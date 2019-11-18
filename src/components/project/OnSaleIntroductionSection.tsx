@@ -87,7 +87,7 @@ const StyleSection = styled.section`
           width: 397px;
         }
       }
-      .slogan{
+      .slogan {
         h3 span {
           font-size: 40px;
         }

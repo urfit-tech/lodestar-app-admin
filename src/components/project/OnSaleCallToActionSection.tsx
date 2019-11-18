@@ -1,6 +1,6 @@
+import { Button } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
-import { Button } from 'antd'
 import { BREAK_POINT } from '../common/Responsive'
 
 type OnSaleCallToActionSectionProps = {
@@ -28,19 +28,19 @@ const StyledJoin = styled.div`
     letter-spacing: 0.77px;
     text-align: center;
     color: white;
-    
+
     &::before {
       position: absolute;
       bottom: 0px;
       left: -30px;
-      content: url("https://files.kolable.com/images/xuemi/shine-01.svg");
+      content: url('https://files.kolable.com/images/xuemi/shine-01.svg');
     }
 
     &::after {
       position: absolute;
       bottom: -130px;
       right: -10px;
-      content: url("https://files.kolable.com/images/xuemi/shine-02.svg")
+      content: url('https://files.kolable.com/images/xuemi/shine-02.svg');
     }
   }
 

@@ -2,9 +2,9 @@ import { Icon } from 'antd'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import FundingProgressBlock from '../../containers/project/FundingProgressBlock'
+import ProjectEnrollmentCounts from '../../containers/project/ProjectEnrollmentCounts'
 import { useInterval } from '../../hooks'
 import { BREAK_POINT } from '../common/Responsive'
-import ProjectEnrollmentCounts from '../../containers/project/ProjectEnrollmentCounts'
 
 const StyledFundingSummaryBlock = styled.div`
   padding: 1.5rem 15px;

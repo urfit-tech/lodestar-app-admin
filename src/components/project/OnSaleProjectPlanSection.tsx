@@ -1,8 +1,7 @@
 import React from 'react'
-import ProjectPlan from './ProjectPlan'
-import { ProjectPlanProps } from './ProjectPlan'
 import styled from 'styled-components'
 import { BREAK_POINT } from '../common/Responsive'
+import ProjectPlan, { ProjectPlanProps } from './ProjectPlan'
 
 type OnSaleProjectPlanSectionProps = {
   projectPlans: ProjectPlanProps[]

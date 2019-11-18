@@ -40,7 +40,9 @@ const ProgramAdminCard: React.FC<ProgramAdminCardProps> = ({ programId, ...cardP
   const { program } = useProgram(programId)
   const { loading: programEnrollmentLoading, error: programEnrollmentError, data: programEnrollmentData } = useQuery(
     program && program.isSubscription ? GET_PROGRAM_PLAN_ENROLLMENT : GET_PROGRAM_ENROLLMENT,
-    { variables: { programId } },
+    {
+      variables: { programId },
+    },
   )
 
   return (

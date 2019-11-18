@@ -21,7 +21,7 @@ const StyledContainer = styled.div`
   width: 320px;
   padding: 80px 0;
 
-  @media(min-width: ${BREAK_POINT}px) {
+  @media (min-width: ${BREAK_POINT}px) {
     width: 960px;
     padding-top: 120px;
   }

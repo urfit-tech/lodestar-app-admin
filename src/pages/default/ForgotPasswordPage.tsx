@@ -64,7 +64,10 @@ const ForgotPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
           <Form.Item>
             {form.getFieldDecorator('email', {
               validateTrigger: 'onSubmit',
-              rules: [{ required: true, message: '請輸入信箱' }, { type: 'email', message: '請輸入信箱格式' }],
+              rules: [
+                { required: true, message: '請輸入信箱' },
+                { type: 'email', message: '請輸入信箱格式' },
+              ],
             })(<Input placeholder="輸入你註冊的信箱" suffix={<Icon type="mail" />} />)}
           </Form.Item>
           <Form.Item className="m-0">

@@ -89,7 +89,7 @@ const CheckoutCard: React.FC<CheckoutCardProps> = ({ memberId, discount, check, 
             <div className="col-2 col-md-2 d-flex justify-content-end align-self-end">- NT$ {orderDiscount.price}</div>
           </div>
         ))}
-      {check && (check.orderProducts && check.orderDiscounts) && (
+      {check && check.orderProducts && check.orderDiscounts && (
         <div className="row mb-3 mt-5">
           <div
             className="col-12 offset-md-8 col-md-4"

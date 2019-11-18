@@ -223,41 +223,41 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                 initialValue: programContent.duration && programContent.duration / 60,
               })(<InputNumber />)}
             </Form.Item>
-              <Form.Item label="內文">
-                {programContent.programContentBody &&
-                  programContent.programContentBody.id &&
-                  form.getFieldDecorator('description', {
-                    initialValue: BraftEditor.createEditorState(programContent.programContentBody.description),
-                  })(
-                    <StyledBraftEditor
-                      language={braftLanguageFn}
-                      controls={[
-                        'headings',
-                        { key: 'font-size', title: '字級' },
-                        'line-height',
-                        'text-color',
-                        'bold',
-                        'italic',
-                        'underline',
-                        'strike-through',
-                        { key: 'remove-styles', title: '清除樣式' },
-                        'separator',
-                        'text-align',
-                        'separator',
-                        'list-ol',
-                        'list-ul',
-                        'blockquote',
-                        { key: 'code', title: '程式碼' },
-                        'separator',
-                        'media',
-                        { key: 'link', title: '連結' },
-                        { key: 'hr', title: '水平線' },
-                        'separator',
-                        { key: 'fullscreen', title: '全螢幕' },
-                      ]}
-                    />,
-                  )}
-              </Form.Item>
+            <Form.Item label="內文">
+              {programContent.programContentBody &&
+                programContent.programContentBody.id &&
+                form.getFieldDecorator('description', {
+                  initialValue: BraftEditor.createEditorState(programContent.programContentBody.description),
+                })(
+                  <StyledBraftEditor
+                    language={braftLanguageFn}
+                    controls={[
+                      'headings',
+                      { key: 'font-size', title: '字級' },
+                      'line-height',
+                      'text-color',
+                      'bold',
+                      'italic',
+                      'underline',
+                      'strike-through',
+                      { key: 'remove-styles', title: '清除樣式' },
+                      'separator',
+                      'text-align',
+                      'separator',
+                      'list-ol',
+                      'list-ul',
+                      'blockquote',
+                      { key: 'code', title: '程式碼' },
+                      'separator',
+                      'media',
+                      { key: 'link', title: '連結' },
+                      { key: 'hr', title: '水平線' },
+                      'separator',
+                      { key: 'fullscreen', title: '全螢幕' },
+                    ]}
+                  />,
+                )}
+            </Form.Item>
           </Form>
         ) : (
           <Spin />

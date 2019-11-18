@@ -18,12 +18,10 @@ const StyledReactPlayer = styled(ReactPlayer)`
   left: 0;
 `
 
-const ProgramContentPlayer: React.FC<
-  ReactPlayerProps & {
-    programContentBody: InferType<typeof programContentBodySchema>
-    memberId: string
-  }
-> = ({ programContentBody, memberId, onProgress, onEnded }) => {
+const ProgramContentPlayer: React.FC<ReactPlayerProps & {
+  programContentBody: InferType<typeof programContentBodySchema>
+  memberId: string
+}> = ({ programContentBody, memberId, onProgress, onEnded }) => {
   const { member } = useMember(memberId)
 
   return (

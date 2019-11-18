@@ -73,7 +73,14 @@ const ProgramCreationModal: React.FC<FormComponentProps> = ({ form }) => {
           {form.getFieldDecorator('isSubscription', {
             initialValue: false,
             rules: [{ required: true }],
-          })(<Radio.Group options={[{ label: '單次付費', value: false }, { label: '訂閱付費', value: true }]} />)}
+          })(
+            <Radio.Group
+              options={[
+                { label: '單次付費', value: false },
+                { label: '訂閱付費', value: true },
+              ]}
+            />,
+          )}
         </Form.Item>
       </Form>
     </AdminModal>

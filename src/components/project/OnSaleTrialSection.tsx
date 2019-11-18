@@ -1,8 +1,8 @@
+import { Carousel } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
-import { Carousel, Icon } from 'antd'
+import { BREAK_POINT } from '../common/Responsive'
 import FundingCoverBlock from './FundingCoverBlock'
-import Responsive, { BREAK_POINT } from '../common/Responsive'
 
 type Video = {
   src: string
@@ -30,7 +30,7 @@ const StyledContainer = styled.div`
   width: 100%;
   max-width: 270px;
   padding-bottom: 80px;
-  
+
   @media (min-width: ${BREAK_POINT}px) {
     max-width: 640px;
   }
@@ -108,12 +108,12 @@ const OnSaleTrialSection: React.FC<OnSaleTrialSectionProps> = ({ title, videos }
             },
           ]}
         >
-          {videos.map(video =>
+          {videos.map(video => (
             <StyledSlide key={video.src}>
               <FundingCoverBlock coverType="video" coverUrl={video.src} />
               <h4>{video.title}</h4>
             </StyledSlide>
-          )}
+          ))}
         </Carousel>
       </StyledContainer>
     </StyledSection>

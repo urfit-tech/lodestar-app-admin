@@ -1,8 +1,8 @@
+import { message } from 'antd'
 import Fingerprint2 from 'fingerprintjs2'
 import jwt from 'jsonwebtoken'
 import React, { useContext, useEffect, useState } from 'react'
 import { UserRole } from '../../schemas/general'
-import { message } from 'antd'
 
 type AuthContext = {
   isLoading: boolean

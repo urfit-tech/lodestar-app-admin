@@ -185,7 +185,7 @@ const StyleStatistics = styled.div`
     }
   }
 
-  @media(min-width: ${BREAK_POINT}px) {
+  @media (min-width: ${BREAK_POINT}px) {
     flex-flow: row;
     justify-content: space-around;
     height: 100px;

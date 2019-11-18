@@ -80,25 +80,25 @@ const StyledWrapper = styled.div`
 `
 
 const StyledCol = styled.div`
-  &:nth-child(2n+1) {
+  &:nth-child(2n + 1) {
     h3::after {
       display: block;
       position: absolute;
       top: -15px;
       right: 10px;
-      content: url("https://files.kolable.com/images/xuemi/thumb.svg")
+      content: url('https://files.kolable.com/images/xuemi/thumb.svg');
     }
     h5::after {
       display: none;
       position: absolute;
       top: -15px;
       right: -75px;
-      content: url("https://files.kolable.com/images/xuemi/thumb.svg")
+      content: url('https://files.kolable.com/images/xuemi/thumb.svg');
     }
   }
-  
+
   @media (min-width: ${BREAK_POINT}px) {
-    &:nth-child(2n+1) {
+    &:nth-child(2n + 1) {
       h3::after {
         display: none;
       }
@@ -142,7 +142,7 @@ const StyledContainer = styled.div`
 const StyledIntro = styled.div`
   div {
     height: 54px;
-    
+
     &:not(:last-child) {
       margin-bottom: 32px;
     }
@@ -156,7 +156,8 @@ const StyledIntro = styled.div`
 
 const StyledIntroItem = styled.header`
   position: relative;
-  h5, p {
+  h5,
+  p {
     text-align: left;
   }
 `
@@ -179,8 +180,7 @@ const OnSaleComparisonSection: React.FC<OnSaleComparisonSectionProps> = ({ compa
                 <StyledIntro className="d-flex flex-column justify-content-between">
                   {comparison.features.map(feature => (
                     <StyledIntroItem>
-                      <h5>{feature.title}
-                      </h5>
+                      <h5>{feature.title}</h5>
                       <p>{feature.description}</p>
                     </StyledIntroItem>
                   ))}

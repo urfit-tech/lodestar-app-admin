@@ -68,7 +68,10 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChan
         </Form.Item>
         <Form.Item>
           {form.getFieldDecorator('email', {
-            rules: [{ required: true, message: '請輸入 Email' }, { type: 'email', message: 'Email 格式錯誤' }],
+            rules: [
+              { required: true, message: '請輸入 Email' },
+              { type: 'email', message: 'Email 格式錯誤' },
+            ],
           })(<Input placeholder="Email" suffix={<Icon type="mail" />} />)}
         </Form.Item>
         <Form.Item>
