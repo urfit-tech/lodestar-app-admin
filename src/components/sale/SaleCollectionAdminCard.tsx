@@ -1,15 +1,16 @@
+import { useQuery } from '@apollo/react-hooks'
 import { Button, Divider, Icon, Input, Table, Tooltip, Typography } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { ColumnProps, PaginationConfig } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import { prop, sum } from 'ramda'
 import React, { useState } from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import styled from 'styled-components'
 import { array, InferType, number, object, string } from 'yup'
 import { currencyFormatter, productTypeFormatter } from '../../helpers'
 import { ProductType } from '../../schemas/general'
 import { orderProductSchema, orderSchema } from '../../schemas/order'
+import types from '../../types'
 import AdminCard from '../common/AdminCard'
 import OrderStatusTag from './OrderStatusTag'
 
@@ -33,7 +34,7 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
 
   const pageSize = pagination.pageSize || DEFAULT_PAGE_SIZE
 
-  const { loading, data } = useQuery(GET_ORDERS, {
+  const { loading, data } = useQuery<types.GET_ORDERS, types.GET_ORDERSVariables>(GET_ORDERS, {
     variables: {
       limit: pageSize,
       offset: pageSize * ((pagination.current || DEFAULT_PAGE_CURRENT) - 1),

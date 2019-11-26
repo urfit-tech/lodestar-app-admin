@@ -3,14 +3,29 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import { footerHeight } from '.'
-import { useCart } from '../../hooks/data'
+import settings from '../../settings'
 import { useAuth } from '../auth/AuthContext'
 import AuthModal, { AuthModalContext } from '../auth/AuthModal'
 import CartDropdown from '../checkout/CartDropdown'
 import Footer from '../common/Footer'
 import MemberProfileButton from '../common/MemberProfileButton'
-import { BREAK_POINT } from '../common/Responsive'
+import Responsive, { BREAK_POINT } from '../common/Responsive'
 import NotificationDropdown from '../notification/NotificationDropdown'
+
+let Logo: string | undefined
+try {
+  Logo = require(`../../images/${process.env.REACT_APP_ID}/logo.svg`)
+} catch {
+  try {
+    Logo = require(`../../images/${process.env.REACT_APP_ID}/logo.png`)
+  } catch {
+    try {
+      Logo = require(`../../images/${process.env.REACT_APP_ID}/logo.jpg`)
+    } catch {
+      Logo = undefined
+    }
+  }
+}
 
 const StyledLayout = styled(Layout)`
   &.bg-white {
@@ -71,7 +86,6 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({
 }) => {
   const [visible, setVisible] = useState(false)
   const { currentMemberId, isAuthenticated } = useAuth()
-  const { cartProducts } = useCart()
 
   return (
     <AuthModalContext.Provider value={{ visible, setVisible }}>
@@ -83,12 +97,32 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({
             renderTitle()
           ) : (
             <Link to={`/`} className="d-flex align-items-center">
-              {process.env.REACT_APP_ID}
+              {Logo ? <img src={Logo} alt="logo" className="header-logo" /> : settings.seo.name || '首頁'}
             </Link>
           )}
 
           <div className="d-flex align-items-center">
-            {currentMemberId && !noCart && <CartDropdown memberId={currentMemberId} cartProducts={cartProducts} />}
+            <Responsive.Desktop>
+              {settings.navLinks.map((navLink, idx) =>
+                navLink.external ? (
+                  <a href={navLink.href} target={navLink.target} key={idx}>
+                    <StyledNavLinkButton type="link">{navLink.label}</StyledNavLinkButton>
+                  </a>
+                ) : (
+                  <Link to={navLink.href} key={idx} target={navLink.target}>
+                    <StyledNavLinkButton type="link">{navLink.label}</StyledNavLinkButton>
+                  </Link>
+                ),
+              )}
+
+              {isAuthenticated && (
+                <Link to={`/members/${currentMemberId}`}>
+                  <StyledNavLinkButton type="link">我的主頁</StyledNavLinkButton>
+                </Link>
+              )}
+            </Responsive.Desktop>
+
+            {currentMemberId && !noCart && <CartDropdown memberId={currentMemberId} />}
             {isAuthenticated && currentMemberId && <NotificationDropdown memberId={currentMemberId} />}
             {currentMemberId && <MemberProfileButton memberId={currentMemberId} />}
           </div>

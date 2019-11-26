@@ -1,10 +1,11 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button } from 'antd'
 import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import Sortable from 'react-sortablejs'
 import { InferType } from 'yup'
 import { programContentSectionSchema, programSchema } from '../../schemas/program'
+import types from '../../types'
 import AdminModal from '../common/AdminModal'
 import DraggableItem from '../common/DraggableItem'
 
@@ -13,8 +14,14 @@ type ProgramStructureAdminModalProps = {
   onStructureChange?: () => void
 }
 const ProgramStructureAdminModal: React.FC<ProgramStructureAdminModalProps> = ({ program, onStructureChange }) => {
-  const updateProgramContentSections = useMutation(UPSERT_PROGRAM_CONTENT_SECTIONS)
-  const updateProgramContents = useMutation(UPSERT_PROGRAM_CONTENTS)
+  const [updateProgramContentSections] = useMutation<
+    types.UPSERT_PROGRAM_CONTENT_SECTIONS,
+    types.UPSERT_PROGRAM_CONTENT_SECTIONSVariables
+  >(UPSERT_PROGRAM_CONTENT_SECTIONS)
+  const [updateProgramContents] = useMutation<types.UPSERT_PROGRAM_CONTENTS, types.UPSERT_PROGRAM_CONTENTSVariables>(
+    UPSERT_PROGRAM_CONTENTS,
+  )
+
   const [loading, setLoading] = useState(false)
   const [sections, setSections] = useState<InferType<typeof programContentSectionSchema>[]>([])
 

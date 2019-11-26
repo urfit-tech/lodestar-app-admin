@@ -46,7 +46,7 @@ const OnSaleContentBlock: React.FC<ProjectContentProps> = ({
       <OnSaleProjectPlanSection projectPlans={projectPlans} />
 
       <OnSaleCommentSection comments={comments} />
-      <OnSaleCallToActionSection updates={updates} />
+      <OnSaleCallToActionSection updates={updates} expiredAt={expiredAt} />
     </div>
   )
 }

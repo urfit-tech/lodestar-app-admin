@@ -3,7 +3,8 @@ import { CardProps } from 'antd/lib/card'
 import { prop, propEq, sum } from 'ramda'
 import React from 'react'
 import styled from 'styled-components'
-import { useCart, useEnrolledMembershipCardIds } from '../../hooks/data'
+import { useEnrolledMembershipCardIds } from '../../hooks/card'
+import { useCart } from '../../hooks/checkout'
 import { Check, Discount } from '../../types/payment'
 import AdminCard from '../common/AdminCard'
 import CouponSelectionModal from './CouponSelectionModal'
@@ -22,7 +23,7 @@ type DiscountSelectionCardProps = CardProps & {
   isCheckoutSubscription?: boolean
   discount: Discount
   onDiscountChange: React.Dispatch<React.SetStateAction<Discount>>
-  check: Check
+  check?: Check
 }
 const DiscountSelectionCard: React.FC<DiscountSelectionCardProps> = ({
   memberId,

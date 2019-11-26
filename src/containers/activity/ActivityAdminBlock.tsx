@@ -1,6 +1,6 @@
+import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import ActivityAdminBlockComponent, { ActivityAdminProps } from '../../components/activity/ActivityAdminBlock'
 import types from '../../types'
 

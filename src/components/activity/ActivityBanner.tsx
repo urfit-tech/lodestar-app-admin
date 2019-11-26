@@ -2,11 +2,25 @@ import { Button } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
 import { BREAK_POINT } from '../../components/common/Responsive'
+import BlurredBanner from '../common/BlurredBanner'
 
-const StyledBanner = styled.div`
+const StyledTitleBlock = styled.div<{ withChildren?: boolean }>`
   position: relative;
-  overflow: hidden;
-  text-align: center;
+  padding: ${props => (props.withChildren ? '4rem 0 2rem' : '10rem 0')};
+  color: white;
+`
+const StyledExtraBlock = styled.div`
+  position: relative;
+  margin-bottom: -1px;
+  padding: 2px;
+  background: linear-gradient(to bottom, transparent 60%, white 60%);
+`
+const StyledTitle = styled.h1`
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 1;
+  letter-spacing: 1px;
 
   .categories {
     margin-bottom: 12px;
@@ -32,41 +46,6 @@ const StyledBanner = styled.div`
     }
   }
 `
-const BlurredBackgroundWrapper = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  transform: scale(1.1);
-`
-const BlurredBackground = styled.div<{ coverUrl: string }>`
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  background-image: url(${props => props.coverUrl});
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  filter: blur(6px);
-`
-const StyledTitleBlock = styled.div<{ withChildren?: boolean }>`
-  position: relative;
-  padding: ${props => (props.withChildren ? '4rem 0 2rem' : '10rem 0')};
-  background-color: rgba(0, 0, 0, 0.6);
-  color: white;
-`
-const StyledExtraBlock = styled.div`
-  position: relative;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 60%, white 60%);
-`
-const StyledTitle = styled.h1`
-  color: white;
-  font-size: 40px;
-  font-weight: bold;
-  line-height: 1;
-  letter-spacing: 1px;
-`
 const StyledQRCode = styled.div`
   img {
     width: 291px;
@@ -88,12 +67,8 @@ type ActivityBannerProps = {
 
 const ActivityBanner: React.FC<ActivityBannerProps> = ({ coverImage, activityCategories, activityTitle, children }) => {
   return (
-    <StyledBanner className="text-center">
-      <BlurredBackgroundWrapper>
-        <BlurredBackground coverUrl={coverImage || ''} />
-      </BlurredBackgroundWrapper>
-
-      <StyledTitleBlock withChildren={!!children}>
+    <BlurredBanner coverUrl={coverImage}>
+      <StyledTitleBlock withChildren={!!children} className="text-center">
         <div className="categories">
           {activityCategories.map(activityCategory => (
             <span className="category" key={activityCategory.category.id}>
@@ -105,14 +80,14 @@ const ActivityBanner: React.FC<ActivityBannerProps> = ({ coverImage, activityCat
       </StyledTitleBlock>
 
       {children && (
-        <StyledExtraBlock>
+        <StyledExtraBlock className="text-center">
           <StyledQRCode className="mb-4">{children}</StyledQRCode>
           <Button type="link" onClick={() => window.print()}>
             列印
           </Button>
         </StyledExtraBlock>
       )}
-    </StyledBanner>
+    </BlurredBanner>
   )
 }
 

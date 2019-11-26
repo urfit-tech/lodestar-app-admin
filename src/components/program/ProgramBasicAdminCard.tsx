@@ -1,11 +1,12 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Typography } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import { InferType } from 'yup'
 import { handleError } from '../../helpers'
 import { programSchema } from '../../schemas/program'
+import types from '../../types'
 import AdminCard from '../common/AdminCard'
 import ProgramCategorySelector from './ProgramCategorySelector'
 
@@ -14,12 +15,19 @@ type ProgramBasicAdminCardProps = FormComponentProps & {
   onRefetch?: () => void
 }
 const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, form, onRefetch }) => {
-  const updateProgramTitle = useMutation(UPDATE_PROGRAM_TITLE)
-  const updateProgramCategories = useMutation(UPDATE_PROGRAM_CATEGORIES)
-  const updateProgramInAdvance = useMutation(UPDATE_PROGRAM_IN_ADVANCE)
+  const [updateProgramTitle] = useMutation<types.UPDATE_PROGRAM_TITLE, types.UPDATE_PROGRAM_TITLEVariables>(
+    UPDATE_PROGRAM_TITLE,
+  )
+  const [updateProgramCategories] = useMutation<
+    types.UPDATE_PROGRAM_CATEGORIES,
+    types.UPDATE_PROGRAM_CATEGORIESVariables
+  >(UPDATE_PROGRAM_CATEGORIES)
+  const [updateProgramInAdvance] = useMutation<
+    types.UPDATE_PROGRAM_IN_ADVANCE,
+    types.UPDATE_PROGRAM_IN_ADVANCEVariables
+  >(UPDATE_PROGRAM_IN_ADVANCE)
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleSubmit = () => {
     program &&
       form.validateFields((error, values) => {
         if (!error) {
@@ -62,7 +70,10 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
         <Form
           labelCol={{ span: 24, md: { span: 4 } }}
           wrapperCol={{ span: 24, md: { span: 8 } }}
-          onSubmit={handleSubmit}
+          onSubmit={e => {
+            e.preventDefault()
+            handleSubmit()
+          }}
         >
           <Form.Item label="課程名稱">
             {form.getFieldDecorator('title', { initialValue: program.title })(<Input />)}

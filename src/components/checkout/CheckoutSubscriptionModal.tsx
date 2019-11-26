@@ -8,13 +8,13 @@ import useRouter from 'use-react-router'
 import { InferType } from 'yup'
 import DiscountSelectionCard from '../../components/checkout/DiscountSelectionCard'
 import { currencyFormatter, getPeriodTypeLabel, handleError, TPDirect } from '../../helpers'
-import { useMember, useProgram } from '../../hooks/data'
+import { useMember } from '../../hooks/member'
+import { useProgram } from '../../hooks/program'
 import { programPlanSchema } from '../../schemas/program'
 import settings from '../../settings'
-import { Discount } from '../../types/payment'
+import { Check, Discount } from '../../types/payment'
 import { useAuth } from '../auth/AuthContext'
 import { AuthModalContext } from '../auth/AuthModal'
-import { FixedRatioImage } from '../common/Image'
 
 const StyledDiv = styled.div`
   height: 44px;
@@ -82,6 +82,10 @@ const ProgramPlanPrice = styled.div`
 const ButtonGroup = styled.div`
   text-align: right;
 `
+const FixedRatioImage = styled.div<{ src?: string }>`
+  background-size: cover;
+  background-position: center;
+`
 
 type CheckoutSubscriptionModalProps = {
   render: React.FC<{
@@ -105,7 +109,7 @@ const CheckoutSubscriptionModal: React.FC<CheckoutSubscriptionModalProps> = ({
   const { program } = useProgram(programId)
   const { member } = useMember(currentMemberId || '')
 
-  const [check, setCheck] = useState()
+  const [check, setCheck] = useState<Check>()
   const [visible, setVisible] = useState()
   const [loading, setLoading] = useState()
   const [discount, setDiscount] = useState<Discount>({ type: 'None', target: '' })
@@ -283,7 +287,7 @@ type CheckoutBlockProp = {
   loading: boolean
   programPlan: InferType<typeof programPlanSchema>
   onCheckout: () => void
-  onCheckSet: (check: any) => void
+  onCheckSet: (check: Check) => void
   onVisible: (value: boolean) => void
 }
 
@@ -313,7 +317,7 @@ const CheckoutBlock: React.FC<CheckoutBlockProp> = ({
   onCheckSet,
   loading,
 }) => {
-  let [check, setCheck] = useState()
+  let [check, setCheck] = useState<Check>()
   useEffect(() => {
     axios
       .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/placeOrder`, {
@@ -323,14 +327,28 @@ const CheckoutBlock: React.FC<CheckoutBlockProp> = ({
         checkoutOnly: true,
       })
       .then(({ data }) => {
-        setCheck(data)
-        onCheckSet(data)
+        const check: Check = {
+          orderProducts: data.order_products.map((value: any) => ({
+            name: value.name,
+            description: value.description,
+            price: value.price,
+            endedAt: value.ended_at,
+            startedAt: value.started_at,
+            autoRenewed: value.auto_renewed,
+          })),
+          orderDiscounts: data.order_discounts.map((value: any) => ({
+            name: value.name,
+            description: value.description,
+            price: value.price,
+            target: value.target,
+            type: value.type,
+          })),
+        }
+        setCheck(check)
+        onCheckSet(check)
       })
-      .catch(error => {
-        message.error(error.response.data.message)
-      })
+      .catch(handleError)
   }, [programPlan, JSON.stringify(discount), memberId])
-
   return (
     <>
       <div style={{ marginTop: '40px' }}>

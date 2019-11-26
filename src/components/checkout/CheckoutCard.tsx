@@ -40,7 +40,7 @@ const CheckoutCard: React.FC<CheckoutCardProps> = ({ memberId, discount, check, 
     try {
       const { data } = await axios.post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/placeOrder`, {
         memberId,
-        productIds: cartProducts.map(cartProduct => cartProduct.product_id),
+        productIds: cartProducts.map(cartProduct => cartProduct.productId),
         discount: discount.type === 'None' || !discount.target ? undefined : discount,
       })
       orderId = data.id

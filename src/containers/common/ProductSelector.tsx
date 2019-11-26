@@ -1,6 +1,6 @@
+import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import ProductSelectorComponent from '../../components/common/ProductSelector'
 import { ProductType } from '../../schemas/general'
 import types from '../../types'

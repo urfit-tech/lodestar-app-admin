@@ -1,11 +1,12 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Dropdown, Icon, Menu, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import { InferType } from 'yup'
 import { programContentSectionSchema, programSchema } from '../../schemas/program'
+import types from '../../types'
 import AdminCard from '../common/AdminCard'
 import ProgramContentAdminItem from './ProgramContentAdminItem'
 
@@ -22,11 +23,21 @@ const ProgramContentSectionAdminCard: React.FC<{
   onUpdate?: () => void
   onRefetch?: () => void
 }> = ({ program, programContentSection, onDelete, onUpdate, onRefetch }) => {
-  const programContentSectionId = programContentSection.id
   const { history, location } = useRouter()
-  const createProgramContent = useMutation(INSERT_PROGRAM_CONTENT)
-  const updateProgramContentSection = useMutation(UPDATE_PROGRAM_CONTENT_SECTION)
-  const deleteProgramContentSection = useMutation(DELETE_PROGRAM_CONTENT_SECTION)
+
+  const [createProgramContent] = useMutation<types.INSERT_PROGRAM_CONTENT, types.INSERT_PROGRAM_CONTENTVariables>(
+    INSERT_PROGRAM_CONTENT,
+  )
+  const [updateProgramContentSection] = useMutation<
+    types.UPDATE_PROGRAM_CONTENT_SECTION,
+    types.UPDATE_PROGRAM_CONTENT_SECTIONVariables
+  >(UPDATE_PROGRAM_CONTENT_SECTION)
+  const [deleteProgramContentSection] = useMutation<
+    types.DELETE_PROGRAM_CONTENT_SECTION,
+    types.DELETE_PROGRAM_CONTENT_SECTIONVariables
+  >(DELETE_PROGRAM_CONTENT_SECTION)
+
+  const programContentSectionId = programContentSection.id
 
   return (
     <StyledAdminCard>

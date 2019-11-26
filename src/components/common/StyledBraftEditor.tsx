@@ -1,8 +1,104 @@
 import BraftEditor from 'braft-editor'
 import React from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import QuotationLeft from '../../images/default/quotation-left.png'
 import QuotationRight from '../../images/default/quotation-right.png'
+
+const OutputMixin = css`
+  h1 {
+    margin-bottom: 1.5rem;
+    padding: 4px 20px;
+    font-size: 20px;
+    font-weight: bold;
+    border-left: 4px solid ${props => props.theme['@primary-color']};
+  }
+  h5 {
+    margin-bottom: 1.5rem;
+    color: #9b9b9b;
+    font-size: 14px;
+    letter-spacing: 0.4px;
+  }
+  p {
+    margin: 0;
+    min-height: 1.5rem;
+    color: #585858;
+    line-height: 27px;
+    letter-spacing: 0.2px;
+    text-align: justify;
+  }
+  ol,
+  ul {
+    margin: 1.5rem 0;
+    padding-left: 1.5rem;
+  }
+  ol:first-child,
+  ul:first-child {
+    margin-top: 0;
+  }
+  ol:last-child,
+  ul:last-child {
+    margin-bottom: 0;
+  }
+  li {
+    font-size: 16px;
+    line-height: 2;
+  }
+  img {
+    margin-bottom: 1.5rem;
+  }
+  img,
+  iframe {
+    width: 100% !important;
+  }
+  blockquote {
+    position: relative;
+    left: 50%;
+    margin-bottom: 2.5rem;
+    padding: 20px 30px;
+    border-left: solid 0px #ccc;
+    background-color: #f7f8f8;
+    color: #585858;
+    font-weight: bold;
+    font-style: initial;
+    text-align: center !important;
+    transform: translateX(-50%);
+
+    @media (min-width: 768px) {
+      padding: 40px 115px;
+    }
+
+    &::before {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 25px;
+      height: 21px;
+      background-image: url(${QuotationLeft});
+      background-size: 100% 100%;
+      content: '';
+
+      @media (min-width: 768px) {
+        top: auto;
+        left: 40px;
+      }
+    }
+    &::after {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 25px;
+      height: 21px;
+      background-image: url(${QuotationRight});
+      background-size: 100% 100%;
+      content: '';
+
+      @media (min-width: 768px) {
+        right: 40px;
+        bottom: auto;
+      }
+    }
+  }
+`
 
 const StyledBraftEditor = styled(BraftEditor)`
   .bf-dropdown .dropdown-content .menu-item.active {
@@ -64,98 +160,14 @@ const StyledBraftEditor = styled(BraftEditor)`
   .public-DraftStyleDefault-orderedListItem.public-DraftStyleDefault-listLTR:before {
     top: -4px;
   }
+
+  .public-DraftEditor-content {
+    ${OutputMixin}
+  }
 `
 
 export const StyledBraftContent = styled.div`
-  h1 {
-    margin-bottom: 1.5rem;
-    padding: 4px 20px;
-    font-size: 20px;
-    font-weight: bold;
-    border-left: 4px solid ${props => props.theme['@primary-color']};
-  }
-  h5 {
-    margin-bottom: 1.5rem;
-    color: #9b9b9b;
-    font-size: 14px;
-    letter-spacing: 0.4px;
-  }
-  p {
-    margin: 0;
-    min-height: 1.5rem;
-    color: #585858;
-    line-height: 27px;
-    letter-spacing: 0.2px;
-    text-align: justify;
-  }
-  ol,
-  ul {
-    margin: 1.5rem 0;
-    padding-left: 1.5rem;
-  }
-  ol:first-child,
-  ul:first-child {
-    margin-top: 0;
-  }
-  ol:last-child,
-  ul:last-child {
-    margin-bottom: 0;
-  }
-  li {
-    font-size: 16px;
-    line-height: 2;
-  }
-  img {
-    margin-bottom: 1.5rem;
-  }
-  blockquote {
-    position: relative;
-    left: 50%;
-    margin-bottom: 2.5rem;
-    padding: 20px 30px;
-    border-left: solid 0px #ccc;
-    background-color: #f7f8f8;
-    color: #585858;
-    font-weight: bold;
-    font-style: initial;
-    text-align: center !important;
-    transform: translateX(-50%);
-
-    @media (min-width: 768px) {
-      padding: 40px 115px;
-    }
-
-    &::before {
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      width: 25px;
-      height: 21px;
-      background-image: url(${QuotationLeft});
-      background-size: 100% 100%;
-      content: '';
-
-      @media (min-width: 768px) {
-        top: auto;
-        left: 40px;
-      }
-    }
-    &::after {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      width: 25px;
-      height: 21px;
-      background-image: url(${QuotationRight});
-      background-size: 100% 100%;
-      content: '';
-
-      @media (min-width: 768px) {
-        right: 40px;
-        bottom: auto;
-      }
-    }
-  }
+  ${OutputMixin}
 `
 
 export const BraftContent: React.FC = ({ children }) => {

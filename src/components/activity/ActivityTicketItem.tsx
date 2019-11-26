@@ -3,7 +3,7 @@ import moment from 'moment'
 import React from 'react'
 import styled from 'styled-components'
 import { dateRangeFormatter } from '../../helpers'
-import { useTicket } from '../../hooks/data'
+import { useActivityTicket } from '../../hooks/activity'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { BREAK_POINT } from '../common/Responsive'
 
@@ -77,7 +77,7 @@ const StyledBadge = styled.span`
 const ActivityTicket: React.FC<{
   ticketId: string
 }> = ({ ticketId }) => {
-  const { loadingTicket, errorTicket, ticket } = useTicket(ticketId)
+  const { loadingTicket, errorTicket, ticket } = useActivityTicket(ticketId)
 
   if (loadingTicket) {
     return (

@@ -1,13 +1,14 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Spin, Tabs } from 'antd'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useEffect } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import styled from 'styled-components'
 import { throttle } from 'throttle-typescript'
 import { InferType } from 'yup'
-import { useProgramContent } from '../../hooks/data'
+import { useProgramContent } from '../../hooks/program'
 import { programSchema } from '../../schemas/program'
+import types from '../../types'
 import { useAuth } from '../auth/AuthContext'
 import { BraftContent } from '../common/StyledBraftEditor'
 import IssueThreadBlock from '../issue/IssueThreadBlock'
@@ -29,7 +30,10 @@ const ProgramContentBlock: React.FC<{
 }> = ({ program, programContentId }) => {
   const { currentMemberId } = useAuth()
   const { programContent, refetchProgramContent } = useProgramContent(programContentId)
-  const insertProgramContentProgress = useMutation(INSTERT_PROGRAM_CONTENT_PROGRESS)
+  const [insertProgramContentProgress] = useMutation<
+    types.INSTERT_PROGRAM_CONTENT_PROGRESS,
+    types.INSTERT_PROGRAM_CONTENT_PROGRESSVariables
+  >(INSTERT_PROGRAM_CONTENT_PROGRESS)
 
   const setProgress = (progress: number) => {
     if (progress === 0) {
@@ -57,7 +61,7 @@ const ProgramContentBlock: React.FC<{
     ) {
       setProgressThrottle(1)
     }
-  })
+  }, [currentMemberId, JSON.stringify(programContent.programContentBody)])
 
   if (!programContent) {
     return <Spin />

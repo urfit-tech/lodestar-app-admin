@@ -1,14 +1,15 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, DatePicker, Form, Icon, Input, InputNumber, message, Radio } from 'antd'
 import { FormComponentProps } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useState } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import styled from 'styled-components'
 import uuid from 'uuid'
 import { InferType } from 'yup'
 import { programPlanSchema } from '../../schemas/program'
+import types from '../../types'
 import AdminModal, { AdminModalProps } from '../common/AdminModal'
 import StyledBraftEditor from '../common/StyledBraftEditor'
 import ProgramPeriodTypeDropdown from './ProgramPeriodTypeDropdown'
@@ -47,7 +48,10 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
   programPlan,
   onRefetch,
 }) => {
-  const upsertProgramPlan = useMutation(UPSERT_PROGRAM_PLAN)
+  const [upsertProgramPlan] = useMutation<types.UPSERT_PROGRAM_PLAN, types.UPSERT_PROGRAM_PLANVariables>(
+    UPSERT_PROGRAM_PLAN,
+  )
+
   const [loading, setLoading] = useState(false)
   const [hasSalePrice, setHasSalePrice] = useState(programPlan && programPlan.salePrice ? true : false)
   const [hasDiscountDownPrice, setHasDiscountDownPrice] = useState(

@@ -1,4 +1,3 @@
-import { message } from 'antd'
 import Fingerprint2 from 'fingerprintjs2'
 import jwt from 'jsonwebtoken'
 import React, { useContext, useEffect, useState } from 'react'
@@ -46,21 +45,14 @@ export const AuthProvider: React.FC = ({ children }) => {
           } catch (error) {}
           window.location.reload()
         }
-        const allowedRoles = payload.allowedRoles as string[]
-        const withRoleAuth = (currentUserRole && allowedRoles.includes(currentUserRole)) || false
-        if (withRoleAuth) {
-          setAuthState({
-            ...defaultContext,
-            fingerprint,
-            isLoading: false,
-            isAuthenticated: true,
-            currentMemberId: payload.sub,
-            allowedUserRoles: payload.allowedRoles,
-          })
-        } else {
-          message.error('沒有該角色權限')
-          localStorage.removeItem(`${process.env.REACT_APP_ID}.auth.token`)
-        }
+        setAuthState({
+          ...defaultContext,
+          fingerprint,
+          isLoading: false,
+          isAuthenticated: true,
+          currentMemberId: payload.sub,
+          allowedUserRoles: payload.allowedRoles,
+        })
       } else {
         // use fingerprint as the currentMemberId
         setAuthState({

@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { ProductTypeLabel } from '../../schemas/general'
 import { ProgramPlanPeriodType } from '../../schemas/program'
+import { CustomRatioImage } from './Image'
 import PriceLabel from './PriceLabel'
 
 const StyledCoverImage = styled.img`
@@ -14,6 +15,7 @@ const StyledCoverImage = styled.img`
   object-fit: cover;
   object-position: center;
 `
+
 const StyledTitle = styled(Typography.Title)`
   && {
     color: var(--gray-darker);
@@ -30,19 +32,19 @@ const StyledMeta = styled.div`
 export type ProductItemProps = {
   id: string
   title: string
-  type: string
-  coverUrl?: string
+  productType?: string
+  coverUrl?: string | null
   listPrice: number
   salePrice?: number
   discountDownPrice?: number
   periodAmount?: number
   periodType?: ProgramPlanPeriodType
-  variant?: string
+  variant?: 'default' | 'simple' | 'cartItem' | 'checkout'
 }
 const ProductItem: React.FC<ProductItemProps> = ({
   id,
   title,
-  type,
+  productType,
   coverUrl,
   listPrice,
   salePrice,
@@ -51,33 +53,72 @@ const ProductItem: React.FC<ProductItemProps> = ({
   periodType,
   variant,
 }) => {
-  if (variant === 'checkout') {
-    return (
-      <>
-        <div className="d-flex align-items-center justify-content-between">
+  switch (variant) {
+    case 'simple':
+      return (
+        <>
           <StyledTitle level={2} ellipsis={{ rows: 2 }} className="flex-grow-1 m-0 mr-5">
             {title}
           </StyledTitle>
           <StyledCoverImage src={coverUrl || EmptyCover} alt={id} className="flex-shrink-0" />
-        </div>
-        <PriceLabel
-          listPrice={listPrice}
-          salePrice={salePrice}
-          downPrice={discountDownPrice}
-          periodAmount={periodAmount}
-          periodType={periodType}
-        />
-      </>
-    )
+        </>
+      )
+    case 'cartItem':
+      return (
+        <>
+          <CustomRatioImage
+            width="4rem"
+            ratio={2 / 3}
+            src={coverUrl || EmptyCover}
+            shape="rounded"
+            className="flex-shrink-0 mr-3"
+          />
+          <Typography.Paragraph ellipsis={{ rows: 2 }} className="flex-grow-1 m-0">
+            {title}
+          </Typography.Paragraph>
+        </>
+      )
+    case 'checkout':
+      return (
+        <>
+          <div className="d-flex align-items-center justify-content-between">
+            <StyledTitle level={2} ellipsis={{ rows: 2 }} className="flex-grow-1 m-0 mr-5">
+              {title}
+            </StyledTitle>
+            <CustomRatioImage
+              width="64px"
+              ratio={3 / 4}
+              src={coverUrl || EmptyCover}
+              shape="rounded"
+              className="flex-shrink-0"
+            />
+          </div>
+          <PriceLabel
+            listPrice={listPrice}
+            salePrice={salePrice}
+            downPrice={discountDownPrice}
+            periodAmount={periodAmount}
+            periodType={periodType}
+          />
+        </>
+      )
   }
 
   return (
     <>
-      <StyledCoverImage src={coverUrl || EmptyCover} alt={id} className="flex-shrink-0 mr-3" />
+      <CustomRatioImage
+        width="64px"
+        ratio={3 / 4}
+        src={coverUrl || EmptyCover}
+        shape="rounded"
+        className="flex-shrink-0 mr-3"
+      />
       <Typography.Paragraph ellipsis={{ rows: 2 }} className="flex-grow-1 m-0 mr-5">
         {title}
       </Typography.Paragraph>
-      <StyledMeta className="mr-5">{ProductTypeLabel[type] || '未知'}</StyledMeta>
+      <StyledMeta className="mr-5">
+        {productType && ProductTypeLabel[productType] ? ProductTypeLabel[productType] : '未知'}
+      </StyledMeta>
     </>
   )
 }

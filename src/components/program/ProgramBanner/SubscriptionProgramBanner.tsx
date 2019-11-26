@@ -66,7 +66,7 @@ const SubscriptionProgramBanner: React.FC<{
               </span>
             ))}
           </StyledCategories>
-          <StyledTitle level={1}>{program.title}</StyledTitle>
+          <StyledTitle>{program.title}</StyledTitle>
           <MemberAvatar memberId={instructorId} withName={true} />
         </StyledTitleBlock>
       </div>

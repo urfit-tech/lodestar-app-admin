@@ -3,9 +3,19 @@ import { ClickParam, MenuProps } from 'antd/lib/menu'
 import React from 'react'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
+import { useEnrolledMembershipCardIds } from '../../hooks/card'
+import { ReactComponent as BookIcon } from '../../images/default/book.svg'
 import { ReactComponent as CalendarAltIcon } from '../../images/default/calendar-alt.svg'
+import { ReactComponent as ClipboardListIcon } from '../../images/default/clipboard-list.svg'
+import { ReactComponent as CommentsIcon } from '../../images/default/comments.svg'
+import { ReactComponent as GiftIcon } from '../../images/default/gift.svg'
+import { ReactComponent as MembercardIcon } from '../../images/default/membercard.svg'
+import { ReactComponent as PointIcon } from '../../images/default/point.svg'
+import { ReactComponent as TicketIcon } from '../../images/default/ticket.svg'
+import { ReactComponent as UserIcon } from '../../images/default/user.svg'
 import { routesProps } from '../../Routes'
 import settings from '../../settings'
+import { useAuth } from '../auth/AuthContext'
 
 const StyledMenu = styled(Menu)`
   && {
@@ -128,3 +138,53 @@ export const CreatorAdminMenu = (props: MenuProps) => (
     </AdminMenu>
   </div>
 )
+
+export const MemberAdminMenu = (props: MenuProps) => {
+  const { currentMemberId } = useAuth()
+  const { enrolledMembershipCardIds } = useEnrolledMembershipCardIds(currentMemberId || '')
+
+  return (
+    <AdminMenu {...props} style={{ background: 'transparent', border: 'none' }}>
+      <Menu.Item key="member_profile_admin">
+        <Icon component={() => <UserIcon />} className="mr-2" />
+        個人設定
+      </Menu.Item>
+      <Menu.Item key="member_program_issues_admin">
+        <Icon component={() => <BookIcon />} className="mr-2" />
+        課程問題
+      </Menu.Item>
+      <Menu.Item key="member_orders_admin">
+        <Icon component={() => <ClipboardListIcon />} className="mr-2" />
+        訂單記錄
+      </Menu.Item>
+      <Menu.Item key="member_point_history_admin">
+        <Icon component={() => <PointIcon />} className="mr-2" />
+        點數紀錄
+      </Menu.Item>
+      <Menu.Item key="member_coupons_admin">
+        <Icon component={() => <TicketIcon />} className="mr-2" />
+        折價券
+      </Menu.Item>
+      {process.env.REACT_APP_MODULE_VOUCHER === 'ENABLED' && (
+        <Menu.Item key="member_voucher_admin">
+          <Icon component={() => <GiftIcon />} className="mr-2" />
+          兌換券
+        </Menu.Item>
+      )}
+      {process.env.REACT_APP_MODULE_MEMBERSHIPCARD === 'ENABLED' && enrolledMembershipCardIds.length > 0 && (
+        <Menu.Item key="member_cards_admin">
+          <Icon component={() => <MembercardIcon />} className="mr-2" />
+          會員卡
+        </Menu.Item>
+      )}
+      {/* <Menu.Item key="member_product_issues_admin">
+        <Icon type="qrcode" className="mr-2" />
+        產品問題
+      </Menu.Item> */}
+      <Menu.Item key="_blank" data-href={settings.customerSupportLink}>
+        <Icon component={() => <CommentsIcon />} className="mr-2" />
+        聯絡客服
+      </Menu.Item>
+    </AdminMenu>
+  )
+}

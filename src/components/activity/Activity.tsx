@@ -39,9 +39,9 @@ const StyledAction = styled.div`
 
 export type ActivityProps = {
   id: string
+  coverUrl: string | null
   title: string
   description?: string
-  coverUrl: string | null
   isParticipantsVisible: boolean
   participantCount?: number
   publishedAt: Date | null
@@ -53,8 +53,8 @@ export type ActivityProps = {
 }
 const Activity: React.FC<ActivityProps> = ({
   title,
-  description,
   coverUrl,
+  description,
   isParticipantsVisible,
   participantCount,
   startedAt,

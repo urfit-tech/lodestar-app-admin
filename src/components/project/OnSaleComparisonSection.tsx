@@ -36,8 +36,9 @@ const StyledSection = styled.section`
     color: white;
   }
   h5 {
+    height: 72px;
     letter-spacing: 0.8px;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
     color: white;
   }
@@ -70,7 +71,8 @@ const StyledSection = styled.section`
       font-size: 28px;
     }
     h5 {
-      font-size: 16px;
+      height: initial;
+      font-size: 18px;
     }
   }
 `
@@ -120,11 +122,12 @@ const StyledContainer = styled.div`
     display: none;
   }
   .arrow {
-    width: 0;
-    height: 0;
+    margin-top: 40px;
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
     border-top: 12px solid white;
+    width: 0;
+    height: 0;
   }
   @media (min-width: ${BREAK_POINT}px) {
     .arrow {
@@ -159,6 +162,14 @@ const StyledIntroItem = styled.header`
   h5,
   p {
     text-align: left;
+  }
+  p {
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  @media (min-width: ${BREAK_POINT}px) {
+    height: 110px;
   }
 `
 

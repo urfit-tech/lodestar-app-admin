@@ -1,13 +1,15 @@
+import { QueryResult } from '@apollo/react-common'
+import { useQuery } from '@apollo/react-hooks'
 import { Card, Icon, Select } from 'antd'
 import gql from 'graphql-tag'
 import { prop, sortBy, uniq } from 'ramda'
 import React, { useState } from 'react'
-import { QueryHookResult, useQuery } from 'react-apollo-hooks'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import { array, InferType, object } from 'yup'
 import { dateFormatter, durationFormatter } from '../../helpers'
 import { programContentSchema, programContentSectionSchema, programSchema } from '../../schemas/program'
+import types from '../../types'
 
 const StyledProgramContentMenu = styled.div`
   background: white;
@@ -103,9 +105,12 @@ const ProgramContentMenu: React.FC<ProgramContentMenuProps> = ({
   onSelect,
 }) => {
   const [sortBy, setSortBy] = useState('section')
-  const query = useQuery(GET_PROGRAM_CONTENTS_WITH_BODY, {
-    variables: { programId: program.id },
-  })
+  const query = useQuery<types.GET_PROGRAM_CONTENTS_WITH_BODY, types.GET_PROGRAM_CONTENTS_WITH_BODYVariables>(
+    GET_PROGRAM_CONTENTS_WITH_BODY,
+    {
+      variables: { programId: program.id },
+    },
+  )
 
   return (
     <StyledProgramContentMenu>
@@ -142,7 +147,7 @@ const ProgramContentMenu: React.FC<ProgramContentMenuProps> = ({
 const ProgramContentMenuBySection: React.FC<{
   program: InferType<typeof programSchema>
   activeProgramContentId?: string
-  query: QueryHookResult<any, any>
+  query: QueryResult<any, any>
   onSelect?: (programContentId: string) => void
 }> = ({ program, activeProgramContentId, query, onSelect }) => {
   const castData = gqlResultSchema.cast(query.data)
@@ -187,7 +192,7 @@ const ProgramContentMenuBySection: React.FC<{
 const ProgramContentMenuByDate: React.FC<{
   program: InferType<typeof programSchema>
   activeProgramContentId?: string
-  query: QueryHookResult<any, any>
+  query: QueryResult<any, any>
   onSelect?: (programContentId: string) => void
 }> = ({ program, activeProgramContentId, query, onSelect }) => {
   const castData = gqlResultSchema.cast(query.data)

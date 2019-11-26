@@ -1,9 +1,9 @@
+import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import SaleSummaryCreatorCardComponent from '../../components/sale/SaleSummaryCreatorCard'
-import { useMember } from '../../hooks/data'
-import * as types from '../../types'
+import { useMember } from '../../hooks/member'
+import types from '../../types'
 
 type SaleSummaryCreatorCardProps = {
   memberId: string

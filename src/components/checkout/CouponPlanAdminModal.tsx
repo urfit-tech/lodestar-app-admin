@@ -1,3 +1,4 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, DatePicker, Form, Input, InputNumber, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import { generate } from 'coupon-code'
@@ -5,9 +6,9 @@ import gql from 'graphql-tag'
 import moment from 'moment'
 import { times } from 'ramda'
 import React, { useState } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import { InferType } from 'yup'
 import { couponPlanSchema } from '../../schemas/coupon'
+import types from '../../types'
 import AdminModal, { AdminModalProps } from '../common/AdminModal'
 import CouponPlanDiscountSelector from './CouponPlanDiscountSelector'
 import PlanCodeSelector, { PlanCodeProps } from './PlanCodeSelector'
@@ -18,8 +19,12 @@ type CouponPlanAdminModalProps = AdminModalProps &
   }
 const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, couponPlan, ...props }) => {
   const [loading, setLoading] = useState()
-  const createCouponPlan = useMutation(INSERT_COUPON_PLAN)
-  const updateCouponPlan = useMutation(UPDATE_COUPON_PLAN)
+  const [createCouponPlan] = useMutation<types.INSERT_COUPON_PLAN, types.INSERT_COUPON_PLANVariables>(
+    INSERT_COUPON_PLAN,
+  )
+  const [updateCouponPlan] = useMutation<types.UPDATE_COUPON_PLAN, types.UPDATE_COUPON_PLANVariables>(
+    UPDATE_COUPON_PLAN,
+  )
 
   const handleSubmit = () => {
     form.validateFieldsAndScroll((error, values) => {

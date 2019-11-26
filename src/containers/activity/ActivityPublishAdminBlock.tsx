@@ -1,7 +1,7 @@
+import { useMutation } from '@apollo/react-hooks'
 import { message } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import { ActivityAdminProps } from '../../components/activity/ActivityAdminBlock'
 import ActivityPublishAdminBlockComponent from '../../components/activity/ActivityPublishAdminBlock'
 import types from '../../types'
@@ -11,7 +11,7 @@ const ActivityPublishAdminBlock: React.FC<{
   onChangeTab?: (key: string) => void
   onRefetch?: () => void
 }> = ({ activityAdmin, onChangeTab, onRefetch }) => {
-  const publishActivity = useMutation<types.PUBLISH_ACTIVITY, types.PUBLISH_ACTIVITYVariables>(PUBLISH_ACTIVITY)
+  const [publishActivity] = useMutation<types.PUBLISH_ACTIVITY, types.PUBLISH_ACTIVITYVariables>(PUBLISH_ACTIVITY)
 
   const handlePublish: (setLoading: React.Dispatch<React.SetStateAction<boolean>>, publishedAt: Date | null) => void = (
     setLoading,

@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { InferType } from 'yup'
 import { currencyFormatter } from '../../helpers'
-import { useEnrolledProgramIds } from '../../hooks/data'
+import { useEnrolledProgramIds } from '../../hooks/program'
 import { programSchema } from '../../schemas/program'
 import ProgramPaymentButton from '../checkout/ProgramPaymentButton'
 

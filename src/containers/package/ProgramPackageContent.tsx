@@ -1,7 +1,7 @@
+import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
 import React from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import { Redirect } from 'react-router'
 import ProgramPackageContentComponent from '../../components/package/ProgramPackageContent'
 import types from '../../types'

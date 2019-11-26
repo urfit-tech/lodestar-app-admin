@@ -1,9 +1,10 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Icon, Input, message, Radio } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import useRouter from 'use-react-router'
+import types from '../../types'
 import { useAuth } from '../auth/AuthContext'
 import AdminModal from '../common/AdminModal'
 import ProgramCategorySelector from './ProgramCategorySelector'
@@ -11,7 +12,9 @@ import ProgramCategorySelector from './ProgramCategorySelector'
 const ProgramCreationModal: React.FC<FormComponentProps> = ({ form }) => {
   const { currentMemberId } = useAuth()
   const { history } = useRouter()
-  const createProgram = useMutation(INSERT_PROGRAM)
+
+  const [createProgram] = useMutation<types.INSERT_PROGRAM, types.INSERT_PROGRAMVariables>(INSERT_PROGRAM)
+
   const [loading, setLoading] = useState()
 
   const handleSubmit = () => {
@@ -20,8 +23,8 @@ const ProgramCreationModal: React.FC<FormComponentProps> = ({ form }) => {
         setLoading(true)
         createProgram({
           variables: {
-            memberId: currentMemberId,
-            appId: process.env.REACT_APP_ID,
+            memberId: currentMemberId || '',
+            appId: process.env.REACT_APP_ID || 'default',
             title: values.title,
             isSubscription: values.isSubscription,
             programCategories: values.categoryIds.map((categoryId: string, idx: number) => ({

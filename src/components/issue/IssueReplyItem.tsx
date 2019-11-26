@@ -1,14 +1,15 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Dropdown, Icon, Menu, message, Tag } from 'antd'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import styled, { ThemeContext } from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { InferType } from 'yup'
 import { programRoleFormatter, rgba } from '../../helpers'
 import { programRoleSchema } from '../../schemas/program'
+import types from '../../types'
 import { useAuth } from '../auth/AuthContext'
 import MemberAvatar from '../common/MemberAvatar'
 import { BraftContent } from '../common/StyledBraftEditor'
@@ -61,10 +62,20 @@ const IssueReplyItem: React.FC<IssueReplyItemProps> = ({
   const { currentMemberId } = useAuth()
   const theme = useContext(ThemeContext)
 
-  const insertIssueReplyReaction = useMutation(INSERT_ISSUE_REPLY_REACTION)
-  const deleteIssueReplyReaction = useMutation(DELETE_ISSUE_REPLY_REACTION)
-  const deleteIssueReply = useMutation(DELETE_ISSUE_REPLY)
-  const updateIssueReply = useMutation(UPDATE_ISSUE_REPLY)
+  const [insertIssueReplyReaction] = useMutation<
+    types.INSERT_ISSUE_REPLY_REACTION,
+    types.INSERT_ISSUE_REPLY_REACTIONVariables
+  >(INSERT_ISSUE_REPLY_REACTION)
+  const [deleteIssueReplyReaction] = useMutation<
+    types.DELETE_ISSUE_REPLY_REACTION,
+    types.DELETE_ISSUE_REPLY_REACTIONVariables
+  >(DELETE_ISSUE_REPLY_REACTION)
+  const [deleteIssueReply] = useMutation<types.DELETE_ISSUE_REPLY, types.DELETE_ISSUE_REPLYVariables>(
+    DELETE_ISSUE_REPLY,
+  )
+  const [updateIssueReply] = useMutation<types.UPDATE_ISSUE_REPLY, types.UPDATE_ISSUE_REPLYVariables>(
+    UPDATE_ISSUE_REPLY,
+  )
 
   const [editing, setEditing] = useState()
   const [focus, setFocus] = useState(qIssueReplyId === issueReplyId)
@@ -79,18 +90,16 @@ const IssueReplyItem: React.FC<IssueReplyItemProps> = ({
     }
   }, [currentMemberId, reactedMemberIds])
 
-  const toggleReaction = (reacted: boolean) => {
-    const promise = reacted
-      ? deleteIssueReplyReaction({
-          variables: { issueReplyId, memberId: currentMemberId },
+  const toggleReaction = async (reacted: boolean) => {
+    reacted
+      ? await deleteIssueReplyReaction({
+          variables: { issueReplyId, memberId: currentMemberId || '' },
         })
-      : insertIssueReplyReaction({
-          variables: { issueReplyId, memberId: currentMemberId },
+      : await insertIssueReplyReaction({
+          variables: { issueReplyId, memberId: currentMemberId || '' },
         })
 
-    promise.then(() => {
-      onRefetch && onRefetch()
-    })
+    onRefetch && onRefetch()
   }
 
   return (

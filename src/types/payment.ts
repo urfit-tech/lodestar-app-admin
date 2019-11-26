@@ -24,10 +24,11 @@ export type OrderDiscount = {
 export type Check = {
   orderProducts: Array<OrderProduct>
   orderDiscounts: Array<OrderDiscount>
-} | undefined
+}
 
 export type CartProduct = {
-  product_id: string
   id: string
+  productId: string
+  createdAt?: string
   price?: number
 }

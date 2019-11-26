@@ -6,7 +6,6 @@ import { ProgramPlanPeriodType } from '../../schemas/program'
 const StyledPriceLabel = styled.div`
   color: var(--gray-darker);
   font-size: 16px;
-  font-size: 16px;
   line-height: 1.5;
   letter-spacing: 0.2px;
 
@@ -70,9 +69,9 @@ const PriceLabel: React.FC<{
             {' ' + currencyFormatter(salePrice)}
           </span>
           <span>
-            {periodType
-              ? ` / ${periodAmount && periodAmount > 1 ? periodAmount : ''} ${getShortenPeriodTypeLabel(periodType)}`
-              : ''}
+            {periodType &&
+              ` 每${periodAmount && periodAmount > 1 ? ` ${periodAmount} ` : ''}` +
+                `${periodType === 'M' ? '個' : ''}${getShortenPeriodTypeLabel(periodType)}`}
           </span>
         </StyledPriceLabel>
       )}
@@ -83,9 +82,9 @@ const PriceLabel: React.FC<{
           {currencyFormatter(listPrice)}
         </span>
         <span>
-          {periodType
-            ? ` / ${periodAmount && periodAmount > 1 ? periodAmount : ''} ${getShortenPeriodTypeLabel(periodType)}`
-            : ''}
+          {periodType &&
+            ` 每${periodAmount && periodAmount > 1 ? ` ${periodAmount} ` : ''}` +
+              `${periodType === 'M' ? '個' : ''}${getShortenPeriodTypeLabel(periodType)}`}
         </span>
       </StyledPriceLabel>
     </div>

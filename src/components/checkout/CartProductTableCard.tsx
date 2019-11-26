@@ -3,7 +3,7 @@ import { CardProps } from 'antd/lib/card'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import ProductItem from '../../containers/common/ProductItem'
-import { useCart } from '../../hooks/data'
+import { useCart } from '../../hooks/checkout'
 import AdminCard from '../common/AdminCard'
 
 type CartProductTableCardProps = CardProps & {
@@ -11,6 +11,7 @@ type CartProductTableCardProps = CardProps & {
 }
 const CartProductTableCard: React.FC<CartProductTableCardProps> = ({ memberId, ...cardProps }) => {
   const { cartProducts, removeCartProduct } = useCart()
+
   return (
     <AdminCard {...cardProps}>
       {cartProducts.length === 0 && (
@@ -22,13 +23,13 @@ const CartProductTableCard: React.FC<CartProductTableCardProps> = ({ memberId, .
       <List itemLayout="horizontal">
         {cartProducts.map(
           cartProduct =>
-            cartProduct.product_id && (
+            cartProduct.productId && (
               <div
                 key={cartProduct.id}
                 className="d-flex justify-content-between align-items-center"
                 style={{ marginBottom: '10px' }}
               >
-                <ProductItem id={cartProduct.product_id} />
+                <ProductItem id={cartProduct.productId} />
                 <Icon type="close" onClick={() => removeCartProduct(cartProduct.id)} />
               </div>
             ),

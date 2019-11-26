@@ -1,7 +1,7 @@
+import { useMutation } from '@apollo/react-hooks'
 import { message } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import { ActivityAdminProps } from '../../components/activity/ActivityAdminBlock'
 import ActivitySessionsAdminBlockComponent from '../../components/activity/ActivitySessionsAdminBlock'
 import types from '../../types'
@@ -11,10 +11,10 @@ const ActivitySessionsAdminBlock: React.FC<{
   onChangeTab?: () => void
   onRefetch?: () => void
 }> = ({ activityAdmin, onRefetch, onChangeTab }) => {
-  const insertActivitySession = useMutation<types.INSERT_ACTIVITY_SESSION, types.INSERT_ACTIVITY_SESSIONVariables>(
+  const [insertActivitySession] = useMutation<types.INSERT_ACTIVITY_SESSION, types.INSERT_ACTIVITY_SESSIONVariables>(
     INSERT_ACTIVITY_SESSION,
   )
-  const updateActivitySession = useMutation<types.UPDATE_ACTIVITY_SESSION, types.UPDATE_ACTIVITY_SESSIONVariables>(
+  const [updateActivitySession] = useMutation<types.UPDATE_ACTIVITY_SESSION, types.UPDATE_ACTIVITY_SESSIONVariables>(
     UPDATE_ACTIVITY_SESSION,
   )
 

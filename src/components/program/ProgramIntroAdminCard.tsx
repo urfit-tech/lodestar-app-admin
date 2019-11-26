@@ -1,13 +1,14 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Input, message, Typography } from 'antd'
 import Form, { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import styled from 'styled-components'
 import { InferType } from 'yup'
 import { handleError } from '../../helpers'
 import { programSchema } from '../../schemas/program'
+import types from '../../types'
 import AdminCard from '../common/AdminCard'
 import { BREAK_POINT } from '../common/Responsive'
 import SingleUploader from '../common/SingleUploader'
@@ -48,20 +49,26 @@ type ProgramIntroAdminCardProps = FormComponentProps & {
   onRefetch?: () => void
 }
 const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, form, onRefetch }) => {
-  const updateProgramIntro = useMutation(UPDATE_PROGRAM_INTRO)
+  const [updateProgramIntro] = useMutation<types.UPDATE_PROGRAM_INTRO, types.UPDATE_PROGRAM_INTROVariables>(
+    UPDATE_PROGRAM_INTRO,
+  )
+
+  const [loading, setLoading] = useState(false)
   const [submitTimes, setSubmitTimes] = useState(Date.now())
 
   const submit = () => {
     program &&
       form.validateFields((error, values) => {
         if (!error) {
+          setLoading(true)
+
           updateProgramIntro({
             variables: {
               programId: program.id,
               abstract: values.abstract || '',
               description: values.description.toRAW(),
               coverUrl: values.coverImg
-                ? `https://${process.env.REACT_APP_S3_PUBLIC_BUCKET}/program_covers/${process.env.REACT_APP_ID}/${program.id}`
+                ? `https://${process.env.REACT_APP_S3_PUBLIC_BUCKET}/program_covers/${process.env.REACT_APP_ID}/${program.id}?t=${submitTimes}`
                 : '',
               coverVideoUrl: values.coverVideoUrl,
             },
@@ -72,6 +79,7 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
               message.success('儲存成功')
             })
             .catch(handleError)
+            .finally(() => setLoading(false))
         }
       })
   }
@@ -93,23 +101,14 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
               {program.coverUrl && (
                 <StyledProgramCover src={`${program.coverUrl}?t=${submitTimes}`} alt="program cover" />
               )}
-              {form.getFieldDecorator('coverImg', {
-                initialValue: program.coverUrl && {
-                  uid: '-1',
-                  name: program.title,
-                  status: 'done',
-                  url: program.coverUrl,
-                },
-              })(
+              {form.getFieldDecorator('coverImg')(
                 <StyledSingleUploader
                   accept="image/*"
                   listType="picture-card"
                   path={`program_covers/${process.env.REACT_APP_ID}/${program.id}`}
                   showUploadList={false}
-                  onSuccess={() => {
-                    submit()
-                  }}
-                  isPublic={true}
+                  onSuccess={() => submit()}
+                  isPublic
                 />,
               )}
             </div>
@@ -159,7 +158,7 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
           </Form.Item>
           <Form.Item wrapperCol={{ md: { offset: 4 } }}>
             <Button onClick={() => form.resetFields()}>取消</Button>
-            <Button className="ml-2" type="primary" htmlType="submit">
+            <Button className="ml-2" type="primary" htmlType="submit" loading={loading}>
               儲存
             </Button>
           </Form.Item>

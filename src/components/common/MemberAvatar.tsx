@@ -1,7 +1,7 @@
 import { AvatarProps } from 'antd/lib/avatar'
 import React from 'react'
 import styled from 'styled-components'
-import { usePublicMember } from '../../hooks/data'
+import { usePublicMember } from '../../hooks/member'
 import { Member } from '../../schemas/general'
 import { AvatarImage } from './Image'
 

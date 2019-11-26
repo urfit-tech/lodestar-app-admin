@@ -1,12 +1,13 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, Dropdown, Form, Icon, Input, InputNumber, Menu, Modal, Spin } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useState } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import { braftLanguageFn } from '../../helpers'
-import { useProgram, useProgramContent } from '../../hooks/data'
+import { useProgram, useProgramContent } from '../../hooks/program'
+import types from '../../types'
 import DatetimePicker from '../common/DatetimePicker'
 import SingleUploader from '../common/SingleUploader'
 import StyledBraftEditor from '../common/StyledBraftEditor'
@@ -25,9 +26,18 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
 }) => {
   const { program } = useProgram(programId)
   const { programContent, refetchProgramContent } = useProgramContent(programContentId)
-  const updateProgramContent = useMutation(UPDATE_PROGRAM_CONTENT)
-  const updateProgramContentPlan = useMutation(UPDATE_PROGRAM_CONTENT_PLAN)
-  const deleteProgramContent = useMutation(DELETE_PROGRAM_CONTENT)
+
+  const [updateProgramContent] = useMutation<types.UPDATE_PROGRAM_CONTENT, types.UPDATE_PROGRAM_CONTENTVariables>(
+    UPDATE_PROGRAM_CONTENT,
+  )
+  const [updateProgramContentPlan] = useMutation<
+    types.UPDATE_PROGRAM_CONTENT_PLAN,
+    types.UPDATE_PROGRAM_CONTENT_PLANVariables
+  >(UPDATE_PROGRAM_CONTENT_PLAN)
+  const [deleteProgramContent] = useMutation<types.DELETE_PROGRAM_CONTENT, types.DELETE_PROGRAM_CONTENTVariables>(
+    DELETE_PROGRAM_CONTENT,
+  )
+
   const [visible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState()

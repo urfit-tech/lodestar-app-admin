@@ -1,13 +1,14 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Icon, Modal, Typography } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import gql from 'graphql-tag'
 import React, { useContext } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import { Link } from 'react-router-dom'
 import { ThemeContext } from 'styled-components'
 import { InferType } from 'yup'
 import { handleError } from '../../helpers'
 import { programSchema } from '../../schemas/program'
+import types from '../../types'
 import AdminCard from '../common/AdminCard'
 
 type ProgramPublishingAdminPaneProps = CardProps & {
@@ -16,12 +17,15 @@ type ProgramPublishingAdminPaneProps = CardProps & {
 }
 const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({ program, onRefetch }) => {
   const theme = useContext(ThemeContext)
+
+  const [publishProgram] = useMutation<types.PUBLISH_PROGRAM, types.PUBLISH_PROGRAMVariables>(PUBLISH_PROGRAM)
+
   const isPublished = (program && program.publishedAt) || false
   const { isValidate, errors } = (program && validateProgram(program)) || {
     isValidate: false,
     errors: [],
   }
-  const publishProgram = useMutation(PUBLISH_PROGRAM)
+
   const handlePublish = () => {
     program &&
       publishProgram({

@@ -1,13 +1,11 @@
-import { Badge, Button, List, Popover, Typography } from 'antd'
+import { Badge, Button, List, Popover } from 'antd'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
-import { currencyFormatter } from '../../helpers'
-import { useProduct } from '../../hooks/data'
-import EmptyCover from '../../images/default/empty-cover.png'
+import ProductItem from '../../containers/common/ProductItem'
+import { useCart } from '../../hooks/checkout'
 import { CartProduct } from '../../types/payment'
-import { CustomRatioImage } from '../common/Image'
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -52,31 +50,55 @@ const StyledButton = styled(Button)`
   }
 `
 
-type CartDropdownProps = {
+const CartDropdown: React.FC<{
   memberId: string
-  cartProducts: Array<CartProduct>
-}
-
-const CartDropdown: React.FC<CartDropdownProps> = ({ memberId, cartProducts }) => {
+}> = ({ memberId }) => {
   const { history } = useRouter()
-  const [dropdownProducts, setDropdownProducts] = useState<CartProduct[]>([])
+
+  const { cartProducts } = useCart()
+
+  const [cartProductCollection, setCartProductCollection] = useState<CartProduct[]>([])
 
   useEffect(() => {
-    onCartProductsChange(memberId, cartProducts, setDropdownProducts)
-  }, [JSON.stringify(cartProducts)])
+    if (cartProducts.length) {
+      axios
+        .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/placeOrder`, {
+          memberId,
+          productIds: cartProducts.map(cartProduct => cartProduct.productId),
+          checkoutOnly: true,
+        })
+        .then(({ data }) => {
+          setCartProductCollection(
+            cartProducts.map((cartProduct, i) => ({
+              id: cartProduct.id,
+              productId: cartProduct.productId,
+              createdAt: cartProduct.createdAt,
+              price: data.order_products[i].price,
+            })),
+          )
+        })
+        .catch(error => {
+          process.env.NODE_ENV === 'development' && console.error(error)
+        })
+    }
+  }, [cartProducts.length])
+
+  if (cartProductCollection.length === 0) {
+    return null
+  }
 
   const content = (
     <Wrapper>
       <StyledList itemLayout="horizontal">
-        {dropdownProducts.map(dropdownProduct =>
-          dropdownProduct.product_id ? (
+        {cartProductCollection.map(cartProduct =>
+          cartProduct.productId ? (
             <CartProductListItem
-              key={dropdownProduct.id}
-              productId={dropdownProduct.product_id}
-              productPrice={dropdownProduct.price}
+              key={cartProduct.id}
+              productId={cartProduct.productId}
+              productPrice={cartProduct.price}
             />
           ) : (
-            <div key={dropdownProduct.id}>目前無此銷售產品</div>
+            <div key={cartProduct.id}>目前無此銷售產品</div>
           ),
         )}
       </StyledList>
@@ -88,61 +110,25 @@ const CartDropdown: React.FC<CartDropdownProps> = ({ memberId, cartProducts }) =
     </Wrapper>
   )
 
-  return dropdownProducts.length ? (
+  return (
     <Popover placement="bottomRight" trigger="click" title="購物清單" content={content}>
-      <StyledBadge count={dropdownProducts.length} className="mr-2">
+      <StyledBadge count={cartProductCollection.length} className="mr-2">
         <StyledButton type="link" icon="shopping-cart" />
       </StyledBadge>
     </Popover>
-  ) : null
+  )
 }
 
 const CartProductListItem: React.FC<{
   productId: string
   productPrice?: number
 }> = ({ productId, productPrice }) => {
-  const [productType, targetId] = productId.split('_')
-  const { product } = useProduct(productType, targetId)
-
   return (
     <StyledListItem>
-      {/* <Link to={product && product.fundingId ? `/projects/${product.fundingId}` : `/programs/${productId}`}> */}
-      <List.Item.Meta
-        className="align-items-center"
-        avatar={<CustomRatioImage width="4rem" ratio={2 / 3} src={(product && product.cover_url) || EmptyCover} />}
-        title={
-          <Typography.Paragraph ellipsis={{ rows: 2 }} className="m-0">
-            {product && product.title}
-          </Typography.Paragraph>
-        }
-        description={<span>{currencyFormatter(productPrice)}</span>}
-      />
-      {/* </Link> */}
+      <ProductItem id={productId} variant="cartItem" />
+      {/* <span>{currencyFormatter(productPrice)}</span> */}
     </StyledListItem>
   )
-}
-
-const onCartProductsChange: (
-  memberId: string,
-  cartProducts: Array<CartProduct>,
-  setDropdownProducts: React.Dispatch<React.SetStateAction<CartProduct[]>>,
-) => void = (memberId, cartProducts, setDropdownProducts) => {
-  axios
-    .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/placeOrder`, {
-      memberId,
-      productIds: cartProducts.map(cartProduct => cartProduct.product_id),
-      checkoutOnly: true,
-    })
-    .then(({ data }) => {
-      setDropdownProducts(
-        cartProducts.map((cartProduct, i) => {
-          return { ...cartProduct, ...data.order_products[i] }
-        }),
-      )
-    })
-    .catch(error => {
-      console.log(error.message)
-    })
 }
 
 export default CartDropdown

@@ -3,7 +3,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { InferType } from 'yup'
 import { durationFormatter } from '../../helpers'
-import { useEnrolledProgramIds } from '../../hooks/data'
+import { useEnrolledProgramIds } from '../../hooks/program'
 import { programContentSchema, programSchema } from '../../schemas/program'
 import ProgramContentTrialModal from './ProgramContentTrialModal'
 

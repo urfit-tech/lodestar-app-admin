@@ -1,10 +1,11 @@
+import { useQuery } from '@apollo/react-hooks'
 import { Button, Select } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import styled from 'styled-components'
 import { InferType } from 'yup'
 import { categorySchema } from '../../schemas/program'
+import types from '../../types'
 
 const StyledButton = styled(Button)`
   padding: 0 20px;
@@ -36,9 +37,12 @@ type ProgramCategorySelectorProps = {
   flatten?: boolean
 }
 const ProgramCategorySelector: React.FC<ProgramCategorySelectorProps> = ({ flatten, value, onChange }, ref) => {
-  const { loading, data } = useQuery(GET_PROGRAM_CATEGORIES, {
-    variables: { appId: process.env.REACT_APP_ID },
-  })
+  const { loading, data } = useQuery<types.GET_PROGRAM_CATEGORIES, types.GET_PROGRAM_CATEGORIESVariables>(
+    GET_PROGRAM_CATEGORIES,
+    {
+      variables: { appId: process.env.REACT_APP_ID || '' },
+    },
+  )
   const categories: InferType<typeof categorySchema>[] = (data && data.category) || []
   return flatten ? (
     <>
@@ -67,8 +71,8 @@ const ProgramCategorySelector: React.FC<ProgramCategorySelectorProps> = ({ flatt
   )
 }
 
-const GET_PROGRAM_CATEGORIES = gql`
-  query GET_CATEGORIES($appId: String!) {
+export const GET_PROGRAM_CATEGORIES = gql`
+  query GET_PROGRAM_CATEGORIES($appId: String!) {
     category(where: { app_id: { _eq: $appId }, class: { _eq: "program" } }, order_by: { position: asc }) {
       id
       name

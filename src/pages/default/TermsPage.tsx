@@ -59,7 +59,9 @@ const StyledSection = styled.section`
 `
 
 const TermsPage = () => {
-  const { name } = useApp()
+  const {
+    app: { name },
+  } = useApp()
 
   return (
     <DefaultLayout>

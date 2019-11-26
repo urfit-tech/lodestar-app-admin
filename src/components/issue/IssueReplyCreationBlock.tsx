@@ -1,10 +1,11 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import styled from 'styled-components'
+import types from '../../types'
 import MemberAvatar from '../common/MemberAvatar'
 
 export const StyledEditor = styled(BraftEditor)`
@@ -18,10 +19,13 @@ type IssueReplyCreationBlockProps = FormComponentProps & {
   onRefetch?: () => void
 }
 const IssueReplyCreationBlock: React.FC<IssueReplyCreationBlockProps> = ({ memberId, issueId, form, onRefetch }) => {
+  const [insertIssueReply] = useMutation<types.INSERT_ISSUE_REPLY, types.INSERT_ISSUE_REPLYVariables>(
+    INSERT_ISSUE_REPLY,
+  )
+
   const [replying, setReplying] = useState()
-  const insertIssueReply = useMutation(INSERT_ISSUE_REPLY)
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+
+  const handleSubmit = () => {
     form.validateFields((error, values) => {
       if (!error) {
         setReplying(true)
@@ -42,7 +46,12 @@ const IssueReplyCreationBlock: React.FC<IssueReplyCreationBlockProps> = ({ membe
     })
   }
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form
+      onSubmit={e => {
+        e.preventDefault()
+        handleSubmit()
+      }}
+    >
       <div className="d-flex align-items-center mb-3">
         <MemberAvatar memberId={memberId} withName />
       </div>

@@ -1,7 +1,7 @@
 import { Select } from 'antd'
 import { SelectProps } from 'antd/lib/select'
 import React from 'react'
-import { useEditablePrograms, useEnrolledProgramIds, useProgram } from '../../hooks/data'
+import { useEditablePrograms, useEnrolledProgramIds, useProgram } from '../../hooks/program'
 
 type ProgramSelectorProps = SelectProps<string> & {
   memberId: string

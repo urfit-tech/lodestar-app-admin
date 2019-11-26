@@ -1,7 +1,7 @@
+import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { sum, uniqBy } from 'ramda'
 import React from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import ProgramPackageCollectionBlockComponent from '../../components/package/ProgramPackageCollectionBlock'
 import types from '../../types'
 

@@ -190,7 +190,7 @@ const IntroductionAdminBlockComponent: React.FC<IntroductionAdminBlockComponentP
   onUpdateIntroduction,
 }) => {
   const [loading, setLoading] = useState(false)
-  const [submitTimes, setSubmitTimes] = useState(0)
+  const [submitTimes, setSubmitTimes] = useState(Date.now())
 
   const handleSubmit = () => {
     form.validateFields((error, values) => {
@@ -200,7 +200,7 @@ const IntroductionAdminBlockComponent: React.FC<IntroductionAdminBlockComponentP
       if (onUpdateIntroduction) {
         onUpdateIntroduction(setLoading, {
           coverUrl: values.coverImg
-            ? `https://${process.env.REACT_APP_S3_PUBLIC_BUCKET}/activity_covers/${process.env.REACT_APP_ID}/${activityId}`
+            ? `https://${process.env.REACT_APP_S3_PUBLIC_BUCKET}/activity_covers/${process.env.REACT_APP_ID}/${activityId}?t=${submitTimes}`
             : '',
           description: values.description.toRAW(),
         })
