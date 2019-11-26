@@ -68,7 +68,7 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
               abstract: values.abstract || '',
               description: values.description.toRAW(),
               coverUrl: values.coverImg
-                ? `https://${process.env.REACT_APP_S3_PUBLIC_BUCKET}/program_covers/${process.env.REACT_APP_ID}/${program.id}?t=${submitTimes}`
+                ? `https://${process.env.REACT_APP_S3_PUBLIC_BUCKET}/program_covers/${localStorage.getItem('kolable.app.id')}/${program.id}?t=${submitTimes}`
                 : '',
               coverVideoUrl: values.coverVideoUrl,
             },
@@ -105,7 +105,7 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
                 <StyledSingleUploader
                   accept="image/*"
                   listType="picture-card"
-                  path={`program_covers/${process.env.REACT_APP_ID}/${program.id}`}
+                  path={`program_covers/${localStorage.getItem('kolable.app.id')}/${program.id}`}
                   showUploadList={false}
                   onSuccess={() => submit()}
                   isPublic

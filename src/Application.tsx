@@ -51,8 +51,8 @@ const ApplicationHelmet = () => {
 
   return (
     <Helmet>
-      <title>{process.env.REACT_APP_ID}</title>
-      <meta name="description" content={process.env.REACT_APP_ID} />
+      <title>{settings.title}</title>
+      <meta name="description" content={settings.description} />
 
       {/* open graph */}
       <meta property="og:type" content="website" />

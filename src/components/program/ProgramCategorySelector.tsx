@@ -40,7 +40,7 @@ const ProgramCategorySelector: React.FC<ProgramCategorySelectorProps> = ({ flatt
   const { loading, data } = useQuery<types.GET_PROGRAM_CATEGORIES, types.GET_PROGRAM_CATEGORIESVariables>(
     GET_PROGRAM_CATEGORIES,
     {
-      variables: { appId: process.env.REACT_APP_ID || '' },
+      variables: { appId: localStorage.getItem('kolable.app.id') || '' },
     },
   )
   const categories: InferType<typeof categorySchema>[] = (data && data.category) || []

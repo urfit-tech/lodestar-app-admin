@@ -36,7 +36,7 @@ export const useApp = () => {
         }
       }
     `,
-    { variables: { appId: process.env.REACT_APP_ID || 'default' } },
+    { variables: { appId: localStorage.getItem('kolable.app.id') || 'default' } },
   )
 
   const app: AppProps =

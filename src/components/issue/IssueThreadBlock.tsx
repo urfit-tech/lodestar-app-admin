@@ -22,7 +22,7 @@ const IssueThreadBlock: React.FC<IssueThreadBlockProps> = ({ threadId, programRo
     GET_ISSUE_THREAD,
     {
       variables: {
-        appId: process.env.REACT_APP_ID || '',
+        appId: localStorage.getItem('kolable.app.id') || '',
         threadId,
       },
     },

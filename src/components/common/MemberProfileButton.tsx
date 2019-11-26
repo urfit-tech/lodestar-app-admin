@@ -122,7 +122,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
           style={{ cursor: 'pointer' }}
           onClick={() => {
             try {
-              localStorage.removeItem(`${process.env.REACT_APP_ID}.auth.token`)
+              localStorage.removeItem(`${localStorage.getItem('kolable.app.id')}.auth.token`)
             } catch (error) {}
             setAuthToken && setAuthToken(null)
           }}

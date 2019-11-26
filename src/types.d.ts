@@ -204,6 +204,30 @@ export interface UPDATE_LOGINED_ATVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_APPLICATION
+// ====================================================
+
+export interface GET_APPLICATION_app {
+  __typename: "app";
+  id: string;
+}
+
+export interface GET_APPLICATION {
+  /**
+   * fetch data from the table: "app"
+   */
+  app: GET_APPLICATION_app[];
+}
+
+export interface GET_APPLICATIONVariables {
+  adminHost: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_ISSUE_STATUS
 // ====================================================
 

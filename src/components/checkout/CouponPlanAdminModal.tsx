@@ -59,7 +59,7 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
               if (couponCode.type === 'random') {
                 return times(
                   () => ({
-                    app_id: process.env.REACT_APP_ID,
+                    app_id: localStorage.getItem('kolable.app.id'),
                     code: generate(),
                     count: 1,
                     remaining: 1,
@@ -68,7 +68,7 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
                 )
               }
               return {
-                app_id: process.env.REACT_APP_ID,
+                app_id: localStorage.getItem('kolable.app.id'),
                 code: couponCode.code,
                 count: couponCode.count,
                 remaining: couponCode.count,

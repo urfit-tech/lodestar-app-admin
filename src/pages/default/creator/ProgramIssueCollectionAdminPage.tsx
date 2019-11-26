@@ -84,7 +84,7 @@ const AllProgramIssueCollectionBlock: React.FC<{
   >(GET_MEMBER_PROGRAM_ISSUES, {
     variables: {
       memberId: allowOthersIssue ? undefined : memberId,
-      appId: process.env.REACT_APP_ID || '',
+      appId: localStorage.getItem('kolable.app.id') || '',
       threadIdLike: selectedProgramId === 'all' ? undefined : `/programs/${selectedProgramId}/contents/%`,
       unsolved,
     },

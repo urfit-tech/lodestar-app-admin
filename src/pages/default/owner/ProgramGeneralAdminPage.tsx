@@ -11,7 +11,7 @@ import { categorySchema } from '../../../schemas/program'
 
 const ProgramGeneralAdminPage = () => {
   const { loading, data, refetch } = useQuery(GET_PROGRAM_CATEGORIES, {
-    variables: { appId: process.env.REACT_APP_ID },
+    variables: { appId: localStorage.getItem('kolable.app.id') },
   })
   const insertProgramCategory = useMutation(INSERT_PROGRAM_CATEGORY)
   const updateProgramCategory = useMutation(UPDATE_PROGRAM_CATEGORY)
@@ -90,7 +90,7 @@ const ProgramGeneralAdminPage = () => {
           onClick={() =>
             insertProgramCategory({
               variables: {
-                appId: process.env.REACT_APP_ID,
+                appId: localStorage.getItem('kolable.app.id'),
                 name: `未命名分類-${categories.length + 1}`,
                 position: categories.length,
               },

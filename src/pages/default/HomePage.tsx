@@ -3,9 +3,11 @@ import React, { useCallback, useContext, useState } from 'react'
 import { Redirect } from 'react-router-dom'
 import { useAuth } from '../../components/auth/AuthContext'
 import AuthModal, { AuthModalContext } from '../../components/auth/AuthModal'
+import { useApp } from '../../hooks/data'
 
 const HomePage = () => {
   const [visible, setVisible] = useState(false)
+  const { app } = useApp()
   const { isAuthenticated, currentUserRole } = useAuth()
   if (isAuthenticated) {
     switch (currentUserRole) {
@@ -20,7 +22,7 @@ const HomePage = () => {
       <AuthModal></AuthModal>
       <div className="container">
         <div className="d-flex justify-content-center">
-          <Typography.Title>KOLABLE 管理後台</Typography.Title>
+          <Typography.Title>{app.title} 管理後台</Typography.Title>
         </div>
         <div className="row">
           <div className="col-12 col-md-4 offset-md-2">

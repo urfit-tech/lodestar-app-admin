@@ -6,9 +6,11 @@ import { HttpLink } from 'apollo-link-http'
 import { UserRole } from '../schemas/general'
 
 const createApolloClient = ({
+  appId,
   currentMemberId,
   currentUserRole,
 }: {
+  appId?: string
   currentMemberId?: string
   currentUserRole?: UserRole
 }) => {
@@ -21,7 +23,7 @@ const createApolloClient = ({
   const contextLink = setContext(() => {
     let authToken: string | null
     try {
-      authToken = localStorage.getItem(`${process.env.REACT_APP_ID}.auth.token`)
+      authToken = localStorage.getItem(`kolable.auth.token`)
     } catch (error) {
       authToken = null
     }
@@ -29,7 +31,7 @@ const createApolloClient = ({
     return currentUserRole
       ? {
           headers: {
-            'x-hasura-app-id': process.env.REACT_APP_ID,
+            'x-hasura-app-id': appId,
             authorization: `Bearer ${authToken}`,
             'x-hasura-role': currentUserRole,
             'x-hasura-user-id': currentMemberId,
@@ -37,7 +39,7 @@ const createApolloClient = ({
         }
       : {
           headers: {
-            'x-hasura-app-id': process.env.REACT_APP_ID,
+            'x-hasura-app-id': appId,
             'x-hasura-user-id': currentMemberId,
           },
         }
@@ -52,4 +54,3 @@ const createApolloClient = ({
 }
 
 export { createApolloClient }
-

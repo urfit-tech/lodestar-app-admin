@@ -24,7 +24,7 @@ const ProgramCreationModal: React.FC<FormComponentProps> = ({ form }) => {
         createProgram({
           variables: {
             memberId: currentMemberId || '',
-            appId: process.env.REACT_APP_ID || 'default',
+            appId: localStorage.getItem('kolable.app.id') || 'default',
             title: values.title,
             isSubscription: values.isSubscription,
             programCategories: values.categoryIds.map((categoryId: string, idx: number) => ({

@@ -24,7 +24,7 @@ const AuthContext = React.createContext<AuthContext>(defaultContext)
 export const AuthProvider: React.FC = ({ children }) => {
   let defaultAuthToken: string | null
   try {
-    defaultAuthToken = localStorage.getItem(`${process.env.REACT_APP_ID}.auth.token`)
+    defaultAuthToken = localStorage.getItem(`kolable.auth.token`)
   } catch (error) {
     defaultAuthToken = null
   }
@@ -41,7 +41,7 @@ export const AuthProvider: React.FC = ({ children }) => {
         let expiredTime = payload.exp - 86400
         if (expiredTime < currentTime) {
           try {
-            localStorage.removeItem(`${process.env.REACT_APP_ID}.auth.token`)
+            localStorage.removeItem(`kolable.auth.token`)
           } catch (error) {}
           window.location.reload()
         }

@@ -38,7 +38,7 @@ const IssueCreationModal: React.FC<IssueCreationModalProps> = ({
       if (!error) {
         insertIssue({
           variables: {
-            appId: process.env.REACT_APP_ID || '',
+            appId: localStorage.getItem('kolable.app.id') || '',
             memberId,
             threadId,
             title: values.title,

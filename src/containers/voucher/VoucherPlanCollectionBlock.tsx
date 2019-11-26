@@ -54,7 +54,7 @@ const VoucherPlanCollectionBlock = () => {
     insertVoucherPlan({
       variables: {
         ...values,
-        appId: process.env.REACT_APP_ID || '',
+        appId: localStorage.getItem('kolable.app.id') || '',
         voucherCodes: values.voucherCodes.flatMap(voucherCode =>
           voucherCode.type === 'random'
             ? times(
@@ -99,7 +99,7 @@ const VoucherPlanCollectionBlock = () => {
       variables: {
         ...values,
         voucherPlanId,
-        appId: process.env.REACT_APP_ID || '',
+        appId: localStorage.getItem('kolable.app.id') || '',
         description: encodeURI(values.description || ''),
         voucherPlanProducts: values.voucherPlanProducts.flatMap(productId => ({
           voucher_plan_id: voucherPlanId,

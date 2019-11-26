@@ -37,7 +37,7 @@ const ProgramCollectionBlock: React.FC<{
   isDraft?: boolean
 }> = ({ isDraft, memberId }) => {
   const { data, error, loading } = useQuery(GET_PROGRAM_COLLECTION, {
-    variables: { appId: process.env.REACT_APP_ID, memberId, isDraft },
+    variables: { appId: localStorage.getItem('kolable.app.id'), memberId, isDraft },
   })
   return (
     <div className="row py-3">

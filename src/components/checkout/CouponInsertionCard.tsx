@@ -52,7 +52,7 @@ const CouponInsertionCard: React.FC<CouponInsertionCardProps> = ({ form, onInser
 }
 export const insertCouponCode = (memberId: string, code: string) =>
   axios.post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/insertCouponCode`, {
-    appId: process.env.REACT_APP_ID,
+    appId: localStorage.getItem('kolable.app.id'),
     memberId,
     code,
   })

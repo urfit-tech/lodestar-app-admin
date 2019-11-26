@@ -37,7 +37,7 @@ export const useCart = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_CART_PRODUCT, types.GET_CART_PRODUCTVariables>(
     GET_CART_PRODUCT,
     {
-      variables: { appId: process.env.REACT_APP_ID || '', memberId: memberId || '' },
+      variables: { appId: localStorage.getItem('kolable.app.id') || '', memberId: memberId || '' },
     },
   )
   const [addCartProduct] = useMutation<types.INSERT_CART_PRODUCT, types.INSERT_CART_PRODUCTVariables>(
@@ -65,7 +65,7 @@ export const useCart = () => {
     addCartProduct: (itemClass: ProductType, itemTarget: string) => {
       addCartProduct({
         variables: {
-          appId: process.env.REACT_APP_ID || '',
+          appId: localStorage.getItem('kolable.app.id') || '',
           memberId: memberId || '',
           productId: `${itemClass}_${itemTarget}`,
         },

@@ -203,7 +203,7 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                   <SingleUploader
                     accept="video/*"
                     uploadText="上傳影片"
-                    path={`videos/${process.env.REACT_APP_ID}/${programContent.programContentBody.id}`}
+                    path={`videos/${localStorage.getItem('kolable.app.id')}/${programContent.programContentBody.id}`}
                     onUploading={() => setUploading(true)}
                     onSuccess={() => setUploading(false)}
                     onError={() => setUploading(false)}
@@ -219,7 +219,7 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                   })(
                     <SingleUploader
                       uploadText="上傳字幕"
-                      path={`texttracks/${process.env.REACT_APP_ID}/${programContent.programContentBody.id}`}
+                      path={`texttracks/${localStorage.getItem('kolable.app.id')}/${programContent.programContentBody.id}`}
                       onUploading={() => setUploading(true)}
                       onSuccess={() => setUploading(false)}
                       onError={() => setUploading(false)}

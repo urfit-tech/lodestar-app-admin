@@ -74,7 +74,7 @@ const ActivityCollectionAdminBlock: React.FC<{
           position: index,
         })),
         memberId,
-        appId: process.env.REACT_APP_ID || '',
+        appId: localStorage.getItem('kolable.app.id') || '',
       },
     })
       .then(({ data }) => {

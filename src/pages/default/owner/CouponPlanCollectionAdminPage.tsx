@@ -14,7 +14,7 @@ const CouponPlanCollectionAdminPage = () => {
     types.GET_COUPON_PLAN_COLLECTION,
     types.GET_COUPON_PLAN_COLLECTIONVariables
   >(GET_COUPON_PLAN_COLLECTION, {
-    variables: { appId: process.env.REACT_APP_ID || '' },
+    variables: { appId: localStorage.getItem('kolable.app.id') || '' },
   })
 
   const couponPlans =

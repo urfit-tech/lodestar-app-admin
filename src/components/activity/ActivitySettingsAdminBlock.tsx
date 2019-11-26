@@ -200,7 +200,7 @@ const IntroductionAdminBlockComponent: React.FC<IntroductionAdminBlockComponentP
       if (onUpdateIntroduction) {
         onUpdateIntroduction(setLoading, {
           coverUrl: values.coverImg
-            ? `https://${process.env.REACT_APP_S3_PUBLIC_BUCKET}/activity_covers/${process.env.REACT_APP_ID}/${activityId}?t=${submitTimes}`
+            ? `https://${process.env.REACT_APP_S3_PUBLIC_BUCKET}/activity_covers/${localStorage.getItem('kolable.app.id')}/${activityId}?t=${submitTimes}`
             : '',
           description: values.description.toRAW(),
         })
@@ -235,7 +235,7 @@ const IntroductionAdminBlockComponent: React.FC<IntroductionAdminBlockComponentP
                 accept="image/*"
                 listType="picture-card"
                 showUploadList={false}
-                path={`activity_covers/${process.env.REACT_APP_ID}/${activityId}`}
+                path={`activity_covers/${localStorage.getItem('kolable.app.id')}/${activityId}`}
                 isPublic
                 onSuccess={() => {
                   setSubmitTimes(submitTimes + 1)

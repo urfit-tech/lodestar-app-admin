@@ -71,7 +71,7 @@ export const usePublishedActivityCollection = () => {
                 ? new Date(activity.activity_sessions_aggregate.aggregate.max.ended_at)
                 : null,
             link: `/activities/${activity.id}`,
-            appId: process.env.REACT_APP_ID || '',
+            appId: localStorage.getItem('kolable.app.id') || '',
             organizerId: activity.organizer_id,
 
             categories: activity.activity_categories.map(activityCategory => ({

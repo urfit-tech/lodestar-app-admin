@@ -42,7 +42,7 @@ const ForgotPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
 
       axios
         .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/forgotPassword`, {
-          appId: process.env.REACT_APP_ID,
+          appId: localStorage.getItem('kolable.app.id'),
           email: values.email,
         })
         .then(({ data }) => {

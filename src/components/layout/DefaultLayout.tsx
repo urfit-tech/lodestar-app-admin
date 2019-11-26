@@ -14,13 +14,13 @@ import NotificationDropdown from '../notification/NotificationDropdown'
 
 let Logo: string | undefined
 try {
-  Logo = require(`../../images/${process.env.REACT_APP_ID}/logo.svg`)
+  Logo = require(`../../images/${localStorage.getItem('kolable.app.id')}/logo.svg`)
 } catch {
   try {
-    Logo = require(`../../images/${process.env.REACT_APP_ID}/logo.png`)
+    Logo = require(`../../images/${localStorage.getItem('kolable.app.id')}/logo.png`)
   } catch {
     try {
-      Logo = require(`../../images/${process.env.REACT_APP_ID}/logo.jpg`)
+      Logo = require(`../../images/${localStorage.getItem('kolable.app.id')}/logo.jpg`)
     } catch {
       Logo = undefined
     }
