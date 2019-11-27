@@ -4345,26 +4345,227 @@ export interface GET_FUNDINGVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PROGRAM_COLLECTION
+// GraphQL query operation: GET_ACTIVITY
 // ====================================================
 
-export interface GET_PROGRAM_COLLECTION_program {
+export interface GET_ACTIVITY_activity_by_pk_activity_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_ACTIVITY_activity_by_pk_activity_categories {
+  __typename: "activity_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_ACTIVITY_activity_by_pk_activity_categories_category;
+}
+
+export interface GET_ACTIVITY_activity_by_pk_activity_sessions {
+  __typename: "activity_session";
+  id: any;
+}
+
+export interface GET_ACTIVITY_activity_by_pk_activity_tickets_activity_session_tickets_activity_session {
+  __typename: "activity_session";
+  id: any;
+  title: string;
+}
+
+export interface GET_ACTIVITY_activity_by_pk_activity_tickets_activity_session_tickets {
+  __typename: "activity_session_ticket";
+  id: any;
+  /**
+   * An object relationship
+   */
+  activity_session: GET_ACTIVITY_activity_by_pk_activity_tickets_activity_session_tickets_activity_session;
+}
+
+export interface GET_ACTIVITY_activity_by_pk_activity_tickets_activity_ticket_enrollments_aggregate_aggregate {
+  __typename: "activity_ticket_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_ACTIVITY_activity_by_pk_activity_tickets_activity_ticket_enrollments_aggregate {
+  __typename: "activity_ticket_enrollment_aggregate";
+  aggregate: GET_ACTIVITY_activity_by_pk_activity_tickets_activity_ticket_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_ACTIVITY_activity_by_pk_activity_tickets_activity_ticket_enrollments {
+  __typename: "activity_ticket_enrollment";
+  order_log_id: string | null;
+  order_product_id: any | null;
+}
+
+export interface GET_ACTIVITY_activity_by_pk_activity_tickets {
+  __typename: "activity_ticket";
+  id: any;
+  count: number;
+  description: string | null;
+  started_at: any;
+  is_published: boolean;
+  ended_at: any;
+  price: any;
+  title: string;
+  /**
+   * An array relationship
+   */
+  activity_session_tickets: GET_ACTIVITY_activity_by_pk_activity_tickets_activity_session_tickets[];
+  /**
+   * An aggregated array relationship
+   */
+  activity_ticket_enrollments_aggregate: GET_ACTIVITY_activity_by_pk_activity_tickets_activity_ticket_enrollments_aggregate;
+  /**
+   * An array relationship
+   */
+  activity_ticket_enrollments: GET_ACTIVITY_activity_by_pk_activity_tickets_activity_ticket_enrollments[];
+}
+
+export interface GET_ACTIVITY_activity_by_pk {
+  __typename: "activity";
+  id: any;
+  organizer_id: string;
+  cover_url: string | null;
+  title: string;
+  description: string;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  activity_categories: GET_ACTIVITY_activity_by_pk_activity_categories[];
+  /**
+   * An array relationship
+   */
+  activity_sessions: GET_ACTIVITY_activity_by_pk_activity_sessions[];
+  /**
+   * An array relationship
+   */
+  activity_tickets: GET_ACTIVITY_activity_by_pk_activity_tickets[];
+}
+
+export interface GET_ACTIVITY {
+  /**
+   * fetch data from the table: "activity" using primary key columns
+   */
+  activity_by_pk: GET_ACTIVITY_activity_by_pk | null;
+}
+
+export interface GET_ACTIVITYVariables {
+  activityId: any;
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CREATOR_PROGRAM_COLLECTION
+// ====================================================
+
+export interface GET_CREATOR_PROGRAM_COLLECTION_program {
   __typename: "program";
   id: any;
   published_at: any | null;
 }
 
-export interface GET_PROGRAM_COLLECTION {
+export interface GET_CREATOR_PROGRAM_COLLECTION {
   /**
    * fetch data from the table: "program"
    */
-  program: GET_PROGRAM_COLLECTION_program[];
+  program: GET_CREATOR_PROGRAM_COLLECTION_program[];
 }
 
-export interface GET_PROGRAM_COLLECTIONVariables {
+export interface GET_CREATOR_PROGRAM_COLLECTIONVariables {
   appId: string;
   memberId?: string | null;
   isDraft?: boolean | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CREATOR_PROGRAM_ISSUES
+// ====================================================
+
+export interface GET_CREATOR_PROGRAM_ISSUES_issue_issue_reactions {
+  __typename: "issue_reaction";
+  member_id: string;
+}
+
+export interface GET_CREATOR_PROGRAM_ISSUES_issue_issue_replies_aggregate_aggregate {
+  __typename: "issue_reply_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_CREATOR_PROGRAM_ISSUES_issue_issue_replies_aggregate {
+  __typename: "issue_reply_aggregate";
+  aggregate: GET_CREATOR_PROGRAM_ISSUES_issue_issue_replies_aggregate_aggregate | null;
+}
+
+export interface GET_CREATOR_PROGRAM_ISSUES_issue {
+  __typename: "issue";
+  id: any;
+  title: string;
+  description: string;
+  solved_at: any | null;
+  created_at: any;
+  member_id: string;
+  thread_id: string;
+  /**
+   * An array relationship
+   */
+  issue_reactions: GET_CREATOR_PROGRAM_ISSUES_issue_issue_reactions[];
+  /**
+   * An aggregated array relationship
+   */
+  issue_replies_aggregate: GET_CREATOR_PROGRAM_ISSUES_issue_issue_replies_aggregate;
+}
+
+export interface GET_CREATOR_PROGRAM_ISSUES {
+  /**
+   * fetch data from the table: "issue"
+   */
+  issue: GET_CREATOR_PROGRAM_ISSUES_issue[];
+}
+
+export interface GET_CREATOR_PROGRAM_ISSUESVariables {
+  appId: string;
+  threadIdLike?: string | null;
+  unsolved?: boolean | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_POINT_HISTORY
+// ====================================================
+
+export interface GET_POINT_HISTORY_point_log {
+  __typename: "point_log";
+  id: any;
+  created_at: any;
+  description: string;
+  point: any;
+}
+
+export interface GET_POINT_HISTORY {
+  /**
+   * fetch data from the table: "point_log"
+   */
+  point_log: GET_POINT_HISTORY_point_log[];
+}
+
+export interface GET_POINT_HISTORYVariables {
+  memberId: string;
+  offset?: number | null;
+  limit?: number | null;
 }
 
 /* tslint:disable */
@@ -4421,6 +4622,69 @@ export interface GET_MEMBER_PROGRAM_ISSUESVariables {
   threadIdLike?: string | null;
   unsolved?: boolean | null;
   memberId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ORDERS_PRODUCT
+// ====================================================
+
+export interface GET_ORDERS_PRODUCT_order_log_by_pk_order_discounts_aggregate_aggregate_sum {
+  __typename: "order_discount_sum_fields";
+  price: any | null;
+}
+
+export interface GET_ORDERS_PRODUCT_order_log_by_pk_order_discounts_aggregate_aggregate {
+  __typename: "order_discount_aggregate_fields";
+  sum: GET_ORDERS_PRODUCT_order_log_by_pk_order_discounts_aggregate_aggregate_sum | null;
+}
+
+export interface GET_ORDERS_PRODUCT_order_log_by_pk_order_discounts_aggregate {
+  __typename: "order_discount_aggregate";
+  aggregate: GET_ORDERS_PRODUCT_order_log_by_pk_order_discounts_aggregate_aggregate | null;
+}
+
+export interface GET_ORDERS_PRODUCT_order_log_by_pk_order_products_aggregate_aggregate_sum {
+  __typename: "order_product_sum_fields";
+  price: any | null;
+}
+
+export interface GET_ORDERS_PRODUCT_order_log_by_pk_order_products_aggregate_aggregate {
+  __typename: "order_product_aggregate_fields";
+  sum: GET_ORDERS_PRODUCT_order_log_by_pk_order_products_aggregate_aggregate_sum | null;
+}
+
+export interface GET_ORDERS_PRODUCT_order_log_by_pk_order_products_aggregate {
+  __typename: "order_product_aggregate";
+  aggregate: GET_ORDERS_PRODUCT_order_log_by_pk_order_products_aggregate_aggregate | null;
+}
+
+export interface GET_ORDERS_PRODUCT_order_log_by_pk {
+  __typename: "order_log";
+  message: string | null;
+  status: string;
+  /**
+   * An aggregated array relationship
+   */
+  order_discounts_aggregate: GET_ORDERS_PRODUCT_order_log_by_pk_order_discounts_aggregate;
+  /**
+   * An aggregated array relationship
+   */
+  order_products_aggregate: GET_ORDERS_PRODUCT_order_log_by_pk_order_products_aggregate;
+}
+
+export interface GET_ORDERS_PRODUCT {
+  /**
+   * fetch data from the table: "order_log" using primary key columns
+   */
+  order_log_by_pk: GET_ORDERS_PRODUCT_order_log_by_pk | null;
+}
+
+export interface GET_ORDERS_PRODUCTVariables {
+  orderId: string;
 }
 
 /* tslint:disable */
@@ -4541,32 +4805,6 @@ export interface GET_MEMBER_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_CATEGORIES
-// ====================================================
-
-export interface GET_CATEGORIES_category {
-  __typename: "category";
-  id: string;
-  name: string;
-  position: number;
-}
-
-export interface GET_CATEGORIES {
-  /**
-   * fetch data from the table: "category"
-   */
-  category: GET_CATEGORIES_category[];
-}
-
-export interface GET_CATEGORIESVariables {
-  appId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_CATEGORY
 // ====================================================
 
@@ -4645,6 +4883,39 @@ export interface DELETE_PROGRAM_CATEGORY {
 
 export interface DELETE_PROGRAM_CATEGORYVariables {
   categoryId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_COLLECTION
+// ====================================================
+
+export interface GET_PROGRAM_COLLECTION_program_program_categories {
+  __typename: "program_category";
+  category_id: string;
+}
+
+export interface GET_PROGRAM_COLLECTION_program {
+  __typename: "program";
+  id: any;
+  /**
+   * An array relationship
+   */
+  program_categories: GET_PROGRAM_COLLECTION_program_program_categories[];
+}
+
+export interface GET_PROGRAM_COLLECTION {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_PROGRAM_COLLECTION_program[];
+}
+
+export interface GET_PROGRAM_COLLECTIONVariables {
+  appId: string;
 }
 
 /* tslint:disable */

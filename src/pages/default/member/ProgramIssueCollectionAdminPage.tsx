@@ -1,42 +1,47 @@
 import { useQuery } from '@apollo/react-hooks'
-import { Icon, Select, Skeleton, Typography } from 'antd'
+import { Checkbox, Icon, Select, Skeleton, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useAuth } from '../../../components/auth/AuthContext'
 import IssueAdminCard from '../../../components/issue/IssueAdminCard'
-import CreatorAdminLayout from '../../../components/layout/CreatorAdminLayout'
-import { EditableProgramSelector } from '../../../components/program/ProgramSelector'
-import { useEditablePrograms } from '../../../hooks/program'
+import MemberAdminLayout from '../../../components/layout/MemberAdminLayout'
+import { EnrolledProgramSelector } from '../../../components/program/ProgramSelector'
+import { useEnrolledProgramIds } from '../../../hooks/program'
+import { ReactComponent as BookIcon } from '../../../images/default/book.svg'
 import types from '../../../types'
 
 const ProgramIssueCollectionAdminPage = () => {
   const { currentMemberId } = useAuth()
   const [selectedProgramId, setSelectedProgramId] = useState('all')
   const [selectedStatus, setSelectedStatus] = useState('unsolved')
+  const [allowOthersIssue, setAllowOthersIssue] = useState(false)
 
   return (
-    <CreatorAdminLayout>
+    <MemberAdminLayout>
       <Typography.Title level={3} className="mb-4">
-        <Icon type="book" theme="filled" className="mr-3" />
+        <Icon component={() => <BookIcon />} className="mr-3" />
         <span>課程問題</span>
       </Typography.Title>
 
-      <div className="row mb-4">
-        <div className="col-12 col-sm-3 mb-2 mb-md-0">
+      <div className="row no-gutters mb-4">
+        <div className="col-12 col-sm-2 pr-sm-3">
           <Select style={{ width: '100%' }} value={selectedStatus} onChange={(key: string) => setSelectedStatus(key)}>
             <Select.Option key="unsolved">未解決</Select.Option>
             <Select.Option key="solved">已解決</Select.Option>
             <Select.Option key="all">全部</Select.Option>
           </Select>
         </div>
-        <div className="col-12 col-sm-9 pl-md-0">
+        <div className="col-12 col-sm-8 pr-sm-3">
           {currentMemberId && (
-            <EditableProgramSelector
+            <EnrolledProgramSelector
               value={selectedProgramId}
               memberId={currentMemberId}
               onChange={key => setSelectedProgramId(key)}
             />
           )}
+        </div>
+        <div className="col-12 col-sm-2 d-flex align-items-center">
+          <Checkbox onChange={e => setAllowOthersIssue(e.target.checked)}>查看所有人問題</Checkbox>
         </div>
       </div>
 
@@ -45,9 +50,10 @@ const ProgramIssueCollectionAdminPage = () => {
           memberId={currentMemberId}
           selectedProgramId={selectedProgramId}
           selectedStatus={selectedStatus}
+          allowOthersIssue={allowOthersIssue}
         />
       )}
-    </CreatorAdminLayout>
+    </MemberAdminLayout>
   )
 }
 
@@ -55,8 +61,9 @@ const AllProgramIssueCollectionBlock: React.FC<{
   memberId: string
   selectedProgramId: string
   selectedStatus: string
-}> = ({ memberId, selectedProgramId, selectedStatus }) => {
-  const { programs } = useEditablePrograms(memberId)
+  allowOthersIssue?: boolean
+}> = ({ memberId, selectedProgramId, selectedStatus, allowOthersIssue }) => {
+  const { enrolledProgramIds } = useEnrolledProgramIds(memberId, true)
 
   let unsolved: boolean | undefined
   switch (selectedStatus) {
@@ -72,10 +79,11 @@ const AllProgramIssueCollectionBlock: React.FC<{
   }
 
   const { loading, error, data, refetch } = useQuery<
-    types.GET_CREATOR_PROGRAM_ISSUES,
-    types.GET_CREATOR_PROGRAM_ISSUESVariables
-  >(GET_CREATOR_PROGRAM_ISSUES, {
+    types.GET_MEMBER_PROGRAM_ISSUES,
+    types.GET_MEMBER_PROGRAM_ISSUESVariables
+  >(GET_MEMBER_PROGRAM_ISSUES, {
     variables: {
+      memberId: allowOthersIssue ? undefined : memberId,
       appId: localStorage.getItem('kolable.app.id') || '',
       threadIdLike: selectedProgramId === 'all' ? undefined : `/programs/${selectedProgramId}/contents/%`,
       unsolved,
@@ -93,9 +101,9 @@ const AllProgramIssueCollectionBlock: React.FC<{
       ) : (
         data.issue
           .map((value: any) => {
-            const selectedProgram = programs.find(program => value.thread_id.includes(program.id))
+            const programId = enrolledProgramIds.find(id => value.thread_id.includes(id))
 
-            if (!selectedProgram) {
+            if (!programId) {
               return null
             }
 
@@ -103,7 +111,7 @@ const AllProgramIssueCollectionBlock: React.FC<{
               <IssueAdminCard
                 key={value.id}
                 threadId={value.thread_id}
-                programId={selectedProgram.id}
+                programId={programId}
                 issueId={value.id}
                 title={value.title}
                 description={value.description}
@@ -122,10 +130,15 @@ const AllProgramIssueCollectionBlock: React.FC<{
   )
 }
 
-const GET_CREATOR_PROGRAM_ISSUES = gql`
-  query GET_CREATOR_PROGRAM_ISSUES($appId: String!, $threadIdLike: String, $unsolved: Boolean) {
+const GET_MEMBER_PROGRAM_ISSUES = gql`
+  query GET_MEMBER_PROGRAM_ISSUES($appId: String!, $threadIdLike: String, $unsolved: Boolean, $memberId: String) {
     issue(
-      where: { app_id: { _eq: $appId }, thread_id: { _like: $threadIdLike }, solved_at: { _is_null: $unsolved } }
+      where: {
+        app_id: { _eq: $appId }
+        member_id: { _eq: $memberId }
+        thread_id: { _like: $threadIdLike }
+        solved_at: { _is_null: $unsolved }
+      }
       order_by: [
         { created_at: desc }
         # { issue_reactions_aggregate: { count: desc } }
@@ -133,11 +146,11 @@ const GET_CREATOR_PROGRAM_ISSUES = gql`
     ) {
       id
       title
+      thread_id
       description
       solved_at
       created_at
       member_id
-      thread_id
       issue_reactions {
         member_id
       }

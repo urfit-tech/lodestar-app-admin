@@ -1,21 +1,32 @@
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Icon, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
-import { useMutation, useQuery } from 'react-apollo-hooks'
 import Sortable from 'react-sortablejs'
 import { InferType } from 'yup'
 import AdminCard from '../../../components/common/AdminCard'
 import DraggableItem from '../../../components/common/DraggableItem'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
+import { GET_PROGRAM_CATEGORIES } from '../../../components/program/ProgramCategorySelector'
 import { categorySchema } from '../../../schemas/program'
+import types from '../../../types'
 
 const ProgramGeneralAdminPage = () => {
-  const { loading, data, refetch } = useQuery(GET_PROGRAM_CATEGORIES, {
-    variables: { appId: localStorage.getItem('kolable.app.id') },
-  })
-  const insertProgramCategory = useMutation(INSERT_PROGRAM_CATEGORY)
-  const updateProgramCategory = useMutation(UPDATE_PROGRAM_CATEGORY)
-  const deleteProgramCategory = useMutation(DELETE_PROGRAM_CATEGORY)
+  const { loading, data, refetch } = useQuery<types.GET_PROGRAM_CATEGORIES, types.GET_PROGRAM_CATEGORIESVariables>(
+    GET_PROGRAM_CATEGORIES,
+    {
+      variables: { appId: localStorage.getItem('kolable.app.id') || '' },
+    },
+  )
+  const [insertProgramCategory] = useMutation<types.INSERT_PROGRAM_CATEGORY, types.INSERT_PROGRAM_CATEGORYVariables>(
+    INSERT_PROGRAM_CATEGORY,
+  )
+  const [updateProgramCategory] = useMutation<types.UPDATE_PROGRAM_CATEGORY, types.UPDATE_PROGRAM_CATEGORYVariables>(
+    UPDATE_PROGRAM_CATEGORY,
+  )
+  const [deleteProgramCategory] = useMutation<types.DELETE_PROGRAM_CATEGORY, types.DELETE_PROGRAM_CATEGORYVariables>(
+    DELETE_PROGRAM_CATEGORY,
+  )
   const [categories, setCategories] = useState<InferType<typeof categorySchema>[]>([])
   useEffect(() => {
     data && data.category && setCategories(data.category)
@@ -87,15 +98,17 @@ const ProgramGeneralAdminPage = () => {
         <Button
           icon="plus"
           type="link"
-          onClick={() =>
-            insertProgramCategory({
-              variables: {
-                appId: localStorage.getItem('kolable.app.id'),
-                name: `未命名分類-${categories.length + 1}`,
-                position: categories.length,
-              },
-            }).then(() => refetch())
-          }
+          onClick={() => {
+            const appId = localStorage.getItem('kolable.app.id')
+            appId &&
+              insertProgramCategory({
+                variables: {
+                  appId,
+                  name: `未命名分類-${categories.length + 1}`,
+                  position: categories.length,
+                },
+              }).then(() => refetch())
+          }}
         >
           新增分類
         </Button>
@@ -103,16 +116,6 @@ const ProgramGeneralAdminPage = () => {
     </OwnerAdminLayout>
   )
 }
-
-const GET_PROGRAM_CATEGORIES = gql`
-  query GET_CATEGORIES($appId: String!) {
-    category(where: { app_id: { _eq: $appId }, class: { _eq: "program" } }, order_by: { position: asc }) {
-      id
-      name
-      position
-    }
-  }
-`
 
 const INSERT_PROGRAM_CATEGORY = gql`
   mutation INSERT_PROGRAM_CATEGORY($appId: String!, $name: String, $position: Int) {

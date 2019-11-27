@@ -8,11 +8,9 @@ import { useAuth } from '../auth/AuthContext'
 import { message } from 'antd'
 
 export const ApiProvider: React.FC = ({ children }) => {
+  const [appId, setAppId] = useState<string | null>(null)
   const { currentUserRole, currentMemberId, isAuthenticated } = useAuth()
   const [apolloClient, setApolloClient] = useState(createApolloClient({ currentMemberId, currentUserRole }))
-  const [updateLoginedAt] = useMutation<types.UPDATE_LOGINED_AT, types.UPDATE_LOGINED_ATVariables>(UPDATE_LOGINED_AT, {
-    client: apolloClient,
-  })
   useEffect(() => {
     localStorage.removeItem('kolable.app.id')
     apolloClient
@@ -24,22 +22,29 @@ export const ApiProvider: React.FC = ({ children }) => {
         const app = (data && data.app.length && data.app[0]) || null
         if (app) {
           localStorage.setItem('kolable.app.id', app.id)
-          setApolloClient(createApolloClient({ currentMemberId, currentUserRole, appId: app.id }))
+          setAppId(app.id)
         } else {
           message.error('無法取得應用程式')
         }
       })
-  }, [setApolloClient])
+  }, [setApolloClient, setAppId])
   useEffect(() => {
-    if (isAuthenticated && currentUserRole) {
-      updateLoginedAt({
+    appId &&
+      currentMemberId &&
+      currentUserRole &&
+      setApolloClient(createApolloClient({ currentMemberId, currentUserRole, appId }))
+  }, [currentMemberId, currentUserRole, appId])
+  useEffect(() => {
+    if (isAuthenticated && currentMemberId) {
+      apolloClient.mutate<types.UPDATE_LOGINED_AT, types.UPDATE_LOGINED_ATVariables>({
+        mutation: UPDATE_LOGINED_AT,
         variables: {
-          memberId: currentMemberId || '',
+          memberId: currentMemberId,
           loginedAt: new Date(),
         },
       })
     }
-  }, [isAuthenticated, currentUserRole, updateLoginedAt, currentMemberId])
+  }, [isAuthenticated, currentMemberId])
 
   return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>
 }

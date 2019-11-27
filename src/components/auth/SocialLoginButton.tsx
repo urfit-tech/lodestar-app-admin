@@ -63,7 +63,7 @@ const socialLogin = async (provider: string, providerToken: any) => {
     })
     const authToken = data.token
     try {
-      localStorage.setItem(`${localStorage.getItem('kolable.app.id')}.auth.token`, authToken)
+      localStorage.setItem(`kolable.auth.token`, authToken)
     } catch (error) {}
     return authToken
   } catch (err) {

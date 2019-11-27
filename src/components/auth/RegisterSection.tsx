@@ -30,7 +30,7 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChan
           .then(({ data }) => {
             const authToken = data.token
             try {
-              localStorage.setItem(`${localStorage.getItem('kolable.app.id')}.auth.token`, authToken)
+              localStorage.setItem(`kolable.auth.token`, authToken)
             } catch (error) {}
             setAuthToken && setAuthToken(authToken)
             setVisible && setVisible(false)

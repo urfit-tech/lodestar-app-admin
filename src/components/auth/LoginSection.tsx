@@ -49,7 +49,7 @@ const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) 
               history.push(`/check-email?email=${values.account}&type=reset-password`)
             } else {
               try {
-                localStorage.setItem(`${localStorage.getItem('kolable.app.id')}.auth.token`, authToken)
+                localStorage.setItem(`kolable.auth.token`, authToken)
               } catch (error) {}
               setAuthToken && setAuthToken(authToken)
             }
