@@ -207,20 +207,20 @@ export interface UPDATE_LOGINED_ATVariables {
 // GraphQL query operation: GET_APPLICATION
 // ====================================================
 
-export interface GET_APPLICATION_app {
-  __typename: "app";
-  id: string;
+export interface GET_APPLICATION_app_admin_by_pk {
+  __typename: "app_admin";
+  app_id: string;
 }
 
 export interface GET_APPLICATION {
   /**
-   * fetch data from the table: "app"
+   * fetch data from the table: "app_admin" using primary key columns
    */
-  app: GET_APPLICATION_app[];
+  app_admin_by_pk: GET_APPLICATION_app_admin_by_pk | null;
 }
 
 export interface GET_APPLICATIONVariables {
-  adminHost: string;
+  host: string;
 }
 
 /* tslint:disable */
@@ -5026,11 +5026,25 @@ export enum activity_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "app_admin"
+ */
+export enum app_admin_constraint {
+  app_admin_pkey = "app_admin_pkey",
+}
+
+/**
+ * update columns of table "app_admin"
+ */
+export enum app_admin_update_column {
+  app_id = "app_id",
+  host = "host",
+}
+
+/**
  * unique or primary key constraints on table "app"
  */
 export enum app_constraint {
   App_pkey = "App_pkey",
-  app_admin_host_key = "app_admin_host_key",
 }
 
 /**
@@ -6269,11 +6283,37 @@ export interface activity_ticket_on_conflict {
 }
 
 /**
+ * input type for inserting array relation for remote table "app_admin"
+ */
+export interface app_admin_arr_rel_insert_input {
+  data: app_admin_insert_input[];
+  on_conflict?: app_admin_on_conflict | null;
+}
+
+/**
+ * input type for inserting data into table "app_admin"
+ */
+export interface app_admin_insert_input {
+  app?: app_obj_rel_insert_input | null;
+  app_id?: string | null;
+  host?: string | null;
+}
+
+/**
+ * on conflict condition type for table "app_admin"
+ */
+export interface app_admin_on_conflict {
+  constraint: app_admin_constraint;
+  update_columns: app_admin_update_column[];
+}
+
+/**
  * input type for inserting data into table "app"
  */
 export interface app_insert_input {
   activities?: activity_arr_rel_insert_input | null;
   admin_host?: string | null;
+  app_admins?: app_admin_arr_rel_insert_input | null;
   app_modules?: app_module_arr_rel_insert_input | null;
   cards?: card_arr_rel_insert_input | null;
   cart_items?: cart_item_arr_rel_insert_input | null;

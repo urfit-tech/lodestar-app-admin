@@ -16,13 +16,13 @@ export const ApiProvider: React.FC = ({ children }) => {
     apolloClient
       .query<types.GET_APPLICATION, types.GET_APPLICATIONVariables>({
         query: GET_APPLICATION,
-        variables: { adminHost: window.location.host },
+        variables: { host: window.location.host },
       })
       .then(({ data }) => {
-        const app = (data && data.app.length && data.app[0]) || null
-        if (app) {
-          localStorage.setItem('kolable.app.id', app.id)
-          setAppId(app.id)
+        if (data && data.app_admin_by_pk) {
+          const appId = data.app_admin_by_pk.app_id
+          localStorage.setItem('kolable.app.id', appId)
+          setAppId(appId)
         } else {
           message.error('無法取得應用程式')
         }
@@ -58,9 +58,9 @@ const UPDATE_LOGINED_AT = gql`
 `
 
 const GET_APPLICATION = gql`
-  query GET_APPLICATION($adminHost: String!) {
-    app(where: { admin_host: { _eq: $adminHost } }) {
-      id
+  query GET_APPLICATION($host: String!) {
+    app_admin_by_pk(host: $host) {
+      app_id
     }
   }
 `
