@@ -227,6 +227,18 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
+  owner_podcast_collection_admin: {
+    path: '/admin/podcasts',
+    pageName: 'owner/PodcastCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_podcast_admin: {
+    path: '/admin/podcasts/:podcastId',
+    pageName: 'owner/PodcastAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
   // content creator admin
   creator_programs_admin: {
     path: '/studio/programs',
