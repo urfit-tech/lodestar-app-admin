@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import PodcastProgramCollectionAdminTable from '../../../containers/podcast/PodcastProgramCollectionAdminTable'
 import { ReactComponent as MicrophoneIcon } from '../../../images/default/microphone.svg'
+import PodcastProgramCreationModal from './PodcastProgramCreationModal'
 
 const StyledTitle = styled.h1`
   color: var(--gray-darker);
@@ -22,16 +23,18 @@ const StyledWrapper = styled.div`
 const PodcastCollectionAdminPage: React.FC = () => {
   return (
     <OwnerAdminLayout>
-      <div className="container py-5">
-        <StyledTitle className="mb-4">
-          <Icon component={() => <MicrophoneIcon />} className="mr-2" />
-          <span>廣播管理</span>
-        </StyledTitle>
+      <StyledTitle className="mb-4">
+        <Icon component={() => <MicrophoneIcon />} className="mr-2" />
+        <span>廣播管理</span>
+      </StyledTitle>
 
-        <StyledWrapper>
-          <PodcastProgramCollectionAdminTable />
-        </StyledWrapper>
+      <div className="mb-5">
+        <PodcastProgramCreationModal />
       </div>
+
+      <StyledWrapper>
+        <PodcastProgramCollectionAdminTable />
+      </StyledWrapper>
     </OwnerAdminLayout>
   )
 }
