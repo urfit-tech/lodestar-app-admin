@@ -2,9 +2,9 @@ import { Icon } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
+import PodcastProgramCreationModal from '../../../components/podcast/PodcastProgramCreationModal'
 import PodcastProgramCollectionAdminTable from '../../../containers/podcast/PodcastProgramCollectionAdminTable'
 import { ReactComponent as MicrophoneIcon } from '../../../images/default/microphone.svg'
-import PodcastProgramCreationModal from './PodcastProgramCreationModal'
 
 const StyledTitle = styled.h1`
   color: var(--gray-darker);

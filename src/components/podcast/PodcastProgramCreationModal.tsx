@@ -2,7 +2,7 @@ import { Button, Form, Input, Modal } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import ProgramCategorySelector from '../../../components/program/ProgramCategorySelector'
+import ProgramCategorySelector from '../program/ProgramCategorySelector'
 
 const StyledTitle = styled.div`
   color: var(--gray-darker);
