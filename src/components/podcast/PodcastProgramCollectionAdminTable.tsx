@@ -86,10 +86,6 @@ const PodcastProgramCollectionAdminTable: React.FC<{
   const [titleSearch, setTitleSearch] = useState('')
   const [nameSearch, setNameSearch] = useState('')
 
-  const data = podcastPrograms
-    .filter(podcastProgram => !titleSearch || podcastProgram.title.includes(titleSearch))
-    .filter(podcastProgram => !nameSearch || podcastProgram.creator.includes(nameSearch))
-
   const columns: ColumnProps<PodcastProgramProps>[] = [
     {
       title: '名稱',
@@ -97,7 +93,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       key: 'title',
       width: '25rem',
       render: (text, record, index) => (
-        <div key={record.id} className="d-flex align-items-center justify-content-between">
+        <div className="d-flex align-items-center justify-content-between">
           <CustomRatioImage
             width="42px"
             ratio={1}
@@ -116,7 +112,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       title: '老師',
       dataIndex: 'creator',
       key: 'creator',
-      render: (text, record, index) => <StyledText key={record.id}>{text}</StyledText>,
+      render: (text, record, index) => <StyledText>{text}</StyledText>,
       ...getColumnSearchProps(selectedKeys => {
         selectedKeys && setNameSearch(selectedKeys[0] || '')
         setTitleSearch('')
@@ -128,7 +124,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       key: 'price',
       width: '12rem',
       render: (text, record, index) => (
-        <div key={record.id}>
+        <div>
           {typeof record.salePrice === 'number' && (
             <StyledPriceLabel className="mr-2">{currencyFormatter(record.salePrice)}</StyledPriceLabel>
           )}
@@ -142,7 +138,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       key: 'salesCount',
       width: '6rem',
       align: 'right',
-      render: (text, record, index) => <StyledText key={record.id}>{text}</StyledText>,
+      render: (text, record, index) => <StyledText>{text}</StyledText>,
     },
     {
       title: '狀態',
@@ -150,18 +146,22 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       key: 'status',
       width: '6rem',
       render: (text, record, index) => (
-        <StyledStatusLabel
-          key={record.id}
-          active={record.isPublished}
-          className="d-flex align-items-center justify-content-start"
-        >
+        <StyledStatusLabel active={record.isPublished} className="d-flex align-items-center justify-content-start">
           {record.isPublished ? '已發布' : '未發布'}
         </StyledStatusLabel>
       ),
     },
   ]
 
-  return <Table columns={columns} dataSource={data} />
+  return (
+    <Table
+      rowKey="id"
+      columns={columns}
+      dataSource={podcastPrograms
+        .filter(podcastProgram => !titleSearch || podcastProgram.title.includes(titleSearch))
+        .filter(podcastProgram => !nameSearch || podcastProgram.creator.includes(nameSearch))}
+    />
+  )
 }
 
 export default PodcastProgramCollectionAdminTable
