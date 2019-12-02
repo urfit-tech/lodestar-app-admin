@@ -1,9 +1,9 @@
 import { Button, Icon, Skeleton, Tabs } from 'antd'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
-import { UpdatePodcastProgramProps } from '../../containers/podcast/PodcastProgramAdminBlock'
+import { PodcastProgramAdminContext } from '../../containers/podcast/PodcastProgramAdminBlock'
 import { StyledLayoutContent } from '../layout/DefaultLayout'
 import PodcastProgramContentAdminBlock from './PodcastProgramContentAdminBlock'
 import PodcastProgramPlanAdminBlock from './PodcastProgramPlanAdminBlock'
@@ -59,38 +59,13 @@ export const StyledAdminBlockTitle = styled.h2`
   font-weight: bold;
   letter-spacing: 0.8px;
 `
-export type PodcastProgramAdminProps = {
-  id: string
-  title: string
-  audioUrl: string | null
-  description: string | null
-  categories: {
-    id: string
-    name: string
-  }[]
-  coverUrl?: string | null
-  abstract: string | null
-  listPrice: number
-  salePrice?: number
-  owner: {
-    id: string
-    avatarUrl?: string | null
-    name: string
-  }
-  instructors: {
-    id: string
-    avatarUrl?: string | null
-    name: string
-  }[]
-  publishedAt: string | null
-}
+
 const PodcastProgramAdminBlock: React.FC<{
   loading?: boolean
   error?: Error
-  podcastProgramAdmin: PodcastProgramAdminProps
-  onUpdate?: (props: UpdatePodcastProgramProps) => void
-}> = ({ loading, error, podcastProgramAdmin, onUpdate }) => {
+}> = ({ loading, error }) => {
   const [defaultActiveKey, setDefaultActiveKey] = useQueryParam('tabkey', StringParam)
+  const { podcastProgramAdmin } = useContext(PodcastProgramAdminContext)
   const [activeKey, setActiveKey] = useState(defaultActiveKey || 'content')
 
   return (
@@ -124,7 +99,7 @@ const PodcastProgramAdminBlock: React.FC<{
             )}
           >
             <Tabs.TabPane key="content" tab="廣播內容">
-              <PodcastProgramContentAdminBlock podcastProgramAdmin={podcastProgramAdmin} onUpdate={onUpdate} />
+              <PodcastProgramContentAdminBlock />
             </Tabs.TabPane>
             <Tabs.TabPane key="settings" tab="廣播設定">
               <PodcastProgramSettingsAdminBlock />

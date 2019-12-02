@@ -1,12 +1,12 @@
 import { Button, Form, Icon, Tooltip } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
-import { UpdatePodcastProgramProps } from '../../containers/podcast/PodcastProgramAdminBlock'
+import { PodcastProgramAdminContext } from '../../containers/podcast/PodcastProgramAdminBlock'
 import SingleUploader from '../common/SingleUploader'
 import StyledBraftEditor from '../common/StyledBraftEditor'
-import { PodcastProgramAdminProps, StyledAdminBlock, StyledAdminPaneTitle } from './PodcastProgramAdminBlock'
+import { StyledAdminBlock, StyledAdminPaneTitle } from './PodcastProgramAdminBlock'
 
 const StyledTips = styled.div`
   font-size: 12px;
@@ -14,15 +14,8 @@ const StyledTips = styled.div`
   white-space: pre-line;
 `
 
-type PodcastProgramContentAdminBlockProps = FormComponentProps & {
-  podcastProgramAdmin: PodcastProgramAdminProps
-  onUpdate?: (props: UpdatePodcastProgramProps) => void
-}
-const PodcastProgramContentAdminBlock: React.FC<PodcastProgramContentAdminBlockProps> = ({
-  podcastProgramAdmin,
-  onUpdate,
-  form,
-}) => {
+const PodcastProgramContentAdminBlock: React.FC<FormComponentProps> = ({ form }) => {
+  const { podcastProgramAdmin, updatePodcastProgram } = useContext(PodcastProgramAdminContext)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
@@ -31,15 +24,14 @@ const PodcastProgramContentAdminBlock: React.FC<PodcastProgramContentAdminBlockP
         return
       }
 
-      onUpdate &&
-        onUpdate({
-          onBefore: () => setLoading(true),
-          onFinally: () => setLoading(false),
-          data: {
-            audioUrl: values.audioUrl,
-            description: values.description.toRAW(),
-          },
-        })
+      updatePodcastProgram({
+        onBefore: () => setLoading(true),
+        onFinally: () => setLoading(false),
+        data: {
+          audioUrl: values.audioUrl,
+          description: values.description.toRAW(),
+        },
+      })
     })
   }
 
@@ -129,4 +121,4 @@ const PodcastProgramContentAdminBlock: React.FC<PodcastProgramContentAdminBlockP
   )
 }
 
-export default Form.create<PodcastProgramContentAdminBlockProps>()(PodcastProgramContentAdminBlock)
+export default Form.create()(PodcastProgramContentAdminBlock)

@@ -1,9 +1,32 @@
-import React from 'react'
-import PodcastProgramAdminBlockComponent, {
-  PodcastProgramAdminProps,
-} from '../../components/podcast/PodcastProgramAdminBlock'
+import React, { createContext } from 'react'
+import PodcastProgramAdminBlockComponent from '../../components/podcast/PodcastProgramAdminBlock'
 
-export type UpdatePodcastProgramProps = {
+type PodcastProgramAdminProps = {
+  id: string
+  title: string
+  audioUrl: string | null
+  description: string | null
+  categories: {
+    id: string
+    name: string
+  }[]
+  coverUrl?: string | null
+  abstract: string | null
+  listPrice: number
+  salePrice?: number
+  owner: {
+    id: string
+    avatarUrl?: string | null
+    name: string
+  }
+  instructors: {
+    id: string
+    avatarUrl?: string | null
+    name: string
+  }[]
+  publishedAt: string | null
+}
+type UpdatePodcastProgramProps = {
   onBefore?: () => void
   onSuccess?: () => void
   onError?: (error: Error) => void
@@ -19,9 +42,31 @@ export type UpdatePodcastProgramProps = {
   }
 }
 
+export const PodcastProgramAdminContext = createContext<{
+  podcastProgramAdmin: PodcastProgramAdminProps
+  updatePodcastProgram: (props: UpdatePodcastProgramProps) => void
+}>({
+  podcastProgramAdmin: {
+    id: '',
+    title: '',
+    audioUrl: null,
+    description: null,
+    categories: [],
+    abstract: null,
+    listPrice: 0,
+    owner: {
+      id: '',
+      name: '',
+    },
+    instructors: [],
+    publishedAt: null,
+  },
+  updatePodcastProgram: () => {},
+})
+
 const PodcastProgramAdminBlock: React.FC<{
   podcastId: string
-}> = () => {
+}> = podcastId => {
   // ! fake data
   const podcastProgramAdmin: PodcastProgramAdminProps = {
     id: 'podcast-1',
@@ -60,7 +105,11 @@ const PodcastProgramAdminBlock: React.FC<{
     onFinally && onFinally()
   }
 
-  return <PodcastProgramAdminBlockComponent podcastProgramAdmin={podcastProgramAdmin} onUpdate={updatePodcastProgram} />
+  return (
+    <PodcastProgramAdminContext.Provider value={{ podcastProgramAdmin, updatePodcastProgram }}>
+      <PodcastProgramAdminBlockComponent />
+    </PodcastProgramAdminContext.Provider>
+  )
 }
 
 export default PodcastProgramAdminBlock
