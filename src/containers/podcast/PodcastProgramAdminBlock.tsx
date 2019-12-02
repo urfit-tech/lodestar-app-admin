@@ -32,13 +32,16 @@ type UpdatePodcastProgramProps = {
   onError?: (error: Error) => void
   onFinally?: () => void
   data: {
-    title?: string
     audioUrl?: string
     description?: string
+    title?: string
     categoryIds?: string[]
+    coverUrl?: string
     abstract?: string
     listPrice?: number
+    salePrice?: number
     instructorIds?: string[]
+    publishedAt?: Date
   }
 }
 
