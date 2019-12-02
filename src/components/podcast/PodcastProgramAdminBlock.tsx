@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
+import { UpdatePodcastProgramProps } from '../../containers/podcast/PodcastProgramAdminBlock'
 import { StyledLayoutContent } from '../layout/DefaultLayout'
 import PodcastProgramContentAdminBlock from './PodcastProgramContentAdminBlock'
 import PodcastProgramPlanAdminBlock from './PodcastProgramPlanAdminBlock'
@@ -61,14 +62,34 @@ export const StyledAdminBlockTitle = styled.h2`
 export type PodcastProgramAdminProps = {
   id: string
   title: string
-  description?: string | null
+  audioUrl: string | null
+  description: string | null
+  categories: {
+    id: string
+    name: string
+  }[]
   coverUrl?: string | null
+  abstract: string | null
+  listPrice: number
+  salePrice?: number
+  owner: {
+    id: string
+    avatarUrl?: string | null
+    name: string
+  }
+  instructors: {
+    id: string
+    avatarUrl?: string | null
+    name: string
+  }[]
+  publishedAt: string | null
 }
 const PodcastProgramAdminBlock: React.FC<{
   loading?: boolean
   error?: Error
   podcastProgramAdmin: PodcastProgramAdminProps
-}> = ({ loading, error, podcastProgramAdmin }) => {
+  onUpdate?: (props: UpdatePodcastProgramProps) => void
+}> = ({ loading, error, podcastProgramAdmin, onUpdate }) => {
   const [defaultActiveKey, setDefaultActiveKey] = useQueryParam('tabkey', StringParam)
   const [activeKey, setActiveKey] = useState(defaultActiveKey || 'content')
 
@@ -103,7 +124,7 @@ const PodcastProgramAdminBlock: React.FC<{
             )}
           >
             <Tabs.TabPane key="content" tab="廣播內容">
-              <PodcastProgramContentAdminBlock />
+              <PodcastProgramContentAdminBlock podcastProgramAdmin={podcastProgramAdmin} onUpdate={onUpdate} />
             </Tabs.TabPane>
             <Tabs.TabPane key="settings" tab="廣播設定">
               <PodcastProgramSettingsAdminBlock />
