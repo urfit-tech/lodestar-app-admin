@@ -111,7 +111,12 @@ const PodcastProgramAdminBlock: React.FC<{
               <PodcastProgramRoleAdminBlock />
             </Tabs.TabPane>
             <Tabs.TabPane key="publish" tab="發佈">
-              <PodcastProgramPublishAdminBlock />
+              <PodcastProgramPublishAdminBlock
+                onChangeTab={key => {
+                  setActiveKey(key)
+                  setDefaultActiveKey(key)
+                }}
+              />
             </Tabs.TabPane>
           </Tabs>
         )}

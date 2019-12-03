@@ -25,7 +25,7 @@ type PodcastProgramAdminProps = {
     avatarUrl?: string | null
     name: string
   }[]
-  publishedAt: string | null
+  publishedAt: Date | null
 }
 type UpdatePodcastProgramProps = {
   onBefore?: () => void
@@ -43,7 +43,7 @@ type UpdatePodcastProgramProps = {
     salePrice?: number | null
     soldAt?: Date | null
     instructorIds?: string[]
-    publishedAt?: Date
+    publishedAt?: Date | null
   }
 }
 
