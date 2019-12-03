@@ -2284,6 +2284,34 @@ export interface UPDATE_ACTIVITY_TICKETVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_CREATOR_COLLECTION
+// ====================================================
+
+export interface GET_CREATOR_COLLECTION_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string | null;
+  username: string;
+  email: string;
+}
+
+export interface GET_CREATOR_COLLECTION {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_CREATOR_COLLECTION_member[];
+}
+
+export interface GET_CREATOR_COLLECTIONVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PROGRAM_SIMPLE
 // ====================================================
 

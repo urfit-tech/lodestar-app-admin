@@ -17,24 +17,23 @@ const StyledTextSecondary = styled.span`
 `
 
 export type MemberOptionProps = {
-  avatarUrl?: string
   id: string
+  avatarUrl?: string | null
   name?: string
   username: string
   email?: string
 }
 export type MemberSelectorProps = {
   members: MemberOptionProps[]
-  value: string[]
-  onChange?: (value: string[]) => void
+  value: string
+  onChange?: (value: string) => void
 }
 const MemberSelector: React.FC<MemberSelectorProps> = ({ members, value, onChange }) => {
   return (
     <StyledSelect
-      mode="multiple"
       placeholder="請輸入帳號 或 Email"
       value={value}
-      onChange={value => onChange && onChange(value as string[])}
+      onChange={value => onChange && onChange(value as string)}
       optionLabelProp="title"
       optionFilterProp="data-source"
     >
