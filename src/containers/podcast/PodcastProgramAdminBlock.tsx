@@ -13,7 +13,8 @@ type PodcastProgramAdminProps = {
   coverUrl?: string | null
   abstract: string | null
   listPrice: number
-  salePrice?: number
+  salePrice?: number | null
+  soldAt?: Date | null
   owner: {
     id: string
     avatarUrl?: string | null
@@ -39,7 +40,8 @@ type UpdatePodcastProgramProps = {
     coverUrl?: string
     abstract?: string
     listPrice?: number
-    salePrice?: number
+    salePrice?: number | null
+    soldAt?: Date | null
     instructorIds?: string[]
     publishedAt?: Date
   }
