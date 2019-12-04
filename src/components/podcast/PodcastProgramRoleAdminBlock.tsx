@@ -3,14 +3,9 @@ import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
 import CreatorSelector from '../../containers/common/CreatorSelector'
 import { PodcastProgramAdminContext } from '../../containers/podcast/PodcastProgramAdminBlock'
+import { AdminBlock, AdminBlockTitle, AdminPaneTitle } from '../admin'
 import { AvatarImage } from '../common/Image'
-import { StyledAdminBlock, StyledAdminBlockTitle, StyledAdminPaneTitle } from './PodcastProgramAdminBlock'
 
-const StyledSubTitle = styled.div`
-  color: var(--gray-dark);
-  font-size: 14px;
-  letter-spacing: 0.4px;
-`
 const StyledName = styled.div`
   color: var(--gray-darker);
   line-height: 1.5;
@@ -60,19 +55,19 @@ const PodcastProgramRoleAdminBlock: React.FC = () => {
 
   return (
     <div className="container py-5">
-      <StyledAdminPaneTitle>身份管理</StyledAdminPaneTitle>
+      <AdminPaneTitle>身份管理</AdminPaneTitle>
 
-      <StyledAdminBlock>
-        <StyledAdminBlockTitle className="mb-4">建立者</StyledAdminBlockTitle>
+      <AdminBlock>
+        <AdminBlockTitle className="mb-4">建立者</AdminBlockTitle>
 
         <div className="d-flex align-items-center justify-content-center">
           <AvatarImage src={podcastProgramAdmin.owner.avatarUrl} size={36} className="mr-3" />
           <StyledName className="flex-grow-1">{podcastProgramAdmin.owner.name}</StyledName>
         </div>
-      </StyledAdminBlock>
+      </AdminBlock>
 
-      <StyledAdminBlock>
-        <StyledAdminBlockTitle className="mb-4">講師</StyledAdminBlockTitle>
+      <AdminBlock>
+        <AdminBlockTitle className="mb-4">講師</AdminBlockTitle>
         {/* <StyledSubTitle className="mb-4">最多設定三位講師</StyledSubTitle> */}
 
         {podcastProgramAdmin.instructors.map(instructor => (
@@ -97,7 +92,7 @@ const PodcastProgramRoleAdminBlock: React.FC = () => {
             新增講師
           </Button>
         )}
-      </StyledAdminBlock>
+      </AdminBlock>
 
       <Modal title={null} footer={null} centered destroyOnClose visible={visible} onCancel={() => setVisible(false)}>
         <StyledModalTitle>新增講師</StyledModalTitle>

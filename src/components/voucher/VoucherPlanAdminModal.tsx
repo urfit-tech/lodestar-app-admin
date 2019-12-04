@@ -3,8 +3,8 @@ import { FormComponentProps } from 'antd/lib/form'
 import moment from 'moment'
 import React, { useState } from 'react'
 import ProductSelector from '../../containers/common/ProductSelector'
+import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import PlanCodeSelector, { PlanCodeProps } from '../checkout/PlanCodeSelector'
-import AdminModal, { AdminModalProps } from '../common/AdminModal'
 
 export type VoucherPlanFields = {
   title: string

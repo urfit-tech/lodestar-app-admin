@@ -7,10 +7,10 @@ import { InferType } from 'yup'
 import { currencyFormatter, getShortenPeriodTypeLabel } from '../../helpers'
 import { useEnrolledPlanIds, useProgram, useProgramPlanEnrollment } from '../../hooks/program'
 import { programPlanSchema } from '../../schemas/program'
+import AdminCard from '../admin/AdminCard'
 import { useAuth } from '../auth/AuthContext'
 import { AuthModalContext } from '../auth/AuthModal'
 import CheckoutSubscriptionModal from '../checkout/CheckoutSubscriptionModal'
-import AdminCard from '../common/AdminCard'
 import { BraftContent } from '../common/StyledBraftEditor'
 
 const StyledAdminCard = styled(AdminCard)`

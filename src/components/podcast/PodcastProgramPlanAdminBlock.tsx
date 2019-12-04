@@ -4,7 +4,7 @@ import moment from 'moment'
 import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
 import { PodcastProgramAdminContext } from '../../containers/podcast/PodcastProgramAdminBlock'
-import { StyledAdminBlock, StyledAdminPaneTitle } from './PodcastProgramAdminBlock'
+import { AdminBlock, AdminPaneTitle } from '../admin'
 
 const StyledIcon = styled(Icon)`
   color: #ff7d62;
@@ -36,9 +36,9 @@ const PodcastProgramPlanAdminBlock: React.FC<FormComponentProps> = ({ form }) =>
 
   return (
     <div className="container py-5">
-      <StyledAdminPaneTitle>銷售方案</StyledAdminPaneTitle>
+      <AdminPaneTitle>銷售方案</AdminPaneTitle>
 
-      <StyledAdminBlock>
+      <AdminBlock>
         <Form
           hideRequiredMark
           colon={false}
@@ -98,7 +98,7 @@ const PodcastProgramPlanAdminBlock: React.FC<FormComponentProps> = ({ form }) =>
             </Button>
           </Form.Item>
         </Form>
-      </StyledAdminBlock>
+      </AdminBlock>
     </div>
   )
 }

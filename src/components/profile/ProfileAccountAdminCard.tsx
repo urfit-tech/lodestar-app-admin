@@ -3,7 +3,7 @@ import { CardProps } from 'antd/lib/card'
 import { FormComponentProps } from 'antd/lib/form'
 import React from 'react'
 import { useMember, useUpdateMember } from '../../hooks/member'
-import AdminCard from '../common/AdminCard'
+import AdminCard from '../admin/AdminCard'
 import { StyledForm } from '../layout'
 
 type ProfileAccountAdminCardProps = CardProps &

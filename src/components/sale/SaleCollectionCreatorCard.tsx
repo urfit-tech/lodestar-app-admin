@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { currencyFormatter, dateFormatter } from '../../helpers'
 import { usePublicMember } from '../../hooks/member'
 import * as types from '../../types'
-import AdminCard from '../common/AdminCard'
+import AdminCard from '../admin/AdminCard'
 
 const StyledCard = styled(AdminCard)`
   .ant-card-body {

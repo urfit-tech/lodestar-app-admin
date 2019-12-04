@@ -3,10 +3,10 @@ import { FormComponentProps } from 'antd/lib/form'
 import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
 import { PodcastProgramAdminContext } from '../../containers/podcast/PodcastProgramAdminBlock'
+import { AdminBlock, AdminBlockTitle, AdminPaneTitle } from '../admin'
 import { CustomRatioImage } from '../common/Image'
 import SingleUploader from '../common/SingleUploader'
 import ProgramCategorySelector from '../program/ProgramCategorySelector'
-import { StyledAdminBlock, StyledAdminBlockTitle, StyledAdminPaneTitle } from './PodcastProgramAdminBlock'
 
 const StyledCoverBlock = styled.div`
   max-width: 120px;
@@ -32,7 +32,7 @@ const StyledSingleUploader = styled(SingleUploader)`
 const PodcastProgramSettingsAdminBlock: React.FC = () => {
   return (
     <div className="container py-5">
-      <StyledAdminPaneTitle>廣播設定</StyledAdminPaneTitle>
+      <AdminPaneTitle>廣播設定</AdminPaneTitle>
 
       <BasicAdminBlock />
       <ContentAdminBlock />
@@ -63,8 +63,8 @@ const BasicAdminBlockComponent: React.FC<FormComponentProps> = ({ form }) => {
   }
 
   return (
-    <StyledAdminBlock>
-      <StyledAdminBlockTitle>基本設定</StyledAdminBlockTitle>
+    <AdminBlock>
+      <AdminBlockTitle>基本設定</AdminBlockTitle>
 
       <Form
         hideRequiredMark
@@ -96,7 +96,7 @@ const BasicAdminBlockComponent: React.FC<FormComponentProps> = ({ form }) => {
           </Button>
         </Form.Item>
       </Form>
-    </StyledAdminBlock>
+    </AdminBlock>
   )
 }
 const BasicAdminBlock = Form.create()(BasicAdminBlockComponent)
@@ -124,8 +124,8 @@ const ContentAdminBlockComponent: React.FC<FormComponentProps> = ({ form }) => {
   }
 
   return (
-    <StyledAdminBlock>
-      <StyledAdminBlockTitle>廣播介紹</StyledAdminBlockTitle>
+    <AdminBlock>
+      <AdminBlockTitle>廣播介紹</AdminBlockTitle>
 
       <Form
         hideRequiredMark
@@ -179,7 +179,7 @@ const ContentAdminBlockComponent: React.FC<FormComponentProps> = ({ form }) => {
           </Button>
         </Form.Item>
       </Form>
-    </StyledAdminBlock>
+    </AdminBlock>
   )
 }
 const ContentAdminBlock = Form.create()(ContentAdminBlockComponent)

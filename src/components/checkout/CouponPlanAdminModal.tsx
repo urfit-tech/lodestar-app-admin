@@ -9,7 +9,7 @@ import React, { useState } from 'react'
 import { InferType } from 'yup'
 import { couponPlanSchema } from '../../schemas/coupon'
 import types from '../../types'
-import AdminModal, { AdminModalProps } from '../common/AdminModal'
+import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CouponPlanDiscountSelector from './CouponPlanDiscountSelector'
 import PlanCodeSelector, { PlanCodeProps } from './PlanCodeSelector'
 

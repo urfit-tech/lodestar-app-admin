@@ -2,7 +2,7 @@ import { Button, Checkbox, DatePicker, Form, Input, InputNumber } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import moment from 'moment'
 import React, { useState } from 'react'
-import AdminModal, { AdminModalProps } from '../common/AdminModal'
+import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import { ActivitySessionProps } from './ActivitySessionsAdminBlock'
 
 type ActivitySessionAdminModalProps = AdminModalProps &

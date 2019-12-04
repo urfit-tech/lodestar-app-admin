@@ -6,7 +6,7 @@ import { ReactComponent as ExclamationCircleIcon } from '../../images/default/ex
 import { ReactComponent as StatusAlertIcon } from '../../images/default/status-alert.svg'
 import { ReactComponent as StatusOrdinaryIcon } from '../../images/default/status-ordinary.svg'
 import { ReactComponent as StatusSuccessIcon } from '../../images/default/status-success.svg'
-import { StyledAdminBlock, StyledAdminPaneTitle } from './PodcastProgramAdminBlock'
+import { AdminBlock, AdminPaneTitle } from '../admin'
 
 const StyledTitle = styled.div`
   color: var(--gray-darker);
@@ -88,9 +88,9 @@ const PodcastProgramPublishAdminBlock: React.FC<{
 
   return (
     <div className="container py-5">
-      <StyledAdminPaneTitle>發佈設定</StyledAdminPaneTitle>
+      <AdminPaneTitle>發佈設定</AdminPaneTitle>
 
-      <StyledAdminBlock>
+      <AdminBlock>
         {Object.values(checkedErrors).some(checkedError => checkedError.value) ? (
           <>
             <div className="text-center mb-5">
@@ -141,7 +141,7 @@ const PodcastProgramPublishAdminBlock: React.FC<{
             </div>
           </>
         )}
-      </StyledAdminBlock>
+      </AdminBlock>
     </div>
   )
 }

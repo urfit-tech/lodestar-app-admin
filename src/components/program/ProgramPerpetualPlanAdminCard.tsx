@@ -9,7 +9,7 @@ import { InferType } from 'yup'
 import { handleError } from '../../helpers'
 import { programSchema } from '../../schemas/program'
 import types from '../../types'
-import AdminCard from '../common/AdminCard'
+import AdminCard from '../admin/AdminCard'
 
 const StyledIcon = styled(Icon)`
   color: #ff7d62;

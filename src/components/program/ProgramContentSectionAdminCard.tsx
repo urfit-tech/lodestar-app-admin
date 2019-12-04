@@ -7,7 +7,7 @@ import useRouter from 'use-react-router'
 import { InferType } from 'yup'
 import { programContentSectionSchema, programSchema } from '../../schemas/program'
 import types from '../../types'
-import AdminCard from '../common/AdminCard'
+import AdminCard from '../admin/AdminCard'
 import ProgramContentAdminItem from './ProgramContentAdminItem'
 
 const StyledAdminCard = styled(AdminCard)`

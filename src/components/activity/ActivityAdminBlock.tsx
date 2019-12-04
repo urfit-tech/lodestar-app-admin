@@ -1,43 +1,15 @@
 import { Button, Icon, Skeleton, Tabs } from 'antd'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import ActivityPublishAdminBlock from '../../containers/activity/ActivityPublishAdminBlock'
 import ActivitySessionsAdminBlock from '../../containers/activity/ActivitySessionsAdminBlock'
 import ActivitySettingsAdminBlock from '../../containers/activity/ActivitySettingsAdminBlock'
 import ActivityTicketsAdminBlock from '../../containers/activity/ActivityTicketsAdminBlock'
+import { AdminHeader, AdminHeaderTitle, AdminTabBarWrapper } from '../admin'
 import { StyledLayoutContent } from '../layout/DefaultLayout'
 import { ActivitySessionProps } from './ActivitySessionsAdminBlock'
 import { ActivityTicketProps } from './ActivityTicket'
-
-const StyledHeader = styled.header`
-  padding: 0 0.5rem;
-  height: 64px;
-  background: white;
-
-  a:first-child {
-    margin-left: 0.75rem;
-  }
-
-  .anticon {
-    color: var(--gray-darker);
-    font-size: 20px;
-  }
-`
-const StyledTitle = styled.div`
-  color: var(--gray-darker);
-  font-size: 16px;
-  font-weight: bold;
-  letter-spacing: 0.2px;
-`
-const StyledTabBarWrapper = styled.div`
-  background: white;
-
-  .ant-tabs-nav-scroll {
-    text-align: center;
-  }
-`
 
 export type ActivityAdminProps = {
   id: string
@@ -71,15 +43,15 @@ const ActivityAdminBlock: React.FC<{
 
   return (
     <>
-      <StyledHeader className="d-flex align-items-center justify-content-between">
+      <AdminHeader className="d-flex align-items-center justify-content-between">
         <Link to="/studio/activities/" className="mr-3">
           <Icon type="arrow-left" />
         </Link>
-        <StyledTitle className="flex-grow-1">{activityAdmin.title}</StyledTitle>
+        <AdminHeaderTitle className="flex-grow-1">{activityAdmin.title}</AdminHeaderTitle>
         <a href={`/activities/${activityAdmin.id}`} target="_blank" rel="noopener noreferrer">
           <Button>預覽</Button>
         </a>
-      </StyledHeader>
+      </AdminHeader>
 
       <StyledLayoutContent>
         {loading ? (
@@ -94,9 +66,9 @@ const ActivityAdminBlock: React.FC<{
               setDefaultActivekey(key)
             }}
             renderTabBar={(props, DefaultTabBar) => (
-              <StyledTabBarWrapper>
+              <AdminTabBarWrapper>
                 <DefaultTabBar {...props} />
-              </StyledTabBarWrapper>
+              </AdminTabBarWrapper>
             )}
           >
             <Tabs.TabPane key="settings" tab="相關設定">

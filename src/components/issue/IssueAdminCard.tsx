@@ -6,8 +6,8 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useProgram } from '../../hooks/program'
 import types from '../../types'
+import AdminCard from '../admin/AdminCard'
 import { useAuth } from '../auth/AuthContext'
-import AdminCard from '../common/AdminCard'
 import IssueItem from './IssueItem'
 
 const StyledAdminCard = styled(AdminCard)`

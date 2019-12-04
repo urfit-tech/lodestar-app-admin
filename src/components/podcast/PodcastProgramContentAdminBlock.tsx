@@ -4,9 +4,9 @@ import BraftEditor from 'braft-editor'
 import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
 import { PodcastProgramAdminContext } from '../../containers/podcast/PodcastProgramAdminBlock'
+import { AdminBlock, AdminPaneTitle } from '../admin'
 import SingleUploader from '../common/SingleUploader'
 import StyledBraftEditor from '../common/StyledBraftEditor'
-import { StyledAdminBlock, StyledAdminPaneTitle } from './PodcastProgramAdminBlock'
 
 const StyledTips = styled.div`
   font-size: 12px;
@@ -38,9 +38,9 @@ const PodcastProgramContentAdminBlock: React.FC<FormComponentProps> = ({ form })
 
   return (
     <div className="container py-5">
-      <StyledAdminPaneTitle>廣播內容</StyledAdminPaneTitle>
+      <AdminPaneTitle>廣播內容</AdminPaneTitle>
 
-      <StyledAdminBlock>
+      <AdminBlock>
         <Form
           hideRequiredMark
           colon={false}
@@ -117,7 +117,7 @@ const PodcastProgramContentAdminBlock: React.FC<FormComponentProps> = ({ form })
             </Button>
           </Form.Item>
         </Form>
-      </StyledAdminBlock>
+      </AdminBlock>
     </div>
   )
 }

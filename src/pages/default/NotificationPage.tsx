@@ -1,7 +1,7 @@
 import { Icon, List, Typography } from 'antd'
 import React from 'react'
+import AdminCard from '../../components/admin/AdminCard'
 import { useAuth } from '../../components/auth/AuthContext'
-import AdminCard from '../../components/common/AdminCard'
 import DefaultLayout from '../../components/layout/DefaultLayout'
 import NotificationItem from '../../components/notification/NotificationItem'
 import { useNotifications } from '../../hooks/data'

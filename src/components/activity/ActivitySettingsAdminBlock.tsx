@@ -3,11 +3,7 @@ import Form, { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import {
-  StyledAdminBlock,
-  StyledAdminBlockTitle,
-  StyledAdminPaneTitle,
-} from '../../pages/default/creator/ActivityAdminPage'
+import { AdminBlock, AdminBlockTitle, AdminPaneTitle } from '../admin'
 import SingleUploader from '../common/SingleUploader'
 import StyledBraftEditor from '../common/StyledBraftEditor'
 import ProgramCategorySelector from '../program/ProgramCategorySelector'
@@ -61,7 +57,7 @@ const ActivitySettingsAdminBlock: React.FC<{
 }> = ({ activityAdmin, onUpdateBasic, onUpdateIntroduction }) => {
   return (
     <div className="container py-5">
-      <StyledAdminPaneTitle>相關設定</StyledAdminPaneTitle>
+      <AdminPaneTitle>相關設定</AdminPaneTitle>
 
       <BasicAdminBlock
         title={activityAdmin.title}
@@ -120,8 +116,8 @@ const BasicAdminBlockComponent: React.FC<BasicAdminBlockComponentProps> = ({
   }
 
   return (
-    <StyledAdminBlock>
-      <StyledAdminBlockTitle>基本設定</StyledAdminBlockTitle>
+    <AdminBlock>
+      <AdminBlockTitle>基本設定</AdminBlockTitle>
 
       <Form
         hideRequiredMark
@@ -162,7 +158,7 @@ const BasicAdminBlockComponent: React.FC<BasicAdminBlockComponentProps> = ({
           </Button>
         </Form.Item>
       </Form>
-    </StyledAdminBlock>
+    </AdminBlock>
   )
 }
 const BasicAdminBlock = Form.create<BasicAdminBlockComponentProps>()(BasicAdminBlockComponent)
@@ -200,7 +196,9 @@ const IntroductionAdminBlockComponent: React.FC<IntroductionAdminBlockComponentP
       if (onUpdateIntroduction) {
         onUpdateIntroduction(setLoading, {
           coverUrl: values.coverImg
-            ? `https://${process.env.REACT_APP_S3_PUBLIC_BUCKET}/activity_covers/${localStorage.getItem('kolable.app.id')}/${activityId}?t=${submitTimes}`
+            ? `https://${process.env.REACT_APP_S3_PUBLIC_BUCKET}/activity_covers/${localStorage.getItem(
+                'kolable.app.id',
+              )}/${activityId}?t=${submitTimes}`
             : '',
           description: values.description.toRAW(),
         })
@@ -209,8 +207,8 @@ const IntroductionAdminBlockComponent: React.FC<IntroductionAdminBlockComponentP
   }
 
   return (
-    <StyledAdminBlock>
-      <StyledAdminBlockTitle>活動介紹</StyledAdminBlockTitle>
+    <AdminBlock>
+      <AdminBlockTitle>活動介紹</AdminBlockTitle>
       <Form
         hideRequiredMark
         labelCol={{ span: 24, md: { span: 4 } }}
@@ -287,7 +285,7 @@ const IntroductionAdminBlockComponent: React.FC<IntroductionAdminBlockComponentP
           </Button>
         </Form.Item>
       </Form>
-    </StyledAdminBlock>
+    </AdminBlock>
   )
 }
 const IntroductionAdminBlock = Form.create<IntroductionAdminBlockComponentProps>()(IntroductionAdminBlockComponent)

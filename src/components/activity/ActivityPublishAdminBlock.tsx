@@ -5,7 +5,7 @@ import { ReactComponent as ExclamationCircleIcon } from '../../images/default/ex
 import { ReactComponent as StatusAlertIcon } from '../../images/default/status-alert.svg'
 import { ReactComponent as StatusOrdinaryIcon } from '../../images/default/status-ordinary.svg'
 import { ReactComponent as StatusSuccessIcon } from '../../images/default/status-success.svg'
-import { StyledAdminPaneTitle } from '../../pages/default/creator/ActivityAdminPage'
+import { AdminPaneTitle } from '../admin'
 import { ActivityAdminProps } from './ActivityAdminBlock'
 
 const StyledWrapper = styled.div`
@@ -70,7 +70,7 @@ const ActivityPublishAdminBlock: React.FC<{
 
   return (
     <div className="container py-5">
-      <StyledAdminPaneTitle>發佈設定</StyledAdminPaneTitle>
+      <AdminPaneTitle>發佈設定</AdminPaneTitle>
 
       <StyledWrapper>
         {activityPublishStatus === 'not-complete' && (

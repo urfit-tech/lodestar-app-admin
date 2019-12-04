@@ -1,6 +1,6 @@
 import { Button, Dropdown, Icon, Menu } from 'antd'
 import React from 'react'
-import { StyledAdminPaneTitle } from '../../pages/default/creator/ActivityAdminPage'
+import { AdminPaneTitle } from '../admin'
 import { ActivityAdminProps } from './ActivityAdminBlock'
 import ActivityTicket from './ActivityTicket'
 import ActivityTicketAdminModal from './ActivityTicketAdminModal'
@@ -39,7 +39,7 @@ const ActivityTicketsAdminBlock: React.FC<{
 }> = ({ activityAdmin, onInsert, onUpdate }) => {
   return (
     <div className="container py-5">
-      <StyledAdminPaneTitle>票券方案</StyledAdminPaneTitle>
+      <AdminPaneTitle>票券方案</AdminPaneTitle>
 
       <ActivityTicketAdminModal
         renderTrigger={({ setVisible }) => (
