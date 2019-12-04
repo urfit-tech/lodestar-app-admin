@@ -1,9 +1,10 @@
-import { Icon } from 'antd'
+import { Icon, Skeleton } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
+import { useAuth } from '../../../components/auth/AuthContext'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
-import PodcastProgramCreationModal from '../../../components/podcast/PodcastProgramCreationModal'
 import PodcastProgramCollectionAdminTable from '../../../containers/podcast/PodcastProgramCollectionAdminTable'
+import PodcastProgramCreationModal from '../../../containers/podcast/PodcastProgramCreationModal'
 import { ReactComponent as MicrophoneIcon } from '../../../images/default/microphone.svg'
 
 const StyledTitle = styled.h1`
@@ -20,7 +21,9 @@ const StyledWrapper = styled.div`
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
 `
 
-const PodcastCollectionAdminPage: React.FC = () => {
+const PodcastProgramCollectionAdminPage: React.FC = () => {
+  const { currentMemberId } = useAuth()
+
   return (
     <OwnerAdminLayout>
       <StyledTitle className="mb-4">
@@ -28,15 +31,21 @@ const PodcastCollectionAdminPage: React.FC = () => {
         <span>廣播管理</span>
       </StyledTitle>
 
-      <div className="mb-5">
-        <PodcastProgramCreationModal />
-      </div>
+      {!currentMemberId ? (
+        <Skeleton active />
+      ) : (
+        <>
+          <div className="mb-5">
+            <PodcastProgramCreationModal memberId={currentMemberId} />
+          </div>
 
-      <StyledWrapper>
-        <PodcastProgramCollectionAdminTable />
-      </StyledWrapper>
+          <StyledWrapper>
+            <PodcastProgramCollectionAdminTable />
+          </StyledWrapper>
+        </>
+      )}
     </OwnerAdminLayout>
   )
 }
 
-export default PodcastCollectionAdminPage
+export default PodcastProgramCollectionAdminPage

@@ -29,7 +29,6 @@ const PodcastProgramContentAdminBlock: React.FC<FormComponentProps> = ({ form })
       updatePodcastProgram({
         onFinally: () => setLoading(false),
         data: {
-          audioUrl: values.audioUrl,
           description: values.description.toRAW(),
         },
       })
@@ -59,14 +58,7 @@ const PodcastProgramContentAdminBlock: React.FC<FormComponentProps> = ({ form })
               </span>
             }
           >
-            {form.getFieldDecorator('coverImg', {
-              initialValue: podcastProgramAdmin.audioUrl && {
-                uid: '-1',
-                name: podcastProgramAdmin.title,
-                status: 'done',
-                url: podcastProgramAdmin.audioUrl,
-              },
-            })(
+            {form.getFieldDecorator('coverImg')(
               <SingleUploader
                 accept="audio/aac,audio/mp3"
                 showUploadList={false}

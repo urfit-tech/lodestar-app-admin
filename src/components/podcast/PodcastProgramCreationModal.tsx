@@ -2,6 +2,7 @@ import { Button, Form, Input, Modal } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { CreatePodcastProgramProps } from '../../containers/podcast/PodcastProgramCreationModal'
 import ProgramCategorySelector from '../program/ProgramCategorySelector'
 
 const StyledTitle = styled.div`
@@ -13,14 +14,7 @@ const StyledTitle = styled.div`
 `
 
 type PodcastProgramCreationModalProps = FormComponentProps & {
-  onCreate?: (
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-    setVisible: React.Dispatch<React.SetStateAction<boolean>>,
-    values: {
-      title: string
-      categoryIds: string[]
-    },
-  ) => void
+  onCreate?: CreatePodcastProgramProps
 }
 const PodcastProgramCreationModal: React.FC<PodcastProgramCreationModalProps> = ({ form, onCreate }) => {
   const [visible, setVisible] = useState(false)
@@ -33,9 +27,14 @@ const PodcastProgramCreationModal: React.FC<PodcastProgramCreationModalProps> = 
       }
 
       if (onCreate) {
-        onCreate(setLoading, setVisible, {
-          title: values.title,
-          categoryIds: values.categoryIds,
+        setLoading(true)
+
+        onCreate({
+          onError: () => setLoading(false),
+          data: {
+            title: values.title,
+            categoryIds: values.categoryIds,
+          },
         })
       }
     })
@@ -63,7 +62,7 @@ const PodcastProgramCreationModal: React.FC<PodcastProgramCreationModalProps> = 
           <Button className="mr-2" onClick={() => setVisible(false)}>
             取消
           </Button>
-          <Button type="primary" onClick={() => handleSubmit()}>
+          <Button type="primary" htmlType="submit" loading={loading} onClick={() => handleSubmit()}>
             建立
           </Button>
         </div>

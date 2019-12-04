@@ -1,32 +1,26 @@
+import { useQuery } from '@apollo/react-hooks'
+import { message, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { createContext } from 'react'
 import PodcastProgramAdminBlockComponent from '../../components/podcast/PodcastProgramAdminBlock'
-import { message } from 'antd'
+import types from '../../types'
 
 type PodcastProgramAdminProps = {
   id: string
   title: string
-  audioUrl: string | null
+  contentType: string | null
   description: string | null
   categories: {
     id: string
     name: string
   }[]
-  coverUrl?: string | null
+  coverUrl: string | null
   abstract: string | null
   listPrice: number
-  salePrice?: number | null
-  soldAt?: Date | null
-  owner: {
-    id: string
-    avatarUrl?: string | null
-    name: string
-  }
-  instructors: {
-    id: string
-    avatarUrl?: string | null
-    name: string
-  }[]
+  salePrice: number | null
+  soldAt: Date | null
+  creatorId: string
+  instructorIds: string[]
   publishedAt: Date | null
 }
 type UpdatePodcastProgramProps = {
@@ -34,7 +28,6 @@ type UpdatePodcastProgramProps = {
   onError?: (error: Error) => void
   onFinally?: () => void
   data: {
-    audioUrl?: string
     description?: string
     title?: string
     categoryIds?: string[]
@@ -48,47 +41,41 @@ type UpdatePodcastProgramProps = {
   }
 }
 
+const defaultPodcastProgramAdmin: PodcastProgramAdminProps = {
+  id: '',
+  title: '',
+  coverUrl: null,
+  contentType: null,
+  description: null,
+  categories: [],
+  abstract: null,
+  listPrice: 0,
+  salePrice: null,
+  soldAt: null,
+  creatorId: '',
+  instructorIds: [],
+  publishedAt: null,
+}
+
 export const PodcastProgramAdminContext = createContext<{
   podcastProgramAdmin: PodcastProgramAdminProps
   updatePodcastProgram: (props: UpdatePodcastProgramProps) => void
 }>({
-  podcastProgramAdmin: {
-    id: '',
-    title: '',
-    audioUrl: null,
-    description: null,
-    categories: [],
-    abstract: null,
-    listPrice: 0,
-    owner: {
-      id: '',
-      name: '',
-    },
-    instructors: [],
-    publishedAt: null,
-  },
+  podcastProgramAdmin: defaultPodcastProgramAdmin,
   updatePodcastProgram: () => {},
 })
 
 const PodcastProgramAdminBlock: React.FC<{
-  podcastId: string
-}> = podcastId => {
-  // ! fake data
-  const podcastProgramAdmin: PodcastProgramAdminProps = {
-    id: 'podcast-1',
-    title: '未命名的廣播',
-    audioUrl: null,
-    description: '123',
-    categories: [],
-    abstract: '456',
-    listPrice: 0,
-    owner: {
-      id: 'creator-1',
-      name: '王小美',
+  podcastProgramId: string
+}> = ({ podcastProgramId }) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_PODCAST_PROGRAM_ADMIN,
+    types.GET_PODCAST_PROGRAM_ADMINVariables
+  >(GET_PODCAST_PROGRAM_ADMIN, {
+    variables: {
+      podcastProgramId: podcastProgramId,
     },
-    instructors: [],
-    publishedAt: null,
-  }
+  })
 
   const updatePodcastProgram: (props: UpdatePodcastProgramProps) => void = ({
     onSuccess,
@@ -100,6 +87,37 @@ const PodcastProgramAdminBlock: React.FC<{
     onSuccess && onSuccess()
     message.success('儲存成功')
     onFinally && onFinally()
+  }
+
+  if (loading) {
+    return <Skeleton active />
+  }
+
+  if (error || !data || !data.podcast_program_by_pk) {
+    return <div>讀取錯誤 {podcastProgramId}</div>
+  }
+
+  const podcastProgramAdmin = {
+    id: data.podcast_program_by_pk.id,
+    title: data.podcast_program_by_pk.title,
+    contentType: data.podcast_program_by_pk.content_type,
+    description: data.podcast_program_by_pk.podcast_program_bodies[0]
+      ? data.podcast_program_by_pk.podcast_program_bodies[0].description
+      : null,
+    categories: data.podcast_program_by_pk.podcast_program_categories.map(podcastProgramCategory => ({
+      id: podcastProgramCategory.category.id,
+      name: podcastProgramCategory.category.name,
+    })),
+    coverUrl: data.podcast_program_by_pk.cover_url,
+    abstract: data.podcast_program_by_pk.abstract,
+    listPrice: data.podcast_program_by_pk.list_price,
+    salePrice: data.podcast_program_by_pk.sale_price,
+    soldAt: data.podcast_program_by_pk.sold_at ? new Date(data.podcast_program_by_pk.sold_at) : null,
+    creatorId: data.podcast_program_by_pk.creator_id,
+    instructorIds: data.podcast_program_by_pk.podcast_program_roles.map(
+      podcastProgramRole => podcastProgramRole.member_id,
+    ),
+    publishedAt: data.podcast_program_by_pk.published_at ? new Date(data.podcast_program_by_pk.published_at) : null,
   }
 
   return (
@@ -121,6 +139,7 @@ const GET_PODCAST_PROGRAM_ADMIN = gql`
       sold_at
       content_type
       published_at
+      creator_id
       podcast_program_bodies {
         id
         description

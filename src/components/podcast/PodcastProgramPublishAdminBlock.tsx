@@ -56,7 +56,7 @@ const PodcastProgramPublishAdminBlock: React.FC<{
     NO_AUDIO: {
       text: '尚未上傳音頻檔案',
       tab: 'content',
-      value: typeof podcastProgramAdmin.audioUrl !== 'string',
+      value: typeof podcastProgramAdmin.contentType !== 'string',
     },
     NO_COVER: {
       text: '尚未上傳封面',
@@ -71,7 +71,7 @@ const PodcastProgramPublishAdminBlock: React.FC<{
     NO_INSTRUCTOR: {
       text: '尚未指定講師',
       tab: 'role',
-      value: podcastProgramAdmin.instructors.length === 0,
+      value: podcastProgramAdmin.instructorIds.length === 0,
     },
   }
 

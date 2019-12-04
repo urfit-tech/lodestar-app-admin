@@ -3,6 +3,7 @@ import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
 import CreatorSelector from '../../containers/common/CreatorSelector'
 import { PodcastProgramAdminContext } from '../../containers/podcast/PodcastProgramAdminBlock'
+import { usePublicMember } from '../../hooks/member'
 import { AdminBlock, AdminBlockTitle, AdminPaneTitle } from '../admin'
 import { AvatarImage } from '../common/Image'
 
@@ -31,6 +32,8 @@ const StyledModalTitle = styled.div`
 
 const PodcastProgramRoleAdminBlock: React.FC = () => {
   const { podcastProgramAdmin, updatePodcastProgram } = useContext(PodcastProgramAdminContext)
+  const { member: creator } = usePublicMember(podcastProgramAdmin.creatorId)
+
   const [visible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null)
@@ -48,7 +51,7 @@ const PodcastProgramRoleAdminBlock: React.FC = () => {
         setVisible(false)
       },
       data: {
-        instructorIds: [...podcastProgramAdmin.instructors.map(instructor => instructor.id), selectedMemberId],
+        instructorIds: [...podcastProgramAdmin.instructorIds, selectedMemberId],
       },
     })
   }
@@ -60,34 +63,32 @@ const PodcastProgramRoleAdminBlock: React.FC = () => {
       <AdminBlock>
         <AdminBlockTitle className="mb-4">建立者</AdminBlockTitle>
 
-        <div className="d-flex align-items-center justify-content-center">
-          <AvatarImage src={podcastProgramAdmin.owner.avatarUrl} size={36} className="mr-3" />
-          <StyledName className="flex-grow-1">{podcastProgramAdmin.owner.name}</StyledName>
-        </div>
+        {!!creator && (
+          <div className="d-flex align-items-center justify-content-center">
+            <AvatarImage src={creator.pictureUrl} size={36} className="mr-3" />
+            <StyledName className="flex-grow-1">{creator.name}</StyledName>
+          </div>
+        )}
       </AdminBlock>
 
       <AdminBlock>
         <AdminBlockTitle className="mb-4">講師</AdminBlockTitle>
         {/* <StyledSubTitle className="mb-4">最多設定三位講師</StyledSubTitle> */}
 
-        {podcastProgramAdmin.instructors.map(instructor => (
-          <StyledInstructorBlock key={instructor.id} className="d-flex align-items-center justify-content-center">
-            <AvatarImage src={podcastProgramAdmin.owner.avatarUrl} size={36} className="mr-3" />
-            <StyledName className="flex-grow-1">{podcastProgramAdmin.owner.name}</StyledName>
-            <Icon
-              type="delete"
-              onClick={() =>
-                updatePodcastProgram({
-                  data: {
-                    instructorIds: podcastProgramAdmin.instructors.filter(v => v.id !== instructor.id).map(v => v.id),
-                  },
-                })
-              }
-            />
-          </StyledInstructorBlock>
+        {podcastProgramAdmin.instructorIds.map(instructorId => (
+          <InstructorBlock
+            memberId={instructorId}
+            onClick={() =>
+              updatePodcastProgram({
+                data: {
+                  instructorIds: podcastProgramAdmin.instructorIds.filter(v => v !== instructorId),
+                },
+              })
+            }
+          />
         ))}
 
-        {podcastProgramAdmin.instructors.length < 1 && (
+        {podcastProgramAdmin.instructorIds.length < 1 && (
           <Button type="link" icon="plus" size="small" onClick={() => setVisible(true)}>
             新增講師
           </Button>
@@ -120,6 +121,21 @@ const PodcastProgramRoleAdminBlock: React.FC = () => {
         </Form>
       </Modal>
     </div>
+  )
+}
+
+const InstructorBlock: React.FC<{
+  memberId: string
+  onClick?: () => void
+}> = ({ memberId, onClick }) => {
+  const { member } = usePublicMember(memberId)
+
+  return (
+    <StyledInstructorBlock key={memberId} className="d-flex align-items-center justify-content-center">
+      <AvatarImage src={member ? member.pictureUrl : null} size={36} className="mr-3" />
+      <StyledName className="flex-grow-1">{member ? member.name : ''}</StyledName>
+      <Icon type="delete" onClick={() => onClick && onClick()} />
+    </StyledInstructorBlock>
   )
 }
 

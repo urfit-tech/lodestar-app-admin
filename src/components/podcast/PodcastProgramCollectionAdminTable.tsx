@@ -94,7 +94,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       key: 'title',
       width: '25rem',
       render: (text, record, index) => (
-        <Link to={`/admin/podcasts/${record.id}`}>
+        <Link to={`/admin/podcast-programs/${record.id}`}>
           <div className="d-flex align-items-center justify-content-between">
             <CustomRatioImage
               width="42px"

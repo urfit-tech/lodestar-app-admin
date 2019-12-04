@@ -227,15 +227,15 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
-  owner_podcast_collection_admin: {
-    path: '/admin/podcasts',
-    pageName: 'owner/PodcastCollectionAdminPage',
+  owner_podcast_program_collection_admin: {
+    path: '/admin/podcast-programs',
+    pageName: 'owner/PodcastProgramCollectionAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
-  owner_podcast_admin: {
-    path: '/admin/podcasts/:podcastId',
-    pageName: 'owner/PodcastAdminPage',
+  owner_podcast_program_admin: {
+    path: '/admin/podcast-programs/:podcastProgramId',
+    pageName: 'owner/PodcastProgramAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },

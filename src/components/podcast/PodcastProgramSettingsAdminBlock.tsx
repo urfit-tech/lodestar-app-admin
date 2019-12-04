@@ -167,7 +167,7 @@ const ContentAdminBlockComponent: React.FC<FormComponentProps> = ({ form }) => {
         </Form.Item>
         <Form.Item label="廣播摘要">
           {form.getFieldDecorator('abstract', {
-            initialValue: podcastProgramAdmin.categories.map(category => category.id),
+            initialValue: podcastProgramAdmin.abstract,
           })(<Input.TextArea rows={4} />)}
         </Form.Item>
         <Form.Item wrapperCol={{ md: { offset: 4 } }}>
