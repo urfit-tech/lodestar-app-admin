@@ -40,6 +40,24 @@ const PodcastProgramRoleAdminBlock: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null)
 
+  const handleSubmit = () => {
+    if (!selectedMemberId) {
+      return
+    }
+
+    setLoading(true)
+
+    updatePodcastProgram({
+      onSuccess: () => {
+        setLoading(false)
+        setVisible(false)
+      },
+      data: {
+        instructorIds: [...podcastProgramAdmin.instructors.map(instructor => instructor.id), selectedMemberId],
+      },
+    })
+  }
+
   return (
     <div className="container py-5">
       <StyledAdminPaneTitle>身份管理</StyledAdminPaneTitle>
@@ -54,8 +72,8 @@ const PodcastProgramRoleAdminBlock: React.FC = () => {
       </StyledAdminBlock>
 
       <StyledAdminBlock>
-        <StyledAdminBlockTitle className="mb-2">講師</StyledAdminBlockTitle>
-        <StyledSubTitle className="mb-4">最多設定三位講師</StyledSubTitle>
+        <StyledAdminBlockTitle className="mb-4">講師</StyledAdminBlockTitle>
+        {/* <StyledSubTitle className="mb-4">最多設定三位講師</StyledSubTitle> */}
 
         {podcastProgramAdmin.instructors.map(instructor => (
           <StyledInstructorBlock key={instructor.id} className="d-flex align-items-center justify-content-center">
@@ -74,7 +92,7 @@ const PodcastProgramRoleAdminBlock: React.FC = () => {
           </StyledInstructorBlock>
         ))}
 
-        {podcastProgramAdmin.instructors.length < 3 && (
+        {podcastProgramAdmin.instructors.length < 1 && (
           <Button type="link" icon="plus" size="small" onClick={() => setVisible(true)}>
             新增講師
           </Button>
@@ -89,20 +107,8 @@ const PodcastProgramRoleAdminBlock: React.FC = () => {
           colon={false}
           onSubmit={e => {
             e.preventDefault()
-            if (!selectedMemberId) {
-              return
-            }
-
-            updatePodcastProgram({
-              onBefore: () => setLoading(true),
-              onSuccess: () => {
-                setLoading(false)
-                setVisible(false)
-              },
-              data: {
-                instructorIds: [...podcastProgramAdmin.instructors.map(instructor => instructor.id), selectedMemberId],
-              },
-            })
+            handleSubmit()
+            setSelectedMemberId(null)
           }}
         >
           <Form.Item label="選擇講師">

@@ -21,8 +21,9 @@ const PodcastProgramPlanAdminBlock: React.FC<FormComponentProps> = ({ form }) =>
         return
       }
 
+      setLoading(true)
+
       updatePodcastProgram({
-        onBefore: () => setLoading(true),
         onFinally: () => setLoading(false),
         data: {
           listPrice: values.listPrice,

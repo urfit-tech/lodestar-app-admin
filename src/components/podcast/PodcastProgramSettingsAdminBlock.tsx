@@ -50,8 +50,9 @@ const BasicAdminBlockComponent: React.FC<FormComponentProps> = ({ form }) => {
         return
       }
 
+      setLoading(true)
+
       updatePodcastProgram({
-        onBefore: () => setLoading(true),
         onFinally: () => setLoading(false),
         data: {
           title: values.title,
@@ -110,8 +111,9 @@ const ContentAdminBlockComponent: React.FC<FormComponentProps> = ({ form }) => {
         return
       }
 
+      setLoading(true)
+
       updatePodcastProgram({
-        onBefore: () => setLoading(true),
         onFinally: () => setLoading(false),
         data: {
           coverUrl: values.coverUrl,

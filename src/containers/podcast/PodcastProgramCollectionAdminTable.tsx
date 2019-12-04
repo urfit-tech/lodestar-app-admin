@@ -1,3 +1,4 @@
+import gql from 'graphql-tag'
 import React from 'react'
 import PodcastProgramCollectionAdminTableComponent, {
   PodcastProgramProps,
@@ -51,5 +52,32 @@ const PodcastProgramCollectionAdminTable: React.FC = () => {
 
   return <PodcastProgramCollectionAdminTableComponent podcastPrograms={podcastPrograms} />
 }
+
+const GET_PODCAST_PROGRAM_ADMIN_COLLECTION = gql`
+  query GET_PODCAST_PROGRAM_ADMIN_COLLECTION {
+    podcast_program {
+      id
+      title
+      cover_url
+      abstract
+      list_price
+      sale_price
+      sold_at
+      published_at
+      podcast_program_categories(order_by: { category: { position: asc } }) {
+        id
+        category {
+          id
+          name
+        }
+      }
+      podcast_program_roles {
+        id
+        member_id
+        name
+      }
+    }
+  }
+`
 
 export default PodcastProgramCollectionAdminTable

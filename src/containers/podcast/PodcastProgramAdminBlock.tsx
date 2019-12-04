@@ -1,5 +1,7 @@
+import gql from 'graphql-tag'
 import React, { createContext } from 'react'
 import PodcastProgramAdminBlockComponent from '../../components/podcast/PodcastProgramAdminBlock'
+import { message } from 'antd'
 
 type PodcastProgramAdminProps = {
   id: string
@@ -28,7 +30,6 @@ type PodcastProgramAdminProps = {
   publishedAt: Date | null
 }
 type UpdatePodcastProgramProps = {
-  onBefore?: () => void
   onSuccess?: () => void
   onError?: (error: Error) => void
   onFinally?: () => void
@@ -85,28 +86,19 @@ const PodcastProgramAdminBlock: React.FC<{
       id: 'creator-1',
       name: '王小美',
     },
-    instructors: [
-      {
-        id: 'creator-1',
-        name: '王小美',
-      },
-      {
-        id: 'creator-2',
-        name: 'Wangdaming',
-      },
-    ],
+    instructors: [],
     publishedAt: null,
   }
 
   const updatePodcastProgram: (props: UpdatePodcastProgramProps) => void = ({
-    onBefore,
     onSuccess,
     onError,
     onFinally,
     data,
   }) => {
-    onBefore && onBefore()
     console.log(data)
+    onSuccess && onSuccess()
+    message.success('儲存成功')
     onFinally && onFinally()
   }
 
@@ -116,5 +108,37 @@ const PodcastProgramAdminBlock: React.FC<{
     </PodcastProgramAdminContext.Provider>
   )
 }
+
+const GET_PODCAST_PROGRAM_ADMIN = gql`
+  query GET_PODCAST_PROGRAM_ADMIN($podcastProgramId: uuid!) {
+    podcast_program_by_pk(id: $podcastProgramId) {
+      id
+      title
+      cover_url
+      abstract
+      list_price
+      sale_price
+      sold_at
+      content_type
+      published_at
+      podcast_program_bodies {
+        id
+        description
+      }
+      podcast_program_categories(order_by: { category: { position: asc } }) {
+        id
+        category {
+          id
+          name
+        }
+      }
+      podcast_program_roles {
+        id
+        member_id
+        name
+      }
+    }
+  }
+`
 
 export default PodcastProgramAdminBlock

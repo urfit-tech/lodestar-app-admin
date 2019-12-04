@@ -76,8 +76,9 @@ const PodcastProgramPublishAdminBlock: React.FC<{
   }
 
   const handlePublish = () => {
+    setLoading(true)
+
     updatePodcastProgram({
-      onBefore: () => setLoading(true),
       onFinally: () => setLoading(false),
       data: {
         publishedAt: podcastProgramAdmin.publishedAt ? null : new Date(),

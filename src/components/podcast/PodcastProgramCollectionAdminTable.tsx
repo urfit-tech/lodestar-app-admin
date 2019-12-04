@@ -1,6 +1,7 @@
 import { Icon, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { currencyFormatter } from '../../helpers'
 import EmptyCover from '../../images/default/empty-cover.png'
@@ -93,15 +94,17 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       key: 'title',
       width: '25rem',
       render: (text, record, index) => (
-        <div className="d-flex align-items-center justify-content-between">
-          <CustomRatioImage
-            width="42px"
-            ratio={1}
-            src={record.coverUrl || EmptyCover}
-            className="mr-3 pr-2 flex-shrink-0"
-          />
-          <StyledTitle className="flex-grow-1">{record.title}</StyledTitle>
-        </div>
+        <Link to={`/admin/podcasts/${record.id}`}>
+          <div className="d-flex align-items-center justify-content-between">
+            <CustomRatioImage
+              width="42px"
+              ratio={1}
+              src={record.coverUrl || EmptyCover}
+              className="mr-3 pr-2 flex-shrink-0"
+            />
+            <StyledTitle className="flex-grow-1">{record.title}</StyledTitle>
+          </div>
+        </Link>
       ),
       ...getColumnSearchProps(selectedKeys => {
         selectedKeys && setTitleSearch(selectedKeys[0] || '')

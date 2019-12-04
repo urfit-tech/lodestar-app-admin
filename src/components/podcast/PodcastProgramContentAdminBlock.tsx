@@ -24,8 +24,9 @@ const PodcastProgramContentAdminBlock: React.FC<FormComponentProps> = ({ form })
         return
       }
 
+      setLoading(true)
+
       updatePodcastProgram({
-        onBefore: () => setLoading(true),
         onFinally: () => setLoading(false),
         data: {
           audioUrl: values.audioUrl,
