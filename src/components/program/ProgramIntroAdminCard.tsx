@@ -10,14 +10,16 @@ import { handleError } from '../../helpers'
 import { programSchema } from '../../schemas/program'
 import types from '../../types'
 import AdminCard from '../common/AdminCard'
+import { CustomRatioImage } from '../common/Image'
 import { BREAK_POINT } from '../common/Responsive'
 import SingleUploader from '../common/SingleUploader'
 import StyledBraftEditor from '../common/StyledBraftEditor'
 
-const StyledProgramCover = styled.img`
+const CoverBlock = styled.div`
   margin-bottom: 2rem;
   width: 100%;
   max-width: 12rem;
+  overflow: hidden;
   border-radius: 4px;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
 
@@ -54,13 +56,13 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
   )
 
   const [loading, setLoading] = useState(false)
-  const [submitTimes, setSubmitTimes] = useState(Date.now())
 
   const submit = () => {
     program &&
       form.validateFields((error, values) => {
         if (!error) {
           setLoading(true)
+          const uploadTime = Date.now()
 
           updateProgramIntro({
             variables: {
@@ -68,13 +70,14 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
               abstract: values.abstract || '',
               description: values.description.toRAW(),
               coverUrl: values.coverImg
-                ? `https://${process.env.REACT_APP_S3_PUBLIC_BUCKET}/program_covers/${localStorage.getItem('kolable.app.id')}/${program.id}?t=${submitTimes}`
+                ? `https://${process.env.REACT_APP_S3_PUBLIC_BUCKET}/program_covers/${localStorage.getItem(
+                    'kolable.app.id',
+                  )}/${program.id}?t=${uploadTime}`
                 : '',
               coverVideoUrl: values.coverVideoUrl,
             },
           })
             .then(() => {
-              setSubmitTimes(submitTimes + 1)
               onRefetch && onRefetch()
               message.success('儲存成功')
             })
@@ -99,7 +102,9 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
           <Form.Item label="課程封面">
             <div className="d-flex align-items-center flex-wrap">
               {program.coverUrl && (
-                <StyledProgramCover src={`${program.coverUrl}?t=${submitTimes}`} alt="program cover" />
+                <CoverBlock>
+                  <CustomRatioImage src={program.coverUrl} width="100%" ratio={9 / 16} />
+                </CoverBlock>
               )}
               {form.getFieldDecorator('coverImg')(
                 <StyledSingleUploader
