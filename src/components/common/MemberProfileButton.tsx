@@ -99,25 +99,6 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
           )}
         </BorderedItem>
 
-        {currentUserRole !== 'app-owner' && allowedUserRoles.includes('app-owner') && (
-          <BorderedItem key="admin" onClick={() => history.push('/admin')} style={{ cursor: 'pointer' }}>
-            <Icon type="swap" className="mr-2" />
-            平台管理員專區
-          </BorderedItem>
-        )}
-        {currentUserRole !== 'content-creator' && allowedUserRoles.includes('content-creator') && (
-          <BorderedItem key="studio" onClick={() => history.push('/studio')} style={{ cursor: 'pointer' }}>
-            <Icon type="swap" className="mr-2" />
-            創作者工作室
-          </BorderedItem>
-        )}
-        {currentUserRole !== 'general-member' && allowedUserRoles.includes('general-member') && (
-          <BorderedItem key="settings" onClick={() => history.push('/settings')} style={{ cursor: 'pointer' }}>
-            <Icon type="swap" className="mr-2" />
-            個人管理後台
-          </BorderedItem>
-        )}
-
         <List.Item
           style={{ cursor: 'pointer' }}
           onClick={() => {

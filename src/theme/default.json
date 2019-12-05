@@ -21,7 +21,7 @@
   "@layout-header-padding": "0 20px",
   "@menu-item-height": "48px",
   "@modal-mask-bg": "fade(@white, 65%)",
-  "@primary-color": "#1890ff",
-  "@processing-color": "rgba(24, 144, 255, 0.1)",
+  "@primary-color": "#4C5B8F",
+  "@processing-color": "rgba(76, 91, 143, 0.1)",
   "@table-header-bg": "#fff"
 }
