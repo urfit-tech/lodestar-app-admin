@@ -84,6 +84,9 @@ export const OwnerAdminMenu = (props: MenuProps) => (
         <Menu.Item key="owner_podcast_program_collection_admin">
           <span>廣播管理</span>
         </Menu.Item>
+        <Menu.Item key="owner_podcast_plan_admin">
+          <span>訂閱方案</span>
+        </Menu.Item>
       </Menu.SubMenu>
 
       <Menu.Item key="owner_program_general_admin">
