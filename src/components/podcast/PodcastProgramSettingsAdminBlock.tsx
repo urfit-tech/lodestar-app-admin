@@ -9,7 +9,11 @@ import SingleUploader from '../common/SingleUploader'
 import ProgramCategorySelector from '../program/ProgramCategorySelector'
 
 const StyledCoverBlock = styled.div`
+  overflow: hidden;
+  width: 120px;
   max-width: 120px;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
 `
 const StyledSingleUploader = styled(SingleUploader)`
   && {
@@ -35,7 +39,7 @@ const PodcastProgramSettingsAdminBlock: React.FC = () => {
       <AdminPaneTitle>廣播設定</AdminPaneTitle>
 
       <BasicAdminBlock />
-      <ContentAdminBlock />
+      <IntroAdminBlock />
     </div>
   )
 }
@@ -101,7 +105,7 @@ const BasicAdminBlockComponent: React.FC<FormComponentProps> = ({ form }) => {
 }
 const BasicAdminBlock = Form.create()(BasicAdminBlockComponent)
 
-const ContentAdminBlockComponent: React.FC<FormComponentProps> = ({ form }) => {
+const IntroAdminBlockComponent: React.FC<FormComponentProps> = ({ form }) => {
   const { podcastProgramAdmin, updatePodcastProgram } = useContext(PodcastProgramAdminContext)
   const [loading, setLoading] = useState(false)
 
@@ -116,7 +120,9 @@ const ContentAdminBlockComponent: React.FC<FormComponentProps> = ({ form }) => {
       updatePodcastProgram({
         onFinally: () => setLoading(false),
         data: {
-          coverUrl: values.coverUrl,
+          coverUrl: `https://${process.env.REACT_APP_S3_PUBLIC_BUCKET}/podcast_program_covers/${localStorage.getItem(
+            'kolable.app.id',
+          )}/${podcastProgramAdmin.id}?t=${Date.now()}`,
           abstract: values.abstract,
         },
       })
@@ -148,11 +154,12 @@ const ContentAdminBlockComponent: React.FC<FormComponentProps> = ({ form }) => {
           }
         >
           <div className="d-flex align-items-center">
-            <StyledCoverBlock>
-              {!!podcastProgramAdmin.coverUrl && (
+            {!!podcastProgramAdmin.coverUrl && (
+              <StyledCoverBlock className="mr-4">
                 <CustomRatioImage src={podcastProgramAdmin.coverUrl} width="100%" ratio={1} />
-              )}
-            </StyledCoverBlock>
+              </StyledCoverBlock>
+            )}
+
             {form.getFieldDecorator('coverUrl', {
               initialValue: podcastProgramAdmin.coverUrl && {
                 uid: '-1',
@@ -165,11 +172,9 @@ const ContentAdminBlockComponent: React.FC<FormComponentProps> = ({ form }) => {
                 accept="image/*"
                 listType="picture-card"
                 showUploadList={false}
-                path={`activity_covers/${localStorage.getItem('kolable.app.id')}/${podcastProgramAdmin.id}`}
+                path={`podcast_program_covers/${localStorage.getItem('kolable.app.id')}/${podcastProgramAdmin.id}`}
                 isPublic
-                onSuccess={() => {
-                  handleSubmit()
-                }}
+                onSuccess={() => handleSubmit()}
               />,
             )}
           </div>
@@ -191,6 +196,6 @@ const ContentAdminBlockComponent: React.FC<FormComponentProps> = ({ form }) => {
     </AdminBlock>
   )
 }
-const ContentAdminBlock = Form.create()(ContentAdminBlockComponent)
+const IntroAdminBlock = Form.create()(IntroAdminBlockComponent)
 
 export default PodcastProgramSettingsAdminBlock

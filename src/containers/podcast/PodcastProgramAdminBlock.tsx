@@ -1,10 +1,10 @@
-import { useQuery, useMutation } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import { message, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { createContext } from 'react'
 import PodcastProgramAdminBlockComponent from '../../components/podcast/PodcastProgramAdminBlock'
-import types from '../../types'
 import { handleError } from '../../helpers'
+import types from '../../types'
 
 type PodcastProgramAdminProps = {
   id: string
@@ -86,6 +86,14 @@ const PodcastProgramAdminBlock: React.FC<{
     types.UPDATE_PODCAST_PROGRAM_BODY,
     types.UPDATE_PODCAST_PROGRAM_BODYVariables
   >(UPDATE_PODCAST_PROGRAM_BODY)
+  const [updatePodcastProgramBasic] = useMutation<
+    types.UPDATE_PODCAST_PROGRAM_BASIC,
+    types.UPDATE_PODCAST_PROGRAM_BASICVariables
+  >(UPDATE_PODCAST_PROGRAM_BASIC)
+  const [updatePodcastProgramIntro] = useMutation<
+    types.UPDATE_PODCAST_PROGRAM_INTRO,
+    types.UPDATE_PODCAST_PROGRAM_INTROVariables
+  >(UPDATE_PODCAST_PROGRAM_INTRO)
 
   const updatePodcastProgram: (props: UpdatePodcastProgramProps) => void = ({
     onSuccess,
@@ -116,6 +124,45 @@ const PodcastProgramAdminBlock: React.FC<{
         .then(() => (onSuccess ? onSuccess() : message.success('儲存成功')))
         .catch(error => (onError ? onError(error) : handleError(error)))
         .finally(() => onFinally && onFinally())
+
+    data.title || data.categoryIds
+      ? updatePodcastProgramBasic({
+          variables: {
+            podcastProgramId,
+            title: data.title,
+            podcastCategories: data.categoryIds
+              ? data.categoryIds.map((categoryId, position) => ({
+                  podcast_program_id: podcastProgramId,
+                  category_id: categoryId,
+                  position,
+                }))
+              : podcastProgramAdmin.categories.map((category, position) => ({
+                  podcast_program_id: podcastProgramId,
+                  category_id: category.id,
+                  position,
+                })),
+          },
+        })
+          .then(() => (onSuccess ? onSuccess() : message.success('儲存成功')))
+          .catch(error => (onError ? onError(error) : handleError(error)))
+          .finally(() => onFinally && onFinally())
+      : null
+
+    data.coverUrl || data.abstract
+      ? updatePodcastProgramIntro({
+          variables: {
+            podcastProgramId,
+            coverUrl: data.coverUrl,
+            abstract: data.abstract,
+          },
+        })
+          .then(() => {
+            onSuccess ? onSuccess() : message.success('儲存成功')
+            refetch()
+          })
+          .catch(error => (onError ? onError(error) : handleError(error)))
+          .finally(() => onFinally && onFinally())
+      : null
   }
 
   if (loading) {
@@ -201,6 +248,33 @@ const UPDATE_PODCAST_PROGRAM_BODY = gql`
     update_podcast_program_body(
       where: { podcast_program_id: { _eq: $podcastProgramId } }
       _set: { description: $description }
+    ) {
+      affected_rows
+    }
+  }
+`
+const UPDATE_PODCAST_PROGRAM_BASIC = gql`
+  mutation UPDATE_PODCAST_PROGRAM_BASIC(
+    $podcastProgramId: uuid!
+    $title: String
+    $podcastCategories: [podcast_program_category_insert_input!]!
+  ) {
+    update_podcast_program(where: { id: { _eq: $podcastProgramId } }, _set: { title: $title }) {
+      affected_rows
+    }
+    delete_podcast_program_category(where: { podcast_program_id: { _eq: $podcastProgramId } }) {
+      affected_rows
+    }
+    insert_podcast_program_category(objects: $podcastCategories) {
+      affected_rows
+    }
+  }
+`
+const UPDATE_PODCAST_PROGRAM_INTRO = gql`
+  mutation UPDATE_PODCAST_PROGRAM_INTRO($podcastProgramId: uuid!, $coverUrl: String, $abstract: String) {
+    update_podcast_program(
+      where: { id: { _eq: $podcastProgramId } }
+      _set: { cover_url: $coverUrl, abstract: $abstract }
     ) {
       affected_rows
     }
