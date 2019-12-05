@@ -22,7 +22,7 @@ const PodcastProgramAdminBlock: React.FC<{
   return (
     <>
       <AdminHeader className="d-flex align-items-center justify-content-between">
-        <Link to="/admin/podcasts/" className="mr-3">
+        <Link to="/admin/podcast-programs/" className="mr-3">
           <Icon type="arrow-left" />
         </Link>
         <AdminHeaderTitle className="flex-grow-1">{podcastProgramAdmin.title}</AdminHeaderTitle>
