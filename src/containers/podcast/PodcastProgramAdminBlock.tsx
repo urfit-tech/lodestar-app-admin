@@ -1,9 +1,10 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/react-hooks'
 import { message, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { createContext } from 'react'
 import PodcastProgramAdminBlockComponent from '../../components/podcast/PodcastProgramAdminBlock'
 import types from '../../types'
+import { handleError } from '../../helpers'
 
 type PodcastProgramAdminProps = {
   id: string
@@ -28,6 +29,7 @@ type UpdatePodcastProgramProps = {
   onError?: (error: Error) => void
   onFinally?: () => void
   data: {
+    contentType?: string
     description?: string
     title?: string
     categoryIds?: string[]
@@ -76,6 +78,14 @@ const PodcastProgramAdminBlock: React.FC<{
       podcastProgramId: podcastProgramId,
     },
   })
+  const [updatePodcastProgramContent] = useMutation<
+    types.UPDATE_PODCAST_PROGRAM_CONTENT,
+    types.UPDATE_PODCAST_PROGRAM_CONTENTVariables
+  >(UPDATE_PODCAST_PROGRAM_CONTENT)
+  const [updatePodcastProgramBody] = useMutation<
+    types.UPDATE_PODCAST_PROGRAM_BODY,
+    types.UPDATE_PODCAST_PROGRAM_BODYVariables
+  >(UPDATE_PODCAST_PROGRAM_BODY)
 
   const updatePodcastProgram: (props: UpdatePodcastProgramProps) => void = ({
     onSuccess,
@@ -84,9 +94,28 @@ const PodcastProgramAdminBlock: React.FC<{
     data,
   }) => {
     console.log(data)
-    onSuccess && onSuccess()
-    message.success('儲存成功')
-    onFinally && onFinally()
+
+    data.contentType &&
+      updatePodcastProgramContent({
+        variables: {
+          podcastProgramId,
+          contentType: data.contentType,
+        },
+      })
+        .then(() => (onSuccess ? onSuccess() : message.success('儲存成功')))
+        .catch(error => (onError ? onError(error) : handleError(error)))
+        .finally(() => onFinally && onFinally())
+
+    data.description &&
+      updatePodcastProgramBody({
+        variables: {
+          podcastProgramId,
+          description: data.description,
+        },
+      })
+        .then(() => (onSuccess ? onSuccess() : message.success('儲存成功')))
+        .catch(error => (onError ? onError(error) : handleError(error)))
+        .finally(() => onFinally && onFinally())
   }
 
   if (loading) {
@@ -156,6 +185,24 @@ const GET_PODCAST_PROGRAM_ADMIN = gql`
         member_id
         name
       }
+    }
+  }
+`
+
+const UPDATE_PODCAST_PROGRAM_CONTENT = gql`
+  mutation UPDATE_PODCAST_PROGRAM_CONTENT($podcastProgramId: uuid!, $contentType: String!) {
+    update_podcast_program(where: { id: { _eq: $podcastProgramId } }, _set: { content_type: $contentType }) {
+      affected_rows
+    }
+  }
+`
+const UPDATE_PODCAST_PROGRAM_BODY = gql`
+  mutation UPDATE_PODCAST_PROGRAM_BODY($podcastProgramId: uuid!, $description: String!) {
+    update_podcast_program_body(
+      where: { podcast_program_id: { _eq: $podcastProgramId } }
+      _set: { description: $description }
+    ) {
+      affected_rows
     }
   }
 `

@@ -2728,6 +2728,62 @@ export interface GET_PODCAST_PROGRAM_ADMINVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_CONTENT
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_CONTENT_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_CONTENT {
+  /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: UPDATE_PODCAST_PROGRAM_CONTENT_update_podcast_program | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_CONTENTVariables {
+  podcastProgramId: any;
+  contentType?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_BODY
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_BODY_update_podcast_program_body {
+  __typename: "podcast_program_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BODY {
+  /**
+   * update data of the table: "podcast_program_body"
+   */
+  update_podcast_program_body: UPDATE_PODCAST_PROGRAM_BODY_update_podcast_program_body | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BODYVariables {
+  podcastProgramId: any;
+  description: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PODCAST_PROGRAM_ADMIN_COLLECTION
 // ====================================================
 

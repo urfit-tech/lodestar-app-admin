@@ -60,7 +60,12 @@ const CREATE_PODCAST_PROGRAM = gql`
     $podcastCategories: [podcast_program_category_insert_input!]!
   ) {
     insert_podcast_program(
-      objects: { title: $title, creator_id: $creatorId, podcast_program_categories: { data: $podcastCategories } }
+      objects: {
+        title: $title
+        creator_id: $creatorId
+        podcast_program_categories: { data: $podcastCategories }
+        podcast_program_bodies: { data: { description: "" } }
+      }
     ) {
       affected_rows
       returning {

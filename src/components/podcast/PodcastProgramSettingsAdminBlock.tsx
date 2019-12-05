@@ -1,9 +1,9 @@
-import { Button, Form, Input } from 'antd'
+import { Button, Form, Icon, Input, Tooltip } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
 import { PodcastProgramAdminContext } from '../../containers/podcast/PodcastProgramAdminBlock'
-import { AdminBlock, AdminBlockTitle, AdminPaneTitle } from '../admin'
+import { AdminBlock, AdminBlockTitle, AdminPaneTitle, StyledTips } from '../admin'
 import { CustomRatioImage } from '../common/Image'
 import SingleUploader from '../common/SingleUploader'
 import ProgramCategorySelector from '../program/ProgramCategorySelector'
@@ -137,7 +137,16 @@ const ContentAdminBlockComponent: React.FC<FormComponentProps> = ({ form }) => {
           handleSubmit()
         }}
       >
-        <Form.Item label="廣播封面">
+        <Form.Item
+          label={
+            <>
+              <span>廣播封面</span>
+              <Tooltip title={<StyledTips>{'建議尺寸：1080*1080px'}</StyledTips>}>
+                <Icon type="question-circle" theme="filled" />
+              </Tooltip>
+            </>
+          }
+        >
           <div className="d-flex align-items-center">
             <StyledCoverBlock>
               {!!podcastProgramAdmin.coverUrl && (

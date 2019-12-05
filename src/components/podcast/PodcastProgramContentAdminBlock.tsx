@@ -2,17 +2,10 @@ import { Button, Form, Icon, Tooltip } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import React, { useContext, useState } from 'react'
-import styled from 'styled-components'
 import { PodcastProgramAdminContext } from '../../containers/podcast/PodcastProgramAdminBlock'
-import { AdminBlock, AdminPaneTitle } from '../admin'
+import { AdminBlock, AdminPaneTitle, StyledTips } from '../admin'
 import SingleUploader from '../common/SingleUploader'
 import StyledBraftEditor from '../common/StyledBraftEditor'
-
-const StyledTips = styled.div`
-  font-size: 12px;
-  letter-spacing: 0.58px;
-  white-space: pre-line;
-`
 
 const PodcastProgramContentAdminBlock: React.FC<FormComponentProps> = ({ form }) => {
   const { podcastProgramAdmin, updatePodcastProgram } = useContext(PodcastProgramAdminContext)
@@ -66,6 +59,11 @@ const PodcastProgramContentAdminBlock: React.FC<FormComponentProps> = ({ form })
                 onSuccess={() => handleSubmit()}
               />,
             )}
+            {podcastProgramAdmin.contentType ? (
+              <div>
+                {podcastProgramAdmin.id}.{podcastProgramAdmin.contentType}
+              </div>
+            ) : null}
           </Form.Item>
           <Form.Item label="內容描述">
             {form.getFieldDecorator('description', {
