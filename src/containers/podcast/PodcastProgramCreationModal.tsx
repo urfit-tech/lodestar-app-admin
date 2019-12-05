@@ -65,6 +65,7 @@ const CREATE_PODCAST_PROGRAM = gql`
         creator_id: $creatorId
         podcast_program_categories: { data: $podcastCategories }
         podcast_program_bodies: { data: { description: "" } }
+        podcast_program_roles: { data: { member_id: $creatorId, name: "instructor" } }
       }
     ) {
       affected_rows

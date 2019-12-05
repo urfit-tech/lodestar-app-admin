@@ -29,7 +29,7 @@ type UpdatePodcastProgramProps = {
   onError?: (error: Error) => void
   onFinally?: () => void
   data: {
-    contentType?: string
+    contentType?: string | null
     description?: string
     title?: string
     categoryIds?: string[]
@@ -94,6 +94,17 @@ const PodcastProgramAdminBlock: React.FC<{
     types.UPDATE_PODCAST_PROGRAM_INTRO,
     types.UPDATE_PODCAST_PROGRAM_INTROVariables
   >(UPDATE_PODCAST_PROGRAM_INTRO)
+  const [updatePodcastProgramPlan] = useMutation<
+    types.UPDATE_PODCAST_PROGRAM_PLAN,
+    types.UPDATE_PODCAST_PROGRAM_PLANVariables
+  >(UPDATE_PODCAST_PROGRAM_PLAN)
+  const [updatePodcastProgramRole] = useMutation<
+    types.UPDATE_PODCAST_PROGRAM_ROLE,
+    types.UPDATE_PODCAST_PROGRAM_ROLEVariables
+  >(UPDATE_PODCAST_PROGRAM_ROLE)
+  const [publishPodcastProgram] = useMutation<types.PUBLISH_PODCAST_PROGRAM, types.PUBLISH_PODCAST_PROGRAMVariables>(
+    PUBLISH_PODCAST_PROGRAM,
+  )
 
   const updatePodcastProgram: (props: UpdatePodcastProgramProps) => void = ({
     onSuccess,
@@ -103,14 +114,17 @@ const PodcastProgramAdminBlock: React.FC<{
   }) => {
     console.log(data)
 
-    data.contentType &&
+    typeof data.contentType !== 'undefined' &&
       updatePodcastProgramContent({
         variables: {
           podcastProgramId,
           contentType: data.contentType,
         },
       })
-        .then(() => (onSuccess ? onSuccess() : message.success('儲存成功')))
+        .then(() => {
+          onSuccess ? onSuccess() : message.success('儲存成功')
+          refetch()
+        })
         .catch(error => (onError ? onError(error) : handleError(error)))
         .finally(() => onFinally && onFinally())
 
@@ -163,6 +177,52 @@ const PodcastProgramAdminBlock: React.FC<{
           .catch(error => (onError ? onError(error) : handleError(error)))
           .finally(() => onFinally && onFinally())
       : null
+
+    data.listPrice || typeof data.salePrice !== 'undefined' || typeof data.soldAt !== 'undefined'
+      ? updatePodcastProgramPlan({
+          variables: {
+            podcastProgramId,
+            listPrice: data.listPrice,
+            salePrice: data.salePrice,
+            soldAt: data.soldAt,
+          },
+        })
+          .then(() => (onSuccess ? onSuccess() : message.success('儲存成功')))
+          .catch(error => (onError ? onError(error) : handleError(error)))
+          .finally(() => onFinally && onFinally())
+      : null
+
+    data.instructorIds &&
+      updatePodcastProgramRole({
+        variables: {
+          podcastProgramId,
+          podcastProgramRoles: data.instructorIds.map(instructorId => ({
+            podcast_program_id: podcastProgramId,
+            member_id: instructorId,
+            name: 'instructor',
+          })),
+        },
+      })
+        .then(() => {
+          onSuccess ? onSuccess() : message.success('儲存成功')
+          refetch()
+        })
+        .catch(error => (onError ? onError(error) : handleError(error)))
+        .finally(() => onFinally && onFinally())
+
+    typeof data.publishedAt !== 'undefined' &&
+      publishPodcastProgram({
+        variables: {
+          podcastProgramId,
+          publishedAt: data.publishedAt,
+        },
+      })
+        .then(() => {
+          onSuccess ? onSuccess() : message.success('儲存成功')
+          refetch()
+        })
+        .catch(error => (onError ? onError(error) : handleError(error)))
+        .finally(() => onFinally && onFinally())
   }
 
   if (loading) {
@@ -237,7 +297,7 @@ const GET_PODCAST_PROGRAM_ADMIN = gql`
 `
 
 const UPDATE_PODCAST_PROGRAM_CONTENT = gql`
-  mutation UPDATE_PODCAST_PROGRAM_CONTENT($podcastProgramId: uuid!, $contentType: String!) {
+  mutation UPDATE_PODCAST_PROGRAM_CONTENT($podcastProgramId: uuid!, $contentType: String) {
     update_podcast_program(where: { id: { _eq: $podcastProgramId } }, _set: { content_type: $contentType }) {
       affected_rows
     }
@@ -276,6 +336,41 @@ const UPDATE_PODCAST_PROGRAM_INTRO = gql`
       where: { id: { _eq: $podcastProgramId } }
       _set: { cover_url: $coverUrl, abstract: $abstract }
     ) {
+      affected_rows
+    }
+  }
+`
+const UPDATE_PODCAST_PROGRAM_PLAN = gql`
+  mutation UPDATE_PODCAST_PROGRAM_PLAN(
+    $podcastProgramId: uuid!
+    $listPrice: numeric
+    $salePrice: numeric
+    $soldAt: timestamptz
+  ) {
+    update_podcast_program(
+      where: { id: { _eq: $podcastProgramId } }
+      _set: { list_price: $listPrice, sale_price: $salePrice, sold_at: $soldAt }
+    ) {
+      affected_rows
+    }
+  }
+`
+const UPDATE_PODCAST_PROGRAM_ROLE = gql`
+  mutation UPDATE_PODCAST_PROGRAM_ROLE(
+    $podcastProgramId: uuid!
+    $podcastProgramRoles: [podcast_program_role_insert_input!]!
+  ) {
+    delete_podcast_program_role(where: { podcast_program_id: { _eq: $podcastProgramId } }) {
+      affected_rows
+    }
+    insert_podcast_program_role(objects: $podcastProgramRoles) {
+      affected_rows
+    }
+  }
+`
+const PUBLISH_PODCAST_PROGRAM = gql`
+  mutation PUBLISH_PODCAST_PROGRAM($podcastProgramId: uuid!, $publishedAt: timestamptz) {
+    update_podcast_program(where: { id: { _eq: $podcastProgramId } }, _set: { published_at: $publishedAt }) {
       affected_rows
     }
   }

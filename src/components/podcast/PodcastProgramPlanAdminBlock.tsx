@@ -80,7 +80,7 @@ const PodcastProgramPlanAdminBlock: React.FC<FormComponentProps> = ({ form }) =>
                 initialValue:
                   podcastProgramAdmin && podcastProgramAdmin.soldAt ? moment(podcastProgramAdmin.soldAt) : null,
                 rules: [{ required: withSalePrice, message: '請選擇日期' }],
-              })(<DatePicker />)}
+              })(<DatePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" />)}
             </Form.Item>
             {form.getFieldValue('soldAt') && moment(form.getFieldValue('soldAt')).isBefore(moment()) ? (
               <div className="d-inline-block">

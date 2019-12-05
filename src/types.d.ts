@@ -2748,7 +2748,7 @@ export interface UPDATE_PODCAST_PROGRAM_CONTENT {
 
 export interface UPDATE_PODCAST_PROGRAM_CONTENTVariables {
   podcastProgramId: any;
-  contentType: string;
+  contentType?: string | null;
 }
 
 /* tslint:disable */
@@ -2866,8 +2866,113 @@ export interface UPDATE_PODCAST_PROGRAM_INTROVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_PLAN
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_PLAN_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_PLAN {
+  /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: UPDATE_PODCAST_PROGRAM_PLAN_update_podcast_program | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_PLANVariables {
+  podcastProgramId: any;
+  listPrice?: any | null;
+  salePrice?: any | null;
+  soldAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_ROLE
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_ROLE_delete_podcast_program_role {
+  __typename: "podcast_program_role_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_ROLE_insert_podcast_program_role {
+  __typename: "podcast_program_role_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_ROLE {
+  /**
+   * delete data from the table: "podcast_program_role"
+   */
+  delete_podcast_program_role: UPDATE_PODCAST_PROGRAM_ROLE_delete_podcast_program_role | null;
+  /**
+   * insert data into the table: "podcast_program_role"
+   */
+  insert_podcast_program_role: UPDATE_PODCAST_PROGRAM_ROLE_insert_podcast_program_role | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_ROLEVariables {
+  podcastProgramId: any;
+  podcastProgramRoles: podcast_program_role_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_PODCAST_PROGRAM
+// ====================================================
+
+export interface PUBLISH_PODCAST_PROGRAM_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_PODCAST_PROGRAM {
+  /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: PUBLISH_PODCAST_PROGRAM_update_podcast_program | null;
+}
+
+export interface PUBLISH_PODCAST_PROGRAMVariables {
+  podcastProgramId: any;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PODCAST_PROGRAM_ADMIN_COLLECTION
 // ====================================================
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_member {
+  __typename: "member";
+  id: string;
+  name: string | null;
+  username: string;
+}
 
 export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_categories_category {
   __typename: "category";
@@ -2904,7 +3009,6 @@ export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_pr
 export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program {
   __typename: "podcast_program";
   id: any;
-  creator_id: string;
   title: string;
   cover_url: string | null;
   abstract: string | null;
@@ -2912,6 +3016,10 @@ export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program {
   sale_price: any | null;
   sold_at: any | null;
   published_at: any | null;
+  /**
+   * An object relationship
+   */
+  member: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_member;
   /**
    * An array relationship
    */
@@ -6091,6 +6199,7 @@ export enum podcast_plan_update_column {
  */
 export enum podcast_program_body_constraint {
   podcast_program_body_pkey = "podcast_program_body_pkey",
+  podcast_program_body_podcast_program_id_key = "podcast_program_body_podcast_program_id_key",
 }
 
 /**

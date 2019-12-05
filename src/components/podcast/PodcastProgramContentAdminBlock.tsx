@@ -1,11 +1,23 @@
 import { Button, Form, Icon, Tooltip } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
+import { extname } from 'path'
 import React, { useContext, useState } from 'react'
+import styled from 'styled-components'
 import { PodcastProgramAdminContext } from '../../containers/podcast/PodcastProgramAdminBlock'
 import { AdminBlock, AdminPaneTitle, StyledTips } from '../admin'
 import SingleUploader from '../common/SingleUploader'
 import StyledBraftEditor from '../common/StyledBraftEditor'
+
+const StyledFileBlock = styled.div`
+  padding: 0.25rem 0.5rem;
+  transition: background 0.2s ease-in-out;
+  line-height: normal;
+
+  :hover {
+    background: var(--gray-lighter);
+  }
+`
 
 const PodcastProgramContentAdminBlock: React.FC<FormComponentProps> = ({ form }) => {
   const { podcastProgramAdmin, updatePodcastProgram } = useContext(PodcastProgramAdminContext)
@@ -53,16 +65,37 @@ const PodcastProgramContentAdminBlock: React.FC<FormComponentProps> = ({ form })
           >
             {form.getFieldDecorator('coverImg')(
               <SingleUploader
-                accept="audio/aac,audio/mp3"
+                accept=".mp3,.m4a,.mp4,.3gp"
+                uploadText="上傳音檔"
                 showUploadList={false}
-                path=""
-                onSuccess={() => handleSubmit()}
+                path={`audios/${localStorage.getItem('kolable.app.id')}/${podcastProgramAdmin.id}`}
+                onSuccess={info => {
+                  const contentType = extname(info.file.name).replace('.', '')
+                  updatePodcastProgram({
+                    data: {
+                      contentType,
+                    },
+                  })
+                }}
               />,
             )}
             {podcastProgramAdmin.contentType ? (
-              <div>
-                {podcastProgramAdmin.id}.{podcastProgramAdmin.contentType}
-              </div>
+              <StyledFileBlock className="d-flex align-items-center justify-content-between">
+                <span>
+                  {podcastProgramAdmin.id}.{podcastProgramAdmin.contentType}
+                </span>
+                <Icon
+                  type="close"
+                  className="cursor-pointer"
+                  onClick={() => {
+                    updatePodcastProgram({
+                      data: {
+                        contentType: null,
+                      },
+                    })
+                  }}
+                />
+              </StyledFileBlock>
             ) : null}
           </Form.Item>
           <Form.Item label="內容描述">

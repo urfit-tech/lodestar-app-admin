@@ -100,16 +100,18 @@ const PodcastProgramPublishAdminBlock: React.FC<{
             </div>
 
             <StyledMetaBlock>
-              {Object.keys(checkedErrors).map(key => (
-                <StyledMeta key={key} className="d-flex align-items-center justify-content-start">
-                  <ExclamationCircleIcon className="mr-2" />
-                  <span className="mr-2">{checkedErrors[key].text}</span>
-                  <Button type="link" size="small" onClick={() => onChangeTab(checkedErrors[key].tab)}>
-                    <span>前往填寫</span>
-                    <Icon type="right" />
-                  </Button>
-                </StyledMeta>
-              ))}
+              {Object.keys(checkedErrors)
+                .filter(key => checkedErrors[key].value)
+                .map(key => (
+                  <StyledMeta key={key} className="d-flex align-items-center justify-content-start">
+                    <ExclamationCircleIcon className="mr-2" />
+                    <span className="mr-2">{checkedErrors[key].text}</span>
+                    <Button type="link" size="small" onClick={() => onChangeTab(checkedErrors[key].tab)}>
+                      <span>前往填寫</span>
+                      <Icon type="right" />
+                    </Button>
+                  </StyledMeta>
+                ))}
             </StyledMetaBlock>
           </>
         ) : !podcastProgramAdmin.publishedAt ? (
