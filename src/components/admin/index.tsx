@@ -1,5 +1,19 @@
 import styled from 'styled-components'
 
+export const AdminPageTitle = styled.h1`
+  color: var(--gray-darker);
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 0.2px;
+`
+export const AdminPageBlock = styled.div`
+  overflow: auto;
+  padding: 2.5rem;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
+`
+
 export const AdminHeader = styled.header`
   padding: 0 0.5rem;
   height: 64px;
