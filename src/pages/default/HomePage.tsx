@@ -14,15 +14,15 @@ const StyledWrapper = styled.div`
   justify-content: center;
   height: 100vh;
   overflow: auto;
-  background-color: var(--gray-lighter);
+  background-color: white;
 `
 const CenteredBox = styled.div``
 const StyledLogo = styled.div<{ appId: string }>`
   margin: 0 auto 2.5rem;
   width: 100%;
   height: 100%;
-  max-width: 24rem;
-  height: 4rem;
+  max-width: 172px;
+  height: 36px;
   background-image: url(https://files.kolable.com/images/${props => props.appId}/logo.svg),
     url(https://files.kolable.com/images/${props => props.appId}/logo.png),
     url(https://files.kolable.com/images/${props => props.appId}/logo.jpg);
