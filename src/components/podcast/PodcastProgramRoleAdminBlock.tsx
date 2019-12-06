@@ -77,6 +77,7 @@ const PodcastProgramRoleAdminBlock: React.FC = () => {
 
         {podcastProgramAdmin.instructorIds.map(instructorId => (
           <InstructorBlock
+            key={instructorId}
             memberId={instructorId}
             onClick={() =>
               updatePodcastProgram({
@@ -131,7 +132,7 @@ const InstructorBlock: React.FC<{
   const { member } = usePublicMember(memberId)
 
   return (
-    <StyledInstructorBlock key={memberId} className="d-flex align-items-center justify-content-center">
+    <StyledInstructorBlock className="d-flex align-items-center justify-content-center">
       <AvatarImage src={member ? member.pictureUrl : null} size={36} className="mr-3" />
       <StyledName className="flex-grow-1">{member ? member.name : ''}</StyledName>
       <Icon type="delete" onClick={() => onClick && onClick()} />

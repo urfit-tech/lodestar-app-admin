@@ -112,8 +112,6 @@ const PodcastProgramAdminBlock: React.FC<{
     onFinally,
     data,
   }) => {
-    console.log(data)
-
     typeof data.contentType !== 'undefined' &&
       updatePodcastProgramContent({
         variables: {
