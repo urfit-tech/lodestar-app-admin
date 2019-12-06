@@ -33,14 +33,10 @@ const StyledLogo = styled.div<{ appId: string }>`
 const StyledTitle = styled.h1`
   margin-bottom: 2.5rem;
   color: var(--gray-darker);
-  font-size: 28px;
+  font-size: 24px;
   font-weight: bold;
   text-align: center;
   letter-spacing: 0.23px;
-
-  @media (min-width: ${BREAK_POINT}px) {
-    margin-bottom: 5rem;
-  }
 `
 const StyledRoleBlock = styled.div`
   padding: 2rem;
@@ -92,7 +88,7 @@ const HomePage = () => {
         <CenteredBox>
           <div className="container">
             <StyledLogo appId={app.id} />
-            <StyledTitle>請問您是...</StyledTitle>
+            <StyledTitle>管理後台</StyledTitle>
 
             <div className="d-flex align-items-center justify-content-between">
               <RoleButton role="app-owner" title="我是管理員" icon={<AdminIcon />} />
