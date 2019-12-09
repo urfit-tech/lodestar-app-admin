@@ -145,12 +145,12 @@ const IntroAdminBlockComponent: React.FC<FormComponentProps> = ({ form }) => {
       >
         <Form.Item
           label={
-            <>
-              <span>廣播封面</span>
+            <span>
+              <span className="mr-2">廣播封面</span>
               <Tooltip title={<StyledTips>{'建議尺寸：1080*1080px'}</StyledTips>}>
                 <Icon type="question-circle" theme="filled" />
               </Tooltip>
-            </>
+            </span>
           }
         >
           <div className="d-flex align-items-center">

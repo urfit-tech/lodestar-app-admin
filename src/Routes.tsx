@@ -245,6 +245,18 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner'
   },
+  owner_appointment_plan_collection_admin: {
+    path: '/admin/appointment-plans',
+    pageName: 'owner/AppointmentPlanCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_appointment_plan_admin: {
+    path: '/admin/appointment-plans/:appointmentPlanId',
+    pageName: 'owner/AppointmentPlanAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
   // content creator admin
   creator_programs_admin: {
     path: '/studio/programs',

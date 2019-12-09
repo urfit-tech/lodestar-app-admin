@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import { useEnrolledMembershipCardIds } from '../../hooks/card'
 import { ReactComponent as BookIcon } from '../../images/default/book.svg'
+import { ReactComponent as CalendarAltOIcon } from '../../images/default/calendar-alt-o.svg'
 import { ReactComponent as CalendarAltIcon } from '../../images/default/calendar-alt.svg'
 import { ReactComponent as ClipboardListIcon } from '../../images/default/clipboard-list.svg'
 import { ReactComponent as CommentsIcon } from '../../images/default/comments.svg'
@@ -46,7 +47,7 @@ export const OwnerAdminMenu = (props: MenuProps) => (
     <div className="p-3">
       <Tag style={{ border: '0px' }}>管理者</Tag>
     </div>
-    <AdminMenu {...props} defaultOpenKeys={['owner_promotion_admin', 'owner_podcast_admin']}>
+    <AdminMenu {...props} defaultOpenKeys={['owner_promotion_admin', 'owner_podcast_admin', 'owner_appointment_admin']}>
       <Menu.Item key="owner_sales_admin">
         <Icon type="dollar" className="mr-2" />
         <span>銷售管理</span>
@@ -86,6 +87,20 @@ export const OwnerAdminMenu = (props: MenuProps) => (
         </Menu.Item>
         <Menu.Item key="owner_podcast_plan_admin">
           <span>訂閱方案</span>
+        </Menu.Item>
+      </Menu.SubMenu>
+
+      <Menu.SubMenu
+        key="owner_appointment_admin"
+        title={
+          <>
+            <Icon component={() => <CalendarAltOIcon />} />
+            <Typography.Text>預約服務</Typography.Text>
+          </>
+        }
+      >
+        <Menu.Item key="owner_appointment_plan_collection_admin">
+          <span>預約方案</span>
         </Menu.Item>
       </Menu.SubMenu>
 

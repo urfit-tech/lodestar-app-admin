@@ -186,7 +186,6 @@ const IntroductionAdminBlockComponent: React.FC<IntroductionAdminBlockComponentP
   onUpdateIntroduction,
 }) => {
   const [loading, setLoading] = useState(false)
-  const [submitTimes, setSubmitTimes] = useState(Date.now())
 
   const handleSubmit = () => {
     form.validateFields((error, values) => {
@@ -194,11 +193,13 @@ const IntroductionAdminBlockComponent: React.FC<IntroductionAdminBlockComponentP
         return
       }
       if (onUpdateIntroduction) {
+        const uploadTime = Date.now()
+
         onUpdateIntroduction(setLoading, {
           coverUrl: values.coverImg
             ? `https://${process.env.REACT_APP_S3_PUBLIC_BUCKET}/activity_covers/${localStorage.getItem(
                 'kolable.app.id',
-              )}/${activityId}?t=${submitTimes}`
+              )}/${activityId}?t=${uploadTime}`
             : '',
           description: values.description.toRAW(),
         })
@@ -220,7 +221,7 @@ const IntroductionAdminBlockComponent: React.FC<IntroductionAdminBlockComponentP
       >
         <Form.Item label="封面">
           <div className="d-flex align-items-center justify-content-between">
-            {coverUrl && <StyledCover className="flex-shrink-0 mr-3" src={`${coverUrl}?t=${submitTimes}`} />}
+            {coverUrl && <StyledCover className="flex-shrink-0 mr-3" src={coverUrl} />}
             {form.getFieldDecorator('coverImg', {
               initialValue: coverUrl && {
                 uid: '-1',
@@ -235,10 +236,7 @@ const IntroductionAdminBlockComponent: React.FC<IntroductionAdminBlockComponentP
                 showUploadList={false}
                 path={`activity_covers/${localStorage.getItem('kolable.app.id')}/${activityId}`}
                 isPublic
-                onSuccess={() => {
-                  setSubmitTimes(submitTimes + 1)
-                  handleSubmit()
-                }}
+                onSuccess={() => handleSubmit()}
               />,
             )}
           </div>
