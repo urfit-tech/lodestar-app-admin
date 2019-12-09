@@ -137,58 +137,58 @@ const PodcastProgramAdminBlock: React.FC<{
         .catch(error => (onError ? onError(error) : handleError(error)))
         .finally(() => onFinally && onFinally())
 
-    data.title || data.categoryIds
-      ? updatePodcastProgramBasic({
-          variables: {
-            podcastProgramId,
-            title: data.title,
-            podcastCategories: data.categoryIds
-              ? data.categoryIds.map((categoryId, position) => ({
-                  podcast_program_id: podcastProgramId,
-                  category_id: categoryId,
-                  position,
-                }))
-              : podcastProgramAdmin.categories.map((category, position) => ({
-                  podcast_program_id: podcastProgramId,
-                  category_id: category.id,
-                  position,
-                })),
-          },
-        })
-          .then(() => (onSuccess ? onSuccess() : message.success('儲存成功')))
-          .catch(error => (onError ? onError(error) : handleError(error)))
-          .finally(() => onFinally && onFinally())
-      : null
+    if (data.title || data.categoryIds) {
+      updatePodcastProgramBasic({
+        variables: {
+          podcastProgramId,
+          title: data.title,
+          podcastCategories: data.categoryIds
+            ? data.categoryIds.map((categoryId, position) => ({
+                podcast_program_id: podcastProgramId,
+                category_id: categoryId,
+                position,
+              }))
+            : podcastProgramAdmin.categories.map((category, position) => ({
+                podcast_program_id: podcastProgramId,
+                category_id: category.id,
+                position,
+              })),
+        },
+      })
+        .then(() => (onSuccess ? onSuccess() : message.success('儲存成功')))
+        .catch(error => (onError ? onError(error) : handleError(error)))
+        .finally(() => onFinally && onFinally())
+    }
 
-    data.coverUrl || data.abstract
-      ? updatePodcastProgramIntro({
-          variables: {
-            podcastProgramId,
-            coverUrl: data.coverUrl,
-            abstract: data.abstract,
-          },
+    if (data.coverUrl || data.abstract) {
+      updatePodcastProgramIntro({
+        variables: {
+          podcastProgramId,
+          coverUrl: data.coverUrl,
+          abstract: data.abstract,
+        },
+      })
+        .then(() => {
+          onSuccess ? onSuccess() : message.success('儲存成功')
+          refetch()
         })
-          .then(() => {
-            onSuccess ? onSuccess() : message.success('儲存成功')
-            refetch()
-          })
-          .catch(error => (onError ? onError(error) : handleError(error)))
-          .finally(() => onFinally && onFinally())
-      : null
+        .catch(error => (onError ? onError(error) : handleError(error)))
+        .finally(() => onFinally && onFinally())
+    }
 
-    data.listPrice || typeof data.salePrice !== 'undefined' || typeof data.soldAt !== 'undefined'
-      ? updatePodcastProgramPlan({
-          variables: {
-            podcastProgramId,
-            listPrice: data.listPrice,
-            salePrice: data.salePrice,
-            soldAt: data.soldAt,
-          },
-        })
-          .then(() => (onSuccess ? onSuccess() : message.success('儲存成功')))
-          .catch(error => (onError ? onError(error) : handleError(error)))
-          .finally(() => onFinally && onFinally())
-      : null
+    if (data.listPrice || typeof data.salePrice !== 'undefined' || typeof data.soldAt !== 'undefined') {
+      updatePodcastProgramPlan({
+        variables: {
+          podcastProgramId,
+          listPrice: data.listPrice,
+          salePrice: data.salePrice,
+          soldAt: data.soldAt,
+        },
+      })
+        .then(() => (onSuccess ? onSuccess() : message.success('儲存成功')))
+        .catch(error => (onError ? onError(error) : handleError(error)))
+        .finally(() => onFinally && onFinally())
+    }
 
     data.instructorIds &&
       updatePodcastProgramRole({

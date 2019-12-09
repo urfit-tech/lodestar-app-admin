@@ -50,7 +50,7 @@ const MemberPointItem: React.FC<{ memberId: string }> = ({ memberId }) => {
 const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
   const { history } = useRouter()
   const { member } = useMember(memberId)
-  const { currentMemberId, allowedUserRoles, isAuthenticated, currentUserRole, setAuthToken } = useAuth()
+  const { currentMemberId, isAuthenticated, currentUserRole, setAuthToken } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
   const navLinks = settings.navLinks
 

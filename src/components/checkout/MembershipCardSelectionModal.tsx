@@ -3,30 +3,11 @@ import moment from 'moment'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { InferType } from 'yup'
-import { rgba } from '../../helpers'
 import { useEnrolledMembershipCardCollection, useMembershipCard } from '../../hooks/card'
 import { useMember } from '../../hooks/member'
 import { memberSchema } from '../../schemas/general'
 import MembershipCardBlock from '../common/MembershipCardBlock'
 
-const StyledIcon = styled.div`
-  margin-bottom: 1.25rem;
-  width: 52px;
-  height: 52px;
-  background: ${props => rgba(props.theme['@primary-color'], 0.1)};
-  color: ${props => props.theme['@primary-color']};
-  font-size: 24px;
-  line-height: 52px;
-  text-align: center;
-  border-radius: 50%;
-`
-const StyledTitle = styled.h1`
-  font-size: 20px;
-  font-weight: bold;
-  line-height: 1.3;
-  letter-spacing: 0.77px;
-  color: #585858;
-`
 const StyledContainer = styled.div`
   margin-bottom: 0.75rem;
   padding: 1rem;
@@ -56,12 +37,8 @@ const MembershipCardSelectionModal: React.FC<MembershipCardSelectionModalProps> 
   return (
     <>
       {render && render({ setVisible, selectedMembershipCard })}
-      <Modal title="選擇會員卡" footer={null} onCancel={() => setVisible(false)} visible={visible}>
-        {/* <StyledIcon>
-          <Icon type="idcard" />
-        </StyledIcon>
-        <StyledTitle className="mb-4">選擇會員卡</StyledTitle> */}
 
+      <Modal title="選擇會員卡" footer={null} onCancel={() => setVisible(false)} visible={visible}>
         {enrolledMembershipCardCollection.map(membershipCard => (
           <div
             key={membershipCard.card.id}

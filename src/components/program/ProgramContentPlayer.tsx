@@ -9,13 +9,6 @@ const StyledWrapper = styled.div`
   position: relative;
   padding-top: 56.25%;
 `
-const StyledReactPlayer = styled(ReactPlayer)`
-  /* position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0; */
-`
 
 const ProgramContentPlayer: React.FC<ReactPlayerProps & {
   programContentBody: InferType<typeof programContentBodySchema>
@@ -26,9 +19,7 @@ const ProgramContentPlayer: React.FC<ReactPlayerProps & {
   return (
     <StyledWrapper>
       <ReactPlayer
-        // url={`https://player.vimeo.com/${programContentBody.data.vimeoVideoId}`}
         url={`https://vimeo.com/${programContentBody.data.vimeoVideoId}`}
-        // url="https://vimeo.com/243556536"
         width="100%"
         height="100%"
         onProgress={onProgress}

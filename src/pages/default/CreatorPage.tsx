@@ -289,6 +289,7 @@ const CreatorPage: React.FC = () => {
     <div className="container">
       <Tabs
         defaultActiveKey="programs"
+        activeKey={activeKey}
         onChange={key => {
           setActiveKey(key)
           setDefaultActivekey(key)

@@ -7,10 +7,10 @@ import styled from 'styled-components'
 import { ReactComponent as MuteIcon } from '../../images/default/icon-mute.svg'
 import { ReactComponent as StopIcon } from '../../images/default/icon-stop-circle.svg'
 import { ReactComponent as VoiceIcon } from '../../images/default/icon-voice.svg'
-import { ReactComponent as PlaySpeed0_5xIcon } from '../../images/default/multiple-0-5.svg'
-import { ReactComponent as PlaySpeed1_0xIcon } from '../../images/default/multiple-1-0.svg'
-import { ReactComponent as PlaySpeed1_5xIcon } from '../../images/default/multiple-1-5.svg'
-import { ReactComponent as PlaySpeed2_0xIcon } from '../../images/default/multiple-2-0.svg'
+import { ReactComponent as PlaySpeed05xIcon } from '../../images/default/multiple-0-5.svg'
+import { ReactComponent as PlaySpeed10xIcon } from '../../images/default/multiple-1-0.svg'
+import { ReactComponent as PlaySpeed15xIcon } from '../../images/default/multiple-1-5.svg'
+import { ReactComponent as PlaySpeed20xIcon } from '../../images/default/multiple-2-0.svg'
 import { ReactComponent as PlayIcon } from '../../images/default/play-circle.svg'
 
 const StyledWrapper = styled.div`
@@ -162,13 +162,13 @@ const PodcastPlayer: React.FC = () => {
             <Icon
               component={() =>
                 playSpeed < 1 ? (
-                  <PlaySpeed0_5xIcon />
+                  <PlaySpeed05xIcon />
                 ) : playSpeed < 1.5 ? (
-                  <PlaySpeed1_0xIcon />
+                  <PlaySpeed10xIcon />
                 ) : playSpeed < 2 ? (
-                  <PlaySpeed1_5xIcon />
+                  <PlaySpeed15xIcon />
                 ) : (
-                  <PlaySpeed2_0xIcon />
+                  <PlaySpeed20xIcon />
                 )
               }
             />

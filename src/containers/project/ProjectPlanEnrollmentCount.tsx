@@ -4,7 +4,7 @@ import React from 'react'
 import types from '../../types'
 
 const ProjectPlanEnrollmentCount: React.FC<{ projectPlanId: string }> = ({ projectPlanId }) => {
-  const { loading, error, data, refetch } = useQuery<
+  const { loading, error, data } = useQuery<
     types.GET_PROJECT_PLAN_ENROLLMENT_COUNT,
     types.GET_PROJECT_PLAN_ENROLLMENT_COUNTVariables
   >(GET_PROJECT_PLAN_ENROLLMENT_COUNT, { variables: { projectPlanId } })
