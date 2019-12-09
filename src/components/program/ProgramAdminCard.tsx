@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { useProgram } from '../../hooks/program'
 import EmptyCover from '../../images/default/empty-cover.png'
-import AdminCard from '../common/AdminCard'
+import AdminCard from '../admin/AdminCard'
 import MemberAvatar from '../common/MemberAvatar'
 import ProgramPriceLabel from './ProgramPriceLabel'
 

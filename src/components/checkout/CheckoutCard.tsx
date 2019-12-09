@@ -8,9 +8,9 @@ import { ThemeContext } from 'styled-components'
 import { currencyFormatter } from '../../helpers'
 import settings from '../../settings'
 import { CartProduct, Check, Discount } from '../../types/payment'
+import AdminCard from '../admin/AdminCard'
 import { useAuth } from '../auth/AuthContext'
 import { AuthModalContext } from '../auth/AuthModal'
-import AdminCard from '../common/AdminCard'
 
 type CheckoutCardProps = CardProps & {
   memberId: string | null

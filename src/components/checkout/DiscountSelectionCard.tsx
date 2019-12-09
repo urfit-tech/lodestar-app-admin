@@ -6,7 +6,7 @@ import styled from 'styled-components'
 import { useEnrolledMembershipCardIds } from '../../hooks/card'
 import { useCart } from '../../hooks/checkout'
 import { Check, Discount } from '../../types/payment'
-import AdminCard from '../common/AdminCard'
+import AdminCard from '../admin/AdminCard'
 import CouponSelectionModal from './CouponSelectionModal'
 import MembershipCardSelectionModal from './MembershipCardSelectionModal'
 

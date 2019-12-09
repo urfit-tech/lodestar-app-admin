@@ -7,7 +7,7 @@ import { InferType } from 'yup'
 import { handleError } from '../../helpers'
 import { programSchema } from '../../schemas/program'
 import types from '../../types'
-import AdminCard from '../common/AdminCard'
+import AdminCard from '../admin/AdminCard'
 import ProgramCategorySelector from './ProgramCategorySelector'
 
 type ProgramBasicAdminCardProps = FormComponentProps & {

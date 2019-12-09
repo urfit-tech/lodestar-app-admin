@@ -7,7 +7,7 @@ import { ReactComponent as CalendarOIcon } from '../../images/default/calendar-a
 import { ReactComponent as MapOIcon } from '../../images/default/map-o.svg'
 import { ReactComponent as TicketOIcon } from '../../images/default/ticket-o.svg'
 import { ReactComponent as UserOIcon } from '../../images/default/user-o.svg'
-import { StyledAdminPaneTitle } from '../../pages/default/creator/ActivityAdminPage'
+import { AdminPaneTitle } from '../admin'
 import { ActivityAdminProps } from './ActivityAdminBlock'
 import ActivitySessionAdminModal from './ActivitySessionAdminModal'
 
@@ -79,7 +79,7 @@ const ActivitySessionsAdminBlock: React.FC<{
 }> = ({ activityAdmin, onInsert, onUpdate, onChangeTab }) => {
   return (
     <div className="container py-5">
-      <StyledAdminPaneTitle>場次管理</StyledAdminPaneTitle>
+      <AdminPaneTitle>場次管理</AdminPaneTitle>
 
       <ActivitySessionAdminModal
         renderTrigger={({ setVisible }) => (

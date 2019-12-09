@@ -6,7 +6,7 @@ import Sortable from 'react-sortablejs'
 import { InferType } from 'yup'
 import { programContentSectionSchema, programSchema } from '../../schemas/program'
 import types from '../../types'
-import AdminModal from '../common/AdminModal'
+import AdminModal from '../admin/AdminModal'
 import DraggableItem from '../common/DraggableItem'
 
 type ProgramStructureAdminModalProps = {

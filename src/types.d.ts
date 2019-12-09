@@ -2284,6 +2284,34 @@ export interface UPDATE_ACTIVITY_TICKETVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_CREATOR_COLLECTION
+// ====================================================
+
+export interface GET_CREATOR_COLLECTION_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string | null;
+  username: string;
+  email: string;
+}
+
+export interface GET_CREATOR_COLLECTION {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_CREATOR_COLLECTION_member[];
+}
+
+export interface GET_CREATOR_COLLECTIONVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PROGRAM_SIMPLE
 // ====================================================
 
@@ -2620,6 +2648,435 @@ export interface GET_PROGRAM_PACKAGE_CONTENT {
 
 export interface GET_PROGRAM_PACKAGE_CONTENTVariables {
   id: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PODCAST_PROGRAM_ADMIN
+// ====================================================
+
+export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_bodies {
+  __typename: "podcast_program_body";
+  id: any;
+  description: string;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_categories {
+  __typename: "podcast_program_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_categories_category;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_roles {
+  __typename: "podcast_program_role";
+  id: any;
+  member_id: string;
+  name: string;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk {
+  __typename: "podcast_program";
+  id: any;
+  title: string;
+  cover_url: string | null;
+  abstract: string | null;
+  list_price: any;
+  sale_price: any | null;
+  sold_at: any | null;
+  content_type: string | null;
+  published_at: any | null;
+  creator_id: string;
+  /**
+   * An array relationship
+   */
+  podcast_program_bodies: GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_bodies[];
+  /**
+   * An array relationship
+   */
+  podcast_program_categories: GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_categories[];
+  /**
+   * An array relationship
+   */
+  podcast_program_roles: GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_roles[];
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN {
+  /**
+   * fetch data from the table: "podcast_program" using primary key columns
+   */
+  podcast_program_by_pk: GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk | null;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMINVariables {
+  podcastProgramId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_CONTENT
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_CONTENT_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_CONTENT {
+  /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: UPDATE_PODCAST_PROGRAM_CONTENT_update_podcast_program | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_CONTENTVariables {
+  podcastProgramId: any;
+  contentType?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_BODY
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_BODY_update_podcast_program_body {
+  __typename: "podcast_program_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BODY {
+  /**
+   * update data of the table: "podcast_program_body"
+   */
+  update_podcast_program_body: UPDATE_PODCAST_PROGRAM_BODY_update_podcast_program_body | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BODYVariables {
+  podcastProgramId: any;
+  description: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_BASIC
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_BASIC_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BASIC_delete_podcast_program_category {
+  __typename: "podcast_program_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BASIC_insert_podcast_program_category {
+  __typename: "podcast_program_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BASIC {
+  /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: UPDATE_PODCAST_PROGRAM_BASIC_update_podcast_program | null;
+  /**
+   * delete data from the table: "podcast_program_category"
+   */
+  delete_podcast_program_category: UPDATE_PODCAST_PROGRAM_BASIC_delete_podcast_program_category | null;
+  /**
+   * insert data into the table: "podcast_program_category"
+   */
+  insert_podcast_program_category: UPDATE_PODCAST_PROGRAM_BASIC_insert_podcast_program_category | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BASICVariables {
+  podcastProgramId: any;
+  title?: string | null;
+  podcastCategories: podcast_program_category_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_INTRO
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_INTRO_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_INTRO {
+  /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: UPDATE_PODCAST_PROGRAM_INTRO_update_podcast_program | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_INTROVariables {
+  podcastProgramId: any;
+  coverUrl?: string | null;
+  abstract?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_PLAN
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_PLAN_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_PLAN {
+  /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: UPDATE_PODCAST_PROGRAM_PLAN_update_podcast_program | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_PLANVariables {
+  podcastProgramId: any;
+  listPrice?: any | null;
+  salePrice?: any | null;
+  soldAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_ROLE
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_ROLE_delete_podcast_program_role {
+  __typename: "podcast_program_role_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_ROLE_insert_podcast_program_role {
+  __typename: "podcast_program_role_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_ROLE {
+  /**
+   * delete data from the table: "podcast_program_role"
+   */
+  delete_podcast_program_role: UPDATE_PODCAST_PROGRAM_ROLE_delete_podcast_program_role | null;
+  /**
+   * insert data into the table: "podcast_program_role"
+   */
+  insert_podcast_program_role: UPDATE_PODCAST_PROGRAM_ROLE_insert_podcast_program_role | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_ROLEVariables {
+  podcastProgramId: any;
+  podcastProgramRoles: podcast_program_role_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_PODCAST_PROGRAM
+// ====================================================
+
+export interface PUBLISH_PODCAST_PROGRAM_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_PODCAST_PROGRAM {
+  /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: PUBLISH_PODCAST_PROGRAM_update_podcast_program | null;
+}
+
+export interface PUBLISH_PODCAST_PROGRAMVariables {
+  podcastProgramId: any;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PODCAST_PROGRAM_ADMIN_COLLECTION
+// ====================================================
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_member {
+  __typename: "member";
+  id: string;
+  name: string | null;
+  username: string;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_categories {
+  __typename: "podcast_program_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_categories_category;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles {
+  __typename: "podcast_program_role";
+  id: any;
+  member_id: string;
+  name: string;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate_aggregate {
+  __typename: "podcast_program_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate {
+  __typename: "podcast_program_enrollment_aggregate";
+  aggregate: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program {
+  __typename: "podcast_program";
+  id: any;
+  title: string;
+  cover_url: string | null;
+  abstract: string | null;
+  list_price: any;
+  sale_price: any | null;
+  sold_at: any | null;
+  published_at: any | null;
+  /**
+   * An object relationship
+   */
+  member: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_member;
+  /**
+   * An array relationship
+   */
+  podcast_program_categories: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_categories[];
+  /**
+   * An array relationship
+   */
+  podcast_program_roles: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles[];
+  /**
+   * An aggregated array relationship
+   */
+  podcast_program_enrollments_aggregate: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION {
+  /**
+   * fetch data from the table: "podcast_program"
+   */
+  podcast_program: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CREATE_PODCAST_PROGRAM
+// ====================================================
+
+export interface CREATE_PODCAST_PROGRAM_insert_podcast_program_returning {
+  __typename: "podcast_program";
+  id: any;
+}
+
+export interface CREATE_PODCAST_PROGRAM_insert_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: CREATE_PODCAST_PROGRAM_insert_podcast_program_returning[];
+}
+
+export interface CREATE_PODCAST_PROGRAM {
+  /**
+   * insert data into the table: "podcast_program"
+   */
+  insert_podcast_program: CREATE_PODCAST_PROGRAM_insert_podcast_program | null;
+}
+
+export interface CREATE_PODCAST_PROGRAMVariables {
+  title: string;
+  creatorId: string;
+  podcastCategories: podcast_program_category_insert_input[];
 }
 
 /* tslint:disable */
@@ -5706,6 +6163,122 @@ export enum payment_log_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "podcast"
+ */
+export enum podcast_constraint {
+  podcast_pkey = "podcast_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "podcast_plan"
+ */
+export enum podcast_plan_constraint {
+  podcast_plan_pkey = "podcast_plan_pkey",
+}
+
+/**
+ * update columns of table "podcast_plan"
+ */
+export enum podcast_plan_update_column {
+  creator_id = "creator_id",
+  id = "id",
+  is_subscription = "is_subscription",
+  list_price = "list_price",
+  period_amount = "period_amount",
+  period_type = "period_type",
+  podcast_id = "podcast_id",
+  position = "position",
+  published_at = "published_at",
+  sale_price = "sale_price",
+  sold_at = "sold_at",
+  title = "title",
+}
+
+/**
+ * unique or primary key constraints on table "podcast_program_body"
+ */
+export enum podcast_program_body_constraint {
+  podcast_program_body_pkey = "podcast_program_body_pkey",
+  podcast_program_body_podcast_program_id_key = "podcast_program_body_podcast_program_id_key",
+}
+
+/**
+ * update columns of table "podcast_program_body"
+ */
+export enum podcast_program_body_update_column {
+  description = "description",
+  id = "id",
+  podcast_program_id = "podcast_program_id",
+}
+
+/**
+ * unique or primary key constraints on table "podcast_program_category"
+ */
+export enum podcast_program_category_constraint {
+  podcast_program_category_pkey = "podcast_program_category_pkey",
+}
+
+/**
+ * update columns of table "podcast_program_category"
+ */
+export enum podcast_program_category_update_column {
+  category_id = "category_id",
+  id = "id",
+  podcast_program_id = "podcast_program_id",
+  position = "position",
+}
+
+/**
+ * unique or primary key constraints on table "podcast_program"
+ */
+export enum podcast_program_constraint {
+  podcast_program_pkey = "podcast_program_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "podcast_program_role"
+ */
+export enum podcast_program_role_constraint {
+  podcast_program_role_pkey = "podcast_program_role_pkey",
+}
+
+/**
+ * update columns of table "podcast_program_role"
+ */
+export enum podcast_program_role_update_column {
+  id = "id",
+  member_id = "member_id",
+  name = "name",
+  podcast_program_id = "podcast_program_id",
+}
+
+/**
+ * update columns of table "podcast_program"
+ */
+export enum podcast_program_update_column {
+  abstract = "abstract",
+  content_type = "content_type",
+  cover_url = "cover_url",
+  creator_id = "creator_id",
+  id = "id",
+  list_price = "list_price",
+  podcast_id = "podcast_id",
+  published_at = "published_at",
+  sale_price = "sale_price",
+  sold_at = "sold_at",
+  title = "title",
+}
+
+/**
+ * update columns of table "podcast"
+ */
+export enum podcast_update_column {
+  app_id = "app_id",
+  id = "id",
+  instructor_id = "instructor_id",
+}
+
+/**
  * unique or primary key constraints on table "point_log"
  */
 export enum point_log_constraint {
@@ -6330,6 +6903,7 @@ export interface app_insert_input {
   og_title?: string | null;
   og_url?: string | null;
   packages?: package_arr_rel_insert_input | null;
+  podcasts?: podcast_arr_rel_insert_input | null;
   point_discount_ratio?: any | null;
   point_exchange_rate?: any | null;
   point_validity_period?: any | null;
@@ -6514,6 +7088,7 @@ export interface category_insert_input {
   class?: string | null;
   id?: string | null;
   name?: string | null;
+  podcast_program_categories?: podcast_program_category_arr_rel_insert_input | null;
   position?: number | null;
   program_categories?: program_category_arr_rel_insert_input | null;
 }
@@ -7058,6 +7633,9 @@ export interface member_insert_input {
   order_logs?: order_log_arr_rel_insert_input | null;
   passhash?: string | null;
   picture_url?: string | null;
+  podcast_plans?: podcast_plan_arr_rel_insert_input | null;
+  podcast_programs?: podcast_program_arr_rel_insert_input | null;
+  podcasts?: podcast_arr_rel_insert_input | null;
   point_logs?: point_log_arr_rel_insert_input | null;
   program_content_progresses?: program_content_progress_arr_rel_insert_input | null;
   program_roles?: program_role_arr_rel_insert_input | null;
@@ -7480,6 +8058,206 @@ export interface payment_log_insert_input {
 export interface payment_log_on_conflict {
   constraint: payment_log_constraint;
   update_columns: payment_log_update_column[];
+}
+
+/**
+ * input type for inserting array relation for remote table "podcast"
+ */
+export interface podcast_arr_rel_insert_input {
+  data: podcast_insert_input[];
+  on_conflict?: podcast_on_conflict | null;
+}
+
+/**
+ * input type for inserting data into table "podcast"
+ */
+export interface podcast_insert_input {
+  app?: app_obj_rel_insert_input | null;
+  app_id?: string | null;
+  id?: any | null;
+  instructor_id?: string | null;
+  member?: member_obj_rel_insert_input | null;
+  podcast_plans?: podcast_plan_arr_rel_insert_input | null;
+  podcast_programs?: podcast_program_arr_rel_insert_input | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "podcast"
+ */
+export interface podcast_obj_rel_insert_input {
+  data: podcast_insert_input;
+  on_conflict?: podcast_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "podcast"
+ */
+export interface podcast_on_conflict {
+  constraint: podcast_constraint;
+  update_columns: podcast_update_column[];
+}
+
+/**
+ * input type for inserting array relation for remote table "podcast_plan"
+ */
+export interface podcast_plan_arr_rel_insert_input {
+  data: podcast_plan_insert_input[];
+  on_conflict?: podcast_plan_on_conflict | null;
+}
+
+/**
+ * input type for inserting data into table "podcast_plan"
+ */
+export interface podcast_plan_insert_input {
+  creator_id?: string | null;
+  id?: any | null;
+  is_subscription?: boolean | null;
+  list_price?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  period_amount?: any | null;
+  period_type?: string | null;
+  podcast?: podcast_obj_rel_insert_input | null;
+  podcast_id?: any | null;
+  position?: number | null;
+  published_at?: any | null;
+  sale_price?: any | null;
+  sold_at?: any | null;
+  title?: string | null;
+}
+
+/**
+ * on conflict condition type for table "podcast_plan"
+ */
+export interface podcast_plan_on_conflict {
+  constraint: podcast_plan_constraint;
+  update_columns: podcast_plan_update_column[];
+}
+
+/**
+ * input type for inserting array relation for remote table "podcast_program"
+ */
+export interface podcast_program_arr_rel_insert_input {
+  data: podcast_program_insert_input[];
+  on_conflict?: podcast_program_on_conflict | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "podcast_program_body"
+ */
+export interface podcast_program_body_arr_rel_insert_input {
+  data: podcast_program_body_insert_input[];
+  on_conflict?: podcast_program_body_on_conflict | null;
+}
+
+/**
+ * input type for inserting data into table "podcast_program_body"
+ */
+export interface podcast_program_body_insert_input {
+  description?: string | null;
+  id?: any | null;
+  podcast_program?: podcast_program_obj_rel_insert_input | null;
+  podcast_program_id?: any | null;
+}
+
+/**
+ * on conflict condition type for table "podcast_program_body"
+ */
+export interface podcast_program_body_on_conflict {
+  constraint: podcast_program_body_constraint;
+  update_columns: podcast_program_body_update_column[];
+}
+
+/**
+ * input type for inserting array relation for remote table "podcast_program_category"
+ */
+export interface podcast_program_category_arr_rel_insert_input {
+  data: podcast_program_category_insert_input[];
+  on_conflict?: podcast_program_category_on_conflict | null;
+}
+
+/**
+ * input type for inserting data into table "podcast_program_category"
+ */
+export interface podcast_program_category_insert_input {
+  category?: category_obj_rel_insert_input | null;
+  category_id?: string | null;
+  id?: any | null;
+  podcast_program?: podcast_program_obj_rel_insert_input | null;
+  podcast_program_id?: any | null;
+  position?: number | null;
+}
+
+/**
+ * on conflict condition type for table "podcast_program_category"
+ */
+export interface podcast_program_category_on_conflict {
+  constraint: podcast_program_category_constraint;
+  update_columns: podcast_program_category_update_column[];
+}
+
+/**
+ * input type for inserting data into table "podcast_program"
+ */
+export interface podcast_program_insert_input {
+  abstract?: string | null;
+  content_type?: string | null;
+  cover_url?: string | null;
+  creator_id?: string | null;
+  id?: any | null;
+  list_price?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  podcast?: podcast_obj_rel_insert_input | null;
+  podcast_id?: any | null;
+  podcast_program_bodies?: podcast_program_body_arr_rel_insert_input | null;
+  podcast_program_categories?: podcast_program_category_arr_rel_insert_input | null;
+  podcast_program_roles?: podcast_program_role_arr_rel_insert_input | null;
+  published_at?: any | null;
+  sale_price?: any | null;
+  sold_at?: any | null;
+  title?: string | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "podcast_program"
+ */
+export interface podcast_program_obj_rel_insert_input {
+  data: podcast_program_insert_input;
+  on_conflict?: podcast_program_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "podcast_program"
+ */
+export interface podcast_program_on_conflict {
+  constraint: podcast_program_constraint;
+  update_columns: podcast_program_update_column[];
+}
+
+/**
+ * input type for inserting array relation for remote table "podcast_program_role"
+ */
+export interface podcast_program_role_arr_rel_insert_input {
+  data: podcast_program_role_insert_input[];
+  on_conflict?: podcast_program_role_on_conflict | null;
+}
+
+/**
+ * input type for inserting data into table "podcast_program_role"
+ */
+export interface podcast_program_role_insert_input {
+  id?: any | null;
+  member_id?: string | null;
+  name?: string | null;
+  podcast_program?: podcast_program_obj_rel_insert_input | null;
+  podcast_program_id?: any | null;
+}
+
+/**
+ * on conflict condition type for table "podcast_program_role"
+ */
+export interface podcast_program_role_on_conflict {
+  constraint: podcast_program_role_constraint;
+  update_columns: podcast_program_role_update_column[];
 }
 
 /**

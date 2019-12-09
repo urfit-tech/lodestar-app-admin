@@ -2,7 +2,7 @@ import { Icon, Tooltip } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
 import { commaFormatter } from '../../helpers'
-import AdminCard from '../common/AdminCard'
+import AdminCard from '../admin/AdminCard'
 import { AvatarImage as SaleSummaryAvatarImage } from '../common/Image'
 
 const SaleSummaryWrapper = styled.div`

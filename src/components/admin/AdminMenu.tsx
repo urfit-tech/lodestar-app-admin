@@ -11,6 +11,7 @@ import { ReactComponent as ClipboardListIcon } from '../../images/default/clipbo
 import { ReactComponent as CommentsIcon } from '../../images/default/comments.svg'
 import { ReactComponent as GiftIcon } from '../../images/default/gift.svg'
 import { ReactComponent as MembercardIcon } from '../../images/default/membercard.svg'
+import { ReactComponent as MicrophoneIcon } from '../../images/default/microphone.svg'
 import { ReactComponent as PointIcon } from '../../images/default/point.svg'
 import { ReactComponent as TicketIcon } from '../../images/default/ticket.svg'
 import { ReactComponent as UserIcon } from '../../images/default/user.svg'
@@ -46,12 +47,13 @@ export const OwnerAdminMenu = (props: MenuProps) => (
     <div className="p-3">
       <Tag style={{ border: '0px' }}>管理者</Tag>
     </div>
-    <AdminMenu {...props} defaultOpenKeys={['owner_promotion_admin', 'owner_appointment_admin']}>
+    <AdminMenu {...props} defaultOpenKeys={['owner_promotion_admin', 'owner_podcast_admin', 'owner_appointment_admin']}>
       <Menu.Item key="owner_sales_admin">
         <Icon type="dollar" className="mr-2" />
         <span>銷售管理</span>
       </Menu.Item>
       {/* <Menu.Item key="owner_point_admin">點數設定</Menu.Item> */}
+
       <Menu.SubMenu
         key="owner_promotion_admin"
         title={
@@ -70,6 +72,24 @@ export const OwnerAdminMenu = (props: MenuProps) => (
           </Menu.Item>
         )}
       </Menu.SubMenu>
+
+      <Menu.SubMenu
+        key="owner_podcast_admin"
+        title={
+          <>
+            <Icon component={() => <MicrophoneIcon />} />
+            <Typography.Text>音頻廣播</Typography.Text>
+          </>
+        }
+      >
+        <Menu.Item key="owner_podcast_program_collection_admin">
+          <span>廣播管理</span>
+        </Menu.Item>
+        <Menu.Item key="owner_podcast_plan_admin">
+          <span>訂閱方案</span>
+        </Menu.Item>
+      </Menu.SubMenu>
+
       <Menu.SubMenu
         key="owner_appointment_admin"
         title={
@@ -83,6 +103,7 @@ export const OwnerAdminMenu = (props: MenuProps) => (
           <span>預約方案</span>
         </Menu.Item>
       </Menu.SubMenu>
+
       <Menu.Item key="owner_program_general_admin">
         <Icon type="book" className="mr-2" />
         <span>分類設定</span>

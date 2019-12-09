@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 import React from 'react'
 import { number, object } from 'yup'
 import types from '../../types'
-import AdminCard from '../common/AdminCard'
+import AdminCard from '../admin/AdminCard'
 
 const SaleSummaryAdminCard = () => {
   const { loading, data } = useQuery<types.GET_TOTAL_ORDER_AMOUNT>(GET_TOTAL_ORDER_AMOUNT)

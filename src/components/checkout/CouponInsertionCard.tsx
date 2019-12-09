@@ -3,8 +3,8 @@ import { CardProps } from 'antd/lib/card'
 import { FormComponentProps } from 'antd/lib/form'
 import axios from 'axios'
 import React, { useState } from 'react'
+import AdminCard from '../admin/AdminCard'
 import { useAuth } from '../auth/AuthContext'
-import AdminCard from '../common/AdminCard'
 
 type CouponInsertionCardProps = CardProps &
   FormComponentProps & {

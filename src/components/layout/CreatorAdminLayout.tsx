@@ -3,7 +3,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { StyledContent } from '.'
 import { useRouteKeys } from '../../hooks/util'
-import { CreatorAdminMenu } from '../common/AdminMenu'
+import { CreatorAdminMenu } from '../admin/AdminMenu'
 import Responsive from '../common/Responsive'
 import DefaultLayout from './DefaultLayout'
 

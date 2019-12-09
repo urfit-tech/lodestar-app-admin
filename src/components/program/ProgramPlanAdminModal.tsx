@@ -10,7 +10,7 @@ import uuid from 'uuid'
 import { InferType } from 'yup'
 import { programPlanSchema } from '../../schemas/program'
 import types from '../../types'
-import AdminModal, { AdminModalProps } from '../common/AdminModal'
+import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import StyledBraftEditor from '../common/StyledBraftEditor'
 import ProgramPeriodTypeDropdown from './ProgramPeriodTypeDropdown'
 

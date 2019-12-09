@@ -4,7 +4,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import ProductItem from '../../containers/common/ProductItem'
 import { useCart } from '../../hooks/checkout'
-import AdminCard from '../common/AdminCard'
+import AdminCard from '../admin/AdminCard'
 
 type CartProductTableCardProps = CardProps & {
   memberId: string

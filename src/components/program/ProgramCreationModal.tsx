@@ -5,8 +5,8 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import useRouter from 'use-react-router'
 import types from '../../types'
+import AdminModal from '../admin/AdminModal'
 import { useAuth } from '../auth/AuthContext'
-import AdminModal from '../common/AdminModal'
 import ProgramCategorySelector from './ProgramCategorySelector'
 
 const ProgramCreationModal: React.FC<FormComponentProps> = ({ form }) => {

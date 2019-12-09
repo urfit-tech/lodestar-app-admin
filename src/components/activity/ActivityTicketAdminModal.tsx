@@ -3,7 +3,7 @@ import Form, { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import moment from 'moment'
 import React, { useState } from 'react'
-import AdminModal, { AdminModalProps } from '../common/AdminModal'
+import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import StyledBraftEditor from '../common/StyledBraftEditor'
 import { ActivityTicketProps } from './ActivityTicket'
 

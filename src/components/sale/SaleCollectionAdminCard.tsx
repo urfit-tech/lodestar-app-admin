@@ -11,7 +11,7 @@ import { currencyFormatter, productTypeFormatter } from '../../helpers'
 import { ProductType } from '../../schemas/general'
 import { orderProductSchema, orderSchema } from '../../schemas/order'
 import types from '../../types'
-import AdminCard from '../common/AdminCard'
+import AdminCard from '../admin/AdminCard'
 import OrderStatusTag from './OrderStatusTag'
 
 const StyledContainer = styled.div`
