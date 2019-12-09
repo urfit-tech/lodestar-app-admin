@@ -2,6 +2,8 @@ import { Button, Form, Input, Modal } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import useRouter from 'use-react-router'
+import CreatorSelector from '../../containers/common/CreatorSelector'
 import { handleError } from '../../helpers'
 
 const StyledTitle = styled.div`
@@ -14,7 +16,7 @@ const StyledTitle = styled.div`
 
 type AppointmentPlanCreationModalProps = FormComponentProps & {
   onCreate?: (props: {
-    onSuccess?: () => void
+    onSuccess?: (data: { appointmentPlanId: string }) => void
     onError?: (error: Error) => void
     data: {
       creatorId: string
@@ -23,7 +25,9 @@ type AppointmentPlanCreationModalProps = FormComponentProps & {
   }) => void
 }
 const AppointmentPlanCreationModal: React.FC<AppointmentPlanCreationModalProps> = ({ form, onCreate }) => {
+  const { history } = useRouter()
   const [visible, setVisible] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
     form.validateFields((error, values) => {
@@ -31,10 +35,17 @@ const AppointmentPlanCreationModal: React.FC<AppointmentPlanCreationModalProps> 
         return
       }
 
+      setLoading(true)
+
       onCreate &&
         onCreate({
-          onSuccess: () => {},
-          onError: error => handleError(error),
+          onSuccess: ({ appointmentPlanId }) => {
+            history.push(`/admin/appointment-plans/${appointmentPlanId}`)
+          },
+          onError: error => {
+            handleError(error)
+            setLoading(false)
+          },
           data: {
             creatorId: values.creatorId,
             title: values.title,
@@ -60,7 +71,12 @@ const AppointmentPlanCreationModal: React.FC<AppointmentPlanCreationModalProps> 
             handleSubmit()
           }}
         >
-          <Form.Item label="選擇老師"></Form.Item>
+          <Form.Item label="選擇老師">
+            {form.getFieldDecorator('creatorId', {
+              initialValue: '',
+              rules: [{ required: true, message: '請選擇老師' }],
+            })(<CreatorSelector />)}
+          </Form.Item>
           <Form.Item label="方案名稱">
             {form.getFieldDecorator('title', {
               initialValue: '未命名方案',
@@ -72,7 +88,7 @@ const AppointmentPlanCreationModal: React.FC<AppointmentPlanCreationModalProps> 
             <Button className="mr-2" onClick={() => setVisible(false)}>
               取消
             </Button>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" loading={loading}>
               建立
             </Button>
           </Form.Item>
