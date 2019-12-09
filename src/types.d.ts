@@ -2655,6 +2655,38 @@ export interface GET_PROGRAM_PACKAGE_CONTENTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: CREATE_PODCAST_PLAN
+// ====================================================
+
+export interface CREATE_PODCAST_PLAN_insert_podcast_plan {
+  __typename: "podcast_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface CREATE_PODCAST_PLAN {
+  /**
+   * insert data into the table: "podcast_plan"
+   */
+  insert_podcast_plan: CREATE_PODCAST_PLAN_insert_podcast_plan | null;
+}
+
+export interface CREATE_PODCAST_PLANVariables {
+  isSubscription: boolean;
+  title: string;
+  listPrice: any;
+  periodAmount: any;
+  periodType: string;
+  creatorId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PODCAST_PROGRAM_ADMIN
 // ====================================================
 
