@@ -22,29 +22,29 @@ const defaultContext: AuthContext = {
 const AuthContext = React.createContext<AuthContext>(defaultContext)
 
 export const AuthProvider: React.FC = ({ children }) => {
-  let defaultAuthToken: string | null
-  try {
-    defaultAuthToken = localStorage.getItem(`kolable.auth.token`)
-  } catch (error) {
-    defaultAuthToken = null
-  }
+  let defaultAuthToken: string | null = localStorage.getItem(`kolable.auth.token`)
+
   const [authToken, setAuthToken] = useState(defaultAuthToken)
   const [authState, setAuthState] = useState(defaultContext)
   const [currentUserRole, setCurrentUserRole] = useState<UserRole>()
+
   useEffect(() => {
     const payload = authToken ? jwt.decode(authToken) : null
+
     Fingerprint2.get(components => {
       const values = components.map(component => component.value)
       const fingerprint = Fingerprint2.x64hash128(values.join(''), 31)
       if (payload && typeof payload === 'object') {
         let currentTime = Date.now() / 1000
         let expiredTime = payload.exp - 86400
+
         if (expiredTime < currentTime) {
           try {
             localStorage.removeItem(`kolable.auth.token`)
           } catch (error) {}
           window.location.reload()
         }
+
         setAuthState({
           ...defaultContext,
           fingerprint,
@@ -65,6 +65,7 @@ export const AuthProvider: React.FC = ({ children }) => {
       }
     })
   }, [authToken])
+
   return (
     <AuthContext.Provider
       value={{

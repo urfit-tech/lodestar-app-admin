@@ -30,23 +30,21 @@ export const ApiProvider: React.FC = ({ children }) => {
   }, [setApolloClient, setAppId])
 
   useEffect(() => {
-    appId &&
-      currentMemberId &&
-      currentUserRole &&
-      setApolloClient(createApolloClient({ currentMemberId, currentUserRole, appId }))
-  }, [currentMemberId, currentUserRole, appId])
+    if (appId && currentMemberId && currentUserRole) {
+      const client = createApolloClient({ currentMemberId, currentUserRole, appId })
+      setApolloClient(client)
 
-  useEffect(() => {
-    if (isAuthenticated && currentMemberId) {
-      apolloClient.mutate<types.UPDATE_LOGINED_AT, types.UPDATE_LOGINED_ATVariables>({
-        mutation: UPDATE_LOGINED_AT,
-        variables: {
-          memberId: currentMemberId,
-          loginedAt: new Date(),
-        },
-      })
+      if (isAuthenticated) {
+        client.mutate<types.UPDATE_LOGINED_AT, types.UPDATE_LOGINED_ATVariables>({
+          mutation: UPDATE_LOGINED_AT,
+          variables: {
+            memberId: currentMemberId,
+            loginedAt: new Date(),
+          },
+        })
+      }
     }
-  }, [isAuthenticated, currentMemberId])
+  }, [appId, currentMemberId, currentUserRole, isAuthenticated])
 
   return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>
 }
