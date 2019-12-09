@@ -1,14 +1,18 @@
-import { Table } from 'antd'
+import { Icon, Input, Table } from 'antd'
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { currencyFormatter } from '../../helpers'
 import { AvatarImage } from '../common/Image'
-import { Link } from 'react-router-dom'
 
-const StyledPlanName = styled.span`
+const StyledCreatorName = styled.span`
+  max-width: 10em;
+  overflow: hidden;
   line-height: 1.5;
-  letter-spacing: 0.2px;
   color: var(--gray-darker);
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `
 const StyledPlanTitle = styled.div`
   display: -webkit-box;
@@ -47,6 +51,10 @@ const StyledPublished = styled.div<{ active?: boolean }>`
   }
 `
 
+const filterIcon = (filtered: boolean) => (
+  <Icon type="search" style={{ color: filtered ? 'var(--primary)' : undefined }} />
+)
+
 export type AppointmentPlanProps = {
   id: string
   avatarlUrl?: string | null
@@ -78,15 +86,29 @@ const AppointmentPlanCollectionTable: React.FC<{
           title: '老師',
           render: (text, record, index) => (
             <Link to={`/admin/appointment-plans/${record.id}`} className="d-flex align-items-center">
-              <AvatarImage className="mr-3" src={record.avatarlUrl} size={36} />
-              <StyledPlanName>{record.creator}</StyledPlanName>
+              <div className="d-flex align-items-center justify-content-between">
+                <AvatarImage className="mr-3" src={record.avatarlUrl} size={36} />
+                <StyledCreatorName>{record.creator}</StyledCreatorName>
+              </div>
             </Link>
           ),
+          filterDropdown: () => (
+            <div className="p-2">
+              <Input autoFocus value={searchName || ''} onChange={e => setSearchName(e.target.value)} />
+            </div>
+          ),
+          filterIcon,
         },
         {
           dataIndex: 'title',
           title: '方案名稱',
           render: (text, record, index) => <StyledPlanTitle>{text}</StyledPlanTitle>,
+          filterDropdown: () => (
+            <div className="p-2">
+              <Input autoFocus value={searchTitle || ''} onChange={e => setSearchTitle(e.target.value)} />
+            </div>
+          ),
+          filterIcon,
         },
         {
           dataIndex: 'listPrice',
