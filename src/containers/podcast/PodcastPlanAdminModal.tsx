@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React from 'react'
-import PodcastPlanCreationModalComponent from '../../components/podcast/PodcastPlanCreationModal'
+import PodcastPlanAdminModalComponent from '../../components/podcast/PodcastPlanAdminModal'
 import types from '../../types'
 
 type PodcastPlanCreationModalProps = {}
@@ -39,7 +39,7 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ }) 
       .catch()
       .finally()
   }
-  return <PodcastPlanCreationModalComponent onCreate={handleCreate} />
+  return <PodcastPlanAdminModalComponent onCreate={handleCreate} />
 }
 
 const CREATE_PODCAST_PLAN = gql`
