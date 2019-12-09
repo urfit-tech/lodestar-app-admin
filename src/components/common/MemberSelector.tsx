@@ -1,5 +1,5 @@
 import { Select } from 'antd'
-import React from 'react'
+import React, { forwardRef } from 'react'
 import styled from 'styled-components'
 import { AvatarImage } from './Image'
 
@@ -25,12 +25,13 @@ export type MemberOptionProps = {
 }
 export type MemberSelectorProps = {
   members: MemberOptionProps[]
-  value: string
+  value?: string
   onChange?: (value: string) => void
 }
-const MemberSelector: React.FC<MemberSelectorProps> = ({ members, value, onChange }) => {
+const MemberSelector: React.FC<MemberSelectorProps> = ({ members, value, onChange }, ref) => {
   return (
     <StyledSelect
+      ref={ref}
       placeholder="請輸入帳號 或 Email"
       value={value}
       onChange={value => onChange && onChange(value as string)}
@@ -55,4 +56,4 @@ const MemberSelector: React.FC<MemberSelectorProps> = ({ members, value, onChang
   )
 }
 
-export default MemberSelector
+export default forwardRef(MemberSelector)

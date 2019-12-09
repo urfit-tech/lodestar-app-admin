@@ -1,22 +1,22 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Spin } from 'antd'
 import gql from 'graphql-tag'
-import React from 'react'
+import React, { forwardRef } from 'react'
 import MemberSelector from '../../components/common/MemberSelector'
 import types from '../../types'
 
 const CreatorSelector: React.FC<{
-  value: string
+  value?: string
   onChange?: (value: string) => void
-}> = ({ value, onChange }) => {
-  const { loading, error, data } = useQuery<
-    types.GET_CREATOR_COLLECTION,
-    types.GET_CREATOR_COLLECTIONVariables
-  >(GET_CREATOR_COLLECTION, {
-    variables: {
-      appId: localStorage.getItem('kolable.app.id') || '',
+}> = ({ value, onChange }, ref) => {
+  const { loading, error, data } = useQuery<types.GET_CREATOR_COLLECTION, types.GET_CREATOR_COLLECTIONVariables>(
+    GET_CREATOR_COLLECTION,
+    {
+      variables: {
+        appId: localStorage.getItem('kolable.app.id') || '',
+      },
     },
-  })
+  )
 
   if (loading) {
     return <Spin />
@@ -34,7 +34,7 @@ const CreatorSelector: React.FC<{
     email: member.email,
   }))
 
-  return <MemberSelector members={members} value={value} onChange={onChange} />
+  return <MemberSelector members={members} value={value} onChange={onChange} ref={ref} />
 }
 
 const GET_CREATOR_COLLECTION = gql`
@@ -49,4 +49,4 @@ const GET_CREATOR_COLLECTION = gql`
   }
 `
 
-export default CreatorSelector
+export default forwardRef(CreatorSelector)
