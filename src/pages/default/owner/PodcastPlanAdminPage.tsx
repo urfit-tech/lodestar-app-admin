@@ -6,6 +6,7 @@ import PodcastPlanAdminModal from '../../../containers/podcast/PodcastPlanAdminM
 import { ReactComponent as DiscountIcon } from '../../../images/default/discount.svg'
 import { useAuth } from '../../../components/auth/AuthContext'
 import styled from 'styled-components'
+import PodcastPlanCollectionAdminTable from '../../../components/podcast/PodcastPlanCollectionAdminTable'
 
 const StyledTitle = styled.h1`
   color: var(--gray-darker);
@@ -31,7 +32,9 @@ const PodcastPlanAdminPage: React.FC<PodcastPlanAdminProps> = ({ }) => {
             <div className="mb-5">
               <PodcastPlanAdminModal />
             </div>
-            <AdminCard></AdminCard>
+            <AdminCard>
+              <PodcastPlanCollectionAdminTable />
+            </AdminCard>
           </>
         )}
 

@@ -1,10 +1,5 @@
 import { InputNumber, Select } from 'antd'
 import React from 'react'
-import styled from 'styled-components'
-
-const StyledInputNumber = styled(InputNumber)`
-  width: 90px;
-`
 
 type PeriodType = 'D' | 'W' | 'M' | 'Y'
 
@@ -17,7 +12,8 @@ const PodcastPeriodSelector: React.FC<{
     <div ref={ref}>
       {value ? (
         <div className="d-flex">
-          <StyledInputNumber
+          <InputNumber
+            min={1}
             value={value.amount}
             onChange={amount => amount && onChange && onChange({ ...value, amount })}
             className="mr-3"
@@ -25,6 +21,7 @@ const PodcastPeriodSelector: React.FC<{
           <Select
             value={value.type}
             onChange={(type: PeriodType) => onChange && onChange({ ...value, type })}
+            style={{width: '90px'}}
           >
             <Select.Option value="D">天</Select.Option>
             <Select.Option value="W">週</Select.Option>
