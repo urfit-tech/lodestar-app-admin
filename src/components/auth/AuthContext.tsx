@@ -22,9 +22,9 @@ const defaultContext: AuthContext = {
 const AuthContext = React.createContext<AuthContext>(defaultContext)
 
 export const AuthProvider: React.FC = ({ children }) => {
-  let defaultAuthToken: string | null = localStorage.getItem(`kolable.auth.token`)
+  let defaultAuthToken: string | null = window.localStorage ? localStorage.getItem('kolable.auth.token') : null
 
-  const [authToken, setAuthToken] = useState(defaultAuthToken)
+  const [authToken, setAuthToken] = useState<string | null>(defaultAuthToken)
   const [authState, setAuthState] = useState(defaultContext)
   const [currentUserRole, setCurrentUserRole] = useState<UserRole>()
 
