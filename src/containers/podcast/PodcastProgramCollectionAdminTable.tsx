@@ -1,7 +1,6 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
-import { reverse } from 'ramda'
 import React from 'react'
 import PodcastProgramCollectionAdminTableComponent, {
   PodcastProgramProps,
@@ -37,12 +36,12 @@ const PodcastProgramCollectionAdminTable: React.FC = () => {
     isPublished: !!podcastProgram.published_at,
   }))
 
-  return <PodcastProgramCollectionAdminTableComponent podcastPrograms={reverse(podcastPrograms)} />
+  return <PodcastProgramCollectionAdminTableComponent podcastPrograms={podcastPrograms} />
 }
 
 const GET_PODCAST_PROGRAM_ADMIN_COLLECTION = gql`
   query GET_PODCAST_PROGRAM_ADMIN_COLLECTION {
-    podcast_program {
+    podcast_program(order_by: { updated_at: desc_nulls_last }) {
       id
       title
       cover_url

@@ -140,7 +140,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       dataIndex: 'salesCount',
       key: 'salesCount',
       width: '6rem',
-      align: 'right',
+      align: 'center',
       render: (text, record, index) => <StyledText>{text}</StyledText>,
     },
     {
@@ -153,6 +153,18 @@ const PodcastProgramCollectionAdminTable: React.FC<{
           {record.isPublished ? '已發布' : '未發布'}
         </StyledStatusLabel>
       ),
+      filters: [
+        {
+          text: '已發布',
+          value: '已發布',
+        },
+        {
+          text: '未發布',
+          value: '未發布',
+        },
+      ],
+      filterMultiple: false,
+      onFilter: (value, record) => record.isPublished === (value === '已發布'),
     },
   ]
 
