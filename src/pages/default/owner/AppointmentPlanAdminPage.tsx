@@ -6,6 +6,8 @@ import useRouter from 'use-react-router'
 import { AdminBlock, AdminBlockTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../../components/admin'
 import { StyledLayoutContent } from '../../../components/layout/DefaultLayout'
 import AppointmentHeader from '../../../containers/appointment/AppointmentHeader'
+import AppointmentIntroductionForm from '../../../containers/appointment/AppointmentIntroductionForm'
+import AppointmentPlanBasicForm from '../../../containers/appointment/AppointmentPlanBasicForm'
 import { AppointmentPlanProvider } from '../../../containers/appointment/AppointmentPlanContext'
 
 const StyledWrapper = styled.div`
@@ -39,9 +41,11 @@ const AppointmentPlanAdminPage: React.FC = () => {
                 <AdminPaneTitle>方案設定</AdminPaneTitle>
                 <AdminBlock>
                   <AdminBlockTitle>基本設定</AdminBlockTitle>
+                  <AppointmentPlanBasicForm />
                 </AdminBlock>
                 <AdminBlock>
                   <AdminBlockTitle>方案簡介</AdminBlockTitle>
+                  <AppointmentIntroductionForm />
                 </AdminBlock>
               </div>
             </Tabs.TabPane>
