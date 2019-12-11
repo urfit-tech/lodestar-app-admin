@@ -134,6 +134,8 @@ const PodcastProgramCollectionAdminTable: React.FC<{
           <StyledPriceLabel>{currencyFormatter(record.listPrice)}</StyledPriceLabel>
         </div>
       ),
+      sorter: (a, b) => b.listPrice - a.listPrice,
+      sortDirections: ['ascend', 'descend'],
     },
     {
       title: '購買',
@@ -142,6 +144,8 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       width: '6rem',
       align: 'center',
       render: (text, record, index) => <StyledText>{text}</StyledText>,
+      sorter: (a, b) => b.salesCount - a.salesCount,
+      sortDirections: ['ascend', 'descend'],
     },
     {
       title: '狀態',
