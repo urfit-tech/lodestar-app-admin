@@ -10,6 +10,7 @@ import AppointmentIntroductionForm from '../../../containers/appointment/Appoint
 import AppointmentPlanBasicForm from '../../../containers/appointment/AppointmentPlanBasicForm'
 import { AppointmentPlanProvider } from '../../../containers/appointment/AppointmentPlanContext'
 import AppointmentPlanSaleForm from '../../../containers/appointment/AppointmentPlanSaleForm'
+import AppointmentPlanSessionBlock from '../../../containers/appointment/AppointmentPlanSessionBlock'
 
 const StyledWrapper = styled.div`
   background: #f7f8f8;
@@ -63,7 +64,9 @@ const AppointmentPlanAdminPage: React.FC = () => {
             <Tabs.TabPane tab="時段設定" key="session">
               <div className="container py-5">
                 <AdminPaneTitle>時段</AdminPaneTitle>
-                <AdminBlock></AdminBlock>
+                <AdminBlock>
+                  <AppointmentPlanSessionBlock />
+                </AdminBlock>
               </div>
             </Tabs.TabPane>
 

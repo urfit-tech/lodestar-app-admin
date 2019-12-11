@@ -9,6 +9,7 @@ export type AppointmentPlanProps = {
   sessions: {
     id: string
     startedAt: Date
+    isEnrolled?: boolean
   }[]
   isPublished: boolean | null
 }
@@ -43,10 +44,12 @@ export const AppointmentPlanProvider: React.FC<{
       {
         id: 'session-4',
         startedAt: new Date('2019-12-01T14:30:00+0800'),
+        isEnrolled: true,
       },
       {
         id: 'session-5',
         startedAt: new Date('2019-12-01T15:00:00+0800'),
+        isEnrolled: true,
       },
       {
         id: 'session-6',
@@ -75,6 +78,7 @@ export const AppointmentPlanProvider: React.FC<{
       {
         id: 'session-12',
         startedAt: new Date('2019-12-02T14:30:00+0800'),
+        isEnrolled: true,
       },
       {
         id: 'session-13',
