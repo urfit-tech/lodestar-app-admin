@@ -1,7 +1,6 @@
 import { InputNumber, Select } from 'antd'
 import React from 'react'
-
-type PeriodType = 'D' | 'W' | 'M' | 'Y'
+import { PeriodType } from '../../schemas/common'
 
 const PodcastPeriodSelector: React.FC<{
   value?: { type: PeriodType, amount: number }
@@ -23,7 +22,6 @@ const PodcastPeriodSelector: React.FC<{
             onChange={(type: PeriodType) => onChange && onChange({ ...value, type })}
             style={{width: '90px'}}
           >
-            <Select.Option value="D">天</Select.Option>
             <Select.Option value="W">週</Select.Option>
             <Select.Option value="M">月</Select.Option>
             <Select.Option value="Y">年</Select.Option>

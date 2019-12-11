@@ -1,12 +1,13 @@
-import { Button, Checkbox, Form, Icon, Input, InputNumber, Modal, Radio, Select } from 'antd'
+import { Button, Checkbox, Form, Icon, Input, Modal, Radio, InputNumber } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { CreatePodcastPlanProps } from '../../containers/podcast/PodcastPlanAdminModal'
-import { useAuth } from '../auth/AuthContext'
-import PodcastPeriodSelector from './PodcastPeriodSelector'
-import { BREAK_POINT } from '../common/Responsive'
 import { rgba } from '../../helpers'
+import { useAuth } from '../auth/AuthContext'
+import { BREAK_POINT } from '../common/Responsive'
+import PodcastPeriodSelector from './PodcastPeriodSelector'
+import MemberSelector from '../common/MemberSelector'
 
 const StyledIcon = styled.div<{ available?: boolean }>`
   display: none;
@@ -51,18 +52,20 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ for
         setLoading(true)
 
         onCreate({
+          onError: () => setLoading(false),
           data: {
+            title: '',
             isSubscription: true,
-            title: "",
-            listPrice: 100,
-            periodAmount: 20,
-            periodType: 'M',
-            creatorId: 'admin-haohoaming'
+            listPrice: values.listPrice,
+            periodAmount: values.period.amount,
+            periodType: values.period.type,
+            creatorId: values.creator
           },
         })
       }
     })
   }
+
   return (
     <>
       <Button icon="file-add" type="primary" onClick={() => setVisible(true)}>
@@ -79,36 +82,48 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ for
             {form.getFieldDecorator('creator', {
               rules: [{ required: true, message: '請輸入帳號 或 Email' }]
             })(<Input placeholder="請輸入帳號 或 Email" />)}
+            {/* // ! replace to <MemberSelector /> */}
           </Form.Item>}
           <Form.Item label="販售狀態">
             {form.getFieldDecorator('status',
-              { rules: [{ required: true }] }
+              { initialValue: 1, rules: [{ required: true }] }
             )(
               <Radio.Group>
                 <Radio value={1}>
                   發佈，立刻開賣訂閱方案
-              </Radio>
+                </Radio>
                 <Radio value={2}>
                   停售，方案暫停對外銷售，並從廣播頁中隱藏
-              </Radio>
+                </Radio>
               </Radio.Group>
             )}
           </Form.Item>
           <Form.Item label="訂閱週期">
             {form.getFieldDecorator('period', {
-              initialValue: { amount: 0, type: 'D' },
+              initialValue: { amount: 0, type: 'W' },
               rules: [{ required: true, message: '請輸入訂閱週期' }]
             })(<PodcastPeriodSelector />)}
           </Form.Item>
           <Form.Item label="定價">
-            {form.getFieldDecorator('listPrice', { rules: [{ required: true, message: '請輸入定價' }] })(<Input prefix="NT$" />)}
+            {form.getFieldDecorator('listPrice', { initialValue: 0, rules: [{ required: true, message: '請輸入定價' }] })(<InputNumber
+              min={0}
+              formatter={value => `NT$ ${value}`}
+              parser={value => (value ? value.replace(/\D/g, '') : '')}
+            />)}
           </Form.Item>
           <Checkbox
             checked={hasSalePrice}
             onChange={e => setSalePrice(e.target.checked)}
           >優惠價</Checkbox>
           {hasSalePrice && <Form.Item label="優惠價">
-            {form.getFieldDecorator('salePrice')(<Input prefix="NT$" />)}
+            {form.getFieldDecorator('salePrice', {
+              initialValue: 0,
+              rules: [{ required: true }, { type: 'number' }],
+            })(<InputNumber
+              min={0}
+              formatter={value => `NT$ ${value}`}
+              parser={value => (value ? value.replace(/\D/g, '') : '')}
+            />)}
           </Form.Item>}
         </Form>
         <div className="text-right">

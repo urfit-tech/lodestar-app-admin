@@ -2,9 +2,11 @@ import React, { useState } from 'react'
 import { Table, Icon, Input } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import styled from 'styled-components'
-import { currencyFormatter } from '../../helpers'
+import { currencyFormatter, getShortenPeriodTypeLabel } from '../../helpers'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { AvatarImage } from '../common/Image'
+import PriceLabel from '../common/PriceLabel'
+import { PeriodType } from '../../schemas/common'
 
 export type PodcastPlanProps = {
   id: string
@@ -15,7 +17,7 @@ export type PodcastPlanProps = {
   salesCount: number
   isPublished: boolean
   periodAmount: number
-  periodType: string
+  periodType: PeriodType | string
 }
 
 const StyledTitle = styled.div`
@@ -89,14 +91,14 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
   const fakeData = [
     {
       id: '0',
-      avatarUrl: undefined,
+      avatarUrl: null,
       creator: '李小美',
       listPrice: 500,
       salePrice: 400,
       salesCount: 88,
       isPublished: true,
       periodAmount: 2,
-      periodType: 'D',
+      periodType: 'W',
     },
     {
       id: '1',
@@ -141,14 +143,14 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       width: '12rem',
       render: (text, record, index) => (
         <div className="d-flex align-items-center justify-content-between">
-            <AvatarImage
-              src={record.avatarUrl || DefaultAvatar}
-              size="42px"
-              shape="circle"
-              className="mr-3 pr-2 flex-shrink-0"
-            />
-            <StyledTitle className="flex-grow-1">{record.creator}</StyledTitle>
-          </div>
+          <AvatarImage
+            src={record.avatarUrl || DefaultAvatar}
+            size="42px"
+            shape="circle"
+            className="mr-3 pr-2 flex-shrink-0"
+          />
+          <StyledTitle className="flex-grow-1">{record.creator}</StyledTitle>
+        </div>
       ),
       ...getColumnSearchProps(selectedKeys => {
         selectedKeys && setTitleSearch(selectedKeys[0] || '')
@@ -163,9 +165,9 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       render: (text, record, index) => (
         <div>
           {typeof record.salePrice === 'number' && (
-            <StyledPriceLabel className="mr-2">{currencyFormatter(record.salePrice)}</StyledPriceLabel>
+            <StyledPriceLabel className="mr-2">每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getShortenPeriodTypeLabel(record.periodType)} {currencyFormatter(record.salePrice)}</StyledPriceLabel>
           )}
-          <StyledPriceLabel>{currencyFormatter(record.listPrice)}</StyledPriceLabel>
+          <StyledPriceLabel className="mr-2">每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getShortenPeriodTypeLabel(record.periodType)} {currencyFormatter(record.listPrice)}</StyledPriceLabel>
         </div>
       ),
     },
