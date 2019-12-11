@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { Select } from 'antd'
 
 export const AdminPageTitle = styled.h1`
   color: var(--gray-darker);
@@ -76,4 +77,14 @@ export const StyledTips = styled.div`
   font-size: 12px;
   letter-spacing: 0.58px;
   white-space: pre-line;
+`
+
+export const StyledSelect = styled(Select)`
+  && {
+    width: auto;
+  }
+
+  .ant-select-selection-selected-value {
+    margin-right: 0.5rem;
+  }
 `

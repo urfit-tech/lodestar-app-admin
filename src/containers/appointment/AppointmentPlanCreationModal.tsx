@@ -1,10 +1,10 @@
 import { Button, Form, Icon, Input } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import useRouter from 'use-react-router'
 import AdminModal from '../../components/admin/AdminModal'
-import { handleError } from '../../helpers'
 import CreatorSelector from '../common/CreatorSelector'
+import AppointmentPlanContext from './AppointmentPlanContext'
 
 export type CreateAppointmentEvent = (props: {
   onSuccess?: (data: { appointmentPlanId: string }) => void
@@ -15,12 +15,15 @@ export type CreateAppointmentEvent = (props: {
   }
 }) => void
 
-type AppointmentPlanCreationModalProps = FormComponentProps & {
-  onCreate?: CreateAppointmentEvent
-}
-const AppointmentPlanCreationModal: React.FC<AppointmentPlanCreationModalProps> = ({ form, onCreate }) => {
+const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) => {
   const { history } = useRouter()
+  const { appointmentPlan } = useContext(AppointmentPlanContext)
+
   const [loading, setLoading] = useState(false)
+
+  if (!appointmentPlan) {
+    return null
+  }
 
   const handleSubmit = () => {
     form.validateFields((error, values) => {
@@ -29,21 +32,8 @@ const AppointmentPlanCreationModal: React.FC<AppointmentPlanCreationModalProps> 
       }
 
       setLoading(true)
-
-      onCreate &&
-        onCreate({
-          onSuccess: ({ appointmentPlanId }) => {
-            history.push(`/admin/appointment-plans/${appointmentPlanId}`)
-          },
-          onError: error => {
-            handleError(error)
-            setLoading(false)
-          },
-          data: {
-            creatorId: values.creatorId,
-            title: values.title,
-          },
-        })
+      console.log(values)
+      history.push(`/admin/appointment-plans/${appointmentPlan.id}`)
     })
   }
 
@@ -89,4 +79,4 @@ const AppointmentPlanCreationModal: React.FC<AppointmentPlanCreationModalProps> 
   )
 }
 
-export default Form.create<AppointmentPlanCreationModalProps>()(AppointmentPlanCreationModal)
+export default Form.create<FormComponentProps>()(AppointmentPlanCreationModal)
