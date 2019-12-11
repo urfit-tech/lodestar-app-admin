@@ -34,6 +34,7 @@ const StyledText = styled.div`
   line-height: 1.5;
   letter-spacing: 0.2px;
   white-space: nowrap;
+  text-align: center;
 `
 const StyledPriceLabel = styled.span`
   color: ${props => props.theme['@primary-color']};
@@ -175,6 +176,7 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       dataIndex: 'salesCount',
       key: 'salesCount',
       width: '6rem',
+      align: 'center',
       render: (text, record, index) => <StyledText>{text}</StyledText>,
     },
     {
