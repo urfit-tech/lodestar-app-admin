@@ -15,6 +15,9 @@ export const AdminPageBlock = styled.div`
 `
 
 export const AdminHeader = styled.header`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 0 0.5rem;
   height: 64px;
   background: white;
@@ -29,6 +32,7 @@ export const AdminHeader = styled.header`
   }
 `
 export const AdminHeaderTitle = styled.div`
+  flex-grow: 1;
   color: var(--gray-darker);
   font-size: 16px;
   font-weight: bold;
