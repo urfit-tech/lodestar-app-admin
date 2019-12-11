@@ -17,6 +17,7 @@ export type PodcastPlanProps = {
   isPublished: boolean
   periodAmount: number
   periodType: PeriodType | string
+  sorter?: number
 }
 
 const StyledTitle = styled.div`
@@ -176,6 +177,8 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       width: '6rem',
       align: 'center',
       render: (text, record, index) => <StyledText>{text}</StyledText>,
+      defaultSortOrder: 'descend',
+      sorter: (a, b) => a.salesCount - b.salesCount,
     },
     {
       title: '狀態',
