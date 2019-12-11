@@ -8,6 +8,7 @@ import { useAuth } from '../auth/AuthContext'
 import { BREAK_POINT } from '../common/Responsive'
 import PodcastPeriodSelector from './PodcastPeriodSelector'
 import MemberSelector from '../common/MemberSelector'
+import CreatorSelector from '../../containers/common/CreatorSelector'
 
 const StyledIcon = styled.div<{ available?: boolean }>`
   display: none;
@@ -81,8 +82,7 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ for
           {currentUserRole !== 'content-creator' && <Form.Item label="選擇講師">
             {form.getFieldDecorator('creator', {
               rules: [{ required: true, message: '請輸入帳號 或 Email' }]
-            })(<Input placeholder="請輸入帳號 或 Email" />)}
-            {/* // ! replace to <MemberSelector /> */}
+            })(<CreatorSelector />)}
           </Form.Item>}
           <Form.Item label="販售狀態">
             {form.getFieldDecorator('status',

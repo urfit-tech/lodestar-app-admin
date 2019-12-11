@@ -1,12 +1,11 @@
-import React, { useState } from 'react'
-import { Table, Icon, Input } from 'antd'
+import { Icon, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { currencyFormatter, getShortenPeriodTypeLabel } from '../../helpers'
 import DefaultAvatar from '../../images/default/avatar.svg'
-import { AvatarImage } from '../common/Image'
-import PriceLabel from '../common/PriceLabel'
 import { PeriodType } from '../../schemas/common'
+import { AvatarImage } from '../common/Image'
 
 export type PodcastPlanProps = {
   id: string
@@ -152,10 +151,10 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
           <StyledTitle className="flex-grow-1">{record.creator}</StyledTitle>
         </div>
       ),
-      ...getColumnSearchProps(selectedKeys => {
-        selectedKeys && setTitleSearch(selectedKeys[0] || '')
-        setNameSearch('')
-      }),
+      // ...getColumnSearchProps(selectedKeys => {
+      //   selectedKeys && setTitleSearch(selectedKeys[0] || '')
+      //   setNameSearch('')
+      // }),
     },
     {
       title: '方案',
@@ -183,7 +182,7 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       dataIndex: 'status',
       key: 'status',
       width: '6rem',
-      filters: [{ text: '已發佈', value: 'published' }, { text: '未發佈', value: 'unpublished' }],
+      // filters: [{ text: '已發佈', value: 'published' }, { text: '未發佈', value: 'unpublished' }],
       render: (text, record, index) => (
         <StyledStatusLabel active={record.isPublished} className="d-flex align-items-center justify-content-start">
           {record.isPublished ? '已發佈' : '未發佈'}
