@@ -164,9 +164,9 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       render: (text, record, index) => (
         <div>
           {typeof record.salePrice === 'number' && (
-            <StyledPriceLabel className="mr-2">每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getShortenPeriodTypeLabel(record.periodType)} {currencyFormatter(record.salePrice)}</StyledPriceLabel>
+            <StyledPriceLabel className="mr-2">{currencyFormatter(record.salePrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getShortenPeriodTypeLabel(record.periodType)} </StyledPriceLabel>
           )}
-          <StyledPriceLabel className="mr-2">每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getShortenPeriodTypeLabel(record.periodType)} {currencyFormatter(record.listPrice)}</StyledPriceLabel>
+          <StyledPriceLabel className="mr-2">{currencyFormatter(record.listPrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getShortenPeriodTypeLabel(record.periodType)}</StyledPriceLabel>
         </div>
       ),
     },
