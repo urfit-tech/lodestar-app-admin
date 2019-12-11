@@ -1,7 +1,7 @@
 import { Icon, Input, Table } from 'antd'
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import useRouter from 'use-react-router'
 import { currencyFormatter } from '../../helpers'
 import { AvatarImage } from '../common/Image'
 
@@ -68,6 +68,8 @@ export type AppointmentPlanProps = {
 const AppointmentPlanCollectionTable: React.FC<{
   appointmentPlans: AppointmentPlanProps[]
 }> = ({ appointmentPlans }) => {
+  const { history } = useRouter()
+
   const [searchName, setSearchName] = useState<string | null>(null)
   const [searchTitle, setSearchTitle] = useState<string | null>(null)
 
@@ -80,17 +82,19 @@ const AppointmentPlanCollectionTable: React.FC<{
   return (
     <Table
       rowKey="id"
+      rowClassName={() => 'cursor-pointer'}
+      onRow={record => ({
+        onClick: () => history.push(`/admin/appointment-plans/${record.id}`),
+      })}
       columns={[
         {
           key: 'id',
           title: '老師',
           render: (text, record, index) => (
-            <Link to={`/admin/appointment-plans/${record.id}`} className="d-flex align-items-center">
-              <div className="d-flex align-items-center justify-content-between">
-                <AvatarImage className="mr-3" src={record.avatarlUrl} size={36} />
-                <StyledCreatorName>{record.creator}</StyledCreatorName>
-              </div>
-            </Link>
+            <div className="d-flex align-items-center justify-content-between">
+              <AvatarImage className="mr-3" src={record.avatarlUrl} size={36} />
+              <StyledCreatorName className="flex-grow-1">{record.creator}</StyledCreatorName>
+            </div>
           ),
           filterDropdown: () => (
             <div className="p-2">
