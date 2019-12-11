@@ -35,8 +35,12 @@ const StyledItemWrapper = styled.div<{ disabled?: boolean }>`
     font-size: 12px;
   }
 `
-const StyledPopoverWrapper = styled.div`
-  padding: 1rem;
+export const EmptyBlock = styled.div`
+  padding: 2.5rem 0;
+  color: var(--gray-dark);
+  font-size: 14px;
+  text-align: center;
+  letter-spacing: 0.4px;
 `
 
 export type AppointmentSessionItemProps = {

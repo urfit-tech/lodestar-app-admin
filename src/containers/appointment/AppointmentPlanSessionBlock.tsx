@@ -3,6 +3,7 @@ import groupBy from 'ramda/es/groupBy'
 import React, { useContext } from 'react'
 import AppointmentSessionCollection, {
   DeleteSessionEvent,
+  EmptyBlock,
 } from '../../components/appointment/AppointmentSessionCollection'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
@@ -24,17 +25,21 @@ const AppointmentPlanSessionBlock: React.FC = () => {
 
   return (
     <>
-      {Object.values(sessionCollections).map(sessions => (
-        <AppointmentSessionCollection
-          key={moment(sessions[0].startedAt).format('YYYY-MM-DD(dd)')}
-          sessions={sessions.map(session => ({
-            id: session.id,
-            startedAt: session.startedAt,
-            isEnrolled: session.isEnrolled,
-            onDelete: handleDelete,
-          }))}
-        />
-      ))}
+      {appointmentPlan.sessions.length === 0 ? (
+        <EmptyBlock>目前還沒有建立任何時段</EmptyBlock>
+      ) : (
+        Object.values(sessionCollections).map(sessions => (
+          <AppointmentSessionCollection
+            key={moment(sessions[0].startedAt).format('YYYY-MM-DD(dd)')}
+            sessions={sessions.map(session => ({
+              id: session.id,
+              startedAt: session.startedAt,
+              isEnrolled: session.isEnrolled,
+              onDelete: handleDelete,
+            }))}
+          />
+        ))
+      )}
     </>
   )
 }
