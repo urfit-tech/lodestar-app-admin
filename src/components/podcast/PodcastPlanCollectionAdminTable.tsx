@@ -85,8 +85,7 @@ const getColumnSearchProps: (
 
 type PodcastPlanCollectionAdminTableProps = {}
 const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableProps> = () => {
-  const [titleSearch, setTitleSearch] = useState('')
-  const [nameSearch, setNameSearch] = useState('')
+  const [creatorSearch, setCreatorSearch] = useState('')
 
   const fakeData = [
     {
@@ -152,10 +151,9 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
           <StyledTitle className="flex-grow-1">{record.creator}</StyledTitle>
         </div>
       ),
-      // ...getColumnSearchProps(selectedKeys => {
-      //   selectedKeys && setTitleSearch(selectedKeys[0] || '')
-      //   setNameSearch('')
-      // }),
+      ...getColumnSearchProps(selectedKeys => {
+        selectedKeys && setCreatorSearch(selectedKeys[0] || '')
+      }),
     },
     {
       title: '方案',
@@ -165,7 +163,7 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       render: (text, record, index) => (
         <div>
           {typeof record.salePrice === 'number' && (
-            <StyledPriceLabel className="mr-2">{currencyFormatter(record.salePrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getShortenPeriodTypeLabel(record.periodType)} </StyledPriceLabel>
+            <StyledPriceLabel className="mr-2">{currencyFormatter(record.salePrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getShortenPeriodTypeLabel(record.periodType)}</StyledPriceLabel>
           )}
           <StyledPriceLabel className="mr-2">{currencyFormatter(record.listPrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getShortenPeriodTypeLabel(record.periodType)}</StyledPriceLabel>
         </div>
@@ -184,7 +182,18 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       dataIndex: 'status',
       key: 'status',
       width: '6rem',
-      // filters: [{ text: '已發佈', value: 'published' }, { text: '未發佈', value: 'unpublished' }],
+      filters: [
+        { 
+          text: '已發佈',
+          value: '已發佈'
+        }, 
+        {
+          text: '未發佈',
+          value: '未發佈'
+        }
+      ],
+      filterMultiple: false,
+      onFilter: (value, record) => record.isPublished === (value === '已發佈'),
       render: (text, record, index) => (
         <StyledStatusLabel active={record.isPublished} className="d-flex align-items-center justify-content-start">
           {record.isPublished ? '已發佈' : '未發佈'}
@@ -197,7 +206,9 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       <Table
         rowKey="id"
         columns={columns}
-        dataSource={fakeData}
+        dataSource={fakeData
+          .filter(data => !creatorSearch || data.creator.includes(creatorSearch))
+        }
       />
     </>
   )

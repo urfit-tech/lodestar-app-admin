@@ -150,21 +150,21 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       width: '6rem',
       render: (text, record, index) => (
         <StyledStatusLabel active={record.isPublished} className="d-flex align-items-center justify-content-start">
-          {record.isPublished ? '已發布' : '未發布'}
+          {record.isPublished ? '已發佈' : '未發佈'}
         </StyledStatusLabel>
       ),
       filters: [
         {
-          text: '已發布',
-          value: '已發布',
+          text: '已發佈',
+          value: '已發佈',
         },
         {
-          text: '未發布',
-          value: '未發布',
+          text: '未發佈',
+          value: '未發佈',
         },
       ],
       filterMultiple: false,
-      onFilter: (value, record) => record.isPublished === (value === '已發布'),
+      onFilter: (value, record) => record.isPublished === (value === '已發佈'),
     },
   ]
 
