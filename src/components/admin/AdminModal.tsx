@@ -62,7 +62,7 @@ const AdminModal: React.FC<AdminModalProps> = ({
         }}
         {...ModalProps}
       >
-        {/* {icon && <StyledIcon>{icon}</StyledIcon>} */}
+        {icon && <StyledIcon>{icon}</StyledIcon>}
         {title && <StyledTitle>{title}</StyledTitle>}
         {children}
 

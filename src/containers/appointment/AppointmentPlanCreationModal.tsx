@@ -1,32 +1,25 @@
-import { Button, Form, Input, Modal } from 'antd'
+import { Button, Form, Icon, Input } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import React, { useState } from 'react'
-import styled from 'styled-components'
 import useRouter from 'use-react-router'
-import CreatorSelector from '../../containers/common/CreatorSelector'
+import AdminModal from '../../components/admin/AdminModal'
 import { handleError } from '../../helpers'
+import CreatorSelector from '../common/CreatorSelector'
 
-const StyledTitle = styled.div`
-  color: var(--gray-darker);
-  font-size: 20px;
-  font-weight: bold;
-  line-height: 1.3;
-  letter-spacing: 0.77px;
-`
+export type CreateAppointmentEvent = (props: {
+  onSuccess?: (data: { appointmentPlanId: string }) => void
+  onError?: (error: Error) => void
+  data: {
+    creatorId: string
+    title: string
+  }
+}) => void
 
 type AppointmentPlanCreationModalProps = FormComponentProps & {
-  onCreate?: (props: {
-    onSuccess?: (data: { appointmentPlanId: string }) => void
-    onError?: (error: Error) => void
-    data: {
-      creatorId: string
-      title: string
-    }
-  }) => void
+  onCreate?: CreateAppointmentEvent
 }
 const AppointmentPlanCreationModal: React.FC<AppointmentPlanCreationModalProps> = ({ form, onCreate }) => {
   const { history } = useRouter()
-  const [visible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
@@ -56,21 +49,26 @@ const AppointmentPlanCreationModal: React.FC<AppointmentPlanCreationModalProps> 
 
   return (
     <>
-      <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
-        建立方案
-      </Button>
-
-      <Modal title={null} footer={null} centered destroyOnClose visible={visible} onCancel={() => setVisible(false)}>
-        <StyledTitle className="mb-4">建立方案</StyledTitle>
-
-        <Form
-          hideRequiredMark
-          colon={false}
-          onSubmit={e => {
-            e.preventDefault()
-            handleSubmit()
-          }}
-        >
+      <AdminModal
+        renderTrigger={({ setVisible }) => (
+          <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
+            建立方案
+          </Button>
+        )}
+        title="建立方案"
+        icon={<Icon type="file-add" />}
+        renderFooter={({ setVisible }) => (
+          <>
+            <Button className="mr-2" onClick={() => setVisible(false)}>
+              取消
+            </Button>
+            <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
+              建立
+            </Button>
+          </>
+        )}
+      >
+        <Form hideRequiredMark colon={false} onSubmit={e => e.preventDefault()}>
           <Form.Item label="選擇老師">
             {form.getFieldDecorator('creatorId', {
               initialValue: '',
@@ -84,16 +82,9 @@ const AppointmentPlanCreationModal: React.FC<AppointmentPlanCreationModalProps> 
             })(<Input />)}
           </Form.Item>
 
-          <Form.Item className="m-0 text-right">
-            <Button className="mr-2" onClick={() => setVisible(false)}>
-              取消
-            </Button>
-            <Button type="primary" htmlType="submit" loading={loading}>
-              建立
-            </Button>
-          </Form.Item>
+          <Form.Item className="m-0 text-right"></Form.Item>
         </Form>
-      </Modal>
+      </AdminModal>
     </>
   )
 }
