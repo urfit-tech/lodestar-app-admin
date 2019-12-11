@@ -1,8 +1,8 @@
 import { Icon, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import useRouter from 'use-react-router'
 import { currencyFormatter } from '../../helpers'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { CustomRatioImage } from '../common/Image'
@@ -84,6 +84,8 @@ const getColumnSearchProps: (
 const PodcastProgramCollectionAdminTable: React.FC<{
   podcastPrograms: PodcastProgramProps[]
 }> = ({ podcastPrograms }) => {
+  const { history } = useRouter()
+
   const [titleSearch, setTitleSearch] = useState('')
   const [nameSearch, setNameSearch] = useState('')
 
@@ -94,17 +96,15 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       key: 'title',
       width: '25rem',
       render: (text, record, index) => (
-        <Link to={`/admin/podcast-programs/${record.id}`}>
-          <div className="d-flex align-items-center justify-content-between">
-            <CustomRatioImage
-              width="42px"
-              ratio={1}
-              src={record.coverUrl || EmptyCover}
-              className="mr-3 pr-2 flex-shrink-0"
-            />
-            <StyledTitle className="flex-grow-1">{record.title}</StyledTitle>
-          </div>
-        </Link>
+        <div className="d-flex align-items-center justify-content-between">
+          <CustomRatioImage
+            width="42px"
+            ratio={1}
+            src={record.coverUrl || EmptyCover}
+            className="mr-3 pr-2 flex-shrink-0"
+          />
+          <StyledTitle className="flex-grow-1">{record.title}</StyledTitle>
+        </div>
       ),
       ...getColumnSearchProps(selectedKeys => {
         selectedKeys && setTitleSearch(selectedKeys[0] || '')
@@ -171,10 +171,14 @@ const PodcastProgramCollectionAdminTable: React.FC<{
   return (
     <Table
       rowKey="id"
+      rowClassName={() => 'cursor-pointer'}
       columns={columns}
       dataSource={podcastPrograms
         .filter(podcastProgram => !titleSearch || podcastProgram.title.includes(titleSearch))
         .filter(podcastProgram => !nameSearch || podcastProgram.creator.includes(nameSearch))}
+      onRow={record => ({
+        onClick: () => history.push(`/admin/podcast-programs/${record.id}`),
+      })}
     />
   )
 }
