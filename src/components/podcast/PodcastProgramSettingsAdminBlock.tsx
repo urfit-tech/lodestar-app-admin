@@ -12,7 +12,6 @@ const StyledCoverBlock = styled.div`
   overflow: hidden;
   width: 120px;
   max-width: 120px;
-  border-radius: 4px;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
 `
 const StyledSingleUploader = styled(SingleUploader)`

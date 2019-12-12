@@ -167,7 +167,6 @@ const PodcastProgramCollectionAdminTable: React.FC<{
           value: '未發佈',
         },
       ],
-      filterMultiple: false,
       onFilter: (value, record) => record.isPublished === (value === '已發佈'),
     },
   ]
