@@ -102,27 +102,6 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({
           )}
 
           <div className="d-flex align-items-center">
-            <Responsive.Desktop>
-              {settings.navLinks.map((navLink, idx) =>
-                navLink.external ? (
-                  <a href={navLink.href} target={navLink.target} key={idx}>
-                    <StyledNavLinkButton type="link">{navLink.label}</StyledNavLinkButton>
-                  </a>
-                ) : (
-                  <Link to={navLink.href} key={idx} target={navLink.target}>
-                    <StyledNavLinkButton type="link">{navLink.label}</StyledNavLinkButton>
-                  </Link>
-                ),
-              )}
-
-              {isAuthenticated && (
-                <Link to={`/members/${currentMemberId}`}>
-                  <StyledNavLinkButton type="link">我的主頁</StyledNavLinkButton>
-                </Link>
-              )}
-            </Responsive.Desktop>
-
-            {currentMemberId && !noCart && <CartDropdown memberId={currentMemberId} />}
             {isAuthenticated && currentMemberId && <NotificationDropdown memberId={currentMemberId} />}
             {currentMemberId && <MemberProfileButton memberId={currentMemberId} />}
           </div>
