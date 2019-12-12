@@ -5,13 +5,13 @@ import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
 import { AdminBlock, AdminBlockTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../../components/admin'
 import { StyledLayoutContent } from '../../../components/layout/DefaultLayout'
-import AppointmentHeader from '../../../containers/appointment/AppointmentHeader'
-import AppointmentIntroductionForm from '../../../containers/appointment/AppointmentIntroductionForm'
 import AppointmentPlanBasicForm from '../../../containers/appointment/AppointmentPlanBasicForm'
 import { AppointmentPlanProvider } from '../../../containers/appointment/AppointmentPlanContext'
+import AppointmentPlanHeader from '../../../containers/appointment/AppointmentPlanHeader'
+import AppointmentPlanIntroForm from '../../../containers/appointment/AppointmentPlanIntroForm'
 import AppointmentPlanSaleForm from '../../../containers/appointment/AppointmentPlanSaleForm'
 import AppointmentPlanSessionBlock from '../../../containers/appointment/AppointmentPlanSessionBlock'
-import AppointmentSessionCreationModal from '../../../containers/appointment/AppointmentSessionCreationModal'
+import AppointmentPlanSessionCreationModal from '../../../containers/appointment/AppointmentPlanSessionCreationModal'
 
 const StyledWrapper = styled.div`
   background: #f7f8f8;
@@ -26,7 +26,7 @@ const AppointmentPlanAdminPage: React.FC = () => {
   return (
     <AppointmentPlanProvider appointmentPlanId={appointmentPlanId}>
       <StyledWrapper>
-        <AppointmentHeader appointmentPlanId={appointmentPlanId} />
+        <AppointmentPlanHeader appointmentPlanId={appointmentPlanId} />
 
         <StyledLayoutContent>
           <Tabs
@@ -48,7 +48,7 @@ const AppointmentPlanAdminPage: React.FC = () => {
                 </AdminBlock>
                 <AdminBlock>
                   <AdminBlockTitle>方案簡介</AdminBlockTitle>
-                  <AppointmentIntroductionForm />
+                  <AppointmentPlanIntroForm />
                 </AdminBlock>
               </div>
             </Tabs.TabPane>
@@ -66,7 +66,7 @@ const AppointmentPlanAdminPage: React.FC = () => {
               <div className="container py-5">
                 <AdminPaneTitle>時段</AdminPaneTitle>
                 <div className="mb-5">
-                  <AppointmentSessionCreationModal />
+                  <AppointmentPlanSessionCreationModal />
                 </div>
                 <AdminBlock>
                   <AppointmentPlanSessionBlock />

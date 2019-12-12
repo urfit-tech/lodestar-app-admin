@@ -6,7 +6,7 @@ import { AdminBlockSubTitle, StyledSelect } from '../../components/admin'
 import AdminModal from '../../components/admin/AdminModal'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
-const AppointmentSessionCreationModal: React.FC<FormComponentProps> = ({ form }) => {
+const AppointmentPlanSessionCreationModal: React.FC<FormComponentProps> = ({ form }) => {
   const { appointmentPlan } = useContext(AppointmentPlanContext)
 
   const [loading, setLoading] = useState(false)
@@ -98,4 +98,4 @@ const AppointmentSessionCreationModal: React.FC<FormComponentProps> = ({ form })
   )
 }
 
-export default Form.create<FormComponentProps>()(AppointmentSessionCreationModal)
+export default Form.create<FormComponentProps>()(AppointmentPlanSessionCreationModal)

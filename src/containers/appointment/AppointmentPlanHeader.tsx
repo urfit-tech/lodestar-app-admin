@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { AdminHeader, AdminHeaderTitle } from '../../components/admin'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
-const AppointmentHeader: React.FC<{
+const AppointmentPlanHeader: React.FC<{
   appointmentPlanId: string
 }> = ({ appointmentPlanId }) => {
   const { appointmentPlan } = useContext(AppointmentPlanContext)
@@ -24,4 +24,4 @@ const AppointmentHeader: React.FC<{
   )
 }
 
-export default AppointmentHeader
+export default AppointmentPlanHeader

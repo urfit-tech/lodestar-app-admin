@@ -5,7 +5,7 @@ import React, { useContext, useState } from 'react'
 import AdminBraftEditor from '../../components/admin/AdminBraftEditor'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
-const AppointmentIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
+const AppointmentPlanIntroForm: React.FC<FormComponentProps> = ({ form }) => {
   const { appointmentPlan } = useContext(AppointmentPlanContext)
   const [loading, setLoading] = useState(false)
 
@@ -55,4 +55,4 @@ const AppointmentIntroductionForm: React.FC<FormComponentProps> = ({ form }) => 
   )
 }
 
-export default Form.create<FormComponentProps>()(AppointmentIntroductionForm)
+export default Form.create<FormComponentProps>()(AppointmentPlanIntroForm)
