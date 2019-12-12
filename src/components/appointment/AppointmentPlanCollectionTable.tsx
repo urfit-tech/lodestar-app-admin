@@ -58,7 +58,7 @@ const filterIcon = (filtered: boolean) => (
 export type AppointmentPlanProps = {
   id: string
   avatarlUrl?: string | null
-  creator: string
+  creatorName: string
   title: string
   listPrice: number
   enrollment: number
@@ -76,7 +76,7 @@ const AppointmentPlanCollectionTable: React.FC<{
   const data = appointmentPlans.filter(
     appointmentPlan =>
       (!searchName && !searchTitle) ||
-      (searchName && appointmentPlan.creator.includes(searchName)) ||
+      (searchName && appointmentPlan.creatorName.includes(searchName)) ||
       (searchTitle && appointmentPlan.title.includes(searchTitle)),
   )
   return (
@@ -93,12 +93,19 @@ const AppointmentPlanCollectionTable: React.FC<{
           render: (text, record, index) => (
             <div className="d-flex align-items-center justify-content-between">
               <AvatarImage className="mr-3" src={record.avatarlUrl} size={36} />
-              <StyledCreatorName className="flex-grow-1">{record.creator}</StyledCreatorName>
+              <StyledCreatorName className="flex-grow-1">{record.creatorName}</StyledCreatorName>
             </div>
           ),
           filterDropdown: () => (
             <div className="p-2">
-              <Input autoFocus value={searchName || ''} onChange={e => setSearchName(e.target.value)} />
+              <Input
+                autoFocus
+                value={searchName || ''}
+                onChange={e => {
+                  searchTitle && setSearchTitle('')
+                  setSearchName(e.target.value)
+                }}
+              />
             </div>
           ),
           filterIcon,
@@ -109,7 +116,14 @@ const AppointmentPlanCollectionTable: React.FC<{
           render: (text, record, index) => <StyledPlanTitle>{text}</StyledPlanTitle>,
           filterDropdown: () => (
             <div className="p-2">
-              <Input autoFocus value={searchTitle || ''} onChange={e => setSearchTitle(e.target.value)} />
+              <Input
+                autoFocus
+                value={searchTitle || ''}
+                onChange={e => {
+                  searchName && setSearchName('')
+                  setSearchTitle(e.target.value)
+                }}
+              />
             </div>
           ),
           filterIcon,
@@ -146,7 +160,6 @@ const AppointmentPlanCollectionTable: React.FC<{
             },
           ],
           onFilter: (value, record) => record.isPublished === (value === '已發布'),
-          filterMultiple: false,
         },
       ]}
       dataSource={data}
