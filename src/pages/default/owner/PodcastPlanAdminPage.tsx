@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import AdminCard from '../../../components/admin/AdminCard'
 import { useAuth } from '../../../components/auth/AuthContext'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
-import PodcastPlanCollectionAdminTable from '../../../components/podcast/PodcastPlanCollectionAdminTable'
+import PodcastPlanCollectionAdminTable from '../../../containers/podcast/PodcastPlanCollectionAdminTable'
 import PodcastPlanAdminModal from '../../../containers/podcast/PodcastPlanAdminModal'
 import { ReactComponent as DiscountIcon } from '../../../images/default/discount.svg'
 

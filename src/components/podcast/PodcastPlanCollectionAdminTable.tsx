@@ -7,19 +7,6 @@ import DefaultAvatar from '../../images/default/avatar.svg'
 import { PeriodType } from '../../schemas/common'
 import { AvatarImage } from '../common/Image'
 
-export type PodcastPlanProps = {
-  id: string
-  avatarUrl?: string | null
-  creator: string
-  listPrice: number
-  salePrice?: number
-  salesCount: number
-  isPublished: boolean
-  periodAmount: number
-  periodType: PeriodType | string
-  sorter?: number
-}
-
 const StyledTitle = styled.div`
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -84,56 +71,27 @@ const getColumnSearchProps: (
   filterIcon: filtered => <Icon type="search" style={{ color: filtered ? 'var(--primary)' : undefined }} />,
 })
 
-type PodcastPlanCollectionAdminTableProps = {}
-const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableProps> = () => {
+export type PodcastPlan = {
+  id: string
+  avatarUrl?: string | null
+  creator: string
+  listPrice: number
+  salePrice?: number
+  salesCount: number
+  isPublished: boolean
+  periodAmount: number
+  periodType: PeriodType | string
+}
+type PodcastPlanCollectionAdminTableProps = {
+  podcastPlans: PodcastPlan[]
+}
+export type PodcastPlanProps = PodcastPlan & {
+  sorter?: number
+}
+const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableProps> = ({
+  podcastPlans
+}) => {
   const [creatorSearch, setCreatorSearch] = useState('')
-
-  const fakeData = [
-    {
-      id: '0',
-      avatarUrl: null,
-      creator: '李小美',
-      listPrice: 500,
-      salePrice: 400,
-      salesCount: 88,
-      isPublished: true,
-      periodAmount: 2,
-      periodType: 'W',
-    },
-    {
-      id: '1',
-      avatarUrl: null,
-      creator: '李小龍',
-      listPrice: 600,
-      salePrice: 200,
-      salesCount: 88,
-      isPublished: true,
-      periodAmount: 1,
-      periodType: 'W',
-    },
-    {
-      id: '2',
-      avatarUrl: null,
-      creator: '劉小東',
-      listPrice: 999,
-      salePrice: undefined,
-      salesCount: 12,
-      isPublished: false,
-      periodAmount: 9,
-      periodType: 'M',
-    },
-    {
-      id: '3',
-      avatarUrl: null,
-      creator: '孫小小',
-      listPrice: 666,
-      salePrice: 400,
-      salesCount: 33,
-      isPublished: true,
-      periodAmount: 1,
-      periodType: 'Y',
-    },
-  ]
 
   const columns: ColumnProps<PodcastPlanProps>[] = [
     {
@@ -209,8 +167,8 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       <Table
         rowKey="id"
         columns={columns}
-        dataSource={fakeData
-          .filter(data => !creatorSearch || data.creator.includes(creatorSearch))
+        dataSource={podcastPlans
+          .filter(podcastPlan => !creatorSearch || podcastPlan.creator.includes(creatorSearch))
         }
       />
     </>
