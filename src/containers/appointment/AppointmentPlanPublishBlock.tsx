@@ -32,12 +32,12 @@ const AppointmentPlanPublishBlock: React.FC = () => {
           text: '尚未設定售價',
           tabkey: 'sale',
         },
-    appointmentPlan.sessions.length
+    appointmentPlan.periods.length
       ? null
       : {
-          id: 'NO_SESSION',
+          id: 'NO_PERIOD',
           text: '尚未設定時段',
-          tabkey: 'session',
+          tabkey: 'schedule',
         },
   ].filter(v => v)
 
