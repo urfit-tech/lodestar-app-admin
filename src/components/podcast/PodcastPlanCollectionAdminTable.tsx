@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
-import { Table, Icon, Input } from 'antd'
+import { Icon, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import React, { useState } from 'react'
 import styled from 'styled-components'
-import { currencyFormatter } from '../../helpers'
+import { currencyFormatter, getShortenPeriodTypeLabel } from '../../helpers'
 import DefaultAvatar from '../../images/default/avatar.svg'
+import { PeriodType } from '../../schemas/common'
 import { AvatarImage } from '../common/Image'
 
 export type PodcastPlanProps = {
@@ -15,7 +16,8 @@ export type PodcastPlanProps = {
   salesCount: number
   isPublished: boolean
   periodAmount: number
-  periodType: string
+  periodType: PeriodType | string
+  sorter?: number
 }
 
 const StyledTitle = styled.div`
@@ -33,6 +35,7 @@ const StyledText = styled.div`
   line-height: 1.5;
   letter-spacing: 0.2px;
   white-space: nowrap;
+  text-align: center;
 `
 const StyledPriceLabel = styled.span`
   color: ${props => props.theme['@primary-color']};
@@ -83,20 +86,19 @@ const getColumnSearchProps: (
 
 type PodcastPlanCollectionAdminTableProps = {}
 const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableProps> = () => {
-  const [titleSearch, setTitleSearch] = useState('')
-  const [nameSearch, setNameSearch] = useState('')
+  const [creatorSearch, setCreatorSearch] = useState('')
 
   const fakeData = [
     {
       id: '0',
-      avatarUrl: undefined,
+      avatarUrl: null,
       creator: '李小美',
       listPrice: 500,
       salePrice: 400,
       salesCount: 88,
       isPublished: true,
       periodAmount: 2,
-      periodType: 'D',
+      periodType: 'W',
     },
     {
       id: '1',
@@ -141,18 +143,17 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       width: '12rem',
       render: (text, record, index) => (
         <div className="d-flex align-items-center justify-content-between">
-            <AvatarImage
-              src={record.avatarUrl || DefaultAvatar}
-              size="42px"
-              shape="circle"
-              className="mr-3 pr-2 flex-shrink-0"
-            />
-            <StyledTitle className="flex-grow-1">{record.creator}</StyledTitle>
-          </div>
+          <AvatarImage
+            src={record.avatarUrl || DefaultAvatar}
+            size="42px"
+            shape="circle"
+            className="mr-3 pr-2 flex-shrink-0"
+          />
+          <StyledTitle className="flex-grow-1">{record.creator}</StyledTitle>
+        </div>
       ),
       ...getColumnSearchProps(selectedKeys => {
-        selectedKeys && setTitleSearch(selectedKeys[0] || '')
-        setNameSearch('')
+        selectedKeys && setCreatorSearch(selectedKeys[0] || '')
       }),
     },
     {
@@ -163,9 +164,9 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       render: (text, record, index) => (
         <div>
           {typeof record.salePrice === 'number' && (
-            <StyledPriceLabel className="mr-2">{currencyFormatter(record.salePrice)}</StyledPriceLabel>
+            <StyledPriceLabel className="mr-2">{currencyFormatter(record.salePrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getShortenPeriodTypeLabel(record.periodType)}</StyledPriceLabel>
           )}
-          <StyledPriceLabel>{currencyFormatter(record.listPrice)}</StyledPriceLabel>
+          <StyledPriceLabel className="mr-2">{currencyFormatter(record.listPrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getShortenPeriodTypeLabel(record.periodType)}</StyledPriceLabel>
         </div>
       ),
     },
@@ -174,14 +175,28 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       dataIndex: 'salesCount',
       key: 'salesCount',
       width: '6rem',
+      align: 'center',
       render: (text, record, index) => <StyledText>{text}</StyledText>,
+      defaultSortOrder: 'descend',
+      sorter: (a, b) => a.salesCount - b.salesCount,
     },
     {
       title: '狀態',
       dataIndex: 'status',
       key: 'status',
       width: '6rem',
-      filters: [{ text: '已發佈', value: 'published' }, { text: '未發佈', value: 'unpublished' }],
+      filters: [
+        { 
+          text: '已發佈',
+          value: '已發佈'
+        }, 
+        {
+          text: '未發佈',
+          value: '未發佈'
+        }
+      ],
+      filterMultiple: false,
+      onFilter: (value, record) => record.isPublished === (value === '已發佈'),
       render: (text, record, index) => (
         <StyledStatusLabel active={record.isPublished} className="d-flex align-items-center justify-content-start">
           {record.isPublished ? '已發佈' : '未發佈'}
@@ -194,7 +209,9 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       <Table
         rowKey="id"
         columns={columns}
-        dataSource={fakeData}
+        dataSource={fakeData
+          .filter(data => !creatorSearch || data.creator.includes(creatorSearch))
+        }
       />
     </>
   )

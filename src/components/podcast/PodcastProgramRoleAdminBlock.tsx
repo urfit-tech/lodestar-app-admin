@@ -47,6 +47,7 @@ const PodcastProgramRoleAdminBlock: React.FC = () => {
 
     updatePodcastProgram({
       onSuccess: () => {
+        setSelectedMemberId(null)
         setLoading(false)
         setVisible(false)
       },
@@ -105,7 +106,6 @@ const PodcastProgramRoleAdminBlock: React.FC = () => {
           onSubmit={e => {
             e.preventDefault()
             handleSubmit()
-            setSelectedMemberId(null)
           }}
         >
           <Form.Item label="選擇講師">

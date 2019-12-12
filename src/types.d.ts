@@ -2760,6 +2760,34 @@ export interface GET_PODCAST_PROGRAM_ADMINVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_UPDATED_AT
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_UPDATED_AT_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_UPDATED_AT {
+  /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: UPDATE_PODCAST_PROGRAM_UPDATED_AT_update_podcast_program | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_UPDATED_ATVariables {
+  podcastProgramId: any;
+  updatedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_CONTENT
 // ====================================================
 
@@ -6299,6 +6327,7 @@ export enum podcast_program_update_column {
   sale_price = "sale_price",
   sold_at = "sold_at",
   title = "title",
+  updated_at = "updated_at",
 }
 
 /**
@@ -8247,6 +8276,7 @@ export interface podcast_program_insert_input {
   sale_price?: any | null;
   sold_at?: any | null;
   title?: string | null;
+  updated_at?: any | null;
 }
 
 /**

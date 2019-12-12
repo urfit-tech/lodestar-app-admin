@@ -33,7 +33,7 @@ const PodcastProgramCreationModal: React.FC<PodcastProgramCreationModalProps> = 
           onError: () => setLoading(false),
           data: {
             title: values.title,
-            categoryIds: values.categoryIds,
+            categoryIds: values.categoryIds || [],
           },
         })
       }

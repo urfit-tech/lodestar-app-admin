@@ -32,6 +32,7 @@ const MemberSelector: React.FC<MemberSelectorProps> = ({ members, value, onChang
   return (
     <StyledSelect
       ref={ref}
+      showSearch
       placeholder="請輸入帳號 或 Email"
       value={value}
       onChange={value => onChange && onChange(value as string)}

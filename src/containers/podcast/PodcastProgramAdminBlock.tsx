@@ -78,6 +78,11 @@ const PodcastProgramAdminBlock: React.FC<{
       podcastProgramId: podcastProgramId,
     },
   })
+
+  const [updatePodcastProgramUpdatedAt] = useMutation<
+    types.UPDATE_PODCAST_PROGRAM_UPDATED_AT,
+    types.UPDATE_PODCAST_PROGRAM_UPDATED_ATVariables
+  >(UPDATE_PODCAST_PROGRAM_UPDATED_AT)
   const [updatePodcastProgramContent] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_CONTENT,
     types.UPDATE_PODCAST_PROGRAM_CONTENTVariables
@@ -112,6 +117,13 @@ const PodcastProgramAdminBlock: React.FC<{
     onFinally,
     data,
   }) => {
+    updatePodcastProgramUpdatedAt({
+      variables: {
+        podcastProgramId,
+        updatedAt: new Date(),
+      },
+    })
+
     typeof data.contentType !== 'undefined' &&
       updatePodcastProgramContent({
         variables: {
@@ -294,6 +306,13 @@ const GET_PODCAST_PROGRAM_ADMIN = gql`
   }
 `
 
+const UPDATE_PODCAST_PROGRAM_UPDATED_AT = gql`
+  mutation UPDATE_PODCAST_PROGRAM_UPDATED_AT($podcastProgramId: uuid!, $updatedAt: timestamptz!) {
+    update_podcast_program(where: { id: { _eq: $podcastProgramId } }, _set: { updated_at: $updatedAt }) {
+      affected_rows
+    }
+  }
+`
 const UPDATE_PODCAST_PROGRAM_CONTENT = gql`
   mutation UPDATE_PODCAST_PROGRAM_CONTENT($podcastProgramId: uuid!, $contentType: String) {
     update_podcast_program(where: { id: { _eq: $podcastProgramId } }, _set: { content_type: $contentType }) {

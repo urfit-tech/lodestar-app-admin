@@ -3,8 +3,9 @@ import { RcFile } from 'antd/lib/upload'
 import axios, { AxiosRequestConfig } from 'axios'
 import moment from 'moment'
 import queryString from 'query-string'
+import { PeriodType } from '../schemas/common'
 import { ProductType } from '../schemas/general'
-import { ProgramPlanPeriodType, ProgramRoleName } from '../schemas/program'
+import { ProgramRoleName } from '../schemas/program'
 
 export const TPDirect = (window as any)['TPDirect']
 
@@ -48,7 +49,7 @@ export const uploadFile = async (key: string, file: File | null, config?: AxiosR
       })
     })
 
-export const getPeriodTypeLabel = (periodType: ProgramPlanPeriodType) => {
+export const getPeriodTypeLabel = (periodType: PeriodType | string) => {
   switch (periodType) {
     case 'W':
       return '每週'
@@ -61,7 +62,7 @@ export const getPeriodTypeLabel = (periodType: ProgramPlanPeriodType) => {
   }
 }
 
-export const getShortenPeriodTypeLabel = (periodType: ProgramPlanPeriodType) => {
+export const getShortenPeriodTypeLabel = (periodType: PeriodType | string) => {
   switch (periodType) {
     case 'W':
       return '週'
