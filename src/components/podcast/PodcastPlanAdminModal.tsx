@@ -1,14 +1,13 @@
-import { Button, Checkbox, Form, Icon, Input, Modal, Radio, InputNumber } from 'antd'
+import { Button, Checkbox, Form, Icon, InputNumber, Modal, Radio } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import CreatorSelector from '../../containers/common/CreatorSelector'
 import { CreatePodcastPlanProps } from '../../containers/podcast/PodcastPlanAdminModal'
 import { rgba } from '../../helpers'
 import { useAuth } from '../auth/AuthContext'
 import { BREAK_POINT } from '../common/Responsive'
 import PodcastPeriodSelector from './PodcastPeriodSelector'
-import MemberSelector from '../common/MemberSelector'
-import CreatorSelector from '../../containers/common/CreatorSelector'
 
 const StyledIcon = styled.div<{ available?: boolean }>`
   display: none;
@@ -53,9 +52,13 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ for
         setLoading(true)
 
         onCreate({
+          onSuccess: () => {
+            setLoading(false)
+            setVisible(false)
+          },
           onError: () => setLoading(false),
           data: {
-            title: '',
+            title: values.title,
             isSubscription: true,
             listPrice: values.listPrice,
             periodAmount: values.period.amount,

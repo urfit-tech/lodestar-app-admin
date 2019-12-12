@@ -12,8 +12,8 @@ export type CreatePodcastPlanProps = (
     onError?: (error: Error) => void,
     onFinally?: () => void
     data: {
-      isSubscription: boolean
       title: string
+      isSubscription: boolean
       listPrice: number
       periodAmount: number
       periodType: string
@@ -27,17 +27,16 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ }) 
   const handleCreate: CreatePodcastPlanProps = ({ onSuccess, onError, onFinally, data }) => {
     createPodcastPlan({
       variables: {
-        isSubscription: true,
+        isSubscription: data.isSubscription,
         title: '',
-        listPrice: 1,
-        periodAmount: '',
-        periodType: '',
-        creatorId: ''
+        listPrice: data.listPrice,
+        periodAmount: data.periodAmount,
+        periodType: data.periodType,
+        creatorId: data.creatorId
       }
-    })
-      .then()
-      .catch()
-      .finally()
+    }).then(() => onSuccess && onSuccess())
+      .catch(error => onError && onError(error))
+      .finally(() => onFinally && onFinally())
   }
   return <PodcastPlanAdminModalComponent onCreate={handleCreate} />
 }
