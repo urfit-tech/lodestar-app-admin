@@ -9,6 +9,7 @@ import AppointmentPlanBasicForm from '../../../containers/appointment/Appointmen
 import { AppointmentPlanProvider } from '../../../containers/appointment/AppointmentPlanContext'
 import AppointmentPlanHeader from '../../../containers/appointment/AppointmentPlanHeader'
 import AppointmentPlanIntroForm from '../../../containers/appointment/AppointmentPlanIntroForm'
+import AppointmentPlanPublishBlock from '../../../containers/appointment/AppointmentPlanPublishBlock'
 import AppointmentPlanSaleForm from '../../../containers/appointment/AppointmentPlanSaleForm'
 import AppointmentPlanSessionBlock from '../../../containers/appointment/AppointmentPlanSessionBlock'
 import AppointmentPlanSessionCreationModal from '../../../containers/appointment/AppointmentPlanSessionCreationModal'
@@ -76,8 +77,10 @@ const AppointmentPlanAdminPage: React.FC = () => {
 
             <Tabs.TabPane tab="發佈" key="publish">
               <div className="container py-5">
-                <AdminPaneTitle>發布設定</AdminPaneTitle>
-                <AdminBlock></AdminBlock>
+                <AdminPaneTitle>發佈設定</AdminPaneTitle>
+                <AdminBlock>
+                  <AppointmentPlanPublishBlock />
+                </AdminBlock>
               </div>
             </Tabs.TabPane>
           </Tabs>

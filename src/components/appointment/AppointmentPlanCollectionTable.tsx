@@ -147,19 +147,19 @@ const AppointmentPlanCollectionTable: React.FC<{
           title: '狀態',
           width: '7em',
           render: (text, record, index) => (
-            <StyledPublished active={record.isPublished}>{record.isPublished ? '已發布' : '未發布'}</StyledPublished>
+            <StyledPublished active={record.isPublished}>{record.isPublished ? '已發佈' : '未發佈'}</StyledPublished>
           ),
           filters: [
             {
-              text: '已發布',
-              value: '已發布',
+              text: '已發佈',
+              value: '已發佈',
             },
             {
-              text: '未發布',
-              value: '未發布',
+              text: '未發佈',
+              value: '未發佈',
             },
           ],
-          onFilter: (value, record) => record.isPublished === (value === '已發布'),
+          onFilter: (value, record) => record.isPublished === (value === '已發佈'),
         },
       ]}
       dataSource={data}

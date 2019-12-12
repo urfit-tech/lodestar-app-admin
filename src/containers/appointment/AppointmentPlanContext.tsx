@@ -24,10 +24,10 @@ export const AppointmentPlanProvider: React.FC<{
   // ! fake data
   const appointmentPlan: AppointmentPlanProps = {
     id: appointmentPlanId,
-    title: 'XXOO諮詢',
+    title: '',
     description: '這是一個很棒的課程\n這是一個很棒\n這是一個很棒的課程\n這是一個很棒的課程這是一個很棒的課程。',
-    duration: 60,
-    listPrice: 3000,
+    duration: 0,
+    listPrice: 0,
     sessions: [
       {
         id: 'session-1',
