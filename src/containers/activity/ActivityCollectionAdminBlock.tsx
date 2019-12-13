@@ -1,8 +1,8 @@
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import { message } from 'antd'
 import gql from 'graphql-tag'
 import { reverse } from 'ramda'
 import React from 'react'
-import { useMutation, useQuery } from 'react-apollo-hooks'
 import useRouter from 'use-react-router'
 import { ActivityProps } from '../../components/activity/Activity'
 import ActivityCollectionAdminBlockComponent from '../../components/activity/ActivityCollectionAdminBlock'
@@ -19,7 +19,7 @@ const ActivityCollectionAdminBlock: React.FC<{
     variables: { memberId },
   })
   const { history } = useRouter()
-  const insertActivity = useMutation<types.INSERT_ACTIVITY, types.INSERT_ACTIVITYVariables>(INSERT_ACTIVITY)
+  const [insertActivity] = useMutation<types.INSERT_ACTIVITY, types.INSERT_ACTIVITYVariables>(INSERT_ACTIVITY)
 
   const activities: ActivityProps[] =
     loading || error || !data
@@ -74,7 +74,7 @@ const ActivityCollectionAdminBlock: React.FC<{
           position: index,
         })),
         memberId,
-        appId: process.env.REACT_APP_ID || '',
+        appId: localStorage.getItem('kolable.app.id') || '',
       },
     })
       .then(({ data }) => {

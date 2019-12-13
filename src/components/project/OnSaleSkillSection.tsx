@@ -1,7 +1,7 @@
+import { Carousel } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
 import Responsive, { BREAK_POINT } from '../common/Responsive'
-import { Carousel } from 'antd'
 
 type Card = {
   icon?: string
@@ -30,7 +30,6 @@ const StyledSection = styled.section`
       padding: 80px 0;
     }
   }
-  
 `
 
 const StyledHeader = styled.header`
@@ -57,7 +56,7 @@ const StyledHeader = styled.header`
     letter-spacing: 0.2px;
     text-align: center;
   }
-  
+
   @media (min-width: ${BREAK_POINT}px) {
     padding-bottom: 60px;
 
@@ -135,7 +134,7 @@ const StyleCard = styled.div`
     font-weight: 500;
   }
 
-  @media(min-width: ${BREAK_POINT}px) {
+  @media (min-width: ${BREAK_POINT}px) {
     width: 19%;
     margin-bottom: 20px;
   }
@@ -163,13 +162,7 @@ const OnSaleSkillSection: React.FC<OnSaleSkillSectionProps> = ({ cards, header }
             <h4>{header.subtitle}</h4>
           </StyledHeader>
           <Responsive.Default>
-            <StyledCarousel
-              dots={true}
-              draggable={true}
-              slidesToShow={3}
-              slidesToScroll={1}
-              variableWidth={true}
-            >
+            <StyledCarousel dots={true} draggable={true} slidesToShow={3} slidesToScroll={1} variableWidth={true}>
               {cards.map(card => (
                 <StyledSlide>
                   <StyleCard>

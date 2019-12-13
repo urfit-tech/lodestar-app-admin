@@ -10,7 +10,7 @@ import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import ProductItem from '../../containers/common/ProductItem'
 import { currencyFormatter, handleError, TPDirect } from '../../helpers'
-import { useMember } from '../../hooks/data'
+import { useMember } from '../../hooks/member'
 import { Member } from '../../schemas/general'
 import settings from '../../settings'
 import { Check, Discount } from '../../types/payment'
@@ -77,7 +77,6 @@ const StyledCheckoutPrice = styled.div`
   letter-spacing: 0.2px;
   text-align: right;
 `
-
 type CheckoutProductModalProps = FormComponentProps &
   ModalProps & {
     renderTrigger: React.FC<{

@@ -1,12 +1,13 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, Modal } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import styled from 'styled-components'
-import { useProgram } from '../../hooks/data'
+import { useProgram } from '../../hooks/program'
+import types from '../../types'
+import AdminCard from '../admin/AdminCard'
 import { useAuth } from '../auth/AuthContext'
-import AdminCard from '../common/AdminCard'
 import IssueItem from './IssueItem'
 
 const StyledAdminCard = styled(AdminCard)`
@@ -59,7 +60,9 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
 }) => {
   const { currentMemberId } = useAuth()
   const { program } = useProgram(programId)
-  const updateIssueStatus = useMutation(UPDATE_ISSUE_STATUS)
+  const [updateIssueStatus] = useMutation<types.UPDATE_ISSUE_STATUS, types.UPDATE_ISSUE_STATUSVariables>(
+    UPDATE_ISSUE_STATUS,
+  )
 
   const [solved, setSolved] = useState(!!solvedAt)
   const [modalVisible, setModalVisible] = useState()

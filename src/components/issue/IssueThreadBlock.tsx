@@ -1,10 +1,11 @@
+import { useQuery } from '@apollo/react-hooks'
 import { Divider, Spin } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { InferType } from 'yup'
 import { programRoleSchema } from '../../schemas/program'
+import types from '../../types'
 import { useAuth } from '../auth/AuthContext'
 import IssueCreationModal from './IssueCreationModal'
 import IssueItem from './IssueItem'
@@ -17,12 +18,15 @@ const IssueThreadBlock: React.FC<IssueThreadBlockProps> = ({ threadId, programRo
   const [qIssueId] = useQueryParam('issueId', StringParam)
   const [qIssueReplyId] = useQueryParam('issueReplyId', StringParam)
   const { currentMemberId } = useAuth()
-  const { data, loading, error, refetch } = useQuery(GET_ISSUE_THREAD, {
-    variables: {
-      appId: process.env.REACT_APP_ID,
-      threadId,
+  const { data, loading, error, refetch } = useQuery<types.GET_ISSUE_THREAD, types.GET_ISSUE_THREADVariables>(
+    GET_ISSUE_THREAD,
+    {
+      variables: {
+        appId: localStorage.getItem('kolable.app.id') || '',
+        threadId,
+      },
     },
-  })
+  )
 
   return (
     <div>
@@ -38,7 +42,7 @@ const IssueThreadBlock: React.FC<IssueThreadBlockProps> = ({ threadId, programRo
 
       {loading ? (
         <Spin />
-      ) : error ? (
+      ) : error || !data ? (
         '無法取得問題'
       ) : (
         data.issue.map((value: any) => {

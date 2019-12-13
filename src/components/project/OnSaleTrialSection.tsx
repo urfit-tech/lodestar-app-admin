@@ -1,8 +1,8 @@
+import { Carousel } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
-import { Carousel, Icon } from 'antd'
+import { BREAK_POINT } from '../common/Responsive'
 import FundingCoverBlock from './FundingCoverBlock'
-import Responsive, { BREAK_POINT } from '../common/Responsive'
 
 type Video = {
   src: string
@@ -30,59 +30,36 @@ const StyledContainer = styled.div`
   width: 100%;
   max-width: 270px;
   padding-bottom: 80px;
-  
+
   @media (min-width: ${BREAK_POINT}px) {
-    max-width: 640px;
-  }
-`
-
-const StyledCarousel = styled(Carousel)`
-  && .slick-dots {
-    li {
-      margin-left: 32px;
-
-      button {
-        width: 12px;
-        height: 12px;
-        background: #cdcdcd;
-        border-radius: 50%;
-        transition: transform 0.2s ease-in-out;
-      }
-    }
-    li::first-child {
-      margin-left: 0;
-    }
-    li.slick-active {
-      button {
-        width: 12px;
-        transform: scale(1.25, 1.25);
-        background: #ff5760;
-      }
-    }
-  }
-
-  && .slick-track {
-    display: flex;
+    max-width: 960px;
   }
 `
 
 const StyledSlide = styled.div`
+  position: relative;
   max-width: 100vw;
-  padding: 32px 16px;
+  padding: 52px 32px;
 
   h4 {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     padding-top: 10px;
+    width: 200px;
     text-align: center;
   }
 
   @media (min-width: ${BREAK_POINT}px) {
-    max-width: 320px;
+    h4 {
+      width: 100%;
+    }
   }
 `
 
 const StyledImage = styled.img`
-  width: 40px;
-  height: 40px;
+  width: 40px !important;
+  height: 40px !important;
 `
 
 const OnSaleTrialSection: React.FC<OnSaleTrialSectionProps> = ({ title, videos }) => {
@@ -108,12 +85,12 @@ const OnSaleTrialSection: React.FC<OnSaleTrialSectionProps> = ({ title, videos }
             },
           ]}
         >
-          {videos.map(video =>
+          {videos.map(video => (
             <StyledSlide key={video.src}>
               <FundingCoverBlock coverType="video" coverUrl={video.src} />
               <h4>{video.title}</h4>
             </StyledSlide>
-          )}
+          ))}
         </Carousel>
       </StyledContainer>
     </StyledSection>

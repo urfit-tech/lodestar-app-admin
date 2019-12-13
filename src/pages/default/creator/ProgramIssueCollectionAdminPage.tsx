@@ -1,12 +1,13 @@
+import { useQuery } from '@apollo/react-hooks'
 import { Icon, Select, Skeleton, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import { useAuth } from '../../../components/auth/AuthContext'
 import IssueAdminCard from '../../../components/issue/IssueAdminCard'
 import CreatorAdminLayout from '../../../components/layout/CreatorAdminLayout'
 import { EditableProgramSelector } from '../../../components/program/ProgramSelector'
-import { useEditablePrograms } from '../../../hooks/data'
+import { useEditablePrograms } from '../../../hooks/program'
+import types from '../../../types'
 
 const ProgramIssueCollectionAdminPage = () => {
   const { currentMemberId } = useAuth()
@@ -70,9 +71,12 @@ const AllProgramIssueCollectionBlock: React.FC<{
       break
   }
 
-  const { loading, error, data, refetch } = useQuery(GET_PROGRAM_ISSUES, {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_CREATOR_PROGRAM_ISSUES,
+    types.GET_CREATOR_PROGRAM_ISSUESVariables
+  >(GET_CREATOR_PROGRAM_ISSUES, {
     variables: {
-      appId: process.env.REACT_APP_ID,
+      appId: localStorage.getItem('kolable.app.id') || '',
       threadIdLike: selectedProgramId === 'all' ? undefined : `/programs/${selectedProgramId}/contents/%`,
       unsolved,
     },
@@ -118,8 +122,8 @@ const AllProgramIssueCollectionBlock: React.FC<{
   )
 }
 
-const GET_PROGRAM_ISSUES = gql`
-  query GET_PROGRAM_ISSUES($appId: String!, $threadIdLike: String, $unsolved: Boolean) {
+const GET_CREATOR_PROGRAM_ISSUES = gql`
+  query GET_CREATOR_PROGRAM_ISSUES($appId: String!, $threadIdLike: String, $unsolved: Boolean) {
     issue(
       where: { app_id: { _eq: $appId }, thread_id: { _like: $threadIdLike }, solved_at: { _is_null: $unsolved } }
       order_by: [

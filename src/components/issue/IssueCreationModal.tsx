@@ -1,11 +1,12 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Icon, Input, message, Modal, Typography } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import { ModalProps } from 'antd/lib/modal'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import styled from 'styled-components'
+import types from '../../types'
 import MemberAvatar from '../common/MemberAvatar'
 import StyledBraftEditor from '../common/StyledBraftEditor'
 
@@ -27,15 +28,17 @@ const IssueCreationModal: React.FC<IssueCreationModalProps> = ({
   onSubmit,
   ...modalProps
 }) => {
+  const [insertIssue] = useMutation<types.INSERT_ISSUE, types.INSERT_ISSUEVariables>(INSERT_ISSUE)
+
   const [loading, setLoading] = useState()
   const [modalVisible, setModalVisible] = useState()
-  const insertIssue = useMutation(INSERT_ISSUE)
+
   const handleSubmit = () => {
     form.validateFields((error, values) => {
       if (!error) {
         insertIssue({
           variables: {
-            appId: process.env.REACT_APP_ID,
+            appId: localStorage.getItem('kolable.app.id') || '',
             memberId,
             threadId,
             title: values.title,
@@ -52,6 +55,7 @@ const IssueCreationModal: React.FC<IssueCreationModalProps> = ({
       }
     })
   }
+
   return (
     <>
       <Modal

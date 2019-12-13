@@ -1,14 +1,15 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, DatePicker, Icon, InputNumber, message } from 'antd'
 import Form, { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useState } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import styled from 'styled-components'
 import { InferType } from 'yup'
 import { handleError } from '../../helpers'
 import { programSchema } from '../../schemas/program'
-import AdminCard from '../common/AdminCard'
+import types from '../../types'
+import AdminCard from '../admin/AdminCard'
 
 const StyledIcon = styled(Icon)`
   color: #ff7d62;
@@ -19,7 +20,10 @@ type ProgramPerpetualPlanAdminCardProps = FormComponentProps & {
   onRefetch?: () => void
 }
 const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps> = ({ program, onRefetch, form }) => {
-  const updateProgram = useMutation(UPDATE_PROGRAM_PLAN)
+  const [updateProgram] = useMutation<
+    types.UPDATE_PROGRAM_PERPETUAL_PLAN,
+    types.UPDATE_PROGRAM_PERPETUAL_PLANVariables
+  >(UPDATE_PROGRAM_PERPETUAL_PLAN)
   const [loading, setLoading] = useState()
   const [hasSalePrice, setHasSalePrice] = useState(program.salePrice ? true : false)
 
@@ -106,8 +110,13 @@ const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps
   )
 }
 
-const UPDATE_PROGRAM_PLAN = gql`
-  mutation UPDATE_PROGRAM_PLAN($programId: uuid!, $listPrice: numeric, $salePrice: numeric, $soldAt: timestamptz) {
+const UPDATE_PROGRAM_PERPETUAL_PLAN = gql`
+  mutation UPDATE_PROGRAM_PERPETUAL_PLAN(
+    $programId: uuid!
+    $listPrice: numeric
+    $salePrice: numeric
+    $soldAt: timestamptz
+  ) {
     update_program(
       where: { id: { _eq: $programId } }
       _set: { list_price: $listPrice, sale_price: $salePrice, sold_at: $soldAt }

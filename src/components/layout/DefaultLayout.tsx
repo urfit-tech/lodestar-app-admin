@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import { footerHeight } from '.'
-import { useCart } from '../../hooks/data'
 import settings from '../../settings'
 import { useAuth } from '../auth/AuthContext'
 import AuthModal, { AuthModalContext } from '../auth/AuthModal'
@@ -12,6 +11,21 @@ import Footer from '../common/Footer'
 import MemberProfileButton from '../common/MemberProfileButton'
 import Responsive, { BREAK_POINT } from '../common/Responsive'
 import NotificationDropdown from '../notification/NotificationDropdown'
+
+let Logo: string | undefined
+try {
+  Logo = require(`../../images/${localStorage.getItem('kolable.app.id')}/logo.svg`)
+} catch {
+  try {
+    Logo = require(`../../images/${localStorage.getItem('kolable.app.id')}/logo.png`)
+  } catch {
+    try {
+      Logo = require(`../../images/${localStorage.getItem('kolable.app.id')}/logo.jpg`)
+    } catch {
+      Logo = undefined
+    }
+  }
+}
 
 const StyledLayout = styled(Layout)`
   &.bg-white {
@@ -72,7 +86,6 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({
 }) => {
   const [visible, setVisible] = useState(false)
   const { currentMemberId, isAuthenticated } = useAuth()
-  const { cartProducts } = useCart()
 
   return (
     <AuthModalContext.Provider value={{ visible, setVisible }}>
@@ -84,12 +97,11 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({
             renderTitle()
           ) : (
             <Link to={`/`} className="d-flex align-items-center">
-              {process.env.REACT_APP_ID}
+              {Logo ? <img src={Logo} alt="logo" className="header-logo" /> : settings.seo.name || '首頁'}
             </Link>
           )}
 
           <div className="d-flex align-items-center">
-            {currentMemberId && !noCart && <CartDropdown memberId={currentMemberId} cartProducts={cartProducts} />}
             {isAuthenticated && currentMemberId && <NotificationDropdown memberId={currentMemberId} />}
             {currentMemberId && <MemberProfileButton memberId={currentMemberId} />}
           </div>

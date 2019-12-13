@@ -12,16 +12,16 @@ import { ThemeProvider } from 'styled-components'
 import { QueryParamProvider } from 'use-query-params'
 import { AuthProvider } from './components/auth/AuthContext'
 import { ApiProvider } from './components/common/ApiContext'
-import { useGA, usePixel, useTappay, useTheme } from './hooks'
+import { useGA, usePixel, useTappay } from './hooks/util'
 import Routes from './Routes'
 import settings from './settings'
 import './styles/default/index.scss'
+import theme from './theme/default.json'
 
 const Application = () => {
   useGA()
   usePixel()
   useTappay()
-  const theme = useTheme()
   return (
     <ThemeProvider theme={theme}>
       <AuthProvider>
@@ -51,8 +51,8 @@ const ApplicationHelmet = () => {
 
   return (
     <Helmet>
-      <title>{process.env.REACT_APP_ID}</title>
-      <meta name="description" content={process.env.REACT_APP_ID} />
+      <title>{settings.title}</title>
+      <meta name="description" content={settings.description} />
 
       {/* open graph */}
       <meta property="og:type" content="website" />

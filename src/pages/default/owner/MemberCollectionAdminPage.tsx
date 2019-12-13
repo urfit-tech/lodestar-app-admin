@@ -1,15 +1,16 @@
+import { useQuery } from '@apollo/react-hooks'
 import { Button, Dropdown, Icon, Input, Menu, Table, Typography } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import { sum } from 'ramda'
 import React, { useContext, useState } from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import styled, { ThemeContext } from 'styled-components'
-import AdminCard from '../../../components/common/AdminCard'
+import AdminCard from '../../../components/admin/AdminCard'
 import MemberAvatar from '../../../components/common/MemberAvatar'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import { currencyFormatter } from '../../../helpers'
+import types from '../../../types'
 
 const StyledDropdown = styled(Dropdown)`
   margin-bottom: 32px;
@@ -65,7 +66,7 @@ const getColumnSearchProps = ({
 
 const MemberCollectionAdminPage = () => {
   const theme = useContext(ThemeContext)
-  const { loading, data } = useQuery(GET_MEMBER_COLLECTION)
+  const { loading, data } = useQuery<types.GET_MEMBER_COLLECTION>(GET_MEMBER_COLLECTION)
   const [roleFileter, setRoleFilter] = useState(0)
   const [nameSearch, setNameSearch] = useState('')
   const [emailSearch, setEmailSearch] = useState('')

@@ -1,7 +1,7 @@
+import { useMutation } from '@apollo/react-hooks'
 import { message } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import { ActivityAdminProps } from '../../components/activity/ActivityAdminBlock'
 import ActivitySettingsAdminBlockComponent from '../../components/activity/ActivitySettingsAdminBlock'
 import types from '../../types'
@@ -10,10 +10,10 @@ const ActivitySettingsAdminBlock: React.FC<{
   activityAdmin: ActivityAdminProps
   onRefetch?: () => void
 }> = ({ activityAdmin, onRefetch }) => {
-  const updateActivityBasic = useMutation<types.UPDATE_ACTIVITY_BASIC, types.UPDATE_ACTIVITY_BASICVariables>(
+  const [updateActivityBasic] = useMutation<types.UPDATE_ACTIVITY_BASIC, types.UPDATE_ACTIVITY_BASICVariables>(
     UPDATE_ACTIVITY_BASIC,
   )
-  const updateActivityIntroduction = useMutation<
+  const [updateActivityIntroduction] = useMutation<
     types.UPDATE_ACTIVITY_INTRODUCTION,
     types.UPDATE_ACTIVITY_INTRODUCTIONVariables
   >(UPDATE_ACTIVITY_INTRODUCTION)

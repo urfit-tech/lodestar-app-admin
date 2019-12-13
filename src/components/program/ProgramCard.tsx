@@ -1,44 +1,69 @@
-import { Card, Typography } from 'antd'
-import { CardProps } from 'antd/lib/card'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { durationFormatter } from '../../helpers'
-import { useEnrolledProgramIds, useProgram, useProgramDuration } from '../../hooks/data'
+import { useEnrolledProgramIds, useProgram, useProgramDuration } from '../../hooks/program'
 import EmptyCover from '../../images/default/empty-cover.png'
-import AdminCard from '../common/AdminCard'
+import { CustomRatioImage } from '../common/Image'
 import MemberAvatar from '../common/MemberAvatar'
 import ProgramPriceLabel from './ProgramPriceLabel'
 
-const AvatarPlaceHolder = styled.div`
-  margin: 16px 0;
-  height: 32px;
+const StyledWrapper = styled.div`
+  overflow: hidden;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
 `
-const ProgramCover = styled.div<{ src?: string }>`
-  width: 100%;
-  padding-top: 56.25%;
-  background-image: url(${props => props.src || EmptyCover});
-  background-size: cover;
-  background-position: center;
+const StyledMeta = styled.div`
+  padding: 1.25rem;
+`
+const StyledTitle = styled.div`
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+  height: 3em;
+  color: var(--gray-darker);
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.8px;
+`
+const StyledDescription = styled.div`
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+  height: 3em;
+  color: var(--gray-dark);
+  font-size: 14px;
+  letter-spacing: 0.4px;
+`
+const AvatarPlaceHolder = styled.div`
+  height: 2rem;
 `
 const StyledPriceBlock = styled.div`
-  color: #585858;
+  height: 1.5rem;
+  color: var(--gray-dark);
+  font-size: 14px;
 `
 
-type ProgramCardProps = CardProps & {
-  withMetadata?: boolean
+type ProgramCardProps = {
   memberId: string
   programId: string
-  noPrice?: boolean
   programType?: string
+  noInstructor?: boolean
+  noPrice?: boolean
+  withMetadata?: boolean
 }
 const ProgramCard: React.FC<ProgramCardProps> = ({
-  withMetadata,
   memberId,
   programId,
-  noPrice,
   programType,
-  ...cardProps
+  noInstructor,
+  noPrice,
+  withMetadata,
 }) => {
   const { program } = useProgram(programId)
   const duration = useProgramDuration(programId)
@@ -48,12 +73,14 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
 
   return (
     <>
-      <AvatarPlaceHolder className="mb-3">
-        {program &&
-          program.roles
-            .filter(role => role.name === 'owner')
-            .map(role => <MemberAvatar key={role.memberId} memberId={role.memberId} withName />)}
-      </AvatarPlaceHolder>
+      {!noInstructor && (
+        <AvatarPlaceHolder className="my-3">
+          {program &&
+            program.roles
+              .filter(role => role.name === 'owner')
+              .map(role => <MemberAvatar key={role.memberId} memberId={role.memberId} withName />)}
+        </AvatarPlaceHolder>
+      )}
 
       <Link
         to={
@@ -62,28 +89,27 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
             : `/programs/${programId}` + (programType ? `?type=${programType}` : '')
         }
       >
-        <AdminCard
-          {...cardProps}
-          variant="program"
-          loading={!program}
-          cover={<ProgramCover src={program && program.coverUrl ? program.coverUrl : ''} />}
-        >
-          <Card.Meta
-            title={<Typography.Title ellipsis={{ rows: 2 }}>{program && program.title}</Typography.Title>}
-            description={
-              <>
-                <Typography.Paragraph ellipsis={{ rows: 2 }}>{program && program.abstract}</Typography.Paragraph>
-
-                {!isEnrolled && withMetadata && (
-                  <StyledPriceBlock className="d-flex justify-content-between">
-                    <div>{program && !program.isSubscription && durationFormatter(duration)}</div>
-                    {!noPrice && program && <ProgramPriceLabel program={program} />}
-                  </StyledPriceBlock>
-                )}
-              </>
-            }
+        <StyledWrapper>
+          <CustomRatioImage
+            width="100%"
+            ratio={9 / 16}
+            src={program && program.coverUrl ? program.coverUrl : EmptyCover}
+            shape="rounded"
           />
-        </AdminCard>
+          <StyledMeta>
+            <StyledTitle>{program && program.title}</StyledTitle>
+            <StyledDescription>{program && program.abstract}</StyledDescription>
+
+            <StyledPriceBlock className="d-flex justify-content-between">
+              {!isEnrolled && withMetadata && (
+                <>
+                  <div>{program && !program.isSubscription && durationFormatter(duration)}</div>
+                  {!noPrice && program && <ProgramPriceLabel program={program} />}
+                </>
+              )}
+            </StyledPriceBlock>
+          </StyledMeta>
+        </StyledWrapper>
       </Link>
     </>
   )

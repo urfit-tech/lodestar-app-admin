@@ -1,36 +1,12 @@
 import React from 'react'
 import styled from 'styled-components'
+import BlurredBanner from '../common/BlurredBanner'
 import { BREAK_POINT } from '../common/Responsive'
 
 const StyledWrapper = styled.div`
-  position: relative;
-  overflow: hidden;
-  color: white;
-
   @media (min-width: ${BREAK_POINT}px) {
     padding: 4rem 0;
   }
-`
-const StyledBackground = styled.div<{ src?: string }>`
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background-image: url(${props => props.src || ''});
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  transform: scale(1.1);
-  filter: blur(8px);
-`
-const StyledMask = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: rgba(0, 0, 0, 0.5);
 `
 const StyledCenterBox = styled.div`
   position: relative;
@@ -38,6 +14,7 @@ const StyledCenterBox = styled.div`
   padding: 2.5rem 6rem 2.5rem 1.5rem;
   width: 100%;
   max-width: 600px;
+  color: white;
 
   @media (min-width: ${BREAK_POINT}px) {
     padding: 5.25rem 6rem;
@@ -76,12 +53,12 @@ const StyledDecoration = styled.div`
 
   ::before {
     transform-origin: left bottom;
-    transform: rotate(-20deg);
+    transform: skewY(-20deg);
   }
 
   ::after {
     transform-origin: right bottom;
-    transform: rotate(20deg);
+    transform: skewY(20deg);
   }
 `
 const StyledTitle = styled.h1`
@@ -112,24 +89,23 @@ const ProgramPackageBanner: React.FC<ProgramPackageBannerProps> = ({
   totalDuration,
 }) => {
   return (
-    <StyledWrapper>
-      <StyledBackground src={coverUrl} />
-      <StyledMask />
-
-      <StyledCenterBox>
-        <StyledDecoration>
-          <span>
-            課程
-            <br />
-            組合
-          </span>
-        </StyledDecoration>
-        <StyledTitle className="mb-3">{title}</StyledTitle>
-        {/* <StyledMeta>
-          {programCount} 堂課・{Math.floor(totalDuration / 60)} 分鐘
-        </StyledMeta> */}
-      </StyledCenterBox>
-    </StyledWrapper>
+    <BlurredBanner coverUrl={coverUrl}>
+      <StyledWrapper>
+        <StyledCenterBox>
+          <StyledDecoration>
+            <span>
+              課程
+              <br />
+              組合
+            </span>
+          </StyledDecoration>
+          <StyledTitle className="mb-3">{title}</StyledTitle>
+          {/* <StyledMeta>
+            {programCount} 堂課・{Math.floor(totalDuration / 60)} 分鐘
+          </StyledMeta> */}
+        </StyledCenterBox>
+      </StyledWrapper>
+    </BlurredBanner>
   )
 }
 

@@ -1,11 +1,12 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Icon, message, Tag, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import styled from 'styled-components'
 import { InferType } from 'yup'
 import { dateFormatter } from '../../helpers'
 import { programContentSchema, programSchema } from '../../schemas/program'
+import types from '../../types'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
 
 const StyledTitle = styled.div`
@@ -26,7 +27,9 @@ const ProgramContentAdminItem: React.FC<{
   programContent: InferType<typeof programContentSchema>
   onRefetch?: () => void
 }> = ({ showPlans, programContent, program, onRefetch }) => {
-  const updateProgramContent = useMutation(UPDATE_PROGRAM_CONTENT)
+  const [updateProgramContent] = useMutation<types.PUBLISH_PROGRAM_CONTENT, types.PUBLISH_PROGRAM_CONTENTVariables>(
+    PUBLISH_PROGRAM_CONTENT,
+  )
 
   return (
     <div className="d-flex align-items-center justify-content-between p-3" style={{ background: '#f7f8f8' }}>
@@ -78,8 +81,8 @@ const ProgramContentAdminItem: React.FC<{
   )
 }
 
-const UPDATE_PROGRAM_CONTENT = gql`
-  mutation UPDATE_PROGRAM_CONTENT($programContentId: uuid!, $publishedAt: timestamptz) {
+const PUBLISH_PROGRAM_CONTENT = gql`
+  mutation PUBLISH_PROGRAM_CONTENT($programContentId: uuid!, $publishedAt: timestamptz) {
     update_program_content(where: { id: { _eq: $programContentId } }, _set: { published_at: $publishedAt }) {
       affected_rows
     }

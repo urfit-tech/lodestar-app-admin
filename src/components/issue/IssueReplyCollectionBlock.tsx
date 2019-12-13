@@ -1,8 +1,9 @@
+import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import { InferType } from 'yup'
 import { programRoleSchema } from '../../schemas/program'
+import types from '../../types'
 import { useAuth } from '../auth/AuthContext'
 import IssueReplyCreationBlock from './IssueReplyCreationBlock'
 import IssueReplyItem from './IssueReplyItem'
@@ -13,15 +14,18 @@ interface IssueReplyCollectionBlockProps {
 }
 const IssueReplyCollectionBlock: React.FC<IssueReplyCollectionBlockProps> = ({ programRoles, issueId }) => {
   const { currentMemberId } = useAuth()
-  const { loading, data, error, refetch } = useQuery(GET_ISSUE_REPLIES, {
-    variables: { issueId },
-  })
+  const { loading, data, error, refetch } = useQuery<types.GET_ISSUE_REPLIES, types.GET_ISSUE_REPLIESVariables>(
+    GET_ISSUE_REPLIES,
+    {
+      variables: { issueId },
+    },
+  )
 
   return (
     <>
       {loading
         ? '載入回覆中'
-        : error
+        : error || !data
         ? '無法載入回覆'
         : data.issue_reply.map((value: any) => (
             <div key={value.id} className="mt-5">

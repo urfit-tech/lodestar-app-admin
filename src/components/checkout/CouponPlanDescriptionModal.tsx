@@ -1,11 +1,12 @@
+import { useQuery } from '@apollo/react-hooks'
 import { Modal, Typography } from 'antd'
 import { ModalProps } from 'antd/lib/modal'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import styled from 'styled-components'
 import { InferType } from 'yup'
 import { couponPlanSchema } from '../../schemas/coupon'
+import types from '../../types'
 
 const StyledModal = styled(Modal)`
   color: ${props => props.theme['@normal-color']};
@@ -36,9 +37,12 @@ type CouponPlanDescriptionModalProps = ModalProps & {
   couponPlan: InferType<typeof couponPlanSchema>
 }
 const CouponPlanDescriptionModal: React.FC<CouponPlanDescriptionModalProps> = ({ couponPlan, ...modalProps }) => {
-  const { loading, data, error } = useQuery(GET_COUPON_PLAN_CODES, {
-    variables: { couponPlanId: couponPlan.id },
-  })
+  const { loading, data, error } = useQuery<types.GET_COUPON_PLAN_CODES, types.GET_COUPON_PLAN_CODESVariables>(
+    GET_COUPON_PLAN_CODES,
+    {
+      variables: { couponPlanId: couponPlan.id },
+    },
+  )
 
   return (
     <StyledModal title={couponPlan.title} footer={null} {...modalProps}>
@@ -46,7 +50,7 @@ const CouponPlanDescriptionModal: React.FC<CouponPlanDescriptionModalProps> = ({
 
       {loading
         ? '載入中'
-        : error
+        : error || !data
         ? '載入失敗'
         : data.coupon_code.map((codeValue: any) => (
             <div key={codeValue.code}>

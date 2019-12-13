@@ -57,13 +57,13 @@ const SocialLoginButton = SocialLogin(WrappedSocialLoginButton)
 const socialLogin = async (provider: string, providerToken: any) => {
   try {
     const { data } = await axios.post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/socialLogin`, {
-      appId: process.env.REACT_APP_ID,
+      appId: localStorage.getItem('kolable.app.id'),
       provider,
       providerToken,
     })
     const authToken = data.token
     try {
-      localStorage.setItem(`${process.env.REACT_APP_ID}.auth.token`, authToken)
+      localStorage.setItem(`kolable.auth.token`, authToken)
     } catch (error) {}
     return authToken
   } catch (err) {

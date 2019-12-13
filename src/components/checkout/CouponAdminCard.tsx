@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { InferType } from 'yup'
 import { currencyFormatter, dateFormatter } from '../../helpers'
 import { couponSchema } from '../../schemas/coupon'
-import AdminCard from '../common/AdminCard'
+import AdminCard from '../admin/AdminCard'
 import CouponDescriptionModal from './CouponDescriptionModal'
 
 const StyledAdminCard = styled(AdminCard)`

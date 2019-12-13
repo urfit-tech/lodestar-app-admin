@@ -8,7 +8,7 @@ import ProgramPlanAdminPane from '../../../components/program/ProgramPlanAdminPa
 import ProgramPublishingAdminPane from '../../../components/program/ProgramPublishingAdminPane'
 import ProgramRoleAdminPane from '../../../components/program/ProgramRoleAdminPane'
 import ProgramSettingAdminPane from '../../../components/program/ProgramSettingAdminPane'
-import { useProgram } from '../../../hooks/data'
+import { useProgram } from '../../../hooks/program'
 
 const StyledPageHeader = styled(PageHeader)`
   && {

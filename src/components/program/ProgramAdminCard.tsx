@@ -1,13 +1,13 @@
+import { useQuery } from '@apollo/react-hooks'
 import { Card, Typography } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { useProgram } from '../../hooks/data'
+import { useProgram } from '../../hooks/program'
 import EmptyCover from '../../images/default/empty-cover.png'
-import AdminCard from '../common/AdminCard'
+import AdminCard from '../admin/AdminCard'
 import MemberAvatar from '../common/MemberAvatar'
 import ProgramPriceLabel from './ProgramPriceLabel'
 
@@ -39,8 +39,10 @@ type ProgramAdminCardProps = CardProps & {
 const ProgramAdminCard: React.FC<ProgramAdminCardProps> = ({ programId, ...cardProps }) => {
   const { program } = useProgram(programId)
   const { loading: programEnrollmentLoading, error: programEnrollmentError, data: programEnrollmentData } = useQuery(
-    program && program.isSubscription ? GET_PROGRAM_PLAN_ENROLLMENT : GET_PROGRAM_ENROLLMENT,
-    { variables: { programId } },
+    program && program.isSubscription ? GET_SUBSCRIPTION_ENROLLMENT : GET_PERPETUAL_ENROLLMENT,
+    {
+      variables: { programId },
+    },
   )
 
   return (
@@ -84,8 +86,8 @@ const ProgramAdminCard: React.FC<ProgramAdminCardProps> = ({ programId, ...cardP
   )
 }
 
-const GET_PROGRAM_ENROLLMENT = gql`
-  query GET_PROGRAM_ENROLLMENT($programId: uuid!) {
+const GET_PERPETUAL_ENROLLMENT = gql`
+  query GET_PERPETUAL_ENROLLMENT($programId: uuid!) {
     program_enrollment_aggregate(where: { program_id: { _eq: $programId } }) {
       aggregate {
         count
@@ -94,8 +96,8 @@ const GET_PROGRAM_ENROLLMENT = gql`
   }
 `
 
-const GET_PROGRAM_PLAN_ENROLLMENT = gql`
-  query GET_PROGRAM_PLAN_ENROLLMENT($programId: uuid!) {
+const GET_SUBSCRIPTION_ENROLLMENT = gql`
+  query GET_SUBSCRIPTION_ENROLLMENT($programId: uuid!) {
     program_plan_enrollment_aggregate(where: { program_plan: { program_id: { _eq: $programId } } }) {
       aggregate {
         count

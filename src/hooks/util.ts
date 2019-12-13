@@ -1,22 +1,11 @@
 import { filter } from 'ramda'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import ReactPixel from 'react-facebook-pixel'
 import ReactGA from 'react-ga'
 import useRouter from 'use-react-router'
 import { TPDirect } from '../helpers'
 import { routesProps } from '../Routes'
 import settings from '../settings'
-
-//create your forceUpdate hook
-export const useForceUpdate = () => {
-  const [state, setState] = useState(true) //boolean state
-  return () => setState(!state) // toggle the state to force render
-}
-
-export const useTheme = () => {
-  const theme = require(`../theme/default.json`)
-  return theme
-}
 
 export const useRouteKeys = () => {
   const { location } = useRouter()
@@ -42,6 +31,7 @@ export const useInterval = (callback: Function, delay: number | null, immediatel
     }
   }, [delay, immediately])
 }
+
 export const useTappay = () => {
   settings.tappayApp.id &&
     settings.tappayApp.key &&
@@ -56,6 +46,7 @@ export const useTappay = () => {
 export const useGA = () => {
   settings.trackingId.ga && ReactGA.initialize(settings.trackingId.ga)
 }
+
 export const useGAPageView = () => {
   useEffect(() => {
     ReactGA.pageview(window.location.pathname + window.location.search)

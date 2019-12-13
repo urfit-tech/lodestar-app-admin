@@ -1,7 +1,7 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Badge, Button, List, Popover } from 'antd'
 import gql from 'graphql-tag'
 import React, { useEffect } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import { useNotifications } from '../../hooks/data'
@@ -54,7 +54,8 @@ type NotificationDropdownProps = {
 const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ memberId }) => {
   const { history } = useRouter()
   const { notifications, startPolling, refetch } = useNotifications(memberId, 15)
-  const readAllNotification = useMutation<types.READ_ALL_NOTIFICATIONS, types.READ_ALL_NOTIFICATIONSVariables>(
+
+  const [readAllNotification] = useMutation<types.READ_ALL_NOTIFICATIONS, types.READ_ALL_NOTIFICATIONSVariables>(
     READ_ALL_NOTIFICATION,
   )
 

@@ -1,12 +1,13 @@
+import { useQuery } from '@apollo/react-hooks'
 import { Statistic } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import { number, object } from 'yup'
-import AdminCard from '../common/AdminCard'
+import types from '../../types'
+import AdminCard from '../admin/AdminCard'
 
 const SaleSummaryAdminCard = () => {
-  const { loading, data } = useQuery(GET_TOTAL_ORDER_AMOUNT)
+  const { loading, data } = useQuery<types.GET_TOTAL_ORDER_AMOUNT>(GET_TOTAL_ORDER_AMOUNT)
   const castData = gqlResultSchema.cast(data)
   const totalSales =
     (castData.orderProductAggregate.aggregate.sum.price || 0) -

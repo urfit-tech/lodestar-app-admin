@@ -1,22 +1,25 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Input, message, Typography } from 'antd'
 import Form, { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import styled from 'styled-components'
 import { InferType } from 'yup'
 import { handleError } from '../../helpers'
 import { programSchema } from '../../schemas/program'
-import AdminCard from '../common/AdminCard'
+import types from '../../types'
+import AdminCard from '../admin/AdminCard'
+import { CustomRatioImage } from '../common/Image'
 import { BREAK_POINT } from '../common/Responsive'
 import SingleUploader from '../common/SingleUploader'
 import StyledBraftEditor from '../common/StyledBraftEditor'
 
-const StyledProgramCover = styled.img`
+const CoverBlock = styled.div`
   margin-bottom: 2rem;
   width: 100%;
   max-width: 12rem;
+  overflow: hidden;
   border-radius: 4px;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
 
@@ -48,30 +51,38 @@ type ProgramIntroAdminCardProps = FormComponentProps & {
   onRefetch?: () => void
 }
 const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, form, onRefetch }) => {
-  const updateProgramIntro = useMutation(UPDATE_PROGRAM_INTRO)
-  const [submitTimes, setSubmitTimes] = useState(Date.now())
+  const [updateProgramIntro] = useMutation<types.UPDATE_PROGRAM_INTRO, types.UPDATE_PROGRAM_INTROVariables>(
+    UPDATE_PROGRAM_INTRO,
+  )
+
+  const [loading, setLoading] = useState(false)
 
   const submit = () => {
     program &&
       form.validateFields((error, values) => {
         if (!error) {
+          setLoading(true)
+          const uploadTime = Date.now()
+
           updateProgramIntro({
             variables: {
               programId: program.id,
               abstract: values.abstract || '',
               description: values.description.toRAW(),
               coverUrl: values.coverImg
-                ? `https://${process.env.REACT_APP_S3_PUBLIC_BUCKET}/program_covers/${process.env.REACT_APP_ID}/${program.id}`
+                ? `https://${process.env.REACT_APP_S3_PUBLIC_BUCKET}/program_covers/${localStorage.getItem(
+                    'kolable.app.id',
+                  )}/${program.id}?t=${uploadTime}`
                 : '',
               coverVideoUrl: values.coverVideoUrl,
             },
           })
             .then(() => {
-              setSubmitTimes(submitTimes + 1)
               onRefetch && onRefetch()
               message.success('儲存成功')
             })
             .catch(handleError)
+            .finally(() => setLoading(false))
         }
       })
   }
@@ -91,25 +102,18 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
           <Form.Item label="課程封面">
             <div className="d-flex align-items-center flex-wrap">
               {program.coverUrl && (
-                <StyledProgramCover src={`${program.coverUrl}?t=${submitTimes}`} alt="program cover" />
+                <CoverBlock>
+                  <CustomRatioImage src={program.coverUrl} width="100%" ratio={9 / 16} />
+                </CoverBlock>
               )}
-              {form.getFieldDecorator('coverImg', {
-                initialValue: program.coverUrl && {
-                  uid: '-1',
-                  name: program.title,
-                  status: 'done',
-                  url: program.coverUrl,
-                },
-              })(
+              {form.getFieldDecorator('coverImg')(
                 <StyledSingleUploader
                   accept="image/*"
                   listType="picture-card"
-                  path={`program_covers/${process.env.REACT_APP_ID}/${program.id}`}
+                  path={`program_covers/${localStorage.getItem('kolable.app.id')}/${program.id}`}
                   showUploadList={false}
-                  onSuccess={() => {
-                    submit()
-                  }}
-                  isPublic={true}
+                  onSuccess={() => submit()}
+                  isPublic
                 />,
               )}
             </div>
@@ -159,7 +163,7 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
           </Form.Item>
           <Form.Item wrapperCol={{ md: { offset: 4 } }}>
             <Button onClick={() => form.resetFields()}>取消</Button>
-            <Button className="ml-2" type="primary" htmlType="submit">
+            <Button className="ml-2" type="primary" htmlType="submit" loading={loading}>
               儲存
             </Button>
           </Form.Item>

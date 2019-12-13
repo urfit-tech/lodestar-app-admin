@@ -1,9 +1,9 @@
+import { useQuery } from '@apollo/react-hooks'
 import { message } from 'antd'
 import axios from 'axios'
 import gql from 'graphql-tag'
 import { reverse } from 'ramda'
 import React from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import { useAuth } from '../../components/auth/AuthContext'
 import VoucherCollectionBlockComponent from '../../components/voucher/VoucherCollectionBlock'
 import types from '../../types'
@@ -94,7 +94,7 @@ const VoucherCollectionBlock = () => {
 
 const insertVoucherCode = (memberId: string, code: string) => {
   return axios.post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/insertVoucherCode`, {
-    appId: process.env.REACT_APP_ID,
+    appId: localStorage.getItem('kolable.app.id'),
     memberId,
     code,
   })
@@ -102,7 +102,7 @@ const insertVoucherCode = (memberId: string, code: string) => {
 
 const exchangeVoucherCode = (memberId: string, voucherId: string, selectedProductIds: string[]) => {
   return axios.post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/placeOrder`, {
-    appId: process.env.REACT_APP_ID,
+    appId: localStorage.getItem('kolable.app.id'),
     memberId,
     discount: {
       type: 'Voucher',

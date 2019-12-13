@@ -1,15 +1,16 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Dropdown, Form, Icon, Input, Menu, message, Tag, Typography } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import styled, { ThemeContext } from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { InferType } from 'yup'
 import { programRoleFormatter, rgba } from '../../helpers'
 import { programRoleSchema } from '../../schemas/program'
+import types from '../../types'
 import { useAuth } from '../auth/AuthContext'
 import MemberAvatar from '../common/MemberAvatar'
 import { BraftContent } from '../common/StyledBraftEditor'
@@ -82,10 +83,14 @@ const IssueItem: React.FC<IssueItemProps> = ({
   const { currentMemberId } = useAuth()
   const theme = useContext(ThemeContext)
 
-  const insertIssueReaction = useMutation(INSERT_ISSUE_REACTION)
-  const deleteIssueReaction = useMutation(DELETE_ISSUE_REACTION)
-  const deleteIssue = useMutation(DELETE_ISSUE)
-  const updateIssue = useMutation(UPDATE_ISSUE)
+  const [insertIssueReaction] = useMutation<types.INSERT_ISSUE_REACTION, types.INSERT_ISSUE_REACTIONVariables>(
+    INSERT_ISSUE_REACTION,
+  )
+  const [deleteIssueReaction] = useMutation<types.DELETE_ISSUE_REACTION, types.DELETE_ISSUE_REACTIONVariables>(
+    DELETE_ISSUE_REACTION,
+  )
+  const [deleteIssue] = useMutation<types.DELETE_ISSUE, types.DELETE_ISSUEVariables>(DELETE_ISSUE)
+  const [updateIssue] = useMutation<types.UPDATE_ISSUE, types.UPDATE_ISSUEVariables>(UPDATE_ISSUE)
 
   const [editing, setEditing] = useState()
   const [focus, setFocus] = useState(!qIssueReplyId && qIssueId === issueId)
@@ -100,18 +105,16 @@ const IssueItem: React.FC<IssueItemProps> = ({
     }
   }, [currentMemberId, reactedMemberIds])
 
-  const toggleReaction = (reacted: boolean) => {
-    const promise = reacted
-      ? deleteIssueReaction({
-          variables: { issueId, memberId: currentMemberId },
+  const toggleReaction = async (reacted: boolean) => {
+    reacted
+      ? await deleteIssueReaction({
+          variables: { issueId, memberId: currentMemberId || '' },
         })
-      : insertIssueReaction({
-          variables: { issueId, memberId: currentMemberId },
+      : await insertIssueReaction({
+          variables: { issueId, memberId: currentMemberId || '' },
         })
 
-    promise.then(() => {
-      onRefetch && onRefetch()
-    })
+    onRefetch && onRefetch()
   }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

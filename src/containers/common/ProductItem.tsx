@@ -1,16 +1,15 @@
+import { useQuery } from '@apollo/react-hooks'
 import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useQuery } from 'react-apollo-hooks'
-import ProductItemComponent from '../../components/common/ProductItem'
+import ProductItemComponent, { ProductItemProps } from '../../components/common/ProductItem'
 import { ProgramPlanPeriodType } from '../../schemas/program'
 import types from '../../types'
 
-type ProductItemProps = {
+const ProductItem: React.FC<{
   id: string
-  variant?: string
-}
-const ProductItem: React.FC<ProductItemProps> = ({ id, variant }) => {
+  variant?: 'default' | 'simple' | 'cartItem' | 'checkout'
+}> = ({ id, variant }) => {
   const [productType, targetId] = id.split('_')
   const { loading, error, data } = useQuery<types.GET_PROGRAM_SIMPLE, types.GET_PROGRAM_SIMPLEVariables>(
     GET_PRODUCT_SIMPLE,
@@ -21,16 +20,7 @@ const ProductItem: React.FC<ProductItemProps> = ({ id, variant }) => {
     return <Skeleton active avatar />
   }
 
-  let target: {
-    id: string
-    title: string
-    coverUrl?: string
-    listPrice: number
-    salePrice?: number
-    discountDownPrice?: number
-    periodAmount?: number
-    periodType?: ProgramPlanPeriodType
-  }
+  let target: ProductItemProps
 
   if (data.program_by_pk) {
     // Program
@@ -107,7 +97,7 @@ const ProductItem: React.FC<ProductItemProps> = ({ id, variant }) => {
     return <>{targetId}</>
   }
 
-  return <ProductItemComponent type={productType} variant={variant} {...target} />
+  return <ProductItemComponent productType={productType} variant={variant} {...target} />
 }
 
 const GET_PRODUCT_SIMPLE = gql`

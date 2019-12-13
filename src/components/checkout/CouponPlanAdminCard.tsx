@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { InferType } from 'yup'
 import { currencyFormatter, dateFormatter } from '../../helpers'
 import { couponPlanSchema } from '../../schemas/coupon'
-import AdminCard from '../common/AdminCard'
+import AdminCard from '../admin/AdminCard'
 import CouponPlanAdminModal from './CouponPlanAdminModal'
 import CouponPlanDescriptionModal from './CouponPlanDescriptionModal'
 

@@ -1,8 +1,7 @@
 import React from 'react'
-import ProjectPlan from './ProjectPlan'
-import { ProjectPlanProps } from './ProjectPlan'
 import styled from 'styled-components'
 import { BREAK_POINT } from '../common/Responsive'
+import ProjectPlan, { ProjectPlanProps } from './ProjectPlan'
 
 type OnSaleProjectPlanSectionProps = {
   projectPlans: ProjectPlanProps[]
@@ -13,7 +12,7 @@ const StyledSection = styled.section`
 `
 
 const StyledWrapper = styled.section`
-  padding: 20px;
+  padding: 60px 20px;
   > h3 {
     text-align: center;
     font-size: 28px;
@@ -39,7 +38,7 @@ const StyledWrapper = styled.section`
       letter-spacing: 1px;
       color: var(--gray-darker);
     }
-    p {
+    > p {
       width: 100%;
       padding-bottom: 64px;
     }
@@ -62,7 +61,7 @@ const StyledContainer = styled.div`
 
 const OnSaleProjectPlanSection: React.FC<OnSaleProjectPlanSectionProps> = ({ projectPlans }) => {
   return (
-    <StyledSection>
+    <StyledSection id="project-plan-section">
       <StyledWrapper>
         <h3>方案介紹</h3>
         <p>立即成為VIP，開啟你的全方位設計核心能力，學習設計不用花大錢！</p>

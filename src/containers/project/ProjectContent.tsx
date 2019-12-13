@@ -1,9 +1,9 @@
+import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import { useAuth } from '../../components/auth/AuthContext'
 import ProjectContentComponent from '../../components/project/ProjectContent'
-import { useEnrolledProjectPlanIds } from '../../hooks/data'
+import { useEnrolledProjectPlanIds } from '../../hooks/Project'
 import types from '../../types'
 
 type ProjectContent = {

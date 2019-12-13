@@ -1,4 +1,3 @@
-import { Typography } from 'antd'
 import ReactPlayer from 'react-player'
 import styled from 'styled-components'
 import { BREAK_POINT } from '../../common/Responsive'
@@ -7,16 +6,14 @@ export const StyledCategories = styled.div`
   margin-bottom: 1rem;
   font-size: 14px;
 `
-export const StyledTitle = styled(Typography.Title)`
-  && {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 600;
-    letter-spacing: 0.23px;
+export const StyledTitle = styled.h1`
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.23;
+  letter-spacing: 0.23px;
 
-    @media (min-width: ${BREAK_POINT}px) {
-      font-size: 40px;
-    }
+  @media (min-width: ${BREAK_POINT}px) {
+    font-size: 40px;
   }
 `
 export const StyledVideoWrapper = styled.div<{ backgroundImage?: string }>`

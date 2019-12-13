@@ -1,7 +1,5 @@
 import React from 'react'
 
-const RecommendationSection = () => (
-  <div></div>
-)
+const RecommendationSection = () => <div></div>
 
 export default RecommendationSection

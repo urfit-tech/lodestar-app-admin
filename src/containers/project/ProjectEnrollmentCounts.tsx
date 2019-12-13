@@ -1,8 +1,8 @@
-import React from 'react'
-import gql from 'graphql-tag'
-import { useQuery } from 'react-apollo-hooks'
-import types from '../../types'
+import { useQuery } from '@apollo/react-hooks'
 import { Spin } from 'antd'
+import gql from 'graphql-tag'
+import React from 'react'
+import types from '../../types'
 
 const ProjectEnrollmentCounts: React.FC<{ projectId: string }> = ({ projectId }) => {
   const { loading, error, data } = useQuery<

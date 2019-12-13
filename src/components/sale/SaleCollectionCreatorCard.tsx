@@ -2,9 +2,9 @@ import { List, Typography } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
 import { currencyFormatter, dateFormatter } from '../../helpers'
-import { usePublicMember } from '../../hooks/data'
+import { usePublicMember } from '../../hooks/member'
 import * as types from '../../types'
-import AdminCard from '../common/AdminCard'
+import AdminCard from '../admin/AdminCard'
 
 const StyledCard = styled(AdminCard)`
   .ant-card-body {

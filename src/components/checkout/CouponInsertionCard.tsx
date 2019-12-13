@@ -3,8 +3,8 @@ import { CardProps } from 'antd/lib/card'
 import { FormComponentProps } from 'antd/lib/form'
 import axios from 'axios'
 import React, { useState } from 'react'
+import AdminCard from '../admin/AdminCard'
 import { useAuth } from '../auth/AuthContext'
-import AdminCard from '../common/AdminCard'
 
 type CouponInsertionCardProps = CardProps &
   FormComponentProps & {
@@ -52,7 +52,7 @@ const CouponInsertionCard: React.FC<CouponInsertionCardProps> = ({ form, onInser
 }
 export const insertCouponCode = (memberId: string, code: string) =>
   axios.post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/insertCouponCode`, {
-    appId: process.env.REACT_APP_ID,
+    appId: localStorage.getItem('kolable.app.id'),
     memberId,
     code,
   })

@@ -3,13 +3,15 @@ import { ClickParam, MenuProps } from 'antd/lib/menu'
 import React from 'react'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
-import { useEnrolledMembershipCardIds } from '../../hooks/data'
+import { useEnrolledMembershipCardIds } from '../../hooks/card'
 import { ReactComponent as BookIcon } from '../../images/default/book.svg'
+import { ReactComponent as CalendarAltOIcon } from '../../images/default/calendar-alt-o.svg'
 import { ReactComponent as CalendarAltIcon } from '../../images/default/calendar-alt.svg'
 import { ReactComponent as ClipboardListIcon } from '../../images/default/clipboard-list.svg'
 import { ReactComponent as CommentsIcon } from '../../images/default/comments.svg'
 import { ReactComponent as GiftIcon } from '../../images/default/gift.svg'
 import { ReactComponent as MembercardIcon } from '../../images/default/membercard.svg'
+import { ReactComponent as MicrophoneIcon } from '../../images/default/microphone.svg'
 import { ReactComponent as PointIcon } from '../../images/default/point.svg'
 import { ReactComponent as TicketIcon } from '../../images/default/ticket.svg'
 import { ReactComponent as UserIcon } from '../../images/default/user.svg'
@@ -45,12 +47,13 @@ export const OwnerAdminMenu = (props: MenuProps) => (
     <div className="p-3">
       <Tag style={{ border: '0px' }}>管理者</Tag>
     </div>
-    <AdminMenu {...props} defaultOpenKeys={['owner_promotion_admin']}>
+    <AdminMenu {...props} defaultOpenKeys={['owner_promotion_admin', 'owner_podcast_admin', 'owner_appointment_admin']}>
       <Menu.Item key="owner_sales_admin">
         <Icon type="dollar" className="mr-2" />
         <span>銷售管理</span>
       </Menu.Item>
       {/* <Menu.Item key="owner_point_admin">點數設定</Menu.Item> */}
+
       <Menu.SubMenu
         key="owner_promotion_admin"
         title={
@@ -69,6 +72,38 @@ export const OwnerAdminMenu = (props: MenuProps) => (
           </Menu.Item>
         )}
       </Menu.SubMenu>
+
+      <Menu.SubMenu
+        key="owner_podcast_admin"
+        title={
+          <>
+            <Icon component={() => <MicrophoneIcon />} />
+            <Typography.Text>音頻廣播</Typography.Text>
+          </>
+        }
+      >
+        <Menu.Item key="owner_podcast_program_collection_admin">
+          <span>廣播管理</span>
+        </Menu.Item>
+        <Menu.Item key="owner_podcast_plan_admin">
+          <span>訂閱方案</span>
+        </Menu.Item>
+      </Menu.SubMenu>
+
+      <Menu.SubMenu
+        key="owner_appointment_admin"
+        title={
+          <>
+            <Icon component={() => <CalendarAltOIcon />} />
+            <Typography.Text>預約服務</Typography.Text>
+          </>
+        }
+      >
+        <Menu.Item key="owner_appointment_plan_collection_admin">
+          <span>預約方案</span>
+        </Menu.Item>
+      </Menu.SubMenu>
+
       <Menu.Item key="owner_program_general_admin">
         <Icon type="book" className="mr-2" />
         <span>分類設定</span>
@@ -138,3 +173,53 @@ export const CreatorAdminMenu = (props: MenuProps) => (
     </AdminMenu>
   </div>
 )
+
+export const MemberAdminMenu = (props: MenuProps) => {
+  const { currentMemberId } = useAuth()
+  const { enrolledMembershipCardIds } = useEnrolledMembershipCardIds(currentMemberId || '')
+
+  return (
+    <AdminMenu {...props} style={{ background: 'transparent', border: 'none' }}>
+      <Menu.Item key="member_profile_admin">
+        <Icon component={() => <UserIcon />} className="mr-2" />
+        個人設定
+      </Menu.Item>
+      <Menu.Item key="member_program_issues_admin">
+        <Icon component={() => <BookIcon />} className="mr-2" />
+        課程問題
+      </Menu.Item>
+      <Menu.Item key="member_orders_admin">
+        <Icon component={() => <ClipboardListIcon />} className="mr-2" />
+        訂單記錄
+      </Menu.Item>
+      <Menu.Item key="member_point_history_admin">
+        <Icon component={() => <PointIcon />} className="mr-2" />
+        點數紀錄
+      </Menu.Item>
+      <Menu.Item key="member_coupons_admin">
+        <Icon component={() => <TicketIcon />} className="mr-2" />
+        折價券
+      </Menu.Item>
+      {process.env.REACT_APP_MODULE_VOUCHER === 'ENABLED' && (
+        <Menu.Item key="member_voucher_admin">
+          <Icon component={() => <GiftIcon />} className="mr-2" />
+          兌換券
+        </Menu.Item>
+      )}
+      {process.env.REACT_APP_MODULE_MEMBERSHIPCARD === 'ENABLED' && enrolledMembershipCardIds.length > 0 && (
+        <Menu.Item key="member_cards_admin">
+          <Icon component={() => <MembercardIcon />} className="mr-2" />
+          會員卡
+        </Menu.Item>
+      )}
+      {/* <Menu.Item key="member_product_issues_admin">
+        <Icon type="qrcode" className="mr-2" />
+        產品問題
+      </Menu.Item> */}
+      <Menu.Item key="_blank" data-href={settings.customerSupportLink}>
+        <Icon component={() => <CommentsIcon />} className="mr-2" />
+        聯絡客服
+      </Menu.Item>
+    </AdminMenu>
+  )
+}

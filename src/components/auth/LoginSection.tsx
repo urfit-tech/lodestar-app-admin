@@ -37,7 +37,7 @@ const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) 
         setLoading(true)
         axios
           .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/generalLogin`, {
-            appId: process.env.REACT_APP_ID,
+            appId: localStorage.getItem('kolable.app.id'),
             account: values.account,
             password: values.password,
           })
@@ -49,7 +49,7 @@ const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) 
               history.push(`/check-email?email=${values.account}&type=reset-password`)
             } else {
               try {
-                localStorage.setItem(`${process.env.REACT_APP_ID}.auth.token`, authToken)
+                localStorage.setItem(`kolable.auth.token`, authToken)
               } catch (error) {}
               setAuthToken && setAuthToken(authToken)
             }

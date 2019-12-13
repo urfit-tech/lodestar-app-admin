@@ -27,7 +27,6 @@ const StyledWrapper = styled.div`
   padding: 20px;
 
   @media (min-width: ${BREAK_POINT}px) {
-
   }
 `
 

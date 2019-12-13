@@ -3,11 +3,11 @@ import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
-import { useMember, useMemberPoint } from '../../hooks/data'
+import { useMember, useMemberPoint } from '../../hooks/member'
 import settings from '../../settings'
+import { CreatorAdminMenu, MemberAdminMenu, OwnerAdminMenu } from '../admin/AdminMenu'
 import { useAuth } from '../auth/AuthContext'
 import { AuthModalContext } from '../auth/AuthModal'
-import { CreatorAdminMenu, OwnerAdminMenu } from './AdminMenu'
 import MemberAvatar from './MemberAvatar'
 import Responsive from './Responsive'
 
@@ -50,7 +50,7 @@ const MemberPointItem: React.FC<{ memberId: string }> = ({ memberId }) => {
 const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
   const { history } = useRouter()
   const { member } = useMember(memberId)
-  const { currentMemberId, allowedUserRoles, isAuthenticated, currentUserRole, setAuthToken } = useAuth()
+  const { currentMemberId, isAuthenticated, currentUserRole, setAuthToken } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
   const navLinks = settings.navLinks
 
@@ -69,24 +69,41 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
     <Wrapper>
       <StyledList split={false}>
         <BorderedItem className="justify-content-between">
-          <div>{member && member.name}</div>
+          <div>
+            {member && member.name}
+            <br />
+            {currentMemberId && isAuthenticated && <MemberPointItem memberId={currentMemberId} />}
+          </div>
           <Responsive.Default>
             <MemberAvatar memberId={currentMemberId || ''} size={36} />
           </Responsive.Default>
         </BorderedItem>
+
+        <Responsive.Default>
+          {CustomNavLinks}
+          {isAuthenticated && (
+            <BorderedItem onClick={() => history.push(`/members/${currentMemberId}`)} style={{ cursor: 'pointer' }}>
+              <BlankIcon className="mr-2" />
+              我的主頁
+            </BorderedItem>
+          )}
+        </Responsive.Default>
 
         <BorderedItem className="shift-left">
           {currentUserRole === 'app-owner' ? (
             <OwnerAdminMenu style={{ border: 'none' }} />
           ) : currentUserRole === 'content-creator' ? (
             <CreatorAdminMenu style={{ border: 'none' }} />
-          ) : null}
+          ) : (
+            <MemberAdminMenu style={{ border: 'none' }} />
+          )}
         </BorderedItem>
+
         <List.Item
           style={{ cursor: 'pointer' }}
           onClick={() => {
             try {
-              localStorage.removeItem(`${process.env.REACT_APP_ID}.auth.token`)
+              localStorage.removeItem(`kolable.auth.token`)
             } catch (error) {}
             setAuthToken && setAuthToken(null)
           }}
@@ -122,10 +139,10 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
           content={
             <Wrapper>
               <StyledList split={false}>
-                <List.Item onClick={() => setVisible && setVisible(true)} style={{ cursor: 'pointer' }}>
+                {/* <List.Item onClick={() => setVisible && setVisible(true)} style={{ cursor: 'pointer' }}>
                   <BlankIcon className="mr-2" />
                   <span>註冊登入</span>
-                </List.Item>
+                </List.Item> */}
                 {CustomNavLinks}
               </StyledList>
             </Wrapper>

@@ -1,9 +1,10 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Spin, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import { InferType } from 'yup'
 import { programSchema } from '../../schemas/program'
+import types from '../../types'
 import ProgramContentSectionAdminCard from './ProgramContentSectionAdminCard'
 import ProgramStructureAdminModal from './ProgramStructureAdminModal'
 
@@ -11,8 +12,13 @@ const ProgramContentAdminPane: React.FC<{
   program: InferType<typeof programSchema> | null
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
+  const [createProgramContentSection] = useMutation<
+    types.INSERT_PROGRAM_CONTENT_SECTION,
+    types.INSERT_PROGRAM_CONTENT_SECTIONVariables
+  >(INSERT_PROGRAM_CONTENT_SECTION)
+
   const [loading, setLoading] = useState()
-  const createProgramContentSection = useMutation(INSERT_PROGRAM_CONTENT_SECTION)
+
   const handleContentSectionAdd = () => {
     if (program) {
       setLoading(true)

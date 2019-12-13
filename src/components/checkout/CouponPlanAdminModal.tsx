@@ -1,3 +1,4 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, DatePicker, Form, Input, InputNumber, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import { generate } from 'coupon-code'
@@ -5,10 +6,10 @@ import gql from 'graphql-tag'
 import moment from 'moment'
 import { times } from 'ramda'
 import React, { useState } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import { InferType } from 'yup'
 import { couponPlanSchema } from '../../schemas/coupon'
-import AdminModal, { AdminModalProps } from '../common/AdminModal'
+import types from '../../types'
+import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CouponPlanDiscountSelector from './CouponPlanDiscountSelector'
 import PlanCodeSelector, { PlanCodeProps } from './PlanCodeSelector'
 
@@ -18,8 +19,12 @@ type CouponPlanAdminModalProps = AdminModalProps &
   }
 const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, couponPlan, ...props }) => {
   const [loading, setLoading] = useState()
-  const createCouponPlan = useMutation(INSERT_COUPON_PLAN)
-  const updateCouponPlan = useMutation(UPDATE_COUPON_PLAN)
+  const [createCouponPlan] = useMutation<types.INSERT_COUPON_PLAN, types.INSERT_COUPON_PLANVariables>(
+    INSERT_COUPON_PLAN,
+  )
+  const [updateCouponPlan] = useMutation<types.UPDATE_COUPON_PLAN, types.UPDATE_COUPON_PLANVariables>(
+    UPDATE_COUPON_PLAN,
+  )
 
   const handleSubmit = () => {
     form.validateFieldsAndScroll((error, values) => {
@@ -54,7 +59,7 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
               if (couponCode.type === 'random') {
                 return times(
                   () => ({
-                    app_id: process.env.REACT_APP_ID,
+                    app_id: localStorage.getItem('kolable.app.id'),
                     code: generate(),
                     count: 1,
                     remaining: 1,
@@ -63,7 +68,7 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
                 )
               }
               return {
-                app_id: process.env.REACT_APP_ID,
+                app_id: localStorage.getItem('kolable.app.id'),
                 code: couponCode.code,
                 count: couponCode.count,
                 remaining: couponCode.count,

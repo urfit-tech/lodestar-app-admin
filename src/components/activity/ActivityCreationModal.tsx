@@ -1,7 +1,7 @@
 import { Button, Form, Icon, Input } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import React, { useState } from 'react'
-import AdminModal from '../common/AdminModal'
+import AdminModal from '../admin/AdminModal'
 import ProgramCategorySelector from '../program/ProgramCategorySelector'
 
 type ActivityCreationModalProps = FormComponentProps & {

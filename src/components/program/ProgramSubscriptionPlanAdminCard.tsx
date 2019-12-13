@@ -1,12 +1,13 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, InputNumber, Typography } from 'antd'
 import Form, { FormComponentProps, FormProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
-import { useMutation } from 'react-apollo-hooks'
 import styled from 'styled-components'
 import { InferType } from 'yup'
 import { programPlanSchema } from '../../schemas/program'
-import AdminCard from '../common/AdminCard'
+import types from '../../types'
+import AdminCard from '../admin/AdminCard'
 import PriceLabel from '../common/PriceLabel'
 import { BraftContent } from '../common/StyledBraftEditor'
 import ProgramPlanAdminModal from './ProgramPlanAdminModal'
@@ -92,8 +93,11 @@ const ProgramSubscriptionPlanAdminCard: React.FC<ProgramSubscriptionPlanAdminCar
 
 type PerpetualPlanFormProps = FormComponentProps & FormProps & { programPlan: InferType<typeof programPlanSchema> }
 const PerpetualPlanForm: React.FC<PerpetualPlanFormProps> = ({ form, programPlan }) => {
+  const [updateProgramContent] = useMutation<
+    types.UPDATE_PROGRAM_SUBSCRIPTION_PLAN,
+    types.UPDATE_PROGRAM_SUBSCRIPTION_PLANVariables
+  >(UPDATE_PROGRAM_SUBSCRIPTION_PLAN)
   const [loading, setLoading] = useState()
-  const updateProgramContent = useMutation(UPDATE_PROGRAM_PLAN)
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -138,8 +142,8 @@ const PerpetualPlanForm: React.FC<PerpetualPlanFormProps> = ({ form, programPlan
 }
 const WrappedPerpetualPlanForm = Form.create<PerpetualPlanFormProps>()(PerpetualPlanForm)
 
-const UPDATE_PROGRAM_PLAN = gql`
-  mutation UPDATE_PROGRAM_PLAN($programPlanId: uuid!, $listPrice: numeric!, $salePrice: numeric!) {
+const UPDATE_PROGRAM_SUBSCRIPTION_PLAN = gql`
+  mutation UPDATE_PROGRAM_SUBSCRIPTION_PLAN($programPlanId: uuid!, $listPrice: numeric!, $salePrice: numeric!) {
     update_program_plan(
       where: { id: { _eq: $programPlanId } }
       _set: { list_price: $listPrice, sale_price: $salePrice }

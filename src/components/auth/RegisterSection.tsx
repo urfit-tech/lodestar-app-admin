@@ -22,7 +22,7 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChan
         setLoading(true)
         axios
           .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/register`, {
-            appId: process.env.REACT_APP_ID,
+            appId: localStorage.getItem('kolable.app.id'),
             username: values.username,
             email: values.email,
             password: values.password,
@@ -30,7 +30,7 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChan
           .then(({ data }) => {
             const authToken = data.token
             try {
-              localStorage.setItem(`${process.env.REACT_APP_ID}.auth.token`, authToken)
+              localStorage.setItem(`kolable.auth.token`, authToken)
             } catch (error) {}
             setAuthToken && setAuthToken(authToken)
             setVisible && setVisible(false)
@@ -68,7 +68,10 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChan
         </Form.Item>
         <Form.Item>
           {form.getFieldDecorator('email', {
-            rules: [{ required: true, message: '請輸入 Email' }, { type: 'email', message: 'Email 格式錯誤' }],
+            rules: [
+              { required: true, message: '請輸入 Email' },
+              { type: 'email', message: 'Email 格式錯誤' },
+            ],
           })(<Input placeholder="Email" suffix={<Icon type="mail" />} />)}
         </Form.Item>
         <Form.Item>

@@ -2,8 +2,8 @@ import { Button, Form, Input, message, Typography } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { FormComponentProps } from 'antd/lib/form'
 import React from 'react'
-import { useMember, useUpdateMember } from '../../hooks/data'
-import AdminCard from '../common/AdminCard'
+import { useMember, useUpdateMember } from '../../hooks/member'
+import AdminCard from '../admin/AdminCard'
 import { StyledForm } from '../layout'
 
 type ProfileAccountAdminCardProps = CardProps &
@@ -13,6 +13,7 @@ type ProfileAccountAdminCardProps = CardProps &
 const ProfileAccountAdminCard: React.FC<ProfileAccountAdminCardProps> = ({ form, memberId, ...cardProps }) => {
   const { member } = useMember(memberId)
   const updateMember = useUpdateMember()
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     form.validateFields((error, values) => {

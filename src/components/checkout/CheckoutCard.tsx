@@ -8,9 +8,9 @@ import { ThemeContext } from 'styled-components'
 import { currencyFormatter } from '../../helpers'
 import settings from '../../settings'
 import { CartProduct, Check, Discount } from '../../types/payment'
+import AdminCard from '../admin/AdminCard'
 import { useAuth } from '../auth/AuthContext'
 import { AuthModalContext } from '../auth/AuthModal'
-import AdminCard from '../common/AdminCard'
 
 type CheckoutCardProps = CardProps & {
   memberId: string | null
@@ -40,7 +40,7 @@ const CheckoutCard: React.FC<CheckoutCardProps> = ({ memberId, discount, check, 
     try {
       const { data } = await axios.post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/placeOrder`, {
         memberId,
-        productIds: cartProducts.map(cartProduct => cartProduct.product_id),
+        productIds: cartProducts.map(cartProduct => cartProduct.productId),
         discount: discount.type === 'None' || !discount.target ? undefined : discount,
       })
       orderId = data.id
@@ -89,7 +89,7 @@ const CheckoutCard: React.FC<CheckoutCardProps> = ({ memberId, discount, check, 
             <div className="col-2 col-md-2 d-flex justify-content-end align-self-end">- NT$ {orderDiscount.price}</div>
           </div>
         ))}
-      {check && (check.orderProducts && check.orderDiscounts) && (
+      {check && check.orderProducts && check.orderDiscounts && (
         <div className="row mb-3 mt-5">
           <div
             className="col-12 offset-md-8 col-md-4"

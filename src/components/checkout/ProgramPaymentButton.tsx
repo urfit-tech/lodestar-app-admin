@@ -4,7 +4,7 @@ import React from 'react'
 import styled, { css } from 'styled-components'
 import useRouter from 'use-react-router'
 import { InferType } from 'yup'
-import { useCart } from '../../hooks/data'
+import { useCart } from '../../hooks/checkout'
 import { programSchema } from '../../schemas/program'
 
 const StyleButton = styled(Button)<{ variant?: string }>`

@@ -36,8 +36,9 @@ const StyledSection = styled.section`
     color: white;
   }
   h5 {
+    height: 72px;
     letter-spacing: 0.8px;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
     color: white;
   }
@@ -70,7 +71,8 @@ const StyledSection = styled.section`
       font-size: 28px;
     }
     h5 {
-      font-size: 16px;
+      height: initial;
+      font-size: 18px;
     }
   }
 `
@@ -80,25 +82,25 @@ const StyledWrapper = styled.div`
 `
 
 const StyledCol = styled.div`
-  &:nth-child(2n+1) {
+  &:nth-child(2n + 1) {
     h3::after {
       display: block;
       position: absolute;
       top: -15px;
       right: 10px;
-      content: url("https://files.kolable.com/images/xuemi/thumb.svg")
+      content: url('https://files.kolable.com/images/xuemi/thumb.svg');
     }
     h5::after {
       display: none;
       position: absolute;
       top: -15px;
       right: -75px;
-      content: url("https://files.kolable.com/images/xuemi/thumb.svg")
+      content: url('https://files.kolable.com/images/xuemi/thumb.svg');
     }
   }
-  
+
   @media (min-width: ${BREAK_POINT}px) {
-    &:nth-child(2n+1) {
+    &:nth-child(2n + 1) {
       h3::after {
         display: none;
       }
@@ -120,11 +122,12 @@ const StyledContainer = styled.div`
     display: none;
   }
   .arrow {
-    width: 0;
-    height: 0;
+    margin-top: 40px;
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
     border-top: 12px solid white;
+    width: 0;
+    height: 0;
   }
   @media (min-width: ${BREAK_POINT}px) {
     .arrow {
@@ -142,7 +145,7 @@ const StyledContainer = styled.div`
 const StyledIntro = styled.div`
   div {
     height: 54px;
-    
+
     &:not(:last-child) {
       margin-bottom: 32px;
     }
@@ -156,8 +159,17 @@ const StyledIntro = styled.div`
 
 const StyledIntroItem = styled.header`
   position: relative;
-  h5, p {
+  h5,
+  p {
     text-align: left;
+  }
+  p {
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  @media (min-width: ${BREAK_POINT}px) {
+    height: 110px;
   }
 `
 
@@ -179,8 +191,7 @@ const OnSaleComparisonSection: React.FC<OnSaleComparisonSectionProps> = ({ compa
                 <StyledIntro className="d-flex flex-column justify-content-between">
                   {comparison.features.map(feature => (
                     <StyledIntroItem>
-                      <h5>{feature.title}
-                      </h5>
+                      <h5>{feature.title}</h5>
                       <p>{feature.description}</p>
                     </StyledIntroItem>
                   ))}

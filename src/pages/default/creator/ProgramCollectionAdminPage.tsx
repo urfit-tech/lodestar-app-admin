@@ -1,13 +1,12 @@
+import { useQuery } from '@apollo/react-hooks'
 import { Icon, Spin, Tabs, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useQuery } from 'react-apollo-hooks'
-import { InferType } from 'yup'
 import { useAuth } from '../../../components/auth/AuthContext'
 import CreatorAdminLayout from '../../../components/layout/CreatorAdminLayout'
 import ProgramAdminCard from '../../../components/program/ProgramAdminCard'
 import ProgramCreationModal from '../../../components/program/ProgramCreationModal'
-import { programSchema } from '../../../schemas/program'
+import types from '../../../types'
 
 const ProgramCollectionAdminPage: React.FC = () => {
   const { currentMemberId } = useAuth()
@@ -36,17 +35,20 @@ const ProgramCollectionBlock: React.FC<{
   memberId: string
   isDraft?: boolean
 }> = ({ isDraft, memberId }) => {
-  const { data, error, loading } = useQuery(GET_PROGRAM_COLLECTION, {
-    variables: { appId: process.env.REACT_APP_ID, memberId, isDraft },
+  const { data, error, loading } = useQuery<
+    types.GET_CREATOR_PROGRAM_COLLECTION,
+    types.GET_CREATOR_PROGRAM_COLLECTIONVariables
+  >(GET_CREATOR_PROGRAM_COLLECTION, {
+    variables: { appId: localStorage.getItem('kolable.app.id') || '', memberId, isDraft },
   })
   return (
     <div className="row py-3">
       {loading ? (
         <Spin />
-      ) : error ? (
+      ) : error || !data ? (
         '無法載入資料'
       ) : (
-        data.program.map((program: InferType<typeof programSchema>) => (
+        data.program.map(program => (
           <div key={program.id} className="col-12 col-md-6 col-lg-4 mb-5">
             <ProgramAdminCard programId={program.id} />
           </div>
@@ -56,8 +58,8 @@ const ProgramCollectionBlock: React.FC<{
   )
 }
 
-const GET_PROGRAM_COLLECTION = gql`
-  query GET_PROGRAM_COLLECTION($appId: String!, $memberId: String, $isDraft: Boolean) {
+const GET_CREATOR_PROGRAM_COLLECTION = gql`
+  query GET_CREATOR_PROGRAM_COLLECTION($appId: String!, $memberId: String, $isDraft: Boolean) {
     program(
       where: {
         app_id: { _eq: $appId }

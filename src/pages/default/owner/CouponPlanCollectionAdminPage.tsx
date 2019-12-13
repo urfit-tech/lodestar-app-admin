@@ -1,8 +1,8 @@
+import { useQuery } from '@apollo/react-hooks'
 import { Button, Icon, Tabs, Typography } from 'antd'
 import gql from 'graphql-tag'
 import { reverse } from 'ramda'
 import React from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import CouponPlanAdminCard from '../../../components/checkout/CouponPlanAdminCard'
 import CouponPlanAdminModal from '../../../components/checkout/CouponPlanAdminModal'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
@@ -14,7 +14,7 @@ const CouponPlanCollectionAdminPage = () => {
     types.GET_COUPON_PLAN_COLLECTION,
     types.GET_COUPON_PLAN_COLLECTIONVariables
   >(GET_COUPON_PLAN_COLLECTION, {
-    variables: { appId: process.env.REACT_APP_ID || '' },
+    variables: { appId: localStorage.getItem('kolable.app.id') || '' },
   })
 
   const couponPlans =

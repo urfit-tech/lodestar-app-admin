@@ -1,6 +1,6 @@
+import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React from 'react'
-import { useQuery } from 'react-apollo-hooks'
 import FundingProgressBlockComponent from '../../components/project/FundingProgressBlock'
 import types from '../../types'
 
