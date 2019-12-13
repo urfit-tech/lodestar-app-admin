@@ -1,8 +1,10 @@
-import { Button, Icon } from 'antd'
+import { Button } from 'antd'
 import moment from 'moment'
-import React from 'react'
-import styled, { css } from 'styled-components'
+import React, { useState } from 'react'
+import styled from 'styled-components'
+import { handleError } from '../../helpers'
 import AdminModal from '../admin/AdminModal'
+import AppointmentPeriodItem, { AppointmentPeriodProps } from './AppointmentPeriodItem'
 
 const StyledWrapper = styled.div`
   display: flex;
@@ -17,59 +19,14 @@ const StyledTitle = styled.div`
   font-weight: bold;
   letter-spacing: 0.2px;
 `
-const StyledItemWrapper = styled.div<{ variant?: 'default' | 'excluded' | 'disabled' }>`
-  position: relative;
-  margin-bottom: 0.5rem;
-  margin-right: 0.5rem;
-  padding: 0.75rem;
-  width: 6rem;
-  overflow: hidden;
-  border: solid 1px ${props => (props.variant === 'disabled' ? 'var(--gray-light)' : 'var(--gray-dark)')};
-  color: ${props => (props.variant === 'disabled' ? 'var(--gray-dark)' : 'var(--gray-darker)')};
-  border-radius: 4px;
-
-  ${props =>
-    props.variant === 'excluded'
-      ? css`
-          ::before {
-            display: block;
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            content: ' ';
-            background-image: linear-gradient(
-              90deg,
-              transparent 0px,
-              transparent 5.5px,
-              var(--gray) 5.5px,
-              var(--gray) 6px
-            );
-            background-size: 6px 100%;
-            background-repeat: repeat;
-            transform: rotate(30deg) scale(2);
-          }
-        `
-      : ''}
-
-  .anticon {
-    font-size: 12px;
-  }
-`
-const StyledItemTitle = styled.div`
-  position: relative;
-  margin-bottom: 0.25rem;
+const StyledModalDescription = styled.div`
+  color: var(--gray-darker);
+  line-height: 1.5;
   letter-spacing: 0.2px;
 `
-const StyledItemMeta = styled.div`
-  position: relative;
-  font-size: 12px;
-  letter-spacing: 0.34px;
-`
-const DangerText = styled.div`
-  color: var(--error);
+const StyledModalMeta = styled.div`
   font-size: 14px;
+  color: var(--gray-dark);
   letter-spacing: 0.4px;
 `
 export const EmptyBlock = styled.div`
@@ -80,55 +37,133 @@ export const EmptyBlock = styled.div`
   letter-spacing: 0.4px;
 `
 
-export type DeleteSessionEvent = (props: {
-  id: string
-  onSuccess?: () => void
-  onError?: () => void
-  onFinally?: () => void
-}) => void
-export type AppointmentPeriodItemProps = {
-  id: string
-  startedAt: Date
-  isEnrolled?: boolean
-  isExcluded?: boolean
-  onDelete?: DeleteSessionEvent
-}
-const AppointmentPeriodItem: React.FC<AppointmentPeriodItemProps> = ({
-  id,
-  startedAt,
-  isEnrolled,
-  isExcluded,
-  onDelete,
-}) => {
-  return (
-    <StyledItemWrapper variant={isEnrolled ? 'disabled' : isExcluded ? 'excluded' : 'default'}>
-      <StyledItemTitle>
-        {startedAt
-          .getHours()
-          .toString()
-          .padStart(2, '0')}
-        :
-        {startedAt
-          .getMinutes()
-          .toString()
-          .padStart(2, '0')}
-      </StyledItemTitle>
-      <StyledItemMeta>{isEnrolled ? '已預約' : isExcluded ? '已關閉' : '可預約'}</StyledItemMeta>
-    </StyledItemWrapper>
-  )
+const getPeriodTypeLabel: (periodType: string) => string = periodType => {
+  switch (periodType) {
+    case 'D':
+      return '每日'
+    case 'W':
+      return '每週'
+    case 'M':
+      return '每月'
+    case 'Y':
+      return '每年'
+    default:
+      return '未知週期'
+  }
 }
 
+export type DeleteScheduleEvent = (props: {
+  values: {
+    scheduleId: string
+  }
+  onSuccess?: () => void
+  onError?: (error: Error) => void
+  onFinally?: () => void
+}) => void
+export type ClosePeriodEvent = (props: {
+  values: {
+    periodId: string
+  }
+  onSuccess?: () => void
+  onError?: (error: Error) => void
+  onFinally?: () => void
+}) => void
+
 const AppointmentSessionCollection: React.FC<{
-  periods: AppointmentPeriodItemProps[]
-}> = ({ periods }) => {
+  periods: AppointmentPeriodProps[]
+  onDelete?: DeleteScheduleEvent
+  onClose?: ClosePeriodEvent
+}> = ({ periods, onDelete, onClose }) => {
+  const [visible, setVisible] = useState(false)
+  const [selectedPeriod, setSelectedPeriod] = useState<AppointmentPeriodProps | null>(null)
+
   return (
     <>
       <StyledTitle>{periods.length > 0 && moment(periods[1].startedAt).format('YYYY-MM-DD(dd)')}</StyledTitle>
       <StyledWrapper>
         {periods.map(period => (
-          <AppointmentPeriodItem key={period.id} {...period} />
+          <div
+            key={period.id}
+            onClick={() => {
+              if (period.isEnrolled) {
+                return
+              }
+              setSelectedPeriod(period)
+              setVisible(true)
+            }}
+          >
+            <AppointmentPeriodItem {...period} />
+          </div>
         ))}
       </StyledWrapper>
+
+      <AdminModal
+        visible={visible}
+        onCancel={() => setVisible(false)}
+        title="編輯時段"
+        renderFooter={() => (
+          <div className="row pt-4">
+            <div className="col-6">
+              {selectedPeriod && (
+                <Button
+                  type="danger"
+                  block
+                  onClick={() =>
+                    selectedPeriod.schedule &&
+                    onDelete &&
+                    onDelete({
+                      values: {
+                        scheduleId: selectedPeriod.schedule.id,
+                      },
+                      onSuccess: () => {
+                        setVisible(false)
+                        setSelectedPeriod(null)
+                      },
+                      onError: error => handleError(error),
+                    })
+                  }
+                >
+                  刪除{selectedPeriod.schedule && selectedPeriod.schedule.periodType !== null && '系列'}時段
+                </Button>
+              )}
+            </div>
+            <div className="col-6">
+              {selectedPeriod && (
+                <Button
+                  block
+                  onClick={() =>
+                    onClose &&
+                    onClose({
+                      values: {
+                        periodId: selectedPeriod.id,
+                      },
+                      onSuccess: () => {
+                        setVisible(false)
+                        setSelectedPeriod(null)
+                      },
+                      onError: error => handleError(error),
+                    })
+                  }
+                >
+                  {selectedPeriod.isExcluded ? '開啟' : '關閉'}
+                  {selectedPeriod.schedule && selectedPeriod.schedule.periodType !== null && '單一'}時段
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
+      >
+        {selectedPeriod && (
+          <StyledModalDescription className="mb-2">
+            {moment(selectedPeriod.startedAt).format('YYYY-MM-DD(dd) HH:mm')}
+          </StyledModalDescription>
+        )}
+        {selectedPeriod && selectedPeriod.schedule && selectedPeriod.schedule.periodType !== null && (
+          <StyledModalMeta className="mb-2">
+            ※系列時段為{getPeriodTypeLabel(selectedPeriod.schedule.periodType)}重複
+          </StyledModalMeta>
+        )}
+      </AdminModal>
     </>
   )
 }

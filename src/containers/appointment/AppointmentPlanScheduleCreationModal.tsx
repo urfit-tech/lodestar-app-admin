@@ -26,14 +26,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
 
       setLoading(true)
 
-      const dates: Date[] = []
-      const currentDate = moment(values.startedAt)
-      const endedLimit = moment().add(3, 'month')
-      while (currentDate < endedLimit) {
-        dates.push(currentDate.toDate())
-        currentDate.add(1, values.periodType as 'd' | 'w' | 'M')
-      }
-      console.log(dates)
+      console.log('create schedule:', values)
 
       setLoading(false)
       setVisible(false)
@@ -84,11 +77,11 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
         </Checkbox>
         <div className={withRepeat ? 'd-block mb-4' : 'd-none'}>
           {form.getFieldDecorator('periodType', {
-            initialValue: 'd',
+            initialValue: 'D',
           })(
             <StyledSelect className="ml-4">
-              <Select.Option value="d">每日</Select.Option>
-              <Select.Option value="w">每週</Select.Option>
+              <Select.Option value="D">每日</Select.Option>
+              <Select.Option value="W">每週</Select.Option>
               <Select.Option value="M">每月</Select.Option>
             </StyledSelect>,
           )}
