@@ -1,5 +1,5 @@
-import { Icon, Skeleton } from 'antd'
-import React from 'react'
+import { Icon, Skeleton, Button } from 'antd'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import AdminCard from '../../../components/admin/AdminCard'
 import { useAuth } from '../../../components/auth/AuthContext'
@@ -16,6 +16,7 @@ const StyledTitle = styled.h1`
 `
 const PodcastPlanAdminPage: React.FC = () => {
   const { currentMemberId } = useAuth()
+  const [isVisible, setVisible] = useState<boolean>(false)
 
   return (
     <OwnerAdminLayout>
@@ -27,16 +28,24 @@ const PodcastPlanAdminPage: React.FC = () => {
       {!currentMemberId ? (
         <Skeleton active />
       ) : (
-        <>
-          <div className="mb-5">
-            <PodcastPlanAdminModal />
-          </div>
-          
-          <AdminCard>
-            <PodcastPlanCollectionAdminTable />
-          </AdminCard>
-        </>
-      )}
+          <>
+            <div className="mb-5">
+              <PodcastPlanAdminModal isVisible={isVisible} onVisibleSet={setVisible}>
+                <Button
+                  icon="file-add"
+                  type="primary"
+                  onClick={() => setVisible(true)}
+                >
+                  建立方案
+                </Button>
+              </PodcastPlanAdminModal >
+            </div>
+
+            <AdminCard>
+              <PodcastPlanCollectionAdminTable />
+            </AdminCard>
+          </>
+        )}
     </OwnerAdminLayout>
   )
 }

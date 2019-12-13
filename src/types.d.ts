@@ -2675,8 +2675,11 @@ export interface CREATE_PODCAST_PLAN {
 
 export interface CREATE_PODCAST_PLANVariables {
   isSubscription: boolean;
+  publishedAt?: any | null;
   title: string;
   listPrice: any;
+  salePrice?: any | null;
+  soldAt?: any | null;
   periodAmount: any;
   periodType: string;
   creatorId: string;
@@ -6178,6 +6181,7 @@ export enum order_product_constraint {
  * update columns of table "order_product"
  */
 export enum order_product_update_column {
+  accumulated_errors = "accumulated_errors",
   auto_renewed = "auto_renewed",
   created_at = "created_at",
   description = "description",
@@ -7989,6 +7993,7 @@ export interface order_product_arr_rel_insert_input {
  * input type for inserting data into table "order_product"
  */
 export interface order_product_insert_input {
+  accumulated_errors?: number | null;
   auto_renewed?: boolean | null;
   created_at?: any | null;
   description?: string | null;

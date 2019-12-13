@@ -1,10 +1,13 @@
 import { useMutation } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import React from 'react'
+import React, { Dispatch, SetStateAction } from 'react'
 import PodcastPlanAdminModalComponent from '../../components/podcast/PodcastPlanAdminModal'
 import types from '../../types'
 
-type PodcastPlanCreationModalProps = {}
+type PodcastPlanCreationModalProps = {
+  isVisible: boolean
+  onVisibleSet: Dispatch<SetStateAction<boolean>>
+}
 
 export type CreatePodcastPlanProps = (
   props: {
@@ -13,23 +16,29 @@ export type CreatePodcastPlanProps = (
     onFinally?: () => void
     data: {
       title: string
+      isPublished: boolean
       isSubscription: boolean
       listPrice: number
+      salePrice: number
+      soldAt: Date | null
       periodAmount: number
       periodType: string
       creatorId: string
     }
   }) => void
 
-const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ }) => {
+const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ isVisible, onVisibleSet, children }) => {
   const [createPodcastPlan] = useMutation<types.CREATE_PODCAST_PLAN, types.CREATE_PODCAST_PLANVariables>(CREATE_PODCAST_PLAN)
 
   const handleCreate: CreatePodcastPlanProps = ({ onSuccess, onError, onFinally, data }) => {
     createPodcastPlan({
       variables: {
-        isSubscription: data.isSubscription,
+        isSubscription: true,
+        publishedAt: data.isPublished ? new Date() : null,
         title: '',
         listPrice: data.listPrice,
+        salePrice: data.salePrice,
+        soldAt: data.soldAt,
         periodAmount: data.periodAmount,
         periodType: data.periodType,
         creatorId: data.creatorId
@@ -38,23 +47,31 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ }) 
       .catch(error => onError && onError(error))
       .finally(() => onFinally && onFinally())
   }
-  return <PodcastPlanAdminModalComponent onCreate={handleCreate} />
+  return <PodcastPlanAdminModalComponent isVisible={isVisible} onVisibleSet={onVisibleSet}  onCreate={handleCreate} >
+      {children}
+    </ PodcastPlanAdminModalComponent>
 }
 
 const CREATE_PODCAST_PLAN = gql`
   mutation CREATE_PODCAST_PLAN(
     $isSubscription: Boolean!
+    $publishedAt: timestamptz
     $title: String!
     $listPrice: numeric!
+    $salePrice: numeric
+    $soldAt: timestamptz
     $periodAmount: numeric!
     $periodType: String!
     $creatorId: String!
   ) {
     insert_podcast_plan(
       objects: {
-        is_subscription: $isSubscription, 
+        is_subscription: $isSubscription,
+        published_at: $publishedAt,
         title: $title, 
         list_price: $listPrice,
+        sale_price: $salePrice,
+        sold_at: $soldAt,
         period_amount: $periodAmount,
         period_type: $periodType,
         creator_id: $creatorId

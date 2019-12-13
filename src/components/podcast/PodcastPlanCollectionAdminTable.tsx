@@ -6,6 +6,7 @@ import { currencyFormatter, getShortenPeriodTypeLabel } from '../../helpers'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { PeriodType } from '../../schemas/common'
 import { AvatarImage } from '../common/Image'
+import PodcastPlanAdminModal from './PodcastPlanAdminModal'
 
 const StyledTitle = styled.div`
   display: -webkit-box;
@@ -92,6 +93,7 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
   podcastPlans
 }) => {
   const [creatorSearch, setCreatorSearch] = useState('')
+  const [isVisible, setVisible] = useState(false)
 
   const columns: ColumnProps<PodcastPlanProps>[] = [
     {
@@ -144,10 +146,10 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       key: 'status',
       width: '6rem',
       filters: [
-        { 
+        {
           text: '已發佈',
           value: '已發佈'
-        }, 
+        },
         {
           text: '未發佈',
           value: '未發佈'

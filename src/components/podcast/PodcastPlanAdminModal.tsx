@@ -1,6 +1,6 @@
-import { Button, Checkbox, Form, Icon, InputNumber, Modal, Radio } from 'antd'
+import { Button, Checkbox, Form, Icon, InputNumber, Modal, Radio, DatePicker } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
-import React, { useState } from 'react'
+import React, { useState, Dispatch, SetStateAction } from 'react'
 import styled from 'styled-components'
 import CreatorSelector from '../../containers/common/CreatorSelector'
 import { CreatePodcastPlanProps } from '../../containers/podcast/PodcastPlanAdminModal'
@@ -37,9 +37,10 @@ const StyledTitle = styled.div`
 `
 type PodcastPlanCreationModalProps = FormComponentProps & {
   onCreate?: CreatePodcastPlanProps
+  isVisible: boolean
+  onVisibleSet: Dispatch<SetStateAction<boolean>>
 }
-const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ form, onCreate }) => {
-  const [visible, setVisible] = useState(false)
+const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ form, isVisible, onVisibleSet, onCreate, children }) => {
   const [loading, setLoading] = useState(false)
   const [hasSalePrice, setSalePrice] = useState(false)
   const { currentUserRole } = useAuth()
@@ -54,13 +55,16 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ for
         onCreate({
           onSuccess: () => {
             setLoading(false)
-            setVisible(false)
+            onVisibleSet(false)
           },
           onError: () => setLoading(false),
           data: {
             title: values.title,
+            isPublished: values.status,
             isSubscription: true,
             listPrice: values.listPrice,
+            salePrice: values.salePrice,
+            soldAt: values.soldAt,
             periodAmount: values.period.amount,
             periodType: values.period.type,
             creatorId: values.creator
@@ -72,11 +76,9 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ for
 
   return (
     <>
-      <Button icon="file-add" type="primary" onClick={() => setVisible(true)}>
-        建立方案
-      </Button>
+      {children}
 
-      <Modal title={null} footer={null} destroyOnClose centered visible={visible} onCancel={() => setVisible(false)}>
+      <Modal title={null} footer={null} destroyOnClose centered visible={isVisible} onCancel={() => onVisibleSet(false)}>
         <StyledIcon>
           <Icon type="file-add" />
         </StyledIcon>
@@ -92,10 +94,10 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ for
               { initialValue: 1, rules: [{ required: true }] }
             )(
               <Radio.Group>
-                <Radio value={1}>
+                <Radio value={true}>
                   發佈，立刻開賣訂閱方案
                 </Radio>
-                <Radio value={2}>
+                <Radio value={false}>
                   停售，方案暫停對外銷售，並從廣播頁中隱藏
                 </Radio>
               </Radio.Group>
@@ -126,11 +128,15 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ for
               min={0}
               formatter={value => `NT$ ${value}`}
               parser={value => (value ? value.replace(/\D/g, '') : '')}
+              className="mr-2"
             />)}
+            {form.getFieldDecorator('soldAt', {
+              rules: [{ required: true }]
+            })(<DatePicker placeholder="優惠截止日期" />)}
           </Form.Item>}
         </Form>
         <div className="text-right">
-          <Button className="mr-2" onClick={() => setVisible(false)}>
+          <Button className="mr-2" onClick={() => onVisibleSet(false)}>
             取消
           </Button>
           <Button type="primary" htmlType="submit" loading={loading} onClick={() => handleSubmit()}>
