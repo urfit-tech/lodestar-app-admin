@@ -5,8 +5,9 @@ import AdminCard from '../../../components/admin/AdminCard'
 import { useAuth } from '../../../components/auth/AuthContext'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import PodcastPlanCollectionAdminTable from '../../../containers/podcast/PodcastPlanCollectionAdminTable'
-import PodcastPlanAdminModal from '../../../containers/podcast/PodcastPlanAdminModal'
+import PodcastPlanCreationModal from '../../../containers/podcast/PodcastPlanCreationModal'
 import { ReactComponent as DiscountIcon } from '../../../images/default/discount.svg'
+import { usePodcastPlanAdminCollection } from '../../../hooks/podcast'
 
 const StyledTitle = styled.h1`
   color: var(--gray-darker);
@@ -17,6 +18,7 @@ const StyledTitle = styled.h1`
 const PodcastPlanAdminPage: React.FC = () => {
   const { currentMemberId } = useAuth()
   const [isVisible, setVisible] = useState<boolean>(false)
+  const { loadingPodcastPlanAdminCollection, errorPodcastPlanAdminCollection, podcastPlans, refetchPodcastPlanAdminCollection } = usePodcastPlanAdminCollection()
 
   return (
     <OwnerAdminLayout>
@@ -30,7 +32,11 @@ const PodcastPlanAdminPage: React.FC = () => {
       ) : (
           <>
             <div className="mb-5">
-              <PodcastPlanAdminModal isVisible={isVisible} onVisibleSet={setVisible}>
+              <PodcastPlanCreationModal
+                isVisible={isVisible}
+                onVisibleSet={setVisible}
+                refetch={refetchPodcastPlanAdminCollection}
+              >
                 <Button
                   icon="file-add"
                   type="primary"
@@ -38,11 +44,16 @@ const PodcastPlanAdminPage: React.FC = () => {
                 >
                   建立方案
                 </Button>
-              </PodcastPlanAdminModal >
+              </PodcastPlanCreationModal >
             </div>
 
             <AdminCard>
-              <PodcastPlanCollectionAdminTable />
+              <PodcastPlanCollectionAdminTable
+                loading={loadingPodcastPlanAdminCollection}
+                error={errorPodcastPlanAdminCollection}
+                podcastPlans={podcastPlans}
+                refetch={refetchPodcastPlanAdminCollection}
+              />
             </AdminCard>
           </>
         )}

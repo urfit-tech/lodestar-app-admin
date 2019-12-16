@@ -2,11 +2,13 @@ import { Icon, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import PodcastPlanUpdateModal from '../../containers/podcast/PodcastPlanUpdateModal'
 import { currencyFormatter, getShortenPeriodTypeLabel } from '../../helpers'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { PeriodType } from '../../schemas/common'
 import { AvatarImage } from '../common/Image'
-import PodcastPlanAdminModal from './PodcastPlanAdminModal'
+import { ApolloError, ApolloQueryResult } from 'apollo-client'
+import types from '../../types'
 
 const StyledTitle = styled.div`
   display: -webkit-box;
@@ -85,15 +87,20 @@ export type PodcastPlan = {
 }
 type PodcastPlanCollectionAdminTableProps = {
   podcastPlans: PodcastPlan[]
+  loading: boolean
+  error?: ApolloError
+  refetch: (variables?: Record<string, any> | undefined) => Promise<ApolloQueryResult<types.GET_PODCAST_PLAN_ADMIN_COLLECTION>>
 }
 export type PodcastPlanProps = PodcastPlan & {
   sorter?: number
 }
 const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableProps> = ({
-  podcastPlans
+  podcastPlans,
+  refetch
 }) => {
   const [creatorSearch, setCreatorSearch] = useState('')
   const [isVisible, setVisible] = useState(false)
+  const [programPlanId, setPorgramPlanId] = useState('')
 
   const columns: ColumnProps<PodcastPlanProps>[] = [
     {
@@ -123,7 +130,7 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       width: '15rem',
       render: (text, record, index) => (
         <div>
-          {typeof record.salePrice === 'number' && (
+          {typeof record.salePrice === 'number' && !!record.salePrice && (
             <StyledPriceLabel className="mr-2">{currencyFormatter(record.salePrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getShortenPeriodTypeLabel(record.periodType)}</StyledPriceLabel>
           )}
           <StyledPriceLabel className="mr-2">{currencyFormatter(record.listPrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getShortenPeriodTypeLabel(record.periodType)}</StyledPriceLabel>
@@ -172,7 +179,21 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
         dataSource={podcastPlans
           .filter(podcastPlan => !creatorSearch || podcastPlan.creator.includes(creatorSearch))
         }
+        onRow={record => {
+          return ({
+            onClick: () => {
+              setVisible(true)
+              setPorgramPlanId(record.id)
+            }
+          })
+        }}
       />
+      {isVisible && <PodcastPlanUpdateModal
+        podcastPlanId={programPlanId}
+        isVisible={isVisible}
+        onVisibleSet={setVisible}
+        refetch={refetch}
+      />}
     </>
   )
 }

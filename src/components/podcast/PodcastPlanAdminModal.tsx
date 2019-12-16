@@ -1,14 +1,31 @@
-import { Button, Checkbox, Form, Icon, InputNumber, Modal, Radio, DatePicker } from 'antd'
+import { Button, Checkbox, DatePicker, Form, Icon, InputNumber, Modal, Radio } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
-import React, { useState, Dispatch, SetStateAction } from 'react'
+import moment from 'moment'
+import React, { Dispatch, SetStateAction, useState } from 'react'
 import styled from 'styled-components'
 import CreatorSelector from '../../containers/common/CreatorSelector'
-import { CreatePodcastPlanProps } from '../../containers/podcast/PodcastPlanAdminModal'
 import { rgba } from '../../helpers'
 import { useAuth } from '../auth/AuthContext'
 import { BREAK_POINT } from '../common/Responsive'
 import PodcastPeriodSelector from './PodcastPeriodSelector'
-
+export type PodcastPlanProps = (
+  props: {
+    onSuccess?: () => void,
+    onError?: (error: Error) => void,
+    onFinally?: () => void
+    data: {
+      title: string
+      isPublished: boolean
+      isSubscription: boolean
+      listPrice: number
+      salePrice: number
+      soldAt: Date | null
+      periodAmount: number
+      periodType: string
+      creatorId: string
+      podcastPlanId?: string
+    }
+  }) => void
 const StyledIcon = styled.div<{ available?: boolean }>`
   display: none;
   justify-content: center;
@@ -36,28 +53,44 @@ const StyledTitle = styled.div`
   letter-spacing: 0.77px;
 `
 type PodcastPlanCreationModalProps = FormComponentProps & {
-  onCreate?: CreatePodcastPlanProps
+  onSubmit: PodcastPlanProps
   isVisible: boolean
   onVisibleSet: Dispatch<SetStateAction<boolean>>
+  podcastPlan?: {
+    id: string
+    periodType: "Y" | 'M' | "W"
+    periodAmount: number
+    listPrice: number
+    salePrice?: number | null
+    soldAt?: Date | null
+    isPublished?: boolean | null
+    podcastPlanId?: string
+    creatorId?: string | null
+  } | null
 }
-const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ form, isVisible, onVisibleSet, onCreate, children }) => {
+const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({ 
+  form,
+  onSubmit,
+  isVisible,
+  onVisibleSet,
+  podcastPlan,
+  children
+}) => {
   const [loading, setLoading] = useState(false)
-  const [hasSalePrice, setSalePrice] = useState(false)
   const { currentUserRole } = useAuth()
+
+  const [hasSalePrice, setSalePrice] = useState<boolean>(Boolean(podcastPlan && podcastPlan.salePrice))
 
   const handleSubmit = () => {
     form.validateFields((error, values) => {
       if (error) return
 
-      if (onCreate) {
+      if (onSubmit) {
         setLoading(true)
 
-        onCreate({
-          onSuccess: () => {
-            setLoading(false)
-            onVisibleSet(false)
-          },
-          onError: () => setLoading(false),
+        onSubmit({
+          onSuccess: () => onVisibleSet(false),
+          onError: error => console.log(error),
           data: {
             title: values.title,
             isPublished: values.status,
@@ -67,8 +100,8 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ for
             soldAt: values.soldAt,
             periodAmount: values.period.amount,
             periodType: values.period.type,
-            creatorId: values.creator
-          },
+            creatorId: values.creatorId
+          }
         })
       }
     })
@@ -85,14 +118,16 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ for
         <StyledTitle>廣播頻道訂閱方案</StyledTitle>
         <Form>
           {currentUserRole !== 'content-creator' && <Form.Item label="選擇講師">
-            {form.getFieldDecorator('creator', {
+            {form.getFieldDecorator('creatorId', {
+              initialValue: podcastPlan ? podcastPlan.creatorId : '',
               rules: [{ required: true, message: '請輸入帳號 或 Email' }]
             })(<CreatorSelector />)}
           </Form.Item>}
           <Form.Item label="販售狀態">
-            {form.getFieldDecorator('status',
-              { initialValue: 1, rules: [{ required: true }] }
-            )(
+            {form.getFieldDecorator('status', {
+              initialValue: podcastPlan ? podcastPlan.isPublished : true,
+              rules: [{ required: true }]
+            })(
               <Radio.Group>
                 <Radio value={true}>
                   發佈，立刻開賣訂閱方案
@@ -105,12 +140,18 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ for
           </Form.Item>
           <Form.Item label="訂閱週期">
             {form.getFieldDecorator('period', {
-              initialValue: { amount: 0, type: 'W' },
+              initialValue: {
+                amount: podcastPlan ? podcastPlan.periodAmount : 1,
+                type: podcastPlan ? podcastPlan.periodType : "W"
+              },
               rules: [{ required: true, message: '請輸入訂閱週期' }]
             })(<PodcastPeriodSelector />)}
           </Form.Item>
           <Form.Item label="定價">
-            {form.getFieldDecorator('listPrice', { initialValue: 0, rules: [{ required: true, message: '請輸入定價' }] })(<InputNumber
+            {form.getFieldDecorator('listPrice', {
+              initialValue: podcastPlan ? podcastPlan.listPrice : 0,
+              rules: [{ required: true, message: '請輸入定價' }, { type: 'number' }]
+            })(<InputNumber
               min={0}
               formatter={value => `NT$ ${value}`}
               parser={value => (value ? value.replace(/\D/g, '') : '')}
@@ -122,8 +163,8 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ for
           >優惠價</Checkbox>
           {hasSalePrice && <Form.Item label="優惠價">
             {form.getFieldDecorator('salePrice', {
-              initialValue: 0,
-              rules: [{ required: true }, { type: 'number' }],
+              initialValue: podcastPlan ? podcastPlan.salePrice : 0,
+              rules: [{ required: true, message: '請輸入優惠價' }, { type: 'number' }],
             })(<InputNumber
               min={0}
               formatter={value => `NT$ ${value}`}
@@ -131,6 +172,7 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ for
               className="mr-2"
             />)}
             {form.getFieldDecorator('soldAt', {
+              initialValue: podcastPlan && podcastPlan.soldAt ? moment(podcastPlan.soldAt) : null,
               rules: [{ required: true }]
             })(<DatePicker placeholder="優惠截止日期" />)}
           </Form.Item>}
@@ -148,4 +190,4 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ for
   )
 }
 
-export default Form.create<PodcastPlanCreationModalProps>()(PodcastPlanCreationModal)
+export default Form.create<PodcastPlanCreationModalProps>()(PodcastPlanAdminModal)

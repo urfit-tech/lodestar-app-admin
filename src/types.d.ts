@@ -2690,58 +2690,33 @@ export interface CREATE_PODCAST_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PODCAST_PLAN_ADMIN_COLLECTION
+// GraphQL mutation operation: UPDATE_PODCAST_PLAN
 // ====================================================
 
-export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member_podcast_programs_podcast_program_enrollments_aggregate_aggregate {
-  __typename: "podcast_program_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member_podcast_programs_podcast_program_enrollments_aggregate {
-  __typename: "podcast_program_enrollment_aggregate";
-  aggregate: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member_podcast_programs_podcast_program_enrollments_aggregate_aggregate | null;
-}
-
-export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member_podcast_programs {
-  __typename: "podcast_program";
+export interface UPDATE_PODCAST_PLAN_update_podcast_plan {
+  __typename: "podcast_plan_mutation_response";
   /**
-   * An aggregated array relationship
+   * number of affected rows by the mutation
    */
-  podcast_program_enrollments_aggregate: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member_podcast_programs_podcast_program_enrollments_aggregate;
+  affected_rows: number;
 }
 
-export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member {
-  __typename: "member";
-  name: string | null;
-  username: string;
-  picture_url: string | null;
+export interface UPDATE_PODCAST_PLAN {
   /**
-   * An array relationship
+   * update data of the table: "podcast_plan"
    */
-  podcast_programs: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member_podcast_programs[];
+  update_podcast_plan: UPDATE_PODCAST_PLAN_update_podcast_plan | null;
 }
 
-export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan {
-  __typename: "podcast_plan";
-  id: any;
-  period_type: string;
-  period_amount: any;
-  list_price: any;
-  sale_price: any | null;
-  sold_at: any | null;
-  published_at: any | null;
-  /**
-   * An object relationship
-   */
-  member: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member;
-}
-
-export interface GET_PODCAST_PLAN_ADMIN_COLLECTION {
-  /**
-   * fetch data from the table: "podcast_plan"
-   */
-  podcast_plan: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan[];
+export interface UPDATE_PODCAST_PLANVariables {
+  podcastPlanId: any;
+  listPrice: any;
+  periodAmount: any;
+  periodType: string;
+  publishedAt?: any | null;
+  salePrice: any;
+  soldAt?: any | null;
+  creatorId: string;
 }
 
 /* tslint:disable */
@@ -4453,6 +4428,96 @@ export interface UPDATE_MEMBERVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PODCAST_PLAN
+// ====================================================
+
+export interface GET_PODCAST_PLAN_podcast_plan_by_pk {
+  __typename: "podcast_plan";
+  id: any;
+  creator_id: string;
+  period_type: string;
+  period_amount: any;
+  list_price: any;
+  sale_price: any | null;
+  sold_at: any | null;
+  published_at: any | null;
+}
+
+export interface GET_PODCAST_PLAN {
+  /**
+   * fetch data from the table: "podcast_plan" using primary key columns
+   */
+  podcast_plan_by_pk: GET_PODCAST_PLAN_podcast_plan_by_pk | null;
+}
+
+export interface GET_PODCAST_PLANVariables {
+  podcastPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PODCAST_PLAN_ADMIN_COLLECTION
+// ====================================================
+
+export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member_podcast_programs_podcast_program_enrollments_aggregate_aggregate {
+  __typename: "podcast_program_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member_podcast_programs_podcast_program_enrollments_aggregate {
+  __typename: "podcast_program_enrollment_aggregate";
+  aggregate: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member_podcast_programs_podcast_program_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member_podcast_programs {
+  __typename: "podcast_program";
+  /**
+   * An aggregated array relationship
+   */
+  podcast_program_enrollments_aggregate: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member_podcast_programs_podcast_program_enrollments_aggregate;
+}
+
+export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member {
+  __typename: "member";
+  name: string | null;
+  username: string;
+  picture_url: string | null;
+  /**
+   * An array relationship
+   */
+  podcast_programs: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member_podcast_programs[];
+}
+
+export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan {
+  __typename: "podcast_plan";
+  id: any;
+  period_type: string;
+  period_amount: any;
+  list_price: any;
+  sale_price: any | null;
+  sold_at: any | null;
+  published_at: any | null;
+  /**
+   * An object relationship
+   */
+  member: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member;
+}
+
+export interface GET_PODCAST_PLAN_ADMIN_COLLECTION {
+  /**
+   * fetch data from the table: "podcast_plan"
+   */
+  podcast_plan: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PROGRAM
 // ====================================================
 
@@ -5661,6 +5726,49 @@ export enum app_update_column {
   point_validity_period = "point_validity_period",
   title = "title",
   vimeo_project_id = "vimeo_project_id",
+}
+
+/**
+ * unique or primary key constraints on table "appointment_plan"
+ */
+export enum appointment_plan_constraint {
+  appointment_plan_pkey = "appointment_plan_pkey",
+}
+
+/**
+ * update columns of table "appointment_plan"
+ */
+export enum appointment_plan_update_column {
+  created_at = "created_at",
+  creator_id = "creator_id",
+  description = "description",
+  duration = "duration",
+  id = "id",
+  price = "price",
+  title = "title",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "appointment_schedule"
+ */
+export enum appointment_schedule_constraint {
+  appointment_schedule_pkey = "appointment_schedule_pkey",
+}
+
+/**
+ * update columns of table "appointment_schedule"
+ */
+export enum appointment_schedule_update_column {
+  appointment_plan_id = "appointment_plan_id",
+  created_at = "created_at",
+  excludes = "excludes",
+  id = "id",
+  interval_amount = "interval_amount",
+  interval_type = "interval_type",
+  started_at = "started_at",
+  times = "times",
+  updated_at = "updated_at",
 }
 
 /**
@@ -7082,6 +7190,78 @@ export interface app_on_conflict {
 }
 
 /**
+ * input type for inserting array relation for remote table "appointment_plan"
+ */
+export interface appointment_plan_arr_rel_insert_input {
+  data: appointment_plan_insert_input[];
+  on_conflict?: appointment_plan_on_conflict | null;
+}
+
+/**
+ * input type for inserting data into table "appointment_plan"
+ */
+export interface appointment_plan_insert_input {
+  appointment_schedules?: appointment_schedule_arr_rel_insert_input | null;
+  created_at?: any | null;
+  creator?: member_obj_rel_insert_input | null;
+  creator_id?: string | null;
+  description?: string | null;
+  duration?: any | null;
+  id?: any | null;
+  price?: any | null;
+  title?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "appointment_plan"
+ */
+export interface appointment_plan_obj_rel_insert_input {
+  data: appointment_plan_insert_input;
+  on_conflict?: appointment_plan_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "appointment_plan"
+ */
+export interface appointment_plan_on_conflict {
+  constraint: appointment_plan_constraint;
+  update_columns: appointment_plan_update_column[];
+}
+
+/**
+ * input type for inserting array relation for remote table "appointment_schedule"
+ */
+export interface appointment_schedule_arr_rel_insert_input {
+  data: appointment_schedule_insert_input[];
+  on_conflict?: appointment_schedule_on_conflict | null;
+}
+
+/**
+ * input type for inserting data into table "appointment_schedule"
+ */
+export interface appointment_schedule_insert_input {
+  appointment_plan?: appointment_plan_obj_rel_insert_input | null;
+  appointment_plan_id?: any | null;
+  created_at?: any | null;
+  excludes?: any | null;
+  id?: any | null;
+  interval_amount?: number | null;
+  interval_type?: string | null;
+  started_at?: any | null;
+  times?: number | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "appointment_schedule"
+ */
+export interface appointment_schedule_on_conflict {
+  constraint: appointment_schedule_constraint;
+  update_columns: appointment_schedule_update_column[];
+}
+
+/**
  * input type for inserting array relation for remote table "card"
  */
 export interface card_arr_rel_insert_input {
@@ -7732,6 +7912,7 @@ export interface member_insert_input {
   activities?: activity_arr_rel_insert_input | null;
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
+  appointment_plans?: appointment_plan_arr_rel_insert_input | null;
   comment_reactions?: comment_reaction_arr_rel_insert_input | null;
   comment_replies?: comment_reply_arr_rel_insert_input | null;
   comment_reply_reactions?: comment_reply_reaction_arr_rel_insert_input | null;
@@ -7787,6 +7968,7 @@ export interface member_on_conflict {
  * input type for inserting data into table "member_public"
  */
 export interface member_public_insert_input {
+  app_id?: string | null;
   description?: string | null;
   id?: string | null;
   metadata?: any | null;
@@ -8285,6 +8467,14 @@ export interface podcast_program_body_insert_input {
 }
 
 /**
+ * input type for inserting object relation for remote table "podcast_program_body"
+ */
+export interface podcast_program_body_obj_rel_insert_input {
+  data: podcast_program_body_insert_input;
+  on_conflict?: podcast_program_body_on_conflict | null;
+}
+
+/**
  * on conflict condition type for table "podcast_program_body"
  */
 export interface podcast_program_body_on_conflict {
@@ -8334,6 +8524,7 @@ export interface podcast_program_insert_input {
   podcast?: podcast_obj_rel_insert_input | null;
   podcast_id?: any | null;
   podcast_program_bodies?: podcast_program_body_arr_rel_insert_input | null;
+  podcast_program_body?: podcast_program_body_obj_rel_insert_input | null;
   podcast_program_categories?: podcast_program_category_arr_rel_insert_input | null;
   podcast_program_roles?: podcast_program_role_arr_rel_insert_input | null;
   published_at?: any | null;
