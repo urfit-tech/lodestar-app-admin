@@ -2728,6 +2728,7 @@ export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk {
   sale_price: any | null;
   sold_at: any | null;
   content_type: string | null;
+  duration: any;
   published_at: any | null;
   creator_id: string;
   /**
@@ -2819,6 +2820,14 @@ export interface UPDATE_PODCAST_PROGRAM_CONTENTVariables {
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_BODY
 // ====================================================
 
+export interface UPDATE_PODCAST_PROGRAM_BODY_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_PODCAST_PROGRAM_BODY_update_podcast_program_body {
   __typename: "podcast_program_body_mutation_response";
   /**
@@ -2829,6 +2838,10 @@ export interface UPDATE_PODCAST_PROGRAM_BODY_update_podcast_program_body {
 
 export interface UPDATE_PODCAST_PROGRAM_BODY {
   /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: UPDATE_PODCAST_PROGRAM_BODY_update_podcast_program | null;
+  /**
    * update data of the table: "podcast_program_body"
    */
   update_podcast_program_body: UPDATE_PODCAST_PROGRAM_BODY_update_podcast_program_body | null;
@@ -2836,7 +2849,8 @@ export interface UPDATE_PODCAST_PROGRAM_BODY {
 
 export interface UPDATE_PODCAST_PROGRAM_BODYVariables {
   podcastProgramId: any;
-  description: string;
+  description?: string | null;
+  duration?: any | null;
 }
 
 /* tslint:disable */
@@ -5602,6 +5616,49 @@ export enum app_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "appointment_plan"
+ */
+export enum appointment_plan_constraint {
+  appointment_plan_pkey = "appointment_plan_pkey",
+}
+
+/**
+ * update columns of table "appointment_plan"
+ */
+export enum appointment_plan_update_column {
+  created_at = "created_at",
+  creator_id = "creator_id",
+  description = "description",
+  duration = "duration",
+  id = "id",
+  price = "price",
+  title = "title",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "appointment_schedule"
+ */
+export enum appointment_schedule_constraint {
+  appointment_schedule_pkey = "appointment_schedule_pkey",
+}
+
+/**
+ * update columns of table "appointment_schedule"
+ */
+export enum appointment_schedule_update_column {
+  appointment_plan_id = "appointment_plan_id",
+  created_at = "created_at",
+  excludes = "excludes",
+  id = "id",
+  interval_amount = "interval_amount",
+  interval_type = "interval_type",
+  started_at = "started_at",
+  times = "times",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "card"
  */
 export enum card_constraint {
@@ -6119,6 +6176,7 @@ export enum order_product_constraint {
  * update columns of table "order_product"
  */
 export enum order_product_update_column {
+  accumulated_errors = "accumulated_errors",
   auto_renewed = "auto_renewed",
   created_at = "created_at",
   description = "description",
@@ -6320,6 +6378,7 @@ export enum podcast_program_update_column {
   content_type = "content_type",
   cover_url = "cover_url",
   creator_id = "creator_id",
+  duration = "duration",
   id = "id",
   list_price = "list_price",
   podcast_id = "podcast_id",
@@ -7019,6 +7078,78 @@ export interface app_on_conflict {
 }
 
 /**
+ * input type for inserting array relation for remote table "appointment_plan"
+ */
+export interface appointment_plan_arr_rel_insert_input {
+  data: appointment_plan_insert_input[];
+  on_conflict?: appointment_plan_on_conflict | null;
+}
+
+/**
+ * input type for inserting data into table "appointment_plan"
+ */
+export interface appointment_plan_insert_input {
+  appointment_schedules?: appointment_schedule_arr_rel_insert_input | null;
+  created_at?: any | null;
+  creator?: member_obj_rel_insert_input | null;
+  creator_id?: string | null;
+  description?: string | null;
+  duration?: any | null;
+  id?: any | null;
+  price?: any | null;
+  title?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "appointment_plan"
+ */
+export interface appointment_plan_obj_rel_insert_input {
+  data: appointment_plan_insert_input;
+  on_conflict?: appointment_plan_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "appointment_plan"
+ */
+export interface appointment_plan_on_conflict {
+  constraint: appointment_plan_constraint;
+  update_columns: appointment_plan_update_column[];
+}
+
+/**
+ * input type for inserting array relation for remote table "appointment_schedule"
+ */
+export interface appointment_schedule_arr_rel_insert_input {
+  data: appointment_schedule_insert_input[];
+  on_conflict?: appointment_schedule_on_conflict | null;
+}
+
+/**
+ * input type for inserting data into table "appointment_schedule"
+ */
+export interface appointment_schedule_insert_input {
+  appointment_plan?: appointment_plan_obj_rel_insert_input | null;
+  appointment_plan_id?: any | null;
+  created_at?: any | null;
+  excludes?: any | null;
+  id?: any | null;
+  interval_amount?: number | null;
+  interval_type?: string | null;
+  started_at?: any | null;
+  times?: number | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "appointment_schedule"
+ */
+export interface appointment_schedule_on_conflict {
+  constraint: appointment_schedule_constraint;
+  update_columns: appointment_schedule_update_column[];
+}
+
+/**
  * input type for inserting array relation for remote table "card"
  */
 export interface card_arr_rel_insert_input {
@@ -7669,6 +7800,7 @@ export interface member_insert_input {
   activities?: activity_arr_rel_insert_input | null;
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
+  appointment_plans?: appointment_plan_arr_rel_insert_input | null;
   comment_reactions?: comment_reaction_arr_rel_insert_input | null;
   comment_replies?: comment_reply_arr_rel_insert_input | null;
   comment_reply_reactions?: comment_reply_reaction_arr_rel_insert_input | null;
@@ -7724,6 +7856,7 @@ export interface member_on_conflict {
  * input type for inserting data into table "member_public"
  */
 export interface member_public_insert_input {
+  app_id?: string | null;
   description?: string | null;
   id?: string | null;
   metadata?: any | null;
@@ -7930,6 +8063,7 @@ export interface order_product_arr_rel_insert_input {
  * input type for inserting data into table "order_product"
  */
 export interface order_product_insert_input {
+  accumulated_errors?: number | null;
   auto_renewed?: boolean | null;
   created_at?: any | null;
   description?: string | null;
@@ -8221,6 +8355,14 @@ export interface podcast_program_body_insert_input {
 }
 
 /**
+ * input type for inserting object relation for remote table "podcast_program_body"
+ */
+export interface podcast_program_body_obj_rel_insert_input {
+  data: podcast_program_body_insert_input;
+  on_conflict?: podcast_program_body_on_conflict | null;
+}
+
+/**
  * on conflict condition type for table "podcast_program_body"
  */
 export interface podcast_program_body_on_conflict {
@@ -8264,12 +8406,14 @@ export interface podcast_program_insert_input {
   content_type?: string | null;
   cover_url?: string | null;
   creator_id?: string | null;
+  duration?: any | null;
   id?: any | null;
   list_price?: any | null;
   member?: member_obj_rel_insert_input | null;
   podcast?: podcast_obj_rel_insert_input | null;
   podcast_id?: any | null;
   podcast_program_bodies?: podcast_program_body_arr_rel_insert_input | null;
+  podcast_program_body?: podcast_program_body_obj_rel_insert_input | null;
   podcast_program_categories?: podcast_program_category_arr_rel_insert_input | null;
   podcast_program_roles?: podcast_program_role_arr_rel_insert_input | null;
   published_at?: any | null;
