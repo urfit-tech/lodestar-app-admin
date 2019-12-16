@@ -2,23 +2,13 @@ import { Icon, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import PodcastPlanUpdateModal from '../../containers/podcast/PodcastPlanUpdateModal'
 import { currencyFormatter, getShortenPeriodTypeLabel } from '../../helpers'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { PeriodType } from '../../schemas/common'
 import { AvatarImage } from '../common/Image'
-
-export type PodcastPlanProps = {
-  id: string
-  avatarUrl?: string | null
-  creator: string
-  listPrice: number
-  salePrice?: number
-  salesCount: number
-  isPublished: boolean
-  periodAmount: number
-  periodType: PeriodType | string
-  sorter?: number
-}
+import { ApolloError, ApolloQueryResult } from 'apollo-client'
+import types from '../../types'
 
 const StyledTitle = styled.div`
   display: -webkit-box;
@@ -84,56 +74,33 @@ const getColumnSearchProps: (
   filterIcon: filtered => <Icon type="search" style={{ color: filtered ? 'var(--primary)' : undefined }} />,
 })
 
-type PodcastPlanCollectionAdminTableProps = {}
-const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableProps> = () => {
+export type PodcastPlan = {
+  id: string
+  avatarUrl?: string | null
+  creator: string
+  listPrice: number
+  salePrice?: number
+  salesCount: number
+  isPublished: boolean
+  periodAmount: number
+  periodType: PeriodType | string
+}
+type PodcastPlanCollectionAdminTableProps = {
+  podcastPlans: PodcastPlan[]
+  loading: boolean
+  error?: ApolloError
+  refetch: (variables?: Record<string, any> | undefined) => Promise<ApolloQueryResult<types.GET_PODCAST_PLAN_ADMIN_COLLECTION>>
+}
+export type PodcastPlanProps = PodcastPlan & {
+  sorter?: number
+}
+const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableProps> = ({
+  podcastPlans,
+  refetch
+}) => {
   const [creatorSearch, setCreatorSearch] = useState('')
-
-  const fakeData = [
-    {
-      id: '0',
-      avatarUrl: null,
-      creator: '李小美',
-      listPrice: 500,
-      salePrice: 400,
-      salesCount: 88,
-      isPublished: true,
-      periodAmount: 2,
-      periodType: 'W',
-    },
-    {
-      id: '1',
-      avatarUrl: null,
-      creator: '李小龍',
-      listPrice: 600,
-      salePrice: 200,
-      salesCount: 88,
-      isPublished: true,
-      periodAmount: 1,
-      periodType: 'W',
-    },
-    {
-      id: '2',
-      avatarUrl: null,
-      creator: '劉小東',
-      listPrice: 999,
-      salePrice: undefined,
-      salesCount: 12,
-      isPublished: false,
-      periodAmount: 9,
-      periodType: 'M',
-    },
-    {
-      id: '3',
-      avatarUrl: null,
-      creator: '孫小小',
-      listPrice: 666,
-      salePrice: 400,
-      salesCount: 33,
-      isPublished: true,
-      periodAmount: 1,
-      periodType: 'Y',
-    },
-  ]
+  const [isVisible, setVisible] = useState(false)
+  const [programPlanId, setPorgramPlanId] = useState('')
 
   const columns: ColumnProps<PodcastPlanProps>[] = [
     {
@@ -163,7 +130,7 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       width: '15rem',
       render: (text, record, index) => (
         <div>
-          {typeof record.salePrice === 'number' && (
+          {typeof record.salePrice === 'number' && !!record.salePrice && (
             <StyledPriceLabel className="mr-2">{currencyFormatter(record.salePrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getShortenPeriodTypeLabel(record.periodType)}</StyledPriceLabel>
           )}
           <StyledPriceLabel className="mr-2">{currencyFormatter(record.listPrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getShortenPeriodTypeLabel(record.periodType)}</StyledPriceLabel>
@@ -186,10 +153,10 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       key: 'status',
       width: '6rem',
       filters: [
-        { 
+        {
           text: '已發佈',
           value: '已發佈'
-        }, 
+        },
         {
           text: '未發佈',
           value: '未發佈'
@@ -209,10 +176,24 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       <Table
         rowKey="id"
         columns={columns}
-        dataSource={fakeData
-          .filter(data => !creatorSearch || data.creator.includes(creatorSearch))
+        dataSource={podcastPlans
+          .filter(podcastPlan => !creatorSearch || podcastPlan.creator.includes(creatorSearch))
         }
+        onRow={record => {
+          return ({
+            onClick: () => {
+              setVisible(true)
+              setPorgramPlanId(record.id)
+            }
+          })
+        }}
       />
+      {isVisible && <PodcastPlanUpdateModal
+        podcastPlanId={programPlanId}
+        isVisible={isVisible}
+        onVisibleSet={setVisible}
+        refetch={refetch}
+      />}
     </>
   )
 }

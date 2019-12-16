@@ -2675,10 +2675,47 @@ export interface CREATE_PODCAST_PLAN {
 
 export interface CREATE_PODCAST_PLANVariables {
   isSubscription: boolean;
+  publishedAt?: any | null;
   title: string;
+  listPrice: any;
+  salePrice?: any | null;
+  soldAt?: any | null;
+  periodAmount: any;
+  periodType: string;
+  creatorId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PLAN
+// ====================================================
+
+export interface UPDATE_PODCAST_PLAN_update_podcast_plan {
+  __typename: "podcast_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PLAN {
+  /**
+   * update data of the table: "podcast_plan"
+   */
+  update_podcast_plan: UPDATE_PODCAST_PLAN_update_podcast_plan | null;
+}
+
+export interface UPDATE_PODCAST_PLANVariables {
+  podcastPlanId: any;
   listPrice: any;
   periodAmount: any;
   periodType: string;
+  publishedAt?: any | null;
+  salePrice: any;
+  soldAt?: any | null;
   creatorId: string;
 }
 
@@ -4398,6 +4435,96 @@ export interface UPDATE_MEMBERVariables {
   username?: string | null;
   email?: string | null;
   pictureUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PODCAST_PLAN
+// ====================================================
+
+export interface GET_PODCAST_PLAN_podcast_plan_by_pk {
+  __typename: "podcast_plan";
+  id: any;
+  creator_id: string;
+  period_type: string;
+  period_amount: any;
+  list_price: any;
+  sale_price: any | null;
+  sold_at: any | null;
+  published_at: any | null;
+}
+
+export interface GET_PODCAST_PLAN {
+  /**
+   * fetch data from the table: "podcast_plan" using primary key columns
+   */
+  podcast_plan_by_pk: GET_PODCAST_PLAN_podcast_plan_by_pk | null;
+}
+
+export interface GET_PODCAST_PLANVariables {
+  podcastPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PODCAST_PLAN_ADMIN_COLLECTION
+// ====================================================
+
+export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member_podcast_programs_podcast_program_enrollments_aggregate_aggregate {
+  __typename: "podcast_program_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member_podcast_programs_podcast_program_enrollments_aggregate {
+  __typename: "podcast_program_enrollment_aggregate";
+  aggregate: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member_podcast_programs_podcast_program_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member_podcast_programs {
+  __typename: "podcast_program";
+  /**
+   * An aggregated array relationship
+   */
+  podcast_program_enrollments_aggregate: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member_podcast_programs_podcast_program_enrollments_aggregate;
+}
+
+export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member {
+  __typename: "member";
+  name: string | null;
+  username: string;
+  picture_url: string | null;
+  /**
+   * An array relationship
+   */
+  podcast_programs: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member_podcast_programs[];
+}
+
+export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan {
+  __typename: "podcast_plan";
+  id: any;
+  period_type: string;
+  period_amount: any;
+  list_price: any;
+  sale_price: any | null;
+  sold_at: any | null;
+  published_at: any | null;
+  /**
+   * An object relationship
+   */
+  member: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_member;
+}
+
+export interface GET_PODCAST_PLAN_ADMIN_COLLECTION {
+  /**
+   * fetch data from the table: "podcast_plan"
+   */
+  podcast_plan: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan[];
 }
 
 /* tslint:disable */
