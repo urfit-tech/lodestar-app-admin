@@ -1,6 +1,24 @@
 import styled from 'styled-components'
+import { Select } from 'antd'
+
+export const AdminPageTitle = styled.h1`
+  color: var(--gray-darker);
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 0.2px;
+`
+export const AdminPageBlock = styled.div`
+  overflow: auto;
+  padding: 2.5rem;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
+`
 
 export const AdminHeader = styled.header`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 0 0.5rem;
   height: 64px;
   background: white;
@@ -15,6 +33,7 @@ export const AdminHeader = styled.header`
   }
 `
 export const AdminHeaderTitle = styled.div`
+  flex-grow: 1;
   color: var(--gray-darker);
   font-size: 16px;
   font-weight: bold;
@@ -58,4 +77,14 @@ export const StyledTips = styled.div`
   font-size: 12px;
   letter-spacing: 0.58px;
   white-space: pre-line;
+`
+
+export const StyledSelect = styled(Select)`
+  && {
+    width: auto;
+  }
+
+  .ant-select-selection-selected-value {
+    margin-right: 0.5rem;
+  }
 `

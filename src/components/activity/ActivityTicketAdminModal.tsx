@@ -1,4 +1,4 @@
-import { Button, DatePicker, Input, InputNumber, Radio, Select } from 'antd'
+import { Button, DatePicker, Icon, Input, InputNumber, Radio, Select } from 'antd'
 import Form, { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import moment from 'moment'
@@ -50,6 +50,7 @@ const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
 
   return (
     <AdminModal
+      icon={() => <Icon type="file-add" />}
       title="票券方案"
       maskClosable={false}
       renderFooter={({ setVisible }) => (
