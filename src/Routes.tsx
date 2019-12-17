@@ -243,7 +243,7 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     path: '/admin/podcast-plan',
     pageName: 'owner/PodcastPlanAdminPage',
     authenticated: true,
-    allowedUserRole: 'app-owner'
+    allowedUserRole: 'app-owner',
   },
   owner_appointment_plan_collection_admin: {
     path: '/admin/appointment-plans',
@@ -254,6 +254,12 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   owner_appointment_plan_admin: {
     path: '/admin/appointment-plans/:appointmentPlanId',
     pageName: 'owner/AppointmentPlanAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_appointment_period_collection_admin: {
+    path: '/admin/appointment-periods',
+    pageName: 'owner/AppointmentPeriodCollectionAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
