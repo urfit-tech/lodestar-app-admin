@@ -19,12 +19,12 @@ const AppointmentPlanScheduleBlock: React.FC = () => {
     return <EmptyBlock>目前還沒有建立任何時段</EmptyBlock>
   }
 
-  const handleDelete: DeleteScheduleEvent = ({ values, onSuccess, onError, onFinally }) => {
+  const handleDelete: (event: DeleteScheduleEvent) => void = ({ values, onSuccess, onError, onFinally }) => {
     console.log('delete schedule:', values)
     onSuccess && onSuccess()
   }
 
-  const handleClose: ClosePeriodEvent = ({ values, onSuccess, onError, onFinally }) => {
+  const handleClose: (event: ClosePeriodEvent) => void = ({ values, onSuccess, onError, onFinally }) => {
     console.log('close period:', values)
     onSuccess && onSuccess()
   }

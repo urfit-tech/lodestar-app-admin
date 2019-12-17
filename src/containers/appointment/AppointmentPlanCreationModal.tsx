@@ -5,14 +5,14 @@ import useRouter from 'use-react-router'
 import AdminModal from '../../components/admin/AdminModal'
 import CreatorSelector from '../common/CreatorSelector'
 
-export type CreateAppointmentEvent = (props: {
+export type CreateAppointmentEvent = {
   onSuccess?: (data: { appointmentPlanId: string }) => void
   onError?: (error: Error) => void
   data: {
     creatorId: string
     title: string
   }
-}) => void
+}
 
 const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) => {
   const { history } = useRouter()

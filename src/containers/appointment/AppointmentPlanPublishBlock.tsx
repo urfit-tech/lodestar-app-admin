@@ -1,6 +1,6 @@
 import { Skeleton } from 'antd'
 import React, { useContext } from 'react'
-import AdminPublishBlock, { checklistItemProps, PublishStatus } from '../../components/admin/AdminPublishBlock'
+import AdminPublishBlock, { ChecklistItemProps, PublishStatus } from '../../components/admin/AdminPublishBlock'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanPublishBlock: React.FC = () => {
@@ -10,7 +10,7 @@ const AppointmentPlanPublishBlock: React.FC = () => {
     return <Skeleton active />
   }
 
-  const checklist: (checklistItemProps | null)[] = [
+  const checklist: (ChecklistItemProps | null)[] = [
     appointmentPlan.title
       ? null
       : {

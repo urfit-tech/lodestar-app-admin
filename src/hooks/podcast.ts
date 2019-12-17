@@ -1,15 +1,16 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import types from '../types'
 import { sum } from 'ramda'
+import types from '../types'
 
 export const usePodcastPlan = (podcastPlanId: string) => {
-  const { data, loading, error, refetch } = useQuery<types.GET_PODCAST_PLAN, types.GET_PODCAST_PLANVariables>(GET_PODCAST_PLAN,
+  const { data, loading, error, refetch } = useQuery<types.GET_PODCAST_PLAN, types.GET_PODCAST_PLANVariables>(
+    GET_PODCAST_PLAN,
     {
       variables: {
-        podcastPlanId
+        podcastPlanId,
       },
-    }
+    },
   )
   const podcastPlan: {
     id: string
@@ -20,22 +21,25 @@ export const usePodcastPlan = (podcastPlanId: string) => {
     periodType: 'Y' | 'M' | 'W'
     isPublished: boolean
     creatorId: string
-  } | null = loading || error || !data || !data.podcast_plan_by_pk ? null : {
-    id: data.podcast_plan_by_pk.id,
-    listPrice: data.podcast_plan_by_pk.list_price,
-    salePrice: data.podcast_plan_by_pk.sale_price,
-    soldAt: new Date(data.podcast_plan_by_pk.sold_at),
-    periodAmount: data.podcast_plan_by_pk.period_amount,
-    periodType: data.podcast_plan_by_pk.period_type as 'Y' | 'M' | 'W',
-    isPublished: new Date(data.podcast_plan_by_pk.published_at).getTime() < Date.now(),
-    creatorId: data.podcast_plan_by_pk.creator_id
-  }
+  } | null =
+    loading || error || !data || !data.podcast_plan_by_pk
+      ? null
+      : {
+          id: data.podcast_plan_by_pk.id,
+          listPrice: data.podcast_plan_by_pk.list_price,
+          salePrice: data.podcast_plan_by_pk.sale_price,
+          soldAt: new Date(data.podcast_plan_by_pk.sold_at),
+          periodAmount: data.podcast_plan_by_pk.period_amount,
+          periodType: data.podcast_plan_by_pk.period_type as 'Y' | 'M' | 'W',
+          isPublished: new Date(data.podcast_plan_by_pk.published_at).getTime() < Date.now(),
+          creatorId: data.podcast_plan_by_pk.creator_id,
+        }
 
   return {
     loadingPodcastPlan: loading,
     errorPodcastPlan: error,
     podcastPlan,
-    refetchPodcastPlan: refetch
+    refetchPodcastPlan: refetch,
   }
 }
 
@@ -56,32 +60,41 @@ export const usePodcastPlanAdminCollection = () => {
     GET_PODCAST_PLAN_ADMIN_COLLECTION,
   )
 
-  const podcastPlans: PodcastPlan[] | null = loading || error || !data || !data.podcast_plan ? null : data.podcast_plan.map(podcastPlan => ({
-    id: podcastPlan.id,
-    avatarUrl: podcastPlan.member.picture_url,
-    creator: podcastPlan.member.name || podcastPlan.member.username,
-    listPrice: podcastPlan.list_price,
-    salePrice: podcastPlan.sold_at
-      && new Date(podcastPlan.sold_at).getTime() > Date.now() ? podcastPlan.sale_price : 0,
-    salesCount: sum(podcastPlan.member.podcast_programs.map(podcastProgram => podcastProgram &&
-      podcastProgram.podcast_program_enrollments_aggregate && podcastProgram.podcast_program_enrollments_aggregate.aggregate &&
-      podcastProgram.podcast_program_enrollments_aggregate.aggregate.count || 0
-    )),
-    isPublished: !!podcastPlan.published_at,
-    periodAmount: podcastPlan.period_amount,
-    periodType: podcastPlan.period_type,
-  }))
+  const podcastPlans: PodcastPlan[] | null =
+    loading || error || !data || !data.podcast_plan
+      ? null
+      : data.podcast_plan.map(podcastPlan => ({
+          id: podcastPlan.id,
+          avatarUrl: podcastPlan.member.picture_url,
+          creator: podcastPlan.member.name || podcastPlan.member.username,
+          listPrice: podcastPlan.list_price,
+          salePrice:
+            podcastPlan.sold_at && new Date(podcastPlan.sold_at).getTime() > Date.now() ? podcastPlan.sale_price : 0,
+          salesCount: sum(
+            podcastPlan.member.podcast_programs.map(
+              podcastProgram =>
+                (podcastProgram &&
+                  podcastProgram.podcast_program_enrollments_aggregate &&
+                  podcastProgram.podcast_program_enrollments_aggregate.aggregate &&
+                  podcastProgram.podcast_program_enrollments_aggregate.aggregate.count) ||
+                0,
+            ),
+          ),
+          isPublished: !!podcastPlan.published_at,
+          periodAmount: podcastPlan.period_amount,
+          periodType: podcastPlan.period_type,
+        }))
 
   return {
     loadingPodcastPlanAdminCollection: loading,
     errorPodcastPlanAdminCollection: error,
     podcastPlans,
-    refetchPodcastPlanAdminCollection: refetch
+    refetchPodcastPlanAdminCollection: refetch,
   }
 }
 
 const GET_PODCAST_PLAN = gql`
-  query GET_PODCAST_PLAN($podcastPlanId: uuid!){
+  query GET_PODCAST_PLAN($podcastPlanId: uuid!) {
     podcast_plan_by_pk(id: $podcastPlanId) {
       id
       creator_id

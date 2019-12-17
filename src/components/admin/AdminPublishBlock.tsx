@@ -44,7 +44,7 @@ const StyledMeta = styled.div`
 `
 
 export type PublishStatus = 'alert' | 'ordinary' | 'success'
-export type checklistItemProps = {
+export type ChecklistItemProps = {
   id: string
   text: string
   tabkey?: string
@@ -54,7 +54,7 @@ const AdminPublishBlock: React.FC<{
   type: PublishStatus
   title?: string
   description?: string
-  checklist?: (checklistItemProps | null)[]
+  checklist?: (ChecklistItemProps | null)[]
 }> = ({ type, title, description, checklist }) => {
   return (
     <>

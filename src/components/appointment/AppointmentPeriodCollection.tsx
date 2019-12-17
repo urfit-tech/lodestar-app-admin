@@ -52,27 +52,27 @@ const getPeriodTypeLabel: (periodType: string) => string = periodType => {
   }
 }
 
-export type DeleteScheduleEvent = (props: {
+export type DeleteScheduleEvent = {
   values: {
     scheduleId: string
   }
   onSuccess?: () => void
   onError?: (error: Error) => void
   onFinally?: () => void
-}) => void
-export type ClosePeriodEvent = (props: {
+}
+export type ClosePeriodEvent = {
   values: {
     periodId: string
   }
   onSuccess?: () => void
   onError?: (error: Error) => void
   onFinally?: () => void
-}) => void
+}
 
 const AppointmentSessionCollection: React.FC<{
   periods: AppointmentPeriodProps[]
-  onDelete?: DeleteScheduleEvent
-  onClose?: ClosePeriodEvent
+  onDelete?: (event: DeleteScheduleEvent) => void
+  onClose?: (event: ClosePeriodEvent) => void
 }> = ({ periods, onDelete, onClose }) => {
   const [visible, setVisible] = useState(false)
   const [selectedPeriod, setSelectedPeriod] = useState<AppointmentPeriodProps | null>(null)
