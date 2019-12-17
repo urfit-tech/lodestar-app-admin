@@ -91,6 +91,7 @@ const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
         onSubmit({
           onSuccess: () => onVisibleSet(false),
           onError: error => console.log(error),
+          onFinally: () => setLoading(false),
           data: {
             title: values.title,
             isPublished: values.status,
@@ -142,7 +143,7 @@ const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
             {form.getFieldDecorator('period', {
               initialValue: {
                 amount: podcastPlan ? podcastPlan.periodAmount : 1,
-                type: podcastPlan ? podcastPlan.periodType : "W"
+                type: podcastPlan ? podcastPlan.periodType : "D"
               },
               rules: [{ required: true, message: '請輸入訂閱週期' }]
             })(<PodcastPeriodSelector />)}

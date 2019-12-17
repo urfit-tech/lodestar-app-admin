@@ -1,14 +1,14 @@
 import { Icon, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import { ApolloError, ApolloQueryResult } from 'apollo-client'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import PodcastPlanUpdateModal from '../../containers/podcast/PodcastPlanUpdateModal'
-import { currencyFormatter, getShortenPeriodTypeLabel } from '../../helpers'
+import { currencyFormatter, getCustomizedPeriodTypeLabel } from '../../helpers'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { PeriodType } from '../../schemas/common'
-import { AvatarImage } from '../common/Image'
-import { ApolloError, ApolloQueryResult } from 'apollo-client'
 import types from '../../types'
+import { AvatarImage } from '../common/Image'
 
 const StyledTitle = styled.div`
   display: -webkit-box;
@@ -131,9 +131,9 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       render: (text, record, index) => (
         <div>
           {typeof record.salePrice === 'number' && !!record.salePrice && (
-            <StyledPriceLabel className="mr-2">{currencyFormatter(record.salePrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getShortenPeriodTypeLabel(record.periodType)}</StyledPriceLabel>
+            <StyledPriceLabel className="mr-2">{currencyFormatter(record.salePrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getCustomizedPeriodTypeLabel(record.periodType)}</StyledPriceLabel>
           )}
-          <StyledPriceLabel className="mr-2">{currencyFormatter(record.listPrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getShortenPeriodTypeLabel(record.periodType)}</StyledPriceLabel>
+          <StyledPriceLabel className="mr-2">{currencyFormatter(record.listPrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getCustomizedPeriodTypeLabel(record.periodType)}</StyledPriceLabel>
         </div>
       ),
     },
@@ -144,7 +144,7 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       width: '6rem',
       align: 'center',
       render: (text, record, index) => <StyledText>{text}</StyledText>,
-      defaultSortOrder: 'descend',
+      defaultSortOrder: undefined,
       sorter: (a, b) => a.salesCount - b.salesCount,
     },
     {

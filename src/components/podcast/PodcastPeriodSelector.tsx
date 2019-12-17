@@ -22,6 +22,7 @@ const PodcastPeriodSelector: React.FC<{
             onChange={(type: PeriodType) => onChange && onChange({ ...value, type })}
             style={{width: '90px'}}
           >
+            <Select.Option value="D">天</Select.Option>
             <Select.Option value="W">週</Select.Option>
             <Select.Option value="M">月</Select.Option>
             <Select.Option value="Y">年</Select.Option>
