@@ -21,7 +21,7 @@ export const AppointmentPlanProvider: React.FC<{
   // ! fake data
   const appointmentPlan: AppointmentPlanProps = {
     id: appointmentPlanId,
-    title: '',
+    title: '未命名方案',
     description: '這是一個很棒的課程\n這是一個很棒\n這是一個很棒的課程\n這是一個很棒的課程這是一個很棒的課程。',
     duration: 0,
     listPrice: 0,

@@ -1,10 +1,9 @@
 import { Button, Form, Icon, Input } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import useRouter from 'use-react-router'
 import AdminModal from '../../components/admin/AdminModal'
 import CreatorSelector from '../common/CreatorSelector'
-import AppointmentPlanContext from './AppointmentPlanContext'
 
 export type CreateAppointmentEvent = (props: {
   onSuccess?: (data: { appointmentPlanId: string }) => void
@@ -17,13 +16,8 @@ export type CreateAppointmentEvent = (props: {
 
 const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) => {
   const { history } = useRouter()
-  const { appointmentPlan } = useContext(AppointmentPlanContext)
 
   const [loading, setLoading] = useState(false)
-
-  if (!appointmentPlan) {
-    return null
-  }
 
   const handleSubmit = () => {
     form.validateFields((error, values) => {
@@ -33,49 +27,47 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
 
       setLoading(true)
       console.log(values)
-      history.push(`/admin/appointment-plans/${appointmentPlan.id}`)
+      history.push(`/admin/appointment-plans/appointmentPlan-id`)
     })
   }
 
   return (
-    <>
-      <AdminModal
-        renderTrigger={({ setVisible }) => (
-          <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
-            建立方案
+    <AdminModal
+      renderTrigger={({ setVisible }) => (
+        <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
+          建立方案
+        </Button>
+      )}
+      title="建立方案"
+      icon={<Icon type="file-add" />}
+      renderFooter={({ setVisible }) => (
+        <>
+          <Button className="mr-2" onClick={() => setVisible(false)}>
+            取消
           </Button>
-        )}
-        title="建立方案"
-        icon={<Icon type="file-add" />}
-        renderFooter={({ setVisible }) => (
-          <>
-            <Button className="mr-2" onClick={() => setVisible(false)}>
-              取消
-            </Button>
-            <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
-              建立
-            </Button>
-          </>
-        )}
-      >
-        <Form hideRequiredMark colon={false} onSubmit={e => e.preventDefault()}>
-          <Form.Item label="選擇老師">
-            {form.getFieldDecorator('creatorId', {
-              initialValue: '',
-              rules: [{ required: true, message: '請選擇老師' }],
-            })(<CreatorSelector />)}
-          </Form.Item>
-          <Form.Item label="方案名稱">
-            {form.getFieldDecorator('title', {
-              initialValue: '未命名方案',
-              rules: [{ required: true, message: '請輸入方案名稱' }],
-            })(<Input />)}
-          </Form.Item>
+          <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
+            建立
+          </Button>
+        </>
+      )}
+    >
+      <Form hideRequiredMark colon={false} onSubmit={e => e.preventDefault()}>
+        <Form.Item label="選擇老師">
+          {form.getFieldDecorator('creatorId', {
+            initialValue: '',
+            rules: [{ required: true, message: '請選擇老師' }],
+          })(<CreatorSelector />)}
+        </Form.Item>
+        <Form.Item label="方案名稱">
+          {form.getFieldDecorator('title', {
+            initialValue: '未命名方案',
+            rules: [{ required: true, message: '請輸入方案名稱' }],
+          })(<Input />)}
+        </Form.Item>
 
-          <Form.Item className="m-0 text-right"></Form.Item>
-        </Form>
-      </AdminModal>
-    </>
+        <Form.Item className="m-0 text-right"></Form.Item>
+      </Form>
+    </AdminModal>
   )
 }
 

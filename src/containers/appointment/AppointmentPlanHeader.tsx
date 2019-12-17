@@ -11,7 +11,7 @@ const AppointmentPlanHeader: React.FC<{
 
   return (
     <AdminHeader>
-      <Link to="/admin/podcast-programs/" className="mr-3">
+      <Link to="/admin/appointment-plans/" className="mr-3">
         <Icon type="arrow-left" />
       </Link>
 

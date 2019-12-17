@@ -23,6 +23,7 @@ const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
 
   return (
     <Form
+      hideRequiredMark
       colon={false}
       onSubmit={e => {
         e.preventDefault()
