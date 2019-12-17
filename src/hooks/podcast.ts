@@ -110,7 +110,7 @@ const GET_PODCAST_PLAN = gql`
 
 const GET_PODCAST_PLAN_ADMIN_COLLECTION = gql`
   query GET_PODCAST_PLAN_ADMIN_COLLECTION {
-    podcast_plan {
+    podcast_plan(order_by: {updated_at: desc}) {
       id
       period_type
       period_amount
