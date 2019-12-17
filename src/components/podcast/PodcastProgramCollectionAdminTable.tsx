@@ -11,7 +11,7 @@ export type PodcastProgramProps = {
   id: string
   coverUrl?: string | null
   title: string
-  creator: string
+  instructorName: string
   listPrice: number
   salePrice?: number
   salesCount: number
@@ -113,8 +113,8 @@ const PodcastProgramCollectionAdminTable: React.FC<{
     },
     {
       title: '老師',
-      dataIndex: 'creator',
-      key: 'creator',
+      dataIndex: 'instructorName',
+      key: 'instructorName',
       render: (text, record, index) => <StyledText>{text}</StyledText>,
       ...getColumnSearchProps(selectedKeys => {
         selectedKeys && setNameSearch(selectedKeys[0] || '')
@@ -178,7 +178,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       columns={columns}
       dataSource={podcastPrograms
         .filter(podcastProgram => !titleSearch || podcastProgram.title.includes(titleSearch))
-        .filter(podcastProgram => !nameSearch || podcastProgram.creator.includes(nameSearch))}
+        .filter(podcastProgram => !nameSearch || podcastProgram.instructorName.includes(nameSearch))}
       onRow={record => ({
         onClick: () => history.push(`/admin/podcast-programs/${record.id}`),
       })}

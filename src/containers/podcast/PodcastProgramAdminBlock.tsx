@@ -135,8 +135,8 @@ const PodcastProgramAdminBlock: React.FC<{
         },
       })
         .then(() => {
-          onSuccess ? onSuccess() : message.success('儲存成功')
           refetch()
+          onSuccess ? onSuccess() : message.success('儲存成功')
         })
         .catch(error => (onError ? onError(error) : handleError(error)))
         .finally(() => onFinally && onFinally())
@@ -150,7 +150,10 @@ const PodcastProgramAdminBlock: React.FC<{
           duration: data.duration,
         },
       })
-        .then(() => (onSuccess ? onSuccess() : message.success('儲存成功')))
+        .then(() => {
+          refetch()
+          onSuccess ? onSuccess() : message.success('儲存成功')
+        })
         .catch(error => (onError ? onError(error) : handleError(error)))
         .finally(() => onFinally && onFinally())
     }
@@ -173,7 +176,10 @@ const PodcastProgramAdminBlock: React.FC<{
               })),
         },
       })
-        .then(() => (onSuccess ? onSuccess() : message.success('儲存成功')))
+        .then(() => {
+          refetch()
+          onSuccess ? onSuccess() : message.success('儲存成功')
+        })
         .catch(error => (onError ? onError(error) : handleError(error)))
         .finally(() => onFinally && onFinally())
     }
@@ -187,8 +193,8 @@ const PodcastProgramAdminBlock: React.FC<{
         },
       })
         .then(() => {
-          onSuccess ? onSuccess() : message.success('儲存成功')
           refetch()
+          onSuccess ? onSuccess() : message.success('儲存成功')
         })
         .catch(error => (onError ? onError(error) : handleError(error)))
         .finally(() => onFinally && onFinally())
@@ -207,7 +213,10 @@ const PodcastProgramAdminBlock: React.FC<{
           soldAt: data.soldAt,
         },
       })
-        .then(() => (onSuccess ? onSuccess() : message.success('儲存成功')))
+        .then(() => {
+          refetch()
+          onSuccess ? onSuccess() : message.success('儲存成功')
+        })
         .catch(error => (onError ? onError(error) : handleError(error)))
         .finally(() => onFinally && onFinally())
     }
@@ -224,8 +233,8 @@ const PodcastProgramAdminBlock: React.FC<{
         },
       })
         .then(() => {
-          onSuccess ? onSuccess() : message.success('儲存成功')
           refetch()
+          onSuccess ? onSuccess() : message.success('儲存成功')
         })
         .catch(error => (onError ? onError(error) : handleError(error)))
         .finally(() => onFinally && onFinally())
@@ -239,8 +248,8 @@ const PodcastProgramAdminBlock: React.FC<{
         },
       })
         .then(() => {
-          onSuccess ? onSuccess() : message.success('儲存成功')
           refetch()
+          onSuccess ? onSuccess() : message.success('儲存成功')
         })
         .catch(error => (onError ? onError(error) : handleError(error)))
         .finally(() => onFinally && onFinally())

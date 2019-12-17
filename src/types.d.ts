@@ -3100,10 +3100,20 @@ export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_pr
   category: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_categories_category;
 }
 
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles_member {
+  __typename: "member";
+  id: string;
+  name: string | null;
+  username: string;
+}
+
 export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles {
   __typename: "podcast_program_role";
   id: any;
-  member_id: string;
+  /**
+   * An object relationship
+   */
+  member: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles_member;
   name: string;
 }
 
@@ -8579,6 +8589,7 @@ export interface podcast_program_role_arr_rel_insert_input {
  */
 export interface podcast_program_role_insert_input {
   id?: any | null;
+  member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   name?: string | null;
   podcast_program?: podcast_program_obj_rel_insert_input | null;
