@@ -19,8 +19,8 @@ const StyledPlanTitle = styled.div`
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  max-width: 18rem;
   max-height: 3em;
+  color: var(--gray-darker);
   line-height: 1.5rem;
   letter-spacing: 0.2px;
 `
@@ -28,10 +28,10 @@ const StyledPlanPrice = styled.div`
   color: ${props => props.theme['@primary-color']};
   letter-spacing: 0.2px;
 `
-const StyledEnrollment = styled.div`
-  color: var(--gray-dark);
-  font-size: 14px;
-  letter-spacing: 0.4px;
+const StyledText = styled.div`
+  color: var(--gray-darker);
+  line-height: 1.5;
+  letter-spacing: 0.2px;
 `
 const StyledPublished = styled.div<{ active?: boolean }>`
   display: flex;
@@ -60,6 +60,7 @@ export type AppointmentPlanProps = {
   avatarlUrl?: string | null
   creatorName: string
   title: string
+  duration: number
   listPrice: number
   enrollment: number
   isPublished: boolean
@@ -91,9 +92,9 @@ const AppointmentPlanCollectionTable: React.FC<{
           key: 'id',
           title: '老師',
           render: (text, record, index) => (
-            <div className="d-flex align-items-center justify-content-between">
+            <div className="d-flex align-items-center justify-content-start">
               <AvatarImage className="mr-3" src={record.avatarlUrl} size={36} />
-              <StyledCreatorName className="flex-grow-1">{record.creatorName}</StyledCreatorName>
+              <StyledCreatorName className="pl-1">{record.creatorName}</StyledCreatorName>
             </div>
           ),
           filterDropdown: () => (
@@ -129,18 +130,25 @@ const AppointmentPlanCollectionTable: React.FC<{
           filterIcon,
         },
         {
+          dataIndex: 'duration',
+          title: '分鐘',
+          width: '7em',
+          render: (text, record, index) => <StyledText>{text}</StyledText>,
+          sorter: (a, b) => b.duration - a.duration,
+        },
+        {
           dataIndex: 'listPrice',
           title: '金額',
           width: '10em',
           render: (text, record, index) => <StyledPlanPrice>{currencyFormatter(text)}</StyledPlanPrice>,
-          sorter: (a, b) => a.listPrice - b.listPrice,
+          sorter: (a, b) => b.listPrice - a.listPrice,
         },
         {
           dataIndex: 'enrollment',
           title: '已預約',
           width: '7em',
-          render: (text, record, index) => <StyledEnrollment>{text} 人</StyledEnrollment>,
-          sorter: (a, b) => a.enrollment - b.enrollment,
+          render: (text, record, index) => <StyledText>{text} 人</StyledText>,
+          sorter: (a, b) => b.enrollment - a.enrollment,
         },
         {
           key: 'published',

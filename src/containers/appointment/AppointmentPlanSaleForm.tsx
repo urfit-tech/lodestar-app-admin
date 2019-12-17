@@ -34,7 +34,7 @@ const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
         label={
           <span>
             <span className="mr-2">時間長度(分鐘)</span>
-            <Tooltip title={<StyledTips>設定單次預約談話的時間長度</StyledTips>}>
+            <Tooltip title={<StyledTips>設定單次預約服務的時間長度</StyledTips>}>
               <Icon type="question-circle" theme="filled" />
             </Tooltip>
           </span>
