@@ -62,6 +62,21 @@ export const getPeriodTypeLabel = (periodType: PeriodType | string) => {
   }
 }
 
+export const getCustomizedPeriodTypeLabel = (periodType: PeriodType | string) => {
+  switch (periodType) {
+    case 'D': 
+      return '天'
+    case 'W':
+      return '週'
+    case 'M':
+      return '個月'
+    case 'Y':
+      return '年'
+    default:
+      return '未知週期'
+  }
+}
+
 export const getShortenPeriodTypeLabel = (periodType: PeriodType | string) => {
   switch (periodType) {
     case 'W':

@@ -1,4 +1,4 @@
-import { Button, Form, Icon, Tooltip } from 'antd'
+import { Button, Form, Icon, InputNumber, Tooltip } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import { extname } from 'path'
@@ -34,6 +34,7 @@ const PodcastProgramContentAdminBlock: React.FC<FormComponentProps> = ({ form })
       updatePodcastProgram({
         onFinally: () => setLoading(false),
         data: {
+          duration: values.duration,
           description: values.description.toRAW(),
         },
       })
@@ -97,6 +98,11 @@ const PodcastProgramContentAdminBlock: React.FC<FormComponentProps> = ({ form })
                 />
               </StyledFileBlock>
             ) : null}
+          </Form.Item>
+          <Form.Item label="內容時長（分鐘）">
+            {form.getFieldDecorator('duration', {
+              initialValue: podcastProgramAdmin.duration,
+            })(<InputNumber min={0} />)}
           </Form.Item>
           <Form.Item label="內容描述">
             {form.getFieldDecorator('description', {

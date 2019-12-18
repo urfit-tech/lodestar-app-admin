@@ -10,6 +10,7 @@ type PodcastProgramAdminProps = {
   id: string
   title: string
   contentType: string | null
+  duration: number
   description: string | null
   categories: {
     id: string
@@ -30,6 +31,7 @@ type UpdatePodcastProgramProps = {
   onFinally?: () => void
   data: {
     contentType?: string | null
+    duration?: number
     description?: string
     title?: string
     categoryIds?: string[]
@@ -48,6 +50,7 @@ const defaultPodcastProgramAdmin: PodcastProgramAdminProps = {
   title: '',
   coverUrl: null,
   contentType: null,
+  duration: 0,
   description: null,
   categories: [],
   abstract: null,
@@ -124,7 +127,7 @@ const PodcastProgramAdminBlock: React.FC<{
       },
     })
 
-    typeof data.contentType !== 'undefined' &&
+    if (typeof data.contentType !== 'undefined') {
       updatePodcastProgramContent({
         variables: {
           podcastProgramId,
@@ -132,24 +135,30 @@ const PodcastProgramAdminBlock: React.FC<{
         },
       })
         .then(() => {
-          onSuccess ? onSuccess() : message.success('儲存成功')
           refetch()
+          onSuccess ? onSuccess() : message.success('儲存成功')
         })
         .catch(error => (onError ? onError(error) : handleError(error)))
         .finally(() => onFinally && onFinally())
+    }
 
-    data.description &&
+    if (typeof data.description !== 'undefined' || typeof data.duration !== 'undefined') {
       updatePodcastProgramBody({
         variables: {
           podcastProgramId,
           description: data.description,
+          duration: data.duration,
         },
       })
-        .then(() => (onSuccess ? onSuccess() : message.success('儲存成功')))
+        .then(() => {
+          refetch()
+          onSuccess ? onSuccess() : message.success('儲存成功')
+        })
         .catch(error => (onError ? onError(error) : handleError(error)))
         .finally(() => onFinally && onFinally())
+    }
 
-    if (data.title || data.categoryIds) {
+    if (typeof data.title !== 'undefined' || typeof data.categoryIds !== 'undefined') {
       updatePodcastProgramBasic({
         variables: {
           podcastProgramId,
@@ -167,12 +176,15 @@ const PodcastProgramAdminBlock: React.FC<{
               })),
         },
       })
-        .then(() => (onSuccess ? onSuccess() : message.success('儲存成功')))
+        .then(() => {
+          refetch()
+          onSuccess ? onSuccess() : message.success('儲存成功')
+        })
         .catch(error => (onError ? onError(error) : handleError(error)))
         .finally(() => onFinally && onFinally())
     }
 
-    if (data.coverUrl || data.abstract) {
+    if (typeof data.coverUrl !== 'undefined' || typeof data.abstract !== 'undefined') {
       updatePodcastProgramIntro({
         variables: {
           podcastProgramId,
@@ -181,14 +193,18 @@ const PodcastProgramAdminBlock: React.FC<{
         },
       })
         .then(() => {
-          onSuccess ? onSuccess() : message.success('儲存成功')
           refetch()
+          onSuccess ? onSuccess() : message.success('儲存成功')
         })
         .catch(error => (onError ? onError(error) : handleError(error)))
         .finally(() => onFinally && onFinally())
     }
 
-    if (data.listPrice || typeof data.salePrice !== 'undefined' || typeof data.soldAt !== 'undefined') {
+    if (
+      typeof data.listPrice !== 'undefined' ||
+      typeof data.salePrice !== 'undefined' ||
+      typeof data.soldAt !== 'undefined'
+    ) {
       updatePodcastProgramPlan({
         variables: {
           podcastProgramId,
@@ -197,12 +213,15 @@ const PodcastProgramAdminBlock: React.FC<{
           soldAt: data.soldAt,
         },
       })
-        .then(() => (onSuccess ? onSuccess() : message.success('儲存成功')))
+        .then(() => {
+          refetch()
+          onSuccess ? onSuccess() : message.success('儲存成功')
+        })
         .catch(error => (onError ? onError(error) : handleError(error)))
         .finally(() => onFinally && onFinally())
     }
 
-    data.instructorIds &&
+    if (typeof data.instructorIds !== 'undefined') {
       updatePodcastProgramRole({
         variables: {
           podcastProgramId,
@@ -214,13 +233,14 @@ const PodcastProgramAdminBlock: React.FC<{
         },
       })
         .then(() => {
-          onSuccess ? onSuccess() : message.success('儲存成功')
           refetch()
+          onSuccess ? onSuccess() : message.success('儲存成功')
         })
         .catch(error => (onError ? onError(error) : handleError(error)))
         .finally(() => onFinally && onFinally())
+    }
 
-    typeof data.publishedAt !== 'undefined' &&
+    if (typeof data.publishedAt !== 'undefined') {
       publishPodcastProgram({
         variables: {
           podcastProgramId,
@@ -228,11 +248,12 @@ const PodcastProgramAdminBlock: React.FC<{
         },
       })
         .then(() => {
-          onSuccess ? onSuccess() : message.success('儲存成功')
           refetch()
+          onSuccess ? onSuccess() : message.success('儲存成功')
         })
         .catch(error => (onError ? onError(error) : handleError(error)))
         .finally(() => onFinally && onFinally())
+    }
   }
 
   if (loading) {
@@ -247,6 +268,7 @@ const PodcastProgramAdminBlock: React.FC<{
     id: data.podcast_program_by_pk.id,
     title: data.podcast_program_by_pk.title,
     contentType: data.podcast_program_by_pk.content_type,
+    duration: data.podcast_program_by_pk.duration,
     description: data.podcast_program_by_pk.podcast_program_bodies[0]
       ? data.podcast_program_by_pk.podcast_program_bodies[0].description
       : null,
@@ -284,6 +306,7 @@ const GET_PODCAST_PROGRAM_ADMIN = gql`
       sale_price
       sold_at
       content_type
+      duration
       published_at
       creator_id
       podcast_program_bodies {
@@ -321,7 +344,10 @@ const UPDATE_PODCAST_PROGRAM_CONTENT = gql`
   }
 `
 const UPDATE_PODCAST_PROGRAM_BODY = gql`
-  mutation UPDATE_PODCAST_PROGRAM_BODY($podcastProgramId: uuid!, $description: String!) {
+  mutation UPDATE_PODCAST_PROGRAM_BODY($podcastProgramId: uuid!, $description: String, $duration: numeric) {
+    update_podcast_program(where: { id: { _eq: $podcastProgramId } }, _set: { duration: $duration }) {
+      affected_rows
+    }
     update_podcast_program_body(
       where: { podcast_program_id: { _eq: $podcastProgramId } }
       _set: { description: $description }

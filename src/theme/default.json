@@ -2,6 +2,8 @@
   "@avatar-size-base": "36px",
   "@avatar-size-lg": "40px",
   "@avatar-size-sm": "28px",
+  "@btn-danger-bg": "@error-color",
+  "@btn-danger-border": "@error-color",
   "@btn-danger-color": "#fff",
   "@btn-default-color": "#585858",
   "@btn-font-size-lg": "16px",

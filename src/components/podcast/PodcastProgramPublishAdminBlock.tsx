@@ -58,6 +58,11 @@ const PodcastProgramPublishAdminBlock: React.FC<{
       tab: 'content',
       value: typeof podcastProgramAdmin.contentType !== 'string',
     },
+    NO_DURATION: {
+      text: '尚未填寫時長',
+      tab: 'content',
+      value: podcastProgramAdmin.duration === 0,
+    },
     NO_COVER: {
       text: '尚未上傳封面',
       tab: 'settings',

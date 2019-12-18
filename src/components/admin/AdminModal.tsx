@@ -26,7 +26,7 @@ const StyledTitle = styled.h1`
 `
 
 export type AdminModalProps = ModalProps & {
-  renderTrigger: React.FC<{
+  renderTrigger?: React.FC<{
     setVisible: React.Dispatch<React.SetStateAction<boolean>>
   }>
   icon?: React.ReactNode
@@ -48,7 +48,7 @@ const AdminModal: React.FC<AdminModalProps> = ({
 
   return (
     <>
-      {renderTrigger({ setVisible })}
+      {renderTrigger && renderTrigger({ setVisible })}
 
       <Modal
         title={null}
@@ -62,7 +62,7 @@ const AdminModal: React.FC<AdminModalProps> = ({
         }}
         {...ModalProps}
       >
-        {/* {icon && <StyledIcon>{icon}</StyledIcon>} */}
+        {icon && <StyledIcon>{icon}</StyledIcon>}
         {title && <StyledTitle>{title}</StyledTitle>}
         {children}
 

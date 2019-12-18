@@ -102,6 +102,9 @@ export const OwnerAdminMenu = (props: MenuProps) => (
         <Menu.Item key="owner_appointment_plan_collection_admin">
           <span>預約方案</span>
         </Menu.Item>
+        <Menu.Item key="owner_appointment_period_collection_admin">
+          <span>預約紀錄</span>
+        </Menu.Item>
       </Menu.SubMenu>
 
       <Menu.Item key="owner_program_general_admin">
