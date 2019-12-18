@@ -214,7 +214,7 @@ const getColumnSearchProps = ({
 }: {
   // dataIndex: string,
   onReset: (clearFilters: any) => void
-  onSearch: (selectedKeys?: string[], confirm?: () => void) => void
+  onSearch: (selectedKeys?: React.ReactText[], confirm?: () => void) => void
 }): ColumnProps<any> => ({
   filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
     <div className="p-2">
