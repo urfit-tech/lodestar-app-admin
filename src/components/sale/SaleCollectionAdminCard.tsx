@@ -232,7 +232,7 @@ const getColumnSearchProps = ({
         onClick={() => onSearch(selectedKeys, confirm)}
         className="mr-2"
       >
-        <span>查 詢</span>
+        查詢
       </StyledFilterButton>
       <StyledFilterButton size="small" onClick={() => onReset(clearFilters)}>
         重置

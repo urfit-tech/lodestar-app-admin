@@ -1,4 +1,4 @@
-import { Icon, Input, Table } from 'antd'
+import { Button, Icon, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import React, { useState } from 'react'
 import styled from 'styled-components'
@@ -62,20 +62,31 @@ const StyledStatusLabel = styled.div<{ active?: boolean }>`
   }
 `
 
-const getColumnSearchProps: (
-  onSearch: (selectedKeys?: string[], confirm?: () => void) => void,
-) => ColumnProps<PodcastProgramProps> = onSearch => ({
+const getColumnSearchProps: (events: {
+  onReset: (clearFilters: any) => void
+  onSearch: (selectedKeys?: React.ReactText[], confirm?: () => void) => void
+}) => ColumnProps<PodcastProgramProps> = ({ onReset, onSearch }) => ({
   filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
     <div className="p-2">
       <Input
         autoFocus
         value={selectedKeys && selectedKeys[0]}
-        onChange={e => {
-          setSelectedKeys && setSelectedKeys([e.target.value || ''])
-          onSearch([e.target.value || ''], confirm)
-        }}
+        onChange={e => setSelectedKeys && setSelectedKeys(e.target.value ? [e.target.value] : [])}
+        onPressEnter={() => onSearch(selectedKeys, confirm)}
         style={{ width: 188, marginBottom: 8, display: 'block' }}
       />
+      <div className="row">
+        <div className="col-6">
+          <Button type="primary" size="small" icon="search" block onClick={() => onSearch(selectedKeys, confirm)}>
+            查詢
+          </Button>
+        </div>
+        <div className="col-6">
+          <Button size="small" block onClick={() => onReset(clearFilters)}>
+            重置
+          </Button>
+        </div>
+      </div>
     </div>
   ),
   filterIcon: filtered => <Icon type="search" style={{ color: filtered ? 'var(--primary)' : undefined }} />,
@@ -94,7 +105,6 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       title: '名稱',
       dataIndex: 'title',
       key: 'title',
-      width: '25rem',
       render: (text, record, index) => (
         <div className="d-flex align-items-center justify-content-between">
           <CustomRatioImage
@@ -106,19 +116,32 @@ const PodcastProgramCollectionAdminTable: React.FC<{
           <StyledTitle className="flex-grow-1">{record.title}</StyledTitle>
         </div>
       ),
-      ...getColumnSearchProps(selectedKeys => {
-        selectedKeys && setTitleSearch(selectedKeys[0] || '')
-        setNameSearch('')
+      ...getColumnSearchProps({
+        onReset: clearFilters => {
+          clearFilters()
+          setTitleSearch('')
+        },
+        onSearch: (selectedKeys, confirm) => {
+          confirm && confirm()
+          selectedKeys && setTitleSearch(selectedKeys[0].toString())
+        },
       }),
     },
     {
       title: '老師',
       dataIndex: 'instructorName',
       key: 'instructorName',
+      width: '12rem',
       render: (text, record, index) => <StyledText>{text}</StyledText>,
-      ...getColumnSearchProps(selectedKeys => {
-        selectedKeys && setNameSearch(selectedKeys[0] || '')
-        setTitleSearch('')
+      ...getColumnSearchProps({
+        onReset: clearFilters => {
+          clearFilters()
+          setNameSearch('')
+        },
+        onSearch: (selectedKeys, confirm) => {
+          confirm && confirm()
+          selectedKeys && setNameSearch(selectedKeys[0].toString())
+        },
       }),
     },
     {
@@ -141,7 +164,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       title: '購買',
       dataIndex: 'salesCount',
       key: 'salesCount',
-      width: '6rem',
+      width: '7rem',
       align: 'center',
       render: (text, record, index) => <StyledText>{text}</StyledText>,
       sorter: (a, b) => b.salesCount - a.salesCount,
@@ -151,7 +174,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       title: '狀態',
       dataIndex: 'status',
       key: 'status',
-      width: '6rem',
+      width: '7rem',
       render: (text, record, index) => (
         <StyledStatusLabel active={record.isPublished} className="d-flex align-items-center justify-content-start">
           {record.isPublished ? '已發佈' : '未發佈'}

@@ -17,7 +17,7 @@ const PodcastProgramCollectionAdminTable: React.FC = () => {
   }, [])
 
   if (loading) {
-    return <Skeleton />
+    return <Skeleton active />
   }
 
   if (error || !data) {
