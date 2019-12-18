@@ -37,7 +37,10 @@ export type AppointmentPeriodCardProps = {
   appointmentPlanTitle: string
   startedAt: Date
   endedAt: Date
-  creatorName?: string
+  creator: {
+    id: string
+    name: string
+  }
   link?: string
 }
 const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
@@ -46,7 +49,7 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
   appointmentPlanTitle,
   startedAt,
   endedAt,
-  creatorName,
+  creator,
   link,
 }) => {
   const [visible, setVisible] = useState(false)
@@ -57,6 +60,7 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
   const endedTime = moment(endedAt)
     .utc()
     .format('YYYYMMDD[T]HHmmss[Z]')
+  const isFinished = endedAt.getTime() < Date.now()
 
   return (
     <StyledWrapper className="d-flex align-items-center justify-content-between">
@@ -69,10 +73,10 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
           <StyledMeta>
             <Icon component={() => <CalendarAltOIcon />} className="mr-1" />
             <span>{dateRangeFormatter(startedAt, endedAt, 'MM/DD(dd) HH:mm')}</span>
-            {creatorName && (
+            {creator.name && (
               <>
                 <Icon component={() => <UserOIcon />} className="ml-3 mr-1" />
-                <span>{creatorName}</span>
+                <span>{creator.name}</span>
               </>
             )}
           </StyledMeta>
@@ -80,21 +84,30 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
       </div>
 
       <div>
-        <Button type="link" onClick={() => setVisible(true)}>
+        <Button type="link" size="small" onClick={() => setVisible(true)}>
           詳情
         </Button>
         <Divider type="vertical" />
         <a
-          className="ant-btn ant-btn-link"
           href={`https://www.google.com/calendar/render?action=TEMPLATE&text=${appointmentPlanTitle}&dates=${startedTime}%2F${endedTime}`}
           target="_blank"
           rel="noopener noreferrer"
         >
-          加入行事曆
+          <Button type="link" size="small">
+            加入行事曆
+          </Button>
         </a>
-        <Button type="primary" disabled={!link} className="ml-2">
-          進入會議
-        </Button>
+        {isFinished ? (
+          <Button type="link" size="small" disabled={true} className="ml-2">
+            已結束
+          </Button>
+        ) : (
+          <a href={link} target="_blank" rel="noopener noreferrer">
+            <Button type="primary" className="ml-2">
+              進入會議
+            </Button>
+          </a>
+        )}
       </div>
 
       <Modal footer={null} width={312} destroyOnClose centered visible={visible} onCancel={() => setVisible(false)}>
