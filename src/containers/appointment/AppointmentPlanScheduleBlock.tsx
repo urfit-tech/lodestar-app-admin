@@ -1,3 +1,4 @@
+import gql from 'graphql-tag'
 import moment from 'moment'
 import groupBy from 'ramda/es/groupBy'
 import React, { useContext } from 'react'
@@ -53,5 +54,27 @@ const AppointmentPlanScheduleBlock: React.FC = () => {
     </>
   )
 }
+
+const UPDATE_APPOINTMENT_SCHEDULE = gql`
+  mutation UPDATE_APPOINTMENT_SCHEDULE(
+    $appointmentScheduleId: uuid!
+    $startedAt: timestamptz!
+    $intervalType: String
+    $intervalAmount: Int
+    $excludes: jsonb
+  ) {
+    update_appointment_schedule(
+      where: { id: { _eq: $appointmentScheduleId } }
+      _set: {
+        started_at: $startedAt
+        interval_type: $intervalType
+        interval_amount: $intervalAmount
+        excludes: $excludes
+      }
+    ) {
+      affected_rows
+    }
+  }
+`
 
 export default AppointmentPlanScheduleBlock

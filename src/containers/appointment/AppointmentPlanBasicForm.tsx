@@ -1,5 +1,6 @@
 import { Button, Form, Input } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
+import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
@@ -48,5 +49,13 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
     </Form>
   )
 }
+
+const UPDATE_APPOINTMENT_PLAN_TITLE = gql`
+  mutation UPDATE_APPOINTMENT_PLAN_TITLE($appointmentPlanId: uuid!, $title: String!) {
+    update_appointment_plan(where: { id: { _eq: $appointmentPlanId } }, _set: { title: $title }) {
+      affected_rows
+    }
+  }
+`
 
 export default Form.create<FormComponentProps>()(AppointmentPlanBasicForm)

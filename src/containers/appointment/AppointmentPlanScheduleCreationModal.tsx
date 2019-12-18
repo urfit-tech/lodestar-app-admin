@@ -1,5 +1,6 @@
 import { Button, Checkbox, DatePicker, Form, Icon, Select } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
+import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useContext, useState } from 'react'
 import { AdminBlockSubTitle, StyledSelect } from '../../components/admin'
@@ -90,5 +91,25 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
     </AdminModal>
   )
 }
+
+const CREATE_APPOINTMENT_SCHEDULE = gql`
+  mutation CREATE_APPOINTMENT_SCHEDULE(
+    $appointmentPlanId: uuid!
+    $startedAt: timestamptz!
+    $intervalType: String
+    $intervalAmount: Int
+  ) {
+    insert_appointment_schedule(
+      objects: {
+        appointment_plan_id: $appointmentPlanId
+        started_at: $startedAt
+        interval_type: $intervalType
+        interval_amount: $intervalAmount
+      }
+    ) {
+      affected_rows
+    }
+  }
+`
 
 export default Form.create<FormComponentProps>()(AppointmentPlanScheduleCreationModal)

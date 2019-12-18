@@ -26,7 +26,7 @@ const AppointmentPlanCollectionTable: React.FC = () => {
           duration: appointmentPlan.duration,
           listPrice: appointmentPlan.price,
           enrollment: 0,
-          isPublished: !!appointmentPlan.publishedAt,
+          isPublished: !!appointmentPlan.published_at,
         }))
 
   return <AppointmentPlanCollectionTableComponent appointmentPlans={appointmentPlans} loading={loading} />
@@ -45,7 +45,7 @@ const GET_APPOINTMENT_PLAN_COLLECTION_ADMIN = gql`
       title
       duration
       price
-      publishedAt
+      published_at
     }
   }
 `

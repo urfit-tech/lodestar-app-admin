@@ -1,5 +1,6 @@
 import { Button, Form, Icon, InputNumber, Tooltip } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
+import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { StyledTips } from '../../components/admin'
 import CurrencyInput from '../../components/admin/CurrencyInput'
@@ -66,5 +67,16 @@ const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
     </Form>
   )
 }
+
+const UPDATE_APPOINTMENT_PLAN_SALE = gql`
+  mutation UPDATE_APPOINTMENT_PLAN_SALE($appointmentPlanId: uuid!, $duration: numeric, $listPrice: numeric) {
+    update_appointment_plan(
+      where: { id: { _eq: $appointmentPlanId } }
+      _set: { duration: $duration, price: $listPrice }
+    ) {
+      affected_rows
+    }
+  }
+`
 
 export default Form.create<FormComponentProps>()(AppointmentPlanSaleForm)

@@ -1,4 +1,5 @@
 import { Skeleton } from 'antd'
+import gql from 'graphql-tag'
 import React, { useContext } from 'react'
 import AdminPublishBlock, { ChecklistItemProps, PublishStatus } from '../../components/admin/AdminPublishBlock'
 import AppointmentPlanContext from './AppointmentPlanContext'
@@ -55,5 +56,13 @@ const AppointmentPlanPublishBlock: React.FC = () => {
 
   return <AdminPublishBlock type={publishStatus} title={title} description={description} checklist={checklist} />
 }
+
+const PUBLISH_APPOINTMENT_PLAN = gql`
+  mutation PUBLISH_APPOINTMENT_PLAN($appointmentPlanId: uuid!, $publishedAt: timestamptz) {
+    update_appointment_plan(where: { id: { _eq: $appointmentPlanId } }, _set: { published_at: $publishedAt }) {
+      affected_rows
+    }
+  }
+`
 
 export default AppointmentPlanPublishBlock

@@ -2327,7 +2327,7 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
   title: string;
   duration: any;
   price: any;
-  publishedAt: any | null;
+  published_at: any | null;
 }
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN {
@@ -2335,6 +2335,234 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN {
    * fetch data from the table: "appointment_plan"
    */
   appointment_plan: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APPOINTMENT_PLAN_ADMIN
+// ====================================================
+
+export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods_appointment_schedule {
+  __typename: "appointment_schedule";
+  id: any;
+  /**
+   * Y / M / W / D
+   */
+  interval_type: string | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods {
+  __typename: "appointment_period";
+  /**
+   * An object relationship
+   */
+  appointment_schedule: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods_appointment_schedule | null;
+  started_at: any | null;
+  ended_at: any | null;
+  booked: boolean | null;
+  available: boolean | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk {
+  __typename: "appointment_plan";
+  id: any;
+  title: string;
+  description: string | null;
+  duration: any;
+  price: any;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  appointment_periods: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods[];
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMIN {
+  /**
+   * fetch data from the table: "appointment_plan" using primary key columns
+   */
+  appointment_plan_by_pk: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMINVariables {
+  appointmentPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_TITLE
+// ====================================================
+
+export interface UPDATE_APPOINTMENT_PLAN_TITLE_update_appointment_plan {
+  __typename: "appointment_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_TITLE {
+  /**
+   * update data of the table: "appointment_plan"
+   */
+  update_appointment_plan: UPDATE_APPOINTMENT_PLAN_TITLE_update_appointment_plan | null;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
+  appointmentPlanId: any;
+  title: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_DESCRIPTION
+// ====================================================
+
+export interface UPDATE_APPOINTMENT_PLAN_DESCRIPTION_update_appointment_plan {
+  __typename: "appointment_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_DESCRIPTION {
+  /**
+   * update data of the table: "appointment_plan"
+   */
+  update_appointment_plan: UPDATE_APPOINTMENT_PLAN_DESCRIPTION_update_appointment_plan | null;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_DESCRIPTIONVariables {
+  appointmentPlanId: any;
+  description: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_SALE
+// ====================================================
+
+export interface UPDATE_APPOINTMENT_PLAN_SALE_update_appointment_plan {
+  __typename: "appointment_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_SALE {
+  /**
+   * update data of the table: "appointment_plan"
+   */
+  update_appointment_plan: UPDATE_APPOINTMENT_PLAN_SALE_update_appointment_plan | null;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_SALEVariables {
+  appointmentPlanId: any;
+  duration?: any | null;
+  listPrice?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_APPOINTMENT_PLAN
+// ====================================================
+
+export interface PUBLISH_APPOINTMENT_PLAN_update_appointment_plan {
+  __typename: "appointment_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_APPOINTMENT_PLAN {
+  /**
+   * update data of the table: "appointment_plan"
+   */
+  update_appointment_plan: PUBLISH_APPOINTMENT_PLAN_update_appointment_plan | null;
+}
+
+export interface PUBLISH_APPOINTMENT_PLANVariables {
+  appointmentPlanId: any;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CREATE_APPOINTMENT_SCHEDULE
+// ====================================================
+
+export interface CREATE_APPOINTMENT_SCHEDULE_insert_appointment_schedule {
+  __typename: "appointment_schedule_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface CREATE_APPOINTMENT_SCHEDULE {
+  /**
+   * insert data into the table: "appointment_schedule"
+   */
+  insert_appointment_schedule: CREATE_APPOINTMENT_SCHEDULE_insert_appointment_schedule | null;
+}
+
+export interface CREATE_APPOINTMENT_SCHEDULEVariables {
+  appointmentPlanId: any;
+  startedAt: any;
+  intervalType?: string | null;
+  intervalAmount?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_APPOINTMENT_SCHEDULE
+// ====================================================
+
+export interface UPDATE_APPOINTMENT_SCHEDULE_update_appointment_schedule {
+  __typename: "appointment_schedule_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APPOINTMENT_SCHEDULE {
+  /**
+   * update data of the table: "appointment_schedule"
+   */
+  update_appointment_schedule: UPDATE_APPOINTMENT_SCHEDULE_update_appointment_schedule | null;
+}
+
+export interface UPDATE_APPOINTMENT_SCHEDULEVariables {
+  appointmentScheduleId: any;
+  startedAt: any;
+  intervalType?: string | null;
+  intervalAmount?: number | null;
+  excludes?: any | null;
 }
 
 /* tslint:disable */
@@ -5917,7 +6145,7 @@ export enum appointment_plan_update_column {
   duration = "duration",
   id = "id",
   price = "price",
-  publishedAt = "publishedAt",
+  published_at = "published_at",
   title = "title",
   updated_at = "updated_at",
 }
@@ -7616,6 +7844,23 @@ export interface app_on_conflict {
 }
 
 /**
+ * Boolean expression to filter rows from the table "appointment_period". All fields are combined with a logical 'AND'.
+ */
+export interface appointment_period_bool_exp {
+  _and?: (appointment_period_bool_exp | null)[] | null;
+  _not?: appointment_period_bool_exp | null;
+  _or?: (appointment_period_bool_exp | null)[] | null;
+  appointment_plan?: appointment_plan_bool_exp | null;
+  appointment_plan_id?: uuid_comparison_exp | null;
+  appointment_schedule?: appointment_schedule_bool_exp | null;
+  appointment_schedule_id?: uuid_comparison_exp | null;
+  available?: Boolean_comparison_exp | null;
+  booked?: Boolean_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "appointment_plan"
  */
 export interface appointment_plan_arr_rel_insert_input {
@@ -7630,6 +7875,7 @@ export interface appointment_plan_bool_exp {
   _and?: (appointment_plan_bool_exp | null)[] | null;
   _not?: appointment_plan_bool_exp | null;
   _or?: (appointment_plan_bool_exp | null)[] | null;
+  appointment_periods?: appointment_period_bool_exp | null;
   appointment_schedules?: appointment_schedule_bool_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   creator?: member_bool_exp | null;
@@ -7638,7 +7884,7 @@ export interface appointment_plan_bool_exp {
   duration?: numeric_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   price?: numeric_comparison_exp | null;
-  publishedAt?: timestamptz_comparison_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
   title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -7655,7 +7901,7 @@ export interface appointment_plan_insert_input {
   duration?: any | null;
   id?: any | null;
   price?: any | null;
-  publishedAt?: any | null;
+  published_at?: any | null;
   title?: string | null;
   updated_at?: any | null;
 }

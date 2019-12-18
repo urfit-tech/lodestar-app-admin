@@ -109,7 +109,6 @@ const AppointmentSessionCollection: React.FC<{
                   type="danger"
                   block
                   onClick={() =>
-                    selectedPeriod.schedule &&
                     onDelete &&
                     onDelete({
                       values: {
@@ -123,7 +122,7 @@ const AppointmentSessionCollection: React.FC<{
                     })
                   }
                 >
-                  刪除{selectedPeriod.schedule && selectedPeriod.schedule.periodType !== null && '系列'}時段
+                  刪除{selectedPeriod.schedule.periodType !== null && '系列'}時段
                 </Button>
               )}
             </div>
@@ -146,7 +145,7 @@ const AppointmentSessionCollection: React.FC<{
                   }
                 >
                   {selectedPeriod.isExcluded ? '開啟' : '關閉'}
-                  {selectedPeriod.schedule && selectedPeriod.schedule.periodType !== null && '單一'}時段
+                  {selectedPeriod.schedule.periodType !== null && '單一'}時段
                 </Button>
               )}
             </div>
@@ -158,7 +157,7 @@ const AppointmentSessionCollection: React.FC<{
             {moment(selectedPeriod.startedAt).format('YYYY-MM-DD(dd) HH:mm')}
           </StyledModalDescription>
         )}
-        {selectedPeriod && selectedPeriod.schedule && selectedPeriod.schedule.periodType !== null && (
+        {selectedPeriod && selectedPeriod.schedule.periodType !== null && (
           <StyledModalMeta className="mb-2">
             ※系列時段為{getPeriodTypeLabel(selectedPeriod.schedule.periodType)}重複
           </StyledModalMeta>

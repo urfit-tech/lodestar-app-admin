@@ -1,6 +1,7 @@
 import { Button, Form } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor, { EditorState } from 'braft-editor'
+import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import AdminBraftEditor from '../../components/admin/AdminBraftEditor'
 import AppointmentPlanContext from './AppointmentPlanContext'
@@ -33,11 +34,11 @@ const AppointmentPlanIntroForm: React.FC<FormComponentProps> = ({ form }) => {
       <Form.Item>
         {appointmentPlan &&
           form.getFieldDecorator('description', {
-            initialValue: BraftEditor.createEditorState(appointmentPlan.description),
+            initialValue: BraftEditor.createEditorState(appointmentPlan.description || ''),
             rules: [
               {
                 validator: (rule, value: EditorState, callback) => {
-                  value.isEmpty() ? callback('請輸入問題內容') : callback()
+                  value.isEmpty() ? callback('請輸入方案簡介') : callback()
                 },
               },
             ],
@@ -54,5 +55,13 @@ const AppointmentPlanIntroForm: React.FC<FormComponentProps> = ({ form }) => {
     </Form>
   )
 }
+
+const UPDATE_APPOINTMENT_PLAN_DESCRIPTION = gql`
+  mutation UPDATE_APPOINTMENT_PLAN_DESCRIPTION($appointmentPlanId: uuid!, $description: String!) {
+    update_appointment_plan(where: { id: { _eq: $appointmentPlanId } }, _set: { description: $description }) {
+      affected_rows
+    }
+  }
+`
 
 export default Form.create<FormComponentProps>()(AppointmentPlanIntroForm)
