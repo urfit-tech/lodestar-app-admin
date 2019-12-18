@@ -6,7 +6,7 @@ import 'moment/locale/zh-tw'
 import React from 'react'
 import { Helmet } from 'react-helmet'
 import { hot } from 'react-hot-loader'
-import { Route } from 'react-router-dom'
+import { Route, BrowserRouter } from 'react-router-dom'
 import { Organization, WithContext } from 'schema-dts'
 import { ThemeProvider } from 'styled-components'
 import { QueryParamProvider } from 'use-query-params'
@@ -23,18 +23,20 @@ const Application = () => {
   usePixel()
   useTappay()
   return (
-    <ThemeProvider theme={theme}>
-      <AuthProvider>
-        <ApiProvider>
-          <QueryParamProvider ReactRouterRoute={Route}>
-            <ConfigProvider locale={zhTW}>
-              <ApplicationHelmet />
-              <Routes />
-            </ConfigProvider>
-          </QueryParamProvider>
-        </ApiProvider>
-      </AuthProvider>
-    </ThemeProvider>
+    <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <AuthProvider>
+          <ApiProvider>
+            <QueryParamProvider ReactRouterRoute={Route}>
+              <ConfigProvider locale={zhTW}>
+                <ApplicationHelmet />
+                <Routes />
+              </ConfigProvider>
+            </QueryParamProvider>
+          </ApiProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </BrowserRouter>
   )
 }
 
