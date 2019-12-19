@@ -2404,6 +2404,16 @@ export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_p
   available: boolean | null;
 }
 
+export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate_aggregate {
+  __typename: "appointment_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate {
+  __typename: "appointment_enrollment_aggregate";
+  aggregate: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate_aggregate | null;
+}
+
 export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk {
   __typename: "appointment_plan";
   id: any;
@@ -2420,6 +2430,10 @@ export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk {
    * An array relationship
    */
   appointment_periods: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods[];
+  /**
+   * An aggregated array relationship
+   */
+  appointment_enrollments_aggregate: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate;
 }
 
 export interface GET_APPOINTMENT_PLAN_ADMIN {
@@ -7882,6 +7896,21 @@ export interface app_on_conflict {
 }
 
 /**
+ * Boolean expression to filter rows from the table "appointment_enrollment". All fields are combined with a logical 'AND'.
+ */
+export interface appointment_enrollment_bool_exp {
+  _and?: (appointment_enrollment_bool_exp | null)[] | null;
+  _not?: appointment_enrollment_bool_exp | null;
+  _or?: (appointment_enrollment_bool_exp | null)[] | null;
+  appointment_plan?: appointment_plan_bool_exp | null;
+  appointment_plan_id?: uuid_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
+}
+
+/**
  * Boolean expression to filter rows from the table "appointment_period". All fields are combined with a logical 'AND'.
  */
 export interface appointment_period_bool_exp {
@@ -7913,6 +7942,7 @@ export interface appointment_plan_bool_exp {
   _and?: (appointment_plan_bool_exp | null)[] | null;
   _not?: appointment_plan_bool_exp | null;
   _or?: (appointment_plan_bool_exp | null)[] | null;
+  appointment_enrollments?: appointment_enrollment_bool_exp | null;
   appointment_periods?: appointment_period_bool_exp | null;
   appointment_schedules?: appointment_schedule_bool_exp | null;
   created_at?: timestamptz_comparison_exp | null;

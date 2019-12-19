@@ -17,6 +17,7 @@ type AppointmentPlanAdminProps = {
     excludes: number[]
   }[]
   periods: AppointmentPeriodProps[]
+  enrollments: number
   isPublished: boolean | null
 }
 const AppointmentPlanContext = createContext<{
@@ -49,6 +50,7 @@ export const AppointmentPlanProvider: React.FC<{
           listPrice: 0,
           schedules: [],
           periods: [],
+          enrollments: 0,
           isPublished: null,
         }
       : {
@@ -83,6 +85,9 @@ export const AppointmentPlanProvider: React.FC<{
               isExcluded: !appointmentPeriod.available,
             })),
           ),
+          enrollments: data.appointment_plan_by_pk.appointment_enrollments_aggregate.aggregate
+            ? data.appointment_plan_by_pk.appointment_enrollments_aggregate.aggregate.count || 0
+            : 0,
           isPublished: !!data.appointment_plan_by_pk.published_at,
         }
 
@@ -122,6 +127,11 @@ const GET_APPOINTMENT_PLAN_ADMIN = gql`
         ended_at
         booked
         available
+      }
+      appointment_enrollments_aggregate {
+        aggregate {
+          count
+        }
       }
     }
   }
