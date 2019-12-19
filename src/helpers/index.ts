@@ -98,8 +98,8 @@ export const currencyFormatter = (value?: number | string | null) =>
 
 export const dateFormatter = (value: Date, format?: string) => moment(value).format(format || `YYYY/MM/DD HH:mm`)
 
-export const dateRangeFormatter = (startedAt: Date, endedAt: Date) => {
-  const fullTimeFormat = 'YYYY-MM-DD(dd) HH:mm'
+export const dateRangeFormatter = (startedAt: Date, endedAt: Date, timeFormat?: string) => {
+  const fullTimeFormat = timeFormat || 'YYYY-MM-DD(dd) HH:mm'
   const shortTimeFormat = 'HH:mm'
   const startedDate = moment(startedAt).format('YYYYMMDD')
   const endedDate = moment(endedAt).format('YYYYMMDD')
