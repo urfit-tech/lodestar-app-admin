@@ -1,15 +1,21 @@
-import { Button, Checkbox, DatePicker, Form, Icon, Select } from 'antd'
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Checkbox, DatePicker, Form, Icon, message, Select } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useContext, useState } from 'react'
 import { AdminBlockSubTitle, StyledSelect } from '../../components/admin'
 import AdminModal from '../../components/admin/AdminModal'
+import { handleError } from '../../helpers'
+import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ form }) => {
-  const { appointmentPlan } = useContext(AppointmentPlanContext)
-
+  const { appointmentPlan, refetch } = useContext(AppointmentPlanContext)
+  const [createAppointmentSchedule] = useMutation<
+    types.CREATE_APPOINTMENT_SCHEDULE,
+    types.CREATE_APPOINTMENT_SCHEDULEVariables
+  >(CREATE_APPOINTMENT_SCHEDULE)
   const [loading, setLoading] = useState(false)
   const [withRepeat, setWithRepeat] = useState(false)
 
@@ -26,11 +32,24 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
       }
 
       setLoading(true)
-
-      console.log('create schedule:', values)
-
-      setLoading(false)
-      setVisible(false)
+      createAppointmentSchedule({
+        variables: {
+          appointmentPlanId: appointmentPlan.id,
+          startedAt: values.startedAt.toDate(),
+          intervalAmount: withRepeat ? 1 : null,
+          intervalType: withRepeat ? values.periodType : null,
+        },
+      })
+        .then(() => {
+          refetch && refetch()
+          message.success('儲存成功')
+          setVisible(false)
+        })
+        .catch(error => {
+          handleError(error)
+          setLoading(false)
+        })
+        .finally(() => setLoading(false))
     })
   }
 
@@ -43,6 +62,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
       )}
       icon={<Icon type="file-add" />}
       title="建立時段"
+      maskClosable={false}
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>

@@ -2373,6 +2373,15 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN {
 // GraphQL query operation: GET_APPOINTMENT_PLAN_ADMIN
 // ====================================================
 
+export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_schedules {
+  __typename: "appointment_schedule";
+  id: any;
+  /**
+   * ISO8601[], ex: ["2019-01-01T12:34:56+0800"]
+   */
+  excludes: any;
+}
+
 export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods_appointment_schedule {
   __typename: "appointment_schedule";
   id: any;
@@ -2403,6 +2412,10 @@ export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk {
   duration: any;
   price: any;
   published_at: any | null;
+  /**
+   * An array relationship
+   */
+  appointment_schedules: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_schedules[];
   /**
    * An array relationship
    */
@@ -2567,9 +2580,6 @@ export interface UPDATE_APPOINTMENT_SCHEDULE {
 
 export interface UPDATE_APPOINTMENT_SCHEDULEVariables {
   appointmentScheduleId: any;
-  startedAt: any;
-  intervalType?: string | null;
-  intervalAmount?: number | null;
   excludes?: any | null;
 }
 

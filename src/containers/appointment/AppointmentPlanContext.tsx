@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
+import { uniqBy } from 'ramda'
 import React, { createContext } from 'react'
 import { ScheduleIntervalType } from '../../components/appointment/AppointmentPeriodCollection'
 import { AppointmentPeriodProps } from '../../components/appointment/AppointmentPeriodItem'
@@ -11,6 +12,10 @@ type AppointmentPlanAdminProps = {
   description: string | null
   duration: number
   listPrice: number
+  schedules: {
+    id: string
+    excludes: number[]
+  }[]
   periods: AppointmentPeriodProps[]
   isPublished: boolean | null
 }
@@ -39,6 +44,7 @@ export const AppointmentPlanProvider: React.FC<{
           description: null,
           duration: 0,
           listPrice: 0,
+          schedules: [],
           periods: [],
           isPublished: null,
         }
@@ -48,21 +54,32 @@ export const AppointmentPlanProvider: React.FC<{
           description: data.appointment_plan_by_pk.description,
           duration: data.appointment_plan_by_pk.duration,
           listPrice: data.appointment_plan_by_pk.price,
-          periods: data.appointment_plan_by_pk.appointment_periods.map(appointmentPeriod => ({
-            id: `${appointmentPeriod.started_at}_${appointmentPeriod.ended_at}`,
-            schedule: {
-              id: appointmentPeriod.appointment_schedule ? appointmentPeriod.appointment_schedule.id : '',
-              periodAmount: appointmentPeriod.appointment_schedule
-                ? appointmentPeriod.appointment_schedule.interval_amount
-                : null,
-              periodType: appointmentPeriod.appointment_schedule
-                ? (appointmentPeriod.appointment_schedule.interval_type as ScheduleIntervalType)
-                : null,
-            },
-            startedAt: new Date(appointmentPeriod.started_at),
-            isEnrolled: !!appointmentPeriod.booked,
-            isExcluded: !appointmentPeriod.available,
-          })),
+          schedules: data.appointment_plan_by_pk.appointment_schedules.map(appointmentSchedule => {
+            const excludedPeriods = appointmentSchedule.excludes as string[]
+
+            return {
+              id: appointmentSchedule.id,
+              excludes: excludedPeriods.map(period => new Date(period).getTime()),
+            }
+          }),
+          periods: uniqBy(
+            appointmentPeriod => appointmentPeriod.id,
+            data.appointment_plan_by_pk.appointment_periods.map(appointmentPeriod => ({
+              id: `${appointmentPeriod.started_at}`,
+              schedule: {
+                id: appointmentPeriod.appointment_schedule ? appointmentPeriod.appointment_schedule.id : '',
+                periodAmount: appointmentPeriod.appointment_schedule
+                  ? appointmentPeriod.appointment_schedule.interval_amount
+                  : null,
+                periodType: appointmentPeriod.appointment_schedule
+                  ? (appointmentPeriod.appointment_schedule.interval_type as ScheduleIntervalType)
+                  : null,
+              },
+              startedAt: new Date(appointmentPeriod.started_at),
+              isEnrolled: !!appointmentPeriod.booked,
+              isExcluded: !appointmentPeriod.available,
+            })),
+          ),
           isPublished: !!data.appointment_plan_by_pk.published_at,
         }
 
@@ -87,6 +104,10 @@ const GET_APPOINTMENT_PLAN_ADMIN = gql`
       duration
       price
       published_at
+      appointment_schedules {
+        id
+        excludes
+      }
       appointment_periods(order_by: { started_at: asc }) {
         appointment_schedule {
           id
