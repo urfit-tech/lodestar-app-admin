@@ -63,7 +63,7 @@ const AdminPublishBlock: React.FC<{
   type: PublishStatus
   title?: string
   description?: string
-  checklist?: (ChecklistItemProps | null)[]
+  checklist?: ChecklistItemProps[]
   onPublish?: (event: PublishEvent) => void
 }> = ({ type, title, description, checklist, onPublish }) => {
   const [loading, setLoading] = useState(false)

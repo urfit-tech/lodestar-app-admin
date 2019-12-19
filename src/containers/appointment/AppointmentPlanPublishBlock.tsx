@@ -20,36 +20,32 @@ const AppointmentPlanPublishBlock: React.FC = () => {
     return <Skeleton active />
   }
 
-  const checklist: (ChecklistItemProps | null)[] = [
-    appointmentPlan.title
-      ? null
-      : {
-          id: 'NO_TITLE',
-          text: '尚未設定方案名稱',
-          tabkey: 'settings',
-        },
-    appointmentPlan.duration
-      ? null
-      : {
-          id: 'NO_DURATION',
-          text: '尚未設定時間長度',
-          tabkey: 'sale',
-        },
-    appointmentPlan.listPrice
-      ? null
-      : {
-          id: 'NO_LIST_PRICE',
-          text: '尚未設定售價',
-          tabkey: 'sale',
-        },
-    appointmentPlan.periods.length
-      ? null
-      : {
-          id: 'NO_PERIOD',
-          text: '尚未設定時段',
-          tabkey: 'schedule',
-        },
-  ].filter(v => v)
+  const checklist: ChecklistItemProps[] = []
+
+  !appointmentPlan.title &&
+    checklist.push({
+      id: 'NO_TITLE',
+      text: '尚未設定方案名稱',
+      tabkey: 'settings',
+    })
+  !appointmentPlan.duration &&
+    checklist.push({
+      id: 'NO_DURATION',
+      text: '尚未設定時間長度',
+      tabkey: 'sale',
+    })
+  !appointmentPlan.listPrice &&
+    checklist.push({
+      id: 'NO_LIST_PRICE',
+      text: '尚未設定售價',
+      tabkey: 'sale',
+    })
+  !appointmentPlan.periods.length &&
+    checklist.push({
+      id: 'NO_PERIOD',
+      text: '尚未設定時段',
+      tabkey: 'schedule',
+    })
 
   const publishStatus: PublishStatus =
     checklist.length > 0 ? 'alert' : !appointmentPlan.isPublished ? 'ordinary' : 'success'
