@@ -1,11 +1,20 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext } from 'react'
-import AdminPublishBlock, { ChecklistItemProps, PublishStatus } from '../../components/admin/AdminPublishBlock'
+import AdminPublishBlock, {
+  ChecklistItemProps,
+  PublishEvent,
+  PublishStatus,
+} from '../../components/admin/AdminPublishBlock'
+import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanPublishBlock: React.FC = () => {
-  const { appointmentPlan } = useContext(AppointmentPlanContext)
+  const { appointmentPlan, refetch } = useContext(AppointmentPlanContext)
+  const [publishAppointmentPlan] = useMutation<types.PUBLISH_APPOINTMENT_PLAN, types.PUBLISH_APPOINTMENT_PLANVariables>(
+    PUBLISH_APPOINTMENT_PLAN,
+  )
 
   if (!appointmentPlan) {
     return <Skeleton active />
@@ -54,7 +63,30 @@ const AppointmentPlanPublishBlock: React.FC = () => {
       ? ['已發佈', '預約方案已經發佈，學生將能購買預約。']
       : []
 
-  return <AdminPublishBlock type={publishStatus} title={title} description={description} checklist={checklist} />
+  const handlePublish: (event: PublishEvent) => void = ({ values, onSuccess, onError, onFinally }) => {
+    publishAppointmentPlan({
+      variables: {
+        appointmentPlanId: appointmentPlan.id,
+        publishedAt: values.publishedAt,
+      },
+    })
+      .then(() => {
+        refetch && refetch()
+        onSuccess && onSuccess()
+      })
+      .catch(error => onError && onError(error))
+      .finally(() => onFinally && onFinally())
+  }
+
+  return (
+    <AdminPublishBlock
+      type={publishStatus}
+      title={title}
+      description={description}
+      checklist={checklist}
+      onPublish={handlePublish}
+    />
+  )
 }
 
 const PUBLISH_APPOINTMENT_PLAN = gql`

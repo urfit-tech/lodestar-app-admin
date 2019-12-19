@@ -1,5 +1,5 @@
-import { Button, Icon } from 'antd'
-import React from 'react'
+import { Button, Icon, message } from 'antd'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { ReactComponent as ExclamationCircleIcon } from '../../images/default/exclamation-circle.svg'
@@ -49,13 +49,24 @@ export type ChecklistItemProps = {
   text: string
   tabkey?: string
 }
+export type PublishEvent = {
+  values: {
+    publishedAt: Date | null
+  }
+  onSuccess?: () => void
+  onError?: (error: Error) => void
+  onFinally?: () => void
+}
 
 const AdminPublishBlock: React.FC<{
   type: PublishStatus
   title?: string
   description?: string
   checklist?: (ChecklistItemProps | null)[]
-}> = ({ type, title, description, checklist }) => {
+  onPublish?: (event: PublishEvent) => void
+}> = ({ type, title, description, checklist, onPublish }) => {
+  const [loading, setLoading] = useState(false)
+
   return (
     <>
       <div className="text-center mb-4">
@@ -93,6 +104,29 @@ const AdminPublishBlock: React.FC<{
           )}
         </StyledMetaBlock>
       )}
+
+      <div className="text-center">
+        <Button
+          type={type === 'success' ? 'default' : 'primary'}
+          disabled={type === 'alert'}
+          loading={loading}
+          onClick={() => {
+            setLoading(true)
+
+            onPublish &&
+              onPublish({
+                values: {
+                  publishedAt: type === 'ordinary' ? new Date() : null,
+                },
+                onSuccess: () => message.success('發佈成功'),
+                onError: () => message.error('發佈失敗'),
+                onFinally: () => setLoading(false),
+              })
+          }}
+        >
+          {type === 'success' ? '取消發佈' : '立即發佈'}
+        </Button>
+      </div>
     </>
   )
 }
