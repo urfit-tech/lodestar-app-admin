@@ -2306,6 +2306,34 @@ export interface UPDATE_ACTIVITY_TICKETVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_TITLE
+// ====================================================
+
+export interface UPDATE_APPOINTMENT_PLAN_TITLE_update_appointment_plan {
+  __typename: "appointment_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_TITLE {
+  /**
+   * update data of the table: "appointment_plan"
+   */
+  update_appointment_plan: UPDATE_APPOINTMENT_PLAN_TITLE_update_appointment_plan | null;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
+  appointmentPlanId: any;
+  title: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN
 // ====================================================
 
@@ -2348,6 +2376,7 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN {
 export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods_appointment_schedule {
   __typename: "appointment_schedule";
   id: any;
+  interval_amount: number | null;
   /**
    * Y / M / W / D
    */
@@ -2396,27 +2425,36 @@ export interface GET_APPOINTMENT_PLAN_ADMINVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_TITLE
+// GraphQL mutation operation: CREATE_APPOINTMENT_PLAN
 // ====================================================
 
-export interface UPDATE_APPOINTMENT_PLAN_TITLE_update_appointment_plan {
+export interface CREATE_APPOINTMENT_PLAN_insert_appointment_plan_returning {
+  __typename: "appointment_plan";
+  id: any;
+}
+
+export interface CREATE_APPOINTMENT_PLAN_insert_appointment_plan {
   __typename: "appointment_plan_mutation_response";
   /**
    * number of affected rows by the mutation
    */
   affected_rows: number;
-}
-
-export interface UPDATE_APPOINTMENT_PLAN_TITLE {
   /**
-   * update data of the table: "appointment_plan"
+   * data of the affected rows by the mutation
    */
-  update_appointment_plan: UPDATE_APPOINTMENT_PLAN_TITLE_update_appointment_plan | null;
+  returning: CREATE_APPOINTMENT_PLAN_insert_appointment_plan_returning[];
 }
 
-export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
-  appointmentPlanId: any;
+export interface CREATE_APPOINTMENT_PLAN {
+  /**
+   * insert data into the table: "appointment_plan"
+   */
+  insert_appointment_plan: CREATE_APPOINTMENT_PLAN_insert_appointment_plan | null;
+}
+
+export interface CREATE_APPOINTMENT_PLANVariables {
   title: string;
+  creatorId: string;
 }
 
 /* tslint:disable */
@@ -2452,35 +2490,6 @@ export interface UPDATE_APPOINTMENT_PLAN_DESCRIPTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_SALE
-// ====================================================
-
-export interface UPDATE_APPOINTMENT_PLAN_SALE_update_appointment_plan {
-  __typename: "appointment_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_APPOINTMENT_PLAN_SALE {
-  /**
-   * update data of the table: "appointment_plan"
-   */
-  update_appointment_plan: UPDATE_APPOINTMENT_PLAN_SALE_update_appointment_plan | null;
-}
-
-export interface UPDATE_APPOINTMENT_PLAN_SALEVariables {
-  appointmentPlanId: any;
-  duration?: any | null;
-  listPrice?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: PUBLISH_APPOINTMENT_PLAN
 // ====================================================
 
@@ -2509,29 +2518,28 @@ export interface PUBLISH_APPOINTMENT_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: CREATE_APPOINTMENT_SCHEDULE
+// GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_SALE
 // ====================================================
 
-export interface CREATE_APPOINTMENT_SCHEDULE_insert_appointment_schedule {
-  __typename: "appointment_schedule_mutation_response";
+export interface UPDATE_APPOINTMENT_PLAN_SALE_update_appointment_plan {
+  __typename: "appointment_plan_mutation_response";
   /**
    * number of affected rows by the mutation
    */
   affected_rows: number;
 }
 
-export interface CREATE_APPOINTMENT_SCHEDULE {
+export interface UPDATE_APPOINTMENT_PLAN_SALE {
   /**
-   * insert data into the table: "appointment_schedule"
+   * update data of the table: "appointment_plan"
    */
-  insert_appointment_schedule: CREATE_APPOINTMENT_SCHEDULE_insert_appointment_schedule | null;
+  update_appointment_plan: UPDATE_APPOINTMENT_PLAN_SALE_update_appointment_plan | null;
 }
 
-export interface CREATE_APPOINTMENT_SCHEDULEVariables {
+export interface UPDATE_APPOINTMENT_PLAN_SALEVariables {
   appointmentPlanId: any;
-  startedAt: any;
-  intervalType?: string | null;
-  intervalAmount?: number | null;
+  duration?: any | null;
+  listPrice?: any | null;
 }
 
 /* tslint:disable */
@@ -2570,36 +2578,56 @@ export interface UPDATE_APPOINTMENT_SCHEDULEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: CREATE_APPOINTMENT_PLAN
+// GraphQL mutation operation: DELETE_APPOINTMENT_SCHEDULE
 // ====================================================
 
-export interface CREATE_APPOINTMENT_PLAN_insert_appointment_plan_returning {
-  __typename: "appointment_plan";
-  id: any;
-}
-
-export interface CREATE_APPOINTMENT_PLAN_insert_appointment_plan {
-  __typename: "appointment_plan_mutation_response";
+export interface DELETE_APPOINTMENT_SCHEDULE_delete_appointment_schedule {
+  __typename: "appointment_schedule_mutation_response";
   /**
    * number of affected rows by the mutation
    */
   affected_rows: number;
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: CREATE_APPOINTMENT_PLAN_insert_appointment_plan_returning[];
 }
 
-export interface CREATE_APPOINTMENT_PLAN {
+export interface DELETE_APPOINTMENT_SCHEDULE {
   /**
-   * insert data into the table: "appointment_plan"
+   * delete data from the table: "appointment_schedule"
    */
-  insert_appointment_plan: CREATE_APPOINTMENT_PLAN_insert_appointment_plan | null;
+  delete_appointment_schedule: DELETE_APPOINTMENT_SCHEDULE_delete_appointment_schedule | null;
 }
 
-export interface CREATE_APPOINTMENT_PLANVariables {
-  title: string;
-  creatorId: string;
+export interface DELETE_APPOINTMENT_SCHEDULEVariables {
+  appointmentScheduleId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CREATE_APPOINTMENT_SCHEDULE
+// ====================================================
+
+export interface CREATE_APPOINTMENT_SCHEDULE_insert_appointment_schedule {
+  __typename: "appointment_schedule_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface CREATE_APPOINTMENT_SCHEDULE {
+  /**
+   * insert data into the table: "appointment_schedule"
+   */
+  insert_appointment_schedule: CREATE_APPOINTMENT_SCHEDULE_insert_appointment_schedule | null;
+}
+
+export interface CREATE_APPOINTMENT_SCHEDULEVariables {
+  appointmentPlanId: any;
+  startedAt: any;
+  intervalType?: string | null;
+  intervalAmount?: number | null;
 }
 
 /* tslint:disable */

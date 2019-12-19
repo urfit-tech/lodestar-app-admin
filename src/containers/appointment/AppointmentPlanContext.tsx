@@ -1,6 +1,7 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React, { createContext } from 'react'
+import { ScheduleIntervalType } from '../../components/appointment/AppointmentPeriodCollection'
 import { AppointmentPeriodProps } from '../../components/appointment/AppointmentPeriodItem'
 import types from '../../types'
 
@@ -48,11 +49,14 @@ export const AppointmentPlanProvider: React.FC<{
           duration: data.appointment_plan_by_pk.duration,
           listPrice: data.appointment_plan_by_pk.price,
           periods: data.appointment_plan_by_pk.appointment_periods.map(appointmentPeriod => ({
-            id: `${appointmentPeriod.started_at}-${appointmentPeriod.ended_at}`,
+            id: `${appointmentPeriod.started_at}_${appointmentPeriod.ended_at}`,
             schedule: {
               id: appointmentPeriod.appointment_schedule ? appointmentPeriod.appointment_schedule.id : '',
+              periodAmount: appointmentPeriod.appointment_schedule
+                ? appointmentPeriod.appointment_schedule.interval_amount
+                : null,
               periodType: appointmentPeriod.appointment_schedule
-                ? (appointmentPeriod.appointment_schedule.interval_type as 'D' | 'W' | 'M' | 'Y')
+                ? (appointmentPeriod.appointment_schedule.interval_type as ScheduleIntervalType)
                 : null,
             },
             startedAt: new Date(appointmentPeriod.started_at),
@@ -86,6 +90,7 @@ const GET_APPOINTMENT_PLAN_ADMIN = gql`
       appointment_periods(order_by: { started_at: asc }) {
         appointment_schedule {
           id
+          interval_amount
           interval_type
         }
         started_at

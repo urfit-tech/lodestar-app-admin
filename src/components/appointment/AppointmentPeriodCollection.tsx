@@ -37,21 +37,13 @@ export const EmptyBlock = styled.div`
   letter-spacing: 0.4px;
 `
 
-const getPeriodTypeLabel: (periodType: string) => string = periodType => {
-  switch (periodType) {
-    case 'D':
-      return '每日'
-    case 'W':
-      return '每週'
-    case 'M':
-      return '每月'
-    case 'Y':
-      return '每年'
-    default:
-      return '未知週期'
-  }
+export type ScheduleIntervalType = 'Y' | 'M' | 'W' | 'D'
+const scheduleIntervalTypeLabel: { [key in ScheduleIntervalType]: string } = {
+  Y: '每年',
+  M: '每月',
+  W: '每週',
+  D: '每日',
 }
-
 export type DeleteScheduleEvent = {
   values: {
     scheduleId: string
@@ -62,14 +54,15 @@ export type DeleteScheduleEvent = {
 }
 export type ClosePeriodEvent = {
   values: {
-    periodId: string
+    scheduleId: string
+    startedAt: Date
   }
   onSuccess?: () => void
   onError?: (error: Error) => void
   onFinally?: () => void
 }
 
-const AppointmentSessionCollection: React.FC<{
+const AppointmentPeriodCollection: React.FC<{
   periods: AppointmentPeriodProps[]
   onDelete?: (event: DeleteScheduleEvent) => void
   onClose?: (event: ClosePeriodEvent) => void
@@ -79,7 +72,7 @@ const AppointmentSessionCollection: React.FC<{
 
   return (
     <>
-      <StyledTitle>{periods.length > 0 && moment(periods[1].startedAt).format('YYYY-MM-DD(dd)')}</StyledTitle>
+      <StyledTitle>{periods.length > 0 && moment(periods[0].startedAt).format('YYYY-MM-DD(dd)')}</StyledTitle>
       <StyledWrapper>
         {periods.map(period => (
           <div
@@ -134,7 +127,8 @@ const AppointmentSessionCollection: React.FC<{
                     onClose &&
                     onClose({
                       values: {
-                        periodId: selectedPeriod.id,
+                        scheduleId: selectedPeriod.schedule.id,
+                        startedAt: selectedPeriod.startedAt,
                       },
                       onSuccess: () => {
                         setVisible(false)
@@ -157,9 +151,9 @@ const AppointmentSessionCollection: React.FC<{
             {moment(selectedPeriod.startedAt).format('YYYY-MM-DD(dd) HH:mm')}
           </StyledModalDescription>
         )}
-        {selectedPeriod && selectedPeriod.schedule.periodType !== null && (
+        {selectedPeriod && selectedPeriod.schedule.periodType !== null && selectedPeriod.schedule.periodAmount && (
           <StyledModalMeta className="mb-2">
-            ※系列時段為{getPeriodTypeLabel(selectedPeriod.schedule.periodType)}重複
+            ※系列時段為{scheduleIntervalTypeLabel[selectedPeriod.schedule.periodType]}重複
           </StyledModalMeta>
         )}
       </AdminModal>
@@ -167,4 +161,4 @@ const AppointmentSessionCollection: React.FC<{
   )
 }
 
-export default AppointmentSessionCollection
+export default AppointmentPeriodCollection

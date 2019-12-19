@@ -47,6 +47,7 @@ export type AppointmentPeriodProps = {
   id: string
   schedule: {
     id: string
+    periodAmount: number | null
     periodType: 'D' | 'W' | 'M' | 'Y' | null
   }
   startedAt: Date

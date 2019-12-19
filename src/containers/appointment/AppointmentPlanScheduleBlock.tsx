@@ -1,6 +1,6 @@
 import gql from 'graphql-tag'
 import moment from 'moment'
-import groupBy from 'ramda/es/groupBy'
+import { groupBy } from 'ramda'
 import React, { useContext } from 'react'
 import AppointmentPeriodCollection, {
   ClosePeriodEvent,
@@ -12,11 +12,7 @@ import AppointmentPlanContext from './AppointmentPlanContext'
 const AppointmentPlanScheduleBlock: React.FC = () => {
   const { appointmentPlan } = useContext(AppointmentPlanContext)
 
-  if (!appointmentPlan) {
-    return null
-  }
-
-  if (appointmentPlan.periods.length === 0) {
+  if (!appointmentPlan || appointmentPlan.periods.length === 0) {
     return <EmptyBlock>目前還沒有建立任何時段</EmptyBlock>
   }
 
@@ -31,7 +27,7 @@ const AppointmentPlanScheduleBlock: React.FC = () => {
   }
 
   const periodCollections = groupBy(
-    period => `${period.startedAt.getFullYear()}${period.startedAt.getMonth() + 1}${period.startedAt.getDate()}`,
+    period => Math.floor(period.startedAt.getTime() / 86400000).toString(),
     appointmentPlan.periods,
   )
 
@@ -72,6 +68,13 @@ const UPDATE_APPOINTMENT_SCHEDULE = gql`
         excludes: $excludes
       }
     ) {
+      affected_rows
+    }
+  }
+`
+const DELETE_APPOINTMENT_SCHEDULE = gql`
+  mutation DELETE_APPOINTMENT_SCHEDULE($appointmentScheduleId: uuid!) {
+    delete_appointment_schedule(where: { id: { _eq: $appointmentScheduleId } }) {
       affected_rows
     }
   }
