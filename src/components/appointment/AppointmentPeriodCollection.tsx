@@ -115,7 +115,7 @@ const AppointmentPeriodCollection: React.FC<{
                     })
                   }
                 >
-                  刪除{selectedPeriod.schedule.periodType !== null && '系列'}時段
+                  刪除{selectedPeriod.schedule.periodType !== null ? '重複週期' : '時段'}
                 </Button>
               )}
             </div>
@@ -153,7 +153,7 @@ const AppointmentPeriodCollection: React.FC<{
         )}
         {selectedPeriod && selectedPeriod.schedule.periodType !== null && selectedPeriod.schedule.periodAmount && (
           <StyledModalMeta className="mb-2">
-            ※系列時段為{scheduleIntervalTypeLabel[selectedPeriod.schedule.periodType]}重複
+            ※重複週期為{scheduleIntervalTypeLabel[selectedPeriod.schedule.periodType]}
           </StyledModalMeta>
         )}
       </AdminModal>
