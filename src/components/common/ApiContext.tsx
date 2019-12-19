@@ -27,7 +27,7 @@ export const ApiProvider: React.FC = ({ children }) => {
           message.error('無法取得應用程式')
         }
       })
-  }, [setApolloClient, setAppId])
+  }, [apolloClient, setApolloClient, setAppId])
 
   useEffect(() => {
     if (appId && currentMemberId && currentUserRole) {
