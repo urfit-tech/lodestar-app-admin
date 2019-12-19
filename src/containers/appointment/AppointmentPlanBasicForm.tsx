@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Input, message } from 'antd'
+import { Button, Form, Input, message, Skeleton } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
@@ -8,12 +8,16 @@ import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
-  const { appointmentPlan, refetch } = useContext(AppointmentPlanContext)
+  const { loadingAppointmentPlan, appointmentPlan, refetch } = useContext(AppointmentPlanContext)
   const [updateAppointmentPlanTitle] = useMutation<
     types.UPDATE_APPOINTMENT_PLAN_TITLE,
     types.UPDATE_APPOINTMENT_PLAN_TITLEVariables
   >(UPDATE_APPOINTMENT_PLAN_TITLE)
   const [loading, setLoading] = useState(false)
+
+  if (loadingAppointmentPlan || !appointmentPlan) {
+    return <Skeleton active />
+  }
 
   const handleSubmit = () => {
     form.validateFields((errors, values) => {
@@ -24,7 +28,7 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
       setLoading(true)
       updateAppointmentPlanTitle({
         variables: {
-          appointmentPlanId: appointmentPlan ? appointmentPlan.id : '',
+          appointmentPlanId: appointmentPlan.id,
           title: values.title,
         },
       })
@@ -49,11 +53,10 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
       }}
     >
       <Form.Item label="方案名稱">
-        {appointmentPlan &&
-          form.getFieldDecorator('title', {
-            initialValue: appointmentPlan.title,
-            rules: [{ required: true, message: '請輸入方案名稱' }],
-          })(<Input />)}
+        {form.getFieldDecorator('title', {
+          initialValue: appointmentPlan.title,
+          rules: [{ required: true, message: '請輸入方案名稱' }],
+        })(<Input />)}
       </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">

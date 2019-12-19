@@ -20,6 +20,7 @@ const StyledDescription = styled.div`
   letter-spacing: 0.2px;
 `
 const StyledMetaBlock = styled.div`
+  margin-bottom: 2rem;
   padding: 2rem 2.5rem;
   background-color: var(--gray-lighter);
   color: var(--gray-darker);

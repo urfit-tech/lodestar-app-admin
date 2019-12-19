@@ -11,7 +11,7 @@ import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ form }) => {
-  const { appointmentPlan, refetch } = useContext(AppointmentPlanContext)
+  const { loadingAppointmentPlan, appointmentPlan, refetch } = useContext(AppointmentPlanContext)
   const [createAppointmentSchedule] = useMutation<
     types.CREATE_APPOINTMENT_SCHEDULE,
     types.CREATE_APPOINTMENT_SCHEDULEVariables
@@ -19,8 +19,12 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
   const [loading, setLoading] = useState(false)
   const [withRepeat, setWithRepeat] = useState(false)
 
-  if (!appointmentPlan) {
-    return null
+  if (loadingAppointmentPlan || !appointmentPlan) {
+    return (
+      <Button type="primary" icon="file-add" disabled>
+        建立時段
+      </Button>
+    )
   }
 
   const handleSubmit: (props: { setVisible: React.Dispatch<React.SetStateAction<boolean>> }) => void = ({

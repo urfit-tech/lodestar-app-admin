@@ -20,9 +20,12 @@ type AppointmentPlanAdminProps = {
   isPublished: boolean | null
 }
 const AppointmentPlanContext = createContext<{
+  loadingAppointmentPlan: boolean
   appointmentPlan?: AppointmentPlanAdminProps
   refetch?: () => void
-}>({})
+}>({
+  loadingAppointmentPlan: true,
+})
 
 export const AppointmentPlanProvider: React.FC<{
   appointmentPlanId: string
@@ -86,6 +89,7 @@ export const AppointmentPlanProvider: React.FC<{
   return (
     <AppointmentPlanContext.Provider
       value={{
+        loadingAppointmentPlan: loading,
         appointmentPlan,
         refetch,
       }}

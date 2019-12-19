@@ -11,12 +11,12 @@ import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanPublishBlock: React.FC = () => {
-  const { appointmentPlan, refetch } = useContext(AppointmentPlanContext)
+  const { loadingAppointmentPlan, appointmentPlan, refetch } = useContext(AppointmentPlanContext)
   const [publishAppointmentPlan] = useMutation<types.PUBLISH_APPOINTMENT_PLAN, types.PUBLISH_APPOINTMENT_PLANVariables>(
     PUBLISH_APPOINTMENT_PLAN,
   )
 
-  if (!appointmentPlan) {
+  if (loadingAppointmentPlan || !appointmentPlan) {
     return <Skeleton active />
   }
 

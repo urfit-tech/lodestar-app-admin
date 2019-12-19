@@ -1,4 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
+import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import { groupBy } from 'ramda'
@@ -12,7 +13,7 @@ import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanScheduleBlock: React.FC = () => {
-  const { appointmentPlan, refetch } = useContext(AppointmentPlanContext)
+  const { loadingAppointmentPlan, appointmentPlan, refetch } = useContext(AppointmentPlanContext)
   const [updateAppointmentSchedule] = useMutation<
     types.UPDATE_APPOINTMENT_SCHEDULE,
     types.UPDATE_APPOINTMENT_SCHEDULEVariables
@@ -22,7 +23,11 @@ const AppointmentPlanScheduleBlock: React.FC = () => {
     types.DELETE_APPOINTMENT_SCHEDULEVariables
   >(DELETE_APPOINTMENT_SCHEDULE)
 
-  if (!appointmentPlan || appointmentPlan.periods.length === 0) {
+  if (loadingAppointmentPlan || !appointmentPlan) {
+    return <Skeleton />
+  }
+
+  if (appointmentPlan.periods.length === 0) {
     return <EmptyBlock>目前還沒有建立任何時段</EmptyBlock>
   }
 
