@@ -1,11 +1,18 @@
-import { Button, Form, Input } from 'antd'
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Form, Input, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
+import { handleError } from '../../helpers'
+import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
-  const { appointmentPlan } = useContext(AppointmentPlanContext)
+  const { appointmentPlan, refetch } = useContext(AppointmentPlanContext)
+  const [updateAppointmentPlanTitle] = useMutation<
+    types.UPDATE_APPOINTMENT_PLAN_TITLE,
+    types.UPDATE_APPOINTMENT_PLAN_TITLEVariables
+  >(UPDATE_APPOINTMENT_PLAN_TITLE)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
@@ -15,8 +22,18 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
       }
 
       setLoading(true)
-      console.log(values)
-      setLoading(false)
+      updateAppointmentPlanTitle({
+        variables: {
+          appointmentPlanId: appointmentPlan ? appointmentPlan.id : '',
+          title: values.title,
+        },
+      })
+        .then(() => {
+          refetch && refetch()
+          message.success('儲存成功')
+        })
+        .catch(error => handleError(error))
+        .finally(() => setLoading(false))
     })
   }
 

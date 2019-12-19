@@ -1,13 +1,20 @@
-import { Button, Form } from 'antd'
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Form, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import AdminBraftEditor from '../../components/admin/AdminBraftEditor'
+import { handleError } from '../../helpers'
+import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanIntroForm: React.FC<FormComponentProps> = ({ form }) => {
   const { appointmentPlan } = useContext(AppointmentPlanContext)
+  const [updateAppointmentPlanDescription] = useMutation<
+    types.UPDATE_APPOINTMENT_PLAN_DESCRIPTION,
+    types.UPDATE_APPOINTMENT_PLAN_DESCRIPTIONVariables
+  >(UPDATE_APPOINTMENT_PLAN_DESCRIPTION)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
@@ -17,8 +24,15 @@ const AppointmentPlanIntroForm: React.FC<FormComponentProps> = ({ form }) => {
       }
 
       setLoading(true)
-      console.log(values.description.toRAW())
-      setLoading(false)
+      updateAppointmentPlanDescription({
+        variables: {
+          appointmentPlanId: appointmentPlan ? appointmentPlan.id : '',
+          description: values.description.toRAW(),
+        },
+      })
+        .then(() => message.success('儲存成功'))
+        .catch(error => handleError(error))
+        .finally(() => setLoading(false))
     })
   }
 
@@ -35,6 +49,7 @@ const AppointmentPlanIntroForm: React.FC<FormComponentProps> = ({ form }) => {
         {appointmentPlan &&
           form.getFieldDecorator('description', {
             initialValue: BraftEditor.createEditorState(appointmentPlan.description || ''),
+            validateTrigger: 'onSubmit',
             rules: [
               {
                 validator: (rule, value: EditorState, callback) => {

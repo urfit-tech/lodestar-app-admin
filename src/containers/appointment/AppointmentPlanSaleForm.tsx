@@ -1,13 +1,20 @@
-import { Button, Form, Icon, InputNumber, Tooltip } from 'antd'
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Form, Icon, InputNumber, message, Tooltip } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { StyledTips } from '../../components/admin'
 import CurrencyInput from '../../components/admin/CurrencyInput'
+import { handleError } from '../../helpers'
+import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
   const { appointmentPlan } = useContext(AppointmentPlanContext)
+  const [updateAppointmentPlanSale] = useMutation<
+    types.UPDATE_APPOINTMENT_PLAN_SALE,
+    types.UPDATE_APPOINTMENT_PLAN_SALEVariables
+  >(UPDATE_APPOINTMENT_PLAN_SALE)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
@@ -17,8 +24,16 @@ const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
       }
 
       setLoading(true)
-      console.log(values)
-      setLoading(false)
+      updateAppointmentPlanSale({
+        variables: {
+          appointmentPlanId: appointmentPlan ? appointmentPlan.id : '',
+          duration: values.duration,
+          listPrice: values.listPrice,
+        },
+      })
+        .then(() => message.success('儲存成功'))
+        .catch(error => handleError(error))
+        .finally(() => setLoading(false))
     })
   }
 
