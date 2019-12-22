@@ -25,6 +25,10 @@ const StyledMeta = styled.div`
   font-size: 14px;
   letter-spacing: 0.4px;
 `
+const StyledButton = styled(Button)`
+  line-height: normal;
+  padding: 0 1.25rem;
+`
 
 export type AppointmentPeriodCardProps = {
   id: string
@@ -98,14 +102,14 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
           </Button>
         </a>
         {isFinished ? (
-          <Button type="link" size="small" disabled={true} className="ml-2">
+          <StyledButton type="link" size="small" disabled={true} className="ml-2">
             已結束
-          </Button>
+          </StyledButton>
         ) : (
           <a href={link} target="_blank" rel="noopener noreferrer">
-            <Button type="primary" className="ml-2">
+            <StyledButton type="primary" className="ml-2">
               進入會議
-            </Button>
+            </StyledButton>
           </a>
         )}
       </div>
