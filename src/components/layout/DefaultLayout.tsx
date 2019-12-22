@@ -6,10 +6,9 @@ import { footerHeight } from '.'
 import settings from '../../settings'
 import { useAuth } from '../auth/AuthContext'
 import AuthModal, { AuthModalContext } from '../auth/AuthModal'
-import CartDropdown from '../checkout/CartDropdown'
 import Footer from '../common/Footer'
 import MemberProfileButton from '../common/MemberProfileButton'
-import Responsive, { BREAK_POINT } from '../common/Responsive'
+import { BREAK_POINT } from '../common/Responsive'
 import NotificationDropdown from '../notification/NotificationDropdown'
 
 let Logo: string | undefined

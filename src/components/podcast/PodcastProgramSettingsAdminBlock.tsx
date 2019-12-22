@@ -119,7 +119,7 @@ const IntroAdminBlockComponent: React.FC<FormComponentProps> = ({ form }) => {
       updatePodcastProgram({
         onFinally: () => setLoading(false),
         data: {
-          coverUrl: `https://${process.env.REACT_APP_S3_PUBLIC_BUCKET}/podcast_program_covers/${localStorage.getItem(
+          coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/podcast_program_covers/${localStorage.getItem(
             'kolable.app.id',
           )}/${podcastProgramAdmin.id}?t=${Date.now()}`,
           abstract: values.abstract,

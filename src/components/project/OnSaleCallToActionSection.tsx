@@ -6,7 +6,6 @@ import { ReactComponent as CalendarOIcon } from '../../images/default/calendar-a
 import { BREAK_POINT } from '../common/Responsive'
 import { CountDownTimeBlock } from './FundingSummaryBlock'
 
-
 const StyledJoin = styled.div`
   background-color: #563952;
   padding: 64px 0;
@@ -27,14 +26,14 @@ const StyledJoin = styled.div`
       position: absolute;
       bottom: 0px;
       left: -15px;
-      content: url('https://files.kolable.com/images/xuemi/shine-01.svg');
+    content: url('https://${process.env.REACT_APP_S3_BUCKET}/images/xuemi/shine-01.svg');
     }
 
     &::after {
       position: absolute;
       bottom: -130px;
       right: -10px;
-      content: url('https://files.kolable.com/images/xuemi/shine-02.svg');
+      content: url('https://${process.env.REACT_APP_S3_BUCKET}/images/xuemi/shine-02.svg');
     }
   }
 

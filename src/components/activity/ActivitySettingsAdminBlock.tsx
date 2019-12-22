@@ -197,7 +197,7 @@ const IntroductionAdminBlockComponent: React.FC<IntroductionAdminBlockComponentP
 
         onUpdateIntroduction(setLoading, {
           coverUrl: values.coverImg
-            ? `https://${process.env.REACT_APP_S3_PUBLIC_BUCKET}/activity_covers/${localStorage.getItem(
+            ? `https://${process.env.REACT_APP_S3_BUCKET}/activity_covers/${localStorage.getItem(
                 'kolable.app.id',
               )}/${activityId}?t=${uploadTime}`
             : '',

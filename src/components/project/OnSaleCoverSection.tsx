@@ -195,7 +195,7 @@ const StyleStatistics = styled.div`
 const OnSaleCoverSection: React.FC<OnSaleCoverSectionProps> = ({ cover, header, statistics }) => {
   return (
     <StyledSection>
-      <img src="https://files.kolable.com/images/xuemi/bg-zero.png" alt="background" />
+      <img src="https://${process.env.REACT_APP_S3_BUCKET}/images/xuemi/bg-zero.png" alt="background" />
       <StyledCover className="container">
         <div className="row">
           <div className="col-12 col-lg-5">
@@ -206,7 +206,7 @@ const OnSaleCoverSection: React.FC<OnSaleCoverSectionProps> = ({ cover, header, 
                 <div>{description}</div>
               ))}
             </StyledDescription>
-            <img src="https://files.kolable.com/images/xuemi/quote.svg" alt="quote" />
+            <img src="https://${process.env.REACT_APP_S3_BUCKET}/images/xuemi/quote.svg" alt="quote" />
           </div>
           <div className="col-12 col-lg-7">
             <FundingCoverBlock coverType={cover.type} coverUrl={cover.url} />
@@ -214,7 +214,7 @@ const OnSaleCoverSection: React.FC<OnSaleCoverSectionProps> = ({ cover, header, 
         </div>
       </StyledCover>
       <StyledSlogan className="d-flex">
-        <img src="https://files.kolable.com/images/xuemi/teachers-2.png" alt="teachers" />
+        <img src="https://${process.env.REACT_APP_S3_BUCKET}/images/xuemi/teachers-2.png" alt="teachers" />
         <div className="container">
           <StyledHeader>
             <h3>{header.title}</h3>
@@ -232,8 +232,8 @@ const OnSaleCoverSection: React.FC<OnSaleCoverSectionProps> = ({ cover, header, 
             ))}
           </StyleStatistics>
         </div>
-        <img src="https://files.kolable.com/images/xuemi/teachers-1.png" alt="teachers" />
-        <img src="https://files.kolable.com/images/xuemi/teachers-m.png" alt="teachers" />
+        <img src="https://${process.env.REACT_APP_S3_BUCKET}/images/xuemi/teachers-1.png" alt="teachers" />
+        <img src="https://${process.env.REACT_APP_S3_BUCKET}/images/xuemi/teachers-m.png" alt="teachers" />
       </StyledSlogan>
     </StyledSection>
   )

@@ -45,7 +45,7 @@ const ActivityTicketPage: React.FC<ActivityTicketPageProps> = ({ activityTicketI
         activityTitle={ticket.activity.title}
         coverImage={ticket.activity.coverUrl || ''}
       >
-        <img src={`https://files.kolable.com/images/${localStorage.getItem('kolable.app.id')}/qr-code-home.png`} alt="qr-code" />
+        <img src={`https://${process.env.REACT_APP_S3_BUCKET}/images/${localStorage.getItem('kolable.app.id')}/qr-code-home.png`} alt="qr-code" />
       </ActivityBanner>
       <StyledContainer className="container">
         <div className="row">
