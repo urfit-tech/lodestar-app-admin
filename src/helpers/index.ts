@@ -64,7 +64,7 @@ export const getPeriodTypeLabel = (periodType: PeriodType | string) => {
 
 export const getCustomizedPeriodTypeLabel = (periodType: PeriodType | string) => {
   switch (periodType) {
-    case 'D': 
+    case 'D':
       return '天'
     case 'W':
       return '週'

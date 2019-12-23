@@ -12,7 +12,6 @@ const OwnerAdminLayout: React.FC = ({ children }) => {
 
   return (
     <DefaultLayout
-      noCart
       noFooter
       renderTitle={() => (
         <Link to={`/admin`}>

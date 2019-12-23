@@ -1,9 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
 import { dateRangeFormatter } from '../../helpers'
+import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as CalendarOIcon } from '../../images/default/calendar-alt-o.svg'
 import { BREAK_POINT } from '../common/Responsive'
-import DefaultAvatar from '../../images/default/avatar.svg'
 
 const StyledCard = styled.div`
   border-radius: 4px;

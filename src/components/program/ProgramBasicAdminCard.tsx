@@ -22,10 +22,6 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
     types.UPDATE_PROGRAM_CATEGORIES,
     types.UPDATE_PROGRAM_CATEGORIESVariables
   >(UPDATE_PROGRAM_CATEGORIES)
-  const [updateProgramInAdvance] = useMutation<
-    types.UPDATE_PROGRAM_IN_ADVANCE,
-    types.UPDATE_PROGRAM_IN_ADVANCEVariables
-  >(UPDATE_PROGRAM_IN_ADVANCE)
 
   const handleSubmit = () => {
     program &&
@@ -45,12 +41,6 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
                 })),
               },
             }),
-            // updateProgramInAdvance({
-            //   variables: {
-            //     programId: program.id,
-            //     inAdvance: values.inAdvance,
-            //   },
-            // }),
           ])
             .then(() => {
               onRefetch && onRefetch()
@@ -83,14 +73,6 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
               initialValue: program.programCategories.map(programCategories => programCategories.category.id),
             })(<ProgramCategorySelector />)}
           </Form.Item>
-          {/* <Form.Item label="種類">
-            {form.getFieldDecorator('inAdvance', { initialValue: program.inAdvance })(
-              <Radio.Group>
-                <Radio value={false}>一般課程</Radio>
-                <Radio value={true}>募資課程</Radio>
-              </Radio.Group>,
-            )}
-          </Form.Item> */}
           <Form.Item wrapperCol={{ md: { offset: 4 } }}>
             <Button onClick={() => form.resetFields()}>取消</Button>
             <Button className="ml-2" type="primary" htmlType="submit">
@@ -117,14 +99,6 @@ const UPDATE_PROGRAM_CATEGORIES = gql`
       affected_rows
     }
     insert_program_category(objects: $programCategories) {
-      affected_rows
-    }
-  }
-`
-
-const UPDATE_PROGRAM_IN_ADVANCE = gql`
-  mutation UPDATE_PROGRAM_IN_ADVANCE($programId: uuid!, $inAdvance: Boolean) {
-    update_program(_set: { in_advance: $inAdvance }, where: { id: { _eq: $programId } }) {
       affected_rows
     }
   }

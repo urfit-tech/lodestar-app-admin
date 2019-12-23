@@ -1,17 +1,5 @@
 import { Collapse, Icon } from 'antd'
 import React from 'react'
-import styled from 'styled-components'
-
-const { Panel } = Collapse
-
-const CustomPanelStyle = styled(Panel)`
-  background: #f7f7f7;
-  border-radius: 4px;
-  margin-bottom: 24px;
-  border: 0;
-  overflow: hidden;
-  position: relative;
-`
 
 type CollapseProps = {
   IconPosition?: 'left' | 'right'

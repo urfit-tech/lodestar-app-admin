@@ -19,7 +19,9 @@ const PodcastProgramCreationModal: React.FC<{
   memberId: string
 }> = ({ memberId }) => {
   const { history } = useRouter()
-  const [createPodcastProgram] = useMutation<types.CREATE_PODCAST_PROGRAM, types.CREATE_PODCAST_PROGRAMVariables>(CREATE_PODCAST_PROGRAM)
+  const [createPodcastProgram] = useMutation<types.CREATE_PODCAST_PROGRAM, types.CREATE_PODCAST_PROGRAMVariables>(
+    CREATE_PODCAST_PROGRAM,
+  )
 
   const handleCreate: CreatePodcastProgramProps = ({ onSuccess, onError, onFinally, data }) => {
     createPodcastProgram({

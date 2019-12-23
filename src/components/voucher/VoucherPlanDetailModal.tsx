@@ -15,17 +15,6 @@ const StyledTitle = styled.div`
   line-height: 1.3;
   letter-spacing: 0.77px;
 `
-const StyledCoverImage = styled.img`
-  width: 64px;
-  height: 48px;
-  min-height: 1px;
-  border-radius: 4px;
-  object-fit: cover;
-  object-position: center;
-`
-const StyledMeta = styled.div`
-  white-space: nowrap;
-`
 const StyledVoucherCode = styled.div<{ isFinished: boolean }>`
   color: ${props => (props.isFinished ? 'var(--gray)' : 'var(--gray-darker)')};
 `

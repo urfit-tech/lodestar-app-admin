@@ -1,39 +1,45 @@
 import { useMutation } from '@apollo/react-hooks'
+import { ApolloQueryResult } from 'apollo-client'
 import gql from 'graphql-tag'
-import { now } from 'moment'
 import React, { Dispatch, SetStateAction } from 'react'
 import PodcastPlanAdminModal from '../../components/podcast/PodcastPlanAdminModal'
-import { usePodcastPlan, usePodcastPlanAdminCollection } from '../../hooks/podcast'
+import { usePodcastPlan } from '../../hooks/podcast'
 import types from '../../types'
-import { ApolloQueryResult } from 'apollo-client'
 
-export type UpdatePodcastPlanProps = (
-  props: {
-    onSuccess?: () => void,
-    onError?: (error: Error) => void,
-    onFinally?: () => void
-    data: {
-      title: string
-      isPublished: boolean
-      isSubscription: boolean
-      listPrice: number
-      salePrice: number
-      soldAt: Date | null
-      periodAmount: number
-      periodType: string
-      creatorId: string
-      podcastPlanId?: string
-    }
-  }) => void
+export type UpdatePodcastPlanProps = (props: {
+  onSuccess?: () => void
+  onError?: (error: Error) => void
+  onFinally?: () => void
+  data: {
+    title: string
+    isPublished: boolean
+    isSubscription: boolean
+    listPrice: number
+    salePrice: number
+    soldAt: Date | null
+    periodAmount: number
+    periodType: string
+    creatorId: string
+    podcastPlanId?: string
+  }
+}) => void
 type PodcastPlanUpdateModalProps = {
   isVisible: boolean
   onVisibleSet: Dispatch<SetStateAction<boolean>>
   podcastPlanId: string
-  refetch: (variables?: Record<string, any> | undefined) => Promise<ApolloQueryResult<types.GET_PODCAST_PLAN_ADMIN_COLLECTION>>
+  refetch: (
+    variables?: Record<string, any> | undefined,
+  ) => Promise<ApolloQueryResult<types.GET_PODCAST_PLAN_ADMIN_COLLECTION>>
 }
-const PodcastPlanUpdateModal: React.FC<PodcastPlanUpdateModalProps> = ({ isVisible, onVisibleSet, podcastPlanId, refetch }) => {
-  const [updatePodcastPlan] = useMutation<types.UPDATE_PODCAST_PLAN, types.UPDATE_PODCAST_PLANVariables>(UPDATE_PODCAST_PLAN)
-  const { refetchPodcastPlanAdminCollection } = usePodcastPlanAdminCollection()
+const PodcastPlanUpdateModal: React.FC<PodcastPlanUpdateModalProps> = ({
+  isVisible,
+  onVisibleSet,
+  podcastPlanId,
+  refetch,
+}) => {
+  const [updatePodcastPlan] = useMutation<types.UPDATE_PODCAST_PLAN, types.UPDATE_PODCAST_PLANVariables>(
+    UPDATE_PODCAST_PLAN,
+  )
 
   const handleUpdate: UpdatePodcastPlanProps = ({ onSuccess, onError, onFinally, data }) => {
     updatePodcastPlan({
@@ -45,28 +51,31 @@ const PodcastPlanUpdateModal: React.FC<PodcastPlanUpdateModalProps> = ({ isVisib
         publishedAt: data.isPublished ? new Date() : null,
         salePrice: data.salePrice || 0,
         soldAt: data.soldAt,
-        creatorId: data.creatorId
-      }
-    }).then(() => {
-      refetch()
-      onSuccess && onSuccess()
+        creatorId: data.creatorId,
+      },
     })
+      .then(() => {
+        refetch()
+        onSuccess && onSuccess()
+      })
       .catch(error => onError && onError(error))
       .finally(() => onFinally && onFinally())
   }
-  
+
   const { loadingPodcastPlan, podcastPlan } = usePodcastPlan(podcastPlanId)
 
-  if(loadingPodcastPlan) {
+  if (loadingPodcastPlan) {
     return null
   }
 
-  return <PodcastPlanAdminModal
-    podcastPlan={podcastPlan}
-    isVisible={isVisible}
-    onVisibleSet={onVisibleSet}
-    onSubmit={handleUpdate}
-  />
+  return (
+    <PodcastPlanAdminModal
+      podcastPlan={podcastPlan}
+      isVisible={isVisible}
+      onVisibleSet={onVisibleSet}
+      onSubmit={handleUpdate}
+    />
+  )
 }
 
 const UPDATE_PODCAST_PLAN = gql`
@@ -81,14 +90,14 @@ const UPDATE_PODCAST_PLAN = gql`
     $creatorId: String!
   ) {
     update_podcast_plan(
-      where: { id: {_eq: $podcastPlanId} }, 
+      where: { id: { _eq: $podcastPlanId } }
       _set: {
-        list_price: $listPrice,
-        period_amount: $periodAmount,
-        period_type: $periodType,
-        published_at: $publishedAt,
-        sale_price: $salePrice,
-        sold_at: $soldAt,
+        list_price: $listPrice
+        period_amount: $periodAmount
+        period_type: $periodType
+        published_at: $publishedAt
+        sale_price: $salePrice
+        sold_at: $soldAt
         creator_id: $creatorId
       }
     ) {

@@ -108,10 +108,11 @@ const RoleButton: React.FC<{
 }> = ({ role, title, icon }) => {
   const { setCurrentUserRole } = useAuth()
   const { setVisible: setAuthModalVisible } = useContext(AuthModalContext)
+
   const handleClick = useCallback(() => {
     setCurrentUserRole && setCurrentUserRole(role)
     setAuthModalVisible && setAuthModalVisible(true)
-  }, [])
+  }, [role, setAuthModalVisible, setCurrentUserRole])
 
   return (
     <StyledRoleBlock className="d-flex flex-column align-items-center justify-content-between" onClick={handleClick}>

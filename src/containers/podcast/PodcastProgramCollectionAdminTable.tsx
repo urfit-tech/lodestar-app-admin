@@ -14,7 +14,7 @@ const PodcastProgramCollectionAdminTable: React.FC = () => {
 
   useEffect(() => {
     refetch()
-  }, [])
+  }, [refetch])
 
   if (loading) {
     return <Skeleton active />

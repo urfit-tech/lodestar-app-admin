@@ -1,4 +1,4 @@
-import { Button, Layout } from 'antd'
+import { Layout } from 'antd'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled, { css } from 'styled-components'
@@ -61,28 +61,14 @@ const CenteredBox = styled.div`
     width: calc(100% / 3);
   }
 `
-const StyledNavLinkButton = styled(Button)`
-  && {
-    color: #585858;
-    line-height: 1.5;
-  }
-`
 
 type DefaultLayoutProps = {
   white?: boolean
   noFooter?: boolean
-  noCart?: boolean
   centeredBox?: boolean
   renderTitle?: () => React.ReactNode
 }
-const DefaultLayout: React.FC<DefaultLayoutProps> = ({
-  white,
-  noFooter,
-  noCart,
-  centeredBox,
-  renderTitle,
-  children,
-}) => {
+const DefaultLayout: React.FC<DefaultLayoutProps> = ({ white, noFooter, centeredBox, renderTitle, children }) => {
   const [visible, setVisible] = useState(false)
   const { currentMemberId, isAuthenticated } = useAuth()
 

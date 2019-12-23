@@ -12,7 +12,6 @@ const CreatorAdminLayout: React.FC = ({ children }) => {
 
   return (
     <DefaultLayout
-      noCart
       noFooter
       renderTitle={() => (
         <Link to={`/studio`}>

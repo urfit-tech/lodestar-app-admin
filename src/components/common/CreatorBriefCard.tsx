@@ -1,7 +1,7 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
 import DefaultAvatar from '../../images/default/avatar.svg'
-import { CustomRatioImage } from '../common/Image'
+import { CustomRatioImage } from './Image'
 
 const StyledCardBody = styled.div<{ active?: boolean }>`
   background-color: white;

@@ -1,37 +1,45 @@
 import { useMutation } from '@apollo/react-hooks'
+import { ApolloQueryResult } from 'apollo-client'
 import gql from 'graphql-tag'
 import React, { Dispatch, SetStateAction } from 'react'
 import PodcastPlanAdminModalComponent from '../../components/podcast/PodcastPlanAdminModal'
-import types from '../../types'
 import { usePodcastPlanAdminCollection } from '../../hooks/podcast'
-import { ApolloQueryResult } from 'apollo-client'
+import types from '../../types'
 
 type PodcastPlanCreationModalProps = {
   isVisible: boolean
   onVisibleSet: Dispatch<SetStateAction<boolean>>
-  refetch: (variables?: Record<string, any> | undefined) => Promise<ApolloQueryResult<types.GET_PODCAST_PLAN_ADMIN_COLLECTION>>
+  refetch: (
+    variables?: Record<string, any> | undefined,
+  ) => Promise<ApolloQueryResult<types.GET_PODCAST_PLAN_ADMIN_COLLECTION>>
 }
 
-export type CreatePodcastPlanProps = (
-  props: {
-    onSuccess?: () => void,
-    onError?: (error: Error) => void,
-    onFinally?: () => void
-    data: {
-      title: string
-      isPublished: boolean
-      isSubscription: boolean
-      listPrice: number
-      salePrice: number
-      soldAt: Date | null
-      periodAmount: number
-      periodType: string
-      creatorId: string
-    }
-  }) => void
+export type CreatePodcastPlanProps = (props: {
+  onSuccess?: () => void
+  onError?: (error: Error) => void
+  onFinally?: () => void
+  data: {
+    title: string
+    isPublished: boolean
+    isSubscription: boolean
+    listPrice: number
+    salePrice: number
+    soldAt: Date | null
+    periodAmount: number
+    periodType: string
+    creatorId: string
+  }
+}) => void
 
-const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ isVisible, onVisibleSet, refetch, children }) => {
-  const [createPodcastPlan] = useMutation<types.CREATE_PODCAST_PLAN, types.CREATE_PODCAST_PLANVariables>(CREATE_PODCAST_PLAN)
+const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({
+  isVisible,
+  onVisibleSet,
+  refetch,
+  children,
+}) => {
+  const [createPodcastPlan] = useMutation<types.CREATE_PODCAST_PLAN, types.CREATE_PODCAST_PLANVariables>(
+    CREATE_PODCAST_PLAN,
+  )
   const { refetchPodcastPlanAdminCollection } = usePodcastPlanAdminCollection()
 
   const handleCreate: CreatePodcastPlanProps = ({ onSuccess, onError, onFinally, data }) => {
@@ -45,21 +53,24 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({ isV
         soldAt: data.soldAt,
         periodAmount: data.periodAmount,
         periodType: data.periodType,
-        creatorId: data.creatorId
-      }
-    }).then(() => {
-      refetch()
-      onSuccess && onSuccess()
+        creatorId: data.creatorId,
+      },
     })
+      .then(() => {
+        refetch()
+        onSuccess && onSuccess()
+      })
       .catch(error => onError && onError(error))
       .finally(() => {
         refetchPodcastPlanAdminCollection()
         onFinally && onFinally()
       })
   }
-  return <PodcastPlanAdminModalComponent isVisible={isVisible} onVisibleSet={onVisibleSet} onSubmit={handleCreate} >
-    {children}
-  </ PodcastPlanAdminModalComponent>
+  return (
+    <PodcastPlanAdminModalComponent isVisible={isVisible} onVisibleSet={onVisibleSet} onSubmit={handleCreate}>
+      {children}
+    </PodcastPlanAdminModalComponent>
+  )
 }
 
 const CREATE_PODCAST_PLAN = gql`
@@ -76,14 +87,14 @@ const CREATE_PODCAST_PLAN = gql`
   ) {
     insert_podcast_plan(
       objects: {
-        is_subscription: $isSubscription,
-        published_at: $publishedAt,
-        title: $title, 
-        list_price: $listPrice,
-        sale_price: $salePrice,
-        sold_at: $soldAt,
-        period_amount: $periodAmount,
-        period_type: $periodType,
+        is_subscription: $isSubscription
+        published_at: $publishedAt
+        title: $title
+        list_price: $listPrice
+        sale_price: $salePrice
+        sold_at: $soldAt
+        period_amount: $periodAmount
+        period_type: $periodType
         creator_id: $creatorId
       }
     ) {
