@@ -8,6 +8,7 @@ import { useAuth } from '../../components/auth/AuthContext'
 import MemberAvatar from '../../components/common/MemberAvatar'
 import DefaultLayout from '../../components/layout/DefaultLayout'
 import ProgramCard from '../../components/program/ProgramCard'
+import ReservationCard from '../../components/reservation/ReservationCard'
 import ProgramPackageCollectionBlock from '../../containers/package/ProgramPackageCollectionBlock'
 import EnrolledProgramCollectionBlock from '../../containers/program/EnrolledProgramCollectionBlock'
 import ProjectPlanCollectionBlock from '../../containers/project/ProjectPlanCollectionBlock'
@@ -15,8 +16,7 @@ import { useEnrolledActivityTickets } from '../../hooks/activity'
 import { useEnrolledProgramPackagePlanIds } from '../../hooks/data'
 import { usePublicMember } from '../../hooks/member'
 import { useEditablePrograms } from '../../hooks/program'
-import { useEnrolledProjectPlanIds } from '../../hooks/Project'
-import ReservationCard from '../../components/reservation/ReservationCard'
+import { useEnrolledProjectPlanIds } from '../../hooks/project'
 
 const MemberPage = () => {
   const { match } = useRouter<{ memberId: string }>()
@@ -119,14 +119,14 @@ const InstructedProgramCollectionBlock: React.FC<{ memberId: string }> = ({ memb
       ) : programs.length === 0 ? (
         <div>沒有開設任何課程</div>
       ) : (
-              <div className="row">
-                {programs.map(program => (
-                  <div key={program.id} className="col-12 mb-4 col-md-6 col-lg-4">
-                    <ProgramCard memberId={memberId} programId={program.id} />
-                  </div>
-                ))}
-              </div>
-            )}
+        <div className="row">
+          {programs.map(program => (
+            <div key={program.id} className="col-12 mb-4 col-md-6 col-lg-4">
+              <ProgramCard memberId={memberId} programId={program.id} />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -141,49 +141,51 @@ const ActivityTicketCollectionBlock: React.FC<{ memberId: string }> = ({ memberI
       ) : errorTickets ? (
         '無法載入'
       ) : (
-            <List>
-              {enrolledActivityTickets.map(ticket => (
-                <Link to={`/orders/${ticket.orderLogId}/products/${ticket.orderProductId}`} key={ticket.orderProductId}>
-                  <div className="mb-4">
-                    <ActivityTicketItem ticketId={ticket.activityTicketId} />
-                  </div>
-                </Link>
-              ))}
-            </List>
-          )}
+        <List>
+          {enrolledActivityTickets.map(ticket => (
+            <Link to={`/orders/${ticket.orderLogId}/products/${ticket.orderProductId}`} key={ticket.orderProductId}>
+              <div className="mb-4">
+                <ActivityTicketItem ticketId={ticket.activityTicketId} />
+              </div>
+            </Link>
+          ))}
+        </List>
+      )}
     </div>
   )
 }
 
 const ReservationServicePlanCollectionBlock: React.FC<{ memberId: string }> = ({ memberId }) => {
-  let startedAt = new Date();
-  let endedAt = new Date();
-  endedAt.setTime(startedAt.getTime() + (30 * 60 * 1000));
+  let startedAt = new Date()
+  let endedAt = new Date()
+  endedAt.setTime(startedAt.getTime() + 30 * 60 * 1000)
   const reservationServicePlans = [
     {
-      avatarUrl: "",
-      title: "title1",
+      avatarUrl: '',
+      title: 'title1',
       startedAt: startedAt,
-      endedAt
+      endedAt,
     },
     {
-      avatarUrl: "",
-      title: "title2",
+      avatarUrl: '',
+      title: 'title2',
       startedAt: startedAt,
-      endedAt: startedAt
-    }
+      endedAt: startedAt,
+    },
   ]
   return (
     <div className="container py-3">
       <List>
-        {reservationServicePlans.map(reservationServerPlan => <div className="mb-4">
-          <ReservationCard
-            avatarUrl={reservationServerPlan.avatarUrl}
-            title={reservationServerPlan.title}
-            startedAt={reservationServerPlan.startedAt}
-            endedAt={reservationServerPlan.endedAt}
-          />
-        </div>)}
+        {reservationServicePlans.map(reservationServerPlan => (
+          <div className="mb-4">
+            <ReservationCard
+              avatarUrl={reservationServerPlan.avatarUrl}
+              title={reservationServerPlan.title}
+              startedAt={reservationServerPlan.startedAt}
+              endedAt={reservationServerPlan.endedAt}
+            />
+          </div>
+        ))}
       </List>
     </div>
   )

@@ -3,7 +3,7 @@ import gql from 'graphql-tag'
 import React from 'react'
 import { useAuth } from '../../components/auth/AuthContext'
 import ProjectContentComponent from '../../components/project/ProjectContent'
-import { useEnrolledProjectPlanIds } from '../../hooks/Project'
+import { useEnrolledProjectPlanIds } from '../../hooks/project'
 import types from '../../types'
 
 type ProjectContent = {
