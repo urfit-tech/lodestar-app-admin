@@ -62,7 +62,7 @@ export type AppointmentPlanProps = {
   title: string
   duration: number
   listPrice: number
-  enrollment: number
+  enrollments: number
   isPublished: boolean
 }
 
@@ -147,11 +147,11 @@ const AppointmentPlanCollectionTable: React.FC<{
           sorter: (a, b) => b.listPrice - a.listPrice,
         },
         {
-          dataIndex: 'enrollment',
+          dataIndex: 'enrollments',
           title: '已預約',
           width: '7em',
           render: (text, record, index) => <StyledText>{text} 人</StyledText>,
-          sorter: (a, b) => b.enrollment - a.enrollment,
+          sorter: (a, b) => b.enrollments - a.enrollments,
         },
         {
           key: 'published',

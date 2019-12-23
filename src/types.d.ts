@@ -2345,6 +2345,16 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator 
   username: string;
 }
 
+export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate_aggregate {
+  __typename: "appointment_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate {
+  __typename: "appointment_enrollment_aggregate";
+  aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate_aggregate | null;
+}
+
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
   __typename: "appointment_plan";
   id: any;
@@ -2356,6 +2366,10 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
   duration: any;
   price: any;
   published_at: any | null;
+  /**
+   * An aggregated array relationship
+   */
+  appointment_enrollments_aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate;
 }
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN {
@@ -6841,6 +6855,7 @@ export enum payment_log_constraint {
  */
 export enum payment_log_update_column {
   created_at = "created_at",
+  method = "method",
   no = "no",
   order_id = "order_id",
 }
@@ -9801,6 +9816,7 @@ export interface payment_log_bool_exp {
   _not?: payment_log_bool_exp | null;
   _or?: (payment_log_bool_exp | null)[] | null;
   created_at?: timestamptz_comparison_exp | null;
+  method?: String_comparison_exp | null;
   no?: numeric_comparison_exp | null;
   order_id?: String_comparison_exp | null;
   order_log?: order_log_bool_exp | null;
@@ -9811,6 +9827,7 @@ export interface payment_log_bool_exp {
  */
 export interface payment_log_insert_input {
   created_at?: any | null;
+  method?: string | null;
   no?: any | null;
   order_id?: string | null;
   order_log?: order_log_obj_rel_insert_input | null;

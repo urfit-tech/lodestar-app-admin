@@ -13,7 +13,7 @@ const AppointmentPlanCollectionTable: React.FC = () => {
 
   useEffect(() => {
     refetch()
-  }, [])
+  }, [refetch])
 
   const appointmentPlans: AppointmentPlanProps[] =
     loading || !!error || !data
@@ -25,7 +25,9 @@ const AppointmentPlanCollectionTable: React.FC = () => {
           title: appointmentPlan.title,
           duration: appointmentPlan.duration,
           listPrice: appointmentPlan.price,
-          enrollment: 0,
+          enrollments: appointmentPlan.appointment_enrollments_aggregate.aggregate
+            ? appointmentPlan.appointment_enrollments_aggregate.aggregate.count || 0
+            : 0,
           isPublished: !!appointmentPlan.published_at,
         }))
 
@@ -46,6 +48,11 @@ const GET_APPOINTMENT_PLAN_COLLECTION_ADMIN = gql`
       duration
       price
       published_at
+      appointment_enrollments_aggregate {
+        aggregate {
+          count
+        }
+      }
     }
   }
 `
