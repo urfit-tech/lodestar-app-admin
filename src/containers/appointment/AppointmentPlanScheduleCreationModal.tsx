@@ -1,19 +1,30 @@
-import { Button, Checkbox, DatePicker, Form, Icon, Select } from 'antd'
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Checkbox, DatePicker, Form, Icon, message, Select } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
+import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useContext, useState } from 'react'
 import { AdminBlockSubTitle, StyledSelect } from '../../components/admin'
 import AdminModal from '../../components/admin/AdminModal'
+import { handleError } from '../../helpers'
+import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ form }) => {
-  const { appointmentPlan } = useContext(AppointmentPlanContext)
-
+  const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)
+  const [createAppointmentSchedule] = useMutation<
+    types.CREATE_APPOINTMENT_SCHEDULE,
+    types.CREATE_APPOINTMENT_SCHEDULEVariables
+  >(CREATE_APPOINTMENT_SCHEDULE)
   const [loading, setLoading] = useState(false)
   const [withRepeat, setWithRepeat] = useState(false)
 
-  if (!appointmentPlan) {
-    return null
+  if (loadingAppointmentPlan || !appointmentPlan) {
+    return (
+      <Button type="primary" icon="file-add" disabled>
+        建立時段
+      </Button>
+    )
   }
 
   const handleSubmit: (props: { setVisible: React.Dispatch<React.SetStateAction<boolean>> }) => void = ({
@@ -25,11 +36,24 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
       }
 
       setLoading(true)
-
-      console.log('create schedule:', values)
-
-      setLoading(false)
-      setVisible(false)
+      createAppointmentSchedule({
+        variables: {
+          appointmentPlanId: appointmentPlan.id,
+          startedAt: values.startedAt.toDate(),
+          intervalAmount: withRepeat ? 1 : null,
+          intervalType: withRepeat ? values.periodType : null,
+        },
+      })
+        .then(() => {
+          refetchAppointmentPlan && refetchAppointmentPlan()
+          message.success('儲存成功')
+          setVisible(false)
+        })
+        .catch(error => {
+          handleError(error)
+          setLoading(false)
+        })
+        .finally(() => setLoading(false))
     })
   }
 
@@ -42,6 +66,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
       )}
       icon={<Icon type="file-add" />}
       title="建立時段"
+      maskClosable={false}
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>
@@ -90,5 +115,25 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
     </AdminModal>
   )
 }
+
+const CREATE_APPOINTMENT_SCHEDULE = gql`
+  mutation CREATE_APPOINTMENT_SCHEDULE(
+    $appointmentPlanId: uuid!
+    $startedAt: timestamptz!
+    $intervalType: String
+    $intervalAmount: Int
+  ) {
+    insert_appointment_schedule(
+      objects: {
+        appointment_plan_id: $appointmentPlanId
+        started_at: $startedAt
+        interval_type: $intervalType
+        interval_amount: $intervalAmount
+      }
+    ) {
+      affected_rows
+    }
+  }
+`
 
 export default Form.create<FormComponentProps>()(AppointmentPlanScheduleCreationModal)

@@ -57,18 +57,19 @@ const filterIcon = (filtered: boolean) => (
 
 export type AppointmentPlanProps = {
   id: string
-  avatarlUrl?: string | null
+  avatarUrl?: string | null
   creatorName: string
   title: string
   duration: number
   listPrice: number
-  enrollment: number
+  enrollments: number
   isPublished: boolean
 }
 
 const AppointmentPlanCollectionTable: React.FC<{
   appointmentPlans: AppointmentPlanProps[]
-}> = ({ appointmentPlans }) => {
+  loading?: boolean
+}> = ({ appointmentPlans, loading }) => {
   const { history } = useRouter()
 
   const [searchName, setSearchName] = useState<string | null>(null)
@@ -80,10 +81,12 @@ const AppointmentPlanCollectionTable: React.FC<{
       (searchName && appointmentPlan.creatorName.includes(searchName)) ||
       (searchTitle && appointmentPlan.title.includes(searchTitle)),
   )
+
   return (
     <Table
       rowKey="id"
       rowClassName={() => 'cursor-pointer'}
+      loading={loading}
       onRow={record => ({
         onClick: () => history.push(`/admin/appointment-plans/${record.id}`),
       })}
@@ -93,7 +96,7 @@ const AppointmentPlanCollectionTable: React.FC<{
           title: '老師',
           render: (text, record, index) => (
             <div className="d-flex align-items-center justify-content-start">
-              <AvatarImage className="mr-3" src={record.avatarlUrl} size={36} />
+              <AvatarImage className="mr-3" src={record.avatarUrl} size={36} />
               <StyledCreatorName className="pl-1">{record.creatorName}</StyledCreatorName>
             </div>
           ),
@@ -144,11 +147,11 @@ const AppointmentPlanCollectionTable: React.FC<{
           sorter: (a, b) => b.listPrice - a.listPrice,
         },
         {
-          dataIndex: 'enrollment',
+          dataIndex: 'enrollments',
           title: '已預約',
           width: '7em',
           render: (text, record, index) => <StyledText>{text} 人</StyledText>,
-          sorter: (a, b) => b.enrollment - a.enrollment,
+          sorter: (a, b) => b.enrollments - a.enrollments,
         },
         {
           key: 'published',

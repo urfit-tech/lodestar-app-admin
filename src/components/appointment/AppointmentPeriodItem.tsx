@@ -45,10 +45,11 @@ const StyledItemMeta = styled.div`
 
 export type AppointmentPeriodProps = {
   id: string
-  schedule?: {
+  schedule: {
     id: string
+    periodAmount: number | null
     periodType: 'D' | 'W' | 'M' | 'Y' | null
-  } | null
+  }
   startedAt: Date
   isEnrolled?: boolean
   isExcluded?: boolean

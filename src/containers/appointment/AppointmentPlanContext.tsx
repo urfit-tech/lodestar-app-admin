@@ -1,178 +1,140 @@
+import { useQuery } from '@apollo/react-hooks'
+import gql from 'graphql-tag'
+import { uniqBy } from 'ramda'
 import React, { createContext } from 'react'
+import { ScheduleIntervalType } from '../../components/appointment/AppointmentPeriodCollection'
 import { AppointmentPeriodProps } from '../../components/appointment/AppointmentPeriodItem'
+import types from '../../types'
 
-export type AppointmentPlanProps = {
+type AppointmentPlanAdminProps = {
   id: string
   title: string
   description: string | null
   duration: number
   listPrice: number
+  schedules: {
+    id: string
+    excludes: number[]
+  }[]
   periods: AppointmentPeriodProps[]
+  enrollments: number
   isPublished: boolean | null
 }
-
 const AppointmentPlanContext = createContext<{
-  appointmentPlan?: AppointmentPlanProps
-}>({})
+  loadingAppointmentPlan: boolean
+  appointmentPlan?: AppointmentPlanAdminProps
+  refetchAppointmentPlan?: () => void
+}>({
+  loadingAppointmentPlan: true,
+})
 
 export const AppointmentPlanProvider: React.FC<{
   appointmentPlanId: string
 }> = ({ appointmentPlanId, children }) => {
-  // ! fake data
-  const appointmentPlan: AppointmentPlanProps = {
-    id: appointmentPlanId,
-    title: '未命名方案',
-    description: '這是一個很棒的課程\n這是一個很棒\n這是一個很棒的課程\n這是一個很棒的課程這是一個很棒的課程。',
-    duration: 0,
-    listPrice: 0,
-    periods: [
-      {
-        id: 'session-1',
-        schedule: {
-          id: 'schedule-1',
-          periodType: null,
-        },
-        startedAt: new Date('2019-12-01T13:00:00+0800'),
-      },
-      {
-        id: 'session-2',
-        schedule: {
-          id: 'schedule-2',
-          periodType: null,
-        },
-        startedAt: new Date('2019-12-01T13:30:00+0800'),
-      },
-      {
-        id: 'session-3',
-        schedule: {
-          id: 'schedule-3',
-          periodType: 'D',
-        },
-        startedAt: new Date('2019-12-01T14:00:00+0800'),
-      },
-      {
-        id: 'session-4',
-        schedule: {
-          id: 'schedule-4',
-          periodType: 'D',
-        },
-        startedAt: new Date('2019-12-01T14:30:00+0800'),
-        isEnrolled: true,
-      },
-      {
-        id: 'session-5',
-        schedule: {
-          id: 'schedule-5',
-          periodType: 'D',
-        },
-        startedAt: new Date('2019-12-01T15:00:00+0800'),
-        isEnrolled: true,
-      },
-      {
-        id: 'session-6',
-        schedule: {
-          id: 'schedule-6',
-          periodType: 'D',
-        },
-        startedAt: new Date('2019-12-01T15:30:00+0800'),
-      },
-      {
-        id: 'session-7',
-        schedule: {
-          id: 'schedule-7',
-          periodType: 'D',
-        },
-        startedAt: new Date('2019-12-01T16:00:00+0800'),
-        isExcluded: true,
-      },
-      {
-        id: 'session-8',
-        schedule: {
-          id: 'schedule-8',
-          periodType: 'D',
-        },
-        startedAt: new Date('2019-12-01T16:30:00+0800'),
-        isExcluded: true,
-      },
-      {
-        id: 'session-9',
-        schedule: {
-          id: 'schedule-9',
-          periodType: null,
-        },
-        startedAt: new Date('2019-12-01T17:00:00+0800'),
-      },
-      {
-        id: 'session-10',
-        schedule: {
-          id: 'schedule-10',
-          periodType: null,
-        },
-        startedAt: new Date('2019-12-01T17:30:00+0800'),
-      },
-      {
-        id: 'session-11',
-        schedule: {
-          id: 'schedule-3',
-          periodType: 'D',
-        },
-        startedAt: new Date('2019-12-02T14:00:00+0800'),
-      },
-      {
-        id: 'session-12',
-        schedule: {
-          id: 'schedule-4',
-          periodType: 'D',
-        },
-        startedAt: new Date('2019-12-02T14:30:00+0800'),
-        isEnrolled: true,
-      },
-      {
-        id: 'session-13',
-        schedule: {
-          id: 'schedule-5',
-          periodType: 'D',
-        },
-        startedAt: new Date('2019-12-02T15:00:00+0800'),
-        isExcluded: true,
-      },
-      {
-        id: 'session-14',
-        schedule: {
-          id: 'schedule-6',
-          periodType: 'D',
-        },
-        startedAt: new Date('2019-12-02T15:30:00+0800'),
-      },
-      {
-        id: 'session-15',
-        schedule: {
-          id: 'schedule-7',
-          periodType: 'D',
-        },
-        startedAt: new Date('2019-12-02T16:00:00+0800'),
-      },
-      {
-        id: 'session-16',
-        schedule: {
-          id: 'schedule-8',
-          periodType: 'D',
-        },
-        startedAt: new Date('2019-12-02T16:30:00+0800'),
-      },
-    ],
-    isPublished: null,
-  }
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_APPOINTMENT_PLAN_ADMIN,
+    types.GET_APPOINTMENT_PLAN_ADMINVariables
+  >(GET_APPOINTMENT_PLAN_ADMIN, {
+    variables: {
+      appointmentPlanId,
+    },
+  })
+
+  const appointmentPlan: AppointmentPlanAdminProps =
+    loading || !!error || !data || !data.appointment_plan_by_pk
+      ? {
+          id: appointmentPlanId,
+          title: '',
+          description: null,
+          duration: 0,
+          listPrice: 0,
+          schedules: [],
+          periods: [],
+          enrollments: 0,
+          isPublished: null,
+        }
+      : {
+          id: appointmentPlanId,
+          title: data.appointment_plan_by_pk.title,
+          description: data.appointment_plan_by_pk.description,
+          duration: data.appointment_plan_by_pk.duration,
+          listPrice: data.appointment_plan_by_pk.price,
+          schedules: data.appointment_plan_by_pk.appointment_schedules.map(appointmentSchedule => {
+            const excludedPeriods = appointmentSchedule.excludes as string[]
+
+            return {
+              id: appointmentSchedule.id,
+              excludes: excludedPeriods.map(period => new Date(period).getTime()),
+            }
+          }),
+          periods: uniqBy(
+            appointmentPeriod => appointmentPeriod.id,
+            data.appointment_plan_by_pk.appointment_periods.map(appointmentPeriod => ({
+              id: `${appointmentPeriod.started_at}`,
+              schedule: {
+                id: appointmentPeriod.appointment_schedule ? appointmentPeriod.appointment_schedule.id : '',
+                periodAmount: appointmentPeriod.appointment_schedule
+                  ? appointmentPeriod.appointment_schedule.interval_amount
+                  : null,
+                periodType: appointmentPeriod.appointment_schedule
+                  ? (appointmentPeriod.appointment_schedule.interval_type as ScheduleIntervalType)
+                  : null,
+              },
+              startedAt: new Date(appointmentPeriod.started_at),
+              isEnrolled: !!appointmentPeriod.booked,
+              isExcluded: !appointmentPeriod.available,
+            })),
+          ),
+          enrollments: data.appointment_plan_by_pk.appointment_enrollments_aggregate.aggregate
+            ? data.appointment_plan_by_pk.appointment_enrollments_aggregate.aggregate.count || 0
+            : 0,
+          isPublished: !!data.appointment_plan_by_pk.published_at,
+        }
 
   return (
     <AppointmentPlanContext.Provider
       value={{
+        loadingAppointmentPlan: loading,
         appointmentPlan,
+        refetchAppointmentPlan: refetch,
       }}
     >
       {children}
     </AppointmentPlanContext.Provider>
   )
 }
+
+const GET_APPOINTMENT_PLAN_ADMIN = gql`
+  query GET_APPOINTMENT_PLAN_ADMIN($appointmentPlanId: uuid!) {
+    appointment_plan_by_pk(id: $appointmentPlanId) {
+      id
+      title
+      description
+      duration
+      price
+      published_at
+      appointment_schedules {
+        id
+        excludes
+      }
+      appointment_periods(order_by: { started_at: asc }) {
+        appointment_schedule {
+          id
+          interval_amount
+          interval_type
+        }
+        started_at
+        ended_at
+        booked
+        available
+      }
+      appointment_enrollments_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+  }
+`
 
 export default AppointmentPlanContext

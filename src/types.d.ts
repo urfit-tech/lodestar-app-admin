@@ -8,6 +8,9 @@
 
 export interface GET_ACTIVITY_SESSION_activity_session_by_pk_activity_session_tickets_activity_ticket {
   __typename: "activity_ticket";
+  /**
+   * unlimited as 99999999
+   */
   count: number;
 }
 
@@ -1532,7 +1535,15 @@ export interface UPDATE_PROGRAM_SUBSCRIPTION_PLANVariables {
 
 export interface GET_MEMBER_ORDERS_order_log_order_products_product {
   __typename: "product";
+  /**
+   * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
+   */
   id: string;
+  /**
+   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket /
+   * Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan /
+   * AppointmentServicePlan
+   */
   type: string;
 }
 
@@ -1602,7 +1613,15 @@ export interface GET_ORDERS_order_log_aggregate {
 
 export interface GET_ORDERS_order_log_order_products_product {
   __typename: "product";
+  /**
+   * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
+   */
   id: string;
+  /**
+   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket /
+   * Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan /
+   * AppointmentServicePlan
+   */
   type: string;
 }
 
@@ -1810,6 +1829,9 @@ export interface GET_ACTIVTY_ADMIN_activity_by_pk_activity_tickets {
   title: string;
   description: string | null;
   price: any;
+  /**
+   * unlimited as 99999999
+   */
   count: number;
   started_at: any;
   ended_at: any;
@@ -2284,6 +2306,373 @@ export interface UPDATE_ACTIVITY_TICKETVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_TITLE
+// ====================================================
+
+export interface UPDATE_APPOINTMENT_PLAN_TITLE_update_appointment_plan {
+  __typename: "appointment_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_TITLE {
+  /**
+   * update data of the table: "appointment_plan"
+   */
+  update_appointment_plan: UPDATE_APPOINTMENT_PLAN_TITLE_update_appointment_plan | null;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
+  appointmentPlanId: any;
+  title: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN
+// ====================================================
+
+export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string | null;
+  username: string;
+}
+
+export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate_aggregate {
+  __typename: "appointment_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate {
+  __typename: "appointment_enrollment_aggregate";
+  aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
+  __typename: "appointment_plan";
+  id: any;
+  /**
+   * An object relationship
+   */
+  creator: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator;
+  title: string;
+  duration: any;
+  price: any;
+  published_at: any | null;
+  /**
+   * An aggregated array relationship
+   */
+  appointment_enrollments_aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate;
+}
+
+export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN {
+  /**
+   * fetch data from the table: "appointment_plan"
+   */
+  appointment_plan: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APPOINTMENT_PLAN_ADMIN
+// ====================================================
+
+export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_schedules {
+  __typename: "appointment_schedule";
+  id: any;
+  /**
+   * ISO8601[], ex: ["2019-01-01T12:34:56+0800"]
+   */
+  excludes: any;
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods_appointment_schedule {
+  __typename: "appointment_schedule";
+  id: any;
+  interval_amount: number | null;
+  /**
+   * Y / M / W / D
+   */
+  interval_type: string | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods {
+  __typename: "appointment_period";
+  /**
+   * An object relationship
+   */
+  appointment_schedule: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods_appointment_schedule | null;
+  started_at: any | null;
+  ended_at: any | null;
+  booked: boolean | null;
+  available: boolean | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate_aggregate {
+  __typename: "appointment_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate {
+  __typename: "appointment_enrollment_aggregate";
+  aggregate: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk {
+  __typename: "appointment_plan";
+  id: any;
+  title: string;
+  description: string | null;
+  duration: any;
+  price: any;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  appointment_schedules: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_schedules[];
+  /**
+   * An array relationship
+   */
+  appointment_periods: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods[];
+  /**
+   * An aggregated array relationship
+   */
+  appointment_enrollments_aggregate: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate;
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMIN {
+  /**
+   * fetch data from the table: "appointment_plan" using primary key columns
+   */
+  appointment_plan_by_pk: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMINVariables {
+  appointmentPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CREATE_APPOINTMENT_PLAN
+// ====================================================
+
+export interface CREATE_APPOINTMENT_PLAN_insert_appointment_plan_returning {
+  __typename: "appointment_plan";
+  id: any;
+}
+
+export interface CREATE_APPOINTMENT_PLAN_insert_appointment_plan {
+  __typename: "appointment_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: CREATE_APPOINTMENT_PLAN_insert_appointment_plan_returning[];
+}
+
+export interface CREATE_APPOINTMENT_PLAN {
+  /**
+   * insert data into the table: "appointment_plan"
+   */
+  insert_appointment_plan: CREATE_APPOINTMENT_PLAN_insert_appointment_plan | null;
+}
+
+export interface CREATE_APPOINTMENT_PLANVariables {
+  title: string;
+  creatorId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_DESCRIPTION
+// ====================================================
+
+export interface UPDATE_APPOINTMENT_PLAN_DESCRIPTION_update_appointment_plan {
+  __typename: "appointment_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_DESCRIPTION {
+  /**
+   * update data of the table: "appointment_plan"
+   */
+  update_appointment_plan: UPDATE_APPOINTMENT_PLAN_DESCRIPTION_update_appointment_plan | null;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_DESCRIPTIONVariables {
+  appointmentPlanId: any;
+  description: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_APPOINTMENT_PLAN
+// ====================================================
+
+export interface PUBLISH_APPOINTMENT_PLAN_update_appointment_plan {
+  __typename: "appointment_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_APPOINTMENT_PLAN {
+  /**
+   * update data of the table: "appointment_plan"
+   */
+  update_appointment_plan: PUBLISH_APPOINTMENT_PLAN_update_appointment_plan | null;
+}
+
+export interface PUBLISH_APPOINTMENT_PLANVariables {
+  appointmentPlanId: any;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_SALE
+// ====================================================
+
+export interface UPDATE_APPOINTMENT_PLAN_SALE_update_appointment_plan {
+  __typename: "appointment_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_SALE {
+  /**
+   * update data of the table: "appointment_plan"
+   */
+  update_appointment_plan: UPDATE_APPOINTMENT_PLAN_SALE_update_appointment_plan | null;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_SALEVariables {
+  appointmentPlanId: any;
+  duration?: any | null;
+  listPrice?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_APPOINTMENT_SCHEDULE
+// ====================================================
+
+export interface UPDATE_APPOINTMENT_SCHEDULE_update_appointment_schedule {
+  __typename: "appointment_schedule_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APPOINTMENT_SCHEDULE {
+  /**
+   * update data of the table: "appointment_schedule"
+   */
+  update_appointment_schedule: UPDATE_APPOINTMENT_SCHEDULE_update_appointment_schedule | null;
+}
+
+export interface UPDATE_APPOINTMENT_SCHEDULEVariables {
+  appointmentScheduleId: any;
+  excludes?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_APPOINTMENT_SCHEDULE
+// ====================================================
+
+export interface DELETE_APPOINTMENT_SCHEDULE_delete_appointment_schedule {
+  __typename: "appointment_schedule_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_APPOINTMENT_SCHEDULE {
+  /**
+   * delete data from the table: "appointment_schedule"
+   */
+  delete_appointment_schedule: DELETE_APPOINTMENT_SCHEDULE_delete_appointment_schedule | null;
+}
+
+export interface DELETE_APPOINTMENT_SCHEDULEVariables {
+  appointmentScheduleId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CREATE_APPOINTMENT_SCHEDULE
+// ====================================================
+
+export interface CREATE_APPOINTMENT_SCHEDULE_insert_appointment_schedule {
+  __typename: "appointment_schedule_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface CREATE_APPOINTMENT_SCHEDULE {
+  /**
+   * insert data into the table: "appointment_schedule"
+   */
+  insert_appointment_schedule: CREATE_APPOINTMENT_SCHEDULE_insert_appointment_schedule | null;
+}
+
+export interface CREATE_APPOINTMENT_SCHEDULEVariables {
+  appointmentPlanId: any;
+  startedAt: any;
+  intervalType?: string | null;
+  intervalAmount?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_CREATOR_COLLECTION
 // ====================================================
 
@@ -2411,6 +2800,9 @@ export interface GET_PROGRAM_SIMPLE_project_plan_by_pk {
   sold_at: any | null;
   discount_down_price: any;
   period_amount: any | null;
+  /**
+   * Y / M / W / D
+   */
   period_type: string | null;
   /**
    * An object relationship
@@ -2752,6 +3144,9 @@ export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program
   __typename: "podcast_program_role";
   id: any;
   member_id: string;
+  /**
+   * instructor
+   */
   name: string;
 }
 
@@ -3114,6 +3509,9 @@ export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_pr
    * An object relationship
    */
   member: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles_member;
+  /**
+   * instructor
+   */
   name: string;
 }
 
@@ -3301,16 +3699,25 @@ export interface GET_PROJECT_project_by_pk_project_plans {
   created_at: any;
   is_subscription: boolean;
   period_amount: any | null;
+  /**
+   * Y / M / W / D
+   */
   period_type: string | null;
 }
 
 export interface GET_PROJECT_project_by_pk {
   __typename: "project";
   id: any;
+  /**
+   * funding / pre-order / on-sale
+   */
   type: string;
   created_at: any;
   published_at: any | null;
   expired_at: any | null;
+  /**
+   * image / video
+   */
   cover_type: string;
   cover_url: string;
   title: string;
@@ -3928,6 +4335,9 @@ export interface GET_TICKET_activity_ticket_by_pk {
   is_published: boolean;
   started_at: any;
   ended_at: any;
+  /**
+   * unlimited as 99999999
+   */
   count: number;
   price: any;
   /**
@@ -4132,7 +4542,15 @@ export interface DELETE_CART_PRODUCTVariables {
 
 export interface GET_ORDER_PRODUCT_order_product_by_pk_product {
   __typename: "product";
+  /**
+   * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
+   */
   id: string;
+  /**
+   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket /
+   * Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan /
+   * AppointmentServicePlan
+   */
   type: string;
   target: string;
 }
@@ -4212,6 +4630,9 @@ export interface GET_COUPON_COLLECTION_coupon_coupon_code_coupon_plan {
   __typename: "coupon_plan";
   title: string;
   amount: any;
+  /**
+   * 1 - cash / 2 - percent
+   */
   type: number;
   constraint: any | null;
   started_at: any | null;
@@ -4597,12 +5018,18 @@ export interface GET_PROGRAM_program_by_pk_program_roles {
   __typename: "program_role";
   id: any;
   member_id: string;
+  /**
+   * instructor / assistant 
+   */
   name: string;
 }
 
 export interface GET_PROGRAM_program_by_pk_program_plans {
   __typename: "program_plan";
   id: any;
+  /**
+   * 1 - subscribe from now / 2 - subscribe all
+   */
   type: number;
   title: string | null;
   description: string | null;
@@ -4979,6 +5406,9 @@ export interface GET_FUNDING_funding_by_pk {
   __typename: "funding";
   id: any;
   app_id: string;
+  /**
+   * image / video
+   */
   cover_type: string;
   cover_url: string;
   title: string;
@@ -4990,6 +5420,9 @@ export interface GET_FUNDING_funding_by_pk {
   contents: any;
   updates: any;
   comments: any;
+  /**
+   * funding / pre-order
+   */
   type: string | null;
   /**
    * An array relationship
@@ -5070,6 +5503,9 @@ export interface GET_ACTIVITY_activity_by_pk_activity_tickets_activity_ticket_en
 export interface GET_ACTIVITY_activity_by_pk_activity_tickets {
   __typename: "activity_ticket";
   id: any;
+  /**
+   * unlimited as 99999999
+   */
   count: number;
   description: string | null;
   started_at: any;
@@ -5385,6 +5821,9 @@ export interface GET_COUPON_PLAN_COLLECTION_coupon_plan {
   title: string;
   amount: any;
   scope: string | null;
+  /**
+   * 1 - cash / 2 - percent
+   */
   type: number;
   constraint: any | null;
   started_at: any | null;
@@ -5449,6 +5888,9 @@ export interface GET_MEMBER_COLLECTION_member {
   email: string;
   logined_at: any | null;
   name: string | null;
+  /**
+   * ["admin", "creator", "member"]
+   */
   roles: any | null;
   username: string;
   /**
@@ -5769,6 +6211,7 @@ export enum appointment_plan_update_column {
   duration = "duration",
   id = "id",
   price = "price",
+  published_at = "published_at",
   title = "title",
   updated_at = "updated_at",
 }
@@ -5791,7 +6234,6 @@ export enum appointment_schedule_update_column {
   interval_amount = "interval_amount",
   interval_type = "interval_type",
   started_at = "started_at",
-  times = "times",
   updated_at = "updated_at",
 }
 
@@ -6413,6 +6855,7 @@ export enum payment_log_constraint {
  */
 export enum payment_log_update_column {
   created_at = "created_at",
+  method = "method",
   no = "no",
   order_id = "order_id",
 }
@@ -6435,6 +6878,7 @@ export enum podcast_plan_constraint {
  * update columns of table "podcast_plan"
  */
 export enum podcast_plan_update_column {
+  created_at = "created_at",
   creator_id = "creator_id",
   id = "id",
   is_subscription = "is_subscription",
@@ -6447,6 +6891,7 @@ export enum podcast_plan_update_column {
   sale_price = "sale_price",
   sold_at = "sold_at",
   title = "title",
+  updated_at = "updated_at",
 }
 
 /**
@@ -6931,6 +7376,57 @@ export enum voucher_update_column {
 }
 
 /**
+ * expression to compare columns of type Boolean. All fields are combined with logical 'AND'.
+ */
+export interface Boolean_comparison_exp {
+  _eq?: boolean | null;
+  _gt?: boolean | null;
+  _gte?: boolean | null;
+  _in?: boolean[] | null;
+  _is_null?: boolean | null;
+  _lt?: boolean | null;
+  _lte?: boolean | null;
+  _neq?: boolean | null;
+  _nin?: boolean[] | null;
+}
+
+/**
+ * expression to compare columns of type Int. All fields are combined with logical 'AND'.
+ */
+export interface Int_comparison_exp {
+  _eq?: number | null;
+  _gt?: number | null;
+  _gte?: number | null;
+  _in?: number[] | null;
+  _is_null?: boolean | null;
+  _lt?: number | null;
+  _lte?: number | null;
+  _neq?: number | null;
+  _nin?: number[] | null;
+}
+
+/**
+ * expression to compare columns of type String. All fields are combined with logical 'AND'.
+ */
+export interface String_comparison_exp {
+  _eq?: string | null;
+  _gt?: string | null;
+  _gte?: string | null;
+  _ilike?: string | null;
+  _in?: string[] | null;
+  _is_null?: boolean | null;
+  _like?: string | null;
+  _lt?: string | null;
+  _lte?: string | null;
+  _neq?: string | null;
+  _nilike?: string | null;
+  _nin?: string[] | null;
+  _nlike?: string | null;
+  _nsimilar?: string | null;
+  _similar?: string | null;
+}
+
+/**
  * input type for inserting array relation for remote table "activity"
  */
 export interface activity_arr_rel_insert_input {
@@ -6939,11 +7435,51 @@ export interface activity_arr_rel_insert_input {
 }
 
 /**
+ * Boolean expression to filter rows from the table "activity". All fields are combined with a logical 'AND'.
+ */
+export interface activity_bool_exp {
+  _and?: (activity_bool_exp | null)[] | null;
+  _not?: activity_bool_exp | null;
+  _or?: (activity_bool_exp | null)[] | null;
+  activity_categories?: activity_category_bool_exp | null;
+  activity_enrollments?: activity_enrollment_bool_exp | null;
+  activity_sessions?: activity_session_bool_exp | null;
+  activity_tickets?: activity_ticket_bool_exp | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  cover_url?: String_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  is_participants_visible?: Boolean_comparison_exp | null;
+  organizer?: member_bool_exp | null;
+  organizer_id?: String_comparison_exp | null;
+  package_items?: package_item_bool_exp | null;
+  position?: Int_comparison_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "activity_category"
  */
 export interface activity_category_arr_rel_insert_input {
   data: activity_category_insert_input[];
   on_conflict?: activity_category_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "activity_category". All fields are combined with a logical 'AND'.
+ */
+export interface activity_category_bool_exp {
+  _and?: (activity_category_bool_exp | null)[] | null;
+  _not?: activity_category_bool_exp | null;
+  _or?: (activity_category_bool_exp | null)[] | null;
+  activity?: activity_bool_exp | null;
+  activity_id?: uuid_comparison_exp | null;
+  category?: category_bool_exp | null;
+  category_id?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
 }
 
 /**
@@ -6964,6 +7500,25 @@ export interface activity_category_insert_input {
 export interface activity_category_on_conflict {
   constraint: activity_category_constraint;
   update_columns: activity_category_update_column[];
+  where?: activity_category_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "activity_enrollment". All fields are combined with a logical 'AND'.
+ */
+export interface activity_enrollment_bool_exp {
+  _and?: (activity_enrollment_bool_exp | null)[] | null;
+  _not?: activity_enrollment_bool_exp | null;
+  _or?: (activity_enrollment_bool_exp | null)[] | null;
+  activity?: activity_bool_exp | null;
+  activity_id?: uuid_comparison_exp | null;
+  activity_session_id?: uuid_comparison_exp | null;
+  activity_ticket_id?: uuid_comparison_exp | null;
+  member_email?: String_comparison_exp | null;
+  member_id?: String_comparison_exp | null;
+  member_name?: String_comparison_exp | null;
+  member_phone?: String_comparison_exp | null;
+  order_log_id?: String_comparison_exp | null;
 }
 
 /**
@@ -7001,6 +7556,7 @@ export interface activity_obj_rel_insert_input {
 export interface activity_on_conflict {
   constraint: activity_constraint;
   update_columns: activity_update_column[];
+  where?: activity_bool_exp | null;
 }
 
 /**
@@ -7009,6 +7565,26 @@ export interface activity_on_conflict {
 export interface activity_session_arr_rel_insert_input {
   data: activity_session_insert_input[];
   on_conflict?: activity_session_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "activity_session". All fields are combined with a logical 'AND'.
+ */
+export interface activity_session_bool_exp {
+  _and?: (activity_session_bool_exp | null)[] | null;
+  _not?: activity_session_bool_exp | null;
+  _or?: (activity_session_bool_exp | null)[] | null;
+  activity?: activity_bool_exp | null;
+  activity_enrollments?: activity_enrollment_bool_exp | null;
+  activity_id?: uuid_comparison_exp | null;
+  activity_session_tickets?: activity_session_ticket_bool_exp | null;
+  description?: String_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  location?: String_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
+  threshold?: numeric_comparison_exp | null;
+  title?: String_comparison_exp | null;
 }
 
 /**
@@ -7041,6 +7617,7 @@ export interface activity_session_obj_rel_insert_input {
 export interface activity_session_on_conflict {
   constraint: activity_session_constraint;
   update_columns: activity_session_update_column[];
+  where?: activity_session_bool_exp | null;
 }
 
 /**
@@ -7049,6 +7626,20 @@ export interface activity_session_on_conflict {
 export interface activity_session_ticket_arr_rel_insert_input {
   data: activity_session_ticket_insert_input[];
   on_conflict?: activity_session_ticket_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "activity_session_ticket". All fields are combined with a logical 'AND'.
+ */
+export interface activity_session_ticket_bool_exp {
+  _and?: (activity_session_ticket_bool_exp | null)[] | null;
+  _not?: activity_session_ticket_bool_exp | null;
+  _or?: (activity_session_ticket_bool_exp | null)[] | null;
+  activity_session?: activity_session_bool_exp | null;
+  activity_session_id?: uuid_comparison_exp | null;
+  activity_ticket?: activity_ticket_bool_exp | null;
+  activity_ticket_id?: uuid_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
 }
 
 /**
@@ -7068,6 +7659,7 @@ export interface activity_session_ticket_insert_input {
 export interface activity_session_ticket_on_conflict {
   constraint: activity_session_ticket_constraint;
   update_columns: activity_session_ticket_update_column[];
+  where?: activity_session_ticket_bool_exp | null;
 }
 
 /**
@@ -7076,6 +7668,43 @@ export interface activity_session_ticket_on_conflict {
 export interface activity_ticket_arr_rel_insert_input {
   data: activity_ticket_insert_input[];
   on_conflict?: activity_ticket_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "activity_ticket". All fields are combined with a logical 'AND'.
+ */
+export interface activity_ticket_bool_exp {
+  _and?: (activity_ticket_bool_exp | null)[] | null;
+  _not?: activity_ticket_bool_exp | null;
+  _or?: (activity_ticket_bool_exp | null)[] | null;
+  activity?: activity_bool_exp | null;
+  activity_enrollments?: activity_enrollment_bool_exp | null;
+  activity_id?: uuid_comparison_exp | null;
+  activity_session_tickets?: activity_session_ticket_bool_exp | null;
+  activity_ticket_enrollments?: activity_ticket_enrollment_bool_exp | null;
+  count?: Int_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  is_published?: Boolean_comparison_exp | null;
+  order_items?: order_item_bool_exp | null;
+  price?: numeric_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "activity_ticket_enrollment". All fields are combined with a logical 'AND'.
+ */
+export interface activity_ticket_enrollment_bool_exp {
+  _and?: (activity_ticket_enrollment_bool_exp | null)[] | null;
+  _not?: activity_ticket_enrollment_bool_exp | null;
+  _or?: (activity_ticket_enrollment_bool_exp | null)[] | null;
+  activity_ticket?: activity_ticket_bool_exp | null;
+  activity_ticket_id?: uuid_comparison_exp | null;
+  member_id?: String_comparison_exp | null;
+  order_log_id?: String_comparison_exp | null;
+  order_product_id?: uuid_comparison_exp | null;
 }
 
 /**
@@ -7110,6 +7739,7 @@ export interface activity_ticket_obj_rel_insert_input {
 export interface activity_ticket_on_conflict {
   constraint: activity_ticket_constraint;
   update_columns: activity_ticket_update_column[];
+  where?: activity_ticket_bool_exp | null;
 }
 
 /**
@@ -7118,6 +7748,18 @@ export interface activity_ticket_on_conflict {
 export interface app_admin_arr_rel_insert_input {
   data: app_admin_insert_input[];
   on_conflict?: app_admin_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "app_admin". All fields are combined with a logical 'AND'.
+ */
+export interface app_admin_bool_exp {
+  _and?: (app_admin_bool_exp | null)[] | null;
+  _not?: app_admin_bool_exp | null;
+  _or?: (app_admin_bool_exp | null)[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  host?: String_comparison_exp | null;
 }
 
 /**
@@ -7135,6 +7777,43 @@ export interface app_admin_insert_input {
 export interface app_admin_on_conflict {
   constraint: app_admin_constraint;
   update_columns: app_admin_update_column[];
+  where?: app_admin_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "app". All fields are combined with a logical 'AND'.
+ */
+export interface app_bool_exp {
+  _and?: (app_bool_exp | null)[] | null;
+  _not?: app_bool_exp | null;
+  _or?: (app_bool_exp | null)[] | null;
+  activities?: activity_bool_exp | null;
+  admin_host?: String_comparison_exp | null;
+  app_admins?: app_admin_bool_exp | null;
+  app_modules?: app_module_bool_exp | null;
+  cards?: card_bool_exp | null;
+  cart_items?: cart_item_bool_exp | null;
+  comments?: comment_bool_exp | null;
+  description?: String_comparison_exp | null;
+  domain?: String_comparison_exp | null;
+  fundings?: funding_bool_exp | null;
+  id?: String_comparison_exp | null;
+  issues?: issue_bool_exp | null;
+  members?: member_bool_exp | null;
+  name?: String_comparison_exp | null;
+  og_description?: String_comparison_exp | null;
+  og_image?: String_comparison_exp | null;
+  og_title?: String_comparison_exp | null;
+  og_url?: String_comparison_exp | null;
+  packages?: package_bool_exp | null;
+  podcasts?: podcast_bool_exp | null;
+  point_discount_ratio?: numeric_comparison_exp | null;
+  point_exchange_rate?: numeric_comparison_exp | null;
+  point_validity_period?: numeric_comparison_exp | null;
+  programs?: program_bool_exp | null;
+  title?: String_comparison_exp | null;
+  vimeo_project_id?: String_comparison_exp | null;
+  voucher_plans?: voucher_plan_bool_exp | null;
 }
 
 /**
@@ -7179,6 +7858,21 @@ export interface app_module_arr_rel_insert_input {
 }
 
 /**
+ * Boolean expression to filter rows from the table "app_module". All fields are combined with a logical 'AND'.
+ */
+export interface app_module_bool_exp {
+  _and?: (app_module_bool_exp | null)[] | null;
+  _not?: app_module_bool_exp | null;
+  _or?: (app_module_bool_exp | null)[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  module?: module_bool_exp | null;
+  module_id?: String_comparison_exp | null;
+}
+
+/**
  * input type for inserting data into table "app_module"
  */
 export interface app_module_insert_input {
@@ -7196,6 +7890,7 @@ export interface app_module_insert_input {
 export interface app_module_on_conflict {
   constraint: app_module_constraint;
   update_columns: app_module_update_column[];
+  where?: app_module_bool_exp | null;
 }
 
 /**
@@ -7212,6 +7907,39 @@ export interface app_obj_rel_insert_input {
 export interface app_on_conflict {
   constraint: app_constraint;
   update_columns: app_update_column[];
+  where?: app_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "appointment_enrollment". All fields are combined with a logical 'AND'.
+ */
+export interface appointment_enrollment_bool_exp {
+  _and?: (appointment_enrollment_bool_exp | null)[] | null;
+  _not?: appointment_enrollment_bool_exp | null;
+  _or?: (appointment_enrollment_bool_exp | null)[] | null;
+  appointment_plan?: appointment_plan_bool_exp | null;
+  appointment_plan_id?: uuid_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "appointment_period". All fields are combined with a logical 'AND'.
+ */
+export interface appointment_period_bool_exp {
+  _and?: (appointment_period_bool_exp | null)[] | null;
+  _not?: appointment_period_bool_exp | null;
+  _or?: (appointment_period_bool_exp | null)[] | null;
+  appointment_plan?: appointment_plan_bool_exp | null;
+  appointment_plan_id?: uuid_comparison_exp | null;
+  appointment_schedule?: appointment_schedule_bool_exp | null;
+  appointment_schedule_id?: uuid_comparison_exp | null;
+  available?: Boolean_comparison_exp | null;
+  booked?: Boolean_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
 }
 
 /**
@@ -7220,6 +7948,28 @@ export interface app_on_conflict {
 export interface appointment_plan_arr_rel_insert_input {
   data: appointment_plan_insert_input[];
   on_conflict?: appointment_plan_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "appointment_plan". All fields are combined with a logical 'AND'.
+ */
+export interface appointment_plan_bool_exp {
+  _and?: (appointment_plan_bool_exp | null)[] | null;
+  _not?: appointment_plan_bool_exp | null;
+  _or?: (appointment_plan_bool_exp | null)[] | null;
+  appointment_enrollments?: appointment_enrollment_bool_exp | null;
+  appointment_periods?: appointment_period_bool_exp | null;
+  appointment_schedules?: appointment_schedule_bool_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  creator?: member_bool_exp | null;
+  creator_id?: String_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  duration?: numeric_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  price?: numeric_comparison_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**
@@ -7234,6 +7984,7 @@ export interface appointment_plan_insert_input {
   duration?: any | null;
   id?: any | null;
   price?: any | null;
+  published_at?: any | null;
   title?: string | null;
   updated_at?: any | null;
 }
@@ -7252,6 +8003,7 @@ export interface appointment_plan_obj_rel_insert_input {
 export interface appointment_plan_on_conflict {
   constraint: appointment_plan_constraint;
   update_columns: appointment_plan_update_column[];
+  where?: appointment_plan_bool_exp | null;
 }
 
 /**
@@ -7260,6 +8012,24 @@ export interface appointment_plan_on_conflict {
 export interface appointment_schedule_arr_rel_insert_input {
   data: appointment_schedule_insert_input[];
   on_conflict?: appointment_schedule_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "appointment_schedule". All fields are combined with a logical 'AND'.
+ */
+export interface appointment_schedule_bool_exp {
+  _and?: (appointment_schedule_bool_exp | null)[] | null;
+  _not?: appointment_schedule_bool_exp | null;
+  _or?: (appointment_schedule_bool_exp | null)[] | null;
+  appointment_plan?: appointment_plan_bool_exp | null;
+  appointment_plan_id?: uuid_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  excludes?: jsonb_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  interval_amount?: Int_comparison_exp | null;
+  interval_type?: String_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**
@@ -7274,7 +8044,6 @@ export interface appointment_schedule_insert_input {
   interval_amount?: number | null;
   interval_type?: string | null;
   started_at?: any | null;
-  times?: number | null;
   updated_at?: any | null;
 }
 
@@ -7284,6 +8053,7 @@ export interface appointment_schedule_insert_input {
 export interface appointment_schedule_on_conflict {
   constraint: appointment_schedule_constraint;
   update_columns: appointment_schedule_update_column[];
+  where?: appointment_schedule_bool_exp | null;
 }
 
 /**
@@ -7295,11 +8065,43 @@ export interface card_arr_rel_insert_input {
 }
 
 /**
+ * Boolean expression to filter rows from the table "card". All fields are combined with a logical 'AND'.
+ */
+export interface card_bool_exp {
+  _and?: (card_bool_exp | null)[] | null;
+  _not?: card_bool_exp | null;
+  _or?: (card_bool_exp | null)[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  card_discounts?: card_discount_bool_exp | null;
+  description?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  template?: String_comparison_exp | null;
+  title?: String_comparison_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "card_discount"
  */
 export interface card_discount_arr_rel_insert_input {
   data: card_discount_insert_input[];
   on_conflict?: card_discount_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "card_discount". All fields are combined with a logical 'AND'.
+ */
+export interface card_discount_bool_exp {
+  _and?: (card_discount_bool_exp | null)[] | null;
+  _not?: card_discount_bool_exp | null;
+  _or?: (card_discount_bool_exp | null)[] | null;
+  amount?: numeric_comparison_exp | null;
+  card?: card_bool_exp | null;
+  card_id?: uuid_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  product?: product_bool_exp | null;
+  product_id?: String_comparison_exp | null;
+  type?: String_comparison_exp | null;
 }
 
 /**
@@ -7321,6 +8123,7 @@ export interface card_discount_insert_input {
 export interface card_discount_on_conflict {
   constraint: card_discount_constraint;
   update_columns: card_discount_update_column[];
+  where?: card_discount_bool_exp | null;
 }
 
 /**
@@ -7350,6 +8153,7 @@ export interface card_obj_rel_insert_input {
 export interface card_on_conflict {
   constraint: card_constraint;
   update_columns: card_update_column[];
+  where?: card_bool_exp | null;
 }
 
 /**
@@ -7358,6 +8162,21 @@ export interface card_on_conflict {
 export interface cart_item_arr_rel_insert_input {
   data: cart_item_insert_input[];
   on_conflict?: cart_item_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "cart_item". All fields are combined with a logical 'AND'.
+ */
+export interface cart_item_bool_exp {
+  _and?: (cart_item_bool_exp | null)[] | null;
+  _not?: cart_item_bool_exp | null;
+  _or?: (cart_item_bool_exp | null)[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  class?: String_comparison_exp | null;
+  fingerprint?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  target?: jsonb_comparison_exp | null;
 }
 
 /**
@@ -7378,6 +8197,7 @@ export interface cart_item_insert_input {
 export interface cart_item_on_conflict {
   constraint: cart_item_constraint;
   update_columns: cart_item_update_column[];
+  where?: cart_item_bool_exp | null;
 }
 
 /**
@@ -7386,6 +8206,21 @@ export interface cart_item_on_conflict {
 export interface cart_product_arr_rel_insert_input {
   data: cart_product_insert_input[];
   on_conflict?: cart_product_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "cart_product". All fields are combined with a logical 'AND'.
+ */
+export interface cart_product_bool_exp {
+  _and?: (cart_product_bool_exp | null)[] | null;
+  _not?: cart_product_bool_exp | null;
+  _or?: (cart_product_bool_exp | null)[] | null;
+  app_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member_id?: String_comparison_exp | null;
+  product?: product_bool_exp | null;
+  product_id?: String_comparison_exp | null;
 }
 
 /**
@@ -7406,6 +8241,24 @@ export interface cart_product_insert_input {
 export interface cart_product_on_conflict {
   constraint: cart_product_constraint;
   update_columns: cart_product_update_column[];
+  where?: cart_product_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "category". All fields are combined with a logical 'AND'.
+ */
+export interface category_bool_exp {
+  _and?: (category_bool_exp | null)[] | null;
+  _not?: category_bool_exp | null;
+  _or?: (category_bool_exp | null)[] | null;
+  activity_categories?: activity_category_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  class?: String_comparison_exp | null;
+  id?: String_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  podcast_program_categories?: podcast_program_category_bool_exp | null;
+  position?: Int_comparison_exp | null;
+  program_categories?: program_category_bool_exp | null;
 }
 
 /**
@@ -7436,6 +8289,7 @@ export interface category_obj_rel_insert_input {
 export interface category_on_conflict {
   constraint: category_constraint;
   update_columns: category_update_column[];
+  where?: category_bool_exp | null;
 }
 
 /**
@@ -7444,6 +8298,25 @@ export interface category_on_conflict {
 export interface comment_arr_rel_insert_input {
   data: comment_insert_input[];
   on_conflict?: comment_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "comment". All fields are combined with a logical 'AND'.
+ */
+export interface comment_bool_exp {
+  _and?: (comment_bool_exp | null)[] | null;
+  _not?: comment_bool_exp | null;
+  _or?: (comment_bool_exp | null)[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  comment_reactions?: comment_reaction_bool_exp | null;
+  comment_replies?: comment_reply_bool_exp | null;
+  content?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  thread_id?: String_comparison_exp | null;
 }
 
 /**
@@ -7476,6 +8349,7 @@ export interface comment_obj_rel_insert_input {
 export interface comment_on_conflict {
   constraint: comment_constraint;
   update_columns: comment_update_column[];
+  where?: comment_bool_exp | null;
 }
 
 /**
@@ -7484,6 +8358,21 @@ export interface comment_on_conflict {
 export interface comment_reaction_arr_rel_insert_input {
   data: comment_reaction_insert_input[];
   on_conflict?: comment_reaction_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "comment_reaction". All fields are combined with a logical 'AND'.
+ */
+export interface comment_reaction_bool_exp {
+  _and?: (comment_reaction_bool_exp | null)[] | null;
+  _not?: comment_reaction_bool_exp | null;
+  _or?: (comment_reaction_bool_exp | null)[] | null;
+  comment?: comment_bool_exp | null;
+  comment_id?: uuid_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
 }
 
 /**
@@ -7504,6 +8393,7 @@ export interface comment_reaction_insert_input {
 export interface comment_reaction_on_conflict {
   constraint: comment_reaction_constraint;
   update_columns: comment_reaction_update_column[];
+  where?: comment_reaction_bool_exp | null;
 }
 
 /**
@@ -7512,6 +8402,23 @@ export interface comment_reaction_on_conflict {
 export interface comment_reply_arr_rel_insert_input {
   data: comment_reply_insert_input[];
   on_conflict?: comment_reply_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "comment_reply". All fields are combined with a logical 'AND'.
+ */
+export interface comment_reply_bool_exp {
+  _and?: (comment_reply_bool_exp | null)[] | null;
+  _not?: comment_reply_bool_exp | null;
+  _or?: (comment_reply_bool_exp | null)[] | null;
+  comment?: comment_bool_exp | null;
+  comment_id?: uuid_comparison_exp | null;
+  comment_reply_reactions?: comment_reply_reaction_bool_exp | null;
+  content?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
 }
 
 /**
@@ -7542,6 +8449,7 @@ export interface comment_reply_obj_rel_insert_input {
 export interface comment_reply_on_conflict {
   constraint: comment_reply_constraint;
   update_columns: comment_reply_update_column[];
+  where?: comment_reply_bool_exp | null;
 }
 
 /**
@@ -7550,6 +8458,21 @@ export interface comment_reply_on_conflict {
 export interface comment_reply_reaction_arr_rel_insert_input {
   data: comment_reply_reaction_insert_input[];
   on_conflict?: comment_reply_reaction_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "comment_reply_reaction". All fields are combined with a logical 'AND'.
+ */
+export interface comment_reply_reaction_bool_exp {
+  _and?: (comment_reply_reaction_bool_exp | null)[] | null;
+  _not?: comment_reply_reaction_bool_exp | null;
+  _or?: (comment_reply_reaction_bool_exp | null)[] | null;
+  comment_reply?: comment_reply_bool_exp | null;
+  comment_reply_id?: uuid_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
 }
 
 /**
@@ -7570,6 +8493,7 @@ export interface comment_reply_reaction_insert_input {
 export interface comment_reply_reaction_on_conflict {
   constraint: comment_reply_reaction_constraint;
   update_columns: comment_reply_reaction_update_column[];
+  where?: comment_reply_reaction_bool_exp | null;
 }
 
 /**
@@ -7581,11 +8505,45 @@ export interface coupon_arr_rel_insert_input {
 }
 
 /**
+ * Boolean expression to filter rows from the table "coupon". All fields are combined with a logical 'AND'.
+ */
+export interface coupon_bool_exp {
+  _and?: (coupon_bool_exp | null)[] | null;
+  _not?: coupon_bool_exp | null;
+  _or?: (coupon_bool_exp | null)[] | null;
+  coupon_code?: coupon_code_bool_exp | null;
+  coupon_code_id?: uuid_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  order_logs?: order_log_bool_exp | null;
+  status?: coupon_status_bool_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "coupon_code"
  */
 export interface coupon_code_arr_rel_insert_input {
   data: coupon_code_insert_input[];
   on_conflict?: coupon_code_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "coupon_code". All fields are combined with a logical 'AND'.
+ */
+export interface coupon_code_bool_exp {
+  _and?: (coupon_code_bool_exp | null)[] | null;
+  _not?: coupon_code_bool_exp | null;
+  _or?: (coupon_code_bool_exp | null)[] | null;
+  app_id?: String_comparison_exp | null;
+  code?: String_comparison_exp | null;
+  count?: Int_comparison_exp | null;
+  coupon_plan?: coupon_plan_bool_exp | null;
+  coupon_plan_id?: uuid_comparison_exp | null;
+  coupons?: coupon_bool_exp | null;
+  id?: uuid_comparison_exp | null;
+  remaining?: Int_comparison_exp | null;
 }
 
 /**
@@ -7616,6 +8574,7 @@ export interface coupon_code_obj_rel_insert_input {
 export interface coupon_code_on_conflict {
   constraint: coupon_code_constraint;
   update_columns: coupon_code_update_column[];
+  where?: coupon_code_bool_exp | null;
 }
 
 /**
@@ -7645,6 +8604,26 @@ export interface coupon_obj_rel_insert_input {
 export interface coupon_on_conflict {
   constraint: coupon_constraint;
   update_columns: coupon_update_column[];
+  where?: coupon_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "coupon_plan". All fields are combined with a logical 'AND'.
+ */
+export interface coupon_plan_bool_exp {
+  _and?: (coupon_plan_bool_exp | null)[] | null;
+  _not?: coupon_plan_bool_exp | null;
+  _or?: (coupon_plan_bool_exp | null)[] | null;
+  amount?: numeric_comparison_exp | null;
+  constraint?: numeric_comparison_exp | null;
+  coupon_codes?: coupon_code_bool_exp | null;
+  description?: String_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  scope?: String_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  type?: Int_comparison_exp | null;
 }
 
 /**
@@ -7677,6 +8656,20 @@ export interface coupon_plan_obj_rel_insert_input {
 export interface coupon_plan_on_conflict {
   constraint: coupon_plan_constraint;
   update_columns: coupon_plan_update_column[];
+  where?: coupon_plan_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "coupon_status". All fields are combined with a logical 'AND'.
+ */
+export interface coupon_status_bool_exp {
+  _and?: (coupon_status_bool_exp | null)[] | null;
+  _not?: coupon_status_bool_exp | null;
+  _or?: (coupon_status_bool_exp | null)[] | null;
+  coupon?: coupon_bool_exp | null;
+  coupon_id?: uuid_comparison_exp | null;
+  outdated?: Boolean_comparison_exp | null;
+  used?: Boolean_comparison_exp | null;
 }
 
 /**
@@ -7685,6 +8678,31 @@ export interface coupon_plan_on_conflict {
 export interface funding_arr_rel_insert_input {
   data: funding_insert_input[];
   on_conflict?: funding_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "funding". All fields are combined with a logical 'AND'.
+ */
+export interface funding_bool_exp {
+  _and?: (funding_bool_exp | null)[] | null;
+  _not?: funding_bool_exp | null;
+  _or?: (funding_bool_exp | null)[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  comments?: jsonb_comparison_exp | null;
+  contents?: jsonb_comparison_exp | null;
+  cover_type?: String_comparison_exp | null;
+  cover_url?: String_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  expired_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  introduction?: String_comparison_exp | null;
+  programs?: program_bool_exp | null;
+  subtitle?: String_comparison_exp | null;
+  target_amount?: numeric_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  type?: String_comparison_exp | null;
+  updates?: jsonb_comparison_exp | null;
 }
 
 /**
@@ -7723,6 +8741,7 @@ export interface funding_obj_rel_insert_input {
 export interface funding_on_conflict {
   constraint: funding_constraint;
   update_columns: funding_update_column[];
+  where?: funding_bool_exp | null;
 }
 
 /**
@@ -7731,6 +8750,27 @@ export interface funding_on_conflict {
 export interface issue_arr_rel_insert_input {
   data: issue_insert_input[];
   on_conflict?: issue_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "issue". All fields are combined with a logical 'AND'.
+ */
+export interface issue_bool_exp {
+  _and?: (issue_bool_exp | null)[] | null;
+  _not?: issue_bool_exp | null;
+  _or?: (issue_bool_exp | null)[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  issue_reactions?: issue_reaction_bool_exp | null;
+  issue_replies?: issue_reply_bool_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  solved_at?: timestamptz_comparison_exp | null;
+  thread_id?: String_comparison_exp | null;
+  title?: String_comparison_exp | null;
 }
 
 /**
@@ -7765,6 +8805,7 @@ export interface issue_obj_rel_insert_input {
 export interface issue_on_conflict {
   constraint: issue_constraint;
   update_columns: issue_update_column[];
+  where?: issue_bool_exp | null;
 }
 
 /**
@@ -7773,6 +8814,22 @@ export interface issue_on_conflict {
 export interface issue_reaction_arr_rel_insert_input {
   data: issue_reaction_insert_input[];
   on_conflict?: issue_reaction_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "issue_reaction". All fields are combined with a logical 'AND'.
+ */
+export interface issue_reaction_bool_exp {
+  _and?: (issue_reaction_bool_exp | null)[] | null;
+  _not?: issue_reaction_bool_exp | null;
+  _or?: (issue_reaction_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  issue?: issue_bool_exp | null;
+  issue_id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  public_member?: member_public_bool_exp | null;
 }
 
 /**
@@ -7794,6 +8851,7 @@ export interface issue_reaction_insert_input {
 export interface issue_reaction_on_conflict {
   constraint: issue_reaction_constraint;
   update_columns: issue_reaction_update_column[];
+  where?: issue_reaction_bool_exp | null;
 }
 
 /**
@@ -7802,6 +8860,23 @@ export interface issue_reaction_on_conflict {
 export interface issue_reply_arr_rel_insert_input {
   data: issue_reply_insert_input[];
   on_conflict?: issue_reply_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "issue_reply". All fields are combined with a logical 'AND'.
+ */
+export interface issue_reply_bool_exp {
+  _and?: (issue_reply_bool_exp | null)[] | null;
+  _not?: issue_reply_bool_exp | null;
+  _or?: (issue_reply_bool_exp | null)[] | null;
+  content?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  issue?: issue_bool_exp | null;
+  issue_id?: uuid_comparison_exp | null;
+  issue_reply_reactions?: issue_reply_reaction_bool_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
 }
 
 /**
@@ -7832,6 +8907,7 @@ export interface issue_reply_obj_rel_insert_input {
 export interface issue_reply_on_conflict {
   constraint: issue_reply_constraint;
   update_columns: issue_reply_update_column[];
+  where?: issue_reply_bool_exp | null;
 }
 
 /**
@@ -7840,6 +8916,22 @@ export interface issue_reply_on_conflict {
 export interface issue_reply_reaction_arr_rel_insert_input {
   data: issue_reply_reaction_insert_input[];
   on_conflict?: issue_reply_reaction_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "issue_reply_reaction". All fields are combined with a logical 'AND'.
+ */
+export interface issue_reply_reaction_bool_exp {
+  _and?: (issue_reply_reaction_bool_exp | null)[] | null;
+  _not?: issue_reply_reaction_bool_exp | null;
+  _or?: (issue_reply_reaction_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  issue_reply?: issue_reply_bool_exp | null;
+  issue_reply_id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  public_member?: member_public_bool_exp | null;
 }
 
 /**
@@ -7861,6 +8953,27 @@ export interface issue_reply_reaction_insert_input {
 export interface issue_reply_reaction_on_conflict {
   constraint: issue_reply_reaction_constraint;
   update_columns: issue_reply_reaction_update_column[];
+  where?: issue_reply_reaction_bool_exp | null;
+}
+
+/**
+ * expression to compare columns of type jsonb. All fields are combined with logical 'AND'.
+ */
+export interface jsonb_comparison_exp {
+  _contained_in?: any | null;
+  _contains?: any | null;
+  _eq?: any | null;
+  _gt?: any | null;
+  _gte?: any | null;
+  _has_key?: string | null;
+  _has_keys_all?: string[] | null;
+  _has_keys_any?: string[] | null;
+  _in?: any[] | null;
+  _is_null?: boolean | null;
+  _lt?: any | null;
+  _lte?: any | null;
+  _neq?: any | null;
+  _nin?: any[] | null;
 }
 
 /**
@@ -7869,6 +8982,24 @@ export interface issue_reply_reaction_on_conflict {
 export interface media_arr_rel_insert_input {
   data: media_insert_input[];
   on_conflict?: media_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "media". All fields are combined with a logical 'AND'.
+ */
+export interface media_bool_exp {
+  _and?: (media_bool_exp | null)[] | null;
+  _not?: media_bool_exp | null;
+  _or?: (media_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  metadata?: jsonb_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  resource_url?: String_comparison_exp | null;
+  size?: Int_comparison_exp | null;
+  type?: String_comparison_exp | null;
 }
 
 /**
@@ -7892,6 +9023,7 @@ export interface media_insert_input {
 export interface media_on_conflict {
   constraint: media_constraint;
   update_columns: media_update_column[];
+  where?: media_bool_exp | null;
 }
 
 /**
@@ -7903,11 +9035,74 @@ export interface member_arr_rel_insert_input {
 }
 
 /**
+ * Boolean expression to filter rows from the table "member". All fields are combined with a logical 'AND'.
+ */
+export interface member_bool_exp {
+  _and?: (member_bool_exp | null)[] | null;
+  _not?: member_bool_exp | null;
+  _or?: (member_bool_exp | null)[] | null;
+  activities?: activity_bool_exp | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  appointment_plans?: appointment_plan_bool_exp | null;
+  comment_reactions?: comment_reaction_bool_exp | null;
+  comment_replies?: comment_reply_bool_exp | null;
+  comment_reply_reactions?: comment_reply_reaction_bool_exp | null;
+  comments?: comment_bool_exp | null;
+  coupons?: coupon_bool_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  email?: String_comparison_exp | null;
+  facebook_user_id?: String_comparison_exp | null;
+  google_user_id?: String_comparison_exp | null;
+  id?: String_comparison_exp | null;
+  issue_reactions?: issue_reaction_bool_exp | null;
+  issue_replies?: issue_reply_bool_exp | null;
+  issue_reply_reactions?: issue_reply_reaction_bool_exp | null;
+  issues?: issue_bool_exp | null;
+  logined_at?: timestamptz_comparison_exp | null;
+  media?: media_bool_exp | null;
+  member_cards?: member_card_bool_exp | null;
+  metadata?: jsonb_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  notifications?: notification_bool_exp | null;
+  notificationsByTargetMembereId?: notification_bool_exp | null;
+  order_logs?: order_log_bool_exp | null;
+  passhash?: String_comparison_exp | null;
+  picture_url?: String_comparison_exp | null;
+  podcast_plans?: podcast_plan_bool_exp | null;
+  podcast_program_roles?: podcast_program_role_bool_exp | null;
+  podcast_programs?: podcast_program_bool_exp | null;
+  podcasts?: podcast_bool_exp | null;
+  point_logs?: point_log_bool_exp | null;
+  point_status?: point_status_bool_exp | null;
+  program_content_progresses?: program_content_progress_bool_exp | null;
+  program_roles?: program_role_bool_exp | null;
+  roles?: jsonb_comparison_exp | null;
+  username?: String_comparison_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "member_card"
  */
 export interface member_card_arr_rel_insert_input {
   data: member_card_insert_input[];
   on_conflict?: member_card_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_card". All fields are combined with a logical 'AND'.
+ */
+export interface member_card_bool_exp {
+  _and?: (member_card_bool_exp | null)[] | null;
+  _not?: member_card_bool_exp | null;
+  _or?: (member_card_bool_exp | null)[] | null;
+  card_identifier?: String_comparison_exp | null;
+  card_info?: jsonb_comparison_exp | null;
+  card_secret?: jsonb_comparison_exp | null;
+  id?: String_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
 }
 
 /**
@@ -7928,6 +9123,7 @@ export interface member_card_insert_input {
 export interface member_card_on_conflict {
   constraint: member_card_constraint;
   update_columns: member_card_update_column[];
+  where?: member_card_bool_exp | null;
 }
 
 /**
@@ -7964,6 +9160,7 @@ export interface member_insert_input {
   passhash?: string | null;
   picture_url?: string | null;
   podcast_plans?: podcast_plan_arr_rel_insert_input | null;
+  podcast_program_roles?: podcast_program_role_arr_rel_insert_input | null;
   podcast_programs?: podcast_program_arr_rel_insert_input | null;
   podcasts?: podcast_arr_rel_insert_input | null;
   point_logs?: point_log_arr_rel_insert_input | null;
@@ -7987,6 +9184,24 @@ export interface member_obj_rel_insert_input {
 export interface member_on_conflict {
   constraint: member_constraint;
   update_columns: member_update_column[];
+  where?: member_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_public". All fields are combined with a logical 'AND'.
+ */
+export interface member_public_bool_exp {
+  _and?: (member_public_bool_exp | null)[] | null;
+  _not?: member_public_bool_exp | null;
+  _or?: (member_public_bool_exp | null)[] | null;
+  app_id?: String_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  id?: String_comparison_exp | null;
+  metadata?: jsonb_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  picture_url?: String_comparison_exp | null;
+  roles?: jsonb_comparison_exp | null;
+  username?: String_comparison_exp | null;
 }
 
 /**
@@ -8008,6 +9223,18 @@ export interface member_public_insert_input {
  */
 export interface member_public_obj_rel_insert_input {
   data: member_public_insert_input;
+}
+
+/**
+ * Boolean expression to filter rows from the table "module". All fields are combined with a logical 'AND'.
+ */
+export interface module_bool_exp {
+  _and?: (module_bool_exp | null)[] | null;
+  _not?: module_bool_exp | null;
+  _or?: (module_bool_exp | null)[] | null;
+  app_modules?: app_module_bool_exp | null;
+  id?: String_comparison_exp | null;
+  name?: String_comparison_exp | null;
 }
 
 /**
@@ -8033,6 +9260,7 @@ export interface module_obj_rel_insert_input {
 export interface module_on_conflict {
   constraint: module_constraint;
   update_columns: module_update_column[];
+  where?: module_bool_exp | null;
 }
 
 /**
@@ -8041,6 +9269,28 @@ export interface module_on_conflict {
 export interface notification_arr_rel_insert_input {
   data: notification_insert_input[];
   on_conflict?: notification_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "notification". All fields are combined with a logical 'AND'.
+ */
+export interface notification_bool_exp {
+  _and?: (notification_bool_exp | null)[] | null;
+  _not?: notification_bool_exp | null;
+  _or?: (notification_bool_exp | null)[] | null;
+  avatar?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  extra?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  read_at?: timestamptz_comparison_exp | null;
+  reference_url?: String_comparison_exp | null;
+  sourceMember?: member_bool_exp | null;
+  source_member_id?: String_comparison_exp | null;
+  targetMember?: member_bool_exp | null;
+  target_member_id?: String_comparison_exp | null;
+  type?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**
@@ -8068,6 +9318,22 @@ export interface notification_insert_input {
 export interface notification_on_conflict {
   constraint: notification_constraint;
   update_columns: notification_update_column[];
+  where?: notification_bool_exp | null;
+}
+
+/**
+ * expression to compare columns of type numeric. All fields are combined with logical 'AND'.
+ */
+export interface numeric_comparison_exp {
+  _eq?: any | null;
+  _gt?: any | null;
+  _gte?: any | null;
+  _in?: any[] | null;
+  _is_null?: boolean | null;
+  _lt?: any | null;
+  _lte?: any | null;
+  _neq?: any | null;
+  _nin?: any[] | null;
 }
 
 /**
@@ -8076,6 +9342,23 @@ export interface notification_on_conflict {
 export interface order_discount_arr_rel_insert_input {
   data: order_discount_insert_input[];
   on_conflict?: order_discount_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "order_discount". All fields are combined with a logical 'AND'.
+ */
+export interface order_discount_bool_exp {
+  _and?: (order_discount_bool_exp | null)[] | null;
+  _not?: order_discount_bool_exp | null;
+  _or?: (order_discount_bool_exp | null)[] | null;
+  description?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  order_id?: String_comparison_exp | null;
+  order_log?: order_log_bool_exp | null;
+  price?: numeric_comparison_exp | null;
+  target?: String_comparison_exp | null;
+  type?: String_comparison_exp | null;
 }
 
 /**
@@ -8098,6 +9381,7 @@ export interface order_discount_insert_input {
 export interface order_discount_on_conflict {
   constraint: order_discount_constraint;
   update_columns: order_discount_update_column[];
+  where?: order_discount_bool_exp | null;
 }
 
 /**
@@ -8106,6 +9390,34 @@ export interface order_discount_on_conflict {
 export interface order_item_arr_rel_insert_input {
   data: order_item_insert_input[];
   on_conflict?: order_item_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "order_item". All fields are combined with a logical 'AND'.
+ */
+export interface order_item_bool_exp {
+  _and?: (order_item_bool_exp | null)[] | null;
+  _not?: order_item_bool_exp | null;
+  _or?: (order_item_bool_exp | null)[] | null;
+  activity_ticket?: activity_ticket_bool_exp | null;
+  activity_ticket_id?: uuid_comparison_exp | null;
+  auto_renewed?: Boolean_comparison_exp | null;
+  class?: String_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  order_id?: String_comparison_exp | null;
+  order_log?: order_log_bool_exp | null;
+  price?: numeric_comparison_exp | null;
+  product_id?: uuid_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_content?: program_content_bool_exp | null;
+  program_content_id?: uuid_comparison_exp | null;
+  program_id?: uuid_comparison_exp | null;
+  program_plan?: program_plan_bool_exp | null;
+  program_plan_id?: uuid_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
 }
 
 /**
@@ -8139,6 +9451,7 @@ export interface order_item_insert_input {
 export interface order_item_on_conflict {
   constraint: order_item_constraint;
   update_columns: order_item_update_column[];
+  where?: order_item_bool_exp | null;
 }
 
 /**
@@ -8147,6 +9460,32 @@ export interface order_item_on_conflict {
 export interface order_log_arr_rel_insert_input {
   data: order_log_insert_input[];
   on_conflict?: order_log_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "order_log". All fields are combined with a logical 'AND'.
+ */
+export interface order_log_bool_exp {
+  _and?: (order_log_bool_exp | null)[] | null;
+  _not?: order_log_bool_exp | null;
+  _or?: (order_log_bool_exp | null)[] | null;
+  coupon?: coupon_bool_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  discount_coupon_id?: uuid_comparison_exp | null;
+  discount_point?: numeric_comparison_exp | null;
+  discount_price?: numeric_comparison_exp | null;
+  discount_type?: Int_comparison_exp | null;
+  id?: String_comparison_exp | null;
+  invoice?: jsonb_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  message?: String_comparison_exp | null;
+  order_discounts?: order_discount_bool_exp | null;
+  order_items?: order_item_bool_exp | null;
+  order_products?: order_product_bool_exp | null;
+  payment_logs?: payment_log_bool_exp | null;
+  status?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**
@@ -8186,6 +9525,7 @@ export interface order_log_obj_rel_insert_input {
 export interface order_log_on_conflict {
   constraint: order_log_constraint;
   update_columns: order_log_update_column[];
+  where?: order_log_bool_exp | null;
 }
 
 /**
@@ -8194,6 +9534,28 @@ export interface order_log_on_conflict {
 export interface order_product_arr_rel_insert_input {
   data: order_product_insert_input[];
   on_conflict?: order_product_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "order_product". All fields are combined with a logical 'AND'.
+ */
+export interface order_product_bool_exp {
+  _and?: (order_product_bool_exp | null)[] | null;
+  _not?: order_product_bool_exp | null;
+  _or?: (order_product_bool_exp | null)[] | null;
+  accumulated_errors?: Int_comparison_exp | null;
+  auto_renewed?: Boolean_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  order_id?: String_comparison_exp | null;
+  order_log?: order_log_bool_exp | null;
+  price?: numeric_comparison_exp | null;
+  product?: product_bool_exp | null;
+  product_id?: String_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
 }
 
 /**
@@ -8221,6 +9583,7 @@ export interface order_product_insert_input {
 export interface order_product_on_conflict {
   constraint: order_product_constraint;
   update_columns: order_product_update_column[];
+  where?: order_product_bool_exp | null;
 }
 
 /**
@@ -8229,6 +9592,21 @@ export interface order_product_on_conflict {
 export interface package_arr_rel_insert_input {
   data: package_insert_input[];
   on_conflict?: package_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "package". All fields are combined with a logical 'AND'.
+ */
+export interface package_bool_exp {
+  _and?: (package_bool_exp | null)[] | null;
+  _not?: package_bool_exp | null;
+  _or?: (package_bool_exp | null)[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  elements?: jsonb_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  package_sections?: package_section_bool_exp | null;
+  title?: String_comparison_exp | null;
 }
 
 /**
@@ -8252,11 +9630,45 @@ export interface package_item_arr_rel_insert_input {
 }
 
 /**
+ * Boolean expression to filter rows from the table "package_item". All fields are combined with a logical 'AND'.
+ */
+export interface package_item_bool_exp {
+  _and?: (package_item_bool_exp | null)[] | null;
+  _not?: package_item_bool_exp | null;
+  _or?: (package_item_bool_exp | null)[] | null;
+  activity?: activity_bool_exp | null;
+  activity_id?: uuid_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  merchandise_id?: uuid_comparison_exp | null;
+  package_item_group?: package_item_group_bool_exp | null;
+  package_item_group_id?: uuid_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_id?: uuid_comparison_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "package_item_group"
  */
 export interface package_item_group_arr_rel_insert_input {
   data: package_item_group_insert_input[];
   on_conflict?: package_item_group_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "package_item_group". All fields are combined with a logical 'AND'.
+ */
+export interface package_item_group_bool_exp {
+  _and?: (package_item_group_bool_exp | null)[] | null;
+  _not?: package_item_group_bool_exp | null;
+  _or?: (package_item_group_bool_exp | null)[] | null;
+  id?: uuid_comparison_exp | null;
+  package_items?: package_item_bool_exp | null;
+  package_section?: package_section_bool_exp | null;
+  package_section_id?: uuid_comparison_exp | null;
+  subtitle?: String_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  type?: String_comparison_exp | null;
+  with_filter?: Boolean_comparison_exp | null;
 }
 
 /**
@@ -8287,6 +9699,7 @@ export interface package_item_group_obj_rel_insert_input {
 export interface package_item_group_on_conflict {
   constraint: package_item_group_constraint;
   update_columns: package_item_group_update_column[];
+  where?: package_item_group_bool_exp | null;
 }
 
 /**
@@ -8309,6 +9722,7 @@ export interface package_item_insert_input {
 export interface package_item_on_conflict {
   constraint: package_item_constraint;
   update_columns: package_item_update_column[];
+  where?: package_item_bool_exp | null;
 }
 
 /**
@@ -8325,6 +9739,7 @@ export interface package_obj_rel_insert_input {
 export interface package_on_conflict {
   constraint: package_constraint;
   update_columns: package_update_column[];
+  where?: package_bool_exp | null;
 }
 
 /**
@@ -8333,6 +9748,24 @@ export interface package_on_conflict {
 export interface package_section_arr_rel_insert_input {
   data: package_section_insert_input[];
   on_conflict?: package_section_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "package_section". All fields are combined with a logical 'AND'.
+ */
+export interface package_section_bool_exp {
+  _and?: (package_section_bool_exp | null)[] | null;
+  _not?: package_section_bool_exp | null;
+  _or?: (package_section_bool_exp | null)[] | null;
+  block?: Boolean_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  package?: package_bool_exp | null;
+  package_id?: uuid_comparison_exp | null;
+  package_item_groups?: package_item_group_bool_exp | null;
+  position?: Int_comparison_exp | null;
+  subtitle?: String_comparison_exp | null;
+  title?: String_comparison_exp | null;
 }
 
 /**
@@ -8364,6 +9797,7 @@ export interface package_section_obj_rel_insert_input {
 export interface package_section_on_conflict {
   constraint: package_section_constraint;
   update_columns: package_section_update_column[];
+  where?: package_section_bool_exp | null;
 }
 
 /**
@@ -8375,10 +9809,25 @@ export interface payment_log_arr_rel_insert_input {
 }
 
 /**
+ * Boolean expression to filter rows from the table "payment_log". All fields are combined with a logical 'AND'.
+ */
+export interface payment_log_bool_exp {
+  _and?: (payment_log_bool_exp | null)[] | null;
+  _not?: payment_log_bool_exp | null;
+  _or?: (payment_log_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  method?: String_comparison_exp | null;
+  no?: numeric_comparison_exp | null;
+  order_id?: String_comparison_exp | null;
+  order_log?: order_log_bool_exp | null;
+}
+
+/**
  * input type for inserting data into table "payment_log"
  */
 export interface payment_log_insert_input {
   created_at?: any | null;
+  method?: string | null;
   no?: any | null;
   order_id?: string | null;
   order_log?: order_log_obj_rel_insert_input | null;
@@ -8390,6 +9839,7 @@ export interface payment_log_insert_input {
 export interface payment_log_on_conflict {
   constraint: payment_log_constraint;
   update_columns: payment_log_update_column[];
+  where?: payment_log_bool_exp | null;
 }
 
 /**
@@ -8398,6 +9848,22 @@ export interface payment_log_on_conflict {
 export interface podcast_arr_rel_insert_input {
   data: podcast_insert_input[];
   on_conflict?: podcast_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "podcast". All fields are combined with a logical 'AND'.
+ */
+export interface podcast_bool_exp {
+  _and?: (podcast_bool_exp | null)[] | null;
+  _not?: podcast_bool_exp | null;
+  _or?: (podcast_bool_exp | null)[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  instructor_id?: String_comparison_exp | null;
+  member?: member_bool_exp | null;
+  podcast_plans?: podcast_plan_bool_exp | null;
+  podcast_programs?: podcast_program_bool_exp | null;
 }
 
 /**
@@ -8427,6 +9893,7 @@ export interface podcast_obj_rel_insert_input {
 export interface podcast_on_conflict {
   constraint: podcast_constraint;
   update_columns: podcast_update_column[];
+  where?: podcast_bool_exp | null;
 }
 
 /**
@@ -8438,9 +9905,35 @@ export interface podcast_plan_arr_rel_insert_input {
 }
 
 /**
+ * Boolean expression to filter rows from the table "podcast_plan". All fields are combined with a logical 'AND'.
+ */
+export interface podcast_plan_bool_exp {
+  _and?: (podcast_plan_bool_exp | null)[] | null;
+  _not?: podcast_plan_bool_exp | null;
+  _or?: (podcast_plan_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  creator_id?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  is_subscription?: Boolean_comparison_exp | null;
+  list_price?: numeric_comparison_exp | null;
+  member?: member_bool_exp | null;
+  period_amount?: numeric_comparison_exp | null;
+  period_type?: String_comparison_exp | null;
+  podcast?: podcast_bool_exp | null;
+  podcast_id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+  sale_price?: numeric_comparison_exp | null;
+  sold_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
  * input type for inserting data into table "podcast_plan"
  */
 export interface podcast_plan_insert_input {
+  created_at?: any | null;
   creator_id?: string | null;
   id?: any | null;
   is_subscription?: boolean | null;
@@ -8455,6 +9948,7 @@ export interface podcast_plan_insert_input {
   sale_price?: any | null;
   sold_at?: any | null;
   title?: string | null;
+  updated_at?: any | null;
 }
 
 /**
@@ -8463,6 +9957,7 @@ export interface podcast_plan_insert_input {
 export interface podcast_plan_on_conflict {
   constraint: podcast_plan_constraint;
   update_columns: podcast_plan_update_column[];
+  where?: podcast_plan_bool_exp | null;
 }
 
 /**
@@ -8479,6 +9974,19 @@ export interface podcast_program_arr_rel_insert_input {
 export interface podcast_program_body_arr_rel_insert_input {
   data: podcast_program_body_insert_input[];
   on_conflict?: podcast_program_body_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "podcast_program_body". All fields are combined with a logical 'AND'.
+ */
+export interface podcast_program_body_bool_exp {
+  _and?: (podcast_program_body_bool_exp | null)[] | null;
+  _not?: podcast_program_body_bool_exp | null;
+  _or?: (podcast_program_body_bool_exp | null)[] | null;
+  description?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  podcast_program?: podcast_program_bool_exp | null;
+  podcast_program_id?: uuid_comparison_exp | null;
 }
 
 /**
@@ -8505,6 +10013,36 @@ export interface podcast_program_body_obj_rel_insert_input {
 export interface podcast_program_body_on_conflict {
   constraint: podcast_program_body_constraint;
   update_columns: podcast_program_body_update_column[];
+  where?: podcast_program_body_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "podcast_program". All fields are combined with a logical 'AND'.
+ */
+export interface podcast_program_bool_exp {
+  _and?: (podcast_program_bool_exp | null)[] | null;
+  _not?: podcast_program_bool_exp | null;
+  _or?: (podcast_program_bool_exp | null)[] | null;
+  abstract?: String_comparison_exp | null;
+  content_type?: String_comparison_exp | null;
+  cover_url?: String_comparison_exp | null;
+  creator_id?: String_comparison_exp | null;
+  duration?: numeric_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  list_price?: numeric_comparison_exp | null;
+  member?: member_bool_exp | null;
+  podcast?: podcast_bool_exp | null;
+  podcast_id?: uuid_comparison_exp | null;
+  podcast_program_bodies?: podcast_program_body_bool_exp | null;
+  podcast_program_body?: podcast_program_body_bool_exp | null;
+  podcast_program_categories?: podcast_program_category_bool_exp | null;
+  podcast_program_enrollments?: podcast_program_enrollment_bool_exp | null;
+  podcast_program_roles?: podcast_program_role_bool_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+  sale_price?: numeric_comparison_exp | null;
+  sold_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**
@@ -8513,6 +10051,21 @@ export interface podcast_program_body_on_conflict {
 export interface podcast_program_category_arr_rel_insert_input {
   data: podcast_program_category_insert_input[];
   on_conflict?: podcast_program_category_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "podcast_program_category". All fields are combined with a logical 'AND'.
+ */
+export interface podcast_program_category_bool_exp {
+  _and?: (podcast_program_category_bool_exp | null)[] | null;
+  _not?: podcast_program_category_bool_exp | null;
+  _or?: (podcast_program_category_bool_exp | null)[] | null;
+  category?: category_bool_exp | null;
+  category_id?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  podcast_program?: podcast_program_bool_exp | null;
+  podcast_program_id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
 }
 
 /**
@@ -8533,6 +10086,19 @@ export interface podcast_program_category_insert_input {
 export interface podcast_program_category_on_conflict {
   constraint: podcast_program_category_constraint;
   update_columns: podcast_program_category_update_column[];
+  where?: podcast_program_category_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "podcast_program_enrollment". All fields are combined with a logical 'AND'.
+ */
+export interface podcast_program_enrollment_bool_exp {
+  _and?: (podcast_program_enrollment_bool_exp | null)[] | null;
+  _not?: podcast_program_enrollment_bool_exp | null;
+  _or?: (podcast_program_enrollment_bool_exp | null)[] | null;
+  member_id?: String_comparison_exp | null;
+  podcast_program?: podcast_program_bool_exp | null;
+  podcast_program_id?: uuid_comparison_exp | null;
 }
 
 /**
@@ -8574,6 +10140,7 @@ export interface podcast_program_obj_rel_insert_input {
 export interface podcast_program_on_conflict {
   constraint: podcast_program_constraint;
   update_columns: podcast_program_update_column[];
+  where?: podcast_program_bool_exp | null;
 }
 
 /**
@@ -8582,6 +10149,21 @@ export interface podcast_program_on_conflict {
 export interface podcast_program_role_arr_rel_insert_input {
   data: podcast_program_role_insert_input[];
   on_conflict?: podcast_program_role_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "podcast_program_role". All fields are combined with a logical 'AND'.
+ */
+export interface podcast_program_role_bool_exp {
+  _and?: (podcast_program_role_bool_exp | null)[] | null;
+  _not?: podcast_program_role_bool_exp | null;
+  _or?: (podcast_program_role_bool_exp | null)[] | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  podcast_program?: podcast_program_bool_exp | null;
+  podcast_program_id?: uuid_comparison_exp | null;
 }
 
 /**
@@ -8602,6 +10184,7 @@ export interface podcast_program_role_insert_input {
 export interface podcast_program_role_on_conflict {
   constraint: podcast_program_role_constraint;
   update_columns: podcast_program_role_update_column[];
+  where?: podcast_program_role_bool_exp | null;
 }
 
 /**
@@ -8610,6 +10193,21 @@ export interface podcast_program_role_on_conflict {
 export interface point_log_arr_rel_insert_input {
   data: point_log_insert_input[];
   on_conflict?: point_log_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "point_log". All fields are combined with a logical 'AND'.
+ */
+export interface point_log_bool_exp {
+  _and?: (point_log_bool_exp | null)[] | null;
+  _not?: point_log_bool_exp | null;
+  _or?: (point_log_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  point?: numeric_comparison_exp | null;
 }
 
 /**
@@ -8630,6 +10228,36 @@ export interface point_log_insert_input {
 export interface point_log_on_conflict {
   constraint: point_log_constraint;
   update_columns: point_log_update_column[];
+  where?: point_log_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "point_status". All fields are combined with a logical 'AND'.
+ */
+export interface point_status_bool_exp {
+  _and?: (point_status_bool_exp | null)[] | null;
+  _not?: point_status_bool_exp | null;
+  _or?: (point_status_bool_exp | null)[] | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  points?: numeric_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "product". All fields are combined with a logical 'AND'.
+ */
+export interface product_bool_exp {
+  _and?: (product_bool_exp | null)[] | null;
+  _not?: product_bool_exp | null;
+  _or?: (product_bool_exp | null)[] | null;
+  card_discounts?: card_discount_bool_exp | null;
+  cart_products?: cart_product_bool_exp | null;
+  id?: String_comparison_exp | null;
+  order_products?: order_product_bool_exp | null;
+  product_owner?: product_owner_bool_exp | null;
+  target?: String_comparison_exp | null;
+  type?: String_comparison_exp | null;
+  voucher_plan_products?: voucher_plan_product_bool_exp | null;
 }
 
 /**
@@ -8659,6 +10287,18 @@ export interface product_obj_rel_insert_input {
 export interface product_on_conflict {
   constraint: product_constraint;
   update_columns: product_update_column[];
+  where?: product_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "product_owner". All fields are combined with a logical 'AND'.
+ */
+export interface product_owner_bool_exp {
+  _and?: (product_owner_bool_exp | null)[] | null;
+  _not?: product_owner_bool_exp | null;
+  _or?: (product_owner_bool_exp | null)[] | null;
+  member_id?: String_comparison_exp | null;
+  product_id?: String_comparison_exp | null;
 }
 
 /**
@@ -8667,6 +10307,22 @@ export interface product_on_conflict {
 export interface program_announcement_arr_rel_insert_input {
   data: program_announcement_insert_input[];
   on_conflict?: program_announcement_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_announcement". All fields are combined with a logical 'AND'.
+ */
+export interface program_announcement_bool_exp {
+  _and?: (program_announcement_bool_exp | null)[] | null;
+  _not?: program_announcement_bool_exp | null;
+  _or?: (program_announcement_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_id?: uuid_comparison_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
 }
 
 /**
@@ -8688,6 +10344,7 @@ export interface program_announcement_insert_input {
 export interface program_announcement_on_conflict {
   constraint: program_announcement_constraint;
   update_columns: program_announcement_update_column[];
+  where?: program_announcement_bool_exp | null;
 }
 
 /**
@@ -8699,11 +10356,64 @@ export interface program_arr_rel_insert_input {
 }
 
 /**
+ * Boolean expression to filter rows from the table "program". All fields are combined with a logical 'AND'.
+ */
+export interface program_bool_exp {
+  _and?: (program_bool_exp | null)[] | null;
+  _not?: program_bool_exp | null;
+  _or?: (program_bool_exp | null)[] | null;
+  abstract?: String_comparison_exp | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  cover_url?: String_comparison_exp | null;
+  cover_video_url?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  editors?: program_editor_bool_exp | null;
+  funding?: funding_bool_exp | null;
+  funding_id?: uuid_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  in_advance?: Boolean_comparison_exp | null;
+  is_sold_out?: Boolean_comparison_exp | null;
+  is_subscription?: Boolean_comparison_exp | null;
+  list_price?: numeric_comparison_exp | null;
+  order_items?: order_item_bool_exp | null;
+  package_items?: package_item_bool_exp | null;
+  position?: Int_comparison_exp | null;
+  program_announcements?: program_announcement_bool_exp | null;
+  program_categories?: program_category_bool_exp | null;
+  program_content_sections?: program_content_section_bool_exp | null;
+  program_package_programs?: program_package_program_bool_exp | null;
+  program_plans?: program_plan_bool_exp | null;
+  program_related_items?: program_related_item_bool_exp | null;
+  program_roles?: program_role_bool_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+  sale_price?: numeric_comparison_exp | null;
+  sold_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "program_category"
  */
 export interface program_category_arr_rel_insert_input {
   data: program_category_insert_input[];
   on_conflict?: program_category_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_category". All fields are combined with a logical 'AND'.
+ */
+export interface program_category_bool_exp {
+  _and?: (program_category_bool_exp | null)[] | null;
+  _not?: program_category_bool_exp | null;
+  _or?: (program_category_bool_exp | null)[] | null;
+  category?: category_bool_exp | null;
+  category_id?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_id?: uuid_comparison_exp | null;
 }
 
 /**
@@ -8724,6 +10434,7 @@ export interface program_category_insert_input {
 export interface program_category_on_conflict {
   constraint: program_category_constraint;
   update_columns: program_category_update_column[];
+  where?: program_category_bool_exp | null;
 }
 
 /**
@@ -8732,6 +10443,20 @@ export interface program_category_on_conflict {
 export interface program_content_arr_rel_insert_input {
   data: program_content_insert_input[];
   on_conflict?: program_content_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_content_body". All fields are combined with a logical 'AND'.
+ */
+export interface program_content_body_bool_exp {
+  _and?: (program_content_body_bool_exp | null)[] | null;
+  _not?: program_content_body_bool_exp | null;
+  _or?: (program_content_body_bool_exp | null)[] | null;
+  data?: jsonb_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  program_contents?: program_content_bool_exp | null;
+  type?: String_comparison_exp | null;
 }
 
 /**
@@ -8759,6 +10484,50 @@ export interface program_content_body_obj_rel_insert_input {
 export interface program_content_body_on_conflict {
   constraint: program_content_body_constraint;
   update_columns: program_content_body_update_column[];
+  where?: program_content_body_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_content". All fields are combined with a logical 'AND'.
+ */
+export interface program_content_bool_exp {
+  _and?: (program_content_bool_exp | null)[] | null;
+  _not?: program_content_bool_exp | null;
+  _or?: (program_content_bool_exp | null)[] | null;
+  abstract?: String_comparison_exp | null;
+  content_body_id?: uuid_comparison_exp | null;
+  content_section_id?: uuid_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  duration?: numeric_comparison_exp | null;
+  enrollments?: program_content_enrollment_bool_exp | null;
+  id?: uuid_comparison_exp | null;
+  list_price?: numeric_comparison_exp | null;
+  metadata?: jsonb_comparison_exp | null;
+  order_items?: order_item_bool_exp | null;
+  position?: Int_comparison_exp | null;
+  program_content_body?: program_content_body_bool_exp | null;
+  program_content_plans?: program_content_plan_bool_exp | null;
+  program_content_progress?: program_content_progress_bool_exp | null;
+  program_content_section?: program_content_section_bool_exp | null;
+  program_content_type?: program_content_type_bool_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+  sale_price?: numeric_comparison_exp | null;
+  sold_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_content_enrollment". All fields are combined with a logical 'AND'.
+ */
+export interface program_content_enrollment_bool_exp {
+  _and?: (program_content_enrollment_bool_exp | null)[] | null;
+  _not?: program_content_enrollment_bool_exp | null;
+  _or?: (program_content_enrollment_bool_exp | null)[] | null;
+  member_id?: String_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_content?: program_content_bool_exp | null;
+  program_content_id?: uuid_comparison_exp | null;
+  program_id?: uuid_comparison_exp | null;
 }
 
 /**
@@ -8799,6 +10568,7 @@ export interface program_content_obj_rel_insert_input {
 export interface program_content_on_conflict {
   constraint: program_content_constraint;
   update_columns: program_content_update_column[];
+  where?: program_content_bool_exp | null;
 }
 
 /**
@@ -8807,6 +10577,20 @@ export interface program_content_on_conflict {
 export interface program_content_plan_arr_rel_insert_input {
   data: program_content_plan_insert_input[];
   on_conflict?: program_content_plan_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_content_plan". All fields are combined with a logical 'AND'.
+ */
+export interface program_content_plan_bool_exp {
+  _and?: (program_content_plan_bool_exp | null)[] | null;
+  _not?: program_content_plan_bool_exp | null;
+  _or?: (program_content_plan_bool_exp | null)[] | null;
+  id?: uuid_comparison_exp | null;
+  program_content?: program_content_bool_exp | null;
+  program_content_id?: uuid_comparison_exp | null;
+  program_plan?: program_plan_bool_exp | null;
+  program_plan_id?: uuid_comparison_exp | null;
 }
 
 /**
@@ -8826,6 +10610,7 @@ export interface program_content_plan_insert_input {
 export interface program_content_plan_on_conflict {
   constraint: program_content_plan_constraint;
   update_columns: program_content_plan_update_column[];
+  where?: program_content_plan_bool_exp | null;
 }
 
 /**
@@ -8834,6 +10619,21 @@ export interface program_content_plan_on_conflict {
 export interface program_content_progress_arr_rel_insert_input {
   data: program_content_progress_insert_input[];
   on_conflict?: program_content_progress_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_content_progress". All fields are combined with a logical 'AND'.
+ */
+export interface program_content_progress_bool_exp {
+  _and?: (program_content_progress_bool_exp | null)[] | null;
+  _not?: program_content_progress_bool_exp | null;
+  _or?: (program_content_progress_bool_exp | null)[] | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  program_content?: program_content_bool_exp | null;
+  program_content_id?: uuid_comparison_exp | null;
+  progress?: numeric_comparison_exp | null;
 }
 
 /**
@@ -8854,6 +10654,7 @@ export interface program_content_progress_insert_input {
 export interface program_content_progress_on_conflict {
   constraint: program_content_progress_constraint;
   update_columns: program_content_progress_update_column[];
+  where?: program_content_progress_bool_exp | null;
 }
 
 /**
@@ -8862,6 +10663,22 @@ export interface program_content_progress_on_conflict {
 export interface program_content_section_arr_rel_insert_input {
   data: program_content_section_insert_input[];
   on_conflict?: program_content_section_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_content_section". All fields are combined with a logical 'AND'.
+ */
+export interface program_content_section_bool_exp {
+  _and?: (program_content_section_bool_exp | null)[] | null;
+  _not?: program_content_section_bool_exp | null;
+  _or?: (program_content_section_bool_exp | null)[] | null;
+  description?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_contents?: program_content_bool_exp | null;
+  program_id?: uuid_comparison_exp | null;
+  title?: String_comparison_exp | null;
 }
 
 /**
@@ -8891,6 +10708,19 @@ export interface program_content_section_obj_rel_insert_input {
 export interface program_content_section_on_conflict {
   constraint: program_content_section_constraint;
   update_columns: program_content_section_update_column[];
+  where?: program_content_section_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_content_type". All fields are combined with a logical 'AND'.
+ */
+export interface program_content_type_bool_exp {
+  _and?: (program_content_type_bool_exp | null)[] | null;
+  _not?: program_content_type_bool_exp | null;
+  _or?: (program_content_type_bool_exp | null)[] | null;
+  id?: uuid_comparison_exp | null;
+  program_content?: program_content_bool_exp | null;
+  type?: String_comparison_exp | null;
 }
 
 /**
@@ -8898,6 +10728,17 @@ export interface program_content_section_on_conflict {
  */
 export interface program_editor_arr_rel_insert_input {
   data: program_editor_insert_input[];
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_editor". All fields are combined with a logical 'AND'.
+ */
+export interface program_editor_bool_exp {
+  _and?: (program_editor_bool_exp | null)[] | null;
+  _not?: program_editor_bool_exp | null;
+  _or?: (program_editor_bool_exp | null)[] | null;
+  member_id?: String_comparison_exp | null;
+  program_id?: uuid_comparison_exp | null;
 }
 
 /**
@@ -8957,6 +10798,24 @@ export interface program_obj_rel_insert_input {
 export interface program_on_conflict {
   constraint: program_constraint;
   update_columns: program_update_column[];
+  where?: program_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_package". All fields are combined with a logical 'AND'.
+ */
+export interface program_package_bool_exp {
+  _and?: (program_package_bool_exp | null)[] | null;
+  _not?: program_package_bool_exp | null;
+  _or?: (program_package_bool_exp | null)[] | null;
+  cover_url?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  program_package_plans?: program_package_plan_bool_exp | null;
+  program_package_programs?: program_package_program_bool_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
 }
 
 /**
@@ -8987,6 +10846,7 @@ export interface program_package_obj_rel_insert_input {
 export interface program_package_on_conflict {
   constraint: program_package_constraint;
   update_columns: program_package_update_column[];
+  where?: program_package_bool_exp | null;
 }
 
 /**
@@ -8995,6 +10855,44 @@ export interface program_package_on_conflict {
 export interface program_package_plan_arr_rel_insert_input {
   data: program_package_plan_insert_input[];
   on_conflict?: program_package_plan_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_package_plan". All fields are combined with a logical 'AND'.
+ */
+export interface program_package_plan_bool_exp {
+  _and?: (program_package_plan_bool_exp | null)[] | null;
+  _not?: program_package_plan_bool_exp | null;
+  _or?: (program_package_plan_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  discount_down_price?: numeric_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  is_subscription?: Boolean_comparison_exp | null;
+  list_price?: numeric_comparison_exp | null;
+  period_amount?: numeric_comparison_exp | null;
+  period_type?: String_comparison_exp | null;
+  position?: numeric_comparison_exp | null;
+  program_package?: program_package_bool_exp | null;
+  program_package_id?: uuid_comparison_exp | null;
+  program_package_plan_enrollments?: program_package_plan_enrollment_bool_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+  sale_price?: numeric_comparison_exp | null;
+  sold_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table
+ * "program_package_plan_enrollment". All fields are combined with a logical 'AND'.
+ */
+export interface program_package_plan_enrollment_bool_exp {
+  _and?: (program_package_plan_enrollment_bool_exp | null)[] | null;
+  _not?: program_package_plan_enrollment_bool_exp | null;
+  _or?: (program_package_plan_enrollment_bool_exp | null)[] | null;
+  member_id?: String_comparison_exp | null;
+  program_package_plan?: program_package_plan_bool_exp | null;
+  program_package_plan_id?: uuid_comparison_exp | null;
 }
 
 /**
@@ -9024,6 +10922,7 @@ export interface program_package_plan_insert_input {
 export interface program_package_plan_on_conflict {
   constraint: program_package_plan_constraint;
   update_columns: program_package_plan_update_column[];
+  where?: program_package_plan_bool_exp | null;
 }
 
 /**
@@ -9032,6 +10931,20 @@ export interface program_package_plan_on_conflict {
 export interface program_package_program_arr_rel_insert_input {
   data: program_package_program_insert_input[];
   on_conflict?: program_package_program_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_package_program". All fields are combined with a logical 'AND'.
+ */
+export interface program_package_program_bool_exp {
+  _and?: (program_package_program_bool_exp | null)[] | null;
+  _not?: program_package_program_bool_exp | null;
+  _or?: (program_package_program_bool_exp | null)[] | null;
+  id?: uuid_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_id?: uuid_comparison_exp | null;
+  program_package?: program_package_bool_exp | null;
+  program_package_id?: uuid_comparison_exp | null;
 }
 
 /**
@@ -9051,6 +10964,7 @@ export interface program_package_program_insert_input {
 export interface program_package_program_on_conflict {
   constraint: program_package_program_constraint;
   update_columns: program_package_program_update_column[];
+  where?: program_package_program_bool_exp | null;
 }
 
 /**
@@ -9059,6 +10973,32 @@ export interface program_package_program_on_conflict {
 export interface program_plan_arr_rel_insert_input {
   data: program_plan_insert_input[];
   on_conflict?: program_plan_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_plan". All fields are combined with a logical 'AND'.
+ */
+export interface program_plan_bool_exp {
+  _and?: (program_plan_bool_exp | null)[] | null;
+  _not?: program_plan_bool_exp | null;
+  _or?: (program_plan_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  discount_down_price?: numeric_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
+  gains?: jsonb_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  list_price?: numeric_comparison_exp | null;
+  order_items?: order_item_bool_exp | null;
+  period_type?: String_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_content_permissions?: program_content_plan_bool_exp | null;
+  program_id?: uuid_comparison_exp | null;
+  sale_price?: numeric_comparison_exp | null;
+  sold_at?: timestamptz_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  type?: Int_comparison_exp | null;
 }
 
 /**
@@ -9098,6 +11038,7 @@ export interface program_plan_obj_rel_insert_input {
 export interface program_plan_on_conflict {
   constraint: program_plan_constraint;
   update_columns: program_plan_update_column[];
+  where?: program_plan_bool_exp | null;
 }
 
 /**
@@ -9106,6 +11047,21 @@ export interface program_plan_on_conflict {
 export interface program_related_item_arr_rel_insert_input {
   data: program_related_item_insert_input[];
   on_conflict?: program_related_item_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_related_item". All fields are combined with a logical 'AND'.
+ */
+export interface program_related_item_bool_exp {
+  _and?: (program_related_item_bool_exp | null)[] | null;
+  _not?: program_related_item_bool_exp | null;
+  _or?: (program_related_item_bool_exp | null)[] | null;
+  class?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_id?: uuid_comparison_exp | null;
+  target?: jsonb_comparison_exp | null;
+  weight?: numeric_comparison_exp | null;
 }
 
 /**
@@ -9126,6 +11082,7 @@ export interface program_related_item_insert_input {
 export interface program_related_item_on_conflict {
   constraint: program_related_item_constraint;
   update_columns: program_related_item_update_column[];
+  where?: program_related_item_bool_exp | null;
 }
 
 /**
@@ -9134,6 +11091,21 @@ export interface program_related_item_on_conflict {
 export interface program_role_arr_rel_insert_input {
   data: program_role_insert_input[];
   on_conflict?: program_role_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_role". All fields are combined with a logical 'AND'.
+ */
+export interface program_role_bool_exp {
+  _and?: (program_role_bool_exp | null)[] | null;
+  _not?: program_role_bool_exp | null;
+  _or?: (program_role_bool_exp | null)[] | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_id?: uuid_comparison_exp | null;
 }
 
 /**
@@ -9154,6 +11126,37 @@ export interface program_role_insert_input {
 export interface program_role_on_conflict {
   constraint: program_role_constraint;
   update_columns: program_role_update_column[];
+  where?: program_role_bool_exp | null;
+}
+
+/**
+ * expression to compare columns of type timestamptz. All fields are combined with logical 'AND'.
+ */
+export interface timestamptz_comparison_exp {
+  _eq?: any | null;
+  _gt?: any | null;
+  _gte?: any | null;
+  _in?: any[] | null;
+  _is_null?: boolean | null;
+  _lt?: any | null;
+  _lte?: any | null;
+  _neq?: any | null;
+  _nin?: any[] | null;
+}
+
+/**
+ * expression to compare columns of type uuid. All fields are combined with logical 'AND'.
+ */
+export interface uuid_comparison_exp {
+  _eq?: any | null;
+  _gt?: any | null;
+  _gte?: any | null;
+  _in?: any[] | null;
+  _is_null?: boolean | null;
+  _lt?: any | null;
+  _lte?: any | null;
+  _neq?: any | null;
+  _nin?: any[] | null;
 }
 
 /**
@@ -9165,11 +11168,42 @@ export interface voucher_arr_rel_insert_input {
 }
 
 /**
+ * Boolean expression to filter rows from the table "voucher". All fields are combined with a logical 'AND'.
+ */
+export interface voucher_bool_exp {
+  _and?: (voucher_bool_exp | null)[] | null;
+  _not?: voucher_bool_exp | null;
+  _or?: (voucher_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member_id?: String_comparison_exp | null;
+  status?: voucher_status_bool_exp | null;
+  voucher_code?: voucher_code_bool_exp | null;
+  voucher_code_id?: uuid_comparison_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "voucher_code"
  */
 export interface voucher_code_arr_rel_insert_input {
   data: voucher_code_insert_input[];
   on_conflict?: voucher_code_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "voucher_code". All fields are combined with a logical 'AND'.
+ */
+export interface voucher_code_bool_exp {
+  _and?: (voucher_code_bool_exp | null)[] | null;
+  _not?: voucher_code_bool_exp | null;
+  _or?: (voucher_code_bool_exp | null)[] | null;
+  code?: String_comparison_exp | null;
+  count?: Int_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  remaining?: Int_comparison_exp | null;
+  voucher_plan?: voucher_plan_bool_exp | null;
+  voucher_plan_id?: uuid_comparison_exp | null;
+  vouchers?: voucher_bool_exp | null;
 }
 
 /**
@@ -9199,6 +11233,7 @@ export interface voucher_code_obj_rel_insert_input {
 export interface voucher_code_on_conflict {
   constraint: voucher_code_constraint;
   update_columns: voucher_code_update_column[];
+  where?: voucher_code_bool_exp | null;
 }
 
 /**
@@ -9218,6 +11253,7 @@ export interface voucher_insert_input {
 export interface voucher_on_conflict {
   constraint: voucher_constraint;
   update_columns: voucher_update_column[];
+  where?: voucher_bool_exp | null;
 }
 
 /**
@@ -9226,6 +11262,25 @@ export interface voucher_on_conflict {
 export interface voucher_plan_arr_rel_insert_input {
   data: voucher_plan_insert_input[];
   on_conflict?: voucher_plan_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "voucher_plan". All fields are combined with a logical 'AND'.
+ */
+export interface voucher_plan_bool_exp {
+  _and?: (voucher_plan_bool_exp | null)[] | null;
+  _not?: voucher_plan_bool_exp | null;
+  _or?: (voucher_plan_bool_exp | null)[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  product_quantity_limit?: Int_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  voucher_codes?: voucher_code_bool_exp | null;
+  voucher_plan_products?: voucher_plan_product_bool_exp | null;
 }
 
 /**
@@ -9258,6 +11313,7 @@ export interface voucher_plan_obj_rel_insert_input {
 export interface voucher_plan_on_conflict {
   constraint: voucher_plan_constraint;
   update_columns: voucher_plan_update_column[];
+  where?: voucher_plan_bool_exp | null;
 }
 
 /**
@@ -9266,6 +11322,20 @@ export interface voucher_plan_on_conflict {
 export interface voucher_plan_product_arr_rel_insert_input {
   data: voucher_plan_product_insert_input[];
   on_conflict?: voucher_plan_product_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "voucher_plan_product". All fields are combined with a logical 'AND'.
+ */
+export interface voucher_plan_product_bool_exp {
+  _and?: (voucher_plan_product_bool_exp | null)[] | null;
+  _not?: voucher_plan_product_bool_exp | null;
+  _or?: (voucher_plan_product_bool_exp | null)[] | null;
+  id?: uuid_comparison_exp | null;
+  product?: product_bool_exp | null;
+  product_id?: String_comparison_exp | null;
+  voucher_plan?: voucher_plan_bool_exp | null;
+  voucher_plan_id?: uuid_comparison_exp | null;
 }
 
 /**
@@ -9285,6 +11355,20 @@ export interface voucher_plan_product_insert_input {
 export interface voucher_plan_product_on_conflict {
   constraint: voucher_plan_product_constraint;
   update_columns: voucher_plan_product_update_column[];
+  where?: voucher_plan_product_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "voucher_status". All fields are combined with a logical 'AND'.
+ */
+export interface voucher_status_bool_exp {
+  _and?: (voucher_status_bool_exp | null)[] | null;
+  _not?: voucher_status_bool_exp | null;
+  _or?: (voucher_status_bool_exp | null)[] | null;
+  outdated?: Boolean_comparison_exp | null;
+  used?: Boolean_comparison_exp | null;
+  voucher?: voucher_bool_exp | null;
+  voucher_id?: uuid_comparison_exp | null;
 }
 
 //==============================================================

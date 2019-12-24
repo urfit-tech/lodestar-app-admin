@@ -1,13 +1,25 @@
-import { Button, Form } from 'antd'
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Form, message, Skeleton } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor, { EditorState } from 'braft-editor'
+import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import AdminBraftEditor from '../../components/admin/AdminBraftEditor'
+import { handleError } from '../../helpers'
+import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanIntroForm: React.FC<FormComponentProps> = ({ form }) => {
-  const { appointmentPlan } = useContext(AppointmentPlanContext)
+  const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)
+  const [updateAppointmentPlanDescription] = useMutation<
+    types.UPDATE_APPOINTMENT_PLAN_DESCRIPTION,
+    types.UPDATE_APPOINTMENT_PLAN_DESCRIPTIONVariables
+  >(UPDATE_APPOINTMENT_PLAN_DESCRIPTION)
   const [loading, setLoading] = useState(false)
+
+  if (loadingAppointmentPlan || !appointmentPlan) {
+    return <Skeleton active />
+  }
 
   const handleSubmit = () => {
     form.validateFields((errors, values) => {
@@ -16,8 +28,18 @@ const AppointmentPlanIntroForm: React.FC<FormComponentProps> = ({ form }) => {
       }
 
       setLoading(true)
-      console.log(values.description.toRAW())
-      setLoading(false)
+      updateAppointmentPlanDescription({
+        variables: {
+          appointmentPlanId: appointmentPlan.id,
+          description: values.description.toRAW(),
+        },
+      })
+        .then(() => {
+          refetchAppointmentPlan && refetchAppointmentPlan()
+          message.success('儲存成功')
+        })
+        .catch(error => handleError(error))
+        .finally(() => setLoading(false))
     })
   }
 
@@ -31,17 +53,17 @@ const AppointmentPlanIntroForm: React.FC<FormComponentProps> = ({ form }) => {
       }}
     >
       <Form.Item>
-        {appointmentPlan &&
-          form.getFieldDecorator('description', {
-            initialValue: BraftEditor.createEditorState(appointmentPlan.description),
-            rules: [
-              {
-                validator: (rule, value: EditorState, callback) => {
-                  value.isEmpty() ? callback('請輸入問題內容') : callback()
-                },
+        {form.getFieldDecorator('description', {
+          initialValue: BraftEditor.createEditorState(appointmentPlan.description || ''),
+          validateTrigger: 'onSubmit',
+          rules: [
+            {
+              validator: (rule, value: EditorState, callback) => {
+                value.isEmpty() ? callback('請輸入方案簡介') : callback()
               },
-            ],
-          })(<AdminBraftEditor />)}
+            },
+          ],
+        })(<AdminBraftEditor />)}
       </Form.Item>
       <Form.Item>
         <Button onClick={() => form.resetFields()} className="mr-2">
@@ -54,5 +76,13 @@ const AppointmentPlanIntroForm: React.FC<FormComponentProps> = ({ form }) => {
     </Form>
   )
 }
+
+const UPDATE_APPOINTMENT_PLAN_DESCRIPTION = gql`
+  mutation UPDATE_APPOINTMENT_PLAN_DESCRIPTION($appointmentPlanId: uuid!, $description: String!) {
+    update_appointment_plan(where: { id: { _eq: $appointmentPlanId } }, _set: { description: $description }) {
+      affected_rows
+    }
+  }
+`
 
 export default Form.create<FormComponentProps>()(AppointmentPlanIntroForm)

@@ -1,13 +1,25 @@
-import { Button, Form, Icon, InputNumber, Tooltip } from 'antd'
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Form, Icon, InputNumber, message, Skeleton, Tooltip } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
+import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { StyledTips } from '../../components/admin'
 import CurrencyInput from '../../components/admin/CurrencyInput'
+import { handleError } from '../../helpers'
+import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
-  const { appointmentPlan } = useContext(AppointmentPlanContext)
+  const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)
+  const [updateAppointmentPlanSale] = useMutation<
+    types.UPDATE_APPOINTMENT_PLAN_SALE,
+    types.UPDATE_APPOINTMENT_PLAN_SALEVariables
+  >(UPDATE_APPOINTMENT_PLAN_SALE)
   const [loading, setLoading] = useState(false)
+
+  if (loadingAppointmentPlan || !appointmentPlan) {
+    return <Skeleton active />
+  }
 
   const handleSubmit = () => {
     form.validateFields((errors, values) => {
@@ -16,8 +28,19 @@ const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
       }
 
       setLoading(true)
-      console.log(values)
-      setLoading(false)
+      updateAppointmentPlanSale({
+        variables: {
+          appointmentPlanId: appointmentPlan.id,
+          duration: values.duration,
+          listPrice: values.listPrice,
+        },
+      })
+        .then(() => {
+          refetchAppointmentPlan && refetchAppointmentPlan()
+          message.success('儲存成功')
+        })
+        .catch(error => handleError(error))
+        .finally(() => setLoading(false))
     })
   }
 
@@ -40,19 +63,17 @@ const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
           </span>
         }
       >
-        {appointmentPlan &&
-          form.getFieldDecorator('duration', {
-            initialValue: appointmentPlan.duration,
-            rules: [{ required: true, message: '請輸入時間長度' }],
-          })(<InputNumber min={0} />)}
+        {form.getFieldDecorator('duration', {
+          initialValue: appointmentPlan.duration,
+          rules: [{ required: true, message: '請輸入時間長度' }],
+        })(<InputNumber min={0} />)}
       </Form.Item>
 
       <Form.Item label="定價">
-        {appointmentPlan &&
-          form.getFieldDecorator('listPrice', {
-            initialValue: appointmentPlan.listPrice,
-            rules: [{ required: true, message: '請輸入定價' }],
-          })(<CurrencyInput />)}
+        {form.getFieldDecorator('listPrice', {
+          initialValue: appointmentPlan.listPrice,
+          rules: [{ required: true, message: '請輸入定價' }],
+        })(<CurrencyInput />)}
       </Form.Item>
 
       <Form.Item>
@@ -66,5 +87,16 @@ const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
     </Form>
   )
 }
+
+const UPDATE_APPOINTMENT_PLAN_SALE = gql`
+  mutation UPDATE_APPOINTMENT_PLAN_SALE($appointmentPlanId: uuid!, $duration: numeric, $listPrice: numeric) {
+    update_appointment_plan(
+      where: { id: { _eq: $appointmentPlanId } }
+      _set: { duration: $duration, price: $listPrice }
+    ) {
+      affected_rows
+    }
+  }
+`
 
 export default Form.create<FormComponentProps>()(AppointmentPlanSaleForm)

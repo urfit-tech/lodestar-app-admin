@@ -1,18 +1,30 @@
+import { useMutation } from '@apollo/react-hooks'
+import { Skeleton } from 'antd'
+import gql from 'graphql-tag'
 import moment from 'moment'
-import groupBy from 'ramda/es/groupBy'
+import { groupBy } from 'ramda'
 import React, { useContext } from 'react'
 import AppointmentPeriodCollection, {
   ClosePeriodEvent,
   DeleteScheduleEvent,
   EmptyBlock,
 } from '../../components/appointment/AppointmentPeriodCollection'
+import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanScheduleBlock: React.FC = () => {
-  const { appointmentPlan } = useContext(AppointmentPlanContext)
+  const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)
+  const [updateAppointmentSchedule] = useMutation<
+    types.UPDATE_APPOINTMENT_SCHEDULE,
+    types.UPDATE_APPOINTMENT_SCHEDULEVariables
+  >(UPDATE_APPOINTMENT_SCHEDULE)
+  const [deleteAppointmentSchedule] = useMutation<
+    types.DELETE_APPOINTMENT_SCHEDULE,
+    types.DELETE_APPOINTMENT_SCHEDULEVariables
+  >(DELETE_APPOINTMENT_SCHEDULE)
 
-  if (!appointmentPlan) {
-    return null
+  if (loadingAppointmentPlan || !appointmentPlan) {
+    return <Skeleton />
   }
 
   if (appointmentPlan.periods.length === 0) {
@@ -20,19 +32,45 @@ const AppointmentPlanScheduleBlock: React.FC = () => {
   }
 
   const handleDelete: (event: DeleteScheduleEvent) => void = ({ values, onSuccess, onError, onFinally }) => {
-    console.log('delete schedule:', values)
-    onSuccess && onSuccess()
+    deleteAppointmentSchedule({
+      variables: {
+        appointmentScheduleId: values.scheduleId,
+      },
+    })
+      .then(() => {
+        refetchAppointmentPlan && refetchAppointmentPlan()
+        onSuccess && onSuccess()
+      })
+      .catch(error => onError && onError(error))
+      .finally(() => onFinally && onFinally())
   }
 
   const handleClose: (event: ClosePeriodEvent) => void = ({ values, onSuccess, onError, onFinally }) => {
-    console.log('close period:', values)
-    onSuccess && onSuccess()
+    const targetSchedule = appointmentPlan.schedules.find(schedule => schedule.id === values.scheduleId)
+    if (!targetSchedule) {
+      return
+    }
+
+    const isReopennedPeriod = targetSchedule.excludes.includes(values.startedAt.getTime())
+    const excludes: number[] = isReopennedPeriod
+      ? targetSchedule.excludes.filter(exclude => exclude !== values.startedAt.getTime())
+      : [...targetSchedule.excludes, values.startedAt.getTime()].sort()
+
+    updateAppointmentSchedule({
+      variables: {
+        appointmentScheduleId: targetSchedule.id,
+        excludes: excludes.map(exclude => new Date(exclude).toISOString()),
+      },
+    })
+      .then(() => {
+        refetchAppointmentPlan && refetchAppointmentPlan()
+        onSuccess && onSuccess()
+      })
+      .catch(error => onError && onError(error))
+      .finally(() => onFinally && onFinally())
   }
 
-  const periodCollections = groupBy(
-    period => `${period.startedAt.getFullYear()}${period.startedAt.getMonth() + 1}${period.startedAt.getDate()}`,
-    appointmentPlan.periods,
-  )
+  const periodCollections = groupBy(period => moment(period.startedAt).format('YYYYMMDD'), appointmentPlan.periods)
 
   return (
     <>
@@ -53,5 +91,20 @@ const AppointmentPlanScheduleBlock: React.FC = () => {
     </>
   )
 }
+
+const UPDATE_APPOINTMENT_SCHEDULE = gql`
+  mutation UPDATE_APPOINTMENT_SCHEDULE($appointmentScheduleId: uuid!, $excludes: jsonb) {
+    update_appointment_schedule(where: { id: { _eq: $appointmentScheduleId } }, _set: { excludes: $excludes }) {
+      affected_rows
+    }
+  }
+`
+const DELETE_APPOINTMENT_SCHEDULE = gql`
+  mutation DELETE_APPOINTMENT_SCHEDULE($appointmentScheduleId: uuid!) {
+    delete_appointment_schedule(where: { id: { _eq: $appointmentScheduleId } }) {
+      affected_rows
+    }
+  }
+`
 
 export default AppointmentPlanScheduleBlock
