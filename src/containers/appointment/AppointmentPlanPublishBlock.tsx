@@ -11,7 +11,7 @@ import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanPublishBlock: React.FC = () => {
-  const { loadingAppointmentPlan, appointmentPlan, refetch } = useContext(AppointmentPlanContext)
+  const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)
   const [publishAppointmentPlan] = useMutation<types.PUBLISH_APPOINTMENT_PLAN, types.PUBLISH_APPOINTMENT_PLANVariables>(
     PUBLISH_APPOINTMENT_PLAN,
   )
@@ -67,7 +67,7 @@ const AppointmentPlanPublishBlock: React.FC = () => {
       },
     })
       .then(() => {
-        refetch && refetch()
+        refetchAppointmentPlan && refetchAppointmentPlan()
         onSuccess && onSuccess()
       })
       .catch(error => onError && onError(error))

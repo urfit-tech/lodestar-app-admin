@@ -23,7 +23,7 @@ type AppointmentPlanAdminProps = {
 const AppointmentPlanContext = createContext<{
   loadingAppointmentPlan: boolean
   appointmentPlan?: AppointmentPlanAdminProps
-  refetch?: () => void
+  refetchAppointmentPlan?: () => void
 }>({
   loadingAppointmentPlan: true,
 })
@@ -96,7 +96,7 @@ export const AppointmentPlanProvider: React.FC<{
       value={{
         loadingAppointmentPlan: loading,
         appointmentPlan,
-        refetch,
+        refetchAppointmentPlan: refetch,
       }}
     >
       {children}

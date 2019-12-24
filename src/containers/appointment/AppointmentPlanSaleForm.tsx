@@ -10,7 +10,7 @@ import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
-  const { loadingAppointmentPlan, appointmentPlan, refetch } = useContext(AppointmentPlanContext)
+  const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)
   const [updateAppointmentPlanSale] = useMutation<
     types.UPDATE_APPOINTMENT_PLAN_SALE,
     types.UPDATE_APPOINTMENT_PLAN_SALEVariables
@@ -36,7 +36,7 @@ const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
         },
       })
         .then(() => {
-          refetch && refetch()
+          refetchAppointmentPlan && refetchAppointmentPlan()
           message.success('儲存成功')
         })
         .catch(error => handleError(error))

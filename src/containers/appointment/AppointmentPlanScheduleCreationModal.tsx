@@ -11,7 +11,7 @@ import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ form }) => {
-  const { loadingAppointmentPlan, appointmentPlan, refetch } = useContext(AppointmentPlanContext)
+  const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)
   const [createAppointmentSchedule] = useMutation<
     types.CREATE_APPOINTMENT_SCHEDULE,
     types.CREATE_APPOINTMENT_SCHEDULEVariables
@@ -45,7 +45,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
         },
       })
         .then(() => {
-          refetch && refetch()
+          refetchAppointmentPlan && refetchAppointmentPlan()
           message.success('儲存成功')
           setVisible(false)
         })

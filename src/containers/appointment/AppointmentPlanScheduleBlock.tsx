@@ -13,7 +13,7 @@ import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanScheduleBlock: React.FC = () => {
-  const { loadingAppointmentPlan, appointmentPlan, refetch } = useContext(AppointmentPlanContext)
+  const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)
   const [updateAppointmentSchedule] = useMutation<
     types.UPDATE_APPOINTMENT_SCHEDULE,
     types.UPDATE_APPOINTMENT_SCHEDULEVariables
@@ -38,7 +38,7 @@ const AppointmentPlanScheduleBlock: React.FC = () => {
       },
     })
       .then(() => {
-        refetch && refetch()
+        refetchAppointmentPlan && refetchAppointmentPlan()
         onSuccess && onSuccess()
       })
       .catch(error => onError && onError(error))
@@ -63,7 +63,7 @@ const AppointmentPlanScheduleBlock: React.FC = () => {
       },
     })
       .then(() => {
-        refetch && refetch()
+        refetchAppointmentPlan && refetchAppointmentPlan()
         onSuccess && onSuccess()
       })
       .catch(error => onError && onError(error))
