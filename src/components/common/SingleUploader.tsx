@@ -2,6 +2,7 @@ import { Button, message, Spin, Upload } from 'antd'
 import { UploadProps } from 'antd/lib/upload'
 import { UploadChangeParam, UploadFile } from 'antd/lib/upload/interface'
 import axios, { Canceler } from 'axios'
+import { extname } from 'path'
 import React, { useRef, useState } from 'react'
 import { uploadFile } from '../../helpers'
 
@@ -64,7 +65,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = (
       setLoading(true)
       onChange && onChange(file)
       uploadFile(
-        path,
+        path + extname(file.name),
         file,
         {
           onUploadProgress: progressEvent => {
