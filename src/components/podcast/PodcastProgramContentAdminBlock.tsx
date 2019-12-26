@@ -66,6 +66,7 @@ const PodcastProgramContentAdminBlock: React.FC<FormComponentProps> = ({ form })
           >
             {form.getFieldDecorator('coverImg')(
               <SingleUploader
+                withExtension
                 accept=".mp3,.m4a,.mp4,.3gp"
                 uploadText="上傳音檔"
                 showUploadList={false}

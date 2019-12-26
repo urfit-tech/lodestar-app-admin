@@ -18,6 +18,7 @@ type SingleUploaderProps = UploadProps & {
   onUploading?: (info: UploadChangeParam<UploadFile>) => void
   onSuccess?: (info: UploadChangeParam<UploadFile>) => void
   onError?: (info: UploadChangeParam<UploadFile>) => void
+  withExtension?: boolean
 }
 const SingleUploader: React.FC<SingleUploaderProps> = (
   {
@@ -32,6 +33,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = (
     onError,
     onCancel,
     isPublic,
+    withExtension,
     ...uploadProps
   },
   ref,
@@ -65,7 +67,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = (
       setLoading(true)
       onChange && onChange(file)
       uploadFile(
-        path + extname(file.name),
+        withExtension ? path + extname(file.name) : path,
         file,
         {
           onUploadProgress: progressEvent => {
