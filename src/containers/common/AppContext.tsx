@@ -27,6 +27,8 @@ const defaultAppProps: AppProps = {
 export const AppContext = createContext<AppProps>(defaultAppProps)
 
 export const AppProvider: React.FC = ({ children }) => {
+  const appId = localStorage.getItem('kolable.app.id') || ''
+
   const { loading, error, data } = useQuery<types.GET_APP, types.GET_APPVariables>(
     gql`
       query GET_APP($appId: String!) {
@@ -44,7 +46,7 @@ export const AppProvider: React.FC = ({ children }) => {
     `,
     {
       variables: {
-        appId: process.env.REACT_APP_ID || '',
+        appId: appId,
       },
     },
   )

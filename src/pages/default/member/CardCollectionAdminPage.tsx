@@ -1,14 +1,16 @@
-import { Icon, Typography } from 'antd'
+import { Icon, Skeleton, Typography } from 'antd'
 import moment from 'moment'
-import React from 'react'
-import { Redirect } from 'react-router'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
 import { useAuth } from '../../../components/auth/AuthContext'
 import MembershipCardBlock from '../../../components/common/MembershipCardBlock'
+import DefaultLayout from '../../../components/layout/DefaultLayout'
 import MemberAdminLayout from '../../../components/layout/MemberAdminLayout'
+import AppContext from '../../../containers/common/AppContext'
 import { useEnrolledMembershipCardCollection, useMembershipCard } from '../../../hooks/card'
 import { useMember } from '../../../hooks/member'
 import { ReactComponent as MembercardIcon } from '../../../images/default/membercard.svg'
+import NotFoundPage from '../NotFoundPage'
 
 const StyledContainer = styled.div`
   margin-bottom: 1.25rem;
@@ -21,10 +23,19 @@ const StyledContainer = styled.div`
 
 const CardCollectionAdminPage = () => {
   const { currentMemberId } = useAuth()
+  const { loading, enabledModules } = useContext(AppContext)
   const { enrolledMembershipCardCollection } = useEnrolledMembershipCardCollection(currentMemberId || '')
 
-  if (process.env.REACT_APP_MODULE_MEMBERSHIPCARD === 'DISABLED') {
-    return <Redirect to="/" />
+  if (loading) {
+    return (
+      <DefaultLayout>
+        <Skeleton active />
+      </DefaultLayout>
+    )
+  }
+
+  if (!enabledModules.member_card) {
+    return <NotFoundPage />
   }
 
   return (

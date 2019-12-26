@@ -1,13 +1,25 @@
-import { Icon, Typography } from 'antd'
-import React from 'react'
-import { Redirect } from 'react-router'
+import { Icon, Skeleton, Typography } from 'antd'
+import React, { useContext } from 'react'
+import DefaultLayout from '../../../components/layout/DefaultLayout'
 import MemberAdminLayout from '../../../components/layout/MemberAdminLayout'
+import AppContext from '../../../containers/common/AppContext'
 import VoucherCollectionBlock from '../../../containers/voucher/VoucherCollectionBlock'
 import { ReactComponent as GiftIcon } from '../../../images/default/gift.svg'
+import NotFoundPage from '../NotFoundPage'
 
 const VoucherCollectionAdminPage = () => {
-  if (process.env.REACT_APP_MODULE_VOUCHER === 'DISABLED') {
-    return <Redirect to="/" />
+  const { loading, enabledModules } = useContext(AppContext)
+
+  if (loading) {
+    return (
+      <DefaultLayout>
+        <Skeleton active />
+      </DefaultLayout>
+    )
+  }
+
+  if (!enabledModules.voucher) {
+    return <NotFoundPage />
   }
 
   return (
