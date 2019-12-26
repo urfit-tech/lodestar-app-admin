@@ -65,21 +65,12 @@ export const usePodcastPlanAdminCollection = () => {
       ? null
       : data.podcast_plan.map(podcastPlan => ({
           id: podcastPlan.id,
-          avatarUrl: podcastPlan.member.picture_url,
-          creator: podcastPlan.member.name || podcastPlan.member.username,
+          avatarUrl: podcastPlan.creator?.picture_url || '',
+          creator: podcastPlan.creator?.name || podcastPlan.creator?.username || '',
           listPrice: podcastPlan.list_price,
           salePrice:
             podcastPlan.sold_at && new Date(podcastPlan.sold_at).getTime() > Date.now() ? podcastPlan.sale_price : 0,
-          salesCount: sum(
-            podcastPlan.member.podcast_programs.map(
-              podcastProgram =>
-                (podcastProgram &&
-                  podcastProgram.podcast_program_enrollments_aggregate &&
-                  podcastProgram.podcast_program_enrollments_aggregate.aggregate &&
-                  podcastProgram.podcast_program_enrollments_aggregate.aggregate.count) ||
-                0,
-            ),
-          ),
+          salesCount: podcastPlan.podcast_plan_enrollments_aggregate.aggregate?.count || 0,
           isPublished: !!podcastPlan.published_at,
           periodAmount: podcastPlan.period_amount,
           periodType: podcastPlan.period_type,
@@ -118,17 +109,15 @@ const GET_PODCAST_PLAN_ADMIN_COLLECTION = gql`
       sale_price
       sold_at
       published_at
-      member {
+      podcast_plan_enrollments_aggregate {
+        aggregate {
+          count
+        }
+      }
+      creator {
         name
         username
         picture_url
-        podcast_programs {
-          podcast_program_enrollments_aggregate {
-            aggregate {
-              count
-            }
-          }
-        }
       }
     }
   }

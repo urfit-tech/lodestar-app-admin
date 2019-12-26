@@ -56,7 +56,7 @@ const GET_PODCAST_PROGRAM_ADMIN_COLLECTION = gql`
       sale_price
       sold_at
       published_at
-      member {
+      creator {
         id
         name
         username
