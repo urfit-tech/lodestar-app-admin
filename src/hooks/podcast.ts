@@ -1,6 +1,5 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import { sum } from 'ramda'
 import types from '../types'
 
 export const usePodcastPlan = (podcastPlanId: string) => {

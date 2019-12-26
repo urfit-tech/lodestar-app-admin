@@ -2335,6 +2335,9 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
    */
   creator: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator;
   title: string;
+  /**
+   * minutes
+   */
   duration: any;
   price: any;
   published_at: any | null;
@@ -2405,6 +2408,9 @@ export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk {
   id: any;
   title: string;
   description: string | null;
+  /**
+   * minutes
+   */
   duration: any;
   price: any;
   published_at: any | null;
@@ -2638,6 +2644,43 @@ export interface CREATE_APPOINTMENT_SCHEDULEVariables {
   startedAt: any;
   intervalType?: string | null;
   intervalAmount?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APP
+// ====================================================
+
+export interface GET_APP_app_by_pk_app_modules {
+  __typename: "app_module";
+  id: any;
+  module_id: string;
+}
+
+export interface GET_APP_app_by_pk {
+  __typename: "app";
+  id: string;
+  name: string;
+  title: string | null;
+  description: string | null;
+  /**
+   * An array relationship
+   */
+  app_modules: GET_APP_app_by_pk_app_modules[];
+}
+
+export interface GET_APP {
+  /**
+   * fetch data from the table: "app" using primary key columns
+   */
+  app_by_pk: GET_APP_app_by_pk | null;
+}
+
+export interface GET_APPVariables {
+  appId: string;
 }
 
 /* tslint:disable */
@@ -4189,40 +4232,6 @@ export interface GET_ORDER_PRODUCT {
 
 export interface GET_ORDER_PRODUCTVariables {
   orderProductId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_APP
-// ====================================================
-
-export interface GET_APP_app_by_pk {
-  __typename: "app";
-  id: string;
-  name: string;
-  title: string | null;
-  description: string | null;
-  og_title: string | null;
-  og_url: string | null;
-  og_image: string | null;
-  og_description: string | null;
-  point_exchange_rate: any;
-  point_discount_ratio: any;
-  point_validity_period: any;
-}
-
-export interface GET_APP {
-  /**
-   * fetch data from the table: "app" using primary key columns
-   */
-  app_by_pk: GET_APP_app_by_pk | null;
-}
-
-export interface GET_APPVariables {
-  appId: string;
 }
 
 /* tslint:disable */

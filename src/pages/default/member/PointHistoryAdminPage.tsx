@@ -1,18 +1,16 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Card, Icon, List, Statistic, Tag, Typography } from 'antd'
 import gql from 'graphql-tag'
-import React, { useState } from 'react'
+import React from 'react'
 import AdminCard from '../../../components/admin/AdminCard'
 import { useAuth } from '../../../components/auth/AuthContext'
 import MemberAdminLayout from '../../../components/layout/MemberAdminLayout'
 import { dateFormatter } from '../../../helpers'
-import { useApp } from '../../../hooks/data'
 import { useMemberPoint } from '../../../hooks/member'
 import { ReactComponent as PointIcon } from '../../../images/default/point.svg'
 import types from '../../../types'
 
 const MemberPointSummarySection: React.FC<{ memberId: string }> = ({ memberId }) => {
-  const { app } = useApp()
   const { numPoints } = useMemberPoint(memberId)
 
   return (
@@ -24,7 +22,7 @@ const MemberPointSummarySection: React.FC<{ memberId: string }> = ({ memberId })
       </div>
       <div className="col-12 col-sm-6">
         <Card>
-          <Statistic title="點數價值" value={app ? app.pointExchangeRate * numPoints : 0} precision={0} suffix="元" />
+          <Statistic title="點數價值" value={0} precision={0} suffix="元" />
         </Card>
       </div>
     </div>
@@ -32,14 +30,11 @@ const MemberPointSummarySection: React.FC<{ memberId: string }> = ({ memberId })
 }
 const PointHistoryAdminPage = () => {
   const limit = undefined
-  const [noMoreData, setNoMoreData] = useState()
+  // const [noMoreData, setNoMoreData] = useState()
   const { currentMemberId } = useAuth()
-  const { loading, data, fetchMore } = useQuery<types.GET_POINT_HISTORY, types.GET_POINT_HISTORYVariables>(
-    GET_POINT_HISTORY,
-    {
-      variables: { memberId: currentMemberId || '', offset: 0, limit },
-    },
-  )
+  const { loading, data } = useQuery<types.GET_POINT_HISTORY, types.GET_POINT_HISTORYVariables>(GET_POINT_HISTORY, {
+    variables: { memberId: currentMemberId || '', offset: 0, limit },
+  })
 
   // const loadMore = !noMoreData ? (
   //   <div

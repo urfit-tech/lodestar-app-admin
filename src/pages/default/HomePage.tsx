@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { useAuth } from '../../components/auth/AuthContext'
 import AuthModal, { AuthModalContext } from '../../components/auth/AuthModal'
 import { BREAK_POINT } from '../../components/common/Responsive'
-import { useApp } from '../../hooks/data'
+import AppContext from '../../containers/common/AppContext'
 import { ReactComponent as AdminIcon } from '../../images/default/icon-admin.svg'
 import { ReactComponent as CreatorIcon } from '../../images/default/icon-creator.svg'
 
@@ -67,7 +67,7 @@ const StyledRoleBlock = styled.div`
 `
 
 const HomePage = () => {
-  const { app } = useApp()
+  const app = useContext(AppContext)
   const { isAuthenticated, currentUserRole } = useAuth()
   const [visible, setVisible] = useState(false)
 
