@@ -4,6 +4,7 @@ import React, { useContext } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import useRouter from 'use-react-router'
 import AppContext from '../../containers/common/AppContext'
+import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
 import { ReactComponent as CalendarAltIcon } from '../../images/icon/calendar-alt.svg'
 import { ReactComponent as DiscountIcon } from '../../images/icon/discount.svg'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
@@ -42,7 +43,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
 
   return (
     <div className="d-flex flex-column flex-grow-1">
-      <div className="p-3">
+      <div className="py-3 px-4">
         <Tag color={theme['@primary-color']}>管理者</Tag>
       </div>
 
@@ -118,13 +119,13 @@ export const CreatorAdminMenu = (props: MenuProps) => {
 
   return (
     <div className="d-flex flex-column flex-grow-1">
-      <div className="p-3">
+      <div className="py-3 px-4">
         <Tag color={theme['@primary-color']}>創作者</Tag>
       </div>
 
       <AdminMenu {...props} defaultOpenKeys={['creator_programs_admin', 'creator_activities_admin']}>
         <Menu.Item key="creator_sales_admin">
-          <Icon type="pay-circle" />
+          <Icon component={() => <MoneyCricleIcon />} />
           <span>銷售管理</span>
         </Menu.Item>
 
@@ -132,7 +133,7 @@ export const CreatorAdminMenu = (props: MenuProps) => {
           key="creator_programs_admin"
           title={
             <span>
-              <Icon type="shopping" />
+              <Icon component={() => <BookIcon />} />
               <span>課程</span>
             </span>
           }
