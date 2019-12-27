@@ -1,7 +1,7 @@
 import { Button, Icon, Popover } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
-import { ReactComponent as MicrophoneIcon } from '../../images/default/microphone.svg'
+import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import { AvatarImage } from '../common/Image'
 import Responsive, { BREAK_POINT } from '../common/Responsive'
 import { Link } from 'react-router-dom'

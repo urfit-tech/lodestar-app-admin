@@ -5,7 +5,7 @@ import { useAuth } from '../../../components/auth/AuthContext'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import PodcastProgramCollectionAdminTable from '../../../containers/podcast/PodcastProgramCollectionAdminTable'
 import PodcastProgramCreationModal from '../../../containers/podcast/PodcastProgramCreationModal'
-import { ReactComponent as MicrophoneIcon } from '../../../images/default/microphone.svg'
+import { ReactComponent as MicrophoneIcon } from '../../../images/icon/microphone.svg'
 
 const StyledTitle = styled.h1`
   color: var(--gray-darker);

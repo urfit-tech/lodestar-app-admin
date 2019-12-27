@@ -3,8 +3,8 @@ import moment from 'moment'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { dateRangeFormatter } from '../../helpers'
-import { ReactComponent as CalendarAltOIcon } from '../../images/default/calendar-alt-o.svg'
-import { ReactComponent as UserOIcon } from '../../images/default/user-o.svg'
+import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
+import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
 import { AvatarImage } from '../common/Image'
 
 const StyledWrapper = styled.div`

@@ -4,7 +4,7 @@ import DefaultLayout from '../../../components/layout/DefaultLayout'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import AppContext from '../../../containers/common/AppContext'
 import VoucherPlanCollectionBlock from '../../../containers/voucher/VoucherPlanCollectionBlock'
-import { ReactComponent as DiscountIcon } from '../../../images/default/discount.svg'
+import { ReactComponent as DiscountIcon } from '../../../images/icon/discount.svg'
 import NotFoundPage from '../NotFoundPage'
 
 const VoucherPlanCollectionAdminPage = () => {

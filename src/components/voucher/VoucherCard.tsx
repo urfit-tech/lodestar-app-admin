@@ -3,7 +3,7 @@ import moment from 'moment'
 import React from 'react'
 import styled from 'styled-components'
 import { rgba } from '../../helpers'
-import { ReactComponent as GiftIcon } from '../../images/default/gift.svg'
+import { ReactComponent as GiftIcon } from '../../images/icon/gift.svg'
 import { BREAK_POINT } from '../common/Responsive'
 
 const StyledWrapper = styled.div`
@@ -93,7 +93,7 @@ export type VoucherProps = {
   extra?: React.ReactNode
   action?: React.ReactNode
 }
-const Voucher: React.FC<VoucherProps> = ({
+const VoucherCard: React.FC<VoucherProps> = ({
   title,
   startedAt,
   endedAt,
@@ -134,4 +134,4 @@ const Voucher: React.FC<VoucherProps> = ({
   )
 }
 
-export default Voucher
+export default VoucherCard

@@ -3,7 +3,7 @@ import React from 'react'
 import VoucherCollectionTabs from '../../components/voucher/VoucherCollectionTabs'
 import VoucherPlanAdminModal, { VoucherPlanFields } from '../../components/voucher/VoucherPlanAdminModal'
 import VoucherPlanDetailModal from '../../components/voucher/VoucherPlanDetailModal'
-import { VoucherProps } from './Voucher'
+import { VoucherProps } from './VoucherCard'
 
 type VoucherPlanCollectionBlockProps = {
   loading?: boolean

@@ -7,7 +7,7 @@ import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import PodcastPlanCollectionAdminTable from '../../../containers/podcast/PodcastPlanCollectionAdminTable'
 import PodcastPlanCreationModal from '../../../containers/podcast/PodcastPlanCreationModal'
 import { usePodcastPlanAdminCollection } from '../../../hooks/podcast'
-import { ReactComponent as DiscountIcon } from '../../../images/default/discount.svg'
+import { ReactComponent as DiscountIcon } from '../../../images/icon/discount.svg'
 
 const StyledTitle = styled.h1`
   color: var(--gray-darker);

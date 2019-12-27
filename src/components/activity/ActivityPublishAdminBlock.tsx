@@ -1,10 +1,10 @@
 import { Button, Icon } from 'antd'
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { ReactComponent as ExclamationCircleIcon } from '../../images/default/exclamation-circle.svg'
 import { ReactComponent as StatusAlertIcon } from '../../images/default/status-alert.svg'
 import { ReactComponent as StatusOrdinaryIcon } from '../../images/default/status-ordinary.svg'
 import { ReactComponent as StatusSuccessIcon } from '../../images/default/status-success.svg'
+import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import { AdminPaneTitle } from '../admin'
 import { ActivityAdminProps } from './ActivityAdminBlock'
 
