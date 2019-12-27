@@ -65,7 +65,10 @@ const ProgramCollectionBlock: React.FC<{
       ) : (
         data.program.map(program => (
           <div key={program.id} className="col-12 col-md-6 col-lg-4 mb-5">
-            <ProgramAdminCard programId={program.id} />
+            <ProgramAdminCard
+              programId={program.id}
+              link={memberId ? `/studio/programs/${program.id}` : `/admin/programs/${program.id}`}
+            />
           </div>
         ))
       )}

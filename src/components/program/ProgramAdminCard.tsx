@@ -35,8 +35,9 @@ const ExtraContentBlock = styled.div`
 
 type ProgramAdminCardProps = CardProps & {
   programId: string
+  link: string
 }
-const ProgramAdminCard: React.FC<ProgramAdminCardProps> = ({ programId, ...cardProps }) => {
+const ProgramAdminCard: React.FC<ProgramAdminCardProps> = ({ programId, link, ...cardProps }) => {
   const { program } = useProgram(programId)
   const { loading: programEnrollmentLoading, error: programEnrollmentError, data: programEnrollmentData } = useQuery(
     program && program.isSubscription ? GET_SUBSCRIPTION_ENROLLMENT : GET_PERPETUAL_ENROLLMENT,
@@ -53,7 +54,7 @@ const ProgramAdminCard: React.FC<ProgramAdminCardProps> = ({ programId, ...cardP
             .filter(role => role.name === 'owner')
             .map(role => <MemberAvatar key={role.memberId} memberId={role.memberId} withName />)}
       </AvatarPlaceHolder>
-      <Link to={`/studio/programs/${programId}`}>
+      <Link to={link}>
         <AdminCard
           {...cardProps}
           variant="program"

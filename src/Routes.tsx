@@ -215,6 +215,12 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
+  owner_program_admin: {
+    path: '/admin/programs/:programId',
+    pageName: 'creator/ProgramAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
 
   // content creator admin
   creator_programs_admin: {
