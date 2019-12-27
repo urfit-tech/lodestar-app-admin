@@ -1,10 +1,10 @@
 import { Button, Icon, Popover } from 'antd'
 import React from 'react'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
+import { ReactComponent as MicrophoneOIcon } from '../../images/icon/microphone-o.svg'
 import { AvatarImage } from '../common/Image'
 import Responsive, { BREAK_POINT } from '../common/Responsive'
-import { Link } from 'react-router-dom'
 
 const StyledWrapper = styled.div`
   padding: 1.25rem;
@@ -65,7 +65,7 @@ const PodcastProgramPopover: React.FC<PodcastProgramPopoverProps> = ({
     <StyledWrapper>
       <StyledTitle>{title}</StyledTitle>
       <StyledMeta>
-        <Icon component={() => <MicrophoneIcon />} className="mr-2" />
+        <Icon component={() => <MicrophoneOIcon />} className="mr-2" />
         {Math.floor(duration / 60)}:{`${duration % 60}`.padStart(2, '0')}
       </StyledMeta>
       <StyledDescription>{description}</StyledDescription>

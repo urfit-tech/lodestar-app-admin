@@ -4,11 +4,12 @@ import React, { useContext } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import useRouter from 'use-react-router'
 import AppContext from '../../containers/common/AppContext'
-import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as CalendarAltIcon } from '../../images/icon/calendar-alt.svg'
+import { ReactComponent as DiscountIcon } from '../../images/icon/discount.svg'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
+import { ReactComponent as MoneyCricleIcon } from '../../images/icon/money-circle.svg'
+import { ReactComponent as UsersIcon } from '../../images/icon/users.svg'
 import { routesProps } from '../../Routes'
-import settings from '../../settings'
 
 const StyledMenu = styled(Menu)`
   && {
@@ -18,6 +19,7 @@ const StyledMenu = styled(Menu)`
 
 const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
   const { history } = useRouter()
+
   const handleClick = ({ key, item }: ClickParam) => {
     if (key.startsWith('_blank')) {
       window.open(item.props['data-href'])
@@ -41,9 +43,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
   return (
     <div className="d-flex flex-column flex-grow-1">
       <div className="p-3">
-        <Tag color={theme['@primary-color']} style={{ border: '0px' }}>
-          管理者
-        </Tag>
+        <Tag color={theme['@primary-color']}>管理者</Tag>
       </div>
 
       <AdminMenu
@@ -51,28 +51,9 @@ export const OwnerAdminMenu = (props: MenuProps) => {
         defaultOpenKeys={['owner_promotion_admin', 'owner_podcast_admin', 'owner_appointment_admin']}
       >
         <Menu.Item key="owner_sales_admin">
-          <Icon type="dollar" className="mr-2" />
+          <Icon component={() => <MoneyCricleIcon />} />
           <span>銷售管理</span>
         </Menu.Item>
-
-        <Menu.SubMenu
-          key="owner_promotion_admin"
-          title={
-            <span>
-              <Icon type="shopping" />
-              <span>促銷管理</span>
-            </span>
-          }
-        >
-          <Menu.Item key="owner_coupon_plans_admin">
-            <span>折價方案</span>
-          </Menu.Item>
-          {enabledModules.voucher && (
-            <Menu.Item key="owner_voucher_plans_admin">
-              <span>兌換方案</span>
-            </Menu.Item>
-          )}
-        </Menu.SubMenu>
 
         {enabledModules.podcast && (
           <Menu.SubMenu
@@ -84,12 +65,8 @@ export const OwnerAdminMenu = (props: MenuProps) => {
               </span>
             }
           >
-            <Menu.Item key="owner_podcast_program_collection_admin">
-              <span>廣播管理</span>
-            </Menu.Item>
-            <Menu.Item key="owner_podcast_plan_admin">
-              <span>訂閱方案</span>
-            </Menu.Item>
+            <Menu.Item key="owner_podcast_program_collection_admin">廣播管理</Menu.Item>
+            <Menu.Item key="owner_podcast_plan_admin">訂閱方案</Menu.Item>
           </Menu.SubMenu>
         )}
 
@@ -98,26 +75,36 @@ export const OwnerAdminMenu = (props: MenuProps) => {
             key="owner_appointment_admin"
             title={
               <span>
-                <Icon component={() => <CalendarAltOIcon />} />
+                <Icon component={() => <CalendarAltIcon />} />
                 <span>預約服務</span>
               </span>
             }
           >
-            <Menu.Item key="owner_appointment_plan_collection_admin">
-              <span>預約方案</span>
-            </Menu.Item>
-            <Menu.Item key="owner_appointment_period_collection_admin">
-              <span>預約紀錄</span>
-            </Menu.Item>
+            <Menu.Item key="owner_appointment_plan_collection_admin">預約方案</Menu.Item>
+            <Menu.Item key="owner_appointment_period_collection_admin">預約紀錄</Menu.Item>
           </Menu.SubMenu>
         )}
 
+        <Menu.SubMenu
+          key="owner_promotion_admin"
+          title={
+            <span>
+              <Icon component={() => <DiscountIcon />} />
+              <span>促銷管理</span>
+            </span>
+          }
+        >
+          <Menu.Item key="owner_coupon_plans_admin">折價券</Menu.Item>
+          {enabledModules.voucher && <Menu.Item key="owner_voucher_plans_admin">兌換券</Menu.Item>}
+        </Menu.SubMenu>
+
         <Menu.Item key="owner_program_general_admin">
-          <Icon type="book" className="mr-2" />
+          <Icon type="book" />
           <span>分類設定</span>
         </Menu.Item>
+
         <Menu.Item key="owner_members_admin">
-          <Icon type="user" className="mr-2" />
+          <Icon component={() => <UsersIcon />} />
           <span>會員管理</span>
         </Menu.Item>
       </AdminMenu>
@@ -132,9 +119,7 @@ export const CreatorAdminMenu = (props: MenuProps) => {
   return (
     <div className="d-flex flex-column flex-grow-1">
       <div className="p-3">
-        <Tag color={theme['@primary-color']} style={{ border: '0px' }}>
-          創作者
-        </Tag>
+        <Tag color={theme['@primary-color']}>創作者</Tag>
       </div>
 
       <AdminMenu {...props} defaultOpenKeys={['creator_programs_admin', 'creator_activities_admin']}>
@@ -142,6 +127,7 @@ export const CreatorAdminMenu = (props: MenuProps) => {
           <Icon type="pay-circle" />
           <span>銷售管理</span>
         </Menu.Item>
+
         <Menu.SubMenu
           key="creator_programs_admin"
           title={
@@ -168,12 +154,6 @@ export const CreatorAdminMenu = (props: MenuProps) => {
             <Menu.Item key="creator_activities_admin">線下實體管理</Menu.Item>
           </Menu.SubMenu>
         )}
-        <Menu.Item key="_blank" data-href={settings.customerSupportLink}>
-          <div>
-            <Icon type="message" />
-            <span>客服留言</span>
-          </div>
-        </Menu.Item>
       </AdminMenu>
     </div>
   )
