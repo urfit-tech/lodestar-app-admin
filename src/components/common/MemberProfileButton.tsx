@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import { useMember, useMemberPoint } from '../../hooks/member'
 import settings from '../../settings'
-import { CreatorAdminMenu, MemberAdminMenu, OwnerAdminMenu } from '../admin/AdminMenu'
+import { CreatorAdminMenu, OwnerAdminMenu } from '../admin/AdminMenu'
 import { useAuth } from '../auth/AuthContext'
 import { AuthModalContext } from '../auth/AuthModal'
 import MemberAvatar from './MemberAvatar'
@@ -94,9 +94,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
             <OwnerAdminMenu style={{ border: 'none' }} />
           ) : currentUserRole === 'content-creator' ? (
             <CreatorAdminMenu style={{ border: 'none' }} />
-          ) : (
-            <MemberAdminMenu style={{ border: 'none' }} />
-          )}
+          ) : null}
         </BorderedItem>
 
         <List.Item
@@ -138,13 +136,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
           trigger="click"
           content={
             <Wrapper>
-              <StyledList split={false}>
-                {/* <List.Item onClick={() => setVisible && setVisible(true)} style={{ cursor: 'pointer' }}>
-                  <BlankIcon className="mr-2" />
-                  <span>註冊登入</span>
-                </List.Item> */}
-                {CustomNavLinks}
-              </StyledList>
+              <StyledList split={false}>{CustomNavLinks}</StyledList>
             </Wrapper>
           }
         >

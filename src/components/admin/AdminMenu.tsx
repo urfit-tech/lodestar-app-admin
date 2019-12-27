@@ -1,7 +1,7 @@
 import { Icon, Menu, Tag, Typography } from 'antd'
 import { ClickParam, MenuProps } from 'antd/lib/menu'
 import React, { useContext } from 'react'
-import styled from 'styled-components'
+import styled, { ThemeContext } from 'styled-components'
 import useRouter from 'use-react-router'
 import AppContext from '../../containers/common/AppContext'
 import { useEnrolledMembershipCardIds } from '../../hooks/card'
@@ -36,6 +36,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       route ? history.push(route.path) : alert('無此路徑')
     }
   }
+
   return (
     <StyledMenu {...menuProps} mode="inline" onClick={handleClick}>
       {children}
@@ -44,13 +45,17 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
 }
 
 export const OwnerAdminMenu = (props: MenuProps) => {
+  const theme = useContext(ThemeContext)
   const { enabledModules } = useContext(AppContext)
 
   return (
     <div className="d-flex flex-column flex-grow-1">
       <div className="p-3">
-        <Tag style={{ border: '0px' }}>管理者</Tag>
+        <Tag color={theme['@primary-color']} style={{ border: '0px' }}>
+          管理者
+        </Tag>
       </div>
+
       <AdminMenu
         {...props}
         defaultOpenKeys={['owner_promotion_admin', 'owner_podcast_admin', 'owner_appointment_admin']}
@@ -59,15 +64,14 @@ export const OwnerAdminMenu = (props: MenuProps) => {
           <Icon type="dollar" className="mr-2" />
           <span>銷售管理</span>
         </Menu.Item>
-        {/* <Menu.Item key="owner_point_admin">點數設定</Menu.Item> */}
 
         <Menu.SubMenu
           key="owner_promotion_admin"
           title={
-            <>
+            <span>
               <Icon type="shopping" />
-              <Typography.Text>促銷管理</Typography.Text>
-            </>
+              <span>促銷管理</span>
+            </span>
           }
         >
           <Menu.Item key="owner_coupon_plans_admin">
@@ -84,10 +88,10 @@ export const OwnerAdminMenu = (props: MenuProps) => {
           <Menu.SubMenu
             key="owner_podcast_admin"
             title={
-              <>
+              <span>
                 <Icon component={() => <MicrophoneIcon />} />
-                <Typography.Text>音頻廣播</Typography.Text>
-              </>
+                <span>音頻廣播</span>
+              </span>
             }
           >
             <Menu.Item key="owner_podcast_program_collection_admin">
@@ -103,10 +107,10 @@ export const OwnerAdminMenu = (props: MenuProps) => {
           <Menu.SubMenu
             key="owner_appointment_admin"
             title={
-              <>
+              <span>
                 <Icon component={() => <CalendarAltOIcon />} />
-                <Typography.Text>預約服務</Typography.Text>
-              </>
+                <span>預約服務</span>
+              </span>
             }
           >
             <Menu.Item key="owner_appointment_plan_collection_admin">
@@ -132,25 +136,29 @@ export const OwnerAdminMenu = (props: MenuProps) => {
 }
 
 export const CreatorAdminMenu = (props: MenuProps) => {
+  const theme = useContext(ThemeContext)
   const { enabledModules } = useContext(AppContext)
 
   return (
     <div className="d-flex flex-column flex-grow-1">
       <div className="p-3">
-        <Tag style={{ border: '0px' }}>創作者</Tag>
+        <Tag color={theme['@primary-color']} style={{ border: '0px' }}>
+          創作者
+        </Tag>
       </div>
+
       <AdminMenu {...props} defaultOpenKeys={['creator_programs_admin', 'creator_activities_admin']}>
         <Menu.Item key="creator_sales_admin">
           <Icon type="pay-circle" />
-          <Typography.Text>銷售管理</Typography.Text>
+          <span>銷售管理</span>
         </Menu.Item>
         <Menu.SubMenu
           key="creator_programs_admin"
           title={
-            <>
+            <span>
               <Icon type="shopping" />
-              <Typography.Text>課程</Typography.Text>
-            </>
+              <span>課程</span>
+            </span>
           }
         >
           <Menu.Item key="creator_programs_admin">課程內容</Menu.Item>
@@ -161,10 +169,10 @@ export const CreatorAdminMenu = (props: MenuProps) => {
           <Menu.SubMenu
             key="creator_activities_admin"
             title={
-              <>
+              <span>
                 <Icon component={() => <CalendarAltIcon />} />
-                <Typography.Text>線下實體</Typography.Text>
-              </>
+                <span>線下實體</span>
+              </span>
             }
           >
             <Menu.Item key="creator_activities_admin">線下實體管理</Menu.Item>
@@ -173,57 +181,10 @@ export const CreatorAdminMenu = (props: MenuProps) => {
         <Menu.Item key="_blank" data-href={settings.customerSupportLink}>
           <div>
             <Icon type="message" />
-            <Typography.Text>客服留言</Typography.Text>
+            <span>客服留言</span>
           </div>
         </Menu.Item>
       </AdminMenu>
     </div>
-  )
-}
-
-export const MemberAdminMenu = (props: MenuProps) => {
-  const { currentMemberId } = useAuth()
-  const { enabledModules } = useContext(AppContext)
-  const { enrolledMembershipCardIds } = useEnrolledMembershipCardIds(currentMemberId || '')
-
-  return (
-    <AdminMenu {...props} style={{ background: 'transparent', border: 'none' }}>
-      <Menu.Item key="member_profile_admin">
-        <Icon component={() => <UserIcon />} className="mr-2" />
-        個人設定
-      </Menu.Item>
-      <Menu.Item key="member_program_issues_admin">
-        <Icon component={() => <BookIcon />} className="mr-2" />
-        課程問題
-      </Menu.Item>
-      <Menu.Item key="member_orders_admin">
-        <Icon component={() => <ClipboardListIcon />} className="mr-2" />
-        訂單記錄
-      </Menu.Item>
-      <Menu.Item key="member_point_history_admin">
-        <Icon component={() => <PointIcon />} className="mr-2" />
-        點數紀錄
-      </Menu.Item>
-      <Menu.Item key="member_coupons_admin">
-        <Icon component={() => <TicketIcon />} className="mr-2" />
-        折價券
-      </Menu.Item>
-      {enabledModules.voucher && (
-        <Menu.Item key="member_voucher_admin">
-          <Icon component={() => <GiftIcon />} className="mr-2" />
-          兌換券
-        </Menu.Item>
-      )}
-      {enabledModules.member_card && enrolledMembershipCardIds.length > 0 && (
-        <Menu.Item key="member_cards_admin">
-          <Icon component={() => <MembercardIcon />} className="mr-2" />
-          會員卡
-        </Menu.Item>
-      )}
-      <Menu.Item key="_blank" data-href={settings.customerSupportLink}>
-        <Icon component={() => <CommentsIcon />} className="mr-2" />
-        聯絡客服
-      </Menu.Item>
-    </AdminMenu>
   )
 }
