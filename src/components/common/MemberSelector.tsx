@@ -3,9 +3,6 @@ import React, { forwardRef } from 'react'
 import styled from 'styled-components'
 import { AvatarImage } from './Image'
 
-const StyledSelect = styled(Select)`
-  width: 100%;
-`
 const StyledText = styled.span`
   color: var(--gray-darker);
   font-weight: bold;
@@ -23,21 +20,23 @@ export type MemberOptionProps = {
   username: string
   email?: string
 }
-export type MemberSelectorProps = {
+const MemberSelector: React.FC<{
   members: MemberOptionProps[]
   value?: string
-  onChange?: (value: string) => void
-}
-const MemberSelector: React.FC<MemberSelectorProps> = ({ members, value, onChange }, ref) => {
+  onChange?: (value: string | null) => void
+  disabled?: boolean
+}> = ({ members, value, onChange, disabled }, ref) => {
   return (
-    <StyledSelect
+    <Select<string | null>
       ref={ref}
       showSearch
       placeholder="請輸入帳號 或 Email"
       value={value}
-      onChange={value => onChange && onChange(value as string)}
+      onChange={value => onChange && onChange(value)}
       optionLabelProp="title"
       optionFilterProp="data-source"
+      style={{ width: '100%' }}
+      disabled={disabled}
     >
       {members.map(member => (
         <Select.Option
@@ -53,7 +52,7 @@ const MemberSelector: React.FC<MemberSelectorProps> = ({ members, value, onChang
           </div>
         </Select.Option>
       ))}
-    </StyledSelect>
+    </Select>
   )
 }
 

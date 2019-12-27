@@ -49,12 +49,30 @@ export const OwnerAdminMenu = (props: MenuProps) => {
 
       <AdminMenu
         {...props}
-        defaultOpenKeys={['owner_promotion_admin', 'owner_podcast_admin', 'owner_appointment_admin']}
+        defaultOpenKeys={[
+          'owner_program_admin',
+          'owner_promotion_admin',
+          'owner_podcast_admin',
+          'owner_appointment_admin',
+        ]}
       >
         <Menu.Item key="owner_sales_admin">
           <Icon component={() => <MoneyCricleIcon />} />
           <span>銷售管理</span>
         </Menu.Item>
+
+        <Menu.SubMenu
+          key="owner_program_admin"
+          title={
+            <span>
+              <Icon component={() => <BookIcon />} />
+              <span>課程設定</span>
+            </span>
+          }
+        >
+          <Menu.Item key="owner_program_collection_admin">課程管理</Menu.Item>
+          {/* <Menu.Item>課程問題</Menu.Item> */}
+        </Menu.SubMenu>
 
         {enabledModules.podcast && (
           <Menu.SubMenu
