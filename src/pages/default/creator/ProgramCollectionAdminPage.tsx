@@ -4,43 +4,58 @@ import gql from 'graphql-tag'
 import React from 'react'
 import { useAuth } from '../../../components/auth/AuthContext'
 import CreatorAdminLayout from '../../../components/layout/CreatorAdminLayout'
+import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import ProgramAdminCard from '../../../components/program/ProgramAdminCard'
 import ProgramCreationModal from '../../../components/program/ProgramCreationModal'
 import types from '../../../types'
+import LoadingPage from '../LoadingPage'
 
 const ProgramCollectionAdminPage: React.FC = () => {
-  const { currentMemberId } = useAuth()
+  const { currentMemberId, currentUserRole } = useAuth()
+
+  if (!currentMemberId || !currentUserRole) {
+    return <LoadingPage />
+  }
+
+  const AdminLayout = currentUserRole === 'app-owner' ? OwnerAdminLayout : CreatorAdminLayout
+  const memberId = currentUserRole === 'content-creator' ? currentMemberId : undefined
+
   return (
-    <CreatorAdminLayout>
+    <AdminLayout>
       <Typography.Title level={3} className="mb-4">
         <Icon type="file-text" theme="filled" className="mr-3" />
         <span>課程管理</span>
       </Typography.Title>
 
-      <ProgramCreationModal />
+      <ProgramCreationModal withSelector={currentUserRole === 'app-owner'} />
 
       <Tabs defaultActiveKey="draft">
         <Tabs.TabPane key="draft" tab="草稿">
-          {currentMemberId && <ProgramCollectionBlock memberId={currentMemberId} isDraft />}
+          <ProgramCollectionBlock memberId={memberId} isDraft />
         </Tabs.TabPane>
         <Tabs.TabPane key="published" tab="已發佈">
-          {currentMemberId && <ProgramCollectionBlock memberId={currentMemberId} isDraft={false} />}
+          <ProgramCollectionBlock memberId={memberId} isDraft={false} />
         </Tabs.TabPane>
       </Tabs>
-    </CreatorAdminLayout>
+    </AdminLayout>
   )
 }
 
 const ProgramCollectionBlock: React.FC<{
-  memberId: string
+  memberId?: string
   isDraft?: boolean
 }> = ({ isDraft, memberId }) => {
   const { data, error, loading } = useQuery<
     types.GET_CREATOR_PROGRAM_COLLECTION,
     types.GET_CREATOR_PROGRAM_COLLECTIONVariables
   >(GET_CREATOR_PROGRAM_COLLECTION, {
-    variables: { appId: localStorage.getItem('kolable.app.id') || '', memberId, isDraft },
+    variables: {
+      appId: localStorage.getItem('kolable.app.id') || '',
+      memberId,
+      isDraft,
+    },
   })
+
   return (
     <div className="row py-3">
       {loading ? (
@@ -50,7 +65,10 @@ const ProgramCollectionBlock: React.FC<{
       ) : (
         data.program.map(program => (
           <div key={program.id} className="col-12 col-md-6 col-lg-4 mb-5">
-            <ProgramAdminCard programId={program.id} />
+            <ProgramAdminCard
+              programId={program.id}
+              link={memberId ? `/studio/programs/${program.id}` : `/admin/programs/${program.id}`}
+            />
           </div>
         ))
       )}

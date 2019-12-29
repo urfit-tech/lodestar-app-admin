@@ -2,7 +2,7 @@ import { Divider, Icon, Tag } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
 import { currencyFormatter, dateRangeFormatter } from '../../helpers'
-import { ReactComponent as UserOIcon } from '../../images/default/user-o.svg'
+import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
 import { BraftContent } from '../common/StyledBraftEditor'
 
 const StyledWrapper = styled.div`

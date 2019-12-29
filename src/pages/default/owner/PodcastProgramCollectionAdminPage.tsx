@@ -5,7 +5,7 @@ import { useAuth } from '../../../components/auth/AuthContext'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import PodcastProgramCollectionAdminTable from '../../../containers/podcast/PodcastProgramCollectionAdminTable'
 import PodcastProgramCreationModal from '../../../containers/podcast/PodcastProgramCreationModal'
-import { ReactComponent as MicrophoneIcon } from '../../../images/default/microphone.svg'
+import { ReactComponent as MicrophoneOIcon } from '../../../images/icon/microphone-o.svg'
 
 const StyledTitle = styled.h1`
   color: var(--gray-darker);
@@ -27,7 +27,7 @@ const PodcastProgramCollectionAdminPage: React.FC = () => {
   return (
     <OwnerAdminLayout>
       <StyledTitle className="mb-4">
-        <Icon component={() => <MicrophoneIcon />} className="mr-2" />
+        <Icon component={() => <MicrophoneOIcon />} className="mr-2" />
         <span>廣播管理</span>
       </StyledTitle>
 

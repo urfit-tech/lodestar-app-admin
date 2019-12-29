@@ -2,10 +2,10 @@ import { Icon } from 'antd'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { ReactComponent as FacebookIconSVG } from '../../../images/default/facebook-icon.svg'
-import { ReactComponent as GroupIconSVG } from '../../../images/default/group-icon.svg'
-import { ReactComponent as InstagramIconSVG } from '../../../images/default/instagram-icon.svg'
-import { ReactComponent as YoutubeIconSVG } from '../../../images/default/youtube-icon.svg'
+import { ReactComponent as FacebookIcon } from '../../../images/icon/facebook.svg'
+import { ReactComponent as GroupIcon } from '../../../images/icon/group.svg'
+import { ReactComponent as InstagramIcon } from '../../../images/icon/instagram.svg'
+import { ReactComponent as YoutubeIcon } from '../../../images/icon/youtube.svg'
 import settings from '../../../settings'
 import { BREAK_POINT } from '../Responsive'
 import DefaultFooter from './DefaultFooter'
@@ -92,10 +92,10 @@ export const SocialLinks = () => {
         .filter(socialLink => socialLink.label)
         .map(socialLink => (
           <StyledSocialAnchor key={socialLink.label} href={socialLink.href} target="_blank">
-            {socialLink.label === 'facebook' && <Icon component={() => <FacebookIconSVG />} />}
-            {socialLink.label === 'group' && <Icon component={() => <GroupIconSVG />} />}
-            {socialLink.label === 'youtube' && <Icon component={() => <YoutubeIconSVG />} />}
-            {socialLink.label === 'instagram' && <Icon component={() => <InstagramIconSVG />} />}
+            {socialLink.label === 'facebook' && <Icon component={() => <FacebookIcon />} />}
+            {socialLink.label === 'group' && <Icon component={() => <GroupIcon />} />}
+            {socialLink.label === 'youtube' && <Icon component={() => <YoutubeIcon />} />}
+            {socialLink.label === 'instagram' && <Icon component={() => <InstagramIcon />} />}
           </StyledSocialAnchor>
         ))}
     </>

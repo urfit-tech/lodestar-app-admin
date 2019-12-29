@@ -1,9 +1,10 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import React from 'react'
+import React, { useContext } from 'react'
 import ProductSelectorComponent from '../../components/common/ProductSelector'
 import { ProductType } from '../../schemas/general'
 import types from '../../types'
+import AppContext from './AppContext'
 
 type ProductSelectorProps = {
   allowTypes: ProductType[]
@@ -11,6 +12,7 @@ type ProductSelectorProps = {
   onChange?: (value: string[]) => void
 }
 const ProductSelector: React.FC<ProductSelectorProps> = ({ allowTypes, value, onChange }, ref) => {
+  const { enabledModules } = useContext(AppContext)
   const { loading, error, data } = useQuery<types.GET_ALLTYPE_PRODUCT_COLLECTION>(GET_ALLTYPE_PRODUCT_COLLECTION)
 
   const products: {
@@ -34,7 +36,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({ allowTypes, value, on
             : [],
 
           Card:
-            process.env.REACT_APP_MODULE_MEMBERSHIPCARD === 'ENABLED' && allowTypes.includes('Card')
+            enabledModules.member_card && allowTypes.includes('Card')
               ? data.card.map(card => ({
                   id: `Card_${card.id}`,
                   title: card.title,

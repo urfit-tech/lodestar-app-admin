@@ -3,7 +3,7 @@ import React from 'react'
 import { useAuth } from '../../../components/auth/AuthContext'
 import CreatorAdminLayout from '../../../components/layout/CreatorAdminLayout'
 import ActivityCollectionAdminBlock from '../../../containers/activity/ActivityCollectionAdminBlock'
-import { ReactComponent as CalendarAltIcon } from '../../../images/default/calendar-alt.svg'
+import { ReactComponent as CalendarAltIcon } from '../../../images/icon/calendar-alt.svg'
 
 const ActivityCollectionAdminPage = () => {
   const { currentMemberId } = useAuth()

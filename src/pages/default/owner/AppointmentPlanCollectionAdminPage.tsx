@@ -4,7 +4,7 @@ import { AdminPageBlock, AdminPageTitle } from '../../../components/admin'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import AppointmentPlanCollectionTable from '../../../containers/appointment/AppointmentPlanCollectionTable'
 import AppointmentPlanCreationModal from '../../../containers/appointment/AppointmentPlanCreationModal'
-import { ReactComponent as CalendarAltOIcon } from '../../../images/default/calendar-alt-o.svg'
+import { ReactComponent as CalendarAltOIcon } from '../../../images/icon/calendar-alt-o.svg'
 
 const AppointmentPlanCollectionAdminPage: React.FC = () => {
   return (

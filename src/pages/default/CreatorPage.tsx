@@ -9,7 +9,7 @@ import CreatorIntroBlock from '../../components/common/CreatorIntroBlock'
 import DefaultLayout from '../../components/layout/DefaultLayout'
 import { currencyFormatter } from '../../helpers'
 import { usePublicMember } from '../../hooks/member'
-import { ReactComponent as ArrowRight } from '../../images/default/angle-right.svg'
+import { ReactComponent as AngleRight } from '../../images/icon/angle-right.svg'
 
 const StyledImage = styled.img`
   width: 114px;
@@ -360,7 +360,7 @@ const CreatorPage: React.FC = () => {
                   setDefaultActivekey("programs")
                 }}>
                   瀏覽全部
-                  <Icon component={() => <ArrowRight />} className="ml-2" />
+                  <Icon component={() => <AngleRight />} className="ml-2" />
                 </StyledLink>
               </StyledSideBarBlock>
               <StyledSideBarBlock>
@@ -374,7 +374,7 @@ const CreatorPage: React.FC = () => {
                   setDefaultActivekey("podcasts")
                 }}>
                   瀏覽全部
-                  <Icon component={() => <ArrowRight />} className="ml-2" />
+                  <Icon component={() => <AngleRight />} className="ml-2" />
                 </StyledLink>
               </StyledSideBarBlock>
             </div>

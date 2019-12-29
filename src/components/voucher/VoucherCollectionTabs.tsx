@@ -1,6 +1,6 @@
 import { Tabs } from 'antd'
 import React, { useState } from 'react'
-import Voucher, { VoucherProps } from './Voucher'
+import VoucherCard, { VoucherProps } from './VoucherCard'
 
 type VoucherCollectionTabProps = {
   vouchers: VoucherProps[]
@@ -16,7 +16,7 @@ const VoucherCollectionTabs: React.FC<VoucherCollectionTabProps> = ({ vouchers }
             .filter(voucher => voucher.available)
             .map(voucher => (
               <div key={voucher.id} className="col-12 col-lg-6">
-                <Voucher {...voucher} />
+                <VoucherCard {...voucher} />
               </div>
             ))}
         </div>
@@ -27,7 +27,7 @@ const VoucherCollectionTabs: React.FC<VoucherCollectionTabProps> = ({ vouchers }
             .filter(voucher => !voucher.available)
             .map(voucher => (
               <div key={voucher.id} className="col-12 col-lg-6">
-                <Voucher {...voucher} />
+                <VoucherCard {...voucher} />
               </div>
             ))}
         </div>

@@ -3,7 +3,7 @@ import React from 'react'
 import VoucherCollectionTabs from '../../components/voucher/VoucherCollectionTabs'
 import VoucherExchangeModal from '../../components/voucher/VoucherExchangeModal'
 import VoucherInsertBlock from '../../components/voucher/VoucherInsertBlock'
-import { VoucherProps } from './Voucher'
+import { VoucherProps } from './VoucherCard'
 
 type VoucherCollectionBlockProps = {
   memberId?: string

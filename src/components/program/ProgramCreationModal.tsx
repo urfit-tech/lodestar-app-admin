@@ -4,18 +4,22 @@ import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import useRouter from 'use-react-router'
+import CreatorSelector from '../../containers/common/CreatorSelector'
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
 import { useAuth } from '../auth/AuthContext'
 import ProgramCategorySelector from './ProgramCategorySelector'
 
-const ProgramCreationModal: React.FC<FormComponentProps> = ({ form }) => {
+type ProgramCreationModalProps = FormComponentProps & {
+  withSelector?: boolean
+}
+const ProgramCreationModal: React.FC<ProgramCreationModalProps> = ({ form, withSelector }) => {
   const { currentMemberId } = useAuth()
   const { history } = useRouter()
 
   const [createProgram] = useMutation<types.INSERT_PROGRAM, types.INSERT_PROGRAMVariables>(INSERT_PROGRAM)
 
-  const [loading, setLoading] = useState()
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
     form.validateFields((error, values) => {
@@ -23,7 +27,7 @@ const ProgramCreationModal: React.FC<FormComponentProps> = ({ form }) => {
         setLoading(true)
         createProgram({
           variables: {
-            memberId: currentMemberId || '',
+            memberId: values.memberId || currentMemberId,
             appId: localStorage.getItem('kolable.app.id') || 'default',
             title: values.title,
             isSubscription: values.isSubscription,
@@ -48,12 +52,12 @@ const ProgramCreationModal: React.FC<FormComponentProps> = ({ form }) => {
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button icon="plus" className="mb-4" onClick={() => setVisible(true)}>
+        <Button type="primary" icon="file-add" className="mb-4" onClick={() => setVisible(true)}>
           建立課程
         </Button>
       )}
       title="建立課程"
-      icon={<Icon type="plus" />}
+      icon={<Icon type="file-add" />}
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>
@@ -66,11 +70,22 @@ const ProgramCreationModal: React.FC<FormComponentProps> = ({ form }) => {
       )}
     >
       <Form>
-        <Form.Item className="mb-1" label="課程名稱">
-          {form.getFieldDecorator('title', { rules: [{ required: true }] })(<Input />)}
+        {withSelector && (
+          <Form.Item label="選擇老師">
+            {form.getFieldDecorator('memberId', {
+              initialValue: currentMemberId,
+            })(<CreatorSelector />)}
+          </Form.Item>
+        )}
+        <Form.Item label="課程名稱" className="mb-1">
+          {form.getFieldDecorator('title', {
+            rules: [{ required: true }],
+          })(<Input />)}
         </Form.Item>
         <Form.Item label="類別">
-          {form.getFieldDecorator('categoryIds', { initialValue: [] })(<ProgramCategorySelector />)}
+          {form.getFieldDecorator('categoryIds', {
+            initialValue: [],
+          })(<ProgramCategorySelector />)}
         </Form.Item>
         <Form.Item label="選擇課程付費方案">
           {form.getFieldDecorator('isSubscription', {
@@ -113,4 +128,4 @@ const INSERT_PROGRAM = gql`
     }
   }
 `
-export default Form.create<FormComponentProps>()(ProgramCreationModal)
+export default Form.create<ProgramCreationModalProps>()(ProgramCreationModal)

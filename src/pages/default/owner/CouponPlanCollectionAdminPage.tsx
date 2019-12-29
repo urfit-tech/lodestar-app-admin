@@ -6,7 +6,7 @@ import React from 'react'
 import CouponPlanAdminCard from '../../../components/checkout/CouponPlanAdminCard'
 import CouponPlanAdminModal from '../../../components/checkout/CouponPlanAdminModal'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
-import { ReactComponent as DiscountIcon } from '../../../images/default/discount.svg'
+import { ReactComponent as DiscountIcon } from '../../../images/icon/discount.svg'
 import types from '../../../types'
 
 const CouponPlanCollectionAdminPage = () => {

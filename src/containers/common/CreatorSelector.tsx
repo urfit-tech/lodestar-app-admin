@@ -7,8 +7,9 @@ import types from '../../types'
 
 const CreatorSelector: React.FC<{
   value?: string
-  onChange?: (value: string) => void
-}> = ({ value, onChange }, ref) => {
+  onChange?: (value: string | null) => void
+  disabled?: boolean
+}> = ({ value, onChange, disabled }, ref) => {
   const { loading, error, data } = useQuery<types.GET_CREATOR_COLLECTION, types.GET_CREATOR_COLLECTIONVariables>(
     GET_CREATOR_COLLECTION,
     {
@@ -34,7 +35,7 @@ const CreatorSelector: React.FC<{
     email: member.email,
   }))
 
-  return <MemberSelector members={members} value={value} onChange={onChange} ref={ref} />
+  return <MemberSelector ref={ref} members={members} value={value} onChange={onChange} disabled={disabled} />
 }
 
 const GET_CREATOR_COLLECTION = gql`

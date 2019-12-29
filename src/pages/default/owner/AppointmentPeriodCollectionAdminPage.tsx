@@ -4,7 +4,7 @@ import { AdminPageTitle } from '../../../components/admin'
 import { AppointmentPeriodCardProps } from '../../../components/appointment/AppointmentPeriodCard'
 import AppointmentPeriodCollectionTabs from '../../../components/appointment/AppointmentPeriodCollectionTabs'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
-import { ReactComponent as CalendarAltOIcon } from '../../../images/default/calendar-alt-o.svg'
+import { ReactComponent as CalendarAltOIcon } from '../../../images/icon/calendar-alt-o.svg'
 
 const AppointmentPeriodCollectionAdminPage: React.FC = () => {
   const periods: AppointmentPeriodCardProps[] = [

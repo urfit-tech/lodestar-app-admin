@@ -4,14 +4,14 @@ import 'rc-slider/dist/rc-slider.css'
 import React, { useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
 import styled from 'styled-components'
-import { ReactComponent as MuteIcon } from '../../images/default/icon-mute.svg'
-import { ReactComponent as StopIcon } from '../../images/default/icon-stop-circle.svg'
-import { ReactComponent as VoiceIcon } from '../../images/default/icon-voice.svg'
-import { ReactComponent as PlaySpeed05xIcon } from '../../images/default/multiple-0-5.svg'
-import { ReactComponent as PlaySpeed10xIcon } from '../../images/default/multiple-1-0.svg'
-import { ReactComponent as PlaySpeed15xIcon } from '../../images/default/multiple-1-5.svg'
-import { ReactComponent as PlaySpeed20xIcon } from '../../images/default/multiple-2-0.svg'
-import { ReactComponent as PlayIcon } from '../../images/default/play-circle.svg'
+import { ReactComponent as PlaySpeed05xIcon } from '../../images/icon/multiple-0-5.svg'
+import { ReactComponent as PlaySpeed10xIcon } from '../../images/icon/multiple-1-0.svg'
+import { ReactComponent as PlaySpeed15xIcon } from '../../images/icon/multiple-1-5.svg'
+import { ReactComponent as PlaySpeed20xIcon } from '../../images/icon/multiple-2-0.svg'
+import { ReactComponent as MuteIcon } from '../../images/icon/mute.svg'
+import { ReactComponent as PlayCircleIcon } from '../../images/icon/play-circle.svg'
+import { ReactComponent as StopCircleIcon } from '../../images/icon/stop-circle.svg'
+import { ReactComponent as VoiceIcon } from '../../images/icon/voice.svg'
 
 const StyledWrapper = styled.div`
   position: fixed;
@@ -134,7 +134,7 @@ const PodcastPlayer: React.FC = () => {
 
         <div className="container d-flex align-items-center justify-content-between py-2">
           <Button type="link" className="flex-shrink-0 control-play" onClick={() => setIsPlaying(!isPlaying)}>
-            <Icon component={() => (isPlaying ? <StopIcon /> : <PlayIcon />)} />
+            <Icon component={() => (isPlaying ? <StopCircleIcon /> : <PlayCircleIcon />)} />
           </Button>
 
           <StyledInformationBlock className="flex-grow-1">

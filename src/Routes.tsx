@@ -129,61 +129,7 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'ProgramPackageContentPage',
     authenticated: false,
   },
-  // general member admin
-  member_profile_admin: {
-    path: '/settings/profile',
-    pageName: 'member/ProfileAdminPage',
-    authenticated: true,
-    allowedUserRole: 'general-member',
-  },
-  member_point_history_admin: {
-    path: '/settings/point_history',
-    pageName: 'member/PointHistoryAdminPage',
-    authenticated: true,
-    allowedUserRole: 'general-member',
-  },
-  member_orders_admin: {
-    path: '/settings/orders',
-    pageName: 'member/OrderCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'general-member',
-  },
-  member_program_issues_admin: {
-    path: '/settings/program_issues',
-    pageName: 'member/ProgramIssueCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'general-member',
-  },
-  member_product_issues_admin: {
-    path: '/settings/product_issues',
-    pageName: 'member/ProductIssueCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'general-member',
-  },
-  member_coupons_admin: {
-    path: '/settings/coupons',
-    pageName: 'member/CouponCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'general-member',
-  },
-  member_voucher_admin: {
-    path: '/settings/voucher',
-    pageName: 'member/VoucherCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'general-member',
-  },
-  member_account_admin: {
-    path: '/settings/account',
-    pageName: 'member/AccountAdminPage',
-    authenticated: true,
-    allowedUserRole: 'general-member',
-  },
-  member_cards_admin: {
-    path: '/settings/cards',
-    pageName: 'member/CardCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'general-member',
-  },
+
   // app owner admin
   owner_point_admin: {
     path: '/admin/point',
@@ -263,6 +209,19 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
+  owner_program_collection_admin: {
+    path: '/admin/programs',
+    pageName: 'creator/ProgramCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_program_admin: {
+    path: '/admin/programs/:programId',
+    pageName: 'creator/ProgramAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+
   // content creator admin
   creator_programs_admin: {
     path: '/studio/programs',
