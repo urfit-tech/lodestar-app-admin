@@ -1,7 +1,7 @@
 import { Button, Icon, Skeleton, Tabs } from 'antd'
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
+import useRouter from 'use-react-router'
 import ActivityPublishAdminBlock from '../../containers/activity/ActivityPublishAdminBlock'
 import ActivitySessionsAdminBlock from '../../containers/activity/ActivitySessionsAdminBlock'
 import ActivitySettingsAdminBlock from '../../containers/activity/ActivitySettingsAdminBlock'
@@ -38,15 +38,16 @@ const ActivityAdminBlock: React.FC<{
   activityAdmin: ActivityAdminProps
   onRefetch?: () => void
 }> = ({ loading, error, activityAdmin, onRefetch }) => {
+  const { history } = useRouter()
   const [defaultActivekey, setDefaultActivekey] = useQueryParam('tabkey', StringParam)
   const [activeKey, setActiveKey] = useState(defaultActivekey || 'settings')
 
   return (
     <>
       <AdminHeader className="d-flex align-items-center justify-content-between">
-        <Link to="/studio/activities/" className="mr-3">
+        <div className="mr-3 cursor-pointer" onClick={() => history.goBack()}>
           <Icon type="arrow-left" />
-        </Link>
+        </div>
         <AdminHeaderTitle className="flex-grow-1">{activityAdmin.title}</AdminHeaderTitle>
         <a href={`/activities/${activityAdmin.id}`} target="_blank" rel="noopener noreferrer">
           <Button>預覽</Button>

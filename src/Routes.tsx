@@ -62,21 +62,6 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'ManualPage',
     authenticated: false,
   },
-  project: {
-    path: '/projects/:projectId',
-    pageName: 'ProjectPage',
-    authenticated: false,
-  },
-  activity_collection: {
-    path: '/activities',
-    pageName: 'ActivityCollectionPage',
-    authenticated: false,
-  },
-  activity: {
-    path: '/activities/:activityId',
-    pageName: 'ActivityPage',
-    authenticated: false,
-  },
   order: {
     path: '/orders/:orderId',
     pageName: 'OrderPage',
@@ -87,56 +72,13 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'OrderProductPage',
     authenticated: true,
   },
-  member: {
-    path: '/members/:memberId',
-    pageName: 'MemberPage',
-    authenticated: false,
-  },
-  cart: {
-    path: '/cart',
-    pageName: 'CartPage',
-    authenticated: false,
-  },
-  program_collection: {
-    path: '/programs',
-    pageName: 'ProgramCollectionPage',
-    authenticated: false,
-  },
-  program: {
-    path: '/programs/:programId',
-    pageName: 'ProgramPage',
-    authenticated: false,
-  },
   notification: {
     path: '/notifications',
     pageName: 'NotificationPage',
     authenticated: false,
   },
-  program_content_collection: {
-    path: '/programs/:programId/contents',
-    pageName: 'ProgramContentCollectionPage',
-    authenticated: true,
-    allowedUserRole: 'general-member',
-  },
-  program_content: {
-    path: '/programs/:programId/contents/:programContentId',
-    pageName: 'ProgramContentPage',
-    authenticated: true,
-    allowedUserRole: 'general-member',
-  },
-  program_package_content: {
-    path: '/program-packages/:programPackageId/content',
-    pageName: 'ProgramPackageContentPage',
-    authenticated: false,
-  },
 
   // app owner admin
-  owner_point_admin: {
-    path: '/admin/point',
-    pageName: 'owner/PointAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
   owner_coupon_plans_admin: {
     path: '/admin/coupon_plans',
     pageName: 'owner/CouponPlanCollectionAdminPage',
@@ -221,6 +163,24 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
+  owner_program_issues_admin: {
+    path: '/admin/program_issues',
+    pageName: 'creator/ProgramIssueCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_activity_collection_admin: {
+    path: '/admin/activities',
+    pageName: 'creator/ActivityCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_activity_admin: {
+    path: '/admin/activities/:activityId',
+    pageName: 'creator/ActivityAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
 
   // content creator admin
   creator_programs_admin: {
@@ -241,7 +201,7 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'content-creator',
   },
-  creator_activities_admin: {
+  creator_activity_collection_admin: {
     path: '/studio/activities',
     pageName: 'creator/ActivityCollectionAdminPage',
     authenticated: true,
