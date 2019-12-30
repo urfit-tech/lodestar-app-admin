@@ -169,6 +169,18 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
+  owner_activity_collection_admin: {
+    path: '/admin/activities',
+    pageName: 'creator/ActivityCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_activity_admin: {
+    path: '/admin/activities/:activityId',
+    pageName: 'creator/ActivityAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
 
   // content creator admin
   creator_programs_admin: {
@@ -189,7 +201,7 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'content-creator',
   },
-  creator_activities_admin: {
+  creator_activity_collection_admin: {
     path: '/studio/activities',
     pageName: 'creator/ActivityCollectionAdminPage',
     authenticated: true,

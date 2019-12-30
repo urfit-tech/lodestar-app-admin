@@ -1,24 +1,22 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { message } from 'antd'
 import gql from 'graphql-tag'
 import { reverse } from 'ramda'
 import React from 'react'
-import useRouter from 'use-react-router'
 import { ActivityProps } from '../../components/activity/Activity'
 import ActivityCollectionAdminBlockComponent from '../../components/activity/ActivityCollectionAdminBlock'
+import { CreateActivityEvent } from '../../components/activity/ActivityCreationModal'
 import types from '../../types'
 import ActivityParticipantCollection from './ActivityParticipantCollection'
 
 const ActivityCollectionAdminBlock: React.FC<{
-  memberId: string
+  memberId?: string
 }> = ({ memberId }) => {
-  const { loading, error, data } = useQuery<
+  const { loading, error, data, refetch } = useQuery<
     types.GET_ACTIVITY_COLLECTION_ADMIN,
     types.GET_ACTIVITY_COLLECTION_ADMINVariables
   >(GET_ACTIVITY_COLLECTION_ADMIN, {
     variables: { memberId },
   })
-  const { history } = useRouter()
   const [insertActivity] = useMutation<types.INSERT_ACTIVITY, types.INSERT_ACTIVITYVariables>(INSERT_ACTIVITY)
 
   const activities: ActivityProps[] =
@@ -46,7 +44,7 @@ const ActivityCollectionAdminBlock: React.FC<{
             activity.activity_sessions_aggregate.aggregate.max.ended_at
               ? new Date(activity.activity_sessions_aggregate.aggregate.max.ended_at)
               : null,
-          link: `/studio/activities/${activity.id}`,
+          link: !memberId ? `/admin/activities/${activity.id}` : `/studio/activities/${activity.id}`,
           action: (
             <div className="text-right" onClick={e => e.preventDefault()}>
               <ActivityParticipantCollection activityId={activity.id} />
@@ -54,17 +52,12 @@ const ActivityCollectionAdminBlock: React.FC<{
           ),
         }))
 
-  const handleCreate: (
-    setVisible: React.Dispatch<React.SetStateAction<boolean>>,
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-    data: {
-      title: string
-      description: string
-      activityCategoryIds: string[]
-    },
-  ) => void = (setVisible, setLoading, { title, description, activityCategoryIds }) => {
-    setLoading(true)
-
+  const handleCreate: (event: CreateActivityEvent) => void = ({
+    values: { memberId, title, description, activityCategoryIds },
+    onSuccess,
+    onError,
+    onFinally,
+  }) => {
     insertActivity({
       variables: {
         title,
@@ -78,26 +71,18 @@ const ActivityCollectionAdminBlock: React.FC<{
       },
     })
       .then(({ data }) => {
-        message.success('成功建立活動')
-        if (data && data.insert_activity) {
-          const activityId = data.insert_activity.returning[0].id
-          history.push(`/studio/activities/${activityId}`)
-        }
+        refetch && refetch()
+        data && data.insert_activity && onSuccess && onSuccess(data.insert_activity.returning[0].id)
       })
-      .catch(error => {
-        if (process.env.NODE_ENV === 'development') {
-          console.error(error)
-        }
-        message.error('建立活動失敗')
-      })
-      .finally(() => setLoading(false))
+      .catch(error => onError && onError(error))
+      .finally(() => onFinally && onFinally())
   }
 
   return <ActivityCollectionAdminBlockComponent activities={reverse(activities)} onCreate={handleCreate} />
 }
 
 const GET_ACTIVITY_COLLECTION_ADMIN = gql`
-  query GET_ACTIVITY_COLLECTION_ADMIN($memberId: String!) {
+  query GET_ACTIVITY_COLLECTION_ADMIN($memberId: String) {
     activity(where: { organizer_id: { _eq: $memberId } }) {
       id
       title

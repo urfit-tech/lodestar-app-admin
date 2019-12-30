@@ -1920,7 +1920,7 @@ export interface GET_ACTIVITY_COLLECTION_ADMIN {
 }
 
 export interface GET_ACTIVITY_COLLECTION_ADMINVariables {
-  memberId: string;
+  memberId?: string | null;
 }
 
 /* tslint:disable */

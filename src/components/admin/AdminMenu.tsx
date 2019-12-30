@@ -54,6 +54,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
           'owner_promotion_admin',
           'owner_podcast_admin',
           'owner_appointment_admin',
+          'owner_activity_admin',
         ]}
       >
         <Menu.Item key="owner_sales_admin">
@@ -101,6 +102,20 @@ export const OwnerAdminMenu = (props: MenuProps) => {
           >
             <Menu.Item key="owner_appointment_plan_collection_admin">預約方案</Menu.Item>
             <Menu.Item key="owner_appointment_period_collection_admin">預約紀錄</Menu.Item>
+          </Menu.SubMenu>
+        )}
+
+        {enabledModules.activity && (
+          <Menu.SubMenu
+            key="owner_activity_admin"
+            title={
+              <span>
+                <Icon component={() => <CalendarAltIcon />} />
+                <span>線下實體</span>
+              </span>
+            }
+          >
+            <Menu.Item key="owner_activity_collection_admin">線下實體管理</Menu.Item>
           </Menu.SubMenu>
         )}
 
@@ -170,7 +185,7 @@ export const CreatorAdminMenu = (props: MenuProps) => {
               </span>
             }
           >
-            <Menu.Item key="creator_activities_admin">線下實體管理</Menu.Item>
+            <Menu.Item key="creator_activity_collection_admin">線下實體管理</Menu.Item>
           </Menu.SubMenu>
         )}
       </AdminMenu>
