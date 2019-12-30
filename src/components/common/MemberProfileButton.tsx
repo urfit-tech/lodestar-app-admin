@@ -5,7 +5,6 @@ import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import { useMember, useMemberPoint } from '../../hooks/member'
 import settings from '../../settings'
-import { CreatorAdminMenu, OwnerAdminMenu } from '../admin/AdminMenu'
 import { useAuth } from '../auth/AuthContext'
 import { AuthModalContext } from '../auth/AuthModal'
 import MemberAvatar from './MemberAvatar'
@@ -69,11 +68,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
     <Wrapper>
       <StyledList split={false}>
         <BorderedItem className="justify-content-between">
-          <div>
-            {member && member.name}
-            <br />
-            {currentMemberId && isAuthenticated && <MemberPointItem memberId={currentMemberId} />}
-          </div>
+          <div>{member && member.name}</div>
           <Responsive.Default>
             <MemberAvatar memberId={currentMemberId || ''} size={36} />
           </Responsive.Default>
@@ -88,14 +83,6 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
             </BorderedItem>
           )}
         </Responsive.Default>
-
-        <BorderedItem className="shift-left">
-          {currentUserRole === 'app-owner' ? (
-            <OwnerAdminMenu style={{ border: 'none' }} />
-          ) : currentUserRole === 'content-creator' ? (
-            <CreatorAdminMenu style={{ border: 'none' }} />
-          ) : null}
-        </BorderedItem>
 
         <List.Item
           style={{ cursor: 'pointer' }}
