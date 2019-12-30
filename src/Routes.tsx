@@ -62,21 +62,6 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'ManualPage',
     authenticated: false,
   },
-  project: {
-    path: '/projects/:projectId',
-    pageName: 'ProjectPage',
-    authenticated: false,
-  },
-  activity_collection: {
-    path: '/activities',
-    pageName: 'ActivityCollectionPage',
-    authenticated: false,
-  },
-  activity: {
-    path: '/activities/:activityId',
-    pageName: 'ActivityPage',
-    authenticated: false,
-  },
   order: {
     path: '/orders/:orderId',
     pageName: 'OrderPage',
@@ -87,56 +72,13 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'OrderProductPage',
     authenticated: true,
   },
-  member: {
-    path: '/members/:memberId',
-    pageName: 'MemberPage',
-    authenticated: false,
-  },
-  cart: {
-    path: '/cart',
-    pageName: 'CartPage',
-    authenticated: false,
-  },
-  program_collection: {
-    path: '/programs',
-    pageName: 'ProgramCollectionPage',
-    authenticated: false,
-  },
-  program: {
-    path: '/programs/:programId',
-    pageName: 'ProgramPage',
-    authenticated: false,
-  },
   notification: {
     path: '/notifications',
     pageName: 'NotificationPage',
     authenticated: false,
   },
-  program_content_collection: {
-    path: '/programs/:programId/contents',
-    pageName: 'ProgramContentCollectionPage',
-    authenticated: true,
-    allowedUserRole: 'general-member',
-  },
-  program_content: {
-    path: '/programs/:programId/contents/:programContentId',
-    pageName: 'ProgramContentPage',
-    authenticated: true,
-    allowedUserRole: 'general-member',
-  },
-  program_package_content: {
-    path: '/program-packages/:programPackageId/content',
-    pageName: 'ProgramPackageContentPage',
-    authenticated: false,
-  },
 
   // app owner admin
-  owner_point_admin: {
-    path: '/admin/point',
-    pageName: 'owner/PointAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
   owner_coupon_plans_admin: {
     path: '/admin/coupon_plans',
     pageName: 'owner/CouponPlanCollectionAdminPage',
