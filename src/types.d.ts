@@ -3469,47 +3469,6 @@ export interface CREATE_PODCAST_PROGRAMVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_OWNED_PROGRAMS
-// ====================================================
-
-export interface GET_OWNED_PROGRAMS_program_enrollment {
-  __typename: "program_enrollment";
-  program_id: any | null;
-}
-
-export interface GET_OWNED_PROGRAMS_program_plan_enrollment_program_plan {
-  __typename: "program_plan";
-  program_id: any;
-}
-
-export interface GET_OWNED_PROGRAMS_program_plan_enrollment {
-  __typename: "program_plan_enrollment";
-  /**
-   * An object relationship
-   */
-  program_plan: GET_OWNED_PROGRAMS_program_plan_enrollment_program_plan | null;
-}
-
-export interface GET_OWNED_PROGRAMS {
-  /**
-   * fetch data from the table: "program_enrollment"
-   */
-  program_enrollment: GET_OWNED_PROGRAMS_program_enrollment[];
-  /**
-   * fetch data from the table: "program_plan_enrollment"
-   */
-  program_plan_enrollment: GET_OWNED_PROGRAMS_program_plan_enrollment[];
-}
-
-export interface GET_OWNED_PROGRAMSVariables {
-  memberId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_PRODUCT_OWNER_ORDERS
 // ====================================================
 
@@ -4795,23 +4754,48 @@ export interface GET_PROGRAM_CONTENTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PROGRAMS
+// GraphQL query operation: GET_OWNED_PROGRAMS
 // ====================================================
 
-export interface GET_PROGRAMS_program {
+export interface GET_OWNED_PROGRAMS_program {
   __typename: "program";
   id: any;
   title: string;
 }
 
-export interface GET_PROGRAMS {
+export interface GET_OWNED_PROGRAMS {
   /**
    * fetch data from the table: "program"
    */
-  program: GET_PROGRAMS_program[];
+  program: GET_OWNED_PROGRAMS_program[];
 }
 
-export interface GET_PROGRAMSVariables {
+export interface GET_OWNED_PROGRAMSVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_EDITABLE_PROGRAMS
+// ====================================================
+
+export interface GET_EDITABLE_PROGRAMS_program {
+  __typename: "program";
+  id: any;
+  title: string;
+}
+
+export interface GET_EDITABLE_PROGRAMS {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_EDITABLE_PROGRAMS_program[];
+}
+
+export interface GET_EDITABLE_PROGRAMSVariables {
   memberId: string;
 }
 
@@ -4820,49 +4804,49 @@ export interface GET_PROGRAMSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ENROLLED_PROGRAMS
+// GraphQL query operation: GET_ENROLLED_PROGRAM_IDS
 // ====================================================
 
-export interface GET_ENROLLED_PROGRAMS_program_enrollment {
+export interface GET_ENROLLED_PROGRAM_IDS_program_enrollment {
   __typename: "program_enrollment";
   program_id: any | null;
 }
 
-export interface GET_ENROLLED_PROGRAMS_program_plan_enrollment_program_plan {
+export interface GET_ENROLLED_PROGRAM_IDS_program_plan_enrollment_program_plan {
   __typename: "program_plan";
   id: any;
   program_id: any;
 }
 
-export interface GET_ENROLLED_PROGRAMS_program_plan_enrollment {
+export interface GET_ENROLLED_PROGRAM_IDS_program_plan_enrollment {
   __typename: "program_plan_enrollment";
   /**
    * An object relationship
    */
-  program_plan: GET_ENROLLED_PROGRAMS_program_plan_enrollment_program_plan | null;
+  program_plan: GET_ENROLLED_PROGRAM_IDS_program_plan_enrollment_program_plan | null;
 }
 
-export interface GET_ENROLLED_PROGRAMS_program_content_enrollment {
+export interface GET_ENROLLED_PROGRAM_IDS_program_content_enrollment {
   __typename: "program_content_enrollment";
   program_id: any | null;
 }
 
-export interface GET_ENROLLED_PROGRAMS {
+export interface GET_ENROLLED_PROGRAM_IDS {
   /**
    * fetch data from the table: "program_enrollment"
    */
-  program_enrollment: GET_ENROLLED_PROGRAMS_program_enrollment[];
+  program_enrollment: GET_ENROLLED_PROGRAM_IDS_program_enrollment[];
   /**
    * fetch data from the table: "program_plan_enrollment"
    */
-  program_plan_enrollment: GET_ENROLLED_PROGRAMS_program_plan_enrollment[];
+  program_plan_enrollment: GET_ENROLLED_PROGRAM_IDS_program_plan_enrollment[];
   /**
    * fetch data from the table: "program_content_enrollment"
    */
-  program_content_enrollment: GET_ENROLLED_PROGRAMS_program_content_enrollment[];
+  program_content_enrollment: GET_ENROLLED_PROGRAM_IDS_program_content_enrollment[];
 }
 
-export interface GET_ENROLLED_PROGRAMSVariables {
+export interface GET_ENROLLED_PROGRAM_IDSVariables {
   memberId: string;
   noFunding?: boolean | null;
 }

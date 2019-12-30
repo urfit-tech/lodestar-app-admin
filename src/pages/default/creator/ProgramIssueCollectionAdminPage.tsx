@@ -1,21 +1,24 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Icon, Select, Skeleton, Typography } from 'antd'
 import gql from 'graphql-tag'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useAuth } from '../../../components/auth/AuthContext'
 import IssueAdminCard from '../../../components/issue/IssueAdminCard'
 import CreatorAdminLayout from '../../../components/layout/CreatorAdminLayout'
-import { EditableProgramSelector } from '../../../components/program/ProgramSelector'
+import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
+import { EditableProgramSelector, OwnedProgramSelector } from '../../../components/program/ProgramSelector'
+import AppContext from '../../../containers/common/AppContext'
 import { useEditablePrograms } from '../../../hooks/program'
 import types from '../../../types'
 
 const ProgramIssueCollectionAdminPage = () => {
-  const { currentMemberId } = useAuth()
-  const [selectedProgramId, setSelectedProgramId] = useState('all')
-  const [selectedStatus, setSelectedStatus] = useState('unsolved')
+  const { currentMemberId, currentUserRole } = useAuth()
+  const [selectedProgramId, setSelectedProgramId] = useState<string>('all')
+  const [selectedStatus, setSelectedStatus] = useState<string>('unsolved')
+  const AdminLayout = currentUserRole === 'app-owner' ? OwnerAdminLayout : CreatorAdminLayout
 
   return (
-    <CreatorAdminLayout>
+    <AdminLayout>
       <Typography.Title level={3} className="mb-4">
         <Icon type="book" theme="filled" className="mr-3" />
         <span>課程問題</span>
@@ -30,7 +33,10 @@ const ProgramIssueCollectionAdminPage = () => {
           </Select>
         </div>
         <div className="col-12 col-sm-9 pl-md-0">
-          {currentMemberId && (
+          {currentMemberId && currentUserRole === 'app-owner' && (
+            <OwnedProgramSelector value={selectedProgramId} onChange={key => setSelectedProgramId(key)} />
+          )}
+          {currentMemberId && currentUserRole === 'content-creator' && (
             <EditableProgramSelector
               value={selectedProgramId}
               memberId={currentMemberId}
@@ -47,7 +53,7 @@ const ProgramIssueCollectionAdminPage = () => {
           selectedStatus={selectedStatus}
         />
       )}
-    </CreatorAdminLayout>
+    </AdminLayout>
   )
 }
 
@@ -56,6 +62,7 @@ const AllProgramIssueCollectionBlock: React.FC<{
   selectedProgramId: string
   selectedStatus: string
 }> = ({ memberId, selectedProgramId, selectedStatus }) => {
+  const { id: appId } = useContext(AppContext)
   const { programs } = useEditablePrograms(memberId)
 
   let unsolved: boolean | undefined
@@ -76,7 +83,7 @@ const AllProgramIssueCollectionBlock: React.FC<{
     types.GET_CREATOR_PROGRAM_ISSUESVariables
   >(GET_CREATOR_PROGRAM_ISSUES, {
     variables: {
-      appId: localStorage.getItem('kolable.app.id') || '',
+      appId,
       threadIdLike: selectedProgramId === 'all' ? undefined : `/programs/${selectedProgramId}/contents/%`,
       unsolved,
     },

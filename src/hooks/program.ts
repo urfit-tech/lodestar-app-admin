@@ -1,7 +1,9 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { uniq, unnest } from 'ramda'
+import { useContext } from 'react'
 import { array, object, string } from 'yup'
+import AppContext from '../containers/common/AppContext'
 import { programContentSchema, programSchema } from '../schemas/program'
 import types from '../types'
 
@@ -146,10 +148,43 @@ export const useProgramContent = (programContentId: string) => {
   }
 }
 
-export const useEditablePrograms = (memberId: string) => {
-  const { loading, data, error, refetch } = useQuery<types.GET_PROGRAMS, types.GET_PROGRAMSVariables>(
+export const useOwnedPrograms = () => {
+  const { id: appId } = useContext(AppContext)
+  const { loading, error, data, refetch } = useQuery<types.GET_OWNED_PROGRAMS, types.GET_OWNED_PROGRAMSVariables>(
     gql`
-      query GET_PROGRAMS($memberId: String!) {
+      query GET_OWNED_PROGRAMS($appId: String!) {
+        program(where: { app_id: { _eq: $appId } }) {
+          id
+          title
+        }
+      }
+    `,
+    { variables: { appId } },
+  )
+
+  const programs: {
+    id: string
+    title: string
+  }[] =
+    loading || !!error || !data
+      ? []
+      : data.program.map(program => ({
+          id: program.id,
+          title: program.title,
+        }))
+
+  return {
+    loadingPrograms: loading,
+    errorPrograms: error,
+    programs,
+    refetchPrograms: refetch,
+  }
+}
+
+export const useEditablePrograms = (memberId: string) => {
+  const { loading, data, error, refetch } = useQuery<types.GET_EDITABLE_PROGRAMS, types.GET_EDITABLE_PROGRAMSVariables>(
+    gql`
+      query GET_EDITABLE_PROGRAMS($memberId: String!) {
         program(where: { editors: { member_id: { _eq: $memberId } } }) {
           id
           title
@@ -160,6 +195,7 @@ export const useEditablePrograms = (memberId: string) => {
       variables: { memberId },
     },
   )
+
   return {
     programs: object({ program: array(programSchema).default([]) }).cast(data).program,
     error,
@@ -169,9 +205,9 @@ export const useEditablePrograms = (memberId: string) => {
 }
 
 export const useEnrolledProgramIds = (memberId: string, noFunding?: boolean) => {
-  const { loading, data, error, refetch } = useQuery<types.GET_ENROLLED_PROGRAMS, types.GET_ENROLLED_PROGRAMSVariables>(
+  const { loading, data, error, refetch } = useQuery<types.GET_ENROLLED_PROGRAM_IDS, types.GET_ENROLLED_PROGRAM_IDSVariables>(
     gql`
-      query GET_ENROLLED_PROGRAMS($memberId: String!, $noFunding: Boolean) {
+      query GET_ENROLLED_PROGRAM_IDS($memberId: String!, $noFunding: Boolean) {
         program_enrollment(
           where: { member_id: { _eq: $memberId }, program: { funding_id: { _is_null: $noFunding } } }
           distinct_on: program_id
