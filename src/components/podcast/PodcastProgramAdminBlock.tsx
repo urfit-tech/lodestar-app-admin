@@ -10,14 +10,18 @@ import PodcastProgramPlanAdminBlock from './PodcastProgramPlanAdminBlock'
 import PodcastProgramPublishAdminBlock from './PodcastProgramPublishAdminBlock'
 import PodcastProgramRoleAdminBlock from './PodcastProgramRoleAdminBlock'
 import PodcastProgramSettingsAdminBlock from './PodcastProgramSettingsAdminBlock'
+import { useAuth } from '../auth/AuthContext'
+import AppContext from '../../containers/common/AppContext'
 
 const PodcastProgramAdminBlock: React.FC<{
   loading?: boolean
   error?: Error
 }> = ({ loading, error }) => {
   const [defaultActiveKey, setDefaultActiveKey] = useQueryParam('tabkey', StringParam)
+  const app = useContext(AppContext)
   const { podcastProgramAdmin } = useContext(PodcastProgramAdminContext)
   const [activeKey, setActiveKey] = useState(defaultActiveKey || 'content')
+  const { currentMemberId } = useAuth()
 
   return (
     <>
@@ -26,7 +30,7 @@ const PodcastProgramAdminBlock: React.FC<{
           <Icon type="arrow-left" />
         </Link>
         <AdminHeaderTitle className="flex-grow-1">{podcastProgramAdmin.title}</AdminHeaderTitle>
-        <a href={`/podcast-programs/${podcastProgramAdmin.id}`} target="_blank" rel="noopener noreferrer">
+        <a href={`https://${app.domain}/creators/${currentMemberId}?tabkey=podcasts`} target="_blank" rel="noopener noreferrer">
           <Button>預覽</Button>
         </a>
       </AdminHeader>

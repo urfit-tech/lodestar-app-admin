@@ -15,6 +15,7 @@ type AppProps = {
   enabledModules: {
     [key in Module]?: boolean
   }
+  domain: string | null
 }
 const defaultAppProps: AppProps = {
   loading: true,
@@ -23,6 +24,7 @@ const defaultAppProps: AppProps = {
   title: null,
   description: null,
   enabledModules: {},
+  domain: ''
 }
 export const AppContext = createContext<AppProps>(defaultAppProps)
 
@@ -37,6 +39,7 @@ export const AppProvider: React.FC = ({ children }) => {
           name
           title
           description
+          domain
           app_modules {
             id
             module_id
@@ -69,6 +72,7 @@ export const AppProvider: React.FC = ({ children }) => {
             title: data.app_by_pk.title,
             description: data.app_by_pk.description,
             enabledModules,
+            domain:  data.app_by_pk ? data.app_by_pk.domain : ""
           }
         })()
 

@@ -2666,6 +2666,7 @@ export interface GET_APP_app_by_pk {
   name: string;
   title: string | null;
   description: string | null;
+  domain: string | null;
   /**
    * An array relationship
    */
