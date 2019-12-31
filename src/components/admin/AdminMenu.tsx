@@ -1,7 +1,7 @@
-import { Icon, Menu, Tag } from 'antd'
+import { Icon, Menu } from 'antd'
 import { ClickParam, MenuProps } from 'antd/lib/menu'
 import React, { useContext } from 'react'
-import styled, { ThemeContext } from 'styled-components'
+import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import AppContext from '../../containers/common/AppContext'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
@@ -38,15 +38,10 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
 }
 
 export const OwnerAdminMenu = (props: MenuProps) => {
-  const theme = useContext(ThemeContext)
   const { enabledModules } = useContext(AppContext)
 
   return (
     <div className="d-flex flex-column flex-grow-1">
-      <div className="py-3 px-4">
-        <Tag color={theme['@primary-color']}>管理者</Tag>
-      </div>
-
       <AdminMenu
         {...props}
         defaultOpenKeys={[
@@ -147,15 +142,10 @@ export const OwnerAdminMenu = (props: MenuProps) => {
 }
 
 export const CreatorAdminMenu = (props: MenuProps) => {
-  const theme = useContext(ThemeContext)
   const { enabledModules } = useContext(AppContext)
 
   return (
     <div className="d-flex flex-column flex-grow-1">
-      <div className="py-3 px-4">
-        <Tag color={theme['@primary-color']}>創作者</Tag>
-      </div>
-
       <AdminMenu {...props} defaultOpenKeys={['creator_programs_admin', 'creator_activities_admin']}>
         <Menu.Item key="creator_sales_admin">
           <Icon component={() => <MoneyCricleIcon />} />

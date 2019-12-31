@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import { useMember, useMemberPoint } from '../../hooks/member'
 import settings from '../../settings'
+import { CreatorAdminMenu, OwnerAdminMenu } from '../admin/AdminMenu'
 import { useAuth } from '../auth/AuthContext'
 import { AuthModalContext } from '../auth/AuthModal'
 import MemberAvatar from './MemberAvatar'
@@ -82,6 +83,13 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
               我的主頁
             </BorderedItem>
           )}
+          <BorderedItem className="shift-left">
+            {currentUserRole === 'app-owner' ? (
+              <OwnerAdminMenu style={{ border: 'none' }} />
+            ) : currentUserRole === 'content-creator' ? (
+              <CreatorAdminMenu style={{ border: 'none' }} />
+            ) : null}
+          </BorderedItem>
         </Responsive.Default>
 
         <List.Item
