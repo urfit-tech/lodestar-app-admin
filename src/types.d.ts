@@ -2310,11 +2310,11 @@ export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
 // ====================================================
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator {
-  __typename: "member";
-  id: string;
+  __typename: "member_public";
+  id: string | null;
   picture_url: string | null;
   name: string | null;
-  username: string;
+  username: string | null;
 }
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate_aggregate {
@@ -2333,7 +2333,7 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
   /**
    * An object relationship
    */
-  creator: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator;
+  creator: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator | null;
   title: string;
   /**
    * minutes
@@ -3974,6 +3974,80 @@ export interface GET_TICKET {
 
 export interface GET_TICKETVariables {
   ticketId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APPOINTMENT_ENROLLMENT_COLLECTION
+// ====================================================
+
+export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_appointment_plan_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_appointment_plan {
+  __typename: "appointment_plan";
+  id: any;
+  title: string;
+  /**
+   * minutes
+   */
+  duration: any;
+  /**
+   * An object relationship
+   */
+  creator: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_appointment_plan_creator | null;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product_order_log {
+  __typename: "order_log";
+  id: string;
+  invoice: any;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product {
+  __typename: "order_product";
+  id: any;
+  deliverables: any | null;
+  /**
+   * An object relationship
+   */
+  order_log: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product_order_log;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment {
+  __typename: "appointment_enrollment";
+  /**
+   * An object relationship
+   */
+  appointment_plan: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_appointment_plan | null;
+  /**
+   * An object relationship
+   */
+  member: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_member | null;
+  started_at: any | null;
+  /**
+   * An object relationship
+   */
+  order_product: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product | null;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION {
+  /**
+   * fetch data from the table: "appointment_enrollment"
+   */
+  appointment_enrollment: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment[];
 }
 
 /* tslint:disable */
@@ -6271,6 +6345,7 @@ export enum order_product_update_column {
   accumulated_errors = "accumulated_errors",
   auto_renewed = "auto_renewed",
   created_at = "created_at",
+  deliverables = "deliverables",
   description = "description",
   ended_at = "ended_at",
   id = "id",
@@ -7435,6 +7510,8 @@ export interface appointment_enrollment_bool_exp {
   ended_at?: timestamptz_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  order_product?: order_product_bool_exp | null;
+  order_product_id?: uuid_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
 }
 
@@ -7474,7 +7551,7 @@ export interface appointment_plan_bool_exp {
   appointment_periods?: appointment_period_bool_exp | null;
   appointment_schedules?: appointment_schedule_bool_exp | null;
   created_at?: timestamptz_comparison_exp | null;
-  creator?: member_bool_exp | null;
+  creator?: member_public_bool_exp | null;
   creator_id?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   duration?: numeric_comparison_exp | null;
@@ -7491,7 +7568,7 @@ export interface appointment_plan_bool_exp {
 export interface appointment_plan_insert_input {
   appointment_schedules?: appointment_schedule_arr_rel_insert_input | null;
   created_at?: any | null;
-  creator?: member_obj_rel_insert_input | null;
+  creator?: member_public_obj_rel_insert_input | null;
   creator_id?: string | null;
   description?: string | null;
   duration?: any | null;
@@ -9059,6 +9136,7 @@ export interface order_product_bool_exp {
   accumulated_errors?: Int_comparison_exp | null;
   auto_renewed?: Boolean_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  deliverables?: jsonb_comparison_exp | null;
   description?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -9078,6 +9156,7 @@ export interface order_product_insert_input {
   accumulated_errors?: number | null;
   auto_renewed?: boolean | null;
   created_at?: any | null;
+  deliverables?: any | null;
   description?: string | null;
   ended_at?: any | null;
   id?: any | null;

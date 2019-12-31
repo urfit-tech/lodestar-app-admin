@@ -20,8 +20,10 @@ const AppointmentPlanCollectionTable: React.FC = () => {
       ? []
       : data.appointment_plan.map(appointmentPlan => ({
           id: appointmentPlan.id,
-          avatarUrl: appointmentPlan.creator.picture_url,
-          creatorName: appointmentPlan.creator.name || appointmentPlan.creator.username,
+          avatarUrl: appointmentPlan.creator ? appointmentPlan.creator.picture_url : null,
+          creatorName: appointmentPlan.creator
+            ? appointmentPlan.creator.name || appointmentPlan.creator.username || ''
+            : '',
           title: appointmentPlan.title,
           duration: appointmentPlan.duration,
           listPrice: appointmentPlan.price,
