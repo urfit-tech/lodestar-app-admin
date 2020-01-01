@@ -1,7 +1,7 @@
-import { Icon, Menu, Tag } from 'antd'
+import { Icon, Menu } from 'antd'
 import { ClickParam, MenuProps } from 'antd/lib/menu'
 import React, { useContext } from 'react'
-import styled, { ThemeContext } from 'styled-components'
+import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import AppContext from '../../containers/common/AppContext'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
@@ -38,15 +38,10 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
 }
 
 export const OwnerAdminMenu = (props: MenuProps) => {
-  const theme = useContext(ThemeContext)
   const { enabledModules } = useContext(AppContext)
 
   return (
     <div className="d-flex flex-column flex-grow-1">
-      <div className="py-3 px-4">
-        <Tag color={theme['@primary-color']}>管理者</Tag>
-      </div>
-
       <AdminMenu
         {...props}
         defaultOpenKeys={[
@@ -54,6 +49,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
           'owner_promotion_admin',
           'owner_podcast_admin',
           'owner_appointment_admin',
+          'owner_activity_admin',
         ]}
       >
         <Menu.Item key="owner_sales_admin">
@@ -71,7 +67,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
           }
         >
           <Menu.Item key="owner_program_collection_admin">課程管理</Menu.Item>
-          {/* <Menu.Item>課程問題</Menu.Item> */}
+          <Menu.Item key="owner_program_issues_admin">課程問題</Menu.Item>
         </Menu.SubMenu>
 
         {enabledModules.podcast && (
@@ -104,6 +100,20 @@ export const OwnerAdminMenu = (props: MenuProps) => {
           </Menu.SubMenu>
         )}
 
+        {enabledModules.activity && (
+          <Menu.SubMenu
+            key="owner_activity_admin"
+            title={
+              <span>
+                <Icon component={() => <CalendarAltIcon />} />
+                <span>線下實體</span>
+              </span>
+            }
+          >
+            <Menu.Item key="owner_activity_collection_admin">線下實體管理</Menu.Item>
+          </Menu.SubMenu>
+        )}
+
         <Menu.SubMenu
           key="owner_promotion_admin"
           title={
@@ -132,15 +142,10 @@ export const OwnerAdminMenu = (props: MenuProps) => {
 }
 
 export const CreatorAdminMenu = (props: MenuProps) => {
-  const theme = useContext(ThemeContext)
   const { enabledModules } = useContext(AppContext)
 
   return (
     <div className="d-flex flex-column flex-grow-1">
-      <div className="py-3 px-4">
-        <Tag color={theme['@primary-color']}>創作者</Tag>
-      </div>
-
       <AdminMenu {...props} defaultOpenKeys={['creator_programs_admin', 'creator_activities_admin']}>
         <Menu.Item key="creator_sales_admin">
           <Icon component={() => <MoneyCricleIcon />} />
@@ -170,7 +175,7 @@ export const CreatorAdminMenu = (props: MenuProps) => {
               </span>
             }
           >
-            <Menu.Item key="creator_activities_admin">線下實體管理</Menu.Item>
+            <Menu.Item key="creator_activity_collection_admin">線下實體管理</Menu.Item>
           </Menu.SubMenu>
         )}
       </AdminMenu>

@@ -14,7 +14,7 @@ const OwnerAdminLayout: React.FC = ({ children }) => {
     <DefaultLayout
       noFooter
       renderTitle={() => (
-        <Link to={`/admin`}>
+        <Link to={`/admin`} className="d-flex">
           <Button type="link">平台管理者專區</Button>
         </Link>
       )}

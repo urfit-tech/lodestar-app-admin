@@ -1,11 +1,12 @@
 import { Button, Icon, Skeleton, Tabs } from 'antd'
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext, useState } from 'react'
 import { StringParam, useQueryParam } from 'use-query-params'
+import useRouter from 'use-react-router'
 import ActivityPublishAdminBlock from '../../containers/activity/ActivityPublishAdminBlock'
 import ActivitySessionsAdminBlock from '../../containers/activity/ActivitySessionsAdminBlock'
 import ActivitySettingsAdminBlock from '../../containers/activity/ActivitySettingsAdminBlock'
 import ActivityTicketsAdminBlock from '../../containers/activity/ActivityTicketsAdminBlock'
+import AppContext from '../../containers/common/AppContext'
 import { AdminHeader, AdminHeaderTitle, AdminTabBarWrapper } from '../admin'
 import { StyledLayoutContent } from '../layout/DefaultLayout'
 import { ActivitySessionProps } from './ActivitySessionsAdminBlock'
@@ -38,17 +39,19 @@ const ActivityAdminBlock: React.FC<{
   activityAdmin: ActivityAdminProps
   onRefetch?: () => void
 }> = ({ loading, error, activityAdmin, onRefetch }) => {
+  const { history } = useRouter()
   const [defaultActivekey, setDefaultActivekey] = useQueryParam('tabkey', StringParam)
   const [activeKey, setActiveKey] = useState(defaultActivekey || 'settings')
+  const app = useContext(AppContext)
 
   return (
     <>
       <AdminHeader className="d-flex align-items-center justify-content-between">
-        <Link to="/studio/activities/" className="mr-3">
+        <div className="mr-3 cursor-pointer" onClick={() => history.goBack()}>
           <Icon type="arrow-left" />
-        </Link>
+        </div>
         <AdminHeaderTitle className="flex-grow-1">{activityAdmin.title}</AdminHeaderTitle>
-        <a href={`/activities/${activityAdmin.id}`} target="_blank" rel="noopener noreferrer">
+        <a href={`https://${app.domain}/activities/${activityAdmin.id}`} target="_blank" rel="noopener noreferrer">
           <Button>預覽</Button>
         </a>
       </AdminHeader>

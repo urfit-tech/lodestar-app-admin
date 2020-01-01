@@ -69,11 +69,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
     <Wrapper>
       <StyledList split={false}>
         <BorderedItem className="justify-content-between">
-          <div>
-            {member && member.name}
-            <br />
-            {currentMemberId && isAuthenticated && <MemberPointItem memberId={currentMemberId} />}
-          </div>
+          <div>{member && member.name}</div>
           <Responsive.Default>
             <MemberAvatar memberId={currentMemberId || ''} size={36} />
           </Responsive.Default>
@@ -87,15 +83,14 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
               我的主頁
             </BorderedItem>
           )}
+          <BorderedItem className="shift-left">
+            {currentUserRole === 'app-owner' ? (
+              <OwnerAdminMenu style={{ border: 'none' }} />
+            ) : currentUserRole === 'content-creator' ? (
+              <CreatorAdminMenu style={{ border: 'none' }} />
+            ) : null}
+          </BorderedItem>
         </Responsive.Default>
-
-        <BorderedItem className="shift-left">
-          {currentUserRole === 'app-owner' ? (
-            <OwnerAdminMenu style={{ border: 'none' }} />
-          ) : currentUserRole === 'content-creator' ? (
-            <CreatorAdminMenu style={{ border: 'none' }} />
-          ) : null}
-        </BorderedItem>
 
         <List.Item
           style={{ cursor: 'pointer' }}

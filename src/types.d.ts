@@ -1920,7 +1920,7 @@ export interface GET_ACTIVITY_COLLECTION_ADMIN {
 }
 
 export interface GET_ACTIVITY_COLLECTION_ADMINVariables {
-  memberId: string;
+  memberId?: string | null;
 }
 
 /* tslint:disable */
@@ -2310,11 +2310,11 @@ export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
 // ====================================================
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator {
-  __typename: "member";
-  id: string;
+  __typename: "member_public";
+  id: string | null;
   picture_url: string | null;
   name: string | null;
-  username: string;
+  username: string | null;
 }
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate_aggregate {
@@ -2333,7 +2333,7 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
   /**
    * An object relationship
    */
-  creator: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator;
+  creator: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator | null;
   title: string;
   /**
    * minutes
@@ -2666,6 +2666,7 @@ export interface GET_APP_app_by_pk {
   name: string;
   title: string | null;
   description: string | null;
+  domain: string | null;
   /**
    * An array relationship
    */
@@ -3469,47 +3470,6 @@ export interface CREATE_PODCAST_PROGRAMVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_OWNED_PROGRAMS
-// ====================================================
-
-export interface GET_OWNED_PROGRAMS_program_enrollment {
-  __typename: "program_enrollment";
-  program_id: any | null;
-}
-
-export interface GET_OWNED_PROGRAMS_program_plan_enrollment_program_plan {
-  __typename: "program_plan";
-  program_id: any;
-}
-
-export interface GET_OWNED_PROGRAMS_program_plan_enrollment {
-  __typename: "program_plan_enrollment";
-  /**
-   * An object relationship
-   */
-  program_plan: GET_OWNED_PROGRAMS_program_plan_enrollment_program_plan | null;
-}
-
-export interface GET_OWNED_PROGRAMS {
-  /**
-   * fetch data from the table: "program_enrollment"
-   */
-  program_enrollment: GET_OWNED_PROGRAMS_program_enrollment[];
-  /**
-   * fetch data from the table: "program_plan_enrollment"
-   */
-  program_plan_enrollment: GET_OWNED_PROGRAMS_program_plan_enrollment[];
-}
-
-export interface GET_OWNED_PROGRAMSVariables {
-  memberId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_PRODUCT_OWNER_ORDERS
 // ====================================================
 
@@ -4015,6 +3975,80 @@ export interface GET_TICKET {
 
 export interface GET_TICKETVariables {
   ticketId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APPOINTMENT_ENROLLMENT_COLLECTION
+// ====================================================
+
+export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_appointment_plan_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_appointment_plan {
+  __typename: "appointment_plan";
+  id: any;
+  title: string;
+  /**
+   * minutes
+   */
+  duration: any;
+  /**
+   * An object relationship
+   */
+  creator: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_appointment_plan_creator | null;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product_order_log {
+  __typename: "order_log";
+  id: string;
+  invoice: any;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product {
+  __typename: "order_product";
+  id: any;
+  deliverables: any | null;
+  /**
+   * An object relationship
+   */
+  order_log: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product_order_log;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment {
+  __typename: "appointment_enrollment";
+  /**
+   * An object relationship
+   */
+  appointment_plan: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_appointment_plan | null;
+  /**
+   * An object relationship
+   */
+  member: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_member | null;
+  started_at: any | null;
+  /**
+   * An object relationship
+   */
+  order_product: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product | null;
+}
+
+export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION {
+  /**
+   * fetch data from the table: "appointment_enrollment"
+   */
+  appointment_enrollment: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment[];
 }
 
 /* tslint:disable */
@@ -4795,23 +4829,48 @@ export interface GET_PROGRAM_CONTENTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PROGRAMS
+// GraphQL query operation: GET_OWNED_PROGRAMS
 // ====================================================
 
-export interface GET_PROGRAMS_program {
+export interface GET_OWNED_PROGRAMS_program {
   __typename: "program";
   id: any;
   title: string;
 }
 
-export interface GET_PROGRAMS {
+export interface GET_OWNED_PROGRAMS {
   /**
    * fetch data from the table: "program"
    */
-  program: GET_PROGRAMS_program[];
+  program: GET_OWNED_PROGRAMS_program[];
 }
 
-export interface GET_PROGRAMSVariables {
+export interface GET_OWNED_PROGRAMSVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_EDITABLE_PROGRAMS
+// ====================================================
+
+export interface GET_EDITABLE_PROGRAMS_program {
+  __typename: "program";
+  id: any;
+  title: string;
+}
+
+export interface GET_EDITABLE_PROGRAMS {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_EDITABLE_PROGRAMS_program[];
+}
+
+export interface GET_EDITABLE_PROGRAMSVariables {
   memberId: string;
 }
 
@@ -4820,49 +4879,49 @@ export interface GET_PROGRAMSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ENROLLED_PROGRAMS
+// GraphQL query operation: GET_ENROLLED_PROGRAM_IDS
 // ====================================================
 
-export interface GET_ENROLLED_PROGRAMS_program_enrollment {
+export interface GET_ENROLLED_PROGRAM_IDS_program_enrollment {
   __typename: "program_enrollment";
   program_id: any | null;
 }
 
-export interface GET_ENROLLED_PROGRAMS_program_plan_enrollment_program_plan {
+export interface GET_ENROLLED_PROGRAM_IDS_program_plan_enrollment_program_plan {
   __typename: "program_plan";
   id: any;
   program_id: any;
 }
 
-export interface GET_ENROLLED_PROGRAMS_program_plan_enrollment {
+export interface GET_ENROLLED_PROGRAM_IDS_program_plan_enrollment {
   __typename: "program_plan_enrollment";
   /**
    * An object relationship
    */
-  program_plan: GET_ENROLLED_PROGRAMS_program_plan_enrollment_program_plan | null;
+  program_plan: GET_ENROLLED_PROGRAM_IDS_program_plan_enrollment_program_plan | null;
 }
 
-export interface GET_ENROLLED_PROGRAMS_program_content_enrollment {
+export interface GET_ENROLLED_PROGRAM_IDS_program_content_enrollment {
   __typename: "program_content_enrollment";
   program_id: any | null;
 }
 
-export interface GET_ENROLLED_PROGRAMS {
+export interface GET_ENROLLED_PROGRAM_IDS {
   /**
    * fetch data from the table: "program_enrollment"
    */
-  program_enrollment: GET_ENROLLED_PROGRAMS_program_enrollment[];
+  program_enrollment: GET_ENROLLED_PROGRAM_IDS_program_enrollment[];
   /**
    * fetch data from the table: "program_plan_enrollment"
    */
-  program_plan_enrollment: GET_ENROLLED_PROGRAMS_program_plan_enrollment[];
+  program_plan_enrollment: GET_ENROLLED_PROGRAM_IDS_program_plan_enrollment[];
   /**
    * fetch data from the table: "program_content_enrollment"
    */
-  program_content_enrollment: GET_ENROLLED_PROGRAMS_program_content_enrollment[];
+  program_content_enrollment: GET_ENROLLED_PROGRAM_IDS_program_content_enrollment[];
 }
 
-export interface GET_ENROLLED_PROGRAMSVariables {
+export interface GET_ENROLLED_PROGRAM_IDSVariables {
   memberId: string;
   noFunding?: boolean | null;
 }
@@ -6287,6 +6346,7 @@ export enum order_product_update_column {
   accumulated_errors = "accumulated_errors",
   auto_renewed = "auto_renewed",
   created_at = "created_at",
+  deliverables = "deliverables",
   description = "description",
   ended_at = "ended_at",
   id = "id",
@@ -7451,6 +7511,8 @@ export interface appointment_enrollment_bool_exp {
   ended_at?: timestamptz_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  order_product?: order_product_bool_exp | null;
+  order_product_id?: uuid_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
 }
 
@@ -7490,7 +7552,7 @@ export interface appointment_plan_bool_exp {
   appointment_periods?: appointment_period_bool_exp | null;
   appointment_schedules?: appointment_schedule_bool_exp | null;
   created_at?: timestamptz_comparison_exp | null;
-  creator?: member_bool_exp | null;
+  creator?: member_public_bool_exp | null;
   creator_id?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   duration?: numeric_comparison_exp | null;
@@ -7507,7 +7569,7 @@ export interface appointment_plan_bool_exp {
 export interface appointment_plan_insert_input {
   appointment_schedules?: appointment_schedule_arr_rel_insert_input | null;
   created_at?: any | null;
-  creator?: member_obj_rel_insert_input | null;
+  creator?: member_public_obj_rel_insert_input | null;
   creator_id?: string | null;
   description?: string | null;
   duration?: any | null;
@@ -9075,6 +9137,7 @@ export interface order_product_bool_exp {
   accumulated_errors?: Int_comparison_exp | null;
   auto_renewed?: Boolean_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  deliverables?: jsonb_comparison_exp | null;
   description?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -9094,6 +9157,7 @@ export interface order_product_insert_input {
   accumulated_errors?: number | null;
   auto_renewed?: boolean | null;
   created_at?: any | null;
+  deliverables?: any | null;
   description?: string | null;
   ended_at?: any | null;
   id?: any | null;

@@ -1,5 +1,5 @@
 import { Button, Dropdown, Menu, PageHeader, Tabs } from 'antd'
-import React, { useEffect } from 'react'
+import React, { useEffect, useContext } from 'react'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
@@ -9,6 +9,7 @@ import ProgramPublishingAdminPane from '../../../components/program/ProgramPubli
 import ProgramRoleAdminPane from '../../../components/program/ProgramRoleAdminPane'
 import ProgramSettingAdminPane from '../../../components/program/ProgramSettingAdminPane'
 import { useProgram } from '../../../hooks/program'
+import AppContext from '../../../containers/common/AppContext'
 
 const StyledPageHeader = styled(PageHeader)`
   && {
@@ -38,6 +39,7 @@ const ProgramAdminPage: React.FC = () => {
   const programId = match.params.programId
   const { program, refetch: refetchProgram } = useProgram(programId)
   const [active, setActive] = useQueryParam('active', StringParam)
+  const app = useContext(AppContext)
 
   useEffect(() => {
     !active && setActive('content')
@@ -46,14 +48,14 @@ const ProgramAdminPage: React.FC = () => {
   return (
     <>
       <StyledPageHeader
-        onBack={() => history.push(`/studio/programs`)}
+        onBack={() => history.goBack()}
         title={program && program.title}
         extra={
           program && (
             <Dropdown
               placement="bottomRight"
               overlay={
-                <Menu onClick={({ key }) => window.open(key)}>
+                <Menu onClick={({ key }) => window.open(`https://${app.domain}${key}`)}>
                   <Menu.Item className="py-2 px-3" key={`/programs/${program.id}`}>
                     預覽簡介
                   </Menu.Item>

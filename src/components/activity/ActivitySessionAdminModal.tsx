@@ -44,7 +44,7 @@ const ActivitySessionAdminModal: React.FC<ActivitySessionAdminModalProps> = ({
 
   return (
     <AdminModal
-      icon={() => <Icon type="file-add" />}
+      icon={!activitySession ? <Icon type="file-add" /> : <Icon type="edit" />}
       title="場次"
       maskClosable={false}
       renderFooter={({ setVisible }) => (

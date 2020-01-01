@@ -67,24 +67,17 @@ export const AppointmentPlanProvider: React.FC<{
               excludes: excludedPeriods.map(period => new Date(period).getTime()),
             }
           }),
-          periods: uniqBy(
-            appointmentPeriod => appointmentPeriod.id,
-            data.appointment_plan_by_pk.appointment_periods.map(appointmentPeriod => ({
-              id: `${appointmentPeriod.started_at}`,
-              schedule: {
-                id: appointmentPeriod.appointment_schedule ? appointmentPeriod.appointment_schedule.id : '',
-                periodAmount: appointmentPeriod.appointment_schedule
-                  ? appointmentPeriod.appointment_schedule.interval_amount
-                  : null,
-                periodType: appointmentPeriod.appointment_schedule
-                  ? (appointmentPeriod.appointment_schedule.interval_type as ScheduleIntervalType)
-                  : null,
-              },
-              startedAt: new Date(appointmentPeriod.started_at),
-              isEnrolled: !!appointmentPeriod.booked,
-              isExcluded: !appointmentPeriod.available,
-            })),
-          ),
+          periods: data.appointment_plan_by_pk.appointment_periods.map(appointmentPeriod => ({
+            id: `${appointmentPeriod.appointment_schedule?.id || ''}-${appointmentPeriod.started_at}`,
+            schedule: {
+              id: appointmentPeriod.appointment_schedule?.id || '',
+              periodAmount: appointmentPeriod.appointment_schedule?.interval_amount || null,
+              periodType: (appointmentPeriod.appointment_schedule?.interval_type as ScheduleIntervalType) || null,
+            },
+            startedAt: new Date(appointmentPeriod.started_at),
+            isEnrolled: !!appointmentPeriod.booked,
+            isExcluded: !appointmentPeriod.available,
+          })),
           enrollments: data.appointment_plan_by_pk.appointment_enrollments_aggregate.aggregate
             ? data.appointment_plan_by_pk.appointment_enrollments_aggregate.aggregate.count || 0
             : 0,

@@ -32,7 +32,7 @@ const StyledButton = styled(Button)`
 
 export type AppointmentPeriodCardProps = {
   id: string
-  avatarUrl?: string
+  avatarUrl?: string | null
   member: {
     name: string
     email?: string
@@ -45,7 +45,7 @@ export type AppointmentPeriodCardProps = {
     id: string
     name: string
   }
-  link?: string
+  link?: string | null
 }
 const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
   avatarUrl,
@@ -106,8 +106,8 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
             已結束
           </StyledButton>
         ) : (
-          <a href={link} target="_blank" rel="noopener noreferrer">
-            <StyledButton type="primary" className="ml-2">
+          <a href={link || ''} target="_blank" rel="noopener noreferrer">
+            <StyledButton type="primary" className="ml-2" disabled={!link}>
               進入會議
             </StyledButton>
           </a>

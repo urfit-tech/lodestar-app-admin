@@ -50,7 +50,7 @@ const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
 
   return (
     <AdminModal
-      icon={() => <Icon type="file-add" />}
+      icon={<Icon type="file-add" />}
       title="票券方案"
       maskClosable={false}
       renderFooter={({ setVisible }) => (
