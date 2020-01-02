@@ -67,7 +67,7 @@ const getColumnSearchProps = ({
 
 const MemberCollectionAdminPage = () => {
   const theme = useContext(ThemeContext)
-  const { loading, error, data } = useQuery<types.GET_MEMBER_COLLECTION>(GET_MEMBER_COLLECTION)
+  const { loading, error, data, refetch } = useQuery<types.GET_MEMBER_COLLECTION>(GET_MEMBER_COLLECTION)
 
   const [roleFilter, setRoleFilter] = useState<UserRole>('general-member')
   const [nameSearch, setNameSearch] = useState('')
@@ -222,7 +222,13 @@ const MemberCollectionAdminPage = () => {
         </StyledWrapper>
       </AdminCard>
 
-      <MemberAdminModal width="24rem" member={selectedMember} visible={visible} onCancel={() => setVisible(false)} />
+      <MemberAdminModal
+        width="24rem"
+        member={selectedMember}
+        visible={visible}
+        onCancel={() => setVisible(false)}
+        onSuccess={() => refetch()}
+      />
     </OwnerAdminLayout>
   )
 }

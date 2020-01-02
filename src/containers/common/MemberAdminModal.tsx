@@ -34,9 +34,10 @@ type MemberAdminModalProps = FormComponentProps &
   ModalProps & {
     member: MemberInfo | null
     onCancel?: () => void
+    onSuccess?: () => void
   }
 
-const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCancel, ...modalProps }) => {
+const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCancel, onSuccess, ...modalProps }) => {
   const [updateMemberInfor] = useMutation<types.UPDATE_MEMBER_INFOR, types.UPDATE_MEMBER_INFORVariables>(gql`
     mutation UPDATE_MEMBER_INFOR($memberId: String!, $name: String, $email: String, $roles: jsonb) {
       update_member(where: { id: { _eq: $memberId } }, _set: { name: $name, email: $email, roles: $roles }) {
@@ -70,7 +71,10 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
           roles,
         },
       })
-        .then(() => message.success('儲存成功'))
+        .then(() => {
+          message.success('儲存成功')
+          onSuccess && onSuccess()
+        })
         .catch(error => handleError(error))
         .finally(() => setLoading(false))
     })
