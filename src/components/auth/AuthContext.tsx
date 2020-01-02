@@ -7,6 +7,7 @@ type AuthContext = {
   isLoading: boolean
   fingerprint: string
   isAuthenticated: boolean
+  authToken: string | null
   currentMemberId?: string
   allowedUserRoles: UserRole[]
   currentUserRole?: UserRole
@@ -16,6 +17,7 @@ type AuthContext = {
 const defaultContext: AuthContext = {
   isLoading: true,
   fingerprint: '',
+  authToken: null,
   isAuthenticated: false,
   allowedUserRoles: [],
 }
@@ -70,6 +72,7 @@ export const AuthProvider: React.FC = ({ children }) => {
     <AuthContext.Provider
       value={{
         ...authState,
+        authToken,
         currentUserRole: authToken ? currentUserRole : undefined,
         setCurrentUserRole,
         setAuthToken,

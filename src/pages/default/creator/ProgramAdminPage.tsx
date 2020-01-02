@@ -10,6 +10,7 @@ import ProgramRoleAdminPane from '../../../components/program/ProgramRoleAdminPa
 import ProgramSettingAdminPane from '../../../components/program/ProgramSettingAdminPane'
 import { useProgram } from '../../../hooks/program'
 import AppContext from '../../../containers/common/AppContext'
+import { useAuth } from '../../../components/auth/AuthContext'
 
 const StyledPageHeader = styled(PageHeader)`
   && {
@@ -35,6 +36,7 @@ const StyledPageHeader = styled(PageHeader)`
 `
 
 const ProgramAdminPage: React.FC = () => {
+  const { authToken } = useAuth()
   const { history, match } = useRouter<{ programId: string }>()
   const programId = match.params.programId
   const { program, refetch: refetchProgram } = useProgram(programId)
@@ -55,7 +57,7 @@ const ProgramAdminPage: React.FC = () => {
             <Dropdown
               placement="bottomRight"
               overlay={
-                <Menu onClick={({ key }) => window.open(`https://${app.domain}${key}`)}>
+                <Menu onClick={({ key }) => window.open(`//${app.domain}${key}?token=${authToken}`)}>
                   <Menu.Item className="py-2 px-3" key={`/programs/${program.id}`}>
                     預覽簡介
                   </Menu.Item>

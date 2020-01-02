@@ -8,6 +8,7 @@ import ActivitySettingsAdminBlock from '../../containers/activity/ActivitySettin
 import ActivityTicketsAdminBlock from '../../containers/activity/ActivityTicketsAdminBlock'
 import AppContext from '../../containers/common/AppContext'
 import { AdminHeader, AdminHeaderTitle, AdminTabBarWrapper } from '../admin'
+import { useAuth } from '../auth/AuthContext'
 import { StyledLayoutContent } from '../layout/DefaultLayout'
 import { ActivitySessionProps } from './ActivitySessionsAdminBlock'
 import { ActivityTicketProps } from './ActivityTicket'
@@ -39,6 +40,7 @@ const ActivityAdminBlock: React.FC<{
   activityAdmin: ActivityAdminProps
   onRefetch?: () => void
 }> = ({ loading, error, activityAdmin, onRefetch }) => {
+  const { authToken } = useAuth()
   const { history } = useRouter()
   const [defaultActivekey, setDefaultActivekey] = useQueryParam('tabkey', StringParam)
   const [activeKey, setActiveKey] = useState(defaultActivekey || 'settings')
@@ -51,7 +53,11 @@ const ActivityAdminBlock: React.FC<{
           <Icon type="arrow-left" />
         </div>
         <AdminHeaderTitle className="flex-grow-1">{activityAdmin.title}</AdminHeaderTitle>
-        <a href={`https://${app.domain}/activities/${activityAdmin.id}`} target="_blank" rel="noopener noreferrer">
+        <a
+          href={`//${app.domain}/activities/${activityAdmin.id}?token=${authToken}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <Button>預覽</Button>
         </a>
       </AdminHeader>

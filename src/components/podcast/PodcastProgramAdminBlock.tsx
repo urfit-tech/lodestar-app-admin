@@ -2,16 +2,16 @@ import { Button, Icon, Skeleton, Tabs } from 'antd'
 import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
+import AppContext from '../../containers/common/AppContext'
 import { PodcastProgramAdminContext } from '../../containers/podcast/PodcastProgramAdminBlock'
 import { AdminHeader, AdminHeaderTitle, AdminTabBarWrapper } from '../admin'
+import { useAuth } from '../auth/AuthContext'
 import { StyledLayoutContent } from '../layout/DefaultLayout'
 import PodcastProgramContentAdminBlock from './PodcastProgramContentAdminBlock'
 import PodcastProgramPlanAdminBlock from './PodcastProgramPlanAdminBlock'
 import PodcastProgramPublishAdminBlock from './PodcastProgramPublishAdminBlock'
 import PodcastProgramRoleAdminBlock from './PodcastProgramRoleAdminBlock'
 import PodcastProgramSettingsAdminBlock from './PodcastProgramSettingsAdminBlock'
-import { useAuth } from '../auth/AuthContext'
-import AppContext from '../../containers/common/AppContext'
 
 const PodcastProgramAdminBlock: React.FC<{
   loading?: boolean
@@ -21,7 +21,7 @@ const PodcastProgramAdminBlock: React.FC<{
   const app = useContext(AppContext)
   const { podcastProgramAdmin } = useContext(PodcastProgramAdminContext)
   const [activeKey, setActiveKey] = useState(defaultActiveKey || 'content')
-  const { currentMemberId } = useAuth()
+  const { authToken } = useAuth()
 
   return (
     <>
@@ -30,7 +30,11 @@ const PodcastProgramAdminBlock: React.FC<{
           <Icon type="arrow-left" />
         </Link>
         <AdminHeaderTitle className="flex-grow-1">{podcastProgramAdmin.title}</AdminHeaderTitle>
-        <a href={`https://${app.domain}/creators/${currentMemberId}?tabkey=podcasts`} target="_blank" rel="noopener noreferrer">
+        <a
+          href={`//${app.domain}/podcasts/${podcastProgramAdmin.id}?token=${authToken}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <Button>預覽</Button>
         </a>
       </AdminHeader>
