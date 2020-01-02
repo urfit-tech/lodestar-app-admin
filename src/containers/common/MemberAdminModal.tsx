@@ -4,13 +4,13 @@ import { FormComponentProps } from 'antd/lib/form'
 import { ModalProps } from 'antd/lib/modal'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
 import { AvatarImage } from '../../components/common/Image'
 import { currencyFormatter, handleError } from '../../helpers'
 import { UserRole } from '../../schemas/general'
 import types from '../../types'
+import AppContext from './AppContext'
 
 const StyledMetaBlock = styled.div`
   color: var(--gray-darker);
@@ -38,6 +38,7 @@ type MemberAdminModalProps = FormComponentProps &
   }
 
 const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCancel, onSuccess, ...modalProps }) => {
+  const { domain } = useContext(AppContext)
   const [updateMemberInfor] = useMutation<types.UPDATE_MEMBER_INFOR, types.UPDATE_MEMBER_INFORVariables>(gql`
     mutation UPDATE_MEMBER_INFOR($memberId: String!, $name: String, $email: String, $roles: jsonb) {
       update_member(where: { id: { _eq: $memberId } }, _set: { name: $name, email: $email, roles: $roles }) {
@@ -85,13 +86,27 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
       <AvatarImage src={member.avatarUrl} size={120} className="mx-auto mb-4" />
 
       <div className="row no-gutters align-items-center justify-content-center">
-        <Link to={`/creators/${member.id}`} className="col-5 text-center">
-          <Button type="link">創作者主頁</Button>
-        </Link>
-        <Divider type="vertical" />
-        <Link to={`/members/${member.id}`} className="col-5 text-center">
+        {member.roles.includes('content-creator') && (
+          <>
+            <a
+              href={`https://${domain}/creators/${member.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="col-5 text-center"
+            >
+              <Button type="link">創作者主頁</Button>
+            </a>
+            <Divider type="vertical" />
+          </>
+        )}
+        <a
+          href={`https://${domain}/members/${member.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="col-5 text-center"
+        >
           <Button type="link">學員主頁</Button>
-        </Link>
+        </a>
       </div>
 
       <Form

@@ -24,7 +24,7 @@ const defaultAppProps: AppProps = {
   title: null,
   description: null,
   enabledModules: {},
-  domain: ''
+  domain: '',
 }
 export const AppContext = createContext<AppProps>(defaultAppProps)
 
@@ -72,7 +72,7 @@ export const AppProvider: React.FC = ({ children }) => {
             title: data.app_by_pk.title,
             description: data.app_by_pk.description,
             enabledModules,
-            domain:  data.app_by_pk ? data.app_by_pk.domain : ""
+            domain: data.app_by_pk ? data.app_by_pk.domain : '',
           }
         })()
 
