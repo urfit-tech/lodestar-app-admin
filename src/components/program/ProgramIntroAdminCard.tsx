@@ -73,7 +73,7 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
                 ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${localStorage.getItem(
                     'kolable.app.id',
                   )}/${program.id}?t=${uploadTime}`
-                : '',
+                : undefined,
               coverVideoUrl: values.coverVideoUrl,
             },
           })
