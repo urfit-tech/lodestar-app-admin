@@ -14,7 +14,7 @@ const CreatorAdminLayout: React.FC = ({ children }) => {
     <DefaultLayout
       noFooter
       renderTitle={() => (
-        <Link to={`/studio`} className="d-flex">
+        <Link to={`/`} className="d-flex">
           <Button type="link">創作者工作室</Button>
         </Link>
       )}
