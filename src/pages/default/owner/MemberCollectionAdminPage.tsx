@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/react-hooks'
-import { Button, Dropdown, Icon, Input, Menu, Table, Typography } from 'antd'
+import { Button, Dropdown, Icon, Input, Menu, Table, Tag, Typography } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import moment from 'moment'
@@ -7,9 +7,11 @@ import { sum } from 'ramda'
 import React, { useContext, useState } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import AdminCard from '../../../components/admin/AdminCard'
-import MemberAvatar from '../../../components/common/MemberAvatar'
+import { AvatarImage } from '../../../components/common/Image'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
+import MemberAdminModal, { MemberInfo } from '../../../containers/common/MemberAdminModal'
 import { currencyFormatter } from '../../../helpers'
+import { UserRole } from '../../../schemas/general'
 import types from '../../../types'
 
 const StyledDropdown = styled(Dropdown)`
@@ -17,28 +19,27 @@ const StyledDropdown = styled(Dropdown)`
   width: 240px;
   color: #585858;
 `
-
 const StyledMenuItem = styled(Menu.Item)`
   && {
     padding: 12px 16px;
   }
 `
-
 const StyledWrapper = styled.div`
   width: 100%;
   overflow: auto;
   background: white;
-`
-
-const StyledTable = styled(Table)`
   td {
     color: #585858;
   }
 `
-
 const StyledMemberName = styled.span`
   color: #585858;
   font-size: 16px;
+`
+const StyledTag = styled(Tag)`
+  && {
+    border-radius: 11px;
+  }
 `
 
 const getColumnSearchProps = ({
@@ -66,21 +67,34 @@ const getColumnSearchProps = ({
 
 const MemberCollectionAdminPage = () => {
   const theme = useContext(ThemeContext)
-  const { loading, data } = useQuery<types.GET_MEMBER_COLLECTION>(GET_MEMBER_COLLECTION)
-  const [roleFileter, setRoleFilter] = useState(0)
+  const { loading, error, data } = useQuery<types.GET_MEMBER_COLLECTION>(GET_MEMBER_COLLECTION)
+
+  const [roleFilter, setRoleFilter] = useState<UserRole>('general-member')
   const [nameSearch, setNameSearch] = useState('')
   const [emailSearch, setEmailSearch] = useState('')
+  const [visible, setVisible] = useState(false)
+  const [selectedMember, setSelectedMember] = useState<MemberInfo | null>(null)
 
-  const columns: ColumnProps<any>[] = [
+  const columns: ColumnProps<MemberInfo>[] = [
     {
       title: '姓名',
       dataIndex: 'id',
       key: 'id',
-      render: id => (
-        <MemberAvatar
-          memberId={id}
-          renderText={member => <StyledMemberName className="ml-3">{member.name}</StyledMemberName>}
-        />
+      render: (text, record, index) => (
+        <div className="d-flex align-items-center">
+          <AvatarImage src={record.avatarUrl} />
+          <StyledMemberName className="ml-3 mr-2">{record.name}</StyledMemberName>
+          {record.roles.includes('app-owner') && (
+            <StyledTag color="#585858" className="ml-2 mr-0">
+              管理者
+            </StyledTag>
+          )}
+          {record.roles.includes('content-creator') && (
+            <StyledTag color={theme['@primary-color']} className="ml-2 mr-0">
+              創作者
+            </StyledTag>
+          )}
+        </div>
       ),
       ...getColumnSearchProps({
         theme,
@@ -104,17 +118,16 @@ const MemberCollectionAdminPage = () => {
     },
     {
       title: '上次登入',
-      dataIndex: 'logined_at',
+      dataIndex: 'loginedAt',
       key: 'logined-at',
-      render: logined_at => (logined_at ? moment(logined_at).fromNow() : ''),
-      // defaultSortOrder: 'ascend',
-      sorter: (a, b) => new Date(b.logined_at).getTime() - new Date(a.logined_at).getTime(),
+      render: (text, record, index) => (record.loginedAt ? moment(record.loginedAt).fromNow() : ''),
+      sorter: (a, b) => (b.loginedAt ? b.loginedAt.getTime() : 0) - (a.loginedAt ? a.loginedAt.getTime() : 0),
     },
     {
       title: '持有點數',
       dataIndex: 'points',
       key: 'points',
-      render: points => `${points}點`,
+      render: points => `${points} 點`,
     },
     {
       title: '消費金額',
@@ -126,38 +139,45 @@ const MemberCollectionAdminPage = () => {
     },
   ]
 
-  const dataSource =
-    data && data.member
-      ? data.member
-          .filter((value: any) => nameSearch.length === 0 || (value.name || '').includes(nameSearch))
-          .filter((value: any) => emailSearch.length === 0 || (value.email || '').includes(emailSearch))
-          .map((value: any) => ({
-            ...value,
-            points: value.point_status ? value.point_status.points : 0,
+  const dataSource: MemberInfo[] =
+    loading || error || !data
+      ? []
+      : data.member
+          .filter(member => nameSearch.length === 0 || (member.name || member.username).includes(nameSearch))
+          .filter(member => emailSearch.length === 0 || (member.email || member.username).includes(emailSearch))
+          .map(member => ({
+            id: member.id,
+            avatarUrl: member.picture_url,
+            name: member.name || member.username,
+            email: member.email,
+            loginedAt: member.logined_at ? new Date(member.logined_at) : null,
+            roles: member.roles,
+            points: member.point_status ? member.point_status.points : 0,
             consumption: sum(
-              value.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
+              member.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
             ),
           }))
-          .sort((a: any, b: any) => new Date(b.logined_at).getTime() - new Date(a.logined_at).getTime())
-      : []
+          .sort((a, b) => (b.loginedAt ? b.loginedAt.getTime() : 0) - (a.loginedAt ? a.loginedAt.getTime() : 0))
 
-  const roles = [
-    {
-      id: 'general-member',
+  const roles: {
+    [id in UserRole]: {
+      name: string
+      count: number
+    }
+  } = {
+    'general-member': {
       name: '全部會員',
       count: dataSource.length,
     },
-    {
-      id: 'content-creator',
+    'content-creator': {
       name: '創作者',
       count: dataSource.filter((row: any) => row && row.roles.includes('content-creator')).length,
     },
-    {
-      id: 'app-owner',
+    'app-owner': {
       name: '管理員',
       count: dataSource.filter((row: any) => row && row.roles.includes('app-owner')).length,
     },
-  ]
+  }
 
   return (
     <OwnerAdminLayout>
@@ -169,34 +189,40 @@ const MemberCollectionAdminPage = () => {
       <StyledDropdown
         overlay={
           <Menu>
-            {roles.map((role, index) => (
-              <StyledMenuItem
-                key={role.id}
-                onClick={() => {
-                  setRoleFilter(index)
-                }}
-              >{`${role.name} (${role.count})`}</StyledMenuItem>
+            {Object.keys(roles).map(roleId => (
+              <StyledMenuItem key={roleId} onClick={() => setRoleFilter(roleId as UserRole)}>
+                {roles[roleId as UserRole].name} ({roles[roleId as UserRole].count})
+              </StyledMenuItem>
             ))}
           </Menu>
         }
       >
         <Button className="d-flex justify-content-between align-items-center">
-          {`${roles[roleFileter].name} (${roles[roleFileter].count})`}
+          {`${roles[roleFilter].name} (${roles[roleFilter].count})`}
           <Icon type="caret-down" />
         </Button>
       </StyledDropdown>
 
       <AdminCard>
         <StyledWrapper>
-          <StyledTable
+          <Table
             columns={columns}
             rowKey="id"
             loading={loading}
-            dataSource={dataSource.filter((row: any) => row.roles.includes(roles[roleFileter].id)) || []}
+            dataSource={dataSource.filter(member => member.roles.includes(roleFilter))}
             pagination={{ position: 'bottom' }}
+            rowClassName={() => 'cursor-pointer'}
+            onRow={record => ({
+              onClick: () => {
+                setSelectedMember(record)
+                setVisible(true)
+              },
+            })}
           />
         </StyledWrapper>
       </AdminCard>
+
+      <MemberAdminModal width="24rem" member={selectedMember} visible={visible} onCancel={() => setVisible(false)} />
     </OwnerAdminLayout>
   )
 }
@@ -205,11 +231,12 @@ const GET_MEMBER_COLLECTION = gql`
   query GET_MEMBER_COLLECTION {
     member {
       id
+      picture_url
+      name
+      username
       email
       logined_at
-      name
       roles
-      username
       point_status {
         points
       }

@@ -2717,6 +2717,36 @@ export interface GET_CREATOR_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_INFOR
+// ====================================================
+
+export interface UPDATE_MEMBER_INFOR_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_INFOR {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_INFOR_update_member | null;
+}
+
+export interface UPDATE_MEMBER_INFORVariables {
+  memberId: string;
+  name?: string | null;
+  email?: string | null;
+  roles?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PROGRAM_SIMPLE
 // ====================================================
 
@@ -5473,14 +5503,15 @@ export interface GET_MEMBER_COLLECTION_member_order_logs {
 export interface GET_MEMBER_COLLECTION_member {
   __typename: "member";
   id: string;
+  picture_url: string | null;
+  name: string | null;
+  username: string;
   email: string;
   logined_at: any | null;
-  name: string | null;
   /**
    * ["admin", "creator", "member"]
    */
   roles: any | null;
-  username: string;
   /**
    * An object relationship
    */
