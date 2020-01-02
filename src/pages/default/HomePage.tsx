@@ -1,6 +1,7 @@
-import React, { useCallback, useContext, useState } from 'react'
-import { Redirect } from 'react-router-dom'
+import { message } from 'antd'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
+import useRouter from 'use-react-router'
 import { useAuth } from '../../components/auth/AuthContext'
 import AuthModal, { AuthModalContext } from '../../components/auth/AuthModal'
 import { BREAK_POINT } from '../../components/common/Responsive'
@@ -67,18 +68,20 @@ const StyledRoleBlock = styled.div`
 `
 
 const HomePage = () => {
+  const { history } = useRouter()
   const app = useContext(AppContext)
-  const { isAuthenticated, currentUserRole } = useAuth()
+  const { isAuthenticated, currentUserRole, setAuthToken } = useAuth()
   const [visible, setVisible] = useState(false)
 
-  if (isAuthenticated) {
-    switch (currentUserRole) {
-      case 'app-owner':
-        return <Redirect to="/admin"></Redirect>
-      case 'content-creator':
-        return <Redirect to="/studio"></Redirect>
+  useEffect(() => {
+    if (isAuthenticated && currentUserRole !== 'app-owner' && currentUserRole !== 'content-creator') {
+      message.error('請使用管理帳號登入')
+      try {
+        localStorage.removeItem(`kolable.auth.token`)
+      } catch (error) {}
+      setAuthToken && setAuthToken(null)
     }
-  }
+  }, [isAuthenticated, currentUserRole, setAuthToken])
 
   return (
     <AuthModalContext.Provider value={{ visible, setVisible }}>
@@ -91,8 +94,8 @@ const HomePage = () => {
             <StyledTitle>管理後台</StyledTitle>
 
             <div className="d-flex align-items-center justify-content-between">
-              <RoleButton role="app-owner" title="我是管理員" icon={<AdminIcon />} />
-              <RoleButton role="content-creator" title="我是創作者" icon={<CreatorIcon />} />
+              <RoleButton title="我是管理員" icon={<AdminIcon />} onAuthenticated={() => history.push('/admin')} />
+              <RoleButton title="我是創作者" icon={<CreatorIcon />} onAuthenticated={() => history.push('/studio')} />
             </div>
           </div>
         </CenteredBox>
@@ -102,17 +105,17 @@ const HomePage = () => {
 }
 
 const RoleButton: React.FC<{
-  role: 'app-owner' | 'content-creator'
   title: string
   icon: React.ReactNode
-}> = ({ role, title, icon }) => {
-  const { setCurrentUserRole } = useAuth()
+  onAuthenticated?: () => void
+}> = ({ title, icon, onAuthenticated }) => {
+  const { isAuthenticated } = useAuth()
   const { setVisible: setAuthModalVisible } = useContext(AuthModalContext)
 
   const handleClick = useCallback(() => {
-    setCurrentUserRole && setCurrentUserRole(role)
-    setAuthModalVisible && setAuthModalVisible(true)
-  }, [role, setAuthModalVisible, setCurrentUserRole])
+    setAuthModalVisible && setAuthModalVisible(!isAuthenticated)
+    isAuthenticated && onAuthenticated && onAuthenticated()
+  }, [isAuthenticated, setAuthModalVisible, onAuthenticated])
 
   return (
     <StyledRoleBlock className="d-flex flex-column align-items-center justify-content-between" onClick={handleClick}>
