@@ -68,7 +68,7 @@ const GET_PODCAST_PROGRAM_ADMIN_COLLECTION = gql`
           name
         }
       }
-      podcast_program_roles {
+      podcast_program_roles(where: { name: { _eq: "instructor" } }) {
         id
         member {
           id

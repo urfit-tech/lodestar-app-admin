@@ -1,6 +1,5 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import { uniqBy } from 'ramda'
 import React, { createContext } from 'react'
 import { ScheduleIntervalType } from '../../components/appointment/AppointmentPeriodCollection'
 import { AppointmentPeriodProps } from '../../components/appointment/AppointmentPeriodItem'

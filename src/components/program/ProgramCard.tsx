@@ -77,7 +77,8 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
         <AvatarPlaceHolder className="my-3">
           {program &&
             program.roles
-              .filter(role => role.name === 'owner')
+              .filter(role => role.name === 'instructor')
+              .slice(0, 1)
               .map(role => <MemberAvatar key={role.memberId} memberId={role.memberId} withName />)}
         </AvatarPlaceHolder>
       )}
