@@ -2,7 +2,9 @@ import { useQuery } from '@apollo/react-hooks'
 import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { useEffect } from 'react'
-import PodcastProgramCollectionAdminTableComponent, { PodcastProgramProps } from '../../components/podcast/PodcastProgramCollectionAdminTable'
+import PodcastProgramCollectionAdminTableComponent, {
+  PodcastProgramProps,
+} from '../../components/podcast/PodcastProgramCollectionAdminTable'
 import types from '../../types'
 
 const PodcastProgramCollectionAdminTable: React.FC = () => {
@@ -27,7 +29,9 @@ const PodcastProgramCollectionAdminTable: React.FC = () => {
     coverUrl: podcastProgram.cover_url,
     title: podcastProgram.title,
     instructorName: podcastProgram.podcast_program_roles.length
-      ? podcastProgram.podcast_program_roles[0].member.name || podcastProgram.podcast_program_roles[0].member.username
+      ? podcastProgram.podcast_program_roles[0].member?.name ||
+        podcastProgram.podcast_program_roles[0].member?.username ||
+        ''
       : '',
     listPrice: podcastProgram.list_price,
     salePrice:

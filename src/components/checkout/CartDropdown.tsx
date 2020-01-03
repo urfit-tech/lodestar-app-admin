@@ -81,7 +81,7 @@ const CartDropdown: React.FC<{
           process.env.NODE_ENV === 'development' && console.error(error)
         })
     }
-  }, [cartProducts.length])
+  }, [cartProducts, cartProducts.length, memberId])
 
   if (cartProductCollection.length === 0) {
     return null

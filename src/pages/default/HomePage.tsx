@@ -23,9 +23,9 @@ const StyledLogo = styled.div<{ appId: string }>`
   height: 100%;
   max-width: 172px;
   height: 36px;
-  background-image: url(https://${process.env.REACT_APP_S3_BUCKET}/images/${props => props.appId}/logo.svg),
-    url(https://${process.env.REACT_APP_S3_BUCKET}/images/${props => props.appId}/logo.png),
-    url(https://${process.env.REACT_APP_S3_BUCKET}/images/${props => props.appId}/logo.jpg);
+  background-image: url(https://static.kolable.com/images/${props => props.appId}/logo.svg),
+    url(https://static.kolable.com/images/${props => props.appId}/logo.png),
+    url(https://static.kolable.com/images/${props => props.appId}/logo.jpg);
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;

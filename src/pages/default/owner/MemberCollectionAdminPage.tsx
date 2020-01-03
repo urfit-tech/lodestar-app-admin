@@ -123,12 +123,12 @@ const MemberCollectionAdminPage = () => {
       render: (text, record, index) => (record.loginedAt ? moment(record.loginedAt).fromNow() : ''),
       sorter: (a, b) => (b.loginedAt ? b.loginedAt.getTime() : 0) - (a.loginedAt ? a.loginedAt.getTime() : 0),
     },
-    {
-      title: '持有點數',
-      dataIndex: 'points',
-      key: 'points',
-      render: points => `${points} 點`,
-    },
+    // {
+    //   title: '持有點數',
+    //   dataIndex: 'points',
+    //   key: 'points',
+    //   render: points => `${points} 點`,
+    // },
     {
       title: '消費金額',
       dataIndex: 'consumption',
@@ -227,7 +227,10 @@ const MemberCollectionAdminPage = () => {
         member={selectedMember}
         visible={visible}
         onCancel={() => setVisible(false)}
-        onSuccess={() => refetch()}
+        onSuccess={() => {
+          refetch()
+          setVisible(false)
+        }}
       />
     </OwnerAdminLayout>
   )
