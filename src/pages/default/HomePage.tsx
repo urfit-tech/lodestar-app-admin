@@ -73,15 +73,15 @@ const HomePage = () => {
   const { isAuthenticated, currentUserRole, setAuthToken } = useAuth()
   const [visible, setVisible] = useState(false)
 
-  useEffect(() => {
-    if (isAuthenticated && currentUserRole !== 'app-owner' && currentUserRole !== 'content-creator') {
-      message.error('請使用管理帳號登入')
-      try {
-        localStorage.removeItem(`kolable.auth.token`)
-      } catch (error) {}
-      setAuthToken && setAuthToken(null)
-    }
-  }, [isAuthenticated, currentUserRole, setAuthToken])
+  // useEffect(() => {
+  //   if (isAuthenticated && currentUserRole !== 'app-owner' && currentUserRole !== 'content-creator') {
+  //     message.error('請使用管理帳號登入')
+  //     try {
+  //       localStorage.removeItem(`kolable.auth.token`)
+  //     } catch (error) {}
+  //     setAuthToken && setAuthToken(null)
+  //   }
+  // }, [isAuthenticated, currentUserRole, setAuthToken])
 
   return (
     <AuthModalContext.Provider value={{ visible, setVisible }}>
