@@ -1269,6 +1269,34 @@ export interface INSERT_PROGRAMVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_COVER
+// ====================================================
+
+export interface UPDATE_PROGRAM_COVER_update_program {
+  __typename: "program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_COVER {
+  /**
+   * update data of the table: "program"
+   */
+  update_program: UPDATE_PROGRAM_COVER_update_program | null;
+}
+
+export interface UPDATE_PROGRAM_COVERVariables {
+  programId: any;
+  coverUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_INTRO
 // ====================================================
 
@@ -1291,7 +1319,6 @@ export interface UPDATE_PROGRAM_INTROVariables {
   programId: any;
   abstract?: string | null;
   description?: string | null;
-  coverUrl?: string | null;
   coverVideoUrl?: string | null;
 }
 
@@ -3363,10 +3390,10 @@ export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_pr
 }
 
 export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles_member {
-  __typename: "member";
-  id: string;
+  __typename: "member_public";
+  id: string | null;
   name: string | null;
-  username: string;
+  username: string | null;
 }
 
 export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles {
@@ -3375,7 +3402,7 @@ export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_pr
   /**
    * An object relationship
    */
-  member: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles_member;
+  member: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles_member | null;
   /**
    * instructor
    */
@@ -6203,6 +6230,7 @@ export enum member_constraint {
  * update columns of table "member"
  */
 export enum member_update_column {
+  abstract = "abstract",
   app_id = "app_id",
   created_at = "created_at",
   description = "description",
@@ -6215,7 +6243,9 @@ export enum member_update_column {
   name = "name",
   passhash = "passhash",
   picture_url = "picture_url",
+  role = "role",
   roles = "roles",
+  title = "title",
   username = "username",
 }
 
@@ -8632,6 +8662,7 @@ export interface member_bool_exp {
   _and?: (member_bool_exp | null)[] | null;
   _not?: member_bool_exp | null;
   _or?: (member_bool_exp | null)[] | null;
+  abstract?: String_comparison_exp | null;
   activities?: activity_bool_exp | null;
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
@@ -8669,7 +8700,9 @@ export interface member_bool_exp {
   point_status?: point_status_bool_exp | null;
   program_content_progresses?: program_content_progress_bool_exp | null;
   program_roles?: program_role_bool_exp | null;
+  role?: String_comparison_exp | null;
   roles?: jsonb_comparison_exp | null;
+  title?: String_comparison_exp | null;
   username?: String_comparison_exp | null;
 }
 
@@ -8721,6 +8754,7 @@ export interface member_card_on_conflict {
  * input type for inserting data into table "member"
  */
 export interface member_insert_input {
+  abstract?: string | null;
   activities?: activity_arr_rel_insert_input | null;
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
@@ -8757,7 +8791,9 @@ export interface member_insert_input {
   point_logs?: point_log_arr_rel_insert_input | null;
   program_content_progresses?: program_content_progress_arr_rel_insert_input | null;
   program_roles?: program_role_arr_rel_insert_input | null;
+  role?: string | null;
   roles?: any | null;
+  title?: string | null;
   username?: string | null;
 }
 
@@ -8791,6 +8827,7 @@ export interface member_public_bool_exp {
   metadata?: jsonb_comparison_exp | null;
   name?: String_comparison_exp | null;
   picture_url?: String_comparison_exp | null;
+  role?: String_comparison_exp | null;
   roles?: jsonb_comparison_exp | null;
   username?: String_comparison_exp | null;
 }
@@ -8805,6 +8842,7 @@ export interface member_public_insert_input {
   metadata?: any | null;
   name?: string | null;
   picture_url?: string | null;
+  role?: string | null;
   roles?: any | null;
   username?: string | null;
 }
@@ -9765,7 +9803,7 @@ export interface podcast_program_role_bool_exp {
   _not?: podcast_program_role_bool_exp | null;
   _or?: (podcast_program_role_bool_exp | null)[] | null;
   id?: uuid_comparison_exp | null;
-  member?: member_bool_exp | null;
+  member?: member_public_bool_exp | null;
   member_id?: String_comparison_exp | null;
   name?: String_comparison_exp | null;
   podcast_program?: podcast_program_bool_exp | null;
@@ -9777,7 +9815,7 @@ export interface podcast_program_role_bool_exp {
  */
 export interface podcast_program_role_insert_input {
   id?: any | null;
-  member?: member_obj_rel_insert_input | null;
+  member?: member_public_obj_rel_insert_input | null;
   member_id?: string | null;
   name?: string | null;
   podcast_program?: podcast_program_obj_rel_insert_input | null;
