@@ -47,8 +47,8 @@ const AppointmentPlanScheduleBlock: React.FC = () => {
       return
     }
 
-    const isReopennedPeriod = targetSchedule.excludes.includes(values.startedAt.getTime())
-    const excludes: number[] = isReopennedPeriod
+    const isReopenedPeriod = targetSchedule.excludes.includes(values.startedAt.getTime())
+    const excludes: number[] = isReopenedPeriod
       ? targetSchedule.excludes.filter(exclude => exclude !== values.startedAt.getTime())
       : [...targetSchedule.excludes, values.startedAt.getTime()].sort()
 

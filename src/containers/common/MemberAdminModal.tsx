@@ -39,7 +39,7 @@ type MemberAdminModalProps = FormComponentProps &
 
 const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCancel, onSuccess, ...modalProps }) => {
   const { domain } = useContext(AppContext)
-  const [updateMemberInfor] = useMutation<types.UPDATE_MEMBER_INFO, types.UPDATE_MEMBER_INFOVariables>(gql`
+  const [updateMemberInfo] = useMutation<types.UPDATE_MEMBER_INFO, types.UPDATE_MEMBER_INFOVariables>(gql`
     mutation UPDATE_MEMBER_INFO($memberId: String!, $name: String, $email: String, $roles: jsonb) {
       update_member(where: { id: { _eq: $memberId } }, _set: { name: $name, email: $email, roles: $roles }) {
         affected_rows
@@ -62,7 +62,7 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
 
       const roles: UserRole[] = ['general-member', ...values.roles]
 
-      updateMemberInfor({
+      updateMemberInfo({
         variables: {
           memberId: member.id,
           name: values.name,

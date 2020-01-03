@@ -87,9 +87,9 @@ const ActivityTicketsAdminBlock: React.FC<{
       variables: {
         activityTicketId: data.activityTicketId,
         title: data.title,
-        activitySessionTickets: data.sessionIds.map(sesionId => ({
+        activitySessionTickets: data.sessionIds.map(sessionId => ({
           activity_ticket_id: data.activityTicketId,
-          activity_session_id: sesionId,
+          activity_session_id: sessionId,
         })),
         isPublished: data.isPublished,
         startedAt: data.startedAt,

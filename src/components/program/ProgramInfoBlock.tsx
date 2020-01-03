@@ -148,7 +148,7 @@ const ProgramContentCountBlock: React.FC<{
         <span>分鐘</span>
       </div>
       <div className="d-flex flex-column justify-content-center">
-        <span>{program.contentSections.filter(contentSesion => contentSesion.programContents.length).length}</span>
+        <span>{program.contentSections.filter(contentSession => contentSession.programContents.length).length}</span>
         <span>章節</span>
       </div>
       <div className="d-flex flex-column justify-content-center">

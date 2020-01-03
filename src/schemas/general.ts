@@ -32,7 +32,7 @@ export const ProductTypeLabel: { [key: string]: string } = {
   ProgramPlan: '課程',
   ProgramContent: '課程',
   ProgramPackagePlan: '課程組合',
-  ProjectPlan: "專案方案",
+  ProjectPlan: '專案方案',
   Card: '會員卡',
   ActivityTicket: '實體',
   Merchandise: '商品',
@@ -49,7 +49,7 @@ export type ProductTarget = InferType<typeof productTargetSchema>
 export const cartProductSchema = object({
   id: string(),
   product_id: string(),
-  created_at: string()
+  created_at: string(),
 }).camelCase()
 export type CartProduct = InferType<typeof cartProductSchema>
 

@@ -61,7 +61,7 @@ const ProgramContentBlock: React.FC<{
     ) {
       setProgressThrottle(1)
     }
-  }, [currentMemberId, JSON.stringify(programContent.programContentBody)])
+  }, [currentMemberId, programContent.programContentBody, setProgressThrottle])
 
   if (!programContent) {
     return <Spin />

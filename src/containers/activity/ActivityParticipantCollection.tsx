@@ -8,8 +8,8 @@ import types from '../../types'
 const ActivityParticipantCollection: React.FC<{
   activityId: string
 }> = ({ activityId }) => {
-  const { loading, error, data } = useQuery<types.GET_ACITIVTY_PARTICIPANTS, types.GET_ACITIVTY_PARTICIPANTSVariables>(
-    GET_ACITIVTY_PARTICIPANTS,
+  const { loading, error, data } = useQuery<types.GET_ACTIVITY_PARTICIPANTS, types.GET_ACTIVITY_PARTICIPANTSVariables>(
+    GET_ACTIVITY_PARTICIPANTS,
     {
       variables: {
         activityId,
@@ -40,8 +40,8 @@ const ActivityParticipantCollection: React.FC<{
   return <ActivityParticipantCollectionModal sessions={sessions} />
 }
 
-const GET_ACITIVTY_PARTICIPANTS = gql`
-  query GET_ACITIVTY_PARTICIPANTS($activityId: uuid!) {
+const GET_ACTIVITY_PARTICIPANTS = gql`
+  query GET_ACTIVITY_PARTICIPANTS($activityId: uuid!) {
     activity_enrollment(where: { activity_id: { _eq: $activityId } }, order_by: {}) {
       activity_session_id
       member_id

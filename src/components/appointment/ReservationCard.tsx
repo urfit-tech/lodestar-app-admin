@@ -52,7 +52,7 @@ const StyledReservationPeriod = styled.div`
   font-size: 14px;
   font-weight: 500;
 `
-const StyledCalenadarIcon = styled(CalendarOIcon)`
+const StyledCalendarIcon = styled(CalendarOIcon)`
   margin-top: 4px;
   margin-right: 4px;
 `
@@ -103,7 +103,7 @@ const ReservationCard: React.FC<ReservationCardProps> = ({ avatarUrl, title, sta
           <StyledReservationInfo className="d-flex flex-column justify-content-between">
             <StyledTitle>{title}</StyledTitle>
             <StyledReservationPeriod className="d-flex align-items-start">
-              <StyledCalenadarIcon />
+              <StyledCalendarIcon />
               <span>{dateRangeFormatter(startedAt, endedAt)}</span>
             </StyledReservationPeriod>
           </StyledReservationInfo>

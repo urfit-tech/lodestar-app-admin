@@ -7,8 +7,8 @@ import types from '../../types'
 const ActivityAdminBlock: React.FC<{
   activityId: string
 }> = ({ activityId }) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_ACTIVTY_ADMIN, types.GET_ACTIVTY_ADMINVariables>(
-    GET_ACTIVTY_ADMIN,
+  const { loading, error, data, refetch } = useQuery<types.GET_ACTIVITY_ADMIN, types.GET_ACTIVITY_ADMINVariables>(
+    GET_ACTIVITY_ADMIN,
     {
       variables: { activityId },
     },
@@ -91,8 +91,8 @@ const ActivityAdminBlock: React.FC<{
   )
 }
 
-const GET_ACTIVTY_ADMIN = gql`
-  query GET_ACTIVTY_ADMIN($activityId: uuid!) {
+const GET_ACTIVITY_ADMIN = gql`
+  query GET_ACTIVITY_ADMIN($activityId: uuid!) {
     activity_by_pk(id: $activityId) {
       id
       title

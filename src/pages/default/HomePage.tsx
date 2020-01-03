@@ -69,6 +69,7 @@ const StyledRoleBlock = styled.div`
 const HomePage = () => {
   const { history } = useRouter()
   const app = useContext(AppContext)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { isAuthenticated, currentUserRole, setAuthToken } = useAuth()
   const [visible, setVisible] = useState(false)
 

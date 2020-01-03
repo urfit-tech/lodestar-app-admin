@@ -62,12 +62,12 @@ const ActivityParticipantCollectionModal: React.FC<{
                   type="primary"
                   className={`my-4 ${session.participants.length ? '' : 'd-none'}`}
                   onClick={() => {
-                    const downloadlink = document.createElement('a')
-                    downloadlink.setAttribute('href', encodeURI(csvContent))
-                    downloadlink.setAttribute('download', `${session.title}.csv`)
-                    document.body.appendChild(downloadlink)
-                    downloadlink.click()
-                    document.body.removeChild(downloadlink)
+                    const downloadLink = document.createElement('a')
+                    downloadLink.setAttribute('href', encodeURI(csvContent))
+                    downloadLink.setAttribute('download', `${session.title}.csv`)
+                    document.body.appendChild(downloadLink)
+                    downloadLink.click()
+                    document.body.removeChild(downloadLink)
                   }}
                 >
                   下載名單

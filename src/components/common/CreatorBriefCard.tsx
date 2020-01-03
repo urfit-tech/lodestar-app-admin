@@ -24,7 +24,7 @@ const StyledTitle = styled.div`
   font-weight: bold;
   letter-spacing: 0.2px;
 `
-const StyeldSubtitle = styled.div`
+const StyledSubtitle = styled.div`
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -61,7 +61,7 @@ const CreatorBriefCard: React.FC<CreatorBriefCardProps> = ({ imageUrl, title, me
       <StyledCardBody active={variant === 'featuring'}>
         <StyledTitle className="mb-2">{title}</StyledTitle>
 
-        <StyeldSubtitle>{meta || description}</StyeldSubtitle>
+        <StyledSubtitle>{meta || description}</StyledSubtitle>
 
         {meta && <StyledParagraph>{description}</StyledParagraph>}
       </StyledCardBody>

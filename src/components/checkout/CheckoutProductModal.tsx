@@ -93,7 +93,7 @@ const CheckoutProductModal: React.FC<CheckoutProductModalProps> = ({
   type,
   productId,
   requiredFields,
-  ...Modalprops
+  ...modalProps
 }) => {
   const { history } = useRouter()
   const { setVisible: setAuthModalVisible } = useContext(AuthModalContext)
@@ -184,7 +184,7 @@ const CheckoutProductModal: React.FC<CheckoutProductModalProps> = ({
         destroyOnClose
         visible={visible}
         onCancel={() => setVisible(false)}
-        {...Modalprops}
+        {...modalProps}
       >
         <StyledTitle className="mb-4">購物清單</StyledTitle>
 

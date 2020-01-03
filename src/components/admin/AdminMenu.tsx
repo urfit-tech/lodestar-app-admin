@@ -8,7 +8,7 @@ import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
 import { ReactComponent as CalendarAltIcon } from '../../images/icon/calendar-alt.svg'
 import { ReactComponent as DiscountIcon } from '../../images/icon/discount.svg'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
-import { ReactComponent as MoneyCricleIcon } from '../../images/icon/money-circle.svg'
+import { ReactComponent as MoneyCircleIcon } from '../../images/icon/money-circle.svg'
 import { ReactComponent as UsersIcon } from '../../images/icon/users.svg'
 import { routesProps } from '../../Routes'
 
@@ -53,7 +53,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
         ]}
       >
         <Menu.Item key="owner_sales_admin">
-          <Icon component={() => <MoneyCricleIcon />} />
+          <Icon component={() => <MoneyCircleIcon />} />
           <span>銷售管理</span>
         </Menu.Item>
 
@@ -148,7 +148,7 @@ export const CreatorAdminMenu = (props: MenuProps) => {
     <div className="d-flex flex-column flex-grow-1">
       <AdminMenu {...props} defaultOpenKeys={['creator_programs_admin', 'creator_activities_admin']}>
         <Menu.Item key="creator_sales_admin">
-          <Icon component={() => <MoneyCricleIcon />} />
+          <Icon component={() => <MoneyCircleIcon />} />
           <span>銷售管理</span>
         </Menu.Item>
 

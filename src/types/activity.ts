@@ -17,7 +17,7 @@ export type ActivitySessionProps = {
   threshold: number | null
   startedAt: Date
   endedAt: Date
-  locatino: string
+  location: string
   activityId: string
 }
 

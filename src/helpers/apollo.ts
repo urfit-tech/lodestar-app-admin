@@ -54,4 +54,3 @@ const createApolloClient = ({
 }
 
 export { createApolloClient }
-

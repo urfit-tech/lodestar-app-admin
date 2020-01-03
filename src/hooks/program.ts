@@ -205,7 +205,10 @@ export const useEditablePrograms = (memberId: string) => {
 }
 
 export const useEnrolledProgramIds = (memberId: string, noFunding?: boolean) => {
-  const { loading, data, error, refetch } = useQuery<types.GET_ENROLLED_PROGRAM_IDS, types.GET_ENROLLED_PROGRAM_IDSVariables>(
+  const { loading, data, error, refetch } = useQuery<
+    types.GET_ENROLLED_PROGRAM_IDS,
+    types.GET_ENROLLED_PROGRAM_IDSVariables
+  >(
     gql`
       query GET_ENROLLED_PROGRAM_IDS($memberId: String!, $noFunding: Boolean) {
         program_enrollment(
