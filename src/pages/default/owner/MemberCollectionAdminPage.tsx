@@ -227,7 +227,10 @@ const MemberCollectionAdminPage = () => {
         member={selectedMember}
         visible={visible}
         onCancel={() => setVisible(false)}
-        onSuccess={() => refetch()}
+        onSuccess={() => {
+          refetch()
+          setVisible(false)
+        }}
       />
     </OwnerAdminLayout>
   )
