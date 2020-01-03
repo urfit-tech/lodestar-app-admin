@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import { useAuth } from '../components/auth/AuthContext'
+import { useAuth } from '../contexts/AuthContext'
 import { ProductType } from '../schemas/general'
 import types from '../types'
 import { CartProduct } from '../types/payment'

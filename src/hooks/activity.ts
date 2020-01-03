@@ -96,11 +96,11 @@ export const usePublishedActivityCollection = () => {
 
 export const useEnrolledActivityTickets = (memberId: string) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_ENROLLED_ACTIVITYT_TICKETS,
-    types.GET_ENROLLED_ACTIVITYT_TICKETSVariables
+    types.GET_ENROLLED_ACTIVITY_TICKETS,
+    types.GET_ENROLLED_ACTIVITY_TICKETSVariables
   >(
     gql`
-      query GET_ENROLLED_ACTIVITYT_TICKETS($memberId: String!) {
+      query GET_ENROLLED_ACTIVITY_TICKETS($memberId: String!) {
         activity_ticket_enrollment(where: { member_id: { _eq: $memberId } }) {
           order_log_id
           order_product_id

@@ -4,11 +4,7 @@ import gql from 'graphql-tag'
 import moment from 'moment'
 import { groupBy } from 'ramda'
 import React, { useContext } from 'react'
-import AppointmentPeriodCollection, {
-  ClosePeriodEvent,
-  DeleteScheduleEvent,
-  EmptyBlock,
-} from '../../components/appointment/AppointmentPeriodCollection'
+import AppointmentPeriodCollection, { ClosePeriodEvent, DeleteScheduleEvent, EmptyBlock } from '../../components/appointment/AppointmentPeriodCollection'
 import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 

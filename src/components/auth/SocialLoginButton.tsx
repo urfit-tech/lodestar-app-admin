@@ -3,9 +3,9 @@ import axios from 'axios'
 import React, { useContext, useState } from 'react'
 import SocialLogin from 'react-social-login'
 import styled from 'styled-components'
+import { useAuth } from '../../contexts/AuthContext'
 import FacebookLogoImage from '../../images/default/FB-logo.png'
 import GoogleLogoImage from '../../images/default/google-logo.png'
-import { useAuth } from './AuthContext'
 import { AuthModalContext } from './AuthModal'
 
 const StyledButton = styled(Button)`

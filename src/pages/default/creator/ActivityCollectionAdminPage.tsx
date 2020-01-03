@@ -1,9 +1,9 @@
 import { Icon, Typography } from 'antd'
 import React from 'react'
-import { useAuth } from '../../../components/auth/AuthContext'
 import CreatorAdminLayout from '../../../components/layout/CreatorAdminLayout'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import ActivityCollectionAdminBlock from '../../../containers/activity/ActivityCollectionAdminBlock'
+import { useAuth } from '../../../contexts/AuthContext'
 import { ReactComponent as CalendarAltIcon } from '../../../images/icon/calendar-alt.svg'
 
 const ActivityCollectionAdminPage = () => {

@@ -4,10 +4,10 @@ import { CardProps } from 'antd/lib/card'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { useAuth } from '../../contexts/AuthContext'
 import { useProgram } from '../../hooks/program'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
-import { useAuth } from '../auth/AuthContext'
 import IssueItem from './IssueItem'
 
 const StyledAdminCard = styled(AdminCard)`

@@ -179,58 +179,6 @@ export interface GET_COUPON_PLAN_CODESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_LOGINED_AT
-// ====================================================
-
-export interface UPDATE_LOGINED_AT_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_LOGINED_AT {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: UPDATE_LOGINED_AT_update_member | null;
-}
-
-export interface UPDATE_LOGINED_ATVariables {
-  memberId: string;
-  loginedAt?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_APPLICATION
-// ====================================================
-
-export interface GET_APPLICATION_app_admin_by_pk {
-  __typename: "app_admin";
-  app_id: string;
-}
-
-export interface GET_APPLICATION {
-  /**
-   * fetch data from the table: "app_admin" using primary key columns
-   */
-  app_admin_by_pk: GET_APPLICATION_app_admin_by_pk | null;
-}
-
-export interface GET_APPLICATIONVariables {
-  host: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_ISSUE_STATUS
 // ====================================================
 
@@ -1035,10 +983,10 @@ export interface INSERT_PROGRAM_CONTENT_SECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: INSTERT_PROGRAM_CONTENT_PROGRESS
+// GraphQL mutation operation: INSERT_PROGRAM_CONTENT_PROGRESS
 // ====================================================
 
-export interface INSTERT_PROGRAM_CONTENT_PROGRESS_insert_program_content_progress {
+export interface INSERT_PROGRAM_CONTENT_PROGRESS_insert_program_content_progress {
   __typename: "program_content_progress_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -1046,14 +994,14 @@ export interface INSTERT_PROGRAM_CONTENT_PROGRESS_insert_program_content_progres
   affected_rows: number;
 }
 
-export interface INSTERT_PROGRAM_CONTENT_PROGRESS {
+export interface INSERT_PROGRAM_CONTENT_PROGRESS {
   /**
    * insert data into the table: "program_content_progress"
    */
-  insert_program_content_progress: INSTERT_PROGRAM_CONTENT_PROGRESS_insert_program_content_progress | null;
+  insert_program_content_progress: INSERT_PROGRAM_CONTENT_PROGRESS_insert_program_content_progress | null;
 }
 
-export interface INSTERT_PROGRAM_CONTENT_PROGRESSVariables {
+export interface INSERT_PROGRAM_CONTENT_PROGRESSVariables {
   memberId?: string | null;
   programContentId: any;
   progress?: any | null;
@@ -2651,44 +2599,6 @@ export interface CREATE_APPOINTMENT_SCHEDULEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_APP
-// ====================================================
-
-export interface GET_APP_app_by_pk_app_modules {
-  __typename: "app_module";
-  id: any;
-  module_id: string;
-}
-
-export interface GET_APP_app_by_pk {
-  __typename: "app";
-  id: string;
-  name: string;
-  title: string | null;
-  description: string | null;
-  domain: string | null;
-  /**
-   * An array relationship
-   */
-  app_modules: GET_APP_app_by_pk_app_modules[];
-}
-
-export interface GET_APP {
-  /**
-   * fetch data from the table: "app" using primary key columns
-   */
-  app_by_pk: GET_APP_app_by_pk | null;
-}
-
-export interface GET_APPVariables {
-  appId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_CREATOR_COLLECTION
 // ====================================================
 
@@ -2717,10 +2627,10 @@ export interface GET_CREATOR_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER_INFOR
+// GraphQL mutation operation: UPDATE_MEMBER_INFO
 // ====================================================
 
-export interface UPDATE_MEMBER_INFOR_update_member {
+export interface UPDATE_MEMBER_INFO_update_member {
   __typename: "member_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -2728,14 +2638,14 @@ export interface UPDATE_MEMBER_INFOR_update_member {
   affected_rows: number;
 }
 
-export interface UPDATE_MEMBER_INFOR {
+export interface UPDATE_MEMBER_INFO {
   /**
    * update data of the table: "member"
    */
-  update_member: UPDATE_MEMBER_INFOR_update_member | null;
+  update_member: UPDATE_MEMBER_INFO_update_member | null;
 }
 
-export interface UPDATE_MEMBER_INFORVariables {
+export interface UPDATE_MEMBER_INFOVariables {
   memberId: string;
   name?: string | null;
   email?: string | null;
@@ -3393,10 +3303,10 @@ export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_pr
 }
 
 export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles_member {
-  __typename: "member";
-  id: string;
+  __typename: "member_public";
+  id: string | null;
   name: string | null;
-  username: string;
+  username: string | null;
 }
 
 export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles {
@@ -3405,7 +3315,7 @@ export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_pr
   /**
    * An object relationship
    */
-  member: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles_member;
+  member: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles_member | null;
   /**
    * instructor
    */
@@ -3813,6 +3723,96 @@ export interface UPDATE_VOUCHER_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_LOGINED_AT
+// ====================================================
+
+export interface UPDATE_LOGINED_AT_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_LOGINED_AT {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_LOGINED_AT_update_member | null;
+}
+
+export interface UPDATE_LOGINED_ATVariables {
+  memberId: string;
+  loginedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APPLICATION
+// ====================================================
+
+export interface GET_APPLICATION_app_admin_by_pk {
+  __typename: "app_admin";
+  app_id: string;
+}
+
+export interface GET_APPLICATION {
+  /**
+   * fetch data from the table: "app_admin" using primary key columns
+   */
+  app_admin_by_pk: GET_APPLICATION_app_admin_by_pk | null;
+}
+
+export interface GET_APPLICATIONVariables {
+  host: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APP
+// ====================================================
+
+export interface GET_APP_app_by_pk_app_modules {
+  __typename: "app_module";
+  id: any;
+  module_id: string;
+}
+
+export interface GET_APP_app_by_pk {
+  __typename: "app";
+  id: string;
+  name: string;
+  title: string | null;
+  description: string | null;
+  domain: string | null;
+  /**
+   * An array relationship
+   */
+  app_modules: GET_APP_app_by_pk_app_modules[];
+}
+
+export interface GET_APP {
+  /**
+   * fetch data from the table: "app" using primary key columns
+   */
+  app_by_pk: GET_APP_app_by_pk | null;
+}
+
+export interface GET_APPVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PUBLISHED_ACTIVITY_COLLECTION
 // ====================================================
 
@@ -3897,24 +3897,24 @@ export interface GET_PUBLISHED_ACTIVITY_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ENROLLED_ACTIVITYT_TICKETS
+// GraphQL query operation: GET_ENROLLED_ACTIVITY_TICKETS
 // ====================================================
 
-export interface GET_ENROLLED_ACTIVITYT_TICKETS_activity_ticket_enrollment {
+export interface GET_ENROLLED_ACTIVITY_TICKETS_activity_ticket_enrollment {
   __typename: "activity_ticket_enrollment";
   order_log_id: string | null;
   order_product_id: any | null;
   activity_ticket_id: any | null;
 }
 
-export interface GET_ENROLLED_ACTIVITYT_TICKETS {
+export interface GET_ENROLLED_ACTIVITY_TICKETS {
   /**
    * fetch data from the table: "activity_ticket_enrollment"
    */
-  activity_ticket_enrollment: GET_ENROLLED_ACTIVITYT_TICKETS_activity_ticket_enrollment[];
+  activity_ticket_enrollment: GET_ENROLLED_ACTIVITY_TICKETS_activity_ticket_enrollment[];
 }
 
-export interface GET_ENROLLED_ACTIVITYT_TICKETSVariables {
+export interface GET_ENROLLED_ACTIVITY_TICKETSVariables {
   memberId: string;
 }
 
@@ -6234,6 +6234,7 @@ export enum member_constraint {
  * update columns of table "member"
  */
 export enum member_update_column {
+  abstract = "abstract",
   app_id = "app_id",
   created_at = "created_at",
   description = "description",
@@ -6247,6 +6248,7 @@ export enum member_update_column {
   passhash = "passhash",
   picture_url = "picture_url",
   roles = "roles",
+  title = "title",
   username = "username",
 }
 
@@ -8663,6 +8665,7 @@ export interface member_bool_exp {
   _and?: (member_bool_exp | null)[] | null;
   _not?: member_bool_exp | null;
   _or?: (member_bool_exp | null)[] | null;
+  abstract?: String_comparison_exp | null;
   activities?: activity_bool_exp | null;
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
@@ -8701,6 +8704,7 @@ export interface member_bool_exp {
   program_content_progresses?: program_content_progress_bool_exp | null;
   program_roles?: program_role_bool_exp | null;
   roles?: jsonb_comparison_exp | null;
+  title?: String_comparison_exp | null;
   username?: String_comparison_exp | null;
 }
 
@@ -8752,6 +8756,7 @@ export interface member_card_on_conflict {
  * input type for inserting data into table "member"
  */
 export interface member_insert_input {
+  abstract?: string | null;
   activities?: activity_arr_rel_insert_input | null;
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
@@ -8789,6 +8794,7 @@ export interface member_insert_input {
   program_content_progresses?: program_content_progress_arr_rel_insert_input | null;
   program_roles?: program_role_arr_rel_insert_input | null;
   roles?: any | null;
+  title?: string | null;
   username?: string | null;
 }
 
@@ -9796,7 +9802,7 @@ export interface podcast_program_role_bool_exp {
   _not?: podcast_program_role_bool_exp | null;
   _or?: (podcast_program_role_bool_exp | null)[] | null;
   id?: uuid_comparison_exp | null;
-  member?: member_bool_exp | null;
+  member?: member_public_bool_exp | null;
   member_id?: String_comparison_exp | null;
   name?: String_comparison_exp | null;
   podcast_program?: podcast_program_bool_exp | null;
@@ -9808,7 +9814,7 @@ export interface podcast_program_role_bool_exp {
  */
 export interface podcast_program_role_insert_input {
   id?: any | null;
-  member?: member_obj_rel_insert_input | null;
+  member?: member_public_obj_rel_insert_input | null;
   member_id?: string | null;
   name?: string | null;
   podcast_program?: podcast_program_obj_rel_insert_input | null;

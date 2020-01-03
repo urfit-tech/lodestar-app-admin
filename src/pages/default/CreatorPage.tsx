@@ -111,8 +111,8 @@ const CreatorPage: React.FC = () => {
   const memberId = match.params.memberId
   const { member, loadingMember: isLoading } = usePublicMember(memberId)
   const [activeService, switchActiveService] = useState(0)
-  const [defaultActivekey, setDefaultActivekey] = useQueryParam('tabkey', StringParam)
-  const [activeKey, setActiveKey] = useState(defaultActivekey || 'settings')
+  const [defaultActiveKey, setDefaultActiveKey] = useQueryParam('tabkey', StringParam)
+  const [activeKey, setActiveKey] = useState(defaultActiveKey || 'settings')
 
   if (!isLoading) {
     if (!member) return <Redirect to={{ pathname: `/` }} />
@@ -292,7 +292,7 @@ const CreatorPage: React.FC = () => {
         activeKey={activeKey}
         onChange={key => {
           setActiveKey(key)
-          setDefaultActivekey(key)
+          setDefaultActiveKey(key)
         }}>
         <Tabs.TabPane tab="開設課程" key="programs">
           開設課程
@@ -357,7 +357,7 @@ const CreatorPage: React.FC = () => {
                 </div>)}
                 <StyledLink onClick={() => {
                   setActiveKey("programs")
-                  setDefaultActivekey("programs")
+                  setDefaultActiveKey("programs")
                 }}>
                   瀏覽全部
                   <Icon component={() => <AngleRight />} className="ml-2" />
@@ -371,7 +371,7 @@ const CreatorPage: React.FC = () => {
                 </div>)}
                 <StyledLink onClick={() => {
                   setActiveKey("podcasts")
-                  setDefaultActivekey("podcasts")
+                  setDefaultActiveKey("podcasts")
                 }}>
                   瀏覽全部
                   <Icon component={() => <AngleRight />} className="ml-2" />

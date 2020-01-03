@@ -9,12 +9,12 @@ import ReactPixel from 'react-facebook-pixel'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import ProductItem from '../../containers/common/ProductItem'
+import { useAuth } from '../../contexts/AuthContext'
 import { currencyFormatter, handleError, TPDirect } from '../../helpers'
 import { useMember } from '../../hooks/member'
 import { Member } from '../../schemas/general'
 import settings from '../../settings'
 import { Check, Discount } from '../../types/payment'
-import { useAuth } from '../auth/AuthContext'
 import { AuthModalContext } from '../auth/AuthModal'
 import DiscountSelectionCard from './DiscountSelectionCard'
 
@@ -159,7 +159,7 @@ const CheckoutProductModal: React.FC<CheckoutProductModalProps> = ({
             return
           }
 
-          checkoutPerpretual(setLoading, {
+          checkoutPerpetual(setLoading, {
             member,
             productId,
             discount,
@@ -378,7 +378,7 @@ const checkoutSubscription: (
   })
 }
 
-const checkoutPerpretual: (
+const checkoutPerpetual: (
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   data: {
     member: Member

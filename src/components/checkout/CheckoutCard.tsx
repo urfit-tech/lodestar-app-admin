@@ -5,11 +5,11 @@ import { prop, sum } from 'ramda'
 import React, { useContext, useState } from 'react'
 import ReactPixel from 'react-facebook-pixel'
 import { ThemeContext } from 'styled-components'
+import { useAuth } from '../../contexts/AuthContext'
 import { currencyFormatter } from '../../helpers'
 import settings from '../../settings'
 import { CartProduct, Check, Discount } from '../../types/payment'
 import AdminCard from '../admin/AdminCard'
-import { useAuth } from '../auth/AuthContext'
 import { AuthModalContext } from '../auth/AuthModal'
 
 type CheckoutCardProps = CardProps & {

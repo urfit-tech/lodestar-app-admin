@@ -6,8 +6,8 @@ import Activity, { ActivityProps } from './Activity'
 const ActivityCollectionTabs: React.FC<{
   activities: ActivityProps[]
 }> = ({ activities }) => {
-  const [defaultActivekey, setDefaultActivekey] = useQueryParam('tabkey', StringParam)
-  const [activeKey, setActiveKey] = useState(defaultActivekey || 'now')
+  const [defaultActiveKey, setDefaultActiveKey] = useQueryParam('tabkey', StringParam)
+  const [activeKey, setActiveKey] = useState(defaultActiveKey || 'now')
 
   const tabContents = [
     {
@@ -36,7 +36,7 @@ const ActivityCollectionTabs: React.FC<{
       activeKey={activeKey}
       onChange={key => {
         setActiveKey(key)
-        setDefaultActivekey(key)
+        setDefaultActiveKey(key)
       }}
     >
       {tabContents.map(tabContent => (

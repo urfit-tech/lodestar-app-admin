@@ -98,8 +98,8 @@ const MemberCollectionAdminPage = () => {
       ),
       ...getColumnSearchProps({
         theme,
-        onSearch: (selectedkeys, confirm) => {
-          selectedkeys && setNameSearch(selectedkeys[0] || '')
+        onSearch: (selectedKeys, confirm) => {
+          selectedKeys && setNameSearch(selectedKeys[0] || '')
           setEmailSearch('')
         },
       }),
@@ -110,8 +110,8 @@ const MemberCollectionAdminPage = () => {
       key: 'email',
       ...getColumnSearchProps({
         theme,
-        onSearch: (selectedkeys, confirm) => {
-          selectedkeys && setEmailSearch(selectedkeys[0] || '')
+        onSearch: (selectedKeys, confirm) => {
+          selectedKeys && setEmailSearch(selectedKeys[0] || '')
           setNameSearch('')
         },
       }),

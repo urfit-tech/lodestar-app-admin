@@ -1,9 +1,9 @@
 import { Icon, Typography } from 'antd'
 import React from 'react'
-import { useAuth } from '../../../components/auth/AuthContext'
 import CreatorAdminLayout from '../../../components/layout/CreatorAdminLayout'
 import SaleCollectionCreatorCard from '../../../containers/sale/SaleCollectionCreatorCard'
 import SaleSummaryCreatorCard from '../../../containers/sale/SaleSummaryCreatorCard'
+import { useAuth } from '../../../contexts/AuthContext'
 
 const SalesAdminPage = () => {
   const { currentMemberId } = useAuth()

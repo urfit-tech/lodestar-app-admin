@@ -7,10 +7,10 @@ import moment from 'moment'
 import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
 import { AvatarImage } from '../../components/common/Image'
+import AppContext from '../../contexts/AppContext'
 import { currencyFormatter, handleError } from '../../helpers'
 import { UserRole } from '../../schemas/general'
 import types from '../../types'
-import AppContext from './AppContext'
 
 const StyledMetaBlock = styled.div`
   color: var(--gray-darker);
@@ -39,8 +39,8 @@ type MemberAdminModalProps = FormComponentProps &
 
 const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCancel, onSuccess, ...modalProps }) => {
   const { domain } = useContext(AppContext)
-  const [updateMemberInfor] = useMutation<types.UPDATE_MEMBER_INFOR, types.UPDATE_MEMBER_INFORVariables>(gql`
-    mutation UPDATE_MEMBER_INFOR($memberId: String!, $name: String, $email: String, $roles: jsonb) {
+  const [updateMemberInfor] = useMutation<types.UPDATE_MEMBER_INFO, types.UPDATE_MEMBER_INFOVariables>(gql`
+    mutation UPDATE_MEMBER_INFO($memberId: String!, $name: String, $email: String, $roles: jsonb) {
       update_member(where: { id: { _eq: $memberId } }, _set: { name: $name, email: $email, roles: $roles }) {
         affected_rows
       }

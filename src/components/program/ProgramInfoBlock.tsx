@@ -3,16 +3,16 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { InferType } from 'yup'
+import { useAuth } from '../../contexts/AuthContext'
 import { currencyFormatter } from '../../helpers'
 import { usePublicMember } from '../../hooks/member'
 import { useEnrolledProgramIds } from '../../hooks/program'
 import { programSchema } from '../../schemas/program'
-import { useAuth } from '../auth/AuthContext'
 import ProgramPaymentButton from '../checkout/ProgramPaymentButton'
 import { AvatarImage } from '../common/Image'
 import Responsive, { BREAK_POINT } from '../common/Responsive'
 
-const ProgramInforCard = styled(Card)`
+const ProgramInfoCard = styled(Card)`
   && {
     margin-bottom: 2.5rem;
     box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.15);
@@ -89,14 +89,14 @@ const ProgramInfoBlock: React.FC<{
   return (
     <>
       <Responsive.Default>
-        <ProgramInforCard>
+        <ProgramInfoCard>
           <ProgramContentCountBlock program={program} />
-        </ProgramInforCard>
+        </ProgramInfoCard>
       </Responsive.Default>
 
       <Responsive.Desktop>
         <Affix offsetTop={40} target={() => document.getElementById('layout-content')}>
-          <ProgramInforCard>
+          <ProgramInfoCard>
             {member && (
               <>
                 <AvatarImage src={member.pictureUrl || ''} size={96} className="my-3 mx-auto" />
@@ -121,7 +121,7 @@ const ProgramInfoBlock: React.FC<{
                 <Button block>進入課程</Button>
               </Link>
             )}
-          </ProgramInforCard>
+          </ProgramInfoCard>
         </Affix>
       </Responsive.Desktop>
     </>

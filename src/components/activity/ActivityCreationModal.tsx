@@ -3,8 +3,8 @@ import { FormComponentProps } from 'antd/lib/form'
 import React, { useState } from 'react'
 import useRouter from 'use-react-router'
 import CreatorSelector from '../../containers/common/CreatorSelector'
+import { useAuth } from '../../contexts/AuthContext'
 import AdminModal from '../admin/AdminModal'
-import { useAuth } from '../auth/AuthContext'
 import ProgramCategorySelector from '../program/ProgramCategorySelector'
 
 export type CreateActivityEvent = {

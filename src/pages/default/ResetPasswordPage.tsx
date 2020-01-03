@@ -5,9 +5,9 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
-import { useAuth } from '../../components/auth/AuthContext'
 import { BREAK_POINT } from '../../components/common/Responsive'
 import DefaultLayout from '../../components/layout/DefaultLayout'
+import { useAuth } from '../../contexts/AuthContext'
 
 const StyledContainer = styled.div`
   padding: 4rem 1rem;

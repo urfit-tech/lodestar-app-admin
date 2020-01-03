@@ -4,10 +4,10 @@ import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { BooleanParam, StringParam, useQueryParam } from 'use-query-params'
-import { useAuth } from '../../components/auth/AuthContext'
 import DefaultLayout from '../../components/layout/DefaultLayout'
 import ProgramCard from '../../components/program/ProgramCard'
 import ProgramCategorySelector from '../../components/program/ProgramCategorySelector'
+import { useAuth } from '../../contexts/AuthContext'
 import types from '../../types'
 
 const StyledWrapper = styled.div`

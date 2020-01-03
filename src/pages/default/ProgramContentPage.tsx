@@ -2,11 +2,11 @@ import { Button, Layout, PageHeader } from 'antd'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
-import { useAuth } from '../../components/auth/AuthContext'
 import { BREAK_POINT } from '../../components/common/Responsive'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import ProgramContentBlock from '../../components/program/ProgramContentBlock'
 import ProgramContentMenu from '../../components/program/ProgramContentMenu'
+import { useAuth } from '../../contexts/AuthContext'
 import { useProgram } from '../../hooks/program'
 
 const StyledPageHeader = styled(PageHeader)`

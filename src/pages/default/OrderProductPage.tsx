@@ -7,6 +7,7 @@ import ActivityTicketPage from './ActivityTicketPage'
 
 const OrderProductPage = () => {
   const { match } = useRouter<{ orderId: string; orderProductId: string }>()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { orderId, orderProductId } = match.params
   const { loadingOrderProduct, errorOrderProduct, orderProduct } = useOrderProduct(orderProductId)
 

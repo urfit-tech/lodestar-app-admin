@@ -2,9 +2,9 @@ import { ApolloProvider } from '@apollo/react-hooks'
 import { message } from 'antd'
 import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
-import { createApolloClient } from '../../helpers/apollo'
-import types from '../../types'
-import { useAuth } from '../auth/AuthContext'
+import { createApolloClient } from '../helpers/apollo'
+import types from '../types'
+import { useAuth } from './AuthContext'
 
 export const ApiProvider: React.FC = ({ children }) => {
   const [appId, setAppId] = useState<string | null>(null)

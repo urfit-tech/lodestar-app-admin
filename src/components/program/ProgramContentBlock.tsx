@@ -6,10 +6,10 @@ import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { throttle } from 'throttle-typescript'
 import { InferType } from 'yup'
+import { useAuth } from '../../contexts/AuthContext'
 import { useProgramContent } from '../../hooks/program'
 import { programSchema } from '../../schemas/program'
 import types from '../../types'
-import { useAuth } from '../auth/AuthContext'
 import { BraftContent } from '../common/StyledBraftEditor'
 import IssueThreadBlock from '../issue/IssueThreadBlock'
 import ProgramContentPlayer from './ProgramContentPlayer'
@@ -31,9 +31,9 @@ const ProgramContentBlock: React.FC<{
   const { currentMemberId } = useAuth()
   const { programContent, refetchProgramContent } = useProgramContent(programContentId)
   const [insertProgramContentProgress] = useMutation<
-    types.INSTERT_PROGRAM_CONTENT_PROGRESS,
-    types.INSTERT_PROGRAM_CONTENT_PROGRESSVariables
-  >(INSTERT_PROGRAM_CONTENT_PROGRESS)
+    types.INSERT_PROGRAM_CONTENT_PROGRESS,
+    types.INSERT_PROGRAM_CONTENT_PROGRESSVariables
+  >(INSERT_PROGRAM_CONTENT_PROGRESS)
 
   const setProgress = (progress: number) => {
     if (progress === 0) {
@@ -107,8 +107,8 @@ const ProgramContentBlock: React.FC<{
   )
 }
 
-const INSTERT_PROGRAM_CONTENT_PROGRESS = gql`
-  mutation INSTERT_PROGRAM_CONTENT_PROGRESS($memberId: String, $programContentId: uuid!, $progress: numeric) {
+const INSERT_PROGRAM_CONTENT_PROGRESS = gql`
+  mutation INSERT_PROGRAM_CONTENT_PROGRESS($memberId: String, $programContentId: uuid!, $progress: numeric) {
     insert_program_content_progress(
       objects: { member_id: $memberId, program_content_id: $programContentId, progress: $progress }
       on_conflict: { constraint: program_content_progress_member_id_program_content_id_key, update_columns: progress }

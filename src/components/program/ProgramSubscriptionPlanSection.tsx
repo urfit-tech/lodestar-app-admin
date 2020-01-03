@@ -1,6 +1,6 @@
 import React from 'react'
 import { InferType } from 'yup'
-import { useAuth } from '../../components/auth/AuthContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { programSchema } from '../../schemas/program'
 import ProgramSubscriptionPlanCard from './ProgramSubscriptionPlanCard'
 

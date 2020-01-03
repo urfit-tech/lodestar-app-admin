@@ -3,7 +3,7 @@ import gql from 'graphql-tag'
 import { uniq, unnest } from 'ramda'
 import { useContext } from 'react'
 import { array, object, string } from 'yup'
-import AppContext from '../containers/common/AppContext'
+import AppContext from '../contexts/AppContext'
 import { programContentSchema, programSchema } from '../schemas/program'
 import types from '../types'
 

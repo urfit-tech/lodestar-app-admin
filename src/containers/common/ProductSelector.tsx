@@ -2,9 +2,9 @@ import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React, { useContext } from 'react'
 import ProductSelectorComponent from '../../components/common/ProductSelector'
+import AppContext from '../../contexts/AppContext'
 import { ProductType } from '../../schemas/general'
 import types from '../../types'
-import AppContext from './AppContext'
 
 type ProductSelectorProps = {
   allowTypes: ProductType[]

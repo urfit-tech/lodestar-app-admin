@@ -6,9 +6,9 @@ import ActivityPublishAdminBlock from '../../containers/activity/ActivityPublish
 import ActivitySessionsAdminBlock from '../../containers/activity/ActivitySessionsAdminBlock'
 import ActivitySettingsAdminBlock from '../../containers/activity/ActivitySettingsAdminBlock'
 import ActivityTicketsAdminBlock from '../../containers/activity/ActivityTicketsAdminBlock'
-import AppContext from '../../containers/common/AppContext'
+import AppContext from '../../contexts/AppContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { AdminHeader, AdminHeaderTitle, AdminTabBarWrapper } from '../admin'
-import { useAuth } from '../auth/AuthContext'
 import { StyledLayoutContent } from '../layout/DefaultLayout'
 import { ActivitySessionProps } from './ActivitySessionsAdminBlock'
 import { ActivityTicketProps } from './ActivityTicket'
@@ -42,8 +42,8 @@ const ActivityAdminBlock: React.FC<{
 }> = ({ loading, error, activityAdmin, onRefetch }) => {
   const { authToken } = useAuth()
   const { history } = useRouter()
-  const [defaultActivekey, setDefaultActivekey] = useQueryParam('tabkey', StringParam)
-  const [activeKey, setActiveKey] = useState(defaultActivekey || 'settings')
+  const [defaultActiveKey, setDefaultActiveKey] = useQueryParam('tabkey', StringParam)
+  const [activeKey, setActiveKey] = useState(defaultActiveKey || 'settings')
   const app = useContext(AppContext)
 
   return (
@@ -72,7 +72,7 @@ const ActivityAdminBlock: React.FC<{
             activeKey={activeKey}
             onChange={key => {
               setActiveKey(key)
-              setDefaultActivekey(key)
+              setDefaultActiveKey(key)
             }}
             renderTabBar={(props, DefaultTabBar) => (
               <AdminTabBarWrapper>

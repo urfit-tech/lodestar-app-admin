@@ -18,13 +18,13 @@ export const productSchema = object({
 export const orderProductSchema = object({
   id: string(),
   orderId: string(),
-  prodcutId: string(),
+  productId: string(),
   name: string(),
   description: string().nullable(),
   price: number(),
   startedAt: date().nullable(),
   endedAt: date().nullable(),
-  autoRenewd: boolean().nullable(),
+  autoRenewed: boolean().nullable(),
   createdAt: date(),
 
   product: productSchema,

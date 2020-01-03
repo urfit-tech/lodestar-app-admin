@@ -4,8 +4,8 @@ import axios from 'axios'
 import gql from 'graphql-tag'
 import { reverse } from 'ramda'
 import React from 'react'
-import { useAuth } from '../../components/auth/AuthContext'
 import VoucherCollectionBlockComponent from '../../components/voucher/VoucherCollectionBlock'
+import { useAuth } from '../../contexts/AuthContext'
 import types from '../../types'
 
 const VoucherCollectionBlock = () => {

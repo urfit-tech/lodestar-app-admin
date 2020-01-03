@@ -1,10 +1,10 @@
 import { Icon, Skeleton } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
-import { useAuth } from '../../../components/auth/AuthContext'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import PodcastProgramCollectionAdminTable from '../../../containers/podcast/PodcastProgramCollectionAdminTable'
 import PodcastProgramCreationModal from '../../../containers/podcast/PodcastProgramCreationModal'
+import { useAuth } from '../../../contexts/AuthContext'
 import { ReactComponent as MicrophoneOIcon } from '../../../images/icon/microphone-o.svg'
 
 const StyledTitle = styled.h1`

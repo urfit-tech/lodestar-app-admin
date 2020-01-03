@@ -100,7 +100,7 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
 }) => {
   const [creatorSearch, setCreatorSearch] = useState('')
   const [isVisible, setVisible] = useState(false)
-  const [programPlanId, setPorgramPlanId] = useState('')
+  const [programPlanId, setProgramPlanId] = useState('')
 
   const columns: ColumnProps<PodcastPlanProps>[] = [
     {
@@ -183,7 +183,7 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
           return ({
             onClick: () => {
               setVisible(true)
-              setPorgramPlanId(record.id)
+              setProgramPlanId(record.id)
             }
           })
         }}

@@ -1,9 +1,9 @@
 import { Icon, List, Typography } from 'antd'
 import React from 'react'
 import AdminCard from '../../components/admin/AdminCard'
-import { useAuth } from '../../components/auth/AuthContext'
 import DefaultLayout from '../../components/layout/DefaultLayout'
 import NotificationItem from '../../components/notification/NotificationItem'
+import { useAuth } from '../../contexts/AuthContext'
 import { useNotifications } from '../../hooks/data'
 
 const NotificationPage = () => {

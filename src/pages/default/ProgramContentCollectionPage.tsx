@@ -3,8 +3,8 @@ import React from 'react'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import AdminCard from '../../components/admin/AdminCard'
-import { useAuth } from '../../components/auth/AuthContext'
 import ProgramContentMenu from '../../components/program/ProgramContentMenu'
+import { useAuth } from '../../contexts/AuthContext'
 import { useProgram } from '../../hooks/program'
 
 const StyledPCPageHeader = styled(PageHeader)`

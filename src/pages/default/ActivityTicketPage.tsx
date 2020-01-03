@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import ActivityBanner from '../../components/activity/ActivityBanner'
 import ActivitySessionItem from '../../components/activity/ActivitySessionItem'
-import { useAuth } from '../../components/auth/AuthContext'
 import DefaultLayout from '../../components/layout/DefaultLayout'
+import { useAuth } from '../../contexts/AuthContext'
 import { useActivityTicket } from '../../hooks/activity'
 
 const StyledContainer = styled.div`

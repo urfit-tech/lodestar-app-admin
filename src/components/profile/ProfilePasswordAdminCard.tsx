@@ -3,8 +3,8 @@ import { CardProps } from 'antd/lib/card'
 import { FormComponentProps } from 'antd/lib/form'
 import axios from 'axios'
 import React, { FormEvent, useState } from 'react'
+import { useAuth } from '../../contexts/AuthContext'
 import AdminCard from '../admin/AdminCard'
-import { useAuth } from '../auth/AuthContext'
 import { StyledForm } from '../layout'
 
 type ProfilePasswordAdminCardProps = CardProps & FormComponentProps & { memberId: string }

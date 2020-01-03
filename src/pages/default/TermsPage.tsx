@@ -2,7 +2,7 @@ import { Card, Typography } from 'antd'
 import React, { useContext } from 'react'
 import styled from 'styled-components'
 import DefaultLayout from '../../components/layout/DefaultLayout'
-import AppContext from '../../containers/common/AppContext'
+import AppContext from '../../contexts/AppContext'
 
 const StyledTitle = styled(Typography.Title)`
   && {

@@ -2,8 +2,8 @@ import { Skeleton } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
-import { useAuth } from '../../../components/auth/AuthContext'
 import PodcastProgramAdminBlock from '../../../containers/podcast/PodcastProgramAdminBlock'
+import { useAuth } from '../../../contexts/AuthContext'
 
 const StyledWrapper = styled.div`
   background: #f7f8f8;

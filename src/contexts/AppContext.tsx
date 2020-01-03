@@ -1,8 +1,8 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React, { createContext } from 'react'
-import ApplicationHelmet from '../../components/common/ApplicationHelmet'
-import types from '../../types'
+import ApplicationHelmet from '../components/common/ApplicationHelmet'
+import types from '../types'
 
 type Module = 'activity' | 'voucher' | 'member_card' | 'podcast' | 'appointment'
 

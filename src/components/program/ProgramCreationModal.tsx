@@ -5,9 +5,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import useRouter from 'use-react-router'
 import CreatorSelector from '../../containers/common/CreatorSelector'
+import { useAuth } from '../../contexts/AuthContext'
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
-import { useAuth } from '../auth/AuthContext'
 import ProgramCategorySelector from './ProgramCategorySelector'
 
 type ProgramCreationModalProps = FormComponentProps & {

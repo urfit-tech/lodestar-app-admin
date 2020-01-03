@@ -1,9 +1,7 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React, { useEffect } from 'react'
-import AppointmentPlanCollectionTableComponent, {
-  AppointmentPlanProps,
-} from '../../components/appointment/AppointmentPlanCollectionTable'
+import AppointmentPlanCollectionTableComponent, { AppointmentPlanProps } from '../../components/appointment/AppointmentPlanCollectionTable'
 import types from '../../types'
 
 const AppointmentPlanCollectionTable: React.FC = () => {

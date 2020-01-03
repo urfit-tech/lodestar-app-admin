@@ -1,11 +1,11 @@
 import { Icon, Typography } from 'antd'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { useAuth } from '../../components/auth/AuthContext'
 import CartProductTableCard from '../../components/checkout/CartProductTableCard'
 import CheckoutCard from '../../components/checkout/CheckoutCard'
 import DiscountSelectionCard from '../../components/checkout/DiscountSelectionCard'
 import DefaultLayout from '../../components/layout/DefaultLayout'
+import { useAuth } from '../../contexts/AuthContext'
 import { useCart } from '../../hooks/checkout'
 import { Discount } from '../../types/payment'
 
@@ -41,7 +41,7 @@ const CartPage = () => {
           console.error(error)
         }
       })
-  }, [JSON.stringify(cartProducts), JSON.stringify(discount), currentMemberId])
+  }, [cartProducts, currentMemberId, discount])
 
   return (
     <DefaultLayout>
