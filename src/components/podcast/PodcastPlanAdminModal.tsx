@@ -122,7 +122,7 @@ const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
             {form.getFieldDecorator('creatorId', {
               initialValue: podcastPlan ? podcastPlan.creatorId : '',
               rules: [{ required: true, message: '請輸入帳號 或 Email' }]
-            })(<CreatorSelector />)}
+            })(<CreatorSelector variant="single"/>)}
           </Form.Item>}
           <Form.Item label="販售狀態">
             {form.getFieldDecorator('status', {

@@ -86,7 +86,7 @@ const ActivityCreationModal: React.FC<ActivityCreationModalProps> = ({ form, onC
           <Form.Item label="選擇老師">
             {form.getFieldDecorator('memberId', {
               initialValue: currentMemberId,
-            })(<CreatorSelector />)}
+            })(<CreatorSelector variant="single"/>)}
           </Form.Item>
         )}
         <Form.Item label="名稱">
