@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import NotFoundPage from './pages/default/NotFoundPage'
 import LoadablePage from './pages/LoadablePage'
 import { UserRole } from './schemas/general'
+import LoadingPage from './pages/default/LoadingPage'
 
 type RouteProps = {
   path: string
@@ -42,35 +43,10 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'LoadingPage',
     authenticated: false,
   },
-  oauth2: {
-    path: '/oauth2',
-    pageName: 'OAuth2Page',
-    authenticated: false,
-  },
   terms: {
     path: '/terms',
     pageName: 'TermsPage',
     authenticated: false,
-  },
-  about: {
-    path: '/about',
-    pageName: 'AboutPage',
-    authenticated: false,
-  },
-  manual: {
-    path: '/manual',
-    pageName: 'ManualPage',
-    authenticated: false,
-  },
-  order: {
-    path: '/orders/:orderId',
-    pageName: 'OrderPage',
-    authenticated: false,
-  },
-  order_product: {
-    path: '/orders/:orderId/products/:orderProductId',
-    pageName: 'OrderProductPage',
-    authenticated: true,
   },
   notification: {
     path: '/notifications',
@@ -240,73 +216,75 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
 }
 
 export default () => (
-  <Switch>
-    {Object.keys(routesProps).map(routeKey => {
-      const routeProps = routesProps[routeKey as keyof typeof routesProps]
-      return (
-        <Route
-          exact
-          key={routeKey}
-          path={routeProps.path}
-          render={props => (
-            <LoadablePage
-              {...props}
-              pageName={routeProps.pageName}
-              authenticated={routeProps.authenticated}
-              allowedUserRole={routeProps.allowedUserRole}
-            />
-          )}
-        />
-      )
-    })}
-    <Route
-      exact
-      path="/settings"
-      render={props => (
-        <Redirect
-          to={{
-            pathname: '/settings/profile',
-            state: { from: props.location },
-          }}
-        />
-      )}
-    />
-    <Route
-      exact
-      path="/admin"
-      render={props => (
-        <Redirect
-          to={{
-            pathname: '/admin/sales',
-            state: { from: props.location },
-          }}
-        />
-      )}
-    />
-    <Route
-      exact
-      path="/studio"
-      render={props => (
-        <Redirect
-          to={{
-            pathname: '/studio/sales',
-            state: { from: props.location },
-          }}
-        />
-      )}
-    />
-    <Route
-      exact
-      path="/funding/:fundingId"
-      render={props => (
-        <Redirect
-          to={{
-            pathname: `/projects/${props.match.params.fundingId}`,
-            state: { from: props.location },
-          }}
-        />
-      )}
-    />
-    <Route component={NotFoundPage} />
-  </Switch>
+  <Suspense fallback={<LoadingPage></LoadingPage>}>
+    <Switch>
+      {Object.keys(routesProps).map(routeKey => {
+        const routeProps = routesProps[routeKey as keyof typeof routesProps]
+        return (
+          <Route
+            exact
+            key={routeKey}
+            path={routeProps.path}
+            render={props => (
+              <LoadablePage
+                {...props}
+                pageName={routeProps.pageName}
+                authenticated={routeProps.authenticated}
+                allowedUserRole={routeProps.allowedUserRole}
+              />
+            )}
+          />
+        )
+      })}
+      <Route
+        exact
+        path="/settings"
+        render={props => (
+          <Redirect
+            to={{
+              pathname: '/settings/profile',
+              state: { from: props.location },
+            }}
+          />
+        )}
+      />
+      <Route
+        exact
+        path="/admin"
+        render={props => (
+          <Redirect
+            to={{
+              pathname: '/admin/sales',
+              state: { from: props.location },
+            }}
+          />
+        )}
+      />
+      <Route
+        exact
+        path="/studio"
+        render={props => (
+          <Redirect
+            to={{
+              pathname: '/studio/sales',
+              state: { from: props.location },
+            }}
+          />
+        )}
+      />
+      <Route
+        exact
+        path="/funding/:fundingId"
+        render={props => (
+          <Redirect
+            to={{
+              pathname: `/projects/${props.match.params.fundingId}`,
+              state: { from: props.location },
+            }}
+          />
+        )}
+      />
+      <Route component={NotFoundPage} />
+    </Switch>
+  </Suspense>
 )

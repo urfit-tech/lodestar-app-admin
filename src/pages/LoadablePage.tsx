@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, lazy } from 'react'
 import ReactPixel from 'react-facebook-pixel'
 import { Redirect } from 'react-router-dom'
 import useRouter from 'use-react-router'
@@ -20,20 +20,6 @@ const LoadablePage: React.FC<LoadablePageProps> = ({ pageName, authenticated, al
 
   const { location } = useRouter()
   const { isAuthenticated, isLoading, allowedUserRoles, setCurrentUserRole } = useAuth()
-  const [loading, setLoading] = useState()
-  const [PageComponentModule, setPageComponentModule] = useState()
-
-  useEffect(() => {
-    setLoading(true)
-    let componentModule
-    try {
-      componentModule = require(`./default/${pageName}`)
-    } catch {
-      componentModule = 'not found'
-    }
-    setPageComponentModule(componentModule)
-    setLoading(false)
-  }, [pageName])
 
   useEffect(() => {
     if (setCurrentUserRole) {
@@ -55,13 +41,9 @@ const LoadablePage: React.FC<LoadablePageProps> = ({ pageName, authenticated, al
     return <Redirect to={{ pathname: '/' }} />
   }
 
-  return loading || !PageComponentModule ? (
-    <LoadingPage />
-  ) : PageComponentModule === 'not found' ? (
-    <NotFoundPage />
-  ) : (
-    <PageComponentModule.default {...props} />
-  )
+  const Page = lazy(() => import(`./default/${pageName}`))
+
+  return <Page {...props} />
 }
 
 export default LoadablePage
