@@ -51,29 +51,51 @@ type ProgramIntroAdminCardProps = FormComponentProps & {
   onRefetch?: () => void
 }
 const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, form, onRefetch }) => {
+  const [updateProgramCover] = useMutation<types.UPDATE_PROGRAM_COVER, types.UPDATE_PROGRAM_COVERVariables>(
+    UPDATE_PROGRAM_COVER,
+  )
   const [updateProgramIntro] = useMutation<types.UPDATE_PROGRAM_INTRO, types.UPDATE_PROGRAM_INTROVariables>(
     UPDATE_PROGRAM_INTRO,
   )
 
   const [loading, setLoading] = useState(false)
 
-  const submit = () => {
+  const handleUpdateCover = () => {
+    const uploadTime = Date.now()
+
+    program &&
+      form.validateFields((error, values) => {
+        if (!error) {
+          updateProgramCover({
+            variables: {
+              programId: program.id,
+              coverUrl: values.coverImg
+                ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${localStorage.getItem(
+                    'kolable.app.id',
+                  )}/${program.id}?t=${uploadTime}`
+                : undefined,
+            },
+          })
+            .then(() => {
+              onRefetch && onRefetch()
+              message.success('儲存成功')
+            })
+            .catch(handleError)
+        }
+      })
+  }
+
+  const handleSubmit = () => {
     program &&
       form.validateFields((error, values) => {
         if (!error) {
           setLoading(true)
-          const uploadTime = Date.now()
 
           updateProgramIntro({
             variables: {
               programId: program.id,
               abstract: values.abstract || '',
               description: values.description.toRAW(),
-              coverUrl: values.coverImg
-                ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${localStorage.getItem(
-                    'kolable.app.id',
-                  )}/${program.id}?t=${uploadTime}`
-                : undefined,
               coverVideoUrl: values.coverVideoUrl,
             },
           })
@@ -90,15 +112,9 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
   return (
     <AdminCard loading={!program}>
       <Typography.Title level={4}>課程介紹</Typography.Title>
+
       {program && (
-        <Form
-          onSubmit={e => {
-            e.preventDefault()
-            submit()
-          }}
-          labelCol={{ span: 24, md: { span: 4 } }}
-          wrapperCol={{ span: 24, md: { span: 10 } }}
-        >
+        <Form labelCol={{ span: 24, md: { span: 4 } }} wrapperCol={{ span: 24, md: { span: 10 } }}>
           <Form.Item label="課程封面">
             <div className="d-flex align-items-center flex-wrap">
               {program.coverUrl && (
@@ -112,12 +128,24 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
                   listType="picture-card"
                   path={`program_covers/${localStorage.getItem('kolable.app.id')}/${program.id}`}
                   showUploadList={false}
-                  onSuccess={() => submit()}
+                  onSuccess={() => handleUpdateCover()}
                   isPublic
                 />,
               )}
             </div>
           </Form.Item>
+        </Form>
+      )}
+
+      {program && (
+        <Form
+          onSubmit={e => {
+            e.preventDefault()
+            handleSubmit()
+          }}
+          labelCol={{ span: 24, md: { span: 4 } }}
+          wrapperCol={{ span: 24, md: { span: 10 } }}
+        >
           <Form.Item label="介紹影片">
             {form.getFieldDecorator('coverVideoUrl', {
               initialValue: program.coverVideoUrl,
@@ -173,17 +201,18 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
   )
 }
 
+const UPDATE_PROGRAM_COVER = gql`
+  mutation UPDATE_PROGRAM_COVER($programId: uuid!, $coverUrl: String) {
+    update_program(where: { id: { _eq: $programId } }, _set: { cover_url: $coverUrl }) {
+      affected_rows
+    }
+  }
+`
 const UPDATE_PROGRAM_INTRO = gql`
-  mutation UPDATE_PROGRAM_INTRO(
-    $programId: uuid!
-    $abstract: String
-    $description: String
-    $coverUrl: String
-    $coverVideoUrl: String
-  ) {
+  mutation UPDATE_PROGRAM_INTRO($programId: uuid!, $abstract: String, $description: String, $coverVideoUrl: String) {
     update_program(
-      _set: { abstract: $abstract, description: $description, cover_url: $coverUrl, cover_video_url: $coverVideoUrl }
       where: { id: { _eq: $programId } }
+      _set: { abstract: $abstract, description: $description, cover_video_url: $coverVideoUrl }
     ) {
       affected_rows
     }
