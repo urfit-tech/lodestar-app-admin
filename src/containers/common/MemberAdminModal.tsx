@@ -150,10 +150,10 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
             <span className="mr-3">上次登入</span>
             <span>{member.loginedAt ? moment(member.loginedAt).fromNow() : null}</span>
           </div>
-          <div className="mb-2">
+          {/* <div className="mb-2">
             <span className="mr-3">持有點數</span>
             <span>{member.points} 點</span>
-          </div>
+          </div> */}
           <div className="mb-2">
             <span className="mr-3">消費金額</span>
             <span>{currencyFormatter(member.consumption)}</span>
