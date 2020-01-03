@@ -58,7 +58,7 @@ const PodcastProgramContentAdminBlock: React.FC<FormComponentProps> = ({ form })
             label={
               <span>
                 <span className="mr-2">音頻</span>
-                <Tooltip title={<StyledTips>{'建議格式：MP3、AAC\n檔案大小限制：5MB'}</StyledTips>}>
+                <Tooltip title={<StyledTips>{'建議格式：MP3\n檔案大小限制：5MB'}</StyledTips>}>
                   <Icon type="question-circle" theme="filled" />
                 </Tooltip>
               </span>
@@ -67,7 +67,8 @@ const PodcastProgramContentAdminBlock: React.FC<FormComponentProps> = ({ form })
             {form.getFieldDecorator('coverImg')(
               <SingleUploader
                 withExtension
-                accept=".mp3,.m4a,.mp4,.3gp"
+                accept=".mp3"
+                // accept=".mp3,.m4a,.mp4,.3gp,.m4a,.aac"
                 uploadText="上傳音檔"
                 showUploadList={false}
                 path={`audios/${localStorage.getItem('kolable.app.id')}/${podcastProgramAdmin.id}`}
