@@ -85,7 +85,7 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
     <Modal {...modalProps} title={null} footer={null} onCancel={() => onCancel && onCancel()}>
       <AvatarImage src={member.avatarUrl} size={120} className="mx-auto mb-4" />
 
-      <div className="row no-gutters align-items-center justify-content-center">
+      {/* <div className="row no-gutters align-items-center justify-content-center">
         {member.roles.includes('content-creator') && (
           <>
             <a
@@ -107,7 +107,7 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
         >
           <Button type="link">學員主頁</Button>
         </a>
-      </div>
+      </div> */}
 
       <Form
         hideRequiredMark
