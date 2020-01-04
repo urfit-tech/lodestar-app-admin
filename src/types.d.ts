@@ -8642,6 +8642,7 @@ export interface member_public_bool_exp {
   metadata?: jsonb_comparison_exp | null;
   name?: String_comparison_exp | null;
   picture_url?: String_comparison_exp | null;
+  role?: String_comparison_exp | null;
   roles?: jsonb_comparison_exp | null;
   username?: String_comparison_exp | null;
 }
@@ -8656,6 +8657,7 @@ export interface member_public_insert_input {
   metadata?: any | null;
   name?: string | null;
   picture_url?: string | null;
+  role?: string | null;
   roles?: any | null;
   username?: string | null;
 }
