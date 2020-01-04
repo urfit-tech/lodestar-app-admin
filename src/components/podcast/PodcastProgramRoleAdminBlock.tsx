@@ -135,7 +135,7 @@ const PodcastProgramRoleAdminBlock: React.FC = () => {
   )
 }
 
-const InstructorBlock: React.FC<{
+export const InstructorBlock: React.FC<{
   memberId: string
   onClick?: () => void
 }> = ({ memberId, onClick }) => {

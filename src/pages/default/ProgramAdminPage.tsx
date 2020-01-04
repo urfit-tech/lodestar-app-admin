@@ -6,7 +6,7 @@ import useRouter from 'use-react-router'
 import ProgramContentAdminPane from '../../components/program/ProgramContentAdminPane'
 import ProgramPlanAdminPane from '../../components/program/ProgramPlanAdminPane'
 import ProgramPublishingAdminPane from '../../components/program/ProgramPublishingAdminPane'
-import ProgramRoleAdminPane from '../../components/program/ProgramRoleAdminPane'
+import ProgramRoleAdminPane from '../../containers/program/ProgramRoleAdminPane'
 import ProgramSettingAdminPane from '../../components/program/ProgramSettingAdminPane'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
@@ -97,12 +97,6 @@ const ProgramAdminPage: React.FC = () => {
           <Tabs.TabPane tab="銷售方案" key="plan">
             <ProgramPlanAdminPane program={program} onRefetch={refetchProgram} />
           </Tabs.TabPane>
-          {/* <Tabs.TabPane tab="課程公告" key="announcement" disabled>
-            <ProgramAnnouncementAdminPane
-              program={program}
-              onRefetch={refetchProgram}
-            />
-          </Tabs.TabPane> */}
           <Tabs.TabPane tab="身份管理" key="roles">
             <ProgramRoleAdminPane program={program} onRefetch={refetchProgram} />
           </Tabs.TabPane>

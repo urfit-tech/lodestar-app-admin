@@ -21,7 +21,6 @@ const PodcastProgramCollectionAdminTable: React.FC = () => {
   if (error || !data) {
     return <div>讀取錯誤</div>
   }
-
   const podcastPrograms: PodcastProgramProps[] = data.podcast_program.map(podcastProgram => ({
     id: podcastProgram.id,
     coverUrl: podcastProgram.cover_url,
