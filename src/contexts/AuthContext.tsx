@@ -1,8 +1,8 @@
 import Axios from 'axios'
 import jwt from 'jsonwebtoken'
-import React, { useContext, useEffect, useState, useCallback } from 'react'
-import { UserRole } from '../schemas/general'
+import React, { useContext, useEffect, useState } from 'react'
 import { useInterval } from '../hooks/util'
+import { UserRole } from '../schemas/general'
 
 type AuthContext = {
   isAuthenticating: boolean
@@ -11,6 +11,7 @@ type AuthContext = {
   currentMemberId: string | null
   authToken: string | null
   login?: (data: { appId: string; account: string; password: string }) => Promise<void>
+  socialLogin?: (data: { provider: string; providerToken: any }) => Promise<void>
   logout?: () => Promise<void>
 }
 
@@ -45,7 +46,7 @@ export const AuthProvider: React.FC = ({ children }) => {
   useEffect(() => {
     !authToken && refreshToken()
   }, [authToken])
-  
+
   useInterval(refreshToken, 35000)
 
   // useEffect(() => {
@@ -110,6 +111,23 @@ export const AuthProvider: React.FC = ({ children }) => {
             } else {
               setAuthToken(data.authToken)
             }
+          }),
+        socialLogin: async ({ provider, providerToken }) =>
+          Axios.post(
+            `${process.env.REACT_APP_BACKEND_ENDPOINT}/socialLogin`,
+            {
+              appId: process.env.REACT_APP_ID,
+              provider,
+              providerToken,
+            },
+            {
+              withCredentials: true,
+              // prevent preflight
+              // TODO: find a better way to do so
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            },
+          ).then(({ data }) => {
+            setAuthToken(data.authToken)
           }),
         logout: async () =>
           Axios(`${process.env.REACT_APP_BACKEND_ENDPOINT}/logout`, {

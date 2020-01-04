@@ -1,13 +1,12 @@
 import { Button, Form, Icon, Input, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import axios from 'axios'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
 import { BREAK_POINT } from '../../components/common/Responsive'
 import DefaultLayout from '../../components/layout/DefaultLayout'
-import { useAuth } from '../../contexts/AuthContext'
 
 const StyledContainer = styled.div`
   padding: 4rem 1rem;

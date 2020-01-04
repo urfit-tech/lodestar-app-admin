@@ -3,7 +3,7 @@ import ReactPixel from 'react-facebook-pixel'
 import { Redirect } from 'react-router-dom'
 import useRouter from 'use-react-router'
 import { useAuth } from '../contexts/AuthContext'
-import { useGAPageView } from '../hooks/util'
+import { useGAPageView, getUserRoleLevel } from '../hooks/util'
 import { UserRole } from '../schemas/general'
 import settings from '../settings'
 
@@ -26,7 +26,7 @@ const LoadablePage: React.FC<LoadablePageProps> = ({ pageName, authenticated, al
 
   // load forbidden page if not allowed roles
   const Page = lazy(() =>
-    !isAuthenticating && allowedUserRole && allowedUserRole !== currentUserRole
+    !isAuthenticating && allowedUserRole && getUserRoleLevel(allowedUserRole) > getUserRoleLevel(currentUserRole)
       ? import(`./default/ForbiddenPage`)
       : import(`./default/${pageName}`),
   )
