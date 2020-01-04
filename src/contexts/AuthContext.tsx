@@ -47,7 +47,7 @@ export const AuthProvider: React.FC = ({ children }) => {
     !authToken && refreshToken()
   }, [authToken])
 
-  useInterval(refreshToken, 35000)
+  useInterval(refreshToken, 3600 * 1000)
 
   // useEffect(() => {
   //   const payload = authToken ? jwt.decode(authToken) : null
