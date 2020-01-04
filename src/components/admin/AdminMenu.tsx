@@ -127,7 +127,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
           {enabledModules.voucher && <Menu.Item key="owner_voucher_plans_admin">兌換券</Menu.Item>}
         </Menu.SubMenu>
 
-        <Menu.Item key="owner_program_general_admin">
+        <Menu.Item key="owner_category_admin">
           <Icon type="book" />
           <span>分類設定</span>
         </Menu.Item>

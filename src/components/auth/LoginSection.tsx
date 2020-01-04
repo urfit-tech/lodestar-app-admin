@@ -1,12 +1,9 @@
 import { Button, Form, Icon, Input } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
-import axios from 'axios'
 import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import useRouter from 'use-react-router'
 import { useAuth } from '../../contexts/AuthContext'
-import { handleError } from '../../helpers'
 import { AuthState } from '../../schemas/general'
 import { AuthModalContext, StyledAction, StyledDivider, StyledTitle } from './AuthModal'
 import { FacebookLoginButton, GoogleLoginButton } from './SocialLoginButton'
@@ -25,9 +22,8 @@ type LoginSectionProps = FormComponentProps & {
   onAuthStateChange: React.Dispatch<React.SetStateAction<AuthState>>
 }
 const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) => {
-  const { history } = useRouter()
   const [loading, setLoading] = useState()
-  const { setAuthToken } = useAuth()
+  const { login } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
@@ -35,27 +31,17 @@ const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) 
     form.validateFields((error, values) => {
       if (!error) {
         setLoading(true)
-        axios
-          .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/generalLogin`, {
-            appId: localStorage.getItem('kolable.app.id'),
+        login &&
+          login({
+            appId: localStorage.getItem('kolable.app.id') || '',
             account: values.account,
             password: values.password,
           })
-          .then(({ data }) => {
-            setVisible && setVisible(false)
-            const authToken = data.token
-            form.resetFields()
-            if (!authToken) {
-              history.push(`/check-email?email=${values.account}&type=reset-password`)
-            } else {
-              try {
-                localStorage.setItem(`kolable.auth.token`, authToken)
-              } catch (error) {}
-              setAuthToken && setAuthToken(authToken)
-            }
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
+            .then(() => {
+              setVisible && setVisible(false)
+              form.resetFields()
+            })
+            .finally(() => setLoading(false))
       }
     })
   }

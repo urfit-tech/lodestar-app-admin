@@ -6,7 +6,7 @@ import VoucherInsertBlock from '../../components/voucher/VoucherInsertBlock'
 import { VoucherProps } from './VoucherCard'
 
 type VoucherCollectionBlockProps = {
-  memberId?: string
+  memberId: string | null
   loading?: boolean
   error?: Error
   voucherCollection: (VoucherProps & {

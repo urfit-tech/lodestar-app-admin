@@ -11,7 +11,7 @@ import { GET_PROGRAM_CATEGORIES } from '../../../components/program/ProgramCateg
 import { categorySchema } from '../../../schemas/program'
 import types from '../../../types'
 
-const ProgramGeneralAdminPage = () => {
+const CategoryAdminPage = () => {
   const { loading, data, refetch } = useQuery<types.GET_PROGRAM_CATEGORIES, types.GET_PROGRAM_CATEGORIESVariables>(
     GET_PROGRAM_CATEGORIES,
     {
@@ -141,4 +141,4 @@ const DELETE_PROGRAM_CATEGORY = gql`
   }
 `
 
-export default ProgramGeneralAdminPage
+export default CategoryAdminPage

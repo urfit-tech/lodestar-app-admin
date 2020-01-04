@@ -1,6 +1,6 @@
 import { array, date, InferType, mixed, number, object, string } from 'yup'
 
-export type UserRole = 'app-owner' | 'content-creator' | 'general-member'
+export type UserRole = 'app-owner' | 'content-creator' | 'general-member' | 'anonymous'
 export type AuthState = 'login' | 'register' | 'forgotPassword' | 'confirm'
 
 export const appSchema = object({

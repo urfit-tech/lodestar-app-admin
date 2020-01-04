@@ -189,7 +189,7 @@ export const snakeToCamel = (snakeValue: string) =>
 
 export const handleError = (error: any) => {
   process.env.NODE_ENV === 'development' && console.error(error)
-  if (error.response.data) {
+  if (error.response && error.response.data) {
     return message.error(error.response.data.message)
   }
   return message.error(error.message)

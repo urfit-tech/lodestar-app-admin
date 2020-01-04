@@ -286,7 +286,7 @@ const CheckoutProductModal: React.FC<CheckoutProductModalProps> = ({
 }
 
 const onDiscountChange: (
-  currentMemberId: string | undefined,
+  currentMemberId: string | null,
   productId: string,
   discount: Discount,
   setCheck: React.Dispatch<any>,

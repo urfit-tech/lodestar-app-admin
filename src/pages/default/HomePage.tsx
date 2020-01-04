@@ -1,4 +1,5 @@
-import React, { useCallback, useContext, useState } from 'react'
+import { message } from 'antd'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import AuthModal, { AuthModalContext } from '../../components/auth/AuthModal'
@@ -69,19 +70,19 @@ const StyledRoleBlock = styled.div`
 const HomePage = () => {
   const { history } = useRouter()
   const app = useContext(AppContext)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { isAuthenticated, currentUserRole, setAuthToken } = useAuth()
+  const { isAuthenticated, currentUserRole, logout } = useAuth()
   const [visible, setVisible] = useState(false)
 
-  // useEffect(() => {
-  //   if (isAuthenticated && currentUserRole !== 'app-owner' && currentUserRole !== 'content-creator') {
-  //     message.error('請使用管理帳號登入')
-  //     try {
-  //       localStorage.removeItem(`kolable.auth.token`)
-  //     } catch (error) {}
-  //     setAuthToken && setAuthToken(null)
-  //   }
-  // }, [isAuthenticated, currentUserRole, setAuthToken])
+  useEffect(() => {
+    if (currentUserRole === 'app-owner') {
+      history.push('/admin')
+    } else if (currentUserRole === 'content-creator') {
+      history.push('/studio')
+    } else if (isAuthenticated) {
+      message.error('請使用管理帳號登入')
+      logout && logout()
+    }
+  }, [isAuthenticated, currentUserRole, history, logout])
 
   return (
     <AuthModalContext.Provider value={{ visible, setVisible }}>

@@ -18,7 +18,7 @@ const ActivityCollectionAdminPage = () => {
       </Typography.Title>
 
       {currentMemberId && (
-        <ActivityCollectionAdminBlock memberId={currentUserRole === 'app-owner' ? undefined : currentMemberId} />
+        <ActivityCollectionAdminBlock memberId={currentUserRole === 'app-owner' ? null : currentMemberId} />
       )}
     </AdminLayout>
   )

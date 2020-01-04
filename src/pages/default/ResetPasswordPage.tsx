@@ -33,7 +33,6 @@ const StyledTitle = styled.h1`
 
 const ResetPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
   const { history } = useRouter()
-  const { setAuthToken } = useAuth()
   const [token] = useQueryParam('token', StringParam)
   const [loading, setLoading] = useState(false)
 
@@ -56,12 +55,13 @@ const ResetPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
     })
   }
 
-  useEffect(() => {
-    try {
-      localStorage.removeItem(`${localStorage.getItem('kolable.app.id')}.auth.token`)
-    } catch (error) {}
-    setAuthToken && setAuthToken(null)
-  }, [setAuthToken])
+  // FIXME: set auth token to reset password
+  // useEffect(() => {
+  //   try {
+  //     localStorage.removeItem(`${localStorage.getItem('kolable.app.id')}.auth.token`)
+  //   } catch (error) {}
+  //   setAuthToken && setAuthToken(null)
+  // }, [setAuthToken])
 
   return (
     <DefaultLayout noFooter centeredBox>

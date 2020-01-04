@@ -165,6 +165,10 @@ const MemberCollectionAdminPage = () => {
       count: number
     }
   } = {
+    anonymous: {
+      name: '匿名會員',
+      count: 0,
+    },
     'general-member': {
       name: '全部會員',
       count: dataSource.length,

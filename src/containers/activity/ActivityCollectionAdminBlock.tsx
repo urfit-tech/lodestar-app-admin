@@ -9,7 +9,7 @@ import types from '../../types'
 import ActivityParticipantCollection from './ActivityParticipantCollection'
 
 const ActivityCollectionAdminBlock: React.FC<{
-  memberId?: string
+  memberId: string | null
 }> = ({ memberId }) => {
   const { loading, error, data, refetch } = useQuery<
     types.GET_ACTIVITY_COLLECTION_ADMIN,

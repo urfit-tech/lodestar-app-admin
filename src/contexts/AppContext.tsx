@@ -1,6 +1,7 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useApolloClient, useQuery } from '@apollo/react-hooks'
+import { message } from 'antd'
 import gql from 'graphql-tag'
-import React, { createContext } from 'react'
+import React, { createContext, useEffect, useState } from 'react'
 import ApplicationHelmet from '../components/common/ApplicationHelmet'
 import types from '../types'
 
@@ -29,7 +30,26 @@ const defaultAppProps: AppProps = {
 export const AppContext = createContext<AppProps>(defaultAppProps)
 
 export const AppProvider: React.FC = ({ children }) => {
-  const appId = localStorage.getItem('kolable.app.id') || ''
+  const [appId, setAppId] = useState<string | null>(null)
+  const apolloClient = useApolloClient()
+
+  useEffect(() => {
+    localStorage.removeItem('kolable.app.id')
+    apolloClient
+      .query<types.GET_APPLICATION, types.GET_APPLICATIONVariables>({
+        query: GET_APPLICATION,
+        variables: { host: window.location.host },
+      })
+      .then(({ data }) => {
+        if (data && data.app_admin_by_pk) {
+          const appId = data.app_admin_by_pk.app_id
+          localStorage.setItem('kolable.app.id', appId)
+          setAppId(appId)
+        } else {
+          message.error('無法取得應用程式')
+        }
+      })
+  }, [apolloClient, setAppId])
 
   const { loading, error, data } = useQuery<types.GET_APP, types.GET_APPVariables>(
     gql`
@@ -49,7 +69,7 @@ export const AppProvider: React.FC = ({ children }) => {
     `,
     {
       variables: {
-        appId: appId,
+        appId: appId || '',
       },
     },
   )
@@ -83,4 +103,13 @@ export const AppProvider: React.FC = ({ children }) => {
     </AppContext.Provider>
   )
 }
+
+const GET_APPLICATION = gql`
+  query GET_APPLICATION($host: String!) {
+    app_admin_by_pk(host: $host) {
+      app_id
+    }
+  }
+`
+
 export default AppContext

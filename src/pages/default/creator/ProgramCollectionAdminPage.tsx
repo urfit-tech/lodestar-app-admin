@@ -18,7 +18,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
   }
 
   const AdminLayout = currentUserRole === 'app-owner' ? OwnerAdminLayout : CreatorAdminLayout
-  const memberId = currentUserRole === 'content-creator' ? currentMemberId : undefined
+  const memberId = currentUserRole === 'content-creator' ? currentMemberId : null
 
   return (
     <AdminLayout>
@@ -42,7 +42,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
 }
 
 const ProgramCollectionBlock: React.FC<{
-  memberId?: string
+  memberId: string | null
   isDraft?: boolean
 }> = ({ isDraft, memberId }) => {
   const { data, error, loading } = useQuery<
@@ -65,10 +65,7 @@ const ProgramCollectionBlock: React.FC<{
       ) : (
         data.program.map(program => (
           <div key={program.id} className="col-12 col-md-6 col-lg-4 mb-5">
-            <ProgramAdminCard
-              programId={program.id}
-              link={memberId ? `/studio/programs/${program.id}` : `/admin/programs/${program.id}`}
-            />
+            <ProgramAdminCard programId={program.id} link={`/programs/${program.id}`} />
           </div>
         ))
       )}

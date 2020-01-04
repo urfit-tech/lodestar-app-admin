@@ -72,7 +72,6 @@ const socialLogin = async (provider: string, providerToken: any) => {
 }
 
 export const FacebookLoginButton = () => {
-  const { setAuthToken } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
   const [loading, setLoading] = useState()
 
@@ -94,7 +93,6 @@ export const FacebookLoginButton = () => {
         setLoading(true)
         socialLogin(_provider, _token)
           .then(token => {
-            setAuthToken && setAuthToken(token)
             setVisible && setVisible(false)
           })
           .finally(() => setLoading(false))
@@ -111,7 +109,6 @@ export const FacebookLoginButton = () => {
 }
 
 export const GoogleLoginButton = () => {
-  const { setAuthToken } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
   const [loading, setLoading] = useState()
 
@@ -133,7 +130,6 @@ export const GoogleLoginButton = () => {
         setLoading(true)
         socialLogin(_provider, _token)
           .then(token => {
-            setAuthToken && setAuthToken(token)
             setVisible && setVisible(false)
           })
           .finally(() => setLoading(false))

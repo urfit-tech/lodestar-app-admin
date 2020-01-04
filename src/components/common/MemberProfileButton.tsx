@@ -1,10 +1,9 @@
 import { Button, Icon, List, Popover } from 'antd'
 import React, { useContext } from 'react'
-import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import { useAuth } from '../../contexts/AuthContext'
-import { useMember, useMemberPoint } from '../../hooks/member'
+import { useMember } from '../../hooks/member'
 import settings from '../../settings'
 import { CreatorAdminMenu, OwnerAdminMenu } from '../admin/AdminMenu'
 import { AuthModalContext } from '../auth/AuthModal'
@@ -38,19 +37,19 @@ const BorderedItem = styled(List.Item)`
   }
 `
 
-const MemberPointItem: React.FC<{ memberId: string }> = ({ memberId }) => {
-  const { numPoints } = useMemberPoint(memberId)
-  return (
-    <Link to="/settings/point_history">
-      <div>{numPoints} 點</div>
-    </Link>
-  )
-}
+// const MemberPointItem: React.FC<{ memberId: string }> = ({ memberId }) => {
+//   const { numPoints } = useMemberPoint(memberId)
+//   return (
+//     <Link to="/settings/point_history">
+//       <div>{numPoints} 點</div>
+//     </Link>
+//   )
+// }
 
 const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
   const { history } = useRouter()
   const { member } = useMember(memberId)
-  const { currentMemberId, isAuthenticated, currentUserRole, setAuthToken } = useAuth()
+  const { currentMemberId, isAuthenticated, currentUserRole, logout } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
   const navLinks = settings.navLinks
 
@@ -92,15 +91,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
           </BorderedItem>
         </Responsive.Default>
 
-        <List.Item
-          style={{ cursor: 'pointer' }}
-          onClick={() => {
-            try {
-              localStorage.removeItem(`kolable.auth.token`)
-            } catch (error) {}
-            setAuthToken && setAuthToken(null)
-          }}
-        >
+        <List.Item style={{ cursor: 'pointer' }} onClick={() => logout && logout()}>
           <Icon type="logout" className="mr-2" />
           登出
         </List.Item>

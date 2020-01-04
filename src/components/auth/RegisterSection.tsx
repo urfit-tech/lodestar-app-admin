@@ -2,7 +2,6 @@ import { Button, Form, Icon, Input, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import axios from 'axios'
 import React, { useContext, useState } from 'react'
-import { useAuth } from '../../contexts/AuthContext'
 import { AuthState } from '../../schemas/general'
 import { AuthModalContext, StyledAction, StyledDivider, StyledTitle } from './AuthModal'
 import { FacebookLoginButton, GoogleLoginButton } from './SocialLoginButton'
@@ -12,7 +11,6 @@ type RegisterSectionProps = FormComponentProps & {
 }
 const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChange }) => {
   const [loading, setLoading] = useState()
-  const { setAuthToken } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
@@ -28,11 +26,6 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChan
             password: values.password,
           })
           .then(({ data }) => {
-            const authToken = data.token
-            try {
-              localStorage.setItem(`kolable.auth.token`, authToken)
-            } catch (error) {}
-            setAuthToken && setAuthToken(authToken)
             setVisible && setVisible(false)
             form.resetFields()
           })

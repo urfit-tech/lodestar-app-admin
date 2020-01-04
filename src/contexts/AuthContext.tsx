@@ -1,81 +1,121 @@
-import Fingerprint2 from 'fingerprintjs2'
+import Axios from 'axios'
 import jwt from 'jsonwebtoken'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, useCallback } from 'react'
 import { UserRole } from '../schemas/general'
+import { useInterval } from '../hooks/util'
 
 type AuthContext = {
-  isLoading: boolean
-  fingerprint: string
+  isAuthenticating: boolean
   isAuthenticated: boolean
+  currentUserRole: UserRole
+  currentMemberId: string | null
   authToken: string | null
-  currentMemberId?: string
-  allowedUserRoles: UserRole[]
-  currentUserRole?: UserRole
-  setCurrentUserRole?: React.Dispatch<React.SetStateAction<UserRole | undefined>>
-  setAuthToken?: React.Dispatch<React.SetStateAction<string | null>>
+  login?: (data: { appId: string; account: string; password: string }) => Promise<void>
+  logout?: () => Promise<void>
 }
-const defaultContext: AuthContext = {
-  isLoading: true,
-  fingerprint: '',
-  authToken: null,
+
+const defaultAuthContext: AuthContext = {
+  isAuthenticating: true,
   isAuthenticated: false,
-  allowedUserRoles: [],
+  currentUserRole: 'anonymous',
+  currentMemberId: null,
+  authToken: null,
 }
-const AuthContext = React.createContext<AuthContext>(defaultContext)
+
+const AuthContext = React.createContext<AuthContext>(defaultAuthContext)
 
 export const AuthProvider: React.FC = ({ children }) => {
-  let defaultAuthToken: string | null = window.localStorage ? localStorage.getItem('kolable.auth.token') : null
+  const [isAuthenticating, setIsAuthenticating] = useState(defaultAuthContext.isAuthenticating)
+  const [authToken, setAuthToken] = useState<string | null>(null)
 
-  const [authToken, setAuthToken] = useState<string | null>(defaultAuthToken)
-  const [authState, setAuthState] = useState(defaultContext)
-  const [currentUserRole, setCurrentUserRole] = useState<UserRole>()
+  // TODO: add auth payload type
+  const payload = authToken ? (jwt.decode(authToken) as any) : null
+
+  const refreshToken = () => {
+    setIsAuthenticating(true)
+    Axios(`${process.env.REACT_APP_BACKEND_ENDPOINT}/refreshToken`, {
+      method: 'post',
+      withCredentials: true,
+    })
+      .then(({ data }) => setAuthToken(data.authToken))
+      .catch(() => setAuthToken(null))
+      .finally(() => setIsAuthenticating(false))
+  }
 
   useEffect(() => {
-    const payload = authToken ? jwt.decode(authToken) : null
-
-    Fingerprint2.get(components => {
-      const values = components.map(component => component.value)
-      const fingerprint = Fingerprint2.x64hash128(values.join(''), 31)
-      if (payload && typeof payload === 'object') {
-        let currentTime = Date.now() / 1000
-        let expiredTime = payload.exp - 86400
-
-        if (expiredTime < currentTime) {
-          try {
-            localStorage.removeItem(`kolable.auth.token`)
-          } catch (error) {}
-          window.location.reload()
-        }
-
-        setAuthState({
-          ...defaultContext,
-          fingerprint,
-          isLoading: false,
-          isAuthenticated: true,
-          currentMemberId: payload.sub,
-          allowedUserRoles: payload.allowedRoles,
-        })
-      } else {
-        // use fingerprint as the currentMemberId
-        setAuthState({
-          ...defaultContext,
-          fingerprint,
-          isLoading: false,
-          isAuthenticated: false,
-          currentMemberId: fingerprint,
-        })
-      }
-    })
+    !authToken && refreshToken()
   }, [authToken])
+  
+  useInterval(refreshToken, 35000)
+
+  // useEffect(() => {
+  //   const payload = authToken ? jwt.decode(authToken) : null
+
+  //   Fingerprint2.get(components => {
+  //     const values = components.map(component => component.value)
+  //     const fingerprint = Fingerprint2.x64hash128(values.join(''), 31)
+  //     if (payload && typeof payload === 'object') {
+  //       let currentTime = Date.now() / 1000
+  //       let expiredTime = payload.exp - 86400
+
+  //       if (expiredTime < currentTime) {
+  //         try {
+  //           localStorage.removeItem(`kolable.auth.token`)
+  //         } catch (error) {}
+  //         window.location.reload()
+  //       }
+
+  //       setAuthState({
+  //         ...defaultContext,
+  //         fingerprint,
+  //         isAuthenticating: false,
+  //         isAuthenticated: true,
+  //         currentMemberId: payload.sub,
+  //         allowedUserRoles: payload.allowedRoles,
+  //       })
+  //     } else {
+  //       // use fingerprint as the currentMemberId
+  //       setAuthState({
+  //         ...defaultContext,
+  //         fingerprint,
+  //         isAuthenticating: false,
+  //         isAuthenticated: false,
+  //         currentMemberId: fingerprint,
+  //       })
+  //     }
+  //   })
+  // }, [authState.authToken])
 
   return (
     <AuthContext.Provider
       value={{
-        ...authState,
+        isAuthenticating,
+        isAuthenticated: Boolean(authToken),
+        currentUserRole: (payload && payload.role) || 'anonymous',
+        currentMemberId: payload && payload.sub,
         authToken,
-        currentUserRole: authToken ? currentUserRole : undefined,
-        setCurrentUserRole,
-        setAuthToken,
+        login: async ({ appId, account, password }) =>
+          Axios.post(
+            `${process.env.REACT_APP_BACKEND_ENDPOINT}/generalLogin`,
+            { appId, account, password },
+            {
+              withCredentials: true,
+              // prevent preflight
+              // TODO: find a better way to do so
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            },
+          ).then(({ data, status }) => {
+            if (status === 204) {
+              window.location.assign(`/check-email?email=${account}&type=reset-password`)
+            } else {
+              setAuthToken(data.authToken)
+            }
+          }),
+        logout: async () =>
+          Axios(`${process.env.REACT_APP_BACKEND_ENDPOINT}/logout`, {
+            method: 'POST',
+            withCredentials: true,
+          }).then(() => setAuthToken(null)),
       }}
     >
       {children}

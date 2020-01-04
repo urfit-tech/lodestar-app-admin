@@ -4,10 +4,9 @@ import { FormComponentProps } from 'antd/lib/form'
 import { ModalProps } from 'antd/lib/modal'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { AvatarImage } from '../../components/common/Image'
-import AppContext from '../../contexts/AppContext'
 import { currencyFormatter, handleError } from '../../helpers'
 import { UserRole } from '../../schemas/general'
 import types from '../../types'
@@ -38,7 +37,6 @@ type MemberAdminModalProps = FormComponentProps &
   }
 
 const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCancel, onSuccess, ...modalProps }) => {
-  const { domain } = useContext(AppContext)
   const [updateMemberInfo] = useMutation<types.UPDATE_MEMBER_INFO, types.UPDATE_MEMBER_INFOVariables>(gql`
     mutation UPDATE_MEMBER_INFO($memberId: String!, $name: String, $email: String, $roles: jsonb) {
       update_member(where: { id: { _eq: $memberId } }, _set: { name: $name, email: $email, roles: $roles }) {
@@ -61,7 +59,6 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
       setLoading(true)
 
       const roles: UserRole[] = ['general-member', ...values.roles]
-
       updateMemberInfo({
         variables: {
           memberId: member.id,

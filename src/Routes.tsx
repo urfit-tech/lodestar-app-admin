@@ -54,6 +54,12 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: false,
   },
 
+  program_admin: {
+    path: '/programs/:programId',
+    pageName: 'ProgramAdminPage',
+    authenticated: true,
+  },
+
   // app owner admin
   owner_coupon_plans_admin: {
     path: '/admin/coupon_plans',
@@ -67,9 +73,9 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
-  owner_program_general_admin: {
-    path: '/admin/program',
-    pageName: 'owner/ProgramGeneralAdminPage',
+  owner_category_admin: {
+    path: '/admin/category',
+    pageName: 'owner/CategoryAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
@@ -133,12 +139,6 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
-  owner_program_admin: {
-    path: '/admin/programs/:programId',
-    pageName: 'creator/ProgramAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
   owner_program_issues_admin: {
     path: '/admin/program_issues',
     pageName: 'creator/ProgramIssueCollectionAdminPage',
@@ -162,12 +162,6 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   creator_programs_admin: {
     path: '/studio/programs',
     pageName: 'creator/ProgramCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'content-creator',
-  },
-  creator_program_admin: {
-    path: '/studio/programs/:programId',
-    pageName: 'creator/ProgramAdminPage',
     authenticated: true,
     allowedUserRole: 'content-creator',
   },
@@ -238,18 +232,6 @@ export default () => (
       })}
       <Route
         exact
-        path="/settings"
-        render={props => (
-          <Redirect
-            to={{
-              pathname: '/settings/profile',
-              state: { from: props.location },
-            }}
-          />
-        )}
-      />
-      <Route
-        exact
         path="/admin"
         render={props => (
           <Redirect
@@ -267,18 +249,6 @@ export default () => (
           <Redirect
             to={{
               pathname: '/studio/sales',
-              state: { from: props.location },
-            }}
-          />
-        )}
-      />
-      <Route
-        exact
-        path="/funding/:fundingId"
-        render={props => (
-          <Redirect
-            to={{
-              pathname: `/projects/${props.match.params.fundingId}`,
               state: { from: props.location },
             }}
           />
