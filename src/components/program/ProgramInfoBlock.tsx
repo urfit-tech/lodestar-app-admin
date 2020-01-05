@@ -80,7 +80,7 @@ const ProgramInfoBlock: React.FC<{
   program: InferType<typeof programSchema>
 }> = ({ program }) => {
   const { currentMemberId } = useAuth()
-  const instructorId = program.roles.filter(role => role.name === 'instructor').map(role => role.memberId)[0]
+  const instructorId = program.roles.filter(role => role.name === 'instructor').map(role => role.member.id)[0]
   const { member } = usePublicMember(instructorId)
   const { enrolledProgramIds } = useEnrolledProgramIds(currentMemberId || '', true)
 

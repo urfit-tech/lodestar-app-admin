@@ -1,6 +1,7 @@
-import { Button, Form, Icon, Modal } from 'antd'
+import { Button, Form, Modal } from 'antd'
 import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
+import RoleAdminBlock from '../admin/RoleAdminBlock'
 import CreatorSelector from '../../containers/common/CreatorSelector'
 import { PodcastProgramAdminContext } from '../../containers/podcast/PodcastProgramAdminBlock'
 import { usePublicMember } from '../../hooks/member'
@@ -12,16 +13,7 @@ const StyledName = styled.div`
   line-height: 1.5;
   letter-spacing: 0.2px;
 `
-const StyledInstructorBlock = styled.div`
-  margin-bottom: 0.75rem;
-  padding: 1.25rem;
-  border-radius: 4px;
-  background-color: var(--gray-lighter);
 
-  :last-child {
-    margin-bottom: 2rem;
-  }
-`
 const StyledModalTitle = styled.div`
   color: var(--gray-darker);
   font-size: 20px;
@@ -52,7 +44,7 @@ const PodcastProgramRoleAdminBlock: React.FC = () => {
         setVisible(false)
       },
       data: {
-        instructorIds: [...podcastProgramAdmin.instructorIds, selectedMemberId],
+        instructorIds: [...podcastProgramAdmin.instructors.map(instructor => instructor.id), selectedMemberId],
       },
     })
   }
@@ -76,21 +68,22 @@ const PodcastProgramRoleAdminBlock: React.FC = () => {
         <AdminBlockTitle className="mb-4">講師</AdminBlockTitle>
         {/* <StyledSubTitle className="mb-4">最多設定三位講師</StyledSubTitle> */}
 
-        {podcastProgramAdmin.instructorIds.map(instructorId => (
-          <InstructorBlock
-            key={instructorId}
-            memberId={instructorId}
-            onClick={() =>
+        {podcastProgramAdmin.instructors.map(instructor => (
+          <RoleAdminBlock
+            key={instructor.id}
+            name={instructor.name}
+            pictureUrl={instructor.pictureUrl}
+            onDelete={() =>
               updatePodcastProgram({
                 data: {
-                  instructorIds: podcastProgramAdmin.instructorIds.filter(v => v !== instructorId),
+                  instructorIds: podcastProgramAdmin.instructors.filter(v => v.id !== instructor.id).map(v => v.id),
                 },
               })
             }
           />
         ))}
 
-        {podcastProgramAdmin.instructorIds.length < 1 && (
+        {podcastProgramAdmin.instructors.length < 1 && (
           <Button type="link" icon="plus" size="small" onClick={() => setVisible(true)}>
             新增講師
           </Button>
@@ -122,21 +115,6 @@ const PodcastProgramRoleAdminBlock: React.FC = () => {
         </Form>
       </Modal>
     </div>
-  )
-}
-
-export const InstructorBlock: React.FC<{
-  memberId: string
-  onClick?: () => void
-}> = ({ memberId, onClick }) => {
-  const { member } = usePublicMember(memberId)
-
-  return (
-    <StyledInstructorBlock className="d-flex align-items-center justify-content-center">
-      <AvatarImage src={member ? member.pictureUrl : null} size={36} className="mr-3" />
-      <StyledName className="flex-grow-1">{member ? member.name : ''}</StyledName>
-      <Icon type="delete" onClick={() => onClick && onClick()} />
-    </StyledInstructorBlock>
   )
 }
 

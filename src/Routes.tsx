@@ -160,7 +160,7 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
 
   // content creator admin
   creator_programs_admin: {
-    path: '/studio/programs',
+    path: '/programs',
     pageName: 'creator/ProgramCollectionAdminPage',
     authenticated: true,
     allowedUserRole: 'content-creator',

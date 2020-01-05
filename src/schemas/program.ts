@@ -14,8 +14,12 @@ export const programCategorySchema = object({
 export type ProgramRoleName = 'owner' | 'instructor' | 'assistant'
 export const programRoleSchema = object({
   id: string(),
-  memberId: string(),
   name: mixed<ProgramRoleName>(),
+  member: object({
+    id: string(),
+    name: string().nullable(),
+    pictureUrl: string().nullable(),
+  }).camelCase(),
 }).camelCase()
 
 export type ProgramPlanPeriodType = 'W' | 'M' | 'Y'

@@ -55,7 +55,7 @@ const ProgramInstructorCollectionBlock: React.FC<{
 }
 
 const RoleProfile: React.FC<{ role: InferType<typeof programRoleSchema> }> = ({ role }) => {
-  const { loadingMember, member } = usePublicMember(role.memberId)
+  const { loadingMember, member } = usePublicMember(role.member.id)
 
   if (loadingMember || !member) {
     return <Skeleton active avatar />
@@ -64,7 +64,7 @@ const RoleProfile: React.FC<{ role: InferType<typeof programRoleSchema> }> = ({ 
   return (
     <>
       <div className="col-12 col-lg-3 d-flex justify-content-center mb-3">
-        <MemberAvatar memberId={role.memberId} size={128} />
+        <MemberAvatar memberId={role.member.id} size={128} />
       </div>
       <div className="col-12 col-lg-9">
         <StyledInstructorName className="d-flex align-items-center mb-3">

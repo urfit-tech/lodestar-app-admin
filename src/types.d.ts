@@ -1205,7 +1205,8 @@ export interface INSERT_PROGRAM {
 }
 
 export interface INSERT_PROGRAMVariables {
-  memberId: string;
+  ownerId: string;
+  instructorId: string;
   appId: string;
   title: string;
   isSubscription: boolean;
@@ -2974,14 +2975,24 @@ export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program
   category: GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_categories_category;
 }
 
+export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_roles_member {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  picture_url: string | null;
+}
+
 export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_roles {
   __typename: "podcast_program_role";
   id: any;
-  member_id: string;
   /**
    * instructor
    */
   name: string;
+  /**
+   * An object relationship
+   */
+  member: GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_roles_member | null;
 }
 
 export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk {
@@ -4786,14 +4797,24 @@ export interface GET_PROGRAM_program_by_pk_program_content_sections {
   program_contents: GET_PROGRAM_program_by_pk_program_content_sections_program_contents[];
 }
 
+export interface GET_PROGRAM_program_by_pk_program_roles_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  picture_url: string | null;
+}
+
 export interface GET_PROGRAM_program_by_pk_program_roles {
   __typename: "program_role";
   id: any;
-  member_id: string;
   /**
    * instructor / assistant 
    */
   name: string;
+  /**
+   * An object relationship
+   */
+  member: GET_PROGRAM_program_by_pk_program_roles_member;
 }
 
 export interface GET_PROGRAM_program_by_pk_program_plans {

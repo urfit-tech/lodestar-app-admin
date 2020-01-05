@@ -76,7 +76,7 @@ const PodcastProgramPublishAdminBlock: React.FC<{
     NO_INSTRUCTOR: {
       text: '尚未指定講師',
       tab: 'role',
-      value: podcastProgramAdmin.instructorIds.length === 0,
+      value: podcastProgramAdmin.instructors.length === 0,
     },
   }
 

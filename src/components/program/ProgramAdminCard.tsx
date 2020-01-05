@@ -46,13 +46,16 @@ const ProgramAdminCard: React.FC<ProgramAdminCardProps> = ({ programId, link, ..
     },
   )
 
+  const instructors = program ? program.roles.filter(role => role.name === 'instructor').map(role => role.member) : []
+
   return (
     <>
       <AvatarPlaceHolder className="mb-3">
-        {program &&
-          program.roles
-            .filter(role => role.name === 'owner')
-            .map(role => <MemberAvatar key={role.memberId} memberId={role.memberId} withName />)}
+        {instructors.length > 0 ? (
+          <MemberAvatar key={instructors[0].id} memberId={instructors[0].id} withName />
+        ) : (
+          '尚未指定講師'
+        )}
       </AvatarPlaceHolder>
       <Link to={link}>
         <AdminCard

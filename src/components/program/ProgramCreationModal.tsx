@@ -23,11 +23,12 @@ const ProgramCreationModal: React.FC<ProgramCreationModalProps> = ({ form, withS
 
   const handleSubmit = () => {
     form.validateFields((error, values) => {
-      if (!error && createProgram) {
+      if (!error && currentMemberId) {
         setLoading(true)
         createProgram({
           variables: {
-            memberId: values.memberId || currentMemberId,
+            ownerId: currentMemberId,
+            instructorId: values.memberId || currentMemberId,
             appId: localStorage.getItem('kolable.app.id') || 'default',
             title: values.title,
             isSubscription: values.isSubscription,
@@ -39,7 +40,7 @@ const ProgramCreationModal: React.FC<ProgramCreationModalProps> = ({ form, withS
         })
           .then((res: any) => {
             const { id } = res.data.insert_program.returning[0]
-            history.push(`/studio/programs/${id}`)
+            history.push(`/programs/${id}`)
           })
           .catch(error => {
             setLoading(false)
@@ -107,7 +108,8 @@ const ProgramCreationModal: React.FC<ProgramCreationModalProps> = ({ form, withS
 
 const INSERT_PROGRAM = gql`
   mutation INSERT_PROGRAM(
-    $memberId: String!
+    $ownerId: String!
+    $instructorId: String!
     $appId: String!
     $title: String!
     $isSubscription: Boolean!
@@ -118,7 +120,9 @@ const INSERT_PROGRAM = gql`
         app_id: $appId
         title: $title
         is_subscription: $isSubscription
-        program_roles: { data: [{ member_id: $memberId, name: "owner" }, { member_id: $memberId, name: "instructor" }] }
+        program_roles: {
+          data: [{ member_id: $ownerId, name: "owner" }, { member_id: $instructorId, name: "instructor" }]
+        }
         program_categories: { data: $programCategories }
       }
     ) {

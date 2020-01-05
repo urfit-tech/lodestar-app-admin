@@ -22,7 +22,7 @@ type PodcastProgramAdminProps = {
   salePrice: number | null
   soldAt: Date | null
   creatorId: string
-  instructorIds: string[]
+  instructors: { id: string; name: string; pictureUrl: string }[]
   publishedAt: Date | null
 }
 type UpdatePodcastProgramProps = {
@@ -58,7 +58,7 @@ const defaultPodcastProgramAdmin: PodcastProgramAdminProps = {
   salePrice: null,
   soldAt: null,
   creatorId: '',
-  instructorIds: [],
+  instructors: [],
   publishedAt: null,
 }
 
@@ -282,9 +282,11 @@ const PodcastProgramAdminBlock: React.FC<{
     salePrice: data.podcast_program_by_pk.sale_price,
     soldAt: data.podcast_program_by_pk.sold_at ? new Date(data.podcast_program_by_pk.sold_at) : null,
     creatorId: data.podcast_program_by_pk.creator_id,
-    instructorIds: data.podcast_program_by_pk.podcast_program_roles.map(
-      podcastProgramRole => podcastProgramRole.member_id,
-    ),
+    instructors: data.podcast_program_by_pk.podcast_program_roles.map(podcastProgramRole => ({
+      id: podcastProgramRole.member?.id || '',
+      name: podcastProgramRole.member?.name || '',
+      pictureUrl: podcastProgramRole.member?.picture_url || '',
+    })),
     publishedAt: data.podcast_program_by_pk.published_at ? new Date(data.podcast_program_by_pk.published_at) : null,
   }
 
@@ -322,8 +324,12 @@ const GET_PODCAST_PROGRAM_ADMIN = gql`
       }
       podcast_program_roles {
         id
-        member_id
         name
+        member {
+          id
+          name
+          picture_url
+        }
       }
     }
   }

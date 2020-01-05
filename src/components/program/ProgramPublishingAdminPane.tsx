@@ -115,33 +115,33 @@ const validateProgram = (program: InferType<typeof programSchema>) => {
   if (!program.abstract) {
     errors.push({
       message: `尚未填寫課程摘要`,
-      to: `/studio/programs/${program.id}?active=general`,
+      to: `/programs/${program.id}?active=general`,
     })
   }
   if (!program.description) {
     errors.push({
       message: `尚未填寫課程描述`,
-      to: `/studio/programs/${program.id}?active=general`,
+      to: `/programs/${program.id}?active=general`,
     })
   }
   if (program.contentSections.map(v => v.programContents.length).reduce((a, b) => a + b, 0) === 0) {
     errors.push({
       message: `尚未新增任何內容`,
-      to: `/studio/programs/${program.id}?active=content`,
+      to: `/programs/${program.id}?active=content`,
     })
   }
   if (program.isSubscription) {
     if (program.plans.length === 0) {
       errors.push({
         message: `尚未訂定售價`,
-        to: `/studio/programs/${program.id}?active=plan`,
+        to: `/programs/${program.id}?active=plan`,
       })
     }
   } else {
     if (program.listPrice === null) {
       errors.push({
         message: `尚未訂定售價`,
-        to: `/studio/programs/${program.id}?active=plan`,
+        to: `/programs/${program.id}?active=plan`,
       })
     }
   }

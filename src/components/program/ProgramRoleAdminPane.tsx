@@ -3,12 +3,12 @@ import { CardProps } from 'antd/lib/card'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { InferType } from 'yup'
+import RoleAdminBlock from '../admin/RoleAdminBlock'
 import CreatorSelector from '../../containers/common/CreatorSelector'
 import { DeleteProgramProps, UpdateProgramProps } from '../../containers/program/ProgramRoleAdminPane'
 import { programSchema } from '../../schemas/program'
 import AdminCard from '../admin/AdminCard'
 import MemberAvatar from '../common/MemberAvatar'
-import { InstructorBlock } from '../podcast/PodcastProgramRoleAdminBlock'
 
 const StyledModalTitle = styled.div`
   color: var(--gray-darker);
@@ -50,7 +50,7 @@ const ProgramRoleAdminPane: React.FC<ProgramRoleAdminPaneProps> = ({ program, on
       data: {
         programId: program ? program.id : '',
         instructorIds: [
-          ...program.roles.map(role => ({ memberId: role.memberId || '', name: role.name || '' })),
+          ...program.roles.map(role => ({ memberId: role.member.id || '', name: role.name || '' })),
           { memberId: selectedMemberId, name: 'instructor' },
         ],
       },
@@ -67,7 +67,7 @@ const ProgramRoleAdminPane: React.FC<ProgramRoleAdminPaneProps> = ({ program, on
           {program &&
             program.roles
               .filter(role => role.name === 'owner')
-              .map(role => <MemberAvatar key={role.id} memberId={role.memberId} withName />)}
+              .map(role => <MemberAvatar key={role.id} memberId={role.member.id} withName />)}
         </AdminCard>
       </div>
       <div className="mb-3">
@@ -77,10 +77,11 @@ const ProgramRoleAdminPane: React.FC<ProgramRoleAdminPaneProps> = ({ program, on
             program.roles
               .filter(role => role.name === 'instructor')
               .map(role => (
-                <InstructorBlock
+                <RoleAdminBlock
                   key={role.id}
-                  memberId={role.memberId}
-                  onClick={() => {
+                  name={role.member.name}
+                  pictureUrl={role.member.pictureUrl}
+                  onDelete={() => {
                     onProgramDelete({
                       data: {
                         programId: program ? program.id : '',
@@ -114,10 +115,7 @@ const ProgramRoleAdminPane: React.FC<ProgramRoleAdminPaneProps> = ({ program, on
               }}
             >
               <Form.Item label="選擇講師">
-                <CreatorSelector
-                  value={selectedMemberId || ''}
-                  onChange={value => setSelectedMemberId(value)}
-                />
+                <CreatorSelector value={selectedMemberId || ''} onChange={value => setSelectedMemberId(value)} />
               </Form.Item>
               <Form.Item className="text-right">
                 <Button onClick={() => setVisible(false)} className="mr-2">
@@ -137,7 +135,7 @@ const ProgramRoleAdminPane: React.FC<ProgramRoleAdminPaneProps> = ({ program, on
           {program &&
             program.roles
               .filter(role => role.name === 'assistant')
-              .map(role => <MemberAvatar key={role.id} memberId={role.memberId} withName />)}
+              .map(role => <MemberAvatar key={role.id} memberId={role.member.id} withName />)}
         </AdminCard>
       </div>
     </div>

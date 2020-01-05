@@ -224,3 +224,7 @@ export const getUserRoleName = (userRole: string) => {
       return '未知身份'
   }
 }
+
+export const notEmpty = <T>(value: T | null | undefined): value is T => {
+  return value !== null && value !== undefined
+}

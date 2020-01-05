@@ -156,7 +156,7 @@ const IssueItem: React.FC<IssueItemProps> = ({
             renderText={() =>
               programRoles &&
               programRoles
-                .filter(role => role.memberId === memberId)
+                .filter(role => role.member.id === memberId)
                 .map(role =>
                   role.name === 'instructor' ? (
                     <StyledTag key={role.id} color={theme['@primary-color']} className="ml-2 mr-0">
