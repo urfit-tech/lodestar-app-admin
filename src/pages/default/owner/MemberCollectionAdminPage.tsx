@@ -209,16 +209,18 @@ const MemberCollectionAdminPage = () => {
         </StyledWrapper>
       </AdminCard>
 
-      <MemberAdminModal
-        width="24rem"
-        member={selectedMember}
-        visible={visible}
-        onCancel={() => setVisible(false)}
-        onSuccess={() => {
-          refetch()
-          setVisible(false)
-        }}
-      />
+      {visible && (
+        <MemberAdminModal
+          visible
+          width="24rem"
+          member={selectedMember}
+          onCancel={() => setVisible(false)}
+          onSuccess={() => {
+            refetch()
+            setVisible(false)
+          }}
+        />
+      )}
     </OwnerAdminLayout>
   )
 }
