@@ -4,14 +4,12 @@ import gql from 'graphql-tag'
 import React, { forwardRef } from 'react'
 import MemberSelector from '../../components/common/MemberSelector'
 import types from '../../types'
-import MultipleMemberSelector from '../../components/common/MultipleMemberSelector'
 
 const CreatorSelector: React.FC<{
   value?: string
   onChange?: (value: string | null) => void
   disabled?: boolean
-  variant: 'single' | 'multiple'
-}> = ({ value, onChange, disabled, variant }, ref) => {
+}> = ({ value, onChange, disabled }, ref) => {
   const { loading, error, data } = useQuery<types.GET_CREATOR_COLLECTION, types.GET_CREATOR_COLLECTIONVariables>(
     GET_CREATOR_COLLECTION,
     {
@@ -37,14 +35,7 @@ const CreatorSelector: React.FC<{
     email: member.email,
   }))
 
-  if (variant === 'single') {
-    return <MemberSelector ref={ref} members={members} value={value} onChange={onChange} disabled={disabled} />
-  }
-  if (variant === 'multiple') {
-    return <MultipleMemberSelector />
-  }
-
-  return <div>未知錯誤</div>
+  return <MemberSelector ref={ref} members={members} value={value} onChange={onChange} disabled={disabled} />
 }
 
 const GET_CREATOR_COLLECTION = gql`

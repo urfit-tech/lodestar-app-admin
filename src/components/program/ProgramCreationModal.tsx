@@ -74,7 +74,7 @@ const ProgramCreationModal: React.FC<ProgramCreationModalProps> = ({ form, withS
           <Form.Item label="選擇老師">
             {form.getFieldDecorator('memberId', {
               initialValue: currentMemberId,
-            })(<CreatorSelector variant="single"/>)}
+            })(<CreatorSelector />)}
           </Form.Item>
         )}
         <Form.Item label="課程名稱" className="mb-1">

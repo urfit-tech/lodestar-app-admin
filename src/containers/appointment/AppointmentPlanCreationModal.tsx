@@ -71,7 +71,7 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
           {form.getFieldDecorator('creatorId', {
             initialValue: '',
             rules: [{ required: true, message: '請選擇老師' }],
-          })(<CreatorSelector variant="single" />)}
+          })(<CreatorSelector />)}
         </Form.Item>
         <Form.Item label="方案名稱">
           {form.getFieldDecorator('title', {

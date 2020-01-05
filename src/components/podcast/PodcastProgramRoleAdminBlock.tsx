@@ -29,12 +29,6 @@ const StyledModalTitle = styled.div`
   line-height: 1.3;
   letter-spacing: 0.77px;
 `
-const StyledSubTitle = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.4px;
-  color: var(--gray-dark);
-`
 
 const PodcastProgramRoleAdminBlock: React.FC = () => {
   const { podcastProgramAdmin, updatePodcastProgram } = useContext(PodcastProgramAdminContext)
@@ -79,7 +73,7 @@ const PodcastProgramRoleAdminBlock: React.FC = () => {
       </AdminBlock>
 
       <AdminBlock>
-        <AdminBlockTitle className="mb-2">講師</AdminBlockTitle>
+        <AdminBlockTitle className="mb-4">講師</AdminBlockTitle>
         {/* <StyledSubTitle className="mb-4">最多設定三位講師</StyledSubTitle> */}
 
         {podcastProgramAdmin.instructorIds.map(instructorId => (
@@ -115,11 +109,7 @@ const PodcastProgramRoleAdminBlock: React.FC = () => {
           }}
         >
           <Form.Item label="選擇講師">
-            <CreatorSelector 
-              value={selectedMemberId || ''}
-              variant="single"
-              onChange={value => setSelectedMemberId(value)}
-            />
+            <CreatorSelector value={selectedMemberId || ''} onChange={value => setSelectedMemberId(value)} />
           </Form.Item>
           <Form.Item className="text-right">
             <Button onClick={() => setVisible(false)} className="mr-2">

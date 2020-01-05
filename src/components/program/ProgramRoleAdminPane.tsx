@@ -116,7 +116,6 @@ const ProgramRoleAdminPane: React.FC<ProgramRoleAdminPaneProps> = ({ program, on
               <Form.Item label="選擇講師">
                 <CreatorSelector
                   value={selectedMemberId || ''}
-                  variant="single"
                   onChange={value => setSelectedMemberId(value)}
                 />
               </Form.Item>
