@@ -3,6 +3,7 @@ import { Button, Divider, Icon, Input, Table, Tooltip, Typography } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { ColumnProps, PaginationConfig } from 'antd/lib/table'
 import gql from 'graphql-tag'
+import moment from 'moment'
 import { prop, sum } from 'ramda'
 import React, { useState } from 'react'
 import styled from 'styled-components'
@@ -68,6 +69,13 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
           selectedKeys && setOrderIdLike(`%${selectedKeys[0]}%`)
         },
       }),
+    },
+    {
+      title: '訂單日期',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      width: '180px',
+      render: (value: Date) => moment(value).format('YYYY-MM-DD HH:mm'),
     },
     {
       title: '姓名',
