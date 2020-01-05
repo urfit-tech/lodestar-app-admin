@@ -194,3 +194,33 @@ export const handleError = (error: any) => {
   }
   return message.error(error.message)
 }
+
+export const getUserRoleLevel = (userRole: string) => {
+  switch (userRole) {
+    case 'anonymous':
+      return 0
+    case 'general-member':
+      return 1
+    case 'content-creator':
+      return 2
+    case 'app-owner':
+      return 3
+    default:
+      return -1
+  }
+}
+
+export const getUserRoleName = (userRole: string) => {
+  switch (userRole) {
+    case 'anonymous':
+      return '匿名使用者'
+    case 'general-member':
+      return '一般會員'
+    case 'content-creator':
+      return '創作者'
+    case 'app-owner':
+      return '管理員'
+    default:
+      return '未知身份'
+  }
+}

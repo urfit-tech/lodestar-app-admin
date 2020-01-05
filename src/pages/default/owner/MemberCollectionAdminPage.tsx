@@ -10,7 +10,7 @@ import AdminCard from '../../../components/admin/AdminCard'
 import { AvatarImage } from '../../../components/common/Image'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import MemberAdminModal, { MemberInfo } from '../../../containers/common/MemberAdminModal'
-import { currencyFormatter } from '../../../helpers'
+import { currencyFormatter, getUserRoleName } from '../../../helpers'
 import { UserRole } from '../../../schemas/general'
 import types from '../../../types'
 
@@ -69,7 +69,7 @@ const MemberCollectionAdminPage = () => {
   const theme = useContext(ThemeContext)
   const { loading, error, data, refetch } = useQuery<types.GET_MEMBER_COLLECTION>(GET_MEMBER_COLLECTION)
 
-  const [roleFilter, setRoleFilter] = useState<UserRole>('general-member')
+  const [roleFilter, setRoleFilter] = useState<UserRole | null>(null)
   const [nameSearch, setNameSearch] = useState('')
   const [emailSearch, setEmailSearch] = useState('')
   const [visible, setVisible] = useState(false)
@@ -84,12 +84,12 @@ const MemberCollectionAdminPage = () => {
         <div className="d-flex align-items-center">
           <AvatarImage src={record.avatarUrl} />
           <StyledMemberName className="ml-3 mr-2">{record.name}</StyledMemberName>
-          {record.roles.includes('app-owner') && (
+          {record.role === 'app-owner' && (
             <StyledTag color="#585858" className="ml-2 mr-0">
               管理者
             </StyledTag>
           )}
-          {record.roles.includes('content-creator') && (
+          {record.role === 'content-creator' && (
             <StyledTag color={theme['@primary-color']} className="ml-2 mr-0">
               創作者
             </StyledTag>
@@ -151,37 +151,13 @@ const MemberCollectionAdminPage = () => {
             name: member.name || member.username,
             email: member.email,
             loginedAt: member.logined_at ? new Date(member.logined_at) : null,
-            roles: member.roles,
+            role: member.role as UserRole,
             points: member.point_status ? member.point_status.points : 0,
             consumption: sum(
               member.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
             ),
           }))
           .sort((a, b) => (b.loginedAt ? b.loginedAt.getTime() : 0) - (a.loginedAt ? a.loginedAt.getTime() : 0))
-
-  const roles: {
-    [id in UserRole]: {
-      name: string
-      count: number
-    }
-  } = {
-    anonymous: {
-      name: '匿名會員',
-      count: 0,
-    },
-    'general-member': {
-      name: '全部會員',
-      count: dataSource.length,
-    },
-    'content-creator': {
-      name: '創作者',
-      count: dataSource.filter((row: any) => row && row.roles.includes('content-creator')).length,
-    },
-    'app-owner': {
-      name: '管理員',
-      count: dataSource.filter((row: any) => row && row.roles.includes('app-owner')).length,
-    },
-  }
 
   return (
     <OwnerAdminLayout>
@@ -193,16 +169,23 @@ const MemberCollectionAdminPage = () => {
       <StyledDropdown
         overlay={
           <Menu>
-            {Object.keys(roles).map(roleId => (
-              <StyledMenuItem key={roleId} onClick={() => setRoleFilter(roleId as UserRole)}>
-                {roles[roleId as UserRole].name} ({roles[roleId as UserRole].count})
-              </StyledMenuItem>
-            ))}
+            <StyledMenuItem onClick={() => setRoleFilter(null)}>全部會員 ({dataSource.length})</StyledMenuItem>
+            <StyledMenuItem onClick={() => setRoleFilter('app-owner')}>
+              管理員 ({dataSource.filter(row => row.role === 'app-owner').length})
+            </StyledMenuItem>
+            <StyledMenuItem onClick={() => setRoleFilter('content-creator')}>
+              創作者 ({dataSource.filter(row => row.role === 'content-creator').length})
+            </StyledMenuItem>
+            <StyledMenuItem onClick={() => setRoleFilter('general-member')}>
+              一般會員 ({dataSource.filter(row => row.role === 'general-member').length})
+            </StyledMenuItem>
           </Menu>
         }
       >
         <Button className="d-flex justify-content-between align-items-center">
-          {`${roles[roleFilter].name} (${roles[roleFilter].count})`}
+          {`${roleFilter ? getUserRoleName(roleFilter) : '全部會員'} (${
+            dataSource.filter(row => (roleFilter ? row.role === roleFilter : true)).length
+          })`}
           <Icon type="caret-down" />
         </Button>
       </StyledDropdown>
@@ -213,7 +196,7 @@ const MemberCollectionAdminPage = () => {
             columns={columns}
             rowKey="id"
             loading={loading}
-            dataSource={dataSource.filter(member => member.roles.includes(roleFilter))}
+            dataSource={dataSource.filter(member => (roleFilter ? member.role === roleFilter : true))}
             pagination={{ position: 'bottom' }}
             rowClassName={() => 'cursor-pointer'}
             onRow={record => ({
@@ -249,7 +232,7 @@ const GET_MEMBER_COLLECTION = gql`
       username
       email
       logined_at
-      roles
+      role
       point_status {
         points
       }

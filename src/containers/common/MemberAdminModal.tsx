@@ -1,12 +1,14 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, Divider, Form, Input, message, Modal } from 'antd'
+import { Button, Divider, Form, Input, message, Modal, Select } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import { ModalProps } from 'antd/lib/modal'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
 import { AvatarImage } from '../../components/common/Image'
+import { AppContext } from '../../contexts/AppContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { currencyFormatter, handleError } from '../../helpers'
 import { UserRole } from '../../schemas/general'
 import types from '../../types'
@@ -24,7 +26,7 @@ export type MemberInfo = {
   name: string
   email: string
   loginedAt: Date | null
-  roles: UserRole[]
+  role: UserRole
   points: number
   consumption: number
 }
@@ -37,9 +39,11 @@ type MemberAdminModalProps = FormComponentProps &
   }
 
 const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCancel, onSuccess, ...modalProps }) => {
+  const app = useContext(AppContext)
+  const { authToken } = useAuth()
   const [updateMemberInfo] = useMutation<types.UPDATE_MEMBER_INFO, types.UPDATE_MEMBER_INFOVariables>(gql`
-    mutation UPDATE_MEMBER_INFO($memberId: String!, $name: String, $email: String, $roles: jsonb) {
-      update_member(where: { id: { _eq: $memberId } }, _set: { name: $name, email: $email, roles: $roles }) {
+    mutation UPDATE_MEMBER_INFO($memberId: String!, $name: String, $email: String, $role: String) {
+      update_member(where: { id: { _eq: $memberId } }, _set: { name: $name, email: $email, role: $role }) {
         affected_rows
       }
     }
@@ -58,13 +62,12 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
 
       setLoading(true)
 
-      const roles: UserRole[] = ['general-member', ...values.roles]
       updateMemberInfo({
         variables: {
           memberId: member.id,
           name: values.name,
           email: values.email,
-          roles,
+          role: values.role,
         },
       })
         .then(() => {
@@ -80,29 +83,28 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
     <Modal {...modalProps} title={null} footer={null} onCancel={() => onCancel && onCancel()}>
       <AvatarImage src={member.avatarUrl} size={120} className="mx-auto mb-4" />
 
-      {/* <div className="row no-gutters align-items-center justify-content-center">
-        {member.roles.includes('content-creator') && (
-          <>
-            <a
-              href={`https://${domain}/creators/${member.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="col-5 text-center"
-            >
-              <Button type="link">創作者主頁</Button>
-            </a>
-            <Divider type="vertical" />
-          </>
+      <div className="row no-gutters align-items-center justify-content-center">
+        {member.role === 'content-creator' && (
+          <a
+            href={`//${app.domain}/creators/${member.id}?token=${authToken}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="col-5 text-center"
+          >
+            <Button type="link">創作者主頁</Button>
+          </a>
         )}
-        <a
-          href={`https://${domain}/members/${member.id}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="col-5 text-center"
-        >
-          <Button type="link">學員主頁</Button>
-        </a>
-      </div> */}
+        {member.role === 'general-member' && (
+          <a
+            href={`//${app.domain}/members/${member.id}?token=${authToken}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="col-5 text-center"
+          >
+            <Button type="link">學員主頁</Button>
+          </a>
+        )}
+      </div>
 
       <Form
         hideRequiredMark
@@ -124,20 +126,15 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
             rules: [{ required: true, message: '請輸入信箱' }],
           })(<Input />)}
         </Form.Item>
-        <Form.Item label="添加身份">
-          {form.getFieldDecorator('roles', {
-            initialValue: member.roles,
+        <Form.Item label="設定身份">
+          {form.getFieldDecorator('role', {
+            initialValue: member.role,
           })(
-            <Checkbox.Group>
-              <div className="row">
-                <div className="col-6">
-                  <Checkbox value="content-creator">設為創作者</Checkbox>
-                </div>
-                <div className="col-6">
-                  <Checkbox value="app-owner">設為管理者</Checkbox>
-                </div>
-              </div>
-            </Checkbox.Group>,
+            <Select>
+              <Select.Option value="general-member">一般會員</Select.Option>
+              <Select.Option value="content-creator">創作者</Select.Option>
+              <Select.Option value="app-owner">管理者</Select.Option>
+            </Select>,
           )}
         </Form.Item>
 

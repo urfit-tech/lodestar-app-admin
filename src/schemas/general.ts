@@ -56,7 +56,7 @@ export type CartProduct = InferType<typeof cartProductSchema>
 export const memberSchema = object({
   id: string(),
   appId: string(),
-  roles: array(mixed<UserRole>()),
+  role: mixed<UserRole>(),
   username: string(),
   name: string().nullable(),
   email: string(),

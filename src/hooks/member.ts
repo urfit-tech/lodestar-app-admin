@@ -41,7 +41,7 @@ export const usePublicMember = (memberId: string) => {
           picture_url
           metadata
           description
-          roles
+          role
         }
       }
     `,

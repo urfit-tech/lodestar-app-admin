@@ -1594,7 +1594,7 @@ export interface GET_ORDERS_order_log_order_discounts {
 
 export interface GET_ORDERS_order_log_member {
   __typename: "member";
-  name: string | null;
+  name: string;
   email: string;
 }
 
@@ -2633,7 +2633,7 @@ export interface GET_CREATOR_COLLECTION_member {
   __typename: "member";
   id: string;
   picture_url: string | null;
-  name: string | null;
+  name: string;
   username: string;
   email: string;
 }
@@ -2676,7 +2676,7 @@ export interface UPDATE_MEMBER_INFOVariables {
   memberId: string;
   name?: string | null;
   email?: string | null;
-  roles?: any | null;
+  role?: string | null;
 }
 
 /* tslint:disable */
@@ -3778,6 +3778,44 @@ export interface UPDATE_LOGINED_ATVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_APP
+// ====================================================
+
+export interface GET_APP_app_by_pk_app_modules {
+  __typename: "app_module";
+  id: any;
+  module_id: string;
+}
+
+export interface GET_APP_app_by_pk {
+  __typename: "app";
+  id: string;
+  name: string;
+  title: string | null;
+  description: string | null;
+  domain: string;
+  /**
+   * An array relationship
+   */
+  app_modules: GET_APP_app_by_pk_app_modules[];
+}
+
+export interface GET_APP {
+  /**
+   * fetch data from the table: "app" using primary key columns
+   */
+  app_by_pk: GET_APP_app_by_pk | null;
+}
+
+export interface GET_APPVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_APPLICATION
 // ====================================================
 
@@ -3795,44 +3833,6 @@ export interface GET_APPLICATION {
 
 export interface GET_APPLICATIONVariables {
   host: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_APP
-// ====================================================
-
-export interface GET_APP_app_by_pk_app_modules {
-  __typename: "app_module";
-  id: any;
-  module_id: string;
-}
-
-export interface GET_APP_app_by_pk {
-  __typename: "app";
-  id: string;
-  name: string;
-  title: string | null;
-  description: string | null;
-  domain: string | null;
-  /**
-   * An array relationship
-   */
-  app_modules: GET_APP_app_by_pk_app_modules[];
-}
-
-export interface GET_APP {
-  /**
-   * fetch data from the table: "app" using primary key columns
-   */
-  app_by_pk: GET_APP_app_by_pk | null;
-}
-
-export interface GET_APPVariables {
-  appId: string;
 }
 
 /* tslint:disable */
@@ -4477,7 +4477,7 @@ export interface GET_NOTIFICATIONSVariables {
 export interface GET_MEMBER_member_by_pk {
   __typename: "member";
   id: string;
-  name: string | null;
+  name: string;
   email: string;
   username: string;
   picture_url: string | null;
@@ -4511,7 +4511,7 @@ export interface GET_PUBLIC_MEMBER_member_public {
   picture_url: string | null;
   metadata: any | null;
   description: string | null;
-  roles: any | null;
+  role: string | null;
 }
 
 export interface GET_PUBLIC_MEMBER {
@@ -5258,6 +5258,91 @@ export interface GET_CREATOR_PROGRAM_ISSUESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_PROGRAM_CATEGORY
+// ====================================================
+
+export interface INSERT_PROGRAM_CATEGORY_insert_category {
+  __typename: "category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_PROGRAM_CATEGORY {
+  /**
+   * insert data into the table: "category"
+   */
+  insert_category: INSERT_PROGRAM_CATEGORY_insert_category | null;
+}
+
+export interface INSERT_PROGRAM_CATEGORYVariables {
+  appId: string;
+  name?: string | null;
+  position?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_CATEGORY
+// ====================================================
+
+export interface UPDATE_PROGRAM_CATEGORY_update_category {
+  __typename: "category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CATEGORY {
+  /**
+   * update data of the table: "category"
+   */
+  update_category: UPDATE_PROGRAM_CATEGORY_update_category | null;
+}
+
+export interface UPDATE_PROGRAM_CATEGORYVariables {
+  categoryId: string;
+  name?: string | null;
+  position?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PROGRAM_CATEGORY
+// ====================================================
+
+export interface DELETE_PROGRAM_CATEGORY_delete_category {
+  __typename: "category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CATEGORY {
+  /**
+   * delete data from the table: "category"
+   */
+  delete_category: DELETE_PROGRAM_CATEGORY_delete_category | null;
+}
+
+export interface DELETE_PROGRAM_CATEGORYVariables {
+  categoryId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_COUPON_PLAN_COLLECTION
 // ====================================================
 
@@ -5348,14 +5433,14 @@ export interface GET_MEMBER_COLLECTION_member {
   __typename: "member";
   id: string;
   picture_url: string | null;
-  name: string | null;
+  name: string;
   username: string;
   email: string;
   logined_at: any | null;
   /**
-   * ["admin", "creator", "member"]
+   * app-owner / content-creator
    */
-  roles: any | null;
+  role: string;
   /**
    * An object relationship
    */
@@ -5371,91 +5456,6 @@ export interface GET_MEMBER_COLLECTION {
    * fetch data from the table: "member"
    */
   member: GET_MEMBER_COLLECTION_member[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_PROGRAM_CATEGORY
-// ====================================================
-
-export interface INSERT_PROGRAM_CATEGORY_insert_category {
-  __typename: "category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface INSERT_PROGRAM_CATEGORY {
-  /**
-   * insert data into the table: "category"
-   */
-  insert_category: INSERT_PROGRAM_CATEGORY_insert_category | null;
-}
-
-export interface INSERT_PROGRAM_CATEGORYVariables {
-  appId: string;
-  name?: string | null;
-  position?: number | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_CATEGORY
-// ====================================================
-
-export interface UPDATE_PROGRAM_CATEGORY_update_category {
-  __typename: "category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_CATEGORY {
-  /**
-   * update data of the table: "category"
-   */
-  update_category: UPDATE_PROGRAM_CATEGORY_update_category | null;
-}
-
-export interface UPDATE_PROGRAM_CATEGORYVariables {
-  categoryId: string;
-  name?: string | null;
-  position?: number | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_PROGRAM_CATEGORY
-// ====================================================
-
-export interface DELETE_PROGRAM_CATEGORY_delete_category {
-  __typename: "category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PROGRAM_CATEGORY {
-  /**
-   * delete data from the table: "category"
-   */
-  delete_category: DELETE_PROGRAM_CATEGORY_delete_category | null;
-}
-
-export interface DELETE_PROGRAM_CATEGORYVariables {
-  categoryId: string;
 }
 
 /* tslint:disable */
@@ -6039,6 +6039,7 @@ export enum member_constraint {
   User_pkey = "User_pkey",
   member_app_id_email_key = "member_app_id_email_key",
   member_app_id_username_key = "member_app_id_username_key",
+  member_refresh_token_key = "member_refresh_token_key",
 }
 
 /**
@@ -6058,6 +6059,7 @@ export enum member_update_column {
   name = "name",
   passhash = "passhash",
   picture_url = "picture_url",
+  refresh_token = "refresh_token",
   role = "role",
   roles = "roles",
   title = "title",
@@ -8515,6 +8517,7 @@ export interface member_bool_exp {
   point_status?: point_status_bool_exp | null;
   program_content_progresses?: program_content_progress_bool_exp | null;
   program_roles?: program_role_bool_exp | null;
+  refresh_token?: uuid_comparison_exp | null;
   role?: String_comparison_exp | null;
   roles?: jsonb_comparison_exp | null;
   title?: String_comparison_exp | null;
@@ -8606,6 +8609,7 @@ export interface member_insert_input {
   point_logs?: point_log_arr_rel_insert_input | null;
   program_content_progresses?: program_content_progress_arr_rel_insert_input | null;
   program_roles?: program_role_arr_rel_insert_input | null;
+  refresh_token?: any | null;
   role?: string | null;
   roles?: any | null;
   title?: string | null;

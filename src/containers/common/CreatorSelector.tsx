@@ -40,7 +40,7 @@ const CreatorSelector: React.FC<{
 
 const GET_CREATOR_COLLECTION = gql`
   query GET_CREATOR_COLLECTION($appId: String!) {
-    member(where: { app_id: { _eq: $appId }, roles: { _contains: "content-creator" } }) {
+    member(where: { app_id: { _eq: $appId }, role: { _in: ["content-creator", "app-owner"] } }) {
       id
       picture_url
       name

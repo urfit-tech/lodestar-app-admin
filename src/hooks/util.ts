@@ -56,18 +56,3 @@ export const useGAPageView = () => {
 export const usePixel = () => {
   settings.trackingId.fbPixel && ReactPixel.init(settings.trackingId.fbPixel)
 }
-
-export const getUserRoleLevel = (userRole: string) => {
-  switch (userRole) {
-    case 'anonymous':
-      return 0
-    case 'general-member':
-      return 1
-    case 'content-creator':
-      return 2
-    case 'app-owner':
-      return 3
-    default:
-      return -1
-  }
-}
