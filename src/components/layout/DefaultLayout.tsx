@@ -87,7 +87,7 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ white, noFooter, centered
           )}
 
           <div className="d-flex align-items-center">
-            {isAuthenticated && currentMemberId && <NotificationDropdown memberId={currentMemberId} />}
+            {currentMemberId && <NotificationDropdown memberId={currentMemberId} />}
             {currentMemberId && <MemberProfileButton memberId={currentMemberId} />}
           </div>
         </StyledLayoutHeader>
