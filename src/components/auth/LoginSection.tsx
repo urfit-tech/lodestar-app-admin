@@ -4,6 +4,7 @@ import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { useAuth } from '../../contexts/AuthContext'
+import { handleError } from '../../helpers'
 import { AuthState } from '../../schemas/general'
 import { AuthModalContext, StyledAction, StyledDivider, StyledTitle } from './AuthModal'
 import { FacebookLoginButton, GoogleLoginButton } from './SocialLoginButton'
@@ -41,6 +42,7 @@ const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) 
               setVisible && setVisible(false)
               form.resetFields()
             })
+            .catch(handleError)
             .finally(() => setLoading(false))
       }
     })

@@ -1,7 +1,8 @@
-import { Button, Form, Icon, Input, message } from 'antd'
+import { Button, Form, Icon, Input } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
-import axios from 'axios'
 import React, { useContext, useState } from 'react'
+import { useAuth } from '../../contexts/AuthContext'
+import { handleError } from '../../helpers'
 import { AuthState } from '../../schemas/general'
 import { AuthModalContext, StyledAction, StyledDivider, StyledTitle } from './AuthModal'
 import { FacebookLoginButton, GoogleLoginButton } from './SocialLoginButton'
@@ -11,26 +12,29 @@ type RegisterSectionProps = FormComponentProps & {
 }
 const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChange }) => {
   const [loading, setLoading] = useState()
+  const { register } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     form.validateFields((error, values) => {
       if (!error) {
+        const appId = localStorage.getItem('kolable.app.id')
         setLoading(true)
-        axios
-          .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/register`, {
-            appId: localStorage.getItem('kolable.app.id'),
+        appId &&
+          register &&
+          register({
+            appId,
             username: values.username,
             email: values.email,
             password: values.password,
           })
-          .then(({ data }) => {
-            setVisible && setVisible(false)
-            form.resetFields()
-          })
-          .catch(err => message.error(err.response.data.message))
-          .finally(() => setLoading(false))
+            .then(() => {
+              setVisible && setVisible(false)
+              form.resetFields()
+            })
+            .catch(handleError)
+            .finally(() => setLoading(false))
       }
     })
   }

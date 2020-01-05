@@ -10,6 +10,7 @@ type AuthContext = {
   currentUserRole: UserRole
   currentMemberId: string | null
   authToken: string | null
+  register?: (data: { appId: string; username: string; email: string; password: string }) => Promise<void>
   login?: (data: { appId: string; account: string; password: string }) => Promise<void>
   socialLogin?: (data: { provider: string; providerToken: any }) => Promise<void>
   logout?: () => Promise<void>
@@ -95,6 +96,25 @@ export const AuthProvider: React.FC = ({ children }) => {
         currentUserRole: (payload && payload.role) || 'anonymous',
         currentMemberId: payload && payload.sub,
         authToken,
+        register: async ({ appId, username, email, password }) => {
+          Axios.post(
+            `${process.env.REACT_APP_BACKEND_ENDPOINT}/register`,
+            {
+              appId,
+              username,
+              email,
+              password,
+            },
+            {
+              withCredentials: true,
+              // prevent preflight
+              // TODO: find a better way to do so
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            },
+          ).then(({ data }) => {
+            setAuthToken(data.authToken)
+          })
+        },
         login: async ({ appId, account, password }) =>
           Axios.post(
             `${process.env.REACT_APP_BACKEND_ENDPOINT}/generalLogin`,
