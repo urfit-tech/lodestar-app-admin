@@ -50,7 +50,6 @@ export const AuthProvider: React.FC = ({ children }) => {
 
   useInterval(refreshToken, 3600 * 1000)
 
-
   return (
     <AuthContext.Provider
       value={{
@@ -59,7 +58,7 @@ export const AuthProvider: React.FC = ({ children }) => {
         currentUserRole: (payload && payload.role) || 'anonymous',
         currentMemberId: payload && payload.sub,
         authToken,
-        register: async ({ appId, username, email, password }) => {
+        register: async ({ appId, username, email, password }) =>
           Axios.post(
             `${process.env.REACT_APP_BACKEND_ENDPOINT}/register`,
             {
@@ -76,8 +75,7 @@ export const AuthProvider: React.FC = ({ children }) => {
             },
           ).then(({ data }) => {
             setAuthToken(data.authToken)
-          })
-        },
+          }),
         login: async ({ appId, account, password }) =>
           Axios.post(
             `${process.env.REACT_APP_BACKEND_ENDPOINT}/generalLogin`,
