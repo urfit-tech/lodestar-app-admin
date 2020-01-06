@@ -70,7 +70,7 @@ type DefaultLayoutProps = {
 }
 const DefaultLayout: React.FC<DefaultLayoutProps> = ({ white, noFooter, centeredBox, renderTitle, children }) => {
   const [visible, setVisible] = useState(false)
-  const { currentMemberId, isAuthenticated } = useAuth()
+  const { currentMemberId } = useAuth()
 
   return (
     <AuthModalContext.Provider value={{ visible, setVisible }}>

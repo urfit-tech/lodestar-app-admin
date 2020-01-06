@@ -23,28 +23,32 @@ type LoginSectionProps = FormComponentProps & {
   onAuthStateChange: React.Dispatch<React.SetStateAction<AuthState>>
 }
 const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) => {
-  const [loading, setLoading] = useState()
   const { login } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
+  const [loading, setLoading] = useState(false)
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleLogin = () => {
     form.validateFields((error, values) => {
-      if (!error) {
-        setLoading(true)
-        login &&
-          login({
-            appId: localStorage.getItem('kolable.app.id') || '',
-            account: values.account,
-            password: values.password,
-          })
-            .then(() => {
-              setVisible && setVisible(false)
-              form.resetFields()
-            })
-            .catch(handleError)
-            .finally(() => setLoading(false))
+      if (error || !login) {
+        return
       }
+
+      setLoading(true)
+
+      login({
+        appId: localStorage.getItem('kolable.app.id') || '',
+        account: values.account,
+        password: values.password,
+      })
+        .then(() => {
+          setLoading(false)
+          setVisible && setVisible(false)
+          form.resetFields()
+        })
+        .catch(error => {
+          setLoading(false)
+          handleError(error)
+        })
     })
   }
 
@@ -66,7 +70,12 @@ const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) 
         <StyledDivider>或</StyledDivider>
       )}
 
-      <Form onSubmit={handleLogin}>
+      <Form
+        onSubmit={e => {
+          e.preventDefault()
+          handleLogin()
+        }}
+      >
         <Form.Item>
           {form.getFieldDecorator('account', {
             rules: [{ required: true, message: '請輸入使用者名稱或 Email' }],

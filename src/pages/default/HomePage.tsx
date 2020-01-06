@@ -86,7 +86,7 @@ const HomePage = () => {
 
   return (
     <AuthModalContext.Provider value={{ visible, setVisible }}>
-      <AuthModal></AuthModal>
+      <AuthModal />
 
       <StyledWrapper>
         <CenteredBox>

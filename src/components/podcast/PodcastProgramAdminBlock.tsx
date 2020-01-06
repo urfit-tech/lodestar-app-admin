@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { PodcastProgramAdminContext } from '../../containers/podcast/PodcastProgramAdminBlock'
 import AppContext from '../../contexts/AppContext'
-import { useAuth } from '../../contexts/AuthContext'
 import { AdminHeader, AdminHeaderTitle, AdminTabBarWrapper } from '../admin'
 import { StyledLayoutContent } from '../layout/DefaultLayout'
 import PodcastProgramContentAdminBlock from './PodcastProgramContentAdminBlock'
@@ -21,7 +20,6 @@ const PodcastProgramAdminBlock: React.FC<{
   const app = useContext(AppContext)
   const { podcastProgramAdmin } = useContext(PodcastProgramAdminContext)
   const [activeKey, setActiveKey] = useState(defaultActiveKey || 'content')
-  const { authToken } = useAuth()
 
   return (
     <>
@@ -31,7 +29,7 @@ const PodcastProgramAdminBlock: React.FC<{
         </Link>
         <AdminHeaderTitle className="flex-grow-1">{podcastProgramAdmin.title}</AdminHeaderTitle>
         <a
-          href={`//${app.domain}/podcasts/${podcastProgramAdmin.id}?token=${authToken}`}
+          href={`//${app.domain}/podcasts/${podcastProgramAdmin.id}`}
           target="_blank"
           rel="noopener noreferrer"
         >

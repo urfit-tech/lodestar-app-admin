@@ -48,28 +48,24 @@ export const AuthModalContext = React.createContext<{
   setVisible?: React.Dispatch<React.SetStateAction<boolean>>
 }>({ visible: false })
 
-type AuthModalProps = {
+const AuthModal: React.FC<{
   defaultAuthState?: AuthState
   onAuthStateChange?: (authState: AuthState) => void
-}
-const AuthModal = ({ defaultAuthState, onAuthStateChange }: AuthModalProps) => {
+}> = ({ defaultAuthState }) => {
   const { visible, setVisible } = useContext(AuthModalContext)
   const [authState, setAuthState] = useState(defaultAuthState || 'login')
 
   return (
     <Modal
       centered
-      width={window.innerWidth > BREAK_POINT ? window.innerWidth / 3 : window.innerWidth}
       footer={null}
-      onCancel={() => setVisible && setVisible(false)}
+      width={window.innerWidth > BREAK_POINT ? window.innerWidth / 3 : window.innerWidth}
       visible={visible}
+      onCancel={() => setVisible && setVisible(false)}
     >
       <StyledContainer>
-        {authState === 'login' ? (
-          <LoginSection onAuthStateChange={setAuthState} />
-        ) : authState === 'register' ? (
-          <RegisterSection onAuthStateChange={setAuthState} />
-        ) : null}
+        {authState === 'login' && <LoginSection onAuthStateChange={setAuthState} />}
+        {authState === 'register' && <RegisterSection onAuthStateChange={setAuthState} />}
       </StyledContainer>
     </Modal>
   )

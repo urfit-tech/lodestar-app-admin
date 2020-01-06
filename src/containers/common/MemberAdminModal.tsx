@@ -8,7 +8,6 @@ import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
 import { AvatarImage } from '../../components/common/Image'
 import { AppContext } from '../../contexts/AppContext'
-import { useAuth } from '../../contexts/AuthContext'
 import { currencyFormatter, handleError } from '../../helpers'
 import { UserRole } from '../../schemas/general'
 import types from '../../types'
@@ -40,7 +39,6 @@ type MemberAdminModalProps = FormComponentProps &
 
 const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCancel, onSuccess, ...modalProps }) => {
   const app = useContext(AppContext)
-  const { authToken } = useAuth()
   const [updateMemberInfo] = useMutation<types.UPDATE_MEMBER_INFO, types.UPDATE_MEMBER_INFOVariables>(gql`
     mutation UPDATE_MEMBER_INFO($memberId: String!, $name: String, $email: String, $role: String) {
       update_member(where: { id: { _eq: $memberId } }, _set: { name: $name, email: $email, role: $role }) {
@@ -86,7 +84,7 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
       <div className="row no-gutters align-items-center justify-content-center">
         {member.role === 'content-creator' && (
           <a
-            href={`//${app.domain}/creators/${member.id}?token=${authToken}`}
+            href={`//${app.domain}/creators/${member.id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="col-5 text-center"
@@ -96,7 +94,7 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
         )}
         {member.role === 'general-member' && (
           <a
-            href={`//${app.domain}/members/${member.id}?token=${authToken}`}
+            href={`//${app.domain}/members/${member.id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="col-5 text-center"

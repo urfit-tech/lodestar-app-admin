@@ -7,7 +7,6 @@ import ActivitySessionsAdminBlock from '../../containers/activity/ActivitySessio
 import ActivitySettingsAdminBlock from '../../containers/activity/ActivitySettingsAdminBlock'
 import ActivityTicketsAdminBlock from '../../containers/activity/ActivityTicketsAdminBlock'
 import AppContext from '../../contexts/AppContext'
-import { useAuth } from '../../contexts/AuthContext'
 import { AdminHeader, AdminHeaderTitle, AdminTabBarWrapper } from '../admin'
 import { StyledLayoutContent } from '../layout/DefaultLayout'
 import { ActivitySessionProps } from './ActivitySessionsAdminBlock'
@@ -40,7 +39,6 @@ const ActivityAdminBlock: React.FC<{
   activityAdmin: ActivityAdminProps
   onRefetch?: () => void
 }> = ({ loading, error, activityAdmin, onRefetch }) => {
-  const { authToken } = useAuth()
   const { history } = useRouter()
   const [defaultActiveKey, setDefaultActiveKey] = useQueryParam('tabkey', StringParam)
   const [activeKey, setActiveKey] = useState(defaultActiveKey || 'settings')
@@ -54,7 +52,7 @@ const ActivityAdminBlock: React.FC<{
         </div>
         <AdminHeaderTitle className="flex-grow-1">{activityAdmin.title}</AdminHeaderTitle>
         <a
-          href={`//${app.domain}/activities/${activityAdmin.id}?token=${authToken}`}
+          href={`//${app.domain}/activities/${activityAdmin.id}`}
           target="_blank"
           rel="noopener noreferrer"
         >

@@ -6,10 +6,9 @@ import useRouter from 'use-react-router'
 import ProgramContentAdminPane from '../../components/program/ProgramContentAdminPane'
 import ProgramPlanAdminPane from '../../components/program/ProgramPlanAdminPane'
 import ProgramPublishingAdminPane from '../../components/program/ProgramPublishingAdminPane'
-import ProgramRoleAdminPane from '../../containers/program/ProgramRoleAdminPane'
 import ProgramSettingAdminPane from '../../components/program/ProgramSettingAdminPane'
+import ProgramRoleAdminPane from '../../containers/program/ProgramRoleAdminPane'
 import AppContext from '../../contexts/AppContext'
-import { useAuth } from '../../contexts/AuthContext'
 import { useProgram } from '../../hooks/program'
 
 const StyledPageHeader = styled(PageHeader)`
@@ -36,7 +35,6 @@ const StyledPageHeader = styled(PageHeader)`
 `
 
 const ProgramAdminPage: React.FC = () => {
-  const { authToken } = useAuth()
   const { history, match } = useRouter<{ programId: string }>()
   const programId = match.params.programId
   const { program, refetch: refetchProgram } = useProgram(programId)
@@ -57,7 +55,7 @@ const ProgramAdminPage: React.FC = () => {
             <Dropdown
               placement="bottomRight"
               overlay={
-                <Menu onClick={({ key }) => window.open(`//${app.domain}${key}?token=${authToken}`)}>
+                <Menu onClick={({ key }) => window.open(`//${app.domain}${key}`)}>
                   <Menu.Item className="py-2 px-3" key={`/programs/${program.id}`}>
                     預覽簡介
                   </Menu.Item>

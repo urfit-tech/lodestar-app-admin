@@ -11,31 +11,35 @@ type RegisterSectionProps = FormComponentProps & {
   onAuthStateChange: React.Dispatch<React.SetStateAction<AuthState>>
 }
 const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChange }) => {
-  const [loading, setLoading] = useState()
   const { register } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
+  const [loading, setLoading] = useState(false)
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleLogin = () => {
     form.validateFields((error, values) => {
-      if (!error) {
-        const appId = localStorage.getItem('kolable.app.id')
-        setLoading(true)
-        appId &&
-          register &&
-          register({
-            appId,
-            username: values.username,
-            email: values.email,
-            password: values.password,
-          })
-            .then(() => {
-              setVisible && setVisible(false)
-              form.resetFields()
-            })
-            .catch(handleError)
-            .finally(() => setLoading(false))
+      const appId = localStorage.getItem('kolable.app.id')
+
+      if (error || !appId || !register) {
+        return
       }
+
+      setLoading(true)
+
+      register({
+        appId,
+        username: values.username,
+        email: values.email,
+        password: values.password,
+      })
+        .then(() => {
+          setLoading(false)
+          setVisible && setVisible(false)
+          form.resetFields()
+        })
+        .catch(error => {
+          setLoading(false)
+          handleError(error)
+        })
     })
   }
 
@@ -57,7 +61,12 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChan
         <StyledDivider>或</StyledDivider>
       )}
 
-      <Form onSubmit={handleLogin}>
+      <Form
+        onSubmit={e => {
+          e.preventDefault()
+          handleLogin()
+        }}
+      >
         <Form.Item>
           {form.getFieldDecorator('username', {
             rules: [{ required: true, message: '請輸入使用者名稱' }],
