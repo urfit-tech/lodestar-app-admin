@@ -65,7 +65,7 @@ export const useAppointmentEnrollmentCollection = () => {
                 id: enrollment.appointment_plan.creator.id || '',
                 name: enrollment.appointment_plan.creator.name || '',
               },
-              link: enrollment.order_product.deliverables?.join_url || null,
+              link: enrollment.order_product.deliverables?.start_url || null,
             }
           })
           .filter(v => v) as AppointmentPeriodCardProps[])
