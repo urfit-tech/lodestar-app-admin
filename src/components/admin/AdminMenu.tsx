@@ -146,14 +146,17 @@ export const CreatorAdminMenu = (props: MenuProps) => {
 
   return (
     <div className="d-flex flex-column flex-grow-1">
-      <AdminMenu {...props} defaultOpenKeys={['creator_programs_admin', 'creator_activities_admin']}>
+      <AdminMenu
+        {...props}
+        defaultOpenKeys={['creator_program_admin', 'creator_appointment_admin', 'creator_activity_admin']}
+      >
         <Menu.Item key="creator_sales_admin">
           <Icon component={() => <MoneyCircleIcon />} />
           <span>銷售管理</span>
         </Menu.Item>
 
         <Menu.SubMenu
-          key="creator_programs_admin"
+          key="creator_program_admin"
           title={
             <span>
               <Icon component={() => <BookIcon />} />
@@ -165,9 +168,24 @@ export const CreatorAdminMenu = (props: MenuProps) => {
           <Menu.Item key="creator_program_issues_admin">課程問題</Menu.Item>
         </Menu.SubMenu>
 
+        {enabledModules.appointment && (
+          <Menu.SubMenu
+            key="creator_appointment_admin"
+            title={
+              <span>
+                <Icon component={() => <CalendarAltIcon />} />
+                <span>預約服務</span>
+              </span>
+            }
+          >
+            <Menu.Item key="creator_appointment_plan_collection_admin">預約方案</Menu.Item>
+            <Menu.Item key="creator_appointment_period_collection_admin">預約紀錄</Menu.Item>
+          </Menu.SubMenu>
+        )}
+
         {enabledModules.activity && (
           <Menu.SubMenu
-            key="creator_activities_admin"
+            key="creator_activity_admin"
             title={
               <span>
                 <Icon component={() => <CalendarAltIcon />} />

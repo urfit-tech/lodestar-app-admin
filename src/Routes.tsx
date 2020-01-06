@@ -171,6 +171,24 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'content-creator',
   },
+  creator_appointment_plan_collection_admin: {
+    path: '/studio/appointment-plans',
+    pageName: 'owner/AppointmentPlanCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'content-creator',
+  },
+  creator_appointment_plan_admin: {
+    path: '/studio/appointment-plans/:appointmentPlanId',
+    pageName: 'owner/AppointmentPlanAdminPage',
+    authenticated: true,
+    allowedUserRole: 'content-creator',
+  },
+  creator_appointment_period_collection_admin: {
+    path: '/studio/appointment-periods',
+    pageName: 'owner/AppointmentPeriodCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'content-creator',
+  },
   creator_activity_collection_admin: {
     path: '/studio/activities',
     pageName: 'creator/ActivityCollectionAdminPage',

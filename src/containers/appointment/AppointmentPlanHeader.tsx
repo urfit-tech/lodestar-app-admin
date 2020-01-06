@@ -1,18 +1,20 @@
-import { Icon } from 'antd'
+import { Button, Icon } from 'antd'
 import React, { useContext } from 'react'
-import { Link } from 'react-router-dom'
+import useRouter from 'use-react-router'
 import { AdminHeader, AdminHeaderTitle } from '../../components/admin'
 import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanHeader: React.FC<{
   appointmentPlanId: string
 }> = ({ appointmentPlanId }) => {
+  const { history } = useRouter()
   const { appointmentPlan } = useContext(AppointmentPlanContext)
+
   return (
     <AdminHeader>
-      <Link to="/admin/appointment-plans/" className="mr-3">
+      <Button type="link" onClick={() => history.goBack()} className="mr-3">
         <Icon type="arrow-left" />
-      </Link>
+      </Button>
 
       <AdminHeaderTitle>{appointmentPlan ? appointmentPlan.title : appointmentPlanId}</AdminHeaderTitle>
     </AdminHeader>

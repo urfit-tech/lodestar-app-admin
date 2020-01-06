@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import { currencyFormatter } from '../../helpers'
 import { AvatarImage } from '../common/Image'
+import { useAuth } from '../../contexts/AuthContext'
 
 const StyledCreatorName = styled.span`
   max-width: 10em;
@@ -71,6 +72,7 @@ const AppointmentPlanCollectionTable: React.FC<{
   loading?: boolean
 }> = ({ appointmentPlans, loading }) => {
   const { history } = useRouter()
+  const { currentUserRole } = useAuth()
 
   const [searchName, setSearchName] = useState<string | null>(null)
   const [searchTitle, setSearchTitle] = useState<string | null>(null)
@@ -88,7 +90,12 @@ const AppointmentPlanCollectionTable: React.FC<{
       rowClassName={() => 'cursor-pointer'}
       loading={loading}
       onRow={record => ({
-        onClick: () => history.push(`/admin/appointment-plans/${record.id}`),
+        onClick: () =>
+          history.push(
+            currentUserRole === 'app-owner'
+              ? `/admin/appointment-plans/${record.id}`
+              : `/studio/appointment-plans/${record.id}`,
+          ),
       })}
       columns={[
         {

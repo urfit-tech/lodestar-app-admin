@@ -6,11 +6,13 @@ import React, { useState } from 'react'
 import useRouter from 'use-react-router'
 import AdminModal from '../../components/admin/AdminModal'
 import CreatorSelector from '../../containers/common/CreatorSelector'
+import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import types from '../../types'
 
 const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) => {
   const { history } = useRouter()
+  const { currentMemberId, currentUserRole } = useAuth()
 
   const [createAppointmentPlan] = useMutation<types.CREATE_APPOINTMENT_PLAN, types.CREATE_APPOINTMENT_PLANVariables>(
     CREATE_APPOINTMENT_PLAN,
@@ -67,11 +69,11 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
       )}
     >
       <Form hideRequiredMark colon={false} onSubmit={e => e.preventDefault()}>
-        <Form.Item label="選擇老師">
+        <Form.Item label="選擇老師" className={currentUserRole !== 'app-owner' ? 'd-none' : ''}>
           {form.getFieldDecorator('creatorId', {
-            initialValue: '',
+            initialValue: currentMemberId,
             rules: [{ required: true, message: '請選擇老師' }],
-          })(<CreatorSelector />)}
+          })(<CreatorSelector disabled={currentUserRole !== 'app-owner'} />)}
         </Form.Item>
         <Form.Item label="方案名稱">
           {form.getFieldDecorator('title', {
