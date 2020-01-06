@@ -2,8 +2,9 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, Modal } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import gql from 'graphql-tag'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
+import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useProgram } from '../../hooks/program'
 import types from '../../types'
@@ -58,6 +59,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
   onRefetch,
   ...cardProps
 }) => {
+  const { domain } = useContext(AppContext)
   const { currentMemberId } = useAuth()
   const { program } = useProgram(programId)
   const [updateIssueStatus] = useMutation<types.UPDATE_ISSUE_STATUS, types.UPDATE_ISSUE_STATUSVariables>(
@@ -116,12 +118,12 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
         visible={modalVisible}
         onCancel={() => setModalVisible(false)}
         title={
-          <div>
+          <>
             <span>{programTitle}</span>
-            <Button type="link" onClick={() => window.open(threadId)}>
+            <Button type="link" onClick={() => window.open(`//${domain}${threadId}`)}>
               查看課程內容
             </Button>
-          </div>
+          </>
         }
       >
         <IssueItem
