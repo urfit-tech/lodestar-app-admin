@@ -118,7 +118,7 @@ const AllProgramIssueCollectionBlock: React.FC<{
                 numReplies={value.issue_replies_aggregate.aggregate.count}
                 createdAt={new Date(value.created_at)}
                 memberId={value.member_id}
-                solvedAt={value.solved_at && new Date(value.solved_at)}
+                solvedAt={value.solved_at ? new Date(value.solved_at) : null}
                 onRefetch={refetch}
               />
             )

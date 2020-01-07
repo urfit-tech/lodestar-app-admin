@@ -42,7 +42,7 @@ type IssueAdminCardProps = CardProps & {
   numReplies: number
   createdAt: Date
   memberId: string
-  solvedAt: Date
+  solvedAt: Date | null
   onRefetch?: () => void
 }
 const IssueAdminCard: React.FC<IssueAdminCardProps> = ({

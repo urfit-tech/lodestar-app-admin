@@ -58,7 +58,7 @@ type IssueItemProps = FormComponentProps & {
   numReplies: number
   createdAt: Date
   memberId: string
-  solvedAt: Date
+  solvedAt: Date | null
   onRefetch?: () => void
   defaultRepliesVisible?: boolean
   showSolvedCheckbox?: boolean
