@@ -157,7 +157,7 @@ export const useOwnedPrograms = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_OWNED_PROGRAMS, types.GET_OWNED_PROGRAMSVariables>(
     gql`
       query GET_OWNED_PROGRAMS($appId: String!) {
-        program(where: { app_id: { _eq: $appId } }) {
+        program(where: { app_id: { _eq: $appId }, published_at: { _is_null: false } }) {
           id
           title
         }
