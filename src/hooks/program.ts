@@ -80,7 +80,7 @@ export const useProgram = (programId: string) => {
         }
       }
     `,
-    { variables: { programId } },
+    { variables: { programId }, fetchPolicy: 'network-only' },
   )
   return {
     program:

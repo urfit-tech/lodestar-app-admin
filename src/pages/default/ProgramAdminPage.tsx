@@ -48,7 +48,7 @@ const ProgramAdminPage: React.FC = () => {
   return (
     <>
       <StyledPageHeader
-        onBack={() => history.goBack()}
+        onBack={() => history.push('/programs')}
         title={program && program.title}
         extra={
           program && (

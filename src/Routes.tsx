@@ -54,6 +54,18 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: false,
   },
 
+  program_collection_admin: {
+    path: '/programs',
+    pageName: 'ProgramCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'content-creator',
+  },
+  program_issues_admin: {
+    path: '/program_issues',
+    pageName: 'ProgramIssueCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'content-creator',
+  },
   program_admin: {
     path: '/programs/:programId',
     pageName: 'ProgramAdminPage',
@@ -133,18 +145,6 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
-  owner_program_collection_admin: {
-    path: '/admin/programs',
-    pageName: 'creator/ProgramCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
-  owner_program_issues_admin: {
-    path: '/admin/program_issues',
-    pageName: 'creator/ProgramIssueCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
   owner_activity_collection_admin: {
     path: '/admin/activities',
     pageName: 'creator/ActivityCollectionAdminPage',
@@ -159,18 +159,6 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   },
 
   // content creator admin
-  creator_programs_admin: {
-    path: '/programs',
-    pageName: 'creator/ProgramCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'content-creator',
-  },
-  creator_program_issues_admin: {
-    path: '/studio/program_issues',
-    pageName: 'creator/ProgramIssueCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'content-creator',
-  },
   creator_appointment_plan_collection_admin: {
     path: '/studio/appointment-plans',
     pageName: 'owner/AppointmentPlanCollectionAdminPage',
