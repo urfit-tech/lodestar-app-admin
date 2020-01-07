@@ -27,6 +27,9 @@ export type ProductType =
   | 'Card'
   | 'ActivityTicket'
   | 'Merchandise'
+  | 'PodcastProgram'
+  | 'PodcastPlan'
+  | 'AppointmentPlan'
 export const ProductTypeLabel: { [key: string]: string } = {
   Program: '課程',
   ProgramPlan: '課程',
@@ -36,6 +39,9 @@ export const ProductTypeLabel: { [key: string]: string } = {
   Card: '會員卡',
   ActivityTicket: '實體',
   Merchandise: '商品',
+  PodcastProgram: '廣播節目',
+  PodcastPlan: '廣播頻道訂閱方案',
+  AppointmentPlan: '預約'
 }
 export const productTargetSchema = object({
   programId: string().notRequired(),

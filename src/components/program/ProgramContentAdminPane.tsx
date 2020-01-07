@@ -17,7 +17,7 @@ const ProgramContentAdminPane: React.FC<{
     types.INSERT_PROGRAM_CONTENT_SECTIONVariables
   >(INSERT_PROGRAM_CONTENT_SECTION)
 
-  const [loading, setLoading] = useState()
+  const [loading, setLoading] = useState(false)
 
   const handleContentSectionAdd = () => {
     if (program) {

@@ -164,7 +164,7 @@ export const CreatorAdminMenu = (props: MenuProps) => {
             </span>
           }
         >
-          <Menu.Item key="programs_admin">課程內容</Menu.Item>
+          <Menu.Item key="program_collection_admin">課程內容</Menu.Item>
           <Menu.Item key="program_issues_admin">課程問題</Menu.Item>
         </Menu.SubMenu>
 

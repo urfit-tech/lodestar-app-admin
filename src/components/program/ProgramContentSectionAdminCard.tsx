@@ -3,7 +3,6 @@ import { Button, Dropdown, Icon, Menu, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import styled from 'styled-components'
-import useRouter from 'use-react-router'
 import { InferType } from 'yup'
 import { programContentSectionSchema, programSchema } from '../../schemas/program'
 import types from '../../types'
@@ -23,8 +22,6 @@ const ProgramContentSectionAdminCard: React.FC<{
   onUpdate?: () => void
   onRefetch?: () => void
 }> = ({ program, programContentSection, onDelete, onUpdate, onRefetch }) => {
-  const { history, location } = useRouter()
-
   const [createProgramContent] = useMutation<types.INSERT_PROGRAM_CONTENT, types.INSERT_PROGRAM_CONTENTVariables>(
     INSERT_PROGRAM_CONTENT,
   )
@@ -36,8 +33,6 @@ const ProgramContentSectionAdminCard: React.FC<{
     types.DELETE_PROGRAM_CONTENT_SECTION,
     types.DELETE_PROGRAM_CONTENT_SECTIONVariables
   >(DELETE_PROGRAM_CONTENT_SECTION)
-
-  const programContentSectionId = programContentSection.id
 
   return (
     <StyledAdminCard>
@@ -64,7 +59,7 @@ const ProgramContentSectionAdminCard: React.FC<{
                 onClick={() =>
                   window.confirm('此區塊內的所有內容將被刪除，此動作無法還原') &&
                   deleteProgramContentSection({
-                    variables: { programContentSectionId },
+                    variables: { programContentSectionId: programContentSection.id },
                   }).then(() => onDelete && onDelete())
                 }
               >
@@ -95,19 +90,12 @@ const ProgramContentSectionAdminCard: React.FC<{
         onClick={() =>
           createProgramContent({
             variables: {
-              programContentSectionId,
+              programContentSectionId: programContentSection.id,
               title: '未命名內容',
               position: programContentSection.programContents.length,
               publishedAt: program.publishedAt ? undefined : new Date(),
             },
-          }).then(({ data }) => {
-            onRefetch && onRefetch()
-            const programContentId = (data as any).insert_program_content.returning[0].id
-            history.push({
-              pathname: location.pathname,
-              search: `${location.search}&programContentId=${programContentId}`,
-            })
-          })
+          }).then(() => onRefetch && onRefetch())
         }
       >
         新增內容
