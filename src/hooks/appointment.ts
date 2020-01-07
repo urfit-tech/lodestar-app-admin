@@ -2,6 +2,7 @@ import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import { AppointmentPeriodCardProps } from '../components/appointment/AppointmentPeriodCard'
+import { notEmpty } from '../helpers'
 import types from '../types'
 
 export const useAppointmentEnrollmentCollection = () => {
@@ -22,14 +23,10 @@ export const useAppointmentEnrollmentCollection = () => {
           picture_url
         }
         started_at
-        order_product {
-          id
-          deliverables
-          order_log {
-            id
-            invoice
-          }
-        }
+        start_url
+        member_name
+        member_email
+        member_phone
       }
     }
   `)
@@ -37,24 +34,19 @@ export const useAppointmentEnrollmentCollection = () => {
   const appointmentEnrollments: AppointmentPeriodCardProps[] =
     loading || !!error || !data
       ? []
-      : (data.appointment_enrollment
-          .map(enrollment => {
-            if (
-              !enrollment.appointment_plan ||
-              !enrollment.member ||
-              !enrollment.order_product ||
-              !enrollment.appointment_plan.creator
-            ) {
+      : data.appointment_enrollment
+          .map<AppointmentPeriodCardProps | undefined>(enrollment => {
+            if (!enrollment.appointment_plan || !enrollment.member || !enrollment.appointment_plan.creator) {
               return undefined
             }
 
             return {
-              id: enrollment.order_product.id || '',
+              id: `${enrollment.appointment_plan.id}_${enrollment.started_at}`,
               avatarUrl: enrollment.member.picture_url,
               member: {
-                name: enrollment.order_product.order_log.invoice.name,
-                email: enrollment.order_product.order_log.invoice.email,
-                phone: enrollment.order_product.order_log.invoice.phone,
+                name: enrollment.member_name || '',
+                email: enrollment.member_email,
+                phone: enrollment.member_phone,
               },
               appointmentPlanTitle: enrollment.appointment_plan.title,
               startedAt: new Date(enrollment.started_at),
@@ -65,10 +57,10 @@ export const useAppointmentEnrollmentCollection = () => {
                 id: enrollment.appointment_plan.creator.id || '',
                 name: enrollment.appointment_plan.creator.name || '',
               },
-              link: enrollment.order_product.deliverables?.start_url || null,
+              link: enrollment.start_url,
             }
           })
-          .filter(v => v) as AppointmentPeriodCardProps[])
+          .filter(notEmpty)
 
   return {
     loadingAppointmentEnrollments: loading,

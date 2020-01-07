@@ -1,13 +1,22 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React, { useEffect } from 'react'
-import AppointmentPlanCollectionTableComponent, { AppointmentPlanProps } from '../../components/appointment/AppointmentPlanCollectionTable'
+import AppointmentPlanCollectionTableComponent, {
+  AppointmentPlanProps,
+} from '../../components/appointment/AppointmentPlanCollectionTable'
+import { useAuth } from '../../contexts/AuthContext'
 import types from '../../types'
 
 const AppointmentPlanCollectionTable: React.FC = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_APPOINTMENT_PLAN_COLLECTION_ADMIN>(
-    GET_APPOINTMENT_PLAN_COLLECTION_ADMIN,
-  )
+  const { currentUserRole, currentMemberId } = useAuth()
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_APPOINTMENT_PLAN_COLLECTION_ADMIN,
+    types.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables
+  >(GET_APPOINTMENT_PLAN_COLLECTION_ADMIN, {
+    variables: {
+      creatorId: currentUserRole === 'content-creator' ? currentMemberId : undefined,
+    },
+  })
 
   useEffect(() => {
     refetch()
@@ -33,8 +42,8 @@ const AppointmentPlanCollectionTable: React.FC = () => {
 }
 
 const GET_APPOINTMENT_PLAN_COLLECTION_ADMIN = gql`
-  query GET_APPOINTMENT_PLAN_COLLECTION_ADMIN {
-    appointment_plan(order_by: { updated_at: desc }) {
+  query GET_APPOINTMENT_PLAN_COLLECTION_ADMIN($creatorId: String) {
+    appointment_plan(where: { creator_id: { _eq: $creatorId } }, order_by: { updated_at: desc }) {
       id
       creator {
         id

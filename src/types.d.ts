@@ -207,37 +207,6 @@ export interface UPDATE_ISSUE_STATUSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: INSERT_ISSUE
-// ====================================================
-
-export interface INSERT_ISSUE_insert_issue {
-  __typename: "issue_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface INSERT_ISSUE {
-  /**
-   * insert data into the table: "issue"
-   */
-  insert_issue: INSERT_ISSUE_insert_issue | null;
-}
-
-export interface INSERT_ISSUEVariables {
-  appId: string;
-  memberId: string;
-  threadId: string;
-  title?: string | null;
-  description?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_ISSUE
 // ====================================================
 
@@ -541,59 +510,6 @@ export interface UPDATE_ISSUE_REPLY {
 export interface UPDATE_ISSUE_REPLYVariables {
   issueReplyId: any;
   content?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ISSUE_THREAD
-// ====================================================
-
-export interface GET_ISSUE_THREAD_issue_issue_reactions {
-  __typename: "issue_reaction";
-  member_id: string;
-}
-
-export interface GET_ISSUE_THREAD_issue_issue_replies_aggregate_aggregate {
-  __typename: "issue_reply_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_ISSUE_THREAD_issue_issue_replies_aggregate {
-  __typename: "issue_reply_aggregate";
-  aggregate: GET_ISSUE_THREAD_issue_issue_replies_aggregate_aggregate | null;
-}
-
-export interface GET_ISSUE_THREAD_issue {
-  __typename: "issue";
-  id: any;
-  title: string;
-  description: string;
-  solved_at: any | null;
-  created_at: any;
-  member_id: string;
-  /**
-   * An array relationship
-   */
-  issue_reactions: GET_ISSUE_THREAD_issue_issue_reactions[];
-  /**
-   * An aggregated array relationship
-   */
-  issue_replies_aggregate: GET_ISSUE_THREAD_issue_issue_replies_aggregate;
-}
-
-export interface GET_ISSUE_THREAD {
-  /**
-   * fetch data from the table: "issue"
-   */
-  issue: GET_ISSUE_THREAD_issue[];
-}
-
-export interface GET_ISSUE_THREADVariables {
-  appId: string;
-  threadId: string;
 }
 
 /* tslint:disable */
@@ -976,35 +892,6 @@ export interface INSERT_PROGRAM_CONTENT_SECTIONVariables {
   programId: any;
   title: string;
   position: number;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_PROGRAM_CONTENT_PROGRESS
-// ====================================================
-
-export interface INSERT_PROGRAM_CONTENT_PROGRESS_insert_program_content_progress {
-  __typename: "program_content_progress_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface INSERT_PROGRAM_CONTENT_PROGRESS {
-  /**
-   * insert data into the table: "program_content_progress"
-   */
-  insert_program_content_progress: INSERT_PROGRAM_CONTENT_PROGRESS_insert_program_content_progress | null;
-}
-
-export interface INSERT_PROGRAM_CONTENT_PROGRESSVariables {
-  memberId?: string | null;
-  programContentId: any;
-  progress?: any | null;
 }
 
 /* tslint:disable */
@@ -2328,6 +2215,10 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN {
    * fetch data from the table: "appointment_plan"
    */
   appointment_plan: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan[];
+}
+
+export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables {
+  creatorId?: string | null;
 }
 
 /* tslint:disable */
@@ -4146,22 +4037,6 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_me
   picture_url: string | null;
 }
 
-export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product_order_log {
-  __typename: "order_log";
-  id: string;
-  invoice: any;
-}
-
-export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product {
-  __typename: "order_product";
-  id: any;
-  deliverables: any | null;
-  /**
-   * An object relationship
-   */
-  order_log: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product_order_log;
-}
-
 export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment {
   __typename: "appointment_enrollment";
   /**
@@ -4173,10 +4048,10 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment {
    */
   member: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_member | null;
   started_at: any | null;
-  /**
-   * An object relationship
-   */
-  order_product: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product | null;
+  start_url: string | null;
+  member_name: string | null;
+  member_email: string | null;
+  member_phone: string | null;
 }
 
 export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION {
@@ -4798,9 +4673,9 @@ export interface GET_PROGRAM_program_by_pk_program_content_sections {
 }
 
 export interface GET_PROGRAM_program_by_pk_program_roles_member {
-  __typename: "member";
-  id: string;
-  name: string;
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
   picture_url: string | null;
 }
 
@@ -4814,7 +4689,7 @@ export interface GET_PROGRAM_program_by_pk_program_roles {
   /**
    * An object relationship
    */
-  member: GET_PROGRAM_program_by_pk_program_roles_member;
+  member: GET_PROGRAM_program_by_pk_program_roles_member | null;
 }
 
 export interface GET_PROGRAM_program_by_pk_program_plans {
@@ -5264,88 +5139,6 @@ export interface GET_FUNDINGVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_CREATOR_PROGRAM_COLLECTION
-// ====================================================
-
-export interface GET_CREATOR_PROGRAM_COLLECTION_program {
-  __typename: "program";
-  id: any;
-  published_at: any | null;
-}
-
-export interface GET_CREATOR_PROGRAM_COLLECTION {
-  /**
-   * fetch data from the table: "program"
-   */
-  program: GET_CREATOR_PROGRAM_COLLECTION_program[];
-}
-
-export interface GET_CREATOR_PROGRAM_COLLECTIONVariables {
-  appId: string;
-  memberId?: string | null;
-  isDraft?: boolean | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_CREATOR_PROGRAM_ISSUES
-// ====================================================
-
-export interface GET_CREATOR_PROGRAM_ISSUES_issue_issue_reactions {
-  __typename: "issue_reaction";
-  member_id: string;
-}
-
-export interface GET_CREATOR_PROGRAM_ISSUES_issue_issue_replies_aggregate_aggregate {
-  __typename: "issue_reply_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_CREATOR_PROGRAM_ISSUES_issue_issue_replies_aggregate {
-  __typename: "issue_reply_aggregate";
-  aggregate: GET_CREATOR_PROGRAM_ISSUES_issue_issue_replies_aggregate_aggregate | null;
-}
-
-export interface GET_CREATOR_PROGRAM_ISSUES_issue {
-  __typename: "issue";
-  id: any;
-  title: string;
-  description: string;
-  solved_at: any | null;
-  created_at: any;
-  member_id: string;
-  thread_id: string;
-  /**
-   * An array relationship
-   */
-  issue_reactions: GET_CREATOR_PROGRAM_ISSUES_issue_issue_reactions[];
-  /**
-   * An aggregated array relationship
-   */
-  issue_replies_aggregate: GET_CREATOR_PROGRAM_ISSUES_issue_issue_replies_aggregate;
-}
-
-export interface GET_CREATOR_PROGRAM_ISSUES {
-  /**
-   * fetch data from the table: "issue"
-   */
-  issue: GET_CREATOR_PROGRAM_ISSUES_issue[];
-}
-
-export interface GET_CREATOR_PROGRAM_ISSUESVariables {
-  appId: string;
-  threadIdLike?: string | null;
-  unsolved?: boolean | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_CATEGORY
 // ====================================================
 
@@ -5544,6 +5337,88 @@ export interface GET_MEMBER_COLLECTION {
    * fetch data from the table: "member"
    */
   member: GET_MEMBER_COLLECTION_member[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CREATOR_PROGRAM_COLLECTION
+// ====================================================
+
+export interface GET_CREATOR_PROGRAM_COLLECTION_program {
+  __typename: "program";
+  id: any;
+  published_at: any | null;
+}
+
+export interface GET_CREATOR_PROGRAM_COLLECTION {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_CREATOR_PROGRAM_COLLECTION_program[];
+}
+
+export interface GET_CREATOR_PROGRAM_COLLECTIONVariables {
+  appId: string;
+  memberId?: string | null;
+  isDraft?: boolean | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CREATOR_PROGRAM_ISSUES
+// ====================================================
+
+export interface GET_CREATOR_PROGRAM_ISSUES_issue_issue_reactions {
+  __typename: "issue_reaction";
+  member_id: string;
+}
+
+export interface GET_CREATOR_PROGRAM_ISSUES_issue_issue_replies_aggregate_aggregate {
+  __typename: "issue_reply_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_CREATOR_PROGRAM_ISSUES_issue_issue_replies_aggregate {
+  __typename: "issue_reply_aggregate";
+  aggregate: GET_CREATOR_PROGRAM_ISSUES_issue_issue_replies_aggregate_aggregate | null;
+}
+
+export interface GET_CREATOR_PROGRAM_ISSUES_issue {
+  __typename: "issue";
+  id: any;
+  title: string;
+  description: string;
+  solved_at: any | null;
+  created_at: any;
+  member_id: string;
+  thread_id: string;
+  /**
+   * An array relationship
+   */
+  issue_reactions: GET_CREATOR_PROGRAM_ISSUES_issue_issue_reactions[];
+  /**
+   * An aggregated array relationship
+   */
+  issue_replies_aggregate: GET_CREATOR_PROGRAM_ISSUES_issue_issue_replies_aggregate;
+}
+
+export interface GET_CREATOR_PROGRAM_ISSUES {
+  /**
+   * fetch data from the table: "issue"
+   */
+  issue: GET_CREATOR_PROGRAM_ISSUES_issue[];
+}
+
+export interface GET_CREATOR_PROGRAM_ISSUESVariables {
+  appId: string;
+  threadIdLike?: string | null;
+  unsolved?: boolean | null;
 }
 
 /* tslint:disable */
@@ -6149,7 +6024,7 @@ export enum member_update_column {
   picture_url = "picture_url",
   refresh_token = "refresh_token",
   role = "role",
-  roles = "roles",
+  roles_deprecated = "roles_deprecated",
   title = "title",
   username = "username",
 }
@@ -7444,10 +7319,15 @@ export interface appointment_enrollment_bool_exp {
   appointment_plan?: appointment_plan_bool_exp | null;
   appointment_plan_id?: uuid_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
+  join_url?: String_comparison_exp | null;
   member?: member_bool_exp | null;
+  member_email?: String_comparison_exp | null;
   member_id?: String_comparison_exp | null;
+  member_name?: String_comparison_exp | null;
+  member_phone?: String_comparison_exp | null;
   order_product?: order_product_bool_exp | null;
   order_product_id?: uuid_comparison_exp | null;
+  start_url?: String_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
 }
 
@@ -8607,7 +8487,7 @@ export interface member_bool_exp {
   program_roles?: program_role_bool_exp | null;
   refresh_token?: uuid_comparison_exp | null;
   role?: String_comparison_exp | null;
-  roles?: jsonb_comparison_exp | null;
+  roles_deprecated?: jsonb_comparison_exp | null;
   title?: String_comparison_exp | null;
   username?: String_comparison_exp | null;
 }
@@ -8699,7 +8579,7 @@ export interface member_insert_input {
   program_roles?: program_role_arr_rel_insert_input | null;
   refresh_token?: any | null;
   role?: string | null;
-  roles?: any | null;
+  roles_deprecated?: any | null;
   title?: string | null;
   username?: string | null;
 }
@@ -10652,7 +10532,7 @@ export interface program_role_bool_exp {
   _not?: program_role_bool_exp | null;
   _or?: (program_role_bool_exp | null)[] | null;
   id?: uuid_comparison_exp | null;
-  member?: member_bool_exp | null;
+  member?: member_public_bool_exp | null;
   member_id?: String_comparison_exp | null;
   name?: String_comparison_exp | null;
   program?: program_bool_exp | null;
@@ -10664,7 +10544,7 @@ export interface program_role_bool_exp {
  */
 export interface program_role_insert_input {
   id?: any | null;
-  member?: member_obj_rel_insert_input | null;
+  member?: member_public_obj_rel_insert_input | null;
   member_id?: string | null;
   name?: string | null;
   program?: program_obj_rel_insert_input | null;

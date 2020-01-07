@@ -35,8 +35,8 @@ export type AppointmentPeriodCardProps = {
   avatarUrl?: string | null
   member: {
     name: string
-    email?: string
-    phone?: string
+    email?: string | null
+    phone?: string | null
   }
   appointmentPlanTitle: string
   startedAt: Date
