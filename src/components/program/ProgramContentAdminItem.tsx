@@ -1,10 +1,10 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Icon, message, Tag, Typography } from 'antd'
+import { Icon, Tag, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import styled from 'styled-components'
 import { InferType } from 'yup'
-import { dateFormatter } from '../../helpers'
+import { dateFormatter, handleError } from '../../helpers'
 import { programContentSchema, programSchema } from '../../schemas/program'
 import types from '../../types'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
@@ -65,16 +65,14 @@ const ProgramContentAdminItem: React.FC<{
                 },
               })
                 .then(() => onRefetch && onRefetch())
-                .catch(err => message.error(err.message))
+                .catch(error => handleError(error))
             }
           />
         )}
         <ProgramContentAdminModal
           programId={program.id}
           programContentId={programContent.id}
-          onSubmit={() => {
-            onRefetch && onRefetch()
-          }}
+          onSubmit={() => onRefetch && onRefetch()}
         />
       </div>
     </div>
