@@ -78,8 +78,6 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
         </>
       )}
     >
-      <AdminBlockSubTitle className="mb-2">僅可設定三個月內的預約時段</AdminBlockSubTitle>
-
       <Form hideRequiredMark colon={false}>
         <Form.Item label="起始時間">
           {form.getFieldDecorator('startedAt', {
