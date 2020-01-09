@@ -8,24 +8,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { rgba } from '../../helpers'
 import { BREAK_POINT } from '../common/Responsive'
 import PodcastPeriodSelector from './PodcastPeriodSelector'
-export type PodcastPlanProps = (
-  props: {
-    onSuccess?: () => void,
-    onError?: (error: Error) => void,
-    onFinally?: () => void
-    data: {
-      title: string
-      isPublished: boolean
-      isSubscription: boolean
-      listPrice: number
-      salePrice: number
-      soldAt: Date | null
-      periodAmount: number
-      periodType: string
-      creatorId: string
-      podcastPlanId?: string
-    }
-  }) => void
+
 const StyledIcon = styled.div<{ available?: boolean }>`
   display: none;
   justify-content: center;
@@ -52,13 +35,32 @@ const StyledTitle = styled.div`
   line-height: 1.3;
   letter-spacing: 0.77px;
 `
+
+export type PodcastPlanProps = (props: {
+  onSuccess?: () => void
+  onError?: (error: Error) => void
+  onFinally?: () => void
+  data: {
+    title: string
+    isPublished: boolean
+    isSubscription: boolean
+    listPrice: number
+    salePrice: number
+    soldAt: Date | null
+    periodAmount: number
+    periodType: string
+    creatorId: string
+    podcastPlanId?: string
+  }
+}) => void
+
 type PodcastPlanCreationModalProps = FormComponentProps & {
   onSubmit: PodcastPlanProps
   isVisible: boolean
   onVisibleSet: Dispatch<SetStateAction<boolean>>
   podcastPlan?: {
     id: string
-    periodType: "Y" | 'M' | "W"
+    periodType: 'Y' | 'M' | 'W'
     periodAmount: number
     listPrice: number
     salePrice?: number | null
@@ -68,22 +70,24 @@ type PodcastPlanCreationModalProps = FormComponentProps & {
     creatorId?: string | null
   } | null
 }
-const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({ 
+const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
   form,
   onSubmit,
   isVisible,
   onVisibleSet,
   podcastPlan,
-  children
+  children,
 }) => {
   const [loading, setLoading] = useState(false)
   const { currentUserRole } = useAuth()
 
-  const [hasSalePrice, setSalePrice] = useState<boolean>(Boolean(podcastPlan && podcastPlan.salePrice))
+  const [withSalePrice, setWithSalePrice] = useState<boolean>(Boolean(podcastPlan && podcastPlan.salePrice))
 
   const handleSubmit = () => {
     form.validateFields((error, values) => {
-      if (error) return
+      if (error) {
+        return
+      }
 
       if (onSubmit) {
         setLoading(true)
@@ -101,8 +105,8 @@ const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
             soldAt: values.soldAt,
             periodAmount: values.period.amount,
             periodType: values.period.type,
-            creatorId: values.creatorId
-          }
+            creatorId: values.creatorId,
+          },
         })
       }
     })
@@ -112,71 +116,81 @@ const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
     <>
       {children}
 
-      <Modal title={null} footer={null} destroyOnClose centered visible={isVisible} onCancel={() => onVisibleSet(false)}>
+      <Modal
+        title={null}
+        footer={null}
+        destroyOnClose
+        centered
+        visible={isVisible}
+        onCancel={() => onVisibleSet(false)}
+      >
         <StyledIcon>
           <Icon type="file-add" />
         </StyledIcon>
         <StyledTitle>廣播頻道訂閱方案</StyledTitle>
         <Form>
-          {currentUserRole !== 'content-creator' && <Form.Item label="選擇講師">
-            {form.getFieldDecorator('creatorId', {
-              initialValue: podcastPlan ? podcastPlan.creatorId : '',
-              rules: [{ required: true, message: '請輸入帳號 或 Email' }]
-            })(<CreatorSelector />)}
-          </Form.Item>}
+          {currentUserRole !== 'content-creator' && (
+            <Form.Item label="選擇講師">
+              {form.getFieldDecorator('creatorId', {
+                initialValue: podcastPlan ? podcastPlan.creatorId : '',
+                rules: [{ required: true, message: '請輸入帳號 或 Email' }],
+              })(<CreatorSelector />)}
+            </Form.Item>
+          )}
           <Form.Item label="販售狀態">
             {form.getFieldDecorator('status', {
               initialValue: podcastPlan ? podcastPlan.isPublished : true,
-              rules: [{ required: true }]
+              rules: [{ required: true }],
             })(
               <Radio.Group>
-                <Radio value={true}>
-                  發佈，立刻開賣訂閱方案
-                </Radio>
-                <Radio value={false}>
-                  停售，方案暫停對外銷售，並從廣播頁中隱藏
-                </Radio>
-              </Radio.Group>
+                <Radio value={true}>發佈，立刻開賣訂閱方案</Radio>
+                <Radio value={false}>停售，方案暫停對外銷售，並從廣播頁中隱藏</Radio>
+              </Radio.Group>,
             )}
           </Form.Item>
           <Form.Item label="訂閱週期">
             {form.getFieldDecorator('period', {
               initialValue: {
                 amount: podcastPlan ? podcastPlan.periodAmount : 1,
-                type: podcastPlan ? podcastPlan.periodType : "D"
+                type: podcastPlan ? podcastPlan.periodType : 'D',
               },
-              rules: [{ required: true, message: '請輸入訂閱週期' }]
+              rules: [{ required: true, message: '請輸入訂閱週期' }],
             })(<PodcastPeriodSelector />)}
           </Form.Item>
           <Form.Item label="定價">
             {form.getFieldDecorator('listPrice', {
               initialValue: podcastPlan ? podcastPlan.listPrice : 0,
-              rules: [{ required: true, message: '請輸入定價' }, { type: 'number' }]
-            })(<InputNumber
-              min={0}
-              formatter={value => `NT$ ${value}`}
-              parser={value => (value ? value.replace(/\D/g, '') : '')}
-            />)}
+              rules: [{ required: true, message: '請輸入定價' }, { type: 'number' }],
+            })(
+              <InputNumber
+                min={0}
+                formatter={value => `NT$ ${value}`}
+                parser={value => (value ? value.replace(/\D/g, '') : '')}
+              />,
+            )}
           </Form.Item>
-          <Checkbox
-            checked={hasSalePrice}
-            onChange={e => setSalePrice(e.target.checked)}
-          >優惠價</Checkbox>
-          {hasSalePrice && <Form.Item label="優惠價">
-            {form.getFieldDecorator('salePrice', {
-              initialValue: podcastPlan ? podcastPlan.salePrice : 0,
-              rules: [{ required: true, message: '請輸入優惠價' }, { type: 'number' }],
-            })(<InputNumber
-              min={0}
-              formatter={value => `NT$ ${value}`}
-              parser={value => (value ? value.replace(/\D/g, '') : '')}
-              className="mr-2"
-            />)}
-            {form.getFieldDecorator('soldAt', {
-              initialValue: podcastPlan && podcastPlan.soldAt ? moment(podcastPlan.soldAt) : null,
-              rules: [{ required: true }]
-            })(<DatePicker placeholder="優惠截止日期" />)}
-          </Form.Item>}
+          <Checkbox checked={withSalePrice} onChange={e => setWithSalePrice(e.target.checked)}>
+            優惠價
+          </Checkbox>
+          {withSalePrice && (
+            <Form.Item label="優惠價">
+              {form.getFieldDecorator('salePrice', {
+                initialValue: podcastPlan ? podcastPlan.salePrice : 0,
+                rules: [{ required: true, message: '請輸入優惠價' }, { type: 'number' }],
+              })(
+                <InputNumber
+                  min={0}
+                  formatter={value => `NT$ ${value}`}
+                  parser={value => (value ? value.replace(/\D/g, '') : '')}
+                  className="mr-2"
+                />,
+              )}
+              {form.getFieldDecorator('soldAt', {
+                initialValue: podcastPlan && podcastPlan.soldAt ? moment(podcastPlan.soldAt) : null,
+                rules: [{ required: true }],
+              })(<DatePicker placeholder="優惠截止日期" />)}
+            </Form.Item>
+          )}
         </Form>
         <div className="text-right">
           <Button className="mr-2" onClick={() => onVisibleSet(false)}>

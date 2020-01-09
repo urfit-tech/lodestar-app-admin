@@ -2,9 +2,9 @@ import { Icon, Input, Table } from 'antd'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
+import { useAuth } from '../../contexts/AuthContext'
 import { currencyFormatter } from '../../helpers'
 import { AvatarImage } from '../common/Image'
-import { useAuth } from '../../contexts/AuthContext'
 
 const StyledCreatorName = styled.span`
   max-width: 10em;

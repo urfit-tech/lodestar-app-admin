@@ -2,7 +2,9 @@ import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { groupBy } from 'ramda'
 import React from 'react'
-import ActivityParticipantCollectionModal, { ActivitySessionParticipantProps } from '../../components/activity/ActivityParticipantCollectionModal'
+import ActivityParticipantCollectionModal, {
+  ActivitySessionParticipantProps,
+} from '../../components/activity/ActivityParticipantCollectionModal'
 import types from '../../types'
 
 const ActivityParticipantCollection: React.FC<{

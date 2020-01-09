@@ -39,7 +39,9 @@ const ProfileBasicAdminCard: React.FC<ProfileBasicAdminCardProps> = ({ form, mem
             username: member.username,
             name: values.name,
             pictureUrl: values.picture
-              ? `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${localStorage.getItem('kolable.app.id')}/${memberId}`
+              ? `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${localStorage.getItem(
+                  'kolable.app.id',
+                )}/${memberId}`
               : member.pictureUrl,
             description: values.description,
           },

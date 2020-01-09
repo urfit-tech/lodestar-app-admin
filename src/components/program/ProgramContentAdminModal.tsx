@@ -219,7 +219,9 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                   })(
                     <SingleUploader
                       uploadText="上傳字幕"
-                      path={`texttracks/${localStorage.getItem('kolable.app.id')}/${programContent.programContentBody.id}`}
+                      path={`texttracks/${localStorage.getItem('kolable.app.id')}/${
+                        programContent.programContentBody.id
+                      }`}
                       onUploading={() => setUploading(true)}
                       onSuccess={() => setUploading(false)}
                       onError={() => setUploading(false)}

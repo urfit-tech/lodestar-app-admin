@@ -2,7 +2,9 @@ import { useQuery } from '@apollo/react-hooks'
 import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { useEffect } from 'react'
-import PodcastProgramCollectionAdminTableComponent, { PodcastProgramProps } from '../../components/podcast/PodcastProgramCollectionAdminTable'
+import PodcastProgramCollectionAdminTableComponent, {
+  PodcastProgramProps,
+} from '../../components/podcast/PodcastProgramCollectionAdminTable'
 import types from '../../types'
 
 const PodcastProgramCollectionAdminTable: React.FC = () => {

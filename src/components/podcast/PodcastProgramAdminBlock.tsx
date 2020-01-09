@@ -28,11 +28,7 @@ const PodcastProgramAdminBlock: React.FC<{
           <Icon type="arrow-left" />
         </Link>
         <AdminHeaderTitle className="flex-grow-1">{podcastProgramAdmin.title}</AdminHeaderTitle>
-        <a
-          href={`//${app.domain}/podcasts/${podcastProgramAdmin.id}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href={`//${app.domain}/podcasts/${podcastProgramAdmin.id}`} target="_blank" rel="noopener noreferrer">
           <Button>預覽</Button>
         </a>
       </AdminHeader>

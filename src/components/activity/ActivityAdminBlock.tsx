@@ -51,11 +51,7 @@ const ActivityAdminBlock: React.FC<{
           <Icon type="arrow-left" />
         </div>
         <AdminHeaderTitle className="flex-grow-1">{activityAdmin.title}</AdminHeaderTitle>
-        <a
-          href={`//${app.domain}/activities/${activityAdmin.id}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href={`//${app.domain}/activities/${activityAdmin.id}`} target="_blank" rel="noopener noreferrer">
           <Button>預覽</Button>
         </a>
       </AdminHeader>

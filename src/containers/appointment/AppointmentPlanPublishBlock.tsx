@@ -2,7 +2,11 @@ import { useMutation } from '@apollo/react-hooks'
 import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext } from 'react'
-import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } from '../../components/admin/AdminPublishBlock'
+import AdminPublishBlock, {
+  ChecklistItemProps,
+  PublishEvent,
+  PublishStatus,
+} from '../../components/admin/AdminPublishBlock'
 import types from '../../types'
 import AppointmentPlanContext from './AppointmentPlanContext'
 

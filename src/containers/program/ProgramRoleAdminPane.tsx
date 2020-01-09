@@ -52,7 +52,7 @@ const ProgramRoleAdminPane: React.FC<ProgramRoleAdminPaneProps> = ({ program, on
           member_id: instructorId.memberId,
           name: instructorId.name,
         })),
-      }
+      },
     })
       .then(() => {
         onRefetch && onRefetch()

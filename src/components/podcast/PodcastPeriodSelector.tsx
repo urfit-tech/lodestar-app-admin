@@ -3,13 +3,12 @@ import React from 'react'
 import { PeriodType } from '../../schemas/common'
 
 const PodcastPeriodSelector: React.FC<{
-  value?: { type: PeriodType, amount: number }
-  onChange?: (value: { type: PeriodType, amount: number }) => void
+  value?: { type: PeriodType; amount: number }
+  onChange?: (value: { type: PeriodType; amount: number }) => void
 }> = ({ value, onChange }, ref) => {
-
   return (
     <div ref={ref}>
-      {value ? (
+      {typeof value !== 'undefined' && (
         <div className="d-flex">
           <InputNumber
             min={1}
@@ -20,7 +19,7 @@ const PodcastPeriodSelector: React.FC<{
           <Select
             value={value.type}
             onChange={(type: PeriodType) => onChange && onChange({ ...value, type })}
-            style={{width: '90px'}}
+            style={{ width: '90px' }}
           >
             <Select.Option value="D">天</Select.Option>
             <Select.Option value="W">週</Select.Option>
@@ -28,7 +27,7 @@ const PodcastPeriodSelector: React.FC<{
             <Select.Option value="Y">年</Select.Option>
           </Select>
         </div>
-      ) : null}
+      )}
     </div>
   )
 }

@@ -3,11 +3,11 @@ import { CardProps } from 'antd/lib/card'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { InferType } from 'yup'
-import RoleAdminBlock from '../admin/RoleAdminBlock'
 import CreatorSelector from '../../containers/common/CreatorSelector'
 import { DeleteProgramProps, UpdateProgramProps } from '../../containers/program/ProgramRoleAdminPane'
 import { programSchema } from '../../schemas/program'
 import AdminCard from '../admin/AdminCard'
+import RoleAdminBlock from '../admin/RoleAdminBlock'
 import MemberAvatar from '../common/MemberAvatar'
 
 const StyledModalTitle = styled.div`

@@ -115,8 +115,8 @@ const ReservationCard: React.FC<ReservationCardProps> = ({ avatarUrl, title, sta
               <StyledButton variant="primary">進入會議</StyledButton>
             </>
           ) : (
-              <StyledBadge>已結束</StyledBadge>
-            )}
+            <StyledBadge>已結束</StyledBadge>
+          )}
         </StyledStatusBar>
       </StyledWrapper>
     </StyledCard>

@@ -89,15 +89,14 @@ type PodcastPlanCollectionAdminTableProps = {
   podcastPlans: PodcastPlan[]
   loading: boolean
   error?: ApolloError
-  refetch: (variables?: Record<string, any> | undefined) => Promise<ApolloQueryResult<types.GET_PODCAST_PLAN_ADMIN_COLLECTION>>
+  refetch: (
+    variables?: Record<string, any> | undefined,
+  ) => Promise<ApolloQueryResult<types.GET_PODCAST_PLAN_ADMIN_COLLECTION>>
 }
 export type PodcastPlanProps = PodcastPlan & {
   sorter?: number
 }
-const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableProps> = ({
-  podcastPlans,
-  refetch
-}) => {
+const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableProps> = ({ podcastPlans, refetch }) => {
   const [creatorSearch, setCreatorSearch] = useState('')
   const [isVisible, setVisible] = useState(false)
   const [programPlanId, setProgramPlanId] = useState('')
@@ -131,9 +130,15 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       render: (text, record, index) => (
         <div>
           {typeof record.salePrice === 'number' && !!record.salePrice && (
-            <StyledPriceLabel className="mr-2">{currencyFormatter(record.salePrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getCustomizedPeriodTypeLabel(record.periodType)}</StyledPriceLabel>
+            <StyledPriceLabel className="mr-2">
+              {currencyFormatter(record.salePrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}
+              {getCustomizedPeriodTypeLabel(record.periodType)}
+            </StyledPriceLabel>
           )}
-          <StyledPriceLabel className="mr-2">{currencyFormatter(record.listPrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}{getCustomizedPeriodTypeLabel(record.periodType)}</StyledPriceLabel>
+          <StyledPriceLabel className="mr-2">
+            {currencyFormatter(record.listPrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}
+            {getCustomizedPeriodTypeLabel(record.periodType)}
+          </StyledPriceLabel>
         </div>
       ),
     },
@@ -155,12 +160,12 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       filters: [
         {
           text: '已發佈',
-          value: '已發佈'
+          value: '已發佈',
         },
         {
           text: '未發佈',
-          value: '未發佈'
-        }
+          value: '未發佈',
+        },
       ],
       filterMultiple: false,
       onFilter: (value, record) => record.isPublished === (value === '已發佈'),
@@ -176,24 +181,24 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       <Table
         rowKey="id"
         columns={columns}
-        dataSource={podcastPlans
-          .filter(podcastPlan => !creatorSearch || podcastPlan.creator.includes(creatorSearch))
-        }
+        dataSource={podcastPlans.filter(podcastPlan => !creatorSearch || podcastPlan.creator.includes(creatorSearch))}
         onRow={record => {
-          return ({
+          return {
             onClick: () => {
               setVisible(true)
               setProgramPlanId(record.id)
-            }
-          })
+            },
+          }
         }}
       />
-      {isVisible && <PodcastPlanUpdateModal
-        podcastPlanId={programPlanId}
-        isVisible={isVisible}
-        onVisibleSet={setVisible}
-        refetch={refetch}
-      />}
+      {isVisible && (
+        <PodcastPlanUpdateModal
+          podcastPlanId={programPlanId}
+          isVisible={isVisible}
+          onVisibleSet={setVisible}
+          refetch={refetch}
+        />
+      )}
     </>
   )
 }
