@@ -3339,6 +3339,69 @@ export interface CREATE_PODCAST_PROGRAMVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAM_PROGRESS
+// ====================================================
+
+export interface GET_PROGRAM_PROGRESS_program_enrollment_program_program_content_sections_program_contents_program_content_progress {
+  __typename: "program_content_progress";
+  progress: any;
+  member_id: string;
+}
+
+export interface GET_PROGRAM_PROGRESS_program_enrollment_program_program_content_sections_program_contents {
+  __typename: "program_content";
+  duration: any | null;
+  /**
+   * An array relationship
+   */
+  program_content_progress: GET_PROGRAM_PROGRESS_program_enrollment_program_program_content_sections_program_contents_program_content_progress[];
+}
+
+export interface GET_PROGRAM_PROGRESS_program_enrollment_program_program_content_sections {
+  __typename: "program_content_section";
+  /**
+   * An array relationship
+   */
+  program_contents: GET_PROGRAM_PROGRESS_program_enrollment_program_program_content_sections_program_contents[];
+}
+
+export interface GET_PROGRAM_PROGRESS_program_enrollment_program {
+  __typename: "program";
+  id: any;
+  /**
+   * An array relationship
+   */
+  program_content_sections: GET_PROGRAM_PROGRESS_program_enrollment_program_program_content_sections[];
+}
+
+export interface GET_PROGRAM_PROGRESS_program_enrollment {
+  __typename: "program_enrollment";
+  member_id: string | null;
+  member_name: string | null;
+  member_email: string | null;
+  member_picture_url: string | null;
+  /**
+   * An object relationship
+   */
+  program: GET_PROGRAM_PROGRESS_program_enrollment_program | null;
+}
+
+export interface GET_PROGRAM_PROGRESS {
+  /**
+   * fetch data from the table: "program_enrollment"
+   */
+  program_enrollment: GET_PROGRAM_PROGRESS_program_enrollment[];
+}
+
+export interface GET_PROGRAM_PROGRESSVariables {
+  programId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_ROLE
 // ====================================================
 
@@ -4032,8 +4095,8 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_ap
 }
 
 export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_member {
-  __typename: "member";
-  id: string;
+  __typename: "member_public";
+  id: string | null;
   picture_url: string | null;
 }
 
@@ -6006,6 +6069,22 @@ export enum member_constraint {
 }
 
 /**
+ * unique or primary key constraints on table "member_tag"
+ */
+export enum member_tag_constraint {
+  member_tag_pkey = "member_tag_pkey",
+}
+
+/**
+ * update columns of table "member_tag"
+ */
+export enum member_tag_update_column {
+  id = "id",
+  member_id = "member_id",
+  tag = "tag",
+}
+
+/**
  * update columns of table "member"
  */
 export enum member_update_column {
@@ -6703,6 +6782,24 @@ export enum program_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "tag"
+ */
+export enum tag_constraint {
+  tag_id_key = "tag_id_key",
+  tag_pkey = "tag_pkey",
+}
+
+/**
+ * update columns of table "tag"
+ */
+export enum tag_update_column {
+  created_at = "created_at",
+  name = "name",
+  type = "type",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "voucher_code"
  */
 export enum voucher_code_constraint {
@@ -7320,7 +7417,7 @@ export interface appointment_enrollment_bool_exp {
   appointment_plan_id?: uuid_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   join_url?: String_comparison_exp | null;
-  member?: member_bool_exp | null;
+  member?: member_public_bool_exp | null;
   member_email?: String_comparison_exp | null;
   member_id?: String_comparison_exp | null;
   member_name?: String_comparison_exp | null;
@@ -8470,6 +8567,7 @@ export interface member_bool_exp {
   logined_at?: timestamptz_comparison_exp | null;
   media?: media_bool_exp | null;
   member_cards?: member_card_bool_exp | null;
+  member_tags?: member_tag_bool_exp | null;
   metadata?: jsonb_comparison_exp | null;
   name?: String_comparison_exp | null;
   notifications?: notification_bool_exp | null;
@@ -8490,6 +8588,7 @@ export interface member_bool_exp {
   roles_deprecated?: jsonb_comparison_exp | null;
   title?: String_comparison_exp | null;
   username?: String_comparison_exp | null;
+  vouchers?: voucher_bool_exp | null;
 }
 
 /**
@@ -8563,6 +8662,7 @@ export interface member_insert_input {
   logined_at?: any | null;
   media?: media_arr_rel_insert_input | null;
   member_cards?: member_card_arr_rel_insert_input | null;
+  member_tags?: member_tag_arr_rel_insert_input | null;
   metadata?: any | null;
   name?: string | null;
   notifications?: notification_arr_rel_insert_input | null;
@@ -8582,6 +8682,7 @@ export interface member_insert_input {
   roles_deprecated?: any | null;
   title?: string | null;
   username?: string | null;
+  vouchers?: voucher_arr_rel_insert_input | null;
 }
 
 /**
@@ -8639,6 +8740,48 @@ export interface member_public_insert_input {
  */
 export interface member_public_obj_rel_insert_input {
   data: member_public_insert_input;
+}
+
+/**
+ * input type for inserting array relation for remote table "member_tag"
+ */
+export interface member_tag_arr_rel_insert_input {
+  data: member_tag_insert_input[];
+  on_conflict?: member_tag_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_tag". All fields are combined with a logical 'AND'.
+ */
+export interface member_tag_bool_exp {
+  _and?: (member_tag_bool_exp | null)[] | null;
+  _not?: member_tag_bool_exp | null;
+  _or?: (member_tag_bool_exp | null)[] | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  tag?: String_comparison_exp | null;
+  tagByTag?: tag_bool_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_tag"
+ */
+export interface member_tag_insert_input {
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  tag?: string | null;
+  tagByTag?: tag_obj_rel_insert_input | null;
+}
+
+/**
+ * on conflict condition type for table "member_tag"
+ */
+export interface member_tag_on_conflict {
+  constraint: member_tag_constraint;
+  update_columns: member_tag_update_column[];
+  where?: member_tag_bool_exp | null;
 }
 
 /**
@@ -10561,6 +10704,48 @@ export interface program_role_on_conflict {
 }
 
 /**
+ * Boolean expression to filter rows from the table "tag". All fields are combined with a logical 'AND'.
+ */
+export interface tag_bool_exp {
+  _and?: (tag_bool_exp | null)[] | null;
+  _not?: tag_bool_exp | null;
+  _or?: (tag_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  member_tags?: member_tag_bool_exp | null;
+  name?: String_comparison_exp | null;
+  type?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "tag"
+ */
+export interface tag_insert_input {
+  created_at?: any | null;
+  member_tags?: member_tag_arr_rel_insert_input | null;
+  name?: string | null;
+  type?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "tag"
+ */
+export interface tag_obj_rel_insert_input {
+  data: tag_insert_input;
+  on_conflict?: tag_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "tag"
+ */
+export interface tag_on_conflict {
+  constraint: tag_constraint;
+  update_columns: tag_update_column[];
+  where?: tag_bool_exp | null;
+}
+
+/**
  * expression to compare columns of type timestamptz. All fields are combined with logical 'AND'.
  */
 export interface timestamptz_comparison_exp {
@@ -10607,6 +10792,7 @@ export interface voucher_bool_exp {
   _or?: (voucher_bool_exp | null)[] | null;
   created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   status?: voucher_status_bool_exp | null;
   voucher_code?: voucher_code_bool_exp | null;
@@ -10673,6 +10859,7 @@ export interface voucher_code_on_conflict {
 export interface voucher_insert_input {
   created_at?: any | null;
   id?: any | null;
+  member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   voucher_code?: voucher_code_obj_rel_insert_input | null;
   voucher_code_id?: any | null;

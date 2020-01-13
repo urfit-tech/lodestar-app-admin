@@ -25,9 +25,7 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
       </Typography.Title>
       <ProgramSelector className="mb-3" allText="總體學習進度" />
       <AdminPageBlock>
-        <ProgramProgressTable
-        // programId={}
-        />
+        <ProgramProgressTable />
       </AdminPageBlock>
     </AdminLayout>
   )
