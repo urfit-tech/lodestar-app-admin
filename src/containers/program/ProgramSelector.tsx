@@ -1,22 +1,37 @@
-import React from 'react'
-import { useAuth } from '../../contexts/AuthContext'
+import { useQuery } from '@apollo/react-hooks'
 import { Select } from 'antd'
 import { SelectProps } from 'antd/lib/select'
+import gql from 'graphql-tag'
+import React from 'react'
+import * as types from '../../types'
 
 type ProgramSelectorProps = SelectProps & {
   allText?: string
-  value?: string
-  onChange?: (value: string) => void
 }
-const ProgramSelector: React.FC<ProgramSelectorProps> = ({ allText, value, onChange, ...selectProps }) => {
-//   const {} = useAuth()
+const ProgramSelector: React.FC<ProgramSelectorProps> = ({ allText, ...selectProps }) => {
+  const { loading, error, data } = useQuery<types.GET_PROGRAM_ENROLLED>(GET_PROGRAM_ENROLLED)
+  const SelectOptions =
+    data?.program_enrollment.map(programEnrollment => {
+      return <Select.Option key={programEnrollment.program_id}>{programEnrollment.program?.title}</Select.Option>
+    }) || []
+
   return (
-    <Select style={{ width: '100%' }} defaultValue="all" {...selectProps}>
+    <Select disabled={!!error} loading={loading} style={{ width: '100%' }} defaultValue="all" {...selectProps}>
       <Select.Option key="all">{allText || '全部課程'}</Select.Option>
-      <Select.Option key={'foo'}>Foo</Select.Option>
-      <Select.Option key={'bar'}>Bar</Select.Option>
+      {SelectOptions}
     </Select>
   )
 }
+
+const GET_PROGRAM_ENROLLED = gql`
+  query GET_PROGRAM_ENROLLED {
+    program_enrollment(distinct_on: program_id) {
+      program_id
+      program {
+        title
+      }
+    }
+  }
+`
 
 export default ProgramSelector

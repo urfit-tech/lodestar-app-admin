@@ -3469,6 +3469,35 @@ export interface DELETE_PROGRAM_ROLEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAM_ENROLLED
+// ====================================================
+
+export interface GET_PROGRAM_ENROLLED_program_enrollment_program {
+  __typename: "program";
+  title: string;
+}
+
+export interface GET_PROGRAM_ENROLLED_program_enrollment {
+  __typename: "program_enrollment";
+  program_id: any | null;
+  /**
+   * An object relationship
+   */
+  program: GET_PROGRAM_ENROLLED_program_enrollment_program | null;
+}
+
+export interface GET_PROGRAM_ENROLLED {
+  /**
+   * fetch data from the table: "program_enrollment"
+   */
+  program_enrollment: GET_PROGRAM_ENROLLED_program_enrollment[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PRODUCT_OWNER_ORDERS
 // ====================================================
 

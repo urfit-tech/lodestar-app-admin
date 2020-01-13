@@ -1,5 +1,5 @@
 import { Icon, Typography } from 'antd'
-import React from 'react'
+import React, { useState } from 'react'
 import { AdminPageBlock } from '../../components/admin'
 import CreatorAdminLayout from '../../components/layout/CreatorAdminLayout'
 import OwnerAdminLayout from '../../components/layout/OwnerAdminLayout'
@@ -9,6 +9,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import LoadingPage from './LoadingPage'
 
 const ProgramProgressCollectionAdminPage: React.FC = () => {
+  const [selectedProgramId, setSelectedProgramId] = useState()
   const { currentMemberId, currentUserRole } = useAuth()
 
   if (!currentMemberId || !currentUserRole) {
@@ -23,9 +24,13 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
         <Icon type="file-text" theme="filled" className="mr-3" />
         <span>學習進度</span>
       </Typography.Title>
-      <ProgramSelector className="mb-3" allText="總體學習進度" />
+      <ProgramSelector
+        className="mb-3"
+        allText="總體學習進度"
+        onChange={programId => setSelectedProgramId(programId)}
+      />
       <AdminPageBlock>
-        <ProgramProgressTable />
+        <ProgramProgressTable programId={selectedProgramId === 'all' ? undefined : selectedProgramId} />
       </AdminPageBlock>
     </AdminLayout>
   )
