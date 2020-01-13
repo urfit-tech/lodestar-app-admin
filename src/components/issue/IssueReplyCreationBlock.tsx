@@ -6,7 +6,7 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import types from '../../types'
-import MemberAvatar from '../common/MemberAvatar'
+import MemberAvatar from '../../containers/common/MemberAvatar'
 
 export const StyledEditor = styled(BraftEditor)`
   .bf-content {

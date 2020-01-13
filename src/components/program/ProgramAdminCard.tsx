@@ -8,7 +8,7 @@ import styled from 'styled-components'
 import { useProgram } from '../../hooks/program'
 import EmptyCover from '../../images/default/empty-cover.png'
 import AdminCard from '../admin/AdminCard'
-import MemberAvatar from '../common/MemberAvatar'
+import MemberAvatar from '../../containers/common/MemberAvatar'
 import ProgramPriceLabel from './ProgramPriceLabel'
 
 const AvatarPlaceHolder = styled.div`

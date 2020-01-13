@@ -7,7 +7,7 @@ import { useMember } from '../../hooks/member'
 import settings from '../../settings'
 import { CreatorAdminMenu, OwnerAdminMenu } from '../admin/AdminMenu'
 import { AuthModalContext } from '../auth/AuthModal'
-import MemberAvatar from './MemberAvatar'
+import MemberAvatar from '../../containers/common/MemberAvatar'
 import Responsive from './Responsive'
 
 const Wrapper = styled.div`

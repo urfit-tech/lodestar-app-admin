@@ -11,7 +11,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { programRoleFormatter, rgba } from '../../helpers'
 import { programRoleSchema } from '../../schemas/program'
 import types from '../../types'
-import MemberAvatar from '../common/MemberAvatar'
+import MemberAvatar from '../../containers/common/MemberAvatar'
 import { BraftContent } from '../common/StyledBraftEditor'
 import { StyledEditor } from './IssueReplyCreationBlock'
 

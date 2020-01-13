@@ -8,7 +8,7 @@ import { DeleteProgramProps, UpdateProgramProps } from '../../containers/program
 import { programSchema } from '../../schemas/program'
 import AdminCard from '../admin/AdminCard'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
-import MemberAvatar from '../common/MemberAvatar'
+import MemberAvatar from '../../containers/common/MemberAvatar'
 
 const StyledModalTitle = styled.div`
   color: var(--gray-darker);
