@@ -48,45 +48,44 @@ const PodcastProgramAdminPage: React.FC = () => {
                 </AdminBlock>
               </div>
             </Tabs.TabPane>
+
             <Tabs.TabPane key="settings" tab="廣播設定">
               <div className="container py-5">
                 <AdminPaneTitle>廣播設定</AdminPaneTitle>
-
                 <AdminBlock>
                   <AdminBlockTitle>基本設定</AdminBlockTitle>
                   <PodcastProgramBasicForm />
                 </AdminBlock>
-
                 <AdminBlock>
                   <AdminBlockTitle>廣播介紹</AdminBlockTitle>
                   <PodcastProgramIntroForm />
                 </AdminBlock>
               </div>
             </Tabs.TabPane>
+
             <Tabs.TabPane key="plan" tab="銷售方案">
               <div className="container py-5">
                 <AdminPaneTitle>銷售方案</AdminPaneTitle>
-
                 <AdminBlock>
                   <PodcastProgramPlanForm />
                 </AdminBlock>
               </div>
             </Tabs.TabPane>
+
             <Tabs.TabPane key="role" tab="身份管理">
               <div className="container py-5">
                 <AdminPaneTitle>身份管理</AdminPaneTitle>
-
                 <AdminBlock>
                   <AdminBlockTitle className="mb-4">建立者</AdminBlockTitle>
                   <PodcastProgramCreatorBlock />
                 </AdminBlock>
-
                 <AdminBlock>
                   <AdminBlockTitle className="mb-4">講師</AdminBlockTitle>
                   <PodcastProgramInstructorCollectionBlock />
                 </AdminBlock>
               </div>
             </Tabs.TabPane>
+
             <Tabs.TabPane key="publish" tab="發佈">
               <div className="container py-5">
                 <AdminBlock>

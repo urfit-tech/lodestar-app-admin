@@ -57,7 +57,7 @@ const AppointmentPlanPublishBlock: React.FC = () => {
       ? ['尚未發佈', '預約方案未發佈，此方案並不會顯示在頁面上，學生也不能購買此方案。']
       : publishStatus === 'success'
       ? ['已發佈', '預約方案已經發佈，學生將能購買預約。']
-      : []
+      : ['', '']
 
   const handlePublish: (event: PublishEvent) => void = ({ values, onSuccess, onError, onFinally }) => {
     publishAppointmentPlan({
