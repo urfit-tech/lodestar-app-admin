@@ -24,7 +24,9 @@ const StyledFileBlock = styled.div`
 `
 
 const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
-  const { loadingPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(PodcastProgramContext)
+  const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
+    PodcastProgramContext,
+  )
   const [loading, setLoading] = useState(false)
 
   const [updatePodcastProgramContent] = useMutation<
@@ -36,8 +38,27 @@ const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
     types.UPDATE_PODCAST_PROGRAM_BODYVariables
   >(UPDATE_PODCAST_PROGRAM_BODY)
 
-  if (loadingPodcastProgram || !podcastProgram) {
+  if (loadingPodcastProgram) {
     return <Skeleton active />
+  }
+
+  if (errorPodcastProgram || !podcastProgram) {
+    return <div>讀取錯誤</div>
+  }
+
+  const handleUploadAudio = (contentType: string | null) => {
+    updatePodcastProgramContent({
+      variables: {
+        updatedAt: new Date(),
+        podcastProgramId: podcastProgram.id,
+        contentType,
+      },
+    })
+      .then(() => {
+        refetchPodcastProgram && refetchPodcastProgram()
+        message.success('儲存成功')
+      })
+      .catch(error => handleError(error))
   }
 
   const handleSubmit = () => {
@@ -92,21 +113,7 @@ const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
             uploadText="上傳音檔"
             showUploadList={false}
             path={`audios/${localStorage.getItem('kolable.app.id')}/${podcastProgram.id}`}
-            onSuccess={info => {
-              const contentType = extname(info.file.name).replace('.', '')
-              updatePodcastProgramContent({
-                variables: {
-                  updatedAt: new Date(),
-                  podcastProgramId: podcastProgram.id,
-                  contentType,
-                },
-              })
-                .then(() => {
-                  refetchPodcastProgram && refetchPodcastProgram()
-                  message.success('儲存成功')
-                })
-                .catch(error => handleError(error))
-            }}
+            onSuccess={info => handleUploadAudio(extname(info.file.name).replace('.', ''))}
           />,
         )}
         {podcastProgram.contentType ? (
@@ -114,24 +121,7 @@ const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
             <span>
               {podcastProgram.id}.{podcastProgram.contentType}
             </span>
-            <Icon
-              type="close"
-              className="cursor-pointer"
-              onClick={() => {
-                updatePodcastProgramContent({
-                  variables: {
-                    updatedAt: new Date(),
-                    podcastProgramId: podcastProgram.id,
-                    contentType: null,
-                  },
-                })
-                  .then(() => {
-                    refetchPodcastProgram && refetchPodcastProgram()
-                    message.success('儲存成功')
-                  })
-                  .catch(error => handleError(error))
-              }}
-            />
+            <Icon type="close" className="cursor-pointer" onClick={() => handleUploadAudio(null)} />
           </StyledFileBlock>
         ) : null}
       </Form.Item>

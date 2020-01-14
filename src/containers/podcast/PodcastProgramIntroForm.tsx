@@ -36,7 +36,9 @@ const StyledSingleUploader = styled(SingleUploader)`
 `
 
 const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
-  const { loadingPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(PodcastProgramContext)
+  const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
+    PodcastProgramContext,
+  )
   const [loading, setLoading] = useState(false)
 
   const [updatePodcastProgramIntro] = useMutation<
@@ -44,8 +46,12 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
     types.UPDATE_PODCAST_PROGRAM_INTROVariables
   >(UPDATE_PODCAST_PROGRAM_INTRO)
 
-  if (loadingPodcastProgram || !podcastProgram) {
+  if (loadingPodcastProgram) {
     return <Skeleton active />
+  }
+
+  if (errorPodcastProgram || !podcastProgram) {
+    return <div>讀取錯誤</div>
   }
 
   const handleSubmit = () => {

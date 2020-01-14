@@ -14,7 +14,9 @@ const StyledIcon = styled(Icon)`
 `
 
 const PodcastProgramPlanForm: React.FC<FormComponentProps> = ({ form }) => {
-  const { loadingPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(PodcastProgramContext)
+  const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
+    PodcastProgramContext,
+  )
   const [withSalePrice, setWithSalePrice] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -27,8 +29,12 @@ const PodcastProgramPlanForm: React.FC<FormComponentProps> = ({ form }) => {
     setWithSalePrice(!!podcastProgram && typeof podcastProgram.salePrice === 'number')
   }, [podcastProgram])
 
-  if (loadingPodcastProgram || !podcastProgram) {
+  if (loadingPodcastProgram) {
     return <Skeleton active />
+  }
+
+  if (errorPodcastProgram || !podcastProgram) {
+    return <div>讀取錯誤</div>
   }
 
   const handleSubmit = () => {

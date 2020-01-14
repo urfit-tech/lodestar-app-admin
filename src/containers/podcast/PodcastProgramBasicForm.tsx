@@ -9,7 +9,9 @@ import { handleError } from '../../helpers'
 import types from '../../types'
 
 const PodcastProgramBasicForm: React.FC<FormComponentProps> = ({ form }) => {
-  const { loadingPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(PodcastProgramContext)
+  const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
+    PodcastProgramContext,
+  )
   const [loading, setLoading] = useState(false)
 
   const [updatePodcastProgramBasic] = useMutation<
@@ -17,8 +19,12 @@ const PodcastProgramBasicForm: React.FC<FormComponentProps> = ({ form }) => {
     types.UPDATE_PODCAST_PROGRAM_BASICVariables
   >(UPDATE_PODCAST_PROGRAM_BASIC)
 
-  if (loadingPodcastProgram || !podcastProgram) {
+  if (loadingPodcastProgram) {
     return <Skeleton active />
+  }
+
+  if (errorPodcastProgram || !podcastProgram) {
+    return <div>讀取錯誤</div>
   }
 
   const handleSubmit = () => {
