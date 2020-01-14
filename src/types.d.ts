@@ -4519,6 +4519,11 @@ export interface GET_NOTIFICATIONSVariables {
 // GraphQL query operation: GET_MEMBER
 // ====================================================
 
+export interface GET_MEMBER_member_by_pk_member_tags {
+  __typename: "member_tag";
+  tag: string;
+}
+
 export interface GET_MEMBER_member_by_pk {
   __typename: "member";
   id: string;
@@ -4527,6 +4532,12 @@ export interface GET_MEMBER_member_by_pk {
   username: string;
   picture_url: string | null;
   description: string | null;
+  abstract: string | null;
+  title: string | null;
+  /**
+   * An array relationship
+   */
+  member_tags: GET_MEMBER_member_by_pk_member_tags[];
 }
 
 export interface GET_MEMBER {
@@ -4624,6 +4635,8 @@ export interface UPDATE_MEMBERVariables {
   username?: string | null;
   email?: string | null;
   pictureUrl?: string | null;
+  title?: string | null;
+  abstract?: string | null;
 }
 
 /* tslint:disable */
@@ -5660,6 +5673,24 @@ export enum app_module_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "app_setting"
+ */
+export enum app_setting_constraint {
+  app_setting_app_id_key_key = "app_setting_app_id_key_key",
+  app_setting_pkey = "app_setting_pkey",
+}
+
+/**
+ * update columns of table "app_setting"
+ */
+export enum app_setting_update_column {
+  app_id = "app_id",
+  id = "id",
+  key = "key",
+  value = "value",
+}
+
+/**
  * update columns of table "app"
  */
 export enum app_update_column {
@@ -6095,6 +6126,7 @@ export enum member_constraint {
   member_app_id_email_key = "member_app_id_email_key",
   member_app_id_username_key = "member_app_id_username_key",
   member_refresh_token_key = "member_refresh_token_key",
+  member_zoom_user_id_key = "member_zoom_user_id_key",
 }
 
 /**
@@ -6135,6 +6167,7 @@ export enum member_update_column {
   roles_deprecated = "roles_deprecated",
   title = "title",
   username = "username",
+  zoom_user_id = "zoom_user_id",
 }
 
 /**
@@ -7316,6 +7349,7 @@ export interface app_bool_exp {
   admin_host?: String_comparison_exp | null;
   app_admins?: app_admin_bool_exp | null;
   app_modules?: app_module_bool_exp | null;
+  app_settings?: app_setting_bool_exp | null;
   cards?: card_bool_exp | null;
   cart_items?: cart_item_bool_exp | null;
   comments?: comment_bool_exp | null;
@@ -7349,6 +7383,7 @@ export interface app_insert_input {
   admin_host?: string | null;
   app_admins?: app_admin_arr_rel_insert_input | null;
   app_modules?: app_module_arr_rel_insert_input | null;
+  app_settings?: app_setting_arr_rel_insert_input | null;
   cards?: card_arr_rel_insert_input | null;
   cart_items?: cart_item_arr_rel_insert_input | null;
   comments?: comment_arr_rel_insert_input | null;
@@ -7433,6 +7468,48 @@ export interface app_on_conflict {
   constraint: app_constraint;
   update_columns: app_update_column[];
   where?: app_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "app_setting"
+ */
+export interface app_setting_arr_rel_insert_input {
+  data: app_setting_insert_input[];
+  on_conflict?: app_setting_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "app_setting". All fields are combined with a logical 'AND'.
+ */
+export interface app_setting_bool_exp {
+  _and?: (app_setting_bool_exp | null)[] | null;
+  _not?: app_setting_bool_exp | null;
+  _or?: (app_setting_bool_exp | null)[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  key?: String_comparison_exp | null;
+  value?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "app_setting"
+ */
+export interface app_setting_insert_input {
+  app?: app_obj_rel_insert_input | null;
+  app_id?: string | null;
+  id?: any | null;
+  key?: string | null;
+  value?: string | null;
+}
+
+/**
+ * on conflict condition type for table "app_setting"
+ */
+export interface app_setting_on_conflict {
+  constraint: app_setting_constraint;
+  update_columns: app_setting_update_column[];
+  where?: app_setting_bool_exp | null;
 }
 
 /**
@@ -8618,6 +8695,7 @@ export interface member_bool_exp {
   title?: String_comparison_exp | null;
   username?: String_comparison_exp | null;
   vouchers?: voucher_bool_exp | null;
+  zoom_user_id?: String_comparison_exp | null;
 }
 
 /**
@@ -8712,6 +8790,7 @@ export interface member_insert_input {
   title?: string | null;
   username?: string | null;
   vouchers?: voucher_arr_rel_insert_input | null;
+  zoom_user_id?: string | null;
 }
 
 /**

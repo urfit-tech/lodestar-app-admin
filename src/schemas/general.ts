@@ -1,4 +1,4 @@
-import { date, InferType, mixed, number, object, string } from 'yup'
+import { date, InferType, mixed, number, object, string, array } from 'yup'
 
 export type UserRole = 'app-owner' | 'content-creator' | 'general-member' | 'anonymous'
 export type AuthState = 'login' | 'register' | 'forgotPassword' | 'confirm'
@@ -69,8 +69,11 @@ export const memberSchema = object({
   pictureUrl: string().nullable(),
   metadata: object().nullable(),
   description: string().nullable(),
+  title: string().nullable(),
+  abstract: string().nullable(),
   createdAt: date(),
   loginedAt: date(),
+  memberTags: array(),
   facebookUserId: string().nullable(),
   googleUserId: string().nullable(),
 }).camelCase()

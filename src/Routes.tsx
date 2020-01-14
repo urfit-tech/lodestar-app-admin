@@ -225,6 +225,12 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'content-creator',
   },
+  creator_settings_admin: {
+    path: '/studio/settings',
+    pageName: 'creator/SettingAdminPage',
+    authenticated: true,
+    allowedUserRole: 'content-creator'
+  }
 }
 
 export default () => (
