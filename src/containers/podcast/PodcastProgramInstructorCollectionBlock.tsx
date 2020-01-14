@@ -1,0 +1,155 @@
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Form, message, Modal, Skeleton } from 'antd'
+import gql from 'graphql-tag'
+import React, { useContext, useState } from 'react'
+import styled from 'styled-components'
+import RoleAdminBlock from '../../components/admin/RoleAdminBlock'
+import PodcastProgramContext from '../../contexts/PodcastProgramContext'
+import { handleError } from '../../helpers'
+import types from '../../types'
+import CreatorSelector from '../common/CreatorSelector'
+
+const StyledModalTitle = styled.div`
+  color: var(--gray-darker);
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1.3;
+  letter-spacing: 0.77px;
+`
+
+const PodcastProgramInstructorCollectionBlock: React.FC = () => {
+  const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
+    PodcastProgramContext,
+  )
+  const [updatePodcastProgramRole] = useMutation<
+    types.UPDATE_PODCAST_PROGRAM_ROLE,
+    types.UPDATE_PODCAST_PROGRAM_ROLEVariables
+  >(UPDATE_PODCAST_PROGRAM_ROLE)
+
+  const [visible, setVisible] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null)
+
+  if (loadingPodcastProgram) {
+    return <Skeleton active />
+  }
+
+  if (errorPodcastProgram || !podcastProgram) {
+    return <div>讀取錯誤</div>
+  }
+
+  const handleSubmit = () => {
+    if (!selectedMemberId) {
+      return
+    }
+
+    setLoading(true)
+
+    updatePodcastProgramRole({
+      variables: {
+        updatedAt: new Date(),
+        podcastProgramId: podcastProgram.id,
+        podcastProgramRoles: [...podcastProgram.instructors.map(instructor => instructor.id), selectedMemberId].map(
+          instructorId => ({
+            podcast_program_id: podcastProgram.id,
+            member_id: instructorId,
+            name: 'instructor',
+          }),
+        ),
+      },
+    })
+      .then(() => {
+        refetchPodcastProgram && refetchPodcastProgram()
+        setSelectedMemberId(null)
+        setVisible(false)
+        message.success('儲存成功')
+      })
+      .catch(error => handleError(error))
+      .finally(() => setLoading(false))
+  }
+
+  const handleDelete = (targetId: string) => {
+    updatePodcastProgramRole({
+      variables: {
+        updatedAt: new Date(),
+        podcastProgramId: podcastProgram.id,
+        podcastProgramRoles: podcastProgram.instructors
+          .filter(instructor => instructor.id !== targetId)
+          .map(instructor => ({
+            podcast_program_id: podcastProgram.id,
+            member_id: instructor.id,
+            name: 'instructor',
+          })),
+      },
+    })
+      .then(() => {
+        refetchPodcastProgram && refetchPodcastProgram()
+        message.success('儲存成功')
+      })
+      .catch(error => handleError(error))
+  }
+
+  return (
+    <>
+      {podcastProgram.instructors.map(instructor => (
+        <RoleAdminBlock
+          key={instructor.id}
+          name={instructor.name}
+          pictureUrl={instructor.pictureUrl}
+          onDelete={() => handleDelete(instructor.id)}
+        />
+      ))}
+
+      {podcastProgram.instructors.length < 1 && (
+        <Button type="link" icon="plus" size="small" onClick={() => setVisible(true)}>
+          新增講師
+        </Button>
+      )}
+
+      <Modal title={null} footer={null} centered destroyOnClose visible={visible} onCancel={() => setVisible(false)}>
+        <StyledModalTitle>新增講師</StyledModalTitle>
+
+        <Form
+          hideRequiredMark
+          colon={false}
+          onSubmit={e => {
+            e.preventDefault()
+            handleSubmit()
+          }}
+        >
+          <Form.Item label="選擇講師">
+            <CreatorSelector value={selectedMemberId || ''} onChange={value => setSelectedMemberId(value)} />
+          </Form.Item>
+          <Form.Item className="text-right">
+            <Button onClick={() => setVisible(false)} className="mr-2">
+              取消
+            </Button>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              新增
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
+  )
+}
+
+const UPDATE_PODCAST_PROGRAM_ROLE = gql`
+  mutation UPDATE_PODCAST_PROGRAM_ROLE(
+    $podcastProgramId: uuid!
+    $podcastProgramRoles: [podcast_program_role_insert_input!]!
+    $updatedAt: timestamptz!
+  ) {
+    update_podcast_program(where: { id: { _eq: $podcastProgramId } }, _set: { updated_at: $updatedAt }) {
+      affected_rows
+    }
+    delete_podcast_program_role(where: { podcast_program_id: { _eq: $podcastProgramId } }) {
+      affected_rows
+    }
+    insert_podcast_program_role(objects: $podcastProgramRoles) {
+      affected_rows
+    }
+  }
+`
+
+export default PodcastProgramInstructorCollectionBlock
