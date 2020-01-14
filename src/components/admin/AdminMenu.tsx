@@ -10,6 +10,7 @@ import { ReactComponent as DiscountIcon } from '../../images/icon/discount.svg'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import { ReactComponent as MoneyCircleIcon } from '../../images/icon/money-circle.svg'
 import { ReactComponent as UsersIcon } from '../../images/icon/users.svg'
+import { ReactComponent as UserIcon } from '../../images/icon/user.svg'
 import { routesProps } from '../../Routes'
 
 const StyledMenu = styled(Menu)`
@@ -136,6 +137,10 @@ export const OwnerAdminMenu = (props: MenuProps) => {
         <Menu.Item key="owner_members_admin">
           <Icon component={() => <UsersIcon />} />
           <span>會員管理</span>
+        </Menu.Item>
+        <Menu.Item key="owner_settings_admin">
+          <Icon component={() => <UserIcon />} />
+          <span>管理員設定</span>
         </Menu.Item>
       </AdminMenu>
     </div>

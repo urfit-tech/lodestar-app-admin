@@ -103,6 +103,12 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
+  owner_settings_admin: {
+    path: '/admin/settings',
+    pageName: 'owner/SettingAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner'
+  },
   owner_sales_admin: {
     path: '/admin/sales',
     pageName: 'owner/SalesAdminPage',
