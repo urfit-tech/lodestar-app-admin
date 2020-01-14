@@ -15,6 +15,11 @@ export const useMember = (memberId: string) => {
           username
           picture_url
           description
+          abstract
+          title
+          member_tags {
+            tag
+          }
         }
       }
     `,
@@ -98,10 +103,12 @@ export const useUpdateMember = () => {
         $username: String
         $email: String
         $pictureUrl: String
+        $title: String
+        $abstract: String
       ) {
         update_member(
           where: { id: { _eq: $memberId } }
-          _set: { name: $name, description: $description, username: $username, email: $email, picture_url: $pictureUrl }
+          _set: { name: $name, description: $description, username: $username, email: $email, picture_url: $pictureUrl, title: $title, abstract: $abstract }
         ) {
           affected_rows
         }

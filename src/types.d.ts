@@ -4537,6 +4537,11 @@ export interface GET_NOTIFICATIONSVariables {
 // GraphQL query operation: GET_MEMBER
 // ====================================================
 
+export interface GET_MEMBER_member_by_pk_member_tags {
+  __typename: "member_tag";
+  tag: string;
+}
+
 export interface GET_MEMBER_member_by_pk {
   __typename: "member";
   id: string;
@@ -4545,6 +4550,12 @@ export interface GET_MEMBER_member_by_pk {
   username: string;
   picture_url: string | null;
   description: string | null;
+  abstract: string | null;
+  title: string | null;
+  /**
+   * An array relationship
+   */
+  member_tags: GET_MEMBER_member_by_pk_member_tags[];
 }
 
 export interface GET_MEMBER {
@@ -4642,6 +4653,8 @@ export interface UPDATE_MEMBERVariables {
   username?: string | null;
   email?: string | null;
   pictureUrl?: string | null;
+  title?: string | null;
+  abstract?: string | null;
 }
 
 /* tslint:disable */

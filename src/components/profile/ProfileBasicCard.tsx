@@ -1,4 +1,4 @@
-import { Button, Form, Input, message, Typography } from 'antd'
+import { Button, Form, Input, message, Typography, Select } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { FormComponentProps } from 'antd/lib/form'
 import React from 'react'
@@ -21,17 +21,30 @@ const StyledFormItem = styled(Form.Item)`
   }
 `
 
-type ProfileBasicAdminCardProps = CardProps &
+type ProfileBasicCardProps = CardProps &
   FormComponentProps & {
     memberId: string
+    withTitle?: boolean
+    withTags?: boolean
+    withAbstract?: boolean
+    withDescription?: boolean
   }
-const ProfileBasicAdminCard: React.FC<ProfileBasicAdminCardProps> = ({ form, memberId, ...cardProps }) => {
+const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
+  form,
+  memberId,
+  withTitle,
+  withTags,
+  withAbstract,
+  withDescription,
+  ...cardProps
+}) => {
   const { member } = useMember(memberId)
   const updateMember = useUpdateMember()
 
   const handleSubmit = () => {
     form.validateFields((error, values) => {
       if (!error && member) {
+        // TODO: update member data
         updateMember({
           variables: {
             memberId,
@@ -43,6 +56,8 @@ const ProfileBasicAdminCard: React.FC<ProfileBasicAdminCardProps> = ({ form, mem
                   'kolable.app.id',
                 )}/${memberId}`
               : member.pictureUrl,
+            title: values.title,
+            abstract: values.abstract,
             description: values.description,
           },
         })
@@ -54,7 +69,7 @@ const ProfileBasicAdminCard: React.FC<ProfileBasicAdminCardProps> = ({ form, mem
       }
     })
   }
-
+  
   return (
     <AdminCard {...cardProps}>
       <Typography.Title className="mb-4" level={4}>
@@ -89,11 +104,36 @@ const ProfileBasicAdminCard: React.FC<ProfileBasicAdminCardProps> = ({ form, mem
             rules: [{ required: true, message: '請輸入名稱' }],
           })(<Input />)}
         </Form.Item>
-        <Form.Item label="簡介">
-          {form.getFieldDecorator('description', {
-            initialValue: member && member.description,
-          })(<Input.TextArea rows={5} />)}
-        </Form.Item>
+        {withTitle && (
+          <Form.Item label="稱號">
+            {form.getFieldDecorator('title', {
+              initialValue: member && member.title,
+            })(<Input />)}
+          </Form.Item>
+        )}
+        {withTags && (
+          <Form.Item label="專長">
+            {form.getFieldDecorator('tags', {
+              initialValue: member && member.memberTags,
+            })(<Select
+              mode="multiple"
+            />)}
+          </Form.Item>
+        )}
+        {withAbstract && (
+          <Form.Item label="簡述">
+            {form.getFieldDecorator('abstract', {
+              initialValue: member && member.abstract,
+            })(<Input.TextArea rows={5} />)}
+          </Form.Item>
+        )}
+        {withDescription && (
+          <Form.Item label="介紹">
+            {form.getFieldDecorator('description', {
+              initialValue: member && member.description,
+            })(<Input.TextArea rows={5} />)}
+          </Form.Item>
+        )}
         <Form.Item wrapperCol={{ md: { offset: 4 } }}>
           <Button className="mr-2" onClick={() => form.resetFields()}>
             取消
@@ -107,4 +147,4 @@ const ProfileBasicAdminCard: React.FC<ProfileBasicAdminCardProps> = ({ form, mem
   )
 }
 
-export default Form.create<ProfileBasicAdminCardProps>()(ProfileBasicAdminCard)
+export default Form.create<ProfileBasicCardProps>()(ProfileBasicCard)
