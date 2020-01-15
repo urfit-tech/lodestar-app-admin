@@ -4,6 +4,24 @@ import { array, date, object, string } from 'yup'
 import { couponSchema } from '../schemas/coupon'
 import types from '../types'
 
+export const useTags = () => {
+  const { loading, error, data, refetch } = useQuery<types.GET_TAGS>(
+    gql`
+      query GET_TAGS {
+        tag {
+          name
+        }
+      }
+    `,
+  )
+  return {
+    tags: data ? data.tag.map(tag => tag.name) : [],
+    errorTags: error,
+    loadingTags: loading,
+    refetchTags: refetch,
+  }
+}
+
 export const useCouponCollection = (memberId: string) => {
   const { loading, error, data, refetch } = useQuery<types.GET_COUPON_COLLECTION, types.GET_COUPON_COLLECTIONVariables>(
     gql`
