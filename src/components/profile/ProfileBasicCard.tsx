@@ -10,6 +10,7 @@ import SingleUploader from '../common/SingleUploader'
 import { StyledForm } from '../layout'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 import BraftEditor, { EditorState } from 'braft-editor'
+import { useTags } from '../../hooks/data'
 
 const StyledAvatarFormItem = styled(Form.Item)`
   .ant-form-item-children {
@@ -50,12 +51,12 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
   ...cardProps
 }) => {
   const { member } = useMember(memberId)
+  const { tags } = useTags()
   const updateMember = useUpdateMember()
 
   const handleSubmit = () => {
     form.validateFields((error, values) => {
       if (!error && member) {
-        // TODO: let admin and creator can use the same updateMember
         updateMember({
           variables: {
             memberId,
@@ -69,18 +70,18 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
               : member.pictureUrl,
             title: values.title,
             abstract: values.abstract,
-            description: values.description,
+            description: values.description.toRAW(),
           },
         })
           .then(() => {
             message.success('儲存成功')
-            window.location.reload(true)
+            // window.location.reload(true)
           })
           .catch(err => message.error(err.message))
       }
     })
   }
-  
+
   return (
     <AdminCard {...cardProps}>
       <Typography.Title className="mb-4" level={4}>
@@ -128,11 +129,9 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
               initialValue: member && member.memberTags && member.memberTags.map(memberTag => memberTag.tag),
             })(
               <Select mode="multiple">
-                {member &&
-                  member.memberTags &&
-                  member.memberTags.map(memberTag => (
-                    <Select.Option key={memberTag.tag}>{memberTag.tag}</Select.Option>
-                  ))}
+                {tags.map(tag => (
+                  <Select.Option key={tag}>{tag}</Select.Option>
+                ))}
               </Select>,
             )}
           </Form.Item>

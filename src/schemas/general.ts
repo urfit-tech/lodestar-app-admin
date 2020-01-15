@@ -75,6 +75,7 @@ export const memberSchema = object({
   loginedAt: date(),
   memberTags: array(
     object({
+      id: string(),
       tag: string(),
     }).camelCase(),
   ),

@@ -18,6 +18,7 @@ export const useMember = (memberId: string) => {
           abstract
           title
           member_tags {
+            id
             tag
           }
         }
@@ -108,11 +109,25 @@ export const useUpdateMember = () => {
       ) {
         update_member(
           where: { id: { _eq: $memberId } }
-          _set: { name: $name, description: $description, username: $username, email: $email, picture_url: $pictureUrl, title: $title, abstract: $abstract }
+          _set: {
+            name: $name
+            description: $description
+            username: $username
+            email: $email
+            picture_url: $pictureUrl
+            title: $title
+            abstract: $abstract
+          }
         ) {
           affected_rows
         }
       }
+      # // ? 為什麼要有 2 張 table member_tag 和 tag
+      # mutation DELETE_MEMBER_TAGS {
+      #   delete_member_tag(where: { member_id: { _eq: "creator-haohaoming" } }) {
+      #     affected_rows
+      #   }
+      # }
     `,
   )
 

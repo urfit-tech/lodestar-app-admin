@@ -4375,6 +4375,26 @@ export interface GET_ORDER_PRODUCTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_TAGS
+// ====================================================
+
+export interface GET_TAGS_tag {
+  __typename: "tag";
+  name: string;
+}
+
+export interface GET_TAGS {
+  /**
+   * fetch data from the table: "tag"
+   */
+  tag: GET_TAGS_tag[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_COUPON_COLLECTION
 // ====================================================
 
@@ -4521,6 +4541,7 @@ export interface GET_NOTIFICATIONSVariables {
 
 export interface GET_MEMBER_member_by_pk_member_tags {
   __typename: "member_tag";
+  id: any;
   tag: string;
 }
 
