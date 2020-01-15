@@ -13,7 +13,7 @@ const SettingAdminPage: React.FC = ({}) => {
     <OwnerAdminLayout>
       <Typography.Title level={3} className="mb-4">
         <Icon component={() => <UserIcon />} className="mr-3" />
-        <span>會員管理</span>
+        <span>管理者設定</span>
       </Typography.Title>
       <ProfileBasicCard className="mb-4" memberId={currentMemberId || ''} />
       <ProfileAccountAdminCard className="mb-4" memberId={currentMemberId || ''}/>
