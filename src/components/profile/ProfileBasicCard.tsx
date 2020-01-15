@@ -8,8 +8,10 @@ import AdminCard from '../admin/AdminCard'
 import { AvatarImage } from '../common/Image'
 import SingleUploader from '../common/SingleUploader'
 import { StyledForm } from '../layout'
+import AdminBraftEditor from '../admin/AdminBraftEditor'
+import BraftEditor, { EditorState } from 'braft-editor'
 
-const StyledFormItem = styled(Form.Item)`
+const StyledAvatarFormItem = styled(Form.Item)`
   .ant-form-item-children {
     display: flex;
     align-items: center;
@@ -20,7 +22,16 @@ const StyledFormItem = styled(Form.Item)`
     background: none;
   }
 `
-
+const StyledFormItem = styled(Form.Item)`
+  && {
+    align-items: flex-start;
+  }
+`
+const StyledTextArea = styled(Input.TextArea)`
+  && {
+    padding: 10px 12px;
+  }
+`
 type ProfileBasicCardProps = CardProps &
   FormComponentProps & {
     memberId: string
@@ -44,7 +55,7 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
   const handleSubmit = () => {
     form.validateFields((error, values) => {
       if (!error && member) {
-        // TODO: update member data
+        // TODO: let admin and creator can use the same updateMember
         updateMember({
           variables: {
             memberId,
@@ -81,9 +92,9 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
           handleSubmit()
         }}
         labelCol={{ span: 24, md: { span: 4 } }}
-        wrapperCol={{ span: 24, md: { span: 8 } }}
+        wrapperCol={{ span: 24, md: { span: 12 } }}
       >
-        <StyledFormItem label="頭像">
+        <StyledAvatarFormItem label="頭像">
           <div className="mr-3">
             <AvatarImage src={(member && member.pictureUrl) || ''} size={128} />
           </div>
@@ -97,7 +108,7 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
               isPublic={true}
             />,
           )}
-        </StyledFormItem>
+        </StyledAvatarFormItem>
         <Form.Item label="名稱">
           {form.getFieldDecorator('name', {
             initialValue: member && member.name,
@@ -114,25 +125,39 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
         {withTags && (
           <Form.Item label="專長">
             {form.getFieldDecorator('tags', {
-              initialValue: member && member.memberTags,
-            })(<Select
-              mode="multiple"
-            />)}
+              initialValue: member && member.memberTags && member.memberTags.map(memberTag => memberTag.tag),
+            })(
+              <Select mode="multiple">
+                {member &&
+                  member.memberTags &&
+                  member.memberTags.map(memberTag => (
+                    <Select.Option key={memberTag.tag}>{memberTag.tag}</Select.Option>
+                  ))}
+              </Select>,
+            )}
           </Form.Item>
         )}
         {withAbstract && (
-          <Form.Item label="簡述">
+          <StyledFormItem label="簡述">
             {form.getFieldDecorator('abstract', {
               initialValue: member && member.abstract,
-            })(<Input.TextArea rows={5} />)}
-          </Form.Item>
+            })(<StyledTextArea rows={3} maxLength={50} placeholder="50字以內" />)}
+          </StyledFormItem>
         )}
         {withDescription && (
-          <Form.Item label="介紹">
+          <StyledFormItem label="介紹" wrapperCol={{ span: 24, md: { span: 20 } }}>
             {form.getFieldDecorator('description', {
-              initialValue: member && member.description,
-            })(<Input.TextArea rows={5} />)}
-          </Form.Item>
+              initialValue: BraftEditor.createEditorState((member && member.description) || ''),
+              validateTrigger: 'onSubmit',
+              rules: [
+                {
+                  validator: (rule, value: EditorState, callback) => {
+                    value.isEmpty() ? callback('請輸入方案簡介') : callback()
+                  },
+                },
+              ],
+            })(<AdminBraftEditor />)}
+          </StyledFormItem>
         )}
         <Form.Item wrapperCol={{ md: { offset: 4 } }}>
           <Button className="mr-2" onClick={() => form.resetFields()}>

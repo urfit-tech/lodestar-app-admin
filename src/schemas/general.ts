@@ -41,7 +41,7 @@ export const ProductTypeLabel: { [key: string]: string } = {
   Merchandise: '商品',
   PodcastProgram: '廣播節目',
   PodcastPlan: '廣播頻道訂閱方案',
-  AppointmentPlan: '預約'
+  AppointmentPlan: '預約',
 }
 export const productTargetSchema = object({
   programId: string().notRequired(),
@@ -73,7 +73,11 @@ export const memberSchema = object({
   abstract: string().nullable(),
   createdAt: date(),
   loginedAt: date(),
-  memberTags: array(),
+  memberTags: array(
+    object({
+      tag: string(),
+    }).camelCase(),
+  ),
   facebookUserId: string().nullable(),
   googleUserId: string().nullable(),
 }).camelCase()
