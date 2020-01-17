@@ -66,7 +66,12 @@ const ActivityAdminPage = () => {
             </Tabs.TabPane>
 
             <Tabs.TabPane key="publish" tab="發佈">
-              <ActivityPublishAdminBlock />
+              <div className="container py-5">
+                <AdminPaneTitle>發佈設定</AdminPaneTitle>
+                <AdminBlock>
+                  <ActivityPublishAdminBlock />
+                </AdminBlock>
+              </div>
             </Tabs.TabPane>
           </Tabs>
         </StyledLayoutContent>

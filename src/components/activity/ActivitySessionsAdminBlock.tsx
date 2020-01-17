@@ -84,7 +84,7 @@ const ActivitySessionsAdminBlock: React.FC<{
             建立場次
           </Button>
         )}
-        icon={() => <Icon type="file-add" />}
+        icon={<Icon type="file-add" />}
         onSubmit={onInsert}
       />
 
@@ -130,7 +130,7 @@ const ActivitySessionsAdminBlock: React.FC<{
                     <Menu.Item>
                       <ActivitySessionAdminModal
                         renderTrigger={({ setVisible }) => <span onClick={() => setVisible(true)}>編輯</span>}
-                        icon={() => <Icon type="file-edit" />}
+                        icon={<Icon type="file-edit" />}
                         onSubmit={onUpdate}
                         activitySession={session}
                       />

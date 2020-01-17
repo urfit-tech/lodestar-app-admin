@@ -1,4 +1,4 @@
-import { Button, Checkbox, DatePicker, Form, Icon, Input, InputNumber } from 'antd'
+import { Button, Checkbox, DatePicker, Form, Input, InputNumber } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -44,7 +44,6 @@ const ActivitySessionAdminModal: React.FC<ActivitySessionAdminModalProps> = ({
 
   return (
     <AdminModal
-      icon={!activitySession ? <Icon type="file-add" /> : <Icon type="edit" />}
       title="場次"
       maskClosable={false}
       renderFooter={({ setVisible }) => (
