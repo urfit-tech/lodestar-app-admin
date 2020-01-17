@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/react-hooks'
+import { ApolloError } from 'apollo-client'
 import gql from 'graphql-tag'
 import React, { createContext } from 'react'
 import { ScheduleIntervalType } from '../components/appointment/AppointmentPeriodCollection'
@@ -21,6 +22,7 @@ type AppointmentPlanAdminProps = {
 }
 const AppointmentPlanContext = createContext<{
   loadingAppointmentPlan: boolean
+  errorAppointmentPlan?: ApolloError
   appointmentPlan?: AppointmentPlanAdminProps
   refetchAppointmentPlan?: () => void
 }>({
@@ -87,6 +89,7 @@ export const AppointmentPlanProvider: React.FC<{
     <AppointmentPlanContext.Provider
       value={{
         loadingAppointmentPlan: loading,
+        errorAppointmentPlan: error,
         appointmentPlan,
         refetchAppointmentPlan: refetch,
       }}

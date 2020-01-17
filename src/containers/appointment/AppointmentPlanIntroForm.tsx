@@ -10,15 +10,21 @@ import { handleError } from '../../helpers'
 import types from '../../types'
 
 const AppointmentPlanIntroForm: React.FC<FormComponentProps> = ({ form }) => {
-  const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)
+  const { loadingAppointmentPlan, errorAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(
+    AppointmentPlanContext,
+  )
   const [updateAppointmentPlanDescription] = useMutation<
     types.UPDATE_APPOINTMENT_PLAN_DESCRIPTION,
     types.UPDATE_APPOINTMENT_PLAN_DESCRIPTIONVariables
   >(UPDATE_APPOINTMENT_PLAN_DESCRIPTION)
   const [loading, setLoading] = useState(false)
 
-  if (loadingAppointmentPlan || !appointmentPlan) {
+  if (loadingAppointmentPlan) {
     return <Skeleton active />
+  }
+
+  if (errorAppointmentPlan || !appointmentPlan) {
+    return <div>讀取錯誤</div>
   }
 
   const handleSubmit = () => {
@@ -28,6 +34,7 @@ const AppointmentPlanIntroForm: React.FC<FormComponentProps> = ({ form }) => {
       }
 
       setLoading(true)
+
       updateAppointmentPlanDescription({
         variables: {
           appointmentPlanId: appointmentPlan.id,

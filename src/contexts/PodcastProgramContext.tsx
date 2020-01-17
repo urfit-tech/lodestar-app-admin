@@ -26,7 +26,7 @@ type PodcastProgramProps = {
 
 const PodcastProgramContext = createContext<{
   loadingPodcastProgram: boolean
-  errorPodcastProgram?: ApolloError | null
+  errorPodcastProgram?: ApolloError
   podcastProgram?: PodcastProgramProps
   refetchPodcastProgram?: () => void
 }>({
@@ -40,7 +40,9 @@ export const PodcastProgramProvider: React.FC<{
     types.GET_PODCAST_PROGRAM_ADMIN,
     types.GET_PODCAST_PROGRAM_ADMINVariables
   >(GET_PODCAST_PROGRAM_ADMIN, {
-    variables: { podcastProgramId },
+    variables: {
+      podcastProgramId,
+    },
   })
 
   const podcastProgram: PodcastProgramProps | undefined =

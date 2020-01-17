@@ -13,7 +13,9 @@ import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 import types from '../../types'
 
 const AppointmentPlanScheduleBlock: React.FC = () => {
-  const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)
+  const { loadingAppointmentPlan, errorAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(
+    AppointmentPlanContext,
+  )
   const [updateAppointmentSchedule] = useMutation<
     types.UPDATE_APPOINTMENT_SCHEDULE,
     types.UPDATE_APPOINTMENT_SCHEDULEVariables
@@ -23,8 +25,12 @@ const AppointmentPlanScheduleBlock: React.FC = () => {
     types.DELETE_APPOINTMENT_SCHEDULEVariables
   >(DELETE_APPOINTMENT_SCHEDULE)
 
-  if (loadingAppointmentPlan || !appointmentPlan) {
-    return <Skeleton />
+  if (loadingAppointmentPlan) {
+    return <Skeleton active />
+  }
+
+  if (errorAppointmentPlan || !appointmentPlan) {
+    return <div>讀取錯誤</div>
   }
 
   if (appointmentPlan.periods.length === 0) {

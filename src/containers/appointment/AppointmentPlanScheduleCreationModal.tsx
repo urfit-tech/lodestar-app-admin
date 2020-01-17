@@ -11,7 +11,9 @@ import { handleError } from '../../helpers'
 import types from '../../types'
 
 const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ form }) => {
-  const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)
+  const { loadingAppointmentPlan, errorAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(
+    AppointmentPlanContext,
+  )
   const [createAppointmentSchedule] = useMutation<
     types.CREATE_APPOINTMENT_SCHEDULE,
     types.CREATE_APPOINTMENT_SCHEDULEVariables
@@ -19,7 +21,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
   const [loading, setLoading] = useState(false)
   const [withRepeat, setWithRepeat] = useState(false)
 
-  if (loadingAppointmentPlan || !appointmentPlan) {
+  if (loadingAppointmentPlan || errorAppointmentPlan || !appointmentPlan) {
     return (
       <Button type="primary" icon="file-add" disabled>
         建立時段
@@ -36,6 +38,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
       }
 
       setLoading(true)
+      
       createAppointmentSchedule({
         variables: {
           appointmentPlanId: appointmentPlan.id,
@@ -49,10 +52,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
           message.success('儲存成功')
           setVisible(false)
         })
-        .catch(error => {
-          handleError(error)
-          setLoading(false)
-        })
+        .catch(error => handleError(error))
         .finally(() => setLoading(false))
     })
   }
