@@ -9,8 +9,8 @@ import AppointmentPeriodCollection, {
   DeleteScheduleEvent,
   EmptyBlock,
 } from '../../components/appointment/AppointmentPeriodCollection'
+import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 import types from '../../types'
-import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanScheduleBlock: React.FC = () => {
   const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)

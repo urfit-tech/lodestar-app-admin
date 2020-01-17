@@ -1,9 +1,9 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React, { createContext } from 'react'
-import { ScheduleIntervalType } from '../../components/appointment/AppointmentPeriodCollection'
-import { AppointmentPeriodProps } from '../../components/appointment/AppointmentPeriodItem'
-import types from '../../types'
+import { ScheduleIntervalType } from '../components/appointment/AppointmentPeriodCollection'
+import { AppointmentPeriodProps } from '../components/appointment/AppointmentPeriodItem'
+import types from '../types'
 
 type AppointmentPlanAdminProps = {
   id: string

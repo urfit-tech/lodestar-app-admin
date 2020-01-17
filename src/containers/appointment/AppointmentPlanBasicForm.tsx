@@ -3,9 +3,9 @@ import { Button, Form, Input, message, Skeleton } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
+import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 import { handleError } from '../../helpers'
 import types from '../../types'
-import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
   const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)

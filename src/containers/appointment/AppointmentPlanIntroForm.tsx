@@ -5,9 +5,9 @@ import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import AdminBraftEditor from '../../components/admin/AdminBraftEditor'
+import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 import { handleError } from '../../helpers'
 import types from '../../types'
-import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanIntroForm: React.FC<FormComponentProps> = ({ form }) => {
   const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)

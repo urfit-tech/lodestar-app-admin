@@ -2,7 +2,7 @@ import { Button, Icon } from 'antd'
 import React, { useContext } from 'react'
 import useRouter from 'use-react-router'
 import { AdminHeader, AdminHeaderTitle } from '../../components/admin'
-import AppointmentPlanContext from './AppointmentPlanContext'
+import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 
 const AppointmentPlanHeader: React.FC<{
   appointmentPlanId: string

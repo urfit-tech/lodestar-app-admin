@@ -6,13 +6,13 @@ import useRouter from 'use-react-router'
 import { AdminBlock, AdminBlockTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../../components/admin'
 import { StyledLayoutContent } from '../../../components/layout/DefaultLayout'
 import AppointmentPlanBasicForm from '../../../containers/appointment/AppointmentPlanBasicForm'
-import { AppointmentPlanProvider } from '../../../containers/appointment/AppointmentPlanContext'
 import AppointmentPlanHeader from '../../../containers/appointment/AppointmentPlanHeader'
 import AppointmentPlanIntroForm from '../../../containers/appointment/AppointmentPlanIntroForm'
 import AppointmentPlanPublishBlock from '../../../containers/appointment/AppointmentPlanPublishBlock'
 import AppointmentPlanSaleForm from '../../../containers/appointment/AppointmentPlanSaleForm'
 import AppointmentPlanScheduleBlock from '../../../containers/appointment/AppointmentPlanScheduleBlock'
 import AppointmentPlanScheduleCreationModal from '../../../containers/appointment/AppointmentPlanScheduleCreationModal'
+import { AppointmentPlanProvider } from '../../../contexts/AppointmentPlanContext'
 
 const StyledWrapper = styled.div`
   background: #f7f8f8;

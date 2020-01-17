@@ -5,9 +5,9 @@ import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { StyledTips } from '../../components/admin'
 import CurrencyInput from '../../components/admin/CurrencyInput'
+import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 import { handleError } from '../../helpers'
 import types from '../../types'
-import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
   const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)

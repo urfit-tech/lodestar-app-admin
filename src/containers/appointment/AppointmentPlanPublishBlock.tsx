@@ -7,8 +7,8 @@ import AdminPublishBlock, {
   PublishEvent,
   PublishStatus,
 } from '../../components/admin/AdminPublishBlock'
+import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 import types from '../../types'
-import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanPublishBlock: React.FC = () => {
   const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)

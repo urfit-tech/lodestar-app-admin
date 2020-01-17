@@ -6,9 +6,9 @@ import moment from 'moment'
 import React, { useContext, useState } from 'react'
 import { StyledSelect } from '../../components/admin'
 import AdminModal from '../../components/admin/AdminModal'
+import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 import { handleError } from '../../helpers'
 import types from '../../types'
-import AppointmentPlanContext from './AppointmentPlanContext'
 
 const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ form }) => {
   const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)
