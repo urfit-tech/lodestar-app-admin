@@ -8,7 +8,6 @@ import OwnerAdminLayout from '../../components/layout/OwnerAdminLayout'
 import { EditableProgramSelector, OwnedProgramSelector } from '../../components/program/ProgramSelector'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { useEditablePrograms } from '../../hooks/program'
 import types from '../../types'
 
 const ProgramIssueCollectionAdminPage = () => {
@@ -63,7 +62,6 @@ const AllProgramIssueCollectionBlock: React.FC<{
   selectedStatus: string
 }> = ({ memberId, selectedProgramId, selectedStatus }) => {
   const { id: appId } = useContext(AppContext)
-  const { programs } = useEditablePrograms(memberId)
 
   let unsolved: boolean | undefined
   switch (selectedStatus) {
@@ -100,17 +98,12 @@ const AllProgramIssueCollectionBlock: React.FC<{
       ) : (
         data.issue
           .map((value: any) => {
-            const selectedProgram = programs.find(program => value.thread_id.includes(program.id))
-
-            if (!selectedProgram) {
-              return null
-            }
-
+            const [, , programId] = value.thread_id.split('/')
             return (
               <IssueAdminCard
                 key={value.id}
                 threadId={value.thread_id}
-                programId={selectedProgram.id}
+                programId={programId}
                 issueId={value.id}
                 title={value.title}
                 description={value.description}
