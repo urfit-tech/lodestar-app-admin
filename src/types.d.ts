@@ -1685,7 +1685,7 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk {
   __typename: "activity";
   id: any;
   title: string;
-  description: string;
+  description: string | null;
   cover_url: string | null;
   is_participants_visible: boolean;
   organizer_id: string;
@@ -4631,6 +4631,79 @@ export interface GET_MEMBER_POINTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_CREATOR
+// ====================================================
+
+export interface UPDATE_CREATOR_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_CREATOR_delete_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_CREATOR_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_CREATOR_insert_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_CREATOR {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_CREATOR_update_member | null;
+  /**
+   * delete data from the table: "member_tag"
+   */
+  delete_member_tag: UPDATE_CREATOR_delete_member_tag | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_CREATOR_insert_tag | null;
+  /**
+   * insert data into the table: "member_tag"
+   */
+  insert_member_tag: UPDATE_CREATOR_insert_member_tag | null;
+}
+
+export interface UPDATE_CREATORVariables {
+  appId?: string | null;
+  memberId?: string | null;
+  email?: string | null;
+  username?: string | null;
+  name?: string | null;
+  pictureUrl?: string | null;
+  title?: string | null;
+  abstract?: string | null;
+  description?: string | null;
+  tags: tag_insert_input[];
+  memberTags: member_tag_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER
 // ====================================================
 
@@ -4656,76 +4729,6 @@ export interface UPDATE_MEMBERVariables {
   username?: string | null;
   email?: string | null;
   pictureUrl?: string | null;
-  title?: string | null;
-  abstract?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_TAG
-// ====================================================
-
-export interface DELETE_TAG_delete_member_tag {
-  __typename: "member_tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_TAG {
-  /**
-   * delete data from the table: "member_tag"
-   */
-  delete_member_tag: DELETE_TAG_delete_member_tag | null;
-}
-
-export interface DELETE_TAGVariables {
-  memberId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_TAG
-// ====================================================
-
-export interface UPDATE_TAG_insert_tag {
-  __typename: "tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_TAG_insert_member_tag {
-  __typename: "member_tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_TAG {
-  /**
-   * insert data into the table: "tag"
-   */
-  insert_tag: UPDATE_TAG_insert_tag | null;
-  /**
-   * insert data into the table: "member_tag"
-   */
-  insert_member_tag: UPDATE_TAG_insert_member_tag | null;
-}
-
-export interface UPDATE_TAGVariables {
-  memberId?: string | null;
-  tag?: string | null;
-  appId?: string | null;
 }
 
 /* tslint:disable */

@@ -70,7 +70,7 @@ const ActivitySettingsAdminBlock: React.FC<{
         activityId={activityAdmin.id}
         title={activityAdmin.title}
         coverUrl={activityAdmin.coverUrl}
-        description={activityAdmin.description}
+        description={activityAdmin.description || ''}
         onUpdateIntroduction={onUpdateIntroduction}
       />
     </div>

@@ -15,7 +15,7 @@ import { ActivityTicketProps } from './ActivityTicket'
 export type ActivityAdminProps = {
   id: string
   title: string
-  description: string
+  description: string | null
   coverUrl: string | null
   isParticipantsVisible: boolean
   organizerId: string
