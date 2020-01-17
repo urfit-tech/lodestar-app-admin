@@ -4631,10 +4631,10 @@ export interface GET_MEMBER_POINTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_CREATOR
+// GraphQL mutation operation: UPDATE_MEMBER_BASIC
 // ====================================================
 
-export interface UPDATE_CREATOR_update_member {
+export interface UPDATE_MEMBER_BASIC_update_member {
   __typename: "member_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -4642,7 +4642,7 @@ export interface UPDATE_CREATOR_update_member {
   affected_rows: number;
 }
 
-export interface UPDATE_CREATOR_delete_member_tag {
+export interface UPDATE_MEMBER_BASIC_delete_member_tag {
   __typename: "member_tag_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -4650,7 +4650,7 @@ export interface UPDATE_CREATOR_delete_member_tag {
   affected_rows: number;
 }
 
-export interface UPDATE_CREATOR_insert_tag {
+export interface UPDATE_MEMBER_BASIC_insert_tag {
   __typename: "tag_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -4658,7 +4658,7 @@ export interface UPDATE_CREATOR_insert_tag {
   affected_rows: number;
 }
 
-export interface UPDATE_CREATOR_insert_member_tag {
+export interface UPDATE_MEMBER_BASIC_insert_member_tag {
   __typename: "member_tag_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -4666,35 +4666,34 @@ export interface UPDATE_CREATOR_insert_member_tag {
   affected_rows: number;
 }
 
-export interface UPDATE_CREATOR {
+export interface UPDATE_MEMBER_BASIC {
   /**
    * update data of the table: "member"
    */
-  update_member: UPDATE_CREATOR_update_member | null;
+  update_member: UPDATE_MEMBER_BASIC_update_member | null;
   /**
    * delete data from the table: "member_tag"
    */
-  delete_member_tag: UPDATE_CREATOR_delete_member_tag | null;
+  delete_member_tag: UPDATE_MEMBER_BASIC_delete_member_tag | null;
   /**
    * insert data into the table: "tag"
    */
-  insert_tag: UPDATE_CREATOR_insert_tag | null;
+  insert_tag: UPDATE_MEMBER_BASIC_insert_tag | null;
   /**
    * insert data into the table: "member_tag"
    */
-  insert_member_tag: UPDATE_CREATOR_insert_member_tag | null;
+  insert_member_tag: UPDATE_MEMBER_BASIC_insert_member_tag | null;
 }
 
-export interface UPDATE_CREATORVariables {
-  appId?: string | null;
+export interface UPDATE_MEMBER_BASICVariables {
   memberId?: string | null;
-  email?: string | null;
-  username?: string | null;
   name?: string | null;
+  description?: string | null;
+  username?: string | null;
+  email?: string | null;
   pictureUrl?: string | null;
   title?: string | null;
   abstract?: string | null;
-  description?: string | null;
   tags: tag_insert_input[];
   memberTags: member_tag_insert_input[];
 }
@@ -4704,10 +4703,10 @@ export interface UPDATE_CREATORVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER
+// GraphQL mutation operation: UPDATE_MEMBER_ACCOUNT
 // ====================================================
 
-export interface UPDATE_MEMBER_update_member {
+export interface UPDATE_MEMBER_ACCOUNT_update_member {
   __typename: "member_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -4715,14 +4714,14 @@ export interface UPDATE_MEMBER_update_member {
   affected_rows: number;
 }
 
-export interface UPDATE_MEMBER {
+export interface UPDATE_MEMBER_ACCOUNT {
   /**
    * update data of the table: "member"
    */
-  update_member: UPDATE_MEMBER_update_member | null;
+  update_member: UPDATE_MEMBER_ACCOUNT_update_member | null;
 }
 
-export interface UPDATE_MEMBERVariables {
+export interface UPDATE_MEMBER_ACCOUNTVariables {
   memberId?: string | null;
   name?: string | null;
   description?: string | null;

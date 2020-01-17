@@ -3,7 +3,7 @@ import { CardProps } from 'antd/lib/card'
 import { FormComponentProps } from 'antd/lib/form'
 import React from 'react'
 import styled from 'styled-components'
-import { useMember, useUpdateMember } from '../../hooks/member'
+import { useMember, useUpdateMemberBasic } from '../../hooks/member'
 import AdminCard from '../admin/AdminCard'
 import { AvatarImage } from '../common/Image'
 import SingleUploader from '../common/SingleUploader'
@@ -11,6 +11,7 @@ import { StyledForm } from '../layout'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 import BraftEditor, { EditorState } from 'braft-editor'
 import { useTags } from '../../hooks/data'
+import { useAuth } from '../../contexts/AuthContext'
 
 const StyledAvatarFormItem = styled(Form.Item)`
   .ant-form-item-children {
@@ -50,16 +51,17 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
   withDescription,
   ...cardProps
 }) => {
+  const { currentMemberId } = useAuth()
   const { member } = useMember(memberId)
   const { tags } = useTags()
-  const updateMember = useUpdateMember()
+  const updateMemberBasic = useUpdateMemberBasic()
 
   const handleSubmit = () => {
     form.validateFields((error, values) => {
       if (!error && member) {
-        updateMember({
+        updateMemberBasic({
           variables: {
-            memberId,
+            memberId: currentMemberId,
             email: member.email,
             username: member.username,
             name: values.name,
@@ -70,12 +72,21 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
               : member.pictureUrl,
             title: values.title,
             abstract: values.abstract,
-            description: values.description.toRAW(),
+            description: values.description ? values.description.toRAW() : null,
+            tags: values.tags ? values.tags.map((tag: string) => ({
+              app_id: localStorage.getItem('kolable.app.id'),
+              name: tag,
+              type: ""
+            })) : [],
+            memberTags: values.tags ? values.tags.map((tag: string) => ({
+              member_id: currentMemberId,
+              tag_name: tag,
+            })) : []
           },
         })
           .then(() => {
             message.success('儲存成功')
-            // window.location.reload(true)
+            window.location.reload(true)
           })
           .catch(err => message.error(err.message))
       }

@@ -94,10 +94,10 @@ export const useMemberPoint = (memberId: string) => {
   }
 }
 
-export const useUpdateMember = () => {
-  const [updateMember] = useMutation<types.UPDATE_MEMBER, types.UPDATE_MEMBERVariables>(
+export const useUpdateMemberBasic = () => {
+  const [updateMemberBasic] = useMutation<types.UPDATE_MEMBER_BASIC, types.UPDATE_MEMBER_BASICVariables>(
     gql`
-      mutation UPDATE_MEMBER(
+      mutation UPDATE_MEMBER_BASIC(
         $memberId: String
         $name: String
         $description: String
@@ -106,6 +106,8 @@ export const useUpdateMember = () => {
         $pictureUrl: String
         $title: String
         $abstract: String
+        $tags: [tag_insert_input!]!
+        $memberTags: [member_tag_insert_input!]!
       ) {
         update_member(
           where: { id: { _eq: $memberId } }
@@ -121,15 +123,42 @@ export const useUpdateMember = () => {
         ) {
           affected_rows
         }
+        delete_member_tag(where: { member_id: { _eq: $memberId } }) {
+          affected_rows
+        }
+        insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
+          affected_rows
+        }
+        insert_member_tag(objects: $memberTags) {
+          affected_rows
+        }
       }
-      # // ? 為什麼要有 2 張 table member_tag 和 tag
-      # mutation DELETE_MEMBER_TAGS {
-      #   delete_member_tag(where: { member_id: { _eq: "creator-haohaoming" } }) {
-      #     affected_rows
-      #   }
-      # }
     `,
   )
 
-  return updateMember
+  return updateMemberBasic
+}
+
+export const useUpdateMemberAccount = () => {
+  const [updateMemberAccount] = useMutation<types.UPDATE_MEMBER_ACCOUNT, types.UPDATE_MEMBER_ACCOUNTVariables>(
+    gql`
+      mutation UPDATE_MEMBER_ACCOUNT(
+        $memberId: String
+        $name: String
+        $description: String
+        $username: String
+        $email: String
+        $pictureUrl: String
+      ) {
+        update_member(
+          where: { id: { _eq: $memberId } }
+          _set: { name: $name, description: $description, username: $username, email: $email, picture_url: $pictureUrl }
+        ) {
+          affected_rows
+        }
+      }
+    `,
+  )
+
+  return updateMemberAccount
 }
