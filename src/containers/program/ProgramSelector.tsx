@@ -11,9 +11,11 @@ type ProgramSelectorProps = SelectProps & {
 const ProgramSelector: React.FC<ProgramSelectorProps> = ({ allText, ...selectProps }) => {
   const { loading, error, data } = useQuery<types.GET_PROGRAM_ENROLLED>(GET_PROGRAM_ENROLLED)
   const SelectOptions =
-    data?.program_enrollment.map(programEnrollment => {
-      return <Select.Option key={programEnrollment.program_id}>{programEnrollment.program?.title}</Select.Option>
-    }) || []
+    data?.program_enrollment
+      .filter(programEnrollment => programEnrollment.program)
+      .map(programEnrollment => (
+        <Select.Option key={programEnrollment.program_id}>{programEnrollment.program?.title}</Select.Option>
+      )) || []
 
   return (
     <Select disabled={!!error} loading={loading} style={{ width: '100%' }} defaultValue="all" {...selectProps}>
