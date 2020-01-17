@@ -4560,7 +4560,7 @@ export interface GET_NOTIFICATIONSVariables {
 export interface GET_MEMBER_member_by_pk_member_tags {
   __typename: "member_tag";
   id: any;
-  tag: string;
+  tag_name: string;
 }
 
 export interface GET_MEMBER_member_by_pk {
@@ -4676,6 +4676,74 @@ export interface UPDATE_MEMBERVariables {
   pictureUrl?: string | null;
   title?: string | null;
   abstract?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_TAG
+// ====================================================
+
+export interface DELETE_TAG_delete_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_TAG {
+  /**
+   * delete data from the table: "member_tag"
+   */
+  delete_member_tag: DELETE_TAG_delete_member_tag | null;
+}
+
+export interface DELETE_TAGVariables {
+  memberId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_TAG
+// ====================================================
+
+export interface UPDATE_TAG_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_TAG_insert_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_TAG {
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_TAG_insert_tag | null;
+  /**
+   * insert data into the table: "member_tag"
+   */
+  insert_member_tag: UPDATE_TAG_insert_member_tag | null;
+}
+
+export interface UPDATE_TAGVariables {
+  memberId?: string | null;
+  tag?: string | null;
+  appId?: string | null;
 }
 
 /* tslint:disable */

@@ -19,7 +19,7 @@ export const useMember = (memberId: string) => {
           title
           member_tags {
             id
-            tag
+            tag_name
           }
         }
       }
