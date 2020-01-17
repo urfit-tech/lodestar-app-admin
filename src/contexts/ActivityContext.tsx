@@ -9,7 +9,7 @@ import { ApolloError } from 'apollo-client'
 export type ActivityAdminProps = {
   id: string
   title: string
-  description: string
+  description: string | null
   coverUrl: string | null
   isParticipantsVisible: boolean
   organizerId: string

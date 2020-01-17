@@ -43,6 +43,9 @@ const StyledSingleUploader = styled(SingleUploader)`
 const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
   const app = useContext(AppContext)
   const { loadingActivity, errorActivity, activity, refetchActivity } = useContext(ActivityContext)
+  const [updateActivityCover] = useMutation<types.UPDATE_ACTIVITY_COVER, types.UPDATE_ACTIVITY_COVERVariables>(
+    UPDATE_ACTIVITY_COVER,
+  )
   const [updateActivityIntroduction] = useMutation<
     types.UPDATE_ACTIVITY_INTRODUCTION,
     types.UPDATE_ACTIVITY_INTRODUCTIONVariables
@@ -61,7 +64,7 @@ const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
     setLoading(true)
     const uploadTime = Date.now()
 
-    updateActivityIntroduction({
+    updateActivityCover({
       variables: {
         activityId: activity.id,
         coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/activity_covers/${app.id}/${activity.id}?t=${uploadTime}`,
@@ -175,9 +178,16 @@ const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
   )
 }
 
+const UPDATE_ACTIVITY_COVER = gql`
+  mutation UPDATE_ACTIVITY_COVER($activityId: uuid!, $coverUrl: String) {
+    update_activity(where: { id: { _eq: $activityId } }, _set: { cover_url: $coverUrl }) {
+      affected_rows
+    }
+  }
+`
 const UPDATE_ACTIVITY_INTRODUCTION = gql`
-  mutation UPDATE_ACTIVITY_INTRODUCTION($activityId: uuid!, $coverUrl: String, $description: String) {
-    update_activity(where: { id: { _eq: $activityId } }, _set: { cover_url: $coverUrl, description: $description }) {
+  mutation UPDATE_ACTIVITY_INTRODUCTION($activityId: uuid!, $description: String) {
+    update_activity(where: { id: { _eq: $activityId } }, _set: { description: $description }) {
       affected_rows
     }
   }
