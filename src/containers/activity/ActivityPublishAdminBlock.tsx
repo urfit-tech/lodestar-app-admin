@@ -1,54 +1,76 @@
 import { useMutation } from '@apollo/react-hooks'
-import { message } from 'antd'
+import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
-import React from 'react'
-import { ActivityAdminProps } from '../../components/activity/ActivityAdminBlock'
-import ActivityPublishAdminBlockComponent from '../../components/activity/ActivityPublishAdminBlock'
+import React, { useContext } from 'react'
+import AdminPublishBlock, {
+  ChecklistItemProps,
+  PublishEvent,
+  PublishStatus,
+} from '../../components/admin/AdminPublishBlock'
+import ActivityContext from '../../contexts/ActivityContext'
 import types from '../../types'
 
-const ActivityPublishAdminBlock: React.FC<{
-  activityAdmin: ActivityAdminProps
-  onChangeTab?: (key: string) => void
-  onRefetch?: () => void
-}> = ({ activityAdmin, onChangeTab, onRefetch }) => {
+const ActivityPublishAdminBlock: React.FC = () => {
+  const { loadingActivity, errorActivity, activity, refetchActivity } = useContext(ActivityContext)
   const [publishActivity] = useMutation<types.PUBLISH_ACTIVITY, types.PUBLISH_ACTIVITYVariables>(PUBLISH_ACTIVITY)
 
-  const handlePublish: (setLoading: React.Dispatch<React.SetStateAction<boolean>>, publishedAt: Date | null) => void = (
-    setLoading,
-    publishedAt,
-  ) => {
-    setLoading(true)
+  if (loadingActivity) {
+    return <Skeleton active />
+  }
 
+  if (errorActivity || !activity) {
+    return <div>讀取錯誤</div>
+  }
+
+  const checklist: ChecklistItemProps[] = []
+
+  activity.activityTickets.length === 0 &&
+    checklist.push({
+      id: 'NO_TICKET',
+      text: '尚未訂定票券方案',
+      tabkey: 'tickets',
+    })
+
+  !activity.description &&
+    checklist.push({
+      id: 'NO_DESCRIPTION',
+      text: '尚未填寫活動簡介',
+      tabkey: 'settings',
+    })
+
+  const publishStatus: PublishStatus = checklist.length > 0 ? 'alert' : !activity.publishedAt ? 'ordinary' : 'success'
+
+  const [title, description] =
+    publishStatus === 'alert'
+      ? ['尚有未完成項目', '請填寫以下必填資料，填寫完畢即可由此發佈']
+      : publishStatus === 'ordinary'
+      ? ['尚未發佈', '因你的活動未發佈，此活動並不會顯示在頁面上。']
+      : publishStatus === 'success'
+      ? ['已發佈', '現在你的活動已經發佈，此活動會出現在頁面上。']
+      : ['', '']
+
+  const handlePublish: (event: PublishEvent) => void = ({ values, onSuccess, onError, onFinally }) => {
     publishActivity({
       variables: {
-        activityId: activityAdmin.id,
-        publishedAt,
+        activityId: activity.id,
+        publishedAt: values.publishedAt,
       },
     })
       .then(() => {
-        if (publishedAt) {
-          message.success('發佈成功')
-        } else {
-          message.success('已取消發佈')
-        }
-        if (onRefetch) {
-          onRefetch()
-        }
+        refetchActivity && refetchActivity()
+        onSuccess && onSuccess()
       })
-      .catch(error => {
-        if (process.env.NODE_ENV === 'development') {
-          console.error(error)
-        }
-        message.error('發佈失敗')
-      })
-      .finally(() => setLoading(false))
+      .catch(error => onError && onError(error))
+      .finally(() => onFinally && onFinally())
   }
 
   return (
-    <ActivityPublishAdminBlockComponent
-      activityAdmin={activityAdmin}
+    <AdminPublishBlock
+      type={publishStatus}
+      title={title}
+      description={description}
+      checklist={checklist}
       onPublish={handlePublish}
-      onChangeTab={onChangeTab}
     />
   )
 }

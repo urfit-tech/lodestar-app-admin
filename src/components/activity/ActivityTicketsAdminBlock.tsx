@@ -1,7 +1,6 @@
 import { Button, Dropdown, Icon, Menu } from 'antd'
 import React from 'react'
-import { AdminPaneTitle } from '../admin'
-import { ActivityAdminProps } from './ActivityAdminBlock'
+import { ActivityAdminProps } from '../../contexts/ActivityContext'
 import ActivityTicket from './ActivityTicket'
 import ActivityTicketAdminModal from './ActivityTicketAdminModal'
 
@@ -38,9 +37,7 @@ const ActivityTicketsAdminBlock: React.FC<{
   ) => void
 }> = ({ activityAdmin, onInsert, onUpdate }) => {
   return (
-    <div className="container py-5">
-      <AdminPaneTitle>票券方案</AdminPaneTitle>
-
+    <>
       <ActivityTicketAdminModal
         renderTrigger={({ setVisible }) => (
           <Button type="primary" icon="file-add" onClick={() => setVisible(true)} className="mb-5">
@@ -55,41 +52,39 @@ const ActivityTicketsAdminBlock: React.FC<{
       />
 
       <div className="row">
-        {activityAdmin.activityTickets.map(ticket => {
-          return (
-            <div key={ticket.id} className="col-12 col-md-6 mb-4">
-              <ActivityTicket
-                {...ticket}
-                variant="admin"
-                extra={
-                  <Dropdown
-                    overlay={
-                      <Menu>
-                        <Menu.Item>
-                          <ActivityTicketAdminModal
-                            renderTrigger={({ setVisible }) => <span onClick={() => setVisible(true)}>編輯</span>}
-                            icon={() => <Icon type="file-edit" />}
-                            onSubmit={onUpdate}
-                            activityTicket={ticket}
-                            activitySessions={activityAdmin.activitySessions.map(session => ({
-                              id: session.id,
-                              title: session.title,
-                            }))}
-                          />
-                        </Menu.Item>
-                      </Menu>
-                    }
-                    trigger={['click']}
-                  >
-                    <Icon type="more" />
-                  </Dropdown>
-                }
-              />
-            </div>
-          )
-        })}
+        {activityAdmin.activityTickets.map(ticket => (
+          <div key={ticket.id} className="col-12 col-md-6 mb-4">
+            <ActivityTicket
+              {...ticket}
+              variant="admin"
+              extra={
+                <Dropdown
+                  overlay={
+                    <Menu>
+                      <Menu.Item>
+                        <ActivityTicketAdminModal
+                          renderTrigger={({ setVisible }) => <span onClick={() => setVisible(true)}>編輯</span>}
+                          icon={() => <Icon type="file-edit" />}
+                          onSubmit={onUpdate}
+                          activityTicket={ticket}
+                          activitySessions={activityAdmin.activitySessions.map(session => ({
+                            id: session.id,
+                            title: session.title,
+                          }))}
+                        />
+                      </Menu.Item>
+                    </Menu>
+                  }
+                  trigger={['click']}
+                >
+                  <Icon type="more" />
+                </Dropdown>
+              }
+            />
+          </div>
+        ))}
       </div>
-    </div>
+    </>
   )
 }
 

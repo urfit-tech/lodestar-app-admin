@@ -1,22 +1,30 @@
 import { useMutation } from '@apollo/react-hooks'
-import { message } from 'antd'
+import { message, Skeleton } from 'antd'
 import gql from 'graphql-tag'
-import React from 'react'
-import { ActivityAdminProps } from '../../components/activity/ActivityAdminBlock'
+import React, { useContext } from 'react'
 import ActivitySessionsAdminBlockComponent from '../../components/activity/ActivitySessionsAdminBlock'
+import ActivityContext from '../../contexts/ActivityContext'
+import { handleError } from '../../helpers'
 import types from '../../types'
 
 const ActivitySessionsAdminBlock: React.FC<{
-  activityAdmin: ActivityAdminProps
   onChangeTab?: () => void
-  onRefetch?: () => void
-}> = ({ activityAdmin, onRefetch, onChangeTab }) => {
+}> = ({ onChangeTab }) => {
+  const { loadingActivity, errorActivity, activity, refetchActivity } = useContext(ActivityContext)
   const [insertActivitySession] = useMutation<types.INSERT_ACTIVITY_SESSION, types.INSERT_ACTIVITY_SESSIONVariables>(
     INSERT_ACTIVITY_SESSION,
   )
   const [updateActivitySession] = useMutation<types.UPDATE_ACTIVITY_SESSION, types.UPDATE_ACTIVITY_SESSIONVariables>(
     UPDATE_ACTIVITY_SESSION,
   )
+
+  if (loadingActivity) {
+    return <Skeleton active />
+  }
+
+  if (errorActivity || !activity) {
+    return <div>讀取錯誤</div>
+  }
 
   const handleInsert: (
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
@@ -34,23 +42,16 @@ const ActivitySessionsAdminBlock: React.FC<{
 
     insertActivitySession({
       variables: {
-        activityId: activityAdmin.id,
+        activityId: activity.id,
         ...data,
       },
     })
       .then(() => {
         message.success('建立成功')
         setVisible(false)
-        if (onRefetch) {
-          onRefetch()
-        }
+        refetchActivity && refetchActivity()
       })
-      .catch(error => {
-        if (process.env.NODE_ENV === 'development') {
-          console.error(error)
-        }
-        message.error('建立失敗')
-      })
+      .catch(error => handleError(error))
       .finally(() => setLoading(false))
   }
 
@@ -75,22 +76,15 @@ const ActivitySessionsAdminBlock: React.FC<{
       .then(() => {
         message.success('編輯成功')
         setVisible(false)
-        if (onRefetch) {
-          onRefetch()
-        }
+        refetchActivity && refetchActivity()
       })
-      .catch(error => {
-        if (process.env.NODE_ENV === 'development') {
-          console.error(error)
-        }
-        message.error('編輯失敗')
-      })
+      .catch(error => handleError(error))
       .finally(() => setLoading(false))
   }
 
   return (
     <ActivitySessionsAdminBlockComponent
-      activityAdmin={activityAdmin}
+      activityAdmin={activity}
       onInsert={handleInsert}
       onUpdate={handleUpdate}
       onChangeTab={onChangeTab}

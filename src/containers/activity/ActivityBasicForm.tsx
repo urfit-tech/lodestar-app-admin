@@ -1,0 +1,124 @@
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Form, Input, message, Radio, Skeleton } from 'antd'
+import { FormComponentProps } from 'antd/lib/form'
+import gql from 'graphql-tag'
+import React, { useContext, useState } from 'react'
+import ProgramCategorySelector from '../../components/program/ProgramCategorySelector'
+import ActivityContext from '../../contexts/ActivityContext'
+import { handleError } from '../../helpers'
+import types from '../../types'
+
+const ActivityBasicForm: React.FC<FormComponentProps> = ({ form }) => {
+  const { loadingActivity, errorActivity, activity, refetchActivity } = useContext(ActivityContext)
+  const [updateActivityBasic] = useMutation<types.UPDATE_ACTIVITY_BASIC, types.UPDATE_ACTIVITY_BASICVariables>(
+    UPDATE_ACTIVITY_BASIC,
+  )
+  const [loading, setLoading] = useState(false)
+
+  if (loadingActivity) {
+    return <Skeleton active />
+  }
+
+  if (errorActivity || !activity) {
+    return <div>讀取錯誤</div>
+  }
+
+  const handleSubmit = () => {
+    form.validateFields((error, values) => {
+      if (error) {
+        return
+      }
+
+      setLoading(true)
+
+      const categoryIds: string[] = values.categoryIds
+
+      updateActivityBasic({
+        variables: {
+          activityId: activity.id,
+          title: values.title,
+          activityCategories: categoryIds.map((categoryId, index) => ({
+            activity_id: activity.id,
+            category_id: categoryId,
+            position: index,
+          })),
+          isParticipantsVisible: values.isParticipantsVisible === 'public',
+        },
+      })
+        .then(() => {
+          refetchActivity && refetchActivity()
+          message.success('儲存成功')
+        })
+        .catch(error => handleError(error))
+        .finally(() => setLoading(false))
+    })
+  }
+
+  return (
+    <Form
+      hideRequiredMark
+      labelCol={{ span: 24, md: { span: 4 } }}
+      wrapperCol={{ span: 24, md: { span: 8 } }}
+      onSubmit={e => {
+        e.preventDefault()
+        handleSubmit()
+      }}
+    >
+      <Form.Item label="名稱">
+        {form.getFieldDecorator('title', {
+          rules: [{ required: true, message: '請輸入名稱' }],
+          initialValue: activity.title,
+        })(<Input />)}
+      </Form.Item>
+      <Form.Item label="類別">
+        {form.getFieldDecorator('categoryIds', {
+          initialValue: activity.activityCategories.map(activityCategory => activityCategory.category.id),
+        })(<ProgramCategorySelector />)}
+      </Form.Item>
+      <Form.Item label="顯示人數">
+        {form.getFieldDecorator('isParticipantsVisible', {
+          initialValue: activity.isParticipantsVisible ? 'public' : 'private',
+        })(
+          <Radio.Group>
+            <Radio value="public">公開</Radio>
+            <Radio value="private">不公開</Radio>
+          </Radio.Group>,
+        )}
+      </Form.Item>
+      <Form.Item wrapperCol={{ md: { offset: 4 } }}>
+        <Button onClick={() => form.resetFields()} className="mr-2">
+          取消
+        </Button>
+        <Button type="primary" htmlType="submit" loading={loading}>
+          儲存
+        </Button>
+      </Form.Item>
+    </Form>
+  )
+}
+
+const UPDATE_ACTIVITY_BASIC = gql`
+  mutation UPDATE_ACTIVITY_BASIC(
+    $activityId: uuid!
+    $title: String!
+    $isParticipantsVisible: Boolean!
+    $activityCategories: [activity_category_insert_input!]!
+  ) {
+    update_activity(
+      where: { id: { _eq: $activityId } }
+      _set: { title: $title, is_participants_visible: $isParticipantsVisible }
+    ) {
+      affected_rows
+    }
+
+    delete_activity_category(where: { activity_id: { _eq: $activityId } }) {
+      affected_rows
+    }
+
+    insert_activity_category(objects: $activityCategories) {
+      affected_rows
+    }
+  }
+`
+
+export default Form.create<FormComponentProps>()(ActivityBasicForm)

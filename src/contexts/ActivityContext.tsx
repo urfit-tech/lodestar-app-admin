@@ -1,33 +1,56 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import React from 'react'
-import ActivityAdminBlockComponent, { ActivityAdminProps } from '../../components/activity/ActivityAdminBlock'
-import types from '../../types'
+import React, { createContext } from 'react'
+import { ActivitySessionProps } from '../components/activity/ActivitySessionsAdminBlock'
+import { ActivityTicketProps } from '../components/activity/ActivityTicket'
+import types from '../types'
+import { ApolloError } from 'apollo-client'
 
-const ActivityAdminBlock: React.FC<{
+export type ActivityAdminProps = {
+  id: string
+  title: string
+  description: string
+  coverUrl: string | null
+  isParticipantsVisible: boolean
+  organizerId: string
+  publishedAt: Date | null
+
+  activityCategories: {
+    id: string
+    category: {
+      id: string
+      name: string
+    }
+    position: number
+  }[]
+  activitySessions: ActivitySessionProps[]
+  activityTickets: ActivityTicketProps[]
+}
+
+const ActivityContext = createContext<{
+  loadingActivity: boolean
+  errorActivity?: ApolloError
+  activity?: ActivityAdminProps
+  refetchActivity?: () => {}
+}>({
+  loadingActivity: true,
+})
+
+export const ActivityProvider: React.FC<{
   activityId: string
-}> = ({ activityId }) => {
+}> = ({ activityId, children }) => {
   const { loading, error, data, refetch } = useQuery<types.GET_ACTIVITY_ADMIN, types.GET_ACTIVITY_ADMINVariables>(
     GET_ACTIVITY_ADMIN,
     {
-      variables: { activityId },
+      variables: {
+        activityId,
+      },
     },
   )
 
-  const activityAdmin: ActivityAdminProps =
-    loading || error || !data || !data.activity_by_pk
-      ? {
-          id: '',
-          title: '',
-          description: '',
-          coverUrl: null,
-          isParticipantsVisible: false,
-          organizerId: '',
-          publishedAt: null,
-          activityCategories: [],
-          activitySessions: [],
-          activityTickets: [],
-        }
+  const activity: ActivityAdminProps | undefined =
+    loading || !!error || !data || !data.activity_by_pk
+      ? undefined
       : {
           id: data.activity_by_pk.id,
           title: data.activity_by_pk.title,
@@ -82,12 +105,16 @@ const ActivityAdminBlock: React.FC<{
         }
 
   return (
-    <ActivityAdminBlockComponent
-      loading={loading}
-      error={error}
-      activityAdmin={activityAdmin}
-      onRefetch={() => refetch()}
-    />
+    <ActivityContext.Provider
+      value={{
+        loadingActivity: loading,
+        errorActivity: error,
+        activity,
+        refetchActivity: refetch,
+      }}
+    >
+      {children}
+    </ActivityContext.Provider>
   )
 }
 
@@ -154,4 +181,4 @@ const GET_ACTIVITY_ADMIN = gql`
   }
 `
 
-export default ActivityAdminBlock
+export default ActivityContext

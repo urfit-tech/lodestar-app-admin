@@ -1,21 +1,28 @@
 import { useMutation } from '@apollo/react-hooks'
-import { message } from 'antd'
+import { message, Skeleton } from 'antd'
 import gql from 'graphql-tag'
-import React from 'react'
-import { ActivityAdminProps } from '../../components/activity/ActivityAdminBlock'
+import React, { useContext } from 'react'
 import ActivityTicketsAdminBlockComponent from '../../components/activity/ActivityTicketsAdminBlock'
+import ActivityContext from '../../contexts/ActivityContext'
+import { handleError } from '../../helpers'
 import types from '../../types'
 
-const ActivityTicketsAdminBlock: React.FC<{
-  activityAdmin: ActivityAdminProps
-  onRefetch?: () => void
-}> = ({ activityAdmin, onRefetch }) => {
+const ActivityTicketsAdminBlock: React.FC = () => {
+  const { loadingActivity, errorActivity, activity, refetchActivity } = useContext(ActivityContext)
   const [insertActivityTicket] = useMutation<types.INSERT_ACTIVITY_TICKET, types.INSERT_ACTIVITY_TICKETVariables>(
     INSERT_ACTIVITY_TICKET,
   )
   const [updateActivityTicket] = useMutation<types.UPDATE_ACTIVITY_TICKET, types.UPDATE_ACTIVITY_TICKETVariables>(
     UPDATE_ACTIVITY_TICKET,
   )
+
+  if (loadingActivity) {
+    return <Skeleton active />
+  }
+
+  if (errorActivity || !activity) {
+    return <div>讀取錯誤</div>
+  }
 
   const handleInsert: (
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
@@ -35,7 +42,7 @@ const ActivityTicketsAdminBlock: React.FC<{
 
     insertActivityTicket({
       variables: {
-        activityId: activityAdmin.id,
+        activityId: activity.id,
         title: data.title,
         activitySessionTickets: data.sessionIds.map(sessionId => ({
           activity_session_id: sessionId,
@@ -51,19 +58,10 @@ const ActivityTicketsAdminBlock: React.FC<{
       .then(() => {
         message.success('建立成功')
         setVisible(false)
-        if (onRefetch) {
-          onRefetch()
-        }
+        refetchActivity && refetchActivity()
       })
-      .catch(error => {
-        if (process.env.NODE_ENV === 'development') {
-          console.error(error)
-        }
-        message.error('建立失敗')
-      })
-      .finally(() => {
-        setLoading(false)
-      })
+      .catch(error => handleError(error))
+      .finally(() => setLoading(false))
   }
 
   const handleUpdate: (
@@ -102,24 +100,13 @@ const ActivityTicketsAdminBlock: React.FC<{
       .then(() => {
         message.success('編輯成功')
         setVisible(false)
-        if (onRefetch) {
-          onRefetch()
-        }
+        refetchActivity && refetchActivity()
       })
-      .catch(error => {
-        if (process.env.NODE_ENV === 'development') {
-          console.error(error)
-        }
-        message.error('編輯失敗')
-      })
-      .finally(() => {
-        setLoading(false)
-      })
+      .catch(error => handleError(error))
+      .finally(() => setLoading(false))
   }
 
-  return (
-    <ActivityTicketsAdminBlockComponent activityAdmin={activityAdmin} onInsert={handleInsert} onUpdate={handleUpdate} />
-  )
+  return <ActivityTicketsAdminBlockComponent activityAdmin={activity} onInsert={handleInsert} onUpdate={handleUpdate} />
 }
 
 const INSERT_ACTIVITY_TICKET = gql`

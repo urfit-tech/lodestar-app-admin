@@ -2,13 +2,12 @@ import { Button, Dropdown, Icon, Menu } from 'antd'
 import { sum } from 'ramda'
 import React from 'react'
 import styled from 'styled-components'
+import { ActivityAdminProps } from '../../contexts/ActivityContext'
 import { dateRangeFormatter } from '../../helpers'
 import { ReactComponent as CalendarOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as MapOIcon } from '../../images/icon/map-o.svg'
 import { ReactComponent as TicketOIcon } from '../../images/icon/ticket-o.svg'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
-import { AdminPaneTitle } from '../admin'
-import { ActivityAdminProps } from './ActivityAdminBlock'
 import ActivitySessionAdminModal from './ActivitySessionAdminModal'
 
 const StyledWrapper = styled.div`
@@ -78,9 +77,7 @@ const ActivitySessionsAdminBlock: React.FC<{
   onChangeTab?: () => void
 }> = ({ activityAdmin, onInsert, onUpdate, onChangeTab }) => {
   return (
-    <div className="container py-5">
-      <AdminPaneTitle>場次管理</AdminPaneTitle>
-
+    <>
       <ActivitySessionAdminModal
         renderTrigger={({ setVisible }) => (
           <Button type="primary" icon="file-add" onClick={() => setVisible(true)} className="mb-5">
@@ -148,7 +145,7 @@ const ActivitySessionsAdminBlock: React.FC<{
           </StyledWrapper>
         )
       })}
-    </div>
+    </>
   )
 }
 
