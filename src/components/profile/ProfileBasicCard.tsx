@@ -126,9 +126,9 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
         {withTags && (
           <Form.Item label="專長">
             {form.getFieldDecorator('tags', {
-              initialValue: member && member.memberTags && member.memberTags.map(memberTag => memberTag.tag),
+              initialValue: member && member.memberTags && member.memberTags.map(memberTag => memberTag.tagName),
             })(
-              <Select mode="multiple">
+              <Select mode="tags">
                 {tags.map(tag => (
                   <Select.Option key={tag}>{tag}</Select.Option>
                 ))}

@@ -76,7 +76,7 @@ export const memberSchema = object({
   memberTags: array(
     object({
       id: string(),
-      tag: string(),
+      tagName: string(),
     }).camelCase(),
   ),
   facebookUserId: string().nullable(),

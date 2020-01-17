@@ -4542,7 +4542,7 @@ export interface GET_NOTIFICATIONSVariables {
 export interface GET_MEMBER_member_by_pk_member_tags {
   __typename: "member_tag";
   id: any;
-  tag: string;
+  tag_name: string;
 }
 
 export interface GET_MEMBER_member_by_pk {
@@ -4658,6 +4658,74 @@ export interface UPDATE_MEMBERVariables {
   pictureUrl?: string | null;
   title?: string | null;
   abstract?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_TAG
+// ====================================================
+
+export interface DELETE_TAG_delete_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_TAG {
+  /**
+   * delete data from the table: "member_tag"
+   */
+  delete_member_tag: DELETE_TAG_delete_member_tag | null;
+}
+
+export interface DELETE_TAGVariables {
+  memberId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_TAG
+// ====================================================
+
+export interface UPDATE_TAG_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_TAG_insert_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_TAG {
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_TAG_insert_tag | null;
+  /**
+   * insert data into the table: "member_tag"
+   */
+  insert_member_tag: UPDATE_TAG_insert_member_tag | null;
+}
+
+export interface UPDATE_TAGVariables {
+  memberId?: string | null;
+  tag?: string | null;
+  appId?: string | null;
 }
 
 /* tslint:disable */
@@ -6154,6 +6222,7 @@ export enum member_constraint {
  * unique or primary key constraints on table "member_tag"
  */
 export enum member_tag_constraint {
+  member_tag_member_id_tag_name_key = "member_tag_member_id_tag_name_key",
   member_tag_pkey = "member_tag_pkey",
 }
 
@@ -6163,7 +6232,7 @@ export enum member_tag_constraint {
 export enum member_tag_update_column {
   id = "id",
   member_id = "member_id",
-  tag = "tag",
+  tag_name = "tag_name",
 }
 
 /**
@@ -6876,6 +6945,7 @@ export enum tag_constraint {
  * update columns of table "tag"
  */
 export enum tag_update_column {
+  app_id = "app_id",
   created_at = "created_at",
   name = "name",
   type = "type",
@@ -7391,6 +7461,7 @@ export interface app_bool_exp {
   point_exchange_rate?: numeric_comparison_exp | null;
   point_validity_period?: numeric_comparison_exp | null;
   programs?: program_bool_exp | null;
+  tags?: tag_bool_exp | null;
   title?: String_comparison_exp | null;
   vimeo_project_id?: String_comparison_exp | null;
   voucher_plans?: voucher_plan_bool_exp | null;
@@ -7425,6 +7496,7 @@ export interface app_insert_input {
   point_exchange_rate?: any | null;
   point_validity_period?: any | null;
   programs?: program_arr_rel_insert_input | null;
+  tags?: tag_arr_rel_insert_input | null;
   title?: string | null;
   vimeo_project_id?: string | null;
   voucher_plans?: voucher_plan_arr_rel_insert_input | null;
@@ -8889,8 +8961,8 @@ export interface member_tag_bool_exp {
   id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
-  tag?: String_comparison_exp | null;
-  tagByTag?: tag_bool_exp | null;
+  tag?: tag_bool_exp | null;
+  tag_name?: String_comparison_exp | null;
 }
 
 /**
@@ -8900,8 +8972,8 @@ export interface member_tag_insert_input {
   id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
-  tag?: string | null;
-  tagByTag?: tag_obj_rel_insert_input | null;
+  tag?: tag_obj_rel_insert_input | null;
+  tag_name?: string | null;
 }
 
 /**
@@ -10833,12 +10905,22 @@ export interface program_role_on_conflict {
 }
 
 /**
+ * input type for inserting array relation for remote table "tag"
+ */
+export interface tag_arr_rel_insert_input {
+  data: tag_insert_input[];
+  on_conflict?: tag_on_conflict | null;
+}
+
+/**
  * Boolean expression to filter rows from the table "tag". All fields are combined with a logical 'AND'.
  */
 export interface tag_bool_exp {
   _and?: (tag_bool_exp | null)[] | null;
   _not?: tag_bool_exp | null;
   _or?: (tag_bool_exp | null)[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   member_tags?: member_tag_bool_exp | null;
   name?: String_comparison_exp | null;
@@ -10850,6 +10932,8 @@ export interface tag_bool_exp {
  * input type for inserting data into table "tag"
  */
 export interface tag_insert_input {
+  app?: app_obj_rel_insert_input | null;
+  app_id?: string | null;
   created_at?: any | null;
   member_tags?: member_tag_arr_rel_insert_input | null;
   name?: string | null;
