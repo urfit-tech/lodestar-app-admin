@@ -62,7 +62,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
           title={
             <span>
               <Icon component={() => <BookIcon />} />
-              <span>課程設定</span>
+              <span>線上課程</span>
             </span>
           }
         >
