@@ -4393,6 +4393,26 @@ export interface GET_ORDER_PRODUCTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_TAGS
+// ====================================================
+
+export interface GET_TAGS_tag {
+  __typename: "tag";
+  name: string;
+}
+
+export interface GET_TAGS {
+  /**
+   * fetch data from the table: "tag"
+   */
+  tag: GET_TAGS_tag[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_COUPON_COLLECTION
 // ====================================================
 
@@ -4537,6 +4557,12 @@ export interface GET_NOTIFICATIONSVariables {
 // GraphQL query operation: GET_MEMBER
 // ====================================================
 
+export interface GET_MEMBER_member_by_pk_member_tags {
+  __typename: "member_tag";
+  id: any;
+  tag_name: string;
+}
+
 export interface GET_MEMBER_member_by_pk {
   __typename: "member";
   id: string;
@@ -4545,6 +4571,12 @@ export interface GET_MEMBER_member_by_pk {
   username: string;
   picture_url: string | null;
   description: string | null;
+  abstract: string | null;
+  title: string | null;
+  /**
+   * An array relationship
+   */
+  member_tags: GET_MEMBER_member_by_pk_member_tags[];
 }
 
 export interface GET_MEMBER {
@@ -4617,10 +4649,10 @@ export interface GET_MEMBER_POINTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER
+// GraphQL mutation operation: UPDATE_MEMBER_BASIC
 // ====================================================
 
-export interface UPDATE_MEMBER_update_member {
+export interface UPDATE_MEMBER_BASIC_update_member {
   __typename: "member_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -4628,14 +4660,86 @@ export interface UPDATE_MEMBER_update_member {
   affected_rows: number;
 }
 
-export interface UPDATE_MEMBER {
+export interface UPDATE_MEMBER_BASIC_delete_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_BASIC_insert_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_BASIC {
   /**
    * update data of the table: "member"
    */
-  update_member: UPDATE_MEMBER_update_member | null;
+  update_member: UPDATE_MEMBER_BASIC_update_member | null;
+  /**
+   * delete data from the table: "member_tag"
+   */
+  delete_member_tag: UPDATE_MEMBER_BASIC_delete_member_tag | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_MEMBER_BASIC_insert_tag | null;
+  /**
+   * insert data into the table: "member_tag"
+   */
+  insert_member_tag: UPDATE_MEMBER_BASIC_insert_member_tag | null;
 }
 
-export interface UPDATE_MEMBERVariables {
+export interface UPDATE_MEMBER_BASICVariables {
+  memberId?: string | null;
+  name?: string | null;
+  description?: string | null;
+  username?: string | null;
+  email?: string | null;
+  pictureUrl?: string | null;
+  title?: string | null;
+  abstract?: string | null;
+  tags: tag_insert_input[];
+  memberTags: member_tag_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_ACCOUNT
+// ====================================================
+
+export interface UPDATE_MEMBER_ACCOUNT_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_ACCOUNT {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_ACCOUNT_update_member | null;
+}
+
+export interface UPDATE_MEMBER_ACCOUNTVariables {
   memberId?: string | null;
   name?: string | null;
   description?: string | null;
