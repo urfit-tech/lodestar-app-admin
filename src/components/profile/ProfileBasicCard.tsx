@@ -158,14 +158,7 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
           <StyledFormItem label="介紹" wrapperCol={{ span: 24, md: { span: 20 } }}>
             {form.getFieldDecorator('description', {
               initialValue: BraftEditor.createEditorState((member && member.description) || ''),
-              validateTrigger: 'onSubmit',
-              rules: [
-                {
-                  validator: (rule, value: EditorState, callback) => {
-                    value.isEmpty() ? callback('請輸入方案簡介') : callback()
-                  },
-                },
-              ],
+              validateTrigger: 'onSubmit'
             })(<AdminBraftEditor />)}
           </StyledFormItem>
         )}
