@@ -128,7 +128,7 @@ const GET_PROGRAM_PROGRESS = gql`
       program {
         id
         program_content_sections {
-          program_contents {
+          program_contents(where: { published_at: { _is_null: false } }) {
             duration
             program_content_progress {
               progress
