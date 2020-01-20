@@ -43,8 +43,8 @@ const ProgramProgressTable: React.FC<ProgramProgressTableProps> = ({ programId }
           })),
         ) || [],
       )
-      const totalDuration = sum(progressData.map(v => v.duration))
-      const duration = sum(progressData.map(v => v.duration * v.progress))
+      const totalDuration = sum(progressData.map(v => v.duration)) / 60
+      const duration = sum(progressData.map(v => v.duration * v.progress)) / 60
       return {
         programId: programEnrollment.program?.id,
         member: {
