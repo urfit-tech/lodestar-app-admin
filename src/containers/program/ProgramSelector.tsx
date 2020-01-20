@@ -27,7 +27,7 @@ const ProgramSelector: React.FC<ProgramSelectorProps> = ({ allText, ...selectPro
 
 const GET_PROGRAM_ENROLLED = gql`
   query GET_PROGRAM_ENROLLED {
-    program_enrollment(distinct_on: program_id) {
+    program_enrollment(distinct_on: program_id, where: { program: { published_at: { _is_null: false } } }) {
       program_id
       program {
         title
