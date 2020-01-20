@@ -6,7 +6,18 @@ import MemberAvatar from '../../components/common/MemberAvatar'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
 import { groupBy, sum, flatten } from 'ramda'
+import styled from 'styled-components'
 
+const StyledProgress = styled(Progress)`
+  && {
+    .ant-progress-bg {
+      background-color: ${props => props.theme['@primary-color']};
+    }
+    .anticon-check-circle {
+      color: ${props => props.theme['@primary-color']};
+    }
+  }
+`
 type MemberProgress = {
   member: {
     id: string
@@ -103,7 +114,7 @@ const programProgressTableColumns: ColumnProps<MemberProgress>[] = [
   {
     title: '學習進度',
     dataIndex: 'progress',
-    render: value => <Progress percent={parseInt(`${value * 100}`)} />,
+    render: value => <StyledProgress percent={parseInt(`${value * 100}`)} />,
   },
 ]
 
