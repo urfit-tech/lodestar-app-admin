@@ -155,7 +155,8 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
           <StyledFormItem label="簡述">
             {form.getFieldDecorator('abstract', {
               initialValue: member && member.abstract,
-            })(<StyledTextArea rows={3} maxLength={50} placeholder="50字以內" />)}
+              rules: [{ required: true, message: '請輸入簡述' }],
+            })(<StyledTextArea rows={3} maxLength={30} placeholder="30字以內" />)}
           </StyledFormItem>
         )}
         {withDescription && (
