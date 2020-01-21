@@ -1,21 +1,23 @@
+import { Icon } from 'antd'
 import React from 'react'
-import ProfileBasicCard from '../../../components/profile/ProfileBasicCard'
+import { AdminPageTitle } from '../../../components/admin'
+import CreatorAdminLayout from '../../../components/layout/CreatorAdminLayout'
 import ProfileAccountAdminCard from '../../../components/profile/ProfileAccountAdminCard'
+import ProfileBasicCard from '../../../components/profile/ProfileBasicCard'
 import ProfilePasswordAdminCard from '../../../components/profile/ProfilePasswordAdminCard'
 import { useAuth } from '../../../contexts/AuthContext'
-import CreatorAdminLayout from '../../../components/layout/CreatorAdminLayout'
-import { Typography, Icon } from 'antd'
 import { ReactComponent as UserIcon } from '../../../images/icon/user.svg'
 
 const SettingAdminPage: React.FC = () => {
-  const { currentMemberId, currentUserRole } = useAuth()
-  
+  const { currentMemberId } = useAuth()
+
   return (
     <CreatorAdminLayout>
-      <Typography.Title level={3} className="mb-4">
+      <AdminPageTitle className="mb-4">
         <Icon component={() => <UserIcon />} className="mr-3" />
         <span>創作者設定</span>
-      </Typography.Title>
+      </AdminPageTitle>
+
       <ProfileBasicCard
         className="mb-4"
         memberId={currentMemberId || ''}

@@ -8930,6 +8930,7 @@ export interface member_public_bool_exp {
   _and?: (member_public_bool_exp | null)[] | null;
   _not?: member_public_bool_exp | null;
   _or?: (member_public_bool_exp | null)[] | null;
+  abstract?: String_comparison_exp | null;
   app_id?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: String_comparison_exp | null;
@@ -8938,6 +8939,7 @@ export interface member_public_bool_exp {
   picture_url?: String_comparison_exp | null;
   role?: String_comparison_exp | null;
   roles?: jsonb_comparison_exp | null;
+  tag_names?: jsonb_comparison_exp | null;
   username?: String_comparison_exp | null;
 }
 
@@ -8945,6 +8947,7 @@ export interface member_public_bool_exp {
  * input type for inserting data into table "member_public"
  */
 export interface member_public_insert_input {
+  abstract?: string | null;
   app_id?: string | null;
   description?: string | null;
   id?: string | null;
@@ -8953,6 +8956,7 @@ export interface member_public_insert_input {
   picture_url?: string | null;
   role?: string | null;
   roles?: any | null;
+  tag_names?: any | null;
   username?: string | null;
 }
 

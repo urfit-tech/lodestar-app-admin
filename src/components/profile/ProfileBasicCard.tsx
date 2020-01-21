@@ -1,17 +1,17 @@
-import { Button, Form, Input, message, Typography, Select } from 'antd'
+import { Button, Form, Input, message, Select, Typography } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { FormComponentProps } from 'antd/lib/form'
+import BraftEditor from 'braft-editor'
 import React from 'react'
 import styled from 'styled-components'
+import { useAuth } from '../../contexts/AuthContext'
+import { useTags } from '../../hooks/data'
 import { useMember, useUpdateMemberBasic } from '../../hooks/member'
+import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminCard from '../admin/AdminCard'
 import { AvatarImage } from '../common/Image'
 import SingleUploader from '../common/SingleUploader'
 import { StyledForm } from '../layout'
-import AdminBraftEditor from '../admin/AdminBraftEditor'
-import BraftEditor, { EditorState } from 'braft-editor'
-import { useTags } from '../../hooks/data'
-import { useAuth } from '../../contexts/AuthContext'
 
 const StyledAvatarFormItem = styled(Form.Item)`
   .ant-form-item-children {
@@ -73,15 +73,19 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
             title: values.title,
             abstract: values.abstract,
             description: values.description ? values.description.toRAW() : null,
-            tags: values.tags ? values.tags.map((tag: string) => ({
-              app_id: localStorage.getItem('kolable.app.id'),
-              name: tag,
-              type: ""
-            })) : [],
-            memberTags: values.tags ? values.tags.map((tag: string) => ({
-              member_id: currentMemberId,
-              tag_name: tag,
-            })) : []
+            tags: values.tags
+              ? values.tags.map((tag: string) => ({
+                  app_id: localStorage.getItem('kolable.app.id'),
+                  name: tag,
+                  type: '',
+                }))
+              : [],
+            memberTags: values.tags
+              ? values.tags.map((tag: string) => ({
+                  member_id: currentMemberId,
+                  tag_name: tag,
+                }))
+              : [],
           },
         })
           .then(() => {
@@ -158,7 +162,7 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
           <StyledFormItem label="介紹" wrapperCol={{ span: 24, md: { span: 20 } }}>
             {form.getFieldDecorator('description', {
               initialValue: BraftEditor.createEditorState((member && member.description) || ''),
-              validateTrigger: 'onSubmit'
+              validateTrigger: 'onSubmit',
             })(<AdminBraftEditor />)}
           </StyledFormItem>
         )}

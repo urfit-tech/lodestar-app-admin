@@ -18,18 +18,13 @@ const StyledWrapper = styled.div`
   background-color: white;
 `
 const CenteredBox = styled.div``
-const StyledLogo = styled.div<{ appId: string }>`
+const StyledLogoBlock = styled.div`
   margin: 0 auto 2.5rem;
-  width: 100%;
-  height: 100%;
-  max-width: 172px;
-  height: 36px;
-  background-image: url(https://static.kolable.com/images/${props => props.appId}/logo.svg),
-    url(https://static.kolable.com/images/${props => props.appId}/logo.png),
-    url(https://static.kolable.com/images/${props => props.appId}/logo.jpg);
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+  text-align: center;
+
+  img {
+    height: 36px;
+  }
 `
 const StyledTitle = styled.h1`
   margin-bottom: 2.5rem;
@@ -91,7 +86,9 @@ const HomePage = () => {
       <StyledWrapper>
         <CenteredBox>
           <div className="container">
-            <StyledLogo appId={app.id} />
+            <StyledLogoBlock>
+              <img src={`https://static.kolable.com/images/${app.id}/logo.png`} alt="logo" />
+            </StyledLogoBlock>
             <StyledTitle>管理後台</StyledTitle>
 
             <div className="d-flex align-items-center justify-content-between">
