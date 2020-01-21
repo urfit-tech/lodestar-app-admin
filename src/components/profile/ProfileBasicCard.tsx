@@ -159,11 +159,10 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
             })(<StyledTextArea rows={3} maxLength={30} placeholder="30字以內" />)}
           </StyledFormItem>
         )}
-        {withDescription && (
+        {withDescription && member?.description && (
           <StyledFormItem label="介紹" wrapperCol={{ span: 24, md: { span: 20 } }}>
             {form.getFieldDecorator('description', {
               initialValue: BraftEditor.createEditorState((member && member.description) || ''),
-              validateTrigger: 'onSubmit',
             })(<AdminBraftEditor />)}
           </StyledFormItem>
         )}
