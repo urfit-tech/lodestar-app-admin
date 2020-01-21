@@ -1,6 +1,7 @@
 import { useQuery } from '@apollo/react-hooks'
 import { ApolloError } from 'apollo-client'
 import gql from 'graphql-tag'
+import moment from 'moment'
 import React, { createContext } from 'react'
 import { ScheduleIntervalType } from '../components/appointment/AppointmentPeriodCollection'
 import { AppointmentPeriodProps } from '../components/appointment/AppointmentPeriodItem'
@@ -38,6 +39,9 @@ export const AppointmentPlanProvider: React.FC<{
   >(GET_APPOINTMENT_PLAN_ADMIN, {
     variables: {
       appointmentPlanId,
+      now: moment()
+        .startOf('hour')
+        .toDate(),
     },
   })
 
@@ -100,7 +104,7 @@ export const AppointmentPlanProvider: React.FC<{
 }
 
 const GET_APPOINTMENT_PLAN_ADMIN = gql`
-  query GET_APPOINTMENT_PLAN_ADMIN($appointmentPlanId: uuid!) {
+  query GET_APPOINTMENT_PLAN_ADMIN($appointmentPlanId: uuid!, $now: timestamptz) {
     appointment_plan_by_pk(id: $appointmentPlanId) {
       id
       title
@@ -112,7 +116,7 @@ const GET_APPOINTMENT_PLAN_ADMIN = gql`
         id
         excludes
       }
-      appointment_periods(order_by: { started_at: asc }) {
+      appointment_periods(where: { started_at: { _gt: $now } }, order_by: { started_at: asc }) {
         appointment_schedule {
           id
           interval_amount

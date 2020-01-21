@@ -927,6 +927,9 @@ export interface GET_PROGRAM_CONTENTS_WITH_BODY_program_content_body_program_con
   title: string;
   position: number;
   published_at: any | null;
+  /**
+   * sec
+   */
   duration: any | null;
   /**
    * An array relationship
@@ -3050,6 +3053,9 @@ export interface GET_PROGRAM_PROGRESS_program_enrollment_program_program_content
 
 export interface GET_PROGRAM_PROGRESS_program_enrollment_program_program_content_sections_program_contents {
   __typename: "program_content";
+  /**
+   * sec
+   */
   duration: any | null;
   /**
    * An array relationship
@@ -3824,6 +3830,7 @@ export interface GET_APPOINTMENT_PLAN_ADMIN {
 
 export interface GET_APPOINTMENT_PLAN_ADMINVariables {
   appointmentPlanId: any;
+  now?: any | null;
 }
 
 /* tslint:disable */
@@ -4865,6 +4872,9 @@ export interface GET_PROGRAM_program_by_pk_program_content_sections_program_cont
   title: string;
   published_at: any | null;
   list_price: any | null;
+  /**
+   * sec
+   */
   duration: any | null;
   /**
    * An object relationship
@@ -5032,6 +5042,9 @@ export interface GET_PROGRAM_CONTENT_program_content_by_pk {
   sale_price: any | null;
   sold_at: any | null;
   metadata: any | null;
+  /**
+   * sec
+   */
   duration: any | null;
   /**
    * An array relationship
