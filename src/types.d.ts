@@ -2369,6 +2369,7 @@ export interface UPDATE_MEMBER_INFOVariables {
   name?: string | null;
   email?: string | null;
   role?: string | null;
+  zoomUserId?: string | null;
 }
 
 /* tslint:disable */
@@ -5553,6 +5554,7 @@ export interface GET_MEMBER_COLLECTION_member {
    * An object relationship
    */
   point_status: GET_MEMBER_COLLECTION_member_point_status | null;
+  zoom_user_id: string | null;
   /**
    * An array relationship
    */
@@ -7713,7 +7715,6 @@ export interface appointment_plan_bool_exp {
 export interface appointment_plan_insert_input {
   appointment_schedules?: appointment_schedule_arr_rel_insert_input | null;
   created_at?: any | null;
-  creator?: member_public_obj_rel_insert_input | null;
   creator_id?: string | null;
   description?: string | null;
   duration?: any | null;
@@ -8577,7 +8578,6 @@ export interface issue_reaction_insert_input {
   issue_id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
-  public_member?: member_public_obj_rel_insert_input | null;
 }
 
 /**
@@ -8679,7 +8679,6 @@ export interface issue_reply_reaction_insert_input {
   issue_reply_id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
-  public_member?: member_public_obj_rel_insert_input | null;
 }
 
 /**
@@ -8954,30 +8953,7 @@ export interface member_public_bool_exp {
   roles?: jsonb_comparison_exp | null;
   tag_names?: jsonb_comparison_exp | null;
   username?: String_comparison_exp | null;
-}
-
-/**
- * input type for inserting data into table "member_public"
- */
-export interface member_public_insert_input {
-  abstract?: string | null;
-  app_id?: string | null;
-  description?: string | null;
-  id?: string | null;
-  metadata?: any | null;
-  name?: string | null;
-  picture_url?: string | null;
-  role?: string | null;
-  roles?: any | null;
-  tag_names?: any | null;
-  username?: string | null;
-}
-
-/**
- * input type for inserting object relation for remote table "member_public"
- */
-export interface member_public_obj_rel_insert_input {
-  data: member_public_insert_input;
+  zoom_user_id?: String_comparison_exp | null;
 }
 
 /**
@@ -9746,7 +9722,6 @@ export interface podcast_plan_enrollment_bool_exp {
  */
 export interface podcast_plan_insert_input {
   created_at?: any | null;
-  creator?: member_public_obj_rel_insert_input | null;
   creator_id?: string | null;
   id?: any | null;
   is_subscription?: boolean | null;
@@ -9920,7 +9895,6 @@ export interface podcast_program_insert_input {
   abstract?: string | null;
   content_type?: string | null;
   cover_url?: string | null;
-  creator?: member_public_obj_rel_insert_input | null;
   creator_id?: string | null;
   duration?: any | null;
   id?: any | null;
@@ -9983,7 +9957,6 @@ export interface podcast_program_role_bool_exp {
  */
 export interface podcast_program_role_insert_input {
   id?: any | null;
-  member?: member_public_obj_rel_insert_input | null;
   member_id?: string | null;
   name?: string | null;
   podcast_program?: podcast_program_obj_rel_insert_input | null;
@@ -10925,7 +10898,6 @@ export interface program_role_bool_exp {
  */
 export interface program_role_insert_input {
   id?: any | null;
-  member?: member_public_obj_rel_insert_input | null;
   member_id?: string | null;
   name?: string | null;
   program?: program_obj_rel_insert_input | null;

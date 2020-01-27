@@ -11,6 +11,7 @@ import { AppContext } from '../../contexts/AppContext'
 import { currencyFormatter, handleError } from '../../helpers'
 import { UserRole } from '../../schemas/general'
 import types from '../../types'
+import ZoomUserSelector from './ZoomUserSelector'
 
 const StyledMetaBlock = styled.div`
   color: var(--gray-darker);
@@ -28,6 +29,7 @@ export type MemberInfo = {
   role: UserRole
   points: number
   consumption: number
+  zoomUserId: string | null
 }
 
 type MemberAdminModalProps = FormComponentProps &
@@ -40,8 +42,11 @@ type MemberAdminModalProps = FormComponentProps &
 const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCancel, onSuccess, ...modalProps }) => {
   const app = useContext(AppContext)
   const [updateMemberInfo] = useMutation<types.UPDATE_MEMBER_INFO, types.UPDATE_MEMBER_INFOVariables>(gql`
-    mutation UPDATE_MEMBER_INFO($memberId: String!, $name: String, $email: String, $role: String) {
-      update_member(where: { id: { _eq: $memberId } }, _set: { name: $name, email: $email, role: $role }) {
+    mutation UPDATE_MEMBER_INFO($memberId: String!, $name: String, $email: String, $role: String, $zoomUserId: String) {
+      update_member(
+        where: { id: { _eq: $memberId } }
+        _set: { name: $name, email: $email, role: $role, zoom_user_id: $zoomUserId }
+      ) {
         affected_rows
       }
     }
@@ -66,6 +71,7 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
           name: values.name,
           email: values.email,
           role: values.role,
+          zoomUserId: values.zoomUserId,
         },
       })
         .then(() => {
@@ -134,6 +140,12 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
               <Select.Option value="app-owner">管理者</Select.Option>
             </Select>,
           )}
+        </Form.Item>
+
+        <Form.Item label="綁定 Zoom 帳號">
+          {form.getFieldDecorator('zoomUserId', {
+            initialValue: member.zoomUserId,
+          })(<ZoomUserSelector />)}
         </Form.Item>
 
         <Divider />
