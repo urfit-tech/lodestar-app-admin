@@ -3,11 +3,13 @@ import React, { useContext } from 'react'
 import useRouter from 'use-react-router'
 import { AdminHeader, AdminHeaderTitle } from '../../components/admin'
 import ActivityContext from '../../contexts/ActivityContext'
+import AppContext from '../../contexts/AppContext'
 
 const ActivityHeader: React.FC<{
   activityId: string
 }> = ({ activityId }) => {
   const { history } = useRouter()
+  const { domain } = useContext(AppContext)
   const { activity } = useContext(ActivityContext)
 
   return (
@@ -17,6 +19,9 @@ const ActivityHeader: React.FC<{
       </Button>
 
       <AdminHeaderTitle>{activity ? activity.title : activityId}</AdminHeaderTitle>
+      <a href={`//${domain}/activities/${activityId}`} target="_blank" rel="noopener noreferrer">
+        <Button>預覽</Button>
+      </a>
     </AdminHeader>
   )
 }
