@@ -10,6 +10,7 @@ type AuthContext = {
   currentUserRole: UserRole
   currentMemberId: string | null
   authToken: string | null
+  zoomToken: string | null
   register?: (data: { appId: string; username: string; email: string; password: string }) => Promise<void>
   login?: (data: { appId: string; account: string; password: string }) => Promise<void>
   socialLogin?: (data: { provider: string; providerToken: any }) => Promise<void>
@@ -22,6 +23,7 @@ const defaultAuthContext: AuthContext = {
   currentUserRole: 'anonymous',
   currentMemberId: null,
   authToken: null,
+  zoomToken: null,
 }
 
 const AuthContext = React.createContext<AuthContext>(defaultAuthContext)
@@ -29,6 +31,7 @@ const AuthContext = React.createContext<AuthContext>(defaultAuthContext)
 export const AuthProvider: React.FC = ({ children }) => {
   const [isAuthenticating, setIsAuthenticating] = useState(defaultAuthContext.isAuthenticating)
   const [authToken, setAuthToken] = useState<string | null>(null)
+  const [zoomToken, setZoomToken] = useState<string | null>(null)
 
   // TODO: add auth payload type
   const payload = authToken ? (jwt.decode(authToken) as any) : null
@@ -39,8 +42,14 @@ export const AuthProvider: React.FC = ({ children }) => {
       method: 'post',
       withCredentials: true,
     })
-      .then(({ data }) => setAuthToken(data.authToken))
-      .catch(() => setAuthToken(null))
+      .then(({ data }) => {
+        setAuthToken(data.authToken)
+        setZoomToken(data.zoomToken)
+      })
+      .catch(() => {
+        setAuthToken(null)
+        setZoomToken(null)
+      })
       .finally(() => setIsAuthenticating(false))
   }
 
@@ -58,6 +67,7 @@ export const AuthProvider: React.FC = ({ children }) => {
         currentUserRole: (payload && payload.role) || 'anonymous',
         currentMemberId: payload && payload.sub,
         authToken,
+        zoomToken,
         register: async ({ appId, username, email, password }) =>
           Axios.post(
             `${process.env.REACT_APP_BACKEND_ENDPOINT}/register`,

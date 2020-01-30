@@ -1,10 +1,10 @@
 import { useQuery } from '@apollo/react-hooks'
+import { ApolloError } from 'apollo-client'
 import gql from 'graphql-tag'
 import React, { createContext } from 'react'
 import { ActivitySessionProps } from '../components/activity/ActivitySessionsAdminBlock'
 import { ActivityTicketProps } from '../components/activity/ActivityTicket'
 import types from '../types'
-import { ApolloError } from 'apollo-client'
 
 export type ActivityAdminProps = {
   id: string

@@ -228,3 +228,14 @@ export const getUserRoleName = (userRole: string) => {
 export const notEmpty = <T>(value: T | null | undefined): value is T => {
   return value !== null && value !== undefined
 }
+
+export const getZoomUserTypeLabel = (userType: number) => {
+  switch (userType) {
+    case 1:
+      return '基本方案'
+    case 2:
+      return '授權方案'
+    default:
+      return '未知方案'
+  }
+}
