@@ -70,13 +70,6 @@ const VoucherPlanAdminModal: React.FC<VoucherPlanAdminModalProps> = ({ form, vou
           })(<Input type="text" />)}
         </Form.Item>
 
-        <Form.Item label="兌換項目數量">
-          {form.getFieldDecorator('productQuantityLimit', {
-            initialValue: voucherPlan ? voucherPlan.productQuantityLimit : 1,
-            rules: [{ required: true, message: '數量至少為 1' }],
-          })(<InputNumber min={1} />)}
-        </Form.Item>
-
         {!voucherPlan && (
           <Form.Item label="兌換碼">
             {form.getFieldDecorator('voucherCodes', {
@@ -90,6 +83,13 @@ const VoucherPlanAdminModal: React.FC<VoucherPlanAdminModalProps> = ({ form, vou
             initialValue: voucherPlan ? voucherPlan.productIds : [],
             rules: [{ required: true, message: '至少選一個兌換項目' }],
           })(<ProductSelector allowTypes={['Program', 'Card', 'ActivityTicket']} />)}
+        </Form.Item>
+
+        <Form.Item label="兌換項目數量">
+          {form.getFieldDecorator('productQuantityLimit', {
+            initialValue: voucherPlan ? voucherPlan.productQuantityLimit : 1,
+            rules: [{ required: true, message: '數量至少為 1' }],
+          })(<InputNumber min={1} />)}
         </Form.Item>
 
         <Form.Item label="有效期限">
