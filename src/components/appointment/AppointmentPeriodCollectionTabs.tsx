@@ -38,11 +38,17 @@ const AppointmentPeriodCollectionTabs: React.FC<{
     periods.map(period => period.creator),
   )
   const filteredPeriods = periods.filter(period => !selectedCreatorId || period.creator.id === selectedCreatorId)
+  const scheduledPeriod = filteredPeriods
+    .filter(period => period.endedAt.getTime() > Date.now())
+    .sort((a, b) => a.startedAt.getTime() - b.startedAt.getTime())
+  const finishedPeriod = filteredPeriods
+    .filter(period => period.endedAt.getTime() < Date.now())
+    .sort((a, b) => b.endedAt.getTime() - a.endedAt.getTime() || b.startedAt.getTime() - a.startedAt.getTime())
 
   return (
     <StyledTabs defaultActiveKey="scheduled" activeKey={activeKey || 'scheduled'} onChange={key => setActiveKey(key)}>
       <Tabs.TabPane tab="即將舉行" key="scheduled">
-        <div className="py-5">
+        <div className="py-4">
           {withSelector && (
             <StyledFilterBlock>
               <Select value={selectedCreatorId} onChange={(value: string) => setSelectedCreatorId(value)}>
@@ -56,18 +62,15 @@ const AppointmentPeriodCollectionTabs: React.FC<{
             </StyledFilterBlock>
           )}
 
-          {filteredPeriods.length ? (
-            filteredPeriods
-              .filter(period => period.endedAt.getTime() > Date.now())
-              .sort((a, b) => a.startedAt.getTime() - b.startedAt.getTime())
-              .map(period => <AppointmentPeriodCard key={period.id} {...period} />)
+          {scheduledPeriod.length ? (
+            scheduledPeriod.map(period => <AppointmentPeriodCard key={period.id} {...period} />)
           ) : (
             <EmptyBlock>目前還沒有任何預約</EmptyBlock>
           )}
         </div>
       </Tabs.TabPane>
       <Tabs.TabPane tab="已結束" key="finished">
-        <div className="py-5">
+        <div className="py-4">
           {withSelector && (
             <StyledFilterBlock>
               <Select value={selectedCreatorId} onChange={(value: string) => setSelectedCreatorId(value)}>
@@ -81,13 +84,8 @@ const AppointmentPeriodCollectionTabs: React.FC<{
             </StyledFilterBlock>
           )}
 
-          {filteredPeriods.length ? (
-            filteredPeriods
-              .filter(period => period.endedAt.getTime() < Date.now())
-              .sort(
-                (a, b) => b.endedAt.getTime() - a.endedAt.getTime() || b.startedAt.getTime() - a.startedAt.getTime(),
-              )
-              .map(period => <AppointmentPeriodCard key={period.id} {...period} />)
+          {finishedPeriod.length ? (
+            finishedPeriod.map(period => <AppointmentPeriodCard key={period.id} {...period} />)
           ) : (
             <EmptyBlock>目前還沒有任何預約</EmptyBlock>
           )}
