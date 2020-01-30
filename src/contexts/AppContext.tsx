@@ -5,7 +5,7 @@ import React, { createContext, useEffect, useState } from 'react'
 import ApplicationHelmet from '../components/common/ApplicationHelmet'
 import types from '../types'
 
-type Module = 'activity' | 'voucher' | 'member_card' | 'podcast' | 'appointment'
+type Module = 'activity' | 'voucher' | 'member_card' | 'podcast' | 'appointment' | 'learning_statistics'
 
 type AppProps = {
   loading: boolean

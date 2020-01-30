@@ -69,7 +69,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
         >
           <Menu.Item key="program_collection_admin">課程管理</Menu.Item>
           <Menu.Item key="program_issues_admin">課程問題</Menu.Item>
-          <Menu.Item key="program_progress_admin">學習進度</Menu.Item>
+          {enabledModules.learning_statistics && <Menu.Item key="program_progress_admin">學習進度</Menu.Item>}
         </Menu.SubMenu>
 
         {enabledModules.podcast && (
