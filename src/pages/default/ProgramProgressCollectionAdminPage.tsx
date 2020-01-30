@@ -30,7 +30,7 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
         onChange={programId => setSelectedProgramId(programId)}
       />
       <AdminPageBlock>
-        <ProgramProgressTable programId={selectedProgramId === 'all' ? undefined : selectedProgramId} />
+        <ProgramProgressTable programId={selectedProgramId === 'all' ? null : selectedProgramId} />
       </AdminPageBlock>
     </AdminLayout>
   )
