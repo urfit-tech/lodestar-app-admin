@@ -50,7 +50,7 @@ const ActivityParticipantCollectionModal: React.FC<{
         <Tabs>
           {sessions.map(session => {
             const csvContent =
-              'data:text/csv;charset=utf-8;' +
+              'data:text/csv;charset=utf-8,' +
               'Name,Phone,Email\n' +
               session.participants
                 .map(participant => `${participant.name},${participant.phone},"${participant.email}"`)
