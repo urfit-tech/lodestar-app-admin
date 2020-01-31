@@ -5,6 +5,7 @@ import 'braft-editor/dist/output.css'
 import 'moment/locale/zh-tw'
 import React from 'react'
 import { hot } from 'react-hot-loader/root'
+import { IntlProvider } from 'react-intl'
 import { BrowserRouter, Route } from 'react-router-dom'
 import { ThemeProvider } from 'styled-components'
 import { QueryParamProvider } from 'use-query-params'
@@ -21,22 +22,31 @@ const Application = () => {
   usePixel()
   useTappay()
 
+  // const locale = navigator.language.split('-')[0]
+  const locale = 'en'
+  let messages: any = {}
+  try {
+    messages = require(`./translations/locales/${locale}.json`)
+  } catch {}
+
   return (
-    <AuthProvider>
-      <ApiProvider>
-        <AppProvider>
-          <ThemeProvider theme={theme}>
-            <ConfigProvider locale={zhTW}>
-              <BrowserRouter>
-                <QueryParamProvider ReactRouterRoute={Route}>
-                  <Routes />
-                </QueryParamProvider>
-              </BrowserRouter>
-            </ConfigProvider>
-          </ThemeProvider>
-        </AppProvider>
-      </ApiProvider>
-    </AuthProvider>
+    <IntlProvider locale={locale} messages={messages}>
+      <AuthProvider>
+        <ApiProvider>
+          <AppProvider>
+            <ThemeProvider theme={theme}>
+              <ConfigProvider locale={zhTW}>
+                <BrowserRouter>
+                  <QueryParamProvider ReactRouterRoute={Route}>
+                    <Routes />
+                  </QueryParamProvider>
+                </BrowserRouter>
+              </ConfigProvider>
+            </ThemeProvider>
+          </AppProvider>
+        </ApiProvider>
+      </AuthProvider>
+    </IntlProvider>
   )
 }
 
