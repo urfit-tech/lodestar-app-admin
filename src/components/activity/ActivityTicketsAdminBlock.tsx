@@ -1,6 +1,8 @@
 import { Button, Dropdown, Icon, Menu } from 'antd'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import { ActivityAdminProps } from '../../contexts/ActivityContext'
+import { activityMessages, commonMessages } from '../../helpers/translation'
 import ActivityTicket from './ActivityTicket'
 import ActivityTicketAdminModal from './ActivityTicketAdminModal'
 
@@ -36,12 +38,14 @@ const ActivityTicketsAdminBlock: React.FC<{
     },
   ) => void
 }> = ({ activityAdmin, onInsert, onUpdate }) => {
+  const { formatMessage } = useIntl()
+
   return (
     <>
       <ActivityTicketAdminModal
         renderTrigger={({ setVisible }) => (
           <Button type="primary" icon="file-add" onClick={() => setVisible(true)} className="mb-5">
-            建立方案
+            {formatMessage(activityMessages.ui.createTicketPlan)}
           </Button>
         )}
         activitySessions={activityAdmin.activitySessions.map(session => ({
@@ -63,7 +67,9 @@ const ActivityTicketsAdminBlock: React.FC<{
                     <Menu>
                       <Menu.Item>
                         <ActivityTicketAdminModal
-                          renderTrigger={({ setVisible }) => <span onClick={() => setVisible(true)}>編輯</span>}
+                          renderTrigger={({ setVisible }) => (
+                            <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</span>
+                          )}
                           icon={() => <Icon type="file-edit" />}
                           onSubmit={onUpdate}
                           activityTicket={ticket}

@@ -1,44 +1,45 @@
 import { Tabs } from 'antd'
-import React, { useState } from 'react'
+import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import { StringParam, useQueryParam } from 'use-query-params'
 import Activity, { ActivityProps } from './Activity'
+
+const messages = defineMessages({
+  holding: { id: 'activity.status.holding', defaultMessage: '正在舉辦' },
+  finished: { id: 'activity.status.finished', defaultMessage: '已結束' },
+  draft: { id: 'activity.status.draft', defaultMessage: '未上架' },
+})
 
 const ActivityCollectionTabs: React.FC<{
   activities: ActivityProps[]
 }> = ({ activities }) => {
-  const [defaultActiveKey, setDefaultActiveKey] = useQueryParam('tabkey', StringParam)
-  const [activeKey, setActiveKey] = useState(defaultActiveKey || 'now')
+  const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
+  const { formatMessage } = useIntl()
 
   const tabContents = [
     {
-      key: 'now',
-      name: '正在舉辦',
+      key: 'holding',
+      name: formatMessage(messages.holding),
       activities: activities.filter(
         activity => activity.isPublished && activity.endedAt && activity.endedAt.getTime() > Date.now(),
       ),
     },
     {
       key: 'finished',
-      name: '已結束',
+      name: formatMessage(messages.finished),
       activities: activities.filter(
         activity => activity.isPublished && activity.endedAt && activity.endedAt.getTime() < Date.now(),
       ),
     },
     {
-      key: 'not-published',
-      name: '未上架',
+      key: 'draft',
+      name: formatMessage(messages.draft),
       activities: activities.filter(activity => !activity.isPublished || !activity.endedAt),
     },
   ]
 
   return (
-    <Tabs
-      activeKey={activeKey}
-      onChange={key => {
-        setActiveKey(key)
-        setDefaultActiveKey(key)
-      }}
-    >
+    <Tabs activeKey={activeKey || 'holding'} onChange={key => setActiveKey(key)}>
       {tabContents.map(tabContent => (
         <Tabs.TabPane key={tabContent.key} tab={`${tabContent.name} (${tabContent.activities.length})`}>
           <div className="row py-5">

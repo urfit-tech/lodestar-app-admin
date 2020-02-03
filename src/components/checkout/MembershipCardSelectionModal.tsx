@@ -1,8 +1,10 @@
 import { Modal } from 'antd'
 import moment from 'moment'
 import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { InferType } from 'yup'
+import { membershipCardMessages } from '../../helpers/translation'
 import { useEnrolledMembershipCardCollection, useMembershipCard } from '../../hooks/card'
 import { useMember } from '../../hooks/member'
 import { memberSchema } from '../../schemas/general'
@@ -25,6 +27,7 @@ type MembershipCardSelectionModalProps = {
   }>
 }
 const MembershipCardSelectionModal: React.FC<MembershipCardSelectionModalProps> = ({ memberId, onSelect, render }) => {
+  const { formatMessage } = useIntl()
   const { enrolledMembershipCardCollection } = useEnrolledMembershipCardCollection(memberId)
   const { loadingMember, errorMember, member } = useMember(memberId)
   const [visible, setVisible] = useState(false)
@@ -38,7 +41,12 @@ const MembershipCardSelectionModal: React.FC<MembershipCardSelectionModalProps> 
     <>
       {render && render({ setVisible, selectedMembershipCard })}
 
-      <Modal title="選擇會員卡" footer={null} onCancel={() => setVisible(false)} visible={visible}>
+      <Modal
+        title={formatMessage(membershipCardMessages.label.selectMembershipCard)}
+        footer={null}
+        onCancel={() => setVisible(false)}
+        visible={visible}
+      >
         {enrolledMembershipCardCollection.map(membershipCard => (
           <div
             key={membershipCard.card.id}

@@ -1,4 +1,5 @@
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 
 const StyledItemWrapper = styled.div<{ variant?: 'default' | 'excluded' | 'disabled' }>`
@@ -43,6 +44,12 @@ const StyledItemMeta = styled.div`
   letter-spacing: 0.34px;
 `
 
+const messages = defineMessages({
+  enrolled: { id: 'appointment.status.enrolled', defaultMessage: '已預約' },
+  excluded: { id: 'appointment.status.exlucded', defaultMessage: '已關閉' },
+  available: { id: 'appointment.status.available', defaultMessage: '可預約' },
+})
+
 export type AppointmentPeriodProps = {
   id: string
   schedule: {
@@ -55,6 +62,8 @@ export type AppointmentPeriodProps = {
   isExcluded?: boolean
 }
 const AppointmentPeriodItem: React.FC<AppointmentPeriodProps> = ({ id, startedAt, isEnrolled, isExcluded }) => {
+  const { formatMessage } = useIntl()
+
   return (
     <StyledItemWrapper variant={isEnrolled ? 'disabled' : isExcluded ? 'excluded' : 'default'}>
       <StyledItemTitle>
@@ -68,7 +77,13 @@ const AppointmentPeriodItem: React.FC<AppointmentPeriodProps> = ({ id, startedAt
           .toString()
           .padStart(2, '0')}
       </StyledItemTitle>
-      <StyledItemMeta>{isEnrolled ? '已預約' : isExcluded ? '已關閉' : '可預約'}</StyledItemMeta>
+      <StyledItemMeta>
+        {isEnrolled
+          ? formatMessage(messages.enrolled)
+          : isExcluded
+          ? formatMessage(messages.excluded)
+          : formatMessage(messages.available)}
+      </StyledItemMeta>
     </StyledItemWrapper>
   )
 }

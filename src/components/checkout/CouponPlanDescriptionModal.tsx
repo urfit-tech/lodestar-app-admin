@@ -3,8 +3,10 @@ import { Modal, Typography } from 'antd'
 import { ModalProps } from 'antd/lib/modal'
 import gql from 'graphql-tag'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { InferType } from 'yup'
+import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
 import { couponPlanSchema } from '../../schemas/coupon'
 import types from '../../types'
 
@@ -37,6 +39,7 @@ type CouponPlanDescriptionModalProps = ModalProps & {
   couponPlan: InferType<typeof couponPlanSchema>
 }
 const CouponPlanDescriptionModal: React.FC<CouponPlanDescriptionModalProps> = ({ couponPlan, ...modalProps }) => {
+  const { formatMessage } = useIntl()
   const { loading, data, error } = useQuery<types.GET_COUPON_PLAN_CODES, types.GET_COUPON_PLAN_CODESVariables>(
     GET_COUPON_PLAN_CODES,
     {
@@ -46,17 +49,19 @@ const CouponPlanDescriptionModal: React.FC<CouponPlanDescriptionModalProps> = ({
 
   return (
     <StyledModal title={couponPlan.title} footer={null} {...modalProps}>
-      <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>折扣代碼</div>
+      <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>{formatMessage(promotionMessages.term.couponCode)}</div>
 
       {loading
-        ? '載入中'
+        ? formatMessage(commonMessages.label.loading)
         : error || !data
-        ? '載入失敗'
+        ? formatMessage(errorMessages.data.fetch)
         : data.coupon_code.map((codeValue: any) => (
             <div key={codeValue.code}>
               <StyledCouponCode className="mr-3">{codeValue.code}</StyledCouponCode>
               <Typography.Text strong>
-                {codeValue.coupons_aggregate.aggregate.count}/{codeValue.count} 張
+                {`${codeValue.coupons_aggregate.aggregate.count}/${codeValue.count} ${formatMessage(
+                  promotionMessages.label.unit,
+                )}`}
               </Typography.Text>
             </div>
           ))}

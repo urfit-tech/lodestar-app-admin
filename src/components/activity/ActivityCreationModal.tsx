@@ -1,9 +1,12 @@
-import { Button, Form, Icon, Input, message } from 'antd'
+import { Button, Form, Icon, Input } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
 import useRouter from 'use-react-router'
 import CreatorSelector from '../../containers/common/CreatorSelector'
 import { useAuth } from '../../contexts/AuthContext'
+import { handleError } from '../../helpers'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import AdminModal from '../admin/AdminModal'
 import ProgramCategorySelector from '../program/ProgramCategorySelector'
 
@@ -25,6 +28,7 @@ type ActivityCreationModalProps = FormComponentProps & {
 const ActivityCreationModal: React.FC<ActivityCreationModalProps> = ({ form, onCreate }) => {
   const { currentMemberId, currentUserRole } = useAuth()
   const { history } = useRouter()
+  const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
@@ -44,16 +48,12 @@ const ActivityCreationModal: React.FC<ActivityCreationModalProps> = ({ form, onC
             activityCategoryIds: values.categoryIds,
           },
           onSuccess: activityId => {
-            message.success('成功建立活動')
             history.push(
               currentUserRole === 'app-owner' ? `/admin/activities/${activityId}` : `/studio/activities/${activityId}`,
             )
           },
           onError: error => {
-            if (process.env.NODE_ENV === 'development') {
-              console.error(error)
-            }
-            message.error('建立活動失敗')
+            handleError(error)
             setLoading(false)
           },
         })
@@ -65,34 +65,36 @@ const ActivityCreationModal: React.FC<ActivityCreationModalProps> = ({ form, onC
     <AdminModal
       renderTrigger={({ setVisible }) => (
         <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
-          建立
+          {formatMessage(commonMessages.ui.create)}
         </Button>
       )}
       icon={<Icon type="file-add" />}
-      title="建立"
+      title={formatMessage(commonMessages.ui.create)}
       renderFooter={({ setVisible }) => (
         <div>
           <Button onClick={() => setVisible(false)} className="mr-2">
-            取消
+            {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
-            建立
+            {formatMessage(commonMessages.ui.create)}
           </Button>
         </div>
       )}
     >
       <Form hideRequiredMark>
         {currentUserRole === 'app-owner' && (
-          <Form.Item label="選擇老師">
+          <Form.Item label={formatMessage(commonMessages.label.selectInstructor)}>
             {form.getFieldDecorator('memberId', {
               initialValue: currentMemberId,
             })(<CreatorSelector />)}
           </Form.Item>
         )}
-        <Form.Item label="名稱">
-          {form.getFieldDecorator('title', { rules: [{ required: true, message: '請輸入名稱' }] })(<Input />)}
+        <Form.Item label={formatMessage(commonMessages.label.title)}>
+          {form.getFieldDecorator('title', {
+            rules: [{ required: true, message: formatMessage(errorMessages.form.title) }],
+          })(<Input />)}
         </Form.Item>
-        <Form.Item label="類別">
+        <Form.Item label={formatMessage(commonMessages.label.category)}>
           {form.getFieldDecorator('categoryIds', { initialValue: [] })(<ProgramCategorySelector />)}
         </Form.Item>
       </Form>

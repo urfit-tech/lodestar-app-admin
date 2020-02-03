@@ -1,8 +1,10 @@
 import { Select, Tabs } from 'antd'
 import { uniqBy } from 'ramda'
 import React, { useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
+import { appointmentMessages } from '../../helpers/translation'
 import AppointmentPeriodCard, { AppointmentPeriodCardProps } from './AppointmentPeriodCard'
 
 const StyledTabs = styled(Tabs)`
@@ -26,10 +28,17 @@ const EmptyBlock = styled.div`
   text-align: center;
 `
 
+const messages = defineMessages({
+  aboutToStart: { id: 'appointment.status.aboutToStart', defaultMessage: '即將舉行' },
+  allInstructors: { id: 'appointment.label.allInstructors', defaultMessage: '全部老師' },
+  emptyAppointment: { id: 'appointment.ui.emptyAppointment', defaultMessage: '目前還沒有任何預約' },
+})
+
 const AppointmentPeriodCollectionTabs: React.FC<{
   periods: AppointmentPeriodCardProps[]
   withSelector?: boolean
 }> = ({ periods, withSelector }) => {
+  const { formatMessage } = useIntl()
   const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
   const [selectedCreatorId, setSelectedCreatorId] = useState<string>('')
 
@@ -47,12 +56,12 @@ const AppointmentPeriodCollectionTabs: React.FC<{
 
   return (
     <StyledTabs defaultActiveKey="scheduled" activeKey={activeKey || 'scheduled'} onChange={key => setActiveKey(key)}>
-      <Tabs.TabPane tab="即將舉行" key="scheduled">
+      <Tabs.TabPane tab={formatMessage(messages.aboutToStart)} key="scheduled">
         <div className="py-4">
           {withSelector && (
             <StyledFilterBlock>
               <Select value={selectedCreatorId} onChange={(value: string) => setSelectedCreatorId(value)}>
-                <Select.Option value="">全部老師</Select.Option>
+                <Select.Option value="">{formatMessage(messages.allInstructors)}</Select.Option>
                 {creators.map(creator => (
                   <Select.Option key={creator.id} value={creator.id}>
                     {creator.name}
@@ -65,16 +74,16 @@ const AppointmentPeriodCollectionTabs: React.FC<{
           {scheduledPeriod.length ? (
             scheduledPeriod.map(period => <AppointmentPeriodCard key={period.id} {...period} />)
           ) : (
-            <EmptyBlock>目前還沒有任何預約</EmptyBlock>
+            <EmptyBlock>{formatMessage(messages.emptyAppointment)}</EmptyBlock>
           )}
         </div>
       </Tabs.TabPane>
-      <Tabs.TabPane tab="已結束" key="finished">
+      <Tabs.TabPane tab={formatMessage(appointmentMessages.status.finished)} key="finished">
         <div className="py-4">
           {withSelector && (
             <StyledFilterBlock>
               <Select value={selectedCreatorId} onChange={(value: string) => setSelectedCreatorId(value)}>
-                <Select.Option value="">全部老師</Select.Option>
+                <Select.Option value="">{formatMessage(appointmentMessages.status.finished)}</Select.Option>
                 {creators.map(creator => (
                   <Select.Option key={creator.id} value={creator.id}>
                     {creator.name}
@@ -87,7 +96,7 @@ const AppointmentPeriodCollectionTabs: React.FC<{
           {finishedPeriod.length ? (
             finishedPeriod.map(period => <AppointmentPeriodCard key={period.id} {...period} />)
           ) : (
-            <EmptyBlock>目前還沒有任何預約</EmptyBlock>
+            <EmptyBlock>{formatMessage(messages.emptyAppointment)}</EmptyBlock>
           )}
         </div>
       </Tabs.TabPane>

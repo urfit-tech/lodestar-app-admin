@@ -1,10 +1,12 @@
 import { Button, Form, Icon, Input } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import React, { useContext, useState } from 'react'
+import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { AuthState } from '../../schemas/general'
 import { AuthModalContext, StyledAction, StyledDivider, StyledTitle } from './AuthModal'
 import { FacebookLoginButton, GoogleLoginButton } from './SocialLoginButton'
@@ -23,6 +25,7 @@ type LoginSectionProps = FormComponentProps & {
   onAuthStateChange: React.Dispatch<React.SetStateAction<AuthState>>
 }
 const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) => {
+  const { formatMessage } = useIntl()
   const { login } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
   const [loading, setLoading] = useState(false)
@@ -54,7 +57,7 @@ const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) 
 
   return (
     <>
-      <StyledTitle>登入</StyledTitle>
+      <StyledTitle>{formatMessage(commonMessages.ui.login)}</StyledTitle>
 
       {!!process.env.REACT_APP_FACEBOOK_APP_ID && (
         <div className="mb-3">
@@ -67,7 +70,7 @@ const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) 
         </div>
       )}
       {(!!process.env.REACT_APP_FACEBOOK_APP_ID || !!process.env.REACT_APP_GOOGLE_CLIENT_ID) && (
-        <StyledDivider>或</StyledDivider>
+        <StyledDivider>{formatMessage(commonMessages.ui.or)}</StyledDivider>
       )}
 
       <Form
@@ -78,27 +81,33 @@ const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) 
       >
         <Form.Item>
           {form.getFieldDecorator('account', {
-            rules: [{ required: true, message: '請輸入使用者名稱或 Email' }],
-          })(<Input placeholder="使用者名稱或 Email" suffix={<Icon type="user" />} />)}
+            rules: [{ required: true, message: formatMessage(errorMessages.form.account) }],
+          })(<Input placeholder={formatMessage(commonMessages.label.account)} suffix={<Icon type="user" />} />)}
         </Form.Item>
         <Form.Item>
           {form.getFieldDecorator('password', {
-            rules: [{ required: true, message: '請輸入密碼' }],
-          })(<Input type="password" placeholder="密碼" suffix={<Icon type="lock" />} />)}
+            rules: [{ required: true, message: formatMessage(errorMessages.form.password) }],
+          })(
+            <Input
+              type="password"
+              placeholder={formatMessage(commonMessages.label.password)}
+              suffix={<Icon type="lock" />}
+            />,
+          )}
         </Form.Item>
         <ForgetPassword>
-          <Link to="/forgot-password">忘記密碼？</Link>
+          <Link to="/forgot-password">{formatMessage(commonMessages.label.forgotPassword)}</Link>
         </ForgetPassword>
         <Form.Item>
           <Button block loading={loading} type="primary" htmlType="submit">
-            登入
+            {formatMessage(commonMessages.ui.login)}
           </Button>
         </Form.Item>
 
         <StyledAction>
-          <span>還不是會員嗎？</span>
+          <span>{formatMessage(commonMessages.label.notMember)}</span>
           <Button type="link" size="small" onClick={() => onAuthStateChange('register')}>
-            立即註冊
+            {formatMessage(commonMessages.ui.registerNow)}
           </Button>
         </StyledAction>
       </Form>

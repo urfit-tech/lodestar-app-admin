@@ -1,7 +1,9 @@
 import { Button } from 'antd'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { BREAK_POINT } from '../../components/common/Responsive'
+import { commonMessages } from '../../helpers/translation'
 import BlurredBanner from '../common/BlurredBanner'
 
 const StyledTitleBlock = styled.div<{ withChildren?: boolean }>`
@@ -66,6 +68,8 @@ type ActivityBannerProps = {
 }
 
 const ActivityBanner: React.FC<ActivityBannerProps> = ({ coverImage, activityCategories, activityTitle, children }) => {
+  const { formatMessage } = useIntl()
+
   return (
     <BlurredBanner coverUrl={coverImage}>
       <StyledTitleBlock withChildren={!!children} className="text-center">
@@ -83,7 +87,7 @@ const ActivityBanner: React.FC<ActivityBannerProps> = ({ coverImage, activityCat
         <StyledExtraBlock className="text-center">
           <StyledQRCode className="mb-4">{children}</StyledQRCode>
           <Button type="link" onClick={() => window.print()}>
-            列印
+            {formatMessage(commonMessages.ui.print)}
           </Button>
         </StyledExtraBlock>
       )}

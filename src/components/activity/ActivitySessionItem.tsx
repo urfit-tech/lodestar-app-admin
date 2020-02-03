@@ -3,8 +3,10 @@ import { Icon, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { dateRangeFormatter } from '../../helpers'
+import { activityMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const StyledWrapper = styled.div`
@@ -30,6 +32,7 @@ const StyledContent = styled.div`
 const ActivitySessionItem: React.FC<{
   activitySessionId: string
 }> = ({ activitySessionId }) => {
+  const { formatMessage } = useIntl()
   const { loading, error, data } = useQuery<types.GET_ACTIVITY_SESSION, types.GET_ACTIVITY_SESSIONVariables>(
     GET_ACTIVITY_SESSION,
     { variables: { activitySessionId } },
@@ -44,7 +47,7 @@ const ActivitySessionItem: React.FC<{
   }
 
   if (error || !data || !data.activity_session_by_pk) {
-    return <StyledWrapper>載入失敗</StyledWrapper>
+    return <StyledWrapper>{formatMessage(errorMessages.data.fetch)}</StyledWrapper>
   }
 
   const activitySession = data.activity_session_by_pk
@@ -74,7 +77,11 @@ const ActivitySessionItem: React.FC<{
             <span>
               {activitySession.activity_enrollments.length} / {maximumPeople}
             </span>
-            {activitySession.threshold && <span className="ml-3">最少 {activitySession.threshold}</span>}
+            {activitySession.threshold && (
+              <span className="ml-3">
+                {formatMessage(activityMessages.ui.threshold)} {activitySession.threshold}
+              </span>
+            )}
           </div>
         )}
       </StyledContent>

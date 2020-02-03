@@ -1,7 +1,9 @@
 import { Divider, Icon, Tag } from 'antd'
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { currencyFormatter, dateRangeFormatter } from '../../helpers'
+import { activityMessages } from '../../helpers/translation'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
 import { BraftContent } from '../common/StyledBraftEditor'
 
@@ -71,6 +73,13 @@ const StyledExtraAdmin = styled.div`
   letter-spacing: 0.2px;
 `
 
+const messages = defineMessages({
+  notPublished: { id: 'activity.status.notPublished', defaultMessage: '尚未發售' },
+  soldOut: { id: 'activity.status.soldOut', defaultMessage: '已售完' },
+  expired: { id: 'activity.status.expired', defaultMessage: '已截止' },
+  selling: { id: 'activity.status.selling', defaultMessage: '販售中' },
+})
+
 export type ActivityTicketProps = {
   id: string
   title: string
@@ -104,26 +113,28 @@ const ActivityTicket: React.FC<ActivityTicketProps> = ({
   variant,
   extra,
 }) => {
+  const { formatMessage } = useIntl()
+
   const status =
     !isPublished || Date.now() < startedAt.getTime()
-      ? '尚未發售'
+      ? formatMessage(messages.notPublished)
       : participants >= count
-      ? '已售完'
+      ? formatMessage(messages.soldOut)
       : Date.now() > endedAt.getTime()
-      ? '已截止'
-      : '販售中'
+      ? formatMessage(messages.expired)
+      : formatMessage(messages.selling)
 
   return (
     <StyledWrapper>
       <StyledTitle className="d-flex align-items-start justify-content-between mb-3">
         <span>{title}</span>
-        {variant === 'admin' && <StyledLabel active={status === '販售中'}>{status}</StyledLabel>}
+        {variant === 'admin' && <StyledLabel active={status === formatMessage(messages.selling)}>{status}</StyledLabel>}
       </StyledTitle>
       <StyledPrice>{currencyFormatter(price)}</StyledPrice>
 
       <Divider />
 
-      <StyledSubTitle>包含場次</StyledSubTitle>
+      <StyledSubTitle>{formatMessage(activityMessages.term.includingSessions)}</StyledSubTitle>
       {activitySessionTickets.map(sessionTicket => (
         <StyledTag key={sessionTicket.id} color="#585858" className="mb-2">
           {sessionTicket.activitySession.title}
@@ -132,12 +143,12 @@ const ActivityTicket: React.FC<ActivityTicketProps> = ({
 
       {!!description && (
         <StyledDescription>
-          <StyledSubTitle>備註說明</StyledSubTitle>
+          <StyledSubTitle>{formatMessage(activityMessages.term.description)}</StyledSubTitle>
           <BraftContent>{description}</BraftContent>
         </StyledDescription>
       )}
 
-      <StyledSubTitle>售票時間</StyledSubTitle>
+      <StyledSubTitle>{formatMessage(activityMessages.term.sellingTime)}</StyledSubTitle>
       <StyledMeta>{dateRangeFormatter(startedAt, endedAt)}</StyledMeta>
 
       {variant === 'admin' && (

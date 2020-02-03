@@ -1,12 +1,9 @@
 import { Button, Icon, Input, InputNumber, Select } from 'antd'
 import React from 'react'
+import { useIntl } from 'react-intl'
+import { promotionMessages } from '../../helpers/translation'
 
 type PlanType = 'coupon' | 'voucher'
-const PLAN_TYPE_LABEL: { [key in PlanType]: string } = {
-  coupon: '折扣碼',
-  voucher: '兌換碼',
-}
-
 type PlanCodeType = 'random' | 'custom'
 export type PlanCodeProps = {
   type: PlanCodeType
@@ -20,6 +17,8 @@ type PlanCodeSelectorProps = {
   onChange?: (value: PlanCodeProps[]) => void
 }
 const PlanCodeSelector: React.FC<PlanCodeSelectorProps> = ({ planType, value, onChange }, ref) => {
+  const { formatMessage } = useIntl()
+
   return (
     <div ref={ref}>
       {value &&
@@ -40,7 +39,10 @@ const PlanCodeSelector: React.FC<PlanCodeSelectorProps> = ({ planType, value, on
         onClick={() => onChange && onChange([...(value || []), { type: 'random', code: null, count: 1 }])}
         icon="plus"
       >
-        {`新增${PLAN_TYPE_LABEL[planType]}`}
+        {formatMessage(promotionMessages.label.create)}
+        {planType === 'coupon'
+          ? formatMessage(promotionMessages.term.couponCodes)
+          : formatMessage(promotionMessages.term.voucherCodes)}
       </Button>
     </div>
   )
@@ -52,21 +54,23 @@ const PlanCodeInputGroup: React.FC<{
   onChange: (value: PlanCodeProps) => void
   onDelete?: () => void
 }> = ({ planType, value, onChange, onDelete }) => {
+  const { formatMessage } = useIntl()
+
   return (
     <div className="d-flex align-items-center">
       <Input.Group compact className="mr-2">
         <Select value={value.type} onChange={(key: PlanCodeType) => onChange({ ...value, type: key })}>
-          <Select.Option value="random">隨機</Select.Option>
-          <Select.Option value="custom">自訂</Select.Option>
+          <Select.Option value="random">{formatMessage(promotionMessages.ui.random)}</Select.Option>
+          <Select.Option value="custom">{formatMessage(promotionMessages.ui.custom)}</Select.Option>
         </Select>
 
         <InputNumber
           style={{ width: '20%' }}
-          placeholder="發行數量"
+          placeholder={formatMessage(promotionMessages.term.amount)}
           value={value.count}
           onChange={count => count && onChange({ ...value, count })}
-          formatter={v => `${v} 張`}
-          parser={v => (v && parseInt(v.replace(' 張', ''))) || 0}
+          formatter={v => `${v} ${formatMessage(promotionMessages.label.unit)}`}
+          parser={v => (v && parseInt(v.replace(` ${formatMessage(promotionMessages.label.unit)}`, ''))) || 0}
         />
 
         {value.type === 'custom' && (
@@ -74,7 +78,11 @@ const PlanCodeInputGroup: React.FC<{
             style={{ width: '50%' }}
             value={value.code || ''}
             onChange={e => onChange({ ...value, code: e.target.value })}
-            placeholder={`自訂${PLAN_TYPE_LABEL[planType]}`}
+            placeholder={`${formatMessage(promotionMessages.ui.custom)} ${
+              planType === 'coupon'
+                ? formatMessage(promotionMessages.term.couponCodes)
+                : formatMessage(promotionMessages.term.voucherCodes)
+            }`}
           />
         )}
       </Input.Group>

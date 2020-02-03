@@ -1,8 +1,10 @@
 import { Icon, Skeleton } from 'antd'
 import moment from 'moment'
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { dateRangeFormatter } from '../../helpers'
+import { errorMessages } from '../../helpers/translation'
 import { useActivityTicket } from '../../hooks/activity'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { BREAK_POINT } from '../common/Responsive'
@@ -74,9 +76,15 @@ const StyledBadge = styled.span`
   font-size: 14px;
 `
 
+const messages = defineMessages({
+  aboutToStart: { id: 'activity.status.aboutToStart', defaultMessage: '即將舉行' },
+  starting: { id: 'activity.status.starting', defaultMessage: '活動開始' },
+})
+
 const ActivityTicket: React.FC<{
   ticketId: string
 }> = ({ ticketId }) => {
+  const { formatMessage } = useIntl()
   const { loadingTicket, errorTicket, ticket } = useActivityTicket(ticketId)
 
   if (loadingTicket) {
@@ -88,7 +96,7 @@ const ActivityTicket: React.FC<{
   }
 
   if (errorTicket || !ticket) {
-    return <StyledWrapper>無法載入</StyledWrapper>
+    return <StyledWrapper>{formatMessage(errorMessages.data.fetch)}</StyledWrapper>
   }
 
   const activity = ticket.activity
@@ -112,10 +120,12 @@ const ActivityTicket: React.FC<{
                 <span className="mr-2">{dateRangeFormatter(session.startedAt, session.endedAt)}</span>
 
                 {now.isBefore(session.startedAt) && now.diff(session.startedAt, 'days', true) > -7 && (
-                  <StyledBadge>即將舉行</StyledBadge>
+                  <StyledBadge>{formatMessage(messages.aboutToStart)}</StyledBadge>
                 )}
 
-                {now.isBetween(session.startedAt, session.endedAt) && <StyledBadge>活動開始</StyledBadge>}
+                {now.isBetween(session.startedAt, session.endedAt) && (
+                  <StyledBadge>{formatMessage(messages.starting)}</StyledBadge>
+                )}
               </div>
             </StyledMeta>
           )

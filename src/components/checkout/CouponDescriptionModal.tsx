@@ -1,8 +1,10 @@
 import { Modal, Typography } from 'antd'
 import { ModalProps } from 'antd/lib/modal'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { InferType } from 'yup'
+import { promotionMessages } from '../../helpers/translation'
 import { couponSchema } from '../../schemas/coupon'
 import { BraftContent } from '../common/StyledBraftEditor'
 
@@ -35,16 +37,20 @@ const StyledCouponCode = styled.span`
 type CouponDescriptionModalProps = ModalProps & {
   coupon: InferType<typeof couponSchema>
 }
-const CouponDescriptionModal: React.FC<CouponDescriptionModalProps> = ({ coupon, ...modalProps }) => (
-  <StyledModal title={coupon.couponCode.couponPlan.title} footer={null} {...modalProps}>
-    <div className="mb-2">
-      <StyledHeading className="mr-2">折扣代碼</StyledHeading>
-      <StyledCouponCode>{coupon.couponCode.code}</StyledCouponCode>
-    </div>
-    <div className="mt-4">
-      <BraftContent>{coupon.couponCode.couponPlan.description}</BraftContent>
-    </div>
-  </StyledModal>
-)
+const CouponDescriptionModal: React.FC<CouponDescriptionModalProps> = ({ coupon, ...modalProps }) => {
+  const { formatMessage } = useIntl()
+
+  return (
+    <StyledModal title={coupon.couponCode.couponPlan.title} footer={null} {...modalProps}>
+      <div className="mb-2">
+        <StyledHeading className="mr-2">{formatMessage(promotionMessages.term.couponCode)}</StyledHeading>
+        <StyledCouponCode>{coupon.couponCode.code}</StyledCouponCode>
+      </div>
+      <div className="mt-4">
+        <BraftContent>{coupon.couponCode.couponPlan.description}</BraftContent>
+      </div>
+    </StyledModal>
+  )
+}
 
 export default CouponDescriptionModal

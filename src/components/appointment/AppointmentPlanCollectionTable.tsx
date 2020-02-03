@@ -1,9 +1,11 @@
 import { Icon, Input, Table } from 'antd'
 import React, { useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import { useAuth } from '../../contexts/AuthContext'
 import { currencyFormatter } from '../../helpers'
+import { appointmentMessages } from '../../helpers/translation'
 import { AvatarImage } from '../common/Image'
 
 const StyledCreatorName = styled.span`
@@ -52,6 +54,17 @@ const StyledPublished = styled.div<{ active?: boolean }>`
   }
 `
 
+const messages = defineMessages({
+  instructor: { id: 'appointment.label.instructor', defaultMessage: '老師' },
+  minutes: { id: 'appointment.label.minutes', defaultMessage: '分鐘' },
+  price: { id: 'appointment.label.price', defaultMessage: '金額' },
+  enrollments: { id: 'appointment.label.enrollments', defaultMessage: '已預約' },
+  status: { id: 'appointment.label.status', defaultMessage: '狀態' },
+  isPublished: { id: 'appointment.status.isPublished', defaultMessage: '已發佈' },
+  notPublished: { id: 'appointment.status.notPublished', defaultMessage: '未發佈' },
+  people: { id: 'appointment.label.people', defaultMessage: '人' },
+})
+
 const filterIcon = (filtered: boolean) => (
   <Icon type="search" style={{ color: filtered ? 'var(--primary)' : undefined }} />
 )
@@ -71,6 +84,7 @@ const AppointmentPlanCollectionTable: React.FC<{
   appointmentPlans: AppointmentPlanProps[]
   loading?: boolean
 }> = ({ appointmentPlans, loading }) => {
+  const { formatMessage } = useIntl()
   const { history } = useRouter()
   const { currentUserRole } = useAuth()
 
@@ -100,7 +114,7 @@ const AppointmentPlanCollectionTable: React.FC<{
       columns={[
         {
           key: 'id',
-          title: '老師',
+          title: formatMessage(messages.instructor),
           render: (text, record, index) => (
             <div className="d-flex align-items-center justify-content-start">
               <AvatarImage className="mr-3" src={record.avatarUrl} size={36} />
@@ -123,7 +137,7 @@ const AppointmentPlanCollectionTable: React.FC<{
         },
         {
           dataIndex: 'title',
-          title: '方案名稱',
+          title: formatMessage(appointmentMessages.term.planTitle),
           render: (text, record, index) => <StyledPlanTitle>{text}</StyledPlanTitle>,
           filterDropdown: () => (
             <div className="p-2">
@@ -141,43 +155,49 @@ const AppointmentPlanCollectionTable: React.FC<{
         },
         {
           dataIndex: 'duration',
-          title: '分鐘',
+          title: formatMessage(messages.minutes),
           width: '7em',
           render: (text, record, index) => <StyledText>{text}</StyledText>,
           sorter: (a, b) => b.duration - a.duration,
         },
         {
           dataIndex: 'listPrice',
-          title: '金額',
+          title: formatMessage(messages.price),
           width: '10em',
           render: (text, record, index) => <StyledPlanPrice>{currencyFormatter(text)}</StyledPlanPrice>,
           sorter: (a, b) => b.listPrice - a.listPrice,
         },
         {
           dataIndex: 'enrollments',
-          title: '已預約',
+          title: formatMessage(messages.enrollments),
           width: '7em',
-          render: (text, record, index) => <StyledText>{text} 人</StyledText>,
+          render: (text, record, index) => (
+            <StyledText>
+              {text} {formatMessage(messages.people)}
+            </StyledText>
+          ),
           sorter: (a, b) => b.enrollments - a.enrollments,
         },
         {
           key: 'published',
-          title: '狀態',
+          title: formatMessage(messages.status),
           width: '7em',
           render: (text, record, index) => (
-            <StyledPublished active={record.isPublished}>{record.isPublished ? '已發佈' : '未發佈'}</StyledPublished>
+            <StyledPublished active={record.isPublished}>
+              {record.isPublished ? formatMessage(messages.isPublished) : formatMessage(messages.notPublished)}
+            </StyledPublished>
           ),
           filters: [
             {
-              text: '已發佈',
-              value: '已發佈',
+              text: formatMessage(messages.isPublished),
+              value: formatMessage(messages.isPublished),
             },
             {
-              text: '未發佈',
-              value: '未發佈',
+              text: formatMessage(messages.notPublished),
+              value: formatMessage(messages.notPublished),
             },
           ],
-          onFilter: (value, record) => record.isPublished === (value === '已發佈'),
+          onFilter: (value, record) => record.isPublished === (value === formatMessage(messages.isPublished)),
         },
       ]}
       dataSource={data}

@@ -1,8 +1,10 @@
 import { Button, Divider, Dropdown, Icon, Menu } from 'antd'
 import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { InferType } from 'yup'
 import { currencyFormatter, dateFormatter } from '../../helpers'
+import { commonMessages, promotionMessages } from '../../helpers/translation'
 import { couponPlanSchema } from '../../schemas/coupon'
 import AdminCard from '../admin/AdminCard'
 import CouponPlanAdminModal from './CouponPlanAdminModal'
@@ -75,6 +77,7 @@ const CouponPlanAdminCard: React.FC<{
   couponPlan: InferType<typeof couponPlanSchema>
   outdated?: boolean
 }> = ({ couponPlan, outdated }) => {
+  const { formatMessage } = useIntl()
   const [modalVisible, setModalVisible] = useState()
 
   return (
@@ -86,26 +89,30 @@ const CouponPlanAdminCard: React.FC<{
             {couponPlan.type === 1
               ? currencyFormatter(couponPlan.amount)
               : couponPlan.type === 2
-              ? couponPlan.amount % 10 === 0
-                ? `${10 - couponPlan.amount / 10} 折`
-                : `${100 - couponPlan.amount} 折`
+              ? `${couponPlan.amount}% off`
               : null}
           </StyledPriceLabel>
         </StyledTitle>
       }
     >
       <StyledText outdated={outdated}>
-        {couponPlan.constraint ? `消費滿 ${currencyFormatter(couponPlan.constraint)} 折抵` : `直接折抵`}
+        {couponPlan.constraint
+          ? formatMessage(promotionMessages.label.constraintAmount, {
+              amount: currencyFormatter(couponPlan.constraint),
+            })
+          : formatMessage(promotionMessages.label.withoutConstraintAmount)}
         {couponPlan.type === 1
-          ? `金額 ${currencyFormatter(couponPlan.amount)} 元`
+          ? formatMessage(promotionMessages.label.price, {
+              amount: currencyFormatter(couponPlan.amount),
+            })
           : couponPlan.type === 2
-          ? `比例 ${couponPlan.amount}%`
+          ? formatMessage(promotionMessages.label.ratio, { amount: couponPlan.amount })
           : null}
       </StyledText>
       <div style={{ fontFamily: 'Roboto', fontSize: '14px', paddingTop: '12px' }}>
-        {couponPlan.startedAt ? dateFormatter(couponPlan.startedAt) : '即日起'}
+        {couponPlan.startedAt ? dateFormatter(couponPlan.startedAt) : formatMessage(promotionMessages.label.fromNow)}
         {' - '}
-        {couponPlan.endedAt ? dateFormatter(couponPlan.endedAt) : '無使用期限'}
+        {couponPlan.endedAt ? dateFormatter(couponPlan.endedAt) : formatMessage(promotionMessages.label.forever)}
       </div>
 
       <Divider className="mt-3" />
@@ -123,7 +130,7 @@ const CouponPlanAdminCard: React.FC<{
               paddingRight: '24px',
             }}
           >
-            詳情
+            {formatMessage(commonMessages.ui.detail)}
           </Button>
           <span
             style={{
@@ -132,7 +139,9 @@ const CouponPlanAdminCard: React.FC<{
               letterSpacing: '0.4px',
             }}
           >
-            {`數量 ${couponPlan.count - couponPlan.remaining} / ${couponPlan.count}`}
+            {`${formatMessage(promotionMessages.term.amount)} ${couponPlan.count - couponPlan.remaining} / ${
+              couponPlan.count
+            }`}
           </span>
         </div>
 
@@ -142,16 +151,14 @@ const CouponPlanAdminCard: React.FC<{
             <Menu>
               <Menu.Item>
                 <CouponPlanAdminModal
-                  renderTrigger={({ setVisible }) => <span onClick={() => setVisible(true)}>編輯方案</span>}
+                  renderTrigger={({ setVisible }) => (
+                    <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</span>
+                  )}
                   icon={<Icon type="edit" />}
-                  title="編輯折價方案"
+                  title={formatMessage(promotionMessages.ui.editCouponPlan)}
                   couponPlan={couponPlan}
                 />
               </Menu.Item>
-              {/* <Menu.Item disabled>新增折扣碼</Menu.Item>
-                <Menu.Item onClick={() => message.warn("功能尚未開放")}>
-                  刪除方案
-                </Menu.Item> */}
             </Menu>
           }
           trigger={['click']}

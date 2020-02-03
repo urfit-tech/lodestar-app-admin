@@ -1,9 +1,11 @@
 import { Button, Dropdown, Icon, Menu } from 'antd'
 import { sum } from 'ramda'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { ActivityAdminProps } from '../../contexts/ActivityContext'
 import { dateRangeFormatter } from '../../helpers'
+import { activityMessages, commonMessages } from '../../helpers/translation'
 import { ReactComponent as CalendarOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as MapOIcon } from '../../images/icon/map-o.svg'
 import { ReactComponent as TicketOIcon } from '../../images/icon/ticket-o.svg'
@@ -76,12 +78,14 @@ const ActivitySessionsAdminBlock: React.FC<{
   ) => void
   onChangeTab?: () => void
 }> = ({ activityAdmin, onInsert, onUpdate, onChangeTab }) => {
+  const { formatMessage } = useIntl()
+
   return (
     <>
       <ActivitySessionAdminModal
         renderTrigger={({ setVisible }) => (
           <Button type="primary" icon="file-add" onClick={() => setVisible(true)} className="mb-5">
-            建立場次
+            {formatMessage(activityMessages.ui.createSession)}
           </Button>
         )}
         icon={<Icon type="file-add" />}
@@ -108,10 +112,10 @@ const ActivitySessionsAdminBlock: React.FC<{
               <Icon component={() => <TicketOIcon />} className="mr-2" />
               <span>
                 {tickets.length ? (
-                  tickets.map(ticket => ticket.title).join('、')
+                  tickets.map(ticket => ticket.title).join(formatMessage(commonMessages.ui.comma))
                 ) : (
                   <StyledLinkText className="cursor-pointer" onClick={() => onChangeTab && onChangeTab()}>
-                    加入票券方案
+                    {formatMessage(activityMessages.ui.addTicketPlan)}
                   </StyledLinkText>
                 )}
               </span>
@@ -122,14 +126,20 @@ const ActivitySessionsAdminBlock: React.FC<{
                 <span className="mr-3">
                   {session.participants} / {sum(tickets.map(ticket => ticket.count))}
                 </span>
-                {session.threshold && <span>最少 {session.threshold}</span>}
+                {session.threshold && (
+                  <span>
+                    {formatMessage(activityMessages.ui.threshold)} {session.threshold}
+                  </span>
+                )}
               </div>
               <Dropdown
                 overlay={
                   <Menu>
                     <Menu.Item>
                       <ActivitySessionAdminModal
-                        renderTrigger={({ setVisible }) => <span onClick={() => setVisible(true)}>編輯</span>}
+                        renderTrigger={({ setVisible }) => (
+                          <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</span>
+                        )}
                         icon={<Icon type="file-edit" />}
                         onSubmit={onUpdate}
                         activitySession={session}

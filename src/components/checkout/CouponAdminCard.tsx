@@ -1,8 +1,10 @@
 import { Button, Divider } from 'antd'
 import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { InferType } from 'yup'
 import { currencyFormatter, dateFormatter } from '../../helpers'
+import { commonMessages, promotionMessages } from '../../helpers/translation'
 import { couponSchema } from '../../schemas/coupon'
 import AdminCard from '../admin/AdminCard'
 import CouponDescriptionModal from './CouponDescriptionModal'
@@ -72,6 +74,7 @@ const CouponAdminCard: React.FC<{
   coupon: InferType<typeof couponSchema>
   outdated?: boolean
 }> = ({ coupon, outdated }) => {
+  const { formatMessage } = useIntl()
   const [visible, setVisible] = useState()
 
   return (
@@ -83,9 +86,7 @@ const CouponAdminCard: React.FC<{
             {coupon.couponCode.couponPlan.type === 1
               ? currencyFormatter(coupon.couponCode.couponPlan.amount)
               : coupon.couponCode.couponPlan.type === 2
-              ? coupon.couponCode.couponPlan.amount % 10 === 0
-                ? `${10 - coupon.couponCode.couponPlan.amount / 10} 折`
-                : `${100 - coupon.couponCode.couponPlan.amount} 折`
+              ? `${coupon.couponCode.couponPlan.amount}% off`
               : null}
           </StyledPriceLabel>
         </StyledTitle>
@@ -93,18 +94,26 @@ const CouponAdminCard: React.FC<{
     >
       <StyledText outdated={outdated}>
         {coupon.couponCode.couponPlan.constraint
-          ? `消費滿 ${currencyFormatter(coupon.couponCode.couponPlan.constraint)} 折抵`
-          : `直接折抵`}
+          ? formatMessage(promotionMessages.label.constraintAmount, {
+              amount: currencyFormatter(coupon.couponCode.couponPlan.constraint),
+            })
+          : formatMessage(promotionMessages.label.withoutConstraintAmount)}
         {coupon.couponCode.couponPlan.type === 1
-          ? `金額 ${currencyFormatter(coupon.couponCode.couponPlan.amount)} 元`
+          ? formatMessage(promotionMessages.label.price, {
+              amount: currencyFormatter(coupon.couponCode.couponPlan.amount),
+            })
           : coupon.couponCode.couponPlan.type === 2
-          ? `比例 ${coupon.couponCode.couponPlan.amount}%`
+          ? formatMessage(promotionMessages.label.ratio, { amount: coupon.couponCode.couponPlan.amount })
           : null}
       </StyledText>
       <div style={{ fontFamily: 'Roboto', fontSize: '14px', paddingTop: '12px' }}>
-        {coupon.couponCode.couponPlan.startedAt ? dateFormatter(coupon.couponCode.couponPlan.startedAt) : '即日起'}
+        {coupon.couponCode.couponPlan.startedAt
+          ? dateFormatter(coupon.couponCode.couponPlan.startedAt)
+          : formatMessage(promotionMessages.label.fromNow)}
         {' ~ '}
-        {coupon.couponCode.couponPlan.endedAt ? dateFormatter(coupon.couponCode.couponPlan.endedAt) : '無使用期限'}
+        {coupon.couponCode.couponPlan.endedAt
+          ? dateFormatter(coupon.couponCode.couponPlan.endedAt)
+          : formatMessage(promotionMessages.label.forever)}
       </div>
 
       <Divider style={{ margin: '12px 0px 17px' }} />
@@ -120,7 +129,7 @@ const CouponAdminCard: React.FC<{
             height: 'auto',
           }}
         >
-          詳情
+          {formatMessage(commonMessages.ui.detail)}
         </Button>
         <CouponDescriptionModal coupon={coupon} visible={visible} onCancel={() => setVisible(false)} />
       </div>

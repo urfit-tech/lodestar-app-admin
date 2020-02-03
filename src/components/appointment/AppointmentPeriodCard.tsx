@@ -1,8 +1,10 @@
 import { Button, Divider, Icon, Modal } from 'antd'
 import moment from 'moment'
 import React, { useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { dateRangeFormatter } from '../../helpers'
+import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
 import { AvatarImage } from '../common/Image'
@@ -30,6 +32,12 @@ const StyledButton = styled(Button)`
   padding: 0 1.25rem;
 `
 
+const messages = defineMessages({
+  appointmentText: { id: 'appointmnet.ui.appointmentText', defaultMessage: '{name} 已預約你的「{title}」' },
+  addToCalendar: { id: 'appointment.ui.addToCalendar', defaultMessage: '加入行事曆' },
+  joinMeeting: { id: 'appointment.ui.joinMeeting', defaultMessage: '進入會議' },
+})
+
 export type AppointmentPeriodCardProps = {
   id: string
   avatarUrl?: string | null
@@ -56,6 +64,7 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
   creator,
   link,
 }) => {
+  const { formatMessage } = useIntl()
   const [visible, setVisible] = useState(false)
 
   const startedTime = moment(startedAt)
@@ -72,7 +81,7 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
         <AvatarImage src={avatarUrl} size={48} className="mr-4" />
         <div>
           <StyledTitle>
-            {member.name} 已預約你的「{appointmentPlanTitle}」
+            {formatMessage(messages.appointmentText, { name: member.name, title: appointmentPlanTitle })}
           </StyledTitle>
           <StyledMeta>
             <Icon component={() => <CalendarAltOIcon />} className="mr-1" />
@@ -89,7 +98,7 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
 
       <div>
         <Button type="link" size="small" onClick={() => setVisible(true)}>
-          詳情
+          {formatMessage(commonMessages.ui.detail)}
         </Button>
         <Divider type="vertical" />
         <a
@@ -98,17 +107,17 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
           rel="noopener noreferrer"
         >
           <Button type="link" size="small">
-            加入行事曆
+            {formatMessage(messages.addToCalendar)}
           </Button>
         </a>
         {isFinished ? (
           <StyledButton type="link" size="small" disabled={true} className="ml-2">
-            已結束
+            {formatMessage(appointmentMessages.status.finished)}
           </StyledButton>
         ) : (
           <a href={link || ''} target="_blank" rel="noopener noreferrer">
             <StyledButton type="primary" className="ml-2" disabled={!link}>
-              進入會議
+              {formatMessage(messages.joinMeeting)}
             </StyledButton>
           </a>
         )}
@@ -126,13 +135,13 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
 
         {member.email && (
           <StyledMeta className="d-flex justify-content-between mb-3">
-            <div>信箱</div>
+            <div>{formatMessage(commonMessages.label.email)}</div>
             <div>{member.email}</div>
           </StyledMeta>
         )}
         {member.phone && (
           <StyledMeta className="d-flex justify-content-between">
-            <div>手機</div>
+            <div>{formatMessage(commonMessages.label.phone)}</div>
             <div>{member.phone}</div>
           </StyledMeta>
         )}

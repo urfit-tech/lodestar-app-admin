@@ -3,9 +3,24 @@ import Form, { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import moment from 'moment'
 import React, { useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
+import { activityMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import StyledBraftEditor from '../common/StyledBraftEditor'
 import { ActivityTicketProps } from './ActivityTicket'
+
+const messages = defineMessages({
+  published: { id: 'activity.label.published', defaultMessage: '是否開賣' },
+  PublishedTicket: { id: 'activity.status.PublishedTicket', defaultMessage: '發售，活動上架後立即開賣' },
+  NotPublishedTicket: {
+    id: 'activity.status.NotPublishedTicket',
+    defaultMessage: '停售，該票券暫停對外銷售，並從購票頁中隱藏',
+  },
+  ticketStartedAt: { id: 'activity.label.ticketStartedAt', defaultMessage: '售票開始時間' },
+  ticketEndedAt: { id: 'activity.label.ticketEndedAt', defaultMessage: '售票結束時間' },
+  limit: { id: 'activity.label.limit', defaultMessage: '張數限制' },
+  selectSession: { id: 'activity.warning.selectSession', defaultMessage: '選擇場次' },
+})
 
 type ActivityTicketAdminModalProps = FormComponentProps &
   AdminModalProps & {
@@ -27,6 +42,7 @@ const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
   onSubmit,
   ...props
 }) => {
+  const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
@@ -51,34 +67,39 @@ const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
   return (
     <AdminModal
       icon={<Icon type="file-add" />}
-      title="票券方案"
+      title={formatMessage(activityMessages.term.ticketPlan)}
       maskClosable={false}
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>
-            取消
+            {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit(setVisible)}>
-            確定
+            {formatMessage(commonMessages.ui.confirm)}
           </Button>
         </>
       )}
       {...props}
     >
       <Form hideRequiredMark>
-        <Form.Item label="票券名稱" colon={false}>
+        <Form.Item label={formatMessage(activityMessages.term.ticketPlanTitle)} colon={false}>
           {form.getFieldDecorator('title', {
-            rules: [{ required: true, message: '請輸入票券名稱' }],
+            rules: [{ required: true, message: formatMessage(errorMessages.form.ticketPlanTitle) }],
             initialValue: activityTicket ? activityTicket.title : '',
           })(<Input />)}
         </Form.Item>
-        <Form.Item label="包含場次" colon={false}>
+        <Form.Item label={formatMessage(activityMessages.term.includingSessions)} colon={false}>
           {form.getFieldDecorator('sessionIds', {
             initialValue: activityTicket
               ? activityTicket.activitySessionTickets.map(sessionTicket => sessionTicket.activitySession.id)
               : [],
           })(
-            <Select mode="multiple" style={{ width: '100%' }} placeholder="選擇場次" onChange={() => {}}>
+            <Select
+              mode="multiple"
+              style={{ width: '100%' }}
+              placeholder={formatMessage(messages.selectSession)}
+              onChange={() => {}}
+            >
               {activitySessions.map(session => (
                 <Select.Option key={session.id} value={session.id}>
                   {session.title}
@@ -87,19 +108,19 @@ const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
             </Select>,
           )}
         </Form.Item>
-        <Form.Item label="是否開賣" colon={false}>
+        <Form.Item label={formatMessage(messages.published)} colon={false}>
           {form.getFieldDecorator('isPublished', {
             initialValue: !activityTicket || activityTicket.isPublished ? 'public' : 'private',
           })(
             <Radio.Group>
-              <Radio value="public">發售，活動上架後立即開賣</Radio>
-              <Radio value="private">停售，該票券暫停對外銷售，並從購票頁中隱藏</Radio>
+              <Radio value="public">{formatMessage(messages.PublishedTicket)}</Radio>
+              <Radio value="private">{formatMessage(messages.NotPublishedTicket)}</Radio>
             </Radio.Group>,
           )}
         </Form.Item>
-        <Form.Item label="售票開始時間" colon={false}>
+        <Form.Item label={formatMessage(messages.ticketStartedAt)} colon={false}>
           {form.getFieldDecorator('startedAt', {
-            rules: [{ required: true, message: '請選擇開始時間' }],
+            rules: [{ required: true, message: formatMessage(errorMessages.form.startedAt) }],
             initialValue: activityTicket ? moment(activityTicket.startedAt) : null,
           })(
             <DatePicker
@@ -109,9 +130,9 @@ const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
             />,
           )}
         </Form.Item>
-        <Form.Item label="售票結束時間" colon={false}>
+        <Form.Item label={formatMessage(messages.ticketEndedAt)} colon={false}>
           {form.getFieldDecorator('endedAt', {
-            rules: [{ required: true, message: '請選擇結束時間' }],
+            rules: [{ required: true, message: formatMessage(errorMessages.form.endedAt) }],
             initialValue: activityTicket ? moment(activityTicket.endedAt) : null,
           })(
             <DatePicker
@@ -121,7 +142,7 @@ const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
             />,
           )}
         </Form.Item>
-        <Form.Item label="定價" colon={false}>
+        <Form.Item label={formatMessage(commonMessages.label.listPrice)} colon={false}>
           {form.getFieldDecorator('price', {
             rules: [{ type: 'number' }],
             initialValue: activityTicket ? activityTicket.price : 0,
@@ -134,14 +155,14 @@ const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
           )}
         </Form.Item>
 
-        <Form.Item label="張數限制">
+        <Form.Item label={formatMessage(messages.limit)}>
           {form.getFieldDecorator('count', {
             rules: [{ type: 'number' }],
             initialValue: activityTicket ? activityTicket.count : 1,
           })(<InputNumber min={1} />)}
         </Form.Item>
 
-        <Form.Item label="備註說明" colon={false}>
+        <Form.Item label={formatMessage(activityMessages.term.description)} colon={false}>
           {form.getFieldDecorator('description', {
             initialValue: activityTicket ? BraftEditor.createEditorState(activityTicket.description) : null,
           })(

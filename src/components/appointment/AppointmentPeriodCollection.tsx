@@ -1,8 +1,10 @@
 import { Button } from 'antd'
 import moment from 'moment'
 import React, { useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
+import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import AdminModal from '../admin/AdminModal'
 import AppointmentPeriodItem, { AppointmentPeriodProps } from './AppointmentPeriodItem'
 
@@ -37,13 +39,21 @@ export const EmptyBlock = styled.div`
   letter-spacing: 0.4px;
 `
 
+const messages = defineMessages({
+  editPeriod: { id: 'appointment.ui.editPeriod', defaultMessage: '編輯時段' },
+  repetitiveMeta: { id: 'appointment.warning.repetitiveMeta', defaultMessage: '※重複週期為' },
+  perYear: { id: 'appointment.label.perYear', defaultMessage: '每年' },
+  perMonth: { id: 'appointment.label.perMonth', defaultMessage: '每月' },
+  perWeek: { id: 'appointment.label.perWeek', defaultMessage: '每週' },
+  perDay: { id: 'appointment.label.perDay', defaultMessage: '每日' },
+  singlePeriod: { id: 'appointment.label.singlePeriod', defaultMessage: '時段' },
+  seriesPeriod: { id: 'appointment.label.seriesPeriod', defaultMessage: '重複週期' },
+  single: { id: 'appointment.ui.single', defaultMessage: '單一' },
+  open: { id: 'appointment.ui.open', defaultMessage: '開啟' },
+  close: { id: 'appointment.ui.close', defaultMessage: '關閉' },
+})
+
 export type ScheduleIntervalType = 'Y' | 'M' | 'W' | 'D'
-const scheduleIntervalTypeLabel: { [key in ScheduleIntervalType]: string } = {
-  Y: '每年',
-  M: '每月',
-  W: '每週',
-  D: '每日',
-}
 export type DeleteScheduleEvent = {
   values: {
     scheduleId: string
@@ -67,6 +77,7 @@ const AppointmentPeriodCollection: React.FC<{
   onDelete?: (event: DeleteScheduleEvent) => void
   onClose?: (event: ClosePeriodEvent) => void
 }> = ({ periods, onDelete, onClose }) => {
+  const { formatMessage } = useIntl()
   const [visible, setVisible] = useState(false)
   const [selectedPeriod, setSelectedPeriod] = useState<AppointmentPeriodProps | null>(null)
 
@@ -93,7 +104,7 @@ const AppointmentPeriodCollection: React.FC<{
       <AdminModal
         visible={visible}
         onCancel={() => setVisible(false)}
-        title="編輯時段"
+        title={formatMessage(messages.editPeriod)}
         renderFooter={() => (
           <div className="row pt-4">
             <div className="col-6">
@@ -115,7 +126,10 @@ const AppointmentPeriodCollection: React.FC<{
                     })
                   }
                 >
-                  刪除{selectedPeriod.schedule.periodType !== null ? '重複週期' : '時段'}
+                  {formatMessage(commonMessages.ui.delete)}
+                  {selectedPeriod.schedule.periodType !== null
+                    ? formatMessage(messages.seriesPeriod)
+                    : formatMessage(messages.singlePeriod)}
                 </Button>
               )}
             </div>
@@ -138,8 +152,9 @@ const AppointmentPeriodCollection: React.FC<{
                     })
                   }
                 >
-                  {selectedPeriod.isExcluded ? '開啟' : '關閉'}
-                  {selectedPeriod.schedule.periodType !== null && '單一'}時段
+                  {selectedPeriod.isExcluded ? formatMessage(messages.open) : formatMessage(messages.close)}
+                  {selectedPeriod.schedule.periodType !== null && formatMessage(messages.single)}
+                  {formatMessage(appointmentMessages.term.period)}
                 </Button>
               )}
             </div>
@@ -153,7 +168,16 @@ const AppointmentPeriodCollection: React.FC<{
         )}
         {selectedPeriod && selectedPeriod.schedule.periodType !== null && selectedPeriod.schedule.periodAmount && (
           <StyledModalMeta className="mb-2">
-            ※重複週期為{scheduleIntervalTypeLabel[selectedPeriod.schedule.periodType]}
+            {formatMessage(messages.repetitiveMeta)}
+            {selectedPeriod.schedule.periodType === 'Y'
+              ? formatMessage(messages.perYear)
+              : selectedPeriod.schedule.periodType === 'M'
+              ? formatMessage(messages.perMonth)
+              : selectedPeriod.schedule.periodType === 'W'
+              ? formatMessage(messages.perWeek)
+              : selectedPeriod.schedule.periodType === 'D'
+              ? formatMessage(messages.perDay)
+              : ''}
           </StyledModalMeta>
         )}
       </AdminModal>

@@ -1,12 +1,15 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, DatePicker, Form, Input, InputNumber, message } from 'antd'
+import { Button, DatePicker, Form, Input, InputNumber } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import { generate } from 'coupon-code'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import { times } from 'ramda'
 import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
 import { InferType } from 'yup'
+import { handleError } from '../../helpers'
+import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
 import { couponPlanSchema } from '../../schemas/coupon'
 import types from '../../types'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
@@ -18,13 +21,14 @@ type CouponPlanAdminModalProps = AdminModalProps &
     couponPlan?: InferType<typeof couponPlanSchema>
   }
 const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, couponPlan, ...props }) => {
-  const [loading, setLoading] = useState()
+  const { formatMessage } = useIntl()
   const [createCouponPlan] = useMutation<types.INSERT_COUPON_PLAN, types.INSERT_COUPON_PLANVariables>(
     INSERT_COUPON_PLAN,
   )
   const [updateCouponPlan] = useMutation<types.UPDATE_COUPON_PLAN, types.UPDATE_COUPON_PLANVariables>(
     UPDATE_COUPON_PLAN,
   )
+  const [loading, setLoading] = useState()
 
   const handleSubmit = () => {
     form.validateFieldsAndScroll((error, values) => {
@@ -48,7 +52,7 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
         })
           .then(() => window.location.reload())
           .catch(error => {
-            message.error(`無法更新折扣方案`)
+            handleError(error)
             setLoading(false)
           })
       } else {
@@ -88,7 +92,7 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             window.location.reload()
           })
           .catch(error => {
-            message.error(`無法創建折扣方案，可能原因為此折扣碼已存在`)
+            handleError(error)
             setLoading(false)
           })
       }
@@ -100,54 +104,57 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>
-            取消
+            {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
-            確定
+            {formatMessage(commonMessages.ui.confirm)}
           </Button>
         </>
       )}
       {...props}
     >
       <Form>
-        <Form.Item label="折價方案名稱">
+        <Form.Item label={formatMessage(promotionMessages.term.couponPlanTitle)}>
           {form.getFieldDecorator('title', {
             initialValue: couponPlan && couponPlan.title,
-            rules: [{ required: true, message: '請輸入折價方案名稱' }],
+            rules: [{ required: true, message: formatMessage(errorMessages.form.coupontPlanTitle) }],
           })(<Input />)}
         </Form.Item>
-        <Form.Item label="消費需達">
+        <Form.Item label={formatMessage(promotionMessages.label.constraint)}>
           {form.getFieldDecorator('constraint', {
             initialValue: (couponPlan && couponPlan.constraint) || 0,
             rules: [{ required: true }],
-          })(<InputNumber formatter={v => `${v} 元`} parser={v => (v && parseFloat(v.replace(' 元', ''))) || 0} />)}
+          })(<InputNumber formatter={v => `${v}`} parser={v => (v ? parseFloat(v) : 0)} />)}
         </Form.Item>
         {!couponPlan && (
-          <Form.Item label="折扣碼">
+          <Form.Item label={formatMessage(promotionMessages.term.couponCodes)}>
             {form.getFieldDecorator('codes', {
-              rules: [{ required: true, message: '至少一組折扣碼' }],
+              rules: [{ required: true, message: formatMessage(errorMessages.form.couponCodes) }],
             })(<PlanCodeSelector planType="coupon" />)}
           </Form.Item>
         )}
-        <Form.Item label="折抵額度" help="折抵方式為比例時，額度範圍為 0 - 100">
+        <Form.Item
+          label={formatMessage(promotionMessages.term.discount)}
+          help={formatMessage(promotionMessages.label.discountHelp)}
+        >
           {form.getFieldDecorator('discount', {
             initialValue: couponPlan ? { type: couponPlan.type, amount: couponPlan.amount } : { type: 1, amount: 0 },
           })(<CouponPlanDiscountSelector />)}
         </Form.Item>
-        <Form.Item label="有效期限">
+        <Form.Item label={formatMessage(promotionMessages.label.availableDateRange)}>
           <Input.Group compact>
             {form.getFieldDecorator('startedAt', {
               initialValue: couponPlan && couponPlan.startedAt && moment(couponPlan.startedAt),
-            })(<DatePicker placeholder="開始日期" />)}
+            })(<DatePicker placeholder={formatMessage(commonMessages.label.startedAt)} />)}
             {form.getFieldDecorator('endedAt', {
               initialValue: couponPlan && couponPlan.endedAt && moment(couponPlan.endedAt),
-            })(<DatePicker placeholder="截止日期" />)}
+            })(<DatePicker placeholder={formatMessage(commonMessages.label.endedAt)} />)}
           </Input.Group>
         </Form.Item>
-        <Form.Item label="使用限制與描述">
+        <Form.Item label={formatMessage(promotionMessages.term.description)}>
           {form.getFieldDecorator('description', {
             initialValue: couponPlan && couponPlan.description,
-          })(<Input.TextArea placeholder="非必填" rows={4} />)}
+          })(<Input.TextArea placeholder={formatMessage(commonMessages.label.optional)} rows={4} />)}
         </Form.Item>
       </Form>
     </AdminModal>

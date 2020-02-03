@@ -1,8 +1,11 @@
 import { Button, message } from 'antd'
 import axios from 'axios'
 import React, { useContext, useState } from 'react'
+import { useIntl } from 'react-intl'
 import SocialLogin from 'react-social-login'
 import styled from 'styled-components'
+import { handleError } from '../../helpers'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import FacebookLogoImage from '../../images/default/FB-logo.png'
 import GoogleLogoImage from '../../images/default/google-logo.png'
 import { AuthModalContext } from './AuthModal'
@@ -71,6 +74,7 @@ const socialLogin = async (provider: string, providerToken: any) => {
 }
 
 export const FacebookLoginButton = () => {
+  const { formatMessage } = useIntl()
   const { setVisible } = useContext(AuthModalContext)
   const [loading, setLoading] = useState()
 
@@ -96,18 +100,19 @@ export const FacebookLoginButton = () => {
           })
           .finally(() => setLoading(false))
       }}
-      onLoginFailure={(err: any) => {
-        message.error(`無法從 Facebook 登入/註冊`)
-        console.error(err)
+      onLoginFailure={(error: any) => {
+        message.error(formatMessage(errorMessages.event.failedFacebookLogin))
+        handleError(error)
       }}
     >
       <FacebookLogo />
-      <span>Facebook 登入/註冊</span>
+      <span>{formatMessage(commonMessages.ui.facebookLogin)}</span>
     </SocialLoginButton>
   )
 }
 
 export const GoogleLoginButton = () => {
+  const { formatMessage } = useIntl()
   const { setVisible } = useContext(AuthModalContext)
   const [loading, setLoading] = useState()
 
@@ -133,13 +138,13 @@ export const GoogleLoginButton = () => {
           })
           .finally(() => setLoading(false))
       }}
-      onLoginFailure={(err: any) => {
-        message.error(`無法從 Google 登入/註冊`)
-        console.error(err)
+      onLoginFailure={(error: any) => {
+        message.error(formatMessage(errorMessages.event.failedGoogleLogin))
+        handleError(error)
       }}
     >
       <GoogleLogo />
-      <span>Google 登入/註冊</span>
+      <span>{formatMessage(commonMessages.ui.googleLogin)}</span>
     </SocialLoginButton>
   )
 }

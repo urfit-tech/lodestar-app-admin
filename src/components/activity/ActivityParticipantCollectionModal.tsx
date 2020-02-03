@@ -1,5 +1,6 @@
 import { Button, Modal, Tabs } from 'antd'
 import React, { useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 
 const StyledTitle = styled.div`
@@ -22,6 +23,11 @@ const StyledCell = styled.div`
   padding: 0.75rem 0;
 `
 
+const messages = defineMessages({
+  participantsList: { id: 'activity.ui.participantsList', defaultMessage: '參與名單' },
+  downloadList: { id: 'activity.ui.downloadList', defaultMessage: '下載名單' },
+})
+
 export type ActivitySessionParticipantProps = {
   id: string
   title: string
@@ -37,15 +43,16 @@ const ActivityParticipantCollectionModal: React.FC<{
   sessions: ActivitySessionParticipantProps[]
 }> = ({ sessions }) => {
   const [visible, setVisible] = useState(false)
+  const { formatMessage } = useIntl()
 
   return (
     <>
       <Button type="link" size="small" onClick={() => setVisible(true)}>
-        參與名單
+        {formatMessage(messages.participantsList)}
       </Button>
 
       <Modal title={null} footer={null} onCancel={() => setVisible(false)} visible={visible}>
-        <StyledTitle className="mb-3">參與名單</StyledTitle>
+        <StyledTitle className="mb-3">{formatMessage(messages.participantsList)}</StyledTitle>
 
         <Tabs>
           {sessions.map(session => {
@@ -70,7 +77,7 @@ const ActivityParticipantCollectionModal: React.FC<{
                     document.body.removeChild(downloadLink)
                   }}
                 >
-                  下載名單
+                  {formatMessage(messages.downloadList)}
                 </Button>
 
                 <StyledTable>

@@ -1,5 +1,6 @@
 import { Button, Icon, message } from 'antd'
 import React, { useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { ReactComponent as StatusAlertIcon } from '../../images/default/status-alert.svg'
@@ -44,6 +45,14 @@ const StyledMeta = styled.div`
   }
 `
 
+const messages = defineMessages({
+  goTo: { id: 'common.ui.goTo', defaultMessage: '前往填寫' },
+  publishedSuccessfully: { id: 'common.event.publishedSuccessfully', defaultMessage: '發佈成功' },
+  publishingFailed: { id: 'common.event.publishingFailed', defaultMessage: '發佈失敗' },
+  cancelPublishing: { id: 'common.ui.cancelPublishing', defaultMessage: '取消發布' },
+  publish: { id: 'common.ui.publish', defaultMessage: '立即發佈' },
+})
+
 export type PublishStatus = 'alert' | 'ordinary' | 'success'
 export type ChecklistItemProps = {
   id: string
@@ -66,6 +75,7 @@ const AdminPublishBlock: React.FC<{
   checklist?: ChecklistItemProps[]
   onPublish?: (event: PublishEvent) => void
 }> = ({ type, title, description, checklist, onPublish }) => {
+  const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
 
   return (
@@ -95,7 +105,7 @@ const AdminPublishBlock: React.FC<{
                       }}
                     >
                       <Button type="link" size="small">
-                        <span>前往填寫</span>
+                        <span>{formatMessage(messages.goTo)}</span>
                         <Icon type="right" />
                       </Button>
                     </Link>
@@ -119,13 +129,13 @@ const AdminPublishBlock: React.FC<{
                 values: {
                   publishedAt: type === 'ordinary' ? new Date() : null,
                 },
-                onSuccess: () => message.success('發佈成功'),
-                onError: () => message.error('發佈失敗'),
+                onSuccess: () => message.success(formatMessage(messages.publishedSuccessfully)),
+                onError: () => message.error(formatMessage(messages.publishingFailed)),
                 onFinally: () => setLoading(false),
               })
           }}
         >
-          {type === 'success' ? '取消發佈' : '立即發佈'}
+          {type === 'success' ? formatMessage(messages.cancelPublishing) : formatMessage(messages.publish)}
         </Button>
       </div>
     </>

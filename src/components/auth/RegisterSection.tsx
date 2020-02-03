@@ -1,8 +1,10 @@
 import { Button, Form, Icon, Input } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import React, { useContext, useState } from 'react'
+import { useIntl } from 'react-intl'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { AuthState } from '../../schemas/general'
 import { AuthModalContext, StyledAction, StyledDivider, StyledTitle } from './AuthModal'
 import { FacebookLoginButton, GoogleLoginButton } from './SocialLoginButton'
@@ -11,6 +13,7 @@ type RegisterSectionProps = FormComponentProps & {
   onAuthStateChange: React.Dispatch<React.SetStateAction<AuthState>>
 }
 const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChange }) => {
+  const { formatMessage } = useIntl()
   const { register } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
   const [loading, setLoading] = useState(false)
@@ -45,7 +48,7 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChan
 
   return (
     <>
-      <StyledTitle>註冊</StyledTitle>
+      <StyledTitle>{formatMessage(commonMessages.ui.register)}</StyledTitle>
 
       {!!process.env.REACT_APP_FACEBOOK_APP_ID && (
         <div className="mb-3">
@@ -58,7 +61,7 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChan
         </div>
       )}
       {(!!process.env.REACT_APP_FACEBOOK_APP_ID || !!process.env.REACT_APP_GOOGLE_CLIENT_ID) && (
-        <StyledDivider>或</StyledDivider>
+        <StyledDivider>{formatMessage(commonMessages.ui.or)}</StyledDivider>
       )}
 
       <Form
@@ -69,33 +72,39 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChan
       >
         <Form.Item>
           {form.getFieldDecorator('username', {
-            rules: [{ required: true, message: '請輸入使用者名稱' }],
-          })(<Input placeholder="使用者名稱" suffix={<Icon type="user" />} />)}
+            rules: [{ required: true, message: formatMessage(errorMessages.form.account) }],
+          })(<Input placeholder={formatMessage(commonMessages.label.account)} suffix={<Icon type="user" />} />)}
         </Form.Item>
         <Form.Item>
           {form.getFieldDecorator('email', {
             rules: [
-              { required: true, message: '請輸入 Email' },
-              { type: 'email', message: 'Email 格式錯誤' },
+              { required: true, message: formatMessage(errorMessages.form.email) },
+              { type: 'email', message: formatMessage(errorMessages.form.emailFormat) },
             ],
           })(<Input placeholder="Email" suffix={<Icon type="mail" />} />)}
         </Form.Item>
         <Form.Item>
           {form.getFieldDecorator('password', {
-            rules: [{ required: true, message: '請輸入密碼' }],
-          })(<Input type="password" placeholder="密碼" suffix={<Icon type="lock" />} />)}
+            rules: [{ required: true, message: formatMessage(errorMessages.form.password) }],
+          })(
+            <Input
+              type="password"
+              placeholder={formatMessage(commonMessages.label.password)}
+              suffix={<Icon type="lock" />}
+            />,
+          )}
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" block loading={loading}>
-            註冊
+            {formatMessage(commonMessages.ui.register)}
           </Button>
         </Form.Item>
       </Form>
 
       <StyledAction>
-        <span>已經是是會員嗎？</span>
+        <span>{formatMessage(commonMessages.label.alreadyMember)}</span>
         <Button type="link" size="small" onClick={() => onAuthStateChange('login')}>
-          前往登入
+          {formatMessage(commonMessages.label.goToLogin)}
         </Button>
       </StyledAction>
     </>
