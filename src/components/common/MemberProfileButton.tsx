@@ -1,13 +1,15 @@
 import { Button, Icon, List, Popover } from 'antd'
 import React, { useContext } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
+import MemberAvatar from '../../containers/common/MemberAvatar'
 import { useAuth } from '../../contexts/AuthContext'
+import { commonMessages } from '../../helpers/translation'
 import { useMember } from '../../hooks/member'
 import settings from '../../settings'
 import { CreatorAdminMenu, OwnerAdminMenu } from '../admin/AdminMenu'
 import { AuthModalContext } from '../auth/AuthModal'
-import MemberAvatar from '../../containers/common/MemberAvatar'
 import Responsive from './Responsive'
 
 const Wrapper = styled.div`
@@ -37,16 +39,12 @@ const BorderedItem = styled(List.Item)`
   }
 `
 
-// const MemberPointItem: React.FC<{ memberId: string }> = ({ memberId }) => {
-//   const { numPoints } = useMemberPoint(memberId)
-//   return (
-//     <Link to="/settings/point_history">
-//       <div>{numPoints} 點</div>
-//     </Link>
-//   )
-// }
+const messages = defineMessages({
+  memberPage: { id: 'common.label.memberPage', defaultMessage: '我的主頁' },
+})
 
 const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
+  const { formatMessage } = useIntl()
   const { history } = useRouter()
   const { member } = useMember(memberId)
   const { currentMemberId, isAuthenticated, currentUserRole, logout } = useAuth()
@@ -79,7 +77,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
           {isAuthenticated && (
             <BorderedItem onClick={() => history.push(`/members/${currentMemberId}`)} style={{ cursor: 'pointer' }}>
               <BlankIcon className="mr-2" />
-              我的主頁
+              {formatMessage(messages.memberPage)}
             </BorderedItem>
           )}
           <BorderedItem className="shift-left">
@@ -93,7 +91,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
 
         <List.Item style={{ cursor: 'pointer' }} onClick={() => logout && logout().then(() => history.push('/'))}>
           <Icon type="logout" className="mr-2" />
-          登出
+          {formatMessage(commonMessages.ui.logout)}
         </List.Item>
       </StyledList>
     </Wrapper>
@@ -115,7 +113,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
     <>
       <Responsive.Default>
         <Button className="ml-2 mr-2" onClick={() => setVisible && setVisible(true)}>
-          登入
+          {formatMessage(commonMessages.ui.login)}
         </Button>
         <Popover
           placement="bottomRight"
@@ -132,7 +130,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
 
       <Responsive.Desktop>
         <Button className="ml-2" onClick={() => setVisible && setVisible(true)}>
-          登入 / 註冊
+          {formatMessage(commonMessages.ui.loginAndRegister)}
         </Button>
       </Responsive.Desktop>
     </>

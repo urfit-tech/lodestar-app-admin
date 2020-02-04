@@ -82,7 +82,7 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ white, noFooter, centered
             renderTitle()
           ) : (
             <Link to={`/`} className="d-flex align-items-center">
-              {Logo ? <img src={Logo} alt="logo" className="header-logo" /> : settings.seo.name || '首頁'}
+              {Logo ? <img src={Logo} alt="logo" className="header-logo" /> : settings.seo.name || 'Home'}
             </Link>
           )}
 

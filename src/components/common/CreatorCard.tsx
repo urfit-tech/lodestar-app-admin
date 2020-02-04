@@ -1,4 +1,5 @@
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { AvatarImage } from './Image'
@@ -68,6 +69,12 @@ const StyledAction = styled.span`
   }
 `
 
+const messages = defineMessages({
+  creatorPrograms: { id: 'creator.label.creatorPrograms', defaultMessage: '開設課程' },
+  creatorPodcast: { id: 'creator.label.creatorPodcast', defaultMessage: '廣播頻道' },
+  creatorAppointemnts: { id: 'creator.label.creatorAppointemnts', defaultMessage: '大師預約' },
+})
+
 export type CreatorCardProps = {
   id: string
   avatarUrl?: string | null
@@ -89,6 +96,8 @@ const CreatorCard: React.FC<CreatorCardProps> = ({
   withPodcast,
   withReservation,
 }) => {
+  const { formatMessage } = useIntl()
+
   return (
     <StyledWrapper>
       <AvatarBlock className="flex-shrink-0 d-flex justify-content-center">
@@ -109,16 +118,16 @@ const CreatorCard: React.FC<CreatorCardProps> = ({
 
         <div>
           <StyledAction>
-            <Link to={`/creators/${id}?tabkey=programs`}>開設課程</Link>
+            <Link to={`/creators/${id}?tabkey=programs`}>{formatMessage(messages.creatorPrograms)}</Link>
           </StyledAction>
           {withPodcast && (
             <StyledAction>
-              <Link to={`/creators/${id}?tabkey=podcasts`}>廣播頻道</Link>
+              <Link to={`/creators/${id}?tabkey=podcasts`}>{formatMessage(messages.creatorPodcast)}</Link>
             </StyledAction>
           )}
           {withReservation && (
             <StyledAction>
-              <Link to={`/creators/${id}?tabkey=reservations`}>大師預約</Link>
+              <Link to={`/creators/${id}?tabkey=reservations`}>{formatMessage(messages.creatorAppointemnts)}</Link>
             </StyledAction>
           )}
         </div>

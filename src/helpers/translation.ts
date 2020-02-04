@@ -13,11 +13,17 @@ export const commonMessages = {
     detail: { id: 'common.ui.detail', defaultMessage: '詳情' },
     delete: { id: 'common.ui.delete', defaultMessage: '刪除' },
     login: { id: 'common.ui.login', defaultMessage: '登入' },
+    logout: { id: 'common.ui.logout', defaultMessage: '登出' },
+    loginAndRegister: { id: 'common.ui.loginAndRegister', defaultMessage: '登入 / 註冊' },
     register: { id: 'common.ui.register', defaultMessage: '註冊' },
     or: { id: 'common.ui.or', defaultMessage: '或' },
     registerNow: { id: 'common.ui.registerNow', defaultMessage: '立即註冊' },
     facebookLogin: { id: 'common.ui.facebookLogin', defaultMessage: 'Facebook 登入/註冊' },
     googleLogin: { id: 'common.ui.googleLogin', defaultMessage: 'Google 登入/註冊' },
+    save: { id: 'common.ui.save', defaultMessage: '儲存' },
+    reply: { id: 'common.ui.reply', defaultMessage: '回覆' },
+    search: { id: 'common.ui.search', defaultMessage: '查詢' },
+    reset: { id: 'common.ui.reset', defaultMessage: '重置' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -36,6 +42,26 @@ export const commonMessages = {
     goToLogin: { id: 'common.label.goToLogin', defaultMessage: '前往登入' },
     optional: { id: 'common.label.optional', defaultMessage: '非必填' },
     loading: { id: 'common.label.loading', defaultMessage: '載入中' },
+    day: { id: 'common.label.day', defaultMessage: '天' },
+    week: { id: 'common.label.week', defaultMessage: '週' },
+    month: { id: 'common.label.month', defaultMessage: '月' },
+    year: { id: 'common.label.year', defaultMessage: '年' },
+    program: { id: 'common.label.program', defaultMessage: '單次課程' },
+    programPlan: { id: 'common.label.programPlan', defaultMessage: '訂閱方案' },
+    programContent: { id: 'common.label.programContent', defaultMessage: '課程內容' },
+    card: { id: 'common.label.card', defaultMessage: '會員卡' },
+    activityTicket: { id: 'common.label.activityTicket', defaultMessage: '實體活動' },
+    merchandise: { id: 'common.label.merchandise', defaultMessage: '商品' },
+    unknowProduct: { id: 'common.label.unknowProduct', defaultMessage: '未知類別' },
+    cannotRecover: { id: 'common.label.cannotRecover', defaultMessage: '此動作無法復原' },
+    sellingStatus: { id: 'common.label.sellingStatus', defaultMessage: '販售狀態' },
+    periodType: { id: 'common.label.periodType', defaultMessage: '訂閱週期' },
+    salePrice: { id: 'common.label.salePrice', defaultMessage: '優惠價' },
+    salePriceEndTime: { id: 'common.label.salePriceEndTime', defaultMessage: '優惠截止日期' },
+  }),
+  term: defineMessages({
+    instructor: { id: 'common.term.instructor', defaultMessage: '老師' },
+    price: { id: 'common.term.price', defaultMessage: '售價' },
   }),
 }
 
@@ -47,17 +73,23 @@ export const errorMessages = {
     notFound: { id: 'error.route.notFound', defaultMessage: '無此路徑' },
   }),
   form: defineMessages({
-    title: { id: 'error.form.title', defaultMessage: '請輸入名稱' },
-    startedAt: { id: 'error.form.startedAt', defaultMessage: '請選擇開始時間' },
-    endedAt: { id: 'error.form.endedAt', defaultMessage: '請選擇結束時間' },
+    isRequired: { id: 'error.form.isRequired', defaultMessage: '請輸入 {field}' },
+    // title: { id: 'error.form.title', defaultMessage: '請輸入名稱' },
+    // startedAt: { id: 'error.form.startedAt', defaultMessage: '請選擇開始時間' },
+    // endedAt: { id: 'error.form.endedAt', defaultMessage: '請選擇結束時間' },
     account: { id: 'error.form.username', defaultMessage: '請輸入使用者名稱或 Email' },
-    password: { id: 'error.form.password', defaultMessage: '請輸入密碼' },
-    location: { id: 'error.form.location', defaultMessage: '請輸入地址' },
-    ticketPlanTitle: { id: 'error.form.ticketPlanTitle', defaultMessage: '請輸入票券名稱' },
-    email: { id: 'error.form.email', defaultMessage: '請輸入 Email' },
+    // password: { id: 'error.form.password', defaultMessage: '請輸入密碼' },
+    // location: { id: 'error.form.location', defaultMessage: '請輸入地址' },
+    // ticketPlanTitle: { id: 'error.form.ticketPlanTitle', defaultMessage: '請輸入票券名稱' },
+    // email: { id: 'error.form.email', defaultMessage: '請輸入 Email' },
     emailFormat: { id: 'error.form.emailFormat', defaultMessage: 'Email 格式錯誤' },
-    coupontPlanTitle: { id: 'error.form.couponPlanTitle', defaultMessage: '請輸入折價方案名稱' },
+    // coupontPlanTitle: { id: 'error.form.couponPlanTitle', defaultMessage: '請輸入折價方案名稱' },
     couponCodes: { id: 'error.form.codes', defaultMessage: '至少一組折扣碼' },
+    issueContent: { id: 'error.form.issueContent', defaultMessage: '請輸入回覆內容' },
+    selectInstructor: { id: 'error.form.selectInstructor', defaultMessage: '請輸入帳號 或 Email' },
+    // periodType: { id: 'error.form.periodType', defaultMessage: '請輸入訂閱週期' },
+    // listPrice: { id: 'error.form.listPrice', defaultMessage: '請輸入定價' },
+    // salePrice: { id: 'error.form.salePrice', defaultMessage: '請輸入優惠價' },
   }),
   event: defineMessages({
     failedFacebookLogin: { id: 'error.event.failedFacebookLogin', defaultMessage: '無法從 Facebook 登入/註冊' },
@@ -131,6 +163,27 @@ export const promotionMessages = {
 export const membershipCardMessages = {
   label: defineMessages({
     selectMembershipCard: { id: 'membershipCard.label.selectMembershipCard', defaultMessage: '選擇會員卡' },
+  }),
+}
+
+export const programMessages = {
+  status: defineMessages({
+    issueOpen: { id: 'program.status.issueOpen', defaultMessage: '解決中' },
+    issueSolved: { id: 'program.status.issueSolved', defaultMessage: '已解決' },
+  }),
+}
+
+export const podcastMessages = {
+  status: defineMessages({
+    published: { id: 'podcast.status.published', defaultMessage: '已發佈' },
+    notPublished: { id: 'podcast.status.notPublished', defaultMessage: '未發佈' },
+  }),
+  label: defineMessages({
+    status: { id: 'podcast.label.status', defaultMessage: '狀態' },
+    salesCount: { id: 'podcast.label.salesCount', defaultMessage: '購買' },
+  }),
+  term: defineMessages({
+    podcastPlan: { id: 'podcast.term.podcastPlan', defaultMessage: '廣播頻道訂閱方案' },
   }),
 }
 

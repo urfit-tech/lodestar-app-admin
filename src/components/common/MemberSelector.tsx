@@ -1,5 +1,6 @@
 import { Select } from 'antd'
 import React, { forwardRef } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AvatarImage } from './Image'
 
@@ -12,6 +13,10 @@ const StyledTextSecondary = styled.span`
   color: var(--gray-dark);
   letter-spacing: 0.2px;
 `
+
+const messages = defineMessages({
+  memberSelect: { id: 'error.form.memberSelect', defaultMessage: '請輸入帳號 或 Email' },
+})
 
 export type MemberOptionProps = {
   id: string
@@ -26,11 +31,13 @@ const MemberSelector: React.FC<{
   onChange?: (value: string | null) => void
   disabled?: boolean
 }> = ({ members, value, onChange, disabled }, ref) => {
+  const { formatMessage } = useIntl()
+
   return (
     <Select<string | null>
       ref={ref}
       showSearch
-      placeholder="請輸入帳號 或 Email"
+      placeholder={formatMessage(messages.memberSelect)}
       value={value}
       onChange={value => onChange && onChange(value)}
       optionLabelProp="title"

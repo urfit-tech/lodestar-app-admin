@@ -91,7 +91,14 @@ const ActivityCreationModal: React.FC<ActivityCreationModalProps> = ({ form, onC
         )}
         <Form.Item label={formatMessage(commonMessages.label.title)}>
           {form.getFieldDecorator('title', {
-            rules: [{ required: true, message: formatMessage(errorMessages.form.title) }],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.label.title),
+                }),
+              },
+            ],
           })(<Input />)}
         </Form.Item>
         <Form.Item label={formatMessage(commonMessages.label.category)}>

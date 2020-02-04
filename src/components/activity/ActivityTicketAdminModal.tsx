@@ -84,7 +84,14 @@ const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
       <Form hideRequiredMark>
         <Form.Item label={formatMessage(activityMessages.term.ticketPlanTitle)} colon={false}>
           {form.getFieldDecorator('title', {
-            rules: [{ required: true, message: formatMessage(errorMessages.form.ticketPlanTitle) }],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(activityMessages.term.ticketPlanTitle),
+                }),
+              },
+            ],
             initialValue: activityTicket ? activityTicket.title : '',
           })(<Input />)}
         </Form.Item>
@@ -120,7 +127,14 @@ const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
         </Form.Item>
         <Form.Item label={formatMessage(messages.ticketStartedAt)} colon={false}>
           {form.getFieldDecorator('startedAt', {
-            rules: [{ required: true, message: formatMessage(errorMessages.form.startedAt) }],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(messages.ticketStartedAt),
+                }),
+              },
+            ],
             initialValue: activityTicket ? moment(activityTicket.startedAt) : null,
           })(
             <DatePicker
@@ -132,7 +146,12 @@ const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
         </Form.Item>
         <Form.Item label={formatMessage(messages.ticketEndedAt)} colon={false}>
           {form.getFieldDecorator('endedAt', {
-            rules: [{ required: true, message: formatMessage(errorMessages.form.endedAt) }],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, { field: formatMessage(messages.ticketEndedAt) }),
+              },
+            ],
             initialValue: activityTicket ? moment(activityTicket.endedAt) : null,
           })(
             <DatePicker

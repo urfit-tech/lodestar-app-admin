@@ -2,10 +2,12 @@ import { Button, Checkbox, DatePicker, Form, Icon, InputNumber, Modal, Radio } f
 import { FormComponentProps } from 'antd/lib/form'
 import moment from 'moment'
 import React, { Dispatch, SetStateAction, useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import CreatorSelector from '../../containers/common/CreatorSelector'
 import { useAuth } from '../../contexts/AuthContext'
 import { rgba } from '../../helpers'
+import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
 import { BREAK_POINT } from '../common/Responsive'
 import PodcastPeriodSelector from './PodcastPeriodSelector'
 
@@ -35,6 +37,14 @@ const StyledTitle = styled.div`
   line-height: 1.3;
   letter-spacing: 0.77px;
 `
+
+const messages = defineMessages({
+  planPublished: { id: 'podcast.status.planPublished', defaultMessage: '發佈，立刻開賣訂閱方案' },
+  planNotPublished: {
+    id: 'podcast.status.planNotPublished',
+    defaultMessage: '停售，方案暫停對外銷售，並從廣播頁中隱藏',
+  },
+})
 
 export type PodcastPlanProps = (props: {
   onSuccess?: () => void
@@ -78,9 +88,10 @@ const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
   podcastPlan,
   children,
 }) => {
-  const [loading, setLoading] = useState(false)
+  const { formatMessage } = useIntl()
   const { currentUserRole } = useAuth()
 
+  const [loading, setLoading] = useState(false)
   const [withSalePrice, setWithSalePrice] = useState<boolean>(Boolean(podcastPlan && podcastPlan.salePrice))
 
   const handleSubmit = () => {
@@ -127,40 +138,55 @@ const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
         <StyledIcon>
           <Icon type="file-add" />
         </StyledIcon>
-        <StyledTitle>廣播頻道訂閱方案</StyledTitle>
+        <StyledTitle>{formatMessage(podcastMessages.term.podcastPlan)}</StyledTitle>
         <Form>
           {currentUserRole !== 'content-creator' && (
-            <Form.Item label="選擇講師">
+            <Form.Item label={formatMessage(commonMessages.label.selectInstructor)}>
               {form.getFieldDecorator('creatorId', {
                 initialValue: podcastPlan ? podcastPlan.creatorId : '',
-                rules: [{ required: true, message: '請輸入帳號 或 Email' }],
+                rules: [{ required: true, message: formatMessage(errorMessages.form.selectInstructor) }],
               })(<CreatorSelector />)}
             </Form.Item>
           )}
-          <Form.Item label="販售狀態">
+          <Form.Item label={formatMessage(commonMessages.label.sellingStatus)}>
             {form.getFieldDecorator('status', {
               initialValue: podcastPlan ? podcastPlan.isPublished : true,
               rules: [{ required: true }],
             })(
               <Radio.Group>
-                <Radio value={true}>發佈，立刻開賣訂閱方案</Radio>
-                <Radio value={false}>停售，方案暫停對外銷售，並從廣播頁中隱藏</Radio>
+                <Radio value={true}>{formatMessage(messages.planPublished)}</Radio>
+                <Radio value={false}>{formatMessage(messages.planNotPublished)}</Radio>
               </Radio.Group>,
             )}
           </Form.Item>
-          <Form.Item label="訂閱週期">
+          <Form.Item label={formatMessage(commonMessages.label.periodType)}>
             {form.getFieldDecorator('period', {
               initialValue: {
                 amount: podcastPlan ? podcastPlan.periodAmount : 1,
                 type: podcastPlan ? podcastPlan.periodType : 'D',
               },
-              rules: [{ required: true, message: '請輸入訂閱週期' }],
+              rules: [
+                {
+                  required: true,
+                  message: formatMessage(errorMessages.form.isRequired, {
+                    field: formatMessage(commonMessages.label.periodType),
+                  }),
+                },
+              ],
             })(<PodcastPeriodSelector />)}
           </Form.Item>
-          <Form.Item label="定價">
+          <Form.Item label={formatMessage(commonMessages.label.listPrice)}>
             {form.getFieldDecorator('listPrice', {
               initialValue: podcastPlan ? podcastPlan.listPrice : 0,
-              rules: [{ required: true, message: '請輸入定價' }, { type: 'number' }],
+              rules: [
+                {
+                  required: true,
+                  message: formatMessage(errorMessages.form.isRequired, {
+                    field: formatMessage(commonMessages.label.listPrice),
+                  }),
+                },
+                { type: 'number' },
+              ],
             })(
               <InputNumber
                 min={0}
@@ -170,13 +196,21 @@ const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
             )}
           </Form.Item>
           <Checkbox checked={withSalePrice} onChange={e => setWithSalePrice(e.target.checked)}>
-            優惠價
+            {formatMessage(commonMessages.label.salePrice)}
           </Checkbox>
           {withSalePrice && (
-            <Form.Item label="優惠價">
+            <Form.Item label={formatMessage(commonMessages.label.salePrice)}>
               {form.getFieldDecorator('salePrice', {
                 initialValue: podcastPlan ? podcastPlan.salePrice : 0,
-                rules: [{ required: true, message: '請輸入優惠價' }, { type: 'number' }],
+                rules: [
+                  {
+                    required: true,
+                    message: formatMessage(errorMessages.form.isRequired, {
+                      field: formatMessage(commonMessages.label.salePrice),
+                    }),
+                  },
+                  { type: 'number' },
+                ],
               })(
                 <InputNumber
                   min={0}
@@ -188,16 +222,16 @@ const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
               {form.getFieldDecorator('soldAt', {
                 initialValue: podcastPlan && podcastPlan.soldAt ? moment(podcastPlan.soldAt) : null,
                 rules: [{ required: true }],
-              })(<DatePicker placeholder="優惠截止日期" />)}
+              })(<DatePicker placeholder={formatMessage(commonMessages.label.salePriceEndTime)} />)}
             </Form.Item>
           )}
         </Form>
         <div className="text-right">
           <Button className="mr-2" onClick={() => onVisibleSet(false)}>
-            取消
+            {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" htmlType="submit" loading={loading} onClick={() => handleSubmit()}>
-            儲存
+            {formatMessage(commonMessages.ui.save)}
           </Button>
         </div>
       </Modal>

@@ -4,9 +4,11 @@ import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import types from '../../types'
 import MemberAvatar from '../../containers/common/MemberAvatar'
+import { commonMessages, errorMessages } from '../../helpers/translation'
+import types from '../../types'
 
 export const StyledEditor = styled(BraftEditor)`
   .bf-content {
@@ -19,6 +21,7 @@ type IssueReplyCreationBlockProps = FormComponentProps & {
   onRefetch?: () => void
 }
 const IssueReplyCreationBlock: React.FC<IssueReplyCreationBlockProps> = ({ memberId, issueId, form, onRefetch }) => {
+  const { formatMessage } = useIntl()
   const [insertIssueReply] = useMutation<types.INSERT_ISSUE_REPLY, types.INSERT_ISSUE_REPLYVariables>(
     INSERT_ISSUE_REPLY,
   )
@@ -58,19 +61,18 @@ const IssueReplyCreationBlock: React.FC<IssueReplyCreationBlockProps> = ({ membe
       <Form.Item className="mb-1">
         {form.getFieldDecorator('content', {
           initialValue: BraftEditor.createEditorState(null),
-          rules: [{ required: true, message: '請輸入回覆內容' }],
+          rules: [{ required: true, message: formatMessage(errorMessages.form.issueContent) }],
         })(
           <StyledEditor
             style={{ border: '1px solid #cdcdcd', borderRadius: '4px' }}
             language="zh-hant"
-            placeholder="回覆..."
             controls={['bold', 'italic', 'underline', 'separator', 'media']}
           />,
         )}
       </Form.Item>
       <Form.Item style={{ textAlign: 'right' }}>
         <Button type="primary" htmlType="submit" loading={replying}>
-          回覆
+          {formatMessage(commonMessages.ui.reply)}
         </Button>
       </Form.Item>
     </Form>

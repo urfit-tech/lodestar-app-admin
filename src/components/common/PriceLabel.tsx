@@ -1,6 +1,8 @@
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { currencyFormatter, getShortenPeriodTypeLabel } from '../../helpers'
+import { currencyFormatter } from '../../helpers'
+import { commonMessages } from '../../helpers/translation'
 import { ProgramPlanPeriodType } from '../../schemas/program'
 
 const StyledPriceLabel = styled.div`
@@ -20,21 +22,8 @@ const StyledPriceLabel = styled.div`
       letter-spacing: 0.2px;
     }
   }
-  &.discount-down-price {
-    ::before {
-      content: '首期';
-    }
-  }
-  &.discount-down-price + & {
-    ::before {
-      content: '第二期開始';
-    }
-  }
-  &.sale-price + & {
-    ::before {
-      content: '原價';
-    }
 
+  &.sale-price + & {
     color: var(--black-45);
     font-size: 14px;
     line-height: normal;
@@ -43,6 +32,14 @@ const StyledPriceLabel = styled.div`
   }
 `
 
+const messages = defineMessages({
+  firstPeriod: { id: 'price.label.firstPeriod', defaultMessage: '首期' },
+  second: { id: 'price.label.second', defaultMessage: '第二期開始' },
+  originalPrice: { id: 'price.label.originalPrice', defaultMessage: '原價' },
+  free: { id: 'price.label.free', defaultMessage: '免費' },
+  perPeriods: { id: 'price.label.perPeriods', defaultMessage: '每 {amount} {unit}' },
+})
+
 const PriceLabel: React.FC<{
   listPrice: number
   salePrice?: number
@@ -50,6 +47,7 @@ const PriceLabel: React.FC<{
   periodAmount?: number
   periodType?: ProgramPlanPeriodType
 }> = ({ listPrice, salePrice, downPrice, periodAmount, periodType }) => {
+  const { formatMessage } = useIntl()
   const price = salePrice || listPrice
   const firstPeriodPrice = price - (downPrice || 0)
 
@@ -57,7 +55,8 @@ const PriceLabel: React.FC<{
     <div>
       {typeof downPrice === 'number' && (
         <StyledPriceLabel className="discount-down-price">
-          {firstPeriodPrice <= 0 ? '免費' : ''}
+          {formatMessage(messages.firstPeriod)}
+          {firstPeriodPrice <= 0 ? formatMessage(messages.free) : ''}
           {' ' + currencyFormatter(firstPeriodPrice)}
         </StyledPriceLabel>
       )}
@@ -65,26 +64,47 @@ const PriceLabel: React.FC<{
       {typeof salePrice === 'number' && (
         <StyledPriceLabel className="sale-price">
           <span>
-            {salePrice === 0 ? '免費' : ''}
+            {typeof downPrice === 'number' ? formatMessage(messages.second) : ''}
+            {salePrice === 0 ? formatMessage(messages.free) : ''}
             {' ' + currencyFormatter(salePrice)}
           </span>
           <span>
             {periodType &&
-              ` 每${periodAmount && periodAmount > 1 ? ` ${periodAmount} ` : ''}` +
-                `${periodType === 'M' ? '個' : ''}${getShortenPeriodTypeLabel(periodType)}`}
+              formatMessage(messages.perPeriods, {
+                amount: periodAmount && periodAmount > 1 ? ` ${periodAmount} ` : '',
+                unit:
+                  periodType === 'W'
+                    ? formatMessage(commonMessages.label.week)
+                    : periodType === 'M'
+                    ? formatMessage(commonMessages.label.month)
+                    : periodType === 'Y'
+                    ? formatMessage(commonMessages.label.year)
+                    : '',
+              })}
           </span>
         </StyledPriceLabel>
       )}
 
       <StyledPriceLabel>
         <span>
-          {listPrice === 0 ? '免費 ' : ''}
-          {currencyFormatter(listPrice)}
+          {typeof downPrice === 'number' && typeof salePrice === 'undefined' ? formatMessage(messages.second) : ''}
+          {typeof salePrice === 'number' ? formatMessage(messages.originalPrice) : ''}
+          {listPrice === 0 ? formatMessage(messages.free) : ''}
+          {' ' + currencyFormatter(listPrice)}
         </span>
         <span>
           {periodType &&
-            ` 每${periodAmount && periodAmount > 1 ? ` ${periodAmount} ` : ''}` +
-              `${periodType === 'M' ? '個' : ''}${getShortenPeriodTypeLabel(periodType)}`}
+            formatMessage(messages.perPeriods, {
+              amount: periodAmount && periodAmount > 1 ? ` ${periodAmount} ` : '',
+              unit:
+                periodType === 'W'
+                  ? formatMessage(commonMessages.label.week)
+                  : periodType === 'M'
+                  ? formatMessage(commonMessages.label.month)
+                  : periodType === 'Y'
+                  ? formatMessage(commonMessages.label.year)
+                  : '',
+            })}
         </span>
       </StyledPriceLabel>
     </div>

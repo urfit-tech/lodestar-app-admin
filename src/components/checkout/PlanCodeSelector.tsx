@@ -39,7 +39,7 @@ const PlanCodeSelector: React.FC<PlanCodeSelectorProps> = ({ planType, value, on
         onClick={() => onChange && onChange([...(value || []), { type: 'random', code: null, count: 1 }])}
         icon="plus"
       >
-        {formatMessage(promotionMessages.label.create)}
+        {formatMessage(promotionMessages.label.create)}{' '}
         {planType === 'coupon'
           ? formatMessage(promotionMessages.term.couponCodes)
           : formatMessage(promotionMessages.term.voucherCodes)}

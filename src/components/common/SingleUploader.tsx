@@ -4,7 +4,16 @@ import { UploadChangeParam, UploadFile } from 'antd/lib/upload/interface'
 import axios, { Canceler } from 'axios'
 import { extname } from 'path'
 import React, { useRef, useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import { uploadFile } from '../../helpers'
+
+const messages = defineMessages({
+  uploadSuccess: { id: 'upload.event.success', defaultMessage: '上傳成功' },
+  uploadFailed: { id: 'upload.event.failed', defaultMessage: '上傳失敗' },
+  uploading: { id: 'upload.event.uploading', defaultMessage: '上傳中' },
+  uploadRetry: { id: 'upload.label.retry', defaultMessage: '重新上傳' },
+  uploadFile: { id: 'upload.label.uploadFile', defaultMessage: '上傳檔案' },
+})
 
 type SingleUploaderProps = UploadProps & {
   path: string
@@ -38,8 +47,10 @@ const SingleUploader: React.FC<SingleUploaderProps> = (
   },
   ref,
 ) => {
+  const { formatMessage } = useIntl()
   const [loading, setLoading] = useState()
   const uploadCanceler = useRef<Canceler>()
+
   const props: UploadProps = {
     ...uploadProps,
     fileList: value ? [value] : [],
@@ -50,9 +61,9 @@ const SingleUploader: React.FC<SingleUploaderProps> = (
       } else {
         setLoading(false)
         if (info.file.status === 'done') {
-          onSuccess ? onSuccess(info) : message.success(`${info.file.name} 上傳成功`)
+          onSuccess ? onSuccess(info) : message.success(`${info.file.name} ${formatMessage(messages.uploadSuccess)}`)
         } else if (info.file.status === 'error') {
-          onError ? onError(info) : message.error(`${info.file.name} 上傳失敗`)
+          onError ? onError(info) : message.error(`${info.file.name} ${formatMessage(messages.uploadFailed)}`)
         }
       }
     },
@@ -92,11 +103,13 @@ const SingleUploader: React.FC<SingleUploaderProps> = (
       ) : loading ? (
         <div>
           <Spin />
-          <div style={{ color: '#585858' }}>上傳中</div>
+          <div style={{ color: '#585858' }}>{formatMessage(messages.uploading)}</div>
         </div>
       ) : (
         <Button icon="upload" loading={loading} disabled={loading}>
-          {value ? reUploadText || '重新上傳' : uploadText || '上傳檔案'}
+          {value
+            ? reUploadText || formatMessage(messages.uploadRetry)
+            : uploadText || formatMessage(messages.uploadFile)}
         </Button>
       )}
     </Upload>

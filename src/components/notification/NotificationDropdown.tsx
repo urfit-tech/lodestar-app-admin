@@ -2,6 +2,7 @@ import { useMutation } from '@apollo/react-hooks'
 import { Badge, Button, List, Popover } from 'antd'
 import gql from 'graphql-tag'
 import React, { useEffect } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import { useNotifications } from '../../hooks/data'
@@ -48,10 +49,16 @@ const StyledReadAllButton = styled(Button)`
   color: var(--gray-dark);
 `
 
-type NotificationDropdownProps = {
+const messages = defineMessages({
+  checkNotifications: { id: 'notification.ui.checkNotifications', defaultMessage: '查看通知' },
+  notification: { id: 'notification.term.notification', defaultMessage: '通知' },
+  markAllAsRead: { id: 'notification.ui.markAllAsRead', defaultMessage: '全部標示為已讀' },
+})
+
+const NotificationDropdown: React.FC<{
   memberId: string
-}
-const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ memberId }) => {
+}> = ({ memberId }) => {
+  const { formatMessage } = useIntl()
   const { history } = useRouter()
   const { notifications, startPolling, refetch } = useNotifications(memberId, 15)
 
@@ -83,7 +90,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ memberId })
       </StyledList>
       <StyledAction>
         <Button type="link" block onClick={() => history.push('/notifications')}>
-          查看通知
+          {formatMessage(messages.checkNotifications)}
         </Button>
       </StyledAction>
     </Wrapper>
@@ -95,7 +102,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ memberId })
       trigger="click"
       title={
         <div className="d-flex align-items-center justify-content-between">
-          <span>通知</span>
+          <span>{formatMessage(messages.notification)}</span>
           <StyledReadAllButton
             type="link"
             size="small"
@@ -107,7 +114,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ memberId })
               }).then(() => refetch())
             }
           >
-            全部標示為已讀
+            {formatMessage(messages.markAllAsRead)}
           </StyledReadAllButton>
         </div>
       }

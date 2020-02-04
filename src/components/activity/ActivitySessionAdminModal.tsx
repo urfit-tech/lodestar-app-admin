@@ -64,13 +64,27 @@ const ActivitySessionAdminModal: React.FC<ActivitySessionAdminModalProps> = ({
       <Form hideRequiredMark>
         <Form.Item label={formatMessage(activityMessages.term.sessionTitle)} colon={false}>
           {form.getFieldDecorator('title', {
-            rules: [{ required: true, message: formatMessage(errorMessages.form.title) }],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.label.title),
+                }),
+              },
+            ],
             initialValue: activitySession ? activitySession.title : '',
           })(<Input />)}
         </Form.Item>
         <Form.Item label={formatMessage(commonMessages.label.startedAt)} colon={false}>
           {form.getFieldDecorator('startedAt', {
-            rules: [{ required: true, message: formatMessage(errorMessages.form.startedAt) }],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.label.startedAt),
+                }),
+              },
+            ],
             initialValue: activitySession ? moment(activitySession.startedAt) : null,
           })(
             <DatePicker
@@ -82,7 +96,14 @@ const ActivitySessionAdminModal: React.FC<ActivitySessionAdminModalProps> = ({
         </Form.Item>
         <Form.Item label={formatMessage(commonMessages.label.endedAt)} colon={false}>
           {form.getFieldDecorator('endedAt', {
-            rules: [{ required: true, message: formatMessage(errorMessages.form.endedAt) }],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.label.endedAt),
+                }),
+              },
+            ],
             initialValue: activitySession ? moment(activitySession.endedAt) : null,
           })(
             <DatePicker
@@ -94,7 +115,14 @@ const ActivitySessionAdminModal: React.FC<ActivitySessionAdminModalProps> = ({
         </Form.Item>
         <Form.Item label={formatMessage(activityMessages.term.location)} colon={false}>
           {form.getFieldDecorator('location', {
-            rules: [{ required: true, message: formatMessage(errorMessages.form.location) }],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(activityMessages.term.location),
+                }),
+              },
+            ],
             initialValue: activitySession ? activitySession.location : '',
           })(<Input />)}
         </Form.Item>

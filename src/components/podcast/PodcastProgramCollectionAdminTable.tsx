@@ -1,9 +1,11 @@
 import { Button, Icon, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import { currencyFormatter } from '../../helpers'
+import { commonMessages, podcastMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { CustomRatioImage } from '../common/Image'
 
@@ -78,12 +80,12 @@ const getColumnSearchProps: (events: {
       <div className="row">
         <div className="col-6">
           <Button type="primary" size="small" icon="search" block onClick={() => onSearch(selectedKeys, confirm)}>
-            查詢
+            Search
           </Button>
         </div>
         <div className="col-6">
           <Button size="small" block onClick={() => onReset(clearFilters)}>
-            重置
+            Reset
           </Button>
         </div>
       </div>
@@ -95,6 +97,7 @@ const getColumnSearchProps: (events: {
 const PodcastProgramCollectionAdminTable: React.FC<{
   podcastPrograms: PodcastProgramProps[]
 }> = ({ podcastPrograms }) => {
+  const { formatMessage } = useIntl()
   const { history } = useRouter()
 
   const [titleSearch, setTitleSearch] = useState('')
@@ -102,7 +105,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
 
   const columns: ColumnProps<PodcastProgramProps>[] = [
     {
-      title: '名稱',
+      title: formatMessage(commonMessages.label.title),
       dataIndex: 'title',
       key: 'title',
       render: (text, record, index) => (
@@ -128,7 +131,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       }),
     },
     {
-      title: '老師',
+      title: formatMessage(commonMessages.term.instructor),
       dataIndex: 'instructorName',
       key: 'instructorName',
       width: '12rem',
@@ -145,7 +148,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       }),
     },
     {
-      title: '售價',
+      title: formatMessage(commonMessages.term.price),
       dataIndex: 'price',
       key: 'price',
       width: '12rem',
@@ -161,7 +164,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       sortDirections: ['ascend', 'descend'],
     },
     {
-      title: '購買',
+      title: formatMessage(podcastMessages.label.salesCount),
       dataIndex: 'salesCount',
       key: 'salesCount',
       width: '7rem',
@@ -171,26 +174,28 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       sortDirections: ['ascend', 'descend'],
     },
     {
-      title: '狀態',
+      title: formatMessage(podcastMessages.label.status),
       dataIndex: 'status',
       key: 'status',
       width: '7rem',
       render: (text, record, index) => (
         <StyledStatusLabel active={record.isPublished} className="d-flex align-items-center justify-content-start">
-          {record.isPublished ? '已發佈' : '未發佈'}
+          {record.isPublished
+            ? formatMessage(podcastMessages.status.published)
+            : formatMessage(podcastMessages.status.notPublished)}
         </StyledStatusLabel>
       ),
       filters: [
         {
-          text: '已發佈',
-          value: '已發佈',
+          text: formatMessage(podcastMessages.status.published),
+          value: formatMessage(podcastMessages.status.published),
         },
         {
-          text: '未發佈',
-          value: '未發佈',
+          text: formatMessage(podcastMessages.status.notPublished),
+          value: formatMessage(podcastMessages.status.notPublished),
         },
       ],
-      onFilter: (value, record) => record.isPublished === (value === '已發佈'),
+      onFilter: (value, record) => record.isPublished === (value === formatMessage(podcastMessages.status.published)),
     },
   ]
 

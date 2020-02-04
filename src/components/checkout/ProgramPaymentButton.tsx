@@ -1,6 +1,7 @@
 import { Button, Icon } from 'antd'
 import { ButtonProps } from 'antd/lib/button'
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import useRouter from 'use-react-router'
 import { InferType } from 'yup'
@@ -24,6 +25,14 @@ const StyleButton = styled(Button)<{ variant?: string }>`
     `}
 `
 
+const messages = defineMessages({
+  soldOut: { id: 'program.ui.soldOut', defaultMessage: '已售完' },
+  goToCart: { id: 'program.ui.goToCart', defaultMessage: '前往購物車' },
+  addToCart: { id: 'program.ui.addToCart', defaultMessage: '加入購物車' },
+  buyNow: { id: 'program.ui.buyNow', defaultMessage: '立即購買' },
+  joinNow: { id: 'program.ui.joinNow', defaultMessage: '立即參與' },
+})
+
 type ProgramPaymentButtonProps = {
   memberId: string
   program: InferType<typeof programSchema>
@@ -37,17 +46,18 @@ const ProgramPaymentButton: React.FC<ProgramPaymentButtonProps> = ({
   orderButtonProps,
   variant,
 }) => {
+  const { formatMessage } = useIntl()
   const { history } = useRouter()
   const { addCartProduct, findCartProduct } = useCart()
   const cartProduct = findCartProduct('Program', program.id)
 
   return program.isSoldOut ? (
     <Button block disabled>
-      已售完
+      {formatMessage(messages.soldOut)}
     </Button>
   ) : cartProduct ? (
     <Button block type="primary" onClick={() => history.push(`/cart`)}>
-      前往購物車
+      {formatMessage(messages.goToCart)}
     </Button>
   ) : (
     <div className={variant === 'multiline' ? 'd-flex flex-column' : 'd-flex'}>
@@ -60,7 +70,7 @@ const ProgramPaymentButton: React.FC<ProgramPaymentButtonProps> = ({
           {...cartButtonProps}
         >
           <Icon type="shopping-cart" />
-          <span className="ml-2">加入購物車</span>
+          <span className="ml-2">{formatMessage(messages.addToCart)}</span>
         </StyleButton>
       )}
 
@@ -73,7 +83,7 @@ const ProgramPaymentButton: React.FC<ProgramPaymentButtonProps> = ({
         }}
         {...orderButtonProps}
       >
-        {program.listPrice !== 0 ? '立即購買' : '立即參與'}
+        {program.listPrice !== 0 ? formatMessage(messages.buyNow) : formatMessage(messages.joinNow)}
       </Button>
     </div>
   )

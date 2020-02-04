@@ -5,14 +5,16 @@ import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled, { ThemeContext } from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { InferType } from 'yup'
+import MemberAvatar from '../../containers/common/MemberAvatar'
 import { useAuth } from '../../contexts/AuthContext'
 import { programRoleFormatter, rgba } from '../../helpers'
+import { commonMessages, programMessages } from '../../helpers/translation'
 import { programRoleSchema } from '../../schemas/program'
 import types from '../../types'
-import MemberAvatar from '../../containers/common/MemberAvatar'
 import { BraftContent } from '../common/StyledBraftEditor'
 import IssueReplyCollectionBlock from './IssueReplyCollectionBlock'
 import { StyledEditor } from './IssueReplyCreationBlock'
@@ -49,6 +51,12 @@ const StyledTag = styled(Tag)<{ variant?: string }>`
   }
 `
 
+const messages = defineMessages({
+  editIssueFailed: { id: 'program.event.editIssueFailed', defaultMessage: '無法更改問題' },
+  deleteIssuePrompt: { id: 'program.label.deleteIssuePrompt', defaultMessage: '此問題的留言將被一併刪除' },
+  markIssueAs: { id: 'program.label.markIssueAs', defaultMessage: '標記為 {status}' },
+})
+
 type IssueItemProps = FormComponentProps & {
   programRoles: Array<InferType<typeof programRoleSchema>>
   issueId: string
@@ -78,6 +86,7 @@ const IssueItem: React.FC<IssueItemProps> = ({
   defaultRepliesVisible,
   showSolvedCheckbox,
 }) => {
+  const { formatMessage } = useIntl()
   const [qIssueId] = useQueryParam('issueId', StringParam)
   const [qIssueReplyId] = useQueryParam('issueReplyId', StringParam)
   const { currentMemberId } = useAuth()
@@ -132,7 +141,7 @@ const IssueItem: React.FC<IssueItemProps> = ({
             setEditing(false)
             onRefetch && onRefetch()
           })
-          .catch(err => message.error('無法更改問題'))
+          .catch(err => message.error(formatMessage(messages.editIssueFailed)))
       }
     })
   }
@@ -186,14 +195,14 @@ const IssueItem: React.FC<IssueItemProps> = ({
             placement="bottomRight"
             overlay={
               <Menu>
-                <Menu.Item onClick={() => setEditing(true)}>編輯問題</Menu.Item>
+                <Menu.Item onClick={() => setEditing(true)}>{formatMessage(commonMessages.ui.edit)}</Menu.Item>
                 <Menu.Item
                   onClick={() =>
-                    window.confirm('此問題的留言將被一併刪除') &&
+                    window.confirm(formatMessage(messages.deleteIssuePrompt)) &&
                     deleteIssue({ variables: { issueId } }).then(() => onRefetch && onRefetch())
                   }
                 >
-                  刪除問題
+                  {formatMessage(commonMessages.ui.delete)}
                 </Menu.Item>
                 <Menu.Item
                   onClick={() =>
@@ -207,7 +216,11 @@ const IssueItem: React.FC<IssueItemProps> = ({
                     }).then(() => onRefetch && onRefetch())
                   }
                 >
-                  標示為{solvedAt ? '未解決' : '已解決'}
+                  {formatMessage(messages.markIssueAs, {
+                    status: solvedAt
+                      ? formatMessage(programMessages.status.issueOpen)
+                      : formatMessage(programMessages.status.issueSolved),
+                  })}
                 </Menu.Item>
               </Menu>
             }
@@ -229,10 +242,10 @@ const IssueItem: React.FC<IssueItemProps> = ({
             </Form.Item>
             <Form.Item>
               <Button className="mr-2" onClick={() => setEditing(false)}>
-                取消
+                {formatMessage(commonMessages.ui.cancel)}
               </Button>
               <Button type="primary" htmlType="submit">
-                儲存
+                {formatMessage(commonMessages.ui.save)}
               </Button>
             </Form.Item>
           </Form>
@@ -265,7 +278,15 @@ const IssueItem: React.FC<IssueItemProps> = ({
               <span>{numReplies}</span>
             </StyledAction>
           </div>
-          <div>{!showSolvedCheckbox && <IssueState type="secondary">{solvedAt ? '已解決' : '解決中'}</IssueState>}</div>
+          <div>
+            {!showSolvedCheckbox && (
+              <IssueState type="secondary">
+                {solvedAt
+                  ? formatMessage(programMessages.status.issueSolved)
+                  : formatMessage(programMessages.status.issueOpen)}
+              </IssueState>
+            )}
+          </div>
         </div>
 
         {repliesVisible && <IssueReplyCollectionBlock programRoles={programRoles} issueId={issueId} />}

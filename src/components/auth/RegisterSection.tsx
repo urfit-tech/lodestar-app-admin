@@ -78,14 +78,26 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChan
         <Form.Item>
           {form.getFieldDecorator('email', {
             rules: [
-              { required: true, message: formatMessage(errorMessages.form.email) },
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.label.email),
+                }),
+              },
               { type: 'email', message: formatMessage(errorMessages.form.emailFormat) },
             ],
           })(<Input placeholder="Email" suffix={<Icon type="mail" />} />)}
         </Form.Item>
         <Form.Item>
           {form.getFieldDecorator('password', {
-            rules: [{ required: true, message: formatMessage(errorMessages.form.password) }],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.label.password),
+                }),
+              },
+            ],
           })(
             <Input
               type="password"

@@ -1,8 +1,10 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import { InferType } from 'yup'
 import { useAuth } from '../../contexts/AuthContext'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { programRoleSchema } from '../../schemas/program'
 import types from '../../types'
 import IssueReplyCreationBlock from './IssueReplyCreationBlock'
@@ -13,6 +15,7 @@ interface IssueReplyCollectionBlockProps {
   issueId: string
 }
 const IssueReplyCollectionBlock: React.FC<IssueReplyCollectionBlockProps> = ({ programRoles, issueId }) => {
+  const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const { loading, data, error, refetch } = useQuery<types.GET_ISSUE_REPLIES, types.GET_ISSUE_REPLIESVariables>(
     GET_ISSUE_REPLIES,
@@ -24,9 +27,9 @@ const IssueReplyCollectionBlock: React.FC<IssueReplyCollectionBlockProps> = ({ p
   return (
     <>
       {loading
-        ? '載入回覆中'
+        ? formatMessage(commonMessages.label.loading)
         : error || !data
-        ? '無法載入回覆'
+        ? formatMessage(errorMessages.data.fetch)
         : data.issue_reply.map((value: any) => (
             <div key={value.id} className="mt-5">
               <IssueReplyItem

@@ -2,9 +2,11 @@ import { Icon, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { ApolloError, ApolloQueryResult } from 'apollo-client'
 import React, { useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import PodcastPlanUpdateModal from '../../containers/podcast/PodcastPlanUpdateModal'
 import { currencyFormatter, getCustomizedPeriodTypeLabel } from '../../helpers'
+import { commonMessages, podcastMessages } from '../../helpers/translation'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { PeriodType } from '../../schemas/common'
 import types from '../../types'
@@ -55,6 +57,10 @@ const StyledStatusLabel = styled.div<{ active?: boolean }>`
   }
 `
 
+const messages = defineMessages({
+  plan: { id: 'podcast.label.plan', defaultMessage: '方案' },
+})
+
 const getColumnSearchProps: (
   onSearch: (selectedKeys?: string[], confirm?: () => void) => void,
 ) => ColumnProps<PodcastPlanProps> = onSearch => ({
@@ -97,13 +103,14 @@ export type PodcastPlanProps = PodcastPlan & {
   sorter?: number
 }
 const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableProps> = ({ podcastPlans, refetch }) => {
+  const { formatMessage } = useIntl()
   const [creatorSearch, setCreatorSearch] = useState('')
   const [isVisible, setVisible] = useState(false)
   const [programPlanId, setProgramPlanId] = useState('')
 
   const columns: ColumnProps<PodcastPlanProps>[] = [
     {
-      title: '老師',
+      title: formatMessage(commonMessages.term.instructor),
       dataIndex: 'creator',
       key: 'creator',
       width: '12rem',
@@ -123,7 +130,7 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       }),
     },
     {
-      title: '方案',
+      title: formatMessage(messages.plan),
       dataIndex: 'price',
       key: 'price',
       width: '15rem',
@@ -131,19 +138,19 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
         <div>
           {typeof record.salePrice === 'number' && !!record.salePrice && (
             <StyledPriceLabel className="mr-2">
-              {currencyFormatter(record.salePrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}
+              {currencyFormatter(record.salePrice)} /{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}
               {getCustomizedPeriodTypeLabel(record.periodType)}
             </StyledPriceLabel>
           )}
           <StyledPriceLabel className="mr-2">
-            {currencyFormatter(record.listPrice)} 每{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}
+            {currencyFormatter(record.listPrice)} /{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}
             {getCustomizedPeriodTypeLabel(record.periodType)}
           </StyledPriceLabel>
         </div>
       ),
     },
     {
-      title: '購買',
+      title: formatMessage(podcastMessages.label.salesCount),
       dataIndex: 'salesCount',
       key: 'salesCount',
       width: '6rem',
@@ -153,25 +160,27 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
       sorter: (a, b) => a.salesCount - b.salesCount,
     },
     {
-      title: '狀態',
+      title: formatMessage(podcastMessages.label.status),
       dataIndex: 'status',
       key: 'status',
       width: '6rem',
       filters: [
         {
-          text: '已發佈',
-          value: '已發佈',
+          text: formatMessage(podcastMessages.status.published),
+          value: formatMessage(podcastMessages.status.published),
         },
         {
-          text: '未發佈',
-          value: '未發佈',
+          text: formatMessage(podcastMessages.status.notPublished),
+          value: formatMessage(podcastMessages.status.notPublished),
         },
       ],
       filterMultiple: false,
-      onFilter: (value, record) => record.isPublished === (value === '已發佈'),
+      onFilter: (value, record) => record.isPublished === (value === formatMessage(podcastMessages.status.published)),
       render: (text, record, index) => (
         <StyledStatusLabel active={record.isPublished} className="d-flex align-items-center justify-content-start">
-          {record.isPublished ? '已發佈' : '未發佈'}
+          {record.isPublished
+            ? formatMessage(podcastMessages.status.published)
+            : formatMessage(podcastMessages.status.notPublished)}
         </StyledStatusLabel>
       ),
     },

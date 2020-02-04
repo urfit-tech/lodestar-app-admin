@@ -4,16 +4,22 @@ import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled, { ThemeContext } from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { InferType } from 'yup'
+import MemberAvatar from '../../containers/common/MemberAvatar'
 import { useAuth } from '../../contexts/AuthContext'
 import { programRoleFormatter, rgba } from '../../helpers'
+import { commonMessages } from '../../helpers/translation'
 import { programRoleSchema } from '../../schemas/program'
 import types from '../../types'
-import MemberAvatar from '../../containers/common/MemberAvatar'
 import { BraftContent } from '../common/StyledBraftEditor'
 import { StyledEditor } from './IssueReplyCreationBlock'
+
+const messages = defineMessages({
+  updateIssueFailed: { id: 'error.event.updateIssueFailed', defaultMessage: '無法更新回復' },
+})
 
 const IssueReplyContentBlock = styled.div`
   padding: 1rem;
@@ -58,6 +64,7 @@ const IssueReplyItem: React.FC<IssueReplyItemProps> = ({
   memberId,
   onRefetch,
 }) => {
+  const { formatMessage } = useIntl()
   const [qIssueReplyId] = useQueryParam('issueReplyId', StringParam)
   const { currentMemberId } = useAuth()
   const theme = useContext(ThemeContext)
@@ -146,14 +153,14 @@ const IssueReplyItem: React.FC<IssueReplyItemProps> = ({
             placement="bottomRight"
             overlay={
               <Menu>
-                <Menu.Item onClick={() => setEditing(true)}>編輯回覆</Menu.Item>
+                <Menu.Item onClick={() => setEditing(true)}>{formatMessage(commonMessages.ui.edit)}</Menu.Item>
                 <Menu.Item
                   onClick={() =>
-                    window.confirm('此動作無法復原') &&
+                    window.confirm(formatMessage(commonMessages.label.cannotRecover)) &&
                     deleteIssueReply({ variables: { issueReplyId } }).then(() => onRefetch && onRefetch())
                   }
                 >
-                  刪除回覆
+                  {formatMessage(commonMessages.ui.delete)}
                 </Menu.Item>
               </Menu>
             }
@@ -175,7 +182,7 @@ const IssueReplyItem: React.FC<IssueReplyItemProps> = ({
               />
               <div>
                 <Button className="mr-2" onClick={() => setEditing(false)}>
-                  取消
+                  {formatMessage(commonMessages.ui.cancel)}
                 </Button>
                 <Button
                   type="primary"
@@ -187,10 +194,10 @@ const IssueReplyItem: React.FC<IssueReplyItemProps> = ({
                         onRefetch && onRefetch()
                         setEditing(false)
                       })
-                      .catch(err => message.error(`無法更新回覆`))
+                      .catch(err => message.error(formatMessage(messages.updateIssueFailed)))
                   }
                 >
-                  儲存
+                  {formatMessage(commonMessages.ui.save)}
                 </Button>
               </div>
             </>

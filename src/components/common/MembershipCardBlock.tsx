@@ -1,6 +1,7 @@
 import { Icon } from 'antd'
 import moment from 'moment'
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import MembershipCard from './MembershipCard'
 import { BraftContent } from './StyledBraftEditor'
@@ -27,6 +28,11 @@ const StyledSubTitle = styled.div`
   letter-spacing: 0.18px;
 `
 
+const messages = defineMessages({
+  endedAt: { id: 'membershipCard.label.endedAt', defaultMessage: '{date} 止' },
+  noLimit: { id: 'membershipCard.label.noLimit', defaultMessage: '無使用期限' },
+})
+
 const MembershipCardBlock: React.FC<{
   template: string
   templateVars?: any
@@ -35,6 +41,8 @@ const MembershipCardBlock: React.FC<{
   description?: string
   variant?: string
 }> = ({ template, templateVars, title, expiredAt, description, variant }) => {
+  const { formatMessage } = useIntl()
+
   if (variant === 'list-item') {
     return (
       <div className="d-flex justify-content-between">
@@ -59,7 +67,9 @@ const MembershipCardBlock: React.FC<{
 
       <StyledSubTitle>
         <Icon type="calendar" className="mr-2" />
-        {expiredAt ? moment(expiredAt).format('YYYY/MM/DD') + ' 止' : '無使用期限'}
+        {expiredAt
+          ? formatMessage(messages.endedAt, { date: moment(expiredAt).format('YYYY/MM/DD') })
+          : formatMessage(messages.noLimit)}
       </StyledSubTitle>
 
       {description && <BraftContent>{description}</BraftContent>}

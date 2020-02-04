@@ -1,11 +1,15 @@
 import { InputNumber, Select } from 'antd'
 import React from 'react'
+import { useIntl } from 'react-intl'
+import { commonMessages } from '../../helpers/translation'
 import { PeriodType } from '../../schemas/common'
 
 const PodcastPeriodSelector: React.FC<{
   value?: { type: PeriodType; amount: number }
   onChange?: (value: { type: PeriodType; amount: number }) => void
 }> = ({ value, onChange }, ref) => {
+  const { formatMessage } = useIntl()
+
   return (
     <div ref={ref}>
       {typeof value !== 'undefined' && (
@@ -21,10 +25,10 @@ const PodcastPeriodSelector: React.FC<{
             onChange={(type: PeriodType) => onChange && onChange({ ...value, type })}
             style={{ width: '90px' }}
           >
-            <Select.Option value="D">天</Select.Option>
-            <Select.Option value="W">週</Select.Option>
-            <Select.Option value="M">月</Select.Option>
-            <Select.Option value="Y">年</Select.Option>
+            <Select.Option value="D">{formatMessage(commonMessages.label.day)}</Select.Option>
+            <Select.Option value="W">{formatMessage(commonMessages.label.week)}</Select.Option>
+            <Select.Option value="M">{formatMessage(commonMessages.label.month)}</Select.Option>
+            <Select.Option value="Y">{formatMessage(commonMessages.label.year)}</Select.Option>
           </Select>
         </div>
       )}

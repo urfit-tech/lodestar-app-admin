@@ -117,7 +117,14 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
         <Form.Item label={formatMessage(promotionMessages.term.couponPlanTitle)}>
           {form.getFieldDecorator('title', {
             initialValue: couponPlan && couponPlan.title,
-            rules: [{ required: true, message: formatMessage(errorMessages.form.coupontPlanTitle) }],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(promotionMessages.term.couponPlanTitle),
+                }),
+              },
+            ],
           })(<Input />)}
         </Form.Item>
         <Form.Item label={formatMessage(promotionMessages.label.constraint)}>

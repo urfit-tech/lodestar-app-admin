@@ -3,9 +3,11 @@ import { Button, Checkbox, Modal } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { programMessages } from '../../helpers/translation'
 import { useProgram } from '../../hooks/program'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
@@ -31,6 +33,10 @@ const StyledCheckbox = styled(Checkbox)`
   bottom: 24px;
   z-index: 999;
 `
+
+const messages = defineMessages({
+  checkProgramContent: { id: 'program.ui.checkProgramContent', defaultMessage: '查看課程內容' },
+})
 
 type IssueAdminCardProps = CardProps & {
   threadId: string
@@ -59,6 +65,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
   onRefetch,
   ...cardProps
 }) => {
+  const { formatMessage } = useIntl()
   const { domain } = useContext(AppContext)
   const { currentMemberId } = useAuth()
   const { program } = useProgram(programId)
@@ -70,7 +77,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
   const [modalVisible, setModalVisible] = useState()
 
   const programRoles = (program && program.roles) || []
-  const programTitle = program ? program.title || '無課程標題' : ''
+  const programTitle = program?.title
 
   return (
     <>
@@ -108,7 +115,9 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
               }).then(() => setSolved(updatedSolved))
             }}
           >
-            {solvedAt ? '已解決' : '解決中'}
+            {solvedAt
+              ? formatMessage(programMessages.status.issueSolved)
+              : formatMessage(programMessages.status.issueOpen)}
           </StyledCheckbox>
         ) : null}
       </StyledAdminCard>
@@ -121,7 +130,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
           <>
             <span>{programTitle}</span>
             <Button type="link" onClick={() => window.open(`//${domain}${threadId}`)}>
-              查看課程內容
+              {formatMessage(messages.checkProgramContent)}
             </Button>
           </>
         }
