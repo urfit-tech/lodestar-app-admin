@@ -1,7 +1,9 @@
 import { Button, Form, Input } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { commonMessages, promotionMessages } from '../../helpers/translation'
 import { BREAK_POINT } from '../common/Responsive'
 
 const StyledWrapper = styled.div`
@@ -44,11 +46,10 @@ type VoucherInsertBlockProps = FormComponentProps & {
   onInsert?: (setLoading: React.Dispatch<React.SetStateAction<boolean>>, code: string) => void
 }
 const VoucherInsertBlock: React.FC<VoucherInsertBlockProps> = ({ form, onInsert }) => {
+  const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
+  const handleSubmit = () => {
     form.validateFields((err, values) => {
       if (err) {
         return
@@ -62,15 +63,25 @@ const VoucherInsertBlock: React.FC<VoucherInsertBlockProps> = ({ form, onInsert 
 
   return (
     <StyledWrapper>
-      <StyledTitle className="mb-2">新增兌換券</StyledTitle>
+      <StyledTitle className="mb-2">{formatMessage(promotionMessages.ui.addVoucher)}</StyledTitle>
 
-      <Form layout="inline" onSubmit={handleSubmit}>
+      <Form
+        layout="inline"
+        onSubmit={e => {
+          e.preventDefault()
+          handleSubmit()
+        }}
+      >
         <div className="d-flex justify-content-between align-items-center flex-wrap">
           {form.getFieldDecorator('code', { rules: [{ required: true, message: null }] })(
-            <StyledInput placeholder="輸入兌換碼" className="flex-grow-1" autoComplete="off" />,
+            <StyledInput
+              placeholder={formatMessage(promotionMessages.text.enterVoucherCode)}
+              className="flex-grow-1"
+              autoComplete="off"
+            />,
           )}
           <StyledButton loading={loading} type="primary" htmlType="submit" disabled={!form.getFieldValue('code')}>
-            新增
+            {formatMessage(commonMessages.ui.add)}
           </StyledButton>
         </div>
       </Form>

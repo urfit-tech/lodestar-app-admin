@@ -2,15 +2,23 @@ import { Button, Form, Input, message, Typography } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { FormComponentProps } from 'antd/lib/form'
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
+import { handleError } from '../../helpers'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useMember, useUpdateMemberAccount } from '../../hooks/member'
 import AdminCard from '../admin/AdminCard'
 import { StyledForm } from '../layout'
+
+const messages = defineMessages({
+  profileAdminTitle: { id: 'common.label.profileAdminTitle', defaultMessage: '帳號資料' },
+})
 
 type ProfileAccountAdminCardProps = CardProps &
   FormComponentProps & {
     memberId: string
   }
 const ProfileAccountAdminCard: React.FC<ProfileAccountAdminCardProps> = ({ form, memberId, ...cardProps }) => {
+  const { formatMessage } = useIntl()
   const { member } = useMember(memberId)
   const updateMemberAccount = useUpdateMemberAccount()
 
@@ -28,39 +36,46 @@ const ProfileAccountAdminCard: React.FC<ProfileAccountAdminCardProps> = ({ form,
             description: member.description,
           },
         })
-          .then(() => message.success('儲存成功'))
-          .catch(err => message.error(err.message))
+          .then(() => message.success(formatMessage(commonMessages.event.successfullySaved)))
+          .catch(error => handleError(error))
       }
     })
   }
   return (
     <AdminCard {...cardProps}>
       <Typography.Title className="mb-4" level={4}>
-        帳號資料
+        {formatMessage(messages.profileAdminTitle)}
       </Typography.Title>
       <StyledForm
         onSubmit={handleSubmit}
         labelCol={{ span: 24, md: { span: 4 } }}
         wrapperCol={{ span: 24, md: { span: 8 } }}
       >
-        <Form.Item label="帳號">
+        <Form.Item label={formatMessage(commonMessages.label.account)}>
           {form.getFieldDecorator('username', {
             initialValue: member && member.username,
-            rules: [{ required: true, message: '請輸入使用者名稱' }],
+            rules: [{ required: true, message: formatMessage(errorMessages.form.account) }],
           })(<Input />)}
         </Form.Item>
-        <Form.Item label="信箱">
+        <Form.Item label={commonMessages.label.email}>
           {form.getFieldDecorator('_email', {
             initialValue: member && member.email,
-            rules: [{ required: true, message: '請輸入 Email' }],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.label.email),
+                }),
+              },
+            ],
           })(<Input />)}
         </Form.Item>
         <Form.Item wrapperCol={{ md: { offset: 4 } }}>
           <Button className="mr-2" onClick={() => form.resetFields()}>
-            取消
+            {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" htmlType="submit">
-            儲存
+            {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>
       </StyledForm>

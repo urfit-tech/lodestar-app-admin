@@ -1,16 +1,18 @@
 import { Tabs } from 'antd'
 import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
+import { promotionMessages } from '../../helpers/translation'
 import VoucherCard, { VoucherProps } from './VoucherCard'
 
-type VoucherCollectionTabProps = {
+const VoucherCollectionTabs: React.FC<{
   vouchers: VoucherProps[]
-}
-const VoucherCollectionTabs: React.FC<VoucherCollectionTabProps> = ({ vouchers }) => {
+}> = ({ vouchers }) => {
+  const { formatMessage } = useIntl()
   const [activeKey, setActiveKey] = useState('available')
 
   return (
     <Tabs activeKey={activeKey} onChange={key => setActiveKey(key)}>
-      <Tabs.TabPane key="available" tab="可使用">
+      <Tabs.TabPane key="available" tab={formatMessage(promotionMessages.status.available)}>
         <div className="row">
           {vouchers
             .filter(voucher => voucher.available)
@@ -21,7 +23,7 @@ const VoucherCollectionTabs: React.FC<VoucherCollectionTabProps> = ({ vouchers }
             ))}
         </div>
       </Tabs.TabPane>
-      <Tabs.TabPane key="unavailable" tab="已失效">
+      <Tabs.TabPane key="unavailable" tab={formatMessage(promotionMessages.status.unavailable)}>
         <div className="row">
           {vouchers
             .filter(voucher => !voucher.available)

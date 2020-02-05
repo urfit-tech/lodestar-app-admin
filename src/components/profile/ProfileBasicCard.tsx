@@ -3,8 +3,11 @@ import { CardProps } from 'antd/lib/card'
 import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAuth } from '../../contexts/AuthContext'
+import { handleError } from '../../helpers'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useTags } from '../../hooks/data'
 import { useMember, useUpdateMemberBasic } from '../../hooks/member'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
@@ -34,6 +37,11 @@ const StyledTextArea = styled(Input.TextArea)`
     padding: 10px 12px;
   }
 `
+
+const messages = defineMessages({
+  profileBasic: { id: 'common.label.profileBasic', defaultMessage: '基本資料' },
+})
+
 type ProfileBasicCardProps = CardProps &
   FormComponentProps & {
     memberId: string
@@ -51,8 +59,9 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
   withDescription,
   ...cardProps
 }) => {
+  const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
-  const { member } = useMember(memberId)
+  const { member, refetchMember } = useMember(memberId)
   const { tags } = useTags()
   const updateMemberBasic = useUpdateMemberBasic()
 
@@ -89,10 +98,10 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
           },
         })
           .then(() => {
-            message.success('儲存成功')
-            window.location.reload(true)
+            message.success(formatMessage(commonMessages.event.successfullySaved))
+            refetchMember()
           })
-          .catch(err => message.error(err.message))
+          .catch(error => handleError(error))
       }
     })
   }
@@ -100,7 +109,7 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
   return (
     <AdminCard {...cardProps}>
       <Typography.Title className="mb-4" level={4}>
-        基本資料
+        {formatMessage(messages.profileBasic)}
       </Typography.Title>
       <StyledForm
         onSubmit={e => {
@@ -110,7 +119,7 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
         labelCol={{ span: 24, md: { span: 4 } }}
         wrapperCol={{ span: 24, md: { span: 12 } }}
       >
-        <StyledAvatarFormItem label="頭像">
+        <StyledAvatarFormItem label={formatMessage(commonMessages.label.avatar)}>
           <div className="mr-3">
             <AvatarImage src={(member && member.pictureUrl) || ''} size={128} />
           </div>
@@ -125,21 +134,28 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
             />,
           )}
         </StyledAvatarFormItem>
-        <Form.Item label="名稱">
+        <Form.Item label={formatMessage(commonMessages.label.name)}>
           {form.getFieldDecorator('name', {
             initialValue: member && member.name,
-            rules: [{ required: true, message: '請輸入名稱' }],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.label.name),
+                }),
+              },
+            ],
           })(<Input />)}
         </Form.Item>
         {withTitle && (
-          <Form.Item label="稱號">
+          <Form.Item label={formatMessage(commonMessages.label.creatorTitle)}>
             {form.getFieldDecorator('title', {
               initialValue: member && member.title,
             })(<Input />)}
           </Form.Item>
         )}
         {withTags && (
-          <Form.Item label="專長">
+          <Form.Item label={formatMessage(commonMessages.label.speciality)}>
             {form.getFieldDecorator('tags', {
               initialValue: member && member.memberTags && member.memberTags.map(memberTag => memberTag.tagName),
             })(
@@ -152,15 +168,31 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
           </Form.Item>
         )}
         {withAbstract && (
-          <StyledFormItem label="簡述">
+          <StyledFormItem label={formatMessage(commonMessages.label.shortDescription)}>
             {form.getFieldDecorator('abstract', {
               initialValue: member && member.abstract,
-              rules: [{ required: true, message: '請輸入簡述' }],
-            })(<StyledTextArea rows={3} maxLength={30} placeholder="30字以內" />)}
+              rules: [
+                {
+                  required: true,
+                  message: formatMessage(errorMessages.form.isRequired, {
+                    field: formatMessage(commonMessages.label.shortDescription),
+                  }),
+                },
+              ],
+            })(
+              <StyledTextArea
+                rows={3}
+                maxLength={30}
+                placeholder={formatMessage(commonMessages.text.shortDescriptionPlaceholder)}
+              />,
+            )}
           </StyledFormItem>
         )}
         {withDescription && member?.description && (
-          <StyledFormItem label="介紹" wrapperCol={{ span: 24, md: { span: 20 } }}>
+          <StyledFormItem
+            label={formatMessage(commonMessages.label.introduction)}
+            wrapperCol={{ span: 24, md: { span: 20 } }}
+          >
             {form.getFieldDecorator('description', {
               initialValue: BraftEditor.createEditorState((member && member.description) || ''),
             })(<AdminBraftEditor />)}
@@ -168,10 +200,10 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
         )}
         <Form.Item wrapperCol={{ md: { offset: 4 } }}>
           <Button className="mr-2" onClick={() => form.resetFields()}>
-            取消
+            {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" htmlType="submit">
-            儲存
+            {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>
       </StyledForm>

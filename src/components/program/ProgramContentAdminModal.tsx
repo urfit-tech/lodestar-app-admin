@@ -5,13 +5,30 @@ import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import { braftLanguageFn } from '../../helpers'
+import { commonMessages } from '../../helpers/translation'
 import { useProgram, useProgramContent } from '../../hooks/program'
 import types from '../../types'
 import DatetimePicker from '../common/DatetimePicker'
 import SingleUploader from '../common/SingleUploader'
 import StyledBraftEditor from '../common/StyledBraftEditor'
 import ProgramPlanSelector from './ProgramPlanSelector'
+
+const messages = defineMessages({
+  show: { id: 'program.ui.show', defaultMessage: '顯示' },
+  deleteContentWarning: {
+    id: 'program.text.deleteContentWarning',
+    defaultMessage: '你確定要刪除此內容？此動作無法還原',
+  },
+  deleteContent: { id: 'program.ui.deleteContent', defaultMessage: '刪除內容' },
+  contentTitle: { id: 'program.label.contentTitle', defaultMessage: '標題' },
+  contentPlan: { id: 'program.label.contentPlan', defaultMessage: '適用方案' },
+  uploadVideo: { id: 'program.ui.uploadVideo', defaultMessage: '上傳影片' },
+  uploadCaption: { id: 'program.ui.uploadCaption', defaultMessage: '上傳字幕' },
+  duration: { id: 'program.label.duration', defaultMessage: '內容時長（分鐘）' },
+  contentContext: { id: 'program.label.contentContext', defaultMessage: '內文' },
+})
 
 type ProgramContentAdminModalProps = FormComponentProps & {
   programId: string
@@ -24,6 +41,7 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
   programContentId,
   onSubmit,
 }) => {
+  const { formatMessage } = useIntl()
   const { program } = useProgram(programId)
   const { programContent, refetchProgramContent } = useProgramContent(programContentId)
 
@@ -42,13 +60,14 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState()
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleSubmit = () => {
     form.validateFields((err, values) => {
       if (err) {
         return
       }
+
       setLoading(true)
+
       program &&
         Promise.all([
           updateProgramContent({
@@ -124,17 +143,26 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
         footer={null}
       >
         {programContent ? (
-          <Form onSubmit={handleSubmit}>
+          <Form
+            onSubmit={e => {
+              e.preventDefault()
+              handleSubmit()
+            }}
+          >
             <div className="d-flex justify-content-between align-items-center mb-4">
               {program ? (
                 <div className="d-flex align-items-center">
                   {form.getFieldDecorator('isTrial', {
                     initialValue: programContent.price === 0,
-                  })(<Checkbox checked={form.getFieldValue('isTrial')}>試看</Checkbox>)}
+                  })(
+                    <Checkbox checked={form.getFieldValue('isTrial')}>
+                      {formatMessage(commonMessages.ui.trial)}
+                    </Checkbox>,
+                  )}
                   <Form.Item className="mb-0">
                     {form.getFieldDecorator('published', {
                       initialValue: !!programContent.publishedAt,
-                    })(<Checkbox checked={form.getFieldValue('published')}>顯示</Checkbox>)}
+                    })(<Checkbox checked={form.getFieldValue('published')}>{formatMessage(messages.show)}</Checkbox>)}
                   </Form.Item>
                   {form.getFieldValue('published') &&
                     program.isSubscription &&
@@ -153,10 +181,10 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                   }}
                   className="mr-2"
                 >
-                  取消
+                  {formatMessage(commonMessages.ui.cancel)}
                 </Button>
                 <Button type="primary" htmlType="submit" disabled={uploading} loading={loading} className="mr-2">
-                  儲存
+                  {formatMessage(commonMessages.ui.save)}
                 </Button>
                 <Dropdown
                   placement="bottomRight"
@@ -164,13 +192,13 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                     <Menu>
                       <Menu.Item
                         onClick={() =>
-                          window.confirm('你確定要刪除此內容？此動作無法還原') &&
+                          window.confirm(formatMessage(messages.deleteContentWarning)) &&
                           deleteProgramContent({
                             variables: { programContentId },
                           }).then(() => onSubmit && onSubmit())
                         }
                       >
-                        刪除內容
+                        {formatMessage(messages.deleteContent)}
                       </Menu.Item>
                     </Menu>
                   }
@@ -180,13 +208,13 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                 </Dropdown>
               </div>
             </div>
-            <Form.Item label="標題">
+            <Form.Item label={formatMessage(messages.contentTitle)}>
               {form.getFieldDecorator('title', {
                 initialValue: programContent && programContent.title,
-              })(<Input placeholder="標題名稱" />)}
+              })(<Input />)}
             </Form.Item>
             {program && program.isSubscription && (
-              <Form.Item label="適用方案">
+              <Form.Item label={formatMessage(messages.contentPlan)}>
                 {form.getFieldDecorator('planIds', {
                   initialValue:
                     (programContent &&
@@ -194,15 +222,15 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                         programContentPlan => programContentPlan.programPlan.id,
                       )) ||
                     [],
-                })(<ProgramPlanSelector programId={programId} placeholder="選擇方案" />)}
+                })(<ProgramPlanSelector programId={programId} placeholder={formatMessage(messages.contentPlan)} />)}
               </Form.Item>
             )}
-            <Form.Item label="影片">
+            <Form.Item label={formatMessage(commonMessages.label.video)}>
               {programContent.programContentBody &&
                 form.getFieldDecorator('video', { initialValue: bodyData.video })(
                   <SingleUploader
                     accept="video/*"
-                    uploadText="上傳影片"
+                    uploadText={formatMessage(messages.uploadVideo)}
                     path={`videos/${localStorage.getItem('kolable.app.id')}/${programContent.programContentBody.id}`}
                     onUploading={() => setUploading(true)}
                     onSuccess={() => setUploading(false)}
@@ -212,13 +240,13 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                 )}
             </Form.Item>
             {((videoFieldValue && videoFieldValue.status === 'done') || bodyData.video) && (
-              <Form.Item label="字幕">
+              <Form.Item label={formatMessage(commonMessages.label.caption)}>
                 {programContent.programContentBody &&
                   form.getFieldDecorator('texttrack', {
                     initialValue: bodyData.texttrack,
                   })(
                     <SingleUploader
-                      uploadText="上傳字幕"
+                      uploadText={formatMessage(messages.uploadCaption)}
                       path={`texttracks/${localStorage.getItem('kolable.app.id')}/${
                         programContent.programContentBody.id
                       }`}
@@ -230,12 +258,12 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                   )}
               </Form.Item>
             )}
-            <Form.Item label="內容時長（分鐘）">
+            <Form.Item label={formatMessage(messages.duration)}>
               {form.getFieldDecorator('duration', {
                 initialValue: programContent.duration && programContent.duration / 60,
               })(<InputNumber />)}
             </Form.Item>
-            <Form.Item label="內文">
+            <Form.Item label={formatMessage(messages.contentContext)}>
               {programContent.programContentBody &&
                 programContent.programContentBody.id &&
                 form.getFieldDecorator('description', {

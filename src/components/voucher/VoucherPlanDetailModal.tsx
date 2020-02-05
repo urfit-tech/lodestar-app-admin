@@ -1,6 +1,8 @@
 import { Modal, Tabs } from 'antd'
 import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { commonMessages, promotionMessages } from '../../helpers/translation'
 import { ProductType } from '../../schemas/general'
 
 const StyledTriggerText = styled.span`
@@ -35,13 +37,14 @@ type VoucherPlanDetailModalProps = {
   }[]
 }
 const VoucherPlanDetailModal: React.FC<VoucherPlanDetailModalProps> = ({ title, productCounts, voucherCodes }) => {
+  const { formatMessage } = useIntl()
   const [visible, setVisible] = useState(false)
   const [activeKey, setActiveKey] = useState('codes')
 
   return (
     <>
       <StyledTriggerText className="mr-4" onClick={() => setVisible(true)}>
-        詳情
+        {formatMessage(commonMessages.ui.detail)}
       </StyledTriggerText>
 
       <Modal centered destroyOnClose footer={null} visible={visible} onCancel={() => setVisible(false)}>
@@ -69,7 +72,7 @@ const VoucherPlanDetailModal: React.FC<VoucherPlanDetailModalProps> = ({ title, 
             ))}
           </Tabs.TabPane> */}
 
-          <Tabs.TabPane key="codes" tab="兌換代碼" className="pt-4">
+          <Tabs.TabPane key="codes" tab={formatMessage(promotionMessages.term.voucherCode)} className="pt-4">
             {voucherCodes.map(voucherCode => (
               <StyledVoucherCode
                 key={voucherCode.code}
@@ -77,7 +80,12 @@ const VoucherPlanDetailModal: React.FC<VoucherPlanDetailModalProps> = ({ title, 
                 isFinished={voucherCode.used === voucherCode.count}
               >
                 <code>{voucherCode.code}</code>
-                <div>{`${voucherCode.used}/${voucherCode.count} 張`}</div>
+                <div>
+                  {formatMessage(promotionMessages.text.exchangedCount, {
+                    exchanged: voucherCode.used,
+                    total: voucherCode.count,
+                  })}
+                </div>
               </StyledVoucherCode>
             ))}
           </Tabs.TabPane>

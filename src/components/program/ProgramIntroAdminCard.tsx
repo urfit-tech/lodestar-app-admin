@@ -4,9 +4,11 @@ import Form, { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { InferType } from 'yup'
 import { handleError } from '../../helpers'
+import { commonMessages } from '../../helpers/translation'
 import { programSchema } from '../../schemas/program'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
@@ -46,11 +48,21 @@ const StyledSingleUploader = styled(SingleUploader)`
   }
 `
 
+const messages = defineMessages({
+  programIntroduction: { id: 'program.label.programIntroduction', defaultMessage: '課程介紹' },
+  programCover: { id: 'program.label.programCover', defaultMessage: '課程封面' },
+  introductionVideo: { id: 'program.label.introductionVideo', defaultMessage: '介紹影片' },
+  videoPlaceholder: { id: 'program.text.videoPlaceholder', defaultMessage: '貼上影片網址' },
+  programAbstract: { id: 'program.label.programAbstract', defaultMessage: '課程摘要' },
+  programDescription: { id: 'program.label.programDescription', defaultMessage: '課程描述' },
+})
+
 type ProgramIntroAdminCardProps = FormComponentProps & {
   program: InferType<typeof programSchema> | null
   onRefetch?: () => void
 }
 const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, form, onRefetch }) => {
+  const { formatMessage } = useIntl()
   const [updateProgramCover] = useMutation<types.UPDATE_PROGRAM_COVER, types.UPDATE_PROGRAM_COVERVariables>(
     UPDATE_PROGRAM_COVER,
   )
@@ -78,7 +90,7 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
           })
             .then(() => {
               onRefetch && onRefetch()
-              message.success('儲存成功')
+              message.success(formatMessage(commonMessages.event.successfullySaved))
             })
             .catch(handleError)
         }
@@ -101,7 +113,7 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
           })
             .then(() => {
               onRefetch && onRefetch()
-              message.success('儲存成功')
+              message.success(formatMessage(commonMessages.event.successfullySaved))
             })
             .catch(handleError)
             .finally(() => setLoading(false))
@@ -111,11 +123,11 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
 
   return (
     <AdminCard loading={!program}>
-      <Typography.Title level={4}>課程介紹</Typography.Title>
+      <Typography.Title level={4}>{formatMessage(messages.programIntroduction)}</Typography.Title>
 
       {program && (
         <Form labelCol={{ span: 24, md: { span: 4 } }} wrapperCol={{ span: 24, md: { span: 10 } }}>
-          <Form.Item label="課程封面">
+          <Form.Item label={formatMessage(messages.programCover)}>
             <div className="d-flex align-items-center flex-wrap">
               {program.coverUrl && (
                 <CoverBlock>
@@ -146,17 +158,17 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
           labelCol={{ span: 24, md: { span: 4 } }}
           wrapperCol={{ span: 24, md: { span: 10 } }}
         >
-          <Form.Item label="介紹影片">
+          <Form.Item label={formatMessage(messages.introductionVideo)}>
             {form.getFieldDecorator('coverVideoUrl', {
               initialValue: program.coverVideoUrl,
-            })(<Input placeholder="貼上影片網址" />)}
+            })(<Input placeholder={formatMessage(messages.videoPlaceholder)} />)}
           </Form.Item>
-          <Form.Item label="課程摘要">
+          <Form.Item label={formatMessage(messages.programAbstract)}>
             {form.getFieldDecorator('abstract', {
               initialValue: program.abstract,
             })(<Input.TextArea rows={5} />)}
           </Form.Item>
-          <Form.Item label="課程描述" wrapperCol={{ md: { span: 20 } }}>
+          <Form.Item label={formatMessage(messages.programDescription)} wrapperCol={{ md: { span: 20 } }}>
             {form.getFieldDecorator('description', {
               initialValue: BraftEditor.createEditorState(program.description),
             })(
@@ -190,9 +202,9 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
             )}
           </Form.Item>
           <Form.Item wrapperCol={{ md: { offset: 4 } }}>
-            <Button onClick={() => form.resetFields()}>取消</Button>
+            <Button onClick={() => form.resetFields()}>{formatMessage(commonMessages.ui.cancel)}</Button>
             <Button className="ml-2" type="primary" htmlType="submit" loading={loading}>
-              儲存
+              {formatMessage(commonMessages.ui.save)}
             </Button>
           </Form.Item>
         </Form>

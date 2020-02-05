@@ -1,9 +1,11 @@
 import { List, Typography } from 'antd'
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { currencyFormatter, dateFormatter } from '../../helpers'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { usePublicMember } from '../../hooks/member'
-import * as types from '../../types'
+import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 
 const StyledCard = styled(AdminCard)`
@@ -44,20 +46,28 @@ const StyledTitle = styled.div`
   white-space: nowrap;
 `
 
+const messages = defineMessages({
+  purchasedAt: { id: 'common.text.purchasedAt', defaultMessage: '{name} 於 {date} 購買' },
+})
+
 type SaleCollectionCreatorCardProps = {
   loading?: boolean
   error?: Error
   orderProducts: types.GET_PRODUCT_OWNER_ORDERS_order_product[]
 }
 const SaleCollectionCreatorCard: React.FC<SaleCollectionCreatorCardProps> = ({ loading, error, orderProducts }) => {
+  const { formatMessage } = useIntl()
+
   if (error) {
-    return <StyledCard>無法載入資料</StyledCard>
+    return <StyledCard>{formatMessage(errorMessages.data.fetch)}</StyledCard>
   }
   return (
     <StyledCard loading={loading}>
       <StyledWrapper>
         <div className="d-flex justify-content-end">
-          <Typography.Text type="secondary">共 {orderProducts.length} 筆</Typography.Text>
+          <Typography.Text type="secondary">
+            {formatMessage(commonMessages.text.totalCount, { count: orderProducts.length })}
+          </Typography.Text>
         </div>
         <List loading={loading} dataSource={orderProducts} renderItem={item => <ListItem {...item} />} />
       </StyledWrapper>
@@ -66,6 +76,7 @@ const SaleCollectionCreatorCard: React.FC<SaleCollectionCreatorCardProps> = ({ l
 }
 
 const ListItem: React.FC<types.GET_PRODUCT_OWNER_ORDERS_order_product> = ({ name, price, order_log: orderLog }) => {
+  const { formatMessage } = useIntl()
   const { member } = usePublicMember(orderLog.member_id)
 
   if (!member) {
@@ -77,9 +88,7 @@ const ListItem: React.FC<types.GET_PRODUCT_OWNER_ORDERS_order_product> = ({ name
       <ListItemWrapper className="d-flex align-items-center justify-content-between">
         <div className="info mr-3">
           <StyledTitle>{name}</StyledTitle>
-          <p>
-            {member.name} 於 {dateFormatter(orderLog.created_at)} 購買
-          </p>
+          <p>{formatMessage(messages.purchasedAt, { name: member.name, date: dateFormatter(orderLog.created_at) })}</p>
         </div>
         <div className="flex-shrink-0 price">{currencyFormatter(price)}</div>
       </ListItemWrapper>

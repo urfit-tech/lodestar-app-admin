@@ -58,7 +58,7 @@ const PodcastProgramCreationModal: React.FC<PodcastProgramCreationModalProps> = 
         <Form hideRequiredMark>
           <Form.Item label={formatMessage(commonMessages.label.title)}>
             {form.getFieldDecorator('title', {
-              initialValue: '未命名的廣播',
+              initialValue: 'Untitled',
               rules: [
                 {
                   required: true,

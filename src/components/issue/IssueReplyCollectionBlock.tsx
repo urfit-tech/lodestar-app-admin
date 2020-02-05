@@ -27,7 +27,7 @@ const IssueReplyCollectionBlock: React.FC<IssueReplyCollectionBlockProps> = ({ p
   return (
     <>
       {loading
-        ? formatMessage(commonMessages.label.loading)
+        ? formatMessage(commonMessages.event.loading)
         : error || !data
         ? formatMessage(errorMessages.data.fetch)
         : data.issue_reply.map((value: any) => (

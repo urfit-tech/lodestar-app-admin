@@ -3,18 +3,25 @@ import { Button, Form, Input, message, Typography } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import { InferType } from 'yup'
 import { handleError } from '../../helpers'
+import { commonMessages, programMessages } from '../../helpers/translation'
 import { programSchema } from '../../schemas/program'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 import ProgramCategorySelector from './ProgramCategorySelector'
+
+const messages = defineMessages({
+  basicSettings: { id: 'program.label.basicSettings', defaultMessage: '基本設定' },
+})
 
 type ProgramBasicAdminCardProps = FormComponentProps & {
   program: InferType<typeof programSchema> | null
   onRefetch?: () => void
 }
 const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, form, onRefetch }) => {
+  const { formatMessage } = useIntl()
   const [updateProgramTitle] = useMutation<types.UPDATE_PROGRAM_TITLE, types.UPDATE_PROGRAM_TITLEVariables>(
     UPDATE_PROGRAM_TITLE,
   )
@@ -44,9 +51,9 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
           ])
             .then(() => {
               onRefetch && onRefetch()
-              message.success('儲存成功')
+              message.success(formatMessage(commonMessages.event.successfullySaved))
             })
-            .catch(handleError)
+            .catch(error => handleError(handleError))
         }
       })
   }
@@ -54,7 +61,7 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
   return (
     <AdminCard loading={!program}>
       <Typography.Title className="pb-4" level={4}>
-        基本設定
+        {formatMessage(messages.basicSettings)}
       </Typography.Title>
       {program && (
         <Form
@@ -65,18 +72,18 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
             handleSubmit()
           }}
         >
-          <Form.Item label="課程名稱">
+          <Form.Item label={formatMessage(programMessages.label.programTitle)}>
             {form.getFieldDecorator('title', { initialValue: program.title })(<Input />)}
           </Form.Item>
-          <Form.Item label="類別">
+          <Form.Item label={formatMessage(commonMessages.label.category)}>
             {form.getFieldDecorator('categoryIds', {
               initialValue: program.programCategories.map(programCategories => programCategories.category.id),
             })(<ProgramCategorySelector />)}
           </Form.Item>
           <Form.Item wrapperCol={{ md: { offset: 4 } }}>
-            <Button onClick={() => form.resetFields()}>取消</Button>
+            <Button onClick={() => form.resetFields()}>{formatMessage(commonMessages.ui.cancel)}</Button>
             <Button className="ml-2" type="primary" htmlType="submit">
-              儲存
+              {formatMessage(commonMessages.ui.save)}
             </Button>
           </Form.Item>
         </Form>

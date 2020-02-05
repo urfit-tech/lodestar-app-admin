@@ -2,6 +2,7 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Dropdown, Icon, Menu, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { InferType } from 'yup'
 import { programContentSectionSchema, programSchema } from '../../schemas/program'
@@ -15,6 +16,15 @@ const StyledAdminCard = styled(AdminCard)`
   }
 `
 
+const messages = defineMessages({
+  deleteSectionWarning: {
+    id: 'program.text.deleteSectionWarning',
+    defaultMessage: '此區塊內的所有內容將被刪除，此動作無法還原',
+  },
+  deleteSection: { id: 'program.ui.deleteSection', defaultMessage: '刪除區塊' },
+  createContent: { id: 'program.ui.createContent', defaultMessage: '新增內容' },
+})
+
 const ProgramContentSectionAdminCard: React.FC<{
   program: InferType<typeof programSchema>
   programContentSection: InferType<typeof programContentSectionSchema>
@@ -22,6 +32,7 @@ const ProgramContentSectionAdminCard: React.FC<{
   onUpdate?: () => void
   onRefetch?: () => void
 }> = ({ program, programContentSection, onDelete, onUpdate, onRefetch }) => {
+  const { formatMessage } = useIntl()
   const [createProgramContent] = useMutation<types.INSERT_PROGRAM_CONTENT, types.INSERT_PROGRAM_CONTENTVariables>(
     INSERT_PROGRAM_CONTENT,
   )
@@ -57,13 +68,13 @@ const ProgramContentSectionAdminCard: React.FC<{
             <Menu>
               <Menu.Item
                 onClick={() =>
-                  window.confirm('此區塊內的所有內容將被刪除，此動作無法還原') &&
+                  window.confirm(formatMessage(messages.deleteSectionWarning)) &&
                   deleteProgramContentSection({
                     variables: { programContentSectionId: programContentSection.id },
                   }).then(() => onDelete && onDelete())
                 }
               >
-                刪除區塊
+                {formatMessage(messages.deleteSection)}
               </Menu.Item>
             </Menu>
           }
@@ -91,14 +102,14 @@ const ProgramContentSectionAdminCard: React.FC<{
           createProgramContent({
             variables: {
               programContentSectionId: programContentSection.id,
-              title: '未命名內容',
+              title: 'untitled',
               position: programContentSection.programContents.length,
               publishedAt: program.publishedAt ? undefined : new Date(),
             },
           }).then(() => onRefetch && onRefetch())
         }
       >
-        新增內容
+        {formatMessage(messages.createContent)}
       </Button>
     </StyledAdminCard>
   )

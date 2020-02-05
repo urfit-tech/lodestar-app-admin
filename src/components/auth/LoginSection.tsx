@@ -81,8 +81,13 @@ const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) 
       >
         <Form.Item>
           {form.getFieldDecorator('account', {
-            rules: [{ required: true, message: formatMessage(errorMessages.form.account) }],
-          })(<Input placeholder={formatMessage(commonMessages.label.account)} suffix={<Icon type="user" />} />)}
+            rules: [{ required: true, message: formatMessage(errorMessages.form.accountNameOrEmail) }],
+          })(
+            <Input
+              placeholder={formatMessage(commonMessages.label.accountNameOrEmail)}
+              suffix={<Icon type="user" />}
+            />,
+          )}
         </Form.Item>
         <Form.Item>
           {form.getFieldDecorator('password', {

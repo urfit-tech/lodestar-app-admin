@@ -2,9 +2,11 @@ import { useMutation } from '@apollo/react-hooks'
 import { Icon, Tag, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { InferType } from 'yup'
 import { dateFormatter, handleError } from '../../helpers'
+import { commonMessages } from '../../helpers/translation'
 import { programContentSchema, programSchema } from '../../schemas/program'
 import types from '../../types'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
@@ -21,12 +23,17 @@ const StyledTag = styled(Tag)`
   }
 `
 
+const messages = defineMessages({
+  programContentPlans: { id: 'program.text.programContentPlans', defaultMessage: '方案：' },
+})
+
 const ProgramContentAdminItem: React.FC<{
   showPlans?: boolean
   program: InferType<typeof programSchema>
   programContent: InferType<typeof programContentSchema>
   onRefetch?: () => void
 }> = ({ showPlans, programContent, program, onRefetch }) => {
+  const { formatMessage } = useIntl()
   const [updateProgramContent] = useMutation<types.PUBLISH_PROGRAM_CONTENT, types.PUBLISH_PROGRAM_CONTENTVariables>(
     PUBLISH_PROGRAM_CONTENT,
   )
@@ -37,16 +44,16 @@ const ProgramContentAdminItem: React.FC<{
         <StyledTitle>{programContent.title}</StyledTitle>
         {showPlans && (
           <StyledDescriptions type="secondary">
-            方案：
+            {formatMessage(messages.programContentPlans)}
             {programContent.programContentPlans
               .map(programContentPlan => programContentPlan.programPlan.title)
-              .join('、')}
+              .join(formatMessage(commonMessages.ui.comma))}
           </StyledDescriptions>
         )}
       </div>
 
       <div className="d-flex align-items-center">
-        {programContent.price === 0 && <StyledTag className="mr-3">試看</StyledTag>}
+        {programContent.price === 0 && <StyledTag className="mr-3">{formatMessage(commonMessages.ui.trial)}</StyledTag>}
         {program.isSubscription ? (
           programContent.publishedAt && (
             <StyledDescriptions type="secondary" className="mr-3">

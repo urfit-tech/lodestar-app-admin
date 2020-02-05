@@ -5,9 +5,11 @@ import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import uuid from 'uuid'
 import { InferType } from 'yup'
+import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import { programPlanSchema } from '../../schemas/program'
 import types from '../../types'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
@@ -25,6 +27,7 @@ const StyledForm = styled(Form)`
     font-size: 14px;
     font-weight: 500;
     color: #9b9b9b;
+    white-space: pre-line;
 
     span {
       display: block;
@@ -34,6 +37,23 @@ const StyledForm = styled(Form)`
 const StyledIcon = styled(Icon)`
   color: #ff7d62;
 `
+
+const messages = defineMessages({
+  subscriptionPlan: { id: 'program.label.subscriptionPlan', defaultMessage: '訂閱付費方案' },
+  permissionType: { id: 'program.label.permissiontype', defaultMessage: '選擇內容觀看權限' },
+  availableForPastContent: { id: 'program.label.availableForPastContent', defaultMessage: '可看過去內容' },
+  unavailableForPastContent: { id: 'program.label.unavailableForPastContent', defaultMessage: '不可看過去內容' },
+  subscriptionPeriodType: { id: 'program.lable.subscriptionPeriodType', defaultMessage: '訂閱週期' },
+  salePriceNotation: {
+    id: 'program.text.salePriceNotation',
+    defaultMessage: '購買到優惠價的會員，往後每期皆以優惠價收款',
+  },
+  discountDownNotation: {
+    id: 'program.text.discountDownNotation',
+    defaultMessage: '定價或優惠價 - 首期折扣 = 首期支付金額\nEX：100 - 20 = 80，此欄填入 20',
+  },
+  planDescription: { id: 'program.label.planDescription', defaultMessage: '方案描述' },
+})
 
 type ProgramPlanAdminModalProps = FormComponentProps &
   AdminModalProps & {
@@ -48,6 +68,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
   programPlan,
   onRefetch,
 }) => {
+  const { formatMessage } = useIntl()
   const [upsertProgramPlan] = useMutation<types.UPSERT_PROGRAM_PLAN, types.UPSERT_PROGRAM_PLANVariables>(
     UPSERT_PROGRAM_PLAN,
   )
@@ -97,47 +118,54 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
   return (
     <AdminModal
       renderTrigger={renderTrigger}
-      title="訂閱付費方案"
+      title={formatMessage(messages.subscriptionPlan)}
       icon={<Icon type="file-add" />}
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>
-            取消
+            {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit(setVisible)}>
-            確定
+            {formatMessage(commonMessages.ui.confirm)}
           </Button>
         </>
       )}
     >
       <StyledForm>
-        <Form.Item label="方案名稱">
+        <Form.Item label={formatMessage(programMessages.label.planTitle)}>
           {form.getFieldDecorator('title', {
             initialValue: programPlan && programPlan.title,
-            rules: [{ required: true, message: '請輸入方案名稱' }],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(programMessages.label.planTitle),
+                }),
+              },
+            ],
           })(<Input />)}
         </Form.Item>
-        <Form.Item label="選擇內容觀看權限">
+        <Form.Item label={formatMessage(messages.permissionType)}>
           {form.getFieldDecorator('type', {
             initialValue: (programPlan && programPlan.type) || 2,
             rules: [{ required: true }],
           })(
             <Radio.Group>
               <Radio value={1} style={radioStyle}>
-                可看過去內容
+                {formatMessage(messages.availableForPastContent)}
               </Radio>
               <Radio value={2} style={radioStyle}>
-                不可看過去內容
+                {formatMessage(messages.unavailableForPastContent)}
               </Radio>
             </Radio.Group>,
           )}
         </Form.Item>
-        <Form.Item label="訂閱週期">
+        <Form.Item label={formatMessage(messages.subscriptionPeriodType)}>
           {form.getFieldDecorator('periodType', {
             initialValue: (programPlan && programPlan.periodType) || 'M',
           })(<ProgramPeriodTypeDropdown />)}
         </Form.Item>
-        <Form.Item label="定價">
+        <Form.Item label={formatMessage(commonMessages.label.listPrice)}>
           {form.getFieldDecorator('listPrice', {
             initialValue: (programPlan && programPlan.listPrice) || 0,
           })(
@@ -151,9 +179,9 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
 
         <div className="mb-4">
           <Checkbox defaultChecked={hasSalePrice} onChange={e => setHasSalePrice(e.target.checked)}>
-            優惠價
+            {formatMessage(commonMessages.label.salePrice)}
           </Checkbox>
-          {hasSalePrice && <div className="notation">購買到優惠價的會員，往後每期皆以優惠價收款</div>}
+          {hasSalePrice && <div className="notation">{formatMessage(messages.salePriceNotation)}</div>}
         </div>
         <Form.Item className={hasSalePrice ? 'm-0' : 'd-none'}>
           <Form.Item className="d-inline-block mr-2">
@@ -170,27 +198,22 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
           <Form.Item className="d-inline-block mr-2">
             {form.getFieldDecorator('soldAt', {
               initialValue: programPlan && programPlan.soldAt ? moment(programPlan.soldAt) : null,
-              rules: [{ required: hasSalePrice, message: '請選擇日期' }],
-            })(<DatePicker placeholder="優惠截止日期" />)}
+              rules: [{ required: hasSalePrice, message: formatMessage(errorMessages.form.date) }],
+            })(<DatePicker placeholder={formatMessage(commonMessages.label.salePriceEndTime)} />)}
           </Form.Item>
           {form.getFieldValue('soldAt') && moment(form.getFieldValue('soldAt')).isBefore(moment()) ? (
             <div className="d-inline-block">
               <StyledIcon type="exclamation-circle" theme="filled" className="mr-1" />
-              <span>已過期</span>
+              <span>{formatMessage(commonMessages.label.outdated)}</span>
             </div>
           ) : null}
         </Form.Item>
 
         <div className="mb-4">
           <Checkbox defaultChecked={hasDiscountDownPrice} onChange={e => setHasDiscountDownPrice(e.target.checked)}>
-            首期折扣
+            {formatMessage(commonMessages.label.discountDownPrice)}
           </Checkbox>
-          {hasDiscountDownPrice && (
-            <div className="notation">
-              <span>定價或優惠價 - 首期折扣 = 首期支付金額</span>
-              <span>EX：100 - 20 = 80，此欄填入 20</span>
-            </div>
-          )}
+          {hasDiscountDownPrice && <div className="notation">{formatMessage(messages.discountDownNotation)}</div>}
         </div>
         <Form.Item className={hasDiscountDownPrice ? '' : 'd-none'}>
           {form.getFieldDecorator('discountDownPrice', {
@@ -204,7 +227,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
           )}
         </Form.Item>
 
-        <Form.Item label="方案描述">
+        <Form.Item label={formatMessage(messages.planDescription)}>
           {form.getFieldDecorator('description', {
             initialValue: BraftEditor.createEditorState(programPlan ? programPlan.description : null),
           })(

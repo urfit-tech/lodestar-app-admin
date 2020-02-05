@@ -52,7 +52,7 @@ const CouponPlanDescriptionModal: React.FC<CouponPlanDescriptionModalProps> = ({
       <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>{formatMessage(promotionMessages.term.couponCode)}</div>
 
       {loading
-        ? formatMessage(commonMessages.label.loading)
+        ? formatMessage(commonMessages.event.loading)
         : error || !data
         ? formatMessage(errorMessages.data.fetch)
         : data.coupon_code.map((codeValue: any) => (

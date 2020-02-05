@@ -4,9 +4,11 @@ import Form, { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { InferType } from 'yup'
 import { handleError } from '../../helpers'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { programSchema } from '../../schemas/program'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
@@ -24,6 +26,7 @@ const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps
     types.UPDATE_PROGRAM_PERPETUAL_PLAN,
     types.UPDATE_PROGRAM_PERPETUAL_PLANVariables
   >(UPDATE_PROGRAM_PERPETUAL_PLAN)
+  const { formatMessage } = useIntl()
   const [loading, setLoading] = useState()
   const [hasSalePrice, setHasSalePrice] = useState(program.salePrice ? true : false)
 
@@ -41,7 +44,7 @@ const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps
           },
         })
           .then(() => {
-            message.success('儲存成功')
+            message.success(formatMessage(commonMessages.event.successfullySaved))
             onRefetch && onRefetch()
           })
           .catch(handleError)
@@ -53,7 +56,7 @@ const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps
   return (
     <AdminCard>
       <Form onSubmit={handleSubmit}>
-        <Form.Item label="定價">
+        <Form.Item label={formatMessage(commonMessages.label.listPrice)}>
           {form.getFieldDecorator('listPrice', {
             initialValue: program.listPrice || 0,
             rules: [{ required: true }, { type: 'number' }],
@@ -68,7 +71,7 @@ const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps
 
         <div className="mb-4">
           <Checkbox defaultChecked={hasSalePrice} onChange={e => setHasSalePrice(e.target.checked)}>
-            優惠價
+            {formatMessage(commonMessages.label.salePrice)}
           </Checkbox>
         </div>
         <Form.Item className={hasSalePrice ? 'm-0' : 'd-none'}>
@@ -86,23 +89,23 @@ const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps
           <Form.Item className="d-inline-block mr-2">
             {form.getFieldDecorator('soldAt', {
               initialValue: program && program.soldAt ? moment(program.soldAt) : null,
-              rules: [{ required: hasSalePrice, message: '請選擇日期' }],
+              rules: [{ required: hasSalePrice, message: formatMessage(errorMessages.form.date) }],
             })(<DatePicker />)}
           </Form.Item>
           {form.getFieldValue('soldAt') && moment(form.getFieldValue('soldAt')).isBefore(moment()) ? (
             <div className="d-inline-block">
               <StyledIcon type="exclamation-circle" theme="filled" className="mr-1" />
-              <span>已過期</span>
+              <span>{formatMessage(commonMessages.label.outdated)}</span>
             </div>
           ) : null}
         </Form.Item>
 
         <Form.Item>
           <Button disabled={loading} onClick={() => form.resetFields()} className="mr-2">
-            取消
+            {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button loading={loading} type="primary" htmlType="submit">
-            儲存
+            {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>
       </Form>

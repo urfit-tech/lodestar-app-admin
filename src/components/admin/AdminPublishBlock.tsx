@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as StatusAlertIcon } from '../../images/default/status-alert.svg'
 import { ReactComponent as StatusOrdinaryIcon } from '../../images/default/status-ordinary.svg'
 import { ReactComponent as StatusSuccessIcon } from '../../images/default/status-success.svg'
@@ -49,8 +50,6 @@ const messages = defineMessages({
   goTo: { id: 'common.ui.goTo', defaultMessage: '前往填寫' },
   publishedSuccessfully: { id: 'common.event.publishedSuccessfully', defaultMessage: '發佈成功' },
   publishingFailed: { id: 'common.event.publishingFailed', defaultMessage: '發佈失敗' },
-  cancelPublishing: { id: 'common.ui.cancelPublishing', defaultMessage: '取消發布' },
-  publish: { id: 'common.ui.publish', defaultMessage: '立即發佈' },
 })
 
 export type PublishStatus = 'alert' | 'ordinary' | 'success'
@@ -135,7 +134,9 @@ const AdminPublishBlock: React.FC<{
               })
           }}
         >
-          {type === 'success' ? formatMessage(messages.cancelPublishing) : formatMessage(messages.publish)}
+          {type === 'success'
+            ? formatMessage(commonMessages.ui.cancelPublishing)
+            : formatMessage(commonMessages.ui.publish)}
         </Button>
       </div>
     </>

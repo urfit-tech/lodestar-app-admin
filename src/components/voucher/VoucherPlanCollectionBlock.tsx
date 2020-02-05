@@ -1,8 +1,10 @@
 import { Button, Dropdown, Icon, Menu, Skeleton } from 'antd'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import VoucherCollectionTabs from '../../components/voucher/VoucherCollectionTabs'
 import VoucherPlanAdminModal, { VoucherPlanFields } from '../../components/voucher/VoucherPlanAdminModal'
 import VoucherPlanDetailModal from '../../components/voucher/VoucherPlanDetailModal'
+import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
 import { VoucherProps } from './VoucherCard'
 
 type VoucherPlanCollectionBlockProps = {
@@ -38,12 +40,14 @@ const VoucherPlanCollectionBlock: React.FC<VoucherPlanCollectionBlockProps> = ({
   onInsert,
   onUpdate,
 }) => {
+  const { formatMessage } = useIntl()
+
   if (loading) {
     return <Skeleton active />
   }
 
   if (error) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const vouchers = voucherPlanCollection.map(voucherPlan => {
@@ -63,7 +67,10 @@ const VoucherPlanCollectionBlock: React.FC<VoucherPlanCollectionBlockProps> = ({
           />
 
           <div className="flex-grow-1">
-            數量 {voucherPlan.count - voucherPlan.remaining}/{voucherPlan.count}
+            {formatMessage(promotionMessages.text.exchangedCount, {
+              exchanged: voucherPlan.count - voucherPlan.remaining,
+              total: voucherPlan.count,
+            })}
           </div>
 
           <Dropdown
@@ -72,13 +79,15 @@ const VoucherPlanCollectionBlock: React.FC<VoucherPlanCollectionBlockProps> = ({
               <Menu>
                 <Menu.Item>
                   <VoucherPlanAdminModal
-                    renderTrigger={({ setVisible }) => <span onClick={() => setVisible(true)}>編輯方案</span>}
+                    renderTrigger={({ setVisible }) => (
+                      <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</span>
+                    )}
                     icon={<Icon type="edit" />}
-                    title="編輯折價方案"
+                    title={formatMessage(promotionMessages.ui.editVoucherPlan)}
                     voucherPlan={voucherPlan}
-                    onSubmit={(setVisible, setLoading, values) => {
+                    onSubmit={(setVisible, setLoading, values) =>
                       onUpdate(setVisible, setLoading, values, voucherPlan.id)
-                    }}
+                    }
                   />
                 </Menu.Item>
               </Menu>
@@ -98,11 +107,11 @@ const VoucherPlanCollectionBlock: React.FC<VoucherPlanCollectionBlockProps> = ({
         <VoucherPlanAdminModal
           renderTrigger={({ setVisible }) => (
             <Button type="primary" onClick={() => setVisible(true)} icon="file-add">
-              建立兌換方案
+              {formatMessage(commonMessages.ui.create)}
             </Button>
           )}
           icon={<Icon type="file-add" />}
-          title="建立兌換方案"
+          title={formatMessage(promotionMessages.ui.createVoucherPlan)}
           onSubmit={onInsert}
         />
       </div>

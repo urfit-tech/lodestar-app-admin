@@ -1,4 +1,5 @@
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import ReactPlayer, { ReactPlayerProps } from 'react-player'
 import styled from 'styled-components'
 import { InferType } from 'yup'
@@ -10,10 +11,15 @@ const StyledWrapper = styled.div`
   padding-top: 56.25%;
 `
 
+const messages = defineMessages({
+  memberWatchOnly: { id: 'program.text.memberWatchOnly', defaultMessage: '僅提供 {name} 觀看' },
+})
+
 const ProgramContentPlayer: React.FC<ReactPlayerProps & {
   programContentBody: InferType<typeof programContentBodySchema>
   memberId: string
 }> = ({ programContentBody, memberId, onProgress, onEnded }) => {
+  const { formatMessage } = useIntl()
   const { member } = useMember(memberId)
 
   return (
@@ -42,7 +48,7 @@ const ProgramContentPlayer: React.FC<ReactPlayerProps & {
             background: 'rgba(255, 255, 255, 0.6)',
           }}
         >
-          僅提供 {member.name}-{member.email} 觀看
+          {formatMessage(messages.memberWatchOnly, { name: `${member.name}-${member.email}` })}
         </div>
       )}
     </StyledWrapper>

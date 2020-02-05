@@ -2,12 +2,21 @@ import { useQuery } from '@apollo/react-hooks'
 import { Statistic } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import { number, object } from 'yup'
+import { promotionMessages } from '../../helpers/translation'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 
+const messages = defineMessages({
+  totalSales: { id: 'common.label.totalSales', defaultMessage: '銷售總額' },
+})
+
 const SaleSummaryAdminCard = () => {
+  const { formatMessage } = useIntl()
+
   const { loading, data } = useQuery<types.GET_TOTAL_ORDER_AMOUNT>(GET_TOTAL_ORDER_AMOUNT)
+
   const castData = gqlResultSchema.cast(data)
   const totalSales =
     (castData.orderProductAggregate.aggregate.sum.price || 0) -
@@ -15,7 +24,11 @@ const SaleSummaryAdminCard = () => {
 
   return (
     <AdminCard loading={loading}>
-      <Statistic title="銷售總額" value={totalSales} suffix="元" />
+      <Statistic
+        title={formatMessage(messages.totalSales)}
+        value={totalSales}
+        suffix={formatMessage(promotionMessages.term.dollar)}
+      />
     </AdminCard>
   )
 }

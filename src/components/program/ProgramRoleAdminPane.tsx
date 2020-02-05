@@ -1,14 +1,16 @@
 import { Button, Form, Modal, Typography } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import React, { useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { InferType } from 'yup'
 import CreatorSelector from '../../containers/common/CreatorSelector'
+import MemberAvatar from '../../containers/common/MemberAvatar'
 import { DeleteProgramProps, UpdateProgramProps } from '../../containers/program/ProgramRoleAdminPane'
+import { commonMessages } from '../../helpers/translation'
 import { programSchema } from '../../schemas/program'
 import AdminCard from '../admin/AdminCard'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
-import MemberAvatar from '../../containers/common/MemberAvatar'
 
 const StyledModalTitle = styled.div`
   color: var(--gray-darker);
@@ -18,12 +20,16 @@ const StyledModalTitle = styled.div`
   letter-spacing: 0.77px;
 `
 
-type ProgramRoleAdminPaneProps = CardProps & {
+const messages = defineMessages({
+  programOwner: { id: 'program.label.programOwner', defaultMessage: '課程負責人' },
+})
+
+const ProgramRoleAdminPane: React.FC<CardProps & {
   program: InferType<typeof programSchema> | null
   onProgramUpdate: UpdateProgramProps
   onProgramDelete: DeleteProgramProps
-}
-const ProgramRoleAdminPane: React.FC<ProgramRoleAdminPaneProps> = ({ program, onProgramUpdate, onProgramDelete }) => {
+}> = ({ program, onProgramUpdate, onProgramDelete }) => {
+  const { formatMessage } = useIntl()
   const [visible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null)
@@ -59,11 +65,11 @@ const ProgramRoleAdminPane: React.FC<ProgramRoleAdminPaneProps> = ({ program, on
   return (
     <div className="container py-3">
       <Typography.Title className="pb-3" level={3}>
-        身份管理
+        {formatMessage(commonMessages.label.roleAdmin)}
       </Typography.Title>
       <div className="mb-3">
         <AdminCard loading={!program}>
-          <Typography.Title level={4}>課程負責人</Typography.Title>
+          <Typography.Title level={4}>{formatMessage(messages.programOwner)}</Typography.Title>
           {program &&
             program.roles
               .filter(role => role.name === 'owner')
@@ -72,7 +78,7 @@ const ProgramRoleAdminPane: React.FC<ProgramRoleAdminPaneProps> = ({ program, on
       </div>
       <div className="mb-3">
         <AdminCard loading={!program}>
-          <Typography.Title level={4}>講師</Typography.Title>
+          <Typography.Title level={4}>{formatMessage(commonMessages.term.instructor)}</Typography.Title>
           {program &&
             program.roles
               .filter(role => role.name === 'instructor')
@@ -92,7 +98,7 @@ const ProgramRoleAdminPane: React.FC<ProgramRoleAdminPaneProps> = ({ program, on
               ))}
           {program && !program.roles.find(role => role.name === 'instructor') && (
             <Button type="link" icon="plus" size="small" onClick={() => setVisible(true)}>
-              新增講師
+              {formatMessage(commonMessages.ui.addInstructor)}
             </Button>
           )}
 
@@ -104,7 +110,7 @@ const ProgramRoleAdminPane: React.FC<ProgramRoleAdminPaneProps> = ({ program, on
             visible={visible}
             onCancel={() => setVisible(false)}
           >
-            <StyledModalTitle>新增講師</StyledModalTitle>
+            <StyledModalTitle>{formatMessage(commonMessages.ui.addInstructor)}</StyledModalTitle>
 
             <Form
               hideRequiredMark
@@ -114,15 +120,15 @@ const ProgramRoleAdminPane: React.FC<ProgramRoleAdminPaneProps> = ({ program, on
                 handleSubmit()
               }}
             >
-              <Form.Item label="選擇講師">
+              <Form.Item label={formatMessage(commonMessages.label.selectInstructor)}>
                 <CreatorSelector value={selectedMemberId || ''} onChange={value => setSelectedMemberId(value)} />
               </Form.Item>
               <Form.Item className="text-right">
                 <Button onClick={() => setVisible(false)} className="mr-2">
-                  取消
+                  {formatMessage(commonMessages.ui.cancel)}
                 </Button>
                 <Button type="primary" htmlType="submit" loading={loading}>
-                  新增
+                  {formatMessage(commonMessages.ui.add)}
                 </Button>
               </Form.Item>
             </Form>
@@ -131,7 +137,7 @@ const ProgramRoleAdminPane: React.FC<ProgramRoleAdminPaneProps> = ({ program, on
       </div>
       <div className="mb-3">
         <AdminCard loading={!program}>
-          <Typography.Title level={4}>助教</Typography.Title>
+          <Typography.Title level={4}>{formatMessage(commonMessages.term.teachingAssistant)}</Typography.Title>
           {program &&
             program.roles
               .filter(role => role.name === 'assistant')

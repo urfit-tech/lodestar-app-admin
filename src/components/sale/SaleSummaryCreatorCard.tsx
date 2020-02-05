@@ -1,5 +1,6 @@
 import { Icon, Tooltip } from 'antd'
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commaFormatter } from '../../helpers'
 import AdminCard from '../admin/AdminCard'
@@ -30,6 +31,14 @@ const TipsText = styled.span`
   font-size: 12px;
 `
 
+const messages = defineMessages({
+  totalActualSalse: { id: 'common.text.totalActualSalse', defaultMessage: '實際銷售總額 {dollars} 元' },
+  totalActualSalseNotation: {
+    id: 'common.text.totalActualSalseNotation',
+    defaultMessage: '銷售總額 - 訂閱首期折扣 = 實際銷售總額',
+  },
+})
+
 type SaleSummaryCreatorCardProps = {
   loading?: boolean
   error?: Error
@@ -46,6 +55,8 @@ const SaleSummaryCreatorCard: React.FC<SaleSummaryCreatorCardProps> = ({
   avatar,
   name,
 }) => {
+  const { formatMessage } = useIntl()
+
   return (
     <AdminCard loading={loading}>
       <SaleSummaryWrapper className="d-flex align-items-center justify-content-start">
@@ -53,9 +64,11 @@ const SaleSummaryCreatorCard: React.FC<SaleSummaryCreatorCardProps> = ({
         <SaleSummaryInfo className="ml-4">
           <h3>{name}</h3>
           <p>
-            <span className="mr-2">實際銷售總額 {commaFormatter(totalPrice - totalDiscount)} 元</span>
+            <span className="mr-2">
+              {formatMessage(messages.totalActualSalse, { dollars: commaFormatter(totalPrice - totalDiscount) })}
+            </span>
             {totalDiscount > 0 && (
-              <Tooltip placement="top" title={<TipsText>銷售總額 - 訂閱首期折扣 = 實際銷售總額</TipsText>}>
+              <Tooltip placement="top" title={<TipsText>{formatMessage(messages.totalActualSalseNotation)}</TipsText>}>
                 <Icon type="question-circle" theme="filled" />
               </Tooltip>
             )}

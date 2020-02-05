@@ -1,7 +1,9 @@
 import React from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { InferType } from 'yup'
 import { currencyFormatter, getPeriodTypeLabel } from '../../helpers'
+import { commonMessages } from '../../helpers/translation'
 import { programSchema } from '../../schemas/program'
 
 const StyledPriceLabel = styled.div`
@@ -17,8 +19,10 @@ type ProgramPriceLabelProps = {
   program: InferType<typeof programSchema>
 }
 const ProgramPriceLabel: React.FC<ProgramPriceLabelProps> = ({ program }) => {
+  const { formatMessage } = useIntl()
+
   if (program.isSubscription && program.plans.length === 0) {
-    return <span>暫不販售</span>
+    return <span>{formatMessage(commonMessages.label.unavailableSelling)}</span>
   }
 
   if (program.isSubscription) {

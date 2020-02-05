@@ -1,8 +1,10 @@
 import { Divider } from 'antd'
 import moment from 'moment'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { rgba } from '../../helpers'
+import { promotionMessages } from '../../helpers/translation'
 import { ReactComponent as GiftIcon } from '../../images/icon/gift.svg'
 import { BREAK_POINT } from '../common/Responsive'
 
@@ -102,6 +104,8 @@ const VoucherCard: React.FC<VoucherProps> = ({
   extra,
   action,
 }) => {
+  const { formatMessage } = useIntl()
+
   return (
     <StyledWrapper>
       <div className="d-flex align-items-center justify-content-start">
@@ -112,13 +116,13 @@ const VoucherCard: React.FC<VoucherProps> = ({
         <StyledContent className="flex-grow-1">
           <StyledTitle className="mb-1">{title}</StyledTitle>
           <div>
-            {startedAt ? moment(startedAt).format('YYYY/MM/DD') : '即日起'}
+            {startedAt ? moment(startedAt).format('YYYY/MM/DD') : formatMessage(promotionMessages.label.fromNow)}
             {' ~ '}
-            {endedAt ? moment(endedAt).format('YYYY/MM/DD') : '無使用期限'}
+            {endedAt ? moment(endedAt).format('YYYY/MM/DD') : formatMessage(promotionMessages.label.forever)}
           </div>
 
           <StyledExtra className="d-flex align-items-center justify-content-between mt-4">
-            <div>可兌換 {productQuantityLimit} 個項目</div>
+            <div>{formatMessage(promotionMessages.text.exchangeItemsNumber, { number: productQuantityLimit })}</div>
             {available && extra && <div>{extra}</div>}
           </StyledExtra>
         </StyledContent>

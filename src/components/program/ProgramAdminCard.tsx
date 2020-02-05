@@ -3,12 +3,14 @@ import { Card, Typography } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import gql from 'graphql-tag'
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import MemberAvatar from '../../containers/common/MemberAvatar'
+import { errorMessages, programMessages } from '../../helpers/translation'
 import { useProgram } from '../../hooks/program'
 import EmptyCover from '../../images/default/empty-cover.png'
 import AdminCard from '../admin/AdminCard'
-import MemberAvatar from '../../containers/common/MemberAvatar'
 import ProgramPriceLabel from './ProgramPriceLabel'
 
 const AvatarPlaceHolder = styled.div`
@@ -33,12 +35,18 @@ const ExtraContentBlock = styled.div`
   text-align: center;
 `
 
+const messages = defineMessages({
+  noAssignedInstructor: { id: 'common.text.noAssignedInstructor', defaultMessage: '尚未指定講師' },
+})
+
 type ProgramAdminCardProps = CardProps & {
   programId: string
   link: string
 }
 const ProgramAdminCard: React.FC<ProgramAdminCardProps> = ({ programId, link, ...cardProps }) => {
+  const { formatMessage } = useIntl()
   const { program } = useProgram(programId)
+
   const { loading: programEnrollmentLoading, error: programEnrollmentError, data: programEnrollmentData } = useQuery(
     program && program.isSubscription ? GET_SUBSCRIPTION_ENROLLMENT : GET_PERPETUAL_ENROLLMENT,
     {
@@ -54,7 +62,7 @@ const ProgramAdminCard: React.FC<ProgramAdminCardProps> = ({ programId, link, ..
         {instructors.length > 0 ? (
           <MemberAvatar key={instructors[0].id} memberId={instructors[0].id} withName />
         ) : (
-          '尚未指定講師'
+          formatMessage(messages.noAssignedInstructor)
         )}
       </AvatarPlaceHolder>
       <Link to={link}>
@@ -76,10 +84,14 @@ const ProgramAdminCard: React.FC<ProgramAdminCardProps> = ({ programId, link, ..
                   {!program || programEnrollmentLoading
                     ? '-'
                     : programEnrollmentError
-                    ? '載入錯誤'
+                    ? formatMessage(errorMessages.data.fetch)
                     : program.isSubscription
-                    ? `已訂閱 ${programEnrollmentData.program_plan_enrollment_aggregate.aggregate.count || 0} 人`
-                    : `已售 ${programEnrollmentData.program_enrollment_aggregate.aggregate.count} 人`}
+                    ? formatMessage(programMessages.text.enrolledSubscriptionCount, {
+                        field: programEnrollmentData.program_plan_enrollment_aggregate.aggregate.count || 0,
+                      })
+                    : formatMessage(programMessages.text.enrolledPerpetualCount, {
+                        field: programEnrollmentData.program_enrollment_aggregate.aggregate.count || 0,
+                      })}
                 </ExtraContentBlock>
               </>
             }

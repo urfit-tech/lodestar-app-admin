@@ -1,8 +1,10 @@
 import { Skeleton } from 'antd'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import VoucherCollectionTabs from '../../components/voucher/VoucherCollectionTabs'
 import VoucherExchangeModal from '../../components/voucher/VoucherExchangeModal'
 import VoucherInsertBlock from '../../components/voucher/VoucherInsertBlock'
+import { errorMessages } from '../../helpers/translation'
 import { VoucherProps } from './VoucherCard'
 
 type VoucherCollectionBlockProps = {
@@ -28,12 +30,14 @@ const VoucherCollectionBlock: React.FC<VoucherCollectionBlockProps> = ({
   onExchange,
   onInsert,
 }) => {
+  const { formatMessage } = useIntl()
+
   if (!memberId || loading) {
     return <Skeleton active />
   }
 
   if (error) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const vouchers = voucherCollection.map(voucher => ({

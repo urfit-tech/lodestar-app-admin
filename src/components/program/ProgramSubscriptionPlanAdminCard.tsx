@@ -3,8 +3,10 @@ import { Button, Divider, InputNumber, Typography } from 'antd'
 import Form, { FormComponentProps, FormProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { InferType } from 'yup'
+import { commonMessages } from '../../helpers/translation'
 import { programPlanSchema } from '../../schemas/program'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
@@ -57,6 +59,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<ProgramSubscriptionPlanAdminCar
   programPlan,
   onRefetch,
 }) => {
+  const { formatMessage } = useIntl()
   const isOnSale = programPlan.soldAt && new Date() < programPlan.soldAt
   const { salePrice, listPrice, discountDownPrice, periodType } = programPlan
 
@@ -81,7 +84,9 @@ const ProgramSubscriptionPlanAdminCard: React.FC<ProgramSubscriptionPlanAdminCar
         onRefetch={onRefetch}
         programId={programId}
         programPlan={programPlan}
-        renderTrigger={({ setVisible }) => <Button onClick={() => setVisible(true)}>編輯</Button>}
+        renderTrigger={({ setVisible }) => (
+          <Button onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</Button>
+        )}
       />
     </StyledAdminCard>
   ) : (
@@ -93,6 +98,8 @@ const ProgramSubscriptionPlanAdminCard: React.FC<ProgramSubscriptionPlanAdminCar
 
 type PerpetualPlanFormProps = FormComponentProps & FormProps & { programPlan: InferType<typeof programPlanSchema> }
 const PerpetualPlanForm: React.FC<PerpetualPlanFormProps> = ({ form, programPlan }) => {
+  const { formatMessage } = useIntl()
+
   const [updateProgramContent] = useMutation<
     types.UPDATE_PROGRAM_SUBSCRIPTION_PLAN,
     types.UPDATE_PROGRAM_SUBSCRIPTION_PLANVariables
@@ -117,13 +124,13 @@ const PerpetualPlanForm: React.FC<PerpetualPlanFormProps> = ({ form, programPlan
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Form.Item label="定價">
+      <Form.Item label={formatMessage(commonMessages.label.listPrice)}>
         {form.getFieldDecorator('listPrice', {
           initialValue: programPlan.listPrice,
           rules: [{ required: true }, { type: 'number' }],
         })(<InputNumber />)}
       </Form.Item>
-      <Form.Item label="優惠價">
+      <Form.Item label={formatMessage(commonMessages.label.salePrice)}>
         {form.getFieldDecorator('salePrice', {
           initialValue: programPlan.salePrice,
           rules: [{ required: true }, { type: 'number' }],
@@ -131,10 +138,10 @@ const PerpetualPlanForm: React.FC<PerpetualPlanFormProps> = ({ form, programPlan
       </Form.Item>
       <Form.Item>
         <Button disabled={loading} onClick={() => form.resetFields()}>
-          取消
+          {formatMessage(commonMessages.ui.cancel)}
         </Button>
         <Button loading={loading} type="primary" htmlType="submit">
-          儲存
+          {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>
     </Form>

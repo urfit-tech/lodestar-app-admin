@@ -6,9 +6,11 @@ import gql from 'graphql-tag'
 import moment from 'moment'
 import { prop, sum } from 'ramda'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { array, InferType, object } from 'yup'
 import { currencyFormatter, dateFormatter, productTypeFormatter } from '../../helpers'
+import { commonMessages } from '../../helpers/translation'
 import { ProductType } from '../../schemas/general'
 import { orderProductSchema, orderSchema } from '../../schemas/order'
 import types from '../../types'
@@ -41,6 +43,8 @@ type OrderCollectionAdminCardProps = CardProps & {
   memberId: string
 }
 const OrderCollectionAdminCard: React.FC<OrderCollectionAdminCardProps> = ({ memberId }) => {
+  const { formatMessage } = useIntl()
+
   const { loading, error, data } = useQuery<types.GET_MEMBER_ORDERS, types.GET_MEMBER_ORDERSVariables>(
     GET_MEMBER_ORDERS,
     {
@@ -74,6 +78,41 @@ const OrderCollectionAdminCard: React.FC<OrderCollectionAdminCardProps> = ({ mem
         totalPrice: sum(value.orderProducts.map(prop('price'))) - sum(value.orderDiscounts.map(prop('price'))),
       })) || []
 
+  const columns: ColumnProps<any>[] = [
+    {
+      title: formatMessage(commonMessages.label.orderLogId),
+      dataIndex: 'id',
+      key: 'id',
+      width: '100px',
+      render: (text: string) => (
+        <Tooltip title={text}>
+          <span>{text.split('-')[0]}</span>
+        </Tooltip>
+      ),
+    },
+    {
+      title: formatMessage(commonMessages.label.orderLogDate),
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      width: '200px',
+      render: text => <StyledDate>{dateFormatter(text)}</StyledDate>,
+    },
+    {
+      title: formatMessage(commonMessages.label.orderLogPrice),
+      dataIndex: 'totalPrice',
+      key: 'totalPrice',
+      align: 'right',
+      render: text => currencyFormatter(text),
+    },
+    {
+      title: formatMessage(commonMessages.label.orderLogStatus),
+      dataIndex: 'status',
+      key: 'status',
+      width: '100px',
+      render: (status: string) => <OrderStatusTag status={status} />,
+    },
+  ]
+
   return (
     <AdminCard>
       <StyledContainer>
@@ -92,7 +131,13 @@ const OrderCollectionAdminCard: React.FC<OrderCollectionAdminCardProps> = ({ mem
                     <div className="flex-grow-1 mr-4">
                       {orderProducts.name}
                       {orderProducts.endedAt && (
-                        <span className="ml-2">({moment(orderProducts.endedAt).format('YYYY-MM-DD')} 到期)</span>
+                        <span className="ml-2">
+                          (
+                          {formatMessage(commonMessages.text.dueDate, {
+                            date: moment(orderProducts.endedAt).format('YYYY-MM-DD'),
+                          })}
+                          )
+                        </span>
                       )}
                     </div>
                     <div className="flex-shrink-0 text-right">{currencyFormatter(orderProducts.price)}</div>
@@ -114,19 +159,19 @@ const OrderCollectionAdminCard: React.FC<OrderCollectionAdminCardProps> = ({ mem
               ))}
               <div className="row text-right">
                 <div className="col-9">
-                  <span>總金額</span>
+                  <span>{formatMessage(commonMessages.label.totalPrice)}</span>
 
-                  {/* {record.status === "UNPAID" && (
-                      <Button className="mr-2">取消訂單</Button>
-                    )}
-                    {record.status === "UNPAID" && (
-                      <Button className="mr-2" type="primary">
-                        重新付款
-                      </Button>
-                    )}
-                    {record.status === "SUCCESS" && (
-                      <Button className="mr-2">查看收據</Button>
-                    )} */}
+                  {/* {record.status === 'UNPAID' && (
+                    <Button className="mr-2">{formatMessage(commonMessages.ui.cancelOrder)}</Button>
+                  )}
+                  {record.status === 'UNPAID' && (
+                    <Button className="mr-2" type="primary">
+                      {formatMessage(commonMessages.ui.retryPayment)}
+                    </Button>
+                  )}
+                  {record.status === 'SUCCESS' && (
+                    <Button className="mr-2">{formatMessage(commonMessages.ui.checkInvoice)}</Button>
+                  )} */}
                 </div>
                 <div className="col-3">
                   <span>{currencyFormatter(record.totalPrice)} </span>
@@ -139,41 +184,6 @@ const OrderCollectionAdminCard: React.FC<OrderCollectionAdminCardProps> = ({ mem
     </AdminCard>
   )
 }
-
-const columns: ColumnProps<any>[] = [
-  {
-    title: '訂單編號',
-    dataIndex: 'id',
-    key: 'id',
-    width: '100px',
-    render: (text: string) => (
-      <Tooltip title={text}>
-        <span>{text.split('-')[0]}</span>
-      </Tooltip>
-    ),
-  },
-  {
-    title: '購買日期',
-    dataIndex: 'createdAt',
-    key: 'createdAt',
-    width: '200px',
-    render: text => <StyledDate>{dateFormatter(text)}</StyledDate>,
-  },
-  {
-    title: '購買總額',
-    dataIndex: 'totalPrice',
-    key: 'totalPrice',
-    align: 'right',
-    render: text => currencyFormatter(text),
-  },
-  {
-    title: '訂單狀態',
-    dataIndex: 'status',
-    key: 'status',
-    width: '100px',
-    render: (status: string) => <OrderStatusTag status={status} />,
-  },
-]
 
 const GET_MEMBER_ORDERS = gql`
   query GET_MEMBER_ORDERS($memberId: String!) {

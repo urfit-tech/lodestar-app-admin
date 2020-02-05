@@ -5,6 +5,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import useRouter from 'use-react-router'
 import { InferType } from 'yup'
+import { commonMessages } from '../../helpers/translation'
 import { useCart } from '../../hooks/checkout'
 import { programSchema } from '../../schemas/program'
 
@@ -27,9 +28,6 @@ const StyleButton = styled(Button)<{ variant?: string }>`
 
 const messages = defineMessages({
   soldOut: { id: 'program.ui.soldOut', defaultMessage: '已售完' },
-  goToCart: { id: 'program.ui.goToCart', defaultMessage: '前往購物車' },
-  addToCart: { id: 'program.ui.addToCart', defaultMessage: '加入購物車' },
-  buyNow: { id: 'program.ui.buyNow', defaultMessage: '立即購買' },
   joinNow: { id: 'program.ui.joinNow', defaultMessage: '立即參與' },
 })
 
@@ -57,7 +55,7 @@ const ProgramPaymentButton: React.FC<ProgramPaymentButtonProps> = ({
     </Button>
   ) : cartProduct ? (
     <Button block type="primary" onClick={() => history.push(`/cart`)}>
-      {formatMessage(messages.goToCart)}
+      {formatMessage(commonMessages.ui.goToCart)}
     </Button>
   ) : (
     <div className={variant === 'multiline' ? 'd-flex flex-column' : 'd-flex'}>
@@ -70,7 +68,7 @@ const ProgramPaymentButton: React.FC<ProgramPaymentButtonProps> = ({
           {...cartButtonProps}
         >
           <Icon type="shopping-cart" />
-          <span className="ml-2">{formatMessage(messages.addToCart)}</span>
+          <span className="ml-2">{formatMessage(commonMessages.ui.addToCart)}</span>
         </StyleButton>
       )}
 
@@ -83,7 +81,7 @@ const ProgramPaymentButton: React.FC<ProgramPaymentButtonProps> = ({
         }}
         {...orderButtonProps}
       >
-        {program.listPrice !== 0 ? formatMessage(messages.buyNow) : formatMessage(messages.joinNow)}
+        {program.listPrice !== 0 ? formatMessage(commonMessages.ui.buyNow) : formatMessage(messages.joinNow)}
       </Button>
     </div>
   )

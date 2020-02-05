@@ -2,18 +2,27 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button } from 'antd'
 import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import Sortable from 'react-sortablejs'
 import { InferType } from 'yup'
+import { commonMessages } from '../../helpers/translation'
 import { programContentSectionSchema, programSchema } from '../../schemas/program'
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
 import DraggableItem from '../common/DraggableItem'
+
+const messages = defineMessages({
+  sortProgram: { id: 'program.ui.sortProgram', defaultMessage: '課程排序' },
+  contentSorting: { id: 'program.label.contentSorting', defaultMessage: '內容排序' },
+})
 
 type ProgramStructureAdminModalProps = {
   program: InferType<typeof programSchema> | null
   onStructureChange?: () => void
 }
 const ProgramStructureAdminModal: React.FC<ProgramStructureAdminModalProps> = ({ program, onStructureChange }) => {
+  const { formatMessage } = useIntl()
+
   const [updateProgramContentSections] = useMutation<
     types.UPSERT_PROGRAM_CONTENT_SECTIONS,
     types.UPSERT_PROGRAM_CONTENT_SECTIONSVariables
@@ -75,17 +84,17 @@ const ProgramStructureAdminModal: React.FC<ProgramStructureAdminModalProps> = ({
     <AdminModal
       renderTrigger={({ setVisible }) => (
         <Button type="link" icon="drag" onClick={() => setVisible(true)}>
-          課程排序
+          {formatMessage(messages.sortProgram)}
         </Button>
       )}
-      title="內容排序"
+      title={formatMessage(messages.contentSorting)}
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>
-            取消
+            {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit(setVisible)}>
-            確定
+            {formatMessage(commonMessages.ui.confirm)}
           </Button>
         </>
       )}

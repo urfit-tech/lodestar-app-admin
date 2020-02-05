@@ -3,17 +3,27 @@ import { Button, Form, Icon, Input, message, Radio } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import useRouter from 'use-react-router'
 import CreatorSelector from '../../containers/common/CreatorSelector'
 import { useAuth } from '../../contexts/AuthContext'
+import { commonMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
 import ProgramCategorySelector from './ProgramCategorySelector'
+
+const messages = defineMessages({
+  createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
+  programPlanType: { id: 'program.label.programPlanType', defaultMessage: '選擇課程付費方案' },
+  perpetualPlanType: { id: 'program.label.perpetualPlanType', defaultMessage: '單次付費' },
+  subscriptionPlanType: { id: 'program.label.subscriptionPlanType', defaultMessage: '訂閱付費' },
+})
 
 type ProgramCreationModalProps = FormComponentProps & {
   withSelector?: boolean
 }
 const ProgramCreationModal: React.FC<ProgramCreationModalProps> = ({ form, withSelector }) => {
+  const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const { history } = useRouter()
 
@@ -54,49 +64,49 @@ const ProgramCreationModal: React.FC<ProgramCreationModalProps> = ({ form, withS
     <AdminModal
       renderTrigger={({ setVisible }) => (
         <Button type="primary" icon="file-add" className="mb-4" onClick={() => setVisible(true)}>
-          建立課程
+          {formatMessage(messages.createProgram)}
         </Button>
       )}
-      title="建立課程"
+      title={formatMessage(messages.createProgram)}
       icon={<Icon type="file-add" />}
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>
-            取消
+            {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
-            建立課程
+            {formatMessage(commonMessages.ui.create)}
           </Button>
         </>
       )}
     >
       <Form>
         {withSelector && (
-          <Form.Item label="選擇老師">
+          <Form.Item label={formatMessage(commonMessages.label.selectInstructor)}>
             {form.getFieldDecorator('memberId', {
               initialValue: currentMemberId,
             })(<CreatorSelector />)}
           </Form.Item>
         )}
-        <Form.Item label="課程名稱" className="mb-1">
+        <Form.Item label={formatMessage(programMessages.label.programTitle)} className="mb-1">
           {form.getFieldDecorator('title', {
             rules: [{ required: true }],
           })(<Input />)}
         </Form.Item>
-        <Form.Item label="類別">
+        <Form.Item label={formatMessage(commonMessages.label.category)}>
           {form.getFieldDecorator('categoryIds', {
             initialValue: [],
           })(<ProgramCategorySelector />)}
         </Form.Item>
-        <Form.Item label="選擇課程付費方案">
+        <Form.Item label={formatMessage(messages.programPlanType)}>
           {form.getFieldDecorator('isSubscription', {
             initialValue: false,
             rules: [{ required: true }],
           })(
             <Radio.Group
               options={[
-                { label: '單次付費', value: false },
-                { label: '訂閱付費', value: true },
+                { label: formatMessage(messages.perpetualPlanType), value: false },
+                { label: formatMessage(messages.subscriptionPlanType), value: true },
               ]}
             />,
           )}

@@ -1,7 +1,9 @@
 import { Button, Checkbox, Divider, Modal } from 'antd'
 import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import ProductItem from '../../containers/common/ProductItem'
+import { commonMessages, promotionMessages } from '../../helpers/translation'
 
 const StyledTitle = styled.div`
   color: var(--gray-darker);
@@ -38,6 +40,7 @@ const VoucherExchangeModal: React.FC<VoucherExchangeModalProps> = ({
   productIds,
   onExchange,
 }) => {
+  const { formatMessage } = useIntl()
   const [visible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([])
@@ -45,13 +48,15 @@ const VoucherExchangeModal: React.FC<VoucherExchangeModalProps> = ({
   return (
     <>
       <Button type="primary" onClick={() => setVisible(true)}>
-        立即使用
+        {formatMessage(promotionMessages.ui.useNow)}
       </Button>
 
       <Modal centered destroyOnClose footer={null} visible={visible} onCancel={() => setVisible(false)}>
-        <StyledTitle className="mb-2">可兌換 {productQuantityLimit} 個項目</StyledTitle>
+        <StyledTitle className="mb-2">
+          {formatMessage(promotionMessages.text.exchangeItemsNumber, { number: productQuantityLimit })}
+        </StyledTitle>
         <StyledDescription className="mb-2">{description}</StyledDescription>
-        <StyledNotice>兌換券為一次使用後失效，請一次兌換完畢</StyledNotice>
+        <StyledNotice>{formatMessage(promotionMessages.text.exchangeNotation)}</StyledNotice>
 
         {productIds.map(productId => (
           <div key={productId}>
@@ -75,7 +80,7 @@ const VoucherExchangeModal: React.FC<VoucherExchangeModalProps> = ({
 
         <div className="text-right">
           <Button className="mr-2" onClick={() => setVisible(false)}>
-            取消
+            {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button
             type="primary"
@@ -87,7 +92,7 @@ const VoucherExchangeModal: React.FC<VoucherExchangeModalProps> = ({
               }
             }}
           >
-            兌換
+            {formatMessage(promotionMessages.ui.exchange)}
           </Button>
         </div>
       </Modal>

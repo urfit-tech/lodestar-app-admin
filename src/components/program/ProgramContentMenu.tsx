@@ -4,10 +4,12 @@ import { Card, Icon, Select } from 'antd'
 import gql from 'graphql-tag'
 import { prop, sortBy, uniq } from 'ramda'
 import React, { useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import { array, InferType, object } from 'yup'
 import { dateFormatter, durationFormatter } from '../../helpers'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { programContentSchema, programContentSectionSchema, programSchema } from '../../schemas/program'
 import types from '../../types'
 
@@ -92,6 +94,12 @@ const StyledItem = styled.div`
   }
 `
 
+const messages = defineMessages({
+  contentMenu: { id: 'program.label.contentMenu', defaultMessage: '課程列表' },
+  sortBySection: { id: 'program.ui.sortBySection', defaultMessage: '單元排序' },
+  sortByDate: { id: 'program.ui.sortByDate', defaultMessage: '時間排序' },
+})
+
 type ProgramContentMenuProps = {
   activeProgramContentId?: string
   program: InferType<typeof programSchema>
@@ -104,7 +112,7 @@ const ProgramContentMenu: React.FC<ProgramContentMenuProps> = ({
   activeProgramContentId,
   onSelect,
 }) => {
-  const [sortBy, setSortBy] = useState('section')
+  const { formatMessage } = useIntl()
   const query = useQuery<types.GET_PROGRAM_CONTENTS_WITH_BODY, types.GET_PROGRAM_CONTENTS_WITH_BODYVariables>(
     GET_PROGRAM_CONTENTS_WITH_BODY,
     {
@@ -112,14 +120,16 @@ const ProgramContentMenu: React.FC<ProgramContentMenuProps> = ({
     },
   )
 
+  const [sortBy, setSortBy] = useState('section')
+
   return (
     <StyledProgramContentMenu>
       <StyledHead className="d-flex justify-content-between align-items-center">
-        <span>課程列表</span>
+        <span>{formatMessage(messages.contentMenu)}</span>
         <StyledSelectBlock>
           <Select size="default" value={sortBy} onChange={(value: string) => setSortBy(value)}>
-            <Select.Option value="section">單元排序</Select.Option>
-            <Select.Option value="date">時間排序</Select.Option>
+            <Select.Option value="section">{formatMessage(messages.sortBySection)}</Select.Option>
+            <Select.Option value="date">{formatMessage(messages.sortByDate)}</Select.Option>
           </Select>
         </StyledSelectBlock>
       </StyledHead>
@@ -150,6 +160,8 @@ const ProgramContentMenuBySection: React.FC<{
   query: QueryResult<any, any>
   onSelect?: (programContentId: string) => void
 }> = ({ program, activeProgramContentId, query, onSelect }) => {
+  const { formatMessage } = useIntl()
+
   const castData = gqlResultSchema.cast(query.data)
   const programContents = castData.programContentBody
     .flatMap(contentBody => contentBody.programContents)
@@ -160,9 +172,9 @@ const ProgramContentMenuBySection: React.FC<{
   )
 
   return query.loading ? (
-    <div>載入中...</div>
+    <div>{formatMessage(commonMessages.event.loading)}</div>
   ) : query.error ? (
-    <div>無法載入</div>
+    <div>{formatMessage(errorMessages.data.fetch)}</div>
   ) : programContentSections.length === 0 ? (
     <EmptyMenu />
   ) : (
@@ -195,6 +207,8 @@ const ProgramContentMenuByDate: React.FC<{
   query: QueryResult<any, any>
   onSelect?: (programContentId: string) => void
 }> = ({ program, activeProgramContentId, query, onSelect }) => {
+  const { formatMessage } = useIntl()
+
   const castData = gqlResultSchema.cast(query.data)
   const programContents = castData.programContentBody
     .flatMap(contentBody => contentBody.programContents)
@@ -202,9 +216,9 @@ const ProgramContentMenuByDate: React.FC<{
     .sort((a, b) => (a.publishedAt && b.publishedAt && a.publishedAt < b.publishedAt ? 1 : -1))
 
   return query.loading ? (
-    <div>載入中...</div>
+    <div>{formatMessage(commonMessages.event.loading)}</div>
   ) : query.error ? (
-    <div>無法載入</div>
+    <div>{formatMessage(errorMessages.data.fetch)}</div>
   ) : programContents.length === 0 ? (
     <EmptyMenu />
   ) : (

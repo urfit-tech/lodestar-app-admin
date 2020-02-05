@@ -1,7 +1,9 @@
 import { Button, Icon, Popover } from 'antd'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { ReactComponent as MicrophoneOIcon } from '../../images/icon/microphone-o.svg'
 import { AvatarImage } from '../common/Image'
 import Responsive, { BREAK_POINT } from '../common/Responsive'
@@ -61,6 +63,8 @@ const PodcastProgramPopover: React.FC<PodcastProgramPopoverProps> = ({
   categories,
   creator,
 }) => {
+  const { formatMessage } = useIntl()
+
   const content = (
     <StyledWrapper>
       <StyledTitle>{title}</StyledTitle>
@@ -84,16 +88,16 @@ const PodcastProgramPopover: React.FC<PodcastProgramPopoverProps> = ({
         </Link>
         <div className="flex-grow-1 text-right">
           <Button type="link" icon="plus" size="small">
-            訂閱頻道
+            {formatMessage(podcastMessages.ui.subscribe)}
           </Button>
         </div>
       </div>
 
       <div>
         <Button type="primary" className="mb-2" block>
-          立即購買
+          {formatMessage(commonMessages.ui.buyNow)}
         </Button>
-        <Button block>加入購物車</Button>
+        <Button block>{formatMessage(commonMessages.ui.addToCart)}</Button>
       </div>
     </StyledWrapper>
   )

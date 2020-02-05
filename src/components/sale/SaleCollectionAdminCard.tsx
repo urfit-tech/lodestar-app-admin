@@ -6,9 +6,11 @@ import gql from 'graphql-tag'
 import moment from 'moment'
 import { prop, sum } from 'ramda'
 import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { array, InferType, number, object, string } from 'yup'
 import { currencyFormatter, productTypeFormatter } from '../../helpers'
+import { commonMessages } from '../../helpers/translation'
 import { ProductType } from '../../schemas/general'
 import { orderProductSchema, orderSchema } from '../../schemas/order'
 import types from '../../types'
@@ -27,6 +29,8 @@ const DEFAULT_PAGE_SIZE = 20
 const DEFAULT_PAGE_CURRENT = 1
 
 const SaleCollectionAdminCard: React.FC<CardProps> = () => {
+  const { formatMessage } = useIntl()
+
   const [status, setStatus] = useState()
   const [orderIdLike, setOrderIdLike] = useState()
   const [memberNameLike, setMemberNameLike] = useState()
@@ -50,7 +54,7 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
 
   const columns: ColumnProps<any>[] = [
     {
-      title: '訂單編號',
+      title: formatMessage(commonMessages.label.orderLogId),
       dataIndex: 'id',
       key: 'id',
       width: '150px',
@@ -71,14 +75,14 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
       }),
     },
     {
-      title: '訂單日期',
+      title: formatMessage(commonMessages.label.orderLogDate),
       dataIndex: 'createdAt',
       key: 'createdAt',
       width: '180px',
       render: (value: Date) => moment(value).format('YYYY-MM-DD HH:mm'),
     },
     {
-      title: '姓名',
+      title: formatMessage(commonMessages.label.memberName),
       dataIndex: 'member.name',
       key: 'name',
       ...getColumnSearchProps({
@@ -107,24 +111,24 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
       }),
     },
     {
-      title: '訂單狀態',
+      title: formatMessage(commonMessages.label.orderLogStatus),
       dataIndex: 'status',
       key: 'status',
       width: '120px',
       render: (status: string) => <OrderStatusTag status={status} />,
       filters: [
         {
-          text: '已完成',
+          text: formatMessage(commonMessages.status.orderSuccess),
           value: 'SUCCESS',
         },
         {
-          text: '待付款',
+          text: formatMessage(commonMessages.status.orderUnpaid),
           value: 'UNPAID',
         },
       ],
     },
     {
-      title: '訂單金額',
+      title: formatMessage(commonMessages.label.orderLogPrice),
       dataIndex: 'totalPrice',
       key: 'totalPrice',
       align: 'right',
@@ -146,7 +150,9 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
     <AdminCard>
       <StyledContainer>
         <div className="d-flex justify-content-end">
-          <Typography.Text type="secondary">共 {totalCount} 筆</Typography.Text>
+          <Typography.Text type="secondary">
+            {formatMessage(commonMessages.text.totalCount, { count: `${totalCount}` })}
+          </Typography.Text>
         </div>
 
         <Table
@@ -188,21 +194,19 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
               })}
               <div className="row" style={{ textAlign: 'right' }}>
                 <div className="col-9">
-                  <div>
-                    <span>總金額</span>
-                  </div>
+                  <span>{formatMessage(commonMessages.label.totalPrice)}</span>
 
-                  {/* {record.status === "UNPAID" && (
-                      <Button className="mr-2">取消訂單</Button>
-                    )}
-                    {record.status === "UNPAID" && (
-                      <Button className="mr-2" type="primary">
-                        重新付款
-                      </Button>
-                    )}
-                    {record.status === "SUCCESS" && (
-                      <Button className="mr-2">查看收據</Button>
-                    )} */}
+                  {/* {record.status === 'UNPAID' && (
+                    <Button className="mr-2">{formatMessage(commonMessages.ui.cancelOrder)}</Button>
+                  )}
+                  {record.status === 'UNPAID' && (
+                    <Button className="mr-2" type="primary">
+                      {formatMessage(commonMessages.ui.retryPayment)}
+                    </Button>
+                  )}
+                  {record.status === 'SUCCESS' && (
+                    <Button className="mr-2">{formatMessage(commonMessages.ui.checkInvoice)}</Button>
+                  )} */}
                 </div>
                 <div className="col-3">
                   <span>{currencyFormatter(record.totalPrice)} </span>
@@ -240,10 +244,10 @@ const getColumnSearchProps = ({
         onClick={() => onSearch(selectedKeys, confirm)}
         className="mr-2"
       >
-        查詢
+        Search
       </StyledFilterButton>
       <StyledFilterButton size="small" onClick={() => onReset(clearFilters)}>
-        重置
+        Reset
       </StyledFilterButton>
     </div>
   ),

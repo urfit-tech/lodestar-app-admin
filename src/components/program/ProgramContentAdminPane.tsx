@@ -2,16 +2,24 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Spin, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import { InferType } from 'yup'
 import { programSchema } from '../../schemas/program'
 import types from '../../types'
 import ProgramContentSectionAdminCard from './ProgramContentSectionAdminCard'
 import ProgramStructureAdminModal from './ProgramStructureAdminModal'
 
+const messages = defineMessages({
+  programContent: { id: 'program.label.programContent', defaultMessage: '課程內容' },
+  creatingBlock: { id: 'program.event.creatingBlock', defaultMessage: '新增區塊中' },
+  createBlock: { id: 'program.ui.createBlock', defaultMessage: '新增區塊' },
+})
+
 const ProgramContentAdminPane: React.FC<{
   program: InferType<typeof programSchema> | null
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
+  const { formatMessage } = useIntl()
   const [createProgramContentSection] = useMutation<
     types.INSERT_PROGRAM_CONTENT_SECTION,
     types.INSERT_PROGRAM_CONTENT_SECTIONVariables
@@ -25,7 +33,7 @@ const ProgramContentAdminPane: React.FC<{
       createProgramContentSection({
         variables: {
           programId: program.id,
-          title: '未命名區塊',
+          title: 'Untitled Block',
           position: program.contentSections.length,
         },
       })
@@ -38,7 +46,7 @@ const ProgramContentAdminPane: React.FC<{
     <div className="container py-3">
       <div className="d-flex justify-content-between align-items-center pb-4">
         <Typography.Title className="mb-0" level={3}>
-          課程內容
+          {formatMessage(messages.programContent)}
         </Typography.Title>
         <ProgramStructureAdminModal program={program} onStructureChange={onRefetch} />
       </div>
@@ -62,11 +70,11 @@ const ProgramContentAdminPane: React.FC<{
       <Divider>
         {loading ? (
           <Button type="link" icon="loading">
-            新增區塊中
+            {formatMessage(messages.creatingBlock)}
           </Button>
         ) : (
           <Button type="link" icon="plus" onClick={handleContentSectionAdd}>
-            新增區塊
+            {formatMessage(messages.createBlock)}
           </Button>
         )}
       </Divider>
