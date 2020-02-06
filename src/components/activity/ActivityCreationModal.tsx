@@ -89,19 +89,19 @@ const ActivityCreationModal: React.FC<ActivityCreationModalProps> = ({ form, onC
             })(<CreatorSelector />)}
           </Form.Item>
         )}
-        <Form.Item label={formatMessage(commonMessages.label.title)}>
+        <Form.Item label={formatMessage(commonMessages.term.title)}>
           {form.getFieldDecorator('title', {
             rules: [
               {
                 required: true,
                 message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.label.title),
+                  field: formatMessage(commonMessages.term.title),
                 }),
               },
             ],
           })(<Input />)}
         </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.label.category)}>
+        <Form.Item label={formatMessage(commonMessages.term.category)}>
           {form.getFieldDecorator('categoryIds', { initialValue: [] })(<ProgramCategorySelector />)}
         </Form.Item>
       </Form>

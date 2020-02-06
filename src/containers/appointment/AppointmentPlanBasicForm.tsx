@@ -3,11 +3,14 @@ import { Button, Form, Input, message, Skeleton } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
+import { useIntl } from 'react-intl'
 import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 import { handleError } from '../../helpers'
+import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
+  const { formatMessage } = useIntl()
   const { loadingAppointmentPlan, errorAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(
     AppointmentPlanContext,
   )
@@ -22,7 +25,7 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
   }
 
   if (errorAppointmentPlan || !appointmentPlan) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const handleSubmit = () => {
@@ -41,7 +44,7 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
       })
         .then(() => {
           refetchAppointmentPlan && refetchAppointmentPlan()
-          message.success('儲存成功')
+          message.success(commonMessages.event.successfullySaved)
         })
         .catch(error => handleError(error))
         .finally(() => setLoading(false))
@@ -59,18 +62,25 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
         handleSubmit()
       }}
     >
-      <Form.Item label="方案名稱">
+      <Form.Item label={formatMessage(appointmentMessages.term.planTitle)}>
         {form.getFieldDecorator('title', {
           initialValue: appointmentPlan.title,
-          rules: [{ required: true, message: '請輸入方案名稱' }],
+          rules: [
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(appointmentMessages.term.planTitle),
+              }),
+            },
+          ],
         })(<Input />)}
       </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
-          取消
+          {formatMessage(commonMessages.ui.cancel)}
         </Button>
         <Button type="primary" htmlType="submit" loading={loading}>
-          儲存
+          {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>
     </Form>

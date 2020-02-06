@@ -4,13 +4,16 @@ import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useContext, useState } from 'react'
+import { useIntl } from 'react-intl'
 import { StyledSelect } from '../../components/admin'
 import AdminModal from '../../components/admin/AdminModal'
 import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 import { handleError } from '../../helpers'
+import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ form }) => {
+  const { formatMessage } = useIntl()
   const { loadingAppointmentPlan, errorAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(
     AppointmentPlanContext,
   )
@@ -24,7 +27,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
   if (loadingAppointmentPlan || errorAppointmentPlan || !appointmentPlan) {
     return (
       <Button type="primary" icon="file-add" disabled>
-        建立時段
+        {formatMessage(appointmentMessages.label.createPeriod)}
       </Button>
     )
   }
@@ -38,7 +41,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
       }
 
       setLoading(true)
-      
+
       createAppointmentSchedule({
         variables: {
           appointmentPlanId: appointmentPlan.id,
@@ -49,7 +52,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
       })
         .then(() => {
           refetchAppointmentPlan && refetchAppointmentPlan()
-          message.success('儲存成功')
+          message.success(formatMessage(commonMessages.event.successfullyCreated))
           setVisible(false)
         })
         .catch(error => handleError(error))
@@ -61,33 +64,33 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
     <AdminModal
       renderTrigger={({ setVisible }) => (
         <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
-          建立時段
+          {formatMessage(appointmentMessages.label.createPeriod)}
         </Button>
       )}
       icon={<Icon type="file-add" />}
-      title="建立時段"
+      title={formatMessage(appointmentMessages.label.createPeriod)}
       maskClosable={false}
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>
-            取消
+            {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit({ setVisible })}>
-            建立
+            {formatMessage(commonMessages.ui.create)}
           </Button>
         </>
       )}
     >
       <Form hideRequiredMark colon={false}>
-        <Form.Item label="起始時間">
+        <Form.Item label={formatMessage(appointmentMessages.term.startedAt)}>
           {form.getFieldDecorator('startedAt', {
             initialValue: moment()
               .add(1, 'hour')
               .startOf('hour'),
-            rules: [{ required: true, message: '請選擇起始時間' }],
+            rules: [{ required: true, message: formatMessage(appointmentMessages.text.selectStartedAt) }],
           })(
             <DatePicker
-              placeholder="選擇起始時間"
+              placeholder={formatMessage(appointmentMessages.text.selectStartedAt)}
               format="YYYY-MM-DD HH:mm"
               showTime={{ format: 'HH:mm' }}
               disabledDate={currentTime => (currentTime ? currentTime < moment().startOf('day') : false)}
@@ -96,16 +99,16 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
         </Form.Item>
 
         <Checkbox className="mb-2" defaultChecked={withRepeat} onChange={e => setWithRepeat(e.target.checked)}>
-          重複週期
+          {formatMessage(appointmentMessages.term.periodType)}
         </Checkbox>
         <div className={withRepeat ? 'd-block mb-4' : 'd-none'}>
           {form.getFieldDecorator('periodType', {
             initialValue: 'D',
           })(
             <StyledSelect className="ml-4">
-              <Select.Option value="D">每日</Select.Option>
-              <Select.Option value="W">每週</Select.Option>
-              <Select.Option value="M">每月</Select.Option>
+              <Select.Option value="D">{formatMessage(commonMessages.label.perDay)}</Select.Option>
+              <Select.Option value="W">{formatMessage(commonMessages.label.week)}</Select.Option>
+              <Select.Option value="M">{formatMessage(commonMessages.label.month)}</Select.Option>
             </StyledSelect>,
           )}
         </div>

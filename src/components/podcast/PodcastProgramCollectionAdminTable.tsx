@@ -105,7 +105,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
 
   const columns: ColumnProps<PodcastProgramProps>[] = [
     {
-      title: formatMessage(commonMessages.label.title),
+      title: formatMessage(commonMessages.term.title),
       dataIndex: 'title',
       key: 'title',
       render: (text, record, index) => (

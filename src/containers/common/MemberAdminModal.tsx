@@ -5,13 +5,25 @@ import { ModalProps } from 'antd/lib/modal'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useContext, useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AvatarImage } from '../../components/common/Image'
 import { AppContext } from '../../contexts/AppContext'
 import { currencyFormatter, handleError } from '../../helpers'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { UserRole } from '../../schemas/general'
 import types from '../../types'
 import ZoomUserSelector from './ZoomUserSelector'
+
+const messages = defineMessages({
+  creatorPageLink: { id: 'common.ui.creatorPageLink', defaultMessage: '創作者主頁' },
+  memberPageLink: { id: 'common.ui.memberPageLink', defaultMessage: '學員主頁' },
+  roleSettings: { id: 'common.label.roleSettigs', defaultMessage: '設定身份' },
+  lastLogin: { id: 'common.label.lastLogin', defaultMessage: '上次登入' },
+  holdingPoints: { id: 'common.label.holdingPoints', defaultMessage: '持有點數' },
+  points: { id: 'common.label.points', defaultMessage: '{points} 點' },
+  consumption: { id: 'common.label.consumption', defaultMessage: '消費金額' },
+})
 
 const StyledMetaBlock = styled.div`
   color: var(--gray-darker);
@@ -40,6 +52,7 @@ type MemberAdminModalProps = FormComponentProps &
   }
 
 const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCancel, onSuccess, ...modalProps }) => {
+  const { formatMessage } = useIntl()
   const app = useContext(AppContext)
   const [updateMemberInfo] = useMutation<types.UPDATE_MEMBER_INFO, types.UPDATE_MEMBER_INFOVariables>(gql`
     mutation UPDATE_MEMBER_INFO($memberId: String!, $name: String, $email: String, $role: String, $zoomUserId: String) {
@@ -75,7 +88,7 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
         },
       })
         .then(() => {
-          message.success('儲存成功')
+          message.success(formatMessage(commonMessages.event.successfullySaved))
           onSuccess && onSuccess()
         })
         .catch(error => handleError(error))
@@ -95,7 +108,7 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
             rel="noopener noreferrer"
             className="col-5 text-center"
           >
-            <Button type="link">創作者主頁</Button>
+            <Button type="link">{formatMessage(messages.creatorPageLink)}</Button>
           </a>
         )}
         {member.role === 'general-member' && (
@@ -105,7 +118,7 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
             rel="noopener noreferrer"
             className="col-5 text-center"
           >
-            <Button type="link">學員主頁</Button>
+            <Button type="link">{formatMessage(messages.memberPageLink)}</Button>
           </a>
         )}
       </div>
@@ -118,26 +131,40 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
           handleSubmit()
         }}
       >
-        <Form.Item label="姓名">
+        <Form.Item label={formatMessage(commonMessages.term.memberName)}>
           {form.getFieldDecorator('name', {
             initialValue: member.name,
-            rules: [{ required: true, message: '請輸入姓名' }],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.term.memberName),
+                }),
+              },
+            ],
           })(<Input />)}
         </Form.Item>
-        <Form.Item label="信箱">
+        <Form.Item label={formatMessage(commonMessages.term.email)}>
           {form.getFieldDecorator('email', {
             initialValue: member.email,
-            rules: [{ required: true, message: '請輸入信箱' }],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.term.email),
+                }),
+              },
+            ],
           })(<Input />)}
         </Form.Item>
-        <Form.Item label="設定身份">
+        <Form.Item label={formatMessage(messages.roleSettings)}>
           {form.getFieldDecorator('role', {
             initialValue: member.role,
           })(
             <Select>
-              <Select.Option value="general-member">一般會員</Select.Option>
-              <Select.Option value="content-creator">創作者</Select.Option>
-              <Select.Option value="app-owner">管理者</Select.Option>
+              <Select.Option value="general-member">{formatMessage(commonMessages.term.generalMember)}</Select.Option>
+              <Select.Option value="content-creator">{formatMessage(commonMessages.term.contentCreator)}</Select.Option>
+              <Select.Option value="app-owner">{formatMessage(commonMessages.term.appOwner)}</Select.Option>
             </Select>,
           )}
         </Form.Item>
@@ -152,15 +179,15 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
 
         <StyledMetaBlock>
           <div className="mb-2">
-            <span className="mr-3">上次登入</span>
+            <span className="mr-3">{formatMessage(messages.lastLogin)}</span>
             <span>{member.loginedAt ? moment(member.loginedAt).fromNow() : null}</span>
           </div>
           {/* <div className="mb-2">
-            <span className="mr-3">持有點數</span>
-            <span>{member.points} 點</span>
+            <span className="mr-3">{formatMessage(messages.holdingPoints)}</span>
+            <span>{formatMessage(messages.points, { points: member.points })}</span>
           </div> */}
           <div className="mb-2">
-            <span className="mr-3">消費金額</span>
+            <span className="mr-3">{formatMessage(messages.consumption)}</span>
             <span>{currencyFormatter(member.consumption)}</span>
           </div>
         </StyledMetaBlock>
@@ -173,10 +200,10 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
               onCancel && onCancel()
             }}
           >
-            取消
+            {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
-            儲存
+            {formatMessage(commonMessages.ui.save)}
           </Button>
         </div>
       </Form>

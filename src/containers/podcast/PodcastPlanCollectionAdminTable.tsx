@@ -1,7 +1,9 @@
 import { Skeleton } from 'antd'
 import { ApolloError, ApolloQueryResult } from 'apollo-client'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import PodcastPlanCollectionAdminTableComponent from '../../components/podcast/PodcastPlanCollectionAdminTable'
+import { errorMessages } from '../../helpers/translation'
 import { PodcastPlan } from '../../hooks/podcast'
 import types from '../../types'
 
@@ -20,12 +22,14 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
   podcastPlans,
   refetch,
 }) => {
+  const { formatMessage } = useIntl()
+
   if (loading) {
     return <Skeleton />
   }
 
   if (error || !podcastPlans) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   return (

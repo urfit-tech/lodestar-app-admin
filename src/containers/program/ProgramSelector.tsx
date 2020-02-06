@@ -3,13 +3,17 @@ import { Select } from 'antd'
 import { SelectProps } from 'antd/lib/select'
 import gql from 'graphql-tag'
 import React from 'react'
-import * as types from '../../types'
+import { useIntl } from 'react-intl'
+import { commonMessages } from '../../helpers/translation'
+import types from '../../types'
 
 type ProgramSelectorProps = SelectProps & {
   allText?: string
 }
 const ProgramSelector: React.FC<ProgramSelectorProps> = ({ allText, ...selectProps }) => {
+  const { formatMessage } = useIntl()
   const { loading, error, data } = useQuery<types.GET_PROGRAM_ENROLLED>(GET_PROGRAM_ENROLLED)
+
   const SelectOptions =
     data?.program_enrollment
       .filter(programEnrollment => programEnrollment.program)
@@ -19,7 +23,7 @@ const ProgramSelector: React.FC<ProgramSelectorProps> = ({ allText, ...selectPro
 
   return (
     <Select disabled={!!error} loading={loading} style={{ width: '100%' }} defaultValue="all" {...selectProps}>
-      <Select.Option key="all">{allText || '全部課程'}</Select.Option>
+      <Select.Option key="all">{allText || formatMessage(commonMessages.label.allProgram)}</Select.Option>
       {SelectOptions}
     </Select>
   )

@@ -4,12 +4,14 @@ import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import SingleUploader from '../../components/common/SingleUploader'
 import StyledBraftEditor from '../../components/common/StyledBraftEditor'
 import ActivityContext from '../../contexts/ActivityContext'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const StyledCover = styled.div<{ src: string }>`
@@ -41,6 +43,7 @@ const StyledSingleUploader = styled(SingleUploader)`
 `
 
 const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
+  const { formatMessage } = useIntl()
   const app = useContext(AppContext)
   const { loadingActivity, errorActivity, activity, refetchActivity } = useContext(ActivityContext)
   const [updateActivityCover] = useMutation<types.UPDATE_ACTIVITY_COVER, types.UPDATE_ACTIVITY_COVERVariables>(
@@ -57,7 +60,7 @@ const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
   }
 
   if (errorActivity || !activity) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const handleUpdateCover = () => {
@@ -72,7 +75,7 @@ const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
     })
       .then(() => {
         refetchActivity && refetchActivity()
-        message.success('儲存成功')
+        message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(error => handleError(error))
       .finally(() => setLoading(false))
@@ -94,7 +97,7 @@ const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
       })
         .then(() => {
           refetchActivity && refetchActivity()
-          message.success('儲存成功')
+          message.success(formatMessage(commonMessages.event.successfullySaved))
         })
         .catch(error => handleError(error))
         .finally(() => setLoading(false))
@@ -111,7 +114,7 @@ const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
         handleSubmit()
       }}
     >
-      <Form.Item label="封面">
+      <Form.Item label={formatMessage(commonMessages.term.cover)}>
         <div className="d-flex align-items-center justify-content-between">
           {activity.coverUrl && <StyledCover className="flex-shrink-0 mr-3" src={activity.coverUrl} />}
           {form.getFieldDecorator('coverImg', {
@@ -133,7 +136,7 @@ const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
           )}
         </div>
       </Form.Item>
-      <Form.Item label="描述" wrapperCol={{ md: { span: 20 } }}>
+      <Form.Item label={formatMessage(commonMessages.term.description)} wrapperCol={{ md: { span: 20 } }}>
         {form.getFieldDecorator('description', {
           initialValue: BraftEditor.createEditorState(activity.description),
         })(
@@ -168,10 +171,10 @@ const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
       </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
-          取消
+          {formatMessage(commonMessages.ui.cancel)}
         </Button>
         <Button type="primary" htmlType="submit" loading={loading}>
-          儲存
+          {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>
     </Form>

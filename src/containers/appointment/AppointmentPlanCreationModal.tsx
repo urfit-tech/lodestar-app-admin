@@ -3,14 +3,17 @@ import { Button, Form, Icon, Input } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
 import useRouter from 'use-react-router'
 import AdminModal from '../../components/admin/AdminModal'
 import CreatorSelector from '../../containers/common/CreatorSelector'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
+import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) => {
+  const { formatMessage } = useIntl()
   const { history } = useRouter()
   const { currentMemberId, currentUserRole } = useAuth()
 
@@ -52,33 +55,43 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
     <AdminModal
       renderTrigger={({ setVisible }) => (
         <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
-          建立方案
+          {formatMessage(appointmentMessages.ui.createPlan)}
         </Button>
       )}
-      title="建立方案"
+      title={formatMessage(appointmentMessages.ui.createPlan)}
       icon={<Icon type="file-add" />}
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>
-            取消
+            {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
-            建立
+            {formatMessage(commonMessages.ui.create)}
           </Button>
         </>
       )}
     >
       <Form hideRequiredMark colon={false} onSubmit={e => e.preventDefault()}>
-        <Form.Item label="選擇老師" className={currentUserRole !== 'app-owner' ? 'd-none' : ''}>
+        <Form.Item
+          label={formatMessage(commonMessages.label.selectInstructor)}
+          className={currentUserRole !== 'app-owner' ? 'd-none' : ''}
+        >
           {form.getFieldDecorator('creatorId', {
             initialValue: currentMemberId,
-            rules: [{ required: true, message: '請選擇老師' }],
+            rules: [{ required: true, message: formatMessage(errorMessages.form.selectInstructor) }],
           })(<CreatorSelector disabled={currentUserRole !== 'app-owner'} />)}
         </Form.Item>
-        <Form.Item label="方案名稱">
+        <Form.Item label={formatMessage(commonMessages.term.planTitle)}>
           {form.getFieldDecorator('title', {
-            initialValue: '未命名方案',
-            rules: [{ required: true, message: '請輸入方案名稱' }],
+            initialValue: 'Untitled',
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.term.planTitle),
+                }),
+              },
+            ],
           })(<Input />)}
         </Form.Item>
       </Form>

@@ -124,13 +124,13 @@ const PerpetualPlanForm: React.FC<PerpetualPlanFormProps> = ({ form, programPlan
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Form.Item label={formatMessage(commonMessages.label.listPrice)}>
+      <Form.Item label={formatMessage(commonMessages.term.listPrice)}>
         {form.getFieldDecorator('listPrice', {
           initialValue: programPlan.listPrice,
           rules: [{ required: true }, { type: 'number' }],
         })(<InputNumber />)}
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.label.salePrice)}>
+      <Form.Item label={formatMessage(commonMessages.term.salePrice)}>
         {form.getFieldDecorator('salePrice', {
           initialValue: programPlan.salePrice,
           rules: [{ required: true }, { type: 'number' }],

@@ -161,7 +161,7 @@ const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
             />,
           )}
         </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.label.listPrice)} colon={false}>
+        <Form.Item label={formatMessage(commonMessages.term.listPrice)} colon={false}>
           {form.getFieldDecorator('price', {
             rules: [{ type: 'number' }],
             initialValue: activityTicket ? activityTicket.price : 0,

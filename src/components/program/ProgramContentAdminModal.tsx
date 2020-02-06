@@ -225,7 +225,7 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                 })(<ProgramPlanSelector programId={programId} placeholder={formatMessage(messages.contentPlan)} />)}
               </Form.Item>
             )}
-            <Form.Item label={formatMessage(commonMessages.label.video)}>
+            <Form.Item label={formatMessage(commonMessages.term.video)}>
               {programContent.programContentBody &&
                 form.getFieldDecorator('video', { initialValue: bodyData.video })(
                   <SingleUploader
@@ -240,7 +240,7 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                 )}
             </Form.Item>
             {((videoFieldValue && videoFieldValue.status === 'done') || bodyData.video) && (
-              <Form.Item label={formatMessage(commonMessages.label.caption)}>
+              <Form.Item label={formatMessage(commonMessages.term.caption)}>
                 {programContent.programContentBody &&
                   form.getFieldDecorator('texttrack', {
                     initialValue: bodyData.texttrack,

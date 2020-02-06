@@ -2,12 +2,15 @@ import { useQuery } from '@apollo/react-hooks'
 import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { useEffect } from 'react'
+import { useIntl } from 'react-intl'
 import PodcastProgramCollectionAdminTableComponent, {
   PodcastProgramProps,
 } from '../../components/podcast/PodcastProgramCollectionAdminTable'
+import { errorMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const PodcastProgramCollectionAdminTable: React.FC = () => {
+  const { formatMessage } = useIntl()
   const { loading, error, data, refetch } = useQuery<types.GET_PODCAST_PROGRAM_ADMIN_COLLECTION>(
     GET_PODCAST_PROGRAM_ADMIN_COLLECTION,
   )
@@ -21,7 +24,7 @@ const PodcastProgramCollectionAdminTable: React.FC = () => {
   }
 
   if (error || !data) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const podcastPrograms: PodcastProgramProps[] = data.podcast_program.map(podcastProgram => ({

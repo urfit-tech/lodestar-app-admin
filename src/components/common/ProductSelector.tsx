@@ -7,19 +7,19 @@ const productTypes = ['Program', 'ProgramPlan', 'ProgramContent', 'Card', 'Activ
 const productTypeLabel = (productType: string) => {
   switch (productType) {
     case 'Program':
-      return commonMessages.label.program
+      return commonMessages.label.allProgram
     case 'ProgramPlan':
-      return commonMessages.label.programPlan
+      return commonMessages.label.allProgramPlan
     case 'ProgramContent':
-      return commonMessages.label.programContent
+      return commonMessages.label.allProgramContent
     case 'Card':
-      return commonMessages.label.card
+      return commonMessages.label.allMembershipCard
     case 'ActivityTicket':
-      return commonMessages.label.activityTicket
+      return commonMessages.label.allActivityTicket
     case 'Merchandise':
-      return commonMessages.label.merchandise
+      return commonMessages.label.allMerchandise
     default:
-      return commonMessages.label.unknowProduct
+      return commonMessages.term.unknowProduct
   }
 }
 

@@ -159,7 +159,7 @@ const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
               </Radio.Group>,
             )}
           </Form.Item>
-          <Form.Item label={formatMessage(commonMessages.label.periodType)}>
+          <Form.Item label={formatMessage(commonMessages.term.periodType)}>
             {form.getFieldDecorator('period', {
               initialValue: {
                 amount: podcastPlan ? podcastPlan.periodAmount : 1,
@@ -169,20 +169,20 @@ const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
                 {
                   required: true,
                   message: formatMessage(errorMessages.form.isRequired, {
-                    field: formatMessage(commonMessages.label.periodType),
+                    field: formatMessage(commonMessages.term.periodType),
                   }),
                 },
               ],
             })(<PodcastPeriodSelector />)}
           </Form.Item>
-          <Form.Item label={formatMessage(commonMessages.label.listPrice)}>
+          <Form.Item label={formatMessage(commonMessages.term.listPrice)}>
             {form.getFieldDecorator('listPrice', {
               initialValue: podcastPlan ? podcastPlan.listPrice : 0,
               rules: [
                 {
                   required: true,
                   message: formatMessage(errorMessages.form.isRequired, {
-                    field: formatMessage(commonMessages.label.listPrice),
+                    field: formatMessage(commonMessages.term.listPrice),
                   }),
                 },
                 { type: 'number' },
@@ -196,17 +196,17 @@ const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
             )}
           </Form.Item>
           <Checkbox checked={withSalePrice} onChange={e => setWithSalePrice(e.target.checked)}>
-            {formatMessage(commonMessages.label.salePrice)}
+            {formatMessage(commonMessages.term.salePrice)}
           </Checkbox>
           {withSalePrice && (
-            <Form.Item label={formatMessage(commonMessages.label.salePrice)}>
+            <Form.Item label={formatMessage(commonMessages.term.salePrice)}>
               {form.getFieldDecorator('salePrice', {
                 initialValue: podcastPlan ? podcastPlan.salePrice : 0,
                 rules: [
                   {
                     required: true,
                     message: formatMessage(errorMessages.form.isRequired, {
-                      field: formatMessage(commonMessages.label.salePrice),
+                      field: formatMessage(commonMessages.term.salePrice),
                     }),
                   },
                   { type: 'number' },

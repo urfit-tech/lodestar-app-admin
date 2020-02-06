@@ -119,7 +119,7 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
         labelCol={{ span: 24, md: { span: 4 } }}
         wrapperCol={{ span: 24, md: { span: 12 } }}
       >
-        <StyledAvatarFormItem label={formatMessage(commonMessages.label.avatar)}>
+        <StyledAvatarFormItem label={formatMessage(commonMessages.term.avatar)}>
           <div className="mr-3">
             <AvatarImage src={(member && member.pictureUrl) || ''} size={128} />
           </div>
@@ -134,28 +134,28 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
             />,
           )}
         </StyledAvatarFormItem>
-        <Form.Item label={formatMessage(commonMessages.label.name)}>
+        <Form.Item label={formatMessage(commonMessages.term.name)}>
           {form.getFieldDecorator('name', {
             initialValue: member && member.name,
             rules: [
               {
                 required: true,
                 message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.label.name),
+                  field: formatMessage(commonMessages.term.name),
                 }),
               },
             ],
           })(<Input />)}
         </Form.Item>
         {withTitle && (
-          <Form.Item label={formatMessage(commonMessages.label.creatorTitle)}>
+          <Form.Item label={formatMessage(commonMessages.term.creatorTitle)}>
             {form.getFieldDecorator('title', {
               initialValue: member && member.title,
             })(<Input />)}
           </Form.Item>
         )}
         {withTags && (
-          <Form.Item label={formatMessage(commonMessages.label.speciality)}>
+          <Form.Item label={formatMessage(commonMessages.term.speciality)}>
             {form.getFieldDecorator('tags', {
               initialValue: member && member.memberTags && member.memberTags.map(memberTag => memberTag.tagName),
             })(
@@ -168,14 +168,14 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
           </Form.Item>
         )}
         {withAbstract && (
-          <StyledFormItem label={formatMessage(commonMessages.label.shortDescription)}>
+          <StyledFormItem label={formatMessage(commonMessages.term.shortDescription)}>
             {form.getFieldDecorator('abstract', {
               initialValue: member && member.abstract,
               rules: [
                 {
                   required: true,
                   message: formatMessage(errorMessages.form.isRequired, {
-                    field: formatMessage(commonMessages.label.shortDescription),
+                    field: formatMessage(commonMessages.term.shortDescription),
                   }),
                 },
               ],
@@ -190,7 +190,7 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
         )}
         {withDescription && member?.description && (
           <StyledFormItem
-            label={formatMessage(commonMessages.label.introduction)}
+            label={formatMessage(commonMessages.term.introduction)}
             wrapperCol={{ span: 24, md: { span: 20 } }}
           >
             {form.getFieldDecorator('description', {

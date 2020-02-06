@@ -75,7 +75,7 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
           <Form.Item label={formatMessage(programMessages.label.programTitle)}>
             {form.getFieldDecorator('title', { initialValue: program.title })(<Input />)}
           </Form.Item>
-          <Form.Item label={formatMessage(commonMessages.label.category)}>
+          <Form.Item label={formatMessage(commonMessages.term.category)}>
             {form.getFieldDecorator('categoryIds', {
               initialValue: program.programCategories.map(programCategories => programCategories.category.id),
             })(<ProgramCategorySelector />)}

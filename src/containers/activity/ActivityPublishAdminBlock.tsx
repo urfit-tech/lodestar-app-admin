@@ -2,15 +2,35 @@ import { useMutation } from '@apollo/react-hooks'
 import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import AdminPublishBlock, {
   ChecklistItemProps,
   PublishEvent,
   PublishStatus,
 } from '../../components/admin/AdminPublishBlock'
 import ActivityContext from '../../contexts/ActivityContext'
+import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 
+const messages = defineMessages({
+  noTicketPlan: { id: 'activity.text.noTicketPlan', defaultMessage: '尚未訂定票券方案' },
+  noDescription: { id: 'activity.text.noDescription', defaultMessage: '尚未填寫活動簡介' },
+  notCompleteNotation: {
+    id: 'activity.text.notCompleteNotation',
+    defaultMessage: '請填寫以下必填資料，填寫完畢即可由此發佈',
+  },
+  unpublishedNotation: {
+    id: 'activity.text.unpublishedNotation',
+    defaultMessage: '因你的活動未發佈，此活動並不會顯示在頁面上。',
+  },
+  publishedNotation: {
+    id: 'activity.text.publishedNotation',
+    defaultMessage: '現在你的活動已經發佈，此活動會出現在頁面上。',
+  },
+})
+
 const ActivityPublishAdminBlock: React.FC = () => {
+  const { formatMessage } = useIntl()
   const { loadingActivity, errorActivity, activity, refetchActivity } = useContext(ActivityContext)
   const [publishActivity] = useMutation<types.PUBLISH_ACTIVITY, types.PUBLISH_ACTIVITYVariables>(PUBLISH_ACTIVITY)
 
@@ -19,7 +39,7 @@ const ActivityPublishAdminBlock: React.FC = () => {
   }
 
   if (errorActivity || !activity) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(commonMessages.event.successfullySaved)}</div>
   }
 
   const checklist: ChecklistItemProps[] = []
@@ -27,14 +47,14 @@ const ActivityPublishAdminBlock: React.FC = () => {
   activity.activityTickets.length === 0 &&
     checklist.push({
       id: 'NO_TICKET',
-      text: '尚未訂定票券方案',
+      text: formatMessage(messages.noTicketPlan),
       tabkey: 'tickets',
     })
 
   !activity.description &&
     checklist.push({
       id: 'NO_DESCRIPTION',
-      text: '尚未填寫活動簡介',
+      text: formatMessage(messages.noDescription),
       tabkey: 'settings',
     })
 
@@ -42,11 +62,11 @@ const ActivityPublishAdminBlock: React.FC = () => {
 
   const [title, description] =
     publishStatus === 'alert'
-      ? ['尚有未完成項目', '請填寫以下必填資料，填寫完畢即可由此發佈']
+      ? [formatMessage(commonMessages.status.notComplete), formatMessage(messages.notCompleteNotation)]
       : publishStatus === 'ordinary'
-      ? ['尚未發佈', '因你的活動未發佈，此活動並不會顯示在頁面上。']
+      ? [formatMessage(commonMessages.status.unpublished), formatMessage(messages.unpublishedNotation)]
       : publishStatus === 'success'
-      ? ['已發佈', '現在你的活動已經發佈，此活動會出現在頁面上。']
+      ? [formatMessage(commonMessages.status.published), formatMessage(messages.publishedNotation)]
       : ['', '']
 
   const handlePublish: (event: PublishEvent) => void = ({ values, onSuccess, onError, onFinally }) => {

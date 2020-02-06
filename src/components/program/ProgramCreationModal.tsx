@@ -93,7 +93,7 @@ const ProgramCreationModal: React.FC<ProgramCreationModalProps> = ({ form, withS
             rules: [{ required: true }],
           })(<Input />)}
         </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.label.category)}>
+        <Form.Item label={formatMessage(commonMessages.term.category)}>
           {form.getFieldDecorator('categoryIds', {
             initialValue: [],
           })(<ProgramCategorySelector />)}

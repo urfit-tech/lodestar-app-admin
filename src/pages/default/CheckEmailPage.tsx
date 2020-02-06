@@ -1,6 +1,7 @@
 import { Button, message } from 'antd'
 import axios from 'axios'
 import React, { useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import DefaultLayout from '../../components/layout/DefaultLayout'
@@ -20,10 +21,23 @@ const StyledAction = styled.div`
   font-size: 14px;
 `
 
+const messages = defineMessages({
+  sentResetPasswordMail: { id: 'common.text.sentResetPasswordMail', defaultMessage: '已寄送重設密碼信' },
+  resetPasswordNotation: {
+    id: 'common.text.resetPasswordNotation',
+    defaultMessage: '為了安全考量，請至信箱收信更換密碼',
+  },
+  checkEmailNotation: { id: 'common.text.checkEmailNotation', defaultMessage: '請至信箱收信更換密碼' },
+  emailNotReceived: { id: 'common.text.emailNotReceived', defaultMessage: '收不到信？' },
+  sendEmailAgain: { id: 'common.ui.sendEmailAgain', defaultMessage: '再寄一次' },
+})
+
 const CheckEmailPage = () => {
-  const [loading, setLoading] = useState(false)
+  const { formatMessage } = useIntl()
   const [email] = useQueryParam('email', StringParam)
   const [type] = useQueryParam('type', StringParam)
+
+  const [loading, setLoading] = useState(false)
 
   const handleResendEmail = () => {
     setLoading(true)
@@ -39,7 +53,7 @@ const CheckEmailPage = () => {
         email: email,
       })
       .then(({ data }) => {
-        message.success('已寄送重設密碼信')
+        message.success(formatMessage(messages.sentResetPasswordMail))
       })
       .catch(err => message.error(err.response.data.message))
       .finally(() => setLoading(false))
@@ -52,14 +66,18 @@ const CheckEmailPage = () => {
           <CheckEmailIcon />
         </StyledIcon>
 
-        <p>{type === 'reset-password' ? '為了安全考量，請至信箱收信更換密碼' : '請至信箱收信更換密碼'}</p>
+        <p>
+          {type === 'reset-password'
+            ? formatMessage(messages.resetPasswordNotation)
+            : formatMessage(messages.checkEmailNotation)}
+        </p>
 
         <p>{email}</p>
 
         <StyledAction>
-          <span>收不到信？</span>
+          <span>{formatMessage(messages.emailNotReceived)}</span>
           <Button type="link" size="small" onClick={handleResendEmail} loading={loading}>
-            再寄一次
+            {formatMessage(messages.sendEmailAgain)}
           </Button>
         </StyledAction>
       </StyledContainer>

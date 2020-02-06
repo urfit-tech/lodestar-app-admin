@@ -113,7 +113,7 @@ const VoucherPlanAdminModal: React.FC<VoucherPlanAdminModalProps> = ({ form, vou
               initialValue: voucherPlan && voucherPlan.startedAt ? moment(voucherPlan.startedAt) : null,
             })(
               <DatePicker
-                placeholder={formatMessage(commonMessages.label.startedAt)}
+                placeholder={formatMessage(commonMessages.term.startedAt)}
                 format="YYYY-MM-DD HH:mm"
                 showTime={{ defaultValue: moment('00:00:00', 'HH:mm') }}
               />,
@@ -125,7 +125,7 @@ const VoucherPlanAdminModal: React.FC<VoucherPlanAdminModalProps> = ({ form, vou
               initialValue: voucherPlan && voucherPlan.endedAt ? moment(voucherPlan.endedAt) : null,
             })(
               <DatePicker
-                placeholder={formatMessage(commonMessages.label.endedAt)}
+                placeholder={formatMessage(commonMessages.term.endedAt)}
                 format="YYYY-MM-DD HH:mm"
                 showTime={{ defaultValue: moment('23:59:59', 'HH:mm') }}
               />,

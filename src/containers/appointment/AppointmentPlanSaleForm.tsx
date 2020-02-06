@@ -3,13 +3,16 @@ import { Button, Form, Icon, InputNumber, message, Skeleton, Tooltip } from 'ant
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
+import { useIntl } from 'react-intl'
 import { StyledTips } from '../../components/admin'
 import CurrencyInput from '../../components/admin/CurrencyInput'
 import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 import { handleError } from '../../helpers'
+import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
+  const { formatMessage } = useIntl()
   const { loadingAppointmentPlan, errorAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(
     AppointmentPlanContext,
   )
@@ -24,7 +27,7 @@ const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
   }
 
   if (errorAppointmentPlan || !appointmentPlan) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const handleSubmit = () => {
@@ -44,7 +47,7 @@ const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
       })
         .then(() => {
           refetchAppointmentPlan && refetchAppointmentPlan()
-          message.success('儲存成功')
+          message.success(formatMessage(commonMessages.event.successfullySaved))
         })
         .catch(error => handleError(error))
         .finally(() => setLoading(false))
@@ -63,8 +66,8 @@ const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
       <Form.Item
         label={
           <span>
-            <span className="mr-2">時間長度(分鐘)</span>
-            <Tooltip title={<StyledTips>設定單次預約服務的時間長度</StyledTips>}>
+            <span className="mr-2">{formatMessage(appointmentMessages.label.duration)}</span>
+            <Tooltip title={<StyledTips>{formatMessage(appointmentMessages.text.durationTips)}</StyledTips>}>
               <Icon type="question-circle" theme="filled" />
             </Tooltip>
           </span>
@@ -72,23 +75,30 @@ const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
       >
         {form.getFieldDecorator('duration', {
           initialValue: appointmentPlan.duration,
-          rules: [{ required: true, message: '請輸入時間長度' }],
+          rules: [{ required: true, message: formatMessage(errorMessages.form.duration) }],
         })(<InputNumber min={0} />)}
       </Form.Item>
 
-      <Form.Item label="定價">
+      <Form.Item label={formatMessage(commonMessages.term.listPrice)}>
         {form.getFieldDecorator('listPrice', {
           initialValue: appointmentPlan.listPrice,
-          rules: [{ required: true, message: '請輸入定價' }],
+          rules: [
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(commonMessages.term.listPrice),
+              }),
+            },
+          ],
         })(<CurrencyInput />)}
       </Form.Item>
 
       <Form.Item>
         <Button onClick={() => form.resetFields()} className="mr-2">
-          取消
+          {formatMessage(commonMessages.ui.cancel)}
         </Button>
         <Button type="primary" htmlType="submit" loading={loading}>
-          儲存
+          {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>
     </Form>

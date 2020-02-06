@@ -3,12 +3,15 @@ import { Button, Form, Input, message, Radio, Skeleton } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
+import { useIntl } from 'react-intl'
 import ProgramCategorySelector from '../../components/program/ProgramCategorySelector'
 import ActivityContext from '../../contexts/ActivityContext'
 import { handleError } from '../../helpers'
+import { activityMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const ActivityBasicForm: React.FC<FormComponentProps> = ({ form }) => {
+  const { formatMessage } = useIntl()
   const { loadingActivity, errorActivity, activity, refetchActivity } = useContext(ActivityContext)
   const [updateActivityBasic] = useMutation<types.UPDATE_ACTIVITY_BASIC, types.UPDATE_ACTIVITY_BASICVariables>(
     UPDATE_ACTIVITY_BASIC,
@@ -20,7 +23,7 @@ const ActivityBasicForm: React.FC<FormComponentProps> = ({ form }) => {
   }
 
   if (errorActivity || !activity) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const handleSubmit = () => {
@@ -47,7 +50,7 @@ const ActivityBasicForm: React.FC<FormComponentProps> = ({ form }) => {
       })
         .then(() => {
           refetchActivity && refetchActivity()
-          message.success('儲存成功')
+          message.success(formatMessage(commonMessages.event.successfullySaved))
         })
         .catch(error => handleError(error))
         .finally(() => setLoading(false))
@@ -64,33 +67,40 @@ const ActivityBasicForm: React.FC<FormComponentProps> = ({ form }) => {
         handleSubmit()
       }}
     >
-      <Form.Item label="名稱">
+      <Form.Item label={formatMessage(commonMessages.term.title)}>
         {form.getFieldDecorator('title', {
-          rules: [{ required: true, message: '請輸入名稱' }],
+          rules: [
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(commonMessages.term.title),
+              }),
+            },
+          ],
           initialValue: activity.title,
         })(<Input />)}
       </Form.Item>
-      <Form.Item label="類別">
+      <Form.Item label={formatMessage(commonMessages.term.category)}>
         {form.getFieldDecorator('categoryIds', {
           initialValue: activity.activityCategories.map(activityCategory => activityCategory.category.id),
         })(<ProgramCategorySelector />)}
       </Form.Item>
-      <Form.Item label="顯示人數">
+      <Form.Item label={formatMessage(activityMessages.label.showParticipantsNumber)}>
         {form.getFieldDecorator('isParticipantsVisible', {
           initialValue: activity.isParticipantsVisible ? 'public' : 'private',
         })(
           <Radio.Group>
-            <Radio value="public">公開</Radio>
-            <Radio value="private">不公開</Radio>
+            <Radio value="public">{formatMessage(activityMessages.status.public)}</Radio>
+            <Radio value="private">{formatMessage(activityMessages.status.hidden)}</Radio>
           </Radio.Group>,
         )}
       </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
-          取消
+          {formatMessage(commonMessages.ui.cancel)}
         </Button>
         <Button type="primary" htmlType="submit" loading={loading}>
-          儲存
+          {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>
     </Form>

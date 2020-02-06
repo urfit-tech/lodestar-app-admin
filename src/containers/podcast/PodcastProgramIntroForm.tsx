@@ -3,12 +3,14 @@ import { Button, Form, Icon, Input, message, Skeleton, Tooltip } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StyledTips } from '../../components/admin/index'
 import { CustomRatioImage } from '../../components/common/Image'
 import SingleUploader from '../../components/common/SingleUploader'
 import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
+import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const StyledCoverBlock = styled.div`
@@ -36,6 +38,7 @@ const StyledSingleUploader = styled(SingleUploader)`
 `
 
 const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
+  const { formatMessage } = useIntl()
   const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
     PodcastProgramContext,
   )
@@ -51,7 +54,7 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
   }
 
   if (errorPodcastProgram || !podcastProgram) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const handleSubmit = () => {
@@ -71,7 +74,7 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
       })
         .then(() => {
           refetchPodcastProgram && refetchPodcastProgram()
-          message.success('儲存成功')
+          message.success(formatMessage(commonMessages.event.successfullySaved))
         })
         .catch(error => handleError(error))
         .finally(() => setLoading(false))
@@ -90,7 +93,7 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
     })
       .then(() => {
         refetchPodcastProgram && refetchPodcastProgram()
-        message.success('儲存成功')
+        message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(error => handleError(error))
       .finally(() => setLoading(false))
@@ -110,8 +113,8 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
       <Form.Item
         label={
           <span>
-            <span className="mr-2">廣播封面</span>
-            <Tooltip title={<StyledTips>{'建議尺寸：1080*1080px'}</StyledTips>}>
+            <span className="mr-2">{formatMessage(podcastMessages.term.podcastCover)}</span>
+            <Tooltip title={<StyledTips>{formatMessage(podcastMessages.text.podcastCoverTips)}</StyledTips>}>
               <Icon type="question-circle" theme="filled" />
             </Tooltip>
           </span>
@@ -143,17 +146,17 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
           )}
         </div>
       </Form.Item>
-      <Form.Item label="廣播摘要">
+      <Form.Item label={formatMessage(podcastMessages.term.podcastAbstract)}>
         {form.getFieldDecorator('abstract', {
           initialValue: podcastProgram.abstract,
         })(<Input.TextArea rows={4} />)}
       </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
-          取消
+          {formatMessage(commonMessages.ui.cancel)}
         </Button>
         <Button type="primary" htmlType="submit" loading={loading}>
-          儲存
+          {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>
     </Form>

@@ -51,20 +51,20 @@ const ProfileAccountAdminCard: React.FC<ProfileAccountAdminCardProps> = ({ form,
         labelCol={{ span: 24, md: { span: 4 } }}
         wrapperCol={{ span: 24, md: { span: 8 } }}
       >
-        <Form.Item label={formatMessage(commonMessages.label.account)}>
+        <Form.Item label={formatMessage(commonMessages.term.account)}>
           {form.getFieldDecorator('username', {
             initialValue: member && member.username,
             rules: [{ required: true, message: formatMessage(errorMessages.form.account) }],
           })(<Input />)}
         </Form.Item>
-        <Form.Item label={commonMessages.label.email}>
+        <Form.Item label={commonMessages.term.email}>
           {form.getFieldDecorator('_email', {
             initialValue: member && member.email,
             rules: [
               {
                 required: true,
                 message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.label.email),
+                  field: formatMessage(commonMessages.term.email),
                 }),
               },
             ],

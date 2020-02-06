@@ -1,12 +1,19 @@
-import { Progress, Table } from 'antd'
-import * as types from '../../types'
-import { ColumnProps } from 'antd/lib/table'
-import React from 'react'
-import MemberAvatar from '../../components/common/MemberAvatar'
-import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
-import { groupBy, sum, flatten } from 'ramda'
+import { Progress, Table } from 'antd'
+import { ColumnProps } from 'antd/lib/table'
+import gql from 'graphql-tag'
+import { flatten, groupBy, sum } from 'ramda'
+import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import MemberAvatar from '../../components/common/MemberAvatar'
+import { commonMessages, errorMessages } from '../../helpers/translation'
+import * as types from '../../types'
+
+const messages = defineMessages({
+  learningDuration: { id: 'common.term.learningDuration', defaultMessage: '學習時數' },
+  learningProgress: { id: 'common.term.learningProgress', defaultMessage: '學習進度' },
+})
 
 const StyledProgress = styled(Progress)`
   && {
@@ -18,6 +25,7 @@ const StyledProgress = styled(Progress)`
     }
   }
 `
+
 type MemberProgress = {
   member: {
     id: string
@@ -31,10 +39,11 @@ type MemberProgress = {
 type MemberProgramProgress = MemberProgress & {
   programId: string
 }
-type ProgramProgressTableProps = {
+
+const ProgramProgressTable: React.FC<{
   programId?: string
-}
-const ProgramProgressTable: React.FC<ProgramProgressTableProps> = ({ programId }) => {
+}> = ({ programId }) => {
+  const { formatMessage } = useIntl()
   const { loading, error, data } = useQuery<types.GET_PROGRAM_PROGRESS, types.GET_PROGRAM_PROGRESSVariables>(
     GET_PROGRAM_PROGRESS,
     { variables: { programId } },
@@ -80,8 +89,32 @@ const ProgramProgressTable: React.FC<ProgramProgressTableProps> = ({ programId }
   })
 
   if (error) {
-    return <div>無法載入資料</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
+
+  const programProgressTableColumns: ColumnProps<MemberProgress>[] = [
+    {
+      title: formatMessage(commonMessages.term.memberName),
+      dataIndex: 'member.id',
+      render: (_, record) => (
+        <MemberAvatar name={record.member.name} pictureUrl={record.member.pictureUrl}></MemberAvatar>
+      ),
+    },
+    {
+      title: 'Email',
+      dataIndex: 'member.email',
+    },
+    {
+      title: formatMessage(messages.learningDuration),
+      dataIndex: 'duration',
+      render: value => formatMessage(commonMessages.text.minutes, { minutes: `${parseInt(value)}` }),
+    },
+    {
+      title: formatMessage(messages.learningProgress),
+      dataIndex: 'progress',
+      render: value => <StyledProgress percent={parseInt(`${value * 100}`)} />,
+    },
+  ]
 
   return (
     <Table
@@ -93,30 +126,6 @@ const ProgramProgressTable: React.FC<ProgramProgressTableProps> = ({ programId }
     />
   )
 }
-
-const programProgressTableColumns: ColumnProps<MemberProgress>[] = [
-  {
-    title: '姓名',
-    dataIndex: 'member.id',
-    render: (_, record) => (
-      <MemberAvatar name={record.member.name} pictureUrl={record.member.pictureUrl}></MemberAvatar>
-    ),
-  },
-  {
-    title: 'Email',
-    dataIndex: 'member.email',
-  },
-  {
-    title: '學習時數',
-    dataIndex: 'duration',
-    render: value => `${parseInt(value)} 分鐘`,
-  },
-  {
-    title: '學習進度',
-    dataIndex: 'progress',
-    render: value => <StyledProgress percent={parseInt(`${value * 100}`)} />,
-  },
-]
 
 const GET_PROGRAM_PROGRESS = gql`
   query GET_PROGRAM_PROGRESS($programId: uuid) {

@@ -2,7 +2,9 @@ import { useQuery } from '@apollo/react-hooks'
 import { Spin } from 'antd'
 import gql from 'graphql-tag'
 import React, { forwardRef } from 'react'
+import { useIntl } from 'react-intl'
 import MemberSelector from '../../components/common/MemberSelector'
+import { errorMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const CreatorSelector: React.FC<{
@@ -10,6 +12,7 @@ const CreatorSelector: React.FC<{
   onChange?: (value: string | null) => void
   disabled?: boolean
 }> = ({ value, onChange, disabled }, ref) => {
+  const { formatMessage } = useIntl()
   const { loading, error, data } = useQuery<types.GET_CREATOR_COLLECTION, types.GET_CREATOR_COLLECTIONVariables>(
     GET_CREATOR_COLLECTION,
     {
@@ -24,7 +27,7 @@ const CreatorSelector: React.FC<{
   }
 
   if (error || !data) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const members = data.member.map(member => ({

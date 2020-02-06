@@ -4,11 +4,20 @@ import axios from 'axios'
 import gql from 'graphql-tag'
 import { reverse } from 'ramda'
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import VoucherCollectionBlockComponent from '../../components/voucher/VoucherCollectionBlock'
 import { useAuth } from '../../contexts/AuthContext'
 import types from '../../types'
 
+const messages = defineMessages({
+  successfullyInsert: { id: 'voucher.event.successfullyInsert', defaultMessage: '成功加入兌換券' },
+  failedInsert: { id: 'voucher.event.failedInsert', defaultMessage: '無法加入兌換券' },
+  successfullyExchange: { id: 'voucher.event.successfullyExchange', defaultMessage: '兌換成功，請到「我的主頁」查看' },
+  failedExchange: { id: 'voucher.event.failedExchange', defaultMessage: '無法使用兌換券' },
+})
+
 const VoucherCollectionBlock = () => {
+  const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const { loading, error, data, refetch } = useQuery<types.GET_VOUCHER_COLLECTION>(GET_VOUCHER_COLLECTION)
 
@@ -39,14 +48,14 @@ const VoucherCollectionBlock = () => {
 
     insertVoucherCode(currentMemberId, code)
       .then(data => {
-        message.success('成功加入兌換券')
+        message.success(formatMessage(messages.successfullyInsert))
         refetch()
       })
       .catch(error => {
         try {
           message.error(error.response.data.message)
         } catch (error) {
-          message.error('無法加入兌換券')
+          message.error(formatMessage(messages.failedInsert))
         }
       })
       .finally(() => setLoading(false))
@@ -67,14 +76,14 @@ const VoucherCollectionBlock = () => {
     exchangeVoucherCode(currentMemberId, voucherId, selectedProductIds)
       .then(data => {
         setVisible(false)
-        message.success('兌換成功，請到「我的主頁」查看')
+        message.success(formatMessage(messages.successfullyExchange))
         refetch()
       })
       .catch(error => {
         try {
           message.error(error.response.data.message)
         } catch (error) {
-          message.error('無法使用兌換券')
+          message.error(formatMessage(messages.failedExchange))
         }
       })
       .finally(() => setLoading(false))

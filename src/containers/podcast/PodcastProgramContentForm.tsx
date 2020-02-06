@@ -5,12 +5,14 @@ import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import { extname } from 'path'
 import React, { useContext, useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StyledTips } from '../../components/admin'
 import SingleUploader from '../../components/common/SingleUploader'
 import StyledBraftEditor from '../../components/common/StyledBraftEditor'
 import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
+import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const StyledFileBlock = styled.div`
@@ -24,10 +26,10 @@ const StyledFileBlock = styled.div`
 `
 
 const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
+  const { formatMessage } = useIntl()
   const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
     PodcastProgramContext,
   )
-  const [loading, setLoading] = useState(false)
 
   const [updatePodcastProgramContent] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_CONTENT,
@@ -38,12 +40,14 @@ const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
     types.UPDATE_PODCAST_PROGRAM_BODYVariables
   >(UPDATE_PODCAST_PROGRAM_BODY)
 
+  const [loading, setLoading] = useState(false)
+
   if (loadingPodcastProgram) {
     return <Skeleton active />
   }
 
   if (errorPodcastProgram || !podcastProgram) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const handleUploadAudio = (contentType: string | null) => {
@@ -56,7 +60,7 @@ const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
     })
       .then(() => {
         refetchPodcastProgram && refetchPodcastProgram()
-        message.success('儲存成功')
+        message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(error => handleError(error))
   }
@@ -79,7 +83,7 @@ const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
       })
         .then(() => {
           refetchPodcastProgram && refetchPodcastProgram()
-          message.success('儲存成功')
+          message.success(formatMessage(commonMessages.event.successfullySaved))
         })
         .catch(error => handleError(error))
         .finally(() => setLoading(false))
@@ -98,8 +102,8 @@ const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
       <Form.Item
         label={
           <span>
-            <span className="mr-2">音頻</span>
-            <Tooltip title={<StyledTips>{'建議格式：MP3\n檔案大小限制：5MB'}</StyledTips>}>
+            <span className="mr-2">{formatMessage(podcastMessages.term.audioFile)}</span>
+            <Tooltip title={<StyledTips>{formatMessage(podcastMessages.text.audioFileTips)}</StyledTips>}>
               <Icon type="question-circle" theme="filled" />
             </Tooltip>
           </span>
@@ -110,7 +114,7 @@ const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
             withExtension
             accept=".mp3"
             // accept=".mp3,.m4a,.mp4,.3gp,.m4a,.aac"
-            uploadText="上傳音檔"
+            uploadText={formatMessage(podcastMessages.ui.uploadAudioFile)}
             showUploadList={false}
             path={`audios/${localStorage.getItem('kolable.app.id')}/${podcastProgram.id}`}
             onSuccess={info => handleUploadAudio(extname(info.file.name).replace('.', ''))}
@@ -125,12 +129,12 @@ const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
           </StyledFileBlock>
         ) : null}
       </Form.Item>
-      <Form.Item label="內容時長（分鐘）">
+      <Form.Item label={formatMessage(podcastMessages.label.duration)}>
         {form.getFieldDecorator('duration', {
           initialValue: podcastProgram.duration,
         })(<InputNumber min={0} />)}
       </Form.Item>
-      <Form.Item label="內容描述">
+      <Form.Item label={formatMessage(podcastMessages.label.description)}>
         {form.getFieldDecorator('description', {
           initialValue: BraftEditor.createEditorState(podcastProgram.description),
         })(
@@ -165,10 +169,10 @@ const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
       </Form.Item>
       <Form.Item>
         <Button onClick={() => form.resetFields()} className="mr-2">
-          取消
+          {formatMessage(commonMessages.ui.cancel)}
         </Button>
         <Button type="primary" htmlType="submit" loading={loading}>
-          儲存
+          {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>
     </Form>

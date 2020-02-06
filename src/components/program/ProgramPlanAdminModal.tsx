@@ -165,7 +165,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
             initialValue: (programPlan && programPlan.periodType) || 'M',
           })(<ProgramPeriodTypeDropdown />)}
         </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.label.listPrice)}>
+        <Form.Item label={formatMessage(commonMessages.term.listPrice)}>
           {form.getFieldDecorator('listPrice', {
             initialValue: (programPlan && programPlan.listPrice) || 0,
           })(
@@ -179,7 +179,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
 
         <div className="mb-4">
           <Checkbox defaultChecked={hasSalePrice} onChange={e => setHasSalePrice(e.target.checked)}>
-            {formatMessage(commonMessages.label.salePrice)}
+            {formatMessage(commonMessages.term.salePrice)}
           </Checkbox>
           {hasSalePrice && <div className="notation">{formatMessage(messages.salePriceNotation)}</div>}
         </div>

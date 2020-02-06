@@ -2,14 +2,17 @@ import { useMutation } from '@apollo/react-hooks'
 import { message, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext } from 'react'
+import { useIntl } from 'react-intl'
 import ActivitySessionsAdminBlockComponent from '../../components/activity/ActivitySessionsAdminBlock'
 import ActivityContext from '../../contexts/ActivityContext'
 import { handleError } from '../../helpers'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const ActivitySessionsAdminBlock: React.FC<{
   onChangeTab?: () => void
 }> = ({ onChangeTab }) => {
+  const { formatMessage } = useIntl()
   const { loadingActivity, errorActivity, activity, refetchActivity } = useContext(ActivityContext)
   const [insertActivitySession] = useMutation<types.INSERT_ACTIVITY_SESSION, types.INSERT_ACTIVITY_SESSIONVariables>(
     INSERT_ACTIVITY_SESSION,
@@ -23,7 +26,7 @@ const ActivitySessionsAdminBlock: React.FC<{
   }
 
   if (errorActivity || !activity) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const handleInsert: (
@@ -47,7 +50,7 @@ const ActivitySessionsAdminBlock: React.FC<{
       },
     })
       .then(() => {
-        message.success('建立成功')
+        message.success(formatMessage(commonMessages.event.successfullyCreated))
         setVisible(false)
         refetchActivity && refetchActivity()
       })
@@ -74,7 +77,7 @@ const ActivitySessionsAdminBlock: React.FC<{
       variables: data,
     })
       .then(() => {
-        message.success('編輯成功')
+        message.success(formatMessage(commonMessages.event.successfullySaved))
         setVisible(false)
         refetchActivity && refetchActivity()
       })

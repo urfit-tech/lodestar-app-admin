@@ -68,20 +68,20 @@ const ActivitySessionAdminModal: React.FC<ActivitySessionAdminModalProps> = ({
               {
                 required: true,
                 message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.label.title),
+                  field: formatMessage(commonMessages.term.title),
                 }),
               },
             ],
             initialValue: activitySession ? activitySession.title : '',
           })(<Input />)}
         </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.label.startedAt)} colon={false}>
+        <Form.Item label={formatMessage(commonMessages.term.startedAt)} colon={false}>
           {form.getFieldDecorator('startedAt', {
             rules: [
               {
                 required: true,
                 message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.label.startedAt),
+                  field: formatMessage(commonMessages.term.startedAt),
                 }),
               },
             ],
@@ -94,13 +94,13 @@ const ActivitySessionAdminModal: React.FC<ActivitySessionAdminModalProps> = ({
             />,
           )}
         </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.label.endedAt)} colon={false}>
+        <Form.Item label={formatMessage(commonMessages.term.endedAt)} colon={false}>
           {form.getFieldDecorator('endedAt', {
             rules: [
               {
                 required: true,
                 message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.label.endedAt),
+                  field: formatMessage(commonMessages.term.endedAt),
                 }),
               },
             ],

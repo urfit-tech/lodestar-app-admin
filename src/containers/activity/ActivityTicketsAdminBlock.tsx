@@ -2,12 +2,15 @@ import { useMutation } from '@apollo/react-hooks'
 import { message, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext } from 'react'
+import { useIntl } from 'react-intl'
 import ActivityTicketsAdminBlockComponent from '../../components/activity/ActivityTicketsAdminBlock'
 import ActivityContext from '../../contexts/ActivityContext'
 import { handleError } from '../../helpers'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const ActivityTicketsAdminBlock: React.FC = () => {
+  const { formatMessage } = useIntl()
   const { loadingActivity, errorActivity, activity, refetchActivity } = useContext(ActivityContext)
   const [insertActivityTicket] = useMutation<types.INSERT_ACTIVITY_TICKET, types.INSERT_ACTIVITY_TICKETVariables>(
     INSERT_ACTIVITY_TICKET,
@@ -21,7 +24,7 @@ const ActivityTicketsAdminBlock: React.FC = () => {
   }
 
   if (errorActivity || !activity) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const handleInsert: (
@@ -56,7 +59,7 @@ const ActivityTicketsAdminBlock: React.FC = () => {
       },
     })
       .then(() => {
-        message.success('建立成功')
+        message.success(formatMessage(commonMessages.event.successfullyCreated))
         setVisible(false)
         refetchActivity && refetchActivity()
       })
@@ -98,7 +101,7 @@ const ActivityTicketsAdminBlock: React.FC = () => {
       },
     })
       .then(() => {
-        message.success('編輯成功')
+        message.success(formatMessage(commonMessages.event.successfullySaved))
         setVisible(false)
         refetchActivity && refetchActivity()
       })

@@ -82,7 +82,7 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
       render: (value: Date) => moment(value).format('YYYY-MM-DD HH:mm'),
     },
     {
-      title: formatMessage(commonMessages.label.memberName),
+      title: formatMessage(commonMessages.term.memberName),
       dataIndex: 'member.name',
       key: 'name',
       ...getColumnSearchProps({

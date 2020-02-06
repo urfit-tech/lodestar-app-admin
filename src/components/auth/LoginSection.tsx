@@ -82,12 +82,7 @@ const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) 
         <Form.Item>
           {form.getFieldDecorator('account', {
             rules: [{ required: true, message: formatMessage(errorMessages.form.accountNameOrEmail) }],
-          })(
-            <Input
-              placeholder={formatMessage(commonMessages.label.accountNameOrEmail)}
-              suffix={<Icon type="user" />}
-            />,
-          )}
+          })(<Input placeholder={formatMessage(commonMessages.term.username)} suffix={<Icon type="user" />} />)}
         </Form.Item>
         <Form.Item>
           {form.getFieldDecorator('password', {
@@ -95,14 +90,14 @@ const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) 
               {
                 required: true,
                 message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.label.password),
+                  field: formatMessage(commonMessages.term.password),
                 }),
               },
             ],
           })(
             <Input
               type="password"
-              placeholder={formatMessage(commonMessages.label.password)}
+              placeholder={formatMessage(commonMessages.term.password)}
               suffix={<Icon type="lock" />}
             />,
           )}

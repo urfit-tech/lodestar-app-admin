@@ -56,7 +56,7 @@ const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps
   return (
     <AdminCard>
       <Form onSubmit={handleSubmit}>
-        <Form.Item label={formatMessage(commonMessages.label.listPrice)}>
+        <Form.Item label={formatMessage(commonMessages.term.listPrice)}>
           {form.getFieldDecorator('listPrice', {
             initialValue: program.listPrice || 0,
             rules: [{ required: true }, { type: 'number' }],
@@ -71,7 +71,7 @@ const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps
 
         <div className="mb-4">
           <Checkbox defaultChecked={hasSalePrice} onChange={e => setHasSalePrice(e.target.checked)}>
-            {formatMessage(commonMessages.label.salePrice)}
+            {formatMessage(commonMessages.term.salePrice)}
           </Checkbox>
         </div>
         <Form.Item className={hasSalePrice ? 'm-0' : 'd-none'}>

@@ -2,15 +2,37 @@ import { useMutation } from '@apollo/react-hooks'
 import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import AdminPublishBlock, {
   ChecklistItemProps,
   PublishEvent,
   PublishStatus,
 } from '../../components/admin/AdminPublishBlock'
 import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
+import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 
+const messages = defineMessages({
+  noTitle: { id: 'appointment.text.noTitle', defaultMessage: '尚未設定方案名稱' },
+  noDuration: { id: 'appointment.text.noDuration', defaultMessage: '尚未設定時間長度' },
+  noListPrice: { id: 'appointment.text.noListPrice', defaultMessage: '尚未設定售價' },
+  noPeriod: { id: 'appointment.text.noPeriod', defaultMessage: '尚未設定時段' },
+  notCompleteNotation: {
+    id: 'appointment.text.notCompleteNotation',
+    defaultMessage: '請填寫以下必填資料，填寫完畢即可由此發佈',
+  },
+  unpublishedNotation: {
+    id: 'appointment.text.unpublishedNotation',
+    defaultMessage: '預約方案未發佈，此方案並不會顯示在頁面上，學生也不能購買此方案。',
+  },
+  publishedNotation: {
+    id: 'appointment.text.publishedNotation',
+    defaultMessage: '預約方案已經發佈，學生將能購買預約。',
+  },
+})
+
 const AppointmentPlanPublishBlock: React.FC = () => {
+  const { formatMessage } = useIntl()
   const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)
   const [publishAppointmentPlan] = useMutation<types.PUBLISH_APPOINTMENT_PLAN, types.PUBLISH_APPOINTMENT_PLANVariables>(
     PUBLISH_APPOINTMENT_PLAN,
@@ -25,25 +47,25 @@ const AppointmentPlanPublishBlock: React.FC = () => {
   !appointmentPlan.title &&
     checklist.push({
       id: 'NO_TITLE',
-      text: '尚未設定方案名稱',
+      text: formatMessage(messages.noTitle),
       tabkey: 'settings',
     })
   !appointmentPlan.duration &&
     checklist.push({
       id: 'NO_DURATION',
-      text: '尚未設定時間長度',
+      text: formatMessage(messages.noDuration),
       tabkey: 'sale',
     })
   !appointmentPlan.listPrice &&
     checklist.push({
       id: 'NO_LIST_PRICE',
-      text: '尚未設定售價',
+      text: formatMessage(messages.noListPrice),
       tabkey: 'sale',
     })
   !appointmentPlan.periods.length &&
     checklist.push({
       id: 'NO_PERIOD',
-      text: '尚未設定時段',
+      text: formatMessage(messages.noPeriod),
       tabkey: 'schedule',
     })
 
@@ -52,11 +74,11 @@ const AppointmentPlanPublishBlock: React.FC = () => {
 
   const [title, description] =
     publishStatus === 'alert'
-      ? ['尚有未完成項目', '請填寫以下必填資料，填寫完畢即可由此發佈']
+      ? [formatMessage(commonMessages.status.notComplete), formatMessage(messages.notCompleteNotation)]
       : publishStatus === 'ordinary'
-      ? ['尚未發佈', '預約方案未發佈，此方案並不會顯示在頁面上，學生也不能購買此方案。']
+      ? [formatMessage(commonMessages.status.unpublished), formatMessage(messages.unpublishedNotation)]
       : publishStatus === 'success'
-      ? ['已發佈', '預約方案已經發佈，學生將能購買預約。']
+      ? [formatMessage(commonMessages.status.published), formatMessage(messages.publishedNotation)]
       : ['', '']
 
   const handlePublish: (event: PublishEvent) => void = ({ values, onSuccess, onError, onFinally }) => {

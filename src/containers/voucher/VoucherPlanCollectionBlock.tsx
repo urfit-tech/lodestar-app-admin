@@ -4,11 +4,15 @@ import { generate } from 'coupon-code'
 import gql from 'graphql-tag'
 import { reverse, times } from 'ramda'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import { VoucherPlanFields } from '../../components/voucher/VoucherPlanAdminModal'
 import VoucherPlanCollectionBlockComponent from '../../components/voucher/VoucherPlanCollectionBlock'
+import { handleError } from '../../helpers'
+import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 
-const VoucherPlanCollectionBlock = () => {
+const VoucherPlanCollectionBlock: React.FC = () => {
+  const { formatMessage } = useIntl()
   const { loading, error, data, refetch } = useQuery<types.GET_VOUCHER_PLAN_COLLECTION>(GET_VOUCHER_PLAN_COLLECTION)
   const [insertVoucherPlan] = useMutation<types.INSERT_VOUCHER_PLAN, types.INSERT_VOUCHER_PLANVariables>(
     INSERT_VOUCHER_PLAN,
@@ -77,14 +81,14 @@ const VoucherPlanCollectionBlock = () => {
       },
     })
       .then(() => {
+        message.success(formatMessage(commonMessages.event.successfullyCreated))
         setVisible(false)
-        message.success('已建立兌換方案')
         refetch()
       })
-      .catch(() => {
-        message.error(`建立兌換方案失敗`)
+      .catch(error => {
+        handleError(error)
+        setLoading(false)
       })
-      .finally(() => setLoading(false))
   }
 
   const handleUpdate = (
@@ -108,14 +112,14 @@ const VoucherPlanCollectionBlock = () => {
       },
     })
       .then(() => {
+        message.success(formatMessage(commonMessages.event.successfullySaved))
         setVisible(false)
-        message.success('已更新兌換方案')
         refetch()
       })
-      .catch(() => {
-        message.error(`更新兌換方案失敗`)
+      .catch(error => {
+        handleError(error)
+        setLoading(false)
       })
-      .finally(() => setLoading(false))
   }
 
   return (

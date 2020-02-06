@@ -4,15 +4,22 @@ import gql from 'graphql-tag'
 import moment from 'moment'
 import { groupBy } from 'ramda'
 import React, { useContext } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import AppointmentPeriodCollection, {
   ClosePeriodEvent,
   DeleteScheduleEvent,
   EmptyBlock,
 } from '../../components/appointment/AppointmentPeriodCollection'
 import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
+import { errorMessages } from '../../helpers/translation'
 import types from '../../types'
 
+const messages = defineMessages({
+  noPeriodCreated: { id: 'appointment.text.noPeriodCreated', defaultMessage: '目前還沒有建立任何時段' },
+})
+
 const AppointmentPlanScheduleBlock: React.FC = () => {
+  const { formatMessage } = useIntl()
   const { loadingAppointmentPlan, errorAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(
     AppointmentPlanContext,
   )
@@ -30,11 +37,11 @@ const AppointmentPlanScheduleBlock: React.FC = () => {
   }
 
   if (errorAppointmentPlan || !appointmentPlan) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   if (appointmentPlan.periods.length === 0) {
-    return <EmptyBlock>目前還沒有建立任何時段</EmptyBlock>
+    return <EmptyBlock>{formatMessage(messages.noPeriodCreated)}</EmptyBlock>
   }
 
   const handleDelete: (event: DeleteScheduleEvent) => void = ({ values, onSuccess, onError, onFinally }) => {

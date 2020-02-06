@@ -4,9 +4,11 @@ import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const StyledIcon = styled(Icon)`
@@ -14,16 +16,18 @@ const StyledIcon = styled(Icon)`
 `
 
 const PodcastProgramPlanForm: React.FC<FormComponentProps> = ({ form }) => {
+  const { formatMessage } = useIntl()
   const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
     PodcastProgramContext,
   )
-  const [withSalePrice, setWithSalePrice] = useState(false)
-  const [loading, setLoading] = useState(false)
 
   const [updatePodcastProgramPlan] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_PLAN,
     types.UPDATE_PODCAST_PROGRAM_PLANVariables
   >(UPDATE_PODCAST_PROGRAM_PLAN)
+
+  const [withSalePrice, setWithSalePrice] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     setWithSalePrice(!!podcastProgram && typeof podcastProgram.salePrice === 'number')
@@ -34,7 +38,7 @@ const PodcastProgramPlanForm: React.FC<FormComponentProps> = ({ form }) => {
   }
 
   if (errorPodcastProgram || !podcastProgram) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const handleSubmit = () => {
@@ -56,7 +60,7 @@ const PodcastProgramPlanForm: React.FC<FormComponentProps> = ({ form }) => {
       })
         .then(() => {
           refetchPodcastProgram && refetchPodcastProgram()
-          message.success('儲存成功')
+          message.success(formatMessage(commonMessages.event.successfullySaved))
         })
         .catch(error => handleError(error))
         .finally(() => setLoading(false))
@@ -72,7 +76,7 @@ const PodcastProgramPlanForm: React.FC<FormComponentProps> = ({ form }) => {
         handleSubmit()
       }}
     >
-      <Form.Item label="定價">
+      <Form.Item label={formatMessage(commonMessages.term.listPrice)}>
         {form.getFieldDecorator('listPrice', {
           initialValue: podcastProgram.listPrice,
         })(
@@ -85,7 +89,7 @@ const PodcastProgramPlanForm: React.FC<FormComponentProps> = ({ form }) => {
       </Form.Item>
       <div className="mb-4">
         <Checkbox checked={withSalePrice} onChange={e => setWithSalePrice(e.target.checked)}>
-          優惠價
+          {formatMessage(commonMessages.term.salePrice)}
         </Checkbox>
       </div>
       <Form.Item className={withSalePrice ? 'm-0' : 'd-none'}>
@@ -103,22 +107,22 @@ const PodcastProgramPlanForm: React.FC<FormComponentProps> = ({ form }) => {
         <Form.Item className="d-inline-block mr-2">
           {form.getFieldDecorator('soldAt', {
             initialValue: podcastProgram && podcastProgram.soldAt ? moment(podcastProgram.soldAt) : null,
-            rules: [{ required: withSalePrice, message: '請選擇日期' }],
+            rules: [{ required: withSalePrice, message: formatMessage(errorMessages.form.date) }],
           })(<DatePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" />)}
         </Form.Item>
         {form.getFieldValue('soldAt') && moment(form.getFieldValue('soldAt')).isBefore(moment()) ? (
           <div className="d-inline-block">
             <StyledIcon type="exclamation-circle" theme="filled" className="mr-1" />
-            <span>已過期</span>
+            <span>{formatMessage(commonMessages.label.outdated)}</span>
           </div>
         ) : null}
       </Form.Item>
       <Form.Item>
         <Button onClick={() => form.resetFields()} className="mr-2">
-          取消
+          {formatMessage(commonMessages.ui.cancel)}
         </Button>
         <Button type="primary" htmlType="submit" loading={loading}>
-          儲存
+          {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>
     </Form>

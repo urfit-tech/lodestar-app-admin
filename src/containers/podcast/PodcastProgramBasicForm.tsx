@@ -3,12 +3,15 @@ import { Button, Form, Input, message, Skeleton } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
+import { useIntl } from 'react-intl'
 import ProgramCategorySelector from '../../components/program/ProgramCategorySelector'
 import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
+import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const PodcastProgramBasicForm: React.FC<FormComponentProps> = ({ form }) => {
+  const { formatMessage } = useIntl()
   const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
     PodcastProgramContext,
   )
@@ -24,7 +27,7 @@ const PodcastProgramBasicForm: React.FC<FormComponentProps> = ({ form }) => {
   }
 
   if (errorPodcastProgram || !podcastProgram) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const handleSubmit = () => {
@@ -55,7 +58,7 @@ const PodcastProgramBasicForm: React.FC<FormComponentProps> = ({ form }) => {
       })
         .then(() => {
           refetchPodcastProgram && refetchPodcastProgram()
-          message.success('儲存成功')
+          message.success(formatMessage(commonMessages.event.successfullySaved))
         })
         .catch(error => handleError(error))
         .finally(() => setLoading(false))
@@ -73,23 +76,30 @@ const PodcastProgramBasicForm: React.FC<FormComponentProps> = ({ form }) => {
         handleSubmit()
       }}
     >
-      <Form.Item label="廣播名稱">
+      <Form.Item label={formatMessage(podcastMessages.label.podcastProgramTitle)}>
         {form.getFieldDecorator('title', {
-          rules: [{ required: true, message: '請輸入名稱' }],
+          rules: [
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(commonMessages.term.title),
+              }),
+            },
+          ],
           initialValue: podcastProgram.title,
         })(<Input />)}
       </Form.Item>
-      <Form.Item label="類別">
+      <Form.Item label={formatMessage(commonMessages.term.category)}>
         {form.getFieldDecorator('categoryIds', {
           initialValue: podcastProgram.categories.map(category => category.id),
         })(<ProgramCategorySelector />)}
       </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
-          取消
+          {formatMessage(commonMessages.ui.cancel)}
         </Button>
         <Button type="primary" htmlType="submit" loading={loading}>
-          儲存
+          {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>
     </Form>

@@ -1,5 +1,6 @@
 import { Tabs } from 'antd'
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
@@ -12,11 +13,21 @@ import ActivityPublishAdminBlock from '../../../containers/activity/ActivityPubl
 import ActivitySessionsAdminBlock from '../../../containers/activity/ActivitySessionsAdminBlock'
 import ActivityTicketsAdminBlock from '../../../containers/activity/ActivityTicketsAdminBlock'
 import { ActivityProvider } from '../../../contexts/ActivityContext'
+import { activityMessages } from '../../../helpers/translation'
+
+const messages = defineMessages({
+  settings: { id: 'activity.label.settings', defaultMessage: '相關設定' },
+  basicSettings: { id: 'activity.label.basicSettings', defaultMessage: '基本設定' },
+  activityIntroduction: { id: 'activity.label.activityIntroduction', defaultMessage: '活動介紹' },
+  sessionAdmin: { id: 'activity.label.sessionAdmin', defaultMessage: '場次管理' },
+  publishSettings: { id: 'activity.label.publishSettings', defaultMessage: '發佈設定' },
+})
 
 const StyledWrapper = styled.div`
   background: #f7f8f8;
 `
-const ActivityAdminPage = () => {
+const ActivityAdminPage: React.FC = () => {
+  const { formatMessage } = useIntl()
   const { match } = useRouter<{ activityId: string }>()
   const activityId = match.params.activityId
   const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
@@ -37,37 +48,37 @@ const ActivityAdminPage = () => {
               </AdminTabBarWrapper>
             )}
           >
-            <Tabs.TabPane key="settings" tab="相關設定">
+            <Tabs.TabPane key="settings" tab={formatMessage(messages.settings)}>
               <div className="container py-5">
-                <AdminPaneTitle>相關設定</AdminPaneTitle>
+                <AdminPaneTitle>{formatMessage(messages.settings)}</AdminPaneTitle>
                 <AdminBlock>
-                  <AdminBlockTitle>基本設定</AdminBlockTitle>
+                  <AdminBlockTitle>{formatMessage(messages.basicSettings)}</AdminBlockTitle>
                   <ActivityBasicForm />
                 </AdminBlock>
                 <AdminBlock>
-                  <AdminBlockTitle>活動介紹</AdminBlockTitle>
+                  <AdminBlockTitle>{formatMessage(messages.activityIntroduction)}</AdminBlockTitle>
                   <ActivityIntroductionForm />
                 </AdminBlock>
               </div>
             </Tabs.TabPane>
 
-            <Tabs.TabPane key="sessions" tab="場次管理">
+            <Tabs.TabPane key="sessions" tab={formatMessage(messages.sessionAdmin)}>
               <div className="container py-5">
-                <AdminPaneTitle>場次管理</AdminPaneTitle>
+                <AdminPaneTitle>{formatMessage(messages.sessionAdmin)}</AdminPaneTitle>
                 <ActivitySessionsAdminBlock onChangeTab={() => setActiveKey('tickets')} />
               </div>
             </Tabs.TabPane>
 
-            <Tabs.TabPane key="tickets" tab="票券方案">
+            <Tabs.TabPane key="tickets" tab={formatMessage(activityMessages.term.ticketPlan)}>
               <div className="container py-5">
-                <AdminPaneTitle>票券方案</AdminPaneTitle>
+                <AdminPaneTitle>{formatMessage(activityMessages.term.ticketPlan)}</AdminPaneTitle>
                 <ActivityTicketsAdminBlock />
               </div>
             </Tabs.TabPane>
 
-            <Tabs.TabPane key="publish" tab="發佈">
+            <Tabs.TabPane key="publish" tab={formatMessage(messages.publishSettings)}>
               <div className="container py-5">
-                <AdminPaneTitle>發佈設定</AdminPaneTitle>
+                <AdminPaneTitle>{formatMessage(messages.publishSettings)}</AdminPaneTitle>
                 <AdminBlock>
                   <ActivityPublishAdminBlock />
                 </AdminBlock>

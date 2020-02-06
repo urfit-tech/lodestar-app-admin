@@ -56,20 +56,20 @@ const PodcastProgramCreationModal: React.FC<PodcastProgramCreationModalProps> = 
       <Modal title={null} footer={null} destroyOnClose centered visible={visible} onCancel={() => setVisible(false)}>
         <StyledTitle>{formatMessage(messages.createPodcastProgram)}</StyledTitle>
         <Form hideRequiredMark>
-          <Form.Item label={formatMessage(commonMessages.label.title)}>
+          <Form.Item label={formatMessage(commonMessages.term.title)}>
             {form.getFieldDecorator('title', {
               initialValue: 'Untitled',
               rules: [
                 {
                   required: true,
                   message: formatMessage(errorMessages.form.isRequired, {
-                    field: formatMessage(commonMessages.label.title),
+                    field: formatMessage(commonMessages.term.title),
                   }),
                 },
               ],
             })(<Input type="text" />)}
           </Form.Item>
-          <Form.Item label={formatMessage(commonMessages.label.category)}>
+          <Form.Item label={formatMessage(commonMessages.term.category)}>
             {form.getFieldDecorator('categoryIds')(<ProgramCategorySelector />)}
           </Form.Item>
         </Form>

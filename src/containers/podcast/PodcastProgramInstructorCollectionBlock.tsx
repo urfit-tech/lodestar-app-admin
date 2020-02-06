@@ -2,10 +2,12 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, message, Modal, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import RoleAdminBlock from '../../components/admin/RoleAdminBlock'
 import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import CreatorSelector from '../common/CreatorSelector'
 
@@ -18,6 +20,7 @@ const StyledModalTitle = styled.div`
 `
 
 const PodcastProgramInstructorCollectionBlock: React.FC = () => {
+  const { formatMessage } = useIntl()
   const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
     PodcastProgramContext,
   )
@@ -35,7 +38,7 @@ const PodcastProgramInstructorCollectionBlock: React.FC = () => {
   }
 
   if (errorPodcastProgram || !podcastProgram) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const handleSubmit = () => {
@@ -62,7 +65,7 @@ const PodcastProgramInstructorCollectionBlock: React.FC = () => {
         refetchPodcastProgram && refetchPodcastProgram()
         setSelectedMemberId(null)
         setVisible(false)
-        message.success('儲存成功')
+        message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(error => handleError(error))
       .finally(() => setLoading(false))
@@ -84,7 +87,7 @@ const PodcastProgramInstructorCollectionBlock: React.FC = () => {
     })
       .then(() => {
         refetchPodcastProgram && refetchPodcastProgram()
-        message.success('儲存成功')
+        message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(error => handleError(error))
   }
@@ -102,12 +105,12 @@ const PodcastProgramInstructorCollectionBlock: React.FC = () => {
 
       {podcastProgram.instructors.length < 1 && (
         <Button type="link" icon="plus" size="small" onClick={() => setVisible(true)}>
-          新增講師
+          {formatMessage(commonMessages.ui.addInstructor)}
         </Button>
       )}
 
       <Modal title={null} footer={null} centered destroyOnClose visible={visible} onCancel={() => setVisible(false)}>
-        <StyledModalTitle>新增講師</StyledModalTitle>
+        <StyledModalTitle>{formatMessage(commonMessages.ui.addInstructor)}</StyledModalTitle>
 
         <Form
           hideRequiredMark
@@ -117,15 +120,15 @@ const PodcastProgramInstructorCollectionBlock: React.FC = () => {
             handleSubmit()
           }}
         >
-          <Form.Item label="選擇講師">
+          <Form.Item label={formatMessage(commonMessages.label.selectInstructor)}>
             <CreatorSelector value={selectedMemberId || ''} onChange={value => setSelectedMemberId(value)} />
           </Form.Item>
           <Form.Item className="text-right">
             <Button onClick={() => setVisible(false)} className="mr-2">
-              取消
+              {formatMessage(commonMessages.ui.cancel)}
             </Button>
             <Button type="primary" htmlType="submit" loading={loading}>
-              新增
+              {formatMessage(commonMessages.ui.add)}
             </Button>
           </Form.Item>
         </Form>

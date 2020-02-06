@@ -20,9 +20,6 @@ const messages = defineMessages({
     id: 'program.text.unpublishingWarning',
     defaultMessage: '課程將下架且不會出現在課程列表，已購買的學生仍然可以看到課程內容。',
   },
-  isPublished: { id: 'program.status.isPublished', defaultMessage: '已發佈課程' },
-  isUnpublished: { id: 'program.status.isUnpublished', defaultMessage: '未發佈課程' },
-  notComplete: { id: 'program.status.notComplete', defaultMessage: '尚有未完成項目' },
   isPublishedNotation: {
     id: 'program.text.isPublishedNotation',
     defaultMessage: '現在你的課程已經發佈，此課程並會出現在頁面上，學生將能購買此課程。',
@@ -136,10 +133,10 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
               <div className="mb-2">
                 <Typography.Title level={4}>
                   {isPublished
-                    ? formatMessage(messages.isPublished)
+                    ? formatMessage(commonMessages.status.published)
                     : isValidate
-                    ? formatMessage(messages.isUnpublished)
-                    : formatMessage(messages.notComplete)}
+                    ? formatMessage(commonMessages.status.unpublished)
+                    : formatMessage(commonMessages.status.notComplete)}
                 </Typography.Title>
               </div>
               <div className="mb-3">

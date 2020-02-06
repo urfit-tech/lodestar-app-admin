@@ -4,12 +4,15 @@ import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
+import { useIntl } from 'react-intl'
 import AdminBraftEditor from '../../components/admin/AdminBraftEditor'
 import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 import { handleError } from '../../helpers'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const AppointmentPlanIntroForm: React.FC<FormComponentProps> = ({ form }) => {
+  const { formatMessage } = useIntl()
   const { loadingAppointmentPlan, errorAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(
     AppointmentPlanContext,
   )
@@ -24,7 +27,7 @@ const AppointmentPlanIntroForm: React.FC<FormComponentProps> = ({ form }) => {
   }
 
   if (errorAppointmentPlan || !appointmentPlan) {
-    return <div>讀取錯誤</div>
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const handleSubmit = () => {
@@ -43,7 +46,7 @@ const AppointmentPlanIntroForm: React.FC<FormComponentProps> = ({ form }) => {
       })
         .then(() => {
           refetchAppointmentPlan && refetchAppointmentPlan()
-          message.success('儲存成功')
+          message.success(formatMessage(commonMessages.event.successfullySaved))
         })
         .catch(error => handleError(error))
         .finally(() => setLoading(false))
@@ -66,7 +69,13 @@ const AppointmentPlanIntroForm: React.FC<FormComponentProps> = ({ form }) => {
           rules: [
             {
               validator: (rule, value: EditorState, callback) => {
-                value.isEmpty() ? callback('請輸入方案簡介') : callback()
+                value.isEmpty()
+                  ? callback(
+                      formatMessage(errorMessages.form.isRequired, {
+                        field: formatMessage(commonMessages.term.planTitle),
+                      }),
+                    )
+                  : callback()
               },
             },
           ],
@@ -74,10 +83,10 @@ const AppointmentPlanIntroForm: React.FC<FormComponentProps> = ({ form }) => {
       </Form.Item>
       <Form.Item>
         <Button onClick={() => form.resetFields()} className="mr-2">
-          取消
+          {formatMessage(commonMessages.ui.cancel)}
         </Button>
         <Button type="primary" htmlType="submit" loading={loading}>
-          儲存
+          {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>
     </Form>
