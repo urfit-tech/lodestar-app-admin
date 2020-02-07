@@ -103,7 +103,7 @@ const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) 
           )}
         </Form.Item>
         <ForgetPassword>
-          <Link to="/forgot-password">{formatMessage(commonMessages.label.forgotPassword)}</Link>
+          <Link to="/forgot-password">{formatMessage(commonMessages.text.forgotPassword)}</Link>
         </ForgetPassword>
         <Form.Item>
           <Button block loading={loading} type="primary" htmlType="submit">

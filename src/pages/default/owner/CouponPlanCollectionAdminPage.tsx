@@ -3,13 +3,16 @@ import { Button, Icon, Tabs, Typography } from 'antd'
 import gql from 'graphql-tag'
 import { reverse } from 'ramda'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import CouponPlanAdminCard from '../../../components/checkout/CouponPlanAdminCard'
 import CouponPlanAdminModal from '../../../components/checkout/CouponPlanAdminModal'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
+import { commonMessages, promotionMessages } from '../../../helpers/translation'
 import { ReactComponent as DiscountIcon } from '../../../images/icon/discount.svg'
 import types from '../../../types'
 
-const CouponPlanCollectionAdminPage = () => {
+const CouponPlanCollectionAdminPage: React.FC = () => {
+  const { formatMessage } = useIntl()
   const { loading, error, data } = useQuery<
     types.GET_COUPON_PLAN_COLLECTION,
     types.GET_COUPON_PLAN_COLLECTIONVariables
@@ -50,24 +53,24 @@ const CouponPlanCollectionAdminPage = () => {
     <OwnerAdminLayout>
       <Typography.Title level={3} className="mb-4">
         <Icon component={() => <DiscountIcon />} className="mr-3" />
-        <span>折價方案</span>
+        <span>{formatMessage(commonMessages.menu.coupons)}</span>
       </Typography.Title>
 
       <CouponPlanAdminModal
         renderTrigger={({ setVisible }) => (
           <Button type="primary" onClick={() => setVisible(true)} className="mb-4" icon="file-add">
-            建立折價方案
+            {formatMessage(promotionMessages.ui.createCouponPlan)}
           </Button>
         )}
         icon={<Icon type="file-add" />}
-        title="新增折價方案"
+        title={formatMessage(promotionMessages.ui.createCouponPlan)}
       />
 
       <Tabs>
-        <Tabs.TabPane key="live" tab="可使用">
+        <Tabs.TabPane key="live" tab={formatMessage(promotionMessages.status.available)}>
           <CouponCollectionBlock couponPlans={couponPlans.filter(couponPlan => couponPlan.available)} />
         </Tabs.TabPane>
-        <Tabs.TabPane key="outdated" tab="已失效">
+        <Tabs.TabPane key="outdated" tab={formatMessage(promotionMessages.status.unavailable)}>
           <CouponCollectionBlock couponPlans={couponPlans.filter(couponPlan => !couponPlan.available)} />
         </Tabs.TabPane>
       </Tabs>

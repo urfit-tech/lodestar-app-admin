@@ -2,11 +2,13 @@ import { Button, Form, Icon, Input, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import axios from 'axios'
 import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
 import { BREAK_POINT } from '../../components/common/Responsive'
 import DefaultLayout from '../../components/layout/DefaultLayout'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 
 const StyledContainer = styled.div`
   padding: 4rem 1rem;
@@ -31,6 +33,7 @@ const StyledTitle = styled.h1`
 `
 
 const ResetPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
+  const { formatMessage } = useIntl()
   const { history } = useRouter()
   const [token] = useQueryParam('token', StringParam)
   const [loading, setLoading] = useState(false)
@@ -65,33 +68,57 @@ const ResetPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
   return (
     <DefaultLayout noFooter centeredBox>
       <StyledContainer>
-        <StyledTitle>重設密碼</StyledTitle>
+        <StyledTitle>{formatMessage(commonMessages.label.resetPassword)}</StyledTitle>
         <Form onSubmit={handleSubmit}>
           <Form.Item>
             {form.getFieldDecorator('password', {
-              rules: [{ required: true, message: '請輸入密碼' }],
-            })(<Input type="password" placeholder="輸入新密碼" suffix={<Icon type="lock" />} />)}
+              rules: [
+                {
+                  required: true,
+                  message: formatMessage(errorMessages.form.isRequired, {
+                    field: formatMessage(commonMessages.label.newPassword),
+                  }),
+                },
+              ],
+            })(
+              <Input
+                type="password"
+                placeholder={formatMessage(commonMessages.label.newPassword)}
+                suffix={<Icon type="lock" />}
+              />,
+            )}
           </Form.Item>
           <Form.Item>
             {form.getFieldDecorator('passwordCheck', {
               validateTrigger: 'onSubmit',
               rules: [
-                { required: true, message: '請輸入確認密碼' },
+                {
+                  required: true,
+                  message: formatMessage(errorMessages.form.isRequired, {
+                    field: formatMessage(commonMessages.label.confirmPassword),
+                  }),
+                },
                 {
                   validator: (rule, value, callback) => {
                     if (value && value !== form.getFieldValue('password')) {
-                      callback('請輸入相同密碼')
+                      callback(formatMessage(errorMessages.event.checkSamePassword))
                     } else {
                       callback()
                     }
                   },
                 },
               ],
-            })(<Input type="password" placeholder="再次輸入新密碼" suffix={<Icon type="lock" />} />)}
+            })(
+              <Input
+                type="password"
+                placeholder={formatMessage(commonMessages.text.newPasswordAgain)}
+                suffix={<Icon type="lock" />}
+              />,
+            )}
           </Form.Item>
           <Form.Item className="m-0">
             <Button htmlType="submit" type="primary" block loading={loading}>
-              確定
+              {formatMessage(commonMessages.ui.confirm)}
             </Button>
           </Form.Item>
         </Form>

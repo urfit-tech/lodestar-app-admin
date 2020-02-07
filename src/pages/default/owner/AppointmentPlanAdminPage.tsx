@@ -1,5 +1,6 @@
 import { Tabs } from 'antd'
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
@@ -13,12 +14,21 @@ import AppointmentPlanSaleForm from '../../../containers/appointment/Appointment
 import AppointmentPlanScheduleBlock from '../../../containers/appointment/AppointmentPlanScheduleBlock'
 import AppointmentPlanScheduleCreationModal from '../../../containers/appointment/AppointmentPlanScheduleCreationModal'
 import { AppointmentPlanProvider } from '../../../contexts/AppointmentPlanContext'
+import { commonMessages } from '../../../helpers/translation'
 
 const StyledWrapper = styled.div`
   background: #f7f8f8;
 `
 
+const messages = defineMessages({
+  planSettings: { id: 'appointment.label.planSettings', defaultMessage: '方案設定' },
+  planDescription: { id: 'appointment.label.planDescription', defaultMessage: '方案簡介' },
+  salesSettings: { id: 'appointment.label.salesSettings', defaultMessage: '銷售方案' },
+  periodSettings: { id: 'appointment.label.periodSettings', defaultMessage: '時段設定' },
+})
+
 const AppointmentPlanAdminPage: React.FC = () => {
+  const { formatMessage } = useIntl()
   const { match } = useRouter<{ appointmentPlanId: string }>()
   const appointmentPlanId = match.params.appointmentPlanId
 
@@ -40,32 +50,32 @@ const AppointmentPlanAdminPage: React.FC = () => {
               </AdminTabBarWrapper>
             )}
           >
-            <Tabs.TabPane tab="方案設定" key="settings">
+            <Tabs.TabPane tab={formatMessage(messages.planSettings)} key="settings">
               <div className="container py-5">
-                <AdminPaneTitle>方案設定</AdminPaneTitle>
+                <AdminPaneTitle>{formatMessage(messages.planSettings)}</AdminPaneTitle>
                 <AdminBlock>
-                  <AdminBlockTitle>基本設定</AdminBlockTitle>
+                  <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
                   <AppointmentPlanBasicForm />
                 </AdminBlock>
                 <AdminBlock>
-                  <AdminBlockTitle>方案簡介</AdminBlockTitle>
+                  <AdminBlockTitle>{formatMessage(messages.planDescription)}</AdminBlockTitle>
                   <AppointmentPlanIntroForm />
                 </AdminBlock>
               </div>
             </Tabs.TabPane>
 
-            <Tabs.TabPane tab="銷售方案" key="sale">
+            <Tabs.TabPane tab={formatMessage(messages.salesSettings)} key="sale">
               <div className="container py-5">
-                <AdminPaneTitle>銷售方案</AdminPaneTitle>
+                <AdminPaneTitle>{formatMessage(messages.salesSettings)}</AdminPaneTitle>
                 <AdminBlock>
                   <AppointmentPlanSaleForm />
                 </AdminBlock>
               </div>
             </Tabs.TabPane>
 
-            <Tabs.TabPane tab="時段設定" key="schedule">
+            <Tabs.TabPane tab={formatMessage(messages.periodSettings)} key="schedule">
               <div className="container py-5">
-                <AdminPaneTitle>時段</AdminPaneTitle>
+                <AdminPaneTitle>{formatMessage(messages.periodSettings)}</AdminPaneTitle>
                 <div className="mb-5">
                   <AppointmentPlanScheduleCreationModal />
                 </div>
@@ -75,9 +85,9 @@ const AppointmentPlanAdminPage: React.FC = () => {
               </div>
             </Tabs.TabPane>
 
-            <Tabs.TabPane tab="發佈" key="publish">
+            <Tabs.TabPane tab={formatMessage(commonMessages.label.publishAdmin)} key="publish">
               <div className="container py-5">
-                <AdminPaneTitle>發佈設定</AdminPaneTitle>
+                <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
                 <AdminBlock>
                   <AppointmentPlanPublishBlock />
                 </AdminBlock>

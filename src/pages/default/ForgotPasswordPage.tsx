@@ -2,10 +2,12 @@ import { Button, Form, Icon, Input, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import axios from 'axios'
 import React, { useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import { BREAK_POINT } from '../../components/common/Responsive'
 import DefaultLayout from '../../components/layout/DefaultLayout'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 
 const StyledContainer = styled.div`
   padding: 4rem 1rem;
@@ -29,7 +31,13 @@ const StyledTitle = styled.h1`
   letter-spacing: 0.8px;
 `
 
+const messages = defineMessages({
+  forgotPassword: { id: 'common.label.forgotPassword', defaultMessage: '忘記密碼' },
+  enterRegisteredEmail: { id: 'common.text.enterRegisteredEmail', defaultMessage: '輸入你註冊的信箱' },
+})
+
 const ForgotPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
+  const { formatMessage } = useIntl()
   const { history } = useRouter()
   const [loading, setLoading] = useState(false)
 
@@ -58,21 +66,26 @@ const ForgotPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
   return (
     <DefaultLayout noFooter centeredBox>
       <StyledContainer>
-        <StyledTitle>忘記密碼</StyledTitle>
+        <StyledTitle>{formatMessage(messages.forgotPassword)}</StyledTitle>
 
         <Form onSubmit={handleSubmit}>
           <Form.Item>
             {form.getFieldDecorator('email', {
               validateTrigger: 'onSubmit',
               rules: [
-                { required: true, message: '請輸入信箱' },
-                { type: 'email', message: '請輸入信箱格式' },
+                {
+                  required: true,
+                  message: formatMessage(errorMessages.form.isRequired, {
+                    field: formatMessage(commonMessages.term.email),
+                  }),
+                },
+                { type: 'email', message: formatMessage(errorMessages.form.emailFormat) },
               ],
-            })(<Input placeholder="輸入你註冊的信箱" suffix={<Icon type="mail" />} />)}
+            })(<Input placeholder={formatMessage(messages.enterRegisteredEmail)} suffix={<Icon type="mail" />} />)}
           </Form.Item>
           <Form.Item className="m-0">
             <Button htmlType="submit" type="primary" block loading={loading}>
-              確定
+              {formatMessage(commonMessages.ui.confirm)}
             </Button>
           </Form.Item>
         </Form>

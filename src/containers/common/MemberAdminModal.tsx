@@ -19,10 +19,6 @@ const messages = defineMessages({
   creatorPageLink: { id: 'common.ui.creatorPageLink', defaultMessage: '創作者主頁' },
   memberPageLink: { id: 'common.ui.memberPageLink', defaultMessage: '學員主頁' },
   roleSettings: { id: 'common.label.roleSettigs', defaultMessage: '設定身份' },
-  lastLogin: { id: 'common.label.lastLogin', defaultMessage: '上次登入' },
-  holdingPoints: { id: 'common.label.holdingPoints', defaultMessage: '持有點數' },
-  points: { id: 'common.label.points', defaultMessage: '{points} 點' },
-  consumption: { id: 'common.label.consumption', defaultMessage: '消費金額' },
 })
 
 const StyledMetaBlock = styled.div`
@@ -179,15 +175,15 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
 
         <StyledMetaBlock>
           <div className="mb-2">
-            <span className="mr-3">{formatMessage(messages.lastLogin)}</span>
+            <span className="mr-3">{formatMessage(commonMessages.label.lastLogin)}</span>
             <span>{member.loginedAt ? moment(member.loginedAt).fromNow() : null}</span>
           </div>
           {/* <div className="mb-2">
-            <span className="mr-3">{formatMessage(messages.holdingPoints)}</span>
-            <span>{formatMessage(messages.points, { points: member.points })}</span>
+            <span className="mr-3">{formatMessage(commonMessages.label.holdingPoints)}</span>
+            <span>{formatMessage(commonMessages.label.points, { points: member.points })}</span>
           </div> */}
           <div className="mb-2">
-            <span className="mr-3">{formatMessage(messages.consumption)}</span>
+            <span className="mr-3">{formatMessage(commonMessages.label.consumption)}</span>
             <span>{currencyFormatter(member.consumption)}</span>
           </div>
         </StyledMetaBlock>

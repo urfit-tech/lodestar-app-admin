@@ -2,16 +2,26 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Icon, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import Sortable from 'react-sortablejs'
 import { InferType } from 'yup'
 import AdminCard from '../../../components/admin/AdminCard'
 import DraggableItem from '../../../components/common/DraggableItem'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import { GET_PROGRAM_CATEGORIES } from '../../../components/program/ProgramCategorySelector'
+import { commonMessages } from '../../../helpers/translation'
 import { categorySchema } from '../../../schemas/program'
 import types from '../../../types'
 
-const CategoryAdminPage = () => {
+const messages = defineMessages({
+  deleteCategoryNotation: {
+    id: 'common.text.deleteCategoryNotation',
+    defaultMessage: '確定要刪除此類別？此動作無法復原',
+  },
+})
+
+const CategoryAdminPage: React.FC = () => {
+  const { formatMessage } = useIntl()
   const { loading, data, refetch } = useQuery<types.GET_PROGRAM_CATEGORIES, types.GET_PROGRAM_CATEGORIESVariables>(
     GET_PROGRAM_CATEGORIES,
     {
@@ -28,18 +38,20 @@ const CategoryAdminPage = () => {
     DELETE_PROGRAM_CATEGORY,
   )
   const [categories, setCategories] = useState<InferType<typeof categorySchema>[]>([])
+
   useEffect(() => {
     data && data.category && setCategories(data.category)
   }, [data])
+
   return (
     <OwnerAdminLayout>
       <Typography.Title level={3} className="mb-4">
         <Icon type="book" className="mr-3" />
-        <span>課程設定</span>
+        <span>{formatMessage(commonMessages.menu.categories)}</span>
       </Typography.Title>
 
       <AdminCard loading={loading}>
-        <Typography.Text>分類項目</Typography.Text>
+        <Typography.Text>{formatMessage(commonMessages.label.categoryItem)}</Typography.Text>
         <Sortable
           className="mt-3"
           options={{ handle: '.draggable-category' }}
@@ -68,7 +80,7 @@ const CategoryAdminPage = () => {
                   type="delete"
                   key="delete"
                   onClick={() => {
-                    if (window.confirm('確定要刪除此類別？此動作無法復原')) {
+                    if (window.confirm(formatMessage(messages.deleteCategoryNotation))) {
                       deleteProgramCategory({
                         variables: { categoryId: category.id },
                       }).then(() => refetch())
@@ -104,13 +116,13 @@ const CategoryAdminPage = () => {
               insertProgramCategory({
                 variables: {
                   appId,
-                  name: `未命名分類-${categories.length + 1}`,
+                  name: `Untitled-${categories.length + 1}`,
                   position: categories.length,
                 },
               }).then(() => refetch())
           }}
         >
-          新增分類
+          {formatMessage(commonMessages.ui.addCategory)}
         </Button>
       </AdminCard>
     </OwnerAdminLayout>

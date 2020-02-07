@@ -1,13 +1,16 @@
 import { Icon, Skeleton, Typography } from 'antd'
 import React, { useContext } from 'react'
+import { useIntl } from 'react-intl'
 import DefaultLayout from '../../../components/layout/DefaultLayout'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import VoucherPlanCollectionBlock from '../../../containers/voucher/VoucherPlanCollectionBlock'
 import AppContext from '../../../contexts/AppContext'
+import { commonMessages } from '../../../helpers/translation'
 import { ReactComponent as DiscountIcon } from '../../../images/icon/discount.svg'
 import NotFoundPage from '../NotFoundPage'
 
 const VoucherPlanCollectionAdminPage = () => {
+  const { formatMessage } = useIntl()
   const { loading, enabledModules } = useContext(AppContext)
 
   if (loading) {
@@ -26,7 +29,7 @@ const VoucherPlanCollectionAdminPage = () => {
     <OwnerAdminLayout>
       <Typography.Title level={3} className="mb-4">
         <Icon component={() => <DiscountIcon />} className="mr-3" />
-        <span>兌換方案</span>
+        <span>{formatMessage(commonMessages.menu.vouchers)}</span>
       </Typography.Title>
 
       <VoucherPlanCollectionBlock />

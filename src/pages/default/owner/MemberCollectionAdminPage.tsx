@@ -5,12 +5,14 @@ import gql from 'graphql-tag'
 import moment from 'moment'
 import { sum } from 'ramda'
 import React, { useContext, useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled, { ThemeContext } from 'styled-components'
 import AdminCard from '../../../components/admin/AdminCard'
 import { AvatarImage } from '../../../components/common/Image'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import MemberAdminModal, { MemberInfo } from '../../../containers/common/MemberAdminModal'
 import { currencyFormatter, getUserRoleName } from '../../../helpers'
+import { commonMessages } from '../../../helpers/translation'
 import { UserRole } from '../../../schemas/general'
 import types from '../../../types'
 
@@ -65,7 +67,8 @@ const getColumnSearchProps = ({
   filterIcon: filtered => <Icon type="search" style={{ color: filtered ? theme['@primary-color'] : undefined }} />,
 })
 
-const MemberCollectionAdminPage = () => {
+const MemberCollectionAdminPage: React.FC = () => {
+  const { formatMessage } = useIntl()
   const theme = useContext(ThemeContext)
   const { loading, error, data, refetch } = useQuery<types.GET_MEMBER_COLLECTION>(GET_MEMBER_COLLECTION)
 
@@ -77,7 +80,7 @@ const MemberCollectionAdminPage = () => {
 
   const columns: ColumnProps<MemberInfo>[] = [
     {
-      title: '姓名',
+      title: formatMessage(commonMessages.term.memberName),
       dataIndex: 'id',
       key: 'id',
       render: (text, record, index) => (
@@ -86,12 +89,12 @@ const MemberCollectionAdminPage = () => {
           <StyledMemberName className="ml-3 mr-2">{record.name}</StyledMemberName>
           {record.role === 'app-owner' && (
             <StyledTag color="#585858" className="ml-2 mr-0">
-              管理者
+              {formatMessage(commonMessages.term.appOwner)}
             </StyledTag>
           )}
           {record.role === 'content-creator' && (
             <StyledTag color={theme['@primary-color']} className="ml-2 mr-0">
-              創作者
+              {formatMessage(commonMessages.term.contentCreator)}
             </StyledTag>
           )}
         </div>
@@ -117,20 +120,20 @@ const MemberCollectionAdminPage = () => {
       }),
     },
     {
-      title: '上次登入',
+      title: formatMessage(commonMessages.label.lastLogin),
       dataIndex: 'loginedAt',
       key: 'logined-at',
       render: (text, record, index) => (record.loginedAt ? moment(record.loginedAt).fromNow() : ''),
       sorter: (a, b) => (b.loginedAt ? b.loginedAt.getTime() : 0) - (a.loginedAt ? a.loginedAt.getTime() : 0),
     },
-    // {
-    //   title: '持有點數',
-    //   dataIndex: 'points',
-    //   key: 'points',
-    //   render: points => `${points} 點`,
-    // },
     {
-      title: '消費金額',
+      title: formatMessage(commonMessages.label.holdingPoints),
+      dataIndex: 'points',
+      key: 'points',
+      render: points => formatMessage(commonMessages.label.points, { points: `${points}` }),
+    },
+    {
+      title: formatMessage(commonMessages.label.consumption),
       dataIndex: 'consumption',
       key: 'consumption',
       align: 'right',
@@ -164,27 +167,32 @@ const MemberCollectionAdminPage = () => {
     <OwnerAdminLayout>
       <Typography.Title level={3} className="mb-4">
         <Icon type="user" className="mr-3" />
-        <span>會員管理</span>
+        <span>{formatMessage(commonMessages.menu.members)}</span>
       </Typography.Title>
 
       <StyledDropdown
         overlay={
           <Menu>
-            <StyledMenuItem onClick={() => setRoleFilter(null)}>全部會員 ({dataSource.length})</StyledMenuItem>
+            <StyledMenuItem onClick={() => setRoleFilter(null)}>
+              {formatMessage(commonMessages.label.allMembers)} ({dataSource.length})
+            </StyledMenuItem>
             <StyledMenuItem onClick={() => setRoleFilter('app-owner')}>
-              管理員 ({dataSource.filter(row => row.role === 'app-owner').length})
+              {formatMessage(commonMessages.term.appOwner)} ({dataSource.filter(row => row.role === 'app-owner').length}
+              )
             </StyledMenuItem>
             <StyledMenuItem onClick={() => setRoleFilter('content-creator')}>
-              創作者 ({dataSource.filter(row => row.role === 'content-creator').length})
+              {formatMessage(commonMessages.term.contentCreator)} (
+              {dataSource.filter(row => row.role === 'content-creator').length})
             </StyledMenuItem>
             <StyledMenuItem onClick={() => setRoleFilter('general-member')}>
-              一般會員 ({dataSource.filter(row => row.role === 'general-member').length})
+              {formatMessage(commonMessages.term.generalMember)} (
+              {dataSource.filter(row => row.role === 'general-member').length})
             </StyledMenuItem>
           </Menu>
         }
       >
         <Button className="d-flex justify-content-between align-items-center">
-          {`${roleFilter ? getUserRoleName(roleFilter) : '全部會員'} (${
+          {`${roleFilter ? getUserRoleName(roleFilter) : formatMessage(commonMessages.term.appOwner)} (${
             dataSource.filter(row => (roleFilter ? row.role === roleFilter : true)).length
           })`}
           <Icon type="caret-down" />

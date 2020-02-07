@@ -1,24 +1,22 @@
 import { Typography } from 'antd'
 import React from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { InferType } from 'yup'
+import { programMessages } from '../../helpers/translation'
 import { programSchema } from '../../schemas/program'
 import ProgramBasicAdminCard from './ProgramBasicAdminCard'
 import ProgramIntroAdminCard from './ProgramIntroAdminCard'
-
-const messages = defineMessages({
-  programSettings: { id: 'program.label.programSettings', defaultMessage: '課程設定' },
-})
 
 const ProgramSettingAdminPane: React.FC<{
   program: InferType<typeof programSchema> | null
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
+
   return (
     <div className="container py-3">
       <Typography.Title className="pb-4" level={3}>
-        {formatMessage(messages.programSettings)}
+        {formatMessage(programMessages.label.programSettings)}
       </Typography.Title>
       <div className="mb-3">
         <ProgramBasicAdminCard program={program} onRefetch={onRefetch} />

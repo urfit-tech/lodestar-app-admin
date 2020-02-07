@@ -12,10 +12,6 @@ import { StyledForm } from '../layout'
 
 const messages = defineMessages({
   editPassword: { id: 'common.ui.editPassword', defaultMessage: '修改密碼' },
-  currentPassword: { id: 'common.label.currentPassword', defaultMessage: '目前密碼' },
-  newPassword: { id: 'common.label.newPassword', defaultMessage: '新密碼' },
-  confirmPassword: { id: 'common.label.confirmPassword', defaultMessage: '確認密碼' },
-  checkSamePassword: { id: 'error.event.checkSamePassword', defaultMessage: '請確認密碼與新密碼相同' },
   successfullyUpdatePassword: { id: 'common.event.successfullyUpdatePassword', defaultMessage: '已更新密碼' },
 })
 
@@ -55,43 +51,43 @@ const ProfilePasswordAdminCard: React.FC<ProfilePasswordAdminCardProps> = ({ for
           handleSubmit()
         }}
       >
-        <Form.Item label={formatMessage(messages.currentPassword)}>
+        <Form.Item label={formatMessage(commonMessages.label.currentPassword)}>
           {form.getFieldDecorator('password', {
             rules: [
               {
                 required: true,
                 message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(messages.currentPassword),
+                  field: formatMessage(commonMessages.label.currentPassword),
                 }),
               },
             ],
           })(<Input type="password" />)}
         </Form.Item>
-        <Form.Item label={formatMessage(messages.newPassword)}>
+        <Form.Item label={formatMessage(commonMessages.label.newPassword)}>
           {form.getFieldDecorator('newPassword', {
             rules: [
               {
                 required: true,
                 message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(messages.newPassword),
+                  field: formatMessage(commonMessages.label.newPassword),
                 }),
               },
             ],
           })(<Input type="password" />)}
         </Form.Item>
-        <Form.Item label={formatMessage(messages.confirmPassword)}>
+        <Form.Item label={formatMessage(commonMessages.label.confirmPassword)}>
           {form.getFieldDecorator('confirmPassword', {
             rules: [
               {
                 required: true,
                 message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(messages.confirmPassword),
+                  field: formatMessage(commonMessages.label.confirmPassword),
                 }),
               },
               {
                 validator: (rule, value, callback) => {
                   if (value && form.getFieldValue('newPassword') !== value) {
-                    callback(new Error(formatMessage(messages.checkSamePassword)))
+                    callback(new Error(formatMessage(errorMessages.event.checkSamePassword)))
                   } else {
                     callback()
                   }

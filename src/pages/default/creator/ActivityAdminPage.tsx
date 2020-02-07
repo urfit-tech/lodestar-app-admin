@@ -13,11 +13,10 @@ import ActivityPublishAdminBlock from '../../../containers/activity/ActivityPubl
 import ActivitySessionsAdminBlock from '../../../containers/activity/ActivitySessionsAdminBlock'
 import ActivityTicketsAdminBlock from '../../../containers/activity/ActivityTicketsAdminBlock'
 import { ActivityProvider } from '../../../contexts/ActivityContext'
-import { activityMessages } from '../../../helpers/translation'
+import { activityMessages, commonMessages } from '../../../helpers/translation'
 
 const messages = defineMessages({
   settings: { id: 'activity.label.settings', defaultMessage: '相關設定' },
-  basicSettings: { id: 'activity.label.basicSettings', defaultMessage: '基本設定' },
   activityIntroduction: { id: 'activity.label.activityIntroduction', defaultMessage: '活動介紹' },
   sessionAdmin: { id: 'activity.label.sessionAdmin', defaultMessage: '場次管理' },
   publishSettings: { id: 'activity.label.publishSettings', defaultMessage: '發佈設定' },
@@ -52,7 +51,7 @@ const ActivityAdminPage: React.FC = () => {
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(messages.settings)}</AdminPaneTitle>
                 <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(messages.basicSettings)}</AdminBlockTitle>
+                  <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
                   <ActivityBasicForm />
                 </AdminBlock>
                 <AdminBlock>

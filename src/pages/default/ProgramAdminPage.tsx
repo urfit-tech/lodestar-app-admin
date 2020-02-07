@@ -1,5 +1,6 @@
 import { Button, Dropdown, Menu, PageHeader, Tabs } from 'antd'
 import React, { useContext, useEffect } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
@@ -9,6 +10,7 @@ import ProgramPublishingAdminPane from '../../components/program/ProgramPublishi
 import ProgramSettingAdminPane from '../../components/program/ProgramSettingAdminPane'
 import ProgramRoleAdminPane from '../../containers/program/ProgramRoleAdminPane'
 import AppContext from '../../contexts/AppContext'
+import { commonMessages, programMessages } from '../../helpers/translation'
 import { useProgram } from '../../hooks/program'
 
 const StyledPageHeader = styled(PageHeader)`
@@ -35,6 +37,7 @@ const StyledPageHeader = styled(PageHeader)`
 `
 
 const ProgramAdminPage: React.FC = () => {
+  const { formatMessage } = useIntl()
   const { history, match } = useRouter<{ programId: string }>()
   const programId = match.params.programId
   const { program, refetch: refetchProgram } = useProgram(programId)
@@ -57,15 +60,15 @@ const ProgramAdminPage: React.FC = () => {
               overlay={
                 <Menu onClick={({ key }) => window.open(`//${app.domain}${key}`)}>
                   <Menu.Item className="py-2 px-3" key={`/programs/${program.id}`}>
-                    預覽簡介
+                    {formatMessage(commonMessages.ui.previewIntroduction)}
                   </Menu.Item>
                   <Menu.Item className="py-2 px-3" key={`/programs/${program.id}/contents`}>
-                    預覽內容
+                    {formatMessage(commonMessages.ui.previewContent)}
                   </Menu.Item>
                 </Menu>
               }
             >
-              <Button>預覽</Button>
+              <Button>{formatMessage(commonMessages.ui.preview)}</Button>
             </Dropdown>
           )
         }
@@ -75,30 +78,27 @@ const ProgramAdminPage: React.FC = () => {
         <Tabs
           activeKey={active}
           onChange={setActive}
-          renderTabBar={(tabsProps, DefaultTabBar) => {
-            const TabBar = DefaultTabBar as typeof React.Component
-            return (
-              <div style={{ backgroundColor: 'white' }}>
-                <div className="container">
-                  <TabBar {...tabsProps} />
-                </div>
+          renderTabBar={(tabsProps, DefaultTabBar) => (
+            <div style={{ backgroundColor: 'white' }}>
+              <div className="container">
+                <DefaultTabBar {...tabsProps} />
               </div>
-            )
-          }}
+            </div>
+          )}
         >
-          <Tabs.TabPane tab="課程內容" key="content">
+          <Tabs.TabPane tab={formatMessage(programMessages.label.programContent)} key="content">
             <ProgramContentAdminPane program={program} onRefetch={refetchProgram} />
           </Tabs.TabPane>
-          <Tabs.TabPane tab="課程設定" key="general">
+          <Tabs.TabPane tab={formatMessage(programMessages.label.programSettings)} key="general">
             <ProgramSettingAdminPane program={program} onRefetch={refetchProgram} />
           </Tabs.TabPane>
-          <Tabs.TabPane tab="銷售方案" key="plan">
+          <Tabs.TabPane tab={formatMessage(commonMessages.label.salesPlan)} key="plan">
             <ProgramPlanAdminPane program={program} onRefetch={refetchProgram} />
           </Tabs.TabPane>
-          <Tabs.TabPane tab="身份管理" key="roles">
+          <Tabs.TabPane tab={formatMessage(commonMessages.label.roleAdmin)} key="roles">
             <ProgramRoleAdminPane program={program} onRefetch={refetchProgram} />
           </Tabs.TabPane>
-          <Tabs.TabPane tab="發佈" key="publishing">
+          <Tabs.TabPane tab={formatMessage(commonMessages.label.publishAdmin)} key="publishing">
             <ProgramPublishingAdminPane program={program} onRefetch={refetchProgram} />
           </Tabs.TabPane>
         </Tabs>

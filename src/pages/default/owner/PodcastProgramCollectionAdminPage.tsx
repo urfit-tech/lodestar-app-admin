@@ -1,10 +1,12 @@
 import { Icon, Skeleton } from 'antd'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import PodcastProgramCollectionAdminTable from '../../../containers/podcast/PodcastProgramCollectionAdminTable'
 import PodcastProgramCreationModal from '../../../containers/podcast/PodcastProgramCreationModal'
 import { useAuth } from '../../../contexts/AuthContext'
+import { commonMessages } from '../../../helpers/translation'
 import { ReactComponent as MicrophoneOIcon } from '../../../images/icon/microphone-o.svg'
 
 const StyledTitle = styled.h1`
@@ -22,13 +24,14 @@ const StyledWrapper = styled.div`
 `
 
 const PodcastProgramCollectionAdminPage: React.FC = () => {
+  const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
 
   return (
     <OwnerAdminLayout>
       <StyledTitle className="mb-4">
         <Icon component={() => <MicrophoneOIcon />} className="mr-2" />
-        <span>廣播管理</span>
+        <span>{formatMessage(commonMessages.menu.podcastPrograms)}</span>
       </StyledTitle>
 
       {!currentMemberId ? (

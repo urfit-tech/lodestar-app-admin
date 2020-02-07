@@ -3,7 +3,7 @@ import { Button, Form, Input, message, Typography } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { InferType } from 'yup'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
@@ -11,10 +11,6 @@ import { programSchema } from '../../schemas/program'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 import ProgramCategorySelector from './ProgramCategorySelector'
-
-const messages = defineMessages({
-  basicSettings: { id: 'program.label.basicSettings', defaultMessage: '基本設定' },
-})
 
 type ProgramBasicAdminCardProps = FormComponentProps & {
   program: InferType<typeof programSchema> | null
@@ -61,7 +57,7 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
   return (
     <AdminCard loading={!program}>
       <Typography.Title className="pb-4" level={4}>
-        {formatMessage(messages.basicSettings)}
+        {formatMessage(commonMessages.label.basicSettings)}
       </Typography.Title>
       {program && (
         <Form

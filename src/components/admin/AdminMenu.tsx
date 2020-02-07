@@ -1,11 +1,11 @@
 import { Icon, Menu } from 'antd'
 import { ClickParam, MenuProps } from 'antd/lib/menu'
 import React, { useContext } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import AppContext from '../../contexts/AppContext'
-import { errorMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
 import { ReactComponent as CalendarAltIcon } from '../../images/icon/calendar-alt.svg'
 import { ReactComponent as DiscountIcon } from '../../images/icon/discount.svg'
@@ -20,29 +20,6 @@ const StyledMenu = styled(Menu)`
     border-right: none;
   }
 `
-
-const messages = defineMessages({
-  salesAdmin: { id: 'common.menu.salesAdmin', defaultMessage: '銷售管理' },
-  programAdmin: { id: 'common.menu.programAdmin', defaultMessage: '線上課程' },
-  programs: { id: 'common.menu.programs', defaultMessage: '課程管理' },
-  programIssues: { id: 'common.menu.programIssues', defaultMessage: '課程問題' },
-  programProgress: { id: 'common.menu.programProgress', defaultMessage: '學習進度' },
-  podcastAdmin: { id: 'common.menu.podcastAdmin', defaultMessage: '音頻廣播' },
-  podcastPrograms: { id: 'common.menu.podcastPrograms', defaultMessage: '廣播管理' },
-  podcastPlans: { id: 'common.menu.podcastPlans', defaultMessage: '訂閱方案' },
-  appointmentAdmin: { id: 'common.menu.appointmentAdmin', defaultMessage: '預約服務' },
-  appointmentPlans: { id: 'common.menu.appointmentPlans', defaultMessage: '預約方案' },
-  appointments: { id: 'common.menu.appointments', defaultMessage: '預約記錄' },
-  activityAdmin: { id: 'common.menu.activityAdmin', defaultMessage: '線下實體' },
-  activities: { id: 'common.menu.activities', defaultMessage: '線下實體管理' },
-  promotionAdmin: { id: 'common.menu.promotionAdmin', defaultMessage: '促銷管理' },
-  coupons: { id: 'common.menu.coupons', defaultMessage: '折價券' },
-  vouchers: { id: 'common.menu.vouchers', defaultMessage: '兌換券' },
-  categories: { id: 'common.menu.categories', defaultMessage: '分類設定' },
-  members: { id: 'common.menu.members', defaultMessage: '會員管理' },
-  ownerSettings: { id: 'common.menu.ownerSettings', defaultMessage: '管理員設定' },
-  creatorSettings: { id: 'common.menu.creatorSettings', defaultMessage: '創作者設定' },
-})
 
 const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
   const { history } = useRouter()
@@ -82,7 +59,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
       >
         <Menu.Item key="owner_sales_admin">
           <Icon component={() => <MoneyCircleIcon />} />
-          <span>{formatMessage(messages.salesAdmin)}</span>
+          <span>{formatMessage(commonMessages.menu.salesAdmin)}</span>
         </Menu.Item>
 
         <Menu.SubMenu
@@ -90,13 +67,15 @@ export const OwnerAdminMenu = (props: MenuProps) => {
           title={
             <span>
               <Icon component={() => <BookIcon />} />
-              <span>{formatMessage(messages.programAdmin)}</span>
+              <span>{formatMessage(commonMessages.menu.programAdmin)}</span>
             </span>
           }
         >
-          <Menu.Item key="program_collection_admin">{formatMessage(messages.programs)}</Menu.Item>
-          <Menu.Item key="program_issues_admin">{formatMessage(messages.programIssues)}</Menu.Item>
-          {enabledModules.learning_statistics && <Menu.Item key="program_progress_admin">{formatMessage(messages.programProgress)}</Menu.Item>}
+          <Menu.Item key="program_collection_admin">{formatMessage(commonMessages.menu.programs)}</Menu.Item>
+          <Menu.Item key="program_issues_admin">{formatMessage(commonMessages.menu.programIssues)}</Menu.Item>
+          {enabledModules.learning_statistics && (
+            <Menu.Item key="program_progress_admin">{formatMessage(commonMessages.menu.programProgress)}</Menu.Item>
+          )}
         </Menu.SubMenu>
 
         {enabledModules.podcast && (
@@ -105,14 +84,14 @@ export const OwnerAdminMenu = (props: MenuProps) => {
             title={
               <span>
                 <Icon component={() => <MicrophoneIcon />} />
-                <span>{formatMessage(messages.podcastAdmin)}</span>
+                <span>{formatMessage(commonMessages.menu.podcastAdmin)}</span>
               </span>
             }
           >
             <Menu.Item key="owner_podcast_program_collection_admin">
-              {formatMessage(messages.podcastPrograms)}
+              {formatMessage(commonMessages.menu.podcastPrograms)}
             </Menu.Item>
-            <Menu.Item key="owner_podcast_plan_admin">{formatMessage(messages.podcastPlans)}</Menu.Item>
+            <Menu.Item key="owner_podcast_plan_admin">{formatMessage(commonMessages.menu.podcastPlans)}</Menu.Item>
           </Menu.SubMenu>
         )}
 
@@ -122,15 +101,15 @@ export const OwnerAdminMenu = (props: MenuProps) => {
             title={
               <span>
                 <Icon component={() => <CalendarAltIcon />} />
-                <span>{formatMessage(messages.appointmentAdmin)}</span>
+                <span>{formatMessage(commonMessages.menu.appointmentAdmin)}</span>
               </span>
             }
           >
             <Menu.Item key="owner_appointment_plan_collection_admin">
-              {formatMessage(messages.appointmentPlans)}
+              {formatMessage(commonMessages.menu.appointmentPlans)}
             </Menu.Item>
             <Menu.Item key="owner_appointment_period_collection_admin">
-              {formatMessage(messages.appointments)}
+              {formatMessage(commonMessages.menu.appointments)}
             </Menu.Item>
           </Menu.SubMenu>
         )}
@@ -141,11 +120,11 @@ export const OwnerAdminMenu = (props: MenuProps) => {
             title={
               <span>
                 <Icon component={() => <CalendarAltIcon />} />
-                <span>{formatMessage(messages.activityAdmin)}</span>
+                <span>{formatMessage(commonMessages.menu.activityAdmin)}</span>
               </span>
             }
           >
-            <Menu.Item key="owner_activity_collection_admin">{formatMessage(messages.activities)}</Menu.Item>
+            <Menu.Item key="owner_activity_collection_admin">{formatMessage(commonMessages.menu.activities)}</Menu.Item>
           </Menu.SubMenu>
         )}
 
@@ -154,28 +133,28 @@ export const OwnerAdminMenu = (props: MenuProps) => {
           title={
             <span>
               <Icon component={() => <DiscountIcon />} />
-              <span>{formatMessage(messages.promotionAdmin)}</span>
+              <span>{formatMessage(commonMessages.menu.promotionAdmin)}</span>
             </span>
           }
         >
-          <Menu.Item key="owner_coupon_plans_admin">{formatMessage(messages.coupons)}</Menu.Item>
+          <Menu.Item key="owner_coupon_plans_admin">{formatMessage(commonMessages.menu.coupons)}</Menu.Item>
           {enabledModules.voucher && (
-            <Menu.Item key="owner_voucher_plans_admin">{formatMessage(messages.vouchers)}</Menu.Item>
+            <Menu.Item key="owner_voucher_plans_admin">{formatMessage(commonMessages.menu.vouchers)}</Menu.Item>
           )}
         </Menu.SubMenu>
 
         <Menu.Item key="owner_category_admin">
           <Icon type="book" />
-          <span>{formatMessage(messages.categories)}</span>
+          <span>{formatMessage(commonMessages.menu.categories)}</span>
         </Menu.Item>
 
         <Menu.Item key="owner_members_admin">
           <Icon component={() => <UsersIcon />} />
-          <span>{formatMessage(messages.members)}</span>
+          <span>{formatMessage(commonMessages.menu.members)}</span>
         </Menu.Item>
         <Menu.Item key="owner_settings_admin">
           <Icon component={() => <UserIcon />} />
-          <span>{formatMessage(messages.ownerSettings)}</span>
+          <span>{formatMessage(commonMessages.menu.ownerSettings)}</span>
         </Menu.Item>
       </AdminMenu>
     </div>
@@ -194,7 +173,7 @@ export const CreatorAdminMenu = (props: MenuProps) => {
       >
         <Menu.Item key="creator_sales_admin">
           <Icon component={() => <MoneyCircleIcon />} />
-          <span>{formatMessage(messages.salesAdmin)}</span>
+          <span>{formatMessage(commonMessages.menu.salesAdmin)}</span>
         </Menu.Item>
 
         <Menu.SubMenu
@@ -202,12 +181,12 @@ export const CreatorAdminMenu = (props: MenuProps) => {
           title={
             <span>
               <Icon component={() => <BookIcon />} />
-              <span>{formatMessage(messages.programAdmin)}</span>
+              <span>{formatMessage(commonMessages.menu.programAdmin)}</span>
             </span>
           }
         >
-          <Menu.Item key="program_collection_admin">{formatMessage(messages.programs)}</Menu.Item>
-          <Menu.Item key="program_issues_admin">{formatMessage(messages.programIssues)}</Menu.Item>
+          <Menu.Item key="program_collection_admin">{formatMessage(commonMessages.menu.programs)}</Menu.Item>
+          <Menu.Item key="program_issues_admin">{formatMessage(commonMessages.menu.programIssues)}</Menu.Item>
         </Menu.SubMenu>
 
         {enabledModules.appointment && (
@@ -216,15 +195,15 @@ export const CreatorAdminMenu = (props: MenuProps) => {
             title={
               <span>
                 <Icon component={() => <CalendarAltIcon />} />
-                <span>{formatMessage(messages.appointmentAdmin)}</span>
+                <span>{formatMessage(commonMessages.menu.appointmentAdmin)}</span>
               </span>
             }
           >
             <Menu.Item key="creator_appointment_plan_collection_admin">
-              {formatMessage(messages.appointmentPlans)}
+              {formatMessage(commonMessages.menu.appointmentPlans)}
             </Menu.Item>
             <Menu.Item key="creator_appointment_period_collection_admin">
-              {formatMessage(messages.appointments)}
+              {formatMessage(commonMessages.menu.appointments)}
             </Menu.Item>
           </Menu.SubMenu>
         )}
@@ -235,16 +214,18 @@ export const CreatorAdminMenu = (props: MenuProps) => {
             title={
               <span>
                 <Icon component={() => <CalendarAltIcon />} />
-                <span>{formatMessage(messages.activityAdmin)}</span>
+                <span>{formatMessage(commonMessages.menu.activityAdmin)}</span>
               </span>
             }
           >
-            <Menu.Item key="creator_activity_collection_admin">{formatMessage(messages.activities)}</Menu.Item>
+            <Menu.Item key="creator_activity_collection_admin">
+              {formatMessage(commonMessages.menu.activities)}
+            </Menu.Item>
           </Menu.SubMenu>
         )}
         <Menu.Item key="creator_settings_admin">
           <Icon component={() => <UserIcon />} />
-          <span>{formatMessage(messages.creatorSettings)}</span>
+          <span>{formatMessage(commonMessages.menu.creatorSettings)}</span>
         </Menu.Item>
       </AdminMenu>
     </div>

@@ -35,10 +35,15 @@ export const commonMessages = {
     cancelOrder: { id: 'common.ui.cancelOrder', defaultMessage: '取消訂單' },
     retryPayment: { id: 'common.ui.retryPayment', defaultMessage: '重新付款' },
     checkInvoice: { id: 'common.ui.checkInvoice', defaultMessage: '查看收據' },
+    back: { id: 'common.ui.back', defaultMessage: '返回上頁' },
+    previewIntroduction: { id: 'common.ui.previewIntroduction', defaultMessage: '預覽簡介' },
+    previewContent: { id: 'common.ui.previewContent', defaultMessage: '預覽內容' },
+    preview: { id: 'common.ui.preview', defaultMessage: '預覽' },
+    backToHompage: { id: 'common.ui.backToHompage', defaultMessage: '回首頁' },
+    addCategory: { id: 'common.ui.addCategory', defaultMessage: '新增分類' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
-    forgotPassword: { id: 'common.label.forgotPassord', defaultMessage: '忘記密碼？' },
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },
     alreadyMember: { id: 'common.label.alreadyMember', defaultMessage: '已經是是會員嗎？' },
     goToLogin: { id: 'common.label.goToLogin', defaultMessage: '前往登入' },
@@ -68,6 +73,22 @@ export const commonMessages = {
     allMembershipCard: { id: 'common.label.allMembershipCard', defaultMessage: '所有會員卡' },
     allActivityTicket: { id: 'common.label.allActivityTicket', defaultMessage: '所有實體活動' },
     allMerchandise: { id: 'common.label.allMerchandise', defaultMessage: '所有商品' },
+    publishAdmin: { id: 'common.label.publishAdmin', defaultMessage: '發佈' },
+    publishSettings: { id: 'common.label.publishSettings', defaultMessage: '發佈設定' },
+    all: { id: 'common.label.all', defaultMessage: '全部' },
+    allProgramProgress: { id: 'common.label.programProgress', defaultMessage: '總體學習進度' },
+    currentPassword: { id: 'common.label.currentPassword', defaultMessage: '目前密碼' },
+    confirmPassword: { id: 'common.label.confirmPassword', defaultMessage: '確認密碼' },
+    newPassword: { id: 'common.label.newPassword', defaultMessage: '新密碼' },
+    resetPassword: { id: 'common.label.resetPassword', defaultMessage: '重設密碼' },
+    categoryItem: { id: 'common.label.categoryItem', defaultMessage: '分類項目' },
+    lastLogin: { id: 'common.label.lastLogin', defaultMessage: '上次登入' },
+    holdingPoints: { id: 'common.label.holdingPoints', defaultMessage: '持有點數' },
+    points: { id: 'common.label.points', defaultMessage: '{points} 點' },
+    consumption: { id: 'common.label.consumption', defaultMessage: '消費金額' },
+    allMembers: { id: 'common.label.allMembers', defaultMessage: '全部會員' },
+    basicSettings: { id: 'common.label.baiscSettings', defaultMessage: '基本設定' },
+    salesPlan: { id: 'common.label.salesPlan', defaultMessage: '銷售方案' },
   }),
   term: defineMessages({
     instructor: { id: 'common.term.instructor', defaultMessage: '老師' },
@@ -108,12 +129,16 @@ export const commonMessages = {
     activityTicket: { id: 'common.term.activityTicket', defaultMessage: '實體活動票券' },
     merchandise: { id: 'common.term.merchandise', defaultMessage: '商品' },
     unknowProduct: { id: 'common.term.unknowProduct', defaultMessage: '未知類別' },
+    currentPassword: { id: 'common.term.currentPassword', defaultMessage: '目前密碼' },
+    owner: { id: 'common.term.owner', defaultMessage: '建立者' },
   }),
   text: defineMessages({
     shortDescriptionPlaceholder: { id: 'common.text.shortDescriptionPlaceholder', defaultMessage: '30 字以內' },
     dueDate: { id: 'common.text.dueDate', defaultMessage: '{date} 到期' },
     totalCount: { id: 'common.text.totalCount', defaultMessage: '共 {count} 筆' },
     minutes: { id: 'common.text.minutes', defaultMessage: '{minutes} 分鐘' },
+    newPasswordAgain: { id: 'common.label.newPasswordAgain', defaultMessage: '再次輸入新密碼' },
+    forgotPassword: { id: 'common.text.forgotPassword', defaultMessage: '忘記密碼？' },
   }),
   event: defineMessages({
     successfullySaved: { id: 'common.event.successfullySaved', defaultMessage: '儲存成功' },
@@ -128,6 +153,29 @@ export const commonMessages = {
     notComplete: { id: 'common.status.notComplete', defaultMessage: '尚有未完成項目' },
     unpublished: { id: 'common.status.unpublished', defaultMessage: '尚未發佈' },
     published: { id: 'common.status.published', defaultMessage: '已發佈' },
+    draft: { id: 'common.label.draft', defaultMessage: '草稿' },
+  }),
+  menu: defineMessages({
+    salesAdmin: { id: 'common.menu.salesAdmin', defaultMessage: '銷售管理' },
+    programAdmin: { id: 'common.menu.programAdmin', defaultMessage: '線上課程' },
+    programs: { id: 'common.menu.programs', defaultMessage: '課程管理' },
+    programIssues: { id: 'common.menu.programIssues', defaultMessage: '課程問題' },
+    programProgress: { id: 'common.menu.programProgress', defaultMessage: '學習進度' },
+    podcastAdmin: { id: 'common.menu.podcastAdmin', defaultMessage: '音頻廣播' },
+    podcastPrograms: { id: 'common.menu.podcastPrograms', defaultMessage: '廣播管理' },
+    podcastPlans: { id: 'common.menu.podcastPlans', defaultMessage: '訂閱方案' },
+    appointmentAdmin: { id: 'common.menu.appointmentAdmin', defaultMessage: '預約服務' },
+    appointmentPlans: { id: 'common.menu.appointmentPlans', defaultMessage: '預約方案' },
+    appointments: { id: 'common.menu.appointments', defaultMessage: '預約記錄' },
+    activityAdmin: { id: 'common.menu.activityAdmin', defaultMessage: '線下實體' },
+    activities: { id: 'common.menu.activities', defaultMessage: '線下實體管理' },
+    promotionAdmin: { id: 'common.menu.promotionAdmin', defaultMessage: '促銷管理' },
+    coupons: { id: 'common.menu.coupons', defaultMessage: '折價方案' },
+    vouchers: { id: 'common.menu.vouchers', defaultMessage: '兌換方案' },
+    categories: { id: 'common.menu.categories', defaultMessage: '分類設定' },
+    members: { id: 'common.menu.members', defaultMessage: '會員管理' },
+    ownerSettings: { id: 'common.menu.ownerSettings', defaultMessage: '管理員設定' },
+    creatorSettings: { id: 'common.menu.creatorSettings', defaultMessage: '創作者設定' },
   }),
 }
 
@@ -155,6 +203,10 @@ export const errorMessages = {
   event: defineMessages({
     failedFacebookLogin: { id: 'error.event.failedFacebookLogin', defaultMessage: '無法從 Facebook 登入/註冊' },
     failedGoogleLogin: { id: 'error.event.failedGoogleLogin', defaultMessage: '無法從 Google 登入/註冊' },
+    checkSamePassword: { id: 'error.event.checkSamePassword', defaultMessage: '請確認密碼與新密碼相同' },
+  }),
+  text: defineMessages({
+    forbidden: { id: 'error.text.forbidden', defaultMessage: '你沒有此頁面的讀取權限' },
   }),
 }
 
@@ -232,6 +284,7 @@ export const promotionMessages = {
     exchange: { id: 'promotion.ui.exchange', defaultMessage: '兌換' },
     addVoucher: { id: 'promotion.ui.addVoucher', defaultMessage: '新增兌換券' },
     createVoucherPlan: { id: 'promotion.ui.createVoucherPlan', defaultMessage: '建立兌換方案' },
+    createCouponPlan: { id: 'promotion.ui.createCouponPlan', defaultMessage: '建立折價方案' },
   }),
   label: defineMessages({
     constraintAmount: { id: 'promotion.label.constraintAmount', defaultMessage: '消費滿 {amount} 折抵' },
@@ -276,10 +329,13 @@ export const programMessages = {
     programTitle: { id: 'program.label.programTitle', defaultMessage: '課程名稱' },
     planTitle: { id: 'program.label.planTitle', defaultMessage: '方案名稱' },
     allProgram: { id: 'program.label.allProgram', defaultMessage: '全部課程' },
+    programContent: { id: 'program.label.programContent', defaultMessage: '課程內容' },
+    programSettings: { id: 'program.label.programSettings', defaultMessage: '課程設定' },
   }),
   text: defineMessages({
     enrolledSubscriptionCount: { id: 'program.text.enrolledCount', defaultMessage: '已訂閱 {count} 人' },
     enrolledPerpetualCount: { id: 'program.text.enrolledPerpetualCount', defaultMessage: '已售 {count} 人' },
+    emptyProgramIssue: { id: 'program.text.empty', defaultMessage: '沒有課程問題' },
   }),
 }
 
@@ -287,6 +343,7 @@ export const podcastMessages = {
   ui: defineMessages({
     subscribe: { id: 'podcast.ui.subscribe', defaultMessage: '訂閱頻道' },
     uploadAudioFile: { id: 'podcast.ui.uploadAudioFile', defaultMessage: '上傳音檔' },
+    createPodcastPlan: { id: 'podcast.ui.createPodcastPlan', defaultMessage: '建立方案' },
   }),
   status: defineMessages({
     published: { id: 'podcast.status.published', defaultMessage: '已發佈' },
@@ -298,6 +355,9 @@ export const podcastMessages = {
     salesCount: { id: 'podcast.label.salesCount', defaultMessage: '購買' },
     duration: { id: 'podcast.label.duration', defaultMessage: '內容時長（分鐘）' },
     description: { id: 'podcast.label.description', defaultMessage: '內容描述' },
+    podcastContent: { id: 'podcast.label.podcastContent', defaultMessage: '廣播內容' },
+    podcastSettings: { id: 'podcast.label.podcastSettings', defaultMessage: '廣播設定' },
+    podcastIntroduction: { id: 'podcast.label.podcastIntroduction', defaultMessage: '廣播介紹' },
   }),
   term: defineMessages({
     podcastPlan: { id: 'podcast.term.podcastPlan', defaultMessage: '廣播頻道訂閱方案' },

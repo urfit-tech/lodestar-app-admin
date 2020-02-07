@@ -2,15 +2,18 @@ import { useQuery } from '@apollo/react-hooks'
 import { Icon, Spin, Tabs, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
+import { useIntl } from 'react-intl'
 import CreatorAdminLayout from '../../components/layout/CreatorAdminLayout'
 import OwnerAdminLayout from '../../components/layout/OwnerAdminLayout'
 import ProgramAdminCard from '../../components/program/ProgramAdminCard'
 import ProgramCreationModal from '../../components/program/ProgramCreationModal'
 import { useAuth } from '../../contexts/AuthContext'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import LoadingPage from './LoadingPage'
 
 const ProgramCollectionAdminPage: React.FC = () => {
+  const { formatMessage } = useIntl()
   const { currentMemberId, currentUserRole } = useAuth()
 
   if (!currentMemberId || !currentUserRole) {
@@ -24,16 +27,16 @@ const ProgramCollectionAdminPage: React.FC = () => {
     <AdminLayout>
       <Typography.Title level={3} className="mb-4">
         <Icon type="file-text" theme="filled" className="mr-3" />
-        <span>課程管理</span>
+        <span>{formatMessage(commonMessages.menu.programs)}</span>
       </Typography.Title>
 
       <ProgramCreationModal withSelector={currentUserRole === 'app-owner'} />
 
       <Tabs defaultActiveKey="draft">
-        <Tabs.TabPane key="draft" tab="草稿">
+        <Tabs.TabPane key="draft" tab={formatMessage(commonMessages.status.draft)}>
           <ProgramCollectionBlock memberId={memberId} isDraft />
         </Tabs.TabPane>
-        <Tabs.TabPane key="published" tab="已發佈">
+        <Tabs.TabPane key="published" tab={formatMessage(commonMessages.status.published)}>
           <ProgramCollectionBlock memberId={memberId} isDraft={false} />
         </Tabs.TabPane>
       </Tabs>
@@ -45,6 +48,7 @@ const ProgramCollectionBlock: React.FC<{
   memberId: string | null
   isDraft?: boolean
 }> = ({ isDraft, memberId }) => {
+  const { formatMessage } = useIntl()
   const { data, error, loading } = useQuery<
     types.GET_CREATOR_PROGRAM_COLLECTION,
     types.GET_CREATOR_PROGRAM_COLLECTIONVariables
@@ -61,7 +65,7 @@ const ProgramCollectionBlock: React.FC<{
       {loading ? (
         <Spin />
       ) : error || !data ? (
-        '無法載入資料'
+        formatMessage(errorMessages.data.fetch)
       ) : (
         data.program.map(program => (
           <div key={program.id} className="col-12 col-md-6 col-lg-4 mb-5">

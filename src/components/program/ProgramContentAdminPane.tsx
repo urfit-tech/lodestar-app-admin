@@ -4,13 +4,13 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { InferType } from 'yup'
+import { programMessages } from '../../helpers/translation'
 import { programSchema } from '../../schemas/program'
 import types from '../../types'
 import ProgramContentSectionAdminCard from './ProgramContentSectionAdminCard'
 import ProgramStructureAdminModal from './ProgramStructureAdminModal'
 
 const messages = defineMessages({
-  programContent: { id: 'program.label.programContent', defaultMessage: '課程內容' },
   creatingBlock: { id: 'program.event.creatingBlock', defaultMessage: '新增區塊中' },
   createBlock: { id: 'program.ui.createBlock', defaultMessage: '新增區塊' },
 })
@@ -46,7 +46,7 @@ const ProgramContentAdminPane: React.FC<{
     <div className="container py-3">
       <div className="d-flex justify-content-between align-items-center pb-4">
         <Typography.Title className="mb-0" level={3}>
-          {formatMessage(messages.programContent)}
+          {formatMessage(programMessages.label.programContent)}
         </Typography.Title>
         <ProgramStructureAdminModal program={program} onStructureChange={onRefetch} />
       </div>

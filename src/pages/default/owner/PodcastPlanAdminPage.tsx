@@ -1,11 +1,13 @@
 import { Button, Icon, Skeleton } from 'antd'
 import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import AdminCard from '../../../components/admin/AdminCard'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import PodcastPlanCollectionAdminTable from '../../../containers/podcast/PodcastPlanCollectionAdminTable'
 import PodcastPlanCreationModal from '../../../containers/podcast/PodcastPlanCreationModal'
 import { useAuth } from '../../../contexts/AuthContext'
+import { commonMessages, podcastMessages } from '../../../helpers/translation'
 import { usePodcastPlanAdminCollection } from '../../../hooks/podcast'
 import { ReactComponent as DiscountIcon } from '../../../images/icon/discount.svg'
 
@@ -16,20 +18,21 @@ const StyledTitle = styled.h1`
   letter-spacing: 0.2px;
 `
 const PodcastPlanAdminPage: React.FC = () => {
+  const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
-  const [isVisible, setVisible] = useState<boolean>(false)
   const {
     loadingPodcastPlanAdminCollection,
     errorPodcastPlanAdminCollection,
     podcastPlans,
     refetchPodcastPlanAdminCollection,
   } = usePodcastPlanAdminCollection()
+  const [isVisible, setVisible] = useState(false)
 
   return (
     <OwnerAdminLayout>
       <StyledTitle className="mb-4">
         <Icon component={() => <DiscountIcon />} className="mr-2" />
-        <span>訂閱方案</span>
+        <span>{formatMessage(commonMessages.menu.podcastPlans)}</span>
       </StyledTitle>
 
       {!currentMemberId ? (
@@ -43,7 +46,7 @@ const PodcastPlanAdminPage: React.FC = () => {
               refetch={refetchPodcastPlanAdminCollection}
             >
               <Button icon="file-add" type="primary" onClick={() => setVisible(true)}>
-                建立方案
+                {formatMessage(podcastMessages.ui.createPodcastPlan)}
               </Button>
             </PodcastPlanCreationModal>
           </div>

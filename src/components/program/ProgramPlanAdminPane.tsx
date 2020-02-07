@@ -3,13 +3,13 @@ import { CardProps } from 'antd/lib/card'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { InferType } from 'yup'
+import { commonMessages } from '../../helpers/translation'
 import { programSchema } from '../../schemas/program'
 import ProgramPerpetualPlanAdminCard from './ProgramPerpetualPlanAdminCard'
 import ProgramPlanAdminModal from './ProgramPlanAdminModal'
 import ProgramSubscriptionPlanAdminCard from './ProgramSubscriptionPlanAdminCard'
 
 const messages = defineMessages({
-  programSalesPlan: { id: 'program.label.programSalesPlan', defaultMessage: '銷售方案' },
   createPlan: { id: 'program.ui.createPlan', defaultMessage: '建立方案' },
 })
 
@@ -23,7 +23,7 @@ const ProgramPlanAdminPane: React.FC<ProgramPlanAdminPaneProps> = ({ program, on
   return (
     <div className="container py-3">
       <Typography.Title className="pb-3" level={3}>
-        {formatMessage(messages.programSalesPlan)}
+        {formatMessage(commonMessages.label.salesPlan)}
       </Typography.Title>
       {program && program.isSubscription && (
         <ProgramPlanAdminModal

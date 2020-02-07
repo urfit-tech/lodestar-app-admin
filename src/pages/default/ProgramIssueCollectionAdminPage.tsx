@@ -2,15 +2,18 @@ import { useQuery } from '@apollo/react-hooks'
 import { Icon, Select, Skeleton, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
+import { useIntl } from 'react-intl'
 import IssueAdminCard from '../../components/issue/IssueAdminCard'
 import CreatorAdminLayout from '../../components/layout/CreatorAdminLayout'
 import OwnerAdminLayout from '../../components/layout/OwnerAdminLayout'
 import { EditableProgramSelector, OwnedProgramSelector } from '../../components/program/ProgramSelector'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const ProgramIssueCollectionAdminPage = () => {
+  const { formatMessage } = useIntl()
   const { currentMemberId, currentUserRole } = useAuth()
   const [selectedProgramId, setSelectedProgramId] = useState<string>('all')
   const [selectedStatus, setSelectedStatus] = useState<string>('unsolved')
@@ -20,15 +23,15 @@ const ProgramIssueCollectionAdminPage = () => {
     <AdminLayout>
       <Typography.Title level={3} className="mb-4">
         <Icon type="book" theme="filled" className="mr-3" />
-        <span>課程問題</span>
+        <span>{formatMessage(commonMessages.menu.programIssues)}</span>
       </Typography.Title>
 
       <div className="row mb-4">
         <div className="col-12 col-sm-3 mb-2 mb-md-0">
           <Select style={{ width: '100%' }} value={selectedStatus} onChange={(key: string) => setSelectedStatus(key)}>
-            <Select.Option key="unsolved">未解決</Select.Option>
-            <Select.Option key="solved">已解決</Select.Option>
-            <Select.Option key="all">全部</Select.Option>
+            <Select.Option key="unsolved">{formatMessage(programMessages.status.issueOpen)}</Select.Option>
+            <Select.Option key="solved">{formatMessage(programMessages.status.issueSolved)}</Select.Option>
+            <Select.Option key="all">{formatMessage(commonMessages.label.all)}</Select.Option>
           </Select>
         </div>
         <div className="col-12 col-sm-9 pl-md-0">
@@ -61,6 +64,7 @@ const AllProgramIssueCollectionBlock: React.FC<{
   selectedProgramId: string
   selectedStatus: string
 }> = ({ memberId, selectedProgramId, selectedStatus }) => {
+  const { formatMessage } = useIntl()
   const { id: appId } = useContext(AppContext)
 
   let unsolved: boolean | undefined
@@ -92,9 +96,9 @@ const AllProgramIssueCollectionBlock: React.FC<{
       {loading || !data ? (
         <Skeleton active />
       ) : error ? (
-        '課程問題錯誤'
+        formatMessage(errorMessages.data.fetch)
       ) : !data.issue || data.issue.length === 0 ? (
-        '沒有課程問題'
+        formatMessage(programMessages.text.emptyProgramIssue)
       ) : (
         data.issue
           .map((value: any) => {

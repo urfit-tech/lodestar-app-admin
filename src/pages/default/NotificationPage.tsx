@@ -1,20 +1,29 @@
 import { Icon, List, Typography } from 'antd'
 import React from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import AdminCard from '../../components/admin/AdminCard'
 import DefaultLayout from '../../components/layout/DefaultLayout'
 import NotificationItem from '../../components/notification/NotificationItem'
 import { useAuth } from '../../contexts/AuthContext'
+import { errorMessages } from '../../helpers/translation'
 import { useNotifications } from '../../hooks/data'
 
+const messages = defineMessages({
+  yourNotification: { id: 'common.label.yourNotification', defaultMessage: '你的通知' },
+  emptyNotification: { id: 'common.text.emptyNotification', defaultMessage: '目前沒有任何通知' },
+})
+
 const NotificationPage = () => {
+  const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
+
   return (
     <DefaultLayout>
       <div className="py-5">
         <div className="container">
           <Typography.Title className="mb-4" level={3}>
             <Icon type="bell" className="mr-1" />
-            <span>你的通知</span>
+            <span>{formatMessage(messages.yourNotification)}</span>
           </Typography.Title>
           {currentMemberId && <NotificationCard memberId={currentMemberId} />}
         </div>
@@ -24,11 +33,13 @@ const NotificationPage = () => {
 }
 
 const NotificationCard: React.FC<{ memberId: string }> = ({ memberId }) => {
+  const { formatMessage } = useIntl()
   const { notifications, refetch, loading, error } = useNotifications(memberId)
+
   return (
     <AdminCard loading={loading} style={{ color: '#9b9b9b' }}>
       {error ? (
-        '無法載入通知'
+        formatMessage(errorMessages.data.fetch)
       ) : notifications.length > 0 ? (
         <List itemLayout="horizontal">
           {notifications.map(notification => (
@@ -47,7 +58,7 @@ const NotificationCard: React.FC<{ memberId: string }> = ({ memberId }) => {
           ))}
         </List>
       ) : (
-        '目前沒有任何通知'
+        formatMessage(messages.emptyNotification)
       )}
     </AdminCard>
   )

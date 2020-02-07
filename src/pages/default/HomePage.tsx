@@ -1,5 +1,6 @@
 import { message } from 'antd'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import AuthModal, { AuthModalContext } from '../../components/auth/AuthModal'
@@ -62,10 +63,18 @@ const StyledRoleBlock = styled.div`
   }
 `
 
+const messages = defineMessages({
+  deniedRolePermission: { id: 'error.text.deniedRolePermission', defaultMessage: '請使用管理帳號登入' },
+  adminBackStage: { id: 'common.label.adminBackStage', defaultMessage: '管理後台' },
+  isAppOwner: { id: 'common.label.isAppOwner', defaultMessage: '我是管理者' },
+  isContentCreator: { id: 'common.isContentCreator', defaultMessage: '我是創作者' },
+})
+
 const HomePage = () => {
   const { history } = useRouter()
-  const app = useContext(AppContext)
+  const { formatMessage } = useIntl()
   const { isAuthenticated, currentUserRole, logout } = useAuth()
+  const app = useContext(AppContext)
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
@@ -74,10 +83,10 @@ const HomePage = () => {
     } else if (currentUserRole === 'content-creator') {
       history.push('/studio')
     } else if (isAuthenticated) {
-      message.error('請使用管理帳號登入')
+      message.error(formatMessage(messages.deniedRolePermission))
       logout && logout()
     }
-  }, [isAuthenticated, currentUserRole, history, logout])
+  }, [isAuthenticated, currentUserRole, history, logout, formatMessage])
 
   return (
     <AuthModalContext.Provider value={{ visible, setVisible }}>
@@ -89,11 +98,19 @@ const HomePage = () => {
             <StyledLogoBlock>
               <img src={`https://static.kolable.com/images/${app.id}/logo.png`} alt="logo" />
             </StyledLogoBlock>
-            <StyledTitle>管理後台</StyledTitle>
+            <StyledTitle>{formatMessage(messages.adminBackStage)}</StyledTitle>
 
             <div className="d-flex align-items-center justify-content-between">
-              <RoleButton title="我是管理員" icon={<AdminIcon />} onAuthenticated={() => history.push('/admin')} />
-              <RoleButton title="我是創作者" icon={<CreatorIcon />} onAuthenticated={() => history.push('/studio')} />
+              <RoleButton
+                title={formatMessage(messages.isAppOwner)}
+                icon={<AdminIcon />}
+                onAuthenticated={() => history.push('/admin')}
+              />
+              <RoleButton
+                title={formatMessage(messages.isContentCreator)}
+                icon={<CreatorIcon />}
+                onAuthenticated={() => history.push('/studio')}
+              />
             </div>
           </div>
         </CenteredBox>
