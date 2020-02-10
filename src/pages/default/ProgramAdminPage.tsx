@@ -80,7 +80,7 @@ const ProgramAdminPage: React.FC = () => {
           onChange={setActive}
           renderTabBar={(tabsProps, DefaultTabBar) => (
             <div style={{ backgroundColor: 'white' }}>
-              <div className="container">
+              <div className="container text-center">
                 <DefaultTabBar {...tabsProps} />
               </div>
             </div>

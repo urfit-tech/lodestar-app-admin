@@ -19,7 +19,7 @@ const productTypeLabel = (productType: string) => {
     case 'Merchandise':
       return commonMessages.label.allMerchandise
     default:
-      return commonMessages.term.unknowProduct
+      return commonMessages.term.unknownProduct
   }
 }
 

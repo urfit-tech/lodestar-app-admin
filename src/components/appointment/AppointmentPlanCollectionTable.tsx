@@ -62,7 +62,7 @@ const messages = defineMessages({
   status: { id: 'appointment.label.status', defaultMessage: '狀態' },
   isPublished: { id: 'appointment.status.isPublished', defaultMessage: '已發佈' },
   notPublished: { id: 'appointment.status.notPublished', defaultMessage: '未發佈' },
-  people: { id: 'appointment.label.people', defaultMessage: '人' },
+  people: { id: 'appointment.label.people', defaultMessage: '{count} 人' },
 })
 
 const filterIcon = (filtered: boolean) => (
@@ -156,32 +156,30 @@ const AppointmentPlanCollectionTable: React.FC<{
         {
           dataIndex: 'duration',
           title: formatMessage(messages.minutes),
-          width: '7em',
+          // width: '7em',
           render: (text, record, index) => <StyledText>{text}</StyledText>,
           sorter: (a, b) => b.duration - a.duration,
         },
         {
           dataIndex: 'listPrice',
           title: formatMessage(messages.price),
-          width: '10em',
+          // width: '10em',
           render: (text, record, index) => <StyledPlanPrice>{currencyFormatter(text)}</StyledPlanPrice>,
           sorter: (a, b) => b.listPrice - a.listPrice,
         },
         {
           dataIndex: 'enrollments',
           title: formatMessage(messages.enrollments),
-          width: '7em',
+          // width: '7em',
           render: (text, record, index) => (
-            <StyledText>
-              {text} {formatMessage(messages.people)}
-            </StyledText>
+            <StyledText>{formatMessage(messages.people, { count: `${text}` })}</StyledText>
           ),
           sorter: (a, b) => b.enrollments - a.enrollments,
         },
         {
           key: 'published',
           title: formatMessage(messages.status),
-          width: '7em',
+          // width: '7em',
           render: (text, record, index) => (
             <StyledPublished active={record.isPublished}>
               {record.isPublished ? formatMessage(messages.isPublished) : formatMessage(messages.notPublished)}

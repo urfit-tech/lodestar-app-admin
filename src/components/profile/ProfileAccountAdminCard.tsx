@@ -57,7 +57,7 @@ const ProfileAccountAdminCard: React.FC<ProfileAccountAdminCardProps> = ({ form,
             rules: [{ required: true, message: formatMessage(errorMessages.form.account) }],
           })(<Input />)}
         </Form.Item>
-        <Form.Item label={commonMessages.term.email}>
+        <Form.Item label={formatMessage(commonMessages.term.email)}>
           {form.getFieldDecorator('_email', {
             initialValue: member && member.email,
             rules: [

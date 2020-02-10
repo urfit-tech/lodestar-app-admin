@@ -87,10 +87,10 @@ const ProgramAdminCard: React.FC<ProgramAdminCardProps> = ({ programId, link, ..
                     ? formatMessage(errorMessages.data.fetch)
                     : program.isSubscription
                     ? formatMessage(programMessages.text.enrolledSubscriptionCount, {
-                        field: programEnrollmentData.program_plan_enrollment_aggregate.aggregate.count || 0,
+                        count: programEnrollmentData.program_plan_enrollment_aggregate.aggregate.count || 0,
                       })
                     : formatMessage(programMessages.text.enrolledPerpetualCount, {
-                        field: programEnrollmentData.program_enrollment_aggregate.aggregate.count || 0,
+                        count: programEnrollmentData.program_enrollment_aggregate.aggregate.count || 0,
                       })}
                 </ExtraContentBlock>
               </>

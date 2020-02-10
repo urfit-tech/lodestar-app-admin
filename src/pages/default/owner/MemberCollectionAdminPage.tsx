@@ -11,8 +11,9 @@ import AdminCard from '../../../components/admin/AdminCard'
 import { AvatarImage } from '../../../components/common/Image'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import MemberAdminModal, { MemberInfo } from '../../../containers/common/MemberAdminModal'
-import { currencyFormatter, getUserRoleName } from '../../../helpers'
+import { currencyFormatter } from '../../../helpers'
 import { commonMessages } from '../../../helpers/translation'
+import { UserRoleName } from '../../../helpers/userRole'
 import { UserRole } from '../../../schemas/general'
 import types from '../../../types'
 
@@ -126,12 +127,11 @@ const MemberCollectionAdminPage: React.FC = () => {
       render: (text, record, index) => (record.loginedAt ? moment(record.loginedAt).fromNow() : ''),
       sorter: (a, b) => (b.loginedAt ? b.loginedAt.getTime() : 0) - (a.loginedAt ? a.loginedAt.getTime() : 0),
     },
-    {
-      title: formatMessage(commonMessages.label.holdingPoints),
-      dataIndex: 'points',
-      key: 'points',
-      render: points => formatMessage(commonMessages.label.points, { points: `${points}` }),
-    },
+    // {
+    //   title: formatMessage(commonMessages.label.holdingPoints),
+    //   dataIndex: 'points',
+    //   key: 'points',
+    // },
     {
       title: formatMessage(commonMessages.label.consumption),
       dataIndex: 'consumption',
@@ -177,24 +177,23 @@ const MemberCollectionAdminPage: React.FC = () => {
               {formatMessage(commonMessages.label.allMembers)} ({dataSource.length})
             </StyledMenuItem>
             <StyledMenuItem onClick={() => setRoleFilter('app-owner')}>
-              {formatMessage(commonMessages.term.appOwner)} ({dataSource.filter(row => row.role === 'app-owner').length}
-              )
+              {formatMessage(commonMessages.term.appOwner)}
+              {` (${dataSource.filter(row => row.role === 'app-owner').length})`}
             </StyledMenuItem>
             <StyledMenuItem onClick={() => setRoleFilter('content-creator')}>
-              {formatMessage(commonMessages.term.contentCreator)} (
-              {dataSource.filter(row => row.role === 'content-creator').length})
+              {formatMessage(commonMessages.term.contentCreator)}
+              {` (${dataSource.filter(row => row.role === 'content-creator').length})`}
             </StyledMenuItem>
             <StyledMenuItem onClick={() => setRoleFilter('general-member')}>
-              {formatMessage(commonMessages.term.generalMember)} (
-              {dataSource.filter(row => row.role === 'general-member').length})
+              {formatMessage(commonMessages.term.generalMember)}
+              {` (${dataSource.filter(row => row.role === 'general-member').length})`}
             </StyledMenuItem>
           </Menu>
         }
       >
         <Button className="d-flex justify-content-between align-items-center">
-          {`${roleFilter ? getUserRoleName(roleFilter) : formatMessage(commonMessages.term.appOwner)} (${
-            dataSource.filter(row => (roleFilter ? row.role === roleFilter : true)).length
-          })`}
+          {roleFilter ? <UserRoleName userRole={roleFilter} /> : formatMessage(commonMessages.label.allMembers)}
+          {` (${dataSource.filter(row => (roleFilter ? row.role === roleFilter : true)).length})`}
           <Icon type="caret-down" />
         </Button>
       </StyledDropdown>

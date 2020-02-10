@@ -65,7 +65,7 @@ const StyledRoleBlock = styled.div`
 
 const messages = defineMessages({
   deniedRolePermission: { id: 'error.text.deniedRolePermission', defaultMessage: '請使用管理帳號登入' },
-  adminBackStage: { id: 'common.label.adminBackStage', defaultMessage: '管理後台' },
+  adminBackstage: { id: 'common.label.adminBackstage', defaultMessage: '管理後台' },
   isAppOwner: { id: 'common.label.isAppOwner', defaultMessage: '我是管理者' },
   isContentCreator: { id: 'common.isContentCreator', defaultMessage: '我是創作者' },
 })
@@ -98,7 +98,7 @@ const HomePage = () => {
             <StyledLogoBlock>
               <img src={`https://static.kolable.com/images/${app.id}/logo.png`} alt="logo" />
             </StyledLogoBlock>
-            <StyledTitle>{formatMessage(messages.adminBackStage)}</StyledTitle>
+            <StyledTitle>{formatMessage(messages.adminBackstage)}</StyledTitle>
 
             <div className="d-flex align-items-center justify-content-between">
               <RoleButton

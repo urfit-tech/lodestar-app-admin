@@ -1,1 +1,1 @@
-export type PeriodType = 'W' | 'M' | 'Y'
+export type PeriodType = 'D' | 'W' | 'M' | 'Y'

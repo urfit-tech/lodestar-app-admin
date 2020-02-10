@@ -24,7 +24,7 @@ const messages = defineMessages({
   planSettings: { id: 'appointment.label.planSettings', defaultMessage: '方案設定' },
   planDescription: { id: 'appointment.label.planDescription', defaultMessage: '方案簡介' },
   salesSettings: { id: 'appointment.label.salesSettings', defaultMessage: '銷售方案' },
-  periodSettings: { id: 'appointment.label.periodSettings', defaultMessage: '時段設定' },
+  scheduleSettings: { id: 'appointment.label.scheduleSettings', defaultMessage: '時段設定' },
 })
 
 const AppointmentPlanAdminPage: React.FC = () => {
@@ -73,9 +73,9 @@ const AppointmentPlanAdminPage: React.FC = () => {
               </div>
             </Tabs.TabPane>
 
-            <Tabs.TabPane tab={formatMessage(messages.periodSettings)} key="schedule">
+            <Tabs.TabPane tab={formatMessage(messages.scheduleSettings)} key="schedule">
               <div className="container py-5">
-                <AdminPaneTitle>{formatMessage(messages.periodSettings)}</AdminPaneTitle>
+                <AdminPaneTitle>{formatMessage(messages.scheduleSettings)}</AdminPaneTitle>
                 <div className="mb-5">
                   <AppointmentPlanScheduleCreationModal />
                 </div>

@@ -5,7 +5,8 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import PodcastPlanUpdateModal from '../../containers/podcast/PodcastPlanUpdateModal'
-import { currencyFormatter, getCustomizedPeriodTypeLabel } from '../../helpers'
+import { currencyFormatter } from '../../helpers'
+import { getShortenPeriodTypeLabel } from '../../helpers/period'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { PeriodType } from '../../schemas/common'
@@ -139,12 +140,12 @@ const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableP
           {typeof record.salePrice === 'number' && !!record.salePrice && (
             <StyledPriceLabel className="mr-2">
               {currencyFormatter(record.salePrice)} /{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}
-              {getCustomizedPeriodTypeLabel(record.periodType)}
+              {getShortenPeriodTypeLabel(record.periodType)}
             </StyledPriceLabel>
           )}
           <StyledPriceLabel className="mr-2">
             {currencyFormatter(record.listPrice)} /{record.periodAmount > 1 ? ` ${record.periodAmount} ` : null}
-            {getCustomizedPeriodTypeLabel(record.periodType)}
+            {getShortenPeriodTypeLabel(record.periodType)}
           </StyledPriceLabel>
         </div>
       ),

@@ -11,9 +11,9 @@ import { ActivityTicketProps } from './ActivityTicket'
 
 const messages = defineMessages({
   published: { id: 'activity.label.published', defaultMessage: '是否開賣' },
-  PublishedTicket: { id: 'activity.status.PublishedTicket', defaultMessage: '發售，活動上架後立即開賣' },
-  NotPublishedTicket: {
-    id: 'activity.status.NotPublishedTicket',
+  publishedTicket: { id: 'activity.status.publishedTicket', defaultMessage: '發售，活動上架後立即開賣' },
+  notPublishedTicket: {
+    id: 'activity.status.notPublishedTicket',
     defaultMessage: '停售，該票券暫停對外銷售，並從購票頁中隱藏',
   },
   ticketStartedAt: { id: 'activity.label.ticketStartedAt', defaultMessage: '售票開始時間' },
@@ -120,8 +120,8 @@ const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
             initialValue: !activityTicket || activityTicket.isPublished ? 'public' : 'private',
           })(
             <Radio.Group>
-              <Radio value="public">{formatMessage(messages.PublishedTicket)}</Radio>
-              <Radio value="private">{formatMessage(messages.NotPublishedTicket)}</Radio>
+              <Radio value="public">{formatMessage(messages.publishedTicket)}</Radio>
+              <Radio value="private">{formatMessage(messages.notPublishedTicket)}</Radio>
             </Radio.Group>,
           )}
         </Form.Item>

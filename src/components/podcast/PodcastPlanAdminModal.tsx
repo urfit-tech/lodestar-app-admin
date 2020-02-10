@@ -199,7 +199,7 @@ const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
             {formatMessage(commonMessages.term.salePrice)}
           </Checkbox>
           {withSalePrice && (
-            <Form.Item label={formatMessage(commonMessages.term.salePrice)}>
+            <Form.Item>
               {form.getFieldDecorator('salePrice', {
                 initialValue: podcastPlan ? podcastPlan.salePrice : 0,
                 rules: [

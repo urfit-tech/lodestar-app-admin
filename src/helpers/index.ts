@@ -77,19 +77,6 @@ export const getCustomizedPeriodTypeLabel = (periodType: PeriodType | string) =>
   }
 }
 
-export const getShortenPeriodTypeLabel = (periodType: PeriodType | string) => {
-  switch (periodType) {
-    case 'W':
-      return '週'
-    case 'M':
-      return '月'
-    case 'Y':
-      return '年'
-    default:
-      return '未知週期'
-  }
-}
-
 export const commaFormatter = (value?: number | string | null) =>
   value !== null && value !== undefined && `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
@@ -207,21 +194,6 @@ export const getUserRoleLevel = (userRole: string) => {
       return 3
     default:
       return -1
-  }
-}
-
-export const getUserRoleName = (userRole: string) => {
-  switch (userRole) {
-    case 'anonymous':
-      return '匿名使用者'
-    case 'general-member':
-      return '一般會員'
-    case 'content-creator':
-      return '創作者'
-    case 'app-owner':
-      return '管理員'
-    default:
-      return '未知身份'
   }
 }
 

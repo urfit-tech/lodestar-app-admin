@@ -9,7 +9,7 @@ import Responsive from '../common/Responsive'
 import DefaultLayout from './DefaultLayout'
 
 const messages = defineMessages({
-  ownerDashboard: { id: 'layout.label.ownerDashboard', defaultMessage: '平台管理者專區' },
+  ownerBackstage: { id: 'layout.label.ownerBackstage', defaultMessage: '平台管理者專區' },
 })
 
 const OwnerAdminLayout: React.FC = ({ children }) => {
@@ -21,7 +21,7 @@ const OwnerAdminLayout: React.FC = ({ children }) => {
       noFooter
       renderTitle={() => (
         <Link to={`/`} className="d-flex">
-          <Button type="link">{formatMessage(messages.ownerDashboard)}</Button>
+          <Button type="link">{formatMessage(messages.ownerBackstage)}</Button>
         </Link>
       )}
     >
