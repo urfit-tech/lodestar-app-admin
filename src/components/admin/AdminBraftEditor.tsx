@@ -2,35 +2,49 @@ import { ControlType, EditorState } from 'braft-editor'
 import React, { forwardRef } from 'react'
 import StyledBraftEditor from '../common/StyledBraftEditor'
 
+const braftLanguageFn = (languages: { [lan: string]: any }, context: any) => {
+  if (context === 'braft-editor') {
+    languages['zh-hant'].controls.normal = '內文'
+    languages['zh-hant'].controls.fontSize = '字級'
+    languages['zh-hant'].controls.removeStyles = '清除樣式'
+    languages['zh-hant'].controls.code = '程式碼'
+    languages['zh-hant'].controls.link = '連結'
+    languages['zh-hant'].controls.hr = '水平線'
+    languages['zh-hant'].controls.fullscreen = '全螢幕'
+
+    return languages['zh-hant']
+  }
+}
+
 type AdminBraftVariant = 'default' | 'short'
 const controls: {
   [key in AdminBraftVariant]: ControlType[]
 } = {
   default: [
     'headings',
-    { key: 'font-size', title: '字級' },
+    'font-size',
     'line-height',
     'text-color',
     'bold',
     'italic',
     'underline',
     'strike-through',
-    { key: 'remove-styles', title: '清除樣式' },
+    'remove-styles',
     'separator',
     'text-align',
     'separator',
     'list-ol',
     'list-ul',
     'blockquote',
-    { key: 'code', title: '程式碼' },
+    'code',
     'separator',
     'media',
-    { key: 'link', title: '連結' },
-    { key: 'hr', title: '水平線' },
+    'link',
+    'hr',
     'separator',
-    { key: 'fullscreen', title: '全螢幕' },
+    'fullscreen',
   ],
-  short: ['bold', 'italic', 'underline', { key: 'remove-styles', title: '清除樣式' }, 'separator', 'media'],
+  short: ['bold', 'italic', 'underline', 'remove-styles', 'separator', 'media'],
 }
 
 const AdminBraftEditor: React.FC<{
@@ -44,7 +58,7 @@ const AdminBraftEditor: React.FC<{
       value={value}
       onChange={onChange}
       contentClassName={variant === 'short' ? 'short-bf-content' : undefined}
-      language="zh-hant"
+      language={braftLanguageFn}
       controls={controls[variant || 'default']}
     />
   )

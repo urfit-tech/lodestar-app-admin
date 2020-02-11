@@ -8,8 +8,8 @@ import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StyledTips } from '../../components/admin'
+import AdminBraftEditor from '../../components/admin/AdminBraftEditor'
 import SingleUploader from '../../components/common/SingleUploader'
-import StyledBraftEditor from '../../components/common/StyledBraftEditor'
 import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
@@ -137,35 +137,7 @@ const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
       <Form.Item label={formatMessage(podcastMessages.label.description)}>
         {form.getFieldDecorator('description', {
           initialValue: BraftEditor.createEditorState(podcastProgram.description),
-        })(
-          <StyledBraftEditor
-            language="zh-hant"
-            controls={[
-              'headings',
-              { key: 'font-size', title: '字級' },
-              'line-height',
-              'text-color',
-              'bold',
-              'italic',
-              'underline',
-              'strike-through',
-              { key: 'remove-styles', title: '清除樣式' },
-              'separator',
-              'text-align',
-              'separator',
-              'list-ol',
-              'list-ul',
-              'blockquote',
-              { key: 'code', title: '程式碼' },
-              'separator',
-              'media',
-              { key: 'link', title: '連結' },
-              { key: 'hr', title: '水平線' },
-              'separator',
-              { key: 'fullscreen', title: '全螢幕' },
-            ]}
-          />,
-        )}
+        })(<AdminBraftEditor />)}
       </Form.Item>
       <Form.Item>
         <Button onClick={() => form.resetFields()} className="mr-2">

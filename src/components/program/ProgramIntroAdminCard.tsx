@@ -11,11 +11,11 @@ import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { programSchema } from '../../schemas/program'
 import types from '../../types'
+import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminCard from '../admin/AdminCard'
 import { CustomRatioImage } from '../common/Image'
 import { BREAK_POINT } from '../common/Responsive'
 import SingleUploader from '../common/SingleUploader'
-import StyledBraftEditor from '../common/StyledBraftEditor'
 
 const CoverBlock = styled.div`
   margin-bottom: 2rem;
@@ -171,35 +171,7 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
           <Form.Item label={formatMessage(messages.programDescription)} wrapperCol={{ md: { span: 20 } }}>
             {form.getFieldDecorator('description', {
               initialValue: BraftEditor.createEditorState(program.description),
-            })(
-              <StyledBraftEditor
-                language="zh-hant"
-                controls={[
-                  'headings',
-                  { key: 'font-size', title: '字級' },
-                  'line-height',
-                  'text-color',
-                  'bold',
-                  'italic',
-                  'underline',
-                  'strike-through',
-                  { key: 'remove-styles', title: '清除樣式' },
-                  'separator',
-                  'text-align',
-                  'separator',
-                  'list-ol',
-                  'list-ul',
-                  'blockquote',
-                  { key: 'code', title: '程式碼' },
-                  'separator',
-                  'media',
-                  { key: 'link', title: '連結' },
-                  { key: 'hr', title: '水平線' },
-                  'separator',
-                  { key: 'fullscreen', title: '全螢幕' },
-                ]}
-              />,
-            )}
+            })(<AdminBraftEditor />)}
           </Form.Item>
           <Form.Item wrapperCol={{ md: { offset: 4 } }}>
             <Button onClick={() => form.resetFields()}>{formatMessage(commonMessages.ui.cancel)}</Button>

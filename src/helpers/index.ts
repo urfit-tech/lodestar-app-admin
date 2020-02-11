@@ -136,13 +136,6 @@ export const durationFormatter = (value?: number | null) => {
   return value && `約 ${(value / 60).toFixed(0)} 分鐘`
 }
 
-export const braftLanguageFn = (languages: { [lan: string]: any }, context: any) => {
-  if (context === 'braft-editor') {
-    languages['zh-hant'].controls.normal = '內文'
-    return languages['zh-hant']
-  }
-}
-
 export const getNotificationIconType = (type: string) => {
   switch (type) {
     case 'message':

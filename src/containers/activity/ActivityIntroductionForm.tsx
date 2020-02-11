@@ -6,8 +6,8 @@ import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import AdminBraftEditor from '../../components/admin/AdminBraftEditor'
 import SingleUploader from '../../components/common/SingleUploader'
-import StyledBraftEditor from '../../components/common/StyledBraftEditor'
 import ActivityContext from '../../contexts/ActivityContext'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
@@ -139,35 +139,7 @@ const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
       <Form.Item label={formatMessage(commonMessages.term.description)} wrapperCol={{ md: { span: 20 } }}>
         {form.getFieldDecorator('description', {
           initialValue: BraftEditor.createEditorState(activity.description),
-        })(
-          <StyledBraftEditor
-            language="zh-hant"
-            controls={[
-              'headings',
-              { key: 'font-size', title: '字級' },
-              'line-height',
-              'text-color',
-              'bold',
-              'italic',
-              'underline',
-              'strike-through',
-              { key: 'remove-styles', title: '清除樣式' },
-              'separator',
-              'text-align',
-              'separator',
-              'list-ol',
-              'list-ul',
-              'blockquote',
-              { key: 'code', title: '程式碼' },
-              'separator',
-              'media',
-              { key: 'link', title: '連結' },
-              { key: 'hr', title: '水平線' },
-              'separator',
-              { key: 'fullscreen', title: '全螢幕' },
-            ]}
-          />,
-        )}
+        })(<AdminBraftEditor />)}
       </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">

@@ -12,8 +12,8 @@ import { InferType } from 'yup'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import { programPlanSchema } from '../../schemas/program'
 import types from '../../types'
+import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
-import StyledBraftEditor from '../common/StyledBraftEditor'
 import ProgramPeriodTypeDropdown from './ProgramPeriodTypeDropdown'
 
 const StyledForm = styled(Form)`
@@ -230,13 +230,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
         <Form.Item label={formatMessage(messages.planDescription)}>
           {form.getFieldDecorator('description', {
             initialValue: BraftEditor.createEditorState(programPlan ? programPlan.description : null),
-          })(
-            <StyledBraftEditor
-              language="zh-hant"
-              controls={['text-color', 'bold', 'list-ol', 'list-ul', { key: 'remove-styles', title: '清除樣式' }]}
-              contentClassName="short-bf-content"
-            />,
-          )}
+          })(<AdminBraftEditor variant="short" />)}
         </Form.Item>
       </StyledForm>
     </AdminModal>

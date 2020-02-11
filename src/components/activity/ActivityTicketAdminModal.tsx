@@ -5,8 +5,8 @@ import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { activityMessages, commonMessages, errorMessages } from '../../helpers/translation'
+import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
-import StyledBraftEditor from '../common/StyledBraftEditor'
 import { ActivityTicketProps } from './ActivityTicket'
 
 const messages = defineMessages({
@@ -184,13 +184,7 @@ const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
         <Form.Item label={formatMessage(activityMessages.term.description)} colon={false}>
           {form.getFieldDecorator('description', {
             initialValue: activityTicket ? BraftEditor.createEditorState(activityTicket.description) : null,
-          })(
-            <StyledBraftEditor
-              language="zh-hant"
-              controls={['text-color', 'bold', 'list-ol', 'list-ul', { key: 'remove-styles', title: '清除樣式' }]}
-              contentClassName="short-bf-content"
-            />,
-          )}
+          })(<AdminBraftEditor variant="short" />)}
         </Form.Item>
       </Form>
     </AdminModal>

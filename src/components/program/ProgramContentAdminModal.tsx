@@ -6,13 +6,12 @@ import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { braftLanguageFn } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useProgram, useProgramContent } from '../../hooks/program'
 import types from '../../types'
+import AdminBraftEditor from '../admin/AdminBraftEditor'
 import DatetimePicker from '../common/DatetimePicker'
 import SingleUploader from '../common/SingleUploader'
-import StyledBraftEditor from '../common/StyledBraftEditor'
 import ProgramPlanSelector from './ProgramPlanSelector'
 
 const messages = defineMessages({
@@ -268,35 +267,7 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                 programContent.programContentBody.id &&
                 form.getFieldDecorator('description', {
                   initialValue: BraftEditor.createEditorState(programContent.programContentBody.description),
-                })(
-                  <StyledBraftEditor
-                    language={braftLanguageFn}
-                    controls={[
-                      'headings',
-                      { key: 'font-size', title: '字級' },
-                      'line-height',
-                      'text-color',
-                      'bold',
-                      'italic',
-                      'underline',
-                      'strike-through',
-                      { key: 'remove-styles', title: '清除樣式' },
-                      'separator',
-                      'text-align',
-                      'separator',
-                      'list-ol',
-                      'list-ul',
-                      'blockquote',
-                      { key: 'code', title: '程式碼' },
-                      'separator',
-                      'media',
-                      { key: 'link', title: '連結' },
-                      { key: 'hr', title: '水平線' },
-                      'separator',
-                      { key: 'fullscreen', title: '全螢幕' },
-                    ]}
-                  />,
-                )}
+                })(<AdminBraftEditor />)}
             </Form.Item>
           </Form>
         ) : (
