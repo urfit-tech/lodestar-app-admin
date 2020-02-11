@@ -2,9 +2,10 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { InferType } from 'yup'
-import { currencyFormatter, getPeriodTypeLabel } from '../../helpers'
+import { currencyFormatter } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { programSchema } from '../../schemas/program'
+import { ShortenPeriodTypeLabel } from '../common/Period'
 
 const StyledPriceLabel = styled.div`
   color: ${props => props.theme['@primary-color']};
@@ -34,7 +35,7 @@ const ProgramPriceLabel: React.FC<ProgramPriceLabelProps> = ({ program }) => {
         <span>{currencyFormatter(plan.listPrice)}</span>
         {isOnSale && <span className="ml-2">{currencyFormatter(plan.salePrice)}</span>}
         {'/'}
-        {getPeriodTypeLabel(plan.periodType)}
+        <ShortenPeriodTypeLabel periodType={plan.periodType} />
       </StyledPriceLabel>
     )
   }

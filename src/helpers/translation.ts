@@ -55,6 +55,8 @@ export const commonMessages = {
     perDay: { id: 'common.label.perDay', defaultMessage: '每日' },
     perWeek: { id: 'common.label.perWeek', defaultMessage: '每週' },
     perMonth: { id: 'common.label.perMonth', defaultMessage: '每月' },
+    perYear: { id: 'common.label.perYear', defaultMessage: '每年' },
+    unknownPeriod: { id: 'common.label.unknownPeriod', defaultMessage: '未知週期' },
     cannotRecover: { id: 'common.label.cannotRecover', defaultMessage: '此動作無法復原' },
     sellingStatus: { id: 'common.label.sellingStatus', defaultMessage: '販售狀態' },
     salePriceEndTime: { id: 'common.label.salePriceEndTime', defaultMessage: '優惠截止日期' },

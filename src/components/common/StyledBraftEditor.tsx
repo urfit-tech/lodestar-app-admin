@@ -100,6 +100,7 @@ const OutputMixin = css`
   }
 `
 
+// TODO: braft editor css content string
 const StyledBraftEditor = styled(BraftEditor)`
   .bf-dropdown .dropdown-content .menu-item.active {
     background-color: ${props => props.theme['@primary-color']};

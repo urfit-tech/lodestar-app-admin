@@ -98,6 +98,7 @@ const messages = defineMessages({
   contentMenu: { id: 'program.label.contentMenu', defaultMessage: '課程列表' },
   sortBySection: { id: 'program.ui.sortBySection', defaultMessage: '單元排序' },
   sortByDate: { id: 'program.ui.sortByDate', defaultMessage: '時間排序' },
+  emptyContentMenu: { id: 'program.text.emptyContentMenu', defaultMessage: '初次購買還沒有新的內容喔～' },
 })
 
 type ProgramContentMenuProps = {
@@ -320,8 +321,9 @@ const SortByDateItem: React.FC<{
   )
 }
 
-const EmptyMenu = () => {
-  return <Card style={{ textAlign: 'center', color: '#9b9b9b' }}>初次購買還沒有新的內容喔～</Card>
+const EmptyMenu: React.FC = () => {
+  const { formatMessage } = useIntl()
+  return <Card style={{ textAlign: 'center', color: '#9b9b9b' }}>{formatMessage(messages.emptyContentMenu)}</Card>
 }
 
 const GET_PROGRAM_CONTENTS_WITH_BODY = gql`

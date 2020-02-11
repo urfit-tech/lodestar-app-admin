@@ -9,12 +9,12 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { array, InferType, object } from 'yup'
-import { currencyFormatter, dateFormatter, productTypeFormatter } from '../../helpers'
+import { currencyFormatter, dateFormatter } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { ProductType } from '../../schemas/general'
 import { orderProductSchema, orderSchema } from '../../schemas/order'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
+import ProductTypeLabel from '../common/ProductTypeLabel'
 import OrderStatusTag from './OrderStatusTag'
 
 const StyledContainer = styled.div`
@@ -126,7 +126,7 @@ const OrderCollectionAdminCard: React.FC<OrderCollectionAdminCardProps> = ({ mem
                 <div key={orderProducts.id}>
                   <StyledOrderItem className="d-flex align-items-center justify-content-between">
                     <div className="flex-shrink-0 mr-4">
-                      {productTypeFormatter(orderProducts.product.type as ProductType)}
+                      <ProductTypeLabel productType={orderProducts.product.type} />
                     </div>
                     <div className="flex-grow-1 mr-4">
                       {orderProducts.name}

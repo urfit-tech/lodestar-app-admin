@@ -15,7 +15,7 @@ const StyledTextSecondary = styled.span`
 `
 
 const messages = defineMessages({
-  memberSelect: { id: 'error.form.memberSelect', defaultMessage: '請輸入帳號 或 Email' },
+  memberSelect: { id: 'error.form.memberSelect', defaultMessage: '請輸入帳號或 Email' },
 })
 
 export type MemberOptionProps = {

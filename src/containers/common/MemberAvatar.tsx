@@ -1,9 +1,9 @@
 import { AvatarProps } from 'antd/lib/avatar'
 import React from 'react'
 import styled from 'styled-components'
+import { AvatarImage } from '../../components/common/Image'
 import { usePublicMember } from '../../hooks/member'
 import { Member } from '../../schemas/general'
-import { AvatarImage } from '../../components/common/Image'
 
 const MemberName = styled.span`
   font-size: 14px;

@@ -1,7 +1,7 @@
 import { Button, Dropdown, Icon, Menu } from 'antd'
 import React from 'react'
-import { getPeriodTypeLabel } from '../../helpers'
 import { ProgramPlanPeriodType } from '../../schemas/program'
+import { PeriodTypeLabel } from '../common/Period'
 
 type ProgramPeriodTypeDropdownProps = {
   value?: ProgramPlanPeriodType
@@ -9,6 +9,7 @@ type ProgramPeriodTypeDropdownProps = {
 }
 const ProgramPeriodTypeDropdown: React.FC<ProgramPeriodTypeDropdownProps> = ({ value, onChange }, form) => {
   const periodTypes: ProgramPlanPeriodType[] = ['W', 'M', 'Y']
+
   return (
     <Dropdown
       trigger={['click']}
@@ -16,14 +17,14 @@ const ProgramPeriodTypeDropdown: React.FC<ProgramPeriodTypeDropdownProps> = ({ v
         <Menu>
           {periodTypes.map(periodType => (
             <Menu.Item key={periodType} onClick={() => onChange && onChange(periodType)}>
-              {getPeriodTypeLabel(periodType)}
+              <PeriodTypeLabel periodType={periodType} />
             </Menu.Item>
           ))}
         </Menu>
       }
     >
       <Button>
-        {value && getPeriodTypeLabel(value)} <Icon type="down" />
+        {value && <PeriodTypeLabel periodType={value} />} <Icon type="down" />
       </Button>
     </Dropdown>
   )

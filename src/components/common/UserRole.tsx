@@ -1,7 +1,8 @@
 import React from 'react'
 import { useIntl } from 'react-intl'
-import { UserRole } from '../schemas/general'
-import { commonMessages } from './translation'
+import { commonMessages } from '../../helpers/translation'
+import { UserRole } from '../../schemas/general'
+import { ProgramRoleName } from '../../schemas/program'
 
 export const UserRoleName: React.FC<{ userRole: UserRole | string | null }> = ({ userRole }) => {
   const { formatMessage } = useIntl()
@@ -15,6 +16,21 @@ export const UserRoleName: React.FC<{ userRole: UserRole | string | null }> = ({
       return <>{formatMessage(commonMessages.term.contentCreator)}</>
     case 'app-owner':
       return <>{formatMessage(commonMessages.term.appOwner)}</>
+    default:
+      return <>{formatMessage(commonMessages.term.unknownRole)}</>
+  }
+}
+
+export const ProgramRoleLabel: React.FC<{ role: ProgramRoleName | string | null }> = ({ role }) => {
+  const { formatMessage } = useIntl()
+
+  switch (role) {
+    case 'owner':
+      return <>{formatMessage(commonMessages.term.owner)}</>
+    case 'instructor':
+      return <>{formatMessage(commonMessages.term.instructor)}</>
+    case 'assistant':
+      return <>{formatMessage(commonMessages.term.teachingAssistant)}</>
     default:
       return <>{formatMessage(commonMessages.term.unknownRole)}</>
   }

@@ -10,11 +10,12 @@ import { StringParam, useQueryParam } from 'use-query-params'
 import { InferType } from 'yup'
 import MemberAvatar from '../../containers/common/MemberAvatar'
 import { useAuth } from '../../contexts/AuthContext'
-import { programRoleFormatter, rgba } from '../../helpers'
+import { rgba } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { programRoleSchema } from '../../schemas/program'
 import types from '../../types'
 import { BraftContent } from '../common/StyledBraftEditor'
+import { ProgramRoleLabel } from '../common/UserRole'
 import { StyledEditor } from './IssueReplyCreationBlock'
 
 const messages = defineMessages({
@@ -132,11 +133,11 @@ const IssueReplyItem: React.FC<IssueReplyItemProps> = ({
                 .map(role =>
                   role.name === 'instructor' ? (
                     <StyledTag key={role.id} color={theme['@primary-color']} className="ml-2 mr-0">
-                      {programRoleFormatter(role.name)}
+                      <ProgramRoleLabel role={role.name} />
                     </StyledTag>
                   ) : role.name === 'assistant' ? (
                     <StyledTag key={role.id} color={theme['@processing-color']} className="ml-2 mr-0">
-                      {programRoleFormatter(role.name)}
+                      <ProgramRoleLabel role={role.name} />
                     </StyledTag>
                   ) : null,
                 )

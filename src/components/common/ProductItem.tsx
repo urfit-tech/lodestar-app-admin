@@ -2,10 +2,10 @@ import { Typography } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
 import EmptyCover from '../../images/default/empty-cover.png'
-import { ProductTypeLabel } from '../../schemas/general'
 import { ProgramPlanPeriodType } from '../../schemas/program'
 import { CustomRatioImage } from './Image'
 import PriceLabel from './PriceLabel'
+import ProductTypeLabel from './ProductTypeLabel'
 
 const StyledCoverImage = styled.img`
   width: 64px;
@@ -117,7 +117,7 @@ const ProductItem: React.FC<ProductItemProps> = ({
         {title}
       </Typography.Paragraph>
       <StyledMeta className="mr-5">
-        {productType && ProductTypeLabel[productType] ? ProductTypeLabel[productType] : '未知'}
+        <ProductTypeLabel productType={productType} />
       </StyledMeta>
     </>
   )

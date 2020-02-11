@@ -3,9 +3,6 @@ import { RcFile } from 'antd/lib/upload'
 import axios, { AxiosRequestConfig } from 'axios'
 import moment from 'moment'
 import queryString from 'query-string'
-import { PeriodType } from '../schemas/common'
-import { ProductType } from '../schemas/general'
-import { ProgramRoleName } from '../schemas/program'
 
 export const TPDirect = (window as any)['TPDirect']
 
@@ -49,34 +46,6 @@ export const uploadFile = async (key: string, file: File | null, config?: AxiosR
       })
     })
 
-export const getPeriodTypeLabel = (periodType: PeriodType | string) => {
-  switch (periodType) {
-    case 'W':
-      return '每週'
-    case 'M':
-      return '每月'
-    case 'Y':
-      return '每年'
-    default:
-      return '未知週期'
-  }
-}
-
-export const getCustomizedPeriodTypeLabel = (periodType: PeriodType | string) => {
-  switch (periodType) {
-    case 'D':
-      return '天'
-    case 'W':
-      return '週'
-    case 'M':
-      return '個月'
-    case 'Y':
-      return '年'
-    default:
-      return '未知週期'
-  }
-}
-
 export const commaFormatter = (value?: number | string | null) =>
   value !== null && value !== undefined && `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
@@ -96,40 +65,6 @@ export const dateRangeFormatter = (startedAt: Date, endedAt: Date, timeFormat?: 
     ' ~ ' +
     moment(endedAt).format(startedDate === endedDate ? shortTimeFormat : fullTimeFormat)
   )
-}
-
-export const productTypeFormatter = (value: ProductType) => {
-  switch (value) {
-    case 'Program':
-    case 'ProgramPlan':
-    case 'ProgramContent':
-      return '課程'
-    case 'ProgramPackagePlan':
-      return '課程組合'
-    case 'ProjectPlan':
-      return '專案方案'
-    case 'Card':
-      return '會員卡'
-    case 'ActivityTicket':
-      return '活動'
-    case 'Merchandise':
-      return '商品'
-    default:
-      return '未知類別'
-  }
-}
-
-export const programRoleFormatter = (value: ProgramRoleName) => {
-  switch (value) {
-    case 'owner':
-      return '課程擁有者'
-    case 'instructor':
-      return '講師'
-    case 'assistant':
-      return '助教'
-    default:
-      return '未知角色'
-  }
 }
 
 export const durationFormatter = (value?: number | null) => {

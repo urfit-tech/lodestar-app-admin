@@ -23,7 +23,7 @@ const StyledVoucherCode = styled.div<{ isFinished: boolean }>`
 
 type VoucherPlanDetailModalProps = {
   title: string
-  productCounts: {
+  productCounts?: {
     id: string
     name: string
     coverUrl?: string

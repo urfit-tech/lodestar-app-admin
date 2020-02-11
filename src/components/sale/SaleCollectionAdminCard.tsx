@@ -9,12 +9,12 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { array, InferType, number, object, string } from 'yup'
-import { currencyFormatter, productTypeFormatter } from '../../helpers'
+import { currencyFormatter } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { ProductType } from '../../schemas/general'
 import { orderProductSchema, orderSchema } from '../../schemas/order'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
+import ProductTypeLabel from '../common/ProductTypeLabel'
 import OrderStatusTag from './OrderStatusTag'
 
 const StyledContainer = styled.div`
@@ -171,7 +171,9 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
               {record.orderProducts.map((orderProduct: InferType<typeof orderProductSchema>) => (
                 <div key={orderProduct.id}>
                   <div className="row">
-                    <div className="col-2">{productTypeFormatter(orderProduct.product.type as ProductType)}</div>
+                    <div className="col-2">
+                      <ProductTypeLabel productType={orderProduct.product.type} />
+                    </div>
                     <div className="col-8">{orderProduct.name}</div>
                     <div className="col-2 text-right">{currencyFormatter(orderProduct.price)}</div>
                   </div>
