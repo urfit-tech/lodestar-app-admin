@@ -21,11 +21,14 @@ export const useMember = (memberId: string) => {
             id
             tag_name
           }
+          role
+          zoom_user_id
         }
       }
     `,
     { variables: { memberId } },
   )
+
   return {
     member: object({ memberByPk: memberSchema.nullable() })
       .camelCase()

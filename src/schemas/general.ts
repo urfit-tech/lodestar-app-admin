@@ -68,5 +68,6 @@ export const memberSchema = object({
   ),
   facebookUserId: string().nullable(),
   googleUserId: string().nullable(),
+  zoomUserId: string().nullable(),
 }).camelCase()
 export type Member = InferType<typeof memberSchema>

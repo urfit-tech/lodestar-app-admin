@@ -4585,6 +4585,11 @@ export interface GET_MEMBER_member_by_pk {
    * An array relationship
    */
   member_tags: GET_MEMBER_member_by_pk_member_tags[];
+  /**
+   * app-owner / content-creator
+   */
+  role: string;
+  zoom_user_id: string | null;
 }
 
 export interface GET_MEMBER {

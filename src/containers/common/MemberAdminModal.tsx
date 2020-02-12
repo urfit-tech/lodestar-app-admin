@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Divider, Form, Input, message, Modal, Select } from 'antd'
+import { Button, Checkbox, Form, Input, message, Modal, Select, Tabs } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import { ModalProps } from 'antd/lib/modal'
 import gql from 'graphql-tag'
@@ -19,6 +19,9 @@ const messages = defineMessages({
   creatorPageLink: { id: 'common.ui.creatorPageLink', defaultMessage: '創作者主頁' },
   memberPageLink: { id: 'common.ui.memberPageLink', defaultMessage: '學員主頁' },
   roleSettings: { id: 'common.label.roleSettigs', defaultMessage: '設定身份' },
+  zoomBinding: { id: 'common.label.zoomBinding', defaultMessage: '綁定 Zoom 帳號' },
+  accountData: { id: 'common.label.accountData', defaultMessage: '帳號資料' },
+  memberLog: { id: 'common.label.memberLog', defaultMessage: '會員紀錄' },
 })
 
 const StyledMetaBlock = styled.div`
@@ -26,6 +29,10 @@ const StyledMetaBlock = styled.div`
   font-size: 14px;
   line-height: 1.57;
   letter-spacing: 0.18px;
+
+  > div {
+    display: flex;
+  }
 `
 
 export type MemberInfo = {
@@ -60,6 +67,8 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
       }
     }
   `)
+  const [activeKey, setActiveKey] = useState<string>('')
+  const [withZoomId, setWithZoomId] = useState<boolean>(member && member.zoomUserId ? true : false)
   const [loading, setLoading] = useState(false)
 
   if (!member) {
@@ -119,90 +128,107 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
         )}
       </div>
 
-      <Form
-        hideRequiredMark
-        colon={false}
-        onSubmit={e => {
-          e.preventDefault()
-          handleSubmit()
-        }}
-      >
-        <Form.Item label={formatMessage(commonMessages.term.memberName)}>
-          {form.getFieldDecorator('name', {
-            initialValue: member.name,
-            rules: [
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.term.memberName),
-                }),
-              },
-            ],
-          })(<Input />)}
-        </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.term.email)}>
-          {form.getFieldDecorator('email', {
-            initialValue: member.email,
-            rules: [
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.term.email),
-                }),
-              },
-            ],
-          })(<Input />)}
-        </Form.Item>
-        <Form.Item label={formatMessage(messages.roleSettings)}>
-          {form.getFieldDecorator('role', {
-            initialValue: member.role,
-          })(
-            <Select>
-              <Select.Option value="general-member">{formatMessage(commonMessages.term.generalMember)}</Select.Option>
-              <Select.Option value="content-creator">{formatMessage(commonMessages.term.contentCreator)}</Select.Option>
-              <Select.Option value="app-owner">{formatMessage(commonMessages.term.appOwner)}</Select.Option>
-            </Select>,
-          )}
-        </Form.Item>
-
-        <Form.Item label="綁定 Zoom 帳號">
-          {form.getFieldDecorator('zoomUserId', {
-            initialValue: member.zoomUserId,
-          })(<ZoomUserSelector />)}
-        </Form.Item>
-
-        <Divider />
-
-        <StyledMetaBlock>
-          <div className="mb-2">
-            <span className="mr-3">{formatMessage(commonMessages.label.lastLogin)}</span>
-            <span>{member.loginedAt ? moment(member.loginedAt).fromNow() : null}</span>
-          </div>
-          {/* <div className="mb-2">
-            <span className="mr-3">{formatMessage(commonMessages.label.holdingPoints)}</span>
-            <span>{formatMessage(commonMessages.label.points, { points: member.points })}</span>
-          </div> */}
-          <div className="mb-2">
-            <span className="mr-3">{formatMessage(commonMessages.label.consumption)}</span>
-            <span>{currencyFormatter(member.consumption)}</span>
-          </div>
-        </StyledMetaBlock>
-
-        <div className="text-right">
-          <Button
-            className="mr-2"
-            onClick={() => {
-              form.resetFields()
-              onCancel && onCancel()
+      <Tabs activeKey={activeKey || 'account'} onChange={key => setActiveKey(key)}>
+        <Tabs.TabPane key="account" tab={formatMessage(messages.accountData)}>
+          <Form
+            hideRequiredMark
+            colon={false}
+            onSubmit={e => {
+              e.preventDefault()
+              handleSubmit()
             }}
           >
-            {formatMessage(commonMessages.ui.cancel)}
-          </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
-            {formatMessage(commonMessages.ui.save)}
-          </Button>
-        </div>
-      </Form>
+            <Form.Item label={formatMessage(commonMessages.term.memberName)}>
+              {form.getFieldDecorator('name', {
+                initialValue: member.name,
+                rules: [
+                  {
+                    required: true,
+                    message: formatMessage(errorMessages.form.isRequired, {
+                      field: formatMessage(commonMessages.term.memberName),
+                    }),
+                  },
+                ],
+              })(<Input />)}
+            </Form.Item>
+            <Form.Item label={formatMessage(commonMessages.term.email)}>
+              {form.getFieldDecorator('email', {
+                initialValue: member.email,
+                rules: [
+                  {
+                    required: true,
+                    message: formatMessage(errorMessages.form.isRequired, {
+                      field: formatMessage(commonMessages.term.email),
+                    }),
+                  },
+                ],
+              })(<Input />)}
+            </Form.Item>
+            <Form.Item label={formatMessage(messages.roleSettings)}>
+              {form.getFieldDecorator('role', {
+                initialValue: member.role,
+              })(
+                <Select>
+                  <Select.Option value="general-member">
+                    {formatMessage(commonMessages.term.generalMember)}
+                  </Select.Option>
+                  <Select.Option value="content-creator">
+                    {formatMessage(commonMessages.term.contentCreator)}
+                  </Select.Option>
+                  <Select.Option value="app-owner">{formatMessage(commonMessages.term.appOwner)}</Select.Option>
+                </Select>,
+              )}
+            </Form.Item>
+
+            {member.role !== 'general-member' && (
+              <div className="mb-4">
+                <Checkbox checked={withZoomId} onChange={e => setWithZoomId(e.target.checked)}>
+                  {formatMessage(messages.zoomBinding)}
+                </Checkbox>
+                {withZoomId && (
+                  <Form.Item>
+                    {form.getFieldDecorator('zoomUserId', {
+                      initialValue: member.zoomUserId,
+                    })(<ZoomUserSelector />)}
+                  </Form.Item>
+                )}
+              </div>
+            )}
+
+            <div className="text-right">
+              <Button
+                className="mr-2"
+                onClick={() => {
+                  form.resetFields()
+                  onCancel && onCancel()
+                }}
+              >
+                {formatMessage(commonMessages.ui.cancel)}
+              </Button>
+              <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
+                {formatMessage(commonMessages.ui.save)}
+              </Button>
+            </div>
+          </Form>
+        </Tabs.TabPane>
+
+        <Tabs.TabPane key="log" tab={formatMessage(messages.memberLog)}>
+          <StyledMetaBlock>
+            <div className="row no-gutters mb-2">
+              <div className="col-5">{formatMessage(commonMessages.label.lastLogin)}</div>
+              <div className="col-7">{member.loginedAt ? moment(member.loginedAt).fromNow() : null}</div>
+            </div>
+            <div className="row no-gutters mb-2">
+              <div className="col-5">{formatMessage(commonMessages.label.holdingPoints)}</div>
+              <div className="col-7">{formatMessage(commonMessages.label.points, { points: member.points })}</div>
+            </div>
+            <div className="row no-gutters mb-2">
+              <div className="col-5">{formatMessage(commonMessages.label.consumption)}</div>
+              <div className="col-7">{currencyFormatter(member.consumption)}</div>
+            </div>
+          </StyledMetaBlock>
+        </Tabs.TabPane>
+      </Tabs>
     </Modal>
   )
 }
