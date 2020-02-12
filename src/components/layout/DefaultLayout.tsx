@@ -1,9 +1,10 @@
-import { Layout } from 'antd'
-import React, { useState } from 'react'
+import { Button, Divider, Dropdown, Icon, Layout, Menu } from 'antd'
+import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import { footerHeight } from '.'
 import { useAuth } from '../../contexts/AuthContext'
+import LanguageContext from '../../contexts/LanguageContext'
 import settings from '../../settings'
 import AuthModal, { AuthModalContext } from '../auth/AuthModal'
 import Footer from '../common/Footer'
@@ -71,6 +72,7 @@ type DefaultLayoutProps = {
 const DefaultLayout: React.FC<DefaultLayoutProps> = ({ white, noFooter, centeredBox, renderTitle, children }) => {
   const [visible, setVisible] = useState(false)
   const { currentMemberId } = useAuth()
+  const { currentLanguage, setCurrentLanguage } = useContext(LanguageContext)
 
   return (
     <AuthModalContext.Provider value={{ visible, setVisible }}>
@@ -87,6 +89,29 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ white, noFooter, centered
           )}
 
           <div className="d-flex align-items-center">
+            <Dropdown
+              trigger={['click']}
+              overlay={
+                <Menu>
+                  <Menu.Item key="zh">
+                    <Button type="link" size="small" onClick={() => setCurrentLanguage && setCurrentLanguage('zh')}>
+                      繁體中文
+                    </Button>
+                  </Menu.Item>
+                  <Menu.Item key="en">
+                    <Button type="link" size="small" onClick={() => setCurrentLanguage && setCurrentLanguage('en')}>
+                      English
+                    </Button>
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <Button type="link">
+                {currentLanguage === 'en' ? 'EN' : '繁中'}
+                <Icon type="down" />
+              </Button>
+            </Dropdown>
+            <Divider type="vertical" />
             {currentMemberId && <NotificationDropdown memberId={currentMemberId} />}
             {currentMemberId && <MemberProfileButton memberId={currentMemberId} />}
           </div>

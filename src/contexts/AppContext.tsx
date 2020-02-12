@@ -2,13 +2,8 @@ import { useApolloClient, useQuery } from '@apollo/react-hooks'
 import { message } from 'antd'
 import gql from 'graphql-tag'
 import React, { createContext, useEffect, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
 import ApplicationHelmet from '../components/common/ApplicationHelmet'
 import types from '../types'
-
-const messages = defineMessages({
-  loadAppError: { id: 'common.event.loadAppError', defaultMessage: '無法取得應用程式' },
-})
 
 type Module = 'activity' | 'voucher' | 'member_card' | 'podcast' | 'appointment' | 'learning_statistics'
 
@@ -35,7 +30,6 @@ const defaultAppProps: AppProps = {
 export const AppContext = createContext<AppProps>(defaultAppProps)
 
 export const AppProvider: React.FC = ({ children }) => {
-  const { formatMessage } = useIntl()
   const apolloClient = useApolloClient()
   const [appId, setAppId] = useState<string | null>(null)
 
@@ -52,10 +46,10 @@ export const AppProvider: React.FC = ({ children }) => {
           localStorage.setItem('kolable.app.id', appId)
           setAppId(appId)
         } else {
-          message.error(formatMessage(messages.loadAppError))
+          message.error('Loading app error.')
         }
       })
-  }, [apolloClient, setAppId, formatMessage])
+  }, [apolloClient, setAppId])
 
   const { loading, error, data } = useQuery<types.GET_APP, types.GET_APPVariables>(
     gql`
