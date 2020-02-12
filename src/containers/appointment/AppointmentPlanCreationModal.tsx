@@ -4,18 +4,27 @@ import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import AdminModal from '../../components/admin/AdminModal'
 import CreatorSelector from '../../containers/common/CreatorSelector'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
+import { useMember } from '../../hooks/member'
+import { ReactComponent as ExclamationCircle } from '../../images/icon/exclamation-circle.svg'
 import types from '../../types'
+
+const WarningText = styled.div`
+  color: var(--error);
+  font-size: 14px;
+`
 
 const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
   const { history } = useRouter()
   const { currentMemberId, currentUserRole } = useAuth()
+  const { member } = useMember(currentMemberId || '')
 
   const [createAppointmentPlan] = useMutation<types.CREATE_APPOINTMENT_PLAN, types.CREATE_APPOINTMENT_PLANVariables>(
     CREATE_APPOINTMENT_PLAN,
@@ -51,6 +60,14 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
     })
   }
 
+  if (!member) {
+    return (
+      <Button icon="file-add" disabled>
+        {formatMessage(appointmentMessages.ui.createPlan)}
+      </Button>
+    )
+  }
+
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
@@ -65,22 +82,24 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
           <Button className="mr-2" onClick={() => setVisible(false)}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
+          <Button type="primary" loading={loading} onClick={() => handleSubmit()} disabled={!member.zoomUserId}>
             {formatMessage(commonMessages.ui.create)}
           </Button>
         </>
       )}
     >
       <Form hideRequiredMark colon={false} onSubmit={e => e.preventDefault()}>
-        <Form.Item
-          label={formatMessage(commonMessages.label.selectInstructor)}
-          className={currentUserRole !== 'app-owner' ? 'd-none' : ''}
-        >
-          {form.getFieldDecorator('creatorId', {
-            initialValue: currentMemberId,
-            rules: [{ required: true, message: formatMessage(errorMessages.form.selectInstructor) }],
-          })(<CreatorSelector disabled={currentUserRole !== 'app-owner'} />)}
-        </Form.Item>
+        {member.role === 'app-owner' && (
+          <Form.Item
+            label={formatMessage(commonMessages.label.selectInstructor)}
+            className={currentUserRole !== 'app-owner' ? 'd-none' : ''}
+          >
+            {form.getFieldDecorator('creatorId', {
+              initialValue: currentMemberId,
+              rules: [{ required: true, message: formatMessage(errorMessages.form.selectInstructor) }],
+            })(<CreatorSelector disabled={currentUserRole !== 'app-owner'} />)}
+          </Form.Item>
+        )}
         <Form.Item label={formatMessage(commonMessages.term.planTitle)}>
           {form.getFieldDecorator('title', {
             initialValue: 'Untitled',
@@ -94,6 +113,12 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
             ],
           })(<Input />)}
         </Form.Item>
+        {!member.zoomUserId && (
+          <WarningText className="mb-4">
+            <Icon className="mr-2" component={() => <ExclamationCircle />} />
+            <span>你尚未綁定Zoom帳號，如欲使用此功能請聯絡平台管理員</span>
+          </WarningText>
+        )}
       </Form>
     </AdminModal>
   )
