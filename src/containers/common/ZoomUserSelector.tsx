@@ -1,19 +1,8 @@
 import { Select } from 'antd'
 import Axios from 'axios'
 import React, { forwardRef, useEffect, useState } from 'react'
-import styled from 'styled-components'
 import { useAuth } from '../../contexts/AuthContext'
 import { getZoomUserTypeLabel } from '../../helpers'
-
-const StyledText = styled.span`
-  color: var(--gray-darker);
-  font-weight: bold;
-  letter-spacing: 0.2px;
-`
-const StyledTextSecondary = styled.span`
-  color: var(--gray-dark);
-  letter-spacing: 0.2px;
-`
 
 export type MemberOptionProps = {
   id: string

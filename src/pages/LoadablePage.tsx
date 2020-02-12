@@ -7,6 +7,7 @@ import { getUserRoleLevel } from '../helpers'
 import { useGAPageView } from '../hooks/util'
 import { UserRole } from '../schemas/general'
 import settings from '../settings'
+import LoadingPage from './default/LoadingPage'
 
 type LoadablePageProps = {
   pageName: string
@@ -19,6 +20,10 @@ const LoadablePage: React.FC<LoadablePageProps> = ({ pageName, authenticated, al
 
   const { location } = useRouter()
   const { isAuthenticated, isAuthenticating, currentUserRole } = useAuth()
+
+  if (isAuthenticating) {
+    return <LoadingPage />
+  }
 
   // redirect to home page if not authenticated
   if (authenticated && !isAuthenticating && !isAuthenticated) {

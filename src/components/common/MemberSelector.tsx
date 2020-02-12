@@ -24,6 +24,7 @@ export type MemberOptionProps = {
   name?: string
   username: string
   email?: string
+  disabled?: boolean
 }
 const MemberSelector: React.FC<{
   members: MemberOptionProps[]
@@ -51,6 +52,7 @@ const MemberSelector: React.FC<{
           value={member.id}
           title={member.name || member.username}
           data-source={`${member.id} ${member.name} ${member.username} ${member.email}`}
+          disabled={member.disabled}
         >
           <div className="d-flex align-items-center justify-content-start">
             <AvatarImage size={28} src={member.avatarUrl} className="mr-2" />
