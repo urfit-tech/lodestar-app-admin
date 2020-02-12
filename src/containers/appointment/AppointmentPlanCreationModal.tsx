@@ -82,7 +82,7 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
           <Button className="mr-2" onClick={() => setVisible(false)}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit()} disabled={!member.zoomUserId}>
+          <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
             {formatMessage(commonMessages.ui.create)}
           </Button>
         </>
@@ -95,9 +95,8 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
             className={currentUserRole !== 'app-owner' ? 'd-none' : ''}
           >
             {form.getFieldDecorator('creatorId', {
-              initialValue: currentMemberId,
               rules: [{ required: true, message: formatMessage(errorMessages.form.selectInstructor) }],
-            })(<CreatorSelector disabled={currentUserRole !== 'app-owner'} />)}
+            })(<CreatorSelector zoomUserOnly />)}
           </Form.Item>
         )}
         <Form.Item label={formatMessage(commonMessages.term.planTitle)}>
@@ -113,7 +112,7 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
             ],
           })(<Input />)}
         </Form.Item>
-        {!member.zoomUserId && (
+        {!member.zoomUserId && member.role === 'content-creator' && (
           <WarningText className="mb-4">
             <Icon className="mr-2" component={() => <ExclamationCircle />} />
             <span>你尚未綁定Zoom帳號，如欲使用此功能請聯絡平台管理員</span>

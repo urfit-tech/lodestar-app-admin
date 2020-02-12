@@ -11,8 +11,8 @@ import types from '../../types'
 const CreatorSelector: React.FC<{
   value?: string
   onChange?: (value: string | null) => void
-  disabled?: boolean
-}> = ({ value, onChange, disabled }, ref) => {
+  zoomUserOnly?: boolean
+}> = ({ value, onChange, zoomUserOnly }, ref) => {
   const { formatMessage } = useIntl()
   const app = useContext(AppContext)
   const { loading, error, data } = useQuery<types.GET_CREATOR_COLLECTION, types.GET_CREATOR_COLLECTIONVariables>(
@@ -20,6 +20,7 @@ const CreatorSelector: React.FC<{
     {
       variables: {
         appId: app.id,
+        noZoomUserId: zoomUserOnly ? !zoomUserOnly : undefined,
       },
     },
   )
@@ -41,12 +42,18 @@ const CreatorSelector: React.FC<{
     disabled: !member.zoom_user_id,
   }))
 
-  return <MemberSelector ref={ref} members={members} value={value} onChange={onChange} disabled={disabled} />
+  return <MemberSelector ref={ref} members={members} value={value} onChange={onChange} />
 }
 
 const GET_CREATOR_COLLECTION = gql`
-  query GET_CREATOR_COLLECTION($appId: String!) {
-    member(where: { app_id: { _eq: $appId }, role: { _in: ["content-creator", "app-owner"] } }) {
+  query GET_CREATOR_COLLECTION($appId: String!, $noZoomUserId: Boolean) {
+    member(
+      where: {
+        app_id: { _eq: $appId }
+        role: { _in: ["content-creator", "app-owner"] }
+        zoom_user_id: { _is_null: $noZoomUserId }
+      }
+    ) {
       id
       picture_url
       name

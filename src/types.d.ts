@@ -2340,6 +2340,7 @@ export interface GET_CREATOR_COLLECTION {
 
 export interface GET_CREATOR_COLLECTIONVariables {
   appId: string;
+  noZoomUserId?: boolean | null;
 }
 
 /* tslint:disable */

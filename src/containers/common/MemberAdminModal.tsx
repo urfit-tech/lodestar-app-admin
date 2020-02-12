@@ -68,6 +68,7 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
     }
   `)
   const [activeKey, setActiveKey] = useState<string>('')
+  const [selectedRole, setSelectedRole] = useState<UserRole>(member?.role || 'anonymous')
   const [withZoomId, setWithZoomId] = useState<boolean>(member && member.zoomUserId ? true : false)
   const [loading, setLoading] = useState(false)
 
@@ -88,8 +89,8 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
           memberId: member.id,
           name: values.name,
           email: values.email,
-          role: values.role,
-          zoomUserId: values.zoomUserId,
+          role: selectedRole,
+          zoomUserId: selectedRole && withZoomId ? values.zoomUserId : null,
         },
       })
         .then(() => {
@@ -165,22 +166,16 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
               })(<Input />)}
             </Form.Item>
             <Form.Item label={formatMessage(messages.roleSettings)}>
-              {form.getFieldDecorator('role', {
-                initialValue: member.role,
-              })(
-                <Select>
-                  <Select.Option value="general-member">
-                    {formatMessage(commonMessages.term.generalMember)}
-                  </Select.Option>
-                  <Select.Option value="content-creator">
-                    {formatMessage(commonMessages.term.contentCreator)}
-                  </Select.Option>
-                  <Select.Option value="app-owner">{formatMessage(commonMessages.term.appOwner)}</Select.Option>
-                </Select>,
-              )}
+              <Select onChange={(value: UserRole) => setSelectedRole(value)} value={selectedRole}>
+                <Select.Option value="general-member">{formatMessage(commonMessages.term.generalMember)}</Select.Option>
+                <Select.Option value="content-creator">
+                  {formatMessage(commonMessages.term.contentCreator)}
+                </Select.Option>
+                <Select.Option value="app-owner">{formatMessage(commonMessages.term.appOwner)}</Select.Option>
+              </Select>
             </Form.Item>
 
-            {member.role !== 'general-member' && (
+            {selectedRole !== 'general-member' && app.enabledModules.appointment && (
               <div className="mb-4">
                 <Checkbox checked={withZoomId} onChange={e => setWithZoomId(e.target.checked)}>
                   {formatMessage(messages.zoomBinding)}
