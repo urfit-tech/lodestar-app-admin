@@ -40,7 +40,7 @@ const NotificationItem: React.FC<{
           variables: { notificationId: id, readAt: new Date() },
         }).then(() => {
           onRead && onRead()
-          window.location.assign(referenceUrl || window.location.href)
+          window.open(referenceUrl || window.location.href)
         })
       }}
     >
