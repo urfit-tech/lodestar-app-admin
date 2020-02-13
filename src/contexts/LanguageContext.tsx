@@ -1,7 +1,8 @@
 import moment from 'moment'
 import 'moment/locale/zh-tw'
-import React, { createContext, useState } from 'react'
+import React, { createContext, useContext, useState } from 'react'
 import { IntlProvider } from 'react-intl'
+import AppContext from './AppContext'
 
 const supportedLanguages = ['zh', 'en']
 
@@ -16,6 +17,8 @@ const defaultLanguage: LanguageProps = {
 const LanguageContext = createContext<LanguageProps>(defaultLanguage)
 
 export const LanguageProvider: React.FC = ({ children }) => {
+  const { enabledModules } = useContext(AppContext)
+
   const browserLanguage = navigator.language.split('-')[0]
   const cachedLanguage = localStorage.getItem('kolable.app.language')
   const [currentLanguage, setCurrentLanguage] = useState(
@@ -30,7 +33,9 @@ export const LanguageProvider: React.FC = ({ children }) => {
 
   let messages: any = {}
   try {
-    messages = require(`../translations/locales/${currentLanguage}.json`)
+    if (enabledModules.locale) {
+      messages = require(`../translations/locales/${currentLanguage}.json`)
+    }
   } catch {}
 
   const language: LanguageProps = {

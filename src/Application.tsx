@@ -24,8 +24,8 @@ const Application: React.FC = () => {
   return (
     <AuthProvider>
       <ApiProvider>
-        <LanguageProvider>
-          <AppProvider>
+        <AppProvider>
+          <LanguageProvider>
             <ThemeProvider theme={theme}>
               <ConfigProvider locale={zhTW}>
                 <BrowserRouter>
@@ -35,8 +35,8 @@ const Application: React.FC = () => {
                 </BrowserRouter>
               </ConfigProvider>
             </ThemeProvider>
-          </AppProvider>
-        </LanguageProvider>
+          </LanguageProvider>
+        </AppProvider>
       </ApiProvider>
     </AuthProvider>
   )
