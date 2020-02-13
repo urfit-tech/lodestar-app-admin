@@ -63,6 +63,12 @@ const CenteredBox = styled.div`
     width: calc(100% / 3);
   }
 `
+const StyledButton = styled(Button)`
+  && {
+    color: var(--gray-dark);
+    font-size: 14px;
+  }
+`
 
 type DefaultLayoutProps = {
   white?: boolean
@@ -99,22 +105,30 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ white, noFooter, centered
                   overlay={
                     <Menu>
                       <Menu.Item key="zh">
-                        <Button type="link" size="small" onClick={() => setCurrentLanguage && setCurrentLanguage('zh')}>
+                        <StyledButton
+                          type="link"
+                          size="small"
+                          onClick={() => setCurrentLanguage && setCurrentLanguage('zh')}
+                        >
                           繁體中文
-                        </Button>
+                        </StyledButton>
                       </Menu.Item>
                       <Menu.Item key="en">
-                        <Button type="link" size="small" onClick={() => setCurrentLanguage && setCurrentLanguage('en')}>
+                        <StyledButton
+                          type="link"
+                          size="small"
+                          onClick={() => setCurrentLanguage && setCurrentLanguage('en')}
+                        >
                           English
-                        </Button>
+                        </StyledButton>
                       </Menu.Item>
                     </Menu>
                   }
                 >
-                  <Button type="link" size="small">
+                  <StyledButton type="link" size="small">
                     {currentLanguage === 'en' ? 'EN' : '繁中'}
                     <Icon type="down" />
-                  </Button>
+                  </StyledButton>
                 </Dropdown>
                 <Divider type="vertical" />
               </>
