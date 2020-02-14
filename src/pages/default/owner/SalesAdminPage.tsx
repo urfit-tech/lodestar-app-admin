@@ -4,6 +4,7 @@ import { useIntl } from 'react-intl'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import SaleCollectionAdminCard from '../../../components/sale/SaleCollectionAdminCard'
 import SaleSummaryCard from '../../../components/sale/SaleSummaryAdminCard'
+import OrderExportModal from '../../../containers/sale/OrderExportModal'
 import { commonMessages } from '../../../helpers/translation'
 
 const SalesAdminPage: React.FC = () => {
@@ -15,6 +16,10 @@ const SalesAdminPage: React.FC = () => {
         <Icon type="dollar" className="mr-3" />
         <span>{formatMessage(commonMessages.menu.salesAdmin)}</span>
       </Typography.Title>
+
+      <div className="mb-4">
+        <OrderExportModal />
+      </div>
 
       <div className="row mb-3">
         <div className="col-12">

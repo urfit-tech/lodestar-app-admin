@@ -3207,6 +3207,167 @@ export interface GET_PROGRAM_ENROLLED {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_ORDER_LOG_COLLECTION
+// ====================================================
+
+export interface GET_ORDER_LOG_COLLECTION_order_log_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface GET_ORDER_LOG_COLLECTION_order_log_order_products_aggregate_aggregate_sum {
+  __typename: "order_product_sum_fields";
+  price: any | null;
+}
+
+export interface GET_ORDER_LOG_COLLECTION_order_log_order_products_aggregate_aggregate {
+  __typename: "order_product_aggregate_fields";
+  sum: GET_ORDER_LOG_COLLECTION_order_log_order_products_aggregate_aggregate_sum | null;
+}
+
+export interface GET_ORDER_LOG_COLLECTION_order_log_order_products_aggregate {
+  __typename: "order_product_aggregate";
+  aggregate: GET_ORDER_LOG_COLLECTION_order_log_order_products_aggregate_aggregate | null;
+}
+
+export interface GET_ORDER_LOG_COLLECTION_order_log_order_discounts_aggregate_aggregate_sum {
+  __typename: "order_discount_sum_fields";
+  price: any | null;
+}
+
+export interface GET_ORDER_LOG_COLLECTION_order_log_order_discounts_aggregate_aggregate {
+  __typename: "order_discount_aggregate_fields";
+  sum: GET_ORDER_LOG_COLLECTION_order_log_order_discounts_aggregate_aggregate_sum | null;
+}
+
+export interface GET_ORDER_LOG_COLLECTION_order_log_order_discounts_aggregate {
+  __typename: "order_discount_aggregate";
+  aggregate: GET_ORDER_LOG_COLLECTION_order_log_order_discounts_aggregate_aggregate | null;
+}
+
+export interface GET_ORDER_LOG_COLLECTION_order_log {
+  __typename: "order_log";
+  id: string;
+  status: string;
+  /**
+   * An object relationship
+   */
+  member: GET_ORDER_LOG_COLLECTION_order_log_member;
+  created_at: any;
+  invoice: any;
+  /**
+   * An aggregated array relationship
+   */
+  order_products_aggregate: GET_ORDER_LOG_COLLECTION_order_log_order_products_aggregate;
+  /**
+   * An aggregated array relationship
+   */
+  order_discounts_aggregate: GET_ORDER_LOG_COLLECTION_order_log_order_discounts_aggregate;
+}
+
+export interface GET_ORDER_LOG_COLLECTION {
+  /**
+   * fetch data from the table: "order_log"
+   */
+  order_log: GET_ORDER_LOG_COLLECTION_order_log[];
+}
+
+export interface GET_ORDER_LOG_COLLECTIONVariables {
+  appId: string;
+  startedAt: any;
+  endedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ORDER_PRODUCT_COLLECTION
+// ====================================================
+
+export interface GET_ORDER_PRODUCT_COLLECTION_order_product_order_log {
+  __typename: "order_log";
+  id: string;
+}
+
+export interface GET_ORDER_PRODUCT_COLLECTION_order_product {
+  __typename: "order_product";
+  id: any;
+  /**
+   * An object relationship
+   */
+  order_log: GET_ORDER_PRODUCT_COLLECTION_order_product_order_log;
+  product_id: string;
+  name: string;
+  price: any;
+  started_at: any | null;
+  ended_at: any | null;
+  auto_renewed: boolean | null;
+}
+
+export interface GET_ORDER_PRODUCT_COLLECTION {
+  /**
+   * fetch data from the table: "order_product"
+   */
+  order_product: GET_ORDER_PRODUCT_COLLECTION_order_product[];
+}
+
+export interface GET_ORDER_PRODUCT_COLLECTIONVariables {
+  appId: string;
+  startedAt: any;
+  endedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ORDER_DISCOUNT_COLLECTION
+// ====================================================
+
+export interface GET_ORDER_DISCOUNT_COLLECTION_order_discount_order_log {
+  __typename: "order_log";
+  id: string;
+}
+
+export interface GET_ORDER_DISCOUNT_COLLECTION_order_discount {
+  __typename: "order_discount";
+  id: any;
+  /**
+   * An object relationship
+   */
+  order_log: GET_ORDER_DISCOUNT_COLLECTION_order_discount_order_log;
+  /**
+   * Coupon / Voucher / Card / DownPrice
+   */
+  type: string | null;
+  target: string | null;
+  name: string;
+  price: any;
+}
+
+export interface GET_ORDER_DISCOUNT_COLLECTION {
+  /**
+   * fetch data from the table: "order_discount"
+   */
+  order_discount: GET_ORDER_DISCOUNT_COLLECTION_order_discount[];
+}
+
+export interface GET_ORDER_DISCOUNT_COLLECTIONVariables {
+  appId: string;
+  startedAt: any;
+  endedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PRODUCT_OWNER_ORDERS
 // ====================================================
 
