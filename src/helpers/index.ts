@@ -147,7 +147,7 @@ export const toCSV: (data: string[][]) => string = data => {
     return ''
   }
 
-  return `data:text/csv;charset=utf-8,${columns.join(',')}\n${data
+  return `data:text/csv;charset=utf-8,${columns.map(column => `"${column}"`).join(',')}\n${data
     .map(row => row.map(col => `"${col}"`).join(','))
     .join('\n')}`
 }

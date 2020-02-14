@@ -3293,6 +3293,20 @@ export interface GET_ORDER_PRODUCT_COLLECTION_order_product_order_log {
   id: string;
 }
 
+export interface GET_ORDER_PRODUCT_COLLECTION_order_product_product {
+  __typename: "product";
+  /**
+   * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
+   */
+  id: string;
+  /**
+   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket /
+   * Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan /
+   * AppointmentServicePlan
+   */
+  type: string;
+}
+
 export interface GET_ORDER_PRODUCT_COLLECTION_order_product {
   __typename: "order_product";
   id: any;
@@ -3300,7 +3314,10 @@ export interface GET_ORDER_PRODUCT_COLLECTION_order_product {
    * An object relationship
    */
   order_log: GET_ORDER_PRODUCT_COLLECTION_order_product_order_log;
-  product_id: string;
+  /**
+   * An object relationship
+   */
+  product: GET_ORDER_PRODUCT_COLLECTION_order_product_product;
   name: string;
   price: any;
   started_at: any | null;

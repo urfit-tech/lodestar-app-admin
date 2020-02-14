@@ -24,6 +24,20 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
   const client = useApolloClient()
   const [loading, setLoading] = useState(false)
 
+  const productTypeLabel: { [key: string]: string } = {
+    Program: formatMessage(commonMessages.product.program),
+    ProgramPlan: formatMessage(commonMessages.product.programPlan),
+    ProgramContent: formatMessage(commonMessages.product.programContent),
+    ProgramPackagePlan: formatMessage(commonMessages.product.programPackagePlan),
+    ProjectPlan: formatMessage(commonMessages.product.projectPlan),
+    Card: formatMessage(commonMessages.product.card),
+    ActivityTicket: formatMessage(commonMessages.product.activityTicket),
+    Merchandise: formatMessage(commonMessages.product.merchandise),
+    PodcastProgram: formatMessage(commonMessages.product.podcastProgram),
+    PodcastPlan: formatMessage(commonMessages.product.podcastPlan),
+    AppointmentPlan: formatMessage(commonMessages.product.appointmentPlan),
+  }
+
   const getOrderLogContent: (startedAt: Date, endedAt: Date) => Promise<string> = useCallback(
     async (startedAt, endedAt) => {
       const orderLogResult = await client.query<
@@ -96,6 +110,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
         [
           formatMessage(commonMessages.label.orderLogId),
           formatMessage(commonMessages.label.orderProductId),
+          formatMessage(commonMessages.label.orderProductType),
           formatMessage(commonMessages.label.orderProductName),
           formatMessage(commonMessages.label.orderProductPrice),
           formatMessage(commonMessages.term.startedAt),
@@ -107,7 +122,8 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
       orderProductResult.data.order_product.forEach(orderProduct => {
         data.push([
           orderProduct.order_log.id,
-          orderProduct.id,
+          orderProduct.product.id,
+          productTypeLabel[orderProduct.product.type] || formatMessage(commonMessages.product.unknownType),
           orderProduct.name,
           orderProduct.price,
           dateFormatter(orderProduct.started_at),
@@ -118,7 +134,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
 
       return toCSV(data)
     },
-    [app, client, formatMessage],
+    [app, client, formatMessage, productTypeLabel],
   )
 
   const getOrderDiscountContent: (startedAt: Date, endedAt: Date) => Promise<string> = useCallback(
@@ -320,7 +336,10 @@ const GET_ORDER_PRODUCT_COLLECTION = gql`
       order_log {
         id
       }
-      product_id
+      product {
+        id
+        type
+      }
       name
       price
       started_at

@@ -77,8 +77,9 @@ export const commonMessages = {
     invoiceName: { id: 'common.label.invoiceName', defaultMessage: '收據姓名' },
     invoiceEmail: { id: 'common.label.invoiceEmail', defaultMessage: '收據信箱' },
     invoicePhone: { id: 'common.label.invoicePhone', defaultMessage: '收據電話' },
-    orderProductId: { id: 'common.label.orderProductId', defaultMessage: '產品編號' },
-    orderProductName: { id: 'common.label.orderProductName', defaultMessage: '產品名稱' },
+    orderProductId: { id: 'common.label.orderProductId', defaultMessage: '項目編號' },
+    orderProductName: { id: 'common.label.orderProductName', defaultMessage: '項目名稱' },
+    orderProductType: { id: 'common.label.orderProductType', defaultMessage: '項目種類' },
     orderProductPrice: { id: 'common.label.orderProductPrice', defaultMessage: '項目金額' },
     orderProductAutoRenew: { id: 'common.label.orderProductAutoRenew', defaultMessage: '自動續訂' },
     orderDiscountType: { id: 'common.label.orderDiscountType', defaultMessage: '折扣類別' },
@@ -198,6 +199,20 @@ export const commonMessages = {
     ownerSettings: { id: 'common.menu.ownerSettings', defaultMessage: '管理員設定' },
     creatorSettings: { id: 'common.menu.creatorSettings', defaultMessage: '創作者設定' },
   }),
+  product: defineMessages({
+    program: { id: 'common.product.program', defaultMessage: '課程' },
+    programPlan: { id: 'common.product.programPlan', defaultMessage: '課程' },
+    programContent: { id: 'common.product.programContent', defaultMessage: '課程' },
+    programPackagePlan: { id: 'common.product.programPackagePlan', defaultMessage: '課程組合' },
+    projectPlan: { id: 'common.product.projectPlan', defaultMessage: '專案方案' },
+    card: { id: 'common.product.card', defaultMessage: '會員卡' },
+    activityTicket: { id: 'common.product.activityTicket', defaultMessage: '實體' },
+    merchandise: { id: 'common.product.merchandise', defaultMessage: '商品' },
+    podcastProgram: { id: 'common.product.podcastProgram', defaultMessage: '廣播' },
+    podcastPlan: { id: 'common.product.podcastPlan', defaultMessage: '廣播頻道' },
+    appointmentPlan: { id: 'common.product.appointmentPlan', defaultMessage: '預約' },
+    unknownType: { id: 'common.product.unknownType', defaultMessage: '未知' },
+  })
 }
 
 export const errorMessages = {
