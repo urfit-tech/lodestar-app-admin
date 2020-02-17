@@ -212,7 +212,7 @@ export const commonMessages = {
     podcastPlan: { id: 'common.product.podcastPlan', defaultMessage: '廣播頻道' },
     appointmentPlan: { id: 'common.product.appointmentPlan', defaultMessage: '預約' },
     unknownType: { id: 'common.product.unknownType', defaultMessage: '未知' },
-  })
+  }),
 }
 
 export const errorMessages = {
@@ -404,6 +404,7 @@ export const podcastMessages = {
   text: defineMessages({
     audioFileTips: { id: 'podcast.text.audioFileTips', defaultMessage: '建議格式：MP3\n檔案大小限制：5MB' },
     podcastCoverTips: { id: 'podcast.text.podcastCoverTips', defaultMessage: '建議尺寸：1080*1080px' },
+    abstractLimit: { id: 'paodast.text.abstractLimit', defaultMessage: '限 100 字' },
   }),
 }
 

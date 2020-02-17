@@ -358,6 +358,7 @@
   "notification.term.notification": "Notification",
   "notification.ui.checkNotifications": "read more",
   "notification.ui.markAllAsRead": "Mark all as read",
+  "paodast.text.abstractLimit": "limit in 100 characters",
   "podcast.label.description": "Description",
   "podcast.label.duration": "Duration (minutes)",
   "podcast.label.plan": "Plan",

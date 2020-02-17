@@ -149,7 +149,7 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
       <Form.Item label={formatMessage(podcastMessages.term.podcastAbstract)}>
         {form.getFieldDecorator('abstract', {
           initialValue: podcastProgram.abstract,
-        })(<Input.TextArea rows={4} />)}
+        })(<Input.TextArea rows={4} maxLength={100} placeholder={formatMessage(podcastMessages.text.abstractLimit)} />)}
       </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
