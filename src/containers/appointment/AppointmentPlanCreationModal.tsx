@@ -125,7 +125,7 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
 
 const CREATE_APPOINTMENT_PLAN = gql`
   mutation CREATE_APPOINTMENT_PLAN($title: String!, $creatorId: String!) {
-    insert_appointment_plan(objects: { title: $title, creator_id: $creatorId }) {
+    insert_appointment_plan(objects: { title: $title, creator_id: $creatorId, duration: 0 }) {
       affected_rows
       returning {
         id
