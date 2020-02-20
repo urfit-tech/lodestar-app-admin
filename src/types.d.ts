@@ -1809,6 +1809,7 @@ export interface GET_ACTIVITY_PARTICIPANTS_activity_enrollment {
   member_name: string | null;
   member_email: string | null;
   member_phone: string | null;
+  order_log_id: string | null;
 }
 
 export interface GET_ACTIVITY_PARTICIPANTS_activity_session {
@@ -5795,6 +5796,27 @@ export enum app_module_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "app_nav"
+ */
+export enum app_nav_constraint {
+  app_nav_pkey = "app_nav_pkey",
+}
+
+/**
+ * update columns of table "app_nav"
+ */
+export enum app_nav_update_column {
+  app_id = "app_id",
+  block = "block",
+  external = "external",
+  href = "href",
+  icon = "icon",
+  id = "id",
+  label = "label",
+  position = "position",
+}
+
+/**
  * unique or primary key constraints on table "app_setting"
  */
 export enum app_setting_constraint {
@@ -7473,6 +7495,7 @@ export interface app_bool_exp {
   admin_host?: String_comparison_exp | null;
   app_admins?: app_admin_bool_exp | null;
   app_modules?: app_module_bool_exp | null;
+  app_navs?: app_nav_bool_exp | null;
   app_settings?: app_setting_bool_exp | null;
   cards?: card_bool_exp | null;
   cart_items?: cart_item_bool_exp | null;
@@ -7508,6 +7531,7 @@ export interface app_insert_input {
   admin_host?: string | null;
   app_admins?: app_admin_arr_rel_insert_input | null;
   app_modules?: app_module_arr_rel_insert_input | null;
+  app_navs?: app_nav_arr_rel_insert_input | null;
   app_settings?: app_setting_arr_rel_insert_input | null;
   cards?: card_arr_rel_insert_input | null;
   cart_items?: cart_item_arr_rel_insert_input | null;
@@ -7577,6 +7601,56 @@ export interface app_module_on_conflict {
   constraint: app_module_constraint;
   update_columns: app_module_update_column[];
   where?: app_module_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "app_nav"
+ */
+export interface app_nav_arr_rel_insert_input {
+  data: app_nav_insert_input[];
+  on_conflict?: app_nav_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "app_nav". All fields are combined with a logical 'AND'.
+ */
+export interface app_nav_bool_exp {
+  _and?: (app_nav_bool_exp | null)[] | null;
+  _not?: app_nav_bool_exp | null;
+  _or?: (app_nav_bool_exp | null)[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  block?: String_comparison_exp | null;
+  external?: Boolean_comparison_exp | null;
+  href?: String_comparison_exp | null;
+  icon?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  label?: String_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "app_nav"
+ */
+export interface app_nav_insert_input {
+  app?: app_obj_rel_insert_input | null;
+  app_id?: string | null;
+  block?: string | null;
+  external?: boolean | null;
+  href?: string | null;
+  icon?: string | null;
+  id?: any | null;
+  label?: string | null;
+  position?: number | null;
+}
+
+/**
+ * on conflict condition type for table "app_nav"
+ */
+export interface app_nav_on_conflict {
+  constraint: app_nav_constraint;
+  update_columns: app_nav_update_column[];
+  where?: app_nav_bool_exp | null;
 }
 
 /**

@@ -228,3 +228,24 @@ export const getUserRoleName = (userRole: string) => {
 export const notEmpty = <T>(value: T | null | undefined): value is T => {
   return value !== null && value !== undefined
 }
+
+export const toCSV: (data: string[][]) => string = data => {
+  const columns = data.shift()
+
+  if (!columns) {
+    return ''
+  }
+
+  return `data:text/csv;charset=utf-8,${columns.map(column => `"${column}"`).join(',')}\n${data
+    .map(row => row.map(col => `"${col}"`).join(','))
+    .join('\n')}`
+}
+
+export const downloadCSV = (fileName: string, data: string) => {
+  const downloadLink = document.createElement('a')
+  downloadLink.setAttribute('href', encodeURI(data))
+  downloadLink.setAttribute('download', fileName)
+  document.body.appendChild(downloadLink)
+  downloadLink.click()
+  document.body.removeChild(downloadLink)
+}

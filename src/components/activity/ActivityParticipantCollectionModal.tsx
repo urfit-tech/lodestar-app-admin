@@ -1,6 +1,7 @@
 import { Button, Modal, Tabs } from 'antd'
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { downloadCSV, toCSV } from '../../helpers'
 
 const StyledTitle = styled.div`
   color: var(--gray-darker);
@@ -30,6 +31,7 @@ export type ActivitySessionParticipantProps = {
     name: string
     phone: string
     email: string
+    orderLogId: string
   }[]
 }
 
@@ -49,12 +51,10 @@ const ActivityParticipantCollectionModal: React.FC<{
 
         <Tabs>
           {sessions.map(session => {
-            const csvContent =
-              'data:text/csv;charset=utf-8;' +
-              'Name,Phone,Email\n' +
-              session.participants
-                .map(participant => `${participant.name},${participant.phone},"${participant.email}"`)
-                .join('\n')
+            const data: string[][] = [['Name', 'Phone', 'Email', 'Order ID']]
+            session.participants.forEach(participant => {
+              data.push([participant.name, participant.phone, participant.email, participant.orderLogId])
+            })
 
             return (
               <Tabs.TabPane key={session.id} tab={`${session.title} (${session.participants.length})`}>
@@ -62,12 +62,7 @@ const ActivityParticipantCollectionModal: React.FC<{
                   type="primary"
                   className={`my-4 ${session.participants.length ? '' : 'd-none'}`}
                   onClick={() => {
-                    const downloadLink = document.createElement('a')
-                    downloadLink.setAttribute('href', encodeURI(csvContent))
-                    downloadLink.setAttribute('download', `${session.title}.csv`)
-                    document.body.appendChild(downloadLink)
-                    downloadLink.click()
-                    document.body.removeChild(downloadLink)
+                    downloadCSV(`${session.title}.csv`, toCSV(data))
                   }}
                 >
                   下載名單
