@@ -34,6 +34,7 @@ const ActivityParticipantCollection: React.FC<{
                   name: participant.member_name || '',
                   phone: participant.member_phone || '',
                   email: participant.member_email || '',
+                  orderLogId: participant.order_log_id || '',
                 }))
               : [],
           }))
@@ -46,6 +47,7 @@ const GET_ACTIVITY_PARTICIPANTS = gql`
   query GET_ACTIVITY_PARTICIPANTS($activityId: uuid!) {
     activity_enrollment(where: { activity_id: { _eq: $activityId } }, order_by: {}) {
       activity_session_id
+      order_log_id
       member_id
       member_name
       member_email

@@ -109,6 +109,9 @@ export const commonMessages = {
     basicSettings: { id: 'common.label.baiscSettings', defaultMessage: '基本設定' },
     salesPlan: { id: 'common.label.salesPlan', defaultMessage: '銷售方案' },
     dateRange: { id: 'common.label.dateRange', defaultMessage: '日期範圍' },
+    name: { id: 'common.label.name', defaultMessage: '姓名' },
+    phone: { id: 'common.label.phone', defaultMessage: '手機' },
+    email: { id: 'common.label.email', defaultMessage: '郵件地址' },
   }),
   term: defineMessages({
     instructor: { id: 'common.term.instructor', defaultMessage: '老師' },
