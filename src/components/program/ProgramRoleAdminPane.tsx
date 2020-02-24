@@ -3,12 +3,11 @@ import { CardProps } from 'antd/lib/card'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { InferType } from 'yup'
 import CreatorSelector from '../../containers/common/CreatorSelector'
 import MemberAvatar from '../../containers/common/MemberAvatar'
 import { DeleteProgramProps, UpdateProgramProps } from '../../containers/program/ProgramRoleAdminPane'
 import { commonMessages } from '../../helpers/translation'
-import { programSchema } from '../../schemas/program'
+import { ProgramType } from '../../schemas/program'
 import AdminCard from '../admin/AdminCard'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
 
@@ -25,7 +24,7 @@ const messages = defineMessages({
 })
 
 const ProgramRoleAdminPane: React.FC<CardProps & {
-  program: InferType<typeof programSchema> | null
+  program: ProgramType | null
   onProgramUpdate: UpdateProgramProps
   onProgramDelete: DeleteProgramProps
 }> = ({ program, onProgramUpdate, onProgramDelete }) => {
@@ -56,7 +55,7 @@ const ProgramRoleAdminPane: React.FC<CardProps & {
       data: {
         programId: program ? program.id : '',
         instructorIds: [
-          ...program.roles.map(role => ({ memberId: role.member.id || '', name: role.name || '' })),
+          ...program.roles.map(role => ({ memberId: role?.member?.id || '', name: role.name || '' })),
           { memberId: selectedMemberId, name: 'instructor' },
         ],
       },
@@ -73,7 +72,7 @@ const ProgramRoleAdminPane: React.FC<CardProps & {
           {program &&
             program.roles
               .filter(role => role.name === 'owner')
-              .map(role => <MemberAvatar key={role.id} memberId={role.member.id} withName />)}
+              .map(role => <MemberAvatar key={role.id} memberId={role?.member?.id || ''} withName />)}
         </AdminCard>
       </div>
       <div className="mb-3">
@@ -85,8 +84,8 @@ const ProgramRoleAdminPane: React.FC<CardProps & {
               .map(role => (
                 <RoleAdminBlock
                   key={role.id}
-                  name={role.member.name}
-                  pictureUrl={role.member.pictureUrl}
+                  name={role?.member?.name || ''}
+                  pictureUrl={role?.member?.pictureUrl || ''}
                   onDelete={() => {
                     onProgramDelete({
                       data: {
@@ -141,7 +140,7 @@ const ProgramRoleAdminPane: React.FC<CardProps & {
           {program &&
             program.roles
               .filter(role => role.name === 'assistant')
-              .map(role => <MemberAvatar key={role.id} memberId={role.member.id} withName />)}
+              .map(role => <MemberAvatar key={role.id} memberId={role?.member?.id || ''} withName />)}
         </AdminCard>
       </div>
     </div>

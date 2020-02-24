@@ -4,9 +4,8 @@ import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import Sortable from 'react-sortablejs'
-import { InferType } from 'yup'
 import { commonMessages } from '../../helpers/translation'
-import { programContentSectionSchema, programSchema } from '../../schemas/program'
+import { ProgramType } from '../../schemas/program'
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
 import DraggableItem from '../common/DraggableItem'
@@ -17,7 +16,7 @@ const messages = defineMessages({
 })
 
 type ProgramStructureAdminModalProps = {
-  program: InferType<typeof programSchema> | null
+  program: ProgramType | null
   onStructureChange?: () => void
 }
 const ProgramStructureAdminModal: React.FC<ProgramStructureAdminModalProps> = ({ program, onStructureChange }) => {
@@ -32,7 +31,30 @@ const ProgramStructureAdminModal: React.FC<ProgramStructureAdminModalProps> = ({
   )
 
   const [loading, setLoading] = useState(false)
-  const [sections, setSections] = useState<InferType<typeof programContentSectionSchema>[]>([])
+  const [sections, setSections] = useState<
+    {
+      id: string
+      title: string
+      programContents: {
+        id: string
+        title: string
+        publishedAt: Date | null
+        listPrice: number | null
+        duration: number | null
+        programContentType: {
+          id: string
+          type: string | null
+        } | null
+        programContentPlans: {
+          id: any
+          programPlan: {
+            id: any
+            title: string | null
+          }
+        }[]
+      }[]
+    }[]
+  >([])
 
   useEffect(() => {
     if (program) {

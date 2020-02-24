@@ -101,7 +101,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
 
         {currentMemberId === memberId ||
         programRoles
-          .filter(role => role.member.id === currentMemberId)
+          .filter(role => role?.member?.id === currentMemberId)
           .some(role => role.name === 'instructor' || role.name === 'assistant') ? (
           <StyledCheckbox
             checked={solved}

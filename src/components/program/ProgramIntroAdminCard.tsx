@@ -6,10 +6,9 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { InferType } from 'yup'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { programSchema } from '../../schemas/program'
+import { ProgramType } from '../../schemas/program'
 import types from '../../types'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminCard from '../admin/AdminCard'
@@ -58,7 +57,7 @@ const messages = defineMessages({
 })
 
 type ProgramIntroAdminCardProps = FormComponentProps & {
-  program: InferType<typeof programSchema> | null
+  program: ProgramType | null
   onRefetch?: () => void
 }
 const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, form, onRefetch }) => {

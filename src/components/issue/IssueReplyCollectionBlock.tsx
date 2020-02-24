@@ -2,16 +2,15 @@ import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import { InferType } from 'yup'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import { programRoleSchema } from '../../schemas/program'
+import { ProgramRoleType } from '../../schemas/program'
 import types from '../../types'
 import IssueReplyCreationBlock from './IssueReplyCreationBlock'
 import IssueReplyItem from './IssueReplyItem'
 
 interface IssueReplyCollectionBlockProps {
-  programRoles: InferType<typeof programRoleSchema>[]
+  programRoles: ProgramRoleType[]
   issueId: string
 }
 const IssueReplyCollectionBlock: React.FC<IssueReplyCollectionBlockProps> = ({ programRoles, issueId }) => {

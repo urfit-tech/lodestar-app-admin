@@ -1,10 +1,9 @@
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { InferType } from 'yup'
 import { currencyFormatter } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { programSchema } from '../../schemas/program'
+import { ProgramType } from '../../schemas/program'
 import { ShortenPeriodTypeLabel } from '../common/Period'
 
 const StyledPriceLabel = styled.div`
@@ -17,7 +16,7 @@ const StyledPriceLabel = styled.div`
 `
 
 type ProgramPriceLabelProps = {
-  program: InferType<typeof programSchema>
+  program: ProgramType
 }
 const ProgramPriceLabel: React.FC<ProgramPriceLabelProps> = ({ program }) => {
   const { formatMessage } = useIntl()
@@ -35,7 +34,7 @@ const ProgramPriceLabel: React.FC<ProgramPriceLabelProps> = ({ program }) => {
         <span>{currencyFormatter(plan.listPrice)}</span>
         {isOnSale && <span className="ml-2">{currencyFormatter(plan.salePrice)}</span>}
         {'/'}
-        <ShortenPeriodTypeLabel periodType={plan.periodType} />
+        <ShortenPeriodTypeLabel periodType={plan.periodType || ''} />
       </StyledPriceLabel>
     )
   }
