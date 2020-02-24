@@ -1,14 +1,13 @@
 import { Typography } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import { InferType } from 'yup'
 import { programMessages } from '../../helpers/translation'
-import { programSchema } from '../../schemas/program'
+import { ProgramType } from '../../schemas/program'
 import ProgramBasicAdminCard from './ProgramBasicAdminCard'
 import ProgramIntroAdminCard from './ProgramIntroAdminCard'
 
 const ProgramSettingAdminPane: React.FC<{
-  program: InferType<typeof programSchema> | null
+  program: ProgramType | null
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()

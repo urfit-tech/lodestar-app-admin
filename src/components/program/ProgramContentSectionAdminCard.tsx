@@ -4,8 +4,7 @@ import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { InferType } from 'yup'
-import { programContentSectionSchema, programSchema } from '../../schemas/program'
+import { ProgramContentSectionType, ProgramType } from '../../schemas/program'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 import ProgramContentAdminItem from './ProgramContentAdminItem'
@@ -26,8 +25,8 @@ const messages = defineMessages({
 })
 
 const ProgramContentSectionAdminCard: React.FC<{
-  program: InferType<typeof programSchema>
-  programContentSection: InferType<typeof programContentSectionSchema>
+  program: ProgramType
+  programContentSection: ProgramContentSectionType
   onDelete?: () => void
   onUpdate?: () => void
   onRefetch?: () => void
@@ -88,7 +87,7 @@ const ProgramContentSectionAdminCard: React.FC<{
         <div key={programContent.id} className="mb-2">
           <ProgramContentAdminItem
             program={program}
-            showPlans={program.isSubscription}
+            showPlans={program && program.isSubscription}
             onRefetch={onRefetch}
             programContent={programContent}
           />
@@ -104,7 +103,7 @@ const ProgramContentSectionAdminCard: React.FC<{
               programContentSectionId: programContentSection.id,
               title: 'untitled',
               position: programContentSection.programContents.length,
-              publishedAt: program.publishedAt ? undefined : new Date(),
+              publishedAt: program && program.publishedAt ? undefined : new Date(),
             },
           }).then(() => onRefetch && onRefetch())
         }

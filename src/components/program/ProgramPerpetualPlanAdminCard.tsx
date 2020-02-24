@@ -6,10 +6,9 @@ import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { InferType } from 'yup'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import { programSchema } from '../../schemas/program'
+import { ProgramType } from '../../schemas/program'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 
@@ -18,7 +17,7 @@ const StyledIcon = styled(Icon)`
 `
 
 type ProgramPerpetualPlanAdminCardProps = FormComponentProps & {
-  program: InferType<typeof programSchema>
+  program: ProgramType
   onRefetch?: () => void
 }
 const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps> = ({ program, onRefetch, form }) => {

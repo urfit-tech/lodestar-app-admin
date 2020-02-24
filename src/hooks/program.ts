@@ -82,19 +82,142 @@ export const useProgram = (programId: string) => {
     `,
     { variables: { programId }, fetchPolicy: 'network-only' },
   )
+  const program: {
+    id: string
+    title: string
+    appId: string
+    isSubscription: boolean
+    soldAt: Date | null
+    coverUrl: string | null
+    abstract: string | null
+    description: string | null
+    salePrice: number | null
+    listPrice: number
+    coverVideoUrl: string | null
+    publishedAt: Date | null
+    inAdvance: boolean
+    fundingId: any | null
+    isSoldOut: boolean | null
+    contentSections: {
+      id: string
+      title: string
+      programContents: {
+        id: string
+        title: string
+        publishedAt: Date | null
+        listPrice: number | null
+        duration: number | null
+        programContentType: {
+          id: string
+          type: string | null
+        } | null
+        programContentPlans: {
+          id: any
+          programPlan: {
+            id: any
+            title: string | null
+          }
+        }[]
+      }[]
+    }[]
+    roles: {
+      id: string
+      name: string
+      member: {
+        id: string | null
+        name: string | null
+        pictureUrl: string | null
+      } | null
+    }[]
+    plans: {
+      id: string
+      type: number
+      title: string | null
+      description: string | null
+      gains: string | null
+      salePrice: number
+      listPrice: number
+      discountDownPrice: number
+      periodType: string | null
+      soldAt: Date | null
+    }[]
+    categories: {
+      position: number
+      category: {
+        id: string
+        name: string
+      }
+    }[]
+  } | null =
+    loading || error || !data || !data.program_by_pk
+      ? null
+      : {
+          id: data.program_by_pk.id,
+          appId: data.program_by_pk.app_id,
+          title: data.program_by_pk.title,
+          abstract: data.program_by_pk.abstract,
+          description: data.program_by_pk.description,
+          isSubscription: data.program_by_pk.is_subscription,
+          soldAt: data.program_by_pk.sold_at,
+          salePrice: data.program_by_pk.sale_price,
+          listPrice: data.program_by_pk.list_price,
+          coverUrl: data.program_by_pk.cover_url,
+          coverVideoUrl: data.program_by_pk.cover_video_url,
+          publishedAt: data.program_by_pk.published_at,
+          inAdvance: data.program_by_pk.in_advance,
+          fundingId: data.program_by_pk.funding_id,
+          isSoldOut: data.program_by_pk.is_sold_out,
+          contentSections: data.program_by_pk.program_content_sections.map(programContentSection => ({
+            id: programContentSection.id,
+            title: programContentSection.title,
+            programContents: programContentSection.program_contents.map(programContent => ({
+              id: programContent.id,
+              title: programContent.title,
+              publishedAt: programContent.published_at,
+              listPrice: programContent.list_price,
+              duration: programContent.duration,
+              programContentType: programContent.program_content_type,
+              programContentPlans: programContent.program_content_plans.map(programContentPlan => ({
+                id: programContentPlan.id,
+                programPlan: {
+                  id: programContentPlan.program_plan.id,
+                  title: programContentPlan.program_plan.title,
+                },
+              })),
+            })),
+          })),
+          roles: data.program_by_pk.program_roles.map(programRole => ({
+            id: programRole.id,
+            name: programRole.name,
+            member: {
+              id: programRole.member && programRole.member.id,
+              name: programRole.member && programRole.member.name,
+              pictureUrl: programRole.member && programRole.member.picture_url,
+            },
+          })),
+          plans: data.program_by_pk.program_plans.map(programPlan => ({
+            id: programPlan.id,
+            type: programPlan.type,
+            title: programPlan.title,
+            description: programPlan.description,
+            gains: programPlan.gains,
+            salePrice: programPlan.sale_price,
+            listPrice: programPlan.list_price,
+            discountDownPrice: programPlan.discount_down_price,
+            periodType: programPlan.period_type,
+            soldAt: programPlan.sold_at,
+          })),
+          categories: data.program_by_pk.program_categories.map(programCategory => ({
+            position: programCategory.position,
+            category: {
+              id: programCategory.category.id,
+              name: programCategory.category.name,
+            },
+          })),
+        }
+
   return {
-    program:
-      loading || error
-        ? null
-        : object({
-            programByPk: programSchema
-              .from('programContentSections', 'contentSections')
-              .from('programRoles', 'roles')
-              .from('programPlans', 'plans')
-              .nullable(),
-          })
-            .camelCase()
-            .cast(data).programByPk,
+    program,
     refetch,
     loading,
   }

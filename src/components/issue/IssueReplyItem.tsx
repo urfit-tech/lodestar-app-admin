@@ -7,12 +7,11 @@ import React, { useContext, useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled, { ThemeContext } from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
-import { InferType } from 'yup'
 import MemberAvatar from '../../containers/common/MemberAvatar'
 import { useAuth } from '../../contexts/AuthContext'
 import { rgba } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { programRoleSchema } from '../../schemas/program'
+import { ProgramRoleType } from '../../schemas/program'
 import types from '../../types'
 import { BraftContent } from '../common/StyledBraftEditor'
 import { ProgramRoleLabel } from '../common/UserRole'
@@ -48,7 +47,7 @@ const StyledTag = styled(Tag)`
 `
 
 type IssueReplyItemProps = {
-  programRoles: InferType<typeof programRoleSchema>[]
+  programRoles: ProgramRoleType[]
   issueReplyId: string
   content: string
   reactedMemberIds: string[]
@@ -129,7 +128,7 @@ const IssueReplyItem: React.FC<IssueReplyItemProps> = ({
             renderText={() =>
               programRoles &&
               programRoles
-                .filter(role => role.member.id === memberId)
+                .filter(role => role?.member?.id === memberId)
                 .map(role =>
                   role.name === 'instructor' ? (
                     <StyledTag key={role.id} color={theme['@primary-color']} className="ml-2 mr-0">

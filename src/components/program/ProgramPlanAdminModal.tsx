@@ -8,9 +8,8 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import uuid from 'uuid'
-import { InferType } from 'yup'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
-import { programPlanSchema } from '../../schemas/program'
+import { ProgramPlanType } from '../../schemas/program'
 import types from '../../types'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
@@ -58,7 +57,7 @@ const messages = defineMessages({
 type ProgramPlanAdminModalProps = FormComponentProps &
   AdminModalProps & {
     programId: string
-    programPlan?: InferType<typeof programPlanSchema>
+    programPlan?: ProgramPlanType
     onRefetch?: () => void
   }
 const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({

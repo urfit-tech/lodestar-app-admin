@@ -6,10 +6,9 @@ import React, { useContext } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import { ThemeContext } from 'styled-components'
-import { InferType } from 'yup'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { programSchema } from '../../schemas/program'
+import { ProgramType } from '../../schemas/program'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 
@@ -40,7 +39,7 @@ const messages = defineMessages({
 })
 
 type ProgramPublishingAdminPaneProps = CardProps & {
-  program: InferType<typeof programSchema> | null
+  program: ProgramType | null
   onRefetch?: () => void
 }
 const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({ program, onRefetch }) => {

@@ -5,9 +5,8 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { InferType } from 'yup'
 import { commonMessages } from '../../helpers/translation'
-import { programPlanSchema } from '../../schemas/program'
+import { ProgramPlanPeriodType, ProgramPlanType } from '../../schemas/program'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 import PriceLabel from '../common/PriceLabel'
@@ -50,7 +49,7 @@ const StyledAdminCard = styled(AdminCard)`
 type ProgramSubscriptionPlanAdminCardProps = {
   programId: string
   isSubscription: boolean
-  programPlan: InferType<typeof programPlanSchema>
+  programPlan: ProgramPlanType
   onRefetch?: () => void
 }
 const ProgramSubscriptionPlanAdminCard: React.FC<ProgramSubscriptionPlanAdminCardProps> = ({
@@ -71,7 +70,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<ProgramSubscriptionPlanAdminCar
         salePrice={isOnSale ? salePrice : undefined}
         downPrice={discountDownPrice || undefined}
         periodAmount={1}
-        periodType={periodType}
+        periodType={periodType as ProgramPlanPeriodType}
       />
 
       <Divider />
@@ -96,7 +95,10 @@ const ProgramSubscriptionPlanAdminCard: React.FC<ProgramSubscriptionPlanAdminCar
   )
 }
 
-type PerpetualPlanFormProps = FormComponentProps & FormProps & { programPlan: InferType<typeof programPlanSchema> }
+type PerpetualPlanFormProps = FormComponentProps &
+  FormProps & {
+    programPlan: ProgramPlanType
+  }
 const PerpetualPlanForm: React.FC<PerpetualPlanFormProps> = ({ form, programPlan }) => {
   const { formatMessage } = useIntl()
 

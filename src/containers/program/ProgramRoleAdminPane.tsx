@@ -2,9 +2,8 @@ import { useMutation } from '@apollo/react-hooks'
 import { CardProps } from 'antd/lib/card'
 import gql from 'graphql-tag'
 import React from 'react'
-import { InferType } from 'yup'
 import ProgramRoleAdminPaneComponent from '../../components/program/ProgramRoleAdminPane'
-import { programSchema } from '../../schemas/program'
+import { ProgramType } from '../../schemas/program'
 import types from '../../types'
 
 export type instructorId = {
@@ -32,7 +31,7 @@ export type DeleteProgramProps = (props: {
 }) => void
 
 type ProgramRoleAdminPaneProps = CardProps & {
-  program: InferType<typeof programSchema> | null
+  program: ProgramType | null
   onRefetch?: () => void
 }
 const ProgramRoleAdminPane: React.FC<ProgramRoleAdminPaneProps> = ({ program, onRefetch }) => {

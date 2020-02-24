@@ -3,9 +3,8 @@ import { Button, Divider, Spin, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { InferType } from 'yup'
 import { programMessages } from '../../helpers/translation'
-import { programSchema } from '../../schemas/program'
+import { ProgramType } from '../../schemas/program'
 import types from '../../types'
 import ProgramContentSectionAdminCard from './ProgramContentSectionAdminCard'
 import ProgramStructureAdminModal from './ProgramStructureAdminModal'
@@ -16,7 +15,7 @@ const messages = defineMessages({
 })
 
 const ProgramContentAdminPane: React.FC<{
-  program: InferType<typeof programSchema> | null
+  program: ProgramType | null
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()

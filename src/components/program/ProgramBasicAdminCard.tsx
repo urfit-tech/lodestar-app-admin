@@ -4,16 +4,15 @@ import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import { InferType } from 'yup'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
-import { programSchema } from '../../schemas/program'
+import { ProgramType } from '../../schemas/program'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 import ProgramCategorySelector from './ProgramCategorySelector'
 
 type ProgramBasicAdminCardProps = FormComponentProps & {
-  program: InferType<typeof programSchema> | null
+  program: ProgramType | null
   onRefetch?: () => void
 }
 const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, form, onRefetch }) => {
@@ -73,7 +72,7 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
           </Form.Item>
           <Form.Item label={formatMessage(commonMessages.term.category)}>
             {form.getFieldDecorator('categoryIds', {
-              initialValue: program.programCategories.map(programCategories => programCategories.category.id),
+              initialValue: program.categories.map(programCategories => programCategories.category.id),
             })(<ProgramCategorySelector />)}
           </Form.Item>
           <Form.Item wrapperCol={{ md: { offset: 4 } }}>

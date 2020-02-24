@@ -7,6 +7,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import MemberAvatar from '../../containers/common/MemberAvatar'
+import { notEmpty } from '../../helpers'
 import { errorMessages, programMessages } from '../../helpers/translation'
 import { useProgram } from '../../hooks/program'
 import EmptyCover from '../../images/default/empty-cover.png'
@@ -54,13 +55,18 @@ const ProgramAdminCard: React.FC<ProgramAdminCardProps> = ({ programId, link, ..
     },
   )
 
-  const instructors = program ? program.roles.filter(role => role.name === 'instructor').map(role => role.member) : []
+  const instructors = program?.roles
+    ? program.roles
+        .filter(role => role.name === 'instructor')
+        .map(role => role.member)
+        .filter(notEmpty)
+    : []
 
   return (
     <>
       <AvatarPlaceHolder className="mb-3">
         {instructors.length > 0 ? (
-          <MemberAvatar key={instructors[0].id} memberId={instructors[0].id} withName />
+          <MemberAvatar key={instructors[0].id || ''} memberId={instructors[0].id || ''} withName />
         ) : (
           formatMessage(messages.noAssignedInstructor)
         )}

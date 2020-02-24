@@ -1810,7 +1810,6 @@ export interface GET_ACTIVITY_PARTICIPANTS_activity_enrollment {
   member_name: string | null;
   member_email: string | null;
   member_phone: string | null;
-  order_log_id: string | null;
 }
 
 export interface GET_ACTIVITY_PARTICIPANTS_activity_session {
