@@ -10,6 +10,7 @@ import types from '../types'
 type AppointmentPlanAdminProps = {
   id: string
   title: string
+  phone: string
   description: string | null
   duration: number
   listPrice: number
@@ -50,6 +51,7 @@ export const AppointmentPlanProvider: React.FC<{
       ? {
           id: appointmentPlanId,
           title: '',
+          phone: '',
           description: null,
           duration: 0,
           listPrice: 0,
@@ -61,6 +63,7 @@ export const AppointmentPlanProvider: React.FC<{
       : {
           id: appointmentPlanId,
           title: data.appointment_plan_by_pk.title,
+          phone: data.appointment_plan_by_pk.phone || '',
           description: data.appointment_plan_by_pk.description,
           duration: data.appointment_plan_by_pk.duration,
           listPrice: data.appointment_plan_by_pk.price,
@@ -108,6 +111,7 @@ const GET_APPOINTMENT_PLAN_ADMIN = gql`
     appointment_plan_by_pk(id: $appointmentPlanId) {
       id
       title
+      phone
       description
       duration
       price

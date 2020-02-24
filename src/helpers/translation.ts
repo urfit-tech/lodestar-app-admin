@@ -283,6 +283,7 @@ export const appointmentMessages = {
   term: defineMessages({
     period: { id: 'appointment.term.period', defaultMessage: '時段' },
     planTitle: { id: 'appointment.term.planTitle', defaultMessage: '方案名稱' },
+    contactPhone: { id: 'appointment.term.contactPhone', defaultMessage: '聯絡手機' },
     startedAt: { id: 'appointment.term.startedAt', defaultMessage: '起始時間' },
     periodType: { id: 'appointment.term.periodType', defaultMessage: '重複週期' },
   }),

@@ -1810,7 +1810,6 @@ export interface GET_ACTIVITY_PARTICIPANTS_activity_enrollment {
   member_name: string | null;
   member_email: string | null;
   member_phone: string | null;
-  order_log_id: string | null;
 }
 
 export interface GET_ACTIVITY_PARTICIPANTS_activity_session {
@@ -2049,6 +2048,7 @@ export interface UPDATE_APPOINTMENT_PLAN_TITLE {
 export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
   appointmentPlanId: any;
   title: string;
+  phone: string;
 }
 
 /* tslint:disable */
@@ -3885,7 +3885,7 @@ export interface GET_APP_app_by_pk_app_modules {
 export interface GET_APP_app_by_pk {
   __typename: "app";
   id: string;
-  name: string;
+  name: string | null;
   title: string | null;
   description: string | null;
   domain: string;
@@ -3983,6 +3983,7 @@ export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk {
   __typename: "appointment_plan";
   id: any;
   title: string;
+  phone: string | null;
   description: string | null;
   /**
    * minutes
@@ -6058,6 +6059,7 @@ export enum appointment_plan_update_column {
   description = "description",
   duration = "duration",
   id = "id",
+  phone = "phone",
   price = "price",
   published_at = "published_at",
   title = "title",
@@ -7963,6 +7965,7 @@ export interface appointment_plan_bool_exp {
   description?: String_comparison_exp | null;
   duration?: numeric_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  phone?: String_comparison_exp | null;
   price?: numeric_comparison_exp | null;
   published_at?: timestamptz_comparison_exp | null;
   title?: String_comparison_exp | null;
@@ -7979,6 +7982,7 @@ export interface appointment_plan_insert_input {
   description?: string | null;
   duration?: any | null;
   id?: any | null;
+  phone?: string | null;
   price?: any | null;
   published_at?: any | null;
   title?: string | null;

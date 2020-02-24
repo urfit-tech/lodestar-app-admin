@@ -40,11 +40,12 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
         variables: {
           appointmentPlanId: appointmentPlan.id,
           title: values.title,
+          phone: values.phone,
         },
       })
         .then(() => {
           refetchAppointmentPlan && refetchAppointmentPlan()
-          message.success(commonMessages.event.successfullySaved)
+          message.success(formatMessage(commonMessages.event.successfullySaved))
         })
         .catch(error => handleError(error))
         .finally(() => setLoading(false))
@@ -75,6 +76,19 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
           ],
         })(<Input />)}
       </Form.Item>
+      <Form.Item label={formatMessage(appointmentMessages.term.contactPhone)}>
+        {form.getFieldDecorator('phone', {
+          initialValue: appointmentPlan.phone,
+          rules: [
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(appointmentMessages.term.contactPhone),
+              }),
+            },
+          ],
+        })(<Input />)}
+      </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
           {formatMessage(commonMessages.ui.cancel)}
@@ -88,8 +102,8 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
 }
 
 const UPDATE_APPOINTMENT_PLAN_TITLE = gql`
-  mutation UPDATE_APPOINTMENT_PLAN_TITLE($appointmentPlanId: uuid!, $title: String!) {
-    update_appointment_plan(where: { id: { _eq: $appointmentPlanId } }, _set: { title: $title }) {
+  mutation UPDATE_APPOINTMENT_PLAN_TITLE($appointmentPlanId: uuid!, $title: String!, $phone: String!) {
+    update_appointment_plan(where: { id: { _eq: $appointmentPlanId } }, _set: { title: $title, phone: $phone }) {
       affected_rows
     }
   }

@@ -10,7 +10,7 @@ type Module = 'activity' | 'voucher' | 'member_card' | 'podcast' | 'appointment'
 type AppProps = {
   loading: boolean
   id: string
-  name: string
+  name: string | null
   title: string | null
   description: string | null
   enabledModules: {
