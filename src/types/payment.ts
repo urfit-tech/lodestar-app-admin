@@ -5,12 +5,18 @@ export type Discount = {
 }
 
 export type OrderProduct = {
+  id: string
   name: string
   description: string
   price: number
   endedAt: Date | null
   startedAt: Date | null
   autoRenewed: boolean
+  product: Product
+}
+
+type Product = {
+  type: string
 }
 
 export type OrderDiscount = {

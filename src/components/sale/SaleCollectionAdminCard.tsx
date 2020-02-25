@@ -8,11 +8,10 @@ import { prop, sum } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { array, InferType, number, object, string } from 'yup'
 import { currencyFormatter } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { orderProductSchema, orderSchema } from '../../schemas/order'
 import types from '../../types'
+import { OrderProduct } from '../../types/payment'
 import AdminCard from '../admin/AdminCard'
 import ProductTypeLabel from '../common/ProductTypeLabel'
 import OrderStatusTag from './OrderStatusTag'
@@ -49,8 +48,7 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
       memberEmailLike,
     },
   })
-  const castData = gqlResultSchema.cast(data)
-  const totalCount = castData.orderLogAggregate.aggregate.count
+  const totalCount = data ? data?.order_log_aggregate?.aggregate?.count : 0
 
   const columns: ColumnProps<any>[] = [
     {
@@ -96,20 +94,20 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
         },
       }),
     },
-    {
-      title: 'Email',
-      dataIndex: 'member.email',
-      key: 'email',
-      width: '260px',
-      ...getColumnSearchProps({
-        onReset: () => {
-          setMemberEmailLike(undefined)
-        },
-        onSearch: (selectedKeys, confirm) => {
-          selectedKeys && setMemberEmailLike(`%${selectedKeys[0]}%`)
-        },
-      }),
-    },
+    // {
+    //   title: 'Email',
+    //   dataIndex: 'member.email',
+    //   key: 'email',
+    //   width: '260px',
+    //   ...getColumnSearchProps({
+    //     onReset: () => {
+    //       setMemberEmailLike(undefined)
+    //     },
+    //     onSearch: (selectedKeys, confirm) => {
+    //       selectedKeys && setMemberEmailLike(`%${selectedKeys[0]}%`)
+    //     },
+    //   }),
+    // },
     {
       title: formatMessage(commonMessages.label.orderLogStatus),
       dataIndex: 'status',
@@ -136,9 +134,9 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
     },
   ]
 
-  const dataSource = castData.orderLog.map(value => ({
+  const dataSource = data?.order_log.map(value => ({
     ...value,
-    totalPrice: sum(value.orderProducts.map(prop('price'))) - sum(value.orderDiscounts.map(prop('price'))),
+    totalPrice: sum(value.order_products.map(prop('price'))) - sum(value.order_discounts.map(prop('price'))),
   }))
 
   const handleTableChange = ({ current }: PaginationConfig, filters: any) => {
@@ -163,12 +161,12 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
           onChange={handleTableChange}
           pagination={{
             defaultPageSize: DEFAULT_PAGE_SIZE,
-            total: totalCount,
+            total: totalCount || undefined,
             ...pagination,
           }}
           expandedRowRender={record => (
             <div>
-              {record.orderProducts.map((orderProduct: InferType<typeof orderProductSchema>) => (
+              {record.orderProducts.map((orderProduct: OrderProduct) => (
                 <div key={orderProduct.id}>
                   <div className="row">
                     <div className="col-2">
@@ -312,23 +310,5 @@ const GET_ORDERS = gql`
     }
   }
 `
-
-const gqlResultSchema = object({
-  orderLogAggregate: object({
-    aggregate: object({
-      count: number(),
-    }),
-  }),
-  orderLog: array(
-    orderSchema.concat(
-      object({
-        member: object({
-          name: string(),
-          email: string(),
-        }),
-      }),
-    ),
-  ).default([]),
-}).camelCase()
 
 export default SaleCollectionAdminCard
