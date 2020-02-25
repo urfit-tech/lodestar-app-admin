@@ -32,8 +32,7 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
 
   const [status, setStatus] = useState()
   const [orderIdLike, setOrderIdLike] = useState()
-  const [memberNameLike, setMemberNameLike] = useState()
-  const [memberEmailLike, setMemberEmailLike] = useState()
+  const [memberNameAndEmailLike, setMemberNameAndEmailLike] = useState()
   const [pagination, setPagination] = useState<PaginationConfig>({})
 
   const pageSize = pagination.pageSize || DEFAULT_PAGE_SIZE
@@ -44,8 +43,7 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
       offset: pageSize * ((pagination.current || DEFAULT_PAGE_CURRENT) - 1),
       status,
       orderIdLike,
-      memberNameLike,
-      memberEmailLike,
+      memberNameAndEmailLike,
     },
   })
   const totalCount = data ? data?.order_log_aggregate?.aggregate?.count : 0
@@ -80,34 +78,20 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
       render: (value: Date) => moment(value).format('YYYY-MM-DD HH:mm'),
     },
     {
-      title: formatMessage(commonMessages.term.memberName),
-      dataIndex: 'member.name',
-      key: 'name',
+      title: formatMessage(commonMessages.label.nameAndEmail),
+      dataIndex: 'nameAndEmail',
+      key: 'nameAndEmail',
       ...getColumnSearchProps({
         onReset: clearFilters => {
           clearFilters()
-          setMemberNameLike(undefined)
+          setMemberNameAndEmailLike(undefined)
         },
         onSearch: (selectedKeys, confirm) => {
           confirm && confirm()
-          selectedKeys && setMemberNameLike(`%${selectedKeys[0]}%`)
+          selectedKeys && setMemberNameAndEmailLike(`%${selectedKeys[0]}%`)
         },
       }),
     },
-    // {
-    //   title: 'Email',
-    //   dataIndex: 'member.email',
-    //   key: 'email',
-    //   width: '260px',
-    //   ...getColumnSearchProps({
-    //     onReset: () => {
-    //       setMemberEmailLike(undefined)
-    //     },
-    //     onSearch: (selectedKeys, confirm) => {
-    //       selectedKeys && setMemberEmailLike(`%${selectedKeys[0]}%`)
-    //     },
-    //   }),
-    // },
     {
       title: formatMessage(commonMessages.label.orderLogStatus),
       dataIndex: 'status',
@@ -136,6 +120,7 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
 
   const dataSource = data?.order_log.map(value => ({
     ...value,
+    nameAndEmail: `${value.member.name} ${value.member.email}`,
     totalPrice: sum(value.order_products.map(prop('price'))) - sum(value.order_discounts.map(prop('price'))),
   }))
 
@@ -255,19 +240,12 @@ const getColumnSearchProps = ({
 })
 
 const GET_ORDERS = gql`
-  query GET_ORDERS(
-    $offset: Int
-    $limit: Int
-    $status: String
-    $orderIdLike: String
-    $memberNameLike: String
-    $memberEmailLike: String
-  ) {
+  query GET_ORDERS($offset: Int, $limit: Int, $status: String, $orderIdLike: String, $memberNameAndEmailLike: String) {
     order_log_aggregate(
       where: {
         id: { _like: $orderIdLike }
         status: { _eq: $status }
-        member: { name: { _like: $memberNameLike }, email: { _like: $memberEmailLike } }
+        member: { _or: [{ name: { _like: $memberNameAndEmailLike } }, { email: { _like: $memberNameAndEmailLike } }] }
       }
     ) {
       aggregate {
@@ -280,7 +258,7 @@ const GET_ORDERS = gql`
       where: {
         id: { _like: $orderIdLike }
         status: { _eq: $status }
-        member: { name: { _like: $memberNameLike }, email: { _like: $memberEmailLike } }
+        member: { _or: [{ name: { _like: $memberNameAndEmailLike } }, { email: { _like: $memberNameAndEmailLike } }] }
       }
       order_by: { created_at: desc }
     ) {

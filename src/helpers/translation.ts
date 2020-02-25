@@ -1,5 +1,3 @@
-// { id: '', defaultMessage: '' },
-
 import { defineMessages } from 'react-intl'
 
 export const commonMessages = {
@@ -112,6 +110,7 @@ export const commonMessages = {
     name: { id: 'common.label.name', defaultMessage: '姓名' },
     phone: { id: 'common.label.phone', defaultMessage: '手機' },
     email: { id: 'common.label.email', defaultMessage: '郵件地址' },
+    nameAndEmail: { id: 'common.lable.nameAndEmail', defaultMessage: '姓名和郵件地址' },
   }),
   term: defineMessages({
     instructor: { id: 'common.term.instructor', defaultMessage: '老師' },

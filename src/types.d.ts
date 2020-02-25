@@ -1524,8 +1524,7 @@ export interface GET_ORDERSVariables {
   limit?: number | null;
   status?: string | null;
   orderIdLike?: string | null;
-  memberNameLike?: string | null;
-  memberEmailLike?: string | null;
+  memberNameAndEmailLike?: string | null;
 }
 
 /* tslint:disable */
