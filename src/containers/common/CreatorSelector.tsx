@@ -39,7 +39,7 @@ const CreatorSelector: React.FC<{
     name: member.name || member.username,
     username: member.username,
     email: member.email,
-    disabled: !member.zoom_user_id,
+    disabled: zoomUserOnly && !member.zoom_user_id,
   }))
 
   return <MemberSelector ref={ref} members={members} value={value} onChange={onChange} />
