@@ -65,6 +65,11 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           formatMessage(commonMessages.label.invoiceName),
           formatMessage(commonMessages.label.invoiceEmail),
           formatMessage(commonMessages.label.invoicePhone),
+          formatMessage(commonMessages.label.invoiceAddress),
+          formatMessage(commonMessages.label.invoicePostCode),
+          formatMessage(commonMessages.label.invoiceBuyerPhone),
+          formatMessage(commonMessages.label.invoiceUniformTitle),
+          formatMessage(commonMessages.label.invoiceUniformNumber),
         ],
       ]
 
@@ -84,6 +89,11 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           orderLog.invoice.name || '',
           orderLog.invoice.email || '',
           orderLog.invoice.phone || '',
+          orderLog.invoice.address || '',
+          orderLog.invoice.postCode || '',
+          orderLog.invoice.buyerPhone || '',
+          orderLog.invoice.uniformTitle || '',
+          orderLog.invoice.uniformNumber || '',
         ])
       })
 
@@ -356,6 +366,7 @@ const GET_ORDER_DISCOUNT_COLLECTION = gql`
       id
       order_log {
         id
+        invoice
       }
       type
       target

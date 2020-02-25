@@ -3257,6 +3257,9 @@ export interface GET_ORDER_LOG_COLLECTION_order_log {
    */
   member: GET_ORDER_LOG_COLLECTION_order_log_member;
   created_at: any;
+  /**
+   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
+   */
   invoice: any;
   /**
    * An aggregated array relationship
@@ -3350,6 +3353,10 @@ export interface GET_ORDER_PRODUCT_COLLECTIONVariables {
 export interface GET_ORDER_DISCOUNT_COLLECTION_order_discount_order_log {
   __typename: "order_log";
   id: string;
+  /**
+   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
+   */
+  invoice: any;
 }
 
 export interface GET_ORDER_DISCOUNT_COLLECTION_order_discount {
