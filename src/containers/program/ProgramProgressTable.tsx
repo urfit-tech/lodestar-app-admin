@@ -130,7 +130,7 @@ const ProgramProgressTable: React.FC<{
 const GET_PROGRAM_PROGRESS = gql`
   query GET_PROGRAM_PROGRESS($programId: uuid) {
     program_enrollment(
-      where: { program_id: { _eq: $programId }, _and: { program: { published_at: { _is_null: false } } } }
+      where: { _and: [{ program_id: { _eq: $programId } }, { program: { published_at: { _is_null: false } } }] }
     ) {
       member_id
       member_name
