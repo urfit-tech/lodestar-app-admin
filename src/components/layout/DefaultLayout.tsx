@@ -122,11 +122,20 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ white, noFooter, centered
                           English
                         </StyledButton>
                       </Menu.Item>
+                      <Menu.Item key="vi">
+                        <StyledButton
+                          type="link"
+                          size="small"
+                          onClick={() => setCurrentLanguage && setCurrentLanguage('vi')}
+                        >
+                          Tiếng việt
+                        </StyledButton>
+                      </Menu.Item>
                     </Menu>
                   }
                 >
                   <StyledButton type="link" size="small">
-                    {currentLanguage === 'en' ? 'EN' : '繁中'}
+                    {currentLanguage === 'en' ? 'EN' : currentLanguage === 'vi' ? 'Tiếng việt' : '繁中'}
                     <Icon type="down" />
                   </StyledButton>
                 </Dropdown>

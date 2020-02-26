@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState } from 'react'
 import { IntlProvider } from 'react-intl'
 import AppContext from './AppContext'
 
-const supportedLanguages = ['zh', 'en']
+const supportedLanguages = ['zh', 'en', 'vi']
 
 type LanguageProps = {
   currentLanguage: string
