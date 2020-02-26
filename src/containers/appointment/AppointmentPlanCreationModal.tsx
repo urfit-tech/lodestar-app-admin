@@ -82,7 +82,12 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
           <Button className="mr-2" onClick={() => setVisible(false)}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
+          <Button
+            type="primary"
+            loading={loading}
+            onClick={() => handleSubmit()}
+            disabled={!member.zoomUserId && member.role === 'content-creator'}
+          >
             {formatMessage(commonMessages.ui.create)}
           </Button>
         </>
