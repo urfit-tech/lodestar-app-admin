@@ -76,7 +76,7 @@ const AppointmentPlanAdminPage: React.FC = () => {
             <Tabs.TabPane tab={formatMessage(messages.scheduleSettings)} key="schedule">
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(messages.scheduleSettings)}</AdminPaneTitle>
-                <div className="mb-5">
+                <div className="mb-4">
                   <AppointmentPlanScheduleCreationModal />
                 </div>
                 <AdminBlock>

@@ -3,14 +3,37 @@ import { Button, Checkbox, DatePicker, Form, Icon, message, Select } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import moment from 'moment'
+import momentTz from 'moment-timezone'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { StyledSelect } from '../../components/admin'
 import AdminModal from '../../components/admin/AdminModal'
 import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import types from '../../types'
+
+const StyledTimeStandardBlock = styled.div`
+  border-radius: 4px;
+  width: 100%;
+  line-height: 1.57;
+  letter-spacing: 0.18px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: NotoSansCJKtc;
+  color: var(--gray-darker);
+`
+const StyledTimeZoneBlock = styled.div`
+  border-radius: 4px;
+  width: 100%;
+  line-height: 1.57;
+  letter-spacing: 0.18px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: NotoSansCJKtc;
+  color: var(--gray-dark);
+`
 
 const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
@@ -63,12 +86,34 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
-          {formatMessage(appointmentMessages.label.createPeriod)}
-        </Button>
+        <>
+          <Button type="primary" icon="file-add" onClick={() => setVisible(true)} className="mb-5">
+            {formatMessage(appointmentMessages.label.createPeriod)}
+          </Button>
+          <StyledTimeStandardBlock>
+            {formatMessage(appointmentMessages.text.timezone, {
+              city: momentTz.tz.guess().split('/')[1],
+              timezone: moment()
+                .zone(momentTz.tz.guess())
+                .format('Z'),
+            })}
+          </StyledTimeStandardBlock>
+        </>
       )}
       icon={<Icon type="file-add" />}
-      title={formatMessage(appointmentMessages.label.createPeriod)}
+      title={
+        <>
+          <div className="mb-3">{formatMessage(appointmentMessages.label.createPeriod)}</div>
+          <StyledTimeZoneBlock>
+            {formatMessage(appointmentMessages.text.timezone, {
+              city: momentTz.tz.guess().split('/')[1],
+              timezone: moment()
+                .zone(momentTz.tz.guess())
+                .format('Z'),
+            })}
+          </StyledTimeZoneBlock>
+        </>
+      }
       maskClosable={false}
       renderFooter={({ setVisible }) => (
         <>
