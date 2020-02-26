@@ -7,8 +7,8 @@ import moment from 'moment'
 import { prop, sum } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import styled from 'styled-components'
-import { currencyFormatter } from '../../helpers'
+import styled, { css } from 'styled-components'
+import { currencyFormatter, desktopViewMixin } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { OrderProduct } from '../../types/payment'
@@ -18,10 +18,28 @@ import OrderStatusTag from './OrderStatusTag'
 
 const StyledContainer = styled.div`
   overflow: auto;
+
+  table th {
+    white-space: nowrap;
+  }
 `
 const StyledFilterButton = styled(Button)`
   height: 36px;
   width: 90px;
+`
+const StyledCell = styled.div`
+  div {
+    white-space: nowrap;
+  }
+
+  ${desktopViewMixin(css`
+    display: flex;
+    flex-wrap: wrap;
+
+    div:first-child {
+      margin-right: 0.5rem;
+    }
+  `)}
 `
 
 const DEFAULT_PAGE_SIZE = 20
@@ -53,7 +71,6 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
       title: formatMessage(commonMessages.label.orderLogId),
       dataIndex: 'id',
       key: 'id',
-      width: '150px',
       render: (text: string) => (
         <Tooltip title={text}>
           <span>{text.split('-')[0]}</span>
@@ -74,12 +91,19 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
       title: formatMessage(commonMessages.label.orderLogDate),
       dataIndex: 'createdAt',
       key: 'createdAt',
-      width: '180px',
-      render: (value: Date) => moment(value).format('YYYY-MM-DD HH:mm'),
+      render: (value: Date) => {
+        const orderLogDate = moment(value)
+
+        return (
+          <StyledCell>
+            <div>{orderLogDate.format('YYYY-MM-DD')}</div>
+            <div>{orderLogDate.format('HH:mm')}</div>
+          </StyledCell>
+        )
+      },
     },
     {
       title: formatMessage(commonMessages.label.nameAndEmail),
-      dataIndex: 'nameAndEmail',
       key: 'nameAndEmail',
       ...getColumnSearchProps({
         onReset: clearFilters => {
@@ -91,12 +115,17 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
           selectedKeys && setMemberNameAndEmailLike(`%${selectedKeys[0]}%`)
         },
       }),
+      render: (text, record, index) => (
+        <StyledCell>
+          <div>{record.name}</div>
+          <div>{record.email}</div>
+        </StyledCell>
+      ),
     },
     {
       title: formatMessage(commonMessages.label.orderLogStatus),
       dataIndex: 'status',
       key: 'status',
-      width: '120px',
       render: (status: string) => <OrderStatusTag status={status} />,
       filters: [
         {
@@ -120,7 +149,8 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
 
   const dataSource = data?.order_log.map(value => ({
     ...value,
-    nameAndEmail: `${value.member.name} ${value.member.email}`,
+    name: value.member.name,
+    email: value.member.email,
     totalPrice: sum(value.order_products.map(prop('price'))) - sum(value.order_discounts.map(prop('price'))),
   }))
 

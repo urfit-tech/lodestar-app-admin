@@ -3,6 +3,8 @@ import { RcFile } from 'antd/lib/upload'
 import axios, { AxiosRequestConfig } from 'axios'
 import moment from 'moment'
 import queryString from 'query-string'
+import { css, FlattenSimpleInterpolation } from 'styled-components'
+import { BREAK_POINT } from '../components/common/Responsive'
 
 export const TPDirect = (window as any)['TPDirect']
 
@@ -160,3 +162,9 @@ export const downloadCSV = (fileName: string, data: string) => {
   downloadLink.click()
   document.body.removeChild(downloadLink)
 }
+
+export const desktopViewMixin = (children: FlattenSimpleInterpolation) => css`
+  @media (min-width: ${BREAK_POINT}px) {
+    ${children}
+  }
+`
