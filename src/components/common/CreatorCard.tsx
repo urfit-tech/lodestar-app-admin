@@ -72,7 +72,7 @@ const StyledAction = styled.span`
 const messages = defineMessages({
   creatorPrograms: { id: 'creator.label.creatorPrograms', defaultMessage: '開設課程' },
   creatorPodcast: { id: 'creator.label.creatorPodcast', defaultMessage: '廣播頻道' },
-  creatorAppointemnts: { id: 'creator.label.creatorAppointemnts', defaultMessage: '大師預約' },
+  creatorAppointments: { id: 'creator.label.creatorAppointments', defaultMessage: '大師預約' },
 })
 
 export type CreatorCardProps = {
@@ -127,7 +127,7 @@ const CreatorCard: React.FC<CreatorCardProps> = ({
           )}
           {withReservation && (
             <StyledAction>
-              <Link to={`/creators/${id}?tabkey=reservations`}>{formatMessage(messages.creatorAppointemnts)}</Link>
+              <Link to={`/creators/${id}?tabkey=reservations`}>{formatMessage(messages.creatorAppointments)}</Link>
             </StyledAction>
           )}
         </div>

@@ -39,7 +39,7 @@ const StyledIcon = styled(Icon)`
 
 const messages = defineMessages({
   subscriptionPlan: { id: 'program.label.subscriptionPlan', defaultMessage: '訂閱付費方案' },
-  permissionType: { id: 'program.label.permissiontype', defaultMessage: '選擇內容觀看權限' },
+  permissionType: { id: 'program.label.permissionType', defaultMessage: '選擇內容觀看權限' },
   availableForPastContent: { id: 'program.label.availableForPastContent', defaultMessage: '可看過去內容' },
   unavailableForPastContent: { id: 'program.label.unavailableForPastContent', defaultMessage: '不可看過去內容' },
   subscriptionPeriodType: { id: 'program.label.subscriptionPeriodType', defaultMessage: '訂閱週期' },

@@ -46,7 +46,7 @@ const StyledItemMeta = styled.div`
 
 const messages = defineMessages({
   enrolled: { id: 'appointment.status.enrolled', defaultMessage: '已預約' },
-  excluded: { id: 'appointment.status.exlucded', defaultMessage: '已關閉' },
+  excluded: { id: 'appointment.status.excluded', defaultMessage: '已關閉' },
   available: { id: 'appointment.status.available', defaultMessage: '可預約' },
 })
 

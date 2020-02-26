@@ -14,7 +14,7 @@ import types from '../../types'
 const messages = defineMessages({
   exportOrder: { id: 'common.ui.exportOrder', defaultMessage: '匯出資料' },
   exportOrderLog: { id: 'common.ui.exportOrderLog', defaultMessage: '匯出訂單' },
-  exportOrderProduct: { id: 'commom.ui.exportOrderProduct', defaultMessage: '訂單明細' },
+  exportOrderProduct: { id: 'common.ui.exportOrderProduct', defaultMessage: '訂單明細' },
   exportOrderDiscount: { id: 'common.ui.exportOrderDiscount', defaultMessage: '折扣明細' },
 })
 
@@ -64,12 +64,14 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           formatMessage(commonMessages.label.orderLogPriceTotal),
           formatMessage(commonMessages.label.invoiceName),
           formatMessage(commonMessages.label.invoiceEmail),
-          formatMessage(commonMessages.label.invoicePhone),
-          formatMessage(commonMessages.label.invoiceAddress),
-          formatMessage(commonMessages.label.invoicePostCode),
           formatMessage(commonMessages.label.invoiceBuyerPhone),
-          formatMessage(commonMessages.label.invoiceUniformTitle),
+          formatMessage(commonMessages.label.invoiceTarget),
+          formatMessage(commonMessages.label.invoiceDonationCode),
+          formatMessage(commonMessages.label.invoiceCarrier),
           formatMessage(commonMessages.label.invoiceUniformNumber),
+          formatMessage(commonMessages.label.invoiceUniformTitle),
+          formatMessage(commonMessages.label.invoiceAddress),
+          formatMessage(commonMessages.label.invoiceId),
         ],
       ]
 
@@ -88,12 +90,14 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           totalProductPrice - totalDiscountPrice,
           orderLog.invoice.name || '',
           orderLog.invoice.email || '',
-          orderLog.invoice.phone || '',
-          orderLog.invoice.address || '',
-          orderLog.invoice.postCode || '',
           orderLog.invoice.buyerPhone || '',
-          orderLog.invoice.uniformTitle || '',
+          orderLog.invoice.donationCode ? '捐贈' : orderLog.invoice.uniformNumber ? '公司' : '個人',
+          orderLog.invoice.donationCode || '',
+          orderLog.invoice.phoneBarCode ? '手機' : orderLog.invoice.citizenCode ? '自然人憑證' : '',
           orderLog.invoice.uniformNumber || '',
+          orderLog.invoice.uniformTitle || '',
+          `${orderLog.invoice.postCode || ''} ${orderLog.invoice.address || ''}`,
+          orderLog.invoice.id || '',
         ])
       })
 

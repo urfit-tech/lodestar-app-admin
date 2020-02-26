@@ -33,7 +33,7 @@ const StyledButton = styled(Button)`
 `
 
 const messages = defineMessages({
-  appointmentText: { id: 'appointmnet.ui.appointmentText', defaultMessage: '{name} 已預約你的「{title}」' },
+  appointmentText: { id: 'appointment.ui.appointmentText', defaultMessage: '{name} 已預約你的「{title}」' },
   addToCalendar: { id: 'appointment.ui.addToCalendar', defaultMessage: '加入行事曆' },
   joinMeeting: { id: 'appointment.ui.joinMeeting', defaultMessage: '進入會議' },
 })

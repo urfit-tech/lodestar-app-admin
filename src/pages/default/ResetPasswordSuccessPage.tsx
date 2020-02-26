@@ -26,7 +26,7 @@ const ResetPasswordSuccessPage: React.FC = () => {
       <StyledContainer>
         <p>{formatMessage(messages.successfullyResetPasswordNotation)}</p>
         <div>
-          <Link to="/">{formatMessage(commonMessages.ui.backToHompage)}</Link>
+          <Link to="/">{formatMessage(commonMessages.ui.backToHomepage)}</Link>
         </div>
       </StyledContainer>
     </DefaultLayout>

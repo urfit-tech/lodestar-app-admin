@@ -32,9 +32,9 @@ const TipsText = styled.span`
 `
 
 const messages = defineMessages({
-  totalActualSalse: { id: 'common.text.totalActualSalse', defaultMessage: '實際銷售總額 {dollars} 元' },
-  totalActualSalseNotation: {
-    id: 'common.text.totalActualSalseNotation',
+  totalActualSales: { id: 'common.text.totalActualSales', defaultMessage: '實際銷售總額 {dollars} 元' },
+  totalActualSalesNotation: {
+    id: 'common.text.totalActualSalesNotation',
     defaultMessage: '銷售總額 - 訂閱首期折扣 = 實際銷售總額',
   },
 })
@@ -65,10 +65,10 @@ const SaleSummaryCreatorCard: React.FC<SaleSummaryCreatorCardProps> = ({
           <h3>{name}</h3>
           <p>
             <span className="mr-2">
-              {formatMessage(messages.totalActualSalse, { dollars: commaFormatter(totalPrice - totalDiscount) })}
+              {formatMessage(messages.totalActualSales, { dollars: commaFormatter(totalPrice - totalDiscount) })}
             </span>
             {totalDiscount > 0 && (
-              <Tooltip placement="top" title={<TipsText>{formatMessage(messages.totalActualSalseNotation)}</TipsText>}>
+              <Tooltip placement="top" title={<TipsText>{formatMessage(messages.totalActualSalesNotation)}</TipsText>}>
                 <Icon type="question-circle" theme="filled" />
               </Tooltip>
             )}

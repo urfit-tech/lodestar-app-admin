@@ -18,7 +18,7 @@ import ZoomUserSelector from './ZoomUserSelector'
 const messages = defineMessages({
   creatorPageLink: { id: 'common.ui.creatorPageLink', defaultMessage: '創作者主頁' },
   memberPageLink: { id: 'common.ui.memberPageLink', defaultMessage: '學員主頁' },
-  roleSettings: { id: 'common.label.roleSettigs', defaultMessage: '設定身份' },
+  roleSettings: { id: 'common.label.roleSettings', defaultMessage: '設定身份' },
   zoomBinding: { id: 'common.label.zoomBinding', defaultMessage: '綁定 Zoom 帳號' },
   accountData: { id: 'common.label.accountData', defaultMessage: '帳號資料' },
   memberLog: { id: 'common.label.memberLog', defaultMessage: '會員紀錄' },
