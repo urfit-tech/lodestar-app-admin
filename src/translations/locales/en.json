@@ -81,6 +81,7 @@
   "appointment.text.notCompleteNotation": "請填寫以下必填資料，填寫完畢即可由此發佈",
   "appointment.text.publishedNotation": "預約方案已經發佈，學生將能購買預約。",
   "appointment.text.selectStartedAt": "start time",
+  "appointment.text.taipei": "Taipei",
   "appointment.text.timezone": "All the timings listed are in your timezone: {city} (GMT{timezone})",
   "appointment.text.unpublishedNotation": "預約方案未發佈，此方案並不會顯示在頁面上，學生也不能購買此方案。",
   "appointment.ui.addToCalendar": "Add to Calendar",
