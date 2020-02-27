@@ -117,7 +117,10 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
       }),
       render: (text, record, index) => (
         <StyledCell>
-          <div>{record.name}</div>
+          <div>
+            {record.name}
+            <span className="ml-2">/</span>
+          </div>
           <div>{record.email}</div>
         </StyledCell>
       ),
