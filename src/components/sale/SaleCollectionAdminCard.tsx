@@ -181,7 +181,16 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
             <div className="col-2">
               <ProductTypeLabel productType={orderProduct.product.type} />
             </div>
-            <div className="col-8">{orderProduct.name}</div>
+            <div className="col-8">
+              {orderProduct.name}
+              {orderProduct.endedAt && (
+                <span className="ml-2">
+                  {`(${moment(orderProduct.endedAt).format('YYYY-MM-DD')} ${formatMessage(
+                    commonMessages.status.productExpired,
+                  )})`}
+                </span>
+              )}
+            </div>
             <div className="col-2 text-right">{currencyFormatter(orderProduct.price)}</div>
           </div>
           <Divider />

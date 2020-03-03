@@ -228,6 +228,7 @@
   "common.product.programPlan": "Program",
   "common.product.projectPlan": "Project",
   "common.product.unknownType": "Unknown",
+  "common.status.expired": "Expired",
   "common.status.notComplete": "Not Complete",
   "common.status.orderFailed": "Failed",
   "common.status.orderRefund": "Refund",

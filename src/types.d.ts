@@ -1368,74 +1368,6 @@ export interface UPDATE_PROGRAM_SUBSCRIPTION_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_MEMBER_ORDERS
-// ====================================================
-
-export interface GET_MEMBER_ORDERS_order_log_order_products_product {
-  __typename: "product";
-  /**
-   * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
-   */
-  id: string;
-  /**
-   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket /
-   * Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan /
-   * AppointmentServicePlan
-   */
-  type: string;
-}
-
-export interface GET_MEMBER_ORDERS_order_log_order_products {
-  __typename: "order_product";
-  id: any;
-  name: string;
-  price: any;
-  ended_at: any | null;
-  /**
-   * An object relationship
-   */
-  product: GET_MEMBER_ORDERS_order_log_order_products_product;
-}
-
-export interface GET_MEMBER_ORDERS_order_log_order_discounts {
-  __typename: "order_discount";
-  id: any;
-  name: string;
-  description: string | null;
-  price: any;
-}
-
-export interface GET_MEMBER_ORDERS_order_log {
-  __typename: "order_log";
-  id: string;
-  created_at: any;
-  status: string;
-  /**
-   * An array relationship
-   */
-  order_products: GET_MEMBER_ORDERS_order_log_order_products[];
-  /**
-   * An array relationship
-   */
-  order_discounts: GET_MEMBER_ORDERS_order_log_order_discounts[];
-}
-
-export interface GET_MEMBER_ORDERS {
-  /**
-   * fetch data from the table: "order_log"
-   */
-  order_log: GET_MEMBER_ORDERS_order_log[];
-}
-
-export interface GET_MEMBER_ORDERSVariables {
-  memberId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_ORDERS
 // ====================================================
 
@@ -3408,6 +3340,7 @@ export interface GET_PRODUCT_OWNER_ORDERS_order_product {
   id: any;
   name: string;
   price: any;
+  ended_at: any | null;
   /**
    * An object relationship
    */
@@ -3471,6 +3404,7 @@ export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT {
   /**
    * fetch aggregated fields from the table: "order_discount"
    */
+  [x: string]: any;
   order_discount_aggregate: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate;
 }
 
