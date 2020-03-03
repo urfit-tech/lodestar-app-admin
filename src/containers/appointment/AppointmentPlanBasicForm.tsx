@@ -74,7 +74,7 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
               }),
             },
           ],
-        })(<Input />)}
+        })(<Input maxLength={10} />)}
       </Form.Item>
       <Form.Item label={formatMessage(appointmentMessages.term.contactPhone)}>
         {form.getFieldDecorator('phone', {
