@@ -179,7 +179,7 @@ export const commonMessages = {
     successfullyCreated: { id: 'common.event.successfullyCreated', defaultMessage: '建立成功' },
   }),
   status: defineMessages({
-    productExpired: {id: 'common.status.expired', defaultMessage: '過期'},
+    productExpired: {id: 'common.status.expired', defaultMessage: '到期'},
     orderSuccess: { id: 'common.status.orderSuccess', defaultMessage: '已完成' },
     orderUnpaid: { id: 'common.status.orderUnpaid', defaultMessage: '待付款' },
     orderRefund: { id: 'common.status.orderRefund', defaultMessage: '已退款' },
