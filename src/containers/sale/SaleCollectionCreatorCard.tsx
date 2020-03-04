@@ -12,7 +12,17 @@ const SaleCollectionCreatorCard: React.FC<SaleCollectionCreatorCardProps> = ({ m
     GET_PRODUCT_OWNER_ORDERS,
     { variables: { memberId } },
   )
-  const orderProducts: types.GET_PRODUCT_OWNER_ORDERS_order_product[] = (data && data.order_product) || []
+  const orderProducts = data?.order_product.map(orderProduct => ({
+    id: orderProduct.id,
+    name: orderProduct.name,
+    price: orderProduct.price,
+    endedAt: orderProduct.ended_at,
+    orderLog: {
+      id: orderProduct.order_log.id,
+      memberId: orderProduct.order_log.member_id,
+      createdAt: orderProduct.order_log.created_at,
+    },
+  }))
   return <SaleCollectionCreatorCardComponent loading={loading} orderProducts={orderProducts} error={error} />
 }
 
@@ -30,6 +40,7 @@ const GET_PRODUCT_OWNER_ORDERS = gql`
       id
       name
       price
+      ended_at
       order_log {
         id
         member_id

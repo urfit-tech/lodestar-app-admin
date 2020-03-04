@@ -1,11 +1,11 @@
-import { List, Typography } from 'antd'
+import { List, Skeleton, Typography } from 'antd'
+import moment from 'moment'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { currencyFormatter, dateFormatter } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { usePublicMember } from '../../hooks/member'
-import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 
 const StyledCard = styled(AdminCard)`
@@ -53,12 +53,28 @@ const messages = defineMessages({
 type SaleCollectionCreatorCardProps = {
   loading?: boolean
   error?: Error
-  orderProducts: types.GET_PRODUCT_OWNER_ORDERS_order_product[]
+  orderProducts?: {
+    id: string
+    name: string
+    price: number
+    endedAt: Date | null
+    orderLog: {
+      id: string
+      memberId: string
+      createdAt: Date
+    }
+  }[]
 }
 const SaleCollectionCreatorCard: React.FC<SaleCollectionCreatorCardProps> = ({ loading, error, orderProducts }) => {
   const { formatMessage } = useIntl()
-
-  if (error) {
+  if (loading) {
+    return (
+      <AdminCard>
+        <Skeleton active />
+      </AdminCard>
+    )
+  }
+  if (error || !orderProducts) {
     return <StyledCard>{formatMessage(errorMessages.data.fetch)}</StyledCard>
   }
   return (
@@ -75,9 +91,18 @@ const SaleCollectionCreatorCard: React.FC<SaleCollectionCreatorCardProps> = ({ l
   )
 }
 
-const ListItem: React.FC<types.GET_PRODUCT_OWNER_ORDERS_order_product> = ({ name, price, order_log: orderLog }) => {
+const ListItem: React.FC<{
+  name: string
+  price: number
+  endedAt: Date | null
+  orderLog: {
+    id: string
+    memberId: string
+    createdAt: Date
+  }
+}> = ({ name, price, orderLog, endedAt }) => {
   const { formatMessage } = useIntl()
-  const { member } = usePublicMember(orderLog.member_id)
+  const { member } = usePublicMember(orderLog.memberId)
 
   if (!member) {
     return null
@@ -87,8 +112,15 @@ const ListItem: React.FC<types.GET_PRODUCT_OWNER_ORDERS_order_product> = ({ name
     <List.Item className="py-4">
       <ListItemWrapper className="d-flex align-items-center justify-content-between">
         <div className="info mr-3">
-          <StyledTitle>{name}</StyledTitle>
-          <p>{formatMessage(messages.purchasedAt, { name: member.name, date: dateFormatter(orderLog.created_at) })}</p>
+          <StyledTitle>
+            {name}
+            {endedAt && (
+              <span className="ml-2">
+                ({moment(endedAt).format('YYYY-MM-DD')} {formatMessage(commonMessages.status.productExpired)})
+              </span>
+            )}
+          </StyledTitle>
+          <p>{formatMessage(messages.purchasedAt, { name: member.name, date: dateFormatter(orderLog.createdAt) })}</p>
         </div>
         <div className="flex-shrink-0 price">{currencyFormatter(price)}</div>
       </ListItemWrapper>
