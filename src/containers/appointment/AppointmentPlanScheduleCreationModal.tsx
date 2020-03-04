@@ -87,7 +87,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
     <AdminModal
       renderTrigger={({ setVisible }) => (
         <>
-          <Button type="primary" icon="file-add" onClick={() => setVisible(true)} className="mb-5">
+          <Button type="primary" icon="file-add" onClick={() => setVisible(true)} className="mb-4">
             {formatMessage(appointmentMessages.label.createPeriod)}
           </Button>
           <StyledTimeStandardBlock>
