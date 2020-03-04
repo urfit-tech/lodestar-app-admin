@@ -115,7 +115,7 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
                 }),
               },
             ],
-          })(<Input />)}
+          })(<Input maxLength={10} />)}
         </Form.Item>
         {!member.zoomUserId && member.role === 'content-creator' && (
           <WarningText className="mb-4">
