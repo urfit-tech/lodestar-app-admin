@@ -92,10 +92,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
           </Button>
           <StyledTimeStandardBlock>
             {formatMessage(appointmentMessages.text.timezone, {
-              city:
-                momentTz.tz.guess().split('/')[1] === 'Taipei'
-                  ? formatMessage(appointmentMessages.text.taipei)
-                  : momentTz.tz.guess().split('/')[1],
+              city: momentTz.tz.guess().split('/')[1],
               timezone: moment()
                 .zone(momentTz.tz.guess())
                 .format('Z'),
@@ -109,10 +106,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
           <div className="mb-3">{formatMessage(appointmentMessages.label.createPeriod)}</div>
           <StyledTimeZoneBlock>
             {formatMessage(appointmentMessages.text.timezone, {
-              city:
-                momentTz.tz.guess().split('/')[1] === 'Taipei'
-                  ? formatMessage(appointmentMessages.text.taipei)
-                  : momentTz.tz.guess().split('/')[1],
+              city: momentTz.tz.guess().split('/')[1],
               timezone: moment()
                 .zone(momentTz.tz.guess())
                 .format('Z'),

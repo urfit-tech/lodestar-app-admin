@@ -298,7 +298,6 @@ export const appointmentMessages = {
     durationTips: { id: 'appointment.text.durationTips', defaultMessage: '設定單次預約服務的時間長度' },
     selectStartedAt: { id: 'appointment.text.selectStartedAt', defaultMessage: '選擇起始時間' },
     timezone: {id: 'appointment.text.timezone', defaultMessage: "時間以 {city} (GMT{timezone}) 顯示"},
-    taipei: {id: 'appointment.text.taipei', defaultMessage: "台北"}
   }),
 }
 
