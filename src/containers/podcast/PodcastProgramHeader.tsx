@@ -25,7 +25,7 @@ const PodcastProgramHeader: React.FC<{
 
       <AdminHeaderTitle>{podcastProgram ? podcastProgram.title : podcastProgramId}</AdminHeaderTitle>
       <a
-        href={`https://${app.domain}/creators/${currentMemberId}?tabkey=appointments`}
+        href={`https://${app.domain}/creators/${currentMemberId}?tabkey=podcasts`}
         target="_blank"
         rel="noopener noreferrer"
       >
