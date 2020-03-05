@@ -4,7 +4,6 @@ import { useIntl } from 'react-intl'
 import useRouter from 'use-react-router'
 import { AdminHeader, AdminHeaderTitle } from '../../components/admin'
 import AppContext from '../../contexts/AppContext'
-import { useAuth } from '../../contexts/AuthContext'
 import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { commonMessages } from '../../helpers/translation'
 
@@ -14,7 +13,6 @@ const PodcastProgramHeader: React.FC<{
   const { history } = useRouter()
   const app = useContext(AppContext)
   const { podcastProgram } = useContext(PodcastProgramContext)
-  const { currentMemberId } = useAuth()
   const { formatMessage } = useIntl()
 
   return (
@@ -24,11 +22,7 @@ const PodcastProgramHeader: React.FC<{
       </Button>
 
       <AdminHeaderTitle>{podcastProgram ? podcastProgram.title : podcastProgramId}</AdminHeaderTitle>
-      <a
-        href={`https://${app.domain}/creators/${currentMemberId}?tabkey=podcasts`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <a href={`https://${app.domain}/podcasts/${podcastProgramId}`} target="_blank" rel="noopener noreferrer">
         <Button>{formatMessage(commonMessages.ui.preview)}</Button>
       </a>
     </AdminHeader>
