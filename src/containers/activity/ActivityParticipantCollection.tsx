@@ -35,6 +35,8 @@ const ActivityParticipantCollection: React.FC<{
                   phone: participant.member_phone || '',
                   email: participant.member_email || '',
                   orderLogId: participant.order_log_id || '',
+                  attended: participant.attended || false,
+                  activityTitle: participant.activity_ticket?.title || '',
                 }))
               : [],
           }))
@@ -53,6 +55,11 @@ const GET_ACTIVITY_PARTICIPANTS = gql`
       member_email
       member_phone
       order_log_id
+      attended
+      activity_ticket {
+        id
+        title
+      }
     }
     activity_session(where: { activity_id: { _eq: $activityId } }, order_by: { started_at: asc }) {
       id

@@ -1733,6 +1733,12 @@ export interface UPDATE_ACTIVITY_INTRODUCTIONVariables {
 // GraphQL query operation: GET_ACTIVITY_PARTICIPANTS
 // ====================================================
 
+export interface GET_ACTIVITY_PARTICIPANTS_activity_enrollment_activity_ticket {
+  __typename: "activity_ticket";
+  id: any;
+  title: string;
+}
+
 export interface GET_ACTIVITY_PARTICIPANTS_activity_enrollment {
   __typename: "activity_enrollment";
   activity_session_id: any | null;
@@ -1741,6 +1747,11 @@ export interface GET_ACTIVITY_PARTICIPANTS_activity_enrollment {
   member_name: string | null;
   member_email: string | null;
   member_phone: string | null;
+  attended: boolean | null;
+  /**
+   * An object relationship
+   */
+  activity_ticket: GET_ACTIVITY_PARTICIPANTS_activity_enrollment_activity_ticket | null;
 }
 
 export interface GET_ACTIVITY_PARTICIPANTS_activity_session {
@@ -3404,7 +3415,6 @@ export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT {
   /**
    * fetch aggregated fields from the table: "order_discount"
    */
-  [x: string]: any;
   order_discount_aggregate: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate;
 }
 
@@ -5942,6 +5952,7 @@ export enum app_nav_update_column {
   icon = "icon",
   id = "id",
   label = "label",
+  locale = "locale",
   position = "position",
 }
 
@@ -7115,6 +7126,7 @@ export enum program_update_column {
   published_at = "published_at",
   sale_price = "sale_price",
   sold_at = "sold_at",
+  support_locale = "support_locale",
   title = "title",
 }
 
@@ -7347,7 +7359,9 @@ export interface activity_enrollment_bool_exp {
   activity?: activity_bool_exp | null;
   activity_id?: uuid_comparison_exp | null;
   activity_session_id?: uuid_comparison_exp | null;
+  activity_ticket?: activity_ticket_bool_exp | null;
   activity_ticket_id?: uuid_comparison_exp | null;
+  attended?: Boolean_comparison_exp | null;
   member_email?: String_comparison_exp | null;
   member_id?: String_comparison_exp | null;
   member_name?: String_comparison_exp | null;
@@ -7756,6 +7770,7 @@ export interface app_nav_bool_exp {
   icon?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   label?: String_comparison_exp | null;
+  locale?: String_comparison_exp | null;
   position?: Int_comparison_exp | null;
 }
 
@@ -7771,6 +7786,7 @@ export interface app_nav_insert_input {
   icon?: string | null;
   id?: any | null;
   label?: string | null;
+  locale?: string | null;
   position?: number | null;
 }
 
@@ -9156,6 +9172,7 @@ export interface member_public_bool_exp {
   role?: String_comparison_exp | null;
   roles?: jsonb_comparison_exp | null;
   tag_names?: jsonb_comparison_exp | null;
+  title?: String_comparison_exp | null;
   username?: String_comparison_exp | null;
   zoom_user_id?: String_comparison_exp | null;
 }
@@ -10379,6 +10396,7 @@ export interface program_bool_exp {
   published_at?: timestamptz_comparison_exp | null;
   sale_price?: numeric_comparison_exp | null;
   sold_at?: timestamptz_comparison_exp | null;
+  support_locale?: jsonb_comparison_exp | null;
   title?: String_comparison_exp | null;
 }
 
@@ -10770,6 +10788,7 @@ export interface program_insert_input {
   published_at?: any | null;
   sale_price?: any | null;
   sold_at?: any | null;
+  support_locale?: any | null;
   title?: string | null;
 }
 
