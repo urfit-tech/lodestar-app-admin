@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages, promotionMessages } from '../../helpers/translation'
-import { ProductType } from '../../schemas/general'
+import { ProductType } from '../../types/general'
 
 const StyledTriggerText = styled.span`
   color: ${props => props.theme['@primary-color']};

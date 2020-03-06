@@ -3,8 +3,8 @@ import { CardProps } from 'antd/lib/card'
 import gql from 'graphql-tag'
 import React from 'react'
 import ProgramRoleAdminPaneComponent from '../../components/program/ProgramRoleAdminPane'
-import { ProgramType } from '../../schemas/program'
 import types from '../../types'
+import { ProgramType } from '../../types/program'
 
 export type instructorId = {
   memberId: string

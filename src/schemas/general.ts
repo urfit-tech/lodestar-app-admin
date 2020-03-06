@@ -18,18 +18,6 @@ export const appSchema = object({
 }).camelCase()
 export type App = InferType<typeof appSchema>
 
-export type ProductType =
-  | 'Program'
-  | 'ProgramPlan'
-  | 'ProgramContent'
-  | 'ProgramPackagePlan'
-  | 'ProjectPlan'
-  | 'Card'
-  | 'ActivityTicket'
-  | 'Merchandise'
-  | 'PodcastProgram'
-  | 'PodcastPlan'
-  | 'AppointmentPlan'
 export const productTargetSchema = object({
   programId: string().notRequired(),
   programPlanId: string().notRequired(),

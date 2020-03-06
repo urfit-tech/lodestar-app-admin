@@ -7,7 +7,7 @@ import CreatorSelector from '../../containers/common/CreatorSelector'
 import MemberAvatar from '../../containers/common/MemberAvatar'
 import { DeleteProgramProps, UpdateProgramProps } from '../../containers/program/ProgramRoleAdminPane'
 import { commonMessages } from '../../helpers/translation'
-import { ProgramType } from '../../schemas/program'
+import { ProgramType } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
 

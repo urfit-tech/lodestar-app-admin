@@ -6,8 +6,8 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { dateFormatter, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { ProgramContentType, ProgramType } from '../../schemas/program'
 import types from '../../types'
+import { ProgramContentType, ProgramType } from '../../types/program'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
 
 const StyledTitle = styled.div`

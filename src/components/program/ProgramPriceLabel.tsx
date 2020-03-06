@@ -3,7 +3,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { currencyFormatter } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { ProgramType } from '../../schemas/program'
+import { ProgramType } from '../../types/program'
 import { ShortenPeriodTypeLabel } from '../common/Period'
 
 const StyledPriceLabel = styled.div`

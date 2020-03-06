@@ -8,8 +8,8 @@ import { Link } from 'react-router-dom'
 import { ThemeContext } from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { ProgramType } from '../../schemas/program'
 import types from '../../types'
+import { ProgramType } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
 
 const messages = defineMessages({
