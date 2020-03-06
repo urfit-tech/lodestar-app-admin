@@ -4,6 +4,8 @@ import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
+import LanguageSelector from '../../components/common/LanguageSelector'
+import AppContext from '../../contexts/AppContext'
 import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
@@ -11,6 +13,7 @@ import types from '../../types'
 
 const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useContext(AppContext)
   const { loadingAppointmentPlan, errorAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(
     AppointmentPlanContext,
   )
@@ -89,6 +92,7 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
           ],
         })(<Input />)}
       </Form.Item>
+      {enabledModules.locale && <LanguageSelector />}
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
           {formatMessage(commonMessages.ui.cancel)}

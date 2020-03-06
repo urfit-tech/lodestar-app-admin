@@ -4,8 +4,10 @@ import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
+import LanguageSelector from '../../components/common/LanguageSelector'
 import ProgramCategorySelector from '../../components/program/ProgramCategorySelector'
 import ActivityContext from '../../contexts/ActivityContext'
+import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { activityMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -13,6 +15,7 @@ import types from '../../types'
 const ActivityBasicForm: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
   const { loadingActivity, errorActivity, activity, refetchActivity } = useContext(ActivityContext)
+  const { enabledModules } = useContext(AppContext)
   const [updateActivityBasic] = useMutation<types.UPDATE_ACTIVITY_BASIC, types.UPDATE_ACTIVITY_BASICVariables>(
     UPDATE_ACTIVITY_BASIC,
   )
@@ -85,6 +88,7 @@ const ActivityBasicForm: React.FC<FormComponentProps> = ({ form }) => {
           initialValue: activity.activityCategories.map(activityCategory => activityCategory.category.id),
         })(<ProgramCategorySelector />)}
       </Form.Item>
+      {enabledModules.locale && <LanguageSelector />}
       <Form.Item label={formatMessage(activityMessages.label.showParticipantsNumber)}>
         {form.getFieldDecorator('isParticipantsVisible', {
           initialValue: activity.isParticipantsVisible ? 'public' : 'private',

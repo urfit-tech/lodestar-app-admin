@@ -2,13 +2,15 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Typography } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
-import React from 'react'
+import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
+import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { ProgramType } from '../../schemas/program'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
+import LanguageSelector from '../common/LanguageSelector'
 import ProgramCategorySelector from './ProgramCategorySelector'
 
 type ProgramBasicAdminCardProps = FormComponentProps & {
@@ -24,6 +26,7 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
     types.UPDATE_PROGRAM_CATEGORIES,
     types.UPDATE_PROGRAM_CATEGORIESVariables
   >(UPDATE_PROGRAM_CATEGORIES)
+  const { enabledModules } = useContext(AppContext)
 
   const handleSubmit = () => {
     program &&
@@ -75,6 +78,7 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
               initialValue: program.categories.map(programCategories => programCategories.category.id),
             })(<ProgramCategorySelector />)}
           </Form.Item>
+          {enabledModules.locale && <LanguageSelector />}
           <Form.Item wrapperCol={{ md: { offset: 4 } }}>
             <Button onClick={() => form.resetFields()}>{formatMessage(commonMessages.ui.cancel)}</Button>
             <Button className="ml-2" type="primary" htmlType="submit">

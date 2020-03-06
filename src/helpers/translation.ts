@@ -77,7 +77,7 @@ export const commonMessages = {
     invoiceEmail: { id: 'common.label.invoiceEmail', defaultMessage: '發票信箱' },
     invoiceBuyerPhone: { id: 'common.label.invoiceBuyerPhone', defaultMessage: '發票電話' },
     invoiceTarget: { id: 'common.label.invoiceTarget', defaultMessage: '發票對象' },
-    invoiceDonationCode: {id: 'common.label.invoiceDonationCode', defaultMessage: '發票捐贈碼'},
+    invoiceDonationCode: { id: 'common.label.invoiceDonationCode', defaultMessage: '發票捐贈碼' },
     invoiceCarrier: { id: 'common.label.invoiceCarrier', defaultMessage: '發票載具' },
     invoiceUniformNumber: { id: 'common.label.invoiceUniformNumber', defaultMessage: '發票統編' },
     invoiceUniformTitle: { id: 'common.label.invoiceUniformTitle', defaultMessage: '發票抬頭' },
@@ -120,6 +120,7 @@ export const commonMessages = {
     phone: { id: 'common.label.phone', defaultMessage: '手機' },
     email: { id: 'common.label.email', defaultMessage: '郵件地址' },
     nameAndEmail: { id: 'common.label.nameAndEmail', defaultMessage: '姓名 / Email' },
+    languages: { id: 'common.label.languages', defaultMessage: '顯示語系' },
   }),
   term: defineMessages({
     instructor: { id: 'common.term.instructor', defaultMessage: '老師' },
@@ -164,6 +165,7 @@ export const commonMessages = {
     unknownProduct: { id: 'common.term.unknownProduct', defaultMessage: '未知類別' },
     currentPassword: { id: 'common.term.currentPassword', defaultMessage: '目前密碼' },
     owner: { id: 'common.term.owner', defaultMessage: '建立者' },
+    supportedLanguages: { id: 'common.term.supportedLanguages', defaultMessage: '選擇顯示於那個語系' },
   }),
   text: defineMessages({
     shortDescriptionPlaceholder: { id: 'common.text.shortDescriptionPlaceholder', defaultMessage: '30 字以內' },
@@ -179,7 +181,7 @@ export const commonMessages = {
     successfullyCreated: { id: 'common.event.successfullyCreated', defaultMessage: '建立成功' },
   }),
   status: defineMessages({
-    productExpired: {id: 'common.status.expired', defaultMessage: '到期'},
+    productExpired: { id: 'common.status.expired', defaultMessage: '到期' },
     orderSuccess: { id: 'common.status.orderSuccess', defaultMessage: '已完成' },
     orderUnpaid: { id: 'common.status.orderUnpaid', defaultMessage: '待付款' },
     orderRefund: { id: 'common.status.orderRefund', defaultMessage: '已退款' },
@@ -306,7 +308,7 @@ export const appointmentMessages = {
   text: defineMessages({
     durationTips: { id: 'appointment.text.durationTips', defaultMessage: '設定單次預約服務的時間長度' },
     selectStartedAt: { id: 'appointment.text.selectStartedAt', defaultMessage: '選擇起始時間' },
-    timezone: {id: 'appointment.text.timezone', defaultMessage: "時間以 {city} (GMT{timezone}) 顯示"},
+    timezone: { id: 'appointment.text.timezone', defaultMessage: '時間以 {city} (GMT{timezone}) 顯示' },
   }),
 }
 

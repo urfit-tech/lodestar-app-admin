@@ -4,7 +4,9 @@ import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
+import LanguageSelector from '../../components/common/LanguageSelector'
 import ProgramCategorySelector from '../../components/program/ProgramCategorySelector'
+import AppContext from '../../contexts/AppContext'
 import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
@@ -12,6 +14,7 @@ import types from '../../types'
 
 const PodcastProgramBasicForm: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useContext(AppContext)
   const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
     PodcastProgramContext,
   )
@@ -94,6 +97,7 @@ const PodcastProgramBasicForm: React.FC<FormComponentProps> = ({ form }) => {
           initialValue: podcastProgram.categories.map(category => category.id),
         })(<ProgramCategorySelector />)}
       </Form.Item>
+      {enabledModules.locale && <LanguageSelector />}
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
           {formatMessage(commonMessages.ui.cancel)}
