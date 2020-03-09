@@ -44,6 +44,7 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
           appointmentPlanId: appointmentPlan.id,
           title: values.title,
           phone: values.phone,
+          supportLocales: values.languages,
         },
       })
         .then(() => {
@@ -112,8 +113,16 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
 }
 
 const UPDATE_APPOINTMENT_PLAN_TITLE = gql`
-  mutation UPDATE_APPOINTMENT_PLAN_TITLE($appointmentPlanId: uuid!, $title: String!, $phone: String!) {
-    update_appointment_plan(where: { id: { _eq: $appointmentPlanId } }, _set: { title: $title, phone: $phone }) {
+  mutation UPDATE_APPOINTMENT_PLAN_TITLE(
+    $appointmentPlanId: uuid!
+    $title: String!
+    $phone: String!
+    $supportLocales: jsonb
+  ) {
+    update_appointment_plan(
+      where: { id: { _eq: $appointmentPlanId } }
+      _set: { title: $title, phone: $phone, support_locales: $supportLocales }
+    ) {
       affected_rows
     }
   }

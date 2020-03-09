@@ -651,6 +651,7 @@ export interface UPDATE_PROGRAM_TITLE {
 export interface UPDATE_PROGRAM_TITLEVariables {
   programId: any;
   title?: string | null;
+  supportLocales?: any | null;
 }
 
 /* tslint:disable */
@@ -1560,6 +1561,7 @@ export interface UPDATE_ACTIVITY_BASICVariables {
   title: string;
   isParticipantsVisible: boolean;
   activityCategories: activity_category_insert_input[];
+  supportLocales?: any | null;
 }
 
 /* tslint:disable */
@@ -1980,6 +1982,7 @@ export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
   appointmentPlanId: any;
   title: string;
   phone: string;
+  supportLocales?: any | null;
 }
 
 /* tslint:disable */
@@ -2625,6 +2628,7 @@ export interface UPDATE_PODCAST_PROGRAM_BASICVariables {
   title?: string | null;
   podcastCategories: podcast_program_category_insert_input[];
   updatedAt: any;
+  supportLocales?: any | null;
 }
 
 /* tslint:disable */

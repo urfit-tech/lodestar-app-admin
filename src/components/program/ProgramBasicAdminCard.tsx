@@ -34,7 +34,7 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
         if (!error) {
           Promise.all([
             updateProgramTitle({
-              variables: { programId: program.id, title: values.title },
+              variables: { programId: program.id, title: values.title, supportLocales: values.languages },
             }),
             updateProgramCategories({
               variables: {
@@ -98,8 +98,8 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
 }
 
 const UPDATE_PROGRAM_TITLE = gql`
-  mutation UPDATE_PROGRAM_TITLE($programId: uuid!, $title: String) {
-    update_program(_set: { title: $title }, where: { id: { _eq: $programId } }) {
+  mutation UPDATE_PROGRAM_TITLE($programId: uuid!, $title: String, $supportLocales: jsonb) {
+    update_program(_set: { title: $title, support_locales: $supportLocales }, where: { id: { _eq: $programId } }) {
       affected_rows
     }
   }

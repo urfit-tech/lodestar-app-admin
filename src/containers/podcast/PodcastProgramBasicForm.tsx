@@ -46,6 +46,7 @@ const PodcastProgramBasicForm: React.FC<FormComponentProps> = ({ form }) => {
           updatedAt: new Date(),
           podcastProgramId: podcastProgram.id,
           title: values.title,
+          supportLocales: values.languages,
           podcastCategories: values.categoryIds
             ? values.categoryIds.map((categoryId: string, position: number) => ({
                 podcast_program_id: podcastProgram.id,
@@ -122,8 +123,12 @@ const UPDATE_PODCAST_PROGRAM_BASIC = gql`
     $title: String
     $podcastCategories: [podcast_program_category_insert_input!]!
     $updatedAt: timestamptz!
+    $supportLocales: jsonb
   ) {
-    update_podcast_program(where: { id: { _eq: $podcastProgramId } }, _set: { title: $title, updated_at: $updatedAt }) {
+    update_podcast_program(
+      where: { id: { _eq: $podcastProgramId } }
+      _set: { title: $title, updated_at: $updatedAt, support_locales: $supportLocales }
+    ) {
       affected_rows
     }
     delete_podcast_program_category(where: { podcast_program_id: { _eq: $podcastProgramId } }) {

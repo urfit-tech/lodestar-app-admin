@@ -43,6 +43,7 @@ const ActivityBasicForm: React.FC<FormComponentProps> = ({ form }) => {
         variables: {
           activityId: activity.id,
           title: values.title,
+          supportLocales: values.languages,
           activityCategories: categoryIds.map((categoryId, index) => ({
             activity_id: activity.id,
             category_id: categoryId,
@@ -123,10 +124,11 @@ const UPDATE_ACTIVITY_BASIC = gql`
     $title: String!
     $isParticipantsVisible: Boolean!
     $activityCategories: [activity_category_insert_input!]!
+    $supportLocales: jsonb
   ) {
     update_activity(
       where: { id: { _eq: $activityId } }
-      _set: { title: $title, is_participants_visible: $isParticipantsVisible }
+      _set: { title: $title, is_participants_visible: $isParticipantsVisible, support_locales: $supportLocales }
     ) {
       affected_rows
     }
