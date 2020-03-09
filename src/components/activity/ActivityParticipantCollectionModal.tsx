@@ -30,7 +30,17 @@ const StyledRow = styled.div`
 `
 const StyledCell = styled.div`
   display: table-cell;
-  padding: 0.75rem 0.5rem;
+  padding: 0.75rem 1.25rem;
+  color: var(--gray-darker);
+  font-size: 14px;
+  letter-spacing: 0.4px;
+
+  &:first-child {
+    padding-left: 0;
+  }
+  &:last-child {
+    padding-right: 0;
+  }
 `
 
 const messages = defineMessages({
@@ -66,7 +76,7 @@ const ActivityParticipantCollectionModal: React.FC<{
         {formatMessage(messages.participantsList)}
       </Button>
 
-      <Modal title={null} footer={null} onCancel={() => setVisible(false)} visible={visible}>
+      <Modal title={null} footer={null} onCancel={() => setVisible(false)} visible={visible} width="41.25rem">
         <StyledTitle className="mb-3">{formatMessage(messages.participantsList)}</StyledTitle>
 
         <Tabs>
