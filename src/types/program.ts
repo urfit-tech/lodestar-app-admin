@@ -14,7 +14,7 @@ export type ProgramType = {
   inAdvance: boolean
   fundingId: any | null
   isSoldOut: boolean | null
-  // supportLocales: string[]
+  supportLocales: string[]
   contentSections: ProgramContentSectionType[]
   roles: ProgramRoleType[]
   plans: ProgramPlanType[]

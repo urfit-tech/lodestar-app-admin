@@ -78,7 +78,13 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
               initialValue: program.categories.map(programCategories => programCategories.category.id),
             })(<ProgramCategorySelector />)}
           </Form.Item>
-          {enabledModules.locale && <LanguageSelector />}
+          {enabledModules.locale && (
+            <Form.Item label={formatMessage(commonMessages.label.languages)}>
+              {form.getFieldDecorator('languages', {
+                initialValue: program.supportLocales.map(supportLocale => supportLocale),
+              })(<LanguageSelector />)}
+            </Form.Item>
+          )}
           <Form.Item wrapperCol={{ md: { offset: 4 } }}>
             <Button onClick={() => form.resetFields()}>{formatMessage(commonMessages.ui.cancel)}</Button>
             <Button className="ml-2" type="primary" htmlType="submit">

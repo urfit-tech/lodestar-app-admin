@@ -88,7 +88,13 @@ const ActivityBasicForm: React.FC<FormComponentProps> = ({ form }) => {
           initialValue: activity.activityCategories.map(activityCategory => activityCategory.category.id),
         })(<ProgramCategorySelector />)}
       </Form.Item>
-      {enabledModules.locale && <LanguageSelector />}
+      {enabledModules.locale && (
+        <Form.Item label={formatMessage(commonMessages.label.languages)}>
+          {form.getFieldDecorator('languages', {
+            initialValue: activity.supportLocales.map(supportLocale => supportLocale),
+          })(<LanguageSelector />)}
+        </Form.Item>
+      )}
       <Form.Item label={formatMessage(activityMessages.label.showParticipantsNumber)}>
         {form.getFieldDecorator('isParticipantsVisible', {
           initialValue: activity.isParticipantsVisible ? 'public' : 'private',

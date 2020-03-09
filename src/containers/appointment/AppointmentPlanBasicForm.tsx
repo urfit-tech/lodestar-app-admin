@@ -92,7 +92,13 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
           ],
         })(<Input />)}
       </Form.Item>
-      {enabledModules.locale && <LanguageSelector />}
+      {enabledModules.locale && (
+        <Form.Item label={formatMessage(commonMessages.label.languages)}>
+          {form.getFieldDecorator('languages', {
+            initialValue: appointmentPlan.supportLocales.map(supportLocale => supportLocale),
+          })(<LanguageSelector />)}
+        </Form.Item>
+      )}
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
           {formatMessage(commonMessages.ui.cancel)}

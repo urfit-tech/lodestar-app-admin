@@ -27,6 +27,7 @@ export const useProgram = (programId: string) => {
           in_advance
           funding_id
           is_sold_out
+          support_locales
           program_content_sections(order_by: { position: asc }) {
             id
             title
@@ -98,6 +99,7 @@ export const useProgram = (programId: string) => {
     inAdvance: boolean
     fundingId: any | null
     isSoldOut: boolean | null
+    supportLocales: string[]
     contentSections: {
       id: string
       title: string
@@ -167,6 +169,7 @@ export const useProgram = (programId: string) => {
           inAdvance: data.program_by_pk.in_advance,
           fundingId: data.program_by_pk.funding_id,
           isSoldOut: data.program_by_pk.is_sold_out,
+          supportLocales: data?.program_by_pk?.support_locales || [],
           contentSections: data.program_by_pk.program_content_sections.map(programContentSection => ({
             id: programContentSection.id,
             title: programContentSection.title,

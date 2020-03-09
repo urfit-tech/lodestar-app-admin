@@ -14,7 +14,7 @@ export type ActivityAdminProps = {
   isParticipantsVisible: boolean
   organizerId: string
   publishedAt: Date | null
-
+  supportLocales: string[]
   activityCategories: {
     id: string
     category: {
@@ -59,7 +59,7 @@ export const ActivityProvider: React.FC<{
           isParticipantsVisible: data.activity_by_pk.is_participants_visible,
           organizerId: data.activity_by_pk.organizer_id,
           publishedAt: data.activity_by_pk.published_at ? new Date(data.activity_by_pk.published_at) : null,
-
+          supportLocales: data?.activity_by_pk?.support_locales || [],
           activityCategories: data.activity_by_pk.activity_categories.map(activityCategory => ({
             id: activityCategory.id,
             category: {
@@ -128,6 +128,7 @@ const GET_ACTIVITY_ADMIN = gql`
       is_participants_visible
       organizer_id
       published_at
+      support_locales
       activity_categories {
         id
         category {
