@@ -651,6 +651,7 @@ export interface UPDATE_PROGRAM_TITLE {
 export interface UPDATE_PROGRAM_TITLEVariables {
   programId: any;
   title?: string | null;
+  supportLocales?: any | null;
 }
 
 /* tslint:disable */
@@ -1560,6 +1561,7 @@ export interface UPDATE_ACTIVITY_BASICVariables {
   title: string;
   isParticipantsVisible: boolean;
   activityCategories: activity_category_insert_input[];
+  supportLocales?: any | null;
 }
 
 /* tslint:disable */
@@ -1991,6 +1993,7 @@ export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
   appointmentPlanId: any;
   title: string;
   phone: string;
+  supportLocales?: any | null;
 }
 
 /* tslint:disable */
@@ -2636,6 +2639,7 @@ export interface UPDATE_PODCAST_PROGRAM_BASICVariables {
   title?: string | null;
   podcastCategories: podcast_program_category_insert_input[];
   updatedAt: any;
+  supportLocales?: any | null;
 }
 
 /* tslint:disable */
@@ -3761,6 +3765,7 @@ export interface GET_ACTIVITY_ADMIN_activity_by_pk {
   is_participants_visible: boolean;
   organizer_id: string;
   published_at: any | null;
+  support_locales: any | null;
   /**
    * An array relationship
    */
@@ -3941,6 +3946,7 @@ export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk {
   duration: any;
   price: any;
   published_at: any | null;
+  support_locales: any | null;
   /**
    * An array relationship
    */
@@ -4030,6 +4036,7 @@ export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk {
   duration: any;
   published_at: any | null;
   creator_id: string;
+  support_locales: any | null;
   /**
    * An array relationship
    */
@@ -5104,6 +5111,7 @@ export interface GET_PROGRAM_program_by_pk {
   in_advance: boolean;
   funding_id: any | null;
   is_sold_out: boolean | null;
+  support_locales: any | null;
   /**
    * An array relationship
    */
@@ -5892,6 +5900,7 @@ export enum activity_update_column {
   organizer_id = "organizer_id",
   position = "position",
   published_at = "published_at",
+  support_locales = "support_locales",
   title = "title",
 }
 
@@ -6013,6 +6022,7 @@ export enum appointment_plan_update_column {
   phone = "phone",
   price = "price",
   published_at = "published_at",
+  support_locales = "support_locales",
   title = "title",
   updated_at = "updated_at",
 }
@@ -6793,6 +6803,7 @@ export enum podcast_program_update_column {
   published_at = "published_at",
   sale_price = "sale_price",
   sold_at = "sold_at",
+  support_locales = "support_locales",
   title = "title",
   updated_at = "updated_at",
 }
@@ -6967,6 +6978,7 @@ export enum program_content_update_column {
   abstract = "abstract",
   content_body_id = "content_body_id",
   content_section_id = "content_section_id",
+  content_type = "content_type",
   created_at = "created_at",
   duration = "duration",
   id = "id",
@@ -7126,7 +7138,7 @@ export enum program_update_column {
   published_at = "published_at",
   sale_price = "sale_price",
   sold_at = "sold_at",
-  support_locale = "support_locale",
+  support_locales = "support_locales",
   title = "title",
 }
 
@@ -7302,6 +7314,7 @@ export interface activity_bool_exp {
   package_items?: package_item_bool_exp | null;
   position?: Int_comparison_exp | null;
   published_at?: timestamptz_comparison_exp | null;
+  support_locales?: jsonb_comparison_exp | null;
   title?: String_comparison_exp | null;
 }
 
@@ -7387,6 +7400,7 @@ export interface activity_insert_input {
   package_items?: package_item_arr_rel_insert_input | null;
   position?: number | null;
   published_at?: any | null;
+  support_locales?: any | null;
   title?: string | null;
 }
 
@@ -7924,6 +7938,7 @@ export interface appointment_plan_bool_exp {
   phone?: String_comparison_exp | null;
   price?: numeric_comparison_exp | null;
   published_at?: timestamptz_comparison_exp | null;
+  support_locales?: jsonb_comparison_exp | null;
   title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -7941,6 +7956,7 @@ export interface appointment_plan_insert_input {
   phone?: string | null;
   price?: any | null;
   published_at?: any | null;
+  support_locales?: any | null;
   title?: string | null;
   updated_at?: any | null;
 }
@@ -10049,6 +10065,7 @@ export interface podcast_program_bool_exp {
   published_at?: timestamptz_comparison_exp | null;
   sale_price?: numeric_comparison_exp | null;
   sold_at?: timestamptz_comparison_exp | null;
+  support_locales?: jsonb_comparison_exp | null;
   title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -10129,6 +10146,7 @@ export interface podcast_program_insert_input {
   published_at?: any | null;
   sale_price?: any | null;
   sold_at?: any | null;
+  support_locales?: any | null;
   title?: string | null;
   updated_at?: any | null;
 }
@@ -10396,7 +10414,7 @@ export interface program_bool_exp {
   published_at?: timestamptz_comparison_exp | null;
   sale_price?: numeric_comparison_exp | null;
   sold_at?: timestamptz_comparison_exp | null;
-  support_locale?: jsonb_comparison_exp | null;
+  support_locales?: jsonb_comparison_exp | null;
   title?: String_comparison_exp | null;
 }
 
@@ -10504,6 +10522,7 @@ export interface program_content_bool_exp {
   abstract?: String_comparison_exp | null;
   content_body_id?: uuid_comparison_exp | null;
   content_section_id?: uuid_comparison_exp | null;
+  content_type?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   duration?: numeric_comparison_exp | null;
   enrollments?: program_content_enrollment_bool_exp | null;
@@ -10544,6 +10563,7 @@ export interface program_content_insert_input {
   abstract?: string | null;
   content_body_id?: any | null;
   content_section_id?: any | null;
+  content_type?: string | null;
   created_at?: any | null;
   duration?: any | null;
   id?: any | null;
@@ -10788,7 +10808,7 @@ export interface program_insert_input {
   published_at?: any | null;
   sale_price?: any | null;
   sold_at?: any | null;
-  support_locale?: any | null;
+  support_locales?: any | null;
   title?: string | null;
 }
 

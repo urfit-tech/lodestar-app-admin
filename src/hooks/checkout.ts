@@ -1,10 +1,10 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { useAuth } from '../contexts/AuthContext'
-import { ProductType } from '../schemas/general'
 import types from '../types'
 import { CartProduct } from '../types/payment'
 import { useEnrolledProductIds } from './data'
+import { ProductType } from '../types/general'
 
 export const useCart = () => {
   const { currentMemberId: memberId } = useAuth()

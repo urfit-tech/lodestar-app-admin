@@ -2,7 +2,7 @@ import { Typography } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { programMessages } from '../../helpers/translation'
-import { ProgramType } from '../../schemas/program'
+import { ProgramType } from '../../types/program'
 import ProgramBasicAdminCard from './ProgramBasicAdminCard'
 import ProgramIntroAdminCard from './ProgramIntroAdminCard'
 

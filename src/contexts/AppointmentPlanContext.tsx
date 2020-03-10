@@ -21,6 +21,7 @@ type AppointmentPlanAdminProps = {
   periods: AppointmentPeriodProps[]
   enrollments: number
   isPublished: boolean | null
+  supportLocales: string[]
 }
 const AppointmentPlanContext = createContext<{
   loadingAppointmentPlan: boolean
@@ -59,6 +60,7 @@ export const AppointmentPlanProvider: React.FC<{
           periods: [],
           enrollments: 0,
           isPublished: null,
+          supportLocales: [],
         }
       : {
           id: appointmentPlanId,
@@ -90,6 +92,7 @@ export const AppointmentPlanProvider: React.FC<{
             ? data.appointment_plan_by_pk.appointment_enrollments_aggregate.aggregate.count || 0
             : 0,
           isPublished: !!data.appointment_plan_by_pk.published_at,
+          supportLocales: data?.appointment_plan_by_pk.support_locales || [],
         }
 
   return (
@@ -116,6 +119,7 @@ const GET_APPOINTMENT_PLAN_ADMIN = gql`
       duration
       price
       published_at
+      support_locales
       appointment_schedules {
         id
         excludes

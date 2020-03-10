@@ -1,15 +1,35 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Input, message, Typography } from 'antd'
+import { Button, Form, Icon, Input, message, Popover, Typography } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
-import React from 'react'
+import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
+import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
-import { ProgramType } from '../../schemas/program'
 import types from '../../types'
+import { ProgramType } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
+import LanguageSelector from '../common/LanguageSelector'
 import ProgramCategorySelector from './ProgramCategorySelector'
+
+const StyledPopover = styled(Popover)`
+  .ant-popover .ant-popover-inner-content {
+    padding: 4px 8px;
+    border-radius: 4px;
+    width: 169px;
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.58px;
+    background-color: blue;
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
+  }
+  .ant-popover .ant-popover-arrow {
+    border-color: var(--gray-dark);
+  }
+`
 
 type ProgramBasicAdminCardProps = FormComponentProps & {
   program: ProgramType | null
@@ -24,6 +44,7 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
     types.UPDATE_PROGRAM_CATEGORIES,
     types.UPDATE_PROGRAM_CATEGORIESVariables
   >(UPDATE_PROGRAM_CATEGORIES)
+  const { enabledModules } = useContext(AppContext)
 
   const handleSubmit = () => {
     program &&
@@ -31,7 +52,7 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
         if (!error) {
           Promise.all([
             updateProgramTitle({
-              variables: { programId: program.id, title: values.title },
+              variables: { programId: program.id, title: values.title, supportLocales: values.languages },
             }),
             updateProgramCategories({
               variables: {
@@ -75,6 +96,22 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
               initialValue: program.categories.map(programCategories => programCategories.category.id),
             })(<ProgramCategorySelector />)}
           </Form.Item>
+          {enabledModules.locale && (
+            <Form.Item
+              label={
+                <div>
+                  {formatMessage(commonMessages.label.languages)}
+                  <StyledPopover content="當前台為指定語系時才會顯示，若不選擇全語系皆顯示">
+                    <Icon type="question-circle" theme="filled" className="ml-2" />
+                  </StyledPopover>
+                </div>
+              }
+            >
+              {form.getFieldDecorator('languages', {
+                initialValue: program.supportLocales.map(supportLocale => supportLocale),
+              })(<LanguageSelector />)}
+            </Form.Item>
+          )}
           <Form.Item wrapperCol={{ md: { offset: 4 } }}>
             <Button onClick={() => form.resetFields()}>{formatMessage(commonMessages.ui.cancel)}</Button>
             <Button className="ml-2" type="primary" htmlType="submit">
@@ -88,8 +125,8 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
 }
 
 const UPDATE_PROGRAM_TITLE = gql`
-  mutation UPDATE_PROGRAM_TITLE($programId: uuid!, $title: String) {
-    update_program(_set: { title: $title }, where: { id: { _eq: $programId } }) {
+  mutation UPDATE_PROGRAM_TITLE($programId: uuid!, $title: String, $supportLocales: jsonb) {
+    update_program(_set: { title: $title, support_locales: $supportLocales }, where: { id: { _eq: $programId } }) {
       affected_rows
     }
   }

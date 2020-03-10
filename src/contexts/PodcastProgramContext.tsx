@@ -22,6 +22,7 @@ type PodcastProgramProps = {
   creatorId: string
   instructors: { id: string; name: string; pictureUrl: string }[]
   publishedAt: Date | null
+  supportLocales: string[]
 }
 
 const PodcastProgramContext = createContext<{
@@ -74,6 +75,7 @@ export const PodcastProgramProvider: React.FC<{
           publishedAt: data.podcast_program_by_pk.published_at
             ? new Date(data.podcast_program_by_pk.published_at)
             : null,
+          supportLocales: data.podcast_program_by_pk.support_locales || [],
         }
 
   return (
@@ -104,6 +106,7 @@ const GET_PODCAST_PROGRAM_ADMIN = gql`
       duration
       published_at
       creator_id
+      support_locales
       podcast_program_bodies {
         id
         description

@@ -8,8 +8,8 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import { ProgramType } from '../../schemas/program'
 import types from '../../types'
+import { ProgramType } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
 
 const StyledIcon = styled(Icon)`

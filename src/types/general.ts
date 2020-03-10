@@ -1,0 +1,12 @@
+export type ProductType =
+  | 'Program'
+  | 'ProgramPlan'
+  | 'ProgramContent'
+  | 'ProgramPackagePlan'
+  | 'ProjectPlan'
+  | 'Card'
+  | 'ActivityTicket'
+  | 'Merchandise'
+  | 'PodcastProgram'
+  | 'PodcastPlan'
+  | 'AppointmentPlan'

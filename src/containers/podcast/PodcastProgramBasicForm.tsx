@@ -1,17 +1,38 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Input, message, Skeleton } from 'antd'
+import { Button, Form, Icon, Input, message, Popover, Skeleton } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
+import LanguageSelector from '../../components/common/LanguageSelector'
 import ProgramCategorySelector from '../../components/program/ProgramCategorySelector'
+import AppContext from '../../contexts/AppContext'
 import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
 import types from '../../types'
 
+const StyledPopover = styled(Popover)`
+  .ant-popover .ant-popover-inner-content {
+    padding: 4px 8px;
+    border-radius: 4px;
+    width: 169px;
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.58px;
+    background-color: blue;
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
+  }
+  .ant-popover .ant-popover-arrow {
+    border-color: var(--gray-dark);
+  }
+`
+
 const PodcastProgramBasicForm: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useContext(AppContext)
   const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
     PodcastProgramContext,
   )
@@ -43,6 +64,7 @@ const PodcastProgramBasicForm: React.FC<FormComponentProps> = ({ form }) => {
           updatedAt: new Date(),
           podcastProgramId: podcastProgram.id,
           title: values.title,
+          supportLocales: values.languages,
           podcastCategories: values.categoryIds
             ? values.categoryIds.map((categoryId: string, position: number) => ({
                 podcast_program_id: podcastProgram.id,
@@ -94,6 +116,22 @@ const PodcastProgramBasicForm: React.FC<FormComponentProps> = ({ form }) => {
           initialValue: podcastProgram.categories.map(category => category.id),
         })(<ProgramCategorySelector />)}
       </Form.Item>
+      {enabledModules.locale && (
+        <Form.Item
+          label={
+            <div>
+              {formatMessage(commonMessages.label.languages)}
+              <StyledPopover content="當前台為指定語系時才會顯示，若不選擇全語系皆顯示">
+                <Icon type="question-circle" theme="filled" className="ml-2" />
+              </StyledPopover>
+            </div>
+          }
+        >
+          {form.getFieldDecorator('languages', {
+            initialValue: podcastProgram.supportLocales.map(supportLocale => supportLocale),
+          })(<LanguageSelector />)}
+        </Form.Item>
+      )}
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
           {formatMessage(commonMessages.ui.cancel)}
@@ -112,8 +150,12 @@ const UPDATE_PODCAST_PROGRAM_BASIC = gql`
     $title: String
     $podcastCategories: [podcast_program_category_insert_input!]!
     $updatedAt: timestamptz!
+    $supportLocales: jsonb
   ) {
-    update_podcast_program(where: { id: { _eq: $podcastProgramId } }, _set: { title: $title, updated_at: $updatedAt }) {
+    update_podcast_program(
+      where: { id: { _eq: $podcastProgramId } }
+      _set: { title: $title, updated_at: $updatedAt, support_locales: $supportLocales }
+    ) {
       affected_rows
     }
     delete_podcast_program_category(where: { podcast_program_id: { _eq: $podcastProgramId } }) {
