@@ -1,9 +1,10 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Input, message, Typography } from 'antd'
+import { Button, Form, Icon, Input, message, Popover, Typography } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
@@ -12,6 +13,23 @@ import { ProgramType } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
 import LanguageSelector from '../common/LanguageSelector'
 import ProgramCategorySelector from './ProgramCategorySelector'
+
+const StyledPopover = styled(Popover)`
+  .ant-popover .ant-popover-inner-content {
+    padding: 4px 8px;
+    border-radius: 4px;
+    width: 169px;
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.58px;
+    background-color: blue;
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
+  }
+  .ant-popover .ant-popover-arrow {
+    border-color: var(--gray-dark);
+  }
+`
 
 type ProgramBasicAdminCardProps = FormComponentProps & {
   program: ProgramType | null
@@ -79,7 +97,16 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
             })(<ProgramCategorySelector />)}
           </Form.Item>
           {enabledModules.locale && (
-            <Form.Item label={formatMessage(commonMessages.label.languages)}>
+            <Form.Item
+              label={
+                <div>
+                  {formatMessage(commonMessages.label.languages)}
+                  <StyledPopover content="當前台為指定語系時才會顯示，若不選擇全語系皆顯示">
+                    <Icon type="question-circle" theme="filled" className="ml-2" />
+                  </StyledPopover>
+                </div>
+              }
+            >
               {form.getFieldDecorator('languages', {
                 initialValue: program.supportLocales.map(supportLocale => supportLocale),
               })(<LanguageSelector />)}

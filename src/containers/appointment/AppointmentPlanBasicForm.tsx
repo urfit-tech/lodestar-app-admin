@@ -1,15 +1,33 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Input, message, Skeleton } from 'antd'
+import { Button, Form, Icon, Input, message, Popover, Skeleton } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import LanguageSelector from '../../components/common/LanguageSelector'
 import AppContext from '../../contexts/AppContext'
 import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
+
+const StyledPopover = styled(Popover)`
+  .ant-popover .ant-popover-inner-content {
+    padding: 4px 8px;
+    border-radius: 4px;
+    width: 169px;
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.58px;
+    background-color: blue;
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
+  }
+  .ant-popover .ant-popover-arrow {
+    border-color: var(--gray-dark);
+  }
+`
 
 const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
@@ -94,7 +112,16 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
         })(<Input />)}
       </Form.Item>
       {enabledModules.locale && (
-        <Form.Item label={formatMessage(commonMessages.label.languages)}>
+        <Form.Item
+          label={
+            <div>
+              {formatMessage(commonMessages.label.languages)}
+              <StyledPopover content="當前台為指定語系時才會顯示，若不選擇全語系皆顯示">
+                <Icon type="question-circle" theme="filled" className="ml-2" />
+              </StyledPopover>
+            </div>
+          }
+        >
           {form.getFieldDecorator('languages', {
             initialValue: appointmentPlan.supportLocales.map(supportLocale => supportLocale),
           })(<LanguageSelector />)}
