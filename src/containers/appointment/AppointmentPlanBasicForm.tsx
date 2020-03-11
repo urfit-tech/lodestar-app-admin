@@ -1,10 +1,9 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Icon, Input, message, Skeleton, Tooltip } from 'antd'
+import { Button, Form, Input, message, Skeleton } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
-import LanguageSelector from '../../components/common/LanguageSelector'
 import AppContext from '../../contexts/AppContext'
 import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 import { handleError } from '../../helpers'
@@ -93,7 +92,7 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
           ],
         })(<Input />)}
       </Form.Item>
-      {enabledModules.locale && (
+      {/* {enabledModules.locale && (
         <Form.Item
           label={
             <>
@@ -108,7 +107,7 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
             initialValue: appointmentPlan.supportLocales.map(supportLocale => supportLocale),
           })(<LanguageSelector />)}
         </Form.Item>
-      )}
+      )} */}
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
           {formatMessage(commonMessages.ui.cancel)}
