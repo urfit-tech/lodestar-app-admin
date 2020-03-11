@@ -165,7 +165,7 @@ export const commonMessages = {
     unknownProduct: { id: 'common.term.unknownProduct', defaultMessage: '未知類別' },
     currentPassword: { id: 'common.term.currentPassword', defaultMessage: '目前密碼' },
     owner: { id: 'common.term.owner', defaultMessage: '建立者' },
-    supportedLanguages: { id: 'common.term.supportedLanguages', defaultMessage: '選擇顯示於那個語系' },
+    supportedLanguages: { id: 'common.term.supportedLanguages', defaultMessage: '選擇顯示於哪個語系' },
   }),
   text: defineMessages({
     shortDescriptionPlaceholder: { id: 'common.text.shortDescriptionPlaceholder', defaultMessage: '30 字以內' },
