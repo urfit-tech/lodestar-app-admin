@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import CreatorSelector from '../../containers/common/CreatorSelector'
 import MemberAvatar from '../../containers/common/MemberAvatar'
 import { DeleteProgramProps, UpdateProgramProps } from '../../containers/program/ProgramRoleAdminPane'
+import { notEmpty } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { ProgramType } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
@@ -55,7 +56,9 @@ const ProgramRoleAdminPane: React.FC<CardProps & {
       data: {
         programId: program ? program.id : '',
         instructorIds: [
-          ...program.roles.map(role => ({ memberId: role?.member?.id || '', name: role.name || '' })),
+          ...program.roles
+            .filter(role => notEmpty(role?.member?.id))
+            .map(role => ({ memberId: role?.member?.id || '', name: role.name || '' })),
           { memberId: selectedMemberId, name: 'instructor' },
         ],
       },
