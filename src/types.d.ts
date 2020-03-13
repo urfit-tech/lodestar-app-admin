@@ -3921,17 +3921,26 @@ export interface GET_APP_app_by_pk_app_modules {
   module_id: string;
 }
 
+export interface GET_APP_app_by_pk_app_settings {
+  __typename: "app_setting";
+  key: string;
+  value: string;
+}
+
 export interface GET_APP_app_by_pk {
   __typename: "app";
   id: string;
   name: string | null;
   title: string | null;
   description: string | null;
-  domain: string;
   /**
    * An array relationship
    */
   app_modules: GET_APP_app_by_pk_app_modules[];
+  /**
+   * An array relationship
+   */
+  app_settings: GET_APP_app_by_pk_app_settings[];
 }
 
 export interface GET_APP {
@@ -10493,6 +10502,7 @@ export interface program_bool_exp {
   program_announcements?: program_announcement_bool_exp | null;
   program_categories?: program_category_bool_exp | null;
   program_content_sections?: program_content_section_bool_exp | null;
+  program_enrollments?: program_enrollment_bool_exp | null;
   program_package_programs?: program_package_program_bool_exp | null;
   program_plans?: program_plan_bool_exp | null;
   program_related_items?: program_related_item_bool_exp | null;
@@ -10860,6 +10870,23 @@ export interface program_editor_bool_exp {
 export interface program_editor_insert_input {
   member_id?: string | null;
   program_id?: any | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_enrollment". All fields are combined with a logical 'AND'.
+ */
+export interface program_enrollment_bool_exp {
+  _and?: (program_enrollment_bool_exp | null)[] | null;
+  _not?: program_enrollment_bool_exp | null;
+  _or?: (program_enrollment_bool_exp | null)[] | null;
+  member?: member_bool_exp | null;
+  member_email?: String_comparison_exp | null;
+  member_id?: String_comparison_exp | null;
+  member_name?: String_comparison_exp | null;
+  member_picture_url?: String_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_id?: uuid_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**

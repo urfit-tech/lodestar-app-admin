@@ -22,7 +22,11 @@ const PodcastProgramHeader: React.FC<{
       </Button>
 
       <AdminHeaderTitle>{podcastProgram ? podcastProgram.title : podcastProgramId}</AdminHeaderTitle>
-      <a href={`https://${app.domain}/podcasts/${podcastProgramId}`} target="_blank" rel="noopener noreferrer">
+      <a
+        href={`https://${app.settings['host']}/podcasts/${podcastProgramId}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <Button>{formatMessage(commonMessages.ui.preview)}</Button>
       </a>
     </AdminHeader>

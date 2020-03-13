@@ -109,7 +109,7 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
       <div className="row no-gutters align-items-center justify-content-center">
         {member.role === 'content-creator' && (
           <a
-            href={`//${app.domain}/creators/${member.id}`}
+            href={`//${app.settings['host']}/creators/${member.id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="col-5 text-center"
@@ -119,7 +119,7 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
         )}
         {member.role === 'general-member' && (
           <a
-            href={`//${app.domain}/members/${member.id}`}
+            href={`//${app.settings['host']}/members/${member.id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="col-5 text-center"

@@ -9,7 +9,7 @@ const ActivityHeader: React.FC<{
   activityId: string
 }> = ({ activityId }) => {
   const { history } = useRouter()
-  const { domain } = useContext(AppContext)
+  const { settings } = useContext(AppContext)
   const { activity } = useContext(ActivityContext)
 
   return (
@@ -19,7 +19,7 @@ const ActivityHeader: React.FC<{
       </Button>
 
       <AdminHeaderTitle>{activity ? activity.title : activityId}</AdminHeaderTitle>
-      <a href={`//${domain}/activities/${activityId}`} target="_blank" rel="noopener noreferrer">
+      <a href={`//${settings['host']}/activities/${activityId}`} target="_blank" rel="noopener noreferrer">
         <Button>預覽</Button>
       </a>
     </AdminHeader>

@@ -66,7 +66,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
   ...cardProps
 }) => {
   const { formatMessage } = useIntl()
-  const { domain } = useContext(AppContext)
+  const { settings } = useContext(AppContext)
   const { currentMemberId } = useAuth()
   const { program } = useProgram(programId)
   const [updateIssueStatus] = useMutation<types.UPDATE_ISSUE_STATUS, types.UPDATE_ISSUE_STATUSVariables>(
@@ -129,7 +129,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
         title={
           <>
             <span>{programTitle}</span>
-            <Button type="link" onClick={() => window.open(`//${domain}${threadId}`)}>
+            <Button type="link" onClick={() => window.open(`//${settings['host']}${threadId}`)}>
               {formatMessage(messages.checkProgramContent)}
             </Button>
           </>
