@@ -4,6 +4,7 @@ import { useIntl } from 'react-intl'
 import { programMessages } from '../../helpers/translation'
 import { ProgramType } from '../../types/program'
 import ProgramBasicAdminCard from './ProgramBasicAdminCard'
+import ProgramDeletionAdminCard from './ProgramDeletionAdminCard'
 import ProgramIntroAdminCard from './ProgramIntroAdminCard'
 
 const ProgramSettingAdminPane: React.FC<{
@@ -23,9 +24,9 @@ const ProgramSettingAdminPane: React.FC<{
       <div className="mb-3">
         <ProgramIntroAdminCard program={program} onRefetch={onRefetch} />
       </div>
-      {/* <div className="mb-3">
-          <ProgramDeletionAdminCard program={program} onRefetch={onRefetch} />
-        </div> */}
+      <div className="mb-3">
+        <ProgramDeletionAdminCard program={program} onRefetch={onRefetch} />
+      </div>
     </div>
   )
 }
