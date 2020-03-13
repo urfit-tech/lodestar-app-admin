@@ -101,7 +101,6 @@ const ProgramProgressTable: React.FC<{
         ])
 
   const programEnrollmentsByMember = groupBy(enrollment => enrollment.memberId, programEnrollments)
-  process.env.NODE_ENV === 'development' && console.log(programEnrollmentsByMember)
 
   const dataSource: MemberProgressProps[] = Object.values(programEnrollmentsByMember).map(memberEnrollments => {
     const totalCount = sum(memberEnrollments.map(enrollment => enrollment.programContentCount))
@@ -171,7 +170,7 @@ const GET_PROGRAM_PROGRESS = gql`
       program {
         id
         program_content_sections {
-          program_contents_aggregate {
+          program_contents_aggregate(where: { published_at: { _is_null: false } }) {
             aggregate {
               count
               sum {
@@ -196,7 +195,7 @@ const GET_PROGRAM_PROGRESS = gql`
         program {
           id
           program_content_sections {
-            program_contents_aggregate {
+            program_contents_aggregate(where: { published_at: { _is_null: false } }) {
               aggregate {
                 count
                 sum {
