@@ -2,7 +2,6 @@ import { useApolloClient, useQuery } from '@apollo/react-hooks'
 import { message } from 'antd'
 import gql from 'graphql-tag'
 import React, { createContext, useEffect, useState } from 'react'
-import ApplicationHelmet from '../components/common/ApplicationHelmet'
 import types from '../types'
 
 type Module = 'activity' | 'voucher' | 'member_card' | 'podcast' | 'appointment' | 'learning_statistics' | 'locale'
@@ -16,7 +15,9 @@ type AppProps = {
   enabledModules: {
     [key in Module]?: boolean
   }
-  domain: string | null
+  settings: {
+    [key: string]: string
+  }
 }
 const defaultAppProps: AppProps = {
   loading: true,
@@ -25,7 +26,7 @@ const defaultAppProps: AppProps = {
   title: null,
   description: null,
   enabledModules: {},
-  domain: '',
+  settings: {},
 }
 export const AppContext = createContext<AppProps>(defaultAppProps)
 
@@ -59,10 +60,13 @@ export const AppProvider: React.FC = ({ children }) => {
           name
           title
           description
-          domain
           app_modules {
             id
             module_id
+          }
+          app_settings {
+            key
+            value
           }
         }
       }
@@ -92,16 +96,14 @@ export const AppProvider: React.FC = ({ children }) => {
             title: data.app_by_pk.title,
             description: data.app_by_pk.description,
             enabledModules,
-            domain: data.app_by_pk ? data.app_by_pk.domain : '',
+            settings: data.app_by_pk.app_settings.reduce(
+              (dict, el, index) => ((dict[el.key] = el.value), dict),
+              {} as { [key: string]: string },
+            ),
           }
         })()
 
-  return (
-    <AppContext.Provider value={app}>
-      <ApplicationHelmet />
-      {children}
-    </AppContext.Provider>
-  )
+  return <AppContext.Provider value={app}>{children}</AppContext.Provider>
 }
 
 const GET_APPLICATION = gql`

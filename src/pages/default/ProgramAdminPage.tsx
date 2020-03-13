@@ -58,7 +58,7 @@ const ProgramAdminPage: React.FC = () => {
             <Dropdown
               placement="bottomRight"
               overlay={
-                <Menu onClick={({ key }) => window.open(`//${app.domain}${key}`)}>
+                <Menu onClick={({ key }) => window.open(`//${app.settings['host']}${key}`)}>
                   <Menu.Item className="py-2 px-3" key={`/programs/${program.id}`}>
                     {formatMessage(commonMessages.ui.previewIntroduction)}
                   </Menu.Item>

@@ -3837,17 +3837,26 @@ export interface GET_APP_app_by_pk_app_modules {
   module_id: string;
 }
 
+export interface GET_APP_app_by_pk_app_settings {
+  __typename: "app_setting";
+  key: string;
+  value: string;
+}
+
 export interface GET_APP_app_by_pk {
   __typename: "app";
   id: string;
   name: string | null;
   title: string | null;
   description: string | null;
-  domain: string;
   /**
    * An array relationship
    */
   app_modules: GET_APP_app_by_pk_app_modules[];
+  /**
+   * An array relationship
+   */
+  app_settings: GET_APP_app_by_pk_app_settings[];
 }
 
 export interface GET_APP {
@@ -7131,6 +7140,7 @@ export enum program_update_column {
   funding_id = "funding_id",
   id = "id",
   in_advance = "in_advance",
+  is_deleted = "is_deleted",
   is_sold_out = "is_sold_out",
   is_subscription = "is_subscription",
   list_price = "list_price",
@@ -10398,6 +10408,7 @@ export interface program_bool_exp {
   funding_id?: uuid_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   in_advance?: Boolean_comparison_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
   is_sold_out?: Boolean_comparison_exp | null;
   is_subscription?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
@@ -10407,6 +10418,7 @@ export interface program_bool_exp {
   program_announcements?: program_announcement_bool_exp | null;
   program_categories?: program_category_bool_exp | null;
   program_content_sections?: program_content_section_bool_exp | null;
+  program_enrollments?: program_enrollment_bool_exp | null;
   program_package_programs?: program_package_program_bool_exp | null;
   program_plans?: program_plan_bool_exp | null;
   program_related_items?: program_related_item_bool_exp | null;
@@ -10777,6 +10789,23 @@ export interface program_editor_insert_input {
 }
 
 /**
+ * Boolean expression to filter rows from the table "program_enrollment". All fields are combined with a logical 'AND'.
+ */
+export interface program_enrollment_bool_exp {
+  _and?: (program_enrollment_bool_exp | null)[] | null;
+  _not?: program_enrollment_bool_exp | null;
+  _or?: (program_enrollment_bool_exp | null)[] | null;
+  member?: member_bool_exp | null;
+  member_email?: String_comparison_exp | null;
+  member_id?: String_comparison_exp | null;
+  member_name?: String_comparison_exp | null;
+  member_picture_url?: String_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_id?: uuid_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
  * input type for inserting data into table "program"
  */
 export interface program_insert_input {
@@ -10792,6 +10821,7 @@ export interface program_insert_input {
   funding_id?: any | null;
   id?: any | null;
   in_advance?: boolean | null;
+  is_deleted?: boolean | null;
   is_sold_out?: boolean | null;
   is_subscription?: boolean | null;
   list_price?: any | null;
