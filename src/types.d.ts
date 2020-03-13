@@ -1109,6 +1109,33 @@ export interface INSERT_PROGRAMVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: MyMutation
+// ====================================================
+
+export interface MyMutation_update_program {
+  __typename: "program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface MyMutation {
+  /**
+   * update data of the table: "program"
+   */
+  update_program: MyMutation_update_program | null;
+}
+
+export interface MyMutationVariables {
+  programId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_COVER
 // ====================================================
 
@@ -5205,6 +5232,7 @@ export interface GET_PROGRAM_program_by_pk {
   funding_id: any | null;
   is_sold_out: boolean | null;
   support_locales: any | null;
+  is_deleted: boolean;
   /**
    * An array relationship
    */

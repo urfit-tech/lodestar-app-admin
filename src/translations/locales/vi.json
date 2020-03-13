@@ -1,5 +1,6 @@
 {
   "activity.label.activityIntroduction": "Giới thiệu hoạt động ",
+  "activity.label.attended": "簽到",
   "activity.label.limit": "Số vé hạn chế",
   "activity.label.publishSettings": "Cài đặt đăng bài",
   "activity.label.published": "Có bán không?",
@@ -8,6 +9,7 @@
   "activity.label.showParticipantsNumber": "Hiển thị số lượng",
   "activity.label.ticketEndedAt": "Thời gian kết thúc bán vé",
   "activity.label.ticketStartedAt": "Thời gian bắt đầu bán vé",
+  "activity.label.ticketType": "票種",
   "activity.status.aboutToStart": "Sắp tổ chức",
   "activity.status.draft": "Chưa đăng tải",
   "activity.status.expired": "Đã đóng ",
@@ -97,6 +99,7 @@
   "common.event.publishedSuccessfully": "Đăng bài thành công",
   "common.event.publishingFailed": "Đăng bài thất bại",
   "common.event.successfullyCreated": "Thiết lập thành công",
+  "common.event.successfullyDeleted": "Đã xóa thành công",
   "common.event.successfullySaved": "Lưu thành công",
   "common.event.successfullyUpdatePassword": "Đã thay đổi mật khẩu",
   "common.isContentCreator": "Tôi là người sáng tạo nội dung",

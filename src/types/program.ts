@@ -18,6 +18,7 @@ export type ProgramType = {
   contentSections: ProgramContentSectionType[]
   roles: ProgramRoleType[]
   plans: ProgramPlanType[]
+  isDeleted: boolean
   categories: {
     position: number
     category: {
