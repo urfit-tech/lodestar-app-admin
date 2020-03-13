@@ -6,6 +6,7 @@ import { extname } from 'path'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { uploadFile } from '../../helpers'
+import styled from 'styled-components'
 
 const messages = defineMessages({
   uploadSuccess: { id: 'upload.event.success', defaultMessage: '上傳成功' },
@@ -14,6 +15,12 @@ const messages = defineMessages({
   uploadRetry: { id: 'upload.label.retry', defaultMessage: '重新上傳' },
   uploadFile: { id: 'upload.label.uploadFile', defaultMessage: '上傳檔案' },
 })
+
+const StyledUpload = styled(Upload)`
+  .ant-progress-bg {
+    background: ${props => props.theme['@primary-color']};
+  }
+`
 
 type SingleUploaderProps = UploadProps & {
   path: string
@@ -97,7 +104,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = (
     },
   }
   return (
-    <Upload {...props}>
+    <StyledUpload {...props}>
       {trigger ? (
         trigger({ loading, value })
       ) : loading ? (
@@ -112,7 +119,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = (
             : uploadText || formatMessage(messages.uploadFile)}
         </Button>
       )}
-    </Upload>
+    </StyledUpload>
   )
 }
 
