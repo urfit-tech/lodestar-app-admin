@@ -3,7 +3,7 @@ import { AvatarImage } from './Image'
 
 type MemberAvatarProps = {
   name: string
-  pictureUrl: string
+  pictureUrl: string | null
 }
 const MemberAvatar: React.FC<MemberAvatarProps> = ({ name, pictureUrl }) => {
   return (

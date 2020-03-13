@@ -61,13 +61,13 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     allowedUserRole: 'content-creator',
   },
   program_issues_admin: {
-    path: '/program_issues',
+    path: '/program-issues',
     pageName: 'ProgramIssueCollectionAdminPage',
     authenticated: true,
     allowedUserRole: 'content-creator',
   },
   program_progress_admin: {
-    path: '/program_progress',
+    path: '/program-progress',
     pageName: 'ProgramProgressCollectionAdminPage',
     authenticated: true,
     allowedUserRole: 'content-creator',

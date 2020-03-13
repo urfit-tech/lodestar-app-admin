@@ -2996,30 +2996,37 @@ export interface PUBLISH_PODCAST_PROGRAMVariables {
 // GraphQL query operation: GET_PROGRAM_PROGRESS
 // ====================================================
 
-export interface GET_PROGRAM_PROGRESS_program_enrollment_program_program_content_sections_program_contents_program_content_progress {
-  __typename: "program_content_progress";
-  progress: any;
-  member_id: string;
+export interface GET_PROGRAM_PROGRESS_program_enrollment_member {
+  __typename: "member";
+  id: string;
+  username: string;
+  name: string;
+  email: string;
+  picture_url: string | null;
 }
 
-export interface GET_PROGRAM_PROGRESS_program_enrollment_program_program_content_sections_program_contents {
-  __typename: "program_content";
-  /**
-   * sec
-   */
+export interface GET_PROGRAM_PROGRESS_program_enrollment_program_program_content_sections_program_contents_aggregate_aggregate_sum {
+  __typename: "program_content_sum_fields";
   duration: any | null;
-  /**
-   * An array relationship
-   */
-  program_content_progress: GET_PROGRAM_PROGRESS_program_enrollment_program_program_content_sections_program_contents_program_content_progress[];
+}
+
+export interface GET_PROGRAM_PROGRESS_program_enrollment_program_program_content_sections_program_contents_aggregate_aggregate {
+  __typename: "program_content_aggregate_fields";
+  count: number | null;
+  sum: GET_PROGRAM_PROGRESS_program_enrollment_program_program_content_sections_program_contents_aggregate_aggregate_sum | null;
+}
+
+export interface GET_PROGRAM_PROGRESS_program_enrollment_program_program_content_sections_program_contents_aggregate {
+  __typename: "program_content_aggregate";
+  aggregate: GET_PROGRAM_PROGRESS_program_enrollment_program_program_content_sections_program_contents_aggregate_aggregate | null;
 }
 
 export interface GET_PROGRAM_PROGRESS_program_enrollment_program_program_content_sections {
   __typename: "program_content_section";
   /**
-   * An array relationship
+   * An aggregated array relationship
    */
-  program_contents: GET_PROGRAM_PROGRESS_program_enrollment_program_program_content_sections_program_contents[];
+  program_contents_aggregate: GET_PROGRAM_PROGRESS_program_enrollment_program_program_content_sections_program_contents_aggregate;
 }
 
 export interface GET_PROGRAM_PROGRESS_program_enrollment_program {
@@ -3033,14 +3040,83 @@ export interface GET_PROGRAM_PROGRESS_program_enrollment_program {
 
 export interface GET_PROGRAM_PROGRESS_program_enrollment {
   __typename: "program_enrollment";
-  member_id: string | null;
-  member_name: string | null;
-  member_email: string | null;
-  member_picture_url: string | null;
+  /**
+   * An object relationship
+   */
+  member: GET_PROGRAM_PROGRESS_program_enrollment_member | null;
   /**
    * An object relationship
    */
   program: GET_PROGRAM_PROGRESS_program_enrollment_program | null;
+}
+
+export interface GET_PROGRAM_PROGRESS_program_plan_enrollment_member {
+  __typename: "member";
+  id: string;
+  username: string;
+  name: string;
+  email: string;
+  picture_url: string | null;
+}
+
+export interface GET_PROGRAM_PROGRESS_program_plan_enrollment_program_plan_program_program_content_sections_program_contents_aggregate_aggregate_sum {
+  __typename: "program_content_sum_fields";
+  duration: any | null;
+}
+
+export interface GET_PROGRAM_PROGRESS_program_plan_enrollment_program_plan_program_program_content_sections_program_contents_aggregate_aggregate {
+  __typename: "program_content_aggregate_fields";
+  count: number | null;
+  sum: GET_PROGRAM_PROGRESS_program_plan_enrollment_program_plan_program_program_content_sections_program_contents_aggregate_aggregate_sum | null;
+}
+
+export interface GET_PROGRAM_PROGRESS_program_plan_enrollment_program_plan_program_program_content_sections_program_contents_aggregate {
+  __typename: "program_content_aggregate";
+  aggregate: GET_PROGRAM_PROGRESS_program_plan_enrollment_program_plan_program_program_content_sections_program_contents_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_PROGRESS_program_plan_enrollment_program_plan_program_program_content_sections {
+  __typename: "program_content_section";
+  /**
+   * An aggregated array relationship
+   */
+  program_contents_aggregate: GET_PROGRAM_PROGRESS_program_plan_enrollment_program_plan_program_program_content_sections_program_contents_aggregate;
+}
+
+export interface GET_PROGRAM_PROGRESS_program_plan_enrollment_program_plan_program {
+  __typename: "program";
+  id: any;
+  /**
+   * An array relationship
+   */
+  program_content_sections: GET_PROGRAM_PROGRESS_program_plan_enrollment_program_plan_program_program_content_sections[];
+}
+
+export interface GET_PROGRAM_PROGRESS_program_plan_enrollment_program_plan {
+  __typename: "program_plan";
+  /**
+   * An object relationship
+   */
+  program: GET_PROGRAM_PROGRESS_program_plan_enrollment_program_plan_program;
+}
+
+export interface GET_PROGRAM_PROGRESS_program_plan_enrollment {
+  __typename: "program_plan_enrollment";
+  /**
+   * An object relationship
+   */
+  member: GET_PROGRAM_PROGRESS_program_plan_enrollment_member | null;
+  /**
+   * An object relationship
+   */
+  program_plan: GET_PROGRAM_PROGRESS_program_plan_enrollment_program_plan | null;
+}
+
+export interface GET_PROGRAM_PROGRESS_program_content_progress {
+  __typename: "program_content_progress";
+  id: any;
+  member_id: string;
+  progress: any;
 }
 
 export interface GET_PROGRAM_PROGRESS {
@@ -3048,6 +3124,14 @@ export interface GET_PROGRAM_PROGRESS {
    * fetch data from the table: "program_enrollment"
    */
   program_enrollment: GET_PROGRAM_PROGRESS_program_enrollment[];
+  /**
+   * fetch data from the table: "program_plan_enrollment"
+   */
+  program_plan_enrollment: GET_PROGRAM_PROGRESS_program_plan_enrollment[];
+  /**
+   * fetch data from the table: "program_content_progress"
+   */
+  program_content_progress: GET_PROGRAM_PROGRESS_program_content_progress[];
 }
 
 export interface GET_PROGRAM_PROGRESSVariables {
@@ -7131,6 +7215,7 @@ export enum program_update_column {
   funding_id = "funding_id",
   id = "id",
   in_advance = "in_advance",
+  is_deleted = "is_deleted",
   is_sold_out = "is_sold_out",
   is_subscription = "is_subscription",
   list_price = "list_price",
@@ -10398,6 +10483,7 @@ export interface program_bool_exp {
   funding_id?: uuid_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   in_advance?: Boolean_comparison_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
   is_sold_out?: Boolean_comparison_exp | null;
   is_subscription?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
@@ -10792,6 +10878,7 @@ export interface program_insert_input {
   funding_id?: any | null;
   id?: any | null;
   in_advance?: boolean | null;
+  is_deleted?: boolean | null;
   is_sold_out?: boolean | null;
   is_subscription?: boolean | null;
   list_price?: any | null;

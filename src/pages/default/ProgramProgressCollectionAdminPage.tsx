@@ -16,7 +16,7 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { currentMemberId, currentUserRole } = useAuth()
   const { enabledModules } = useContext(AppContext)
-  const [selectedProgramId, setSelectedProgramId] = useState()
+  const [selectedProgramId, setSelectedProgramId] = useState('all')
 
   if (!currentMemberId || !currentUserRole) {
     return <LoadingPage />
@@ -37,7 +37,7 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
       <ProgramSelector
         className="mb-3"
         allText={formatMessage(commonMessages.label.allProgramProgress)}
-        onChange={programId => setSelectedProgramId(programId)}
+        onChange={programId => setSelectedProgramId(`${programId}`)}
       />
       <AdminPageBlock>
         <ProgramProgressTable programId={selectedProgramId === 'all' ? null : selectedProgramId} />
