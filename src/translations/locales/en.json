@@ -1,5 +1,6 @@
 {
   "activity.label.activityIntroduction": "Activity Introduction",
+  "activity.label.attended": "簽到",
   "activity.label.limit": "Limit",
   "activity.label.publishSettings": "Publish",
   "activity.label.published": "Published",
@@ -8,6 +9,7 @@
   "activity.label.showParticipantsNumber": "Show Participants Count",
   "activity.label.ticketEndedAt": "Ticket End Time",
   "activity.label.ticketStartedAt": "Ticket Start Time",
+  "activity.label.ticketType": "票種",
   "activity.status.aboutToStart": "About to Start",
   "activity.status.draft": "Draft",
   "activity.status.expired": "Expired",
@@ -97,6 +99,7 @@
   "common.event.publishedSuccessfully": "Published Successfully",
   "common.event.publishingFailed": "Publishing Failed",
   "common.event.successfullyCreated": "Created",
+  "common.event.successfullyDeleted": "Deleted",
   "common.event.successfullySaved": "Saved",
   "common.event.successfullyUpdatePassword": "Password Updated",
   "common.isContentCreator": "Instructor",

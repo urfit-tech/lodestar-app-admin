@@ -1,4 +1,6 @@
-import { Button, Typography } from 'antd'
+import { useMutation } from '@apollo/react-hooks'
+import { Button, message, Typography } from 'antd'
+import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -26,8 +28,20 @@ type ProgramDeletionAdminCardProps = {
   program: ProgramType | null
   onRefetch?: () => void
 }
-const ProgramDeletionAdminCard: React.FC<ProgramDeletionAdminCardProps> = ({ program }) => {
+const ProgramDeletionAdminCard: React.FC<ProgramDeletionAdminCardProps> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
+
+  const [archiveProgram] = useMutation(UPDATE_PROGRAM_IS_DELETED)
+  const handleArchive = (programId: string) => {
+    archiveProgram({
+      variables: {
+        programId,
+      },
+    }).then(() => {
+      onRefetch && onRefetch()
+      message.success(formatMessage(commonMessages.event.successfullyDeleted))
+    })
+  }
 
   return (
     <AdminCard loading={!program}>
@@ -39,10 +53,24 @@ const ProgramDeletionAdminCard: React.FC<ProgramDeletionAdminCardProps> = ({ pro
           <Typography.Text>{formatMessage(messages.deleteProgramWarning)}</Typography.Text>
           <StyledText>{formatMessage(messages.deleteProgramDanger)}</StyledText>
         </div>
-        <Button type="primary">{formatMessage(commonMessages.ui.delete)}</Button>
+        {program?.isDeleted ? (
+          <Button disabled>{formatMessage(commonMessages.ui.deleted)}</Button>
+        ) : (
+          <Button type="primary" onClick={() => handleArchive(program?.id || '')}>
+            {formatMessage(commonMessages.ui.delete)}
+          </Button>
+        )}
       </div>
     </AdminCard>
   )
 }
+
+const UPDATE_PROGRAM_IS_DELETED = gql`
+  mutation MyMutation($programId: uuid) {
+    update_program(where: { id: { _eq: $programId } }, _set: { is_deleted: true }) {
+      affected_rows
+    }
+  }
+`
 
 export default ProgramDeletionAdminCard

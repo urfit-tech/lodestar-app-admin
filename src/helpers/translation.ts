@@ -10,6 +10,7 @@ export const commonMessages = {
     edit: { id: 'common.ui.edit', defaultMessage: '編輯' },
     detail: { id: 'common.ui.detail', defaultMessage: '詳情' },
     delete: { id: 'common.ui.delete', defaultMessage: '刪除' },
+    deleted: { id: 'common.ui.deleted', defaultMessage: '已刪除' },
     login: { id: 'common.ui.login', defaultMessage: '登入' },
     logout: { id: 'common.ui.logout', defaultMessage: '登出' },
     loginAndRegister: { id: 'common.ui.loginAndRegister', defaultMessage: '登入 / 註冊' },
@@ -179,6 +180,7 @@ export const commonMessages = {
     successfullySaved: { id: 'common.event.successfullySaved', defaultMessage: '儲存成功' },
     loading: { id: 'common.event.loading', defaultMessage: '載入中' },
     successfullyCreated: { id: 'common.event.successfullyCreated', defaultMessage: '建立成功' },
+    successfullyDeleted: { id: 'common.event.successfullyDeleted', defaultMessage: '刪除成功' },
   }),
   status: defineMessages({
     productExpired: { id: 'common.status.expired', defaultMessage: '到期' },
