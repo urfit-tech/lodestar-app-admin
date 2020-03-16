@@ -46,7 +46,7 @@ const PodcastProgramBasicForm: React.FC<FormComponentProps> = ({ form }) => {
           updatedAt: new Date(),
           podcastProgramId: podcastProgram.id,
           title: values.title,
-          supportLocales: values.languages,
+          supportLocales: values.languages.length === 0 ? null : values.languages,
           podcastCategories: values.categoryIds
             ? values.categoryIds.map((categoryId: string, position: number) => ({
                 podcast_program_id: podcastProgram.id,
