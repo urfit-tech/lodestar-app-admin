@@ -316,6 +316,8 @@
   "common.ui.create": "Lập",
   "common.ui.creatorPageLink": "Trang chủ của người sáng tạo",
   "common.ui.delete": "Xóa",
+  "common.ui.deleteProgram": "刪除課程",
+  "common.ui.deleted": "已刪除",
   "common.ui.detail": "Chi tiết",
   "common.ui.edit": "Chỉnh sửa",
   "common.ui.editPassword": "Sửa mật khẩu",

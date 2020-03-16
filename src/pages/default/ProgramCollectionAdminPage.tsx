@@ -44,11 +44,14 @@ const ProgramCollectionAdminPage: React.FC = () => {
   )
 }
 
-const ProgramCollectionBlock: React.FC<{
-  memberId: string | null
-  isDraft?: boolean
-}> = ({ isDraft, memberId }) => {
-  const { formatMessage } = useIntl()
+const useCreatorProgramCollection = (
+  memberId: string | null,
+  isDraft?: boolean,
+): {
+  loading: boolean
+  error?: Error
+  data?: { id: string }[]
+} => {
   const { data, error, loading } = useQuery<
     types.GET_CREATOR_PROGRAM_COLLECTION,
     types.GET_CREATOR_PROGRAM_COLLECTIONVariables
@@ -59,15 +62,33 @@ const ProgramCollectionBlock: React.FC<{
       isDraft,
     },
   })
+  return {
+    loading,
+    error,
+    data: data?.program.filter(
+      program =>
+        !program.is_deleted && {
+          id: program.id,
+        },
+    ),
+  }
+}
+
+const ProgramCollectionBlock: React.FC<{
+  memberId: string | null
+  isDraft?: boolean
+}> = ({ isDraft, memberId }) => {
+  const { formatMessage } = useIntl()
+  const { error, data: programs, loading } = useCreatorProgramCollection(memberId, isDraft)
 
   return (
     <div className="row py-3">
       {loading ? (
         <Spin />
-      ) : error || !data ? (
+      ) : error || !programs ? (
         formatMessage(errorMessages.data.fetch)
       ) : (
-        data.program.map(program => (
+        programs.map(program => (
           <div key={program.id} className="col-12 col-md-6 col-lg-4 mb-5">
             <ProgramAdminCard programId={program.id} link={`/programs/${program.id}`} />
           </div>
@@ -88,6 +109,7 @@ const GET_CREATOR_PROGRAM_COLLECTION = gql`
     ) {
       id
       published_at
+      is_deleted
     }
   }
 `

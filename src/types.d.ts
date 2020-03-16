@@ -5874,6 +5874,7 @@ export interface GET_CREATOR_PROGRAM_COLLECTION_program {
   __typename: "program";
   id: any;
   published_at: any | null;
+  is_deleted: boolean;
 }
 
 export interface GET_CREATOR_PROGRAM_COLLECTION {

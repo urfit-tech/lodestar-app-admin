@@ -316,6 +316,8 @@
   "common.ui.create": "Create",
   "common.ui.creatorPageLink": "Creator Page",
   "common.ui.delete": "Delete",
+  "common.ui.deleteProgram": "Delete Course",
+  "common.ui.deleted": "Deleted",
   "common.ui.detail": "Detail",
   "common.ui.edit": "Edit",
   "common.ui.editPassword": "Edit Password",

@@ -10,6 +10,7 @@ export const commonMessages = {
     edit: { id: 'common.ui.edit', defaultMessage: '編輯' },
     detail: { id: 'common.ui.detail', defaultMessage: '詳情' },
     delete: { id: 'common.ui.delete', defaultMessage: '刪除' },
+    deleteProgram: { id: 'common.ui.deleteProgram', defaultMessage: '刪除課程' },
     deleted: { id: 'common.ui.deleted', defaultMessage: '已刪除' },
     login: { id: 'common.ui.login', defaultMessage: '登入' },
     logout: { id: 'common.ui.logout', defaultMessage: '登出' },
