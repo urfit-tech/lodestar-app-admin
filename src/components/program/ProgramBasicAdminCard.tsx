@@ -34,7 +34,11 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
         if (!error) {
           Promise.all([
             updateProgramTitle({
-              variables: { programId: program.id, title: values.title, supportLocales: values.languages },
+              variables: {
+                programId: program.id,
+                title: values.title,
+                supportLocales: !values.languages || values.languages.length === 0 ? null : values.languages,
+              },
             }),
             updateProgramCategories({
               variables: {

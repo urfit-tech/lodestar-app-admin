@@ -43,7 +43,7 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
           appointmentPlanId: appointmentPlan.id,
           title: values.title,
           phone: values.phone,
-          supportLocales: values.languages,
+          supportLocales: !values.languages || values.languages.length === 0 ? null : values.languages,
         },
       })
         .then(() => {

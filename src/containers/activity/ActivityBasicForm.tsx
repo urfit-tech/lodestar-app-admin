@@ -43,7 +43,7 @@ const ActivityBasicForm: React.FC<FormComponentProps> = ({ form }) => {
         variables: {
           activityId: activity.id,
           title: values.title,
-          supportLocales: values.languages,
+          supportLocales: !values.languages || values.languages.length === 0 ? null : values.languages,
           activityCategories: categoryIds.map((categoryId, index) => ({
             activity_id: activity.id,
             category_id: categoryId,
