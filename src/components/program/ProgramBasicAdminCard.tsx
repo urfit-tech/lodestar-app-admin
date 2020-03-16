@@ -37,7 +37,7 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
               variables: {
                 programId: program.id,
                 title: values.title,
-                supportLocales: values.languages.length === 0 ? null : values.languages,
+                supportLocales: !values.languages || values.languages.length === 0 ? null : values.languages,
               },
             }),
             updateProgramCategories({
