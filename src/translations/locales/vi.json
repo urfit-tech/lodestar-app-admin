@@ -453,6 +453,7 @@
   "program.status.issueOpen": "Đang giải quyết",
   "program.status.issueSolved": "Đã giải quyết",
   "program.text.deleteContentWarning": "Bạn xác định phải xóa nội dung này？Hành động này không thể hoàn tác",
+  "program.text.deletePorgramConfirmation": "課程一經刪除即不可恢復，確定要刪除嗎？",
   "program.text.deleteProgramDanger": "Lưu ý: Chỉ trong trường hợp không ai mua thì mới hủy khóa học",
   "program.text.deleteProgramWarning": "Vui lòng xác nhận cần xóa khóa học, vì đã xóa thì không thể hoàn tác.",
   "program.text.deleteSectionWarning": "Nội dung tại khối này sẽ bị xóa, hành động này không thể hoàn tác",

@@ -10,6 +10,10 @@ import AdminCard from '../admin/AdminCard'
 
 const messages = defineMessages({
   deleteProgram: { id: 'program.label.deleteProgram', defaultMessage: '刪除課程' },
+  deleteProgramConfirmation: {
+    id: 'program.text.deletePorgramConfirmation',
+    defaultMessage: '課程一經刪除即不可恢復，確定要刪除嗎？',
+  },
   deleteProgramWarning: {
     id: 'program.text.deleteProgramWarning',
     defaultMessage: '請仔細確認是否真的要刪除課程，因為一旦刪除就無法恢復。',
@@ -83,8 +87,8 @@ const ProgramDeletionAdminCard: React.FC<ProgramDeletionAdminCardProps> = ({ pro
         cancelText={formatMessage(commonMessages.ui.cancel)}
         onCancel={() => setVisible(false)}
       >
-        <StyledModalTitle className="mb-4">刪除課程</StyledModalTitle>
-        <StyledModalParagraph>課程一經刪除即不可恢復，確定要刪除嗎？</StyledModalParagraph>
+        <StyledModalTitle className="mb-4">{formatMessage(commonMessages.ui.deleteProgram)}</StyledModalTitle>
+        <StyledModalParagraph>{formatMessage(messages.deleteProgramConfirmation)}</StyledModalParagraph>
       </StyledDeletionModal>
       <div className="d-flex justify-content-between align-items-center">
         <div className="d-flex flex-column">
