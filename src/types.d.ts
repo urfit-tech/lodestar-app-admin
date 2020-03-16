@@ -3254,11 +3254,38 @@ export interface GET_PROGRAM_ENROLLED_program_enrollment {
   program: GET_PROGRAM_ENROLLED_program_enrollment_program | null;
 }
 
+export interface GET_PROGRAM_ENROLLED_program_plan_enrollment_program_plan_program {
+  __typename: "program";
+  title: string;
+}
+
+export interface GET_PROGRAM_ENROLLED_program_plan_enrollment_program_plan {
+  __typename: "program_plan";
+  program_id: any;
+  /**
+   * An object relationship
+   */
+  program: GET_PROGRAM_ENROLLED_program_plan_enrollment_program_plan_program;
+}
+
+export interface GET_PROGRAM_ENROLLED_program_plan_enrollment {
+  __typename: "program_plan_enrollment";
+  program_plan_id: any | null;
+  /**
+   * An object relationship
+   */
+  program_plan: GET_PROGRAM_ENROLLED_program_plan_enrollment_program_plan | null;
+}
+
 export interface GET_PROGRAM_ENROLLED {
   /**
    * fetch data from the table: "program_enrollment"
    */
   program_enrollment: GET_PROGRAM_ENROLLED_program_enrollment[];
+  /**
+   * fetch data from the table: "program_plan_enrollment"
+   */
+  program_plan_enrollment: GET_PROGRAM_ENROLLED_program_plan_enrollment[];
 }
 
 /* tslint:disable */
@@ -7253,6 +7280,7 @@ export enum program_update_column {
   id = "id",
   in_advance = "in_advance",
   is_deleted = "is_deleted",
+  is_private = "is_private",
   is_sold_out = "is_sold_out",
   is_subscription = "is_subscription",
   list_price = "list_price",
@@ -10521,6 +10549,7 @@ export interface program_bool_exp {
   id?: uuid_comparison_exp | null;
   in_advance?: Boolean_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
+  is_private?: Boolean_comparison_exp | null;
   is_sold_out?: Boolean_comparison_exp | null;
   is_subscription?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
@@ -10934,6 +10963,7 @@ export interface program_insert_input {
   id?: any | null;
   in_advance?: boolean | null;
   is_deleted?: boolean | null;
+  is_private?: boolean | null;
   is_sold_out?: boolean | null;
   is_subscription?: boolean | null;
   list_price?: any | null;
