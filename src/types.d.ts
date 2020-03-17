@@ -1288,12 +1288,17 @@ export interface GET_PROGRAM_PLANSVariables {
 // GraphQL mutation operation: PUBLISH_PROGRAM
 // ====================================================
 
+export interface PUBLISH_PROGRAM_update_program_returning {
+  __typename: "program";
+  is_private: boolean;
+}
+
 export interface PUBLISH_PROGRAM_update_program {
   __typename: "program_mutation_response";
   /**
-   * number of affected rows by the mutation
+   * data of the affected rows by the mutation
    */
-  affected_rows: number;
+  returning: PUBLISH_PROGRAM_update_program_returning[];
 }
 
 export interface PUBLISH_PROGRAM {
@@ -1306,6 +1311,7 @@ export interface PUBLISH_PROGRAM {
 export interface PUBLISH_PROGRAMVariables {
   programId: any;
   publishedAt?: any | null;
+  isPrivate?: boolean | null;
 }
 
 /* tslint:disable */
@@ -11195,11 +11201,28 @@ export interface program_plan_bool_exp {
   program?: program_bool_exp | null;
   program_content_permissions?: program_content_plan_bool_exp | null;
   program_id?: uuid_comparison_exp | null;
+  program_plan_enrollments?: program_plan_enrollment_bool_exp | null;
   sale_price?: numeric_comparison_exp | null;
   sold_at?: timestamptz_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
   title?: String_comparison_exp | null;
   type?: Int_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_plan_enrollment". All fields are combined with a logical 'AND'.
+ */
+export interface program_plan_enrollment_bool_exp {
+  _and?: (program_plan_enrollment_bool_exp | null)[] | null;
+  _not?: program_plan_enrollment_bool_exp | null;
+  _or?: (program_plan_enrollment_bool_exp | null)[] | null;
+  ended_at?: timestamptz_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  program_plan?: program_plan_bool_exp | null;
+  program_plan_id?: uuid_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**

@@ -30,6 +30,9 @@ export const commonMessages = {
     trial: { id: 'common.ui.trial', defaultMessage: '試看' },
     cancelPublishing: { id: 'common.ui.cancelPublishing', defaultMessage: '取消發佈' },
     publish: { id: 'common.ui.publish', defaultMessage: '立即發佈' },
+    publishConfirmation: { id: 'common.ui.publishConfirmation', defaultMessage: '確定發佈' },
+    publiclyPublish: { id: 'common.ui.publiclyPublish', defaultMessage: '公開發佈' },
+    privatelyPublish: { id: 'common.ui.privatelyPublish', defaultMessage: '私密發佈' },
     addInstructor: { id: 'common.ui.addInstructor', defaultMessage: '新增講師' },
     add: { id: 'common.ui.add', defaultMessage: '新增' },
     cancelOrder: { id: 'common.ui.cancelOrder', defaultMessage: '取消訂單' },
@@ -192,6 +195,8 @@ export const commonMessages = {
     notComplete: { id: 'common.status.notComplete', defaultMessage: '尚有未完成項目' },
     unpublished: { id: 'common.status.unpublished', defaultMessage: '尚未發佈' },
     published: { id: 'common.status.published', defaultMessage: '已發佈' },
+    publiclyPublish: { id: 'common.status.publicyPublish', defaultMessage: '已公開發佈' },
+    privatelyPublish: { id: 'common.status.privatelyPublish', defaultMessage: '已私密發佈' },
     draft: { id: 'common.label.draft', defaultMessage: '草稿' },
   }),
   menu: defineMessages({

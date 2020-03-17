@@ -24,7 +24,7 @@ const messages = defineMessages({
   },
 })
 
-const StyledDeletionModal = styled(Modal)`
+export const StyledModal = styled(Modal)`
   && {
     .ant-modal-body {
       padding: 32px 32px 0;
@@ -35,13 +35,13 @@ const StyledDeletionModal = styled(Modal)`
     }
   }
 `
-const StyledModalTitle = styled.h3`
+export const StyledModalTitle = styled.h3`
   font-size: 18px;
   font-weight: bold;
   color: var(--gray-darker);
   letter-spacing: 0.8px;
 `
-const StyledModalParagraph = styled.p`
+export const StyledModalParagraph = styled.p`
   font-size: 16px;
   font-weight: 500;
   color: var(--gray-darker);
@@ -79,7 +79,7 @@ const ProgramDeletionAdminCard: React.FC<ProgramDeletionAdminCardProps> = ({ pro
       <Typography.Title level={4} className="mb-4">
         {formatMessage(messages.deleteProgram)}
       </Typography.Title>
-      <StyledDeletionModal
+      <StyledModal
         visible={isVisible}
         okText={formatMessage(commonMessages.ui.delete)}
         onOk={() => {
@@ -91,7 +91,7 @@ const ProgramDeletionAdminCard: React.FC<ProgramDeletionAdminCardProps> = ({ pro
       >
         <StyledModalTitle className="mb-4">{formatMessage(commonMessages.ui.deleteProgram)}</StyledModalTitle>
         <StyledModalParagraph>{formatMessage(messages.deleteProgramConfirmation)}</StyledModalParagraph>
-      </StyledDeletionModal>
+      </StyledModal>
       <div className="d-flex justify-content-between align-items-center">
         <div className="d-flex flex-column">
           <Typography.Text>{formatMessage(messages.deleteProgramWarning)}</Typography.Text>

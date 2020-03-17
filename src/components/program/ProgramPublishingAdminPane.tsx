@@ -1,8 +1,8 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Icon, Modal, Skeleton, Typography } from 'antd'
+import { Button, Dropdown, Icon, Menu, Modal, Skeleton, Typography } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import gql from 'graphql-tag'
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import { ThemeContext } from 'styled-components'
@@ -11,6 +11,7 @@ import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramType } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
+import { StyledModal, StyledModalParagraph, StyledModalTitle } from './ProgramDeletionAdminCard'
 
 const messages = defineMessages({
   programPublishingSettings: { id: 'program.label.programPublishingSettings', defaultMessage: '發佈設定' },
@@ -22,6 +23,22 @@ const messages = defineMessages({
   isPublishedNotation: {
     id: 'program.text.isPublishedNotation',
     defaultMessage: '現在你的課程已經發佈，此課程並會出現在頁面上，學生將能購買此課程。',
+  },
+  isPubliclyPublishedNotation: {
+    id: 'program.text.isPubliclyPublishedNotation',
+    defaultMessage: '現在你的課程已公開發佈，此課程會出現在頁面上。',
+  },
+  isPrivatelyPublishedNotation: {
+    id: 'program.text.isPrivatelyPublishedNotation',
+    defaultMessage: '你的課程已經私密發佈，此課程不會出現在頁面上，學生僅能透過連結進入瀏覽。',
+  },
+  confirmPrivatelyPublishedTitle: {
+    id: 'program.text.confirmPrivatelyPublishedTitle',
+    defaultMessage: '確定要設為私密發佈？',
+  },
+  confirmPrivatelyPublishedNotation: {
+    id: 'program.text.confirmPrivatelyPublishedNotation',
+    defaultMessage: '課程將不會出現在列表，僅以私下提供連結的方式販售課程。',
   },
   isUnpublishedNotation: {
     id: 'program.text.isUnpublishedNotation',
@@ -45,8 +62,24 @@ type ProgramPublishingAdminPaneProps = CardProps & {
 const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
   const theme = useContext(ThemeContext)
+  const publishProgram = usePublishProgram()
+  const [publishState, setPublishState] = useState<string>(formatMessage(commonMessages.ui.publiclyPublish))
+  const [isPrivateProgram, setProgramStatus] = useState<boolean>(false)
+  const [isVisible, setVisible] = useState<boolean>(false)
 
-  const [publishProgram] = useMutation<types.PUBLISH_PROGRAM, types.PUBLISH_PROGRAMVariables>(PUBLISH_PROGRAM)
+  const overlay = (
+    <Menu>
+      {[formatMessage(commonMessages.ui.publiclyPublish), formatMessage(commonMessages.ui.privatelyPublish)]
+        .filter(item => item !== publishState)
+        .map(item => (
+          <Menu.Item>
+            <Button type="link" onClick={() => setPublishState(item)}>
+              {item}
+            </Button>
+          </Menu.Item>
+        ))}
+    </Menu>
+  )
 
   if (!program) {
     return <Skeleton active />
@@ -90,12 +123,19 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
   }
   const isValidate = errors.length === 0
 
-  const handlePublish = () => {
+  const handlePublish = (isPrivate?: boolean) => {
+    if (isPrivate && !isVisible) {
+      setVisible(true)
+      return
+    }
     program &&
       publishProgram({
-        variables: { programId: program.id, publishedAt: new Date() },
+        variables: { programId: program.id, publishedAt: new Date(), isPrivate },
       })
-        .then(() => onRefetch && onRefetch())
+        .then(result => {
+          setProgramStatus(result?.data?.update_program?.returning[0].is_private || false)
+          onRefetch && onRefetch()
+        })
         .catch(handleError)
   }
   const handleUnPublish = () => {
@@ -105,7 +145,7 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
         content: formatMessage(messages.unpublishingWarning),
         onOk: () => {
           publishProgram({
-            variables: { programId: program.id, publishedAt: null },
+            variables: { programId: program.id, publishedAt: null, isPrivate: false },
           })
             .then(() => onRefetch && onRefetch())
             .catch(handleError)
@@ -132,16 +172,20 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
               <div className="mb-2">
                 <Typography.Title level={4}>
                   {isPublished
-                    ? formatMessage(commonMessages.status.published)
+                    ? isPrivateProgram
+                      ? formatMessage(commonMessages.status.privatelyPublish)
+                      : formatMessage(commonMessages.status.publiclyPublish)
                     : isValidate
                     ? formatMessage(commonMessages.status.unpublished)
                     : formatMessage(commonMessages.status.notComplete)}
                 </Typography.Title>
               </div>
               <div className="mb-3">
-                <Typography.Paragraph>
+                <Typography.Paragraph type="secondary">
                   {isPublished
-                    ? formatMessage(messages.isPublishedNotation)
+                    ? isPrivateProgram
+                      ? formatMessage(messages.isPrivatelyPublishedNotation)
+                      : formatMessage(messages.isPubliclyPublishedNotation)
                     : isValidate
                     ? formatMessage(messages.isUnpublishedNotation)
                     : formatMessage(messages.notCompleteNotation)}
@@ -167,22 +211,56 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
               {isPublished ? (
                 <Button onClick={handleUnPublish}>{formatMessage(commonMessages.ui.cancelPublishing)}</Button>
               ) : (
-                <Button type="primary" disabled={!isValidate} onClick={handlePublish}>
-                  {formatMessage(commonMessages.ui.publish)}
-                </Button>
+                <>
+                  {isValidate ? (
+                    <Dropdown.Button
+                      type="primary"
+                      icon={<Icon type="down" />}
+                      overlay={overlay}
+                      onClick={() => {
+                        handlePublish(publishState === formatMessage(commonMessages.ui.privatelyPublish))
+                      }}
+                    >
+                      <div>{publishState}</div>
+                    </Dropdown.Button>
+                  ) : (
+                    <Dropdown.Button disabled icon={<Icon type="down" />} overlay={overlay}>
+                      <div>{publishState}</div>
+                    </Dropdown.Button>
+                  )}
+                </>
               )}
             </div>
           )}
         </AdminCard>
+        <StyledModal
+          visible={isVisible}
+          okText={formatMessage(commonMessages.ui.publishConfirmation)}
+          onOk={() => {
+            handlePublish(true)
+            setVisible(false)
+          }}
+          cancelText={formatMessage(commonMessages.ui.cancel)}
+          onCancel={() => setVisible(false)}
+        >
+          <StyledModalTitle className="mb-4">{formatMessage(messages.confirmPrivatelyPublishedTitle)}</StyledModalTitle>
+          <StyledModalParagraph>{formatMessage(messages.confirmPrivatelyPublishedNotation)}</StyledModalParagraph>
+        </StyledModal>
       </div>
     </div>
   )
 }
 
+const usePublishProgram = () => {
+  const [publishProgram] = useMutation<types.PUBLISH_PROGRAM, types.PUBLISH_PROGRAMVariables>(PUBLISH_PROGRAM)
+  return publishProgram
+}
 const PUBLISH_PROGRAM = gql`
-  mutation PUBLISH_PROGRAM($programId: uuid!, $publishedAt: timestamptz) {
-    update_program(_set: { published_at: $publishedAt }, where: { id: { _eq: $programId } }) {
-      affected_rows
+  mutation PUBLISH_PROGRAM($programId: uuid!, $publishedAt: timestamptz, $isPrivate: Boolean) {
+    update_program(_set: { published_at: $publishedAt, is_private: $isPrivate }, where: { id: { _eq: $programId } }) {
+      returning {
+        is_private
+      }
     }
   }
 `
