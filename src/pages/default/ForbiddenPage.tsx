@@ -14,7 +14,7 @@ const ForbiddenPage: React.FC = () => {
       <div className="vw-100 pt-5 text-center">
         <div className="mb-3">{formatMessage(errorMessages.text.forbidden)}</div>
         <Button type="primary" onClick={() => history.goBack()}>
-          {formatMessage(commonMessages.ui.back)}
+          {formatMessage(commonMessages.ui.prevPage)}
         </Button>
       </div>
     </DefaultLayout>

@@ -240,7 +240,7 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
             handlePublish(true)
             setVisible(false)
           }}
-          cancelText={formatMessage(commonMessages.ui.cancel)}
+          cancelText={formatMessage(commonMessages.ui.back)}
           onCancel={() => setVisible(false)}
         >
           <StyledModalTitle className="mb-4">{formatMessage(messages.confirmPrivatelyPublishedTitle)}</StyledModalTitle>

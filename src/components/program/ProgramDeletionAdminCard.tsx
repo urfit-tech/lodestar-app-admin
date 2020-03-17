@@ -86,7 +86,7 @@ const ProgramDeletionAdminCard: React.FC<ProgramDeletionAdminCardProps> = ({ pro
           handleArchive(program?.id || '')
           setVisible(false)
         }}
-        cancelText={formatMessage(commonMessages.ui.cancel)}
+        cancelText={formatMessage(commonMessages.ui.back)}
         onCancel={() => setVisible(false)}
       >
         <StyledModalTitle className="mb-4">{formatMessage(commonMessages.ui.deleteProgram)}</StyledModalTitle>
