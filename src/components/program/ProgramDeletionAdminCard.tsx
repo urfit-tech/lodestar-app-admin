@@ -50,6 +50,8 @@ const StyledModalParagraph = styled.p`
 `
 const StyledText = styled.span`
   color: ${props => props.theme['@primary-color']};
+  font-size: 14px;
+  padding-top: 4px;
 `
 
 type ProgramDeletionAdminCardProps = {
