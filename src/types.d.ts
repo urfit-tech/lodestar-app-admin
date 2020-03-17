@@ -1288,17 +1288,12 @@ export interface GET_PROGRAM_PLANSVariables {
 // GraphQL mutation operation: PUBLISH_PROGRAM
 // ====================================================
 
-export interface PUBLISH_PROGRAM_update_program_returning {
-  __typename: "program";
-  is_private: boolean;
-}
-
 export interface PUBLISH_PROGRAM_update_program {
   __typename: "program_mutation_response";
   /**
-   * data of the affected rows by the mutation
+   * number of affected rows by the mutation
    */
-  returning: PUBLISH_PROGRAM_update_program_returning[];
+  affected_rows: number;
 }
 
 export interface PUBLISH_PROGRAM {
@@ -5266,6 +5261,7 @@ export interface GET_PROGRAM_program_by_pk {
   is_sold_out: boolean | null;
   support_locales: any | null;
   is_deleted: boolean;
+  is_private: boolean;
   /**
    * An array relationship
    */

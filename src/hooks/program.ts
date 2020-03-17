@@ -29,6 +29,7 @@ export const useProgram = (programId: string) => {
           is_sold_out
           support_locales
           is_deleted
+          is_private
           program_content_sections(order_by: { position: asc }) {
             id
             title
@@ -102,6 +103,7 @@ export const useProgram = (programId: string) => {
     isSoldOut: boolean | null
     supportLocales: string[]
     isDeleted: boolean
+    isPrivate: boolean
     contentSections: {
       id: string
       title: string
@@ -173,6 +175,7 @@ export const useProgram = (programId: string) => {
           isSoldOut: data.program_by_pk.is_sold_out,
           supportLocales: data?.program_by_pk?.support_locales || [],
           isDeleted: data?.program_by_pk?.is_deleted,
+          isPrivate: data?.program_by_pk?.is_private,
           contentSections: data.program_by_pk.program_content_sections.map(programContentSection => ({
             id: programContentSection.id,
             title: programContentSection.title,

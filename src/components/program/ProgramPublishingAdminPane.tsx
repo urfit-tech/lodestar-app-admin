@@ -64,7 +64,6 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
   const theme = useContext(ThemeContext)
   const publishProgram = usePublishProgram()
   const [publishState, setPublishState] = useState<string>(formatMessage(commonMessages.ui.publiclyPublish))
-  const [isPrivateProgram, setProgramStatus] = useState<boolean>(false)
   const [isVisible, setVisible] = useState<boolean>(false)
 
   const overlay = (
@@ -86,6 +85,7 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
   }
 
   const isPublished = (program && program.publishedAt) || false
+  const isPrivate = program?.isPrivate
 
   const errors: { message: string; to: string }[] = []
   if (!program.abstract) {
@@ -133,7 +133,6 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
         variables: { programId: program.id, publishedAt: new Date(), isPrivate },
       })
         .then(result => {
-          setProgramStatus(result?.data?.update_program?.returning[0].is_private || false)
           onRefetch && onRefetch()
         })
         .catch(handleError)
@@ -172,7 +171,7 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
               <div className="mb-2">
                 <Typography.Title level={4}>
                   {isPublished
-                    ? isPrivateProgram
+                    ? isPrivate
                       ? formatMessage(commonMessages.status.privatelyPublish)
                       : formatMessage(commonMessages.status.publiclyPublish)
                     : isValidate
@@ -183,7 +182,7 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
               <div className="mb-3">
                 <Typography.Paragraph type="secondary">
                   {isPublished
-                    ? isPrivateProgram
+                    ? isPrivate
                       ? formatMessage(messages.isPrivatelyPublishedNotation)
                       : formatMessage(messages.isPubliclyPublishedNotation)
                     : isValidate
@@ -258,9 +257,7 @@ const usePublishProgram = () => {
 const PUBLISH_PROGRAM = gql`
   mutation PUBLISH_PROGRAM($programId: uuid!, $publishedAt: timestamptz, $isPrivate: Boolean) {
     update_program(_set: { published_at: $publishedAt, is_private: $isPrivate }, where: { id: { _eq: $programId } }) {
-      returning {
-        is_private
-      }
+      affected_rows
     }
   }
 `
