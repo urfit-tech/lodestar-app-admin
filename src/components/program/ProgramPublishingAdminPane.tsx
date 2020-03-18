@@ -66,20 +66,6 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
   const [publishState, setPublishState] = useState<string>(formatMessage(commonMessages.ui.publiclyPublish))
   const [isVisible, setVisible] = useState<boolean>(false)
 
-  const overlay = (
-    <Menu>
-      {[formatMessage(commonMessages.ui.publiclyPublish), formatMessage(commonMessages.ui.privatelyPublish)]
-        .filter(item => item !== publishState)
-        .map(item => (
-          <Menu.Item>
-            <Button type="link" onClick={() => setPublishState(item)}>
-              {item}
-            </Button>
-          </Menu.Item>
-        ))}
-    </Menu>
-  )
-
   if (!program) {
     return <Skeleton active />
   }
@@ -152,6 +138,26 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
         onCancel: () => {},
       })
   }
+
+  const overlay = (
+    <Menu>
+      {[formatMessage(commonMessages.ui.publiclyPublish), formatMessage(commonMessages.ui.privatelyPublish)]
+        .filter(publishType => publishType !== publishState)
+        .map(publishType => (
+          <Menu.Item>
+            <Button
+              type="link"
+              onClick={() => {
+                setPublishState(publishType)
+                handlePublish(publishType !== formatMessage(commonMessages.ui.publiclyPublish))
+              }}
+            >
+              {publishType}
+            </Button>
+          </Menu.Item>
+        ))}
+    </Menu>
+  )
 
   return (
     <div className="py-3">
