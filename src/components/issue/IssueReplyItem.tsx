@@ -13,6 +13,7 @@ import { rgba } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramRoleType } from '../../types/program'
+import { uploadFn } from '../admin/AdminBraftEditor'
 import { BraftContent } from '../common/StyledBraftEditor'
 import { ProgramRoleLabel } from '../common/UserRole'
 import { StyledEditor } from './IssueReplyCreationBlock'
@@ -179,6 +180,8 @@ const IssueReplyItem: React.FC<IssueReplyItemProps> = ({
                 value={contentState}
                 onChange={value => setContentState(value)}
                 controls={['bold', 'italic', 'underline', 'separator', 'media']}
+                stripPastedStyles={true}
+                media={{ uploadFn }}
               />
               <div>
                 <Button className="mr-2" onClick={() => setEditing(false)}>

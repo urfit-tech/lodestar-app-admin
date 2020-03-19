@@ -18,7 +18,7 @@ const braftLanguageFn = (languages: { [lan: string]: any }, context: any) => {
   }
 }
 
-const uploadFn = async (params: {
+export const uploadFn = async (params: {
   file: File
   success: (res: {
     url: string
