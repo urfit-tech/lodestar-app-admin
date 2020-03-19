@@ -1,5 +1,7 @@
 import { ControlType, EditorState } from 'braft-editor'
 import React, { forwardRef } from 'react'
+import { v4 as uuid } from 'uuid'
+import { uploadFile } from '../../helpers'
 import StyledBraftEditor from '../common/StyledBraftEditor'
 
 const braftLanguageFn = (languages: { [lan: string]: any }, context: any) => {
@@ -14,6 +16,37 @@ const braftLanguageFn = (languages: { [lan: string]: any }, context: any) => {
 
     return languages['zh-hant']
   }
+}
+
+const uploadFn = async (params: {
+  file: File
+  success: (res: {
+    url: string
+    meta: {
+      id: string
+      title: string
+      alt: string
+      loop: boolean
+      autoPlay: boolean
+      controls: boolean
+      poster: string
+    }
+  }) => void
+}) => {
+  uploadFile(`images/${localStorage.getItem('kolable.app.id')}/editor/${uuid()}`, params.file).then(signedUrl => {
+    params.success({
+      url: signedUrl.split('?')[0],
+      meta: {
+        id: '',
+        title: '',
+        alt: '',
+        loop: false,
+        autoPlay: false,
+        controls: false,
+        poster: '',
+      },
+    })
+  })
 }
 
 type AdminBraftVariant = 'default' | 'short'
@@ -60,6 +93,8 @@ const AdminBraftEditor: React.FC<{
       contentClassName={variant === 'short' ? 'short-bf-content' : undefined}
       language={braftLanguageFn}
       controls={controls[variant || 'default']}
+      stripPastedStyles={true}
+      media={{ uploadFn }}
     />
   )
 }
