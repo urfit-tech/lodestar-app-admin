@@ -68,7 +68,6 @@ const IssueReplyCreationBlock: React.FC<IssueReplyCreationBlockProps> = ({ membe
             style={{ border: '1px solid #cdcdcd', borderRadius: '4px' }}
             language="zh-hant"
             controls={['bold', 'italic', 'underline', 'separator', 'media']}
-            stripPastedStyles={true}
             media={{ uploadFn }}
           />,
         )}

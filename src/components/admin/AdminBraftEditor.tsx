@@ -93,7 +93,6 @@ const AdminBraftEditor: React.FC<{
       contentClassName={variant === 'short' ? 'short-bf-content' : undefined}
       language={braftLanguageFn}
       controls={controls[variant || 'default']}
-      stripPastedStyles={true}
       media={{ uploadFn }}
     />
   )

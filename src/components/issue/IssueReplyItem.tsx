@@ -180,7 +180,6 @@ const IssueReplyItem: React.FC<IssueReplyItemProps> = ({
                 value={contentState}
                 onChange={value => setContentState(value)}
                 controls={['bold', 'italic', 'underline', 'separator', 'media']}
-                stripPastedStyles={true}
                 media={{ uploadFn }}
               />
               <div>
