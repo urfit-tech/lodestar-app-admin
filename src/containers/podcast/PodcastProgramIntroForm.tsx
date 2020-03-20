@@ -43,6 +43,7 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
     PodcastProgramContext,
   )
   const [loading, setLoading] = useState(false)
+  const [uploadCoverUrl, setUploadCoverUrl] = useState<string>()
 
   const [updatePodcastProgramIntro] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_INTRO,
@@ -70,6 +71,9 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
           updatedAt: new Date(),
           podcastProgramId: podcastProgram.id,
           abstract: values.abstract,
+          coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/podcast_program_covers/${localStorage.getItem(
+            'kolable.app.id',
+          )}/${podcastProgram.id}?t=${Date.now()}`,
         },
       })
         .then(() => {
@@ -79,24 +83,6 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
         .catch(error => handleError(error))
         .finally(() => setLoading(false))
     })
-  }
-
-  const handleUploadSuccess = () => {
-    updatePodcastProgramIntro({
-      variables: {
-        updatedAt: new Date(),
-        podcastProgramId: podcastProgram.id,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/podcast_program_covers/${localStorage.getItem(
-          'kolable.app.id',
-        )}/${podcastProgram.id}?t=${Date.now()}`,
-      },
-    })
-      .then(() => {
-        refetchPodcastProgram && refetchPodcastProgram()
-        message.success(formatMessage(commonMessages.event.successfullySaved))
-      })
-      .catch(error => handleError(error))
-      .finally(() => setLoading(false))
   }
 
   return (
@@ -123,7 +109,7 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
         <div className="d-flex align-items-center">
           {!!podcastProgram.coverUrl && (
             <StyledCoverBlock className="mr-4">
-              <CustomRatioImage src={podcastProgram.coverUrl} width="100%" ratio={1} />
+              <CustomRatioImage src={uploadCoverUrl || podcastProgram.coverUrl} width="100%" ratio={1} />
             </StyledCoverBlock>
           )}
 
@@ -141,7 +127,13 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
               showUploadList={false}
               path={`podcast_program_covers/${localStorage.getItem('kolable.app.id')}/${podcastProgram.id}`}
               isPublic
-              onSuccess={() => handleUploadSuccess()}
+              onSuccess={() =>
+                setUploadCoverUrl(
+                  `https://${process.env.REACT_APP_S3_BUCKET}/podcast_program_covers/${localStorage.getItem(
+                    'kolable.app.id',
+                  )}/${podcastProgram.id}?t=${Date.now()}`,
+                )
+              }
             />,
           )}
         </div>
