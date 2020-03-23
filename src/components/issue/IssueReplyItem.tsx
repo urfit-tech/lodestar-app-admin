@@ -8,12 +8,13 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled, { ThemeContext } from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import MemberAvatar from '../../containers/common/MemberAvatar'
+import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { rgba } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramRoleType } from '../../types/program'
-import { uploadFn } from '../admin/AdminBraftEditor'
+import { createUploadFn } from '../admin/AdminBraftEditor'
 import { BraftContent } from '../common/StyledBraftEditor'
 import { ProgramRoleLabel } from '../common/UserRole'
 import { StyledEditor } from './IssueReplyCreationBlock'
@@ -65,6 +66,7 @@ const IssueReplyItem: React.FC<IssueReplyItemProps> = ({
   memberId,
   onRefetch,
 }) => {
+  const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const [qIssueReplyId] = useQueryParam('issueReplyId', StringParam)
   const { currentMemberId } = useAuth()
@@ -180,7 +182,7 @@ const IssueReplyItem: React.FC<IssueReplyItemProps> = ({
                 value={contentState}
                 onChange={value => setContentState(value)}
                 controls={['bold', 'italic', 'underline', 'separator', 'media']}
-                media={{ uploadFn }}
+                media={{ uploadFn: createUploadFn(appId) }}
               />
               <div>
                 <Button className="mr-2" onClick={() => setEditing(false)}>

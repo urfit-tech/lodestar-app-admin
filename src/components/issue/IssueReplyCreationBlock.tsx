@@ -3,13 +3,14 @@ import { Button, Form, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import MemberAvatar from '../../containers/common/MemberAvatar'
+import AppContext from '../../contexts/AppContext'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
-import { uploadFn } from '../admin/AdminBraftEditor'
+import { createUploadFn } from '../admin/AdminBraftEditor'
 
 export const StyledEditor = styled(BraftEditor)`
   .bf-content {
@@ -22,6 +23,7 @@ type IssueReplyCreationBlockProps = FormComponentProps & {
   onRefetch?: () => void
 }
 const IssueReplyCreationBlock: React.FC<IssueReplyCreationBlockProps> = ({ memberId, issueId, form, onRefetch }) => {
+  const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const [insertIssueReply] = useMutation<types.INSERT_ISSUE_REPLY, types.INSERT_ISSUE_REPLYVariables>(
     INSERT_ISSUE_REPLY,
@@ -68,7 +70,7 @@ const IssueReplyCreationBlock: React.FC<IssueReplyCreationBlockProps> = ({ membe
             style={{ border: '1px solid #cdcdcd', borderRadius: '4px' }}
             language="zh-hant"
             controls={['bold', 'italic', 'underline', 'separator', 'media']}
-            media={{ uploadFn }}
+            media={{ uploadFn: createUploadFn(appId) }}
           />,
         )}
       </Form.Item>

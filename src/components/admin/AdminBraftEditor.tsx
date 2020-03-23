@@ -1,6 +1,7 @@
 import { ControlType, EditorState } from 'braft-editor'
-import React, { forwardRef } from 'react'
+import React, { forwardRef, useContext } from 'react'
 import { v4 as uuid } from 'uuid'
+import AppContext from '../../contexts/AppContext'
 import { uploadFile } from '../../helpers'
 import StyledBraftEditor from '../common/StyledBraftEditor'
 
@@ -18,35 +19,37 @@ const braftLanguageFn = (languages: { [lan: string]: any }, context: any) => {
   }
 }
 
-export const uploadFn = async (params: {
-  file: File
-  success: (res: {
-    url: string
-    meta: {
-      id: string
-      title: string
-      alt: string
-      loop: boolean
-      autoPlay: boolean
-      controls: boolean
-      poster: string
-    }
-  }) => void
-}) => {
-  uploadFile(`images/${localStorage.getItem('kolable.app.id')}/editor/${uuid()}`, params.file).then(signedUrl => {
-    params.success({
-      url: signedUrl.split('?')[0],
+export const createUploadFn = (appId: string) => {
+  return async (params: {
+    file: File
+    success: (res: {
+      url: string
       meta: {
-        id: '',
-        title: '',
-        alt: '',
-        loop: false,
-        autoPlay: false,
-        controls: false,
-        poster: '',
-      },
+        id: string
+        title: string
+        alt: string
+        loop: boolean
+        autoPlay: boolean
+        controls: boolean
+        poster: string
+      }
+    }) => void
+  }) => {
+    uploadFile(`images/${appId}/editor/${uuid()}`, params.file).then(signedUrl => {
+      params.success({
+        url: signedUrl.split('?')[0],
+        meta: {
+          id: '',
+          title: '',
+          alt: '',
+          loop: false,
+          autoPlay: false,
+          controls: false,
+          poster: '',
+        },
+      })
     })
-  })
+  }
 }
 
 type AdminBraftVariant = 'default' | 'short'
@@ -85,6 +88,7 @@ const AdminBraftEditor: React.FC<{
   value?: EditorState
   onChange?: (editorState: EditorState) => void
 }> = ({ variant, value, onChange }, ref) => {
+  const { id: appId } = useContext(AppContext)
   return (
     <StyledBraftEditor
       ref={ref}
@@ -93,7 +97,7 @@ const AdminBraftEditor: React.FC<{
       contentClassName={variant === 'short' ? 'short-bf-content' : undefined}
       language={braftLanguageFn}
       controls={controls[variant || 'default']}
-      media={{ uploadFn }}
+      media={{ uploadFn: createUploadFn(appId) }}
     />
   )
 }
