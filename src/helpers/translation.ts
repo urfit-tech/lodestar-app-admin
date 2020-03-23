@@ -72,7 +72,7 @@ export const commonMessages = {
     orderLogId: { id: 'common.label.orderLogId', defaultMessage: '訂單編號' },
     orderLogDate: { id: 'common.label.orderLogDate', defaultMessage: '訂單日期' },
     orderLogPrice: { id: 'common.label.orderLogPrice', defaultMessage: '訂單金額' },
-    orderLogStatus: { id: 'common.label.orderLogStatue', defaultMessage: '訂單狀態' },
+    orderLogStatus: { id: 'common.label.orderLogStatus', defaultMessage: '訂單狀態' },
     orderProductPriceTotal: { id: 'common.label.orderProductPriceTotal', defaultMessage: '項目總額' },
     orderDiscountPriceTotal: { id: 'common.label.orderDiscountPriceTotal', defaultMessage: '折扣總額' },
     orderLogPriceTotal: { id: 'common.label.orderLogPriceTotal', defaultMessage: '訂單總額' },

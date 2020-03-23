@@ -1,5 +1,5 @@
-import { useApolloClient } from '@apollo/react-hooks'
-import { Button, DatePicker, Dropdown, Form, Icon, Menu } from 'antd'
+import { useApolloClient, useQuery } from '@apollo/react-hooks'
+import { Button, DatePicker, Dropdown, Form, Icon, Menu, Select } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import moment from 'moment'
@@ -18,11 +18,26 @@ const messages = defineMessages({
   exportOrderDiscount: { id: 'common.ui.exportOrderDiscount', defaultMessage: '折扣明細' },
 })
 
+const useOrderStatuses = () => {
+  const { loading, error, data } = useQuery<types.GET_ORDER_LOG_STATUS>(GET_ORDER_LOG_STATUS)
+
+  return {
+    loading,
+    error,
+    data: data?.order_log?.map(log => log.status),
+  }
+}
+
 const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
   const app = useContext(AppContext)
   const { formatMessage } = useIntl()
   const client = useApolloClient()
   const [loading, setLoading] = useState(false)
+  const { data: orderStatuses } = useOrderStatuses()
+  const failOrderStatuses =
+    orderStatuses?.filter(
+      status => !(status === 'REFUND' || status === 'UNPAID' || status === 'SUCCESS' || status === 'FAILED'),
+    ) || []
 
   const productTypeLabel: { [key: string]: string } = {
     Program: formatMessage(commonMessages.product.program),
@@ -38,8 +53,8 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
     AppointmentPlan: formatMessage(commonMessages.product.appointmentPlan),
   }
 
-  const getOrderLogContent: (startedAt: Date, endedAt: Date) => Promise<string> = useCallback(
-    async (startedAt, endedAt) => {
+  const getOrderLogContent: (startedAt: Date, endedAt: Date, orderStatuses: string[]) => Promise<string> = useCallback(
+    async (startedAt, endedAt, orderStatuses) => {
       const orderLogResult = await client.query<
         types.GET_ORDER_LOG_COLLECTION,
         types.GET_ORDER_LOG_COLLECTIONVariables
@@ -49,6 +64,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           appId: app.id,
           startedAt,
           endedAt,
+          orderStatuses,
         },
       })
 
@@ -106,8 +122,12 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
     [app, client, formatMessage],
   )
 
-  const getOrderProductContent: (startedAt: Date, endedAt: Date) => Promise<string> = useCallback(
-    async (startedAt, endedAt) => {
+  const getOrderProductContent: (
+    startedAt: Date,
+    endedAt: Date,
+    orderStatuses: string[],
+  ) => Promise<string> = useCallback(
+    async (startedAt, endedAt, orderStatuses) => {
       const orderProductResult = await client.query<
         types.GET_ORDER_PRODUCT_COLLECTION,
         types.GET_ORDER_PRODUCT_COLLECTIONVariables
@@ -117,6 +137,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           appId: app.id,
           startedAt,
           endedAt,
+          orderStatuses,
         },
       })
 
@@ -151,8 +172,12 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
     [app, client, formatMessage, productTypeLabel],
   )
 
-  const getOrderDiscountContent: (startedAt: Date, endedAt: Date) => Promise<string> = useCallback(
-    async (startedAt, endedAt) => {
+  const getOrderDiscountContent: (
+    startedAt: Date,
+    endedAt: Date,
+    orderStatuses: string[],
+  ) => Promise<string> = useCallback(
+    async (startedAt, endedAt, orderStatuses) => {
       const orderDiscountResult = await client.query<
         types.GET_ORDER_DISCOUNT_COLLECTION,
         types.GET_ORDER_DISCOUNT_COLLECTIONVariables
@@ -162,6 +187,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           appId: app.id,
           startedAt,
           endedAt,
+          orderStatuses,
         },
       })
 
@@ -191,43 +217,59 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
   )
 
   const handleExport: (exportTarget: 'orderLog' | 'orderProduct' | 'orderDiscount') => void = exportTarget => {
-    form.validateFields(async (error, values) => {
-      if (error) {
-        return
-      }
+    form.validateFields(
+      async (
+        error,
+        values: {
+          startedAt: Date
+          endedAt: Date
+          orderStatuses: string[]
+        },
+      ) => {
+        if (error) {
+          return
+        }
 
-      setLoading(true)
+        setLoading(true)
 
-      const startedAt = moment(values.startedAt).toDate()
-      const endedAt = moment(values.endedAt).toDate()
-      // const data: string[][] = []
-      let fileName = 'untitled.csv'
-      let csvContent = ''
+        const startedAt = moment(values.startedAt).toDate()
+        const endedAt = moment(values.endedAt).toDate()
+        let orderStatuses: Array<string> = []
+        if (values.orderStatuses.includes('FAILED')) {
+          orderStatuses = failOrderStatuses
+        }
+        orderStatuses = orderStatuses.concat(values.orderStatuses)
 
-      switch (exportTarget) {
-        case 'orderLog':
-          fileName = 'orders'
-          csvContent = await getOrderLogContent(startedAt, endedAt)
-          break
+        // const data: string[][] = []
 
-        case 'orderProduct':
-          fileName = 'items'
-          csvContent = await getOrderProductContent(startedAt, endedAt)
-          break
+        let fileName = 'untitled.csv'
+        let csvContent = ''
 
-        case 'orderDiscount':
-          fileName = 'discounts'
-          csvContent = await getOrderDiscountContent(startedAt, endedAt)
-          break
-      }
+        switch (exportTarget) {
+          case 'orderLog':
+            fileName = 'orders'
+            csvContent = await getOrderLogContent(startedAt, endedAt, orderStatuses)
+            break
 
-      downloadCSV(
-        `${fileName}_${moment(startedAt).format('YYYYMMDD')}_${moment(endedAt).format('YYYYMMDD')}.csv`,
-        csvContent,
-      )
+          case 'orderProduct':
+            fileName = 'items'
+            csvContent = await getOrderProductContent(startedAt, endedAt, orderStatuses)
+            break
 
-      setLoading(false)
-    })
+          case 'orderDiscount':
+            fileName = 'discounts'
+            csvContent = await getOrderDiscountContent(startedAt, endedAt, orderStatuses)
+            break
+        }
+
+        downloadCSV(
+          `${fileName}_${moment(startedAt).format('YYYYMMDD')}_${moment(endedAt).format('YYYYMMDD')}.csv`,
+          csvContent,
+        )
+
+        setLoading(false)
+      },
+    )
   }
 
   return (
@@ -258,7 +300,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
             }
             onClick={() => !loading && handleExport('orderLog')}
           >
-            {loading ? <Icon type="loading" /> : formatMessage(messages.exportOrderLog)}
+            {loading ? <Icon type="loading" /> : <div>{formatMessage(messages.exportOrderLog)}</div>}
           </Dropdown.Button>
         </>
       )}
@@ -305,14 +347,38 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
             )}
           </Form.Item>
         </Form.Item>
+        <Form.Item label={formatMessage(commonMessages.label.orderLogStatus)}>
+          {form.getFieldDecorator('orderStatuses', {
+            initialValue: ['UNPAID', 'SUCCESS', 'FAILED', 'REFUND'],
+            rules: [{ required: true }],
+          })(
+            <Select mode="multiple" placeholder={formatMessage(commonMessages.label.orderLogStatus)}>
+              <Select.Option key="UNPAID">{formatMessage(commonMessages.status.orderUnpaid)}</Select.Option>
+              <Select.Option key="SUCCESS">{formatMessage(commonMessages.status.orderSuccess)}</Select.Option>
+              <Select.Option key="FAILED">{formatMessage(commonMessages.status.orderFailed)}</Select.Option>
+              <Select.Option key="REFUND">{formatMessage(commonMessages.status.orderRefund)}</Select.Option>
+            </Select>,
+          )}
+        </Form.Item>
       </Form>
     </AdminModal>
   )
 }
 
 const GET_ORDER_LOG_COLLECTION = gql`
-  query GET_ORDER_LOG_COLLECTION($appId: String!, $startedAt: timestamptz!, $endedAt: timestamptz!) {
-    order_log(where: { member: { app_id: { _eq: $appId } }, created_at: { _gte: $startedAt, _lte: $endedAt } }) {
+  query GET_ORDER_LOG_COLLECTION(
+    $appId: String!
+    $startedAt: timestamptz!
+    $endedAt: timestamptz!
+    $orderStatuses: [String!]
+  ) {
+    order_log(
+      where: {
+        member: { app_id: { _eq: $appId } }
+        created_at: { _gte: $startedAt, _lte: $endedAt }
+        status: { _in: $orderStatuses }
+      }
+    ) {
       id
       status
       member {
@@ -342,9 +408,20 @@ const GET_ORDER_LOG_COLLECTION = gql`
   }
 `
 const GET_ORDER_PRODUCT_COLLECTION = gql`
-  query GET_ORDER_PRODUCT_COLLECTION($appId: String!, $startedAt: timestamptz!, $endedAt: timestamptz!) {
+  query GET_ORDER_PRODUCT_COLLECTION(
+    $appId: String!
+    $startedAt: timestamptz!
+    $endedAt: timestamptz!
+    $orderStatuses: [String!]
+  ) {
     order_product(
-      where: { order_log: { member: { app_id: { _eq: $appId } }, created_at: { _gte: $startedAt, _lte: $endedAt } } }
+      where: {
+        order_log: {
+          member: { app_id: { _eq: $appId } }
+          created_at: { _gte: $startedAt, _lte: $endedAt }
+          status: { _in: $orderStatuses }
+        }
+      }
     ) {
       id
       order_log {
@@ -363,9 +440,20 @@ const GET_ORDER_PRODUCT_COLLECTION = gql`
   }
 `
 const GET_ORDER_DISCOUNT_COLLECTION = gql`
-  query GET_ORDER_DISCOUNT_COLLECTION($appId: String!, $startedAt: timestamptz!, $endedAt: timestamptz!) {
+  query GET_ORDER_DISCOUNT_COLLECTION(
+    $appId: String!
+    $startedAt: timestamptz!
+    $endedAt: timestamptz!
+    $orderStatuses: [String!]
+  ) {
     order_discount(
-      where: { order_log: { member: { app_id: { _eq: $appId } }, created_at: { _gte: $startedAt, _lte: $endedAt } } }
+      where: {
+        order_log: {
+          member: { app_id: { _eq: $appId } }
+          created_at: { _gte: $startedAt, _lte: $endedAt }
+          status: { _in: $orderStatuses }
+        }
+      }
     ) {
       id
       order_log {
@@ -376,6 +464,14 @@ const GET_ORDER_DISCOUNT_COLLECTION = gql`
       target
       name
       price
+    }
+  }
+`
+
+const GET_ORDER_LOG_STATUS = gql`
+  query GET_ORDER_LOG_STATUS {
+    order_log(distinct_on: status) {
+      status
     }
   }
 `

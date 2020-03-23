@@ -3368,6 +3368,7 @@ export interface GET_ORDER_LOG_COLLECTIONVariables {
   appId: string;
   startedAt: any;
   endedAt: any;
+  orderStatuses?: string[] | null;
 }
 
 /* tslint:disable */
@@ -3426,6 +3427,7 @@ export interface GET_ORDER_PRODUCT_COLLECTIONVariables {
   appId: string;
   startedAt: any;
   endedAt: any;
+  orderStatuses?: string[] | null;
 }
 
 /* tslint:disable */
@@ -3472,6 +3474,27 @@ export interface GET_ORDER_DISCOUNT_COLLECTIONVariables {
   appId: string;
   startedAt: any;
   endedAt: any;
+  orderStatuses?: string[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ORDER_LOG_STATUS
+// ====================================================
+
+export interface GET_ORDER_LOG_STATUS_order_log {
+  __typename: "order_log";
+  status: string;
+}
+
+export interface GET_ORDER_LOG_STATUS {
+  /**
+   * fetch data from the table: "order_log"
+   */
+  order_log: GET_ORDER_LOG_STATUS_order_log[];
 }
 
 /* tslint:disable */
