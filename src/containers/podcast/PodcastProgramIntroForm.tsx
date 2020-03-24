@@ -109,7 +109,7 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
         <div className="d-flex align-items-center">
           {!!podcastProgram.coverUrl && (
             <StyledCoverBlock className="mr-4">
-              <CustomRatioImage src={uploadedCoverUrl || podcastProgram.coverUrl} width="100%" ratio={1} />
+              <CustomRatioImage src={podcastProgram.coverUrl} width="100%" ratio={1} />
             </StyledCoverBlock>
           )}
 
@@ -127,13 +127,7 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
               showUploadList={false}
               path={`podcast_program_covers/${localStorage.getItem('kolable.app.id')}/${podcastProgram.id}`}
               isPublic
-              onSuccess={() =>
-                setUploadedCoverUrl(
-                  `https://${process.env.REACT_APP_S3_BUCKET}/podcast_program_covers/${localStorage.getItem(
-                    'kolable.app.id',
-                  )}/${podcastProgram.id}?t=${Date.now()}`,
-                )
-              }
+              onSuccess={() => handleSubmit()}
             />,
           )}
         </div>
