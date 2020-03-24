@@ -5,8 +5,8 @@ import axios, { Canceler } from 'axios'
 import { extname } from 'path'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { uploadFile } from '../../helpers'
 import styled from 'styled-components'
+import { uploadFile } from '../../helpers'
 
 const messages = defineMessages({
   uploadSuccess: { id: 'upload.event.success', defaultMessage: '上傳成功' },
@@ -55,7 +55,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = (
   ref,
 ) => {
   const { formatMessage } = useIntl()
-  const [loading, setLoading] = useState()
+  const [loading, setLoading] = useState<boolean>(false)
   const uploadCanceler = useRef<Canceler>()
 
   const props: UploadProps = {

@@ -27,26 +27,32 @@ export const validateImage = (file: RcFile, fileSize?: number) => {
   return isImage && inSize
 }
 
-export const uploadFile = async (key: string, file: File | null, config?: AxiosRequestConfig, isPublic?: boolean) =>
+export const uploadFile = async (key: string, file: File | null, config?: AxiosRequestConfig, isPublic?: boolean) => {
+  let signedUrl = ''
   file &&
-  axios
-    .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/signUrl`, {
-      isPublic,
-      operation: 'putObject',
-      params: {
-        Key: key,
-        ContentType: file.type,
-        Expires: 86400,
-      },
-    })
-    .then(res => res.data.signedUrl)
-    .then(url => {
-      const { query } = queryString.parseUrl(url)
-      return axios.put<{ status: number; data: string }>(url, file, {
-        ...config,
-        headers: query,
+    (await axios
+      .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/signUrl`, {
+        isPublic,
+        operation: 'putObject',
+        params: {
+          Key: key,
+          ContentType: file.type,
+          Expires: 86400,
+        },
       })
-    })
+      .then(res => {
+        signedUrl = res.data.signedUrl
+        return res.data.signedUrl
+      })
+      .then(url => {
+        const { query } = queryString.parseUrl(url)
+        return axios.put<{ status: number; data: string }>(url, file, {
+          ...config,
+          headers: query,
+        })
+      }))
+  return signedUrl
+}
 
 export const commaFormatter = (value?: number | string | null) =>
   value !== null && value !== undefined && `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
