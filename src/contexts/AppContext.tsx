@@ -4,7 +4,15 @@ import gql from 'graphql-tag'
 import React, { createContext, useEffect, useState } from 'react'
 import types from '../types'
 
-type Module = 'activity' | 'voucher' | 'member_card' | 'podcast' | 'appointment' | 'learning_statistics' | 'locale'
+type Module =
+  | 'activity'
+  | 'voucher'
+  | 'member_card'
+  | 'podcast'
+  | 'appointment'
+  | 'learning_statistics'
+  | 'locale'
+  | 'qrcode'
 
 type AppProps = {
   loading: boolean

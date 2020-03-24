@@ -1,7 +1,8 @@
 import { Button, Modal, Tabs } from 'antd'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import AppContext from '../../contexts/AppContext'
 import { downloadCSV, toCSV } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 
@@ -67,8 +68,9 @@ export type ActivitySessionParticipantProps = {
 const ActivityParticipantCollectionModal: React.FC<{
   sessions: ActivitySessionParticipantProps[]
 }> = ({ sessions }) => {
-  const [visible, setVisible] = useState(false)
+  const { enabledModules } = useContext(AppContext)
   const { formatMessage } = useIntl()
+  const [visible, setVisible] = useState(false)
 
   return (
     <>
@@ -120,7 +122,7 @@ const ActivityParticipantCollectionModal: React.FC<{
                       <StyledCell></StyledCell>
                       <StyledCell>{formatMessage(commonMessages.label.name)}</StyledCell>
                       <StyledCell>{formatMessage(messages.ticketType)}</StyledCell>
-                      <StyledCell>{formatMessage(messages.attended)}</StyledCell>
+                      {enabledModules.qrcode && <StyledCell>{formatMessage(messages.attended)}</StyledCell>}
                       <StyledCell>{formatMessage(commonMessages.label.phone)}</StyledCell>
                       <StyledCell>{formatMessage(commonMessages.label.email)}</StyledCell>
                     </StyledRow>
@@ -130,7 +132,9 @@ const ActivityParticipantCollectionModal: React.FC<{
                         <StyledCell>{`${index + 1}`.padStart(2, '0')}</StyledCell>
                         <StyledCell>{participant.name}</StyledCell>
                         <StyledCell>{participant.activityTitle}</StyledCell>
-                        <StyledCell className="text-center">{participant.attended && 'v'}</StyledCell>
+                        {enabledModules.qrcode && (
+                          <StyledCell className="text-center">{participant.attended && 'v'}</StyledCell>
+                        )}
                         <StyledCell>{participant.phone}</StyledCell>
                         <StyledCell>{participant.email}</StyledCell>
                       </StyledRow>
