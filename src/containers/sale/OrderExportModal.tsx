@@ -339,8 +339,15 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
         </Form.Item>
         <Form.Item label={formatMessage(commonMessages.label.orderLogStatus)}>
           {form.getFieldDecorator('orderStatuses', {
-            initialValue: ['UNPAID', 'SUCCESS', 'FAILED', 'REFUND'],
-            rules: [{ required: true }],
+            initialValue: [],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.term.orderStatus),
+                }),
+              },
+            ],
           })(
             <Select mode="multiple" placeholder={formatMessage(commonMessages.label.orderLogStatus)}>
               <Select.Option key="UNPAID">{formatMessage(commonMessages.status.orderUnpaid)}</Select.Option>
