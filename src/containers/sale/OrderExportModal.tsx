@@ -310,7 +310,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
               ],
             })(
               <DatePicker
-                className="d-block"
+                style={{ width: '100%' }}
                 placeholder={formatMessage(commonMessages.term.startedAt)}
                 format="YYYY-MM-DD HH:mm"
                 showTime={{ defaultValue: moment('00:00:00', 'HH:mm') }}
@@ -329,7 +329,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
               ],
             })(
               <DatePicker
-                className="d-block"
+                style={{ width: '100%' }}
                 placeholder={formatMessage(commonMessages.term.endedAt)}
                 format="YYYY-MM-DD HH:mm"
                 showTime={{ defaultValue: moment('23:59:59', 'HH:mm') }}
