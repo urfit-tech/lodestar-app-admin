@@ -43,7 +43,6 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
     PodcastProgramContext,
   )
   const [loading, setLoading] = useState(false)
-  const [uploadedCoverUrl, setUploadedCoverUrl] = useState<string>()
 
   const [updatePodcastProgramIntro] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_INTRO,
