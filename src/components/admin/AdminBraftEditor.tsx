@@ -35,9 +35,10 @@ export const createUploadFn = (appId: string) => {
       }
     }) => void
   }) => {
-    uploadFile(`images/${appId}/editor/${uuid()}`, params.file).then(signedUrl => {
+    const uniqId = uuid()
+    uploadFile(`images/${appId}/editor/${uniqId}`, params.file).then(() => {
       params.success({
-        url: signedUrl.split('?')[0],
+        url: `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/editor/${uniqId}`,
         meta: {
           id: '',
           title: '',
