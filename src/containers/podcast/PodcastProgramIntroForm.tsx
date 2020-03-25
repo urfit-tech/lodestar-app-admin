@@ -70,6 +70,9 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
           updatedAt: new Date(),
           podcastProgramId: podcastProgram.id,
           abstract: values.abstract,
+          coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/podcast_program_covers/${localStorage.getItem(
+            'kolable.app.id',
+          )}/${podcastProgram.id}?t=${Date.now()}`,
         },
       })
         .then(() => {
@@ -79,24 +82,6 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
         .catch(error => handleError(error))
         .finally(() => setLoading(false))
     })
-  }
-
-  const handleUploadSuccess = () => {
-    updatePodcastProgramIntro({
-      variables: {
-        updatedAt: new Date(),
-        podcastProgramId: podcastProgram.id,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/podcast_program_covers/${localStorage.getItem(
-          'kolable.app.id',
-        )}/${podcastProgram.id}?t=${Date.now()}`,
-      },
-    })
-      .then(() => {
-        refetchPodcastProgram && refetchPodcastProgram()
-        message.success(formatMessage(commonMessages.event.successfullySaved))
-      })
-      .catch(error => handleError(error))
-      .finally(() => setLoading(false))
   }
 
   return (
@@ -141,7 +126,7 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
               showUploadList={false}
               path={`podcast_program_covers/${localStorage.getItem('kolable.app.id')}/${podcastProgram.id}`}
               isPublic
-              onSuccess={() => handleUploadSuccess()}
+              onSuccess={() => handleSubmit()}
             />,
           )}
         </div>
