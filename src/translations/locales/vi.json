@@ -102,6 +102,7 @@
   "common.event.successfullyDeleted": "Đã xóa thành công",
   "common.event.successfullySaved": "Lưu thành công",
   "common.event.successfullyUpdatePassword": "Đã thay đổi mật khẩu",
+  "common.event.successfullyUpload": "Đã tải lên thành công",
   "common.isContentCreator": "Tôi là người sáng tạo nội dung",
   "common.label.accountData": "Dữ liệu tài khoản",
   "common.label.adminBackstage": "Quản lý Backstage",

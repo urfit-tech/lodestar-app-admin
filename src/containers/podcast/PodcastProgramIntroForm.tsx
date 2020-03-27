@@ -57,6 +57,30 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
     return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
+  const handleUpload = () => {
+    form.validateFields(error => {
+      if (error) {
+        return
+      }
+
+      updatePodcastProgramIntro({
+        variables: {
+          updatedAt: new Date(),
+          podcastProgramId: podcastProgram.id,
+          abstract: podcastProgram.abstract,
+          coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/podcast_program_covers/${localStorage.getItem(
+            'kolable.app.id',
+          )}/${podcastProgram.id}?t=${Date.now()}`,
+        },
+      })
+        .then(() => {
+          refetchPodcastProgram && refetchPodcastProgram()
+          message.success(formatMessage(commonMessages.event.successfullyUpload))
+        })
+        .catch(error => handleError(error))
+    })
+  }
+
   const handleSubmit = () => {
     form.validateFields((error, values) => {
       if (error) {
@@ -70,9 +94,7 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
           updatedAt: new Date(),
           podcastProgramId: podcastProgram.id,
           abstract: values.abstract,
-          coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/podcast_program_covers/${localStorage.getItem(
-            'kolable.app.id',
-          )}/${podcastProgram.id}?t=${Date.now()}`,
+          coverUrl: podcastProgram.coverUrl,
         },
       })
         .then(() => {
@@ -126,7 +148,7 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
               showUploadList={false}
               path={`podcast_program_covers/${localStorage.getItem('kolable.app.id')}/${podcastProgram.id}`}
               isPublic
-              onSuccess={() => handleSubmit()}
+              onSuccess={() => handleUpload()}
             />,
           )}
         </div>

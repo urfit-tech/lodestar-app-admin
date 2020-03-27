@@ -102,6 +102,7 @@
   "common.event.successfullyDeleted": "Deleted",
   "common.event.successfullySaved": "Saved",
   "common.event.successfullyUpdatePassword": "Password Updated",
+  "common.event.successfullyUpload": "Uploaded",
   "common.isContentCreator": "Instructor",
   "common.label.accountData": "Account",
   "common.label.adminBackstage": "Admin Backstage",
