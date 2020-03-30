@@ -34,7 +34,6 @@ type MemberProps = {
 }
 type ProgramProps = {
   programId: string
-  type: string
   programContentCount: number
   programContentDuration: number
 }
@@ -47,81 +46,11 @@ const ProgramProgressTable: React.FC<{
   programId?: string | null
 }> = ({ programId }) => {
   const { formatMessage } = useIntl()
-  const { loading, error, data } = useQuery<types.GET_PROGRAM_PROGRESS, types.GET_PROGRAM_PROGRESSVariables>(
-    GET_PROGRAM_PROGRESS,
-    { variables: { programId } },
-  )
+  const { loading, error, dataSource } = useDataSource(programId)
 
   if (error) {
     return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
-
-  const programEnrollments: (MemberProps & ProgramProps)[] =
-    loading || !data
-      ? []
-      : uniqBy(enrollment => `${enrollment.memberId}_${enrollment.programId}`, [
-          ...data.program_enrollment.map(enrollment => ({
-            memberId: enrollment.member?.id || '',
-            name: enrollment.member?.name || enrollment.member?.username || '',
-            email: enrollment.member?.email || '',
-            pictureUrl: enrollment.member?.picture_url || '',
-
-            programId: enrollment.program?.id || '',
-            type: 'perpetual',
-            programContentCount: sum(
-              enrollment.program?.program_content_sections.map(
-                section => section.program_contents_aggregate.aggregate?.count || 0,
-              ) || [],
-            ),
-            programContentDuration: sum(
-              enrollment.program?.program_content_sections.map(
-                section => section.program_contents_aggregate.aggregate?.sum?.duration || 0,
-              ) || [],
-            ),
-          })),
-          ...data.program_plan_enrollment.map(enrollment => ({
-            memberId: enrollment.member?.id || '',
-            name: enrollment.member?.name || enrollment.member?.username || '',
-            email: enrollment.member?.email || '',
-            pictureUrl: enrollment.member?.picture_url || '',
-
-            programId: enrollment.program_plan?.program.id || '',
-            type: 'subscription',
-            programContentCount: sum(
-              enrollment.program_plan?.program.program_content_sections.map(
-                section => section.program_contents_aggregate.aggregate?.count || 0,
-              ) || [],
-            ),
-            programContentDuration: sum(
-              enrollment.program_plan?.program.program_content_sections.map(
-                section => section.program_contents_aggregate.aggregate?.sum?.duration || 0,
-              ) || [],
-            ),
-          })),
-        ])
-
-  const programEnrollmentsByMember = groupBy(enrollment => enrollment.memberId, programEnrollments)
-
-  const dataSource: MemberProgressProps[] = Object.values(programEnrollmentsByMember).map(memberEnrollments => {
-    const totalCount = sum(memberEnrollments.map(enrollment => enrollment.programContentCount))
-    const totalDuration = sum(memberEnrollments.map(enrollment => enrollment.programContentDuration))
-    const progress = totalCount
-      ? sum(
-          data?.program_content_progress
-            .filter(programContentProgress => programContentProgress.member_id === memberEnrollments[0].memberId)
-            .map(programContentProgress => programContentProgress.progress) || [],
-        ) / totalCount
-      : 0
-
-    return {
-      memberId: memberEnrollments[0].memberId,
-      name: memberEnrollments[0].name,
-      email: memberEnrollments[0].email,
-      pictureUrl: memberEnrollments[0].pictureUrl,
-      duration: totalDuration * progress,
-      progress,
-    }
-  })
 
   const programProgressTableColumns: ColumnProps<MemberProgressProps>[] = [
     {
@@ -157,9 +86,67 @@ const ProgramProgressTable: React.FC<{
   )
 }
 
+const useDataSource = (programId?: string | null) => {
+  const { loading, error, data } = useQuery<types.GET_PROGRAM_PROGRESS, types.GET_PROGRAM_PROGRESSVariables>(
+    GET_PROGRAM_PROGRESS,
+    { variables: { programId } },
+  )
+
+  const programEnrollments: (MemberProps & ProgramProps)[] = uniqBy(
+    enrollment => `${enrollment.memberId}_${enrollment.programId}`,
+    data?.program_content_enrollment.map(enrollment => ({
+      memberId: enrollment.member?.id || '',
+      name: enrollment.member?.name || enrollment.member?.username || '',
+      email: enrollment.member?.email || '',
+      pictureUrl: enrollment.member?.picture_url || '',
+
+      programId: enrollment.program?.id || '',
+      programContentCount: sum(
+        enrollment.program?.program_content_sections.map(
+          section => section.program_contents_aggregate.aggregate?.count || 0,
+        ) || [],
+      ),
+      programContentDuration: sum(
+        enrollment.program?.program_content_sections.map(
+          section => section.program_contents_aggregate.aggregate?.sum?.duration || 0,
+        ) || [],
+      ),
+    })) || [],
+  )
+
+  const programEnrollmentsByMember = groupBy(enrollment => enrollment.memberId, programEnrollments)
+
+  const dataSource: MemberProgressProps[] = Object.values(programEnrollmentsByMember).map(memberEnrollments => {
+    const totalCount = sum(memberEnrollments.map(enrollment => enrollment.programContentCount))
+    const totalDuration = sum(memberEnrollments.map(enrollment => enrollment.programContentDuration))
+    const progress = totalCount
+      ? sum(
+          data?.program_content_progress
+            .filter(programContentProgress => programContentProgress.member_id === memberEnrollments[0].memberId)
+            .map(programContentProgress => programContentProgress.progress) || [],
+        ) / totalCount
+      : 0
+
+    return {
+      memberId: memberEnrollments[0].memberId,
+      name: memberEnrollments[0].name,
+      email: memberEnrollments[0].email,
+      pictureUrl: memberEnrollments[0].pictureUrl,
+      duration: totalDuration * progress,
+      progress,
+    }
+  })
+
+  return {
+    loading,
+    error,
+    dataSource,
+  }
+}
+
 const GET_PROGRAM_PROGRESS = gql`
   query GET_PROGRAM_PROGRESS($programId: uuid) {
-    program_enrollment(where: { program: { id: { _eq: $programId }, published_at: { _is_null: false } } }) {
+    program_content_enrollment(where: { program: { id: { _eq: $programId }, published_at: { _is_null: false } } }) {
       member {
         id
         username
@@ -167,6 +154,7 @@ const GET_PROGRAM_PROGRESS = gql`
         email
         picture_url
       }
+      program_id
       program {
         id
         program_content_sections {
@@ -175,32 +163,6 @@ const GET_PROGRAM_PROGRESS = gql`
               count
               sum {
                 duration
-              }
-            }
-          }
-        }
-      }
-    }
-    program_plan_enrollment(
-      where: { program_plan: { program: { id: { _eq: $programId }, published_at: { _is_null: false } } } }
-    ) {
-      member {
-        id
-        username
-        name
-        email
-        picture_url
-      }
-      program_plan {
-        program {
-          id
-          program_content_sections {
-            program_contents_aggregate(where: { published_at: { _is_null: false } }) {
-              aggregate {
-                count
-                sum {
-                  duration
-                }
               }
             }
           }
