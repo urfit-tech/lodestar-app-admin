@@ -5077,6 +5077,44 @@ export interface UPDATE_MEMBER_ACCOUNTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_MERCHANDISE
+// ====================================================
+
+export interface INSERT_MERCHANDISE_insert_merchandise_returning {
+  __typename: "merchandise";
+  id: any;
+}
+
+export interface INSERT_MERCHANDISE_insert_merchandise {
+  __typename: "merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_MERCHANDISE_insert_merchandise_returning[];
+}
+
+export interface INSERT_MERCHANDISE {
+  /**
+   * insert data into the table: "merchandise"
+   */
+  insert_merchandise: INSERT_MERCHANDISE_insert_merchandise | null;
+}
+
+export interface INSERT_MERCHANDISEVariables {
+  appId: string;
+  title: string;
+  merchandiseCategories: merchandise_category_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MERCHANDISE_COLLECTION
 // ====================================================
 
@@ -6772,6 +6810,7 @@ export enum merchandise_tag_update_column {
  */
 export enum merchandise_update_column {
   abstract = "abstract",
+  app_id = "app_id",
   created_at = "created_at",
   description = "description",
   id = "id",
@@ -8081,6 +8120,7 @@ export interface app_bool_exp {
   id?: String_comparison_exp | null;
   issues?: issue_bool_exp | null;
   members?: member_bool_exp | null;
+  merchandises?: merchandise_bool_exp | null;
   name?: String_comparison_exp | null;
   og_description?: String_comparison_exp | null;
   og_image?: String_comparison_exp | null;
@@ -8118,6 +8158,7 @@ export interface app_insert_input {
   id?: string | null;
   issues?: issue_arr_rel_insert_input | null;
   members?: member_arr_rel_insert_input | null;
+  merchandises?: merchandise_arr_rel_insert_input | null;
   name?: string | null;
   og_description?: string | null;
   og_image?: string | null;
@@ -9657,6 +9698,14 @@ export interface member_tag_on_conflict {
 }
 
 /**
+ * input type for inserting array relation for remote table "merchandise"
+ */
+export interface merchandise_arr_rel_insert_input {
+  data: merchandise_insert_input[];
+  on_conflict?: merchandise_on_conflict | null;
+}
+
+/**
  * Boolean expression to filter rows from the table "merchandise". All fields are combined with a logical 'AND'.
  */
 export interface merchandise_bool_exp {
@@ -9664,6 +9713,8 @@ export interface merchandise_bool_exp {
   _not?: merchandise_bool_exp | null;
   _or?: (merchandise_bool_exp | null)[] | null;
   abstract?: String_comparison_exp | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -9773,6 +9824,8 @@ export interface merchandise_img_on_conflict {
  */
 export interface merchandise_insert_input {
   abstract?: string | null;
+  app?: app_obj_rel_insert_input | null;
+  app_id?: string | null;
   created_at?: any | null;
   description?: string | null;
   id?: any | null;
@@ -11425,6 +11478,7 @@ export interface program_content_enrollment_bool_exp {
   _and?: (program_content_enrollment_bool_exp | null)[] | null;
   _not?: program_content_enrollment_bool_exp | null;
   _or?: (program_content_enrollment_bool_exp | null)[] | null;
+  member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   program?: program_bool_exp | null;
   program_content?: program_content_bool_exp | null;

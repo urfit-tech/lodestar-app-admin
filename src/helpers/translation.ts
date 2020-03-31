@@ -397,6 +397,9 @@ export const programMessages = {
     allProgram: { id: 'program.label.allProgram', defaultMessage: '全部課程' },
     programContent: { id: 'program.label.programContent', defaultMessage: '課程內容' },
     programSettings: { id: 'program.label.programSettings', defaultMessage: '課程設定' },
+    programPlanType: { id: 'program.label.programPlanType', defaultMessage: '選擇課程付費方案' },
+    perpetualPlanType: { id: 'program.label.perpetualPlanType', defaultMessage: '單次付費' },
+    subscriptionPlanType: { id: 'program.label.subscriptionPlanType', defaultMessage: '訂閱付費' },
   }),
   text: defineMessages({
     enrolledSubscriptionCount: { id: 'program.text.enrolledSubscriptionCount', defaultMessage: '已訂閱 {count} 人' },
@@ -435,6 +438,12 @@ export const podcastMessages = {
     audioFileTips: { id: 'podcast.text.audioFileTips', defaultMessage: '建議格式：MP3\n檔案大小限制：5MB' },
     podcastCoverTips: { id: 'podcast.text.podcastCoverTips', defaultMessage: '建議尺寸：1080*1080px' },
     abstractLimit: { id: 'podcast.text.abstractLimit', defaultMessage: '限 100 字' },
+  }),
+}
+
+export const merchandiseMessages = {
+  ui: defineMessages({
+    createMerchandise: { id: 'merchandise.ui.createMerchandise', defaultMessage: '建立商品' },
   }),
 }
 

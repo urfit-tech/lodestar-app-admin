@@ -1,7 +1,28 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import { MerchandiseProps } from '../types/merchandise'
 import types from '../types'
+import { MerchandiseProps } from '../types/merchandise'
+
+export const useInsertMerchandise = () => {
+  const [insertMerchandise] = useMutation<types.INSERT_MERCHANDISE, types.INSERT_MERCHANDISEVariables>(gql`
+    mutation INSERT_MERCHANDISE(
+      $appId: String!
+      $title: String!
+      $merchandiseCategories: [merchandise_category_insert_input!]!
+    ) {
+      insert_merchandise(
+        objects: { app_id: $appId, title: $title, merchandise_categories: { data: $merchandiseCategories } }
+      ) {
+        affected_rows
+        returning {
+          id
+        }
+      }
+    }
+  `)
+
+  return insertMerchandise
+}
 
 export const useMerchandiseCollection = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_MERCHANDISE_COLLECTION>(gql`
