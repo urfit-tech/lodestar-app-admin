@@ -107,7 +107,7 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     path: '/admin/settings',
     pageName: 'owner/SettingAdminPage',
     authenticated: true,
-    allowedUserRole: 'app-owner'
+    allowedUserRole: 'app-owner',
   },
   owner_sales_admin: {
     path: '/admin/sales',
@@ -169,6 +169,17 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
+  owner_blog_collection_admin: {
+    path: '/admin/blog',
+    pageName: 'owner/BlogCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_blog_admin: {
+    path: '/admin/blog/:postId',
+    pageName: 'owner/BlogAdminPage',
+    authenticated: true,
+  },
 
   // content creator admin
   creator_appointment_plan_collection_admin: {
@@ -229,8 +240,8 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     path: '/studio/settings',
     pageName: 'creator/SettingAdminPage',
     authenticated: true,
-    allowedUserRole: 'content-creator'
-  }
+    allowedUserRole: 'content-creator',
+  },
 }
 
 export default () => (

@@ -13,6 +13,8 @@ type Module =
   | 'learning_statistics'
   | 'locale'
   | 'qrcode'
+  | 'merchandise'
+  | 'blog'
 
 type AppProps = {
   loading: boolean
