@@ -71,6 +71,34 @@ export interface GET_ACTIVITY_SESSIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_POST_DESCRIPTION
+// ====================================================
+
+export interface UPDATE_POST_DESCRIPTION_update_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_DESCRIPTION {
+  /**
+   * update data of the table: "post"
+   */
+  update_post: UPDATE_POST_DESCRIPTION_update_post | null;
+}
+
+export interface UPDATE_POST_DESCRIPTIONVariables {
+  id: any;
+  description: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_POST_VIDEO_URL
 // ====================================================
 

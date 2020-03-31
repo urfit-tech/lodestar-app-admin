@@ -20,12 +20,12 @@ const BlogPostVideoAdminCard: React.FC<BlogPostVideoAdminCardProps> = ({
   const updatePostVideoUrl = useUpdatePostVideoUrl()
 
   const handleSubmit = () => {
-    validateFields((err, values) => {
+    validateFields((err, { videoUrl }) => {
       if (!err) {
         updatePostVideoUrl({
           variables: {
             id: post.id,
-            videoUrl: values.videoUrl,
+            videoUrl,
           },
         })
           .then(() => {
