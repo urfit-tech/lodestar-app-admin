@@ -5118,34 +5118,9 @@ export interface INSERT_MERCHANDISEVariables {
 // GraphQL query operation: GET_MERCHANDISE_COLLECTION
 // ====================================================
 
-export interface GET_MERCHANDISE_COLLECTION_merchandise_merchandise_categories_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_MERCHANDISE_COLLECTION_merchandise_merchandise_categories {
-  __typename: "merchandise_category";
-  id: any;
-  /**
-   * An object relationship
-   */
-  category: GET_MERCHANDISE_COLLECTION_merchandise_merchandise_categories_category;
-}
-
-export interface GET_MERCHANDISE_COLLECTION_merchandise_merchandise_tags {
-  __typename: "merchandise_tag";
-  id: any;
-  tag_name: string;
-}
-
 export interface GET_MERCHANDISE_COLLECTION_merchandise_merchandise_imgs {
   __typename: "merchandise_img";
   id: any;
-  /**
-   * cover | common
-   */
-  type: string;
   url: string;
 }
 
@@ -5153,19 +5128,8 @@ export interface GET_MERCHANDISE_COLLECTION_merchandise {
   __typename: "merchandise";
   id: any;
   title: string;
-  abstract: string | null;
-  description: string | null;
   price: any;
-  link: string | null;
   published_at: any | null;
-  /**
-   * An array relationship
-   */
-  merchandise_categories: GET_MERCHANDISE_COLLECTION_merchandise_merchandise_categories[];
-  /**
-   * An array relationship
-   */
-  merchandise_tags: GET_MERCHANDISE_COLLECTION_merchandise_merchandise_tags[];
   /**
    * An array relationship
    */
@@ -5177,6 +5141,79 @@ export interface GET_MERCHANDISE_COLLECTION {
    * fetch data from the table: "merchandise"
    */
   merchandise: GET_MERCHANDISE_COLLECTION_merchandise[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MERCHANDISE
+// ====================================================
+
+export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_categories {
+  __typename: "merchandise_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_MERCHANDISE_merchandise_by_pk_merchandise_categories_category;
+}
+
+export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_tags {
+  __typename: "merchandise_tag";
+  id: any;
+  tag_name: string;
+}
+
+export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_imgs {
+  __typename: "merchandise_img";
+  id: any;
+  /**
+   * cover | common
+   */
+  type: string;
+  url: string;
+}
+
+export interface GET_MERCHANDISE_merchandise_by_pk {
+  __typename: "merchandise";
+  id: any;
+  title: string;
+  abstract: string | null;
+  description: string | null;
+  price: any;
+  link: string | null;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  merchandise_categories: GET_MERCHANDISE_merchandise_by_pk_merchandise_categories[];
+  /**
+   * An array relationship
+   */
+  merchandise_tags: GET_MERCHANDISE_merchandise_by_pk_merchandise_tags[];
+  /**
+   * An array relationship
+   */
+  merchandise_imgs: GET_MERCHANDISE_merchandise_by_pk_merchandise_imgs[];
+}
+
+export interface GET_MERCHANDISE {
+  /**
+   * fetch data from the table: "merchandise" using primary key columns
+   */
+  merchandise_by_pk: GET_MERCHANDISE_merchandise_by_pk | null;
+}
+
+export interface GET_MERCHANDISEVariables {
+  id: any;
 }
 
 /* tslint:disable */

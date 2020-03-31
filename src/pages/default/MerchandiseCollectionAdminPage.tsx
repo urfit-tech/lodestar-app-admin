@@ -1,5 +1,5 @@
-import { Button, Icon, Tabs } from 'antd'
-import React, { useContext } from 'react'
+import { Button, Icon, Input, Tabs } from 'antd'
+import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -26,12 +26,13 @@ const StyledHeader = styled.div<{ width?: string }>`
 const MerchandiseCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { history } = useRouter()
+  const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
   const { currentMemberId, currentUserRole } = useAuth()
+
   const { id: appId } = useContext(AppContext)
   const insertMerchandise = useInsertMerchandise()
   const { merchandises } = useMerchandiseCollection()
-
-  const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
+  const [searchText, setSearchText] = useState('')
 
   const tabContents = [
     {
@@ -69,29 +70,39 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
       </AdminPageTitle>
 
       <div className="mb-4">
-        <ProductCreationModal
-          renderTrigger={({ setVisible }) => (
-            <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
-              {formatMessage(merchandiseMessages.ui.createMerchandise)}
-            </Button>
-          )}
-          title={formatMessage(merchandiseMessages.ui.createMerchandise)}
-          onCreate={({ title, categoryIds }) =>
-            insertMerchandise({
-              variables: {
-                appId,
-                title,
-                merchandiseCategories: categoryIds.map((categoryId, index) => ({
-                  category_id: categoryId,
-                  position: index,
-                })),
-              },
-            }).then(({ data }) => {
-              const id = data?.insert_merchandise?.returning[0].id
-              id && history.push(`/merchandises/${id}`)
-            })
-          }
-        />
+        <div className="row">
+          <div className="col-8">
+            <ProductCreationModal
+              renderTrigger={({ setVisible }) => (
+                <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
+                  {formatMessage(merchandiseMessages.ui.createMerchandise)}
+                </Button>
+              )}
+              title={formatMessage(merchandiseMessages.ui.createMerchandise)}
+              onCreate={({ title, categoryIds }) =>
+                insertMerchandise({
+                  variables: {
+                    appId,
+                    title,
+                    merchandiseCategories: categoryIds.map((categoryId, index) => ({
+                      category_id: categoryId,
+                      position: index,
+                    })),
+                  },
+                }).then(({ data }) => {
+                  const id = data?.insert_merchandise?.returning[0].id
+                  id && history.push(`/merchandises/${id}`)
+                })
+              }
+            />
+          </div>
+          <div className="col-4">
+            <Input.Search
+              placeholder={formatMessage(merchandiseMessages.text.searchMerchandise)}
+              onChange={e => setSearchText(e.target.value.toLowerCase())}
+            />
+          </div>
+        </div>
       </div>
 
       <Tabs activeKey={activeKey || 'selling'} onChange={key => setActiveKey(key)}>
@@ -104,9 +115,11 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
               </StyledHeader>
             </div>
 
-            {tabContent.merchandises.map(merchandise => (
-              <MerchandiseAdminItem key={merchandise.id} {...merchandise} />
-            ))}
+            {tabContent.merchandises
+              .filter(merchandise => !searchText || merchandise.title.toLowerCase().includes(searchText))
+              .map(merchandise => (
+                <MerchandiseAdminItem key={merchandise.id} {...merchandise} />
+              ))}
           </Tabs.TabPane>
         ))}
       </Tabs>

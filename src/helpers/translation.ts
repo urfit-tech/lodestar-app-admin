@@ -451,6 +451,9 @@ export const merchandiseMessages = {
     soldOut: { id: 'merchandise.status.soldOut', defaultMessage: '已售完' },
     unpublished: { id: 'merchandise.status.unpublished', defaultMessage: '未上架' },
   }),
+  text: defineMessages({
+    searchMerchandise: { id: 'merchandise.text.searchMerchandise', defaultMessage: '搜尋商品名稱' },
+  }),
 }
 
 // { id: '', defaultMessage: '' },

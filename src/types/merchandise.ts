@@ -1,18 +1,26 @@
+export type MerchandisePreviewProps = {
+  id: string
+  coverUrl: string | null
+  title: string
+  price: number
+  publishedAt: Date | null
+}
+
 export type MerchandiseProps = {
   id: string
-  images: {
-    url: string
-    isCover: boolean
-  }[]
+  title: string
   categories: {
     id: string
     name: string
   }[]
   tags: string[]
-  title: string
+  images: {
+    url: string
+    isCover: boolean
+  }[]
   abstract: string | null
-  price: number
-  description: string | null
   link: string | null
+  description: string | null
+  price: number
   publishedAt: Date | null
 }
