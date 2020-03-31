@@ -222,6 +222,8 @@ export const commonMessages = {
     merchandises: { id: 'common.menu.merchandises', defaultMessage: '商品管理' },
     merchandiseShipping: { id: 'common.menu.merchandiseShipping', defaultMessage: '出貨管理' },
     merchandiseIssues: { id: 'common.menu.merchandiseIssues', defaultMessage: '問答管理' },
+    blogAdmin: { id: 'common.menu.blogAdmin', defaultMessage: '媒體文章' },
+    blogPosts: { id: 'common.menu.blogPosts', defaultMessage: '文章管理' },
     promotionAdmin: { id: 'common.menu.promotionAdmin', defaultMessage: '促銷管理' },
     coupons: { id: 'common.menu.couponPlans', defaultMessage: '折價方案' },
     vouchers: { id: 'common.menu.voucherPlans', defaultMessage: '兌換方案' },
@@ -465,4 +467,16 @@ export const merchandiseMessages = {
   }),
 }
 
-// { id: '', defaultMessage: '' },
+export const blogMessages = {
+  ui: defineMessages({
+    video: { id: 'blog.ui.video', defaultMessage: '影片內容' },
+    contentDescription: { id: 'blog.ui.description', defaultMessage: '圖文內容' },
+  }),
+  label: defineMessages({
+    postContent: { id: 'blog.label.postContent', defaultMessage: '文章內容' },
+    postManagement: { id: 'blog.label.postManagement', defaultMessage: '文章管理' },
+  }),
+  term: defineMessages({
+    pasteVideoUrl: { id: 'blog.term.pasteVideoUrl', defaultMessage: '貼上影片網址' },
+  }),
+}

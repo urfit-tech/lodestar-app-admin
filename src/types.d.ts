@@ -71,6 +71,63 @@ export interface GET_ACTIVITY_SESSIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_POST_VIDEO_URL
+// ====================================================
+
+export interface UPDATE_POST_VIDEO_URL_update_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_VIDEO_URL {
+  /**
+   * update data of the table: "post"
+   */
+  update_post: UPDATE_POST_VIDEO_URL_update_post | null;
+}
+
+export interface UPDATE_POST_VIDEO_URLVariables {
+  id: any;
+  videoUrl: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_PROGRAM
+// ====================================================
+
+export interface PUBLISH_PROGRAM_update_program {
+  __typename: "program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_PROGRAM {
+  /**
+   * update data of the table: "program"
+   */
+  update_program: PUBLISH_PROGRAM_update_program | null;
+}
+
+export interface PUBLISH_PROGRAMVariables {
+  programId: any;
+  publishedAt?: any | null;
+  isPrivate?: boolean | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_COUPON_PLAN
 // ====================================================
 
@@ -1549,35 +1606,6 @@ export interface GET_PROGRAM_PLANS {
 
 export interface GET_PROGRAM_PLANSVariables {
   programId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: PUBLISH_PROGRAM
-// ====================================================
-
-export interface PUBLISH_PROGRAM_update_program {
-  __typename: "program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface PUBLISH_PROGRAM {
-  /**
-   * update data of the table: "program"
-   */
-  update_program: PUBLISH_PROGRAM_update_program | null;
-}
-
-export interface PUBLISH_PROGRAMVariables {
-  programId: any;
-  publishedAt?: any | null;
-  isPrivate?: boolean | null;
 }
 
 /* tslint:disable */
@@ -4553,6 +4581,33 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION {
    * fetch data from the table: "appointment_enrollment"
    */
   appointment_enrollment: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_POST
+// ====================================================
+
+export interface GET_POST_post_by_pk {
+  __typename: "post";
+  id: any;
+  title: string;
+  video_url: string | null;
+  description: string | null;
+}
+
+export interface GET_POST {
+  /**
+   * fetch data from the table: "post" using primary key columns
+   */
+  post_by_pk: GET_POST_post_by_pk | null;
+}
+
+export interface GET_POSTVariables {
+  id: any;
 }
 
 /* tslint:disable */

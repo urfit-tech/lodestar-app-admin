@@ -182,6 +182,17 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
+  owner_blog_collection_admin: {
+    path: '/admin/blog',
+    pageName: 'owner/BlogCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_blog_admin: {
+    path: '/admin/blog/:postId',
+    pageName: 'owner/BlogAdminPage',
+    authenticated: true,
+  },
 
   // content creator admin
   creator_appointment_plan_collection_admin: {
