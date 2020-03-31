@@ -1,17 +1,12 @@
-import { PageHeader, Tabs } from 'antd'
+import { Button, PageHeader, Tabs } from 'antd'
 import React, { useContext, useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
 import BlogPostAdminPane from '../../../components/blog/BlogPostAdminPane'
-// import ProgramContentAdminPane from '../../components/program/ProgramContentAdminPane'
-// import ProgramPlanAdminPane from '../../components/program/ProgramPlanAdminPane'
-// import ProgramPublishingAdminPane from '../../components/program/ProgramPublishingAdminPane'
-// import ProgramSettingAdminPane from '../../components/program/ProgramSettingAdminPane'
-// import ProgramRoleAdminPane from '../../containers/program/ProgramRoleAdminPane'
 import AppContext from '../../../contexts/AppContext'
-import { blogMessages } from '../../../helpers/translation'
+import { blogMessages, commonMessages } from '../../../helpers/translation'
 import { usePost } from '../../../hooks/blog'
 
 const StyledPageHeader = styled(PageHeader)`
@@ -40,7 +35,6 @@ const StyledPageHeader = styled(PageHeader)`
 const ProgramAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { history, match } = useRouter<{ postId: string }>()
-  // const programId = match.params.programId
   const postId = match.params.postId
   const { data: post, refetch: refetchPost } = usePost(postId)
   const [active, setActive] = useQueryParam('active', StringParam)
@@ -54,27 +48,13 @@ const ProgramAdminPage: React.FC = () => {
       <StyledPageHeader
         onBack={() => history.push('/admin/blog')}
         title={post.title}
-        extra={<div>post</div>}
-        // title={program && program.title}
-        // extra={
-        //   program && (
-        //     <Dropdown
-        //       placement="bottomRight"
-        //       overlay={
-        //         <Menu onClick={({ key }) => window.open(`//${app.settings['host']}${key}`)}>
-        //           <Menu.Item className="py-2 px-3" key={`/programs/${program.id}`}>
-        //             {formatMessage(commonMessages.ui.previewIntroduction)}
-        //           </Menu.Item>
-        //           <Menu.Item className="py-2 px-3" key={`/programs/${program.id}/contents`}>
-        //             {formatMessage(commonMessages.ui.previewContent)}
-        //           </Menu.Item>
-        //         </Menu>
-        //       }
-        //     >
-        //       <Button>{formatMessage(commonMessages.ui.preview)}</Button>
-        //     </Dropdown>
-        //   )
-        // }
+        extra={
+          post && (
+            <a href={`https://${app.settings['host']}/posts/${post.id}`} target="_blank" rel="noopener noreferrer">
+              <Button>{formatMessage(commonMessages.ui.preview)}</Button>
+            </a>
+          )
+        }
       />
 
       <div style={{ backgroundColor: '#f7f8f8', minHeight: 'calc(100vh - 64px)' }}>
