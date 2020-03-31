@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
 import BlogPostAdminPane from '../../../components/blog/BlogPostAdminPane'
+import BlogPostSettingAdminPane from '../../../components/blog/BlogPostSettingAdminPane'
 import AppContext from '../../../contexts/AppContext'
 import { blogMessages, commonMessages } from '../../../helpers/translation'
 import { usePost } from '../../../hooks/blog'
@@ -59,7 +60,8 @@ const ProgramAdminPage: React.FC = () => {
 
       <div style={{ backgroundColor: '#f7f8f8', minHeight: 'calc(100vh - 64px)' }}>
         <Tabs
-          activeKey={active}
+          // activeKey={active}
+          activeKey="general"
           onChange={setActive}
           renderTabBar={(tabsProps, DefaultTabBar) => (
             <div style={{ backgroundColor: 'white' }}>
@@ -72,13 +74,13 @@ const ProgramAdminPage: React.FC = () => {
           <Tabs.TabPane tab={formatMessage(blogMessages.label.postContent)} key="content">
             <BlogPostAdminPane post={post} onRefetch={refetchPost} />
           </Tabs.TabPane>
-          {/* <Tabs.TabPane tab={formatMessage(blogMessages.label.postManagement)} key="general">
-            <BlogSettingAdminPane post={post} onRefetch={refetchPost} />
+          <Tabs.TabPane tab={formatMessage(blogMessages.label.postManagement)} key="general">
+            <BlogPostSettingAdminPane post={post} onRefetch={refetchPost} />
           </Tabs.TabPane>
-          <Tabs.TabPane tab={formatMessage(commonMessages.label.roleAdmin)} key="roles">
+          {/* <Tabs.TabPane tab={formatMessage(commonMessages.label.roleAdmin)} key="roles">
             <BlogRoleAdminPane post={post} onRefetch={refetchPost} />
-          </Tabs.TabPane>
-          <Tabs.TabPane tab={formatMessage(commonMessages.label.publishSettings)} key="publishing">
+          </Tabs.TabPane> */}
+          {/* <Tabs.TabPane tab={formatMessage(commonMessages.label.publishSettings)} key="publishing">
             <BlogPublishingAdminPane post={post} onRefetch={refetchPost} />
           </Tabs.TabPane> */}
         </Tabs>
