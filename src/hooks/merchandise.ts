@@ -34,6 +34,7 @@ export const useMerchandiseCollection = () => {
         description
         price
         link
+        published_at
         merchandise_categories(order_by: { position: asc }) {
           id
           category {
@@ -73,6 +74,7 @@ export const useMerchandiseCollection = () => {
           price: merchandise.price,
           description: merchandise.description,
           link: merchandise.link,
+          publishedAt: merchandise.published_at ? new Date(merchandise.published_at) : null,
         }))
 
   return {

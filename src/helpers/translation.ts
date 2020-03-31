@@ -127,6 +127,7 @@ export const commonMessages = {
     email: { id: 'common.label.email', defaultMessage: '郵件地址' },
     nameAndEmail: { id: 'common.label.nameAndEmail', defaultMessage: '姓名 / Email' },
     languages: { id: 'common.label.languages', defaultMessage: '顯示語系' },
+    price: { id: 'common.label.price', defaultMessage: '價格' },
   }),
   term: defineMessages({
     instructor: { id: 'common.term.instructor', defaultMessage: '老師' },
@@ -444,6 +445,11 @@ export const podcastMessages = {
 export const merchandiseMessages = {
   ui: defineMessages({
     createMerchandise: { id: 'merchandise.ui.createMerchandise', defaultMessage: '建立商品' },
+  }),
+  status: defineMessages({
+    selling: { id: 'merchandise.status.selling', defaultMessage: '販賣中' },
+    soldOut: { id: 'merchandise.status.soldOut', defaultMessage: '已售完' },
+    unpublished: { id: 'merchandise.status.unpublished', defaultMessage: '未上架' },
   }),
 }
 

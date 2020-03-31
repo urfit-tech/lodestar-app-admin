@@ -5157,6 +5157,7 @@ export interface GET_MERCHANDISE_COLLECTION_merchandise {
   description: string | null;
   price: any;
   link: string | null;
+  published_at: any | null;
   /**
    * An array relationship
    */

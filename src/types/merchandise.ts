@@ -14,4 +14,5 @@ export type MerchandiseProps = {
   price: number
   description: string | null
   link: string | null
+  publishedAt: Date | null
 }
