@@ -1,14 +1,12 @@
-import { useQuery } from '@apollo/react-hooks'
 import { Progress, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import gql from 'graphql-tag'
-import { groupBy, sum, uniqBy } from 'ramda'
+import { groupBy, sum } from 'ramda'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import MemberAvatar from '../../components/common/MemberAvatar'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import * as types from '../../types'
+import { useProgramProgressCollection } from '../../hooks/program'
 
 const messages = defineMessages({
   learningDuration: { id: 'common.term.learningDuration', defaultMessage: '學習時數' },
@@ -32,12 +30,6 @@ type MemberProps = {
   email: string
   pictureUrl: string | null
 }
-type ProgramProps = {
-  programId: string
-  type: string
-  programContentCount: number
-  programContentDuration: number
-}
 type MemberProgressProps = MemberProps & {
   duration: number
   progress: number
@@ -47,71 +39,25 @@ const ProgramProgressTable: React.FC<{
   programId?: string | null
 }> = ({ programId }) => {
   const { formatMessage } = useIntl()
-  const { loading, error, data } = useQuery<types.GET_PROGRAM_PROGRESS, types.GET_PROGRAM_PROGRESSVariables>(
-    GET_PROGRAM_PROGRESS,
-    { variables: { programId } },
-  )
+  const { loading, error, programEnrollments, programContentProgress } = useProgramProgressCollection(programId)
 
   if (error) {
     return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
-
-  const programEnrollments: (MemberProps & ProgramProps)[] =
-    loading || !data
-      ? []
-      : uniqBy(enrollment => `${enrollment.memberId}_${enrollment.programId}`, [
-          ...data.program_enrollment.map(enrollment => ({
-            memberId: enrollment.member?.id || '',
-            name: enrollment.member?.name || enrollment.member?.username || '',
-            email: enrollment.member?.email || '',
-            pictureUrl: enrollment.member?.picture_url || '',
-
-            programId: enrollment.program?.id || '',
-            type: 'perpetual',
-            programContentCount: sum(
-              enrollment.program?.program_content_sections.map(
-                section => section.program_contents_aggregate.aggregate?.count || 0,
-              ) || [],
-            ),
-            programContentDuration: sum(
-              enrollment.program?.program_content_sections.map(
-                section => section.program_contents_aggregate.aggregate?.sum?.duration || 0,
-              ) || [],
-            ),
-          })),
-          ...data.program_plan_enrollment.map(enrollment => ({
-            memberId: enrollment.member?.id || '',
-            name: enrollment.member?.name || enrollment.member?.username || '',
-            email: enrollment.member?.email || '',
-            pictureUrl: enrollment.member?.picture_url || '',
-
-            programId: enrollment.program_plan?.program.id || '',
-            type: 'subscription',
-            programContentCount: sum(
-              enrollment.program_plan?.program.program_content_sections.map(
-                section => section.program_contents_aggregate.aggregate?.count || 0,
-              ) || [],
-            ),
-            programContentDuration: sum(
-              enrollment.program_plan?.program.program_content_sections.map(
-                section => section.program_contents_aggregate.aggregate?.sum?.duration || 0,
-              ) || [],
-            ),
-          })),
-        ])
 
   const programEnrollmentsByMember = groupBy(enrollment => enrollment.memberId, programEnrollments)
 
   const dataSource: MemberProgressProps[] = Object.values(programEnrollmentsByMember).map(memberEnrollments => {
     const totalCount = sum(memberEnrollments.map(enrollment => enrollment.programContentCount))
     const totalDuration = sum(memberEnrollments.map(enrollment => enrollment.programContentDuration))
-    const progress = totalCount
-      ? sum(
-          data?.program_content_progress
-            .filter(programContentProgress => programContentProgress.member_id === memberEnrollments[0].memberId)
-            .map(programContentProgress => programContentProgress.progress) || [],
-        ) / totalCount
-      : 0
+    const progress =
+      totalCount && programContentProgress
+        ? sum(
+            programContentProgress
+              .filter(programContentProgress => programContentProgress.memberId === memberEnrollments[0].memberId)
+              .map(programContentProgress => programContentProgress.progress) || [],
+          ) / totalCount
+        : 0
 
     return {
       memberId: memberEnrollments[0].memberId,
@@ -156,69 +102,5 @@ const ProgramProgressTable: React.FC<{
     />
   )
 }
-
-const GET_PROGRAM_PROGRESS = gql`
-  query GET_PROGRAM_PROGRESS($programId: uuid) {
-    program_enrollment(where: { program: { id: { _eq: $programId }, published_at: { _is_null: false } } }) {
-      member {
-        id
-        username
-        name
-        email
-        picture_url
-      }
-      program {
-        id
-        program_content_sections {
-          program_contents_aggregate(where: { published_at: { _is_null: false } }) {
-            aggregate {
-              count
-              sum {
-                duration
-              }
-            }
-          }
-        }
-      }
-    }
-    program_plan_enrollment(
-      where: { program_plan: { program: { id: { _eq: $programId }, published_at: { _is_null: false } } } }
-    ) {
-      member {
-        id
-        username
-        name
-        email
-        picture_url
-      }
-      program_plan {
-        program {
-          id
-          program_content_sections {
-            program_contents_aggregate(where: { published_at: { _is_null: false } }) {
-              aggregate {
-                count
-                sum {
-                  duration
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    program_content_progress(
-      where: {
-        program_content: {
-          program_content_section: { program: { id: { _eq: $programId }, published_at: { _is_null: false } } }
-        }
-      }
-    ) {
-      id
-      member_id
-      progress
-    }
-  }
-`
 
 export default ProgramProgressTable

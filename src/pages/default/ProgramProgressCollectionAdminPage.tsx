@@ -1,14 +1,15 @@
-import { Icon, Typography } from 'antd'
+import { Icon, Select, Typography } from 'antd'
+import { SelectProps } from 'antd/lib/select'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageBlock } from '../../components/admin'
 import CreatorAdminLayout from '../../components/layout/CreatorAdminLayout'
 import OwnerAdminLayout from '../../components/layout/OwnerAdminLayout'
 import ProgramProgressTable from '../../containers/program/ProgramProgressTable'
-import ProgramSelector from '../../containers/program/ProgramSelector'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
+import { useProgramContentEnrollment } from '../../hooks/program'
 import LoadingPage from './LoadingPage'
 import NotFoundPage from './NotFoundPage'
 
@@ -43,6 +44,22 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
         <ProgramProgressTable programId={selectedProgramId === 'all' ? null : selectedProgramId} />
       </AdminPageBlock>
     </AdminLayout>
+  )
+}
+
+const ProgramSelector: React.FC<SelectProps & {
+  allText?: string
+}> = ({ allText, ...selectProps }) => {
+  const { formatMessage } = useIntl()
+  const { loading, error, data: programs } = useProgramContentEnrollment()
+
+  return (
+    <Select disabled={!!error} loading={loading} style={{ width: '100%' }} defaultValue="all" {...selectProps}>
+      <Select.Option key="all">{allText || formatMessage(commonMessages.label.allProgram)}</Select.Option>
+      {programs.map(program => (
+        <Select.Option key={program.id}>{program.title}</Select.Option>
+      ))}
+    </Select>
   )
 }
 
