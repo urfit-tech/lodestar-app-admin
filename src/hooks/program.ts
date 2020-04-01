@@ -492,3 +492,29 @@ export const useProgramPlanEnrollment = (programPlanId: string) => {
     refetchProgramPlanEnrollments: refetch,
   }
 }
+
+export const useProgramContentEnrollment = () => {
+  const { loading, error, data } = useQuery<types.GET_PROGRAM_CONTENT_ENROLLMENT>(GET_PROGRAM_CONTENT_ENROLLMENT)
+
+  return {
+    loading,
+    error,
+    data:
+      data?.program_content_enrollment.map(programContentEnrollment => ({
+        id: programContentEnrollment.program_id,
+        title: programContentEnrollment?.program?.title || '',
+      })) || [],
+  }
+}
+
+const GET_PROGRAM_CONTENT_ENROLLMENT = gql`
+  query GET_PROGRAM_CONTENT_ENROLLMENT {
+    program_content_enrollment(where: { program: { published_at: { _is_null: false } } }, distinct_on: program_id) {
+      program_id
+      program {
+        title
+      }
+    }
+  }
+`
+

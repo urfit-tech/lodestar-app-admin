@@ -1,7 +1,5 @@
-import { useQuery } from '@apollo/react-hooks'
 import { Icon, Select, Typography } from 'antd'
 import { SelectProps } from 'antd/lib/select'
-import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageBlock } from '../../components/admin'
@@ -11,7 +9,7 @@ import ProgramProgressTable from '../../containers/program/ProgramProgressTable'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
-import types from '../../types'
+import { useProgramContentEnrollment } from '../../hooks/program'
 import LoadingPage from './LoadingPage'
 import NotFoundPage from './NotFoundPage'
 
@@ -64,30 +62,5 @@ const ProgramSelector: React.FC<SelectProps & {
     </Select>
   )
 }
-
-const useProgramContentEnrollment = () => {
-  const { loading, error, data } = useQuery<types.GET_PROGRAM_CONTENT_ENROLLMENT>(GET_PROGRAM_CONTENT_ENROLLMENT)
-
-  return {
-    loading,
-    error,
-    data:
-      data?.program_content_enrollment.map(programContentEnrollment => ({
-        id: programContentEnrollment.program_id,
-        title: programContentEnrollment?.program?.title || '',
-      })) || [],
-  }
-}
-
-const GET_PROGRAM_CONTENT_ENROLLMENT = gql`
-  query GET_PROGRAM_CONTENT_ENROLLMENT {
-    program_content_enrollment(where: { program: { published_at: { _is_null: false } } }, distinct_on: program_id) {
-      program_id
-      program {
-        title
-      }
-    }
-  }
-`
 
 export default ProgramProgressCollectionAdminPage
