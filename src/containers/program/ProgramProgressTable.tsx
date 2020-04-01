@@ -46,11 +46,35 @@ const ProgramProgressTable: React.FC<{
   programId?: string | null
 }> = ({ programId }) => {
   const { formatMessage } = useIntl()
-  const { loading, error, dataSource } = useDataSource(programId)
+  const { loading, error, programEnrollments, programContentProgress } = useProgramProgress(programId)
 
   if (error) {
     return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
+
+  const programEnrollmentsByMember = groupBy(enrollment => enrollment.memberId, programEnrollments)
+
+  const dataSource: MemberProgressProps[] = Object.values(programEnrollmentsByMember).map(memberEnrollments => {
+    const totalCount = sum(memberEnrollments.map(enrollment => enrollment.programContentCount))
+    const totalDuration = sum(memberEnrollments.map(enrollment => enrollment.programContentDuration))
+    const progress =
+      totalCount && programContentProgress
+        ? sum(
+            programContentProgress
+              .filter(programContentProgress => programContentProgress.memberId === memberEnrollments[0].memberId)
+              .map(programContentProgress => programContentProgress.progress) || [],
+          ) / totalCount
+        : 0
+
+    return {
+      memberId: memberEnrollments[0].memberId,
+      name: memberEnrollments[0].name,
+      email: memberEnrollments[0].email,
+      pictureUrl: memberEnrollments[0].pictureUrl,
+      duration: totalDuration * progress,
+      progress,
+    }
+  })
 
   const programProgressTableColumns: ColumnProps<MemberProgressProps>[] = [
     {
@@ -86,7 +110,7 @@ const ProgramProgressTable: React.FC<{
   )
 }
 
-const useDataSource = (programId?: string | null) => {
+const useProgramProgress = (programId?: string | null) => {
   const { loading, error, data } = useQuery<types.GET_PROGRAM_PROGRESS, types.GET_PROGRAM_PROGRESSVariables>(
     GET_PROGRAM_PROGRESS,
     { variables: { programId } },
@@ -113,34 +137,16 @@ const useDataSource = (programId?: string | null) => {
       ),
     })) || [],
   )
-
-  const programEnrollmentsByMember = groupBy(enrollment => enrollment.memberId, programEnrollments)
-
-  const dataSource: MemberProgressProps[] = Object.values(programEnrollmentsByMember).map(memberEnrollments => {
-    const totalCount = sum(memberEnrollments.map(enrollment => enrollment.programContentCount))
-    const totalDuration = sum(memberEnrollments.map(enrollment => enrollment.programContentDuration))
-    const progress = totalCount
-      ? sum(
-          data?.program_content_progress
-            .filter(programContentProgress => programContentProgress.member_id === memberEnrollments[0].memberId)
-            .map(programContentProgress => programContentProgress.progress) || [],
-        ) / totalCount
-      : 0
-
-    return {
-      memberId: memberEnrollments[0].memberId,
-      name: memberEnrollments[0].name,
-      email: memberEnrollments[0].email,
-      pictureUrl: memberEnrollments[0].pictureUrl,
-      duration: totalDuration * progress,
-      progress,
-    }
-  })
+  const programContentProgress = data?.program_content_progress.map(programContentProgress => ({
+    memberId: programContentProgress.member_id,
+    progress: programContentProgress.progress,
+  }))
 
   return {
     loading,
     error,
-    dataSource,
+    programEnrollments,
+    programContentProgress,
   }
 }
 
