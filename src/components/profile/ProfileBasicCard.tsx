@@ -188,13 +188,13 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
             )}
           </StyledFormItem>
         )}
-        {withDescription && member?.description && (
+        {withDescription && (
           <StyledFormItem
             label={formatMessage(commonMessages.term.introduction)}
             wrapperCol={{ span: 24, md: { span: 20 } }}
           >
             {form.getFieldDecorator('description', {
-              initialValue: BraftEditor.createEditorState((member && member.description) || ''),
+              initialValue: BraftEditor.createEditorState(member?.description || ''),
             })(<AdminBraftEditor />)}
           </StyledFormItem>
         )}
