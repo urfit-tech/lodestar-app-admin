@@ -1,13 +1,15 @@
-import { Button, Form, Icon, Input, message } from 'antd'
+import { Button, Form, Icon, Input } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import axios from 'axios'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import { BREAK_POINT } from '../../components/common/Responsive'
 import DefaultLayout from '../../components/layout/DefaultLayout'
-import { commonMessages, errorMessages } from '../../helpers/translation'
+import AppContext from '../../contexts/AppContext'
+import { handleError } from '../../helpers'
+import { codeMessages, commonMessages, errorMessages } from '../../helpers/translation'
 
 const StyledContainer = styled.div`
   padding: 4rem 1rem;
@@ -37,6 +39,7 @@ const messages = defineMessages({
 })
 
 const ForgotPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
+  const app = useContext(AppContext)
   const { formatMessage } = useIntl()
   const { history } = useRouter()
   const [loading, setLoading] = useState(false)
@@ -49,14 +52,18 @@ const ForgotPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
       }
 
       axios
-        .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/forgotPassword`, {
-          appId: localStorage.getItem('kolable.app.id'),
-          email: values.email,
+        .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/forgotPassword`, {
+          appId: app.id,
+          account: values.email,
         })
-        .then(({ data }) => {
-          history.push(`/check-email?email=${values.email}&type=forgot-password`)
+        .then(({ data: { code, message, result } }) => {
+          if (code === 'SUCCESS') {
+            history.push(`/check-email?email=${values.email}&type=forgot-password`)
+          } else {
+            message.error(formatMessage(codeMessages[code as keyof typeof codeMessages]))
+          }
         })
-        .catch(err => message.error(err.response.data.message))
+        .catch(handleError)
         .finally(() => setLoading(false))
 
       setLoading(true)

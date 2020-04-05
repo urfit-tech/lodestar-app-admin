@@ -3,15 +3,17 @@ import { message } from 'antd'
 import { generate } from 'coupon-code'
 import gql from 'graphql-tag'
 import { reverse, times } from 'ramda'
-import React from 'react'
+import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import { VoucherPlanFields } from '../../components/voucher/VoucherPlanAdminModal'
 import VoucherPlanCollectionBlockComponent from '../../components/voucher/VoucherPlanCollectionBlock'
+import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const VoucherPlanCollectionBlock: React.FC = () => {
+  const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const { loading, error, data, refetch } = useQuery<types.GET_VOUCHER_PLAN_COLLECTION>(GET_VOUCHER_PLAN_COLLECTION)
   const [insertVoucherPlan] = useMutation<types.INSERT_VOUCHER_PLAN, types.INSERT_VOUCHER_PLANVariables>(
@@ -58,7 +60,7 @@ const VoucherPlanCollectionBlock: React.FC = () => {
     insertVoucherPlan({
       variables: {
         ...values,
-        appId: localStorage.getItem('kolable.app.id') || '',
+        appId,
         voucherCodes: values.voucherCodes.flatMap(voucherCode =>
           voucherCode.type === 'random'
             ? times(
@@ -103,7 +105,7 @@ const VoucherPlanCollectionBlock: React.FC = () => {
       variables: {
         ...values,
         voucherPlanId,
-        appId: localStorage.getItem('kolable.app.id') || '',
+        appId,
         description: encodeURI(values.description || ''),
         voucherPlanProducts: values.voucherPlanProducts.flatMap(productId => ({
           voucher_plan_id: voucherPlanId,

@@ -4,8 +4,9 @@ import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import AppContext from '../../contexts/AppContext'
 import { commonMessages } from '../../helpers/translation'
 import { useProgram, useProgramContent } from '../../hooks/program'
 import types from '../../types'
@@ -41,6 +42,7 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
   programContentId,
   onSubmit,
 }) => {
+  const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const { program } = useProgram(programId)
   const { programContent, refetchProgramContent } = useProgramContent(programContentId)
@@ -238,7 +240,7 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                   <SingleUploader
                     accept="video/*"
                     uploadText={formatMessage(messages.uploadVideo)}
-                    path={`videos/${localStorage.getItem('kolable.app.id')}/${programContent.programContentBody.id}`}
+                    path={`videos/${appId}/${programContent.programContentBody.id}`}
                     onUploading={() => setUploading(true)}
                     onSuccess={() => setUploading(false)}
                     onError={() => setUploading(false)}
@@ -254,9 +256,7 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                   })(
                     <SingleUploader
                       uploadText={formatMessage(messages.uploadCaption)}
-                      path={`texttracks/${localStorage.getItem('kolable.app.id')}/${
-                        programContent.programContentBody.id
-                      }`}
+                      path={`texttracks/${appId}/${programContent.programContentBody.id}`}
                       onUploading={() => setUploading(true)}
                       onSuccess={() => setUploading(false)}
                       onError={() => setUploading(false)}

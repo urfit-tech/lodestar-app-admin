@@ -1,16 +1,18 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { reverse } from 'ramda'
-import React from 'react'
+import React, { useContext } from 'react'
 import { ActivityProps } from '../../components/activity/Activity'
 import ActivityCollectionAdminBlockComponent from '../../components/activity/ActivityCollectionAdminBlock'
 import { CreateActivityEvent } from '../../components/activity/ActivityCreationModal'
+import AppContext from '../../contexts/AppContext'
 import types from '../../types'
 import ActivityParticipantCollection from './ActivityParticipantCollection'
 
 const ActivityCollectionAdminBlock: React.FC<{
   memberId: string | null
 }> = ({ memberId }) => {
+  const { id: appId } = useContext(AppContext)
   const { loading, error, data, refetch } = useQuery<
     types.GET_ACTIVITY_COLLECTION_ADMIN,
     types.GET_ACTIVITY_COLLECTION_ADMINVariables
@@ -67,7 +69,7 @@ const ActivityCollectionAdminBlock: React.FC<{
           position: index,
         })),
         memberId,
-        appId: localStorage.getItem('kolable.app.id') || '',
+        appId,
       },
     })
       .then(({ data }) => {

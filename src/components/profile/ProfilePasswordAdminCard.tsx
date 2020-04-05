@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
-import { commonMessages, errorMessages } from '../../helpers/translation'
+import { codeMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import AdminCard from '../admin/AdminCard'
 import { StyledForm } from '../layout'
 
@@ -18,7 +18,7 @@ const messages = defineMessages({
 type ProfilePasswordAdminCardProps = CardProps & FormComponentProps & { memberId: string }
 const ProfilePasswordAdminCard: React.FC<ProfilePasswordAdminCardProps> = ({ form, memberId, ...cardProps }) => {
   const { formatMessage } = useIntl()
-  const { currentMemberId } = useAuth()
+  const { authToken } = useAuth()
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
@@ -26,13 +26,24 @@ const ProfilePasswordAdminCard: React.FC<ProfilePasswordAdminCardProps> = ({ for
       if (!error) {
         setLoading(true)
         axios
-          .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/changePassword`, {
-            memberId: currentMemberId,
-            password: values.password,
-            newPassword: values.newPassword,
+          .post(
+            `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/changePassword`,
+            {
+              password: values.password,
+              newPassword: values.newPassword,
+            },
+            {
+              headers: { authorization: `Bearer ${authToken}` },
+            },
+          )
+          .then(({ data: { code } }) => {
+            if (code === 'SUCCESS') {
+              message.success(formatMessage(messages.successfullyUpdatePassword))
+            } else {
+              message.error(formatMessage(codeMessages[code as keyof typeof codeMessages]))
+            }
           })
-          .then(() => message.success(formatMessage(messages.successfullyUpdatePassword)))
-          .catch(error => handleError(error))
+          .catch(handleError)
           .finally(() => setLoading(false))
       }
     })

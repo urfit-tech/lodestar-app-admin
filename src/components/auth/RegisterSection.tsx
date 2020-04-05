@@ -2,6 +2,7 @@ import { Button, Form, Icon, Input } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
+import { AppContext } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
@@ -13,6 +14,7 @@ type RegisterSectionProps = FormComponentProps & {
   onAuthStateChange: React.Dispatch<React.SetStateAction<AuthState>>
 }
 const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChange }) => {
+  const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const { register } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
@@ -20,8 +22,6 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChan
 
   const handleLogin = () => {
     form.validateFields((error, values) => {
-      const appId = localStorage.getItem('kolable.app.id')
-
       if (error || !appId || !register) {
         return
       }

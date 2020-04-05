@@ -49,7 +49,6 @@ export const AppProvider: React.FC = ({ children }) => {
   const [appId, setAppId] = useState<string | null>(null)
 
   useEffect(() => {
-    localStorage.removeItem('kolable.app.id')
     apolloClient
       .query<types.GET_APPLICATION, types.GET_APPLICATIONVariables>({
         query: GET_APPLICATION,
@@ -58,7 +57,6 @@ export const AppProvider: React.FC = ({ children }) => {
       .then(({ data }) => {
         if (data && data.app_admin_by_pk) {
           const appId = data.app_admin_by_pk.app_id
-          localStorage.setItem('kolable.app.id', appId)
           setAppId(appId)
         } else {
           message.error('Loading app error.')

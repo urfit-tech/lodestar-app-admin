@@ -1,10 +1,13 @@
 import { Button, message } from 'antd'
 import axios from 'axios'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import DefaultLayout from '../../components/layout/DefaultLayout'
+import AppContext from '../../contexts/AppContext'
+import { handleError } from '../../helpers'
+import { codeMessages } from '../../helpers/translation'
 import { ReactComponent as CheckEmailIcon } from '../../images/default/check-email.svg'
 
 const StyledContainer = styled.div`
@@ -33,6 +36,7 @@ const messages = defineMessages({
 })
 
 const CheckEmailPage = () => {
+  const app = useContext(AppContext)
   const { formatMessage } = useIntl()
   const [email] = useQueryParam('email', StringParam)
   const [type] = useQueryParam('type', StringParam)
@@ -48,14 +52,18 @@ const CheckEmailPage = () => {
       return
     }
     axios
-      .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/forgotPassword`, {
-        appId: localStorage.getItem('kolable.app.id'),
-        email: email,
+      .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/forgotPassword`, {
+        appId: app.id,
+        account: email,
       })
-      .then(({ data }) => {
-        message.success(formatMessage(messages.sentResetPasswordMail))
+      .then(({ data: { code } }) => {
+        if (code === 'SUCCESS') {
+          message.success(formatMessage(messages.sentResetPasswordMail))
+        } else {
+          message.error(formatMessage(codeMessages[code as keyof typeof codeMessages]))
+        }
       })
-      .catch(err => message.error(err.response.data.message))
+      .catch(handleError)
       .finally(() => setLoading(false))
   }
 

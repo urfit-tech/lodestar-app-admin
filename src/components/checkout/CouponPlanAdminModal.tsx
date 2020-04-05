@@ -5,8 +5,10 @@ import { generate } from 'coupon-code'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import { times } from 'ramda'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
+import { InferType } from 'yup'
+import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -20,6 +22,7 @@ type CouponPlanAdminModalProps = AdminModalProps &
     couponPlan?: CouponPlanProps
   }
 const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, couponPlan, ...props }) => {
+  const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const [createCouponPlan] = useMutation<types.INSERT_COUPON_PLAN, types.INSERT_COUPON_PLANVariables>(
     INSERT_COUPON_PLAN,
@@ -62,7 +65,7 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
               if (couponCode.type === 'random') {
                 return times(
                   () => ({
-                    app_id: localStorage.getItem('kolable.app.id'),
+                    app_id: appId,
                     code: generate(),
                     count: 1,
                     remaining: 1,
@@ -71,7 +74,7 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
                 )
               }
               return {
-                app_id: localStorage.getItem('kolable.app.id'),
+                app_id: appId,
                 code: couponCode.code,
                 count: couponCode.count,
                 remaining: couponCode.count,

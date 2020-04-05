@@ -112,7 +112,7 @@ const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
               accept="image/*"
               listType="picture-card"
               showUploadList={false}
-              path={`activity_covers/${localStorage.getItem('kolable.app.id')}/${activity.id}`}
+              path={`activity_covers/${app.id}/${activity.id}`}
               isPublic
               onSuccess={() => handleUpdateCover()}
             />,

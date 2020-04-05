@@ -1,11 +1,11 @@
 import { Button, message } from 'antd'
-import axios from 'axios'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import SocialLogin from 'react-social-login'
 import styled from 'styled-components'
+import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
-import { commonMessages, errorMessages } from '../../helpers/translation'
+import { codeMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import FacebookLogoImage from '../../images/default/FB-logo.png'
 import GoogleLogoImage from '../../images/default/google-logo.png'
 import { AuthModalContext } from './AuthModal'
@@ -56,25 +56,9 @@ class WrappedSocialLoginButton extends React.Component<{
 
 const SocialLoginButton = SocialLogin(WrappedSocialLoginButton)
 
-const socialLogin = async (provider: string, providerToken: any) => {
-  try {
-    const { data } = await axios.post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/socialLogin`, {
-      appId: localStorage.getItem('kolable.app.id'),
-      provider,
-      providerToken,
-    })
-    const authToken = data.token
-    try {
-      localStorage.setItem(`kolable.auth.token`, authToken)
-    } catch (error) {}
-    return authToken
-  } catch (err) {
-    return await message.error(err.message)
-  }
-}
-
 export const FacebookLoginButton: React.FC = () => {
   const { formatMessage } = useIntl()
+  const { socialLogin } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
   const [loading, setLoading] = useState(false)
 
@@ -94,15 +78,21 @@ export const FacebookLoginButton: React.FC = () => {
       scope="public_profile,email"
       onLoginSuccess={({ _provider, _token }: any) => {
         setLoading(true)
-        socialLogin(_provider, _token)
-          .then(token => {
-            setVisible && setVisible(false)
-          })
-          .finally(() => setLoading(false))
+        socialLogin &&
+          socialLogin({ provider: _provider, providerToken: _token.accessToken })
+            .then(() => {
+              setVisible && setVisible(false)
+            })
+            .catch((error: Error) => {
+              const code = error.message as keyof typeof codeMessages
+              message.error(formatMessage(codeMessages[code]))
+            })
+            .catch(handleError)
+            .finally(() => setLoading(false))
       }}
-      onLoginFailure={(error: any) => {
+      onLoginFailure={(err: any) => {
         message.error(formatMessage(errorMessages.event.failedFacebookLogin))
-        handleError(error)
+        console.error(err)
       }}
     >
       <FacebookLogo />
@@ -113,6 +103,7 @@ export const FacebookLoginButton: React.FC = () => {
 
 export const GoogleLoginButton: React.FC = () => {
   const { formatMessage } = useIntl()
+  const { socialLogin } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
   const [loading, setLoading] = useState(false)
 
@@ -132,15 +123,21 @@ export const GoogleLoginButton: React.FC = () => {
       scope="profile email openid"
       onLoginSuccess={({ _provider, _token }: any) => {
         setLoading(true)
-        socialLogin(_provider, _token)
-          .then(token => {
-            setVisible && setVisible(false)
-          })
-          .finally(() => setLoading(false))
+        socialLogin &&
+          socialLogin({ provider: _provider, providerToken: _token.idToken })
+            .then(() => {
+              setVisible && setVisible(false)
+            })
+            .catch((error: Error) => {
+              const code = error.message as keyof typeof codeMessages
+              message.error(formatMessage(codeMessages[code]))
+            })
+            .catch(handleError)
+            .finally(() => setLoading(false))
       }}
-      onLoginFailure={(error: any) => {
+      onLoginFailure={(err: any) => {
         message.error(formatMessage(errorMessages.event.failedGoogleLogin))
-        handleError(error)
+        console.error(err)
       }}
     >
       <GoogleLogo />

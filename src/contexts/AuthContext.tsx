@@ -1,8 +1,9 @@
 import Axios from 'axios'
 import jwt from 'jsonwebtoken'
 import React, { useContext, useEffect, useState } from 'react'
-import { useInterval } from '../hooks/util'
+import { handleError } from '../helpers'
 import { UserRole } from '../schemas/general'
+import { AppContext } from './AppContext'
 
 type AuthContext = {
   isAuthenticating: boolean
@@ -10,6 +11,7 @@ type AuthContext = {
   currentUserRole: UserRole
   currentMemberId: string | null
   authToken: string | null
+  currentMember: { name: string; username: string; email: string; pictureUrl: string } | null
   register?: (data: { appId: string; username: string; email: string; password: string }) => Promise<void>
   login?: (data: { appId: string; account: string; password: string }) => Promise<void>
   socialLogin?: (data: { provider: string; providerToken: any }) => Promise<void>
@@ -22,37 +24,40 @@ const defaultAuthContext: AuthContext = {
   currentUserRole: 'anonymous',
   currentMemberId: null,
   authToken: null,
+  currentMember: null,
 }
 
 const AuthContext = React.createContext<AuthContext>(defaultAuthContext)
 
 export const AuthProvider: React.FC = ({ children }) => {
+  const app = useContext(AppContext)
   const [isAuthenticating, setIsAuthenticating] = useState(defaultAuthContext.isAuthenticating)
   const [authToken, setAuthToken] = useState<string | null>(null)
 
   // TODO: add auth payload type
   const payload = authToken ? (jwt.decode(authToken) as any) : null
 
-  const refreshToken = () => {
-    setIsAuthenticating(true)
-    Axios(`${process.env.REACT_APP_BACKEND_ENDPOINT}/refreshToken`, {
-      method: 'post',
-      withCredentials: true,
-    })
-      .then(({ data }) => {
-        setAuthToken(data.authToken)
-      })
-      .catch(() => {
-        setAuthToken(null)
-      })
-      .finally(() => setIsAuthenticating(false))
-  }
-
+  // refresh token if expired or unauthenticated
   useEffect(() => {
-    !authToken && refreshToken()
-  }, [authToken])
-
-  useInterval(refreshToken, 3600 * 1000)
+    if (payload === null || payload.exp * 1000 < Date.now()) {
+      setIsAuthenticating(true)
+      Axios({
+        method: 'POST',
+        url: `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/refreshToken`,
+        withCredentials: true,
+      })
+        .then(({ data: { code, message, result } }) => {
+          code === 'SUCCESS' ? setAuthToken(result.authToken) : setAuthToken(null)
+        })
+        .catch((error: Error) => {
+          setAuthToken(null)
+          handleError(error)
+        })
+        .finally(() => setIsAuthenticating(false))
+    } else {
+      setIsAuthenticating(false)
+    }
+  }, [JSON.stringify(payload)])
 
   return (
     <AuthContext.Provider
@@ -62,63 +67,70 @@ export const AuthProvider: React.FC = ({ children }) => {
         currentUserRole: (payload && payload.role) || 'anonymous',
         currentMemberId: payload && payload.sub,
         authToken,
+        currentMember: payload && {
+          name: payload.name,
+          username: payload.username,
+          email: payload.email,
+          pictureUrl: payload.pictureUrl,
+        },
         register: async ({ appId, username, email, password }) =>
           Axios.post(
-            `${process.env.REACT_APP_BACKEND_ENDPOINT}/register`,
+            `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/register`,
             {
               appId,
               username,
               email,
               password,
             },
-            {
-              withCredentials: true,
-              // prevent preflight
-              // TODO: find a better way to do so
-              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            },
-          ).then(({ data }) => {
-            setAuthToken(data.authToken)
+            { withCredentials: true },
+          ).then(({ data: { code, message, result } }) => {
+            if (code === 'SUCCESS') {
+              setAuthToken(result.authToken)
+            } else {
+              setAuthToken(null)
+              throw new Error(code)
+            }
           }),
         login: async ({ appId, account, password }) =>
           Axios.post(
-            `${process.env.REACT_APP_BACKEND_ENDPOINT}/generalLogin`,
+            `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/generalLogin`,
             { appId, account, password },
-            {
-              withCredentials: true,
-              // prevent preflight
-              // TODO: find a better way to do so
-              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            },
-          ).then(({ data, status }) => {
-            if (status === 204) {
+            { withCredentials: true },
+          ).then(({ data: { code, result } }) => {
+            if (code !== 'SUCCESS') {
+              setAuthToken(null)
+              throw new Error(code)
+            } else if (result === null) {
               window.location.assign(`/check-email?email=${account}&type=reset-password`)
             } else {
-              setAuthToken(data.authToken)
+              setAuthToken(result.authToken)
             }
           }),
         socialLogin: async ({ provider, providerToken }) =>
           Axios.post(
-            `${process.env.REACT_APP_BACKEND_ENDPOINT}/socialLogin`,
+            `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/socialLogin`,
             {
-              appId: process.env.REACT_APP_ID,
+              appId: app.id,
               provider,
               providerToken,
             },
-            {
-              withCredentials: true,
-              // prevent preflight
-              // TODO: find a better way to do so
-              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            },
-          ).then(({ data }) => {
-            setAuthToken(data.authToken)
+            { withCredentials: true },
+          ).then(({ data: { code, message, result } }) => {
+            if (code === 'SUCCESS') {
+              setAuthToken(result.authToken)
+            } else {
+              setAuthToken(null)
+              throw new Error(code)
+            }
           }),
-        logout: async () =>
-          Axios(`${process.env.REACT_APP_BACKEND_ENDPOINT}/logout`, {
+        logout: async () => {
+          return Axios(`${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/logout`, {
             method: 'POST',
             withCredentials: true,
-          }).then(() => setAuthToken(null)),
+          }).then(() => {
+            setAuthToken(null)
+          })
+        },
       }}
     >
       {children}

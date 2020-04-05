@@ -570,3 +570,27 @@ export const blogMessages = {
     noVideoFound: { id: 'blog.text.noVideoFound', defaultMessage: '找不到影片' },
   }),
 }
+export const codeMessages = defineMessages({
+  SUCCESS: {
+    id: 'code.SUCCESS',
+    defaultMessage: '成功',
+  },
+  E_INPUT: {
+    id: 'code.E_INPUT',
+    defaultMessage: '輸入資料有誤',
+  },
+  E_USERNAME_EXISTS: {
+    id: 'code.E_USERNAME_EXISTS',
+    defaultMessage: '使用者名稱已存在',
+  },
+  E_EMAIL_EXISTS: {
+    id: 'code.E_EMAIL_EXISTS',
+    defaultMessage: '電子信箱已存在',
+  },
+  E_SEND_EMAIL: {
+    id: 'code.E_SEND_EMAIL',
+    defaultMessage: '寄送信件失敗',
+  },
+})
+
+// { id: '', defaultMessage: '' },

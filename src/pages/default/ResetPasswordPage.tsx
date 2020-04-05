@@ -8,7 +8,8 @@ import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
 import { BREAK_POINT } from '../../components/common/Responsive'
 import DefaultLayout from '../../components/layout/DefaultLayout'
-import { commonMessages, errorMessages } from '../../helpers/translation'
+import { handleError } from '../../helpers'
+import { codeMessages, commonMessages, errorMessages } from '../../helpers/translation'
 
 const StyledContainer = styled.div`
   padding: 4rem 1rem;
@@ -44,14 +45,21 @@ const ResetPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
       if (!error) {
         setLoading(true)
         axios
-          .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/resetPassword`, {
-            token,
-            newPassword: values.password,
+          .post(
+            `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/resetPassword`,
+            { newPassword: values.password },
+            {
+              headers: { authorization: `Bearer ${token}` },
+            },
+          )
+          .then(({ data: { code } }) => {
+            if (code === 'SUCCESS') {
+              history.push('/reset-password-success')
+            } else {
+              message.error(formatMessage(codeMessages[code as keyof typeof codeMessages]))
+            }
           })
-          .then(() => {
-            history.push('/reset-password-success')
-          })
-          .catch(err => message.error(err.response.data.message))
+          .catch(handleError)
           .finally(() => setLoading(false))
       }
     })
@@ -60,7 +68,7 @@ const ResetPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
   // FIXME: set auth token to reset password
   // useEffect(() => {
   //   try {
-  //     localStorage.removeItem(`${localStorage.getItem('kolable.app.id')}.auth.token`)
+  //     localStorage.removeItem(`${appId}.auth.token`)
   //   } catch (error) {}
   //   setAuthToken && setAuthToken(null)
   // }, [setAuthToken])

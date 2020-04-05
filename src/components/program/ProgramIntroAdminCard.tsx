@@ -3,9 +3,10 @@ import { Button, Input, message, Typography } from 'antd'
 import Form, { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -61,6 +62,7 @@ type ProgramIntroAdminCardProps = FormComponentProps & {
   onRefetch?: () => void
 }
 const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, form, onRefetch }) => {
+  const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const [updateProgramCover] = useMutation<types.UPDATE_PROGRAM_COVER, types.UPDATE_PROGRAM_COVERVariables>(
     UPDATE_PROGRAM_COVER,
@@ -81,9 +83,7 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
             variables: {
               programId: program.id,
               coverUrl: values.coverImg
-                ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${localStorage.getItem(
-                    'kolable.app.id',
-                  )}/${program.id}?t=${uploadTime}`
+                ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${program.id}?t=${uploadTime}`
                 : undefined,
             },
           })
@@ -137,7 +137,7 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
                 <StyledSingleUploader
                   accept="image/*"
                   listType="picture-card"
-                  path={`program_covers/${localStorage.getItem('kolable.app.id')}/${program.id}`}
+                  path={`program_covers/${appId}/${program.id}`}
                   showUploadList={false}
                   onSuccess={() => handleUpdateCover()}
                   isPublic

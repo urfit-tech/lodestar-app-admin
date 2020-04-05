@@ -8,6 +8,8 @@ import styled from 'styled-components'
 import { StyledTips } from '../../components/admin/index'
 import { CustomRatioImage } from '../../components/common/Image'
 import { StyledSingleUploader } from '../../components/program/ProgramIntroAdminCard'
+import SingleUploader from '../../components/common/SingleUploader'
+import { AppContext } from '../../contexts/AppContext'
 import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
@@ -21,6 +23,7 @@ const StyledCoverBlock = styled.div`
 `
 
 const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
+  const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
     PodcastProgramContext,
@@ -51,9 +54,9 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
           updatedAt: new Date(),
           podcastProgramId: podcastProgram.id,
           abstract: podcastProgram.abstract,
-          coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/podcast_program_covers/${localStorage.getItem(
-            'kolable.app.id',
-          )}/${podcastProgram.id}?t=${Date.now()}`,
+          coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/podcast_program_covers/${appId}/${
+            podcastProgram.id
+          }?t=${Date.now()}`,
         },
       })
         .then(() => {
@@ -129,7 +132,7 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
               accept="image/*"
               listType="picture-card"
               showUploadList={false}
-              path={`podcast_program_covers/${localStorage.getItem('kolable.app.id')}/${podcastProgram.id}`}
+              path={`podcast_program_covers/${appId}/${podcastProgram.id}`}
               isPublic
               onSuccess={() => handleUpload()}
             />,

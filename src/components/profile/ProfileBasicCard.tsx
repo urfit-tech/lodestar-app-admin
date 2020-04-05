@@ -60,6 +60,7 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
   withDescription,
   ...cardProps
 }) => {
+  const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const app = useContext(AppContext)
@@ -77,14 +78,14 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
             username: member.username,
             name: values.name,
             pictureUrl: values.picture
-              ? `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${app.id}/${memberId}?t=${Date.now()}`
+              ? `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${appId}/${memberId}`
               : member.pictureUrl,
             title: values.title,
             abstract: values.abstract,
             description: values.description ? values.description.toRAW() : null,
             tags: values.tags
               ? values.tags.map((tag: string) => ({
-                  app_id: app.id,
+                  app_id: appId,
                   name: tag,
                   type: '',
                 }))
@@ -128,7 +129,7 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
               accept="image/*"
               listType="picture-card"
               showUploadList={false}
-              path={`avatars/${app.id}/${memberId}`}
+              path={`avatars/${appId}/${memberId}`}
               onSuccess={handleSubmit}
               isPublic={true}
             />,

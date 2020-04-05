@@ -4,6 +4,7 @@ import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import { AppContext } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
@@ -25,6 +26,7 @@ type LoginSectionProps = FormComponentProps & {
   onAuthStateChange: React.Dispatch<React.SetStateAction<AuthState>>
 }
 const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) => {
+  const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const { login } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
@@ -39,7 +41,7 @@ const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) 
       setLoading(true)
 
       login({
-        appId: localStorage.getItem('kolable.app.id') || '',
+        appId,
         account: values.account,
         password: values.password,
       })

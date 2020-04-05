@@ -13,21 +13,6 @@ import MemberProfileButton from '../common/MemberProfileButton'
 import { BREAK_POINT } from '../common/Responsive'
 import NotificationDropdown from '../notification/NotificationDropdown'
 
-let Logo: string | undefined
-try {
-  Logo = require(`../../images/${localStorage.getItem('kolable.app.id')}/logo.svg`)
-} catch {
-  try {
-    Logo = require(`../../images/${localStorage.getItem('kolable.app.id')}/logo.png`)
-  } catch {
-    try {
-      Logo = require(`../../images/${localStorage.getItem('kolable.app.id')}/logo.jpg`)
-    } catch {
-      Logo = undefined
-    }
-  }
-}
-
 const StyledLayout = styled(Layout)`
   &.bg-white {
     background: white;
@@ -79,10 +64,25 @@ type DefaultLayoutProps = {
 }
 const DefaultLayout: React.FC<DefaultLayoutProps> = ({ white, noFooter, centeredBox, renderTitle, children }) => {
   const { currentMemberId } = useAuth()
-  const { enabledModules } = useContext(AppContext)
+  const { enabledModules, id: appId } = useContext(AppContext)
   const { currentLanguage, setCurrentLanguage } = useContext(LanguageContext)
 
   const [visible, setVisible] = useState(false)
+
+  let Logo: string | undefined
+  try {
+    Logo = require(`../../images/${appId}/logo.svg`)
+  } catch {
+    try {
+      Logo = require(`../../images/${appId}/logo.png`)
+    } catch {
+      try {
+        Logo = require(`../../images/${appId}/logo.jpg`)
+      } catch {
+        Logo = undefined
+      }
+    }
+  }
 
   return (
     <AuthModalContext.Provider value={{ visible, setVisible }}>

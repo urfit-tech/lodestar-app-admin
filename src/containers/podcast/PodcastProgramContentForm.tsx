@@ -10,6 +10,7 @@ import styled from 'styled-components'
 import { StyledTips } from '../../components/admin'
 import AdminBraftEditor from '../../components/admin/AdminBraftEditor'
 import SingleUploader from '../../components/common/SingleUploader'
+import { AppContext } from '../../contexts/AppContext'
 import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
@@ -26,6 +27,7 @@ const StyledFileBlock = styled.div`
 `
 
 const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
+  const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
     PodcastProgramContext,
@@ -116,7 +118,7 @@ const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
             // accept=".mp3,.m4a,.mp4,.3gp,.m4a,.aac"
             uploadText={formatMessage(podcastMessages.ui.uploadAudioFile)}
             showUploadList={false}
-            path={`audios/${localStorage.getItem('kolable.app.id')}/${podcastProgram.id}`}
+            path={`audios/${appId}/${podcastProgram.id}`}
             onSuccess={info => handleUploadAudio(extname(info.file.name).replace('.', ''))}
           />,
         )}
