@@ -174,6 +174,7 @@ export const commonMessages = {
     currentPassword: { id: 'common.term.currentPassword', defaultMessage: '目前密碼' },
     owner: { id: 'common.term.owner', defaultMessage: '建立者' },
     supportedLanguages: { id: 'common.term.supportedLanguages', defaultMessage: '選擇顯示於哪個語系' },
+    tags: { id: 'common.term.tags', defaultMessage: '標籤' },
   }),
   text: defineMessages({
     shortDescriptionPlaceholder: { id: 'common.text.shortDescriptionPlaceholder', defaultMessage: '30 字以內' },

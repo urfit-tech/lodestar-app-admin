@@ -13,6 +13,7 @@ import {
 } from '../../components/admin'
 import AdminPublishBlock from '../../components/admin/AdminPublishBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
+import MerchandiseBasicForm from '../../components/merchandise/MerchandiseBasicForm'
 import AppContext from '../../contexts/AppContext'
 import { useMerchandise } from '../../hooks/merchandise'
 
@@ -22,6 +23,7 @@ const messages = defineMessages({
   publishAdmin: { id: 'merchandise.label.publishAdmin', defaultMessage: '上架設定' },
   basicSettings: { id: 'merchandise.label.basicSettings', defaultMessage: '基本設定' },
   introduction: { id: 'merchandise.label.introduction', defaultMessage: '商品介紹' },
+  delete: { id: 'merchandise.label.delete', defaultMessage: '刪除商品' },
   price: { id: 'merchandise.label.price', defaultMessage: '商品售價' },
 })
 
@@ -31,7 +33,7 @@ const MerchandiseAdminPage: React.FC = () => {
   const merchandiseId = match.params.merchandiseId
   const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
   const { settings } = useContext(AppContext)
-  const { loadingMerchandise, errorMerchandise, merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
+  const { loadingMerchandise, merchandise, updateBasic } = useMerchandise(merchandiseId)
 
   return (
     <>
@@ -63,9 +65,18 @@ const MerchandiseAdminPage: React.FC = () => {
               <AdminPaneTitle>{formatMessage(messages.settings)}</AdminPaneTitle>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(messages.basicSettings)}</AdminBlockTitle>
+                <MerchandiseBasicForm
+                  title={merchandise?.title || ''}
+                  categoryIds={merchandise?.categories.map(category => category.id) || []}
+                  merchandiseTags={merchandise?.tags || []}
+                  onSave={updateBasic}
+                />
               </AdminBlock>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(messages.introduction)}</AdminBlockTitle>
+              </AdminBlock>
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(messages.delete)}</AdminBlockTitle>
               </AdminBlock>
             </div>
           </Tabs.TabPane>

@@ -5221,6 +5221,151 @@ export interface GET_MERCHANDISEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_MERCHANDISE_BASIC
+// ====================================================
+
+export interface UPDATE_MERCHANDISE_BASIC_update_merchandise {
+  __typename: "merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_BASIC_delete_merchandise_category {
+  __typename: "merchandise_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_BASIC_insert_merchandise_category {
+  __typename: "merchandise_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_BASIC_delete_merchandise_tag {
+  __typename: "merchandise_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_BASIC_insert_merchandise_tag {
+  __typename: "merchandise_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_BASIC {
+  /**
+   * update data of the table: "merchandise"
+   */
+  update_merchandise: UPDATE_MERCHANDISE_BASIC_update_merchandise | null;
+  /**
+   * delete data from the table: "merchandise_category"
+   */
+  delete_merchandise_category: UPDATE_MERCHANDISE_BASIC_delete_merchandise_category | null;
+  /**
+   * insert data into the table: "merchandise_category"
+   */
+  insert_merchandise_category: UPDATE_MERCHANDISE_BASIC_insert_merchandise_category | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_MERCHANDISE_BASIC_insert_tag | null;
+  /**
+   * delete data from the table: "merchandise_tag"
+   */
+  delete_merchandise_tag: UPDATE_MERCHANDISE_BASIC_delete_merchandise_tag | null;
+  /**
+   * insert data into the table: "merchandise_tag"
+   */
+  insert_merchandise_tag: UPDATE_MERCHANDISE_BASIC_insert_merchandise_tag | null;
+}
+
+export interface UPDATE_MERCHANDISE_BASICVariables {
+  merchandiseId: any;
+  title?: string | null;
+  categories: merchandise_category_insert_input[];
+  tags: tag_insert_input[];
+  merchandiseTags: merchandise_tag_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MERCHANDISE_INTRODUCTION
+// ====================================================
+
+export interface UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise {
+  __typename: "merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_INTRODUCTION_delete_merchandise_img {
+  __typename: "merchandise_img_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_INTRODUCTION_insert_merchandise_img {
+  __typename: "merchandise_img_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_INTRODUCTION {
+  /**
+   * update data of the table: "merchandise"
+   */
+  update_merchandise: UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise | null;
+  /**
+   * delete data from the table: "merchandise_img"
+   */
+  delete_merchandise_img: UPDATE_MERCHANDISE_INTRODUCTION_delete_merchandise_img | null;
+  /**
+   * insert data into the table: "merchandise_img"
+   */
+  insert_merchandise_img: UPDATE_MERCHANDISE_INTRODUCTION_insert_merchandise_img | null;
+}
+
+export interface UPDATE_MERCHANDISE_INTRODUCTIONVariables {
+  merchandiseId: any;
+  merchandiseImages: merchandise_img_insert_input[];
+  abstract?: string | null;
+  link?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PODCAST_PLAN
 // ====================================================
 
@@ -6724,6 +6869,7 @@ export enum member_card_constraint {
  * update columns of table "member_card"
  */
 export enum member_card_update_column {
+  card_holder = "card_holder",
   card_identifier = "card_identifier",
   card_info = "card_info",
   card_secret = "card_secret",
@@ -7531,6 +7677,7 @@ export enum program_package_program_constraint {
  */
 export enum program_package_program_update_column {
   id = "id",
+  position = "position",
   program_id = "program_id",
   program_package_id = "program_package_id",
 }
@@ -8729,6 +8876,7 @@ export interface category_bool_exp {
   name?: String_comparison_exp | null;
   podcast_program_categories?: podcast_program_category_bool_exp | null;
   position?: Int_comparison_exp | null;
+  post_categories?: post_category_bool_exp | null;
   program_categories?: program_category_bool_exp | null;
 }
 
@@ -8744,6 +8892,7 @@ export interface category_insert_input {
   name?: string | null;
   podcast_program_categories?: podcast_program_category_arr_rel_insert_input | null;
   position?: number | null;
+  post_categories?: post_category_arr_rel_insert_input | null;
   program_categories?: program_category_arr_rel_insert_input | null;
 }
 
@@ -9574,6 +9723,7 @@ export interface member_card_bool_exp {
   _and?: (member_card_bool_exp | null)[] | null;
   _not?: member_card_bool_exp | null;
   _or?: (member_card_bool_exp | null)[] | null;
+  card_holder?: jsonb_comparison_exp | null;
   card_identifier?: String_comparison_exp | null;
   card_info?: jsonb_comparison_exp | null;
   card_secret?: jsonb_comparison_exp | null;
@@ -9586,6 +9736,7 @@ export interface member_card_bool_exp {
  * input type for inserting data into table "member_card"
  */
 export interface member_card_insert_input {
+  card_holder?: any | null;
   card_identifier?: string | null;
   card_info?: any | null;
   card_secret?: any | null;
@@ -11957,6 +12108,7 @@ export interface program_package_program_bool_exp {
   _not?: program_package_program_bool_exp | null;
   _or?: (program_package_program_bool_exp | null)[] | null;
   id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
   program?: program_bool_exp | null;
   program_id?: uuid_comparison_exp | null;
   program_package?: program_package_bool_exp | null;
@@ -11968,6 +12120,7 @@ export interface program_package_program_bool_exp {
  */
 export interface program_package_program_insert_input {
   id?: any | null;
+  position?: number | null;
   program?: program_obj_rel_insert_input | null;
   program_id?: any | null;
   program_package?: program_package_obj_rel_insert_input | null;
@@ -12182,6 +12335,7 @@ export interface tag_bool_exp {
   member_tags?: member_tag_bool_exp | null;
   merchandise_tags?: merchandise_tag_bool_exp | null;
   name?: String_comparison_exp | null;
+  post_tags?: post_tag_bool_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -12196,6 +12350,7 @@ export interface tag_insert_input {
   member_tags?: member_tag_arr_rel_insert_input | null;
   merchandise_tags?: merchandise_tag_arr_rel_insert_input | null;
   name?: string | null;
+  post_tags?: post_tag_arr_rel_insert_input | null;
   type?: string | null;
   updated_at?: any | null;
 }
