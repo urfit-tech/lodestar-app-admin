@@ -5,6 +5,8 @@ import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
 import { AdminBlock, AdminBlockTitle, AdminPaneTitle } from '../../../components/admin'
+import AdminPublishBlock from '../../../components/admin/AdminPublishBlock'
+import RoleAdminBlock from '../../../components/admin/RoleAdminBlock'
 import BlogPostBasicAdminForm from '../../../components/blog/BlogPostBasicAdminForm'
 import BlogPostContentAdminForm from '../../../components/blog/BlogPostContentAdminForm'
 import BlogPostDeletionAdminModal from '../../../components/blog/BlogPostDeletionAdminModal'
@@ -13,6 +15,7 @@ import BlogPostVideoAdminForm from '../../../components/blog/BlogPostVideoAdminF
 import AppContext from '../../../contexts/AppContext'
 import { blogMessages, commonMessages } from '../../../helpers/translation'
 import { usePost } from '../../../hooks/blog'
+import { usePublicMember } from '../../../hooks/member'
 
 const StyledPageHeader = styled(PageHeader)`
   && {
@@ -42,6 +45,7 @@ const ProgramAdminPage: React.FC = () => {
   const { history, match } = useRouter<{ postId: string }>()
   const postId = match.params.postId
   const { post, refetch: refetchPost } = usePost(postId)
+  const { member } = usePublicMember(post?.memberId || '')
   const [active, setActive] = useQueryParam('active', StringParam)
   const app = useContext(AppContext)
 
@@ -112,12 +116,36 @@ const ProgramAdminPage: React.FC = () => {
             </div>
           </Tabs.TabPane>
 
-          {/* <Tabs.TabPane tab={formatMessage(commonMessages.label.roleAdmin)} key="roles">
-            <BlogRoleAdminPane post={post} onRefetch={refetchPost} />
-          </Tabs.TabPane> */}
-          {/* <Tabs.TabPane tab={formatMessage(commonMessages.label.publishSettings)} key="publishing">
-            <BlogPublishingAdminPane post={post} onRefetch={refetchPost} />
-          </Tabs.TabPane> */}
+          <Tabs.TabPane tab={formatMessage(commonMessages.label.roleAdmin)} key="roles">
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(commonMessages.label.roleAdmin)}</AdminPaneTitle>
+
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(commonMessages.term.owner)}</AdminBlockTitle>
+                <RoleAdminBlock name={member?.name || ''} pictureUrl={member?.pictureUrl || ''} />
+              </AdminBlock>
+
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(commonMessages.term.author)}</AdminBlockTitle>
+              </AdminBlock>
+            </div>
+          </Tabs.TabPane>
+
+          <Tabs.TabPane tab={formatMessage(commonMessages.label.publishSettings)} key="publishing">
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
+
+              <AdminBlock>
+                <AdminPublishBlock
+                  type={'ordinary'}
+                  title={'title'}
+                  description={'description'}
+                  checklist={[]}
+                  onPublish={() => {}}
+                />
+              </AdminBlock>
+            </div>
+          </Tabs.TabPane>
         </Tabs>
       </div>
     </>

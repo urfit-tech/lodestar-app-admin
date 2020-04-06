@@ -9,6 +9,7 @@ export type PostType = {
   }[]
   tagNames: string[]
   isDeleted: boolean
+  memberId: string
 }
 
 export type BlogPostProps = {

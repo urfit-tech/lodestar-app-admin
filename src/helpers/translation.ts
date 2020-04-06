@@ -175,6 +175,7 @@ export const commonMessages = {
     unknownProduct: { id: 'common.term.unknownProduct', defaultMessage: '未知類別' },
     currentPassword: { id: 'common.term.currentPassword', defaultMessage: '目前密碼' },
     owner: { id: 'common.term.owner', defaultMessage: '建立者' },
+    author: { id: 'common.term.authro', defaultMessage: '作者' },
     supportedLanguages: { id: 'common.term.supportedLanguages', defaultMessage: '選擇顯示於哪個語系' },
     tags: { id: 'common.term.tags', defaultMessage: '標籤' },
   }),
