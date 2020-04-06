@@ -5,8 +5,10 @@ import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
 import { AdminBlock, AdminBlockTitle, AdminPaneTitle } from '../../../components/admin'
+import BlogPostBasicAdminForm from '../../../components/blog/BlogPostBasicAdminForm'
 import BlogPostContentAdminForm from '../../../components/blog/BlogPostContentAdminForm'
-import BlogPostSettingAdminPane from '../../../components/blog/BlogPostSettingAdminPane'
+import BlogPostDeletionAdminModal from '../../../components/blog/BlogPostDeletionAdminModal'
+import BlogPostSettingAdminForm from '../../../components/blog/BlogPostSettingAdminForm'
 import BlogPostVideoAdminForm from '../../../components/blog/BlogPostVideoAdminForm'
 import AppContext from '../../../contexts/AppContext'
 import { blogMessages, commonMessages } from '../../../helpers/translation'
@@ -76,20 +78,40 @@ const ProgramAdminPage: React.FC = () => {
           <Tabs.TabPane tab={formatMessage(blogMessages.label.postContent)} key="content">
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(blogMessages.label.postContent)}</AdminPaneTitle>
+
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(blogMessages.ui.video)}</AdminBlockTitle>
                 <BlogPostVideoAdminForm post={post} onRefetch={refetchPost} />
-                {/* <AppointmentPlanBasicForm /> */}
               </AdminBlock>
+
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(blogMessages.ui.contentDescription)}</AdminBlockTitle>
                 <BlogPostContentAdminForm post={post} onRefetch={refetchPost} />
               </AdminBlock>
             </div>
           </Tabs.TabPane>
+
           <Tabs.TabPane tab={formatMessage(blogMessages.label.postManagement)} key="general">
-            <BlogPostSettingAdminPane post={post} onRefetch={refetchPost} />
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(blogMessages.label.postManagement)}</AdminPaneTitle>
+
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
+                <BlogPostBasicAdminForm post={post} onRefetch={refetchPost} />
+              </AdminBlock>
+
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(blogMessages.ui.postSetting)}</AdminBlockTitle>
+                <BlogPostSettingAdminForm post={post} onRefetch={refetchPost} />
+              </AdminBlock>
+
+              <AdminBlock>
+                <AdminPaneTitle>{formatMessage(blogMessages.label.deletePost)}</AdminPaneTitle>
+                <BlogPostDeletionAdminModal post={post} onRefetch={refetchPost} />
+              </AdminBlock>
+            </div>
           </Tabs.TabPane>
+
           {/* <Tabs.TabPane tab={formatMessage(commonMessages.label.roleAdmin)} key="roles">
             <BlogRoleAdminPane post={post} onRefetch={refetchPost} />
           </Tabs.TabPane> */}

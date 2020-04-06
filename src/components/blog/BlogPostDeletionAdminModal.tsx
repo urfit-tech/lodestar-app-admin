@@ -6,10 +6,8 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
 import { BlogPostProps } from '../../types/blog'
-import AdminCard from '../admin/AdminCard'
 
 const messages = defineMessages({
-  deletePost: { id: 'blog.label.deletePost', defaultMessage: '刪除文章' },
   deletePostConfirmation: {
     id: 'blog.text.deletePostConfirmation',
     defaultMessage: '文章一經刪除即不可恢復，確定要刪除嗎？',
@@ -45,7 +43,7 @@ export const StyledModalParagraph = styled.p`
   line-height: 1.5;
 `
 
-const BlogPostDeletionAdminCard: React.FC<BlogPostProps> = ({ post, onRefetch }) => {
+const BlogPostDeletionAdminModal: React.FC<BlogPostProps> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [isVisible, setVisible] = useState(false)
   const archivePost = useUpdatePostIsDeleted()
@@ -62,10 +60,7 @@ const BlogPostDeletionAdminCard: React.FC<BlogPostProps> = ({ post, onRefetch })
   }
 
   return (
-    <AdminCard loading={!post}>
-      <Typography.Title level={4} className="mb-4">
-        {formatMessage(messages.deletePost)}
-      </Typography.Title>
+    <>
       <StyledModal
         visible={isVisible}
         okText={formatMessage(commonMessages.ui.delete)}
@@ -91,7 +86,7 @@ const BlogPostDeletionAdminCard: React.FC<BlogPostProps> = ({ post, onRefetch })
           </Button>
         )}
       </div>
-    </AdminCard>
+    </>
   )
 }
 
@@ -109,4 +104,4 @@ const UPDATE_POST_IS_DELETED = gql`
   }
 `
 
-export default BlogPostDeletionAdminCard
+export default BlogPostDeletionAdminModal

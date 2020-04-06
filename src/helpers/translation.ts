@@ -450,6 +450,7 @@ export const blogMessages = {
     postContent: { id: 'blog.label.postContent', defaultMessage: '文章內容' },
     postManagement: { id: 'blog.label.postManagement', defaultMessage: '文章管理' },
     codeName: { id: 'blog.label.codeName', defaultMessage: '網址代稱' },
+    deletePost: { id: 'blog.label.deletePost', defaultMessage: '刪除文章' },
   }),
   term: defineMessages({
     pasteVideoUrl: { id: 'blog.term.pasteVideoUrl', defaultMessage: '貼上影片網址' },
