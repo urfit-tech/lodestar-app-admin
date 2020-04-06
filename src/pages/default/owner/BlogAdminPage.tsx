@@ -4,8 +4,10 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
-import BlogPostAdminPane from '../../../components/blog/BlogPostAdminPane'
+import { AdminBlock, AdminBlockTitle, AdminPaneTitle } from '../../../components/admin'
+import BlogPostContentAdminForm from '../../../components/blog/BlogPostContentAdminForm'
 import BlogPostSettingAdminPane from '../../../components/blog/BlogPostSettingAdminPane'
+import BlogPostVideoAdminForm from '../../../components/blog/BlogPostVideoAdminForm'
 import AppContext from '../../../contexts/AppContext'
 import { blogMessages, commonMessages } from '../../../helpers/translation'
 import { usePost } from '../../../hooks/blog'
@@ -37,9 +39,10 @@ const ProgramAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { history, match } = useRouter<{ postId: string }>()
   const postId = match.params.postId
-  const { data: post, refetch: refetchPost } = usePost(postId)
+  const { post, refetch: refetchPost } = usePost(postId)
   const [active, setActive] = useQueryParam('active', StringParam)
   const app = useContext(AppContext)
+
   useEffect(() => {
     !active && setActive('content')
   }, [active, setActive])
@@ -71,7 +74,18 @@ const ProgramAdminPage: React.FC = () => {
           )}
         >
           <Tabs.TabPane tab={formatMessage(blogMessages.label.postContent)} key="content">
-            <BlogPostAdminPane post={post} onRefetch={refetchPost} />
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(blogMessages.label.postContent)}</AdminPaneTitle>
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(blogMessages.ui.video)}</AdminBlockTitle>
+                <BlogPostVideoAdminForm post={post} onRefetch={refetchPost} />
+                {/* <AppointmentPlanBasicForm /> */}
+              </AdminBlock>
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(blogMessages.ui.contentDescription)}</AdminBlockTitle>
+                <BlogPostContentAdminForm post={post} onRefetch={refetchPost} />
+              </AdminBlock>
+            </div>
           </Tabs.TabPane>
           <Tabs.TabPane tab={formatMessage(blogMessages.label.postManagement)} key="general">
             <BlogPostSettingAdminPane post={post} onRefetch={refetchPost} />
