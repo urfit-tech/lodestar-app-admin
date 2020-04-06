@@ -11,6 +11,7 @@ export const commonMessages = {
     detail: { id: 'common.ui.detail', defaultMessage: '詳情' },
     delete: { id: 'common.ui.delete', defaultMessage: '刪除' },
     deleteProgram: { id: 'common.ui.deleteProgram', defaultMessage: '刪除課程' },
+    deletePost: { id: 'common.ui.deletePost', defaultMessage: '刪除文章' },
     deleted: { id: 'common.ui.deleted', defaultMessage: '已刪除' },
     login: { id: 'common.ui.login', defaultMessage: '登入' },
     logout: { id: 'common.ui.logout', defaultMessage: '登出' },
@@ -147,6 +148,7 @@ export const commonMessages = {
     caption: { id: 'common.label.caption', defaultMessage: '字幕' },
     title: { id: 'common.term.title', defaultMessage: '名稱' },
     category: { id: 'common.term.category', defaultMessage: '類別' },
+    tag: { id: 'common.term.tag', defaultMessage: '標籤' },
     startedAt: { id: 'common.term.startedAt', defaultMessage: '開始時間' },
     endedAt: { id: 'common.term.endedAt', defaultMessage: '結束時間' },
     orderStatus: { id: 'common.term.orderStatus', defaultMessage: '訂單狀態' },
@@ -181,6 +183,7 @@ export const commonMessages = {
     minutes: { id: 'common.text.minutes', defaultMessage: '{minutes} 分鐘' },
     newPasswordAgain: { id: 'common.label.newPasswordAgain', defaultMessage: '再次輸入新密碼' },
     forgotPassword: { id: 'common.text.forgotPassword', defaultMessage: '忘記密碼？' },
+    locale: { id: 'common.text.locale', defaultMessage: '當前台為指定語系時才會顯示，若不選擇全語系皆顯示' },
   }),
   event: defineMessages({
     successfullySaved: { id: 'common.event.successfullySaved', defaultMessage: '儲存成功' },
@@ -441,12 +444,17 @@ export const blogMessages = {
   ui: defineMessages({
     video: { id: 'blog.ui.video', defaultMessage: '影片內容' },
     contentDescription: { id: 'blog.ui.description', defaultMessage: '圖文內容' },
+    postSetting: { id: 'blog.ui.postSetting', defaultMessage: '文章設定' },
   }),
   label: defineMessages({
     postContent: { id: 'blog.label.postContent', defaultMessage: '文章內容' },
     postManagement: { id: 'blog.label.postManagement', defaultMessage: '文章管理' },
+    codeName: { id: 'blog.label.codeName', defaultMessage: '網址代稱' },
   }),
   term: defineMessages({
     pasteVideoUrl: { id: 'blog.term.pasteVideoUrl', defaultMessage: '貼上影片網址' },
+  }),
+  text: defineMessages({
+    url: { id: 'blog.text.url', defaultMessage: '完整網址的最後部分，通常是因由小寫英文字母、數字或連字號組成' },
   }),
 }

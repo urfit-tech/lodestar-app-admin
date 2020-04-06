@@ -5,7 +5,7 @@ import { blogMessages } from '../../helpers/translation'
 import { BlogPostProps } from '../../types/blog'
 import BlogPostBasicAdminCard from './BlogPostBasicAdminCard'
 import BlogPostDeletionAdminCard from './BlogPostDeletionAdminCard'
-import BlogPostIntroAdminCard from './BlogPostIntroAdminCard'
+import BlogPostSettingAdminCard from './BlogPostSettingAdminCard'
 
 const BlogSettingAdminPane: React.FC<BlogPostProps> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
@@ -18,7 +18,9 @@ const BlogSettingAdminPane: React.FC<BlogPostProps> = ({ post, onRefetch }) => {
       <div className="mb-3">
         <BlogPostBasicAdminCard post={post} onRefetch={onRefetch} />
       </div>
-      <div className="mb-3">{<BlogPostIntroAdminCard post={post} onRefetch={onRefetch} />}</div>
+      <div className="mb-3">
+        <BlogPostSettingAdminCard post={post} onRefetch={onRefetch} />
+      </div>
       <div className="mb-3">
         <BlogPostDeletionAdminCard post={post} onRefetch={onRefetch} />
       </div>

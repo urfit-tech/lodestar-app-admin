@@ -99,6 +99,33 @@ export interface UPDATE_POST_DESCRIPTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_IS_DELETED
+// ====================================================
+
+export interface UPDATE_PROGRAM_IS_DELETED_update_program {
+  __typename: "program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_IS_DELETED {
+  /**
+   * update data of the table: "program"
+   */
+  update_program: UPDATE_PROGRAM_IS_DELETED_update_program | null;
+}
+
+export interface UPDATE_PROGRAM_IS_DELETEDVariables {
+  programId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_POST_VIDEO_URL
 // ====================================================
 
@@ -1187,33 +1214,6 @@ export interface INSERT_PROGRAMVariables {
   title: string;
   isSubscription: boolean;
   programCategories: program_category_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: MyMutation
-// ====================================================
-
-export interface MyMutation_update_program {
-  __typename: "program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface MyMutation {
-  /**
-   * update data of the table: "program"
-   */
-  update_program: MyMutation_update_program | null;
-}
-
-export interface MyMutationVariables {
-  programId?: any | null;
 }
 
 /* tslint:disable */
@@ -4554,12 +4554,42 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION {
 // GraphQL query operation: GET_POST
 // ====================================================
 
+export interface GET_POST_post_by_pk_post_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_POST_post_by_pk_post_categories {
+  __typename: "post_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_POST_post_by_pk_post_categories_category;
+}
+
+export interface GET_POST_post_by_pk_post_tags {
+  __typename: "post_tag";
+  id: any;
+  tag_name: string;
+}
+
 export interface GET_POST_post_by_pk {
   __typename: "post";
   id: any;
   title: string;
   video_url: string | null;
   description: string | null;
+  is_deleted: boolean;
+  /**
+   * An array relationship
+   */
+  post_categories: GET_POST_post_by_pk_post_categories[];
+  /**
+   * An array relationship
+   */
+  post_tags: GET_POST_post_by_pk_post_tags[];
 }
 
 export interface GET_POST {
@@ -6663,6 +6693,7 @@ export enum member_card_constraint {
  * update columns of table "member_card"
  */
 export enum member_card_update_column {
+  card_holder = "card_holder",
   card_identifier = "card_identifier",
   card_info = "card_info",
   card_secret = "card_secret",
@@ -6787,6 +6818,7 @@ export enum merchandise_tag_update_column {
  */
 export enum merchandise_update_column {
   abstract = "abstract",
+  app_id = "app_id",
   created_at = "created_at",
   description = "description",
   id = "id",
@@ -7469,6 +7501,7 @@ export enum program_package_program_constraint {
  */
 export enum program_package_program_update_column {
   id = "id",
+  position = "position",
   program_id = "program_id",
   program_package_id = "program_package_id",
 }
@@ -8096,6 +8129,7 @@ export interface app_bool_exp {
   id?: String_comparison_exp | null;
   issues?: issue_bool_exp | null;
   members?: member_bool_exp | null;
+  merchandises?: merchandise_bool_exp | null;
   name?: String_comparison_exp | null;
   og_description?: String_comparison_exp | null;
   og_image?: String_comparison_exp | null;
@@ -8133,6 +8167,7 @@ export interface app_insert_input {
   id?: string | null;
   issues?: issue_arr_rel_insert_input | null;
   members?: member_arr_rel_insert_input | null;
+  merchandises?: merchandise_arr_rel_insert_input | null;
   name?: string | null;
   og_description?: string | null;
   og_image?: string | null;
@@ -8665,6 +8700,7 @@ export interface category_bool_exp {
   name?: String_comparison_exp | null;
   podcast_program_categories?: podcast_program_category_bool_exp | null;
   position?: Int_comparison_exp | null;
+  post_categories?: post_category_bool_exp | null;
   program_categories?: program_category_bool_exp | null;
 }
 
@@ -8680,6 +8716,7 @@ export interface category_insert_input {
   name?: string | null;
   podcast_program_categories?: podcast_program_category_arr_rel_insert_input | null;
   position?: number | null;
+  post_categories?: post_category_arr_rel_insert_input | null;
   program_categories?: program_category_arr_rel_insert_input | null;
 }
 
@@ -9510,6 +9547,7 @@ export interface member_card_bool_exp {
   _and?: (member_card_bool_exp | null)[] | null;
   _not?: member_card_bool_exp | null;
   _or?: (member_card_bool_exp | null)[] | null;
+  card_holder?: jsonb_comparison_exp | null;
   card_identifier?: String_comparison_exp | null;
   card_info?: jsonb_comparison_exp | null;
   card_secret?: jsonb_comparison_exp | null;
@@ -9522,6 +9560,7 @@ export interface member_card_bool_exp {
  * input type for inserting data into table "member_card"
  */
 export interface member_card_insert_input {
+  card_holder?: any | null;
   card_identifier?: string | null;
   card_info?: any | null;
   card_secret?: any | null;
@@ -9672,6 +9711,14 @@ export interface member_tag_on_conflict {
 }
 
 /**
+ * input type for inserting array relation for remote table "merchandise"
+ */
+export interface merchandise_arr_rel_insert_input {
+  data: merchandise_insert_input[];
+  on_conflict?: merchandise_on_conflict | null;
+}
+
+/**
  * Boolean expression to filter rows from the table "merchandise". All fields are combined with a logical 'AND'.
  */
 export interface merchandise_bool_exp {
@@ -9679,6 +9726,8 @@ export interface merchandise_bool_exp {
   _not?: merchandise_bool_exp | null;
   _or?: (merchandise_bool_exp | null)[] | null;
   abstract?: String_comparison_exp | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -9788,6 +9837,8 @@ export interface merchandise_img_on_conflict {
  */
 export interface merchandise_insert_input {
   abstract?: string | null;
+  app?: app_obj_rel_insert_input | null;
+  app_id?: string | null;
   created_at?: any | null;
   description?: string | null;
   id?: any | null;
@@ -11881,6 +11932,7 @@ export interface program_package_program_bool_exp {
   _not?: program_package_program_bool_exp | null;
   _or?: (program_package_program_bool_exp | null)[] | null;
   id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
   program?: program_bool_exp | null;
   program_id?: uuid_comparison_exp | null;
   program_package?: program_package_bool_exp | null;
@@ -11892,6 +11944,7 @@ export interface program_package_program_bool_exp {
  */
 export interface program_package_program_insert_input {
   id?: any | null;
+  position?: number | null;
   program?: program_obj_rel_insert_input | null;
   program_id?: any | null;
   program_package?: program_package_obj_rel_insert_input | null;
@@ -12106,6 +12159,7 @@ export interface tag_bool_exp {
   member_tags?: member_tag_bool_exp | null;
   merchandise_tags?: merchandise_tag_bool_exp | null;
   name?: String_comparison_exp | null;
+  post_tags?: post_tag_bool_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -12120,6 +12174,7 @@ export interface tag_insert_input {
   member_tags?: member_tag_arr_rel_insert_input | null;
   merchandise_tags?: merchandise_tag_arr_rel_insert_input | null;
   name?: string | null;
+  post_tags?: post_tag_arr_rel_insert_input | null;
   type?: string | null;
   updated_at?: any | null;
 }
