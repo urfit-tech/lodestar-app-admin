@@ -452,6 +452,11 @@ export const merchandiseMessages = {
     soldOut: { id: 'merchandise.status.soldOut', defaultMessage: '已售完' },
     unpublished: { id: 'merchandise.status.unpublished', defaultMessage: '未上架' },
   }),
+  label: defineMessages({
+    images: { id: 'merchandise.label.images', defaultMessage: '商品圖片' },
+    abstract: { id: 'merchandise.label.abstract', defaultMessage: '規格說明' },
+    paymentLink: { id: 'merchandise.label.paymentLink', defaultMessage: '付款連結' },
+  }),
   text: defineMessages({
     searchMerchandise: { id: 'merchandise.text.searchMerchandise', defaultMessage: '搜尋商品名稱' },
   }),

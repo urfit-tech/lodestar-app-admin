@@ -2,10 +2,11 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { useContext } from 'react'
 import { MerchandiseBasicProps } from '../components/merchandise/MerchandiseBasicForm'
+import { MerchandiseIntroductionProps } from '../components/merchandise/MerchandiseIntroductionForm'
 import AppContext from '../contexts/AppContext'
+import { handleError } from '../helpers'
 import types from '../types'
 import { MerchandisePreviewProps, MerchandiseProps } from '../types/merchandise'
-import { handleError } from '../helpers'
 
 export const useInsertMerchandise = () => {
   const [insertMerchandise] = useMutation<types.INSERT_MERCHANDISE, types.INSERT_MERCHANDISEVariables>(gql`
@@ -64,9 +65,36 @@ export const useMerchandiseCollection = () => {
 }
 
 export const useMerchandise = (id: string) => {
-  const app = useContext(AppContext)
   const { loading, error, data, refetch } = useQuery<types.GET_MERCHANDISE, types.GET_MERCHANDISEVariables>(
-    GET_MERCHANDISE,
+    gql`
+      query GET_MERCHANDISE($id: uuid!) {
+        merchandise_by_pk(id: $id) {
+          id
+          title
+          abstract
+          description
+          price
+          link
+          published_at
+          merchandise_categories(order_by: { position: asc }) {
+            id
+            category {
+              id
+              name
+            }
+          }
+          merchandise_tags(order_by: { position: asc }) {
+            id
+            tag_name
+          }
+          merchandise_imgs(order_by: { position: asc }) {
+            id
+            type
+            url
+          }
+        }
+      }
+    `,
     { variables: { id } },
   )
   const merchandise: MerchandiseProps | null =
@@ -91,120 +119,113 @@ export const useMerchandise = (id: string) => {
           publishedAt: data.merchandise_by_pk.published_at ? new Date(data.merchandise_by_pk.published_at) : null,
         }
 
-  const [updateMerchandiseBasic] = useMutation<types.UPDATE_MERCHANDISE_BASIC, types.UPDATE_MERCHANDISE_BASICVariables>(
-    UPDATE_MERCHANDISE_BASIC,
-  )
-  const updateBasic: (data: MerchandiseBasicProps) => Promise<any> = ({ title, categoryIds, merchandiseTags }) => {
-    return updateMerchandiseBasic({
-      variables: {
-        merchandiseId: merchandise?.id,
-        title,
-        categories:
-          categoryIds?.map((categoryId, index) => ({
-            merchandise_id: merchandise?.id,
-            category_id: categoryId,
-            position: index,
-          })),
-        tags:
-          merchandiseTags?.map(merchandiseTag => ({
-            app_id: app.id,
-            name: merchandiseTag,
-            type: '',
-          })),
-        merchandiseTags:
-          merchandiseTags?.map((merchandiseTag, index) => ({
-            merchandise_id: merchandise?.id,
-            tag_name: merchandiseTag,
-            position: index,
-          })),
-      },
-    })
-      .then(() => refetch())
-      .catch(handleError)
-  }
-
   return {
     loadingMerchandise: loading,
     errorMerchandise: error,
     merchandise,
     refetchMerchandise: refetch,
+  }
+}
+
+export const useUpdateMerchandiseBasic = (merchandiseId: string) => {
+  const app = useContext(AppContext)
+  const [updateMerchandiseBasic] = useMutation<types.UPDATE_MERCHANDISE_BASIC, types.UPDATE_MERCHANDISE_BASICVariables>(
+    gql`
+      mutation UPDATE_MERCHANDISE_BASIC(
+        $merchandiseId: uuid!
+        $title: String
+        $categories: [merchandise_category_insert_input!]!
+        $tags: [tag_insert_input!]!
+        $merchandiseTags: [merchandise_tag_insert_input!]!
+      ) {
+        update_merchandise(where: { id: { _eq: $merchandiseId } }, _set: { title: $title }) {
+          affected_rows
+        }
+        delete_merchandise_category(where: { merchandise_id: { _eq: $merchandiseId } }) {
+          affected_rows
+        }
+        insert_merchandise_category(objects: $categories) {
+          affected_rows
+        }
+        insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
+          affected_rows
+        }
+        delete_merchandise_tag(where: { merchandise_id: { _eq: $merchandiseId } }) {
+          affected_rows
+        }
+        insert_merchandise_tag(objects: $merchandiseTags) {
+          affected_rows
+        }
+      }
+    `,
+  )
+  const updateBasic: (data: MerchandiseBasicProps) => Promise<any> = ({ title, categoryIds, merchandiseTags }) => {
+    return updateMerchandiseBasic({
+      variables: {
+        merchandiseId: merchandiseId,
+        title,
+        categories: categoryIds?.map((categoryId, index) => ({
+          merchandise_id: merchandiseId,
+          category_id: categoryId,
+          position: index,
+        })),
+        tags: merchandiseTags?.map(merchandiseTag => ({
+          app_id: app.id,
+          name: merchandiseTag,
+          type: '',
+        })),
+        merchandiseTags: merchandiseTags?.map((merchandiseTag, index) => ({
+          merchandise_id: merchandiseId,
+          tag_name: merchandiseTag,
+          position: index,
+        })),
+      },
+    }).catch(handleError)
+  }
+
+  return {
     updateBasic,
   }
 }
 
-const GET_MERCHANDISE = gql`
-  query GET_MERCHANDISE($id: uuid!) {
-    merchandise_by_pk(id: $id) {
-      id
-      title
-      abstract
-      description
-      price
-      link
-      published_at
-      merchandise_categories(order_by: { position: asc }) {
-        id
-        category {
-          id
-          name
-        }
+export const useUpdateMerchandiseIntroduction = (merchandiseId: string) => {
+  const [updateMerchandiseIntroduction] = useMutation<
+    types.UPDATE_MERCHANDISE_INTRODUCTION,
+    types.UPDATE_MERCHANDISE_INTRODUCTIONVariables
+  >(gql`
+    mutation UPDATE_MERCHANDISE_INTRODUCTION(
+      $merchandiseId: uuid!
+      $abstract: String
+      $link: String
+      $merchandiseImages: [merchandise_img_insert_input!]!
+    ) {
+      update_merchandise(where: { id: { _eq: $merchandiseId } }, _set: { abstract: $abstract, link: $link }) {
+        affected_rows
       }
-      merchandise_tags(order_by: { position: asc }) {
-        id
-        tag_name
+      delete_merchandise_img(where: { merchandise_id: { _eq: $merchandiseId } }) {
+        affected_rows
       }
-      merchandise_imgs(order_by: { position: asc }) {
-        id
-        type
-        url
+      insert_merchandise_img(objects: $merchandiseImages) {
+        affected_rows
       }
     }
-  }
-`
-const UPDATE_MERCHANDISE_BASIC = gql`
-  mutation UPDATE_MERCHANDISE_BASIC(
-    $merchandiseId: uuid!
-    $title: String
-    $categories: [merchandise_category_insert_input!]!
-    $tags: [tag_insert_input!]!
-    $merchandiseTags: [merchandise_tag_insert_input!]!
-  ) {
-    update_merchandise(where: { id: { _eq: $merchandiseId } }, _set: { title: $title }) {
-      affected_rows
-    }
-    delete_merchandise_category(where: { merchandise_id: { _eq: $merchandiseId } }) {
-      affected_rows
-    }
-    insert_merchandise_category(objects: $categories) {
-      affected_rows
-    }
-    insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
-      affected_rows
-    }
-    delete_merchandise_tag(where: { merchandise_id: { _eq: $merchandiseId } }) {
-      affected_rows
-    }
-    insert_merchandise_tag(objects: $merchandiseTags) {
-      affected_rows
-    }
-  }
-`
+  `)
 
-const UPDATE_MERCHANDISE_INTRODUCTION = gql`
-  mutation UPDATE_MERCHANDISE_INTRODUCTION(
-    $merchandiseId: uuid!
-    $merchandiseImages: [merchandise_img_insert_input!]!
-    $abstract: String
-    $link: String
-  ) {
-    update_merchandise(where: { id: { _eq: $merchandiseId } }, _set: { abstract: $abstract, link: $link }) {
-      affected_rows
-    }
-    delete_merchandise_img(where: { merchandise_id: { _eq: $merchandiseId } }) {
-      affected_rows
-    }
-    insert_merchandise_img(objects: $merchandiseImages) {
-      affected_rows
-    }
+  const updateIntroduction: (data: MerchandiseIntroductionProps) => Promise<any> = ({ abstract, link, images }) => {
+    return updateMerchandiseIntroduction({
+      variables: {
+        merchandiseId: merchandiseId,
+        abstract,
+        link,
+        merchandiseImages: images.map((image, index) => ({
+          url: image.url,
+          type: image.isCover ? 'cover' : '',
+        })),
+      },
+    }).catch(handleError)
   }
-`
+
+  return {
+    updateIntroduction,
+  }
+}

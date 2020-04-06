@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import TagSelector from '../../containers/common/TagSelector'
 import { commonMessages, errorMessages } from '../../helpers/translation'
+import { useUpdateMerchandiseBasic } from '../../hooks/merchandise'
 import ProgramCategorySelector from '../program/ProgramCategorySelector'
 
 export type MerchandiseBasicProps = {
@@ -13,16 +14,19 @@ export type MerchandiseBasicProps = {
 }
 type MerchandiseBasicFormProps = FormComponentProps &
   MerchandiseBasicProps & {
-    onSave?: (data: MerchandiseBasicProps) => Promise<any>
+    merchandiseId: string
+    refetch?: () => void
   }
 const MerchandiseBasicForm: React.FC<MerchandiseBasicFormProps> = ({
   form,
   title,
   categoryIds,
   merchandiseTags,
-  onSave,
+  merchandiseId,
+  refetch,
 }) => {
   const { formatMessage } = useIntl()
+  const { updateBasic } = useUpdateMerchandiseBasic(merchandiseId)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
@@ -30,16 +34,17 @@ const MerchandiseBasicForm: React.FC<MerchandiseBasicFormProps> = ({
       if (errors) {
         return
       }
-      if (onSave) {
-        setLoading(true)
-        onSave({
-          title: values.title,
-          categoryIds: values.categoryIds,
-          merchandiseTags: values.tags,
+      setLoading(true)
+      updateBasic({
+        title: values.title,
+        categoryIds: values.categoryIds,
+        merchandiseTags: values.tags,
+      })
+        .then(() => {
+          refetch && refetch()
+          message.success(formatMessage(commonMessages.event.successfullySaved))
         })
-          .then(() => message.success(formatMessage(commonMessages.event.successfullySaved)))
-          .finally(() => setLoading(false))
-      }
+        .finally(() => setLoading(false))
     })
   }
 

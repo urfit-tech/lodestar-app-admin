@@ -14,6 +14,7 @@ import {
 import AdminPublishBlock from '../../components/admin/AdminPublishBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import MerchandiseBasicForm from '../../components/merchandise/MerchandiseBasicForm'
+import MerchandiseIntroductionForm from '../../components/merchandise/MerchandiseIntroductionForm'
 import AppContext from '../../contexts/AppContext'
 import { useMerchandise } from '../../hooks/merchandise'
 
@@ -33,7 +34,7 @@ const MerchandiseAdminPage: React.FC = () => {
   const merchandiseId = match.params.merchandiseId
   const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
   const { settings } = useContext(AppContext)
-  const { loadingMerchandise, merchandise, updateBasic } = useMerchandise(merchandiseId)
+  const { loadingMerchandise, merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
 
   return (
     <>
@@ -66,14 +67,22 @@ const MerchandiseAdminPage: React.FC = () => {
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(messages.basicSettings)}</AdminBlockTitle>
                 <MerchandiseBasicForm
+                  merchandiseId={merchandiseId}
                   title={merchandise?.title || ''}
                   categoryIds={merchandise?.categories.map(category => category.id) || []}
                   merchandiseTags={merchandise?.tags || []}
-                  onSave={updateBasic}
+                  refetch={refetchMerchandise}
                 />
               </AdminBlock>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(messages.introduction)}</AdminBlockTitle>
+                <MerchandiseIntroductionForm
+                  merchandiseId={merchandiseId}
+                  abstract={merchandise?.abstract || ''}
+                  link={merchandise?.link || ''}
+                  images={merchandise?.images || []}
+                  refetch={refetchMerchandise}
+                />
               </AdminBlock>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(messages.delete)}</AdminBlockTitle>
