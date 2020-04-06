@@ -154,35 +154,6 @@ export interface UPDATE_POST_VIDEO_URLVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: PUBLISH_PROGRAM
-// ====================================================
-
-export interface PUBLISH_PROGRAM_update_program {
-  __typename: "program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface PUBLISH_PROGRAM {
-  /**
-   * update data of the table: "program"
-   */
-  update_program: PUBLISH_PROGRAM_update_program | null;
-}
-
-export interface PUBLISH_PROGRAMVariables {
-  programId: any;
-  publishedAt?: any | null;
-  isPrivate?: boolean | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: INSERT_COUPON_PLAN
 // ====================================================
 
@@ -1363,6 +1334,35 @@ export interface GET_PROGRAM_PLANS {
 
 export interface GET_PROGRAM_PLANSVariables {
   programId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_PROGRAM
+// ====================================================
+
+export interface PUBLISH_PROGRAM_update_program {
+  __typename: "program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_PROGRAM {
+  /**
+   * update data of the table: "program"
+   */
+  update_program: PUBLISH_PROGRAM_update_program | null;
+}
+
+export interface PUBLISH_PROGRAMVariables {
+  programId: any;
+  publishedAt?: any | null;
+  isPrivate?: boolean | null;
 }
 
 /* tslint:disable */
@@ -4554,6 +4554,11 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION {
 // GraphQL query operation: GET_POST
 // ====================================================
 
+export interface GET_POST_post_by_pk_post_roles {
+  __typename: "post_role";
+  member_id: string;
+}
+
 export interface GET_POST_post_by_pk_post_categories_category {
   __typename: "category";
   id: string;
@@ -4582,6 +4587,10 @@ export interface GET_POST_post_by_pk {
   video_url: string | null;
   description: string | null;
   is_deleted: boolean;
+  /**
+   * An array relationship
+   */
+  post_roles: GET_POST_post_by_pk_post_roles[];
   /**
    * An array relationship
    */

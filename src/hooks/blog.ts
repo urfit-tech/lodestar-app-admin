@@ -27,6 +27,7 @@ export const usePost = (
           isDeleted: false,
           categories: [],
           tagNames: [],
+          memberId: '',
         }
       : {
           id: data?.post_by_pk?.id || '',
@@ -40,6 +41,7 @@ export const usePost = (
               name: category?.category?.name || '',
             })) || [],
           tagNames: data?.post_by_pk?.post_tags.map(tag => tag.tag_name) || [],
+          memberId: data?.post_by_pk?.post_roles[0].member_id || '',
         }
 
   return {
@@ -58,6 +60,9 @@ const GET_POST = gql`
       video_url
       description
       is_deleted
+      post_roles {
+        member_id
+      }
       post_categories {
         id
         category {
