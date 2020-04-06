@@ -8,7 +8,7 @@ export const usePost = (
 ): {
   loading: boolean
   error?: Error
-  data: PostType
+  post: PostType
   refetch: () => void
 } => {
   const { loading, error, data, refetch } = useQuery<types.GET_POST, types.GET_POSTVariables>(GET_POST, {
@@ -17,31 +17,35 @@ export const usePost = (
     },
   })
 
-  return {
-    loading,
-    error,
-    data: data?.post_by_pk
+  const post: PostType =
+    loading || error || !data
       ? {
-          id: data.post_by_pk.id,
-          title: data.post_by_pk.title,
-          videoUrl: data.post_by_pk.video_url,
-          description: data.post_by_pk.description,
-          isDeleted: data.post_by_pk.is_deleted,
-          categories: data.post_by_pk.post_categories.map(category => ({
-            id: category?.category?.id || '',
-            name: category?.category?.name || '',
-          })),
-          tagNames: data.post_by_pk.post_tags.map(tag => tag.tag_name),
-        }
-      : {
           id: '',
           title: '',
           videoUrl: '',
           description: '',
           isDeleted: false,
-          categories: [{ id: '', name: '' }],
+          categories: [],
           tagNames: [],
-        },
+        }
+      : {
+          id: data?.post_by_pk?.id || '',
+          title: data?.post_by_pk?.title || '',
+          videoUrl: data?.post_by_pk?.video_url || '',
+          description: data?.post_by_pk?.description || '',
+          isDeleted: data?.post_by_pk?.is_deleted || false,
+          categories:
+            data?.post_by_pk?.post_categories.map(category => ({
+              id: category?.category?.id || '',
+              name: category?.category?.name || '',
+            })) || [],
+          tagNames: data?.post_by_pk?.post_tags.map(tag => tag.tag_name) || [],
+        }
+
+  return {
+    loading,
+    error,
+    post,
     refetch,
   }
 }
