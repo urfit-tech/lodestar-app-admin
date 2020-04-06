@@ -99,6 +99,33 @@ export interface UPDATE_POST_DESCRIPTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_IS_DELETED
+// ====================================================
+
+export interface UPDATE_PROGRAM_IS_DELETED_update_program {
+  __typename: "program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_IS_DELETED {
+  /**
+   * update data of the table: "program"
+   */
+  update_program: UPDATE_PROGRAM_IS_DELETED_update_program | null;
+}
+
+export interface UPDATE_PROGRAM_IS_DELETEDVariables {
+  programId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_POST_VIDEO_URL
 // ====================================================
 
@@ -1458,33 +1485,6 @@ export interface INSERT_PROGRAMVariables {
   title: string;
   isSubscription: boolean;
   programCategories: program_category_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: MyMutation
-// ====================================================
-
-export interface MyMutation_update_program {
-  __typename: "program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface MyMutation {
-  /**
-   * update data of the table: "program"
-   */
-  update_program: MyMutation_update_program | null;
-}
-
-export interface MyMutationVariables {
-  programId?: any | null;
 }
 
 /* tslint:disable */
@@ -4619,12 +4619,42 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION {
 // GraphQL query operation: GET_POST
 // ====================================================
 
+export interface GET_POST_post_by_pk_post_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_POST_post_by_pk_post_categories {
+  __typename: "post_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_POST_post_by_pk_post_categories_category;
+}
+
+export interface GET_POST_post_by_pk_post_tags {
+  __typename: "post_tag";
+  id: any;
+  tag_name: string;
+}
+
 export interface GET_POST_post_by_pk {
   __typename: "post";
   id: any;
   title: string;
   video_url: string | null;
   description: string | null;
+  is_deleted: boolean;
+  /**
+   * An array relationship
+   */
+  post_categories: GET_POST_post_by_pk_post_categories[];
+  /**
+   * An array relationship
+   */
+  post_tags: GET_POST_post_by_pk_post_tags[];
 }
 
 export interface GET_POST {

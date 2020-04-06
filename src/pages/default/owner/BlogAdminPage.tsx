@@ -60,8 +60,7 @@ const ProgramAdminPage: React.FC = () => {
 
       <div style={{ backgroundColor: '#f7f8f8', minHeight: 'calc(100vh - 64px)' }}>
         <Tabs
-          // activeKey={active}
-          activeKey="general"
+          activeKey={active}
           onChange={setActive}
           renderTabBar={(tabsProps, DefaultTabBar) => (
             <div style={{ backgroundColor: 'white' }}>

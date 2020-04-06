@@ -3,6 +3,12 @@ export type PostType = {
   title: string
   videoUrl: string | null
   description: string | null
+  categories: {
+    id: string
+    name: string
+  }[]
+  tagNames: string[]
+  isDeleted: boolean
 }
 
 export type BlogPostProps = {
