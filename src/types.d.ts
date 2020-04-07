@@ -663,6 +663,46 @@ export interface UPDATE_MERCHANDISE_DESCRIPTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_MERCHANDISE_IMAGES
+// ====================================================
+
+export interface UPDATE_MERCHANDISE_IMAGES_delete_merchandise_img {
+  __typename: "merchandise_img_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_IMAGES_insert_merchandise_img {
+  __typename: "merchandise_img_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_IMAGES {
+  /**
+   * delete data from the table: "merchandise_img"
+   */
+  delete_merchandise_img: UPDATE_MERCHANDISE_IMAGES_delete_merchandise_img | null;
+  /**
+   * insert data into the table: "merchandise_img"
+   */
+  insert_merchandise_img: UPDATE_MERCHANDISE_IMAGES_insert_merchandise_img | null;
+}
+
+export interface UPDATE_MERCHANDISE_IMAGESVariables {
+  merchandiseId: any;
+  merchandiseImages: merchandise_img_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_MERCHANDISE_INTRODUCTION
 // ====================================================
 
@@ -674,42 +714,17 @@ export interface UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise {
   affected_rows: number;
 }
 
-export interface UPDATE_MERCHANDISE_INTRODUCTION_delete_merchandise_img {
-  __typename: "merchandise_img_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MERCHANDISE_INTRODUCTION_insert_merchandise_img {
-  __typename: "merchandise_img_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
 export interface UPDATE_MERCHANDISE_INTRODUCTION {
   /**
    * update data of the table: "merchandise"
    */
   update_merchandise: UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise | null;
-  /**
-   * delete data from the table: "merchandise_img"
-   */
-  delete_merchandise_img: UPDATE_MERCHANDISE_INTRODUCTION_delete_merchandise_img | null;
-  /**
-   * insert data into the table: "merchandise_img"
-   */
-  insert_merchandise_img: UPDATE_MERCHANDISE_INTRODUCTION_insert_merchandise_img | null;
 }
 
 export interface UPDATE_MERCHANDISE_INTRODUCTIONVariables {
   merchandiseId: any;
   abstract?: string | null;
   link?: string | null;
-  merchandiseImages: merchandise_img_insert_input[];
 }
 
 /* tslint:disable */
@@ -7571,6 +7586,7 @@ export enum post_tag_update_column {
 export enum post_update_column {
   abstract = "abstract",
   app_id = "app_id",
+  code_name = "code_name",
   cover_url = "cover_url",
   created_at = "created_at",
   description = "description",
@@ -11257,6 +11273,7 @@ export interface post_bool_exp {
   abstract?: String_comparison_exp | null;
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
+  code_name?: String_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
@@ -11325,6 +11342,7 @@ export interface post_insert_input {
   abstract?: string | null;
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
+  code_name?: string | null;
   cover_url?: string | null;
   created_at?: any | null;
   description?: string | null;
