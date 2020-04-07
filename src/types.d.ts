@@ -4626,6 +4626,7 @@ export interface GET_POST_post_by_pk {
   video_url: string | null;
   description: string | null;
   is_deleted: boolean;
+  code_name: string | null;
   /**
    * An array relationship
    */

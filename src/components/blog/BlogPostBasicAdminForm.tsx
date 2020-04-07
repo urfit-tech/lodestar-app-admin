@@ -30,6 +30,9 @@ const BlogPostBasicAdminForm: React.FC<BlogPostBasicAdminFormProps> = ({
 
   const handleSubmit = () => {
     validateFields((error, { title, categoryIds, tags, codeName }) => {
+      console.log(title, categoryIds, tags, codeName)
+      console.log(typeof codeName)
+      console.log(codeName.length)
       if (error) {
       }
     })
