@@ -1,10 +1,9 @@
-import { Button, PageHeader, Tabs } from 'antd'
+import { Button, Icon, Tabs } from 'antd'
 import React, { useContext, useEffect } from 'react'
 import { useIntl } from 'react-intl'
-import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
-import { AdminBlock, AdminBlockTitle, AdminPaneTitle } from '../../../components/admin'
+import { AdminBlock, AdminBlockTitle, AdminHeader, AdminHeaderTitle, AdminPaneTitle } from '../../../components/admin'
 import AdminPublishBlock from '../../../components/admin/AdminPublishBlock'
 import RoleAdminBlock from '../../../components/admin/RoleAdminBlock'
 import BlogPostBasicAdminForm from '../../../components/blog/BlogPostBasicAdminForm'
@@ -16,29 +15,6 @@ import AppContext from '../../../contexts/AppContext'
 import { blogMessages, commonMessages } from '../../../helpers/translation'
 import { usePost } from '../../../hooks/blog'
 import { usePublicMember } from '../../../hooks/member'
-
-const StyledPageHeader = styled(PageHeader)`
-  && {
-    padding: 10px 24px;
-    height: 64px;
-  }
-
-  .ant-page-header-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .ant-page-header-heading-title {
-    flex-grow: 1;
-    font-size: 16px;
-  }
-
-  .ant-page-header-heading-extra {
-    width: auto;
-    padding: 0;
-  }
-`
 
 const ProgramAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -55,17 +31,17 @@ const ProgramAdminPage: React.FC = () => {
 
   return (
     <>
-      <StyledPageHeader
-        onBack={() => history.push('/admin/blog')}
-        title={post.title}
-        extra={
-          post && (
-            <a href={`https://${app.settings['host']}/posts/${post.id}`} target="_blank" rel="noopener noreferrer">
-              <Button>{formatMessage(commonMessages.ui.preview)}</Button>
-            </a>
-          )
-        }
-      />
+      <AdminHeader>
+        <Button type="link" onClick={() => history.goBack()} className="mr-3">
+          <Icon type="arrow-left" />
+        </Button>
+
+        <AdminHeaderTitle>{post.title || postId}</AdminHeaderTitle>
+
+        <a href={`https://${app.settings['host']}/posts/${postId}`} target="_blank" rel="noopener noreferrer">
+          <Button>{formatMessage(commonMessages.ui.preview)}</Button>
+        </a>
+      </AdminHeader>
 
       <div style={{ backgroundColor: '#f7f8f8', minHeight: 'calc(100vh - 64px)' }}>
         <Tabs
