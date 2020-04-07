@@ -147,7 +147,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
         
         {enabledModules.blog && (
           <Menu.SubMenu
-            key="blog_admin"
+            key="owner_blog_admin"
             title={
               <span>
                 <Icon type="shopping" theme="filled" />

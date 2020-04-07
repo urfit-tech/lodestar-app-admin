@@ -10,7 +10,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
-import ProgramCategorySelector from './ProgramCategorySelector'
+import CategorySelector from '../common/CategorySelector'
 
 const messages = defineMessages({
   createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
@@ -93,7 +93,7 @@ const ProgramCreationModal: React.FC<ProgramCreationModalProps> = ({ form, withS
         <Form.Item label={formatMessage(commonMessages.term.category)}>
           {form.getFieldDecorator('categoryIds', {
             initialValue: [],
-          })(<ProgramCategorySelector />)}
+          })(<CategorySelector classType="program" />)}
         </Form.Item>
         <Form.Item label={formatMessage(programMessages.label.programPlanType)}>
           {form.getFieldDecorator('isSubscription', {

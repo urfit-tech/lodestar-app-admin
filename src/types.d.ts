@@ -1053,32 +1053,6 @@ export interface UPDATE_PROGRAM_CATEGORIESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PROGRAM_CATEGORIES
-// ====================================================
-
-export interface GET_PROGRAM_CATEGORIES_category {
-  __typename: "category";
-  id: string;
-  name: string;
-  position: number;
-}
-
-export interface GET_PROGRAM_CATEGORIES {
-  /**
-   * fetch data from the table: "category"
-   */
-  category: GET_PROGRAM_CATEGORIES_category[];
-}
-
-export interface GET_PROGRAM_CATEGORIESVariables {
-  appId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: PUBLISH_PROGRAM_CONTENT
 // ====================================================
 
@@ -4763,6 +4737,33 @@ export interface GET_ENROLLED_CARDS {
 
 export interface GET_ENROLLED_CARDSVariables {
   memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CATEGORIES
+// ====================================================
+
+export interface GET_CATEGORIES_category {
+  __typename: "category";
+  id: string;
+  name: string;
+  position: number;
+}
+
+export interface GET_CATEGORIES {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_CATEGORIES_category[];
+}
+
+export interface GET_CATEGORIESVariables {
+  appId: string;
+  classType?: string | null;
 }
 
 /* tslint:disable */

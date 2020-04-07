@@ -5,8 +5,8 @@ import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { StyledTips } from '../../components/admin'
+import CategorySelector from '../../components/common/CategorySelector'
 import LanguageSelector from '../../components/common/LanguageSelector'
-import ProgramCategorySelector from '../../components/program/ProgramCategorySelector'
 import AppContext from '../../contexts/AppContext'
 import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
@@ -97,7 +97,7 @@ const PodcastProgramBasicForm: React.FC<FormComponentProps> = ({ form }) => {
       <Form.Item label={formatMessage(commonMessages.term.category)}>
         {form.getFieldDecorator('categoryIds', {
           initialValue: podcastProgram.categories.map(category => category.id),
-        })(<ProgramCategorySelector />)}
+        })(<CategorySelector classType="program" />)}
       </Form.Item>
       {enabledModules.locale && (
         <Form.Item

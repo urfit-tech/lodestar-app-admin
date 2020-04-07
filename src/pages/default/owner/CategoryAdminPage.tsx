@@ -1,17 +1,17 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Icon, Typography } from 'antd'
 import gql from 'graphql-tag'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import Sortable from 'react-sortablejs'
-import { InferType } from 'yup'
 import AdminCard from '../../../components/admin/AdminCard'
 import DraggableItem from '../../../components/common/DraggableItem'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
-import { GET_PROGRAM_CATEGORIES } from '../../../components/program/ProgramCategorySelector'
+import AppContext from '../../../contexts/AppContext'
 import { commonMessages } from '../../../helpers/translation'
-import { categorySchema } from '../../../schemas/program'
+import { useCategory } from '../../../hooks/category'
 import types from '../../../types'
+import { Category } from '../../../types/category'
 
 const messages = defineMessages({
   deleteCategoryNotation: {
@@ -22,12 +22,8 @@ const messages = defineMessages({
 
 const CategoryAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { loading, data, refetch } = useQuery<types.GET_PROGRAM_CATEGORIES, types.GET_PROGRAM_CATEGORIESVariables>(
-    GET_PROGRAM_CATEGORIES,
-    {
-      variables: { appId: localStorage.getItem('kolable.app.id') || '' },
-    },
-  )
+  const { id: appId } = useContext(AppContext)
+  const { loading, categories: data, refetch } = useCategory(appId)
   const [insertProgramCategory] = useMutation<types.INSERT_PROGRAM_CATEGORY, types.INSERT_PROGRAM_CATEGORYVariables>(
     INSERT_PROGRAM_CATEGORY,
   )
@@ -37,11 +33,11 @@ const CategoryAdminPage: React.FC = () => {
   const [deleteProgramCategory] = useMutation<types.DELETE_PROGRAM_CATEGORY, types.DELETE_PROGRAM_CATEGORYVariables>(
     DELETE_PROGRAM_CATEGORY,
   )
-  const [categories, setCategories] = useState<InferType<typeof categorySchema>[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
 
   useEffect(() => {
-    data && data.category && setCategories(data.category)
-  }, [data])
+    data && setCategories(data)
+  }, [JSON.stringify(data)])
 
   return (
     <OwnerAdminLayout>

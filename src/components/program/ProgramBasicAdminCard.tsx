@@ -11,8 +11,8 @@ import types from '../../types'
 import { ProgramType } from '../../types/program'
 import { StyledTips } from '../admin'
 import AdminCard from '../admin/AdminCard'
+import CategorySelector from '../common/CategorySelector'
 import LanguageSelector from '../common/LanguageSelector'
-import ProgramCategorySelector from './ProgramCategorySelector'
 
 type ProgramBasicAdminCardProps = FormComponentProps & {
   program: ProgramType | null
@@ -81,7 +81,7 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
           <Form.Item label={formatMessage(commonMessages.term.category)}>
             {form.getFieldDecorator('categoryIds', {
               initialValue: program.categories.map(programCategories => programCategories.category.id),
-            })(<ProgramCategorySelector />)}
+            })(<CategorySelector classType="program" />)}
           </Form.Item>
           {enabledModules.locale && (
             <Form.Item

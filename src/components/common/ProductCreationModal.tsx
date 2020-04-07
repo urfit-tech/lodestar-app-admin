@@ -7,7 +7,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
-import ProgramCategorySelector from '../program/ProgramCategorySelector'
+import CategorySelector from '../common/CategorySelector'
 
 type ProductCreationModalProps = FormComponentProps &
   AdminModalProps & {
@@ -92,7 +92,7 @@ const ProductCreationModal: React.FC<ProductCreationModalProps> = ({
           })(<Input />)}
         </Form.Item>
         <Form.Item label={formatMessage(commonMessages.term.category)}>
-          {form.getFieldDecorator('categoryIds', { initialValue: [] })(<ProgramCategorySelector />)}
+          {form.getFieldDecorator('categoryIds', { initialValue: [] })(<CategorySelector classType="program" />)}
         </Form.Item>
         {withProgramType && (
           <Form.Item label={formatMessage(programMessages.label.programPlanType)}>

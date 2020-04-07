@@ -10,7 +10,7 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
-import ProgramCategorySelector from '../program/ProgramCategorySelector'
+import CategorySelector from '../common/CategorySelector'
 
 type MerchandiseBasicFormProps = FormComponentProps & {
   merchandise: MerchandiseProps | null
@@ -71,7 +71,7 @@ const MerchandiseBasicForm: React.FC<MerchandiseBasicFormProps> = ({ form, merch
       <Form.Item label={formatMessage(commonMessages.term.category)}>
         {form.getFieldDecorator('categoryIds', {
           initialValue: merchandise.categories.map(category => category.id),
-        })(<ProgramCategorySelector />)}
+        })(<CategorySelector classType="program"/>)}
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.term.tags)}>
         {form.getFieldDecorator('tags', {

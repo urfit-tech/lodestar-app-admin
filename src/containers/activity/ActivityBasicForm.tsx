@@ -5,8 +5,8 @@ import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { StyledTips } from '../../components/admin'
+import CategorySelector from '../../components/common/CategorySelector'
 import LanguageSelector from '../../components/common/LanguageSelector'
-import ProgramCategorySelector from '../../components/program/ProgramCategorySelector'
 import ActivityContext from '../../contexts/ActivityContext'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
@@ -88,7 +88,7 @@ const ActivityBasicForm: React.FC<FormComponentProps> = ({ form }) => {
       <Form.Item label={formatMessage(commonMessages.term.category)}>
         {form.getFieldDecorator('categoryIds', {
           initialValue: activity.activityCategories.map(activityCategory => activityCategory.category.id),
-        })(<ProgramCategorySelector />)}
+        })(<CategorySelector classType="program" />)}
       </Form.Item>
       {enabledModules.locale && (
         <Form.Item
