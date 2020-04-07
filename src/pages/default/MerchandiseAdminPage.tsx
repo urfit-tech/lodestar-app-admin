@@ -1,6 +1,7 @@
-import { Button, Icon, Skeleton, Tabs } from 'antd'
+import { Button, Icon, Tabs } from 'antd'
 import React, { useContext } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { Link } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
 import {
@@ -11,11 +12,12 @@ import {
   AdminPaneTitle,
   AdminTabBarWrapper,
 } from '../../components/admin'
-import AdminPublishBlock from '../../components/admin/AdminPublishBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import MerchandiseBasicForm from '../../components/merchandise/MerchandiseBasicForm'
+import MerchandiseDeleteBlock from '../../components/merchandise/MerchandiseDeleteBlock'
 import MerchandiseDescriptionForm from '../../components/merchandise/MerchandiseDescriptionForm'
 import MerchandiseIntroductionForm from '../../components/merchandise/MerchandiseIntroductionForm'
+import MerchandisePublishBlock from '../../components/merchandise/MerchandisePublishBlock'
 import MerchandiseSalesForm from '../../components/merchandise/MerchandiseSalesForm'
 import AppContext from '../../contexts/AppContext'
 import { useMerchandise } from '../../hooks/merchandise'
@@ -33,18 +35,20 @@ const messages = defineMessages({
 
 const MerchandiseAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { history, match } = useRouter<{ merchandiseId: string }>()
+  const { match } = useRouter<{ merchandiseId: string }>()
   const merchandiseId = match.params.merchandiseId
   const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
   const { settings } = useContext(AppContext)
-  const { loadingMerchandise, merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
+  const { merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
 
   return (
     <>
       <AdminHeader>
-        <Button type="link" onClick={() => history.goBack()} className="mr-3">
-          <Icon type="arrow-left" />
-        </Button>
+        <Link to="/merchandises">
+          <Button type="link" className="mr-3">
+            <Icon type="arrow-left" />
+          </Button>
+        </Link>
 
         <AdminHeaderTitle>{merchandise?.title || merchandiseId}</AdminHeaderTitle>
 
@@ -93,6 +97,7 @@ const MerchandiseAdminPage: React.FC = () => {
               </AdminBlock>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(messages.delete)}</AdminBlockTitle>
+                <MerchandiseDeleteBlock merchandiseId={merchandiseId} />
               </AdminBlock>
             </div>
           </Tabs.TabPane>
@@ -112,7 +117,13 @@ const MerchandiseAdminPage: React.FC = () => {
           <Tabs.TabPane key="publish" tab={formatMessage(messages.publishAdmin)}>
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(messages.publishAdmin)}</AdminPaneTitle>
-              <AdminBlock>{loadingMerchandise ? <Skeleton active /> : <AdminPublishBlock type="alert" />}</AdminBlock>
+              <AdminBlock>
+                <MerchandisePublishBlock
+                  merchandise={merchandise}
+                  merchandiseId={merchandiseId}
+                  refetch={refetchMerchandise}
+                />
+              </AdminBlock>
             </div>
           </Tabs.TabPane>
         </Tabs>

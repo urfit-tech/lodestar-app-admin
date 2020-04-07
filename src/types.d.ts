@@ -517,6 +517,262 @@ export interface UPDATE_ISSUE_REPLYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_MERCHANDISE_BASIC
+// ====================================================
+
+export interface UPDATE_MERCHANDISE_BASIC_update_merchandise {
+  __typename: "merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_BASIC_delete_merchandise_category {
+  __typename: "merchandise_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_BASIC_insert_merchandise_category {
+  __typename: "merchandise_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_BASIC_delete_merchandise_tag {
+  __typename: "merchandise_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_BASIC_insert_merchandise_tag {
+  __typename: "merchandise_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_BASIC {
+  /**
+   * update data of the table: "merchandise"
+   */
+  update_merchandise: UPDATE_MERCHANDISE_BASIC_update_merchandise | null;
+  /**
+   * delete data from the table: "merchandise_category"
+   */
+  delete_merchandise_category: UPDATE_MERCHANDISE_BASIC_delete_merchandise_category | null;
+  /**
+   * insert data into the table: "merchandise_category"
+   */
+  insert_merchandise_category: UPDATE_MERCHANDISE_BASIC_insert_merchandise_category | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_MERCHANDISE_BASIC_insert_tag | null;
+  /**
+   * delete data from the table: "merchandise_tag"
+   */
+  delete_merchandise_tag: UPDATE_MERCHANDISE_BASIC_delete_merchandise_tag | null;
+  /**
+   * insert data into the table: "merchandise_tag"
+   */
+  insert_merchandise_tag: UPDATE_MERCHANDISE_BASIC_insert_merchandise_tag | null;
+}
+
+export interface UPDATE_MERCHANDISE_BASICVariables {
+  merchandiseId: any;
+  title?: string | null;
+  categories: merchandise_category_insert_input[];
+  tags: tag_insert_input[];
+  merchandiseTags: merchandise_tag_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_MERCHANDISE
+// ====================================================
+
+export interface DELETE_MERCHANDISE_update_merchandise {
+  __typename: "merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_MERCHANDISE {
+  /**
+   * update data of the table: "merchandise"
+   */
+  update_merchandise: DELETE_MERCHANDISE_update_merchandise | null;
+}
+
+export interface DELETE_MERCHANDISEVariables {
+  merchandiseId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MERCHANDISE_DESCRIPTION
+// ====================================================
+
+export interface UPDATE_MERCHANDISE_DESCRIPTION_update_merchandise {
+  __typename: "merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_DESCRIPTION {
+  /**
+   * update data of the table: "merchandise"
+   */
+  update_merchandise: UPDATE_MERCHANDISE_DESCRIPTION_update_merchandise | null;
+}
+
+export interface UPDATE_MERCHANDISE_DESCRIPTIONVariables {
+  merchandiseId: any;
+  description?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MERCHANDISE_INTRODUCTION
+// ====================================================
+
+export interface UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise {
+  __typename: "merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_INTRODUCTION_delete_merchandise_img {
+  __typename: "merchandise_img_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_INTRODUCTION_insert_merchandise_img {
+  __typename: "merchandise_img_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_INTRODUCTION {
+  /**
+   * update data of the table: "merchandise"
+   */
+  update_merchandise: UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise | null;
+  /**
+   * delete data from the table: "merchandise_img"
+   */
+  delete_merchandise_img: UPDATE_MERCHANDISE_INTRODUCTION_delete_merchandise_img | null;
+  /**
+   * insert data into the table: "merchandise_img"
+   */
+  insert_merchandise_img: UPDATE_MERCHANDISE_INTRODUCTION_insert_merchandise_img | null;
+}
+
+export interface UPDATE_MERCHANDISE_INTRODUCTIONVariables {
+  merchandiseId: any;
+  abstract?: string | null;
+  link?: string | null;
+  merchandiseImages: merchandise_img_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_MERCHANDISE
+// ====================================================
+
+export interface PUBLISH_MERCHANDISE_update_merchandise {
+  __typename: "merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_MERCHANDISE {
+  /**
+   * update data of the table: "merchandise"
+   */
+  update_merchandise: PUBLISH_MERCHANDISE_update_merchandise | null;
+}
+
+export interface PUBLISH_MERCHANDISEVariables {
+  merchandiseId: any;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MERCHANDISE_SALES
+// ====================================================
+
+export interface UPDATE_MERCHANDISE_SALES_update_merchandise {
+  __typename: "merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_SALES {
+  /**
+   * update data of the table: "merchandise"
+   */
+  update_merchandise: UPDATE_MERCHANDISE_SALES_update_merchandise | null;
+}
+
+export interface UPDATE_MERCHANDISE_SALESVariables {
+  merchandiseId: any;
+  price?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: READ_ALL_NOTIFICATIONS
 // ====================================================
 
@@ -5214,179 +5470,6 @@ export interface GET_MERCHANDISE {
 
 export interface GET_MERCHANDISEVariables {
   id: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_MERCHANDISE_BASIC
-// ====================================================
-
-export interface UPDATE_MERCHANDISE_BASIC_update_merchandise {
-  __typename: "merchandise_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MERCHANDISE_BASIC_delete_merchandise_category {
-  __typename: "merchandise_category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MERCHANDISE_BASIC_insert_merchandise_category {
-  __typename: "merchandise_category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MERCHANDISE_BASIC_insert_tag {
-  __typename: "tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MERCHANDISE_BASIC_delete_merchandise_tag {
-  __typename: "merchandise_tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MERCHANDISE_BASIC_insert_merchandise_tag {
-  __typename: "merchandise_tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MERCHANDISE_BASIC {
-  /**
-   * update data of the table: "merchandise"
-   */
-  update_merchandise: UPDATE_MERCHANDISE_BASIC_update_merchandise | null;
-  /**
-   * delete data from the table: "merchandise_category"
-   */
-  delete_merchandise_category: UPDATE_MERCHANDISE_BASIC_delete_merchandise_category | null;
-  /**
-   * insert data into the table: "merchandise_category"
-   */
-  insert_merchandise_category: UPDATE_MERCHANDISE_BASIC_insert_merchandise_category | null;
-  /**
-   * insert data into the table: "tag"
-   */
-  insert_tag: UPDATE_MERCHANDISE_BASIC_insert_tag | null;
-  /**
-   * delete data from the table: "merchandise_tag"
-   */
-  delete_merchandise_tag: UPDATE_MERCHANDISE_BASIC_delete_merchandise_tag | null;
-  /**
-   * insert data into the table: "merchandise_tag"
-   */
-  insert_merchandise_tag: UPDATE_MERCHANDISE_BASIC_insert_merchandise_tag | null;
-}
-
-export interface UPDATE_MERCHANDISE_BASICVariables {
-  merchandiseId: any;
-  title?: string | null;
-  categories: merchandise_category_insert_input[];
-  tags: tag_insert_input[];
-  merchandiseTags: merchandise_tag_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_MERCHANDISE_INTRODUCTION
-// ====================================================
-
-export interface UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise {
-  __typename: "merchandise_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MERCHANDISE_INTRODUCTION_delete_merchandise_img {
-  __typename: "merchandise_img_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MERCHANDISE_INTRODUCTION_insert_merchandise_img {
-  __typename: "merchandise_img_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MERCHANDISE_INTRODUCTION {
-  /**
-   * update data of the table: "merchandise"
-   */
-  update_merchandise: UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise | null;
-  /**
-   * delete data from the table: "merchandise_img"
-   */
-  delete_merchandise_img: UPDATE_MERCHANDISE_INTRODUCTION_delete_merchandise_img | null;
-  /**
-   * insert data into the table: "merchandise_img"
-   */
-  insert_merchandise_img: UPDATE_MERCHANDISE_INTRODUCTION_insert_merchandise_img | null;
-}
-
-export interface UPDATE_MERCHANDISE_INTRODUCTIONVariables {
-  merchandiseId: any;
-  abstract?: string | null;
-  link?: string | null;
-  merchandiseImages: merchandise_img_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_MERCHANDISE_SALES
-// ====================================================
-
-export interface UPDATE_MERCHANDISE_SALES_update_merchandise {
-  __typename: "merchandise_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MERCHANDISE_SALES {
-  /**
-   * update data of the table: "merchandise"
-   */
-  update_merchandise: UPDATE_MERCHANDISE_SALES_update_merchandise | null;
-}
-
-export interface UPDATE_MERCHANDISE_SALESVariables {
-  merchandiseId: any;
-  price?: any | null;
 }
 
 /* tslint:disable */

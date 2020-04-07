@@ -446,6 +446,7 @@ export const podcastMessages = {
 export const merchandiseMessages = {
   ui: defineMessages({
     createMerchandise: { id: 'merchandise.ui.createMerchandise', defaultMessage: '建立商品' },
+    deleteMerchandise: { id: 'merchandise.ui.deleteMerchandise', defaultMessage: '刪除商品' },
   }),
   status: defineMessages({
     selling: { id: 'merchandise.status.selling', defaultMessage: '販賣中' },
