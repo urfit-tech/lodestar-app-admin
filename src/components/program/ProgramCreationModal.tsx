@@ -14,9 +14,6 @@ import ProgramCategorySelector from './ProgramCategorySelector'
 
 const messages = defineMessages({
   createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
-  programPlanType: { id: 'program.label.programPlanType', defaultMessage: '選擇課程付費方案' },
-  perpetualPlanType: { id: 'program.label.perpetualPlanType', defaultMessage: '單次付費' },
-  subscriptionPlanType: { id: 'program.label.subscriptionPlanType', defaultMessage: '訂閱付費' },
 })
 
 type ProgramCreationModalProps = FormComponentProps & {
@@ -98,15 +95,15 @@ const ProgramCreationModal: React.FC<ProgramCreationModalProps> = ({ form, withS
             initialValue: [],
           })(<ProgramCategorySelector />)}
         </Form.Item>
-        <Form.Item label={formatMessage(messages.programPlanType)}>
+        <Form.Item label={formatMessage(programMessages.label.programPlanType)}>
           {form.getFieldDecorator('isSubscription', {
             initialValue: false,
             rules: [{ required: true }],
           })(
             <Radio.Group
               options={[
-                { label: formatMessage(messages.perpetualPlanType), value: false },
-                { label: formatMessage(messages.subscriptionPlanType), value: true },
+                { label: formatMessage(programMessages.label.perpetualPlanType), value: false },
+                { label: formatMessage(programMessages.label.subscriptionPlanType), value: true },
               ]}
             />,
           )}

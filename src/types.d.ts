@@ -517,6 +517,277 @@ export interface UPDATE_ISSUE_REPLYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_MERCHANDISE_BASIC
+// ====================================================
+
+export interface UPDATE_MERCHANDISE_BASIC_update_merchandise {
+  __typename: "merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_BASIC_delete_merchandise_category {
+  __typename: "merchandise_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_BASIC_insert_merchandise_category {
+  __typename: "merchandise_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_BASIC_delete_merchandise_tag {
+  __typename: "merchandise_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_BASIC_insert_merchandise_tag {
+  __typename: "merchandise_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_BASIC {
+  /**
+   * update data of the table: "merchandise"
+   */
+  update_merchandise: UPDATE_MERCHANDISE_BASIC_update_merchandise | null;
+  /**
+   * delete data from the table: "merchandise_category"
+   */
+  delete_merchandise_category: UPDATE_MERCHANDISE_BASIC_delete_merchandise_category | null;
+  /**
+   * insert data into the table: "merchandise_category"
+   */
+  insert_merchandise_category: UPDATE_MERCHANDISE_BASIC_insert_merchandise_category | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_MERCHANDISE_BASIC_insert_tag | null;
+  /**
+   * delete data from the table: "merchandise_tag"
+   */
+  delete_merchandise_tag: UPDATE_MERCHANDISE_BASIC_delete_merchandise_tag | null;
+  /**
+   * insert data into the table: "merchandise_tag"
+   */
+  insert_merchandise_tag: UPDATE_MERCHANDISE_BASIC_insert_merchandise_tag | null;
+}
+
+export interface UPDATE_MERCHANDISE_BASICVariables {
+  merchandiseId: any;
+  title?: string | null;
+  categories: merchandise_category_insert_input[];
+  tags: tag_insert_input[];
+  merchandiseTags: merchandise_tag_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_MERCHANDISE
+// ====================================================
+
+export interface DELETE_MERCHANDISE_update_merchandise {
+  __typename: "merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_MERCHANDISE {
+  /**
+   * update data of the table: "merchandise"
+   */
+  update_merchandise: DELETE_MERCHANDISE_update_merchandise | null;
+}
+
+export interface DELETE_MERCHANDISEVariables {
+  merchandiseId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MERCHANDISE_DESCRIPTION
+// ====================================================
+
+export interface UPDATE_MERCHANDISE_DESCRIPTION_update_merchandise {
+  __typename: "merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_DESCRIPTION {
+  /**
+   * update data of the table: "merchandise"
+   */
+  update_merchandise: UPDATE_MERCHANDISE_DESCRIPTION_update_merchandise | null;
+}
+
+export interface UPDATE_MERCHANDISE_DESCRIPTIONVariables {
+  merchandiseId: any;
+  description?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MERCHANDISE_IMAGES
+// ====================================================
+
+export interface UPDATE_MERCHANDISE_IMAGES_delete_merchandise_img {
+  __typename: "merchandise_img_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_IMAGES_insert_merchandise_img {
+  __typename: "merchandise_img_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_IMAGES {
+  /**
+   * delete data from the table: "merchandise_img"
+   */
+  delete_merchandise_img: UPDATE_MERCHANDISE_IMAGES_delete_merchandise_img | null;
+  /**
+   * insert data into the table: "merchandise_img"
+   */
+  insert_merchandise_img: UPDATE_MERCHANDISE_IMAGES_insert_merchandise_img | null;
+}
+
+export interface UPDATE_MERCHANDISE_IMAGESVariables {
+  merchandiseId: any;
+  merchandiseImages: merchandise_img_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MERCHANDISE_INTRODUCTION
+// ====================================================
+
+export interface UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise {
+  __typename: "merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_INTRODUCTION {
+  /**
+   * update data of the table: "merchandise"
+   */
+  update_merchandise: UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise | null;
+}
+
+export interface UPDATE_MERCHANDISE_INTRODUCTIONVariables {
+  merchandiseId: any;
+  abstract?: string | null;
+  link?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_MERCHANDISE
+// ====================================================
+
+export interface PUBLISH_MERCHANDISE_update_merchandise {
+  __typename: "merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_MERCHANDISE {
+  /**
+   * update data of the table: "merchandise"
+   */
+  update_merchandise: PUBLISH_MERCHANDISE_update_merchandise | null;
+}
+
+export interface PUBLISH_MERCHANDISEVariables {
+  merchandiseId: any;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MERCHANDISE_SALES
+// ====================================================
+
+export interface UPDATE_MERCHANDISE_SALES_update_merchandise {
+  __typename: "merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_SALES {
+  /**
+   * update data of the table: "merchandise"
+   */
+  update_merchandise: UPDATE_MERCHANDISE_SALES_update_merchandise | null;
+}
+
+export interface UPDATE_MERCHANDISE_SALESVariables {
+  merchandiseId: any;
+  price?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: READ_ALL_NOTIFICATIONS
 // ====================================================
 
@@ -3021,91 +3292,6 @@ export interface PUBLISH_PODCAST_PROGRAMVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PROGRAM_PROGRESS
-// ====================================================
-
-export interface GET_PROGRAM_PROGRESS_program_content_enrollment_member {
-  __typename: "member";
-  id: string;
-  username: string;
-  name: string;
-  email: string;
-  picture_url: string | null;
-}
-
-export interface GET_PROGRAM_PROGRESS_program_content_enrollment_program_program_content_sections_program_contents_aggregate_aggregate_sum {
-  __typename: "program_content_sum_fields";
-  duration: any | null;
-}
-
-export interface GET_PROGRAM_PROGRESS_program_content_enrollment_program_program_content_sections_program_contents_aggregate_aggregate {
-  __typename: "program_content_aggregate_fields";
-  count: number | null;
-  sum: GET_PROGRAM_PROGRESS_program_content_enrollment_program_program_content_sections_program_contents_aggregate_aggregate_sum | null;
-}
-
-export interface GET_PROGRAM_PROGRESS_program_content_enrollment_program_program_content_sections_program_contents_aggregate {
-  __typename: "program_content_aggregate";
-  aggregate: GET_PROGRAM_PROGRESS_program_content_enrollment_program_program_content_sections_program_contents_aggregate_aggregate | null;
-}
-
-export interface GET_PROGRAM_PROGRESS_program_content_enrollment_program_program_content_sections {
-  __typename: "program_content_section";
-  /**
-   * An aggregated array relationship
-   */
-  program_contents_aggregate: GET_PROGRAM_PROGRESS_program_content_enrollment_program_program_content_sections_program_contents_aggregate;
-}
-
-export interface GET_PROGRAM_PROGRESS_program_content_enrollment_program {
-  __typename: "program";
-  id: any;
-  /**
-   * An array relationship
-   */
-  program_content_sections: GET_PROGRAM_PROGRESS_program_content_enrollment_program_program_content_sections[];
-}
-
-export interface GET_PROGRAM_PROGRESS_program_content_enrollment {
-  __typename: "program_content_enrollment";
-  /**
-   * An object relationship
-   */
-  member: GET_PROGRAM_PROGRESS_program_content_enrollment_member | null;
-  program_id: any | null;
-  /**
-   * An object relationship
-   */
-  program: GET_PROGRAM_PROGRESS_program_content_enrollment_program | null;
-}
-
-export interface GET_PROGRAM_PROGRESS_program_content_progress {
-  __typename: "program_content_progress";
-  id: any;
-  member_id: string;
-  progress: any;
-}
-
-export interface GET_PROGRAM_PROGRESS {
-  /**
-   * fetch data from the table: "program_content_enrollment"
-   */
-  program_content_enrollment: GET_PROGRAM_PROGRESS_program_content_enrollment[];
-  /**
-   * fetch data from the table: "program_content_progress"
-   */
-  program_content_progress: GET_PROGRAM_PROGRESS_program_content_progress[];
-}
-
-export interface GET_PROGRAM_PROGRESSVariables {
-  programId?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_ROLE
 // ====================================================
 
@@ -4956,6 +5142,150 @@ export interface UPDATE_MEMBER_ACCOUNTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_MERCHANDISE
+// ====================================================
+
+export interface INSERT_MERCHANDISE_insert_merchandise_returning {
+  __typename: "merchandise";
+  id: any;
+}
+
+export interface INSERT_MERCHANDISE_insert_merchandise {
+  __typename: "merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_MERCHANDISE_insert_merchandise_returning[];
+}
+
+export interface INSERT_MERCHANDISE {
+  /**
+   * insert data into the table: "merchandise"
+   */
+  insert_merchandise: INSERT_MERCHANDISE_insert_merchandise | null;
+}
+
+export interface INSERT_MERCHANDISEVariables {
+  appId: string;
+  title: string;
+  merchandiseCategories: merchandise_category_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MERCHANDISE_COLLECTION
+// ====================================================
+
+export interface GET_MERCHANDISE_COLLECTION_merchandise_merchandise_imgs {
+  __typename: "merchandise_img";
+  id: any;
+  url: string;
+}
+
+export interface GET_MERCHANDISE_COLLECTION_merchandise {
+  __typename: "merchandise";
+  id: any;
+  title: string;
+  price: any;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  merchandise_imgs: GET_MERCHANDISE_COLLECTION_merchandise_merchandise_imgs[];
+}
+
+export interface GET_MERCHANDISE_COLLECTION {
+  /**
+   * fetch data from the table: "merchandise"
+   */
+  merchandise: GET_MERCHANDISE_COLLECTION_merchandise[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MERCHANDISE
+// ====================================================
+
+export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_categories {
+  __typename: "merchandise_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_MERCHANDISE_merchandise_by_pk_merchandise_categories_category;
+}
+
+export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_tags {
+  __typename: "merchandise_tag";
+  id: any;
+  tag_name: string;
+}
+
+export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_imgs {
+  __typename: "merchandise_img";
+  id: any;
+  /**
+   * cover | common
+   */
+  type: string;
+  url: string;
+}
+
+export interface GET_MERCHANDISE_merchandise_by_pk {
+  __typename: "merchandise";
+  id: any;
+  title: string;
+  abstract: string | null;
+  description: string | null;
+  price: any;
+  link: string | null;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  merchandise_categories: GET_MERCHANDISE_merchandise_by_pk_merchandise_categories[];
+  /**
+   * An array relationship
+   */
+  merchandise_tags: GET_MERCHANDISE_merchandise_by_pk_merchandise_tags[];
+  /**
+   * An array relationship
+   */
+  merchandise_imgs: GET_MERCHANDISE_merchandise_by_pk_merchandise_imgs[];
+}
+
+export interface GET_MERCHANDISE {
+  /**
+   * fetch data from the table: "merchandise" using primary key columns
+   */
+  merchandise_by_pk: GET_MERCHANDISE_merchandise_by_pk | null;
+}
+
+export interface GET_MERCHANDISEVariables {
+  id: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PODCAST_PLAN
 // ====================================================
 
@@ -5465,6 +5795,120 @@ export interface GET_PROGRAM_PLAN_ENROLLMENTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAM_CONTENT_ENROLLMENT
+// ====================================================
+
+export interface GET_PROGRAM_CONTENT_ENROLLMENT_program_content_enrollment_program {
+  __typename: "program";
+  title: string;
+}
+
+export interface GET_PROGRAM_CONTENT_ENROLLMENT_program_content_enrollment {
+  __typename: "program_content_enrollment";
+  program_id: any | null;
+  /**
+   * An object relationship
+   */
+  program: GET_PROGRAM_CONTENT_ENROLLMENT_program_content_enrollment_program | null;
+}
+
+export interface GET_PROGRAM_CONTENT_ENROLLMENT {
+  /**
+   * fetch data from the table: "program_content_enrollment"
+   */
+  program_content_enrollment: GET_PROGRAM_CONTENT_ENROLLMENT_program_content_enrollment[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_PROGRESS
+// ====================================================
+
+export interface GET_PROGRAM_PROGRESS_program_content_enrollment_member {
+  __typename: "member";
+  id: string;
+  username: string;
+  name: string;
+  email: string;
+  picture_url: string | null;
+}
+
+export interface GET_PROGRAM_PROGRESS_program_content_enrollment_program_program_content_sections_program_contents_aggregate_aggregate_sum {
+  __typename: "program_content_sum_fields";
+  duration: any | null;
+}
+
+export interface GET_PROGRAM_PROGRESS_program_content_enrollment_program_program_content_sections_program_contents_aggregate_aggregate {
+  __typename: "program_content_aggregate_fields";
+  count: number | null;
+  sum: GET_PROGRAM_PROGRESS_program_content_enrollment_program_program_content_sections_program_contents_aggregate_aggregate_sum | null;
+}
+
+export interface GET_PROGRAM_PROGRESS_program_content_enrollment_program_program_content_sections_program_contents_aggregate {
+  __typename: "program_content_aggregate";
+  aggregate: GET_PROGRAM_PROGRESS_program_content_enrollment_program_program_content_sections_program_contents_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_PROGRESS_program_content_enrollment_program_program_content_sections {
+  __typename: "program_content_section";
+  /**
+   * An aggregated array relationship
+   */
+  program_contents_aggregate: GET_PROGRAM_PROGRESS_program_content_enrollment_program_program_content_sections_program_contents_aggregate;
+}
+
+export interface GET_PROGRAM_PROGRESS_program_content_enrollment_program {
+  __typename: "program";
+  id: any;
+  /**
+   * An array relationship
+   */
+  program_content_sections: GET_PROGRAM_PROGRESS_program_content_enrollment_program_program_content_sections[];
+}
+
+export interface GET_PROGRAM_PROGRESS_program_content_enrollment {
+  __typename: "program_content_enrollment";
+  /**
+   * An object relationship
+   */
+  member: GET_PROGRAM_PROGRESS_program_content_enrollment_member | null;
+  program_id: any | null;
+  /**
+   * An object relationship
+   */
+  program: GET_PROGRAM_PROGRESS_program_content_enrollment_program | null;
+}
+
+export interface GET_PROGRAM_PROGRESS_program_content_progress {
+  __typename: "program_content_progress";
+  id: any;
+  member_id: string;
+  progress: any;
+}
+
+export interface GET_PROGRAM_PROGRESS {
+  /**
+   * fetch data from the table: "program_content_enrollment"
+   */
+  program_content_enrollment: GET_PROGRAM_PROGRESS_program_content_enrollment[];
+  /**
+   * fetch data from the table: "program_content_progress"
+   */
+  program_content_progress: GET_PROGRAM_PROGRESS_program_content_progress[];
+}
+
+export interface GET_PROGRAM_PROGRESSVariables {
+  programId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ENROLLED_PROJECT_PLAN_IDS
 // ====================================================
 
@@ -5847,35 +6291,6 @@ export interface GET_CREATOR_PROGRAM_ISSUESVariables {
   appId: string;
   threadIdLike?: string | null;
   unsolved?: boolean | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PROGRAM_CONTENT_ENROLLMENT
-// ====================================================
-
-export interface GET_PROGRAM_CONTENT_ENROLLMENT_program_content_enrollment_program {
-  __typename: "program";
-  title: string;
-}
-
-export interface GET_PROGRAM_CONTENT_ENROLLMENT_program_content_enrollment {
-  __typename: "program_content_enrollment";
-  program_id: any | null;
-  /**
-   * An object relationship
-   */
-  program: GET_PROGRAM_CONTENT_ENROLLMENT_program_content_enrollment_program | null;
-}
-
-export interface GET_PROGRAM_CONTENT_ENROLLMENT {
-  /**
-   * fetch data from the table: "program_content_enrollment"
-   */
-  program_content_enrollment: GET_PROGRAM_CONTENT_ENROLLMENT_program_content_enrollment[];
 }
 
 /* tslint:disable */
@@ -6488,6 +6903,7 @@ export enum member_card_constraint {
  * update columns of table "member_card"
  */
 export enum member_card_update_column {
+  card_holder = "card_holder",
   card_identifier = "card_identifier",
   card_info = "card_info",
   card_secret = "card_secret",
@@ -6612,6 +7028,7 @@ export enum merchandise_tag_update_column {
  */
 export enum merchandise_update_column {
   abstract = "abstract",
+  app_id = "app_id",
   created_at = "created_at",
   description = "description",
   id = "id",
@@ -7077,6 +7494,7 @@ export enum post_tag_update_column {
 export enum post_update_column {
   abstract = "abstract",
   app_id = "app_id",
+  code_name = "code_name",
   cover_url = "cover_url",
   created_at = "created_at",
   description = "description",
@@ -7294,6 +7712,7 @@ export enum program_package_program_constraint {
  */
 export enum program_package_program_update_column {
   id = "id",
+  position = "position",
   program_id = "program_id",
   program_package_id = "program_package_id",
 }
@@ -7921,6 +8340,7 @@ export interface app_bool_exp {
   id?: String_comparison_exp | null;
   issues?: issue_bool_exp | null;
   members?: member_bool_exp | null;
+  merchandises?: merchandise_bool_exp | null;
   name?: String_comparison_exp | null;
   og_description?: String_comparison_exp | null;
   og_image?: String_comparison_exp | null;
@@ -7958,6 +8378,7 @@ export interface app_insert_input {
   id?: string | null;
   issues?: issue_arr_rel_insert_input | null;
   members?: member_arr_rel_insert_input | null;
+  merchandises?: merchandise_arr_rel_insert_input | null;
   name?: string | null;
   og_description?: string | null;
   og_image?: string | null;
@@ -8490,6 +8911,7 @@ export interface category_bool_exp {
   name?: String_comparison_exp | null;
   podcast_program_categories?: podcast_program_category_bool_exp | null;
   position?: Int_comparison_exp | null;
+  post_categories?: post_category_bool_exp | null;
   program_categories?: program_category_bool_exp | null;
 }
 
@@ -8505,6 +8927,7 @@ export interface category_insert_input {
   name?: string | null;
   podcast_program_categories?: podcast_program_category_arr_rel_insert_input | null;
   position?: number | null;
+  post_categories?: post_category_arr_rel_insert_input | null;
   program_categories?: program_category_arr_rel_insert_input | null;
 }
 
@@ -9335,6 +9758,7 @@ export interface member_card_bool_exp {
   _and?: (member_card_bool_exp | null)[] | null;
   _not?: member_card_bool_exp | null;
   _or?: (member_card_bool_exp | null)[] | null;
+  card_holder?: jsonb_comparison_exp | null;
   card_identifier?: String_comparison_exp | null;
   card_info?: jsonb_comparison_exp | null;
   card_secret?: jsonb_comparison_exp | null;
@@ -9347,6 +9771,7 @@ export interface member_card_bool_exp {
  * input type for inserting data into table "member_card"
  */
 export interface member_card_insert_input {
+  card_holder?: any | null;
   card_identifier?: string | null;
   card_info?: any | null;
   card_secret?: any | null;
@@ -9497,6 +9922,14 @@ export interface member_tag_on_conflict {
 }
 
 /**
+ * input type for inserting array relation for remote table "merchandise"
+ */
+export interface merchandise_arr_rel_insert_input {
+  data: merchandise_insert_input[];
+  on_conflict?: merchandise_on_conflict | null;
+}
+
+/**
  * Boolean expression to filter rows from the table "merchandise". All fields are combined with a logical 'AND'.
  */
 export interface merchandise_bool_exp {
@@ -9504,6 +9937,8 @@ export interface merchandise_bool_exp {
   _not?: merchandise_bool_exp | null;
   _or?: (merchandise_bool_exp | null)[] | null;
   abstract?: String_comparison_exp | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -9613,6 +10048,8 @@ export interface merchandise_img_on_conflict {
  */
 export interface merchandise_insert_input {
   abstract?: string | null;
+  app?: app_obj_rel_insert_input | null;
+  app_id?: string | null;
   created_at?: any | null;
   description?: string | null;
   id?: any | null;
@@ -10744,6 +11181,7 @@ export interface post_bool_exp {
   abstract?: String_comparison_exp | null;
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
+  code_name?: String_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
@@ -10812,6 +11250,7 @@ export interface post_insert_input {
   abstract?: string | null;
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
+  code_name?: string | null;
   cover_url?: string | null;
   created_at?: any | null;
   description?: string | null;
@@ -11706,6 +12145,7 @@ export interface program_package_program_bool_exp {
   _not?: program_package_program_bool_exp | null;
   _or?: (program_package_program_bool_exp | null)[] | null;
   id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
   program?: program_bool_exp | null;
   program_id?: uuid_comparison_exp | null;
   program_package?: program_package_bool_exp | null;
@@ -11717,6 +12157,7 @@ export interface program_package_program_bool_exp {
  */
 export interface program_package_program_insert_input {
   id?: any | null;
+  position?: number | null;
   program?: program_obj_rel_insert_input | null;
   program_id?: any | null;
   program_package?: program_package_obj_rel_insert_input | null;
@@ -11931,6 +12372,7 @@ export interface tag_bool_exp {
   member_tags?: member_tag_bool_exp | null;
   merchandise_tags?: merchandise_tag_bool_exp | null;
   name?: String_comparison_exp | null;
+  post_tags?: post_tag_bool_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -11945,6 +12387,7 @@ export interface tag_insert_input {
   member_tags?: member_tag_arr_rel_insert_input | null;
   merchandise_tags?: merchandise_tag_arr_rel_insert_input | null;
   name?: string | null;
+  post_tags?: post_tag_arr_rel_insert_input | null;
   type?: string | null;
   updated_at?: any | null;
 }
