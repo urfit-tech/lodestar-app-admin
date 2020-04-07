@@ -30,58 +30,61 @@ const BlogPostBasicAdminForm: React.FC<BlogPostBasicAdminFormProps> = ({
 
   const handleSubmit = () => {
     validateFields((error, { title, categoryIds, tags, codeName }) => {
-      console.log(title, categoryIds, tags, codeName)
-      console.log(typeof codeName)
-      console.log(codeName.length)
       if (error) {
       }
     })
   }
 
   return (
-    <Form
-      labelCol={{ span: 24, md: { span: 4 } }}
-      wrapperCol={{ span: 24, md: { span: 8 } }}
-      onSubmit={e => {
-        e.preventDefault()
-        handleSubmit()
-      }}
-    >
-      <Form.Item label={formatMessage(commonMessages.term.title)}>
-        {getFieldDecorator('title', { initialValue: post.title })(<Input />)}
-      </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.category)}>
-        {getFieldDecorator('categoryIds', {
-          initialValue: post.categories.map(category => category.id),
-        })(<CategorySelector classType="program" />)}
-      </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.tag)}>
-        {getFieldDecorator('tags', {
-          initialValue: post.tagNames,
-        })(<Select mode="tags" />)}
-      </Form.Item>
-      <Form.Item
-        label={
-          <>
-            {formatMessage(blogMessages.label.codeName)}
-            <Tooltip placement="topLeft" title={<StyledTips>{formatMessage(blogMessages.text.url)}</StyledTips>}>
-              <Icon type="question-circle" theme="filled" className="ml-2" />
-            </Tooltip>
-          </>
-        }
+    post && (
+      <Form
+        labelCol={{ span: 24, md: { span: 4 } }}
+        wrapperCol={{ span: 24, md: { span: 8 } }}
+        onSubmit={e => {
+          e.preventDefault()
+          handleSubmit()
+        }}
       >
-        {getFieldDecorator('codeName', {
-          initialValue: '',
-        })(<Input onChange={e => setCodeName(e.target.value)} />)}
-        <StyledText>{`https://${settings['host']}/posts/${codeName}`}</StyledText>
-      </Form.Item>
-      <Form.Item wrapperCol={{ md: { offset: 4 } }}>
-        <Button onClick={() => resetFields()}>{formatMessage(commonMessages.ui.cancel)}</Button>
-        <Button className="ml-2" type="primary" htmlType="submit">
-          {formatMessage(commonMessages.ui.save)}
-        </Button>
-      </Form.Item>
-    </Form>
+        <Form.Item label={formatMessage(commonMessages.term.title)}>
+          {getFieldDecorator('title', { initialValue: post.title })(<Input />)}
+        </Form.Item>
+        <Form.Item label={formatMessage(commonMessages.term.category)}>
+          {getFieldDecorator('categoryIds', {
+            initialValue: post.categories.map(category => category.id),
+          })(<CategorySelector classType="program" />)}
+        </Form.Item>
+        <Form.Item label={formatMessage(commonMessages.term.tag)}>
+          {getFieldDecorator('tags', {
+            initialValue: post.tagNames,
+          })(<Select mode="tags" />)}
+        </Form.Item>
+        <Form.Item
+          label={
+            <>
+              {formatMessage(blogMessages.label.codeName)}
+              <Tooltip placement="topLeft" title={<StyledTips>{formatMessage(blogMessages.text.url)}</StyledTips>}>
+                <Icon type="question-circle" theme="filled" className="ml-2" />
+              </Tooltip>
+            </>
+          }
+          hasFeedback
+          validateStatus={
+            codeName.length ? (post && post.codeNames && post.codeNames.includes(codeName) ? 'error' : 'success') : ''
+          }
+        >
+          {getFieldDecorator('codeName', {
+            initialValue: '',
+          })(<Input onChange={e => setCodeName(e.target.value)} />)}
+          <StyledText>{`https://${settings['host']}/posts/${codeName}`}</StyledText>
+        </Form.Item>
+        <Form.Item wrapperCol={{ md: { offset: 4 } }}>
+          <Button onClick={() => resetFields()}>{formatMessage(commonMessages.ui.cancel)}</Button>
+          <Button className="ml-2" type="primary" htmlType="submit">
+            {formatMessage(commonMessages.ui.save)}
+          </Button>
+        </Form.Item>
+      </Form>
+    )
   )
 }
 

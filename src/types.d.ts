@@ -4626,7 +4626,6 @@ export interface GET_POST_post_by_pk {
   video_url: string | null;
   description: string | null;
   is_deleted: boolean;
-  code_name: string | null;
   /**
    * An array relationship
    */
@@ -4641,11 +4640,21 @@ export interface GET_POST_post_by_pk {
   post_tags: GET_POST_post_by_pk_post_tags[];
 }
 
+export interface GET_POST_post {
+  __typename: "post";
+  id: any;
+  code_name: string | null;
+}
+
 export interface GET_POST {
   /**
    * fetch data from the table: "post" using primary key columns
    */
   post_by_pk: GET_POST_post_by_pk | null;
+  /**
+   * fetch data from the table: "post"
+   */
+  post: GET_POST_post[];
 }
 
 export interface GET_POSTVariables {

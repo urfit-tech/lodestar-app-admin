@@ -2,6 +2,7 @@ import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
 import { PostType } from '../types/blog'
 import types from '../types'
+import { uniq } from 'ramda'
 
 export const usePost = (
   postId: string,
@@ -17,6 +18,8 @@ export const usePost = (
     },
   })
 
+  const codeNames = data && uniq([...data.post.map(post => post.id), ...data.post.map(post => post.code_name)])
+
   const post: PostType =
     loading || error || !data
       ? {
@@ -28,7 +31,7 @@ export const usePost = (
           categories: [],
           tagNames: [],
           memberId: '',
-          codeName: null
+          codeNames: [],
         }
       : {
           id: data?.post_by_pk?.id || '',
@@ -43,7 +46,7 @@ export const usePost = (
             })) || [],
           tagNames: data?.post_by_pk?.post_tags.map(tag => tag.tag_name) || [],
           memberId: data?.post_by_pk?.post_roles[0].member_id || '',
-          codeName: data?.post_by_pk?.code_name || null,
+          codeNames,
         }
 
   return {
@@ -62,7 +65,6 @@ const GET_POST = gql`
       video_url
       description
       is_deleted
-      code_name
       post_roles {
         member_id
       }
@@ -77,6 +79,10 @@ const GET_POST = gql`
         id
         tag_name
       }
+    }
+    post {
+      id
+      code_name
     }
   }
 `
