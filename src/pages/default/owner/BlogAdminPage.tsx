@@ -16,14 +16,14 @@ import { blogMessages, commonMessages } from '../../../helpers/translation'
 import { usePost } from '../../../hooks/blog'
 import { usePublicMember } from '../../../hooks/member'
 
-const ProgramAdminPage: React.FC = () => {
+const BlogAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { history, match } = useRouter<{ postId: string }>()
   const postId = match.params.postId
   const { post, refetch: refetchPost } = usePost(postId)
   const { member } = usePublicMember(post?.memberId || '')
   const [active, setActive] = useQueryParam('active', StringParam)
-  const app = useContext(AppContext)
+  const { settings } = useContext(AppContext)
 
   useEffect(() => {
     !active && setActive('content')
@@ -38,7 +38,7 @@ const ProgramAdminPage: React.FC = () => {
 
         <AdminHeaderTitle>{post.title || postId}</AdminHeaderTitle>
 
-        <a href={`https://${app.settings['host']}/posts/${postId}`} target="_blank" rel="noopener noreferrer">
+        <a href={`https://${settings['host']}/posts/${postId}`} target="_blank" rel="noopener noreferrer">
           <Button>{formatMessage(commonMessages.ui.preview)}</Button>
         </a>
       </AdminHeader>
@@ -128,4 +128,4 @@ const ProgramAdminPage: React.FC = () => {
   )
 }
 
-export default ProgramAdminPage
+export default BlogAdminPage

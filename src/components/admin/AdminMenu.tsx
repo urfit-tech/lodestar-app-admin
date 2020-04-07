@@ -147,7 +147,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
         
         {enabledModules.blog && (
           <Menu.SubMenu
-            key="owner_blog_admin"
+            key="blog_admin"
             title={
               <span>
                 <Icon type="shopping" theme="filled" />
@@ -155,7 +155,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
               </span>
             }
           >
-            <Menu.Item key="owner_blog_collection_admin">{formatMessage(commonMessages.menu.blogPosts)}</Menu.Item>
+            <Menu.Item key="blog_collection_admin">{formatMessage(commonMessages.menu.blogPosts)}</Menu.Item>
           </Menu.SubMenu>
         )}
 

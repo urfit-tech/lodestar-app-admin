@@ -78,6 +78,18 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'ProgramAdminPage',
     authenticated: true,
   },
+  // blog
+  blog_collection_admin: {
+    path: '/blog',
+    pageName: 'owner/BlogCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  blog_admin: {
+    path: '/blog/:postId',
+    pageName: 'owner/BlogAdminPage',
+    authenticated: true,
+  },
 
   // merchandise
   merchandise_collection_admin: {
@@ -181,17 +193,6 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'creator/ActivityAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
-  },
-  owner_blog_collection_admin: {
-    path: '/admin/blog',
-    pageName: 'owner/BlogCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
-  owner_blog_admin: {
-    path: '/admin/blog/:postId',
-    pageName: 'owner/BlogAdminPage',
-    authenticated: true,
   },
 
   // content creator admin
