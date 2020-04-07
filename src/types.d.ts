@@ -5356,9 +5356,37 @@ export interface UPDATE_MERCHANDISE_INTRODUCTION {
 
 export interface UPDATE_MERCHANDISE_INTRODUCTIONVariables {
   merchandiseId: any;
-  merchandiseImages: merchandise_img_insert_input[];
   abstract?: string | null;
   link?: string | null;
+  merchandiseImages: merchandise_img_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MERCHANDISE_SALES
+// ====================================================
+
+export interface UPDATE_MERCHANDISE_SALES_update_merchandise {
+  __typename: "merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_SALES {
+  /**
+   * update data of the table: "merchandise"
+   */
+  update_merchandise: UPDATE_MERCHANDISE_SALES_update_merchandise | null;
+}
+
+export interface UPDATE_MERCHANDISE_SALESVariables {
+  merchandiseId: any;
+  price?: any | null;
 }
 
 /* tslint:disable */

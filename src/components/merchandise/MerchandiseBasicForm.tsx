@@ -1,32 +1,25 @@
-import { Button, Form, Input, message } from 'antd'
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Form, Input, message, Skeleton } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
-import React, { useState } from 'react'
+import gql from 'graphql-tag'
+import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import TagSelector from '../../containers/common/TagSelector'
+import AppContext from '../../contexts/AppContext'
+import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import { useUpdateMerchandiseBasic } from '../../hooks/merchandise'
+import types from '../../types'
+import { MerchandiseProps } from '../../types/merchandise'
 import ProgramCategorySelector from '../program/ProgramCategorySelector'
 
-export type MerchandiseBasicProps = {
-  title: string
-  categoryIds: string[]
-  merchandiseTags: string[]
+type MerchandiseBasicFormProps = FormComponentProps & {
+  merchandise: MerchandiseProps | null
+  merchandiseId: string
+  refetch?: () => void
 }
-type MerchandiseBasicFormProps = FormComponentProps &
-  MerchandiseBasicProps & {
-    merchandiseId: string
-    refetch?: () => void
-  }
-const MerchandiseBasicForm: React.FC<MerchandiseBasicFormProps> = ({
-  form,
-  title,
-  categoryIds,
-  merchandiseTags,
-  merchandiseId,
-  refetch,
-}) => {
+const MerchandiseBasicForm: React.FC<MerchandiseBasicFormProps> = ({ form, merchandise, merchandiseId, refetch }) => {
   const { formatMessage } = useIntl()
-  const { updateBasic } = useUpdateMerchandiseBasic(merchandiseId)
+  const updateMerchandiseBasic = useUpdateMerchandiseBasic(merchandiseId)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
@@ -35,7 +28,7 @@ const MerchandiseBasicForm: React.FC<MerchandiseBasicFormProps> = ({
         return
       }
       setLoading(true)
-      updateBasic({
+      updateMerchandiseBasic({
         title: values.title,
         categoryIds: values.categoryIds,
         merchandiseTags: values.tags,
@@ -46,6 +39,10 @@ const MerchandiseBasicForm: React.FC<MerchandiseBasicFormProps> = ({
         })
         .finally(() => setLoading(false))
     })
+  }
+
+  if (!merchandise) {
+    return <Skeleton active />
   }
 
   return (
@@ -60,7 +57,7 @@ const MerchandiseBasicForm: React.FC<MerchandiseBasicFormProps> = ({
     >
       <Form.Item label={formatMessage(commonMessages.term.title)}>
         {form.getFieldDecorator('title', {
-          initialValue: title,
+          initialValue: merchandise.title,
           rules: [
             {
               required: true,
@@ -73,12 +70,12 @@ const MerchandiseBasicForm: React.FC<MerchandiseBasicFormProps> = ({
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.term.category)}>
         {form.getFieldDecorator('categoryIds', {
-          initialValue: categoryIds,
+          initialValue: merchandise.categories.map(category => category.id),
         })(<ProgramCategorySelector />)}
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.term.tags)}>
         {form.getFieldDecorator('tags', {
-          initialValue: merchandiseTags,
+          initialValue: merchandise.tags,
         })(<TagSelector />)}
       </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
@@ -91,6 +88,74 @@ const MerchandiseBasicForm: React.FC<MerchandiseBasicFormProps> = ({
       </Form.Item>
     </Form>
   )
+}
+
+const useUpdateMerchandiseBasic = (merchandiseId: string) => {
+  const app = useContext(AppContext)
+  const [updateBasic] = useMutation<types.UPDATE_MERCHANDISE_BASIC, types.UPDATE_MERCHANDISE_BASICVariables>(
+    gql`
+      mutation UPDATE_MERCHANDISE_BASIC(
+        $merchandiseId: uuid!
+        $title: String
+        $categories: [merchandise_category_insert_input!]!
+        $tags: [tag_insert_input!]!
+        $merchandiseTags: [merchandise_tag_insert_input!]!
+      ) {
+        update_merchandise(where: { id: { _eq: $merchandiseId } }, _set: { title: $title }) {
+          affected_rows
+        }
+        delete_merchandise_category(where: { merchandise_id: { _eq: $merchandiseId } }) {
+          affected_rows
+        }
+        insert_merchandise_category(objects: $categories) {
+          affected_rows
+        }
+        insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
+          affected_rows
+        }
+        delete_merchandise_tag(where: { merchandise_id: { _eq: $merchandiseId } }) {
+          affected_rows
+        }
+        insert_merchandise_tag(objects: $merchandiseTags) {
+          affected_rows
+        }
+      }
+    `,
+  )
+
+  const updateMerchandiseBasic: (data: {
+    title: string
+    categoryIds: string[]
+    merchandiseTags: string[]
+  }) => Promise<void> = async ({ title, categoryIds, merchandiseTags }) => {
+    try {
+      await updateBasic({
+        variables: {
+          merchandiseId: merchandiseId,
+          title,
+          categories: categoryIds?.map((categoryId, index) => ({
+            merchandise_id: merchandiseId,
+            category_id: categoryId,
+            position: index,
+          })),
+          tags: merchandiseTags?.map(merchandiseTag => ({
+            app_id: app.id,
+            name: merchandiseTag,
+            type: '',
+          })),
+          merchandiseTags: merchandiseTags?.map((merchandiseTag, index) => ({
+            merchandise_id: merchandiseId,
+            tag_name: merchandiseTag,
+            position: index,
+          })),
+        },
+      })
+    } catch (error) {
+      handleError(error)
+    }
+  }
+
+  return updateMerchandiseBasic
 }
 
 export default Form.create<MerchandiseBasicFormProps>()(MerchandiseBasicForm)

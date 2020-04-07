@@ -14,7 +14,9 @@ import {
 import AdminPublishBlock from '../../components/admin/AdminPublishBlock'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import MerchandiseBasicForm from '../../components/merchandise/MerchandiseBasicForm'
+import MerchandiseDescriptionForm from '../../components/merchandise/MerchandiseDescriptionForm'
 import MerchandiseIntroductionForm from '../../components/merchandise/MerchandiseIntroductionForm'
+import MerchandiseSalesForm from '../../components/merchandise/MerchandiseSalesForm'
 import AppContext from '../../contexts/AppContext'
 import { useMerchandise } from '../../hooks/merchandise'
 
@@ -24,6 +26,7 @@ const messages = defineMessages({
   publishAdmin: { id: 'merchandise.label.publishAdmin', defaultMessage: '上架設定' },
   basicSettings: { id: 'merchandise.label.basicSettings', defaultMessage: '基本設定' },
   introduction: { id: 'merchandise.label.introduction', defaultMessage: '商品介紹' },
+  description: { id: 'merchandise.label.description', defaultMessage: '商品詳情' },
   delete: { id: 'merchandise.label.delete', defaultMessage: '刪除商品' },
   price: { id: 'merchandise.label.price', defaultMessage: '商品售價' },
 })
@@ -67,20 +70,24 @@ const MerchandiseAdminPage: React.FC = () => {
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(messages.basicSettings)}</AdminBlockTitle>
                 <MerchandiseBasicForm
+                  merchandise={merchandise}
                   merchandiseId={merchandiseId}
-                  title={merchandise?.title || ''}
-                  categoryIds={merchandise?.categories.map(category => category.id) || []}
-                  merchandiseTags={merchandise?.tags || []}
                   refetch={refetchMerchandise}
                 />
               </AdminBlock>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(messages.introduction)}</AdminBlockTitle>
                 <MerchandiseIntroductionForm
+                  merchandise={merchandise}
                   merchandiseId={merchandiseId}
-                  abstract={merchandise?.abstract || ''}
-                  link={merchandise?.link || ''}
-                  images={merchandise?.images || []}
+                  refetch={refetchMerchandise}
+                />
+              </AdminBlock>
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(messages.description)}</AdminBlockTitle>
+                <MerchandiseDescriptionForm
+                  merchandise={merchandise}
+                  merchandiseId={merchandiseId}
                   refetch={refetchMerchandise}
                 />
               </AdminBlock>
@@ -94,6 +101,11 @@ const MerchandiseAdminPage: React.FC = () => {
               <AdminPaneTitle>{formatMessage(messages.salesAdmin)}</AdminPaneTitle>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(messages.price)}</AdminBlockTitle>
+                <MerchandiseSalesForm
+                  merchandise={merchandise}
+                  merchandiseId={merchandiseId}
+                  refetch={refetchMerchandise}
+                />
               </AdminBlock>
             </div>
           </Tabs.TabPane>

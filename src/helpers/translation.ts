@@ -456,6 +456,7 @@ export const merchandiseMessages = {
     images: { id: 'merchandise.label.images', defaultMessage: '商品圖片' },
     abstract: { id: 'merchandise.label.abstract', defaultMessage: '規格說明' },
     paymentLink: { id: 'merchandise.label.paymentLink', defaultMessage: '付款連結' },
+    price: { id: 'merchandise.label.price', defaultMessage: '商品售價' },
   }),
   text: defineMessages({
     searchMerchandise: { id: 'merchandise.text.searchMerchandise', defaultMessage: '搜尋商品名稱' },
