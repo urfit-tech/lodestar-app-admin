@@ -8,9 +8,9 @@ import { handleError } from '../../helpers'
 import { blogMessages, commonMessages } from '../../helpers/translation'
 import { BlogPostProps } from '../../types/blog'
 
-type BlogPostVideoAdminFormProps = BlogPostProps & FormComponentProps
+type BlogPostVideoFormProps = BlogPostProps & FormComponentProps
 
-const BlogPostVideoAdminForm: React.FC<BlogPostVideoAdminFormProps> = ({
+const BlogPostVideoForm: React.FC<BlogPostVideoFormProps> = ({
   post,
   onRefetch,
   form: { getFieldDecorator, resetFields, validateFields },
@@ -72,4 +72,4 @@ const UPDATE_POST_VIDEO_URL = gql`
   }
 `
 
-export default Form.create<BlogPostVideoAdminFormProps>()(BlogPostVideoAdminForm)
+export default Form.create<BlogPostVideoFormProps>()(BlogPostVideoForm)

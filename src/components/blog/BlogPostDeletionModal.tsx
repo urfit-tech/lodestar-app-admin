@@ -43,7 +43,7 @@ export const StyledModalParagraph = styled.p`
   line-height: 1.5;
 `
 
-const BlogPostDeletionAdminModal: React.FC<BlogPostProps> = ({ post, onRefetch }) => {
+const BlogPostDeletionModal: React.FC<BlogPostProps> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [isVisible, setVisible] = useState(false)
   const archivePost = useUpdatePostIsDeleted()
@@ -104,4 +104,4 @@ const UPDATE_POST_IS_DELETED = gql`
   }
 `
 
-export default BlogPostDeletionAdminModal
+export default BlogPostDeletionModal

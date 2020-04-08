@@ -6,11 +6,11 @@ import useRouter from 'use-react-router'
 import { AdminBlock, AdminBlockTitle, AdminHeader, AdminHeaderTitle, AdminPaneTitle } from '../../../components/admin'
 import AdminPublishBlock from '../../../components/admin/AdminPublishBlock'
 import RoleAdminBlock from '../../../components/admin/RoleAdminBlock'
-import BlogPostBasicAdminForm from '../../../components/blog/BlogPostBasicAdminForm'
-import BlogPostContentAdminForm from '../../../components/blog/BlogPostContentAdminForm'
-import BlogPostDeletionAdminModal from '../../../components/blog/BlogPostDeletionAdminModal'
-import BlogPostSettingAdminForm from '../../../components/blog/BlogPostSettingAdminForm'
-import BlogPostVideoAdminForm from '../../../components/blog/BlogPostVideoAdminForm'
+import BlogPostBasicForm from '../../../components/blog/BlogPostBasicForm'
+import BlogPostContentForm from '../../../components/blog/BlogPostContentForm'
+import BlogPostDeletionModal from '../../../components/blog/BlogPostDeletionModal'
+import BlogPostSettingForm from '../../../components/blog/BlogPostSettingForm'
+import BlogPostVideoForm from '../../../components/blog/BlogPostVideoForm'
 import AppContext from '../../../contexts/AppContext'
 import { blogMessages, commonMessages } from '../../../helpers/translation'
 import { usePost } from '../../../hooks/blog'
@@ -61,12 +61,12 @@ const BlogAdminPage: React.FC = () => {
 
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(blogMessages.ui.video)}</AdminBlockTitle>
-                <BlogPostVideoAdminForm post={post} onRefetch={refetchPost} />
+                <BlogPostVideoForm post={post} onRefetch={refetchPost} />
               </AdminBlock>
 
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(blogMessages.ui.contentDescription)}</AdminBlockTitle>
-                <BlogPostContentAdminForm post={post} onRefetch={refetchPost} />
+                <BlogPostContentForm post={post} onRefetch={refetchPost} />
               </AdminBlock>
             </div>
           </Tabs.TabPane>
@@ -77,17 +77,17 @@ const BlogAdminPage: React.FC = () => {
 
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
-                <BlogPostBasicAdminForm post={post} onRefetch={refetchPost} />
+                <BlogPostBasicForm post={post} onRefetch={refetchPost} />
               </AdminBlock>
 
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(blogMessages.ui.postSetting)}</AdminBlockTitle>
-                <BlogPostSettingAdminForm post={post} onRefetch={refetchPost} />
+                <BlogPostSettingForm post={post} onRefetch={refetchPost} />
               </AdminBlock>
 
               <AdminBlock>
                 <AdminPaneTitle>{formatMessage(blogMessages.label.deletePost)}</AdminPaneTitle>
-                <BlogPostDeletionAdminModal post={post} onRefetch={refetchPost} />
+                <BlogPostDeletionModal post={post} onRefetch={refetchPost} />
               </AdminBlock>
             </div>
           </Tabs.TabPane>

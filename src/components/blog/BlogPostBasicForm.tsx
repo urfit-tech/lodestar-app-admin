@@ -10,7 +10,7 @@ import { BlogPostProps } from '../../types/blog'
 import { StyledTips } from '../admin'
 import CategorySelector from '../common/CategorySelector'
 
-type BlogPostBasicAdminFormProps = BlogPostProps & FormComponentProps
+type BlogPostBasicFormProps = BlogPostProps & FormComponentProps
 
 const StyledText = styled.div`
   color: var(--gray-dark);
@@ -20,7 +20,7 @@ const StyledText = styled.div`
   line-height: 1.2;
 `
 
-const BlogPostBasicAdminForm: React.FC<BlogPostBasicAdminFormProps> = ({
+const BlogPostBasicForm: React.FC<BlogPostBasicFormProps> = ({
   post,
   onRefetch,
   form: { getFieldDecorator, resetFields, validateFields },
@@ -89,4 +89,4 @@ const BlogPostBasicAdminForm: React.FC<BlogPostBasicAdminFormProps> = ({
   )
 }
 
-export default Form.create<BlogPostBasicAdminFormProps>()(BlogPostBasicAdminForm)
+export default Form.create<BlogPostBasicFormProps>()(BlogPostBasicForm)

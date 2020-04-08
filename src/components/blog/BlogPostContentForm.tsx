@@ -10,9 +10,9 @@ import { commonMessages } from '../../helpers/translation'
 import { BlogPostProps } from '../../types/blog'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 
-type BlogPostContentAdminFormProps = BlogPostProps & FormComponentProps
+type BlogPostContentFormProps = BlogPostProps & FormComponentProps
 
-const BlogPostContentAdminForm: React.FC<BlogPostContentAdminFormProps> = ({
+const BlogPostContentForm: React.FC<BlogPostContentFormProps> = ({
   post,
   onRefetch,
   form: { getFieldDecorator, resetFields, validateFields },
@@ -76,4 +76,4 @@ const UPDATE_POST_DESCRIPTION = gql`
   }
 `
 
-export default Form.create<BlogPostContentAdminFormProps>()(BlogPostContentAdminForm)
+export default Form.create<BlogPostContentFormProps>()(BlogPostContentForm)

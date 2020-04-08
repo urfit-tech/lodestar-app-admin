@@ -8,7 +8,7 @@ import { BlogPostProps } from '../../types/blog'
 import { StyledTips } from '../admin'
 import SingleUploader from '../common/SingleUploader'
 
-type BlogPostSettingAdminFormProps = BlogPostProps & FormComponentProps
+type BlogPostSettingFormProps = BlogPostProps & FormComponentProps
 
 // repeat styled single uploader
 const StyledSingleUploader = styled(SingleUploader)`
@@ -29,7 +29,7 @@ const StyledSingleUploader = styled(SingleUploader)`
   }
 `
 
-const BlogPostSettingAdminForm: React.FC<BlogPostSettingAdminFormProps> = ({
+const BlogPostSettingForm: React.FC<BlogPostSettingFormProps> = ({
   post,
   onRefetch,
   form: { getFieldDecorator, resetFields, validateFields },
@@ -87,4 +87,4 @@ const BlogPostSettingAdminForm: React.FC<BlogPostSettingAdminFormProps> = ({
   )
 }
 
-export default Form.create<BlogPostSettingAdminFormProps>()(BlogPostSettingAdminForm)
+export default Form.create<BlogPostSettingFormProps>()(BlogPostSettingForm)
