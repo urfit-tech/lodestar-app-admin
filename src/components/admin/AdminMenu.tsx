@@ -13,6 +13,7 @@ import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.s
 import { ReactComponent as MoneyCircleIcon } from '../../images/icon/money-circle.svg'
 import { ReactComponent as UserIcon } from '../../images/icon/user.svg'
 import { ReactComponent as UsersIcon } from '../../images/icon/users.svg'
+import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
 import { routesProps } from '../../Routes'
 
 const StyledMenu = styled(Menu)`
@@ -55,6 +56,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
           'owner_podcast_admin',
           'owner_appointment_admin',
           'owner_activity_admin',
+          'owner_merchandise_admin',
         ]}
       >
         <Menu.Item key="owner_sales_admin">
@@ -125,6 +127,20 @@ export const OwnerAdminMenu = (props: MenuProps) => {
             }
           >
             <Menu.Item key="owner_activity_collection_admin">{formatMessage(commonMessages.menu.activities)}</Menu.Item>
+          </Menu.SubMenu>
+        )}
+
+        {enabledModules.merchandise && (
+          <Menu.SubMenu
+            key="owner_merchandise_admin"
+            title={
+              <span>
+                <Icon component={() => <ShopIcon />} />
+                <span>{formatMessage(commonMessages.menu.merchandiseAdmin)}</span>
+              </span>
+            }
+          >
+            <Menu.Item key="merchandise_collection_admin">{formatMessage(commonMessages.menu.merchandises)}</Menu.Item>
           </Menu.SubMenu>
         )}
 

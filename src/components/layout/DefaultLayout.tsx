@@ -36,9 +36,10 @@ const StyledLayout = styled(Layout)`
 const StyledLayoutHeader = styled(Layout.Header)`
   border-bottom: 1px solid #ececec;
 `
-export const StyledLayoutContent = styled(Layout.Content)`
+export const StyledLayoutContent = styled(Layout.Content)<{ variant?: 'default' | 'gray' }>`
   height: calc(100vh - 64px);
   overflow-y: auto;
+  ${props => (props.variant === 'gray' ? 'background: var(--gray-lighter);' : '')}
 `
 const StyledContainer = styled.div<{ noFooter?: boolean; centeredBox?: boolean }>`
   min-height: calc(100vh - 64px - ${props => (props.noFooter ? '0' : footerHeight)}px);

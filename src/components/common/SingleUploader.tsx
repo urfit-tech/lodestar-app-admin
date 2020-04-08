@@ -6,7 +6,7 @@ import { extname } from 'path'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { uploadFile } from '../../helpers'
+import { notEmpty, uploadFile } from '../../helpers'
 
 const messages = defineMessages({
   uploadSuccess: { id: 'upload.event.success', defaultMessage: '上傳成功' },
@@ -50,6 +50,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = (
     onCancel,
     isPublic,
     withExtension,
+    fileList,
     ...uploadProps
   },
   ref,
@@ -60,7 +61,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = (
 
   const props: UploadProps = {
     ...uploadProps,
-    fileList: value ? [value] : [],
+    fileList: fileList || [value].filter(notEmpty),
     onChange: info => {
       onChange && onChange(info.file)
       if (info.file.status === 'uploading') {

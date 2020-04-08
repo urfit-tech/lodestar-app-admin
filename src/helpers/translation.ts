@@ -127,6 +127,7 @@ export const commonMessages = {
     email: { id: 'common.label.email', defaultMessage: '郵件地址' },
     nameAndEmail: { id: 'common.label.nameAndEmail', defaultMessage: '姓名 / Email' },
     languages: { id: 'common.label.languages', defaultMessage: '顯示語系' },
+    price: { id: 'common.label.price', defaultMessage: '價格' },
   }),
   term: defineMessages({
     instructor: { id: 'common.term.instructor', defaultMessage: '老師' },
@@ -173,6 +174,7 @@ export const commonMessages = {
     currentPassword: { id: 'common.term.currentPassword', defaultMessage: '目前密碼' },
     owner: { id: 'common.term.owner', defaultMessage: '建立者' },
     supportedLanguages: { id: 'common.term.supportedLanguages', defaultMessage: '選擇顯示於哪個語系' },
+    tags: { id: 'common.term.tags', defaultMessage: '標籤' },
   }),
   text: defineMessages({
     shortDescriptionPlaceholder: { id: 'common.text.shortDescriptionPlaceholder', defaultMessage: '30 字以內' },
@@ -216,6 +218,10 @@ export const commonMessages = {
     appointments: { id: 'common.menu.appointments', defaultMessage: '預約記錄' },
     activityAdmin: { id: 'common.menu.activityAdmin', defaultMessage: '線下實體' },
     activities: { id: 'common.menu.activities', defaultMessage: '線下實體管理' },
+    merchandiseAdmin: { id: 'common.menu.merchandise', defaultMessage: '商品' },
+    merchandises: { id: 'common.menu.merchandises', defaultMessage: '商品管理' },
+    merchandiseShipping: { id: 'common.menu.merchandiseShipping', defaultMessage: '出貨管理' },
+    merchandiseIssues: { id: 'common.menu.merchandiseIssues', defaultMessage: '問答管理' },
     promotionAdmin: { id: 'common.menu.promotionAdmin', defaultMessage: '促銷管理' },
     coupons: { id: 'common.menu.couponPlans', defaultMessage: '折價方案' },
     vouchers: { id: 'common.menu.voucherPlans', defaultMessage: '兌換方案' },
@@ -394,6 +400,9 @@ export const programMessages = {
     allProgram: { id: 'program.label.allProgram', defaultMessage: '全部課程' },
     programContent: { id: 'program.label.programContent', defaultMessage: '課程內容' },
     programSettings: { id: 'program.label.programSettings', defaultMessage: '課程設定' },
+    programPlanType: { id: 'program.label.programPlanType', defaultMessage: '選擇課程付費方案' },
+    perpetualPlanType: { id: 'program.label.perpetualPlanType', defaultMessage: '單次付費' },
+    subscriptionPlanType: { id: 'program.label.subscriptionPlanType', defaultMessage: '訂閱付費' },
   }),
   text: defineMessages({
     enrolledSubscriptionCount: { id: 'program.text.enrolledSubscriptionCount', defaultMessage: '已訂閱 {count} 人' },
@@ -432,6 +441,27 @@ export const podcastMessages = {
     audioFileTips: { id: 'podcast.text.audioFileTips', defaultMessage: '建議格式：MP3\n檔案大小限制：5MB' },
     podcastCoverTips: { id: 'podcast.text.podcastCoverTips', defaultMessage: '建議尺寸：1080*1080px' },
     abstractLimit: { id: 'podcast.text.abstractLimit', defaultMessage: '限 100 字' },
+  }),
+}
+
+export const merchandiseMessages = {
+  ui: defineMessages({
+    createMerchandise: { id: 'merchandise.ui.createMerchandise', defaultMessage: '建立商品' },
+    deleteMerchandise: { id: 'merchandise.ui.deleteMerchandise', defaultMessage: '刪除商品' },
+  }),
+  status: defineMessages({
+    selling: { id: 'merchandise.status.selling', defaultMessage: '販賣中' },
+    soldOut: { id: 'merchandise.status.soldOut', defaultMessage: '已售完' },
+    unpublished: { id: 'merchandise.status.unpublished', defaultMessage: '未上架' },
+  }),
+  label: defineMessages({
+    images: { id: 'merchandise.label.images', defaultMessage: '商品圖片' },
+    abstract: { id: 'merchandise.label.abstract', defaultMessage: '規格說明' },
+    paymentLink: { id: 'merchandise.label.paymentLink', defaultMessage: '付款連結' },
+    price: { id: 'merchandise.label.price', defaultMessage: '商品售價' },
+  }),
+  text: defineMessages({
+    searchMerchandise: { id: 'merchandise.text.searchMerchandise', defaultMessage: '搜尋商品名稱' },
   }),
 }
 
