@@ -9,9 +9,9 @@ import DraggableItem from '../../../components/common/DraggableItem'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import AppContext from '../../../contexts/AppContext'
 import { commonMessages } from '../../../helpers/translation'
-import { useCategory } from '../../../hooks/category'
+import { useCategory } from '../../../hooks/data'
 import types from '../../../types'
-import { Category } from '../../../types/category'
+import { Category } from '../../../types/general'
 
 const messages = defineMessages({
   deleteCategoryNotation: {

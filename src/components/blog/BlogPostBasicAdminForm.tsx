@@ -1,8 +1,9 @@
-import { Button, Form, Icon, Input, Select, Tooltip } from 'antd'
+import { Button, Form, Icon, Input, Tooltip } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import TagSelector from '../../containers/common/TagSelector'
 import AppContext from '../../contexts/AppContext'
 import { blogMessages, commonMessages } from '../../helpers/translation'
 import { BlogPostProps } from '../../types/blog'
@@ -56,7 +57,7 @@ const BlogPostBasicAdminForm: React.FC<BlogPostBasicAdminFormProps> = ({
         <Form.Item label={formatMessage(commonMessages.term.tag)}>
           {getFieldDecorator('tags', {
             initialValue: post.tagNames,
-          })(<Select mode="tags" />)}
+          })(<TagSelector />)}
         </Form.Item>
         <Form.Item
           label={

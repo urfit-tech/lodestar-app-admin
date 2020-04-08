@@ -2,8 +2,8 @@ import { Button, Select } from 'antd'
 import React, { useContext } from 'react'
 import styled from 'styled-components'
 import AppContext from '../../contexts/AppContext'
-import { useCategory } from '../../hooks/category'
-import { ClassType } from '../../types/category'
+import { useCategory } from '../../hooks/data'
+import { ClassType } from '../../types/general'
 
 const StyledButton = styled(Button)`
   padding: 0 20px;

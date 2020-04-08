@@ -78,6 +78,7 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'ProgramAdminPage',
     authenticated: true,
   },
+
   // blog
   blog_collection_admin: {
     path: '/blog',

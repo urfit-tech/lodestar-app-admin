@@ -3,6 +3,7 @@ import gql from 'graphql-tag'
 import { array, date, object, string } from 'yup'
 import { couponSchema } from '../schemas/coupon'
 import types from '../types'
+import { ClassType, Category } from '../types/general'
 
 export const useTags = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_TAGS>(
@@ -19,6 +20,39 @@ export const useTags = () => {
     errorTags: error,
     loadingTags: loading,
     refetchTags: refetch,
+  }
+}
+
+export const useCategory = (appId: string, classType?: ClassType) => {
+  const { loading, data, error, refetch } = useQuery<types.GET_CATEGORIES, types.GET_CATEGORIESVariables>(
+    gql`
+      query GET_CATEGORIES($appId: String!, $classType: String) {
+        category(where: { app_id: { _eq: $appId }, class: { _eq: $classType } }, order_by: { position: asc }) {
+          id
+          name
+          position
+        }
+      }
+    `,
+    {
+      variables: { appId, classType },
+    },
+  )
+
+  const categories: Category[] =
+    loading || error || !data
+      ? []
+      : data.category.map(category => ({
+          id: category.id,
+          name: category.name,
+          position: category.position,
+        }))
+
+  return {
+    loading,
+    categories,
+    error,
+    refetch,
   }
 }
 
