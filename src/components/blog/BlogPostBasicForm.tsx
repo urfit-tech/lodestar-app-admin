@@ -1,11 +1,15 @@
-import { Button, Form, Icon, Input, Tooltip } from 'antd'
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Form, Icon, Input, message, Tooltip } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
-import React, { useContext, useState } from 'react'
+import gql from 'graphql-tag'
+import React, { useContext, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import TagSelector from '../../containers/common/TagSelector'
 import AppContext from '../../contexts/AppContext'
-import { blogMessages, commonMessages } from '../../helpers/translation'
+import { handleError } from '../../helpers'
+import { blogMessages, commonMessages, errorMessages } from '../../helpers/translation'
+import types from '../../types'
 import { BlogPostProps } from '../../types/blog'
 import { StyledTips } from '../admin'
 import CategorySelector from '../common/CategorySelector'
@@ -28,11 +32,31 @@ const BlogPostBasicForm: React.FC<BlogPostBasicFormProps> = ({
   const { settings } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const [codeName, setCodeName] = useState<string>('')
+  const updatePostBasic = useUpdatePostBasic(post.id)
+  const canCodeNameUse = !(post && post.codeNames && post.codeNames.includes(codeName))
 
+  useEffect(() => {
+    setCodeName(post.codeName)
+  }, [JSON.stringify(post)])
+  console.log(codeName.length || null)
   const handleSubmit = () => {
     validateFields((error, { title, categoryIds, tags, codeName }) => {
       if (error) {
+        return
       }
+      if (!canCodeNameUse) {
+        message.error(formatMessage(errorMessages.event.checkSameCodeName))
+        return
+      }
+      updatePostBasic({
+        title,
+        categoryIds,
+        postTags: tags,
+        codeName: codeName.length ? codeName : null,
+      }).then(() => {
+        onRefetch && onRefetch()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+      })
     })
   }
 
@@ -69,13 +93,11 @@ const BlogPostBasicForm: React.FC<BlogPostBasicFormProps> = ({
             </>
           }
           hasFeedback
-          validateStatus={
-            codeName.length ? (post && post.codeNames && post.codeNames.includes(codeName) ? 'error' : 'success') : ''
-          }
+          validateStatus={codeName.length ? (canCodeNameUse ? 'success' : 'error') : ''}
         >
           {getFieldDecorator('codeName', {
-            initialValue: '',
-          })(<Input onChange={e => setCodeName(e.target.value)} />)}
+            initialValue: post.codeName,
+          })(<Input maxLength={20} onChange={e => setCodeName(e.target.value)} />)}
           <StyledText>{`https://${settings['host']}/posts/${codeName}`}</StyledText>
         </Form.Item>
         <Form.Item wrapperCol={{ md: { offset: 4 } }}>
@@ -88,5 +110,80 @@ const BlogPostBasicForm: React.FC<BlogPostBasicFormProps> = ({
     )
   )
 }
+
+const useUpdatePostBasic = (postId: string) => {
+  const { id: appId } = useContext(AppContext)
+  const [updateBasic] = useMutation<types.UPDATE_POST_BASIC, types.UPDATE_POST_BASICVariables>(UPDATE_POST_BASIC)
+
+  const updatePostBasic: (data: {
+    title: string
+    codeName: string
+    categoryIds: string[]
+    postTags: string[]
+  }) => Promise<void> = async ({ title, categoryIds, postTags, codeName }) => {
+    try {
+      await updateBasic({
+        variables: {
+          postId,
+          title,
+          codeName,
+          categories: categoryIds?.map((categoryId, i) => ({
+            post_id: postId,
+            category_id: categoryId,
+            position: i,
+          })),
+          tags: postTags?.map(postTag => ({
+            app_id: appId,
+            name: postTag,
+            type: '',
+          })),
+          postTags: postTags?.map((postTag, i) => ({
+            post_id: postId,
+            tag_name: postTag,
+            position: i,
+          })),
+        },
+      })
+    } catch (error) {
+      handleError(error)
+    }
+  }
+  return updatePostBasic
+}
+
+const UPDATE_POST_BASIC = gql`
+  mutation UPDATE_POST_BASIC(
+    $postId: uuid!
+    $title: String
+    $codeName: String
+    $categories: [post_category_insert_input!]!
+    $tags: [tag_insert_input!]!
+    $postTags: [post_tag_insert_input!]!
+  ) {
+    # update post
+    update_post(where: { id: { _eq: $postId } }, _set: { title: $title, code_name: $codeName }) {
+      affected_rows
+    }
+
+    # update post category
+    delete_post_category(where: { post_id: { _eq: $postId } }) {
+      affected_rows
+    }
+    insert_post_category(objects: $categories) {
+      affected_rows
+    }
+
+    # update post tag
+    insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
+      affected_rows
+    }
+    delete_post_tag(where: { post_id: { _eq: $postId } }) {
+      affected_rows
+    }
+    insert_post_tag(objects: $postTags) {
+      affected_rows
+    }
+  }
+`
 
 export default Form.create<BlogPostBasicFormProps>()(BlogPostBasicForm)

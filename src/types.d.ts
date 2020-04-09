@@ -71,6 +71,98 @@ export interface GET_ACTIVITY_SESSIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_POST_BASIC
+// ====================================================
+
+export interface UPDATE_POST_BASIC_update_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_BASIC_delete_post_category {
+  __typename: "post_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_BASIC_insert_post_category {
+  __typename: "post_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_BASIC_delete_post_tag {
+  __typename: "post_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_BASIC_insert_post_tag {
+  __typename: "post_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_BASIC {
+  /**
+   * update data of the table: "post"
+   */
+  update_post: UPDATE_POST_BASIC_update_post | null;
+  /**
+   * delete data from the table: "post_category"
+   */
+  delete_post_category: UPDATE_POST_BASIC_delete_post_category | null;
+  /**
+   * insert data into the table: "post_category"
+   */
+  insert_post_category: UPDATE_POST_BASIC_insert_post_category | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_POST_BASIC_insert_tag | null;
+  /**
+   * delete data from the table: "post_tag"
+   */
+  delete_post_tag: UPDATE_POST_BASIC_delete_post_tag | null;
+  /**
+   * insert data into the table: "post_tag"
+   */
+  insert_post_tag: UPDATE_POST_BASIC_insert_post_tag | null;
+}
+
+export interface UPDATE_POST_BASICVariables {
+  postId: any;
+  title?: string | null;
+  codeName?: string | null;
+  categories: post_category_insert_input[];
+  tags: tag_insert_input[];
+  postTags: post_tag_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_POST_DESCRIPTION
 // ====================================================
 
@@ -4626,6 +4718,7 @@ export interface GET_POST_post_by_pk {
   video_url: string | null;
   description: string | null;
   is_deleted: boolean;
+  code_name: string | null;
   /**
    * An array relationship
    */
@@ -4747,33 +4840,6 @@ export interface GET_ENROLLED_CARDS {
 
 export interface GET_ENROLLED_CARDSVariables {
   memberId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_CATEGORIES
-// ====================================================
-
-export interface GET_CATEGORIES_category {
-  __typename: "category";
-  id: string;
-  name: string;
-  position: number;
-}
-
-export interface GET_CATEGORIES {
-  /**
-   * fetch data from the table: "category"
-   */
-  category: GET_CATEGORIES_category[];
-}
-
-export interface GET_CATEGORIESVariables {
-  appId: string;
-  classType?: string | null;
 }
 
 /* tslint:disable */
@@ -4923,6 +4989,33 @@ export interface GET_TAGS {
    * fetch data from the table: "tag"
    */
   tag: GET_TAGS_tag[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CATEGORIES
+// ====================================================
+
+export interface GET_CATEGORIES_category {
+  __typename: "category";
+  id: string;
+  name: string;
+  position: number;
+}
+
+export interface GET_CATEGORIES {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_CATEGORIES_category[];
+}
+
+export interface GET_CATEGORIESVariables {
+  appId: string;
+  classType?: string | null;
 }
 
 /* tslint:disable */

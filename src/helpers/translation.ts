@@ -277,6 +277,7 @@ export const errorMessages = {
     failedFacebookLogin: { id: 'error.event.failedFacebookLogin', defaultMessage: '無法從 Facebook 登入/註冊' },
     failedGoogleLogin: { id: 'error.event.failedGoogleLogin', defaultMessage: '無法從 Google 登入/註冊' },
     checkSamePassword: { id: 'error.event.checkSamePassword', defaultMessage: '請確認密碼與新密碼相同' },
+    checkSameCodeName: { id: 'error.event.checkSameCodeName', defaultMessage: '網址代碼已被使用' },
   }),
   text: defineMessages({
     forbidden: { id: 'error.text.forbidden', defaultMessage: '你沒有此頁面的讀取權限' },

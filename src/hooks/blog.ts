@@ -17,9 +17,9 @@ export const usePost = (
       id: postId,
     },
   })
-
-  const codeNames = data && uniq([...data.post.map(post => post.id), ...data.post.map(post => post.code_name)])
-
+  const codeNames =
+    data &&
+    uniq([...data.post.map(post => post.id), ...data.post.filter(post => post.code_name).map(post => post.code_name)])
   const post: PostType =
     loading || error || !data
       ? {
@@ -31,6 +31,7 @@ export const usePost = (
           categories: [],
           tagNames: [],
           memberId: '',
+          codeName: '',
           codeNames: [],
         }
       : {
@@ -46,6 +47,7 @@ export const usePost = (
             })) || [],
           tagNames: data?.post_by_pk?.post_tags.map(tag => tag.tag_name) || [],
           memberId: data?.post_by_pk?.post_roles[0].member_id || '',
+          codeName: data?.post_by_pk?.code_name || '',
           codeNames,
         }
 
@@ -65,6 +67,7 @@ const GET_POST = gql`
       video_url
       description
       is_deleted
+      code_name
       post_roles {
         member_id
       }

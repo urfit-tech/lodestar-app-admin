@@ -10,6 +10,7 @@ export type PostType = {
   tagNames: string[]
   isDeleted: boolean
   memberId: string
+  codeName: string
   codeNames?: (string | null)[]
 }
 

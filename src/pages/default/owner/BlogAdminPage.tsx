@@ -44,85 +44,87 @@ const BlogAdminPage: React.FC = () => {
       </AdminHeader>
 
       <div style={{ backgroundColor: '#f7f8f8', minHeight: 'calc(100vh - 64px)' }}>
-        <Tabs
-          activeKey={active}
-          onChange={setActive}
-          renderTabBar={(tabsProps, DefaultTabBar) => (
-            <div style={{ backgroundColor: 'white' }}>
-              <div className="container text-center">
-                <DefaultTabBar {...tabsProps} />
+        {post && (
+          <Tabs
+            activeKey={active}
+            onChange={setActive}
+            renderTabBar={(tabsProps, DefaultTabBar) => (
+              <div style={{ backgroundColor: 'white' }}>
+                <div className="container text-center">
+                  <DefaultTabBar {...tabsProps} />
+                </div>
               </div>
-            </div>
-          )}
-        >
-          <Tabs.TabPane tab={formatMessage(blogMessages.label.postContent)} key="content">
-            <div className="container py-5">
-              <AdminPaneTitle>{formatMessage(blogMessages.label.postContent)}</AdminPaneTitle>
+            )}
+          >
+            <Tabs.TabPane tab={formatMessage(blogMessages.label.postContent)} key="content">
+              <div className="container py-5">
+                <AdminPaneTitle>{formatMessage(blogMessages.label.postContent)}</AdminPaneTitle>
 
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(blogMessages.ui.video)}</AdminBlockTitle>
-                <BlogPostVideoForm post={post} onRefetch={refetchPost} />
-              </AdminBlock>
+                <AdminBlock>
+                  <AdminBlockTitle>{formatMessage(blogMessages.ui.video)}</AdminBlockTitle>
+                  <BlogPostVideoForm post={post} onRefetch={refetchPost} />
+                </AdminBlock>
 
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(blogMessages.ui.contentDescription)}</AdminBlockTitle>
-                <BlogPostContentForm post={post} onRefetch={refetchPost} />
-              </AdminBlock>
-            </div>
-          </Tabs.TabPane>
+                <AdminBlock>
+                  <AdminBlockTitle>{formatMessage(blogMessages.ui.contentDescription)}</AdminBlockTitle>
+                  <BlogPostContentForm post={post} onRefetch={refetchPost} />
+                </AdminBlock>
+              </div>
+            </Tabs.TabPane>
 
-          <Tabs.TabPane tab={formatMessage(blogMessages.label.postManagement)} key="general">
-            <div className="container py-5">
-              <AdminPaneTitle>{formatMessage(blogMessages.label.postManagement)}</AdminPaneTitle>
+            <Tabs.TabPane tab={formatMessage(blogMessages.label.postManagement)} key="general">
+              <div className="container py-5">
+                <AdminPaneTitle>{formatMessage(blogMessages.label.postManagement)}</AdminPaneTitle>
 
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
-                <BlogPostBasicForm post={post} onRefetch={refetchPost} />
-              </AdminBlock>
+                <AdminBlock>
+                  <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
+                  <BlogPostBasicForm post={post} onRefetch={refetchPost} />
+                </AdminBlock>
 
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(blogMessages.ui.postSetting)}</AdminBlockTitle>
-                <BlogPostSettingForm post={post} onRefetch={refetchPost} />
-              </AdminBlock>
+                <AdminBlock>
+                  <AdminBlockTitle>{formatMessage(blogMessages.ui.postSetting)}</AdminBlockTitle>
+                  <BlogPostSettingForm post={post} onRefetch={refetchPost} />
+                </AdminBlock>
 
-              <AdminBlock>
-                <AdminPaneTitle>{formatMessage(blogMessages.label.deletePost)}</AdminPaneTitle>
-                <BlogPostDeletionModal post={post} onRefetch={refetchPost} />
-              </AdminBlock>
-            </div>
-          </Tabs.TabPane>
+                <AdminBlock>
+                  <AdminPaneTitle>{formatMessage(blogMessages.label.deletePost)}</AdminPaneTitle>
+                  <BlogPostDeletionModal post={post} onRefetch={refetchPost} />
+                </AdminBlock>
+              </div>
+            </Tabs.TabPane>
 
-          <Tabs.TabPane tab={formatMessage(commonMessages.label.roleAdmin)} key="roles">
-            <div className="container py-5">
-              <AdminPaneTitle>{formatMessage(commonMessages.label.roleAdmin)}</AdminPaneTitle>
+            <Tabs.TabPane tab={formatMessage(commonMessages.label.roleAdmin)} key="roles">
+              <div className="container py-5">
+                <AdminPaneTitle>{formatMessage(commonMessages.label.roleAdmin)}</AdminPaneTitle>
 
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(commonMessages.term.owner)}</AdminBlockTitle>
-                <RoleAdminBlock name={member?.name || ''} pictureUrl={member?.pictureUrl || ''} />
-              </AdminBlock>
+                <AdminBlock>
+                  <AdminBlockTitle>{formatMessage(commonMessages.term.owner)}</AdminBlockTitle>
+                  <RoleAdminBlock name={member?.name || ''} pictureUrl={member?.pictureUrl || ''} />
+                </AdminBlock>
 
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(commonMessages.term.author)}</AdminBlockTitle>
-              </AdminBlock>
-            </div>
-          </Tabs.TabPane>
+                <AdminBlock>
+                  <AdminBlockTitle>{formatMessage(commonMessages.term.author)}</AdminBlockTitle>
+                </AdminBlock>
+              </div>
+            </Tabs.TabPane>
 
-          <Tabs.TabPane tab={formatMessage(commonMessages.label.publishSettings)} key="publishing">
-            <div className="container py-5">
-              <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
+            <Tabs.TabPane tab={formatMessage(commonMessages.label.publishSettings)} key="publishing">
+              <div className="container py-5">
+                <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
 
-              <AdminBlock>
-                <AdminPublishBlock
-                  type={'ordinary'}
-                  title={'title'}
-                  description={'description'}
-                  checklist={[]}
-                  onPublish={() => {}}
-                />
-              </AdminBlock>
-            </div>
-          </Tabs.TabPane>
-        </Tabs>
+                <AdminBlock>
+                  <AdminPublishBlock
+                    type={'ordinary'}
+                    title={'title'}
+                    description={'description'}
+                    checklist={[]}
+                    onPublish={() => {}}
+                  />
+                </AdminBlock>
+              </div>
+            </Tabs.TabPane>
+          </Tabs>
+        )}
       </div>
     </>
   )
