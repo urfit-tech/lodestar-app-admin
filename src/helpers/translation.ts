@@ -128,6 +128,7 @@ export const commonMessages = {
     nameAndEmail: { id: 'common.label.nameAndEmail', defaultMessage: '姓名 / Email' },
     languages: { id: 'common.label.languages', defaultMessage: '顯示語系' },
     price: { id: 'common.label.price', defaultMessage: '價格' },
+    uploading: { id: 'command.label.uploading', defaultMessage: '上傳中' },
   }),
   term: defineMessages({
     instructor: { id: 'common.term.instructor', defaultMessage: '老師' },
@@ -448,6 +449,8 @@ export const merchandiseMessages = {
   ui: defineMessages({
     createMerchandise: { id: 'merchandise.ui.createMerchandise', defaultMessage: '建立商品' },
     deleteMerchandise: { id: 'merchandise.ui.deleteMerchandise', defaultMessage: '刪除商品' },
+    setCover: { id: 'merchandise.text.setCover', defaultMessage: '設為封面' },
+    deleteImage: { id: 'merchandise.text.deleteImage', defaultMessage: '刪除圖片' },
   }),
   status: defineMessages({
     selling: { id: 'merchandise.status.selling', defaultMessage: '販賣中' },
@@ -459,6 +462,7 @@ export const merchandiseMessages = {
     abstract: { id: 'merchandise.label.abstract', defaultMessage: '規格說明' },
     paymentLink: { id: 'merchandise.label.paymentLink', defaultMessage: '付款連結' },
     price: { id: 'merchandise.label.price', defaultMessage: '商品售價' },
+    cover: { id: 'merchandise.label.cover', defaultMessage: '封面圖片' },
   }),
   text: defineMessages({
     searchMerchandise: { id: 'merchandise.text.searchMerchandise', defaultMessage: '搜尋商品名稱' },

@@ -2,19 +2,14 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Icon, Input, message, Skeleton, Tooltip } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { v4 as uuid } from 'uuid'
-import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, merchandiseMessages, podcastMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
 import { StyledTips } from '../admin'
-import SingleUploader from '../common/SingleUploader'
-import styled from 'styled-components'
-
-const StyledUploader = styled(SingleUploader)``
+import MerchandiseImagesUploader from './MerchandiseImagesUploader'
 
 type MerchandiseIntroductionFormProps = FormComponentProps & {
   merchandise: MerchandiseProps | null
@@ -28,10 +23,8 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
   refetch,
 }) => {
   const { formatMessage } = useIntl()
-  const app = useContext(AppContext)
   const updateMerchandiseImages = useUpdateMerchandiseImages(merchandiseId)
   const updateMerchandiseIntroduction = useUpdateMerchandiseIntroduction(merchandiseId)
-  const [fieldId, setFieldId] = useState(uuid())
   const [loading, setLoading] = useState(false)
 
   if (!merchandise) {
@@ -57,19 +50,8 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
     })
   }
 
-  const handleUpload = () => {
-    updateMerchandiseImages({
-      images: [
-        ...merchandise.images,
-        {
-          url: `merchandise_images/${app.id}/${merchandiseId}/${fieldId}`,
-          isCover: false,
-        },
-      ],
-    }).then(() => {
-      setFieldId(uuid())
-      refetch && refetch()
-    })
+  const handleUpload = (images: MerchandiseProps['images']) => {
+    updateMerchandiseImages({ images }).then(() => refetch && refetch())
   }
 
   return (
@@ -91,28 +73,9 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
             </Tooltip>
           </>
         }
+        wrapperCol={{ span: 24, md: { span: 16 } }}
       >
-        {/* {merchandise.images.map(image => (
-          <span key={image.url}>{image.url}</span>
-        ))} */}
-        {form.getFieldDecorator('image')(
-          <StyledUploader
-            listType="picture-card"
-            accept="image/*"
-            path={`merchandise_images/${app.id}/${merchandiseId}/${fieldId}`}
-            isPublic={true}
-            trigger={({ loading, value }) => <Button type="link" icon="plus" loading={loading} disabled={loading} />}
-            onSuccess={handleUpload}
-            fileList={merchandise.images.map(image => ({
-              uid: image.url,
-              size: 0, // dummy
-              name: image.url,
-              status: 'done',
-              type: 'image/*',
-              url: `https://${process.env.REACT_APP_S3_BUCKET}/${image.url}`,
-            }))}
-          />,
-        )}
+        <MerchandiseImagesUploader merchandiseId={merchandiseId} images={merchandise.images} onChange={handleUpload} />
       </Form.Item>
       <Form.Item label={formatMessage(merchandiseMessages.label.abstract)}>
         {form.getFieldDecorator('abstract', {
