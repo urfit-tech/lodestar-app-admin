@@ -1,8 +1,8 @@
-import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
-import { PostType } from '../types/blog'
-import types from '../types'
+import gql from 'graphql-tag'
 import { uniq } from 'ramda'
+import types from '../types'
+import { PostType } from '../types/blog'
 
 export const usePost = (
   postId: string,
@@ -20,6 +20,7 @@ export const usePost = (
   const codeNames =
     data &&
     uniq([...data.post.map(post => post.id), ...data.post.filter(post => post.code_name).map(post => post.code_name)])
+
   const post: PostType =
     loading || error || !data
       ? {
@@ -30,11 +31,12 @@ export const usePost = (
           isDeleted: false,
           categories: [],
           tagNames: [],
-          memberId: '',
           codeName: '',
           codeNames: [],
           coverUrl: '',
           merchandiseIds: [],
+          creatorId: '',
+          authors: [],
         }
       : {
           id: data?.post_by_pk?.id || '',
@@ -48,11 +50,18 @@ export const usePost = (
               name: category?.category?.name || '',
             })) || [],
           tagNames: data?.post_by_pk?.post_tags.map(tag => tag.tag_name) || [],
-          memberId: data?.post_by_pk?.post_roles[0].member_id || '',
           codeName: data?.post_by_pk?.code_name || '',
           codeNames,
           coverUrl: data?.post_by_pk?.cover_url || '',
           merchandiseIds: data.post_by_pk?.post_merchandises?.map(postMerchandise => postMerchandise.merchandise_id),
+          creatorId: data?.post_by_pk?.post_roles.find(postRole => postRole.name === 'creator')?.member_id || '',
+          authors: data.post_by_pk?.post_roles
+            .filter(postRole => postRole.name === 'author')
+            .map(postRole => ({
+              id: postRole.member_id,
+              name: postRole?.member?.name || '',
+              pictureUrl: postRole?.member?.picture_url || '',
+            })),
         }
 
   return {
@@ -73,9 +82,6 @@ const GET_POST = gql`
       is_deleted
       code_name
       cover_url
-      post_roles {
-        member_id
-      }
       post_categories {
         id
         category {
@@ -89,6 +95,14 @@ const GET_POST = gql`
       }
       post_merchandises {
         merchandise_id
+      }
+      post_roles {
+        name
+        member_id
+        member {
+          name
+          picture_url
+        }
       }
     }
     post {

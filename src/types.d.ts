@@ -4738,11 +4738,6 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION {
 // GraphQL query operation: GET_POST
 // ====================================================
 
-export interface GET_POST_post_by_pk_post_roles {
-  __typename: "post_role";
-  member_id: string;
-}
-
 export interface GET_POST_post_by_pk_post_categories_category {
   __typename: "category";
   id: string;
@@ -4769,6 +4764,25 @@ export interface GET_POST_post_by_pk_post_merchandises {
   merchandise_id: any;
 }
 
+export interface GET_POST_post_by_pk_post_roles_member {
+  __typename: "member_public";
+  name: string | null;
+  picture_url: string | null;
+}
+
+export interface GET_POST_post_by_pk_post_roles {
+  __typename: "post_role";
+  /**
+   * creator | author
+   */
+  name: string;
+  member_id: string;
+  /**
+   * An object relationship
+   */
+  member: GET_POST_post_by_pk_post_roles_member | null;
+}
+
 export interface GET_POST_post_by_pk {
   __typename: "post";
   id: any;
@@ -4781,10 +4795,6 @@ export interface GET_POST_post_by_pk {
   /**
    * An array relationship
    */
-  post_roles: GET_POST_post_by_pk_post_roles[];
-  /**
-   * An array relationship
-   */
   post_categories: GET_POST_post_by_pk_post_categories[];
   /**
    * An array relationship
@@ -4794,6 +4804,10 @@ export interface GET_POST_post_by_pk {
    * An array relationship
    */
   post_merchandises: GET_POST_post_by_pk_post_merchandises[];
+  /**
+   * An array relationship
+   */
+  post_roles: GET_POST_post_by_pk_post_roles[];
 }
 
 export interface GET_POST_post {
@@ -11634,7 +11648,7 @@ export interface post_role_bool_exp {
   _not?: post_role_bool_exp | null;
   _or?: (post_role_bool_exp | null)[] | null;
   id?: uuid_comparison_exp | null;
-  member?: member_bool_exp | null;
+  member?: member_public_bool_exp | null;
   member_id?: String_comparison_exp | null;
   name?: String_comparison_exp | null;
   position?: Int_comparison_exp | null;
@@ -11647,7 +11661,6 @@ export interface post_role_bool_exp {
  */
 export interface post_role_insert_input {
   id?: any | null;
-  member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   name?: string | null;
   position?: number | null;

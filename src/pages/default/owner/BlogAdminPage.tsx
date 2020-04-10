@@ -6,6 +6,7 @@ import useRouter from 'use-react-router'
 import { AdminBlock, AdminBlockTitle, AdminHeader, AdminHeaderTitle, AdminPaneTitle } from '../../../components/admin'
 import AdminPublishBlock from '../../../components/admin/AdminPublishBlock'
 import RoleAdminBlock from '../../../components/admin/RoleAdminBlock'
+import BlogPostAuthorCollectionBlock from '../../../components/blog/BlogPostAuthorCollectionBlock'
 import BlogPostBasicForm from '../../../components/blog/BlogPostBasicForm'
 import BlogPostContentForm from '../../../components/blog/BlogPostContentForm'
 import BlogPostDeletionModal from '../../../components/blog/BlogPostDeletionModal'
@@ -21,7 +22,7 @@ const BlogAdminPage: React.FC = () => {
   const { history, match } = useRouter<{ postId: string }>()
   const postId = match.params.postId
   const { post, refetch: refetchPost } = usePost(postId)
-  const { member } = usePublicMember(post?.memberId || '')
+  const { member } = usePublicMember(post?.creatorId || '')
   const [active, setActive] = useQueryParam('active', StringParam)
   const { settings } = useContext(AppContext)
 
@@ -104,6 +105,7 @@ const BlogAdminPage: React.FC = () => {
 
                 <AdminBlock>
                   <AdminBlockTitle>{formatMessage(commonMessages.term.author)}</AdminBlockTitle>
+                  <BlogPostAuthorCollectionBlock post={post} />
                 </AdminBlock>
               </div>
             </Tabs.TabPane>
