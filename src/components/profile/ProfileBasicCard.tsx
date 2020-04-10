@@ -182,7 +182,7 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
             })(
               <StyledTextArea
                 rows={3}
-                maxLength={30}
+                maxLength={100}
                 placeholder={formatMessage(commonMessages.text.shortDescriptionPlaceholder)}
               />,
             )}
