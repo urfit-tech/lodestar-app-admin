@@ -482,6 +482,7 @@ export const blogMessages = {
     postContent: { id: 'blog.label.postContent', defaultMessage: '文章內容' },
     postManagement: { id: 'blog.label.postManagement', defaultMessage: '文章管理' },
     codeName: { id: 'blog.label.codeName', defaultMessage: '網址代稱' },
+    merchandises: {id: "blog.label.merchandises", defaultMessage: "相關商品"},
     deletePost: { id: 'blog.label.deletePost', defaultMessage: '刪除文章' },
   }),
   term: defineMessages({
@@ -489,5 +490,6 @@ export const blogMessages = {
   }),
   text: defineMessages({
     url: { id: 'blog.text.url', defaultMessage: '完整網址的最後部分，通常是因由小寫英文字母、數字或連字號組成' },
+    suggestedPictureSize: { id: 'blog.text.suggestedPictureSize', defaultMessage: '建議圖片尺寸：1200*675px' },
   }),
 }

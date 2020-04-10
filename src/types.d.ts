@@ -218,6 +218,59 @@ export interface UPDATE_PROGRAM_IS_DELETEDVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_POST_SETTING
+// ====================================================
+
+export interface UPDATE_POST_SETTING_update_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_SETTING_delete_post_merchandise {
+  __typename: "post_merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_SETTING_insert_post_merchandise {
+  __typename: "post_merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_SETTING {
+  /**
+   * update data of the table: "post"
+   */
+  update_post: UPDATE_POST_SETTING_update_post | null;
+  /**
+   * delete data from the table: "post_merchandise"
+   */
+  delete_post_merchandise: UPDATE_POST_SETTING_delete_post_merchandise | null;
+  /**
+   * insert data into the table: "post_merchandise"
+   */
+  insert_post_merchandise: UPDATE_POST_SETTING_insert_post_merchandise | null;
+}
+
+export interface UPDATE_POST_SETTINGVariables {
+  postId: any;
+  coverUrl?: string | null;
+  merchandises: post_merchandise_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_POST_VIDEO_URL
 // ====================================================
 
@@ -4711,6 +4764,11 @@ export interface GET_POST_post_by_pk_post_tags {
   tag_name: string;
 }
 
+export interface GET_POST_post_by_pk_post_merchandises {
+  __typename: "post_merchandise";
+  merchandise_id: any;
+}
+
 export interface GET_POST_post_by_pk {
   __typename: "post";
   id: any;
@@ -4719,6 +4777,7 @@ export interface GET_POST_post_by_pk {
   description: string | null;
   is_deleted: boolean;
   code_name: string | null;
+  cover_url: string | null;
   /**
    * An array relationship
    */
@@ -4731,6 +4790,10 @@ export interface GET_POST_post_by_pk {
    * An array relationship
    */
   post_tags: GET_POST_post_by_pk_post_tags[];
+  /**
+   * An array relationship
+   */
+  post_merchandises: GET_POST_post_by_pk_post_merchandises[];
 }
 
 export interface GET_POST_post {

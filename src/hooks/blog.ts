@@ -33,6 +33,8 @@ export const usePost = (
           memberId: '',
           codeName: '',
           codeNames: [],
+          coverUrl: '',
+          merchandiseIds: [],
         }
       : {
           id: data?.post_by_pk?.id || '',
@@ -49,6 +51,8 @@ export const usePost = (
           memberId: data?.post_by_pk?.post_roles[0].member_id || '',
           codeName: data?.post_by_pk?.code_name || '',
           codeNames,
+          coverUrl: data?.post_by_pk?.cover_url || '',
+          merchandiseIds: data.post_by_pk?.post_merchandises?.map(postMerchandise => postMerchandise.merchandise_id),
         }
 
   return {
@@ -68,6 +72,7 @@ const GET_POST = gql`
       description
       is_deleted
       code_name
+      cover_url
       post_roles {
         member_id
       }
@@ -81,6 +86,9 @@ const GET_POST = gql`
       post_tags {
         id
         tag_name
+      }
+      post_merchandises {
+        merchandise_id
       }
     }
     post {

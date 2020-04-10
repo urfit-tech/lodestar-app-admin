@@ -12,6 +12,8 @@ export type PostType = {
   memberId: string
   codeName: string
   codeNames?: (string | null)[]
+  coverUrl: string | null
+  merchandiseIds?: string[]
 }
 
 export type BlogPostProps = {
