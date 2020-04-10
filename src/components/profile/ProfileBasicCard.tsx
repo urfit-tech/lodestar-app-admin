@@ -2,9 +2,10 @@ import { Button, Form, Input, message, Select, Typography } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
-import React from 'react'
+import React, { useContext } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
@@ -61,6 +62,7 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
 }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
+  const app = useContext(AppContext)
   const { member, refetchMember } = useMember(memberId)
   const { tags } = useTags()
   const updateMemberBasic = useUpdateMemberBasic()
@@ -75,16 +77,14 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
             username: member.username,
             name: values.name,
             pictureUrl: values.picture
-              ? `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${localStorage.getItem(
-                  'kolable.app.id',
-                )}/${memberId}`
+              ? `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${app.id}/${memberId}?t=${Date.now()}`
               : member.pictureUrl,
             title: values.title,
             abstract: values.abstract,
             description: values.description ? values.description.toRAW() : null,
             tags: values.tags
               ? values.tags.map((tag: string) => ({
-                  app_id: localStorage.getItem('kolable.app.id'),
+                  app_id: app.id,
                   name: tag,
                   type: '',
                 }))
@@ -128,7 +128,7 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
               accept="image/*"
               listType="picture-card"
               showUploadList={false}
-              path={`avatars/${localStorage.getItem('kolable.app.id')}/${memberId}`}
+              path={`avatars/${app.id}/${memberId}`}
               onSuccess={handleSubmit}
               isPublic={true}
             />,
