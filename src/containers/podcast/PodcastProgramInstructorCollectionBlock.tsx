@@ -5,11 +5,11 @@ import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import RoleAdminBlock from '../../components/admin/RoleAdminBlock'
+import CreatorSelector from '../../components/common/CreatorSelector'
 import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
-import CreatorSelector from '../common/CreatorSelector'
 
 const StyledModalTitle = styled.div`
   color: var(--gray-darker);

@@ -2,12 +2,12 @@ import { Button, Form, Icon, Input, Radio } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import CreatorSelector from '../../containers/common/CreatorSelector'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CategorySelector from '../common/CategorySelector'
+import CreatorSelector from './CreatorSelector'
 
 type ProductCreationModalProps = FormComponentProps &
   AdminModalProps & {

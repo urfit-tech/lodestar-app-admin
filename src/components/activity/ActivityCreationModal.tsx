@@ -3,12 +3,12 @@ import { FormComponentProps } from 'antd/lib/form'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import useRouter from 'use-react-router'
-import CreatorSelector from '../../containers/common/CreatorSelector'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import AdminModal from '../admin/AdminModal'
 import CategorySelector from '../common/CategorySelector'
+import CreatorSelector from '../common/CreatorSelector'
 
 export type CreateActivityEvent = {
   values: {

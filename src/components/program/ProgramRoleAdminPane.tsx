@@ -3,7 +3,6 @@ import { CardProps } from 'antd/lib/card'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import CreatorSelector from '../../containers/common/CreatorSelector'
 import MemberAvatar from '../../containers/common/MemberAvatar'
 import { DeleteProgramProps, UpdateProgramProps } from '../../containers/program/ProgramRoleAdminPane'
 import { notEmpty } from '../../helpers'
@@ -11,6 +10,7 @@ import { commonMessages } from '../../helpers/translation'
 import { ProgramType } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
+import CreatorSelector from '../common/CreatorSelector'
 
 const StyledModalTitle = styled.div`
   color: var(--gray-darker);
