@@ -115,6 +115,70 @@ const GET_POST = gql`
   }
 `
 
+export const usePostCollection = () => {
+  const { loading, error, data } = useQuery<types.GET_POSTS>(GET_POSTS)
+
+  const posts: {
+    id: string
+    title: string
+    coverUrl: string | null
+    videoUrl: string | null
+    views: number | null
+    publishedAt: Date | null
+    memberName?: string | null
+  }[] =
+    loading || error || !data
+      ? [
+          {
+            id: '',
+            title: '',
+            coverUrl: '',
+            videoUrl: '',
+            views: null,
+            publishedAt: null,
+            memberName: '',
+          },
+        ]
+      : data?.post.map(post => {
+          return {
+            id: post.id,
+            title: post.title,
+            coverUrl: post.cover_url,
+            videoUrl: post.video_url,
+            views: post.views,
+            publishedAt: post.published_at,
+            memberName: post?.post_roles[0].member?.name || post?.post_roles[0].member?.username || '',
+          }
+        })
+
+  return {
+    loading,
+    error,
+    posts,
+  }
+}
+
+const GET_POSTS = gql`
+  query GET_POSTS {
+    post {
+      id
+      title
+      cover_url
+      video_url
+      post_roles {
+        id
+        post_id
+        member {
+          name
+          username
+        }
+      }
+      published_at
+      views
+    }
+  }
+`
+
 export const useInsertPost = () => {
   const [insertPost] = useMutation<types.INSERT_POST, types.INSERT_POSTVariables>(
     gql`

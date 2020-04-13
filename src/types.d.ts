@@ -4918,6 +4918,51 @@ export interface GET_POSTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_POSTS
+// ====================================================
+
+export interface GET_POSTS_post_post_roles_member {
+  __typename: "member_public";
+  name: string | null;
+  username: string | null;
+}
+
+export interface GET_POSTS_post_post_roles {
+  __typename: "post_role";
+  id: any;
+  post_id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_POSTS_post_post_roles_member | null;
+}
+
+export interface GET_POSTS_post {
+  __typename: "post";
+  id: any;
+  title: string;
+  cover_url: string | null;
+  video_url: string | null;
+  /**
+   * An array relationship
+   */
+  post_roles: GET_POSTS_post_post_roles[];
+  published_at: any | null;
+  views: any;
+}
+
+export interface GET_POSTS {
+  /**
+   * fetch data from the table: "post"
+   */
+  post: GET_POSTS_post[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_POST
 // ====================================================
 
@@ -6884,6 +6929,7 @@ export enum app_nav_update_column {
   label = "label",
   locale = "locale",
   position = "position",
+  tag = "tag",
 }
 
 /**
@@ -8889,6 +8935,7 @@ export interface app_nav_bool_exp {
   label?: String_comparison_exp | null;
   locale?: String_comparison_exp | null;
   position?: Int_comparison_exp | null;
+  tag?: String_comparison_exp | null;
 }
 
 /**
@@ -8905,6 +8952,7 @@ export interface app_nav_insert_input {
   label?: string | null;
   locale?: string | null;
   position?: number | null;
+  tag?: string | null;
 }
 
 /**
