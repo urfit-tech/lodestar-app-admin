@@ -45,13 +45,11 @@ const BlogPostContentForm: React.FC<BlogPostContentFormProps> = ({
         handleSubmit()
       }}
     >
-      {post.description && (
-        <Form.Item>
-          {getFieldDecorator('description', {
-            initialValue: BraftEditor.createEditorState(post.description),
-          })(<AdminBraftEditor />)}
-        </Form.Item>
-      )}
+      <Form.Item>
+        {getFieldDecorator('description', {
+          initialValue: post.description && BraftEditor.createEditorState(post.description),
+        })(<AdminBraftEditor />)}
+      </Form.Item>
       <Form.Item>
         <Button onClick={() => resetFields()}>{formatMessage(commonMessages.ui.cancel)}</Button>
         <Button className="ml-2" type="primary" htmlType="submit">
