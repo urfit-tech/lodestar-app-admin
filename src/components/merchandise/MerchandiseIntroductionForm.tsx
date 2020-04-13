@@ -5,7 +5,7 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
-import { commonMessages, merchandiseMessages, podcastMessages } from '../../helpers/translation'
+import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
 import { StyledTips } from '../admin'
@@ -68,7 +68,7 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
         label={
           <>
             {formatMessage(merchandiseMessages.label.images)}
-            <Tooltip title={<StyledTips>{formatMessage(podcastMessages.text.audioFileTips)}</StyledTips>}>
+            <Tooltip title={<StyledTips>{formatMessage(merchandiseMessages.text.imageTips)}</StyledTips>}>
               <Icon type="question-circle" theme="filled" />
             </Tooltip>
           </>

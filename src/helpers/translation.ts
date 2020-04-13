@@ -466,6 +466,7 @@ export const merchandiseMessages = {
   }),
   text: defineMessages({
     searchMerchandise: { id: 'merchandise.text.searchMerchandise', defaultMessage: '搜尋商品名稱' },
+    imageTips: { id: 'merchandise.text.imageTips', defaultMessage: '建議圖片尺寸：600*600px' },
   }),
 }
 
