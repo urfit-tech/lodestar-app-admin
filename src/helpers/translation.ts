@@ -178,7 +178,7 @@ export const commonMessages = {
     tags: { id: 'common.term.tags', defaultMessage: '標籤' },
   }),
   text: defineMessages({
-    shortDescriptionPlaceholder: { id: 'common.text.shortDescriptionPlaceholder', defaultMessage: '30 字以內' },
+    shortDescriptionPlaceholder: { id: 'common.text.shortDescriptionPlaceholder', defaultMessage: '100 字以內' },
     dueDate: { id: 'common.text.dueDate', defaultMessage: '{date} 到期' },
     totalCount: { id: 'common.text.totalCount', defaultMessage: '共 {count} 筆' },
     minutes: { id: 'common.text.minutes', defaultMessage: '{minutes} 分鐘' },
