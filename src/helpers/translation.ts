@@ -477,12 +477,13 @@ export const blogMessages = {
     video: { id: 'blog.ui.video', defaultMessage: '影片內容' },
     contentDescription: { id: 'blog.ui.description', defaultMessage: '圖文內容' },
     postSetting: { id: 'blog.ui.postSetting', defaultMessage: '文章設定' },
+    createPost: { id: 'blog.ui.createPost', defaultMessage: '建立文章' },
   }),
   label: defineMessages({
     postContent: { id: 'blog.label.postContent', defaultMessage: '文章內容' },
     postManagement: { id: 'blog.label.postManagement', defaultMessage: '文章管理' },
     codeName: { id: 'blog.label.codeName', defaultMessage: '網址代稱' },
-    merchandises: {id: "blog.label.merchandises", defaultMessage: "相關商品"},
+    merchandises: { id: 'blog.label.merchandises', defaultMessage: '相關商品' },
     deletePost: { id: 'blog.label.deletePost', defaultMessage: '刪除文章' },
   }),
   term: defineMessages({

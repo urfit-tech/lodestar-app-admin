@@ -4918,6 +4918,45 @@ export interface GET_POSTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_POST
+// ====================================================
+
+export interface INSERT_POST_insert_post_returning {
+  __typename: "post";
+  id: any;
+}
+
+export interface INSERT_POST_insert_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_POST_insert_post_returning[];
+}
+
+export interface INSERT_POST {
+  /**
+   * insert data into the table: "post"
+   */
+  insert_post: INSERT_POST_insert_post | null;
+}
+
+export interface INSERT_POSTVariables {
+  appId: string;
+  title: string;
+  postCategories: post_category_insert_input[];
+  postRoles: post_role_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ENROLLED_CARD_IDS
 // ====================================================
 

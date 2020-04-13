@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { uniq } from 'ramda'
 import types from '../types'
@@ -37,7 +37,7 @@ export const usePost = (
           merchandiseIds: [],
           creatorId: '',
           authors: [],
-          publishedAt: null
+          publishedAt: null,
         }
       : {
           id: data?.post_by_pk?.id || '',
@@ -63,7 +63,7 @@ export const usePost = (
               name: postRole?.member?.name || '',
               pictureUrl: postRole?.member?.picture_url || '',
             })),
-          publishedAt: data?.post_by_pk?.published_at
+          publishedAt: data?.post_by_pk?.published_at,
         }
 
   return {
@@ -114,3 +114,32 @@ const GET_POST = gql`
     }
   }
 `
+
+export const useInsertPost = () => {
+  const [insertPost] = useMutation<types.INSERT_POST, types.INSERT_POSTVariables>(
+    gql`
+      mutation INSERT_POST(
+        $appId: String!
+        $title: String!
+        $postCategories: [post_category_insert_input!]!
+        $postRoles: [post_role_insert_input!]!
+      ) {
+        insert_post(
+          objects: {
+            app_id: $appId
+            title: $title
+            post_categories: { data: $postCategories }
+            post_roles: { data: $postRoles }
+          }
+        ) {
+          affected_rows
+          returning {
+            id
+          }
+        }
+      }
+    `,
+  )
+
+  return insertPost
+}
