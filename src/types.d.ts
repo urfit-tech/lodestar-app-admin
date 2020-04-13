@@ -271,6 +271,34 @@ export interface UPDATE_PROGRAM_IS_DELETEDVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: PUBLISH_POST
+// ====================================================
+
+export interface PUBLISH_POST_update_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_POST {
+  /**
+   * update data of the table: "post"
+   */
+  update_post: PUBLISH_POST_update_post | null;
+}
+
+export interface PUBLISH_POSTVariables {
+  postId: any;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_POST_SETTING
 // ====================================================
 
@@ -4845,6 +4873,7 @@ export interface GET_POST_post_by_pk {
   is_deleted: boolean;
   code_name: string | null;
   cover_url: string | null;
+  published_at: any | null;
   /**
    * An array relationship
    */

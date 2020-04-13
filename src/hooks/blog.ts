@@ -37,6 +37,7 @@ export const usePost = (
           merchandiseIds: [],
           creatorId: '',
           authors: [],
+          publishedAt: null
         }
       : {
           id: data?.post_by_pk?.id || '',
@@ -62,6 +63,7 @@ export const usePost = (
               name: postRole?.member?.name || '',
               pictureUrl: postRole?.member?.picture_url || '',
             })),
+          publishedAt: data?.post_by_pk?.published_at
         }
 
   return {
@@ -82,6 +84,7 @@ const GET_POST = gql`
       is_deleted
       code_name
       cover_url
+      published_at
       post_categories {
         id
         category {

@@ -19,6 +19,7 @@ export type PostType = {
     name: string
     pictureUrl: string | null
   }>
+  publishedAt: Date | null
 }
 
 export type BlogPostProps = {

@@ -4,12 +4,12 @@ import { useIntl } from 'react-intl'
 import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
 import { AdminBlock, AdminBlockTitle, AdminHeader, AdminHeaderTitle, AdminPaneTitle } from '../../../components/admin'
-import AdminPublishBlock from '../../../components/admin/AdminPublishBlock'
 import RoleAdminBlock from '../../../components/admin/RoleAdminBlock'
 import BlogPostAuthorCollectionBlock from '../../../components/blog/BlogPostAuthorCollectionBlock'
 import BlogPostBasicForm from '../../../components/blog/BlogPostBasicForm'
 import BlogPostContentForm from '../../../components/blog/BlogPostContentForm'
 import BlogPostDeletionModal from '../../../components/blog/BlogPostDeletionModal'
+import BlogPostPublishBlock from '../../../components/blog/BlogPostPublishBlock'
 import BlogPostSettingForm from '../../../components/blog/BlogPostSettingForm'
 import BlogPostVideoForm from '../../../components/blog/BlogPostVideoForm'
 import AppContext from '../../../contexts/AppContext'
@@ -23,12 +23,12 @@ const BlogAdminPage: React.FC = () => {
   const postId = match.params.postId
   const { post, refetch: refetchPost } = usePost(postId)
   const { member } = usePublicMember(post?.creatorId || '')
-  const [active, setActive] = useQueryParam('active', StringParam)
+  const [tabkey, setTabkey] = useQueryParam('tabkey', StringParam)
   const { settings } = useContext(AppContext)
 
   useEffect(() => {
-    !active && setActive('content')
-  }, [active, setActive])
+    !tabkey && setTabkey('content')
+  }, [tabkey, setTabkey])
 
   return (
     <>
@@ -47,8 +47,8 @@ const BlogAdminPage: React.FC = () => {
       <div style={{ backgroundColor: '#f7f8f8', minHeight: 'calc(100vh - 64px)' }}>
         {post && (
           <Tabs
-            activeKey={active}
-            onChange={setActive}
+            activeKey={tabkey}
+            onChange={setTabkey}
             renderTabBar={(tabsProps, DefaultTabBar) => (
               <div style={{ backgroundColor: 'white' }}>
                 <div className="container text-center">
@@ -115,13 +115,7 @@ const BlogAdminPage: React.FC = () => {
                 <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
 
                 <AdminBlock>
-                  <AdminPublishBlock
-                    type={'ordinary'}
-                    title={'title'}
-                    description={'description'}
-                    checklist={[]}
-                    onPublish={() => {}}
-                  />
+                  <BlogPostPublishBlock post={post} onRefetch={refetchPost} />
                 </AdminBlock>
               </div>
             </Tabs.TabPane>
