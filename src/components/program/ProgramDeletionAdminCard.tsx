@@ -11,7 +11,7 @@ import AdminCard from '../admin/AdminCard'
 const messages = defineMessages({
   deleteProgram: { id: 'program.label.deleteProgram', defaultMessage: '刪除課程' },
   deleteProgramConfirmation: {
-    id: 'program.text.deletePorgramConfirmation',
+    id: 'program.text.deleteProgramConfirmation',
     defaultMessage: '課程一經刪除即不可恢復，確定要刪除嗎？',
   },
   deleteProgramWarning: {
