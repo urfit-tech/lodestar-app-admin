@@ -53,7 +53,7 @@ export const createUploadFn = (appId: string) => {
   }
 }
 
-type AdminBraftVariant = 'default' | 'short'
+type AdminBraftVariant = 'default' | 'short' | 'merchandise'
 const controls: {
   [key in AdminBraftVariant]: ControlType[]
 } = {
@@ -82,10 +82,29 @@ const controls: {
     'fullscreen',
   ],
   short: ['bold', 'italic', 'underline', 'remove-styles', 'separator', 'media'],
+  merchandise: [
+    'font-size',
+    'line-height',
+    'text-color',
+    'bold',
+    'italic',
+    'underline',
+    'strike-through',
+    'remove-styles',
+    'separator',
+    'text-align',
+    'separator',
+    'list-ol',
+    'list-ul',
+    'link',
+    'hr',
+    'separator',
+    'fullscreen',
+  ],
 }
 
 const AdminBraftEditor: React.FC<{
-  variant?: 'short' | 'default'
+  variant?: AdminBraftVariant
   value?: EditorState
   onChange?: (editorState: EditorState) => void
 }> = ({ variant, value, onChange }, ref) => {

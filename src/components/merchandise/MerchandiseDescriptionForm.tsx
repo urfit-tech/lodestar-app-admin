@@ -58,7 +58,7 @@ const MerchandiseDescriptionForm: React.FC<MerchandiseDescriptionFormProps> = ({
       <Form.Item>
         {form.getFieldDecorator('description', {
           initialValue: BraftEditor.createEditorState(merchandise.description),
-        })(<AdminBraftEditor />)}
+        })(<AdminBraftEditor variant="merchandise" />)}
       </Form.Item>
       <Form.Item>
         <Button onClick={() => form.resetFields()} className="mr-2">

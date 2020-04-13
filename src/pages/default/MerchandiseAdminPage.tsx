@@ -52,9 +52,9 @@ const MerchandiseAdminPage: React.FC = () => {
 
         <AdminHeaderTitle>{merchandise?.title || merchandiseId}</AdminHeaderTitle>
 
-        <a href={`//${settings['host']}/merchandises/${merchandiseId}`} target="_blank" rel="noopener noreferrer">
+        {/* <a href={`//${settings['host']}/merchandises/${merchandiseId}`} target="_blank" rel="noopener noreferrer">
           <Button>預覽</Button>
-        </a>
+        </a> */}
       </AdminHeader>
 
       <StyledLayoutContent variant="gray">
