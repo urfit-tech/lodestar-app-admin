@@ -145,8 +145,7 @@ const BlogPostSettingForm: React.FC<BlogPostSettingFormProps> = ({
 const useUpdatePostSetting = (postId: string) => {
   const [updateSetting] = useMutation(gql`
     mutation UPDATE_POST_SETTING($postId: uuid!, $coverUrl: String, $merchandises: [post_merchandise_insert_input!]!) {
-      # update post
-      update_post(where: { id: { _eq: $postId } }, _set: { cover_url: $coverUrl }) {
+      update_post(_set: { cover_url: $coverUrl }, where: { id: { _eq: $postId } }) {
         affected_rows
       }
 

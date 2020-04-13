@@ -71,6 +71,59 @@ export interface GET_ACTIVITY_SESSIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_POST_ROLE
+// ====================================================
+
+export interface UPDATE_POST_ROLE_update_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_ROLE_delete_post_role {
+  __typename: "post_role_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_ROLE_insert_post_role {
+  __typename: "post_role_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_ROLE {
+  /**
+   * update data of the table: "post"
+   */
+  update_post: UPDATE_POST_ROLE_update_post | null;
+  /**
+   * delete data from the table: "post_role"
+   */
+  delete_post_role: UPDATE_POST_ROLE_delete_post_role | null;
+  /**
+   * insert data into the table: "post_role"
+   */
+  insert_post_role: UPDATE_POST_ROLE_insert_post_role | null;
+}
+
+export interface UPDATE_POST_ROLEVariables {
+  postId: any;
+  postRoles: post_role_insert_input[];
+  updatedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_POST_BASIC
 // ====================================================
 
@@ -400,6 +453,36 @@ export interface GET_COUPON_PLAN_CODES {
 
 export interface GET_COUPON_PLAN_CODESVariables {
   couponPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CREATOR_COLLECTION
+// ====================================================
+
+export interface GET_CREATOR_COLLECTION_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+  zoom_user_id: string | null;
+}
+
+export interface GET_CREATOR_COLLECTION {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_CREATOR_COLLECTION_member[];
+}
+
+export interface GET_CREATOR_COLLECTIONVariables {
+  appId: string;
+  noZoomUserId?: boolean | null;
 }
 
 /* tslint:disable */
@@ -2732,36 +2815,6 @@ export interface CREATE_APPOINTMENT_SCHEDULEVariables {
   startedAt: any;
   intervalType?: string | null;
   intervalAmount?: number | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_CREATOR_COLLECTION
-// ====================================================
-
-export interface GET_CREATOR_COLLECTION_member {
-  __typename: "member";
-  id: string;
-  picture_url: string | null;
-  name: string;
-  username: string;
-  email: string;
-  zoom_user_id: string | null;
-}
-
-export interface GET_CREATOR_COLLECTION {
-  /**
-   * fetch data from the table: "member"
-   */
-  member: GET_CREATOR_COLLECTION_member[];
-}
-
-export interface GET_CREATOR_COLLECTIONVariables {
-  appId: string;
-  noZoomUserId?: boolean | null;
 }
 
 /* tslint:disable */
@@ -7448,7 +7501,6 @@ export enum order_log_update_column {
   discount_point = "discount_point",
   discount_price = "discount_price",
   discount_type = "discount_type",
-  gateway = "gateway",
   id = "id",
   invoice = "invoice",
   member_id = "member_id",
@@ -10680,7 +10732,6 @@ export interface order_log_bool_exp {
   discount_point?: numeric_comparison_exp | null;
   discount_price?: numeric_comparison_exp | null;
   discount_type?: Int_comparison_exp | null;
-  gateway?: String_comparison_exp | null;
   id?: String_comparison_exp | null;
   invoice?: jsonb_comparison_exp | null;
   member?: member_bool_exp | null;
@@ -10705,7 +10756,6 @@ export interface order_log_insert_input {
   discount_point?: any | null;
   discount_price?: any | null;
   discount_type?: number | null;
-  gateway?: string | null;
   id?: string | null;
   invoice?: any | null;
   member?: member_obj_rel_insert_input | null;
