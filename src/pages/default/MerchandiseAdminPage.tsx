@@ -1,5 +1,5 @@
 import { Button, Icon, Tabs } from 'antd'
-import React, { useContext } from 'react'
+import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -19,7 +19,8 @@ import MerchandiseDescriptionForm from '../../components/merchandise/Merchandise
 import MerchandiseIntroductionForm from '../../components/merchandise/MerchandiseIntroductionForm'
 import MerchandisePublishBlock from '../../components/merchandise/MerchandisePublishBlock'
 import MerchandiseSalesForm from '../../components/merchandise/MerchandiseSalesForm'
-import AppContext from '../../contexts/AppContext'
+import { merchandiseMessages } from '../../helpers/translation'
+// import AppContext from '../../contexts/AppContext'
 import { useMerchandise } from '../../hooks/merchandise'
 
 const messages = defineMessages({
@@ -29,7 +30,6 @@ const messages = defineMessages({
   basicSettings: { id: 'merchandise.label.basicSettings', defaultMessage: '基本設定' },
   introduction: { id: 'merchandise.label.introduction', defaultMessage: '商品介紹' },
   description: { id: 'merchandise.label.description', defaultMessage: '商品詳情' },
-  delete: { id: 'merchandise.label.delete', defaultMessage: '刪除商品' },
   price: { id: 'merchandise.label.price', defaultMessage: '商品售價' },
 })
 
@@ -38,7 +38,7 @@ const MerchandiseAdminPage: React.FC = () => {
   const { match } = useRouter<{ merchandiseId: string }>()
   const merchandiseId = match.params.merchandiseId
   const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
-  const { settings } = useContext(AppContext)
+  // const { settings } = useContext(AppContext)
   const { merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
 
   return (
@@ -96,8 +96,8 @@ const MerchandiseAdminPage: React.FC = () => {
                 />
               </AdminBlock>
               <AdminBlock>
-                <AdminBlockTitle>{formatMessage(messages.delete)}</AdminBlockTitle>
-                <MerchandiseDeleteBlock merchandiseId={merchandiseId} />
+                <AdminBlockTitle>{formatMessage(merchandiseMessages.label.delete)}</AdminBlockTitle>
+                <MerchandiseDeleteBlock merchandiseId={merchandiseId} refetch={refetchMerchandise} />
               </AdminBlock>
             </div>
           </Tabs.TabPane>

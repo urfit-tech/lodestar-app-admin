@@ -463,10 +463,11 @@ export const merchandiseMessages = {
     paymentLink: { id: 'merchandise.label.paymentLink', defaultMessage: '付款連結' },
     price: { id: 'merchandise.label.price', defaultMessage: '商品售價' },
     cover: { id: 'merchandise.label.cover', defaultMessage: '封面圖片' },
+    delete: {id: 'merchandise.label.delete', defaultMessage: '刪除商品'}
   }),
   text: defineMessages({
     searchMerchandise: { id: 'merchandise.text.searchMerchandise', defaultMessage: '搜尋商品名稱' },
-    imageTips: { id: 'merchandise.text.imageTips', defaultMessage: '建議圖片尺寸：600*600px' },
+    imageTips: { id: 'merchandise.text.imageTips', defaultMessage: '建議圖片尺寸：600*600px 以上' },
   }),
 }
 

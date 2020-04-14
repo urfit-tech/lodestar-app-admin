@@ -105,10 +105,10 @@ export const AppProvider: React.FC = ({ children }) => {
             title: data.app_by_pk.title,
             description: data.app_by_pk.description,
             enabledModules,
-            settings: data.app_by_pk.app_settings.reduce(
-              (dict, el, index) => ((dict[el.key] = el.value), dict),
-              {} as { [key: string]: string },
-            ),
+            settings: data.app_by_pk.app_settings.reduce((dict, el, index) => {
+              dict[el.key] = el.value
+              return dict
+            }, {} as { [key: string]: string }),
           }
         })()
 

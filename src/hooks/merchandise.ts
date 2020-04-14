@@ -27,7 +27,10 @@ export const useInsertMerchandise = () => {
 export const useMerchandiseCollection = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_MERCHANDISE_COLLECTION>(gql`
     query GET_MERCHANDISE_COLLECTION {
-      merchandise(where: { is_deleted: { _eq: false } }, order_by: { position: asc, published_at: desc }) {
+      merchandise(
+        where: { is_deleted: { _eq: false } }
+        order_by: { position: asc, published_at: desc, updated_at: desc }
+      ) {
         id
         title
         price

@@ -41,7 +41,10 @@ const messages = defineMessages({
   },
 })
 
-const MerchandiseDeleteBlock: React.FC<{ merchandiseId: string }> = ({ merchandiseId }) => {
+const MerchandiseDeleteBlock: React.FC<{ merchandiseId: string; refetch?: () => Promise<any> }> = ({
+  merchandiseId,
+  refetch,
+}) => {
   const { formatMessage } = useIntl()
   const { history } = useRouter()
   const [deleteMerchandise] = useMutation<types.DELETE_MERCHANDISE, types.DELETE_MERCHANDISEVariables>(
@@ -56,7 +59,10 @@ const MerchandiseDeleteBlock: React.FC<{ merchandiseId: string }> = ({ merchandi
       },
     })
       .then(() => {
-        history.push('/merchandises')
+        refetch &&
+          refetch().then(() => {
+            history.push('/merchandises')
+          })
       })
       .catch(handleError)
   }
@@ -76,7 +82,7 @@ const MerchandiseDeleteBlock: React.FC<{ merchandiseId: string }> = ({ merchandi
         cancelText={formatMessage(commonMessages.ui.back)}
         onCancel={() => setVisible(false)}
       >
-        <StyledTitle className="mb-4">{formatMessage(messages.deleteDescription)}</StyledTitle>
+        <StyledTitle className="mb-4">{formatMessage(merchandiseMessages.label.delete)}</StyledTitle>
         <StyledDescription>{formatMessage(messages.deleteWarning)}</StyledDescription>
       </StyledModal>
     </div>

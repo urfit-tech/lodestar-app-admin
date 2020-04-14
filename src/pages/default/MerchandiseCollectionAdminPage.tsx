@@ -31,7 +31,7 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
 
   const { id: appId } = useContext(AppContext)
   const insertMerchandise = useInsertMerchandise()
-  const { merchandises } = useMerchandiseCollection()
+  const { merchandises, refetchMerchandises } = useMerchandiseCollection()
   const [searchText, setSearchText] = useState('')
 
   const tabContents = [
@@ -42,11 +42,11 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
         merchandise => merchandise.publishedAt && merchandise.publishedAt.getTime() < Date.now(),
       ),
     },
-    {
-      key: 'soldOut',
-      name: formatMessage(merchandiseMessages.status.soldOut),
-      merchandises: [],
-    },
+    // {
+    //   key: 'soldOut',
+    //   name: formatMessage(merchandiseMessages.status.soldOut),
+    //   merchandises: [],
+    // },
     {
       key: 'unpublished',
       name: formatMessage(merchandiseMessages.status.unpublished),
@@ -90,8 +90,10 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
                     })),
                   },
                 }).then(({ data }) => {
-                  const id = data?.insert_merchandise?.returning[0].id
-                  id && history.push(`/merchandises/${id}`)
+                  refetchMerchandises().then(() => {
+                    const merchandiseId = data?.insert_merchandise?.returning[0].id
+                    merchandiseId && history.push(`/merchandises/${merchandiseId}`)
+                  })
                 })
               }
             />
