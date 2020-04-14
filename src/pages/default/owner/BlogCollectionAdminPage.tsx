@@ -31,6 +31,7 @@ const BlogAdminCollectionPage: React.FC = () => {
 
       <div className="mb-4">
         <ProductCreationModal
+          classType="post"
           renderTrigger={({ setVisible }) => (
             <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
               {formatMessage(blogMessages.ui.createPost)}

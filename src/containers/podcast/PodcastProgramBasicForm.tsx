@@ -97,7 +97,7 @@ const PodcastProgramBasicForm: React.FC<FormComponentProps> = ({ form }) => {
       <Form.Item label={formatMessage(commonMessages.term.category)}>
         {form.getFieldDecorator('categoryIds', {
           initialValue: podcastProgram.categories.map(category => category.id),
-        })(<CategorySelector classType="program" />)}
+        })(<CategorySelector classType="podcastProgram" />)}
       </Form.Item>
       {enabledModules.locale && (
         <Form.Item

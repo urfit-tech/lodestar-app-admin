@@ -11,9 +11,9 @@ import { ReactComponent as CalendarAltIcon } from '../../images/icon/calendar-al
 import { ReactComponent as DiscountIcon } from '../../images/icon/discount.svg'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import { ReactComponent as MoneyCircleIcon } from '../../images/icon/money-circle.svg'
+import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
 import { ReactComponent as UserIcon } from '../../images/icon/user.svg'
 import { ReactComponent as UsersIcon } from '../../images/icon/users.svg'
-import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
 import { routesProps } from '../../Routes'
 
 const StyledMenu = styled(Menu)`
@@ -79,6 +79,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
           {enabledModules.learning_statistics && (
             <Menu.Item key="program_progress_admin">{formatMessage(commonMessages.menu.programProgress)}</Menu.Item>
           )}
+          <Menu.Item key="program_category_admin">{formatMessage(commonMessages.menu.programCategory)}</Menu.Item>
         </Menu.SubMenu>
 
         {enabledModules.podcast && (
@@ -95,6 +96,9 @@ export const OwnerAdminMenu = (props: MenuProps) => {
               {formatMessage(commonMessages.menu.podcastPrograms)}
             </Menu.Item>
             <Menu.Item key="owner_podcast_plan_admin">{formatMessage(commonMessages.menu.podcastPlans)}</Menu.Item>
+            <Menu.Item key="owner_podcast_program_category_admin">
+              {formatMessage(commonMessages.menu.podcastCategory)}
+            </Menu.Item>
           </Menu.SubMenu>
         )}
 
@@ -128,6 +132,9 @@ export const OwnerAdminMenu = (props: MenuProps) => {
             }
           >
             <Menu.Item key="owner_activity_collection_admin">{formatMessage(commonMessages.menu.activities)}</Menu.Item>
+            <Menu.Item key="owner_activity_category_admin">
+              {formatMessage(commonMessages.menu.activityCategory)}
+            </Menu.Item>
           </Menu.SubMenu>
         )}
 
@@ -142,9 +149,12 @@ export const OwnerAdminMenu = (props: MenuProps) => {
             }
           >
             <Menu.Item key="merchandise_collection_admin">{formatMessage(commonMessages.menu.merchandises)}</Menu.Item>
+            <Menu.Item key="merchandise_category_admin">
+              {formatMessage(commonMessages.menu.merchandiseCategory)}
+            </Menu.Item>
           </Menu.SubMenu>
         )}
-        
+
         {enabledModules.blog && (
           <Menu.SubMenu
             key="owner_blog_admin"
@@ -156,6 +166,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
             }
           >
             <Menu.Item key="blog_collection_admin">{formatMessage(commonMessages.menu.blogPosts)}</Menu.Item>
+            <Menu.Item key="blog_category_admin">{formatMessage(commonMessages.menu.blogCategory)}</Menu.Item>
           </Menu.SubMenu>
         )}
 

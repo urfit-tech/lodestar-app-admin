@@ -73,6 +73,7 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
         <div className="row">
           <div className="col-8">
             <ProductCreationModal
+              classType="merchandise"
               renderTrigger={({ setVisible }) => (
                 <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
                   {formatMessage(merchandiseMessages.ui.createMerchandise)}

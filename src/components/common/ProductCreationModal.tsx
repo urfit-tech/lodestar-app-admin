@@ -5,12 +5,14 @@ import { useIntl } from 'react-intl'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
+import { ClassType } from '../../types/general'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CategorySelector from '../common/CategorySelector'
 import CreatorSelector from './CreatorSelector'
 
 type ProductCreationModalProps = FormComponentProps &
   AdminModalProps & {
+    classType: ClassType
     withCreatorSelector?: boolean
     withProgramType?: boolean
     onCreate?: (values: {
@@ -24,6 +26,7 @@ type ProductCreationModalProps = FormComponentProps &
 const ProductCreationModal: React.FC<ProductCreationModalProps> = ({
   withCreatorSelector,
   withProgramType,
+  classType,
   form,
   onCreate,
   ...props
@@ -92,7 +95,7 @@ const ProductCreationModal: React.FC<ProductCreationModalProps> = ({
           })(<Input />)}
         </Form.Item>
         <Form.Item label={formatMessage(commonMessages.term.category)}>
-          {form.getFieldDecorator('categoryIds', { initialValue: [] })(<CategorySelector classType="program" />)}
+          {form.getFieldDecorator('categoryIds', { initialValue: [] })(<CategorySelector classType={classType} />)}
         </Form.Item>
         {withProgramType && (
           <Form.Item label={formatMessage(programMessages.label.programPlanType)}>

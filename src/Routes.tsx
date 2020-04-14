@@ -73,6 +73,11 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'content-creator',
   },
+  program_category_admin: {
+    path: '/program-category',
+    pageName: 'ProgramCategoryPage',
+    authenticated: true,
+  },
   program_admin: {
     path: '/programs/:programId',
     pageName: 'ProgramAdminPage',
@@ -91,6 +96,11 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'owner/BlogAdminPage',
     authenticated: true,
   },
+  blog_category_admin: {
+    path: '/blog-post-category',
+    pageName: 'BlogPostCategoryPage',
+    authenticated: true,
+  },
 
   // merchandise
   merchandise_collection_admin: {
@@ -101,6 +111,11 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   merchandise_admin: {
     path: '/merchandises/:merchandiseId',
     pageName: 'MerchandiseAdminPage',
+    authenticated: true,
+  },
+  merchandise_category_admin: {
+    path: '/merchandise-category',
+    pageName: 'MerchandiseCategoryPage',
     authenticated: true,
   },
 
@@ -117,12 +132,12 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
-  owner_category_admin: {
-    path: '/admin/category',
-    pageName: 'owner/CategoryAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
+  // owner_category_admin: {
+  //   path: '/admin/category',
+  //   pageName: 'owner/CategoryAdminPage',
+  //   authenticated: true,
+  //   allowedUserRole: 'app-owner',
+  // },
   owner_members_admin: {
     path: '/admin/members',
     pageName: 'owner/MemberCollectionAdminPage',
@@ -156,6 +171,12 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   owner_podcast_program_admin: {
     path: '/admin/podcast-programs/:podcastProgramId',
     pageName: 'owner/PodcastProgramAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_podcast_program_category_admin: {
+    path: '/admin/podcast-program-category',
+    pageName: 'PodcastProgramCategoryPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
@@ -194,6 +215,11 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'creator/ActivityAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
+  },
+  owner_activity_category_admin: {
+    path: '/admin/activity-category',
+    pageName: 'ActivityCategoryPage',
+    authenticated: true,
   },
 
   // content creator admin

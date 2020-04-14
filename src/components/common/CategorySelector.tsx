@@ -37,7 +37,7 @@ type CategorySelectorProps = {
 }
 const CategorySelector: React.FC<CategorySelectorProps> = ({ flatten, value, onChange, classType }, ref) => {
   const { id: appId } = useContext(AppContext)
-  const { loading, categories } = useCategory(appId, classType)
+  const { loading, categories } = useCategory(classType)
 
   return flatten ? (
     <>

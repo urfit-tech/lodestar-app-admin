@@ -81,7 +81,7 @@ const BlogPostBasicForm: React.FC<BlogPostBasicFormProps> = ({
         <Form.Item label={formatMessage(commonMessages.term.category)}>
           {getFieldDecorator('categoryIds', {
             initialValue: post.categories.map(category => category.id),
-          })(<CategorySelector classType="program" />)}
+          })(<CategorySelector classType="post" />)}
         </Form.Item>
         <Form.Item label={formatMessage(commonMessages.term.tag)}>
           {getFieldDecorator('tags', {

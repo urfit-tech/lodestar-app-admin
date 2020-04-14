@@ -5407,6 +5407,92 @@ export interface GET_NOTIFICATIONSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_PROGRAM_CATEGORY
+// ====================================================
+
+export interface INSERT_PROGRAM_CATEGORY_insert_category {
+  __typename: "category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_PROGRAM_CATEGORY {
+  /**
+   * insert data into the table: "category"
+   */
+  insert_category: INSERT_PROGRAM_CATEGORY_insert_category | null;
+}
+
+export interface INSERT_PROGRAM_CATEGORYVariables {
+  appId: string;
+  name?: string | null;
+  classType?: string | null;
+  position?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_CATEGORY
+// ====================================================
+
+export interface UPDATE_PROGRAM_CATEGORY_update_category {
+  __typename: "category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CATEGORY {
+  /**
+   * update data of the table: "category"
+   */
+  update_category: UPDATE_PROGRAM_CATEGORY_update_category | null;
+}
+
+export interface UPDATE_PROGRAM_CATEGORYVariables {
+  categoryId: string;
+  name?: string | null;
+  position?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PROGRAM_CATEGORY
+// ====================================================
+
+export interface DELETE_PROGRAM_CATEGORY_delete_category {
+  __typename: "category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CATEGORY {
+  /**
+   * delete data from the table: "category"
+   */
+  delete_category: DELETE_PROGRAM_CATEGORY_delete_category | null;
+}
+
+export interface DELETE_PROGRAM_CATEGORYVariables {
+  categoryId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER
 // ====================================================
 
@@ -6471,91 +6557,6 @@ export interface GET_FUNDING {
 
 export interface GET_FUNDINGVariables {
   fundingId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_PROGRAM_CATEGORY
-// ====================================================
-
-export interface INSERT_PROGRAM_CATEGORY_insert_category {
-  __typename: "category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface INSERT_PROGRAM_CATEGORY {
-  /**
-   * insert data into the table: "category"
-   */
-  insert_category: INSERT_PROGRAM_CATEGORY_insert_category | null;
-}
-
-export interface INSERT_PROGRAM_CATEGORYVariables {
-  appId: string;
-  name?: string | null;
-  position?: number | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_CATEGORY
-// ====================================================
-
-export interface UPDATE_PROGRAM_CATEGORY_update_category {
-  __typename: "category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_CATEGORY {
-  /**
-   * update data of the table: "category"
-   */
-  update_category: UPDATE_PROGRAM_CATEGORY_update_category | null;
-}
-
-export interface UPDATE_PROGRAM_CATEGORYVariables {
-  categoryId: string;
-  name?: string | null;
-  position?: number | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_PROGRAM_CATEGORY
-// ====================================================
-
-export interface DELETE_PROGRAM_CATEGORY_delete_category {
-  __typename: "category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PROGRAM_CATEGORY {
-  /**
-   * delete data from the table: "category"
-   */
-  delete_category: DELETE_PROGRAM_CATEGORY_delete_category | null;
-}
-
-export interface DELETE_PROGRAM_CATEGORYVariables {
-  categoryId: string;
 }
 
 /* tslint:disable */

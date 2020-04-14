@@ -71,7 +71,7 @@ const MerchandiseBasicForm: React.FC<MerchandiseBasicFormProps> = ({ form, merch
       <Form.Item label={formatMessage(commonMessages.term.category)}>
         {form.getFieldDecorator('categoryIds', {
           initialValue: merchandise.categories.map(category => category.id),
-        })(<CategorySelector classType="program"/>)}
+        })(<CategorySelector classType="merchandise" />)}
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.term.tags)}>
         {form.getFieldDecorator('tags', {
