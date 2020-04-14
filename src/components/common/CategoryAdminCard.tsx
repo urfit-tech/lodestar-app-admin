@@ -18,7 +18,6 @@ const messages = defineMessages({
 const CategoryAdminCard: React.FC<{ classType: ClassType }> = ({ classType }) => {
   const { formatMessage } = useIntl()
   const { loading, categories: data, refetch } = useCategory(classType)
-  console.log('categories', data)
 
   const insertCategory = useInsertCategory()
   const updateCategory = useUpdateCategory()
