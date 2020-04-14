@@ -160,7 +160,7 @@ export const usePostCollection = () => {
 
 const GET_POSTS = gql`
   query GET_POSTS {
-    post {
+    post(where: { is_deleted: { _eq: false } }) {
       id
       title
       cover_url
