@@ -95,7 +95,7 @@ const BlogAdminCollectionPage: React.FC = () => {
                     views={post.views}
                     memberName={post.memberName}
                     publishedAt={post.publishedAt}
-                    link={''}
+                    link={`/blog/${post.id}`}
                   />
                 </div>
               ))}

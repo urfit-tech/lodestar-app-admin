@@ -492,5 +492,7 @@ export const blogMessages = {
   text: defineMessages({
     url: { id: 'blog.text.url', defaultMessage: '完整網址的最後部分，通常是因由小寫英文字母、數字或連字號組成' },
     suggestedPictureSize: { id: 'blog.text.suggestedPictureSize', defaultMessage: '建議圖片尺寸：1200*675px' },
+    uploading: { id: 'blog.text.uploading', defaultMessage: '上傳中' },
+    noVideoFound: { id: 'blog.text.noVideoFound', defaultMessage: '找不到影片' },
   }),
 }
