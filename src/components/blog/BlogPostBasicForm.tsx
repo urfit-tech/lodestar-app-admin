@@ -32,8 +32,13 @@ const BlogPostBasicForm: React.FC<BlogPostBasicFormProps> = ({
   const { settings } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const [codeName, setCodeName] = useState<string>('')
+
   const updatePostBasic = useUpdatePostBasic(post.id)
-  const canCodeNameUse = !(post && post.codeNames && post.codeNames.includes(codeName))
+  const canCodeNameUse = !(
+    post &&
+    post.codeNames &&
+    post.codeNames.filter(codeName => codeName !== post.codeName).includes(codeName)
+  )
 
   useEffect(() => {
     setCodeName(post.codeName)
