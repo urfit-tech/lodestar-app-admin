@@ -70,7 +70,7 @@ const PodcastProgramCreationModal: React.FC<PodcastProgramCreationModalProps> = 
             })(<Input type="text" />)}
           </Form.Item>
           <Form.Item label={formatMessage(commonMessages.term.category)}>
-            {form.getFieldDecorator('categoryIds')(<CategorySelector classType="program" />)}
+            {form.getFieldDecorator('categoryIds')(<CategorySelector classType="podcastProgram" />)}
           </Form.Item>
         </Form>
 

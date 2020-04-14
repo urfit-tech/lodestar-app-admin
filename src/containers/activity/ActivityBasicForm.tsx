@@ -88,7 +88,7 @@ const ActivityBasicForm: React.FC<FormComponentProps> = ({ form }) => {
       <Form.Item label={formatMessage(commonMessages.term.category)}>
         {form.getFieldDecorator('categoryIds', {
           initialValue: activity.activityCategories.map(activityCategory => activityCategory.category.id),
-        })(<CategorySelector classType="program" />)}
+        })(<CategorySelector classType="activity" />)}
       </Form.Item>
       {enabledModules.locale && (
         <Form.Item

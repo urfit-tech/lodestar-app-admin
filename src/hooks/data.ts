@@ -1,9 +1,11 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
+import { useContext } from 'react'
 import { array, date, object, string } from 'yup'
+import AppContext from '../contexts/AppContext'
 import { couponSchema } from '../schemas/coupon'
 import types from '../types'
-import { ClassType, Category } from '../types/general'
+import { Category, ClassType } from '../types/general'
 
 export const useTags = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_TAGS>(
@@ -23,7 +25,8 @@ export const useTags = () => {
   }
 }
 
-export const useCategory = (appId: string, classType?: ClassType) => {
+export const useCategory = (classType: ClassType) => {
+  const { id: appId } = useContext(AppContext)
   const { loading, data, error, refetch } = useQuery<types.GET_CATEGORIES, types.GET_CATEGORIESVariables>(
     gql`
       query GET_CATEGORIES($appId: String!, $classType: String) {
@@ -198,4 +201,40 @@ export const useNotifications = (memberId: string, limit?: number) => {
       ).default([]),
     }).cast(data).notification,
   }
+}
+
+export const useInsertCategory = () => {
+  const [insertCategory] = useMutation(gql`
+    mutation INSERT_PROGRAM_CATEGORY($appId: String!, $name: String, $classType: String, $position: Int) {
+      insert_category(objects: { app_id: $appId, name: $name, class: $classType, position: $position }) {
+        affected_rows
+      }
+    }
+  `)
+
+  return insertCategory
+}
+
+export const useUpdateCategory = () => {
+  const [updateCategory] = useMutation(gql`
+    mutation UPDATE_PROGRAM_CATEGORY($categoryId: String!, $name: String, $position: Int) {
+      update_category(_set: { name: $name, position: $position }, where: { id: { _eq: $categoryId } }) {
+        affected_rows
+      }
+    }
+  `)
+  
+  return updateCategory
+}
+
+export const useDeleteCategory = () => {
+  const [deleteCategory] = useMutation(gql`
+    mutation DELETE_PROGRAM_CATEGORY($categoryId: String!) {
+      delete_category(where: { id: { _eq: $categoryId } }) {
+        affected_rows
+      }
+    }
+  `)
+  
+  return deleteCategory
 }

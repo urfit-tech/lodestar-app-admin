@@ -102,7 +102,7 @@ const ActivityCreationModal: React.FC<ActivityCreationModalProps> = ({ form, onC
           })(<Input />)}
         </Form.Item>
         <Form.Item label={formatMessage(commonMessages.term.category)}>
-          {form.getFieldDecorator('categoryIds', { initialValue: [] })(<CategorySelector classType="program" />)}
+          {form.getFieldDecorator('categoryIds', { initialValue: [] })(<CategorySelector classType="activity" />)}
         </Form.Item>
       </Form>
     </AdminModal>
