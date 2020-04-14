@@ -11,6 +11,7 @@ export const commonMessages = {
     detail: { id: 'common.ui.detail', defaultMessage: '詳情' },
     delete: { id: 'common.ui.delete', defaultMessage: '刪除' },
     deleteProgram: { id: 'common.ui.deleteProgram', defaultMessage: '刪除課程' },
+    deletePost: { id: 'common.ui.deletePost', defaultMessage: '刪除文章' },
     deleted: { id: 'common.ui.deleted', defaultMessage: '已刪除' },
     login: { id: 'common.ui.login', defaultMessage: '登入' },
     logout: { id: 'common.ui.logout', defaultMessage: '登出' },
@@ -149,6 +150,7 @@ export const commonMessages = {
     caption: { id: 'common.label.caption', defaultMessage: '字幕' },
     title: { id: 'common.term.title', defaultMessage: '名稱' },
     category: { id: 'common.term.category', defaultMessage: '類別' },
+    tag: { id: 'common.term.tag', defaultMessage: '標籤' },
     startedAt: { id: 'common.term.startedAt', defaultMessage: '開始時間' },
     endedAt: { id: 'common.term.endedAt', defaultMessage: '結束時間' },
     orderStatus: { id: 'common.term.orderStatus', defaultMessage: '訂單狀態' },
@@ -174,6 +176,7 @@ export const commonMessages = {
     unknownProduct: { id: 'common.term.unknownProduct', defaultMessage: '未知類別' },
     currentPassword: { id: 'common.term.currentPassword', defaultMessage: '目前密碼' },
     owner: { id: 'common.term.owner', defaultMessage: '建立者' },
+    author: { id: 'common.term.authro', defaultMessage: '作者' },
     supportedLanguages: { id: 'common.term.supportedLanguages', defaultMessage: '選擇顯示於哪個語系' },
     tags: { id: 'common.term.tags', defaultMessage: '標籤' },
   }),
@@ -184,6 +187,7 @@ export const commonMessages = {
     minutes: { id: 'common.text.minutes', defaultMessage: '{minutes} 分鐘' },
     newPasswordAgain: { id: 'common.label.newPasswordAgain', defaultMessage: '再次輸入新密碼' },
     forgotPassword: { id: 'common.text.forgotPassword', defaultMessage: '忘記密碼？' },
+    locale: { id: 'common.text.locale', defaultMessage: '當前台為指定語系時才會顯示，若不選擇全語系皆顯示' },
   }),
   event: defineMessages({
     successfullySaved: { id: 'common.event.successfullySaved', defaultMessage: '儲存成功' },
@@ -223,6 +227,8 @@ export const commonMessages = {
     merchandises: { id: 'common.menu.merchandises', defaultMessage: '商品管理' },
     merchandiseShipping: { id: 'common.menu.merchandiseShipping', defaultMessage: '出貨管理' },
     merchandiseIssues: { id: 'common.menu.merchandiseIssues', defaultMessage: '問答管理' },
+    blogAdmin: { id: 'common.menu.blogAdmin', defaultMessage: '媒體文章' },
+    blogPosts: { id: 'common.menu.blogPosts', defaultMessage: '文章管理' },
     promotionAdmin: { id: 'common.menu.promotionAdmin', defaultMessage: '促銷管理' },
     coupons: { id: 'common.menu.couponPlans', defaultMessage: '折價方案' },
     vouchers: { id: 'common.menu.voucherPlans', defaultMessage: '兌換方案' },
@@ -272,6 +278,7 @@ export const errorMessages = {
     failedFacebookLogin: { id: 'error.event.failedFacebookLogin', defaultMessage: '無法從 Facebook 登入/註冊' },
     failedGoogleLogin: { id: 'error.event.failedGoogleLogin', defaultMessage: '無法從 Google 登入/註冊' },
     checkSamePassword: { id: 'error.event.checkSamePassword', defaultMessage: '請確認密碼與新密碼相同' },
+    checkSameCodeName: { id: 'error.event.checkSameCodeName', defaultMessage: '網址代碼已被使用' },
   }),
   text: defineMessages({
     forbidden: { id: 'error.text.forbidden', defaultMessage: '你沒有此頁面的讀取權限' },
@@ -471,4 +478,27 @@ export const merchandiseMessages = {
   }),
 }
 
-// { id: '', defaultMessage: '' },
+export const blogMessages = {
+  ui: defineMessages({
+    video: { id: 'blog.ui.video', defaultMessage: '影片內容' },
+    contentDescription: { id: 'blog.ui.description', defaultMessage: '圖文內容' },
+    postSetting: { id: 'blog.ui.postSetting', defaultMessage: '文章設定' },
+    createPost: { id: 'blog.ui.createPost', defaultMessage: '建立文章' },
+  }),
+  label: defineMessages({
+    postContent: { id: 'blog.label.postContent', defaultMessage: '文章內容' },
+    postManagement: { id: 'blog.label.postManagement', defaultMessage: '文章管理' },
+    codeName: { id: 'blog.label.codeName', defaultMessage: '網址代稱' },
+    merchandises: { id: 'blog.label.merchandises', defaultMessage: '相關商品' },
+    deletePost: { id: 'blog.label.deletePost', defaultMessage: '刪除文章' },
+  }),
+  term: defineMessages({
+    pasteVideoUrl: { id: 'blog.term.pasteVideoUrl', defaultMessage: '貼上影片網址' },
+  }),
+  text: defineMessages({
+    url: { id: 'blog.text.url', defaultMessage: '完整網址的最後部分，通常是因由小寫英文字母、數字或連字號組成' },
+    suggestedPictureSize: { id: 'blog.text.suggestedPictureSize', defaultMessage: '建議圖片尺寸：1200*675px' },
+    uploading: { id: 'blog.text.uploading', defaultMessage: '上傳中' },
+    noVideoFound: { id: 'blog.text.noVideoFound', defaultMessage: '找不到影片' },
+  }),
+}

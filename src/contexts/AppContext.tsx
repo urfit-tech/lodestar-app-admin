@@ -14,6 +14,7 @@ type Module =
   | 'locale'
   | 'qrcode'
   | 'merchandise'
+  | 'blog'
 
 type AppProps = {
   loading: boolean

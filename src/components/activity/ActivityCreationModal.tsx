@@ -3,12 +3,12 @@ import { FormComponentProps } from 'antd/lib/form'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import useRouter from 'use-react-router'
-import CreatorSelector from '../../containers/common/CreatorSelector'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import AdminModal from '../admin/AdminModal'
-import ProgramCategorySelector from '../program/ProgramCategorySelector'
+import CategorySelector from '../common/CategorySelector'
+import CreatorSelector from '../common/CreatorSelector'
 
 export type CreateActivityEvent = {
   values: {
@@ -102,7 +102,7 @@ const ActivityCreationModal: React.FC<ActivityCreationModalProps> = ({ form, onC
           })(<Input />)}
         </Form.Item>
         <Form.Item label={formatMessage(commonMessages.term.category)}>
-          {form.getFieldDecorator('categoryIds', { initialValue: [] })(<ProgramCategorySelector />)}
+          {form.getFieldDecorator('categoryIds', { initialValue: [] })(<CategorySelector classType="program" />)}
         </Form.Item>
       </Form>
     </AdminModal>

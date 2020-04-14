@@ -1,11 +1,9 @@
-import { useQuery } from '@apollo/react-hooks'
 import { Button, Select } from 'antd'
-import gql from 'graphql-tag'
-import React from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
-import { InferType } from 'yup'
-import { categorySchema } from '../../schemas/program'
-import types from '../../types'
+import AppContext from '../../contexts/AppContext'
+import { useCategory } from '../../hooks/data'
+import { ClassType } from '../../types/general'
 
 const StyledButton = styled(Button)`
   padding: 0 20px;
@@ -31,19 +29,16 @@ const StyledSelect = styled(Select)<{ value?: any; onChange?: any }>`
   }
 `
 
-type ProgramCategorySelectorProps = {
+type CategorySelectorProps = {
+  classType: ClassType
   value?: string
   onChange?: (value: string) => void
   flatten?: boolean
 }
-const ProgramCategorySelector: React.FC<ProgramCategorySelectorProps> = ({ flatten, value, onChange }, ref) => {
-  const { loading, data } = useQuery<types.GET_PROGRAM_CATEGORIES, types.GET_PROGRAM_CATEGORIESVariables>(
-    GET_PROGRAM_CATEGORIES,
-    {
-      variables: { appId: localStorage.getItem('kolable.app.id') || '' },
-    },
-  )
-  const categories: InferType<typeof categorySchema>[] = (data && data.category) || []
+const CategorySelector: React.FC<CategorySelectorProps> = ({ flatten, value, onChange, classType }, ref) => {
+  const { id: appId } = useContext(AppContext)
+  const { loading, categories } = useCategory(appId, classType)
+
   return flatten ? (
     <>
       {categories.map(category => {
@@ -71,14 +66,4 @@ const ProgramCategorySelector: React.FC<ProgramCategorySelectorProps> = ({ flatt
   )
 }
 
-export const GET_PROGRAM_CATEGORIES = gql`
-  query GET_PROGRAM_CATEGORIES($appId: String!) {
-    category(where: { app_id: { _eq: $appId }, class: { _eq: "program" } }, order_by: { position: asc }) {
-      id
-      name
-      position
-    }
-  }
-`
-
-export default React.forwardRef(ProgramCategorySelector)
+export default React.forwardRef(CategorySelector)

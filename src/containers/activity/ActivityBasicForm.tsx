@@ -4,8 +4,9 @@ import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
+import { StyledTips } from '../../components/admin'
+import CategorySelector from '../../components/common/CategorySelector'
 import LanguageSelector from '../../components/common/LanguageSelector'
-import ProgramCategorySelector from '../../components/program/ProgramCategorySelector'
 import ActivityContext from '../../contexts/ActivityContext'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
@@ -87,14 +88,14 @@ const ActivityBasicForm: React.FC<FormComponentProps> = ({ form }) => {
       <Form.Item label={formatMessage(commonMessages.term.category)}>
         {form.getFieldDecorator('categoryIds', {
           initialValue: activity.activityCategories.map(activityCategory => activityCategory.category.id),
-        })(<ProgramCategorySelector />)}
+        })(<CategorySelector classType="program" />)}
       </Form.Item>
       {enabledModules.locale && (
         <Form.Item
           label={
             <>
               {formatMessage(commonMessages.label.languages)}
-              <Tooltip placement="topLeft" title="當前台為指定語系時才會顯示，若不選擇全語系皆顯示">
+              <Tooltip placement="topLeft" title={<StyledTips>{formatMessage(commonMessages.text.locale)}</StyledTips>}>
                 <Icon type="question-circle" theme="filled" className="ml-2" />
               </Tooltip>
             </>

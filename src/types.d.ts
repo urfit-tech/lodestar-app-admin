@@ -71,6 +71,315 @@ export interface GET_ACTIVITY_SESSIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_POST_ROLE
+// ====================================================
+
+export interface UPDATE_POST_ROLE_update_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_ROLE_delete_post_role {
+  __typename: "post_role_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_ROLE_insert_post_role {
+  __typename: "post_role_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_ROLE {
+  /**
+   * update data of the table: "post"
+   */
+  update_post: UPDATE_POST_ROLE_update_post | null;
+  /**
+   * delete data from the table: "post_role"
+   */
+  delete_post_role: UPDATE_POST_ROLE_delete_post_role | null;
+  /**
+   * insert data into the table: "post_role"
+   */
+  insert_post_role: UPDATE_POST_ROLE_insert_post_role | null;
+}
+
+export interface UPDATE_POST_ROLEVariables {
+  postId: any;
+  postRoles: post_role_insert_input[];
+  updatedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_POST_BASIC
+// ====================================================
+
+export interface UPDATE_POST_BASIC_update_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_BASIC_delete_post_category {
+  __typename: "post_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_BASIC_insert_post_category {
+  __typename: "post_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_BASIC_delete_post_tag {
+  __typename: "post_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_BASIC_insert_post_tag {
+  __typename: "post_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_BASIC {
+  /**
+   * update data of the table: "post"
+   */
+  update_post: UPDATE_POST_BASIC_update_post | null;
+  /**
+   * delete data from the table: "post_category"
+   */
+  delete_post_category: UPDATE_POST_BASIC_delete_post_category | null;
+  /**
+   * insert data into the table: "post_category"
+   */
+  insert_post_category: UPDATE_POST_BASIC_insert_post_category | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_POST_BASIC_insert_tag | null;
+  /**
+   * delete data from the table: "post_tag"
+   */
+  delete_post_tag: UPDATE_POST_BASIC_delete_post_tag | null;
+  /**
+   * insert data into the table: "post_tag"
+   */
+  insert_post_tag: UPDATE_POST_BASIC_insert_post_tag | null;
+}
+
+export interface UPDATE_POST_BASICVariables {
+  postId: any;
+  title?: string | null;
+  codeName?: string | null;
+  categories: post_category_insert_input[];
+  tags: tag_insert_input[];
+  postTags: post_tag_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_POST_DESCRIPTION
+// ====================================================
+
+export interface UPDATE_POST_DESCRIPTION_update_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_DESCRIPTION {
+  /**
+   * update data of the table: "post"
+   */
+  update_post: UPDATE_POST_DESCRIPTION_update_post | null;
+}
+
+export interface UPDATE_POST_DESCRIPTIONVariables {
+  id: any;
+  description: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_IS_DELETED
+// ====================================================
+
+export interface UPDATE_PROGRAM_IS_DELETED_update_program {
+  __typename: "program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_IS_DELETED {
+  /**
+   * update data of the table: "program"
+   */
+  update_program: UPDATE_PROGRAM_IS_DELETED_update_program | null;
+}
+
+export interface UPDATE_PROGRAM_IS_DELETEDVariables {
+  programId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_POST
+// ====================================================
+
+export interface PUBLISH_POST_update_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_POST {
+  /**
+   * update data of the table: "post"
+   */
+  update_post: PUBLISH_POST_update_post | null;
+}
+
+export interface PUBLISH_POSTVariables {
+  postId: any;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_POST_SETTING
+// ====================================================
+
+export interface UPDATE_POST_SETTING_update_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_SETTING_delete_post_merchandise {
+  __typename: "post_merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_SETTING_insert_post_merchandise {
+  __typename: "post_merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_SETTING {
+  /**
+   * update data of the table: "post"
+   */
+  update_post: UPDATE_POST_SETTING_update_post | null;
+  /**
+   * delete data from the table: "post_merchandise"
+   */
+  delete_post_merchandise: UPDATE_POST_SETTING_delete_post_merchandise | null;
+  /**
+   * insert data into the table: "post_merchandise"
+   */
+  insert_post_merchandise: UPDATE_POST_SETTING_insert_post_merchandise | null;
+}
+
+export interface UPDATE_POST_SETTINGVariables {
+  postId: any;
+  coverUrl?: string | null;
+  merchandises: post_merchandise_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_POST_VIDEO_URL
+// ====================================================
+
+export interface UPDATE_POST_VIDEO_URL_update_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_VIDEO_URL {
+  /**
+   * update data of the table: "post"
+   */
+  update_post: UPDATE_POST_VIDEO_URL_update_post | null;
+}
+
+export interface UPDATE_POST_VIDEO_URLVariables {
+  id: any;
+  videoUrl: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_COUPON_PLAN
 // ====================================================
 
@@ -172,6 +481,36 @@ export interface GET_COUPON_PLAN_CODES {
 
 export interface GET_COUPON_PLAN_CODESVariables {
   couponPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CREATOR_COLLECTION
+// ====================================================
+
+export interface GET_CREATOR_COLLECTION_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+  zoom_user_id: string | null;
+}
+
+export interface GET_CREATOR_COLLECTION {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_CREATOR_COLLECTION_member[];
+}
+
+export interface GET_CREATOR_COLLECTIONVariables {
+  appId: string;
+  noZoomUserId?: boolean | null;
 }
 
 /* tslint:disable */
@@ -970,32 +1309,6 @@ export interface UPDATE_PROGRAM_CATEGORIESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PROGRAM_CATEGORIES
-// ====================================================
-
-export interface GET_PROGRAM_CATEGORIES_category {
-  __typename: "category";
-  id: string;
-  name: string;
-  position: number;
-}
-
-export interface GET_PROGRAM_CATEGORIES {
-  /**
-   * fetch data from the table: "category"
-   */
-  category: GET_PROGRAM_CATEGORIES_category[];
-}
-
-export interface GET_PROGRAM_CATEGORIESVariables {
-  appId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: PUBLISH_PROGRAM_CONTENT
 // ====================================================
 
@@ -1373,33 +1686,6 @@ export interface INSERT_PROGRAMVariables {
   title: string;
   isSubscription: boolean;
   programCategories: program_category_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: MyMutation
-// ====================================================
-
-export interface MyMutation_update_program {
-  __typename: "program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface MyMutation {
-  /**
-   * update data of the table: "program"
-   */
-  update_program: MyMutation_update_program | null;
-}
-
-export interface MyMutationVariables {
-  programId?: any | null;
 }
 
 /* tslint:disable */
@@ -2557,36 +2843,6 @@ export interface CREATE_APPOINTMENT_SCHEDULEVariables {
   startedAt: any;
   intervalType?: string | null;
   intervalAmount?: number | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_CREATOR_COLLECTION
-// ====================================================
-
-export interface GET_CREATOR_COLLECTION_member {
-  __typename: "member";
-  id: string;
-  picture_url: string | null;
-  name: string;
-  username: string;
-  email: string;
-  zoom_user_id: string | null;
-}
-
-export interface GET_CREATOR_COLLECTION {
-  /**
-   * fetch data from the table: "member"
-   */
-  member: GET_CREATOR_COLLECTION_member[];
-}
-
-export interface GET_CREATOR_COLLECTIONVariables {
-  appId: string;
-  noZoomUserId?: boolean | null;
 }
 
 /* tslint:disable */
@@ -4560,6 +4816,192 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_POST
+// ====================================================
+
+export interface GET_POST_post_by_pk_post_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_POST_post_by_pk_post_categories {
+  __typename: "post_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_POST_post_by_pk_post_categories_category;
+}
+
+export interface GET_POST_post_by_pk_post_tags {
+  __typename: "post_tag";
+  id: any;
+  tag_name: string;
+}
+
+export interface GET_POST_post_by_pk_post_merchandises {
+  __typename: "post_merchandise";
+  merchandise_id: any;
+}
+
+export interface GET_POST_post_by_pk_post_roles_member {
+  __typename: "member_public";
+  name: string | null;
+  picture_url: string | null;
+}
+
+export interface GET_POST_post_by_pk_post_roles {
+  __typename: "post_role";
+  /**
+   * creator | author
+   */
+  name: string;
+  member_id: string;
+  /**
+   * An object relationship
+   */
+  member: GET_POST_post_by_pk_post_roles_member | null;
+}
+
+export interface GET_POST_post_by_pk {
+  __typename: "post";
+  id: any;
+  title: string;
+  video_url: string | null;
+  description: string | null;
+  is_deleted: boolean;
+  code_name: string | null;
+  cover_url: string | null;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  post_categories: GET_POST_post_by_pk_post_categories[];
+  /**
+   * An array relationship
+   */
+  post_tags: GET_POST_post_by_pk_post_tags[];
+  /**
+   * An array relationship
+   */
+  post_merchandises: GET_POST_post_by_pk_post_merchandises[];
+  /**
+   * An array relationship
+   */
+  post_roles: GET_POST_post_by_pk_post_roles[];
+}
+
+export interface GET_POST_post {
+  __typename: "post";
+  id: any;
+  code_name: string | null;
+}
+
+export interface GET_POST {
+  /**
+   * fetch data from the table: "post" using primary key columns
+   */
+  post_by_pk: GET_POST_post_by_pk | null;
+  /**
+   * fetch data from the table: "post"
+   */
+  post: GET_POST_post[];
+}
+
+export interface GET_POSTVariables {
+  id: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_POSTS
+// ====================================================
+
+export interface GET_POSTS_post_post_roles_member {
+  __typename: "member_public";
+  name: string | null;
+  username: string | null;
+}
+
+export interface GET_POSTS_post_post_roles {
+  __typename: "post_role";
+  id: any;
+  post_id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_POSTS_post_post_roles_member | null;
+}
+
+export interface GET_POSTS_post {
+  __typename: "post";
+  id: any;
+  title: string;
+  cover_url: string | null;
+  video_url: string | null;
+  /**
+   * An array relationship
+   */
+  post_roles: GET_POSTS_post_post_roles[];
+  published_at: any | null;
+  views: any;
+}
+
+export interface GET_POSTS {
+  /**
+   * fetch data from the table: "post"
+   */
+  post: GET_POSTS_post[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_POST
+// ====================================================
+
+export interface INSERT_POST_insert_post_returning {
+  __typename: "post";
+  id: any;
+}
+
+export interface INSERT_POST_insert_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_POST_insert_post_returning[];
+}
+
+export interface INSERT_POST {
+  /**
+   * insert data into the table: "post"
+   */
+  insert_post: INSERT_POST_insert_post | null;
+}
+
+export interface INSERT_POSTVariables {
+  appId: string;
+  title: string;
+  postCategories: post_category_insert_input[];
+  postRoles: post_role_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ENROLLED_CARD_IDS
 // ====================================================
 
@@ -4790,6 +5232,33 @@ export interface GET_TAGS {
    * fetch data from the table: "tag"
    */
   tag: GET_TAGS_tag[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CATEGORIES
+// ====================================================
+
+export interface GET_CATEGORIES_category {
+  __typename: "category";
+  id: string;
+  name: string;
+  position: number;
+}
+
+export interface GET_CATEGORIES {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_CATEGORIES_category[];
+}
+
+export interface GET_CATEGORIESVariables {
+  appId: string;
+  classType?: string | null;
 }
 
 /* tslint:disable */
@@ -6460,6 +6929,7 @@ export enum app_nav_update_column {
   label = "label",
   locale = "locale",
   position = "position",
+  tag = "tag",
 }
 
 /**
@@ -7145,7 +7615,6 @@ export enum order_log_update_column {
   discount_point = "discount_point",
   discount_price = "discount_price",
   discount_type = "discount_type",
-  gateway = "gateway",
   id = "id",
   invoice = "invoice",
   member_id = "member_id",
@@ -8466,6 +8935,7 @@ export interface app_nav_bool_exp {
   label?: String_comparison_exp | null;
   locale?: String_comparison_exp | null;
   position?: Int_comparison_exp | null;
+  tag?: String_comparison_exp | null;
 }
 
 /**
@@ -8482,6 +8952,7 @@ export interface app_nav_insert_input {
   label?: string | null;
   locale?: string | null;
   position?: number | null;
+  tag?: string | null;
 }
 
 /**
@@ -10377,7 +10848,6 @@ export interface order_log_bool_exp {
   discount_point?: numeric_comparison_exp | null;
   discount_price?: numeric_comparison_exp | null;
   discount_type?: Int_comparison_exp | null;
-  gateway?: String_comparison_exp | null;
   id?: String_comparison_exp | null;
   invoice?: jsonb_comparison_exp | null;
   member?: member_bool_exp | null;
@@ -10402,7 +10872,6 @@ export interface order_log_insert_input {
   discount_point?: any | null;
   discount_price?: any | null;
   discount_type?: number | null;
-  gateway?: string | null;
   id?: string | null;
   invoice?: any | null;
   member?: member_obj_rel_insert_input | null;
@@ -11345,7 +11814,7 @@ export interface post_role_bool_exp {
   _not?: post_role_bool_exp | null;
   _or?: (post_role_bool_exp | null)[] | null;
   id?: uuid_comparison_exp | null;
-  member?: member_bool_exp | null;
+  member?: member_public_bool_exp | null;
   member_id?: String_comparison_exp | null;
   name?: String_comparison_exp | null;
   position?: Int_comparison_exp | null;
@@ -11358,7 +11827,6 @@ export interface post_role_bool_exp {
  */
 export interface post_role_insert_input {
   id?: any | null;
-  member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   name?: string | null;
   position?: number | null;

@@ -5,12 +5,12 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import useRouter from 'use-react-router'
-import CreatorSelector from '../../containers/common/CreatorSelector'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
-import ProgramCategorySelector from './ProgramCategorySelector'
+import CategorySelector from '../common/CategorySelector'
+import CreatorSelector from '../common/CreatorSelector'
 
 const messages = defineMessages({
   createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
@@ -93,7 +93,7 @@ const ProgramCreationModal: React.FC<ProgramCreationModalProps> = ({ form, withS
         <Form.Item label={formatMessage(commonMessages.term.category)}>
           {form.getFieldDecorator('categoryIds', {
             initialValue: [],
-          })(<ProgramCategorySelector />)}
+          })(<CategorySelector classType="program" />)}
         </Form.Item>
         <Form.Item label={formatMessage(programMessages.label.programPlanType)}>
           {form.getFieldDecorator('isSubscription', {

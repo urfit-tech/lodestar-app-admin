@@ -110,7 +110,7 @@ const ProgramDeletionAdminCard: React.FC<ProgramDeletionAdminCardProps> = ({ pro
 }
 
 const UPDATE_PROGRAM_IS_DELETED = gql`
-  mutation MyMutation($programId: uuid) {
+  mutation UPDATE_PROGRAM_IS_DELETED($programId: uuid) {
     update_program(where: { id: { _eq: $programId } }, _set: { is_deleted: true }) {
       affected_rows
     }

@@ -79,6 +79,19 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
   },
 
+  // blog
+  blog_collection_admin: {
+    path: '/blog',
+    pageName: 'owner/BlogCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  blog_admin: {
+    path: '/blog/:postId',
+    pageName: 'owner/BlogAdminPage',
+    authenticated: true,
+  },
+
   // merchandise
   merchandise_collection_admin: {
     path: '/merchandises',

@@ -9,9 +9,10 @@ import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramType } from '../../types/program'
+import { StyledTips } from '../admin'
 import AdminCard from '../admin/AdminCard'
+import CategorySelector from '../common/CategorySelector'
 import LanguageSelector from '../common/LanguageSelector'
-import ProgramCategorySelector from './ProgramCategorySelector'
 
 type ProgramBasicAdminCardProps = FormComponentProps & {
   program: ProgramType | null
@@ -80,14 +81,17 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
           <Form.Item label={formatMessage(commonMessages.term.category)}>
             {form.getFieldDecorator('categoryIds', {
               initialValue: program.categories.map(programCategories => programCategories.category.id),
-            })(<ProgramCategorySelector />)}
+            })(<CategorySelector classType="program" />)}
           </Form.Item>
           {enabledModules.locale && (
             <Form.Item
               label={
                 <>
                   {formatMessage(commonMessages.label.languages)}
-                  <Tooltip placement="topLeft" title="當前台為指定語系時才會顯示，若不選擇全語系皆顯示">
+                  <Tooltip
+                    placement="topLeft"
+                    title={<StyledTips>{formatMessage(commonMessages.text.locale)}</StyledTips>}
+                  >
                     <Icon type="question-circle" theme="filled" className="ml-2" />
                   </Tooltip>
                 </>

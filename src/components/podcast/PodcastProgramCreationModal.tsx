@@ -5,7 +5,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { CreatePodcastProgramProps } from '../../containers/podcast/PodcastProgramCreationModal'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import ProgramCategorySelector from '../program/ProgramCategorySelector'
+import CategorySelector from '../common/CategorySelector'
 
 const StyledTitle = styled.div`
   color: var(--gray-darker);
@@ -70,7 +70,7 @@ const PodcastProgramCreationModal: React.FC<PodcastProgramCreationModalProps> = 
             })(<Input type="text" />)}
           </Form.Item>
           <Form.Item label={formatMessage(commonMessages.term.category)}>
-            {form.getFieldDecorator('categoryIds')(<ProgramCategorySelector />)}
+            {form.getFieldDecorator('categoryIds')(<CategorySelector classType="program" />)}
           </Form.Item>
         </Form>
 
