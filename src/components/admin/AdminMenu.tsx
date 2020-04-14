@@ -185,11 +185,6 @@ export const OwnerAdminMenu = (props: MenuProps) => {
           )}
         </Menu.SubMenu>
 
-        <Menu.Item key="owner_category_admin">
-          <Icon type="book" />
-          <span>{formatMessage(commonMessages.menu.categories)}</span>
-        </Menu.Item>
-
         <Menu.Item key="owner_members_admin">
           <Icon component={() => <UsersIcon />} />
           <span>{formatMessage(commonMessages.menu.members)}</span>
