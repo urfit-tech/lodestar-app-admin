@@ -125,7 +125,7 @@ export const usePostCollection = () => {
     videoUrl: string | null
     views: number | null
     publishedAt: Date | null
-    memberName?: string | null
+    authorName?: string | null
   }[] =
     loading || error || !data
       ? [
@@ -136,7 +136,7 @@ export const usePostCollection = () => {
             videoUrl: '',
             views: null,
             publishedAt: null,
-            memberName: '',
+            authorName: '',
           },
         ]
       : data?.post.map(post => {
@@ -147,7 +147,7 @@ export const usePostCollection = () => {
             videoUrl: post.video_url,
             views: post.views,
             publishedAt: post.published_at,
-            memberName: post?.post_roles[0].member?.name || post?.post_roles[0].member?.username || '',
+            authorName: post?.post_roles[0].member?.name || post?.post_roles[0].member?.username || '',
           }
         })
 
@@ -165,7 +165,7 @@ const GET_POSTS = gql`
       title
       cover_url
       video_url
-      post_roles {
+      post_roles(where: {name: {_eq: "author"}}) {
         id
         post_id
         member {

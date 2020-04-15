@@ -1,4 +1,4 @@
-import { Icon } from 'antd'
+import { Icon, Typography } from 'antd'
 import moment from 'moment-timezone'
 import React from 'react'
 import { Link } from 'react-router-dom'
@@ -21,23 +21,33 @@ const StyledCover = styled.div<{ src: string }>`
 `
 const StyledIcon = styled.div`
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 0.5rem;
+  right: 0.5rem;
 `
 const StyledDescription = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   padding: 1.25rem;
+  height: 150px;
 `
-const StyledTitle = styled.div`
-  color: var(--gray-darker);
-  font-size: 18px;
-  font-weight: bold;
-  letter-spacing: 0.8px;
+const StyledTitle = styled(Typography.Title)`
+  && {
+    color: var(--gray-darker);
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 0.8px;
+  }
 `
 const StyledMeta = styled.div`
   min-height: 1rem;
   color: var(--black-45);
   font-size: 14px;
   letter-spacing: 0.18px;
+`
+const StyledMemberName = styled.div`
+  white-space: nowrap;
+  overflow: hidden;
 `
 const StyledViews = styled.div`
   padding: 0.75rem 1rem;
@@ -74,18 +84,18 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({
         </StyledCover>
 
         <StyledDescription>
-          <StyledTitle className="mb-4">{title}</StyledTitle>
+          <StyledTitle ellipsis={{ rows: 2 }}>{title}</StyledTitle>
 
-          <StyledMeta className="mb-2">
-            <div className="d-inline-block mr-2">
+          <StyledMeta className="mb-2 d-flex">
+            <StyledMemberName className="mr-2">
               <Icon type="user" className="mr-2" />
               {memberName}
-            </div>
+            </StyledMemberName>
             {publishedAt && (
-              <>
+              <div className="flex-shrink-0">
                 <Icon type="calendar" className="mr-2" />
                 {moment(publishedAt).format('YYYY-MM-DD')}
-              </>
+              </div>
             )}
           </StyledMeta>
         </StyledDescription>

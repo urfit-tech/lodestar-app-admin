@@ -88,7 +88,7 @@ const BlogAdminPage: React.FC = () => {
                 </AdminBlock>
 
                 <AdminBlock>
-                  <AdminPaneTitle>{formatMessage(blogMessages.label.deletePost)}</AdminPaneTitle>
+                  <AdminBlockTitle>{formatMessage(blogMessages.label.deletePost)}</AdminBlockTitle>
                   <BlogPostDeletionModal post={post} onRefetch={refetchPost} />
                 </AdminBlock>
               </div>

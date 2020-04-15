@@ -74,7 +74,7 @@ const ProductCreationModal: React.FC<ProductCreationModalProps> = ({
       )}
       {...props}
     >
-      <Form hideRequiredMark>
+      <Form>
         {withCreatorSelector && (
           <Form.Item label={formatMessage(commonMessages.label.selectInstructor)}>
             {form.getFieldDecorator('creatorId', {

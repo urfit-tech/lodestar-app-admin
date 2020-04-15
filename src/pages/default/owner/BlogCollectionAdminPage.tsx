@@ -49,6 +49,11 @@ const BlogAdminCollectionPage: React.FC = () => {
                     name: 'creator',
                     position: -1,
                   },
+                  {
+                    member_id: currentMemberId,
+                    name: 'author',
+                    position: -1,
+                  },
                 ],
                 postCategories: categoryIds.map((categoryId, i) => ({
                   category_id: categoryId,
@@ -75,7 +80,7 @@ const BlogAdminCollectionPage: React.FC = () => {
                     coverUrl={post.coverUrl}
                     videoUrl={post.videoUrl}
                     views={post.views}
-                    memberName={post.memberName}
+                    memberName={post.authorName}
                     publishedAt={post.publishedAt}
                     link={`/blog/${post.id}`}
                   />
@@ -94,7 +99,7 @@ const BlogAdminCollectionPage: React.FC = () => {
                     coverUrl={post.coverUrl}
                     videoUrl={post.videoUrl}
                     views={post.views}
-                    memberName={post.memberName}
+                    memberName={post.authorName}
                     publishedAt={post.publishedAt}
                     link={`/blog/${post.id}`}
                   />

@@ -51,7 +51,7 @@ const BlogPostSettingForm: React.FC<BlogPostSettingFormProps> = ({
   const updatePostSetting = useUpdatePostSetting(post.id)
 
   const handleUpload = () => {
-    validateFields((err, { coverImg, merchandiseIds }) => {
+    validateFields((err, { merchandiseIds }) => {
       if (!err) {
         setLoading(true)
         const uploadTime = Date.now()
@@ -73,9 +73,10 @@ const BlogPostSettingForm: React.FC<BlogPostSettingFormProps> = ({
     validateFields((err, { cover, merchandiseIds }) => {
       if (!err) {
         setLoading(true)
+        const uploadTime = Date.now()
 
         updatePostSetting({
-          coverUrl: cover,
+          coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/post_covers/${appId}/${post.id}?t=${uploadTime}`,
           merchandiseIds,
         })
           .then(() => {
@@ -115,7 +116,7 @@ const BlogPostSettingForm: React.FC<BlogPostSettingFormProps> = ({
             </StyledCoverBlock>
           )}
 
-          {getFieldDecorator('coverImg')(
+          {getFieldDecorator('postCover')(
             <StyledSingleUploader
               accept="image/*"
               listType="picture-card"
