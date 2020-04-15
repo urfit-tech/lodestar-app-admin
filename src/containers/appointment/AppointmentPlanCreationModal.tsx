@@ -101,7 +101,7 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
           >
             {form.getFieldDecorator('creatorId', {
               rules: [{ required: true, message: formatMessage(errorMessages.form.selectInstructor) }],
-            })(<CreatorSelector zoomUserOnly />)}
+            })(<CreatorSelector />)}
           </Form.Item>
         )}
         <Form.Item label={formatMessage(commonMessages.term.planTitle)}>

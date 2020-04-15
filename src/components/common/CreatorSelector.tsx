@@ -11,10 +11,9 @@ import MemberSelector, { MemberOptionProps } from './MemberSelector'
 const CreatorSelector: React.FC<{
   value?: string
   onChange?: (value: string | null) => void
-  zoomUserOnly?: boolean
-}> = ({ value, onChange, zoomUserOnly }, ref) => {
+}> = ({ value, onChange }, ref) => {
   const { formatMessage } = useIntl()
-  const { loading, error, members } = useGetCreatorCollection(zoomUserOnly)
+  const { loading, error, members } = useGetCreatorCollection()
 
   if (loading) {
     return <Spin />
@@ -27,32 +26,24 @@ const CreatorSelector: React.FC<{
   return <MemberSelector ref={ref} members={members} value={value} onChange={onChange} />
 }
 
-const useGetCreatorCollection = (zoomUserOnly?: boolean) => {
+const useGetCreatorCollection = () => {
   const { id: appId } = useContext(AppContext)
 
   const { data, loading, error } = useQuery<types.GET_CREATOR_COLLECTION, types.GET_CREATOR_COLLECTIONVariables>(
     gql`
-      query GET_CREATOR_COLLECTION($appId: String!, $noZoomUserId: Boolean) {
-        member(
-          where: {
-            app_id: { _eq: $appId }
-            role: { _in: ["content-creator", "app-owner"] }
-            zoom_user_id: { _is_null: $noZoomUserId }
-          }
-        ) {
+      query GET_CREATOR_COLLECTION($appId: String!) {
+        member(where: { app_id: { _eq: $appId }, role: { _in: ["content-creator", "app-owner"] } }) {
           id
           picture_url
           name
           username
           email
-          zoom_user_id
         }
       }
     `,
     {
       variables: {
         appId,
-        noZoomUserId: zoomUserOnly ? !zoomUserOnly : undefined,
       },
     },
   )
@@ -66,7 +57,6 @@ const useGetCreatorCollection = (zoomUserOnly?: boolean) => {
           name: member.name || member.username,
           username: member.username,
           email: member.email,
-          disabled: zoomUserOnly && !member.zoom_user_id,
         }))
 
   return {
