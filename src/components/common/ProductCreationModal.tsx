@@ -24,10 +24,10 @@ type ProductCreationModalProps = FormComponentProps &
   }
 
 const ProductCreationModal: React.FC<ProductCreationModalProps> = ({
+  form,
+  classType,
   withCreatorSelector,
   withProgramType,
-  classType,
-  form,
   onCreate,
   ...props
 }) => {
@@ -43,7 +43,7 @@ const ProductCreationModal: React.FC<ProductCreationModalProps> = ({
       setLoading(true)
       onCreate({
         title: values.title,
-        categoryIds: values.categories || [],
+        categoryIds: values.categoryIds || [],
         creatorId: values.creatorId,
         isSubscription: values.isSubscription,
       }).catch(error => {
