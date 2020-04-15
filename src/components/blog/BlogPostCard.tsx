@@ -48,6 +48,7 @@ const StyledMeta = styled.div`
 const StyledMemberName = styled.div`
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 `
 const StyledViews = styled.div`
   padding: 0.75rem 1rem;
