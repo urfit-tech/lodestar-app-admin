@@ -3,7 +3,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { AvatarImage } from '../../components/common/Image'
 import { usePublicMember } from '../../hooks/member'
-import { Member } from '../../schemas/general'
+import { MemberPublic } from '../../types/general'
 
 const MemberName = styled.span`
   font-size: 14px;
@@ -12,8 +12,8 @@ const MemberName = styled.span`
 
 type MemberAvatarProps = AvatarProps & {
   memberId: string
-  renderAvatar?: (member: Partial<Member>) => React.ReactNode
-  renderText?: (member: Partial<Member>) => React.ReactNode
+  renderAvatar?: (member: MemberPublic) => React.ReactNode
+  renderText?: (member: MemberPublic) => React.ReactNode
   withName?: boolean
 }
 const MemberAvatar: React.FC<MemberAvatarProps> = ({ memberId, shape, size, renderAvatar, renderText, withName }) => {

@@ -1,8 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import { array, number, object } from 'yup'
-import { memberSchema } from '../schemas/general'
 import types from '../types'
+import { Member, MemberPublic } from '../types/general'
 
 export const useMember = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<types.GET_MEMBER, types.GET_MEMBERVariables>(
@@ -22,17 +21,44 @@ export const useMember = (memberId: string) => {
             tag_name
           }
           role
-          zoom_user_id
         }
       }
     `,
     { variables: { memberId } },
   )
 
+  const member: Member =
+    loading || error || !data
+      ? {
+          id: '',
+          name: '',
+          email: '',
+          username: '',
+          pictureUrl: '',
+          description: '',
+          abstract: '',
+          title: '',
+          memberTags: [],
+          role: '',
+        }
+      : {
+          id: data?.member_by_pk?.id || '',
+          name: data?.member_by_pk?.name || '',
+          email: data?.member_by_pk?.email || '',
+          username: data?.member_by_pk?.username || '',
+          pictureUrl: data?.member_by_pk?.picture_url || '',
+          description: data?.member_by_pk?.description || '',
+          abstract: data?.member_by_pk?.abstract || '',
+          title: data?.member_by_pk?.title || '',
+          memberTags: data?.member_by_pk?.member_tags.map(tag => ({
+            id: tag.id || '',
+            tagName: tag.tag_name || '',
+          })),
+          role: data?.member_by_pk?.role || '',
+        }
+
   return {
-    member: object({ memberByPk: memberSchema.nullable() })
-      .camelCase()
-      .cast(data).memberByPk,
+    member,
     errorMember: error,
     loadingMember: loading,
     refetchMember: refetch,
@@ -48,7 +74,6 @@ export const usePublicMember = (memberId: string) => {
           name
           username
           picture_url
-          metadata
           description
           role
         }
@@ -56,44 +81,29 @@ export const usePublicMember = (memberId: string) => {
     `,
     { variables: { memberId } },
   )
+
+  const member: MemberPublic = loading || error || !data
+  ? {
+    id: '',
+    name: '',
+    username: '',
+    pictureUrl: '',
+    description: '',
+    role: ''
+  }
+  : data.member_public.map(member => ({
+    id: member.id || '',
+    name: member.name || '',
+    username: member.name || '',
+    pictureUrl: member.picture_url || '',
+    description: member.description || '',
+    role: member.role || '',
+  }))[0]
+
   return {
-    member:
-      loading || error
-        ? null
-        : object({ memberPublic: array(memberSchema).default([]) })
-            .camelCase()
-            .cast(data).memberPublic[0],
+    member,
     loadingMember: loading,
     refetchMember: refetch,
-  }
-}
-
-export const useMemberPoint = (memberId: string) => {
-  const { loading, data, refetch } = useQuery<types.GET_MEMBER_POINT, types.GET_MEMBER_POINTVariables>(
-    gql`
-      query GET_MEMBER_POINT($memberId: String!) {
-        point_status(where: { member_id: { _eq: $memberId } }) {
-          points
-        }
-      }
-    `,
-    { variables: { memberId } },
-  )
-  const castData = object({
-    pointStatus: array(object({ points: number() }).default([])),
-  })
-    .camelCase()
-    .cast(data)
-  let numPoints: number
-  try {
-    numPoints = castData.pointStatus[0].points
-  } catch {
-    numPoints = 0
-  }
-  return {
-    numPoints,
-    loadingMemberPoint: loading,
-    refetchMemberPoint: refetch,
   }
 }
 
