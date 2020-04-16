@@ -53,8 +53,9 @@ export type AppointmentPeriodCardProps = {
     id: string
     name: string
   }
-  link?: string | null
+  orderProductId: string | null
 }
+
 const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
   avatarUrl,
   member,
@@ -62,7 +63,7 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
   startedAt,
   endedAt,
   creator,
-  link,
+  orderProductId,
 }) => {
   const { formatMessage } = useIntl()
   const [visible, setVisible] = useState(false)
@@ -115,8 +116,12 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
             {formatMessage(appointmentMessages.status.finished)}
           </StyledButton>
         ) : (
-          <a href={link || ''} target="_blank" rel="noopener noreferrer">
-            <StyledButton type="primary" className="ml-2" disabled={!link}>
+          <a
+            href={`https://meet.jit.si/${orderProductId}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <StyledButton type="primary" className="ml-2" disabled={!orderProductId}>
               {formatMessage(messages.joinMeeting)}
             </StyledButton>
           </a>

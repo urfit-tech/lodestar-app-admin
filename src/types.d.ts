@@ -2871,7 +2871,6 @@ export interface UPDATE_MEMBER_INFOVariables {
   name?: string | null;
   email?: string | null;
   role?: string | null;
-  zoomUserId?: string | null;
 }
 
 /* tslint:disable */
@@ -4796,10 +4795,10 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment {
    */
   member: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_member | null;
   started_at: any | null;
-  start_url: string | null;
   member_name: string | null;
   member_email: string | null;
   member_phone: string | null;
+  order_product_id: any | null;
 }
 
 export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION {

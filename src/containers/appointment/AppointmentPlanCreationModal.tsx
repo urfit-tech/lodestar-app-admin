@@ -12,7 +12,6 @@ import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import { useMember } from '../../hooks/member'
-import { ReactComponent as ExclamationCircle } from '../../images/icon/exclamation-circle.svg'
 import types from '../../types'
 
 const WarningText = styled.div`
@@ -117,12 +116,6 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
             ],
           })(<Input maxLength={10} />)}
         </Form.Item>
-        {!member.zoomUserId && member.role === 'content-creator' && (
-          <WarningText className="mb-4">
-            <Icon className="mr-2" component={() => <ExclamationCircle />} />
-            <span>你尚未綁定Zoom帳號，如欲使用此功能請聯絡平台管理員</span>
-          </WarningText>
-        )}
       </Form>
     </AdminModal>
   )

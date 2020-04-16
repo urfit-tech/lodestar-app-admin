@@ -23,10 +23,10 @@ export const useAppointmentEnrollmentCollection = () => {
           picture_url
         }
         started_at
-        start_url
         member_name
         member_email
         member_phone
+        order_product_id
       }
     }
   `)
@@ -57,7 +57,7 @@ export const useAppointmentEnrollmentCollection = () => {
                 id: enrollment.appointment_plan.creator.id || '',
                 name: enrollment.appointment_plan.creator.name || '',
               },
-              link: enrollment.start_url,
+              orderProductId: enrollment.order_product_id,
             }
           })
           .filter(notEmpty)

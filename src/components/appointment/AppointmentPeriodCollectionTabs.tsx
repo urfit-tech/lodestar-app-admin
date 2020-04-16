@@ -72,7 +72,19 @@ const AppointmentPeriodCollectionTabs: React.FC<{
           )}
 
           {scheduledPeriod.length ? (
-            scheduledPeriod.map(period => <AppointmentPeriodCard key={period.id} {...period} />)
+            scheduledPeriod.map(period => (
+              <AppointmentPeriodCard
+                key={period.id}
+                id={period.id}
+                avatarUrl={period.avatarUrl}
+                member={period.member}
+                appointmentPlanTitle={period.appointmentPlanTitle}
+                startedAt={period.startedAt}
+                endedAt={period.endedAt}
+                creator={period.creator}
+                orderProductId={period.orderProductId}
+              />
+            ))
           ) : (
             <EmptyBlock>{formatMessage(messages.emptyAppointment)}</EmptyBlock>
           )}
