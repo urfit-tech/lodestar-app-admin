@@ -1,7 +1,7 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Icon, List, Popover, Spin, Tabs, Typography } from 'antd'
 import gql from 'graphql-tag'
-import React from 'react'
+import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
@@ -11,6 +11,7 @@ import CreatorAdminLayout from '../../components/layout/CreatorAdminLayout'
 import OwnerAdminLayout from '../../components/layout/OwnerAdminLayout'
 import ProgramAdminCard from '../../components/program/ProgramAdminCard'
 import ProgramCreationModal from '../../components/program/ProgramCreationModal'
+import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { ReactComponent as MoveIcon } from '../../images/icon/move.svg'
@@ -94,6 +95,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
   const { loadingProgramPreviews, programPreviews } = useProgramCollection(
     currentUserRole === 'content-creator' ? currentMemberId : null,
   )
+  const updatePosition = useUpdatePosition()
 
   if (!currentMemberId || !currentUserRole) {
     return <LoadingPage />
@@ -131,6 +133,16 @@ const ProgramCollectionAdminPage: React.FC = () => {
             <div className="row">
               <PositionAdminLayout<ProgramPreviewProps>
                 value={tabContent.programs}
+                onChange={programs => {
+                  updatePosition(
+                    programs.map((program, index) => ({
+                      id: program.id,
+                      position: index,
+                      isSubscription: program.isSubscription,
+                      title: program.title,
+                    })),
+                  )
+                }}
                 renderItem={(program, currentIndex, moveTarget) => (
                   <div key={program.id} className="col-12 col-md-6 col-lg-4 mb-5">
                     <AvatarPlaceHolder className="mb-3">
@@ -289,6 +301,40 @@ const useProgramCollection = (memberId: string | null) => {
     programPreviews,
     refetchProgramPreviews: refetch,
   }
+}
+
+const useUpdatePosition = () => {
+  const app = useContext(AppContext)
+  const [updateProgramPositionCollection] = useMutation(gql`
+    mutation UPDATE_PROGRAM_POSITION_COLLECTION($data: [program_insert_input!]!) {
+      insert_program(objects: $data, on_conflict: { constraint: program_pkey, update_columns: position }) {
+        affected_rows
+      }
+    }
+  `)
+
+  const updatePosition = (
+    programs: {
+      id: string
+      position: number
+      isSubscription: boolean
+      title: string
+    }[],
+  ) => {
+    updateProgramPositionCollection({
+      variables: {
+        data: programs.map(program => ({
+          id: program.id,
+          position: program.position,
+          appId: app.id,
+          title: program.title,
+          is_subscription: program.isSubscription,
+        })),
+      },
+    })
+  }
+
+  return updatePosition
 }
 
 export default ProgramCollectionAdminPage
