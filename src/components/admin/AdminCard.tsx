@@ -14,7 +14,7 @@ const AdminCard = styled(Card)<{ variant?: string }>`
       overflow: hidden;
 
       .ant-card-body {
-        height: 13rem;
+        height: 12rem;
       }
 
       .ant-card-meta {

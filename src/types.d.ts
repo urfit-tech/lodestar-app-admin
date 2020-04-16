@@ -6682,6 +6682,100 @@ export interface GET_MEMBER_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAM_PREVIEW_COLLECTION
+// ====================================================
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_roles_member {
+  __typename: "member_public";
+  id: string | null;
+  picture_url: string | null;
+  name: string | null;
+  username: string | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_roles {
+  __typename: "program_role";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_PROGRAM_PREVIEW_COLLECTION_program_program_roles_member | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate_aggregate {
+  __typename: "program_plan_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate {
+  __typename: "program_plan_enrollment_aggregate";
+  aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans {
+  __typename: "program_plan";
+  id: any;
+  list_price: any;
+  sale_price: any;
+  sold_at: any | null;
+  period_type: string | null;
+  /**
+   * An aggregated array relationship
+   */
+  program_plan_enrollments_aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate_aggregate {
+  __typename: "program_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate {
+  __typename: "program_enrollment_aggregate";
+  aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program {
+  __typename: "program";
+  id: any;
+  cover_url: string | null;
+  title: string;
+  abstract: string | null;
+  /**
+   * An array relationship
+   */
+  program_roles: GET_PROGRAM_PREVIEW_COLLECTION_program_program_roles[];
+  is_subscription: boolean;
+  list_price: any | null;
+  sale_price: any | null;
+  sold_at: any | null;
+  /**
+   * An array relationship
+   */
+  program_plans: GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans[];
+  /**
+   * An aggregated array relationship
+   */
+  program_enrollments_aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate;
+  published_at: any | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_PROGRAM_PREVIEW_COLLECTION_program[];
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTIONVariables {
+  memberId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_CREATOR_PROGRAM_COLLECTION
 // ====================================================
 

@@ -1,3 +1,24 @@
+import { ProgramPlanPeriodType } from '../schemas/program'
+
+export type ProgramPreviewProps = {
+  id: string
+  coverUrl: string | null
+  title: string
+  abstract: string | null
+  instructors: {
+    id: string
+    avatarUrl: string | null
+    name: string
+  }[]
+  isSubscription: boolean
+  listPrice: number | null
+  salePrice: number | null
+  periodAmount: number | null
+  periodType: ProgramPlanPeriodType | null
+  enrollment: number
+  isDraft: boolean
+}
+
 export type ProgramType = {
   id: string
   title: string

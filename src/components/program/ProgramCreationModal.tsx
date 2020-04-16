@@ -60,7 +60,7 @@ const ProgramCreationModal: React.FC<ProgramCreationModalProps> = ({ form, withS
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button type="primary" icon="file-add" className="mb-4" onClick={() => setVisible(true)}>
+        <Button type="primary" icon="file-add" className="mb-5" onClick={() => setVisible(true)}>
           {formatMessage(messages.createProgram)}
         </Button>
       )}
