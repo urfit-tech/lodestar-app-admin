@@ -426,6 +426,7 @@ export const programMessages = {
     noAssignedInstructor: { id: 'common.text.noAssignedInstructor', defaultMessage: '尚未指定講師' },
   }),
   ui: defineMessages({
+    createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
     editProgram: { id: 'program.ui.editProgram', defaultMessage: '編輯課程' },
   }),
 }

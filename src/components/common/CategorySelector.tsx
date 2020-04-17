@@ -1,7 +1,6 @@
 import { Button, Select } from 'antd'
-import React, { useContext } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import AppContext from '../../contexts/AppContext'
 import { useCategory } from '../../hooks/data'
 import { ClassType } from '../../types/general'
 
@@ -36,7 +35,6 @@ type CategorySelectorProps = {
   flatten?: boolean
 }
 const CategorySelector: React.FC<CategorySelectorProps> = ({ flatten, value, onChange, classType }, ref) => {
-  const { id: appId } = useContext(AppContext)
   const { loading, categories } = useCategory(classType)
 
   return flatten ? (
