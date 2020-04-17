@@ -97,7 +97,7 @@ const useUpdatePostIsDeleted = () => {
 }
 
 const UPDATE_POST_IS_DELETED = gql`
-  mutation UPDATE_PROGRAM_IS_DELETED($postId: uuid) {
+  mutation UPDATE_POST_IS_DELETED($postId: uuid) {
     update_post(where: { id: { _eq: $postId } }, _set: { is_deleted: true }) {
       affected_rows
     }

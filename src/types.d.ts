@@ -244,26 +244,26 @@ export interface UPDATE_POST_DESCRIPTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_IS_DELETED
+// GraphQL mutation operation: UPDATE_POST_IS_DELETED
 // ====================================================
 
-export interface UPDATE_PROGRAM_IS_DELETED_update_program {
-  __typename: "program_mutation_response";
+export interface UPDATE_POST_IS_DELETED_update_post {
+  __typename: "post_mutation_response";
   /**
    * number of affected rows by the mutation
    */
   affected_rows: number;
 }
 
-export interface UPDATE_PROGRAM_IS_DELETED {
+export interface UPDATE_POST_IS_DELETED {
   /**
-   * update data of the table: "program"
+   * update data of the table: "post"
    */
-  update_program: UPDATE_PROGRAM_IS_DELETED_update_program | null;
+  update_post: UPDATE_POST_IS_DELETED_update_post | null;
 }
 
-export interface UPDATE_PROGRAM_IS_DELETEDVariables {
-  programId?: any | null;
+export interface UPDATE_POST_IS_DELETEDVariables {
+  postId?: any | null;
 }
 
 /* tslint:disable */
@@ -1684,6 +1684,33 @@ export interface INSERT_PROGRAMVariables {
   title: string;
   isSubscription: boolean;
   programCategories: program_category_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_IS_DELETED
+// ====================================================
+
+export interface UPDATE_PROGRAM_IS_DELETED_update_program {
+  __typename: "program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_IS_DELETED {
+  /**
+   * update data of the table: "program"
+   */
+  update_program: UPDATE_PROGRAM_IS_DELETED_update_program | null;
+}
+
+export interface UPDATE_PROGRAM_IS_DELETEDVariables {
+  programId?: any | null;
 }
 
 /* tslint:disable */
