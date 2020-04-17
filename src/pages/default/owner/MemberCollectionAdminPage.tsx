@@ -159,7 +159,6 @@ const MemberCollectionAdminPage: React.FC = () => {
             consumption: sum(
               member.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
             ),
-            zoomUserId: member.zoom_user_id,
           }))
           .sort((a, b) => (b.loginedAt ? b.loginedAt.getTime() : 0) - (a.loginedAt ? a.loginedAt.getTime() : 0))
 
@@ -246,7 +245,6 @@ const GET_MEMBER_COLLECTION = gql`
       point_status {
         points
       }
-      zoom_user_id
       order_logs(where: { status: { _eq: "SUCCESS" } }) {
         order_products_aggregate {
           aggregate {

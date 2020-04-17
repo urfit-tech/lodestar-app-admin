@@ -1,4 +1,4 @@
-import { array, date, InferType, mixed, number, object, string } from 'yup'
+import { InferType, number, object, string } from 'yup'
 
 export type UserRole = 'app-owner' | 'content-creator' | 'general-member' | 'anonymous'
 export type AuthState = 'login' | 'register' | 'forgotPassword' | 'confirm'
@@ -34,28 +34,3 @@ export const cartProductSchema = object({
 }).camelCase()
 export type CartProduct = InferType<typeof cartProductSchema>
 
-export const memberSchema = object({
-  id: string(),
-  appId: string(),
-  role: mixed<UserRole>(),
-  username: string(),
-  name: string().nullable(),
-  email: string(),
-  pictureUrl: string().nullable(),
-  metadata: object().nullable(),
-  description: string().nullable(),
-  title: string().nullable(),
-  abstract: string().nullable(),
-  createdAt: date(),
-  loginedAt: date(),
-  memberTags: array(
-    object({
-      id: string(),
-      tagName: string(),
-    }).camelCase(),
-  ),
-  facebookUserId: string().nullable(),
-  googleUserId: string().nullable(),
-  zoomUserId: string().nullable(),
-}).camelCase()
-export type Member = InferType<typeof memberSchema>

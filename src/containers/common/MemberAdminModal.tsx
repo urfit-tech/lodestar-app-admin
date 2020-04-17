@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, Form, Input, message, Modal, Select, Tabs } from 'antd'
+import { Button, Form, Input, message, Modal, Select, Tabs } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import { ModalProps } from 'antd/lib/modal'
 import gql from 'graphql-tag'
@@ -13,13 +13,11 @@ import { currencyFormatter, handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { UserRole } from '../../schemas/general'
 import types from '../../types'
-import ZoomUserSelector from './ZoomUserSelector'
 
 const messages = defineMessages({
   creatorPageLink: { id: 'common.ui.creatorPageLink', defaultMessage: '創作者主頁' },
   memberPageLink: { id: 'common.ui.memberPageLink', defaultMessage: '學員主頁' },
   roleSettings: { id: 'common.label.roleSettings', defaultMessage: '設定身份' },
-  zoomBinding: { id: 'common.label.zoomBinding', defaultMessage: '綁定 Zoom 帳號' },
   accountData: { id: 'common.label.accountData', defaultMessage: '帳號資料' },
   memberLog: { id: 'common.label.memberLog', defaultMessage: '會員紀錄' },
 })
@@ -44,7 +42,6 @@ export type MemberInfo = {
   role: UserRole
   points: number
   consumption: number
-  zoomUserId: string | null
 }
 
 type MemberAdminModalProps = FormComponentProps &
@@ -58,18 +55,14 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
   const { formatMessage } = useIntl()
   const app = useContext(AppContext)
   const [updateMemberInfo] = useMutation<types.UPDATE_MEMBER_INFO, types.UPDATE_MEMBER_INFOVariables>(gql`
-    mutation UPDATE_MEMBER_INFO($memberId: String!, $name: String, $email: String, $role: String, $zoomUserId: String) {
-      update_member(
-        where: { id: { _eq: $memberId } }
-        _set: { name: $name, email: $email, role: $role, zoom_user_id: $zoomUserId }
-      ) {
+    mutation UPDATE_MEMBER_INFO($memberId: String!, $name: String, $email: String, $role: String) {
+      update_member(where: { id: { _eq: $memberId } }, _set: { name: $name, email: $email, role: $role }) {
         affected_rows
       }
     }
   `)
   const [activeKey, setActiveKey] = useState<string>('')
   const [selectedRole, setSelectedRole] = useState<UserRole>(member?.role || 'anonymous')
-  const [withZoomId, setWithZoomId] = useState<boolean>(member && member.zoomUserId ? true : false)
   const [loading, setLoading] = useState(false)
 
   if (!member) {
@@ -90,7 +83,6 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
           name: values.name,
           email: values.email,
           role: selectedRole,
-          zoomUserId: selectedRole && withZoomId ? values.zoomUserId : null,
         },
       })
         .then(() => {
@@ -174,21 +166,6 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
                 <Select.Option value="app-owner">{formatMessage(commonMessages.term.appOwner)}</Select.Option>
               </Select>
             </Form.Item>
-
-            {selectedRole !== 'general-member' && app.enabledModules.appointment && (
-              <div className="mb-4">
-                <Checkbox checked={withZoomId} onChange={e => setWithZoomId(e.target.checked)}>
-                  {formatMessage(messages.zoomBinding)}
-                </Checkbox>
-                {withZoomId && (
-                  <Form.Item>
-                    {form.getFieldDecorator('zoomUserId', {
-                      initialValue: member.zoomUserId,
-                    })(<ZoomUserSelector />)}
-                  </Form.Item>
-                )}
-              </div>
-            )}
 
             <div className="text-right">
               <Button

@@ -4,7 +4,6 @@ import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import AdminModal from '../../components/admin/AdminModal'
 import CreatorSelector from '../../components/common/CreatorSelector'
@@ -12,13 +11,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import { useMember } from '../../hooks/member'
-import { ReactComponent as ExclamationCircle } from '../../images/icon/exclamation-circle.svg'
 import types from '../../types'
-
-const WarningText = styled.div`
-  color: var(--error);
-  font-size: 14px;
-`
 
 const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
@@ -43,12 +36,12 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
       createAppointmentPlan({
         variables: {
           title: values.title,
-          creatorId: values.creatorId,
+          creatorId: currentUserRole === 'app-owner' ? values.creatorId : currentMemberId,
         },
       })
         .then(({ data }) =>
           history.push(
-            `/admin/appointment-plans/${
+            `/${currentUserRole === 'app-owner' ? 'admin' : 'studio'}/appointment-plans/${
               data && data.insert_appointment_plan ? data.insert_appointment_plan.returning[0].id : ''
             }`,
           ),
@@ -82,12 +75,7 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
           <Button className="mr-2" onClick={() => setVisible(false)}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button
-            type="primary"
-            loading={loading}
-            onClick={() => handleSubmit()}
-            disabled={!member.zoomUserId && member.role === 'content-creator'}
-          >
+          <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
             {formatMessage(commonMessages.ui.create)}
           </Button>
         </>
@@ -101,7 +89,7 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
           >
             {form.getFieldDecorator('creatorId', {
               rules: [{ required: true, message: formatMessage(errorMessages.form.selectInstructor) }],
-            })(<CreatorSelector zoomUserOnly />)}
+            })(<CreatorSelector />)}
           </Form.Item>
         )}
         <Form.Item label={formatMessage(commonMessages.term.planTitle)}>
@@ -117,12 +105,6 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
             ],
           })(<Input maxLength={10} />)}
         </Form.Item>
-        {!member.zoomUserId && member.role === 'content-creator' && (
-          <WarningText className="mb-4">
-            <Icon className="mr-2" component={() => <ExclamationCircle />} />
-            <span>你尚未綁定Zoom帳號，如欲使用此功能請聯絡平台管理員</span>
-          </WarningText>
-        )}
       </Form>
     </AdminModal>
   )
