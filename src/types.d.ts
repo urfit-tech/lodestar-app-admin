@@ -1180,64 +1180,6 @@ export interface READ_NOTIFICATIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PERPETUAL_ENROLLMENT
-// ====================================================
-
-export interface GET_PERPETUAL_ENROLLMENT_program_enrollment_aggregate_aggregate {
-  __typename: "program_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_PERPETUAL_ENROLLMENT_program_enrollment_aggregate {
-  __typename: "program_enrollment_aggregate";
-  aggregate: GET_PERPETUAL_ENROLLMENT_program_enrollment_aggregate_aggregate | null;
-}
-
-export interface GET_PERPETUAL_ENROLLMENT {
-  /**
-   * fetch aggregated fields from the table: "program_enrollment"
-   */
-  program_enrollment_aggregate: GET_PERPETUAL_ENROLLMENT_program_enrollment_aggregate;
-}
-
-export interface GET_PERPETUAL_ENROLLMENTVariables {
-  programId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_SUBSCRIPTION_ENROLLMENT
-// ====================================================
-
-export interface GET_SUBSCRIPTION_ENROLLMENT_program_plan_enrollment_aggregate_aggregate {
-  __typename: "program_plan_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_SUBSCRIPTION_ENROLLMENT_program_plan_enrollment_aggregate {
-  __typename: "program_plan_enrollment_aggregate";
-  aggregate: GET_SUBSCRIPTION_ENROLLMENT_program_plan_enrollment_aggregate_aggregate | null;
-}
-
-export interface GET_SUBSCRIPTION_ENROLLMENT {
-  /**
-   * fetch aggregated fields from the table: "program_plan_enrollment"
-   */
-  program_plan_enrollment_aggregate: GET_SUBSCRIPTION_ENROLLMENT_program_plan_enrollment_aggregate;
-}
-
-export interface GET_SUBSCRIPTION_ENROLLMENTVariables {
-  programId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_TITLE
 // ====================================================
 
@@ -6776,27 +6718,26 @@ export interface GET_PROGRAM_PREVIEW_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_CREATOR_PROGRAM_COLLECTION
+// GraphQL mutation operation: UPDATE_PROGRAM_POSITION_COLLECTION
 // ====================================================
 
-export interface GET_CREATOR_PROGRAM_COLLECTION_program {
-  __typename: "program";
-  id: any;
-  published_at: any | null;
-  is_deleted: boolean;
-}
-
-export interface GET_CREATOR_PROGRAM_COLLECTION {
+export interface UPDATE_PROGRAM_POSITION_COLLECTION_insert_program {
+  __typename: "program_mutation_response";
   /**
-   * fetch data from the table: "program"
+   * number of affected rows by the mutation
    */
-  program: GET_CREATOR_PROGRAM_COLLECTION_program[];
+  affected_rows: number;
 }
 
-export interface GET_CREATOR_PROGRAM_COLLECTIONVariables {
-  appId: string;
-  memberId?: string | null;
-  isDraft?: boolean | null;
+export interface UPDATE_PROGRAM_POSITION_COLLECTION {
+  /**
+   * insert data into the table: "program"
+   */
+  insert_program: UPDATE_PROGRAM_POSITION_COLLECTION_insert_program | null;
+}
+
+export interface UPDATE_PROGRAM_POSITION_COLLECTIONVariables {
+  data: program_insert_input[];
 }
 
 /* tslint:disable */

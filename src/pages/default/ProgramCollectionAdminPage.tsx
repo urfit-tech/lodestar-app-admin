@@ -92,7 +92,7 @@ const StyledListItem = styled(List.Item)`
 const ProgramCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { currentMemberId, currentUserRole } = useAuth()
-  const { loadingProgramPreviews, programPreviews } = useProgramCollection(
+  const { loadingProgramPreviews, programPreviews, refetchProgramPreviews } = useProgramPreviewCollection(
     currentUserRole === 'content-creator' ? currentMemberId : null,
   )
   const updatePosition = useUpdatePosition()
@@ -130,18 +130,17 @@ const ProgramCollectionAdminPage: React.FC = () => {
           <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
             {loadingProgramPreviews && <Spin />}
 
-            <div className="row">
+            <div className="row py-3">
               <PositionAdminLayout<ProgramPreviewProps>
                 value={tabContent.programs}
                 onChange={programs => {
                   updatePosition(
-                    programs.map((program, index) => ({
+                    programs.map(program => ({
                       id: program.id,
-                      position: index,
                       isSubscription: program.isSubscription,
                       title: program.title,
                     })),
-                  )
+                  ).then(() => refetchProgramPreviews())
                 }}
                 renderItem={(program, currentIndex, moveTarget) => (
                   <div key={program.id} className="col-12 col-md-6 col-lg-4 mb-5">
@@ -161,40 +160,42 @@ const ProgramCollectionAdminPage: React.FC = () => {
                       <OverlayBlock>
                         <OverlayContentBlock>
                           <Link to={`/programs/${program.id}`}>
-                            <StyledButton block className="mb-4" icon="edit">
+                            <StyledButton block icon="edit">
                               {formatMessage(programMessages.ui.editProgram)}
                             </StyledButton>
                           </Link>
 
-                          <Popover
-                            trigger="click"
-                            placement="bottomLeft"
-                            content={
-                              <StyledList
-                                header={formatMessage(commonMessages.label.currentPosition, {
-                                  position: currentIndex + 1,
-                                })}
-                              >
-                                <ListWrapper>
-                                  {tabContent.programs.map((program, index) => (
-                                    <StyledListItem
-                                      key={program.id}
-                                      className={currentIndex === index ? 'active' : ''}
-                                      onClick={() => moveTarget(currentIndex, index)}
-                                    >
-                                      <span className="flex-shrink-0">{index + 1}</span>
-                                      <span>{program.title}</span>
-                                    </StyledListItem>
-                                  ))}
-                                </ListWrapper>
-                              </StyledList>
-                            }
-                          >
-                            <StyledButton block>
-                              <Icon component={() => <MoveIcon />} />
-                              {formatMessage(commonMessages.ui.changePosition)}
-                            </StyledButton>
-                          </Popover>
+                          {currentUserRole === 'app-owner' && tabContent.key === 'published' && (
+                            <Popover
+                              trigger="click"
+                              placement="bottomLeft"
+                              content={
+                                <StyledList
+                                  header={formatMessage(commonMessages.label.currentPosition, {
+                                    position: currentIndex + 1,
+                                  })}
+                                >
+                                  <ListWrapper>
+                                    {tabContent.programs.map((program, index) => (
+                                      <StyledListItem
+                                        key={program.id}
+                                        className={currentIndex === index ? 'active' : ''}
+                                        onClick={() => moveTarget(currentIndex, index)}
+                                      >
+                                        <span className="flex-shrink-0">{index + 1}</span>
+                                        <span>{program.title}</span>
+                                      </StyledListItem>
+                                    ))}
+                                  </ListWrapper>
+                                </StyledList>
+                              }
+                            >
+                              <StyledButton block className="mt-4">
+                                <Icon component={() => <MoveIcon />} />
+                                {formatMessage(commonMessages.ui.changePosition)}
+                              </StyledButton>
+                            </Popover>
+                          )}
                         </OverlayContentBlock>
                       </OverlayBlock>
                     </StyledWrapper>
@@ -209,7 +210,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
   )
 }
 
-const useProgramCollection = (memberId: string | null) => {
+const useProgramPreviewCollection = (memberId: string | null) => {
   const { loading, error, data, refetch } = useQuery<
     types.GET_PROGRAM_PREVIEW_COLLECTION,
     types.GET_PROGRAM_PREVIEW_COLLECTIONVariables
@@ -217,8 +218,8 @@ const useProgramCollection = (memberId: string | null) => {
     gql`
       query GET_PROGRAM_PREVIEW_COLLECTION($memberId: String) {
         program(
-          where: { editors: { member_id: { _eq: $memberId } }, is_deleted: { _eq: false } }
-          order_by: { position: asc, published_at: desc }
+          where: { program_roles: { member_id: { _eq: $memberId } }, is_deleted: { _eq: false } }
+          order_by: { position: asc, published_at: desc, updated_at: desc }
         ) {
           id
           cover_url
@@ -291,7 +292,7 @@ const useProgramCollection = (memberId: string | null) => {
             enrollment: program.is_subscription
               ? (plan && plan.program_plan_enrollments_aggregate.aggregate?.count) || 0
               : program.program_enrollments_aggregate.aggregate?.count || 0,
-            isDraft: !!program.published_at,
+            isDraft: !program.published_at,
           }
         })
 
@@ -305,7 +306,10 @@ const useProgramCollection = (memberId: string | null) => {
 
 const useUpdatePosition = () => {
   const app = useContext(AppContext)
-  const [updateProgramPositionCollection] = useMutation(gql`
+  const [updateProgramPositionCollection] = useMutation<
+    types.UPDATE_PROGRAM_POSITION_COLLECTION,
+    types.UPDATE_PROGRAM_POSITION_COLLECTIONVariables
+  >(gql`
     mutation UPDATE_PROGRAM_POSITION_COLLECTION($data: [program_insert_input!]!) {
       insert_program(objects: $data, on_conflict: { constraint: program_pkey, update_columns: position }) {
         affected_rows
@@ -316,23 +320,21 @@ const useUpdatePosition = () => {
   const updatePosition = (
     programs: {
       id: string
-      position: number
       isSubscription: boolean
       title: string
     }[],
-  ) => {
+  ) =>
     updateProgramPositionCollection({
       variables: {
-        data: programs.map(program => ({
+        data: programs.map((program, index) => ({
           id: program.id,
-          position: program.position,
-          appId: app.id,
+          position: index,
+          app_id: app.id,
           title: program.title,
           is_subscription: program.isSubscription,
         })),
       },
     })
-  }
 
   return updatePosition
 }
