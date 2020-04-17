@@ -1,11 +1,106 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import { uniq, unnest, uniqBy, sum } from 'ramda'
+import { sum, uniq, uniqBy, unnest } from 'ramda'
 import { useContext } from 'react'
 import { array, object, string } from 'yup'
 import AppContext from '../contexts/AppContext'
-import { programContentSchema, programSchema } from '../schemas/program'
+import { programContentSchema, ProgramPlanPeriodType, programSchema } from '../schemas/program'
 import types from '../types'
+import { ProgramPreviewProps } from '../types/program'
+
+export const useProgramPreviewCollection = (memberId: string | null) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_PROGRAM_PREVIEW_COLLECTION,
+    types.GET_PROGRAM_PREVIEW_COLLECTIONVariables
+  >(
+    gql`
+      query GET_PROGRAM_PREVIEW_COLLECTION($memberId: String) {
+        program(
+          where: { program_roles: { member_id: { _eq: $memberId } }, is_deleted: { _eq: false } }
+          order_by: { position: asc, published_at: desc, updated_at: desc }
+        ) {
+          id
+          cover_url
+          title
+          abstract
+          program_roles(where: { name: { _eq: "instructor" } }, limit: 1) {
+            id
+            member {
+              id
+              picture_url
+              name
+              username
+            }
+          }
+          is_subscription
+          list_price
+          sale_price
+          sold_at
+          program_plans(limit: 1) {
+            id
+            list_price
+            sale_price
+            sold_at
+            period_type
+            program_plan_enrollments_aggregate {
+              aggregate {
+                count
+              }
+            }
+          }
+          program_enrollments_aggregate {
+            aggregate {
+              count
+            }
+          }
+          published_at
+        }
+      }
+    `,
+    { variables: { memberId } },
+  )
+
+  const programPreviews: ProgramPreviewProps[] =
+    loading || error || !data
+      ? []
+      : data.program.map(program => {
+          const plan = program.program_plans[0]
+
+          return {
+            id: program.id,
+            coverUrl: program.cover_url,
+            title: program.title,
+            abstract: program.abstract,
+            instructors: program.program_roles.map(programRole => ({
+              id: programRole.member?.id || '',
+              avatarUrl: programRole.member?.picture_url || null,
+              name: programRole.member?.name || programRole.member?.username || '',
+            })),
+            isSubscription: program.is_subscription,
+            listPrice: program.is_subscription ? (plan ? plan.list_price : null) : program.list_price,
+            salePrice: program.is_subscription
+              ? plan && plan.sold_at && new Date(plan.sold_at).getTime() > Date.now()
+                ? plan.sale_price
+                : null
+              : program.sold_at && new Date(program.sold_at).getTime() > Date.now()
+              ? program.sale_price
+              : null,
+            periodAmount: program.is_subscription && plan ? 1 : null,
+            periodType: program.is_subscription && plan ? (plan.period_type as ProgramPlanPeriodType) : null,
+            enrollment: program.is_subscription
+              ? (plan && plan.program_plan_enrollments_aggregate.aggregate?.count) || 0
+              : program.program_enrollments_aggregate.aggregate?.count || 0,
+            isDraft: !program.published_at,
+          }
+        })
+
+  return {
+    loadingProgramPreviews: loading,
+    errorProgramPreviews: error,
+    programPreviews,
+    refetchProgramPreviews: refetch,
+  }
+}
 
 export const useProgram = (programId: string) => {
   const { loading, data, error, refetch } = useQuery<types.GET_PROGRAM, types.GET_PROGRAMVariables>(

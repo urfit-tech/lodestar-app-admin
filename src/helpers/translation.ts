@@ -47,6 +47,7 @@ export const commonMessages = {
     preview: { id: 'common.ui.preview', defaultMessage: '預覽' },
     backToHomepage: { id: 'common.ui.backToHomepage', defaultMessage: '回首頁' },
     addCategory: { id: 'common.ui.addCategory', defaultMessage: '新增分類' },
+    changePosition: { id: 'common.ui.changePosition', defaultMessage: '調整排序' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -131,6 +132,7 @@ export const commonMessages = {
     languages: { id: 'common.label.languages', defaultMessage: '顯示語系' },
     price: { id: 'common.label.price', defaultMessage: '價格' },
     uploading: { id: 'command.label.uploading', defaultMessage: '上傳中' },
+    currentPosition: { id: 'command.label.currentPosition', defaultMessage: '目前排序：{position}' },
   }),
   term: defineMessages({
     instructor: { id: 'common.term.instructor', defaultMessage: '老師' },
@@ -422,6 +424,11 @@ export const programMessages = {
     enrolledSubscriptionCount: { id: 'program.text.enrolledSubscriptionCount', defaultMessage: '已訂閱 {count} 人' },
     enrolledPerpetualCount: { id: 'program.text.enrolledPerpetualCount', defaultMessage: '已售 {count} 人' },
     emptyProgramIssue: { id: 'program.text.empty', defaultMessage: '沒有課程問題' },
+    noAssignedInstructor: { id: 'common.text.noAssignedInstructor', defaultMessage: '尚未指定講師' },
+  }),
+  ui: defineMessages({
+    createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
+    editProgram: { id: 'program.ui.editProgram', defaultMessage: '編輯課程' },
   }),
 }
 

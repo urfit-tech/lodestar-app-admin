@@ -144,7 +144,7 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
       {[formatMessage(commonMessages.ui.publiclyPublish), formatMessage(commonMessages.ui.privatelyPublish)]
         .filter(publishType => publishType !== publishState)
         .map(publishType => (
-          <Menu.Item>
+          <Menu.Item key={publishType}>
             <Button
               type="link"
               onClick={() => {
@@ -262,7 +262,10 @@ const usePublishProgram = () => {
 }
 const PUBLISH_PROGRAM = gql`
   mutation PUBLISH_PROGRAM($programId: uuid!, $publishedAt: timestamptz, $isPrivate: Boolean) {
-    update_program(_set: { published_at: $publishedAt, is_private: $isPrivate }, where: { id: { _eq: $programId } }) {
+    update_program(
+      _set: { published_at: $publishedAt, is_private: $isPrivate, position: -1 }
+      where: { id: { _eq: $programId } }
+    ) {
       affected_rows
     }
   }
