@@ -216,15 +216,27 @@ export const useInsertCategory = () => {
 }
 
 export const useUpdateCategory = () => {
-  const [updateCategory] = useMutation(gql`
-    mutation UPDATE_PROGRAM_CATEGORY($categoryId: String!, $name: String, $position: Int) {
+  const [updateCategory] = useMutation<types.UPDATE_CATEGORY, types.UPDATE_CATEGORYVariables>(gql`
+    mutation UPDATE_CATEGORY($categoryId: String!, $name: String, $position: Int) {
       update_category(_set: { name: $name, position: $position }, where: { id: { _eq: $categoryId } }) {
         affected_rows
       }
     }
   `)
-  
+
   return updateCategory
+}
+
+export const useUpdateCategoryPosition = () => {
+  const [updateCategoryPosition] = useMutation<types.UPDATE_CATEGORY_POSITION, types.UPDATE_CATEGORY_POSITIONVariables>(gql`
+    mutation UPDATE_CATEGORY_POSITION($data: [category_insert_input!]!) {
+      insert_category(objects: $data, on_conflict: { constraint: category_pkey, update_columns: position }) {
+        affected_rows
+      }
+    }
+  `)
+
+  return updateCategoryPosition
 }
 
 export const useDeleteCategory = () => {
@@ -235,6 +247,6 @@ export const useDeleteCategory = () => {
       }
     }
   `)
-  
+
   return deleteCategory
 }

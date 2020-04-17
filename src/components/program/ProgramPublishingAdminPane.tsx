@@ -144,7 +144,7 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
       {[formatMessage(commonMessages.ui.publiclyPublish), formatMessage(commonMessages.ui.privatelyPublish)]
         .filter(publishType => publishType !== publishState)
         .map(publishType => (
-          <Menu.Item>
+          <Menu.Item key={publishType}>
             <Button
               type="link"
               onClick={() => {

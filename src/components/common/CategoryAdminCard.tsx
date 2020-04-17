@@ -1,9 +1,16 @@
 import { Button, Icon, Typography } from 'antd'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import Sortable from 'react-sortablejs'
+import AppContext from '../../contexts/AppContext'
 import { commonMessages } from '../../helpers/translation'
-import { useCategory, useDeleteCategory, useInsertCategory, useUpdateCategory } from '../../hooks/data'
+import {
+  useCategory,
+  useDeleteCategory,
+  useInsertCategory,
+  useUpdateCategory,
+  useUpdateCategoryPosition,
+} from '../../hooks/data'
 import { Category, ClassType } from '../../types/general'
 import AdminCard from '../admin/AdminCard'
 import DraggableItem from './DraggableItem'
@@ -17,36 +24,36 @@ const messages = defineMessages({
 
 const CategoryAdminCard: React.FC<{ classType: ClassType }> = ({ classType }) => {
   const { formatMessage } = useIntl()
-  const { loading, categories: data, refetch } = useCategory(classType)
+  const app = useContext(AppContext)
+  const { loading: loadingCategory, categories, refetch } = useCategory(classType)
 
   const insertCategory = useInsertCategory()
   const updateCategory = useUpdateCategory()
+  const updateCategoryPosition = useUpdateCategoryPosition()
   const deleteCategory = useDeleteCategory()
 
-  const [categories, setCategories] = useState<Category[]>([])
-
-  useEffect(() => {
-    data && setCategories(data)
-  }, [JSON.stringify(data)])
+  const [loading, setLoading] = useState(false)
 
   return (
-    <AdminCard loading={loading}>
+    <AdminCard loading={loadingCategory} className={loading ? 'mask' : ''}>
       <Typography.Text>{formatMessage(commonMessages.label.categoryItem)}</Typography.Text>
       <Sortable
         className="mt-3"
         options={{ handle: '.draggable-category' }}
         onChange={(categoryStrings: string[]) => {
-          const newCategories = categoryStrings.map(categoryString => JSON.parse(categoryString))
-          setCategories(newCategories)
-          newCategories.map((category, idx) =>
-            updateCategory({
-              variables: {
-                categoryId: category.id,
+          setLoading(true)
+          const newCategories = categoryStrings.map(categoryString => JSON.parse(categoryString) as Category)
+          updateCategoryPosition({
+            variables: {
+              data: newCategories.map((category, index) => ({
+                app_id: app.id,
+                id: category.id,
                 name: category.name,
-                position: idx,
-              },
-            }),
-          )
+                class: classType,
+                position: index,
+              })),
+            },
+          }).then(() => refetch().then(() => setLoading(false)))
         }}
       >
         {categories.map(category => (

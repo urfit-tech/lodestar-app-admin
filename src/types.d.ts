@@ -5366,10 +5366,10 @@ export interface INSERT_PROGRAM_CATEGORYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_CATEGORY
+// GraphQL mutation operation: UPDATE_CATEGORY
 // ====================================================
 
-export interface UPDATE_PROGRAM_CATEGORY_update_category {
+export interface UPDATE_CATEGORY_update_category {
   __typename: "category_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -5377,17 +5377,44 @@ export interface UPDATE_PROGRAM_CATEGORY_update_category {
   affected_rows: number;
 }
 
-export interface UPDATE_PROGRAM_CATEGORY {
+export interface UPDATE_CATEGORY {
   /**
    * update data of the table: "category"
    */
-  update_category: UPDATE_PROGRAM_CATEGORY_update_category | null;
+  update_category: UPDATE_CATEGORY_update_category | null;
 }
 
-export interface UPDATE_PROGRAM_CATEGORYVariables {
+export interface UPDATE_CATEGORYVariables {
   categoryId: string;
   name?: string | null;
   position?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_CATEGORY_POSITION
+// ====================================================
+
+export interface UPDATE_CATEGORY_POSITION_insert_category {
+  __typename: "category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_CATEGORY_POSITION {
+  /**
+   * insert data into the table: "category"
+   */
+  insert_category: UPDATE_CATEGORY_POSITION_insert_category | null;
+}
+
+export interface UPDATE_CATEGORY_POSITIONVariables {
+  data: category_insert_input[];
 }
 
 /* tslint:disable */
