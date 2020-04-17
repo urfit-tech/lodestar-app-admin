@@ -6708,33 +6708,6 @@ export interface GET_MEMBER_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_POSITION_COLLECTION
-// ====================================================
-
-export interface UPDATE_PROGRAM_POSITION_COLLECTION_insert_program {
-  __typename: "program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_POSITION_COLLECTION {
-  /**
-   * insert data into the table: "program"
-   */
-  insert_program: UPDATE_PROGRAM_POSITION_COLLECTION_insert_program | null;
-}
-
-export interface UPDATE_PROGRAM_POSITION_COLLECTIONVariables {
-  data: program_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM
 // ====================================================
 
@@ -6765,6 +6738,33 @@ export interface INSERT_PROGRAMVariables {
   title: string;
   isSubscription: boolean;
   programCategories: program_category_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_POSITION_COLLECTION
+// ====================================================
+
+export interface UPDATE_PROGRAM_POSITION_COLLECTION_insert_program {
+  __typename: "program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_POSITION_COLLECTION {
+  /**
+   * insert data into the table: "program"
+   */
+  insert_program: UPDATE_PROGRAM_POSITION_COLLECTION_insert_program | null;
+}
+
+export interface UPDATE_PROGRAM_POSITION_COLLECTIONVariables {
+  data: program_insert_input[];
 }
 
 /* tslint:disable */

@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Icon, List, Popover, Spin, Tabs, Typography } from 'antd'
 import gql from 'graphql-tag'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
@@ -105,6 +105,10 @@ const ProgramCollectionAdminPage: React.FC = () => {
     types.UPDATE_PROGRAM_POSITION_COLLECTIONVariables
   >(UPDATE_PROGRAM_POSITION_COLLECTION)
 
+  useEffect(() => {
+    refetchProgramPreviews()
+  }, [refetchProgramPreviews])
+
   if (!currentMemberId || !currentUserRole || app.loading) {
     return <LoadingPage />
   }
@@ -167,14 +171,14 @@ const ProgramCollectionAdminPage: React.FC = () => {
             <div className="row py-3">
               <PositionAdminLayout<ProgramPreviewProps>
                 value={tabContent.programs}
-                onChange={programs => {
+                onChange={value => {
                   updatePositions({
                     variables: {
-                      data: programs.map((program, index) => ({
+                      data: value.map((program, index) => ({
                         app_id: app.id,
                         id: program.id,
                         title: program.title,
-                        isSubscription: program.isSubscription,
+                        is_subscription: program.isSubscription,
                         position: index,
                       })),
                     },
@@ -248,14 +252,6 @@ const ProgramCollectionAdminPage: React.FC = () => {
   )
 }
 
-const UPDATE_PROGRAM_POSITION_COLLECTION = gql`
-  mutation UPDATE_PROGRAM_POSITION_COLLECTION($data: [program_insert_input!]!) {
-    insert_program(objects: $data, on_conflict: { constraint: program_pkey, update_columns: position }) {
-      affected_rows
-    }
-  }
-`
-
 const INSERT_PROGRAM = gql`
   mutation INSERT_PROGRAM(
     $ownerId: String!
@@ -279,6 +275,13 @@ const INSERT_PROGRAM = gql`
       returning {
         id
       }
+    }
+  }
+`
+const UPDATE_PROGRAM_POSITION_COLLECTION = gql`
+  mutation UPDATE_PROGRAM_POSITION_COLLECTION($data: [program_insert_input!]!) {
+    insert_program(objects: $data, on_conflict: { constraint: program_pkey, update_columns: position }) {
+      affected_rows
     }
   }
 `
