@@ -5517,7 +5517,6 @@ export interface GET_MEMBER_member_by_pk {
    * app-owner / content-creator
    */
   role: string;
-  zoom_user_id: string | null;
 }
 
 export interface GET_MEMBER {
@@ -5545,7 +5544,6 @@ export interface GET_PUBLIC_MEMBER_member_public {
   name: string | null;
   username: string | null;
   picture_url: string | null;
-  metadata: any | null;
   description: string | null;
   role: string | null;
 }
@@ -5558,30 +5556,6 @@ export interface GET_PUBLIC_MEMBER {
 }
 
 export interface GET_PUBLIC_MEMBERVariables {
-  memberId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_MEMBER_POINT
-// ====================================================
-
-export interface GET_MEMBER_POINT_point_status {
-  __typename: "point_status";
-  points: any | null;
-}
-
-export interface GET_MEMBER_POINT {
-  /**
-   * fetch data from the table: "point_status"
-   */
-  point_status: GET_MEMBER_POINT_point_status[];
-}
-
-export interface GET_MEMBER_POINTVariables {
   memberId: string;
 }
 
@@ -6663,7 +6637,6 @@ export interface GET_MEMBER_COLLECTION_member {
    * An object relationship
    */
   point_status: GET_MEMBER_COLLECTION_member_point_status | null;
-  zoom_user_id: string | null;
   /**
    * An array relationship
    */
@@ -7429,7 +7402,7 @@ export enum member_update_column {
   roles_deprecated = "roles_deprecated",
   title = "title",
   username = "username",
-  zoom_user_id = "zoom_user_id",
+  zoom_user_id_deprecate = "zoom_user_id_deprecate",
 }
 
 /**
@@ -10209,7 +10182,7 @@ export interface member_bool_exp {
   title?: String_comparison_exp | null;
   username?: String_comparison_exp | null;
   vouchers?: voucher_bool_exp | null;
-  zoom_user_id?: String_comparison_exp | null;
+  zoom_user_id_deprecate?: String_comparison_exp | null;
 }
 
 /**
@@ -10306,7 +10279,7 @@ export interface member_insert_input {
   title?: string | null;
   username?: string | null;
   vouchers?: voucher_arr_rel_insert_input | null;
-  zoom_user_id?: string | null;
+  zoom_user_id_deprecate?: string | null;
 }
 
 /**
