@@ -4927,6 +4927,10 @@ export interface GET_POSTS_post_post_roles_member {
 export interface GET_POSTS_post_post_roles {
   __typename: "post_role";
   id: any;
+  /**
+   * creator | author
+   */
+  name: string;
   post_id: any;
   /**
    * An object relationship
@@ -8256,6 +8260,7 @@ export enum program_update_column {
   sold_at = "sold_at",
   support_locales = "support_locales",
   title = "title",
+  updated_at = "updated_at",
 }
 
 /**
@@ -12010,6 +12015,7 @@ export interface program_bool_exp {
   sold_at?: timestamptz_comparison_exp | null;
   support_locales?: jsonb_comparison_exp | null;
   title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**
@@ -12424,6 +12430,7 @@ export interface program_insert_input {
   sold_at?: any | null;
   support_locales?: any | null;
   title?: string | null;
+  updated_at?: any | null;
 }
 
 /**

@@ -1,5 +1,5 @@
 import { Button, Icon, Tabs } from 'antd'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import useRouter from 'use-react-router'
 import { AdminPageTitle } from '../../../components/admin'
@@ -16,9 +16,13 @@ const BlogAdminCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { history } = useRouter()
   const { currentUserRole, currentMemberId } = useAuth()
-  const { posts } = usePostCollection()
+  const { posts, refetch } = usePostCollection()
   const insertPost = useInsertPost()
   const { id: appId } = useContext(AppContext)
+
+  useEffect(() => {
+    refetch()
+  }, [])
 
   const AdminLayout = currentUserRole === 'app-owner' ? OwnerAdminLayout : CreatorAdminLayout
 

@@ -116,7 +116,7 @@ const GET_POST = gql`
 `
 
 export const usePostCollection = () => {
-  const { loading, error, data } = useQuery<types.GET_POSTS>(GET_POSTS)
+  const { loading, error, data, refetch } = useQuery<types.GET_POSTS>(GET_POSTS)
 
   const posts: {
     id: string
@@ -140,6 +140,8 @@ export const usePostCollection = () => {
           },
         ]
       : data?.post.map(post => {
+          const author = post.post_roles.find(postRole => postRole.name === 'author') || { member: { name: '' } }
+
           return {
             id: post.id,
             title: post.title,
@@ -147,7 +149,7 @@ export const usePostCollection = () => {
             videoUrl: post.video_url,
             views: post.views,
             publishedAt: post.published_at,
-            authorName: post?.post_roles[0].member?.name || post?.post_roles[0].member?.username || '',
+            authorName: author.member?.name,
           }
         })
 
@@ -155,6 +157,7 @@ export const usePostCollection = () => {
     loading,
     error,
     posts,
+    refetch
   }
 }
 
@@ -165,8 +168,9 @@ const GET_POSTS = gql`
       title
       cover_url
       video_url
-      post_roles(where: {name: {_eq: "author"}}) {
+      post_roles(where: { name: { _eq: "author" } }) {
         id
+        name
         post_id
         member {
           name

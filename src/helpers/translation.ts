@@ -35,6 +35,7 @@ export const commonMessages = {
     publiclyPublish: { id: 'common.ui.publiclyPublish', defaultMessage: '公開發佈' },
     privatelyPublish: { id: 'common.ui.privatelyPublish', defaultMessage: '私密發佈' },
     addInstructor: { id: 'common.ui.addInstructor', defaultMessage: '新增講師' },
+    addAuthor: { id: 'common.ui.addAuthor', defaultMessage: '新增作者' },
     add: { id: 'common.ui.add', defaultMessage: '新增' },
     cancelOrder: { id: 'common.ui.cancelOrder', defaultMessage: '取消訂單' },
     retryPayment: { id: 'common.ui.retryPayment', defaultMessage: '重新付款' },

@@ -63,12 +63,12 @@ const BlogPostAuthorCollectionBlock: React.FC<BlogPostProps> = ({ post, onRefetc
 
       {post.authors && post.authors.length < 1 && (
         <Button type="link" icon="plus" size="small" onClick={() => setVisible(true)}>
-          {formatMessage(commonMessages.ui.addInstructor)}
+          {formatMessage(commonMessages.ui.addAuthor)}
         </Button>
       )}
 
       <Modal title={null} footer={null} centered destroyOnClose visible={isVisible} onCancel={() => setVisible(false)}>
-        <StyledModalTitle>{formatMessage(commonMessages.ui.addInstructor)}</StyledModalTitle>
+        <StyledModalTitle>{formatMessage(commonMessages.ui.addAuthor)}</StyledModalTitle>
 
         <Form
           hideRequiredMark
