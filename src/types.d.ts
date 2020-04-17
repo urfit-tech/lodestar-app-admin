@@ -244,26 +244,26 @@ export interface UPDATE_POST_DESCRIPTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_IS_DELETED
+// GraphQL mutation operation: UPDATE_POST_IS_DELETED
 // ====================================================
 
-export interface UPDATE_PROGRAM_IS_DELETED_update_program {
-  __typename: "program_mutation_response";
+export interface UPDATE_POST_IS_DELETED_update_post {
+  __typename: "post_mutation_response";
   /**
    * number of affected rows by the mutation
    */
   affected_rows: number;
 }
 
-export interface UPDATE_PROGRAM_IS_DELETED {
+export interface UPDATE_POST_IS_DELETED {
   /**
-   * update data of the table: "program"
+   * update data of the table: "post"
    */
-  update_program: UPDATE_PROGRAM_IS_DELETED_update_program | null;
+  update_post: UPDATE_POST_IS_DELETED_update_post | null;
 }
 
-export interface UPDATE_PROGRAM_IS_DELETEDVariables {
-  programId?: any | null;
+export interface UPDATE_POST_IS_DELETEDVariables {
+  postId?: any | null;
 }
 
 /* tslint:disable */
@@ -1180,64 +1180,6 @@ export interface READ_NOTIFICATIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PERPETUAL_ENROLLMENT
-// ====================================================
-
-export interface GET_PERPETUAL_ENROLLMENT_program_enrollment_aggregate_aggregate {
-  __typename: "program_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_PERPETUAL_ENROLLMENT_program_enrollment_aggregate {
-  __typename: "program_enrollment_aggregate";
-  aggregate: GET_PERPETUAL_ENROLLMENT_program_enrollment_aggregate_aggregate | null;
-}
-
-export interface GET_PERPETUAL_ENROLLMENT {
-  /**
-   * fetch aggregated fields from the table: "program_enrollment"
-   */
-  program_enrollment_aggregate: GET_PERPETUAL_ENROLLMENT_program_enrollment_aggregate;
-}
-
-export interface GET_PERPETUAL_ENROLLMENTVariables {
-  programId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_SUBSCRIPTION_ENROLLMENT
-// ====================================================
-
-export interface GET_SUBSCRIPTION_ENROLLMENT_program_plan_enrollment_aggregate_aggregate {
-  __typename: "program_plan_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_SUBSCRIPTION_ENROLLMENT_program_plan_enrollment_aggregate {
-  __typename: "program_plan_enrollment_aggregate";
-  aggregate: GET_SUBSCRIPTION_ENROLLMENT_program_plan_enrollment_aggregate_aggregate | null;
-}
-
-export interface GET_SUBSCRIPTION_ENROLLMENT {
-  /**
-   * fetch aggregated fields from the table: "program_plan_enrollment"
-   */
-  program_plan_enrollment_aggregate: GET_SUBSCRIPTION_ENROLLMENT_program_plan_enrollment_aggregate;
-}
-
-export interface GET_SUBSCRIPTION_ENROLLMENTVariables {
-  programId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_TITLE
 // ====================================================
 
@@ -1654,36 +1596,26 @@ export interface UPDATE_PROGRAM_CONTENT_SECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: INSERT_PROGRAM
+// GraphQL mutation operation: UPDATE_PROGRAM_IS_DELETED
 // ====================================================
 
-export interface INSERT_PROGRAM_insert_program_returning {
-  __typename: "program";
-  id: any;
-}
-
-export interface INSERT_PROGRAM_insert_program {
+export interface UPDATE_PROGRAM_IS_DELETED_update_program {
   __typename: "program_mutation_response";
   /**
-   * data of the affected rows by the mutation
+   * number of affected rows by the mutation
    */
-  returning: INSERT_PROGRAM_insert_program_returning[];
+  affected_rows: number;
 }
 
-export interface INSERT_PROGRAM {
+export interface UPDATE_PROGRAM_IS_DELETED {
   /**
-   * insert data into the table: "program"
+   * update data of the table: "program"
    */
-  insert_program: INSERT_PROGRAM_insert_program | null;
+  update_program: UPDATE_PROGRAM_IS_DELETED_update_program | null;
 }
 
-export interface INSERT_PROGRAMVariables {
-  ownerId: string;
-  instructorId: string;
-  appId: string;
-  title: string;
-  isSubscription: boolean;
-  programCategories: program_category_insert_input[];
+export interface UPDATE_PROGRAM_IS_DELETEDVariables {
+  programId?: any | null;
 }
 
 /* tslint:disable */
@@ -5438,10 +5370,10 @@ export interface INSERT_PROGRAM_CATEGORYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_CATEGORY
+// GraphQL mutation operation: UPDATE_CATEGORY
 // ====================================================
 
-export interface UPDATE_PROGRAM_CATEGORY_update_category {
+export interface UPDATE_CATEGORY_update_category {
   __typename: "category_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -5449,17 +5381,44 @@ export interface UPDATE_PROGRAM_CATEGORY_update_category {
   affected_rows: number;
 }
 
-export interface UPDATE_PROGRAM_CATEGORY {
+export interface UPDATE_CATEGORY {
   /**
    * update data of the table: "category"
    */
-  update_category: UPDATE_PROGRAM_CATEGORY_update_category | null;
+  update_category: UPDATE_CATEGORY_update_category | null;
 }
 
-export interface UPDATE_PROGRAM_CATEGORYVariables {
+export interface UPDATE_CATEGORYVariables {
   categoryId: string;
   name?: string | null;
   position?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_CATEGORY_POSITION
+// ====================================================
+
+export interface UPDATE_CATEGORY_POSITION_insert_category {
+  __typename: "category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_CATEGORY_POSITION {
+  /**
+   * insert data into the table: "category"
+   */
+  insert_category: UPDATE_CATEGORY_POSITION_insert_category | null;
+}
+
+export interface UPDATE_CATEGORY_POSITIONVariables {
+  data: category_insert_input[];
 }
 
 /* tslint:disable */
@@ -5891,6 +5850,100 @@ export interface GET_PODCAST_PLAN_ADMIN_COLLECTION {
    * fetch data from the table: "podcast_plan"
    */
   podcast_plan: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_PREVIEW_COLLECTION
+// ====================================================
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_roles_member {
+  __typename: "member_public";
+  id: string | null;
+  picture_url: string | null;
+  name: string | null;
+  username: string | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_roles {
+  __typename: "program_role";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_PROGRAM_PREVIEW_COLLECTION_program_program_roles_member | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate_aggregate {
+  __typename: "program_plan_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate {
+  __typename: "program_plan_enrollment_aggregate";
+  aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans {
+  __typename: "program_plan";
+  id: any;
+  list_price: any;
+  sale_price: any;
+  sold_at: any | null;
+  period_type: string | null;
+  /**
+   * An aggregated array relationship
+   */
+  program_plan_enrollments_aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate_aggregate {
+  __typename: "program_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate {
+  __typename: "program_enrollment_aggregate";
+  aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program {
+  __typename: "program";
+  id: any;
+  cover_url: string | null;
+  title: string;
+  abstract: string | null;
+  /**
+   * An array relationship
+   */
+  program_roles: GET_PROGRAM_PREVIEW_COLLECTION_program_program_roles[];
+  is_subscription: boolean;
+  list_price: any | null;
+  sale_price: any | null;
+  sold_at: any | null;
+  /**
+   * An array relationship
+   */
+  program_plans: GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans[];
+  /**
+   * An aggregated array relationship
+   */
+  program_enrollments_aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate;
+  published_at: any | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_PROGRAM_PREVIEW_COLLECTION_program[];
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTIONVariables {
+  memberId?: string | null;
 }
 
 /* tslint:disable */
@@ -6659,27 +6712,63 @@ export interface GET_MEMBER_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_CREATOR_PROGRAM_COLLECTION
+// GraphQL mutation operation: INSERT_PROGRAM
 // ====================================================
 
-export interface GET_CREATOR_PROGRAM_COLLECTION_program {
+export interface INSERT_PROGRAM_insert_program_returning {
   __typename: "program";
   id: any;
-  published_at: any | null;
-  is_deleted: boolean;
 }
 
-export interface GET_CREATOR_PROGRAM_COLLECTION {
+export interface INSERT_PROGRAM_insert_program {
+  __typename: "program_mutation_response";
   /**
-   * fetch data from the table: "program"
+   * data of the affected rows by the mutation
    */
-  program: GET_CREATOR_PROGRAM_COLLECTION_program[];
+  returning: INSERT_PROGRAM_insert_program_returning[];
 }
 
-export interface GET_CREATOR_PROGRAM_COLLECTIONVariables {
+export interface INSERT_PROGRAM {
+  /**
+   * insert data into the table: "program"
+   */
+  insert_program: INSERT_PROGRAM_insert_program | null;
+}
+
+export interface INSERT_PROGRAMVariables {
+  ownerId: string;
+  instructorId: string;
   appId: string;
-  memberId?: string | null;
-  isDraft?: boolean | null;
+  title: string;
+  isSubscription: boolean;
+  programCategories: program_category_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_POSITION_COLLECTION
+// ====================================================
+
+export interface UPDATE_PROGRAM_POSITION_COLLECTION_insert_program {
+  __typename: "program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_POSITION_COLLECTION {
+  /**
+   * insert data into the table: "program"
+   */
+  insert_program: UPDATE_PROGRAM_POSITION_COLLECTION_insert_program | null;
+}
+
+export interface UPDATE_PROGRAM_POSITION_COLLECTIONVariables {
+  data: program_insert_input[];
 }
 
 /* tslint:disable */

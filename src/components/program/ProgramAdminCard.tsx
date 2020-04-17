@@ -1,29 +1,30 @@
-import { useQuery } from '@apollo/react-hooks'
 import { Card, Typography } from 'antd'
 import { CardProps } from 'antd/lib/card'
-import gql from 'graphql-tag'
 import React from 'react'
-import { defineMessages, useIntl } from 'react-intl'
-import { Link } from 'react-router-dom'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import MemberAvatar from '../../containers/common/MemberAvatar'
-import { notEmpty } from '../../helpers'
-import { errorMessages, programMessages } from '../../helpers/translation'
-import { useProgram } from '../../hooks/program'
+import { currencyFormatter } from '../../helpers'
+import { programMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
+import { ProgramPreviewProps } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
-import ProgramPriceLabel from './ProgramPriceLabel'
+import { PeriodTypeLabel } from '../common/Period'
 
-const AvatarPlaceHolder = styled.div`
-  margin: 16px 0;
-  height: 32px;
-`
-const ProgramCover = styled.div<{ src?: string }>`
+const ProgramCover = styled.div<{ src?: string | null }>`
   width: 100%;
   padding-top: 56.25%;
   background-image: url(${props => props.src || EmptyCover});
   background-size: cover;
   background-position: center;
+`
+const StyledPriceLabel = styled.span`
+  color: ${props => props.theme['@primary-color']};
+
+  & > span:first-child:not(:last-child) {
+    margin-right: 0.5rem;
+    color: ${props => props.theme['@text-color-secondary']};
+    text-decoration: line-through;
+  }
 `
 const ExtraContentBlock = styled.div`
   position: absolute;
@@ -36,96 +37,53 @@ const ExtraContentBlock = styled.div`
   text-align: center;
 `
 
-const messages = defineMessages({
-  noAssignedInstructor: { id: 'common.text.noAssignedInstructor', defaultMessage: '尚未指定講師' },
-})
-
-type ProgramAdminCardProps = CardProps & {
-  programId: string
-  link: string
-}
-const ProgramAdminCard: React.FC<ProgramAdminCardProps> = ({ programId, link, ...cardProps }) => {
+const ProgramAdminCard: React.FC<ProgramPreviewProps & CardProps> = ({
+  id,
+  coverUrl,
+  title,
+  abstract,
+  instructors,
+  isSubscription,
+  listPrice,
+  salePrice,
+  periodAmount,
+  periodType,
+  enrollment,
+  isDraft,
+  ...props
+}) => {
   const { formatMessage } = useIntl()
-  const { program } = useProgram(programId)
-
-  const { loading: programEnrollmentLoading, error: programEnrollmentError, data: programEnrollmentData } = useQuery(
-    program && program.isSubscription ? GET_SUBSCRIPTION_ENROLLMENT : GET_PERPETUAL_ENROLLMENT,
-    {
-      variables: { programId },
-    },
-  )
-
-  const instructors = program?.roles
-    ? program.roles
-        .filter(role => role.name === 'instructor')
-        .map(role => role.member)
-        .filter(notEmpty)
-    : []
 
   return (
-    <>
-      <AvatarPlaceHolder className="mb-3">
-        {instructors.length > 0 ? (
-          <MemberAvatar key={instructors[0].id || ''} memberId={instructors[0].id || ''} withName />
-        ) : (
-          formatMessage(messages.noAssignedInstructor)
-        )}
-      </AvatarPlaceHolder>
-      <Link to={link}>
-        <AdminCard
-          {...cardProps}
-          variant="program"
-          loading={!program}
-          cover={<ProgramCover src={program && program.coverUrl ? program.coverUrl : ''} />}
-        >
-          <Card.Meta
-            title={<Typography.Title ellipsis={{ rows: 2 }}>{program && program.title}</Typography.Title>}
-            description={
-              <>
-                <Typography.Paragraph ellipsis={{ rows: 2 }}>{program && program.abstract}</Typography.Paragraph>
-                <div className="d-flex justify-content-end pb-3">
-                  {program && <ProgramPriceLabel program={program} />}
-                </div>
-                <ExtraContentBlock>
-                  {!program || programEnrollmentLoading
-                    ? '-'
-                    : programEnrollmentError
-                    ? formatMessage(errorMessages.data.fetch)
-                    : program.isSubscription
-                    ? formatMessage(programMessages.text.enrolledSubscriptionCount, {
-                        count: programEnrollmentData.program_plan_enrollment_aggregate.aggregate.count || 0,
-                      })
-                    : formatMessage(programMessages.text.enrolledPerpetualCount, {
-                        count: programEnrollmentData.program_enrollment_aggregate.aggregate.count || 0,
-                      })}
-                </ExtraContentBlock>
-              </>
-            }
-          />
-        </AdminCard>
-      </Link>
-    </>
+    <AdminCard variant="program" cover={<ProgramCover src={coverUrl} />} {...props}>
+      <Card.Meta
+        title={<Typography.Title ellipsis={{ rows: 2 }}>{title}</Typography.Title>}
+        description={
+          <>
+            <Typography.Paragraph ellipsis={{ rows: 2 }} className="mb-0">
+              {abstract}
+            </Typography.Paragraph>
+            <div className="text-right pb-3">
+              <StyledPriceLabel>
+                <span>{currencyFormatter(listPrice)}</span>
+                {!!salePrice && <span>{currencyFormatter(salePrice)}</span>}
+                {!!periodType && (
+                  <>
+                    /<PeriodTypeLabel periodType={periodType} />
+                  </>
+                )}
+              </StyledPriceLabel>
+            </div>
+            <ExtraContentBlock>
+              {isSubscription
+                ? formatMessage(programMessages.text.enrolledSubscriptionCount, { count: enrollment })
+                : formatMessage(programMessages.text.enrolledPerpetualCount, { count: enrollment })}
+            </ExtraContentBlock>
+          </>
+        }
+      />
+    </AdminCard>
   )
 }
-
-const GET_PERPETUAL_ENROLLMENT = gql`
-  query GET_PERPETUAL_ENROLLMENT($programId: uuid!) {
-    program_enrollment_aggregate(where: { program_id: { _eq: $programId } }) {
-      aggregate {
-        count
-      }
-    }
-  }
-`
-
-const GET_SUBSCRIPTION_ENROLLMENT = gql`
-  query GET_SUBSCRIPTION_ENROLLMENT($programId: uuid!) {
-    program_plan_enrollment_aggregate(where: { program_plan: { program_id: { _eq: $programId } } }) {
-      aggregate {
-        count
-      }
-    }
-  }
-`
 
 export default ProgramAdminCard

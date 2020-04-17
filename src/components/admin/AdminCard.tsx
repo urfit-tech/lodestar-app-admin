@@ -2,7 +2,18 @@ import { Card } from 'antd'
 import styled, { css } from 'styled-components'
 
 const AdminCard = styled(Card)<{ variant?: string }>`
+  position: relative;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
+
+  &.mask::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    content: ' ';
+    background: rgba(256, 256, 256, 0.6);
+  }
 
   .ant-card-meta-title {
     white-space: normal;
@@ -14,7 +25,7 @@ const AdminCard = styled(Card)<{ variant?: string }>`
       overflow: hidden;
 
       .ant-card-body {
-        height: 13rem;
+        height: 12rem;
       }
 
       .ant-card-meta {
