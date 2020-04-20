@@ -78,7 +78,7 @@ const BlogPostAuthorCollectionBlock: React.FC<BlogPostProps> = ({ post, onRefetc
             handleSubmit()
           }}
         >
-          <Form.Item label={formatMessage(commonMessages.label.selectInstructor)}>
+          <Form.Item label={formatMessage(commonMessages.label.selectAuthor)}>
             <CreatorSelector value={selectedMemberId || ''} onChange={value => setSelectedMemberId(value)} />
           </Form.Item>
           <Form.Item className="text-right">
