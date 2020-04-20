@@ -209,7 +209,6 @@ const ProgramCollectionAdminPage: React.FC = () => {
 
                           {currentUserRole === 'app-owner' && tabContent.key === 'published' && (
                             <Popover
-                              trigger="click"
                               placement="bottomLeft"
                               content={
                                 <StyledList
