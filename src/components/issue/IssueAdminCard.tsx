@@ -74,7 +74,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
   )
 
   const [solved, setSolved] = useState(!!solvedAt)
-  const [modalVisible, setModalVisible] = useState()
+  const [modalVisible, setModalVisible] = useState<boolean>(false)
 
   const programRoles = (program && program.roles) || []
   const programTitle = program?.title

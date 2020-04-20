@@ -89,7 +89,7 @@ const IssueItem: React.FC<IssueItemProps> = ({
   const { formatMessage } = useIntl()
   const [qIssueId] = useQueryParam('issueId', StringParam)
   const [qIssueReplyId] = useQueryParam('issueReplyId', StringParam)
-  const { currentMemberId } = useAuth()
+  const { currentMemberId, currentUserRole } = useAuth()
   const theme = useContext(ThemeContext)
 
   const [insertIssueReaction] = useMutation<types.INSERT_ISSUE_REACTION, types.INSERT_ISSUE_REACTIONVariables>(
@@ -101,7 +101,7 @@ const IssueItem: React.FC<IssueItemProps> = ({
   const [deleteIssue] = useMutation<types.DELETE_ISSUE, types.DELETE_ISSUEVariables>(DELETE_ISSUE)
   const [updateIssue] = useMutation<types.UPDATE_ISSUE, types.UPDATE_ISSUEVariables>(UPDATE_ISSUE)
 
-  const [editing, setEditing] = useState()
+  const [editing, setEditing] = useState<boolean>(false)
   const [focus, setFocus] = useState(!qIssueReplyId && qIssueId === issueId)
   const [repliesVisible, setRepliesVisible] = useState(defaultRepliesVisible)
   const [reacted, setReacted] = useState(false)
@@ -190,7 +190,7 @@ const IssueItem: React.FC<IssueItemProps> = ({
           </span>
         </div>
 
-        {memberId === currentMemberId && !editing && (
+        {currentUserRole === 'app-owner' && !editing && (
           <Dropdown
             placement="bottomRight"
             overlay={
