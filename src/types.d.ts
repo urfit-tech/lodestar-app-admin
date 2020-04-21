@@ -577,6 +577,22 @@ export interface UPDATE_ISSUEVariables {
 // GraphQL mutation operation: DELETE_ISSUE
 // ====================================================
 
+export interface DELETE_ISSUE_delete_issue_reply_reaction {
+  __typename: "issue_reply_reaction_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_ISSUE_delete_issue_reaction {
+  __typename: "issue_reaction_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface DELETE_ISSUE_delete_issue_reply {
   __typename: "issue_reply_mutation_response";
   /**
@@ -594,6 +610,14 @@ export interface DELETE_ISSUE_delete_issue {
 }
 
 export interface DELETE_ISSUE {
+  /**
+   * delete data from the table: "issue_reply_reaction"
+   */
+  delete_issue_reply_reaction: DELETE_ISSUE_delete_issue_reply_reaction | null;
+  /**
+   * delete data from the table: "issue_reaction"
+   */
+  delete_issue_reaction: DELETE_ISSUE_delete_issue_reaction | null;
   /**
    * delete data from the table: "issue_reply"
    */
