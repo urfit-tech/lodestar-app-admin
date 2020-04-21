@@ -74,7 +74,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
   )
 
   const [solved, setSolved] = useState(!!solvedAt)
-  const [modalVisible, setModalVisible] = useState()
+  const [isModalVisible, setModalVisible] = useState<boolean>(false)
 
   const programRoles = (program && program.roles) || []
   const programTitle = program?.title
@@ -83,6 +83,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
     <>
       <StyledAdminCard className="mb-3" {...cardProps}>
         <IssueItem
+          showSolvedCheckbox
           programRoles={programRoles}
           issueId={issueId}
           title={title}
@@ -93,8 +94,6 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
           memberId={memberId}
           solvedAt={solvedAt}
           onRefetch={onRefetch}
-          defaultRepliesVisible={false}
-          showSolvedCheckbox={true}
         />
 
         <div className="mask" onClick={() => setModalVisible(true)} />
@@ -124,7 +123,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
 
       <Modal
         footer={null}
-        visible={modalVisible}
+        visible={isModalVisible}
         onCancel={() => setModalVisible(false)}
         title={
           <>
@@ -136,6 +135,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
         }
       >
         <IssueItem
+          defaultRepliesVisible
           programRoles={programRoles}
           issueId={issueId}
           title={title}
@@ -146,7 +146,6 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
           memberId={memberId}
           solvedAt={solvedAt}
           onRefetch={onRefetch}
-          defaultRepliesVisible={true}
         />
       </Modal>
     </>

@@ -43,3 +43,15 @@ export type MemberPublic = {
   description: string
   role: string
 }
+
+export type Issue = {
+  id: string
+  title: string
+  description: string
+  solvedAt: Date | null
+  createdAt: Date
+  memberId: string
+  threadId: string
+  reactedMemberIds: Array<string>
+  issueRepliesCount: number
+}

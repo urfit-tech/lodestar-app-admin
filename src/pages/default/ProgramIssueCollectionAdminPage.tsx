@@ -11,6 +11,7 @@ import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
+import { Issue } from '../../types/general'
 
 const ProgramIssueCollectionAdminPage = () => {
   const { formatMessage } = useIntl()
@@ -48,24 +49,16 @@ const ProgramIssueCollectionAdminPage = () => {
         </div>
       </div>
 
-      {currentMemberId && (
-        <AllProgramIssueCollectionBlock
-          memberId={currentMemberId}
-          selectedProgramId={selectedProgramId}
-          selectedStatus={selectedStatus}
-        />
-      )}
+      <AllProgramIssueCollectionBlock selectedProgramId={selectedProgramId} selectedStatus={selectedStatus} />
     </AdminLayout>
   )
 }
 
 const AllProgramIssueCollectionBlock: React.FC<{
-  memberId: string
   selectedProgramId: string
   selectedStatus: string
-}> = ({ memberId, selectedProgramId, selectedStatus }) => {
+}> = ({ selectedProgramId, selectedStatus }) => {
   const { formatMessage } = useIntl()
-  const { id: appId } = useContext(AppContext)
 
   let unsolved: boolean | undefined
   switch (selectedStatus) {
@@ -75,11 +68,38 @@ const AllProgramIssueCollectionBlock: React.FC<{
     case 'solved':
       unsolved = false
       break
-    default:
-      unsolved = undefined
-      break
   }
 
+  const { loading, error, issues, refetch: refetchIssues } = useGetCreatorProgramIssue(selectedProgramId, unsolved)
+
+  return (
+    <div>
+      {loading && <Skeleton active />}
+      {!loading && error && formatMessage(errorMessages.data.fetch)}
+      {!loading && issues.length === 0 && formatMessage(programMessages.text.emptyProgramIssue)}
+
+      {issues.map(issue => (
+        <IssueAdminCard
+          key={issue.id}
+          issueId={issue.id}
+          threadId={issue.threadId}
+          programId={issue.threadId.split('/')[2]}
+          title={issue.title}
+          description={issue.description}
+          reactedMemberIds={issue.reactedMemberIds}
+          numReplies={issue.issueRepliesCount}
+          createdAt={issue.createdAt}
+          solvedAt={issue.solvedAt}
+          memberId={issue.memberId}
+          onRefetch={refetchIssues}
+        />
+      ))}
+    </div>
+  )
+}
+
+const useGetCreatorProgramIssue = (selectedProgramId: string, unsolved?: boolean) => {
+  const { id: appId } = useContext(AppContext)
   const { loading, error, data, refetch } = useQuery<
     types.GET_CREATOR_PROGRAM_ISSUES,
     types.GET_CREATOR_PROGRAM_ISSUESVariables
@@ -91,49 +111,34 @@ const AllProgramIssueCollectionBlock: React.FC<{
     },
   })
 
-  return (
-    <div>
-      {loading || !data ? (
-        <Skeleton active />
-      ) : error ? (
-        formatMessage(errorMessages.data.fetch)
-      ) : !data.issue || data.issue.length === 0 ? (
-        formatMessage(programMessages.text.emptyProgramIssue)
-      ) : (
-        data.issue
-          .map((value: any) => {
-            const [, , programId] = value.thread_id.split('/')
-            return (
-              <IssueAdminCard
-                key={value.id}
-                threadId={value.thread_id}
-                programId={programId}
-                issueId={value.id}
-                title={value.title}
-                description={value.description}
-                reactedMemberIds={value.issue_reactions.map((value: any) => value.member_id)}
-                numReplies={value.issue_replies_aggregate.aggregate.count}
-                createdAt={new Date(value.created_at)}
-                memberId={value.member_id}
-                solvedAt={value.solved_at ? new Date(value.solved_at) : null}
-                onRefetch={refetch}
-              />
-            )
-          })
-          .flat()
-      )}
-    </div>
-  )
+  const issues: Issue[] =
+    loading || error || !data
+      ? []
+      : data.issue.map(issue => ({
+          id: issue.id,
+          title: issue.title,
+          description: issue.description,
+          solvedAt: issue.solved_at ? new Date(issue.solved_at) : null,
+          createdAt: new Date(issue.created_at),
+          memberId: issue.member_id,
+          threadId: issue.thread_id,
+          reactedMemberIds: issue.issue_reactions.map(reaction => reaction.member_id),
+          issueRepliesCount: issue?.issue_replies_aggregate?.aggregate?.count || 0,
+        }))
+
+  return {
+    loading,
+    error,
+    issues,
+    refetch,
+  }
 }
 
 const GET_CREATOR_PROGRAM_ISSUES = gql`
   query GET_CREATOR_PROGRAM_ISSUES($appId: String!, $threadIdLike: String, $unsolved: Boolean) {
     issue(
       where: { app_id: { _eq: $appId }, thread_id: { _like: $threadIdLike }, solved_at: { _is_null: $unsolved } }
-      order_by: [
-        { created_at: desc }
-        # { issue_reactions_aggregate: { count: desc } }
-      ]
+      order_by: { created_at: desc }
     ) {
       id
       title
