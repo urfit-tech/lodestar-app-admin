@@ -209,7 +209,7 @@ const IssueItem: React.FC<IssueItemProps> = ({
             }
             trigger={['click']}
           >
-            <Icon type="more" />
+            <div>{defaultRepliesVisible && <Icon type="more" />}</div>
           </Dropdown>
         )}
       </div>
