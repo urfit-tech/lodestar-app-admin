@@ -8,7 +8,8 @@ type MerchandiseSelectorProps = {
 }
 
 const MerchandiseSelector: React.FC<MerchandiseSelectorProps> = ({ value, onChange }, ref) => {
-  const { loadingMerchandises, merchandises } = useMerchandiseCollection()
+  const { loadingMerchandises, merchandises } = useMerchandiseCollection(false)
+
   return (
     <Select ref={ref} mode="multiple" loading={loadingMerchandises} value={value} onChange={onChange}>
       {merchandises.map(merchandise => (

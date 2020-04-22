@@ -4905,7 +4905,7 @@ export interface GET_POSTS_post {
    */
   post_roles: GET_POSTS_post_post_roles[];
   published_at: any | null;
-  views: any;
+  views: number;
 }
 
 export interface GET_POSTS {
@@ -5719,6 +5719,10 @@ export interface GET_MERCHANDISE_COLLECTION {
    * fetch data from the table: "merchandise"
    */
   merchandise: GET_MERCHANDISE_COLLECTION_merchandise[];
+}
+
+export interface GET_MERCHANDISE_COLLECTIONVariables {
+  isNotPublished?: boolean | null;
 }
 
 /* tslint:disable */
@@ -11754,7 +11758,7 @@ export interface post_bool_exp {
   title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
   video_url?: String_comparison_exp | null;
-  views?: numeric_comparison_exp | null;
+  views?: Int_comparison_exp | null;
 }
 
 /**
@@ -11823,7 +11827,7 @@ export interface post_insert_input {
   title?: string | null;
   updated_at?: any | null;
   video_url?: string | null;
-  views?: any | null;
+  views?: number | null;
 }
 
 /**
