@@ -336,12 +336,14 @@ export const useProgramContent = (programContentId: string) => {
           title
           abstract
           created_at
-          published_at
           list_price
           sale_price
           sold_at
           metadata
           duration
+          published_at
+          is_notify_update
+          notified_at
           program_content_plans {
             id
             program_plan {

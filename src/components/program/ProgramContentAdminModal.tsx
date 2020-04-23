@@ -27,6 +27,7 @@ const messages = defineMessages({
   uploadCaption: { id: 'program.ui.uploadCaption', defaultMessage: '上傳字幕' },
   duration: { id: 'program.label.duration', defaultMessage: '內容時長（分鐘）' },
   contentContext: { id: 'program.label.contentContext', defaultMessage: '內文' },
+  notifyUpdate: { id: 'program.label.notifyUpdate', defaultMessage: '通知內容更新' },
 })
 
 type ProgramContentAdminModalProps = FormComponentProps & {
@@ -57,7 +58,7 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
 
   const [visible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [uploading, setUploading] = useState()
+  const [uploading, setUploading] = useState(false)
 
   const handleSubmit = () => {
     form.validateFields((err, values) => {
@@ -82,6 +83,8 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                 video: values.video || null,
                 texttrack: values.texttrack || null,
               },
+              isNotifyUpdate: values.isNotifyUpdate,
+              notifiedAt: values.isNotifyUpdate ? new Date() : programContent.notifiedAt,
             },
           }),
           program.isSubscription
@@ -168,6 +171,11 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                     form.getFieldDecorator('publishedAt', {
                       initialValue: programContent.publishedAt && moment(programContent.publishedAt),
                     })(<DatetimePicker />)}
+                  <Form.Item className="mb-0">
+                    {form.getFieldDecorator('isNotifyUpdate', {
+                      initialValue: programContent.isNotifyUpdate,
+                    })(<Checkbox>{formatMessage(messages.notifyUpdate)}</Checkbox>)}
+                  </Form.Item>
                 </div>
               ) : (
                 <div />
@@ -288,10 +296,20 @@ const UPDATE_PROGRAM_CONTENT = gql`
     $price: numeric
     $publishedAt: timestamptz
     $duration: numeric
+    $isNotifyUpdate: Boolean
+    $notifiedAt: timestamptz
   ) {
     update_program_content(
       where: { id: { _eq: $programContentId } }
-      _set: { title: $title, duration: $duration, list_price: $price, sale_price: $price, published_at: $publishedAt }
+      _set: {
+        title: $title
+        duration: $duration
+        list_price: $price
+        sale_price: $price
+        published_at: $publishedAt
+        is_notify_update: $isNotifyUpdate
+        notified_at: $notifiedAt
+      }
     ) {
       affected_rows
     }

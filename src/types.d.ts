@@ -1340,6 +1340,8 @@ export interface UPDATE_PROGRAM_CONTENTVariables {
   price?: any | null;
   publishedAt?: any | null;
   duration?: any | null;
+  isNotifyUpdate?: boolean | null;
+  notifiedAt?: any | null;
 }
 
 /* tslint:disable */
@@ -6177,7 +6179,6 @@ export interface GET_PROGRAM_CONTENT_program_content_by_pk {
   title: string;
   abstract: string | null;
   created_at: any;
-  published_at: any | null;
   list_price: any | null;
   sale_price: any | null;
   sold_at: any | null;
@@ -6186,6 +6187,9 @@ export interface GET_PROGRAM_CONTENT_program_content_by_pk {
    * sec
    */
   duration: any | null;
+  published_at: any | null;
+  is_notify_update: boolean;
+  notified_at: any | null;
   /**
    * An array relationship
    */
@@ -8216,8 +8220,10 @@ export enum program_content_update_column {
   created_at = "created_at",
   duration = "duration",
   id = "id",
+  is_notify_update = "is_notify_update",
   list_price = "list_price",
   metadata = "metadata",
+  notified_at = "notified_at",
   position = "position",
   published_at = "published_at",
   sale_price = "sale_price",
@@ -12244,8 +12250,10 @@ export interface program_content_bool_exp {
   duration?: numeric_comparison_exp | null;
   enrollments?: program_content_enrollment_bool_exp | null;
   id?: uuid_comparison_exp | null;
+  is_notify_update?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
   metadata?: jsonb_comparison_exp | null;
+  notified_at?: timestamptz_comparison_exp | null;
   order_items?: order_item_bool_exp | null;
   position?: Int_comparison_exp | null;
   program_content_body?: program_content_body_bool_exp | null;
@@ -12285,8 +12293,10 @@ export interface program_content_insert_input {
   created_at?: any | null;
   duration?: any | null;
   id?: any | null;
+  is_notify_update?: boolean | null;
   list_price?: any | null;
   metadata?: any | null;
+  notified_at?: any | null;
   order_items?: order_item_arr_rel_insert_input | null;
   position?: number | null;
   program_content_body?: program_content_body_obj_rel_insert_input | null;

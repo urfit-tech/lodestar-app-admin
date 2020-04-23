@@ -1,4 +1,4 @@
-import { array, bool, date, mixed, number, object, string } from 'yup'
+import { array, bool, boolean, date, mixed, number, object, string } from 'yup'
 
 export const categorySchema = object({
   id: string(),
@@ -68,6 +68,8 @@ export const programContentSchema = object({
   duration: number().nullable(),
   metadata: mixed().nullable(),
   position: number().nullable(),
+  isNotifyUpdate: boolean(),
+  notifiedAt: date().nullable(),
 })
   .camelCase()
   .from('listPrice', 'price')
