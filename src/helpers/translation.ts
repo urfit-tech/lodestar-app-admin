@@ -410,6 +410,8 @@ export const programMessages = {
   status: defineMessages({
     issueOpen: { id: 'program.status.issueOpen', defaultMessage: '解決中' },
     issueSolved: { id: 'program.status.issueSolved', defaultMessage: '已解決' },
+    active: { id: 'program.status.active', defaultMessage: '開啟' },
+    closed: { id: 'program.status.closed', defaultMessage: '關閉' },
   }),
   label: defineMessages({
     programTitle: { id: 'program.label.programTitle', defaultMessage: '課程名稱' },
@@ -420,6 +422,7 @@ export const programMessages = {
     programPlanType: { id: 'program.label.programPlanType', defaultMessage: '選擇課程付費方案' },
     perpetualPlanType: { id: 'program.label.perpetualPlanType', defaultMessage: '單次付費' },
     subscriptionPlanType: { id: 'program.label.subscriptionPlanType', defaultMessage: '訂閱付費' },
+    isIssuesOpen: { id: 'program.label.isIssuesOpen', defaultMessage: '問題討論' },
   }),
   text: defineMessages({
     enrolledSubscriptionCount: { id: 'program.text.enrolledSubscriptionCount', defaultMessage: '已訂閱 {count} 人' },

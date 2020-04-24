@@ -41,6 +41,7 @@ export type ProgramType = {
   plans: ProgramPlanType[]
   isDeleted: boolean
   isPrivate: boolean
+  isIssuesOpen: boolean
   categories: {
     position: number
     category: {

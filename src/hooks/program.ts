@@ -125,6 +125,7 @@ export const useProgram = (programId: string) => {
           support_locales
           is_deleted
           is_private
+          is_issues_open
           program_content_sections(order_by: { position: asc }) {
             id
             title
@@ -199,6 +200,7 @@ export const useProgram = (programId: string) => {
     supportLocales: string[]
     isDeleted: boolean
     isPrivate: boolean
+    isIssuesOpen: boolean
     contentSections: {
       id: string
       title: string
@@ -268,9 +270,10 @@ export const useProgram = (programId: string) => {
           inAdvance: data.program_by_pk.in_advance,
           fundingId: data.program_by_pk.funding_id,
           isSoldOut: data.program_by_pk.is_sold_out,
-          supportLocales: data?.program_by_pk?.support_locales || [],
-          isDeleted: data?.program_by_pk?.is_deleted,
-          isPrivate: data?.program_by_pk?.is_private,
+          supportLocales: data.program_by_pk.support_locales || [],
+          isDeleted: data.program_by_pk.is_deleted,
+          isPrivate: data.program_by_pk.is_private,
+          isIssuesOpen: data.program_by_pk.is_issues_open,
           contentSections: data.program_by_pk.program_content_sections.map(programContentSection => ({
             id: programContentSection.id,
             title: programContentSection.title,

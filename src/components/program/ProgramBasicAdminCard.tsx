@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Icon, Input, message, Tooltip, Typography } from 'antd'
+import { Button, Form, Icon, Input, message, Radio, Tooltip, Typography } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext } from 'react'
@@ -39,6 +39,7 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
                 programId: program.id,
                 title: values.title,
                 supportLocales: !values.languages || values.languages.length === 0 ? null : values.languages,
+                isIssuesOpen: values.isIssuesOpen,
               },
             }),
             updateProgramCategories({
@@ -56,7 +57,7 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
               onRefetch && onRefetch()
               message.success(formatMessage(commonMessages.event.successfullySaved))
             })
-            .catch(error => handleError(handleError))
+            .catch(handleError)
         }
       })
   }
@@ -102,6 +103,16 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
               })(<LanguageSelector />)}
             </Form.Item>
           )}
+          <Form.Item label={formatMessage(programMessages.label.isIssuesOpen)}>
+            {form.getFieldDecorator('isIssuesOpen', {
+              initialValue: program.isIssuesOpen,
+            })(
+              <Radio.Group>
+                <Radio value={true}>{formatMessage(programMessages.status.active)}</Radio>
+                <Radio value={false}>{formatMessage(programMessages.status.closed)}</Radio>
+              </Radio.Group>,
+            )}
+          </Form.Item>
           <Form.Item wrapperCol={{ md: { offset: 4 } }}>
             <Button onClick={() => form.resetFields()}>{formatMessage(commonMessages.ui.cancel)}</Button>
             <Button className="ml-2" type="primary" htmlType="submit">
@@ -115,8 +126,11 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
 }
 
 const UPDATE_PROGRAM_TITLE = gql`
-  mutation UPDATE_PROGRAM_TITLE($programId: uuid!, $title: String, $supportLocales: jsonb) {
-    update_program(_set: { title: $title, support_locales: $supportLocales }, where: { id: { _eq: $programId } }) {
+  mutation UPDATE_PROGRAM_TITLE($programId: uuid!, $title: String, $supportLocales: jsonb, $isIssuesOpen: Boolean) {
+    update_program(
+      _set: { title: $title, support_locales: $supportLocales, is_issues_open: $isIssuesOpen }
+      where: { id: { _eq: $programId } }
+    ) {
       affected_rows
     }
   }

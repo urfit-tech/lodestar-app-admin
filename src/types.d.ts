@@ -1226,6 +1226,7 @@ export interface UPDATE_PROGRAM_TITLEVariables {
   programId: any;
   title?: string | null;
   supportLocales?: any | null;
+  isIssuesOpen?: boolean | null;
 }
 
 /* tslint:disable */
@@ -6107,6 +6108,7 @@ export interface GET_PROGRAM_program_by_pk {
   support_locales: any | null;
   is_deleted: boolean;
   is_private: boolean;
+  is_issues_open: boolean;
   /**
    * An array relationship
    */
@@ -8373,6 +8375,7 @@ export enum program_update_column {
   id = "id",
   in_advance = "in_advance",
   is_deleted = "is_deleted",
+  is_issues_open = "is_issues_open",
   is_private = "is_private",
   is_sold_out = "is_sold_out",
   is_subscription = "is_subscription",
@@ -12118,6 +12121,7 @@ export interface program_bool_exp {
   id?: uuid_comparison_exp | null;
   in_advance?: Boolean_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
+  is_issues_open?: Boolean_comparison_exp | null;
   is_private?: Boolean_comparison_exp | null;
   is_sold_out?: Boolean_comparison_exp | null;
   is_subscription?: Boolean_comparison_exp | null;
@@ -12538,6 +12542,7 @@ export interface program_insert_input {
   id?: any | null;
   in_advance?: boolean | null;
   is_deleted?: boolean | null;
+  is_issues_open?: boolean | null;
   is_private?: boolean | null;
   is_sold_out?: boolean | null;
   is_subscription?: boolean | null;
