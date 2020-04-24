@@ -77,7 +77,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({ allowTypes, value, on
 
 const GET_ALLTYPE_PRODUCT_COLLECTION = gql`
   query GET_ALLTYPE_PRODUCT_COLLECTION {
-    program(where: { is_subscription: { _eq: false } }) {
+    program(where: { is_deleted: { _eq: false }, is_subscription: { _eq: false } }, order_by: { position: asc }) {
       id
       title
       published_at
