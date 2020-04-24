@@ -6862,6 +6862,43 @@ export interface GET_CREATOR_PROGRAM_ISSUESVariables {
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
+// ====================================================
+// GraphQL mutation operation: INSERT_PROGRAM_PACKAGE
+// ====================================================
+
+export interface INSERT_PROGRAM_PACKAGE_insert_program_package_returning {
+  __typename: "program_package";
+  id: any;
+}
+
+export interface INSERT_PROGRAM_PACKAGE_insert_program_package {
+  __typename: "program_package_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_PROGRAM_PACKAGE_insert_program_package_returning[];
+}
+
+export interface INSERT_PROGRAM_PACKAGE {
+  /**
+   * insert data into the table: "program_package"
+   */
+  insert_program_package: INSERT_PROGRAM_PACKAGE_insert_program_package | null;
+}
+
+export interface INSERT_PROGRAM_PACKAGEVariables {
+  title: string;
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
 //==============================================================
 // START Enums and Input Objects
 //==============================================================
@@ -8288,6 +8325,7 @@ export enum program_package_program_update_column {
  * update columns of table "program_package"
  */
 export enum program_package_update_column {
+  app_id = "app_id",
   cover_url = "cover_url",
   created_at = "created_at",
   description = "description",
@@ -8373,6 +8411,7 @@ export enum program_update_column {
   id = "id",
   in_advance = "in_advance",
   is_deleted = "is_deleted",
+  is_issues_open = "is_issues_open",
   is_private = "is_private",
   is_sold_out = "is_sold_out",
   is_subscription = "is_subscription",
@@ -8920,6 +8959,7 @@ export interface app_bool_exp {
   point_exchange_rate?: numeric_comparison_exp | null;
   point_validity_period?: numeric_comparison_exp | null;
   posts?: post_bool_exp | null;
+  program_packages?: program_package_bool_exp | null;
   programs?: program_bool_exp | null;
   tags?: tag_bool_exp | null;
   title?: String_comparison_exp | null;
@@ -8958,6 +8998,7 @@ export interface app_insert_input {
   point_exchange_rate?: any | null;
   point_validity_period?: any | null;
   posts?: post_arr_rel_insert_input | null;
+  program_packages?: program_package_arr_rel_insert_input | null;
   programs?: program_arr_rel_insert_input | null;
   tags?: tag_arr_rel_insert_input | null;
   title?: string | null;
@@ -12118,6 +12159,7 @@ export interface program_bool_exp {
   id?: uuid_comparison_exp | null;
   in_advance?: Boolean_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
+  is_issues_open?: Boolean_comparison_exp | null;
   is_private?: Boolean_comparison_exp | null;
   is_sold_out?: Boolean_comparison_exp | null;
   is_subscription?: Boolean_comparison_exp | null;
@@ -12538,6 +12580,7 @@ export interface program_insert_input {
   id?: any | null;
   in_advance?: boolean | null;
   is_deleted?: boolean | null;
+  is_issues_open?: boolean | null;
   is_private?: boolean | null;
   is_sold_out?: boolean | null;
   is_subscription?: boolean | null;
@@ -12578,12 +12621,22 @@ export interface program_on_conflict {
 }
 
 /**
+ * input type for inserting array relation for remote table "program_package"
+ */
+export interface program_package_arr_rel_insert_input {
+  data: program_package_insert_input[];
+  on_conflict?: program_package_on_conflict | null;
+}
+
+/**
  * Boolean expression to filter rows from the table "program_package". All fields are combined with a logical 'AND'.
  */
 export interface program_package_bool_exp {
   _and?: (program_package_bool_exp | null)[] | null;
   _not?: program_package_bool_exp | null;
   _or?: (program_package_bool_exp | null)[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
@@ -12598,6 +12651,8 @@ export interface program_package_bool_exp {
  * input type for inserting data into table "program_package"
  */
 export interface program_package_insert_input {
+  app?: app_obj_rel_insert_input | null;
+  app_id?: string | null;
   cover_url?: string | null;
   created_at?: any | null;
   description?: string | null;

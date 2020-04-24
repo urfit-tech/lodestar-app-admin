@@ -218,6 +218,7 @@ export const commonMessages = {
     programAdmin: { id: 'common.menu.programAdmin', defaultMessage: '線上課程' },
     programs: { id: 'common.menu.programs', defaultMessage: '課程管理' },
     programIssues: { id: 'common.menu.programIssues', defaultMessage: '課程問題' },
+    programPackage: { id: 'common.menu.programPackage', defaultMessage: '課程組合管理' },
     programProgress: { id: 'common.menu.programProgress', defaultMessage: '學習進度' },
     programCategory: { id: 'common.menu.programCategory', defaultMessage: '課程分類' },
     podcastAdmin: { id: 'common.menu.podcastAdmin', defaultMessage: '音頻廣播' },
@@ -430,6 +431,15 @@ export const programMessages = {
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
     editProgram: { id: 'program.ui.editProgram', defaultMessage: '編輯課程' },
+  }),
+}
+
+export const programPackageMessage = {
+  ui: defineMessages({
+    createProgramPackage: {
+      id: 'programPackage.ui.createProgramPackage',
+      defaultMessage: '建立課程組合',
+    },
   }),
 }
 

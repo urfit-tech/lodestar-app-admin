@@ -61,12 +61,27 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'content-creator',
   },
+  program_admin: {
+    path: '/programs/:programId',
+    pageName: 'ProgramAdminPage',
+    authenticated: true,
+  },
   program_issues_admin: {
     path: '/program-issues',
     pageName: 'ProgramIssueCollectionAdminPage',
     authenticated: true,
     allowedUserRole: 'content-creator',
   },
+  program_package_collection_admin: {
+    path: '/program-packages',
+    pageName: 'ProgramPackageCollectionAdminPage',
+    authenticated: true,
+  },
+  // program_package_admin: {
+  //   path: '/program-packages/:programPackageId',
+  //   pageName: "ProgramPackageAdminPage",
+  //   authenticated: true
+  // },
   program_progress_admin: {
     path: '/program-progress',
     pageName: 'ProgramProgressCollectionAdminPage',
@@ -76,11 +91,6 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   program_category_admin: {
     path: '/program-category',
     pageName: 'ProgramCategoryPage',
-    authenticated: true,
-  },
-  program_admin: {
-    path: '/programs/:programId',
-    pageName: 'ProgramAdminPage',
     authenticated: true,
   },
 

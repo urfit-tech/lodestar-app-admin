@@ -35,6 +35,7 @@ const BlogAdminCollectionPage: React.FC = () => {
 
       <div className="mb-4">
         <ProductCreationModal
+          withCategorySelector
           classType="post"
           renderTrigger={({ setVisible }) => (
             <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>

@@ -17,7 +17,7 @@ export type Category = {
   position: number
 }
 
-export type ClassType = 'program' | 'podcastProgram' | 'activity' | 'post' | 'merchandise'
+export type ClassType = 'program' | 'podcastProgram' | 'activity' | 'post' | 'merchandise' | 'programPackage'
 
 export type Member = {
   id: string
