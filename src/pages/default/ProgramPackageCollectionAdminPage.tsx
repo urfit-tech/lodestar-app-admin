@@ -1,40 +1,44 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Icon, Tabs, Typography } from 'antd'
-import { ApolloError, ApolloQueryResult } from 'apollo-client'
-import gql from 'graphql-tag'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import useRouter from 'use-react-router'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import CreatorAdminLayout from '../../components/layout/CreatorAdminLayout'
 import OwnerAdminLayout from '../../components/layout/OwnerAdminLayout'
+import ProgramPackageAdminCard from '../../components/programPackage/ProgramPackageAdminCard'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, programPackageMessage } from '../../helpers/translation'
+import { useGetProgramPackages, useInsertProgramPackage } from '../../hooks/programPackage'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
-import types from '../../types'
 
 const ProgramPackageCollectionAdminPage: React.FC = () => {
   const { currentUserRole } = useAuth()
   const { formatMessage } = useIntl()
   const { history } = useRouter()
   const { id: appId } = useContext(AppContext)
-  const { programPackage } = useGetProgramPackage(appId)
-
-  const createProgramPackage = useInsertProgramPackage()
+  const { programPackages, refetch } = useGetProgramPackages(appId)
+  const createProgramPackage = useInsertProgramPackage(appId)
 
   const AdminLayout = currentUserRole === 'app-owner' ? OwnerAdminLayout : CreatorAdminLayout
 
+  const publishedQuantity = programPackages.filter(programPackage => !!programPackage.publishedAt === true).length
   const tabContents = [
+    {
+      key: 'published',
+      tab: `${formatMessage(commonMessages.status.published)} (${publishedQuantity})`,
+      isPublished: true,
+    },
     {
       key: 'draft',
       tab: formatMessage(commonMessages.status.draft),
-    },
-    {
-      key: 'published',
-      tab: formatMessage(commonMessages.status.published),
+      isPublished: false,
     },
   ]
+
+  useEffect(() => {
+    refetch && refetch()
+  }, [])
 
   return (
     <AdminLayout>
@@ -52,12 +56,7 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
             </Button>
           )}
           onCreate={({ title }) =>
-            createProgramPackage({
-              variables: {
-                title,
-                appId,
-              },
-            }).then(({ data }) => {
+            createProgramPackage(title).then(({ data }) => {
               const programPackageId = data?.insert_program_package?.returning[0].id
               history.push(`/program-packages/${programPackageId}`)
             })
@@ -67,71 +66,26 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
 
       <Tabs>
         {tabContents.map(tabContent => (
-          <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}></Tabs.TabPane>
+          <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
+            <div className="row py-5">
+              {programPackages
+                .filter(programPackage => !!programPackage.publishedAt === tabContent.isPublished)
+                .map(programPackage => (
+                  <div key={programPackage.id} className="col-md-6 col-lg-4 col-12 mb-5">
+                    <ProgramPackageAdminCard
+                      id={programPackage.id}
+                      coverUrl={programPackage.coverUrl}
+                      title={programPackage.title}
+                      soldQuantity={programPackage.soldQuantity}
+                    />
+                  </div>
+                ))}
+            </div>
+          </Tabs.TabPane>
         ))}
       </Tabs>
     </AdminLayout>
   )
-}
-
-const useInsertProgramPackage = () => {
-  const [createProgramPackage] = useMutation(gql`
-    mutation INSERT_PROGRAM_PACKAGE($title: String!, $appId: String!) {
-      insert_program_package(objects: { title: $title, app_id: $appId }) {
-        affected_rows
-        returning {
-          id
-        }
-      }
-    }
-  `)
-
-  return createProgramPackage
-}
-
-type ProgramPackage = {
-  id: string
-  publishedAt: Date
-}
-
-const useGetProgramPackage: (
-  appId: string,
-) => {
-  loading: boolean
-  error?: ApolloError
-  programPackage: ProgramPackage[]
-  refetch: (variables?: types.GET_PROGRAM_PACKAGEVariables) => Promise<ApolloQueryResult<types.GET_PROGRAM_PACKAGE>>
-} = appId => {
-  const { loading, error, data, refetch } = useQuery<types.GET_PROGRAM_PACKAGE, types.GET_PROGRAM_PACKAGEVariables>(
-    gql`
-      query GET_PROGRAM_PACKAGE($appId: String!) {
-        program_package(where: { app: { id: { _eq: $appId } } }) {
-          id
-          published_at
-        }
-      }
-    `,
-    {
-      variables: {
-        appId,
-      },
-    },
-  )
-
-  const programPackage: ProgramPackage[] =
-    loading || error || !data
-      ? []
-      : data?.program_package.map(programPackage => ({
-          id: programPackage.id,
-          publishedAt: programPackage.published_at,
-        }))
-
-  return {
-    loading,
-    error,
-    programPackage,
-    refetch,
-  }
 }
 
 export default ProgramPackageCollectionAdminPage

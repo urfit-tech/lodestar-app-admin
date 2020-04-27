@@ -6900,23 +6900,47 @@ export interface INSERT_PROGRAM_PACKAGEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PROGRAM_PACKAGE
+// GraphQL query operation: GET_PROGRAM_PACKAGES
 // ====================================================
 
-export interface GET_PROGRAM_PACKAGE_program_package {
-  __typename: "program_package";
-  id: any;
-  published_at: any | null;
+export interface GET_PROGRAM_PACKAGES_program_package_program_package_plans_program_package_plan_enrollments_aggregate_aggregate {
+  __typename: "program_package_plan_enrollment_aggregate_fields";
+  count: number | null;
 }
 
-export interface GET_PROGRAM_PACKAGE {
+export interface GET_PROGRAM_PACKAGES_program_package_program_package_plans_program_package_plan_enrollments_aggregate {
+  __typename: "program_package_plan_enrollment_aggregate";
+  aggregate: GET_PROGRAM_PACKAGES_program_package_program_package_plans_program_package_plan_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_PACKAGES_program_package_program_package_plans {
+  __typename: "program_package_plan";
+  /**
+   * An aggregated array relationship
+   */
+  program_package_plan_enrollments_aggregate: GET_PROGRAM_PACKAGES_program_package_program_package_plans_program_package_plan_enrollments_aggregate;
+}
+
+export interface GET_PROGRAM_PACKAGES_program_package {
+  __typename: "program_package";
+  id: any;
+  cover_url: string | null;
+  title: string;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  program_package_plans: GET_PROGRAM_PACKAGES_program_package_program_package_plans[];
+}
+
+export interface GET_PROGRAM_PACKAGES {
   /**
    * fetch data from the table: "program_package"
    */
-  program_package: GET_PROGRAM_PACKAGE_program_package[];
+  program_package: GET_PROGRAM_PACKAGES_program_package[];
 }
 
-export interface GET_PROGRAM_PACKAGEVariables {
+export interface GET_PROGRAM_PACKAGESVariables {
   appId: string;
 }
 
