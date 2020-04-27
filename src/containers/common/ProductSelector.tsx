@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import ProductSelectorComponent from '../../components/common/ProductSelector'
 import AppContext from '../../contexts/AppContext'
 import types from '../../types'
@@ -13,7 +13,13 @@ type ProductSelectorProps = {
 }
 const ProductSelector: React.FC<ProductSelectorProps> = ({ allowTypes, value, onChange }, ref) => {
   const { enabledModules } = useContext(AppContext)
-  const { loading, error, data } = useQuery<types.GET_ALLTYPE_PRODUCT_COLLECTION>(GET_ALLTYPE_PRODUCT_COLLECTION)
+  const { loading, error, data, refetch } = useQuery<types.GET_ALLTYPE_PRODUCT_COLLECTION>(
+    GET_ALLTYPE_PRODUCT_COLLECTION,
+  )
+
+  useEffect(() => {
+    refetch()
+  }, [refetch])
 
   const products: {
     [key: string]: {
@@ -26,13 +32,11 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({ allowTypes, value, on
       ? {}
       : {
           Program: allowTypes.includes('Program')
-            ? data.program
-                .filter(program => program.published_at && new Date(program.published_at).getTime() < Date.now())
-                .map(program => ({
-                  id: `Program_${program.id}`,
-                  title: program.title,
-                  type: 'Program',
-                }))
+            ? data.program.map(program => ({
+                id: `Program_${program.id}`,
+                title: program.title,
+                type: 'Program',
+              }))
             : [],
 
           Card:
@@ -77,7 +81,10 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({ allowTypes, value, on
 
 const GET_ALLTYPE_PRODUCT_COLLECTION = gql`
   query GET_ALLTYPE_PRODUCT_COLLECTION {
-    program(where: { is_deleted: { _eq: false }, is_subscription: { _eq: false } }, order_by: { position: asc }) {
+    program(
+      where: { published_at: { _is_null: false }, is_deleted: { _eq: false }, is_subscription: { _eq: false } }
+      order_by: { position: asc }
+    ) {
       id
       title
       published_at

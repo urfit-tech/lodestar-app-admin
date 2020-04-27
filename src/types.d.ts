@@ -8257,6 +8257,7 @@ export enum program_package_plan_update_column {
   discount_down_price = "discount_down_price",
   id = "id",
   is_subscription = "is_subscription",
+  is_tempo_delivery = "is_tempo_delivery",
   list_price = "list_price",
   period_amount = "period_amount",
   period_type = "period_type",
@@ -8290,6 +8291,7 @@ export enum program_package_program_update_column {
  * update columns of table "program_package"
  */
 export enum program_package_update_column {
+  app_id = "app_id",
   cover_url = "cover_url",
   created_at = "created_at",
   description = "description",
@@ -8923,6 +8925,7 @@ export interface app_bool_exp {
   point_exchange_rate?: numeric_comparison_exp | null;
   point_validity_period?: numeric_comparison_exp | null;
   posts?: post_bool_exp | null;
+  program_packages?: program_package_bool_exp | null;
   programs?: program_bool_exp | null;
   tags?: tag_bool_exp | null;
   title?: String_comparison_exp | null;
@@ -8961,6 +8964,7 @@ export interface app_insert_input {
   point_exchange_rate?: any | null;
   point_validity_period?: any | null;
   posts?: post_arr_rel_insert_input | null;
+  program_packages?: program_package_arr_rel_insert_input | null;
   programs?: program_arr_rel_insert_input | null;
   tags?: tag_arr_rel_insert_input | null;
   title?: string | null;
@@ -12583,12 +12587,22 @@ export interface program_on_conflict {
 }
 
 /**
+ * input type for inserting array relation for remote table "program_package"
+ */
+export interface program_package_arr_rel_insert_input {
+  data: program_package_insert_input[];
+  on_conflict?: program_package_on_conflict | null;
+}
+
+/**
  * Boolean expression to filter rows from the table "program_package". All fields are combined with a logical 'AND'.
  */
 export interface program_package_bool_exp {
   _and?: (program_package_bool_exp | null)[] | null;
   _not?: program_package_bool_exp | null;
   _or?: (program_package_bool_exp | null)[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
@@ -12603,6 +12617,8 @@ export interface program_package_bool_exp {
  * input type for inserting data into table "program_package"
  */
 export interface program_package_insert_input {
+  app?: app_obj_rel_insert_input | null;
+  app_id?: string | null;
   cover_url?: string | null;
   created_at?: any | null;
   description?: string | null;
@@ -12650,6 +12666,7 @@ export interface program_package_plan_bool_exp {
   discount_down_price?: numeric_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_subscription?: Boolean_comparison_exp | null;
+  is_tempo_delivery?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
   period_amount?: numeric_comparison_exp | null;
   period_type?: String_comparison_exp | null;
@@ -12686,6 +12703,7 @@ export interface program_package_plan_insert_input {
   discount_down_price?: any | null;
   id?: any | null;
   is_subscription?: boolean | null;
+  is_tempo_delivery?: boolean | null;
   list_price?: any | null;
   period_amount?: any | null;
   period_type?: string | null;
