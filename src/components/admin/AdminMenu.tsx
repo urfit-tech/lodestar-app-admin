@@ -79,6 +79,9 @@ export const OwnerAdminMenu = (props: MenuProps) => {
           {enabledModules.learning_statistics && (
             <Menu.Item key="program_progress_admin">{formatMessage(commonMessages.menu.programProgress)}</Menu.Item>
           )}
+          {enabledModules.tempo_delivery && (
+            <Menu.Item key="program_tempo_delivery">{formatMessage(commonMessages.menu.tempoDelivery)}</Menu.Item>
+          )}
           <Menu.Item key="program_category_admin">{formatMessage(commonMessages.menu.programCategory)}</Menu.Item>
         </Menu.SubMenu>
 

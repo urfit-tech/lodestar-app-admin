@@ -12,9 +12,11 @@ type Module =
   | 'appointment'
   | 'learning_statistics'
   | 'locale'
+  | 'invoice'
   | 'qrcode'
   | 'merchandise'
   | 'blog'
+  | 'tempo_delivery'
 
 type AppProps = {
   loading: boolean

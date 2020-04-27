@@ -73,6 +73,11 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'content-creator',
   },
+  program_tempo_delivery: {
+    path: '/program-tempo-delivery',
+    pageName: 'ProgramTempoDeliveryAdminPage',
+    authenticated: true,
+  },
   program_category_admin: {
     path: '/program-category',
     pageName: 'ProgramCategoryPage',
@@ -81,6 +86,71 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   program_admin: {
     path: '/programs/:programId',
     pageName: 'ProgramAdminPage',
+    authenticated: true,
+  },
+
+  // podcast program
+  owner_podcast_program_collection_admin: {
+    path: '/admin/podcast-programs',
+    pageName: 'owner/PodcastProgramCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_podcast_program_admin: {
+    path: '/admin/podcast-programs/:podcastProgramId',
+    pageName: 'owner/PodcastProgramAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_podcast_program_category_admin: {
+    path: '/admin/podcast-program-category',
+    pageName: 'PodcastProgramCategoryPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_podcast_plan_admin: {
+    path: '/admin/podcast-plan',
+    pageName: 'owner/PodcastPlanAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+
+  // appointment
+  owner_appointment_plan_collection_admin: {
+    path: '/admin/appointment-plans',
+    pageName: 'owner/AppointmentPlanCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_appointment_plan_admin: {
+    path: '/admin/appointment-plans/:appointmentPlanId',
+    pageName: 'owner/AppointmentPlanAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_appointment_period_collection_admin: {
+    path: '/admin/appointment-periods',
+    pageName: 'owner/AppointmentPeriodCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+
+  // activity
+  owner_activity_collection_admin: {
+    path: '/admin/activities',
+    pageName: 'creator/ActivityCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_activity_admin: {
+    path: '/admin/activities/:activityId',
+    pageName: 'creator/ActivityAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_activity_category_admin: {
+    path: '/admin/activity-category',
+    pageName: 'ActivityCategoryPage',
     authenticated: true,
   },
 
@@ -120,6 +190,12 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   },
 
   // app owner admin
+  owner_sales_admin: {
+    path: '/admin/sales',
+    pageName: 'owner/SalesAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
   owner_coupon_plans_admin: {
     path: '/admin/coupon_plans',
     pageName: 'owner/CouponPlanCollectionAdminPage',
@@ -132,12 +208,6 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
-  // owner_category_admin: {
-  //   path: '/admin/category',
-  //   pageName: 'owner/CategoryAdminPage',
-  //   authenticated: true,
-  //   allowedUserRole: 'app-owner',
-  // },
   owner_members_admin: {
     path: '/admin/members',
     pageName: 'owner/MemberCollectionAdminPage',
@@ -150,76 +220,11 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
-  owner_sales_admin: {
-    path: '/admin/sales',
-    pageName: 'owner/SalesAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
   owner_edm_admin: {
     path: '/admin/edm',
     pageName: 'owner/EdmAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
-  },
-  owner_podcast_program_collection_admin: {
-    path: '/admin/podcast-programs',
-    pageName: 'owner/PodcastProgramCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
-  owner_podcast_program_admin: {
-    path: '/admin/podcast-programs/:podcastProgramId',
-    pageName: 'owner/PodcastProgramAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
-  owner_podcast_program_category_admin: {
-    path: '/admin/podcast-program-category',
-    pageName: 'PodcastProgramCategoryPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
-  owner_podcast_plan_admin: {
-    path: '/admin/podcast-plan',
-    pageName: 'owner/PodcastPlanAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
-  owner_appointment_plan_collection_admin: {
-    path: '/admin/appointment-plans',
-    pageName: 'owner/AppointmentPlanCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
-  owner_appointment_plan_admin: {
-    path: '/admin/appointment-plans/:appointmentPlanId',
-    pageName: 'owner/AppointmentPlanAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
-  owner_appointment_period_collection_admin: {
-    path: '/admin/appointment-periods',
-    pageName: 'owner/AppointmentPeriodCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
-  owner_activity_collection_admin: {
-    path: '/admin/activities',
-    pageName: 'creator/ActivityCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
-  owner_activity_admin: {
-    path: '/admin/activities/:activityId',
-    pageName: 'creator/ActivityAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
-  owner_activity_category_admin: {
-    path: '/admin/activity-category',
-    pageName: 'ActivityCategoryPage',
-    authenticated: true,
   },
 
   // content creator admin

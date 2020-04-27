@@ -219,6 +219,7 @@ export const commonMessages = {
     programs: { id: 'common.menu.programs', defaultMessage: '課程管理' },
     programIssues: { id: 'common.menu.programIssues', defaultMessage: '課程問題' },
     programProgress: { id: 'common.menu.programProgress', defaultMessage: '學習進度' },
+    tempoDelivery: { id: 'common.menu.tempoDelivery', defaultMessage: '節奏交付' },
     programCategory: { id: 'common.menu.programCategory', defaultMessage: '課程分類' },
     podcastAdmin: { id: 'common.menu.podcastAdmin', defaultMessage: '音頻廣播' },
     podcastPrograms: { id: 'common.menu.podcastPrograms', defaultMessage: '廣播管理' },
