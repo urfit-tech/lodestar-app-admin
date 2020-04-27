@@ -77,11 +77,11 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'ProgramPackageCollectionAdminPage',
     authenticated: true,
   },
-  // program_package_admin: {
-  //   path: '/program-packages/:programPackageId',
-  //   pageName: "ProgramPackageAdminPage",
-  //   authenticated: true
-  // },
+  program_package_admin: {
+    path: '/program-packages/:programPackageId',
+    pageName: 'ProgramPackageAdminPage',
+    authenticated: true,
+  },
   program_progress_admin: {
     path: '/program-progress',
     pageName: 'ProgramProgressCollectionAdminPage',

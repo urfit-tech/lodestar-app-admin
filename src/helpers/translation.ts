@@ -441,6 +441,12 @@ export const programPackageMessage = {
       defaultMessage: '建立課程組合',
     },
   }),
+  label: defineMessages({
+    program: {
+      id: 'programPackage.label.program',
+      defaultMessage: "課程項目"
+    }
+  })
 }
 
 export const podcastMessages = {
