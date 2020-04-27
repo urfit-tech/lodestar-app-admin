@@ -1,5 +1,6 @@
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Icon, Tabs, Typography } from 'antd'
+import { ApolloError, ApolloQueryResult } from 'apollo-client'
 import gql from 'graphql-tag'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
@@ -11,12 +12,14 @@ import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, programPackageMessage } from '../../helpers/translation'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
+import types from '../../types'
 
 const ProgramPackageCollectionAdminPage: React.FC = () => {
   const { currentUserRole } = useAuth()
   const { formatMessage } = useIntl()
   const { history } = useRouter()
-  const app = useContext(AppContext)
+  const { id: appId } = useContext(AppContext)
+  const { programPackage } = useGetProgramPackage(appId)
 
   const createProgramPackage = useInsertProgramPackage()
 
@@ -52,7 +55,7 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
             createProgramPackage({
               variables: {
                 title,
-                appId: app.id,
+                appId,
               },
             }).then(({ data }) => {
               const programPackageId = data?.insert_program_package?.returning[0].id
@@ -84,6 +87,51 @@ const useInsertProgramPackage = () => {
   `)
 
   return createProgramPackage
+}
+
+type ProgramPackage = {
+  id: string
+  publishedAt: Date
+}
+
+const useGetProgramPackage: (
+  appId: string,
+) => {
+  loading: boolean
+  error?: ApolloError
+  programPackage: ProgramPackage[]
+  refetch: (variables?: types.GET_PROGRAM_PACKAGEVariables) => Promise<ApolloQueryResult<types.GET_PROGRAM_PACKAGE>>
+} = appId => {
+  const { loading, error, data, refetch } = useQuery<types.GET_PROGRAM_PACKAGE, types.GET_PROGRAM_PACKAGEVariables>(
+    gql`
+      query GET_PROGRAM_PACKAGE($appId: String!) {
+        program_package(where: { app: { id: { _eq: $appId } } }) {
+          id
+          published_at
+        }
+      }
+    `,
+    {
+      variables: {
+        appId,
+      },
+    },
+  )
+
+  const programPackage: ProgramPackage[] =
+    loading || error || !data
+      ? []
+      : data?.program_package.map(programPackage => ({
+          id: programPackage.id,
+          publishedAt: programPackage.published_at,
+        }))
+
+  return {
+    loading,
+    error,
+    programPackage,
+    refetch,
+  }
 }
 
 export default ProgramPackageCollectionAdminPage

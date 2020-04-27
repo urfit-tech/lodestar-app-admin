@@ -6899,6 +6899,31 @@ export interface INSERT_PROGRAM_PACKAGEVariables {
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_PACKAGE
+// ====================================================
+
+export interface GET_PROGRAM_PACKAGE_program_package {
+  __typename: "program_package";
+  id: any;
+  published_at: any | null;
+}
+
+export interface GET_PROGRAM_PACKAGE {
+  /**
+   * fetch data from the table: "program_package"
+   */
+  program_package: GET_PROGRAM_PACKAGE_program_package[];
+}
+
+export interface GET_PROGRAM_PACKAGEVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
 //==============================================================
 // START Enums and Input Objects
 //==============================================================
@@ -8292,6 +8317,7 @@ export enum program_package_plan_update_column {
   discount_down_price = "discount_down_price",
   id = "id",
   is_subscription = "is_subscription",
+  is_tempo_delivery = "is_tempo_delivery",
   list_price = "list_price",
   period_amount = "period_amount",
   period_type = "period_type",
@@ -12700,6 +12726,7 @@ export interface program_package_plan_bool_exp {
   discount_down_price?: numeric_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_subscription?: Boolean_comparison_exp | null;
+  is_tempo_delivery?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
   period_amount?: numeric_comparison_exp | null;
   period_type?: String_comparison_exp | null;
@@ -12736,6 +12763,7 @@ export interface program_package_plan_insert_input {
   discount_down_price?: any | null;
   id?: any | null;
   is_subscription?: boolean | null;
+  is_tempo_delivery?: boolean | null;
   list_price?: any | null;
   period_amount?: any | null;
   period_type?: string | null;
