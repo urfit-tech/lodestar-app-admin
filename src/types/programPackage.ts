@@ -29,6 +29,6 @@ export type ProgramPackageCollection = {
 
 export type ProgramPackageProps = {
   programPackageId: string
-  programPackage: {}
+  programPackage: ProgramPackage
   onRefetch?: () => void
 }

@@ -2,12 +2,17 @@ import { Form, Input } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { ProgramPackageProps } from '../../types/programPackage'
+import { CustomRatioImage } from '../common/Image'
+import { CoverBlock } from '../program/ProgramIntroAdminCard'
 
 type ProgramPackageBasicFormProps = ProgramPackageProps & FormComponentProps
 
 const ProgramPackageBasicForm: React.FC<ProgramPackageBasicFormProps> = ({
+  programPackageId,
+  programPackage,
+  onRefetch,
   form: { getFieldDecorator, resetFields, validateFields },
 }) => {
   const { formatMessage } = useIntl()
@@ -23,8 +28,23 @@ const ProgramPackageBasicForm: React.FC<ProgramPackageBasicFormProps> = ({
     >
       <Form.Item label={formatMessage(commonMessages.term.title)}>
         {getFieldDecorator('title', {
-          initialValue: '',
+          initialValue: programPackage.title,
+          rules: [
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(commonMessages.term.title),
+              }),
+            },
+          ],
         })(<Input />)}
+      </Form.Item>
+      <Form.Item label={formatMessage(commonMessages.term.cover)}>
+        {programPackage.coverUrl && (
+          <CoverBlock>
+            <CustomRatioImage src={programPackage.coverUrl} width="100%" ratio={9 / 16} />
+          </CoverBlock>
+        )}
       </Form.Item>
     </Form>
   )
