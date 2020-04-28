@@ -38,7 +38,7 @@ const ProgramPackageAdminPage: React.FC = () => {
           </Button>
         </Link>
 
-        <AdminHeaderTitle>{id}</AdminHeaderTitle>
+        <AdminHeaderTitle>{programPackage.title || id}</AdminHeaderTitle>
 
         <a href={`//${settings['host']}/program-packages/${id}`} target="_blank" rel="noopener noreferrer">
           <Button>預覽</Button>

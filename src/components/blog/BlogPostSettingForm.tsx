@@ -65,7 +65,7 @@ const BlogPostSettingForm: React.FC<BlogPostSettingFormProps> = ({
   }
 
   const handleSubmit = () => {
-    validateFields((err, { cover, merchandiseIds }) => {
+    validateFields((err, { merchandiseIds }) => {
       if (!err) {
         setLoading(true)
         const uploadTime = Date.now()

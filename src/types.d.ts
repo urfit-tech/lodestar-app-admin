@@ -1910,6 +1910,63 @@ export interface UPDATE_PROGRAM_SUBSCRIPTION_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_BASIC
+// ====================================================
+
+export interface UPDATE_PROGRAM_PACKAGE_BASIC_update_program_package {
+  __typename: "program_package_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_BASIC {
+  /**
+   * update data of the table: "program_package"
+   */
+  update_program_package: UPDATE_PROGRAM_PACKAGE_BASIC_update_program_package | null;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_BASICVariables {
+  programPackageId: any;
+  title?: string | null;
+  coverUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_DESCIRPTION
+// ====================================================
+
+export interface UPDATE_PROGRAM_PACKAGE_DESCIRPTION_update_program_package {
+  __typename: "program_package_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_DESCIRPTION {
+  /**
+   * update data of the table: "program_package"
+   */
+  update_program_package: UPDATE_PROGRAM_PACKAGE_DESCIRPTION_update_program_package | null;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_DESCIRPTIONVariables {
+  description?: string | null;
+  programPackageId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ORDERS
 // ====================================================
 
