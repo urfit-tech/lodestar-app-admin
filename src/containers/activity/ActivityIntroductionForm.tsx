@@ -7,7 +7,7 @@ import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import AdminBraftEditor from '../../components/admin/AdminBraftEditor'
-import SingleUploader from '../../components/common/SingleUploader'
+import { StyledSingleUploader } from '../../components/program/ProgramIntroAdminCard'
 import ActivityContext from '../../contexts/ActivityContext'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
@@ -23,23 +23,6 @@ const StyledCover = styled.div<{ src: string }>`
   background-position: center;
   border-radius: 4px;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
-`
-const StyledSingleUploader = styled(SingleUploader)`
-  && {
-    width: auto;
-  }
-
-  .ant-upload.ant-upload-select-picture-card {
-    margin: 0;
-    height: auto;
-    width: 120px;
-    border: none;
-    background: none;
-
-    .ant-upload {
-      padding: 0;
-    }
-  }
 `
 
 const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {

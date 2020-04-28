@@ -29,7 +29,7 @@ export const CoverBlock = styled.div`
     margin-bottom: 0;
   }
 `
-const StyledSingleUploader = styled(SingleUploader)`
+export const StyledSingleUploader = styled(SingleUploader)`
   && {
     width: auto;
   }

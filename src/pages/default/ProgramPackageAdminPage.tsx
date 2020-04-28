@@ -24,10 +24,10 @@ const ProgramPackageAdminPage: React.FC = () => {
   const [activeKey, setActiveKey] = useState('basic')
   const {
     match: {
-      params: { programPackageId },
+      params: { programPackageId: id },
     },
   } = useRouter<{ programPackageId: string }>()
-  const { programPackage, refetch } = useGetProgramPackage(programPackageId)
+  const { programPackage, refetch } = useGetProgramPackage(id)
 
   return (
     <>
@@ -38,13 +38,9 @@ const ProgramPackageAdminPage: React.FC = () => {
           </Button>
         </Link>
 
-        <AdminHeaderTitle>{programPackageId}</AdminHeaderTitle>
+        <AdminHeaderTitle>{id}</AdminHeaderTitle>
 
-        <a
-          href={`//${settings['host']}/program-packages/${programPackageId}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href={`//${settings['host']}/program-packages/${id}`} target="_blank" rel="noopener noreferrer">
           <Button>預覽</Button>
         </a>
       </AdminHeader>
@@ -71,20 +67,12 @@ const ProgramPackageAdminPage: React.FC = () => {
 
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(programPackageMessage.label.generalSetting)}</AdminBlockTitle>
-                <ProgramPackageBasicForm
-                  programPackageId={programPackageId}
-                  programPackage={programPackage}
-                  onRefetch={refetch}
-                />
+                <ProgramPackageBasicForm programPackage={{ id, ...programPackage }} onRefetch={refetch} />
               </AdminBlock>
 
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(commonMessages.term.description)}</AdminBlockTitle>
-                <ProgramPackageDescriptionForm
-                  programPackageId={programPackageId}
-                  programPackage={programPackage}
-                  onRefetch={refetch}
-                />
+                <ProgramPackageDescriptionForm programPackage={{ id, ...programPackage }} onRefetch={refetch} />
               </AdminBlock>
 
               {/* <AdminBlock>

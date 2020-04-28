@@ -7,7 +7,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StyledTips } from '../../components/admin/index'
 import { CustomRatioImage } from '../../components/common/Image'
-import SingleUploader from '../../components/common/SingleUploader'
+import { StyledSingleUploader } from '../../components/program/ProgramIntroAdminCard'
 import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
@@ -18,23 +18,6 @@ const StyledCoverBlock = styled.div`
   width: 120px;
   max-width: 120px;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
-`
-const StyledSingleUploader = styled(SingleUploader)`
-  && {
-    width: auto;
-  }
-
-  .ant-upload.ant-upload-select-picture-card {
-    margin: 0;
-    height: auto;
-    width: 120px;
-    border: none;
-    background: none;
-
-    .ant-upload {
-      padding: 0;
-    }
-  }
 `
 
 const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
