@@ -159,7 +159,7 @@ export const useInsertProgramPackage: (
     types.INSERT_PROGRAM_PACKAGEVariables
   >(gql`
     mutation INSERT_PROGRAM_PACKAGE($title: String!, $appId: String!) {
-      insert_program_package(objects: { title: $title, app_id: $appId }) {
+      insert_program_package(objects: { app_id: $appId, title: $title }) {
         affected_rows
         returning {
           id
@@ -171,8 +171,8 @@ export const useInsertProgramPackage: (
   const createProgramPackage = (title: string) => {
     return createProgramPackageHandler({
       variables: {
-        title,
         appId,
+        title,
       },
     })
   }
