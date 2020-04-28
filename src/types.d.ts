@@ -6524,6 +6524,167 @@ export interface GET_PROGRAM_PROGRESSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAM_PACKAGES
+// ====================================================
+
+export interface GET_PROGRAM_PACKAGES_program_package_program_package_plans_program_package_plan_enrollments_aggregate_aggregate {
+  __typename: "program_package_plan_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROGRAM_PACKAGES_program_package_program_package_plans_program_package_plan_enrollments_aggregate {
+  __typename: "program_package_plan_enrollment_aggregate";
+  aggregate: GET_PROGRAM_PACKAGES_program_package_program_package_plans_program_package_plan_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_PACKAGES_program_package_program_package_plans {
+  __typename: "program_package_plan";
+  /**
+   * An aggregated array relationship
+   */
+  program_package_plan_enrollments_aggregate: GET_PROGRAM_PACKAGES_program_package_program_package_plans_program_package_plan_enrollments_aggregate;
+}
+
+export interface GET_PROGRAM_PACKAGES_program_package {
+  __typename: "program_package";
+  id: any;
+  cover_url: string | null;
+  title: string;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  program_package_plans: GET_PROGRAM_PACKAGES_program_package_program_package_plans[];
+}
+
+export interface GET_PROGRAM_PACKAGES {
+  /**
+   * fetch data from the table: "program_package"
+   */
+  program_package: GET_PROGRAM_PACKAGES_program_package[];
+}
+
+export interface GET_PROGRAM_PACKAGESVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_PACKAGE
+// ====================================================
+
+export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_programs_program {
+  __typename: "program";
+  id: any;
+  title: string;
+  cover_url: string | null;
+  position: number | null;
+}
+
+export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_programs {
+  __typename: "program_package_program";
+  program_id: any;
+  /**
+   * An object relationship
+   */
+  program: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_programs_program;
+}
+
+export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans_program_package_plan_enrollments_aggregate_aggregate {
+  __typename: "program_package_plan_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans_program_package_plan_enrollments_aggregate {
+  __typename: "program_package_plan_enrollment_aggregate";
+  aggregate: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans_program_package_plan_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans {
+  __typename: "program_package_plan";
+  title: string;
+  list_price: any;
+  sale_price: any | null;
+  sold_at: any | null;
+  description: string | null;
+  /**
+   * An aggregated array relationship
+   */
+  program_package_plan_enrollments_aggregate: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans_program_package_plan_enrollments_aggregate;
+}
+
+export interface GET_PROGRAM_PACKAGE_program_package_by_pk {
+  __typename: "program_package";
+  title: string;
+  cover_url: string | null;
+  published_at: any | null;
+  description: string | null;
+  /**
+   * An array relationship
+   */
+  program_package_programs: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_programs[];
+  /**
+   * An array relationship
+   */
+  program_package_plans: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans[];
+}
+
+export interface GET_PROGRAM_PACKAGE {
+  /**
+   * fetch data from the table: "program_package" using primary key columns
+   */
+  program_package_by_pk: GET_PROGRAM_PACKAGE_program_package_by_pk | null;
+}
+
+export interface GET_PROGRAM_PACKAGEVariables {
+  id: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_PROGRAM_PACKAGE
+// ====================================================
+
+export interface INSERT_PROGRAM_PACKAGE_insert_program_package_returning {
+  __typename: "program_package";
+  id: any;
+}
+
+export interface INSERT_PROGRAM_PACKAGE_insert_program_package {
+  __typename: "program_package_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_PROGRAM_PACKAGE_insert_program_package_returning[];
+}
+
+export interface INSERT_PROGRAM_PACKAGE {
+  /**
+   * insert data into the table: "program_package"
+   */
+  insert_program_package: INSERT_PROGRAM_PACKAGE_insert_program_package | null;
+}
+
+export interface INSERT_PROGRAM_PACKAGEVariables {
+  title: string;
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ENROLLED_PROJECT_PLAN_IDS
 // ====================================================
 
@@ -6856,92 +7017,6 @@ export interface GET_CREATOR_PROGRAM_ISSUESVariables {
   appId: string;
   threadIdLike?: string | null;
   unsolved?: boolean | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_PROGRAM_PACKAGE
-// ====================================================
-
-export interface INSERT_PROGRAM_PACKAGE_insert_program_package_returning {
-  __typename: "program_package";
-  id: any;
-}
-
-export interface INSERT_PROGRAM_PACKAGE_insert_program_package {
-  __typename: "program_package_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: INSERT_PROGRAM_PACKAGE_insert_program_package_returning[];
-}
-
-export interface INSERT_PROGRAM_PACKAGE {
-  /**
-   * insert data into the table: "program_package"
-   */
-  insert_program_package: INSERT_PROGRAM_PACKAGE_insert_program_package | null;
-}
-
-export interface INSERT_PROGRAM_PACKAGEVariables {
-  title: string;
-  appId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PROGRAM_PACKAGES
-// ====================================================
-
-export interface GET_PROGRAM_PACKAGES_program_package_program_package_plans_program_package_plan_enrollments_aggregate_aggregate {
-  __typename: "program_package_plan_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_PROGRAM_PACKAGES_program_package_program_package_plans_program_package_plan_enrollments_aggregate {
-  __typename: "program_package_plan_enrollment_aggregate";
-  aggregate: GET_PROGRAM_PACKAGES_program_package_program_package_plans_program_package_plan_enrollments_aggregate_aggregate | null;
-}
-
-export interface GET_PROGRAM_PACKAGES_program_package_program_package_plans {
-  __typename: "program_package_plan";
-  /**
-   * An aggregated array relationship
-   */
-  program_package_plan_enrollments_aggregate: GET_PROGRAM_PACKAGES_program_package_program_package_plans_program_package_plan_enrollments_aggregate;
-}
-
-export interface GET_PROGRAM_PACKAGES_program_package {
-  __typename: "program_package";
-  id: any;
-  cover_url: string | null;
-  title: string;
-  published_at: any | null;
-  /**
-   * An array relationship
-   */
-  program_package_plans: GET_PROGRAM_PACKAGES_program_package_program_package_plans[];
-}
-
-export interface GET_PROGRAM_PACKAGES {
-  /**
-   * fetch data from the table: "program_package"
-   */
-  program_package: GET_PROGRAM_PACKAGES_program_package[];
-}
-
-export interface GET_PROGRAM_PACKAGESVariables {
-  appId: string;
 }
 
 /* tslint:disable */

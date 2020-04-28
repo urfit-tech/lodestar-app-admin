@@ -9,7 +9,7 @@ import ProgramPackageAdminCard from '../../components/programPackage/ProgramPack
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, programPackageMessage } from '../../helpers/translation'
-import { useGetProgramPackages, useInsertProgramPackage } from '../../hooks/programPackage'
+import { useGetProgramPackageCollection, useInsertProgramPackage } from '../../hooks/programPackage'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
 
 const ProgramPackageCollectionAdminPage: React.FC = () => {
@@ -17,7 +17,7 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { history } = useRouter()
   const { id: appId } = useContext(AppContext)
-  const { programPackages, refetch } = useGetProgramPackages(appId)
+  const { programPackages, refetch } = useGetProgramPackageCollection(appId)
   const createProgramPackage = useInsertProgramPackage(appId)
 
   const AdminLayout = currentUserRole === 'app-owner' ? OwnerAdminLayout : CreatorAdminLayout

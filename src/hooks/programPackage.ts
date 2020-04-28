@@ -4,14 +4,14 @@ import { ExecutionResult } from 'graphql'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
 import types from '../types'
-import { ProgramPackage } from '../types/programPackage'
+import { ProgramPackageCollection, ProgramPackage } from '../types/programPackage'
 
-export const useGetProgramPackages: (
+export const useGetProgramPackageCollection: (
   appId: string,
 ) => {
   loading: boolean
   error?: ApolloError
-  programPackages: ProgramPackage[]
+  programPackages: ProgramPackageCollection
   refetch: (variables?: types.GET_PROGRAM_PACKAGESVariables) => Promise<ApolloQueryResult<types.GET_PROGRAM_PACKAGES>>
 } = appId => {
   const { loading, error, data, refetch } = useQuery<types.GET_PROGRAM_PACKAGES, types.GET_PROGRAM_PACKAGESVariables>(
@@ -39,7 +39,7 @@ export const useGetProgramPackages: (
     },
   )
 
-  const programPackages: ProgramPackage[] =
+  const programPackages: ProgramPackageCollection =
     loading || error || !data
       ? []
       : data?.program_package.map(programPackage => ({
@@ -59,6 +59,94 @@ export const useGetProgramPackages: (
     loading,
     error,
     programPackages,
+    refetch,
+  }
+}
+
+export const useGetProgramPackage: (
+  id: string,
+) => {
+  loading: boolean
+  error?: ApolloError
+  programPackage: ProgramPackage
+  refetch: (variables?: types.GET_PROGRAM_PACKAGEVariables) => Promise<ApolloQueryResult<types.GET_PROGRAM_PACKAGE>>
+} = id => {
+  const { loading, error, data, refetch } = useQuery<types.GET_PROGRAM_PACKAGE, types.GET_PROGRAM_PACKAGEVariables>(
+    gql`
+      query GET_PROGRAM_PACKAGE($id: uuid!) {
+        program_package_by_pk(id: $id) {
+          title
+          cover_url
+          published_at
+          description
+          program_package_programs {
+            program_id
+            program {
+              id
+              title
+              cover_url
+              position
+            }
+          }
+          program_package_plans {
+            title
+            list_price
+            sale_price
+            sold_at
+            description
+            program_package_plan_enrollments_aggregate {
+              aggregate {
+                count
+              }
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        id,
+      },
+    },
+  )
+
+  const programPackage: ProgramPackage =
+    loading || error || !data
+      ? {
+          title: '',
+          coverUrl: null,
+          publishedAt: null,
+          description: null,
+          programs: [],
+          plans: [],
+        }
+      : {
+          title: data?.program_package_by_pk?.title ?? '',
+          coverUrl: data?.program_package_by_pk?.cover_url ?? '',
+          publishedAt: data?.program_package_by_pk?.published_at,
+          description: data?.program_package_by_pk?.description ?? '',
+          programs:
+            data?.program_package_by_pk?.program_package_programs.map(program => ({
+              id: program.program_id,
+              title: program.program.title ?? '',
+              coverUrl: program.program.cover_url ?? '',
+              position: program.program.position ?? -1,
+            })) ?? [],
+          plans:
+            data?.program_package_by_pk?.program_package_plans.map(plan => ({
+              title: plan.title,
+              listPrice: plan.list_price ?? 0,
+              salePrice: plan.sale_price ?? 0,
+              soldAt: plan.sold_at,
+              description: plan.description,
+              soldQuantity: plan.program_package_plan_enrollments_aggregate.aggregate?.count ?? 0,
+            })) ?? [],
+        }
+
+  return {
+    loading,
+    programPackage,
+    error,
     refetch,
   }
 }

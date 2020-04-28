@@ -12,18 +12,22 @@ import {
   AdminTabBarWrapper,
 } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
+import ProgramPackageBasicForm from '../../components/programPackage/ProgramPackageBasicFrom'
+import ProgramPackageDescriptionForm from '../../components/programPackage/ProgramPackageDescriptionForm'
 import AppContext from '../../contexts/AppContext'
 import { commonMessages, programPackageMessage } from '../../helpers/translation'
+import { useGetProgramPackage } from '../../hooks/programPackage'
 
 const ProgramPackageAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { settings } = useContext(AppContext)
-  const [activeKey, setActiveKey] = useState('program')
+  const [activeKey, setActiveKey] = useState('basic')
   const {
     match: {
       params: { programPackageId },
     },
   } = useRouter<{ programPackageId: string }>()
+  const { programPackage, refetch } = useGetProgramPackage(programPackageId)
 
   return (
     <>
@@ -67,15 +71,26 @@ const ProgramPackageAdminPage: React.FC = () => {
 
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(programPackageMessage.label.generalSetting)}</AdminBlockTitle>
+                <ProgramPackageBasicForm
+                  programPackageId={programPackageId}
+                  programPackage={programPackage}
+                  onRefetch={refetch}
+                />
               </AdminBlock>
 
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(commonMessages.term.description)}</AdminBlockTitle>
+                <ProgramPackageDescriptionForm
+                  programPackageId={programPackageId}
+                  programPackage={programPackage}
+                  onRefetch={refetch}
+                />
               </AdminBlock>
 
-              <AdminBlock>
+              {/* <AdminBlock>
                 <AdminBlockTitle>{formatMessage(programPackageMessage.label.deleteProgramPackage)}</AdminBlockTitle>
-              </AdminBlock>
+                <ProgramPackageDeletionBlock />
+              </AdminBlock> */}
             </div>
           </Tabs.TabPane>
           <Tabs.TabPane key="sales" tab={formatMessage(commonMessages.label.salesPlan)}>
