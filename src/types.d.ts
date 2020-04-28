@@ -6526,6 +6526,52 @@ export interface GET_PROGRAM_PROGRESSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAM_PACKAGE
+// ====================================================
+
+export interface GET_PROGRAM_PACKAGE_program_package {
+  __typename: "program_package";
+  id: any;
+  title: string;
+}
+
+export interface GET_PROGRAM_PACKAGE {
+  /**
+   * fetch data from the table: "program_package"
+   */
+  program_package: GET_PROGRAM_PACKAGE_program_package[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_PACKAGE_PLAN_COLLECTION
+// ====================================================
+
+export interface GET_PROGRAM_PACKAGE_PLAN_COLLECTION_program_package_plan {
+  __typename: "program_package_plan";
+  id: any;
+  title: string;
+}
+
+export interface GET_PROGRAM_PACKAGE_PLAN_COLLECTION {
+  /**
+   * fetch data from the table: "program_package_plan"
+   */
+  program_package_plan: GET_PROGRAM_PACKAGE_PLAN_COLLECTION_program_package_plan[];
+}
+
+export interface GET_PROGRAM_PACKAGE_PLAN_COLLECTIONVariables {
+  programPackageId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ENROLLED_PROJECT_PLAN_IDS
 // ====================================================
 

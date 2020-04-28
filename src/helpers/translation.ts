@@ -424,6 +424,7 @@ export const programMessages = {
     perpetualPlanType: { id: 'program.label.perpetualPlanType', defaultMessage: '單次付費' },
     subscriptionPlanType: { id: 'program.label.subscriptionPlanType', defaultMessage: '訂閱付費' },
     isIssuesOpen: { id: 'program.label.isIssuesOpen', defaultMessage: '問題討論' },
+    planField: { id: 'program.label.planField', defaultMessage: '方案：' },
   }),
   text: defineMessages({
     enrolledSubscriptionCount: { id: 'program.text.enrolledSubscriptionCount', defaultMessage: '已訂閱 {count} 人' },
