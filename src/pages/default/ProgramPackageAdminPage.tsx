@@ -1,9 +1,16 @@
 import { Button, Icon, Tabs } from 'antd'
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import useRouter from 'use-react-router'
-import { AdminHeader, AdminHeaderTitle } from '../../components/admin'
+import {
+  AdminBlock,
+  AdminBlockTitle,
+  AdminHeader,
+  AdminHeaderTitle,
+  AdminPaneTitle,
+  AdminTabBarWrapper,
+} from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import AppContext from '../../contexts/AppContext'
 import { commonMessages, programPackageMessage } from '../../helpers/translation'
@@ -11,6 +18,7 @@ import { commonMessages, programPackageMessage } from '../../helpers/translation
 const ProgramPackageAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { settings } = useContext(AppContext)
+  const [activeKey, setActiveKey] = useState('program')
   const {
     match: {
       params: { programPackageId },
@@ -40,18 +48,48 @@ const ProgramPackageAdminPage: React.FC = () => {
       <StyledLayoutContent variant="gray">
         <Tabs
           defaultActiveKey="program"
-          // activeKey={activeKey || 'settings'}
-          // onChange={key => setActiveKey(key)}
-          // renderTabBar={(props, DefaultTabBar) => (
-          //   <AdminTabBarWrapper>
-          //     <DefaultTabBar {...props} />
-          //   </AdminTabBarWrapper>
-          // )}
+          activeKey={activeKey}
+          onChange={key => setActiveKey(key)}
+          renderTabBar={(props, DefaultTabBar) => (
+            <AdminTabBarWrapper>
+              <DefaultTabBar {...props} />
+            </AdminTabBarWrapper>
+          )}
         >
-          <Tabs.TabPane key="program" tab={formatMessage(programPackageMessage.label.program)}></Tabs.TabPane>
-          <Tabs.TabPane key="basic" tab={formatMessage(commonMessages.label.basicSettings)}></Tabs.TabPane>
-          <Tabs.TabPane key="sales" tab={formatMessage(commonMessages.label.salesPlan)}></Tabs.TabPane>
-          <Tabs.TabPane key="publish" tab={formatMessage(commonMessages.label.publishSettings)}></Tabs.TabPane>
+          <Tabs.TabPane key="program" tab={formatMessage(programPackageMessage.label.program)}>
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(programPackageMessage.label.program)}</AdminPaneTitle>
+            </div>
+          </Tabs.TabPane>
+          <Tabs.TabPane key="basic" tab={formatMessage(commonMessages.label.basicSettings)}>
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminPaneTitle>
+
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(programPackageMessage.label.generalSetting)}</AdminBlockTitle>
+              </AdminBlock>
+
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(commonMessages.term.description)}</AdminBlockTitle>
+              </AdminBlock>
+
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(programPackageMessage.label.deleteProgramPackage)}</AdminBlockTitle>
+              </AdminBlock>
+            </div>
+          </Tabs.TabPane>
+          <Tabs.TabPane key="sales" tab={formatMessage(commonMessages.label.salesPlan)}>
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(commonMessages.label.salesPlan)}</AdminPaneTitle>
+            </div>
+          </Tabs.TabPane>
+          <Tabs.TabPane key="publish" tab={formatMessage(commonMessages.label.publishSettings)}>
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(commonMessages.label.publishAdmin)}</AdminPaneTitle>
+
+              <AdminBlock></AdminBlock>
+            </div>
+          </Tabs.TabPane>
         </Tabs>
       </StyledLayoutContent>
     </>

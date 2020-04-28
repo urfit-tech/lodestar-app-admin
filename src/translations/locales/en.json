@@ -573,6 +573,8 @@
   "program.ui.sortProgram": "Sort Program",
   "program.ui.uploadCaption": "Upload Caption",
   "program.ui.uploadVideo": "Upload Video",
+  "programPackage.label.delete": "刪除課程組合",
+  "programPackage.label.generalSetting": "一般設定",
   "programPackage.label.program": "課程項目",
   "programPackage.ui.createProgramPackage": "建立課程組合",
   "promotion.label.availableDateRange": "Available Date",
