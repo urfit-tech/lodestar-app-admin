@@ -49,6 +49,7 @@ const ActivitySessionAdminModal: React.FC<ActivitySessionAdminModalProps> = ({
     <AdminModal
       title={formatMessage(activityMessages.term.session)}
       maskClosable={false}
+      footer={null}
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>

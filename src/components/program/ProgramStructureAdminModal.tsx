@@ -110,6 +110,7 @@ const ProgramStructureAdminModal: React.FC<ProgramStructureAdminModalProps> = ({
         </Button>
       )}
       title={formatMessage(messages.contentSorting)}
+      footer={null}
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>

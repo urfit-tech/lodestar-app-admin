@@ -70,16 +70,10 @@ const ActivityCreationModal: React.FC<ActivityCreationModalProps> = ({ form, onC
       )}
       icon={<Icon type="file-add" />}
       title={formatMessage(commonMessages.ui.create)}
-      renderFooter={({ setVisible }) => (
-        <div>
-          <Button onClick={() => setVisible(false)} className="mr-2">
-            {formatMessage(commonMessages.ui.cancel)}
-          </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
-            {formatMessage(commonMessages.ui.create)}
-          </Button>
-        </div>
-      )}
+      cancelText={formatMessage(commonMessages.ui.cancel)}
+      okText={formatMessage(commonMessages.ui.create)}
+      okButtonProps={{ loading }}
+      onOk={() => handleSubmit()}
     >
       <Form hideRequiredMark>
         {currentUserRole === 'app-owner' && (

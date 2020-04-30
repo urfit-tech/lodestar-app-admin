@@ -69,6 +69,7 @@ const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
       icon={<Icon type="file-add" />}
       title={formatMessage(activityMessages.term.ticketPlan)}
       maskClosable={false}
+      footer={null}
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>

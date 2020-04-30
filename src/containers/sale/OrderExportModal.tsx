@@ -270,6 +270,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
         </Button>
       )}
       title={formatMessage(messages.exportOrder)}
+      footer={null}
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>

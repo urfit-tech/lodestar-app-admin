@@ -70,16 +70,10 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
       )}
       title={formatMessage(appointmentMessages.ui.createPlan)}
       icon={<Icon type="file-add" />}
-      renderFooter={({ setVisible }) => (
-        <>
-          <Button className="mr-2" onClick={() => setVisible(false)}>
-            {formatMessage(commonMessages.ui.cancel)}
-          </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
-            {formatMessage(commonMessages.ui.create)}
-          </Button>
-        </>
-      )}
+      cancelText={formatMessage(commonMessages.ui.cancel)}
+      okText={formatMessage(commonMessages.ui.create)}
+      okButtonProps={{ loading }}
+      onOk={() => handleSubmit()}
     >
       <Form hideRequiredMark colon={false} onSubmit={e => e.preventDefault()}>
         {member.role === 'app-owner' && (

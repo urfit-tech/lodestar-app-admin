@@ -58,6 +58,7 @@ const VoucherPlanAdminModal: React.FC<VoucherPlanAdminModalProps> = ({ form, vou
   return (
     <AdminModal
       destroyOnClose
+      footer={null}
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>

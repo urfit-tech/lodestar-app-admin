@@ -119,6 +119,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
       renderTrigger={renderTrigger}
       title={formatMessage(messages.subscriptionPlan)}
       icon={<Icon type="file-add" />}
+      footer={null}
       renderFooter={({ setVisible }) => (
         <>
           <Button className="mr-2" onClick={() => setVisible(false)}>

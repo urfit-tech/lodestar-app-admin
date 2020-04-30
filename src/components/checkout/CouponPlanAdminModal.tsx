@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, DatePicker, Form, Input, InputNumber } from 'antd'
+import { DatePicker, Form, Input, InputNumber } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import { generate } from 'coupon-code'
 import gql from 'graphql-tag'
@@ -28,7 +28,7 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
   const [updateCouponPlan] = useMutation<types.UPDATE_COUPON_PLAN, types.UPDATE_COUPON_PLANVariables>(
     UPDATE_COUPON_PLAN,
   )
-  const [loading, setLoading] = useState()
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
     form.validateFieldsAndScroll((error, values) => {
@@ -101,16 +101,10 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
 
   return (
     <AdminModal
-      renderFooter={({ setVisible }) => (
-        <>
-          <Button className="mr-2" onClick={() => setVisible(false)}>
-            {formatMessage(commonMessages.ui.cancel)}
-          </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
-            {formatMessage(commonMessages.ui.confirm)}
-          </Button>
-        </>
-      )}
+      cancelText={formatMessage(commonMessages.ui.cancel)}
+      okText={formatMessage(commonMessages.ui.confirm)}
+      okButtonProps={{ loading }}
+      onOk={() => handleSubmit()}
       {...props}
     >
       <Form>

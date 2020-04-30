@@ -105,6 +105,7 @@ const AppointmentPeriodCollection: React.FC<{
         visible={visible}
         onCancel={() => setVisible(false)}
         title={formatMessage(messages.editPeriod)}
+        footer={null}
         renderFooter={() => (
           <div className="row pt-4">
             <div className="col-6">

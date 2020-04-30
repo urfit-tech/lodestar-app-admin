@@ -36,7 +36,6 @@ export type AdminModalProps = ModalProps & {
 }
 const AdminModal: React.FC<AdminModalProps> = ({
   title,
-  footer,
   renderTrigger,
   renderFooter,
   children,
@@ -52,7 +51,6 @@ const AdminModal: React.FC<AdminModalProps> = ({
 
       <Modal
         title={null}
-        footer={null}
         centered
         destroyOnClose
         visible={visible}
@@ -66,7 +64,7 @@ const AdminModal: React.FC<AdminModalProps> = ({
         {title && <StyledTitle>{title}</StyledTitle>}
         {children}
 
-        <div className="text-right">{renderFooter && renderFooter({ setVisible })}</div>
+        {renderFooter && <div className="text-right">{renderFooter({ setVisible })}</div>}
       </Modal>
     </>
   )
