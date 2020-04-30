@@ -1,12 +1,18 @@
-import { Button, Checkbox, Divider, Dropdown, Icon, Menu, Spin, Table } from 'antd'
-import moment from 'moment'
+import { Button, Checkbox, Divider, Dropdown, Form, Icon, Menu, Select, Spin, Table, Tooltip } from 'antd'
+import { ColumnProps } from 'antd/lib/table'
+import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminBlock, AdminPageTitle } from '../../components/admin'
+import AdminModal from '../../components/admin/AdminModal'
+import DatetimePicker from '../../components/common/DatetimePicker'
+import { AvatarImage } from '../../components/common/Image'
 import OwnerAdminLayout from '../../components/layout/OwnerAdminLayout'
+import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import {
+  useDeliverProgramCollection,
   useProgramPackageCollection,
   useProgramPackageEnrollment,
   useProgramPackagePlanCollection,
@@ -16,7 +22,6 @@ import {
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
 import { ReactComponent as FileCheckIcon } from '../../images/icon/file-check.svg'
 import { MemberBrief } from '../../types/general'
-import { AvatarImage } from '../../components/common/Image'
 
 const StyledProgramPackageTitle = styled.div`
   margin: 0 auto;
@@ -77,15 +82,34 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null)
   const planId = selectedPlanId || programPackagePlans[0]?.id || null
 
-  const [notDeliveryOnly, setNotDeliveryOnly] = useState(false)
-
   const { programs } = useProgramPackageProgramCollection(packageId)
-  const { members } = useProgramPackageEnrollment(planId)
-
-  const { tempoDelivery } = useProgramTempoDelivery(
+  const { loadingEnrollment, members } = useProgramPackageEnrollment(planId)
+  const { loadingTempoDelivery, tempoDelivery, allDeliveredProgramIds, refetchTempoDelivery } = useProgramTempoDelivery(
     packageId,
     members.map(member => member.id),
   )
+
+  const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([])
+  const [selectedProgramIds, setSelectedProgramIds] = useState<string[]>([])
+  const [deliveredAt, setDeliveredAt] = useState<Moment | null>(moment())
+  const deliverPrograms = useDeliverProgramCollection()
+
+  const [notDeliveryOnly, setNotDeliveryOnly] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const handleDeliver = (closeModal?: () => void) => {
+    if (!selectedMemberIds.length || !selectedProgramIds.length || !deliveredAt) {
+      return
+    }
+    setLoading(true)
+    deliverPrograms(selectedMemberIds, selectedProgramIds, deliveredAt.toDate())
+      .then(() => {
+        closeModal && closeModal()
+        refetchTempoDelivery()
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
+  }
 
   return (
     <OwnerAdminLayout>
@@ -151,10 +175,46 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
 
         <div className="d-flex align-items-center justify-content-between mb-4">
           <div>
-            <Button type="primary" disabled={!packageId || !planId}>
-              <Icon component={() => <FileCheckIcon />} />
-              <span>{formatMessage(programMessages.ui.deliveryProgram)}</span>
-            </Button>
+            <AdminModal
+              renderTrigger={({ setVisible }) => (
+                <Button
+                  type="primary"
+                  disabled={!packageId || !planId || selectedMemberIds.length === 0}
+                  onClick={() => setVisible(true)}
+                >
+                  <Icon component={() => <FileCheckIcon />} />
+                  <span>{formatMessage(programMessages.ui.delivery)}</span>
+                </Button>
+              )}
+              icon={<Icon component={() => <FileCheckIcon />} />}
+              title={formatMessage(programMessages.ui.delivery)}
+              footer={null}
+              renderFooter={({ setVisible }) => (
+                <>
+                  <Button className="mr-2" onClick={() => setVisible(false)}>
+                    {formatMessage(commonMessages.ui.cancel)}
+                  </Button>
+                  <Button type="primary" loading={loading} onClick={() => handleDeliver(() => setVisible(false))}>
+                    {formatMessage(programMessages.ui.deliver)}
+                  </Button>
+                </>
+              )}
+            >
+              <Form colon={false}>
+                <Form.Item label={formatMessage(programMessages.label.select)}>
+                  <Select<string[]> mode="multiple" onChange={value => setSelectedProgramIds(value)}>
+                    {programs.map(program => (
+                      <Select.Option key={program.id} value={program.programPackageProgramId}>
+                        {program.title}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+                <Form.Item label={formatMessage(programMessages.label.selectDeliveryAt)}>
+                  <DatetimePicker value={deliveredAt || undefined} onChange={value => setDeliveredAt(value)} />
+                </Form.Item>
+              </Form>
+            </AdminModal>
           </div>
           <div>
             <Checkbox checked={notDeliveryOnly} onChange={e => setNotDeliveryOnly(e.target.checked)}>
@@ -183,24 +243,36 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
                     )
                   },
                 },
-                ...programs.map(program => ({
-                  title: <StyledHeader>{program.title}</StyledHeader>,
-                  render: (text: any, record: MemberBrief) => {
-                    if (tempoDelivery[record.id] && tempoDelivery[record.id][program.id]) {
-                      return moment(tempoDelivery[record.id][program.id]).format('YYYY-MM-DD HH:mm')
-                    }
-                    return null
-                  },
-                })),
+                ...programs
+                  .filter(program => !notDeliveryOnly || !allDeliveredProgramIds.includes(program.id))
+                  .map(program => ({
+                    title: (
+                      <Tooltip title={program.title}>
+                        <StyledHeader>{program.title}</StyledHeader>
+                      </Tooltip>
+                    ),
+                    align: 'center' as ColumnProps<any>['align'],
+                    render: (text: any, record: MemberBrief) => {
+                      if (tempoDelivery[record.id] && tempoDelivery[record.id][program.id]) {
+                        return moment(tempoDelivery[record.id][program.id]).format('YYYY-MM-DD HH:mm')
+                      }
+                      return null
+                    },
+                  })),
               ]}
               dataSource={members}
               rowKey={record => record.id}
-              rowSelection={{ onChange: selectedRowKeys => {} }}
-              scroll={{ x: programs.length * 16 * 12 }}
+              rowSelection={{
+                onChange: (selectedRowKeys, selectedRows) => {
+                  setSelectedMemberIds(selectedRows.map(row => row.id))
+                },
+              }}
               size="small"
               tableLayout="fixed"
+              scroll={{ x: programs.length * 16 * 12 }}
               bordered
               pagination={false}
+              loading={loadingEnrollment || loadingTempoDelivery}
             />
           )}
         </StyledTableBlock>

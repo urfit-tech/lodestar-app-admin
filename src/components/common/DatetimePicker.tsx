@@ -10,7 +10,7 @@ const DatetimePicker: React.FC<DatetimePickerProps> = ({ value, onChange }, ref)
   return (
     <div>
       <DatePicker size="default" value={value} onChange={onChange} className="mr-2" />
-      <TimePicker size="default" value={value} onChange={onChange} />
+      <TimePicker size="default" value={value} onChange={onChange} format="HH:mm" />
     </div>
   )
 }

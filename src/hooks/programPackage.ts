@@ -1,7 +1,8 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import types from '../types'
 import { MemberBrief } from '../types/general'
+import { flatten } from 'ramda'
 
 export const useProgramPackageCollection = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_PROGRAM_PACKAGE>(gql`
@@ -76,33 +77,30 @@ export const useProgramPackageProgramCollection = (programPackageId: string | nu
     types.GET_PROGRAM_PACKAGE_PROGRAM_COLLECTIONVariables
   >(
     gql`
-      query GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION($programPackageId: uuid) {
-        program(where: { program_package_programs: { program_package_id: { _eq: $programPackageId } } }) {
+      query GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION($programPackageIds: [uuid!]) {
+        program_package_program(where: { program_package_id: { _in: $programPackageIds } }) {
           id
-          title
-        }
-        program_tempo_delivery(where: { program_package_program: { program_package_id: { _eq: $programPackageId } } }) {
-          member_id
-          program_package_program {
+          program {
             id
-            program_id
+            title
           }
-          delivered_at
         }
       }
     `,
-    { variables: { programPackageId } },
+    { variables: { programPackageIds: programPackageId ? [programPackageId] : [] } },
   )
 
   const programs: {
     id: string
     title: string
+    programPackageProgramId: string
   }[] =
     loading || error || !data
       ? []
-      : data.program.map(program => ({
-          id: program.id,
-          title: program.title,
+      : data.program_package_program.map(programPackageProgram => ({
+          id: programPackageProgram.program.id,
+          title: programPackageProgram.program.title,
+          programPackageProgramId: programPackageProgram.id,
         }))
 
   return {
@@ -186,24 +184,77 @@ export const useProgramTempoDelivery = (programPackageId: string | null, memberI
     },
   )
 
+  const deliveredMemberCount: { [ProgramID: string]: number } = {}
   const tempoDelivery: { [MemberId: string]: { [ProgramId: string]: Date } } =
     loading || error || !data
       ? {}
       : data.program_tempo_delivery.reduce((accumulator, currentValue) => {
-          if (!accumulator[currentValue.member_id]) {
-            accumulator[currentValue.member_id] = {}
+          const memberId = currentValue.member_id
+          const programId = currentValue.program_package_program.program_id
+
+          if (!accumulator[memberId]) {
+            accumulator[memberId] = {}
           }
-          accumulator[currentValue.member_id][currentValue.program_package_program.program_id] = new Date(
-            currentValue.delivered_at,
-          )
+          accumulator[memberId][programId] = new Date(currentValue.delivered_at)
+
+          if (!deliveredMemberCount[programId]) {
+            deliveredMemberCount[programId] = 0
+          }
+          deliveredMemberCount[programId]++
 
           return accumulator
         }, {} as { [MemberId: string]: { [ProgramId: string]: Date } })
+
+  const allDeliveredProgramIds: string[] =
+    loading || error || !data
+      ? []
+      : Object.keys(deliveredMemberCount).filter(
+          programId => deliveredMemberCount[programId] === memberIds.length,
+        )
 
   return {
     loadingTempoDelivery: loading,
     errorTempoDelivery: error,
     tempoDelivery,
+    allDeliveredProgramIds,
     refetchTempoDelivery: refetch,
   }
+}
+
+export const useDeliverProgramCollection = () => {
+  const [deliverProgramCollection] = useMutation<
+    types.DELIVER_PROGRAM_COLLECTION,
+    types.DELIVER_PROGRAM_COLLECTIONVariables
+  >(
+    gql`
+      mutation DELIVER_PROGRAM_COLLECTION($data: [program_tempo_delivery_insert_input!]!) {
+        insert_program_tempo_delivery(
+          objects: $data
+          on_conflict: {
+            constraint: program_tempo_delivery_member_id_program_package_program_id_key
+            update_columns: [delivered_at]
+          }
+        ) {
+          affected_rows
+        }
+      }
+    `,
+  )
+
+  const deliverPrograms = (memberIds: string[], programIds: string[], deliverAt: Date) =>
+    deliverProgramCollection({
+      variables: {
+        data: flatten(
+          memberIds.map(memberId =>
+            programIds.map(programId => ({
+              member_id: memberId,
+              program_package_program_id: programId,
+              delivered_at: deliverAt,
+            })),
+          ),
+        ),
+      },
+    })
+
+  return deliverPrograms
 }

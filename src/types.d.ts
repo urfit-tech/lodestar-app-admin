@@ -6575,41 +6575,30 @@ export interface GET_PROGRAM_PACKAGE_PLAN_COLLECTIONVariables {
 // GraphQL query operation: GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION
 // ====================================================
 
-export interface GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION_program {
+export interface GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION_program_package_program_program {
   __typename: "program";
   id: any;
   title: string;
 }
 
-export interface GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION_program_tempo_delivery_program_package_program {
+export interface GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION_program_package_program {
   __typename: "program_package_program";
   id: any;
-  program_id: any;
-}
-
-export interface GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION_program_tempo_delivery {
-  __typename: "program_tempo_delivery";
-  member_id: string;
   /**
    * An object relationship
    */
-  program_package_program: GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION_program_tempo_delivery_program_package_program;
-  delivered_at: any;
+  program: GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION_program_package_program_program;
 }
 
 export interface GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION {
   /**
-   * fetch data from the table: "program"
+   * fetch data from the table: "program_package_program"
    */
-  program: GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION_program[];
-  /**
-   * fetch data from the table: "program_tempo_delivery"
-   */
-  program_tempo_delivery: GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION_program_tempo_delivery[];
+  program_package_program: GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION_program_package_program[];
 }
 
 export interface GET_PROGRAM_PACKAGE_PROGRAM_COLLECTIONVariables {
-  programPackageId?: any | null;
+  programPackageIds?: any[] | null;
 }
 
 /* tslint:disable */
@@ -6682,6 +6671,33 @@ export interface GET_PROGRAM_TEMPO_DELIVERY {
 export interface GET_PROGRAM_TEMPO_DELIVERYVariables {
   programPackageIds?: any[] | null;
   memberIds?: string[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELIVER_PROGRAM_COLLECTION
+// ====================================================
+
+export interface DELIVER_PROGRAM_COLLECTION_insert_program_tempo_delivery {
+  __typename: "program_tempo_delivery_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELIVER_PROGRAM_COLLECTION {
+  /**
+   * insert data into the table: "program_tempo_delivery"
+   */
+  insert_program_tempo_delivery: DELIVER_PROGRAM_COLLECTION_insert_program_tempo_delivery | null;
+}
+
+export interface DELIVER_PROGRAM_COLLECTIONVariables {
+  data: program_tempo_delivery_insert_input[];
 }
 
 /* tslint:disable */
@@ -12924,6 +12940,14 @@ export interface program_package_program_insert_input {
 }
 
 /**
+ * input type for inserting object relation for remote table "program_package_program"
+ */
+export interface program_package_program_obj_rel_insert_input {
+  data: program_package_program_insert_input;
+  on_conflict?: program_package_program_on_conflict | null;
+}
+
+/**
  * on conflict condition type for table "program_package_program"
  */
 export interface program_package_program_on_conflict {
@@ -13108,6 +13132,17 @@ export interface program_role_on_conflict {
   constraint: program_role_constraint;
   update_columns: program_role_update_column[];
   where?: program_role_bool_exp | null;
+}
+
+/**
+ * input type for inserting data into table "program_tempo_delivery"
+ */
+export interface program_tempo_delivery_insert_input {
+  delivered_at?: any | null;
+  id?: any | null;
+  member_id?: string | null;
+  program_package_program?: program_package_program_obj_rel_insert_input | null;
+  program_package_program_id?: any | null;
 }
 
 /**

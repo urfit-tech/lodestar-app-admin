@@ -427,6 +427,8 @@ export const programMessages = {
     planField: { id: 'program.label.planField', defaultMessage: '方案：' },
     notDeliveryOnly: { id: 'program.label.notDeliveryOnly', defaultMessage: '僅顯示未交付' },
     memberList: { id: 'program.label.memberList', defaultMessage: '學員名單' },
+    select: { id: 'program.label.select', defaultMessage: '選擇課程' },
+    selectDeliveryAt: { id: 'program.label.selectDeliveryAt', defaultMessage: '選擇啟用日期' },
   }),
   text: defineMessages({
     enrolledSubscriptionCount: { id: 'program.text.enrolledSubscriptionCount', defaultMessage: '已訂閱 {count} 人' },
@@ -437,7 +439,8 @@ export const programMessages = {
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
     editProgram: { id: 'program.ui.editProgram', defaultMessage: '編輯課程' },
-    deliveryProgram: { id: 'program.ui.deliveryProgram', defaultMessage: '交付課程' },
+    delivery: { id: 'program.ui.delivery', defaultMessage: '交付課程' },
+    deliver: { id: 'program.ui.deliver', defaultMessage: '啟用' },
   }),
 }
 
