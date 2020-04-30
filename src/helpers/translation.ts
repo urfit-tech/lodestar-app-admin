@@ -425,6 +425,8 @@ export const programMessages = {
     subscriptionPlanType: { id: 'program.label.subscriptionPlanType', defaultMessage: '訂閱付費' },
     isIssuesOpen: { id: 'program.label.isIssuesOpen', defaultMessage: '問題討論' },
     planField: { id: 'program.label.planField', defaultMessage: '方案：' },
+    notDeliveryOnly: { id: 'program.label.notDeliveryOnly', defaultMessage: '僅顯示未交付' },
+    memberList: { id: 'program.label.memberList', defaultMessage: '學員名單' },
   }),
   text: defineMessages({
     enrolledSubscriptionCount: { id: 'program.text.enrolledSubscriptionCount', defaultMessage: '已訂閱 {count} 人' },
@@ -435,6 +437,7 @@ export const programMessages = {
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
     editProgram: { id: 'program.ui.editProgram', defaultMessage: '編輯課程' },
+    deliveryProgram: { id: 'program.ui.deliveryProgram', defaultMessage: '交付課程' },
   }),
 }
 

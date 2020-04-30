@@ -6564,7 +6564,124 @@ export interface GET_PROGRAM_PACKAGE_PLAN_COLLECTION {
 }
 
 export interface GET_PROGRAM_PACKAGE_PLAN_COLLECTIONVariables {
+  programPackageIds?: any[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION
+// ====================================================
+
+export interface GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION_program {
+  __typename: "program";
+  id: any;
+  title: string;
+}
+
+export interface GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION_program_tempo_delivery_program_package_program {
+  __typename: "program_package_program";
+  id: any;
+  program_id: any;
+}
+
+export interface GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION_program_tempo_delivery {
+  __typename: "program_tempo_delivery";
+  member_id: string;
+  /**
+   * An object relationship
+   */
+  program_package_program: GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION_program_tempo_delivery_program_package_program;
+  delivered_at: any;
+}
+
+export interface GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION_program[];
+  /**
+   * fetch data from the table: "program_tempo_delivery"
+   */
+  program_tempo_delivery: GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION_program_tempo_delivery[];
+}
+
+export interface GET_PROGRAM_PACKAGE_PROGRAM_COLLECTIONVariables {
   programPackageId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT
+// ====================================================
+
+export interface GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT_program_package_plan_enrollment_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT_program_package_plan_enrollment {
+  __typename: "program_package_plan_enrollment";
+  /**
+   * An object relationship
+   */
+  member: GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT_program_package_plan_enrollment_member | null;
+}
+
+export interface GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT {
+  /**
+   * fetch data from the table: "program_package_plan_enrollment"
+   */
+  program_package_plan_enrollment: GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT_program_package_plan_enrollment[];
+}
+
+export interface GET_PROGRAM_PACKAGE_PLAN_ENROLLMENTVariables {
+  programPackagePlanId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_TEMPO_DELIVERY
+// ====================================================
+
+export interface GET_PROGRAM_TEMPO_DELIVERY_program_tempo_delivery_program_package_program {
+  __typename: "program_package_program";
+  id: any;
+  program_id: any;
+}
+
+export interface GET_PROGRAM_TEMPO_DELIVERY_program_tempo_delivery {
+  __typename: "program_tempo_delivery";
+  member_id: string;
+  /**
+   * An object relationship
+   */
+  program_package_program: GET_PROGRAM_TEMPO_DELIVERY_program_tempo_delivery_program_package_program;
+  delivered_at: any;
+}
+
+export interface GET_PROGRAM_TEMPO_DELIVERY {
+  /**
+   * fetch data from the table: "program_tempo_delivery"
+   */
+  program_tempo_delivery: GET_PROGRAM_TEMPO_DELIVERY_program_tempo_delivery[];
+}
+
+export interface GET_PROGRAM_TEMPO_DELIVERYVariables {
+  programPackageIds?: any[] | null;
+  memberIds?: string[] | null;
 }
 
 /* tslint:disable */

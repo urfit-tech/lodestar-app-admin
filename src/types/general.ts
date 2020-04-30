@@ -44,6 +44,13 @@ export type MemberPublic = {
   role: string
 }
 
+export type MemberBrief = {
+  id: string
+  avatarUrl: string | null
+  name: string
+  email: string
+}
+
 export type Issue = {
   id: string
   title: string

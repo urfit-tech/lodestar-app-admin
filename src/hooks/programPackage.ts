@@ -1,6 +1,7 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import types from '../types'
+import { MemberBrief } from '../types/general'
 
 export const useProgramPackageCollection = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_PROGRAM_PACKAGE>(gql`
@@ -37,9 +38,9 @@ export const useProgramPackagePlanCollection = (programPackageId: string | null)
     types.GET_PROGRAM_PACKAGE_PLAN_COLLECTIONVariables
   >(
     gql`
-      query GET_PROGRAM_PACKAGE_PLAN_COLLECTION($programPackageId: uuid) {
+      query GET_PROGRAM_PACKAGE_PLAN_COLLECTION($programPackageIds: [uuid!]) {
         program_package_plan(
-          where: { program_package_id: { _eq: $programPackageId }, published_at: { _is_null: false } }
+          where: { program_package_id: { _in: $programPackageIds }, published_at: { _is_null: false } }
           order_by: { position: asc, published_at: desc }
         ) {
           id
@@ -47,14 +48,14 @@ export const useProgramPackagePlanCollection = (programPackageId: string | null)
         }
       }
     `,
-    { variables: { programPackageId: programPackageId || undefined } },
+    { variables: { programPackageIds: programPackageId ? [programPackageId] : [] } },
   )
 
   const programPackagePlans: {
     id: string
     title: string
   }[] =
-    loading || error || !data
+    loading || error || !data || !programPackageId
       ? []
       : data.program_package_plan.map(programPackagePlan => ({
           id: programPackagePlan.id,
@@ -66,5 +67,143 @@ export const useProgramPackagePlanCollection = (programPackageId: string | null)
     errorProgramPackagePlans: error,
     programPackagePlans,
     refetchProgramPackagePlans: refetch,
+  }
+}
+
+export const useProgramPackageProgramCollection = (programPackageId: string | null) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION,
+    types.GET_PROGRAM_PACKAGE_PROGRAM_COLLECTIONVariables
+  >(
+    gql`
+      query GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION($programPackageId: uuid) {
+        program(where: { program_package_programs: { program_package_id: { _eq: $programPackageId } } }) {
+          id
+          title
+        }
+        program_tempo_delivery(where: { program_package_program: { program_package_id: { _eq: $programPackageId } } }) {
+          member_id
+          program_package_program {
+            id
+            program_id
+          }
+          delivered_at
+        }
+      }
+    `,
+    { variables: { programPackageId } },
+  )
+
+  const programs: {
+    id: string
+    title: string
+  }[] =
+    loading || error || !data
+      ? []
+      : data.program.map(program => ({
+          id: program.id,
+          title: program.title,
+        }))
+
+  return {
+    loadingPrograms: loading,
+    errorPrograms: error,
+    programs,
+    refetchPrograms: refetch,
+  }
+}
+
+export const useProgramPackageEnrollment = (programPackagePlanId: string | null) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT,
+    types.GET_PROGRAM_PACKAGE_PLAN_ENROLLMENTVariables
+  >(
+    gql`
+      query GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT($programPackagePlanId: uuid) {
+        program_package_plan_enrollment(
+          where: { program_package_plan_id: { _eq: $programPackagePlanId } }
+          distinct_on: member_id
+          order_by: { member_id: asc }
+        ) {
+          member {
+            id
+            picture_url
+            name
+            username
+            email
+          }
+        }
+      }
+    `,
+    { variables: { programPackagePlanId } },
+  )
+
+  const members: MemberBrief[] =
+    loading || error || !data
+      ? []
+      : data.program_package_plan_enrollment.map(enrollment => ({
+          id: enrollment.member?.id || '',
+          avatarUrl: enrollment.member?.picture_url || null,
+          name: enrollment.member?.name || enrollment.member?.username || '',
+          email: enrollment.member?.email || '',
+        }))
+
+  return {
+    loadingEnrollment: loading,
+    errorEnrollment: error,
+    members,
+    refetchEnrollment: refetch,
+  }
+}
+
+export const useProgramTempoDelivery = (programPackageId: string | null, memberIds: string[]) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_PROGRAM_TEMPO_DELIVERY,
+    types.GET_PROGRAM_TEMPO_DELIVERYVariables
+  >(
+    gql`
+      query GET_PROGRAM_TEMPO_DELIVERY($programPackageIds: [uuid!], $memberIds: [String!]) {
+        program_tempo_delivery(
+          where: {
+            member_id: { _in: $memberIds }
+            program_package_program: { program_package_id: { _in: $programPackageIds } }
+          }
+        ) {
+          member_id
+          program_package_program {
+            id
+            program_id
+          }
+          delivered_at
+        }
+      }
+    `,
+    {
+      variables: {
+        programPackageIds: programPackageId ? [programPackageId] : [],
+        memberIds,
+      },
+    },
+  )
+
+  const tempoDelivery: { [MemberId: string]: { [ProgramId: string]: Date } } =
+    loading || error || !data
+      ? {}
+      : data.program_tempo_delivery.reduce((accumulator, currentValue) => {
+          if (!accumulator[currentValue.member_id]) {
+            accumulator[currentValue.member_id] = {}
+          }
+          accumulator[currentValue.member_id][currentValue.program_package_program.program_id] = new Date(
+            currentValue.delivered_at,
+          )
+
+          return accumulator
+        }, {} as { [MemberId: string]: { [ProgramId: string]: Date } })
+
+  return {
+    loadingTempoDelivery: loading,
+    errorTempoDelivery: error,
+    tempoDelivery,
+    refetchTempoDelivery: refetch,
   }
 }
