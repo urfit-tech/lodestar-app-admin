@@ -49,7 +49,7 @@ const ProgramPackageAdminCard: React.FC<{
 
   return (
     <StyledWrapper>
-      <Link to={`/program-packages/${id}`}>
+      <Link to={`/program-packages/${id}?tabkey=program`}>
         <StyledCover src={coverUrl} />
 
         <StyledDescription>

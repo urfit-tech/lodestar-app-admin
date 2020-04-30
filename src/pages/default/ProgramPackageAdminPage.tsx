@@ -1,7 +1,8 @@
 import { Button, Icon, Tabs } from 'antd'
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
+import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
 import {
   AdminBlock,
@@ -14,20 +15,22 @@ import {
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import ProgramPackageBasicForm from '../../components/programPackage/ProgramPackageBasicFrom'
 import ProgramPackageDescriptionForm from '../../components/programPackage/ProgramPackageDescriptionForm'
+import ProgramPackagePublishBlock from '../../components/programPackage/ProgramPackagePublishBlock'
 import AppContext from '../../contexts/AppContext'
 import { commonMessages, programPackageMessage } from '../../helpers/translation'
 import { useGetProgramPackage } from '../../hooks/programPackage'
 
 const ProgramPackageAdminPage: React.FC = () => {
-  const { formatMessage } = useIntl()
-  const { settings } = useContext(AppContext)
-  const [activeKey, setActiveKey] = useState('basic')
   const {
     match: {
       params: { programPackageId: id },
     },
   } = useRouter<{ programPackageId: string }>()
   const { programPackage, refetch } = useGetProgramPackage(id)
+  const { settings } = useContext(AppContext)
+  const { formatMessage } = useIntl()
+  const [tabkey, setTabkey] = useQueryParam('tabkey', StringParam)
+  !tabkey && setTabkey('program')
 
   return (
     <>
@@ -41,15 +44,14 @@ const ProgramPackageAdminPage: React.FC = () => {
         <AdminHeaderTitle>{programPackage.title || id}</AdminHeaderTitle>
 
         <a href={`//${settings['host']}/program-packages/${id}`} target="_blank" rel="noopener noreferrer">
-          <Button>預覽</Button>
+          <Button>{formatMessage(commonMessages.ui.preview)}</Button>
         </a>
       </AdminHeader>
 
       <StyledLayoutContent variant="gray">
         <Tabs
-          defaultActiveKey="program"
-          activeKey={activeKey}
-          onChange={key => setActiveKey(key)}
+          activeKey={tabkey || 'program'}
+          onChange={key => setTabkey(key)}
           renderTabBar={(props, DefaultTabBar) => (
             <AdminTabBarWrapper>
               <DefaultTabBar {...props} />
@@ -90,7 +92,9 @@ const ProgramPackageAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.publishAdmin)}</AdminPaneTitle>
 
-              <AdminBlock></AdminBlock>
+              <AdminBlock>
+                <ProgramPackagePublishBlock programPackage={{ id, ...programPackage }} onRefetch={refetch} />
+              </AdminBlock>
             </div>
           </Tabs.TabPane>
         </Tabs>

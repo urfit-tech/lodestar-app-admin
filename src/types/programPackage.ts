@@ -1,5 +1,5 @@
 export type ProgramPackage = {
-  title: string
+  title: string | null
   coverUrl: string | null
   publishedAt: string | null
   description: string | null

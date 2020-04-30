@@ -121,10 +121,10 @@ export const useGetProgramPackage: (
           plans: [],
         }
       : {
-          title: data?.program_package_by_pk?.title ?? '',
-          coverUrl: data?.program_package_by_pk?.cover_url ?? '',
-          publishedAt: data?.program_package_by_pk?.published_at,
-          description: data?.program_package_by_pk?.description ?? '',
+          title: data?.program_package_by_pk?.title ?? null,
+          coverUrl: data?.program_package_by_pk?.cover_url ?? null,
+          publishedAt: data?.program_package_by_pk?.published_at ?? null,
+          description: data?.program_package_by_pk?.description ?? null,
           programs:
             data?.program_package_by_pk?.program_package_programs.map(program => ({
               id: program.program_id,

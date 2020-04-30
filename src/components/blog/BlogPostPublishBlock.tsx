@@ -10,27 +10,24 @@ import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } fr
 
 const messages = defineMessages({
   noTitle: { id: 'merchandise.text.noTitle', defaultMessage: '尚未填寫名稱' },
-  noAbstract: { id: 'merchandise.text.noAbstract', defaultMessage: '尚未填寫規格' },
-  noLink: { id: 'merchandise.text.noLink', defaultMessage: '尚未設定付款連結' },
-  noPrice: { id: 'merchandise.text.noPrice', defaultMessage: '尚未設定售價' },
 
   notCompleteNotation: {
-    id: 'merchandise.status.notCompleteNotation',
-    defaultMessage: '請填寫以下必填資料，填寫完畢即可由此發佈',
+    id: 'blog.status.notCompleteNotation',
+    defaultMessage: '你的文章未發佈，此文章並不會顯示在頁面上。',
   },
   unpublishedNotation: {
-    id: 'merchandise.status.unpublishedNotation',
-    defaultMessage: '你的商品未發佈，此商品並不會顯示在頁面上。',
+    id: 'blog.status.unpublishedNotation',
+    defaultMessage: '現在你的文章已發佈，此文章會出現在頁面上。',
   },
   publishedNotation: {
-    id: 'merchandise.status.publishedNotation',
-    defaultMessage: '現在你的商品已發佈，此商品會出現在頁面上。',
+    id: 'blog.status.publishedNotation',
+    defaultMessage: '現在你的文章已發佈，此文章會出現在頁面上。',
   },
 })
 
 const BlogPostPublishBlock: React.FC<BlogPostProps> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const publishPost = usePublishPost(post.id)
+  const publishPost = usePostPublish(post.id)
 
   const checklist: ChecklistItemProps[] = []
 
@@ -80,8 +77,8 @@ const BlogPostPublishBlock: React.FC<BlogPostProps> = ({ post, onRefetch }) => {
   )
 }
 
-const usePublishPost = (postId: string) => {
-  const [publish] = useMutation<types.PUBLISH_POST, types.PUBLISH_POSTVariables>(gql`
+const usePostPublish = (postId: string) => {
+  const [publishPostHandler] = useMutation<types.PUBLISH_POST, types.PUBLISH_POSTVariables>(gql`
     mutation PUBLISH_POST($postId: uuid!, $publishedAt: timestamptz) {
       update_post(_set: { published_at: $publishedAt }, where: { id: { _eq: $postId } }) {
         affected_rows
@@ -91,7 +88,7 @@ const usePublishPost = (postId: string) => {
 
   const publishPost: (data: { publishedAt: Date | null }) => Promise<void> = async ({ publishedAt }) => {
     try {
-      await publish({
+      await publishPostHandler({
         variables: {
           postId,
           publishedAt,
