@@ -14,8 +14,8 @@ import { commonMessages, programMessages } from '../../helpers/translation'
 import {
   useDeliverProgramCollection,
   useProgramPackageCollection,
-  useProgramPackageEnrollment,
   useProgramPackagePlanCollection,
+  useProgramPackagePlanEnrollment,
   useProgramPackageProgramCollection,
   useProgramTempoDelivery,
 } from '../../hooks/programPackage'
@@ -78,12 +78,12 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
   const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null)
   const packageId = selectedPackageId || programPackages[0]?.id || null
 
-  const { loadingProgramPackagePlans, programPackagePlans } = useProgramPackagePlanCollection(packageId)
+  const { loadingProgramPackagePlans, programPackagePlans } = useProgramPackagePlanCollection(packageId, true)
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null)
   const planId = selectedPlanId || programPackagePlans[0]?.id || null
 
   const { programs } = useProgramPackageProgramCollection(packageId)
-  const { loadingEnrollment, members } = useProgramPackageEnrollment(planId)
+  const { loadingEnrollment, members } = useProgramPackagePlanEnrollment(planId)
   const { loadingTempoDelivery, tempoDelivery, allDeliveredProgramIds, refetchTempoDelivery } = useProgramTempoDelivery(
     packageId,
     members.map(member => member.id),

@@ -6565,6 +6565,7 @@ export interface GET_PROGRAM_PACKAGE_PLAN_COLLECTION {
 
 export interface GET_PROGRAM_PACKAGE_PLAN_COLLECTIONVariables {
   programPackageIds?: any[] | null;
+  isTempoDelivery?: boolean | null;
 }
 
 /* tslint:disable */
@@ -6634,7 +6635,7 @@ export interface GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT {
 }
 
 export interface GET_PROGRAM_PACKAGE_PLAN_ENROLLMENTVariables {
-  programPackagePlanId?: any | null;
+  programPackagePlanIds?: any[] | null;
 }
 
 /* tslint:disable */

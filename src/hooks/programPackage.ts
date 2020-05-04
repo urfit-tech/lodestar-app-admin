@@ -33,15 +33,19 @@ export const useProgramPackageCollection = () => {
   }
 }
 
-export const useProgramPackagePlanCollection = (programPackageId: string | null) => {
+export const useProgramPackagePlanCollection = (programPackageId: string | null, isTempoDelivery?: boolean) => {
   const { loading, error, data, refetch } = useQuery<
     types.GET_PROGRAM_PACKAGE_PLAN_COLLECTION,
     types.GET_PROGRAM_PACKAGE_PLAN_COLLECTIONVariables
   >(
     gql`
-      query GET_PROGRAM_PACKAGE_PLAN_COLLECTION($programPackageIds: [uuid!]) {
+      query GET_PROGRAM_PACKAGE_PLAN_COLLECTION($programPackageIds: [uuid!], $isTempoDelivery: Boolean) {
         program_package_plan(
-          where: { program_package_id: { _in: $programPackageIds }, published_at: { _is_null: false } }
+          where: {
+            program_package_id: { _in: $programPackageIds }
+            is_tempo_delivery: { _eq: $isTempoDelivery }
+            published_at: { _is_null: false }
+          }
           order_by: { position: asc, published_at: desc }
         ) {
           id
@@ -49,7 +53,7 @@ export const useProgramPackagePlanCollection = (programPackageId: string | null)
         }
       }
     `,
-    { variables: { programPackageIds: programPackageId ? [programPackageId] : [] } },
+    { variables: { programPackageIds: programPackageId ? [programPackageId] : [], isTempoDelivery } },
   )
 
   const programPackagePlans: {
@@ -111,15 +115,15 @@ export const useProgramPackageProgramCollection = (programPackageId: string | nu
   }
 }
 
-export const useProgramPackageEnrollment = (programPackagePlanId: string | null) => {
+export const useProgramPackagePlanEnrollment = (programPackagePlanId: string | null) => {
   const { loading, error, data, refetch } = useQuery<
     types.GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT,
     types.GET_PROGRAM_PACKAGE_PLAN_ENROLLMENTVariables
   >(
     gql`
-      query GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT($programPackagePlanId: uuid) {
+      query GET_PROGRAM_PACKAGE_PLAN_ENROLLMENT($programPackagePlanIds: [uuid!]) {
         program_package_plan_enrollment(
-          where: { program_package_plan_id: { _eq: $programPackagePlanId } }
+          where: { program_package_plan_id: { _in: $programPackagePlanIds } }
           distinct_on: member_id
           order_by: { member_id: asc }
         ) {
@@ -133,7 +137,7 @@ export const useProgramPackageEnrollment = (programPackagePlanId: string | null)
         }
       }
     `,
-    { variables: { programPackagePlanId } },
+    { variables: { programPackagePlanIds: programPackagePlanId ? [programPackagePlanId] : [] } },
   )
 
   const members: MemberBrief[] =
@@ -208,9 +212,7 @@ export const useProgramTempoDelivery = (programPackageId: string | null, memberI
   const allDeliveredProgramIds: string[] =
     loading || error || !data
       ? []
-      : Object.keys(deliveredMemberCount).filter(
-          programId => deliveredMemberCount[programId] === memberIds.length,
-        )
+      : Object.keys(deliveredMemberCount).filter(programId => deliveredMemberCount[programId] === memberIds.length)
 
   return {
     loadingTempoDelivery: loading,
