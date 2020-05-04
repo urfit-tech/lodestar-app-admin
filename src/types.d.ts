@@ -1959,7 +1959,100 @@ export interface UPDATE_PROGRAM_PACKAGE_DESCIRPTION {
 
 export interface UPDATE_PROGRAM_PACKAGE_DESCIRPTIONVariables {
   description?: string | null;
-  programPackageId?: string | null;
+  programPackageId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PERPETUAL_PROGRAM_COLLECTION
+// ====================================================
+
+export interface GET_PERPETUAL_PROGRAM_COLLECTION_program {
+  __typename: "program";
+  id: any;
+  title: string;
+}
+
+export interface GET_PERPETUAL_PROGRAM_COLLECTION {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_PERPETUAL_PROGRAM_COLLECTION_program[];
+}
+
+export interface GET_PERPETUAL_PROGRAM_COLLECTIONVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_PROGRAM
+// ====================================================
+
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program {
+  __typename: "program_package_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program {
+  __typename: "program_package_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAM {
+  /**
+   * delete data from the table: "program_package_program"
+   */
+  delete_program_package_program: UPDATE_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program | null;
+  /**
+   * insert data into the table: "program_package_program"
+   */
+  insert_program_package_program: UPDATE_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program | null;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAMVariables {
+  programPackageId: any;
+  programs: program_package_program_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PROGRAM_PACKAGE_PUBLISH
+// ====================================================
+
+export interface PROGRAM_PACKAGE_PUBLISH_update_program_package {
+  __typename: "program_package_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PROGRAM_PACKAGE_PUBLISH {
+  /**
+   * update data of the table: "program_package"
+   */
+  update_program_package: PROGRAM_PACKAGE_PUBLISH_update_program_package | null;
+}
+
+export interface PROGRAM_PACKAGE_PUBLISHVariables {
+  id: any;
+  publishedAt?: any | null;
 }
 
 /* tslint:disable */
@@ -6662,10 +6755,13 @@ export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans
 
 export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans {
   __typename: "program_package_plan";
+  id: any;
   title: string;
   list_price: any;
   sale_price: any | null;
   sold_at: any | null;
+  period_type: string;
+  period_amount: any;
   description: string | null;
   /**
    * An aggregated array relationship

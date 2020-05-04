@@ -15,9 +15,13 @@ import {
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import ProgramPackageBasicForm from '../../components/programPackage/ProgramPackageBasicFrom'
 import ProgramPackageDescriptionForm from '../../components/programPackage/ProgramPackageDescriptionForm'
+import ProgramPackagePlanCollectionBlock from '../../components/programPackage/ProgramPackagePlanCollectionBlock'
+import ProgramPackagePlanCreationModal from '../../components/programPackage/ProgramPackagePlanCreationModal'
+import ProgramPackageProgramCollectionBlock from '../../components/programPackage/ProgramPackageProgramCollectionBlock'
+import ProgramPackageProgramConnectionModal from '../../components/programPackage/ProgramPackageProgramConnectionModal'
 import ProgramPackagePublishBlock from '../../components/programPackage/ProgramPackagePublishBlock'
 import AppContext from '../../contexts/AppContext'
-import { commonMessages, programPackageMessage } from '../../helpers/translation'
+import { commonMessages, programPackageMessages } from '../../helpers/translation'
 import { useGetProgramPackage } from '../../hooks/programPackage'
 
 const ProgramPackageAdminPage: React.FC = () => {
@@ -50,7 +54,7 @@ const ProgramPackageAdminPage: React.FC = () => {
 
       <StyledLayoutContent variant="gray">
         <Tabs
-          activeKey={tabkey || 'program'}
+          activeKey={tabkey || 'programs'}
           onChange={key => setTabkey(key)}
           renderTabBar={(props, DefaultTabBar) => (
             <AdminTabBarWrapper>
@@ -58,9 +62,16 @@ const ProgramPackageAdminPage: React.FC = () => {
             </AdminTabBarWrapper>
           )}
         >
-          <Tabs.TabPane key="program" tab={formatMessage(programPackageMessage.label.program)}>
+          <Tabs.TabPane key="programs" tab={formatMessage(programPackageMessages.label.program)}>
             <div className="container py-5">
-              <AdminPaneTitle>{formatMessage(programPackageMessage.label.program)}</AdminPaneTitle>
+              <AdminPaneTitle>{formatMessage(programPackageMessages.label.program)}</AdminPaneTitle>
+
+              <ProgramPackageProgramConnectionModal
+                programPackageId={id}
+                programs={programPackage.programs}
+                onRefetch={refetch}
+              />
+              <ProgramPackageProgramCollectionBlock programs={programPackage.programs} />
             </div>
           </Tabs.TabPane>
           <Tabs.TabPane key="basic" tab={formatMessage(commonMessages.label.basicSettings)}>
@@ -68,7 +79,7 @@ const ProgramPackageAdminPage: React.FC = () => {
               <AdminPaneTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminPaneTitle>
 
               <AdminBlock>
-                <AdminBlockTitle>{formatMessage(programPackageMessage.label.generalSetting)}</AdminBlockTitle>
+                <AdminBlockTitle>{formatMessage(programPackageMessages.label.generalSetting)}</AdminBlockTitle>
                 <ProgramPackageBasicForm programPackage={{ id, ...programPackage }} onRefetch={refetch} />
               </AdminBlock>
 
@@ -78,7 +89,7 @@ const ProgramPackageAdminPage: React.FC = () => {
               </AdminBlock>
 
               {/* <AdminBlock>
-                <AdminBlockTitle>{formatMessage(programPackageMessage.label.deleteProgramPackage)}</AdminBlockTitle>
+                <AdminBlockTitle>{formatMessage(programPackageMessages.label.deleteProgramPackage)}</AdminBlockTitle>
                 <ProgramPackageDeletionBlock />
               </AdminBlock> */}
             </div>
@@ -86,6 +97,9 @@ const ProgramPackageAdminPage: React.FC = () => {
           <Tabs.TabPane key="sales" tab={formatMessage(commonMessages.label.salesPlan)}>
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.salesPlan)}</AdminPaneTitle>
+
+              <ProgramPackagePlanCreationModal />
+              <ProgramPackagePlanCollectionBlock plans={programPackage.plans} />
             </div>
           </Tabs.TabPane>
           <Tabs.TabPane key="publish" tab={formatMessage(commonMessages.label.publishSettings)}>

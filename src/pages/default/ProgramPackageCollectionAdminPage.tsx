@@ -8,7 +8,7 @@ import OwnerAdminLayout from '../../components/layout/OwnerAdminLayout'
 import ProgramPackageAdminCard from '../../components/programPackage/ProgramPackageAdminCard'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { commonMessages, programPackageMessage } from '../../helpers/translation'
+import { commonMessages, programPackageMessages } from '../../helpers/translation'
 import { useGetProgramPackageCollection, useInsertProgramPackage } from '../../hooks/programPackage'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
 
@@ -52,7 +52,7 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
           classType="programPackage"
           renderTrigger={({ setVisible }) => (
             <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
-              {formatMessage(programPackageMessage.ui.createProgramPackage)}
+              {formatMessage(programPackageMessages.ui.createProgramPackage)}
             </Button>
           )}
           onCreate={({ title }) =>

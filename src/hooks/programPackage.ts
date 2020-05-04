@@ -89,10 +89,13 @@ export const useGetProgramPackage: (
             }
           }
           program_package_plans {
+            id
             title
             list_price
             sale_price
             sold_at
+            period_type
+            period_amount
             description
             program_package_plan_enrollments_aggregate {
               aggregate {
@@ -134,10 +137,13 @@ export const useGetProgramPackage: (
             })) ?? [],
           plans:
             data?.program_package_by_pk?.program_package_plans.map(plan => ({
+              id: plan.id,
               title: plan.title,
               listPrice: plan.list_price ?? 0,
               salePrice: plan.sale_price ?? 0,
               soldAt: plan.sold_at,
+              periodType: plan.period_type,
+              periodAmount: plan.period_amount,
               description: plan.description,
               soldQuantity: plan.program_package_plan_enrollments_aggregate.aggregate?.count ?? 0,
             })) ?? [],

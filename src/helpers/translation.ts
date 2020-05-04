@@ -434,11 +434,15 @@ export const programMessages = {
   }),
 }
 
-export const programPackageMessage = {
+export const programPackageMessages = {
   ui: defineMessages({
     createProgramPackage: {
       id: 'programPackage.ui.createProgramPackage',
       defaultMessage: '建立課程組合',
+    },
+    connectProgram: {
+      id: 'programPacakge.ui.connectProgram',
+      defaultMessage: '加入課程',
     },
   }),
   label: defineMessages({
