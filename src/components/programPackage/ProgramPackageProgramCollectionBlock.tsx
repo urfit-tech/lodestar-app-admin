@@ -2,7 +2,6 @@ import { Typography } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
 import EmptyCover from '../../images/default/empty-cover.png'
-import { ProgramPackageProgramProps } from '../../types/programPackage'
 
 const StyledCover = styled.div<{ src?: string | null }>`
   position: relative;
@@ -21,7 +20,12 @@ const StyledTitle = styled(Typography.Title)`
 `
 
 const ProgramPackageProgramCollectionBlock: React.FC<{
-  programs: ProgramPackageProgramProps[]
+  programs: {
+    id: string
+    title: string
+    coverUrl: string
+    position: number
+  }[]
 }> = ({ programs }) => {
   return (
     <div className="row py-5">

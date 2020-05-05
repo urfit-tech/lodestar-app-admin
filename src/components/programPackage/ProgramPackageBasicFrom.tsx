@@ -13,7 +13,10 @@ import { ProgramPackageProps } from '../../types/programPackage'
 import { CustomRatioImage } from '../common/Image'
 import { CoverBlock, StyledSingleUploader } from '../program/ProgramIntroAdminCard'
 
-type ProgramPackageBasicFormProps = ProgramPackageProps & FormComponentProps
+type ProgramPackageBasicFormProps = {
+  programPackage: ProgramPackageProps
+  onRefetch?: () => void
+} & FormComponentProps
 
 const ProgramPackageBasicForm: React.FC<ProgramPackageBasicFormProps> = ({
   programPackage,

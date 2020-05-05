@@ -12,7 +12,10 @@ import types from '../../types'
 import { ProgramPackageProps } from '../../types/programPackage'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 
-type ProgramPackageDescriptionFromProps = ProgramPackageProps & FormComponentProps
+type ProgramPackageDescriptionFromProps = {
+  programPackage: ProgramPackageProps
+  onRefetch?: () => void
+} & FormComponentProps
 
 const ProgramPackageDescriptionForm: React.FC<ProgramPackageDescriptionFromProps> = ({
   programPackage,

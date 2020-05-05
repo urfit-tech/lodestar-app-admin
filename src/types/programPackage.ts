@@ -1,23 +1,18 @@
 import { PeriodType } from './general'
 
 export type ProgramPackageProps = {
-  programPackage: {
-    id: string
-    title: string | null
-    coverUrl: string | null
-    publishedAt: string | null
-    description: string | null
-    programs: ProgramPackageProgramProps[]
-    plans: ProgramPackagePlanProps[]
-  }
-  onRefetch?: () => void
-}
-
-export type ProgramPackageProgramProps = {
   id: string
-  title: string
-  coverUrl: string
-  position: number
+  title: string | null
+  coverUrl: string | null
+  publishedAt: string | null
+  description: string | null
+  programs: {
+    id: string
+    title: string
+    coverUrl: string
+    position: number
+  }[]
+  plans: ProgramPackagePlanProps[]
 }
 
 export type ProgramPackagePlanProps = {
@@ -36,4 +31,3 @@ export type ProgramPackagePlanProps = {
   isTempoDelivery: boolean
   position: number
 }
-

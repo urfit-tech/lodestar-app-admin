@@ -24,7 +24,10 @@ const messages = defineMessages({
   },
 })
 
-const ProgramPackagePublishBlock: React.FC<ProgramPackageProps> = ({ programPackage, onRefetch }) => {
+const ProgramPackagePublishBlock: React.FC<{
+  programPackage: ProgramPackageProps
+  onRefetch?: () => void
+}> = ({ programPackage, onRefetch }) => {
   const { formatMessage } = useIntl()
 
   const checklist: ChecklistItemProps[] = []
