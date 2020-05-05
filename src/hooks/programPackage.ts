@@ -4,7 +4,8 @@ import { ExecutionResult } from 'graphql'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
 import types from '../types'
-import { ProgramPackageCollection, ProgramPackage } from '../types/programPackage'
+import { ProgramPackage, ProgramPackageCollection } from '../types/programPackage'
+import { PeriodType } from '../types/general'
 
 export const useGetProgramPackageCollection: (
   appId: string,
@@ -97,6 +98,13 @@ export const useGetProgramPackage: (
             period_type
             period_amount
             description
+            is_subscription
+            discount_down_price
+            period_amount
+            period_type
+            published_at
+            is_tempo_delivery
+            position
             program_package_plan_enrollments_aggregate {
               aggregate {
                 count
@@ -142,9 +150,14 @@ export const useGetProgramPackage: (
               listPrice: plan.list_price ?? 0,
               salePrice: plan.sale_price ?? 0,
               soldAt: plan.sold_at,
-              periodType: plan.period_type,
+              periodType: plan.period_type as PeriodType,
               periodAmount: plan.period_amount,
               description: plan.description,
+              isSubscription: plan.is_subscription,
+              discountDownPrice: plan.discount_down_price,
+              publishedAt: plan.published_at,
+              isTempoDelivery: plan.is_tempo_delivery,
+              position: plan.position,
               soldQuantity: plan.program_package_plan_enrollments_aggregate.aggregate?.count ?? 0,
             })) ?? [],
         }

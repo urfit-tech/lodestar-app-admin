@@ -1967,6 +1967,45 @@ export interface UPDATE_PROGRAM_PACKAGE_DESCIRPTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_PROGRAM_PACKAGE_PLAN
+// ====================================================
+
+export interface INSERT_PROGRAM_PACKAGE_PLAN_insert_program_package_plan {
+  __typename: "program_package_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_PROGRAM_PACKAGE_PLAN {
+  /**
+   * insert data into the table: "program_package_plan"
+   */
+  insert_program_package_plan: INSERT_PROGRAM_PACKAGE_PLAN_insert_program_package_plan | null;
+}
+
+export interface INSERT_PROGRAM_PACKAGE_PLANVariables {
+  programPackageId: any;
+  isSubscription: boolean;
+  title?: string | null;
+  description?: string | null;
+  publishedAt?: any | null;
+  periodAmount: any;
+  periodType: string;
+  listPrice: any;
+  salePrice?: any | null;
+  soldAt?: any | null;
+  discountDownPrice?: any | null;
+  position?: any | null;
+  isTempoDelivery: boolean;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PERPETUAL_PROGRAM_COLLECTION
 // ====================================================
 
@@ -6763,6 +6802,11 @@ export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans
   period_type: string;
   period_amount: any;
   description: string | null;
+  is_subscription: boolean;
+  discount_down_price: any | null;
+  published_at: any | null;
+  is_tempo_delivery: boolean;
+  position: any;
   /**
    * An aggregated array relationship
    */
@@ -8673,6 +8717,24 @@ export enum program_role_update_column {
   member_id = "member_id",
   name = "name",
   program_id = "program_id",
+}
+
+/**
+ * unique or primary key constraints on table "program_tempo_delivery"
+ */
+export enum program_tempo_delivery_constraint {
+  program_tempo_delivery_member_id_program_package_program_id_key = "program_tempo_delivery_member_id_program_package_program_id_key",
+  program_tempo_delivery_pkey = "program_tempo_delivery_pkey",
+}
+
+/**
+ * update columns of table "program_tempo_delivery"
+ */
+export enum program_tempo_delivery_update_column {
+  delivered_at = "delivered_at",
+  id = "id",
+  member_id = "member_id",
+  program_package_program_id = "program_package_program_id",
 }
 
 /**
@@ -13058,6 +13120,7 @@ export interface program_package_program_bool_exp {
   program_id?: uuid_comparison_exp | null;
   program_package?: program_package_bool_exp | null;
   program_package_id?: uuid_comparison_exp | null;
+  program_tempo_deliveries?: program_tempo_delivery_bool_exp | null;
 }
 
 /**
@@ -13070,6 +13133,15 @@ export interface program_package_program_insert_input {
   program_id?: any | null;
   program_package?: program_package_obj_rel_insert_input | null;
   program_package_id?: any | null;
+  program_tempo_deliveries?: program_tempo_delivery_arr_rel_insert_input | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "program_package_program"
+ */
+export interface program_package_program_obj_rel_insert_input {
+  data: program_package_program_insert_input;
+  on_conflict?: program_package_program_on_conflict | null;
 }
 
 /**
@@ -13257,6 +13329,49 @@ export interface program_role_on_conflict {
   constraint: program_role_constraint;
   update_columns: program_role_update_column[];
   where?: program_role_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "program_tempo_delivery"
+ */
+export interface program_tempo_delivery_arr_rel_insert_input {
+  data: program_tempo_delivery_insert_input[];
+  on_conflict?: program_tempo_delivery_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_tempo_delivery". All fields are combined with a logical 'AND'.
+ */
+export interface program_tempo_delivery_bool_exp {
+  _and?: (program_tempo_delivery_bool_exp | null)[] | null;
+  _not?: program_tempo_delivery_bool_exp | null;
+  _or?: (program_tempo_delivery_bool_exp | null)[] | null;
+  delivered_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_public_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  program_package_program?: program_package_program_bool_exp | null;
+  program_package_program_id?: uuid_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "program_tempo_delivery"
+ */
+export interface program_tempo_delivery_insert_input {
+  delivered_at?: any | null;
+  id?: any | null;
+  member_id?: string | null;
+  program_package_program?: program_package_program_obj_rel_insert_input | null;
+  program_package_program_id?: any | null;
+}
+
+/**
+ * on conflict condition type for table "program_tempo_delivery"
+ */
+export interface program_tempo_delivery_on_conflict {
+  constraint: program_tempo_delivery_constraint;
+  update_columns: program_tempo_delivery_update_column[];
+  where?: program_tempo_delivery_bool_exp | null;
 }
 
 /**

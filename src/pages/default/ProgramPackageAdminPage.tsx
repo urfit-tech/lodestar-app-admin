@@ -36,6 +36,10 @@ const ProgramPackageAdminPage: React.FC = () => {
   const [tabkey, setTabkey] = useQueryParam('tabkey', StringParam)
   !tabkey && setTabkey('program')
 
+  const positionCollection = programPackage?.plans.map(plan => plan.position)
+  if (!positionCollection.length) positionCollection.push(0)
+  const maxPosition = Math.max(...positionCollection)
+
   return (
     <>
       <AdminHeader>
@@ -98,7 +102,8 @@ const ProgramPackageAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.salesPlan)}</AdminPaneTitle>
 
-              <ProgramPackagePlanCreationModal />
+              <ProgramPackagePlanCreationModal programPackageId={id} maxPosition={maxPosition} onRefetch={refetch} />
+
               <ProgramPackagePlanCollectionBlock plans={programPackage.plans} />
             </div>
           </Tabs.TabPane>

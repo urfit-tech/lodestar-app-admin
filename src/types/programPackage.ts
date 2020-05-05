@@ -1,3 +1,5 @@
+import { PeriodType } from './general'
+
 export type ProgramPackage = {
   title: string | null
   coverUrl: string | null
@@ -28,8 +30,15 @@ export type ProgramPackagePlan = {
   listPrice: number
   salePrice: number | null
   soldAt: Date | null
+  discountDownPrice: number
   description: string | null
   soldQuantity: number
+  isSubscription: boolean
+  periodAmount: number
+  periodType: PeriodType
+  publishedAt: Date
+  isTempoDelivery: boolean
+  position: number
 }
 
 export type ProgramPackageProps = {

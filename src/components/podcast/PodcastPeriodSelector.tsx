@@ -2,7 +2,7 @@ import { InputNumber, Select } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
-import { PeriodType } from '../../schemas/common'
+import { PeriodType } from '../../types/general'
 
 const PodcastPeriodSelector: React.FC<{
   value?: { type: PeriodType; amount: number }

@@ -1,13 +1,17 @@
 import { Button, Dropdown, Icon, Menu } from 'antd'
 import React from 'react'
 import { ProgramPlanPeriodType } from '../../schemas/program'
-import { PeriodTypeLabel } from '../common/Period'
+import { PeriodTypeLabel, ShortenPeriodTypeLabel } from '../common/Period'
 
 type ProgramPeriodTypeDropdownProps = {
+  isShortenPeriodType?: boolean
   value?: ProgramPlanPeriodType
   onChange?: (periodType: ProgramPlanPeriodType) => void
 }
-const ProgramPeriodTypeDropdown: React.FC<ProgramPeriodTypeDropdownProps> = ({ value, onChange }, form) => {
+const ProgramPeriodTypeDropdown: React.FC<ProgramPeriodTypeDropdownProps> = (
+  { isShortenPeriodType, value, onChange },
+  form,
+) => {
   const periodTypes: ProgramPlanPeriodType[] = ['W', 'M', 'Y']
 
   return (
@@ -17,14 +21,20 @@ const ProgramPeriodTypeDropdown: React.FC<ProgramPeriodTypeDropdownProps> = ({ v
         <Menu>
           {periodTypes.map(periodType => (
             <Menu.Item key={periodType} onClick={() => onChange && onChange(periodType)}>
-              <PeriodTypeLabel periodType={periodType} />
+              {isShortenPeriodType ? (
+                <ShortenPeriodTypeLabel periodType={periodType} />
+              ) : (
+                <PeriodTypeLabel periodType={periodType} />
+              )}
             </Menu.Item>
           ))}
         </Menu>
       }
     >
       <Button>
-        {value && <PeriodTypeLabel periodType={value} />} <Icon type="down" />
+        {value && !isShortenPeriodType && <PeriodTypeLabel periodType={value} />}
+        {value && isShortenPeriodType && <ShortenPeriodTypeLabel periodType={value} />}
+        <Icon type="down" />
       </Button>
     </Dropdown>
   )

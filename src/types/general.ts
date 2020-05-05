@@ -55,3 +55,5 @@ export type Issue = {
   reactedMemberIds: Array<string>
   issueRepliesCount: number
 }
+
+export type PeriodType = 'D' | 'W' | 'M' | 'Y'
