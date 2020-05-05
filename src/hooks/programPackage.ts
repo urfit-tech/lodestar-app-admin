@@ -5,6 +5,7 @@ import gql from 'graphql-tag'
 import { sum } from 'ramda'
 import types from '../types'
 import { PeriodType } from '../types/general'
+import { ProgramPackageProps } from '../types/programPackage'
 
 export const useGetProgramPackageCollection: (
   appId: string,
@@ -75,41 +76,12 @@ export const useGetProgramPackageCollection: (
   }
 }
 
-export type ProgramPackage = {
-  title: string | null
-  coverUrl: string | null
-  publishedAt: string | null
-  description: string | null
-  programs: {
-    id: string
-    title: string
-    coverUrl: string
-    position: number
-  }[]
-  plans: {
-    id: string
-    title: string
-    listPrice: number
-    salePrice: number | null
-    soldAt: Date | null
-    discountDownPrice: number
-    description: string | null
-    soldQuantity: number
-    isSubscription: boolean
-    periodAmount: number
-    periodType: PeriodType
-    publishedAt: Date
-    isTempoDelivery: boolean
-    position: number
-  }[]
-}
-
 export const useGetProgramPackage: (
   id: string,
 ) => {
   loading: boolean
   error?: ApolloError
-  programPackage: ProgramPackage
+  programPackage: ProgramPackageProps
   refetch: (variables?: types.GET_PROGRAM_PACKAGEVariables) => Promise<ApolloQueryResult<types.GET_PROGRAM_PACKAGE>>
 } = id => {
   const { loading, error, data, refetch } = useQuery<types.GET_PROGRAM_PACKAGE, types.GET_PROGRAM_PACKAGEVariables>(
@@ -161,9 +133,10 @@ export const useGetProgramPackage: (
     },
   )
 
-  const programPackage: ProgramPackage =
+  const programPackage: ProgramPackageProps =
     loading || error || !data
       ? {
+          id: '',
           title: '',
           coverUrl: null,
           publishedAt: null,
@@ -172,6 +145,7 @@ export const useGetProgramPackage: (
           plans: [],
         }
       : {
+          id,
           title: data?.program_package_by_pk?.title ?? null,
           coverUrl: data?.program_package_by_pk?.cover_url ?? null,
           publishedAt: data?.program_package_by_pk?.published_at ?? null,
