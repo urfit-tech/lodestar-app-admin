@@ -10,7 +10,7 @@ import styled from 'styled-components'
 import { commonMessages, errorMessages, programMessages, programPackageMessages } from '../../helpers/translation'
 import types from '../../types'
 import { PeriodType } from '../../types/general'
-import { ProgramPackagePlan } from '../../types/programPackage'
+import { ProgramPackagePlanProps } from '../../types/programPackage'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminModal from '../admin/AdminModal'
 import ProgramPeriodTypeDropdown from '../program/ProgramPeriodTypeDropdown'
@@ -72,7 +72,7 @@ const radioStyle = {
 
 type ProgramPackagePlanCreationModalProps = {
   programPackageId: string
-  plan?: ProgramPackagePlan
+  plan?: ProgramPackagePlanProps
   maxPosition?: number
   onRefetch?: () => void
 } & FormComponentProps

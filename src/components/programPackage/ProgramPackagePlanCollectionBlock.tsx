@@ -4,11 +4,11 @@ import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { PeriodType } from '../../types/general'
-import { ProgramPackagePlan } from '../../types/programPackage'
+import { ProgramPackagePlanProps } from '../../types/programPackage'
 import PriceLabel from '../common/PriceLabel'
 import { BraftContent } from '../common/StyledBraftEditor'
 
-const ProgramPackagePlanCollectionBlock: React.FC<{ plans: ProgramPackagePlan[] }> = ({ plans }) => {
+const ProgramPackagePlanCollectionBlock: React.FC<{ plans: ProgramPackagePlanProps[] }> = ({ plans }) => {
   return (
     <div className="row py-5">
       {plans.map(plan => (

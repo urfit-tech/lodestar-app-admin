@@ -4,7 +4,6 @@ import { ExecutionResult } from 'graphql'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
 import types from '../types'
-import { ProgramPackage, ProgramPackageCollection } from '../types/programPackage'
 import { PeriodType } from '../types/general'
 
 export const useGetProgramPackageCollection: (
@@ -12,7 +11,13 @@ export const useGetProgramPackageCollection: (
 ) => {
   loading: boolean
   error?: ApolloError
-  programPackages: ProgramPackageCollection
+  programPackages: {
+    id: string
+    coverUrl?: string | null
+    title: string
+    publishedAt: Date
+    soldQuantity: number
+  }[]
   refetch: (variables?: types.GET_PROGRAM_PACKAGESVariables) => Promise<ApolloQueryResult<types.GET_PROGRAM_PACKAGES>>
 } = appId => {
   const { loading, error, data, refetch } = useQuery<types.GET_PROGRAM_PACKAGES, types.GET_PROGRAM_PACKAGESVariables>(
@@ -40,7 +45,13 @@ export const useGetProgramPackageCollection: (
     },
   )
 
-  const programPackages: ProgramPackageCollection =
+  const programPackages: {
+    id: string
+    coverUrl?: string | null
+    title: string
+    publishedAt: Date
+    soldQuantity: number
+  }[] =
     loading || error || !data
       ? []
       : data?.program_package.map(programPackage => ({
@@ -62,6 +73,35 @@ export const useGetProgramPackageCollection: (
     programPackages,
     refetch,
   }
+}
+
+export type ProgramPackage = {
+  title: string | null
+  coverUrl: string | null
+  publishedAt: string | null
+  description: string | null
+  programs: {
+    id: string
+    title: string
+    coverUrl: string
+    position: number
+  }[]
+  plans: {
+    id: string
+    title: string
+    listPrice: number
+    salePrice: number | null
+    soldAt: Date | null
+    discountDownPrice: number
+    description: string | null
+    soldQuantity: number
+    isSubscription: boolean
+    periodAmount: number
+    periodType: PeriodType
+    publishedAt: Date
+    isTempoDelivery: boolean
+    position: number
+  }[]
 }
 
 export const useGetProgramPackage: (

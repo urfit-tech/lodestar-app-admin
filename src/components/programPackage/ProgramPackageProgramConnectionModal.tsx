@@ -8,11 +8,16 @@ import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, programPackageMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramPackageProgramProps } from '../../types/programPackage'
 import AdminModal from '../admin/AdminModal'
 
-type ProgramPackageProgramConnectionModalProps = { programPackageId: string } & ProgramPackageProgramProps &
-  FormComponentProps
+type ProgramPackageProgramConnectionModalProps = {
+  programPackageId: string
+  programs: {
+    id: string
+    title: string
+  }[]
+  onRefetch?: () => void
+} & FormComponentProps
 
 const ProgramPackageProgramConnectionModal: React.FC<ProgramPackageProgramConnectionModalProps> = ({
   programPackageId,
