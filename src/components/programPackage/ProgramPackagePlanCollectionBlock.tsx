@@ -9,9 +9,10 @@ import PriceLabel from '../common/PriceLabel'
 import { BraftContent } from '../common/StyledBraftEditor'
 
 const ProgramPackagePlanCollectionBlock: React.FC<{
+  programPackageId: string
   plans: ProgramPackagePlanProps[]
   onRefetch?: () => void
-}> = ({ plans }) => {
+}> = ({ programPackageId, plans, onRefetch }) => {
   return (
     <div className="row py-5">
       {plans.map(plan => (

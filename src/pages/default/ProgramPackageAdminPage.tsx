@@ -87,12 +87,12 @@ const ProgramPackageAdminPage: React.FC = () => {
 
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(programPackageMessages.label.generalSetting)}</AdminBlockTitle>
-                <ProgramPackageBasicForm programPackage={{ id, ...programPackage }} onRefetch={refetch} />
+                <ProgramPackageBasicForm programPackage={programPackage} onRefetch={refetch} />
               </AdminBlock>
 
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(commonMessages.term.description)}</AdminBlockTitle>
-                <ProgramPackageDescriptionForm programPackage={{ id, ...programPackage }} onRefetch={refetch} />
+                <ProgramPackageDescriptionForm programPackage={programPackage} onRefetch={refetch} />
               </AdminBlock>
 
               {/* <AdminBlock>
@@ -108,7 +108,11 @@ const ProgramPackageAdminPage: React.FC = () => {
 
               <ProgramPackagePlanCreationModal programPackageId={id} onRefetch={refetch} />
 
-              <ProgramPackagePlanCollectionBlock plans={programPackage.plans} onRefetch={refetch} />
+              <ProgramPackagePlanCollectionBlock
+                programPackageId={id}
+                plans={programPackage.plans}
+                onRefetch={refetch}
+              />
             </div>
           </Tabs.TabPane>
 
@@ -117,7 +121,7 @@ const ProgramPackageAdminPage: React.FC = () => {
               <AdminPaneTitle>{formatMessage(commonMessages.label.publishAdmin)}</AdminPaneTitle>
 
               <AdminBlock>
-                <ProgramPackagePublishBlock programPackage={{ id, ...programPackage }} onRefetch={refetch} />
+                <ProgramPackagePublishBlock programPackage={programPackage} onRefetch={refetch} />
               </AdminBlock>
             </div>
           </Tabs.TabPane>
