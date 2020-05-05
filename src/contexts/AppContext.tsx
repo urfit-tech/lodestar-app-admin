@@ -6,17 +6,18 @@ import types from '../types'
 
 type Module =
   | 'activity'
-  | 'voucher'
-  | 'member_card'
-  | 'podcast'
   | 'appointment'
+  | 'blog'
+  | 'invoice'
   | 'learning_statistics'
   | 'locale'
-  | 'invoice'
-  | 'qrcode'
+  | 'member_card'
   | 'merchandise'
-  | 'blog'
+  | 'podcast'
+  | 'qrcode'
+  | 'social_connect'
   | 'tempo_delivery'
+  | 'voucher'
 
 type AppProps = {
   loading: boolean
