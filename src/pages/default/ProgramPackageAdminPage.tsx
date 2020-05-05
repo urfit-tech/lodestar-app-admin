@@ -25,20 +25,15 @@ import { commonMessages, programPackageMessages } from '../../helpers/translatio
 import { useGetProgramPackage } from '../../hooks/programPackage'
 
 const ProgramPackageAdminPage: React.FC = () => {
+  const { formatMessage } = useIntl()
+  const { settings } = useContext(AppContext)
   const {
     match: {
       params: { programPackageId: id },
     },
   } = useRouter<{ programPackageId: string }>()
   const { programPackage, refetch } = useGetProgramPackage(id)
-  const { settings } = useContext(AppContext)
-  const { formatMessage } = useIntl()
   const [tabkey, setTabkey] = useQueryParam('tabkey', StringParam)
-  !tabkey && setTabkey('program')
-
-  const positionCollection = programPackage?.plans.map(plan => plan.position)
-  if (!positionCollection.length) positionCollection.push(0)
-  const maxPosition = Math.max(...positionCollection)
 
   return (
     <>
@@ -72,12 +67,20 @@ const ProgramPackageAdminPage: React.FC = () => {
 
               <ProgramPackageProgramConnectionModal
                 programPackageId={id}
+                programs={programPackage.programs.map(program => ({
+                  id: program.program.id,
+                  title: program.program.title,
+                }))}
+                onRefetch={refetch}
+              />
+              <ProgramPackageProgramCollectionBlock
+                programPackageId={id}
                 programs={programPackage.programs}
                 onRefetch={refetch}
               />
-              <ProgramPackageProgramCollectionBlock programs={programPackage.programs} />
             </div>
           </Tabs.TabPane>
+
           <Tabs.TabPane key="basic" tab={formatMessage(commonMessages.label.basicSettings)}>
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminPaneTitle>
@@ -98,15 +101,17 @@ const ProgramPackageAdminPage: React.FC = () => {
               </AdminBlock> */}
             </div>
           </Tabs.TabPane>
+
           <Tabs.TabPane key="sales" tab={formatMessage(commonMessages.label.salesPlan)}>
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.salesPlan)}</AdminPaneTitle>
 
-              <ProgramPackagePlanCreationModal programPackageId={id} maxPosition={maxPosition} onRefetch={refetch} />
+              <ProgramPackagePlanCreationModal programPackageId={id} onRefetch={refetch} />
 
-              <ProgramPackagePlanCollectionBlock plans={programPackage.plans} />
+              <ProgramPackagePlanCollectionBlock plans={programPackage.plans} onRefetch={refetch} />
             </div>
           </Tabs.TabPane>
+
           <Tabs.TabPane key="publish" tab={formatMessage(commonMessages.label.publishSettings)}>
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.publishAdmin)}</AdminPaneTitle>

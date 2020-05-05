@@ -73,14 +73,12 @@ const radioStyle = {
 type ProgramPackagePlanCreationModalProps = {
   programPackageId: string
   plan?: ProgramPackagePlanProps
-  maxPosition?: number
   onRefetch?: () => void
 } & FormComponentProps
 
 const ProgramPackagePlanCreationModal: React.FC<ProgramPackagePlanCreationModalProps> = ({
   programPackageId,
   plan,
-  maxPosition = 0,
   onRefetch,
   form: { validateFields, getFieldDecorator, resetFields, getFieldValue },
 }) => {
@@ -126,7 +124,7 @@ const ProgramPackagePlanCreationModal: React.FC<ProgramPackagePlanCreationModalP
           salePrice,
           soldAt,
           discountDownPrice,
-          position: maxPosition + 10,
+          position: -1,
         })
           .then(() => {
             onRefetch && onRefetch()

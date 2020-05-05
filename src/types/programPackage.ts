@@ -6,13 +6,17 @@ export type ProgramPackageProps = {
   coverUrl: string | null
   publishedAt: string | null
   description: string | null
-  programs: {
+  programs: ProgramPackageProgramProps[]
+  plans: ProgramPackagePlanProps[]
+}
+
+export type ProgramPackageProgramProps = {
+  id: string
+  program: {
     id: string
     title: string
-    coverUrl: string
-    position: number
-  }[]
-  plans: ProgramPackagePlanProps[]
+    coverUrl: string | null
+  }
 }
 
 export type ProgramPackagePlanProps = {
@@ -29,5 +33,4 @@ export type ProgramPackagePlanProps = {
   periodType: PeriodType
   publishedAt: Date
   isTempoDelivery: boolean
-  position: number
 }

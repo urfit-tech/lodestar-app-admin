@@ -2,6 +2,7 @@ import { Typography } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
 import EmptyCover from '../../images/default/empty-cover.png'
+import { ProgramPackageProgramProps } from '../../types/programPackage'
 
 const StyledCover = styled.div<{ src?: string | null }>`
   position: relative;
@@ -9,6 +10,7 @@ const StyledCover = styled.div<{ src?: string | null }>`
   background-image: url(${props => props.src || EmptyCover});
   background-size: cover;
   background-position: center;
+  border-radius: 4px;
 `
 const StyledTitle = styled(Typography.Title)`
   && {
@@ -20,21 +22,17 @@ const StyledTitle = styled(Typography.Title)`
 `
 
 const ProgramPackageProgramCollectionBlock: React.FC<{
-  programs: {
-    id: string
-    title: string
-    coverUrl: string
-    position: number
-  }[]
-}> = ({ programs }) => {
+  programPackageId: string
+  programs: ProgramPackageProgramProps[]
+  onRefetch?: () => void
+}> = ({ programPackageId, programs, onRefetch }) => {
   return (
     <div className="row py-5">
       {programs.map(program => (
         <div key={program.id} className="col-md-6 col-lg-4 col-12 mb-5">
-          <StyledCover src={program.coverUrl} className="mb-3" />
-
+          <StyledCover src={program.program.coverUrl} className="mb-3" />
           <StyledTitle level={3} ellipsis={{ rows: 2 }}>
-            {program.title}
+            {program.program.title}
           </StyledTitle>
         </div>
       ))}

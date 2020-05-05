@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import { ApolloError, ApolloQueryResult } from 'apollo-client'
-import { ExecutionResult } from 'graphql'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
 import types from '../types'
@@ -76,14 +75,7 @@ export const useGetProgramPackageCollection: (
   }
 }
 
-export const useGetProgramPackage: (
-  id: string,
-) => {
-  loading: boolean
-  error?: ApolloError
-  programPackage: ProgramPackageProps
-  refetch: (variables?: types.GET_PROGRAM_PACKAGEVariables) => Promise<ApolloQueryResult<types.GET_PROGRAM_PACKAGE>>
-} = id => {
+export const useGetProgramPackage = (id: string) => {
   const { loading, error, data, refetch } = useQuery<types.GET_PROGRAM_PACKAGE, types.GET_PROGRAM_PACKAGEVariables>(
     gql`
       query GET_PROGRAM_PACKAGE($id: uuid!) {
@@ -92,16 +84,15 @@ export const useGetProgramPackage: (
           cover_url
           published_at
           description
-          program_package_programs {
-            program_id
+          program_package_programs(order_by: { position: asc }) {
+            id
             program {
               id
               title
               cover_url
-              position
             }
           }
-          program_package_plans {
+          program_package_plans(order_by: { position: asc }) {
             id
             title
             list_price
@@ -116,7 +107,6 @@ export const useGetProgramPackage: (
             period_type
             published_at
             is_tempo_delivery
-            position
             program_package_plan_enrollments_aggregate {
               aggregate {
                 count
@@ -134,7 +124,7 @@ export const useGetProgramPackage: (
   )
 
   const programPackage: ProgramPackageProps =
-    loading || error || !data
+    loading || error || !data || !data.program_package_by_pk
       ? {
           id: '',
           title: '',
@@ -146,23 +136,25 @@ export const useGetProgramPackage: (
         }
       : {
           id,
-          title: data?.program_package_by_pk?.title ?? null,
-          coverUrl: data?.program_package_by_pk?.cover_url ?? null,
-          publishedAt: data?.program_package_by_pk?.published_at ?? null,
-          description: data?.program_package_by_pk?.description ?? null,
-          programs:
-            data?.program_package_by_pk?.program_package_programs.map(program => ({
-              id: program.program_id,
-              title: program.program.title ?? '',
-              coverUrl: program.program.cover_url ?? '',
-              position: program.program.position ?? -1,
-            })) ?? [],
+          title: data.program_package_by_pk.title || null,
+          coverUrl: data.program_package_by_pk.cover_url || null,
+          publishedAt: data.program_package_by_pk.published_at || null,
+          description: data.program_package_by_pk.description || null,
+          programs: data.program_package_by_pk.program_package_programs.map(programPackageProgram => ({
+            id: programPackageProgram.id,
+            program: {
+              id: programPackageProgram.program.id,
+              title: programPackageProgram.program.title,
+              coverUrl: programPackageProgram.program.cover_url,
+            },
+            position: -1,
+          })),
           plans:
-            data?.program_package_by_pk?.program_package_plans.map(plan => ({
+            data.program_package_by_pk.program_package_plans.map(plan => ({
               id: plan.id,
               title: plan.title,
-              listPrice: plan.list_price ?? 0,
-              salePrice: plan.sale_price ?? 0,
+              listPrice: plan.list_price || 0,
+              salePrice: plan.sale_price || null,
               soldAt: plan.sold_at,
               periodType: plan.period_type as PeriodType,
               periodAmount: plan.period_amount,
@@ -171,7 +163,6 @@ export const useGetProgramPackage: (
               discountDownPrice: plan.discount_down_price,
               publishedAt: plan.published_at,
               isTempoDelivery: plan.is_tempo_delivery,
-              position: plan.position,
               soldQuantity: plan.program_package_plan_enrollments_aggregate.aggregate?.count ?? 0,
             })) ?? [],
         }
@@ -184,9 +175,7 @@ export const useGetProgramPackage: (
   }
 }
 
-export const useInsertProgramPackage: (
-  appId: string,
-) => (title: string) => Promise<ExecutionResult<types.INSERT_PROGRAM_PACKAGE>> = appId => {
+export const useInsertProgramPackage = (appId: string) => {
   const [createProgramPackageHandler] = useMutation<
     types.INSERT_PROGRAM_PACKAGE,
     types.INSERT_PROGRAM_PACKAGEVariables
