@@ -48,6 +48,8 @@ export const commonMessages = {
     backToHomepage: { id: 'common.ui.backToHomepage', defaultMessage: '回首頁' },
     addCategory: { id: 'common.ui.addCategory', defaultMessage: '新增分類' },
     changePosition: { id: 'common.ui.changePosition', defaultMessage: '調整排序' },
+    downloadMemberList: { id: 'common.ui.downloadMemberList', defaultMessage: '下載名單' },
+    export: { id: 'common.ui.export', defaultMessage: '匯出' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -133,7 +135,9 @@ export const commonMessages = {
     languages: { id: 'common.label.languages', defaultMessage: '顯示語系' },
     price: { id: 'common.label.price', defaultMessage: '價格' },
     uploading: { id: 'command.label.uploading', defaultMessage: '上傳中' },
-    currentPosition: { id: 'command.label.currentPosition', defaultMessage: '目前排序：{position}' },
+    currentPosition: { id: 'common.label.currentPosition', defaultMessage: '目前排序：{position}' },
+    roleType: { id: 'common.label.roleType', defaultMessage: '會員類型' },
+    exportFields: { id: 'common.label.exportFields', defaultMessage: '匯出欄位' },
   }),
   term: defineMessages({
     instructor: { id: 'common.term.instructor', defaultMessage: '老師' },

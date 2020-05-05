@@ -4,6 +4,13 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { rgba } from '../../helpers'
 
+const StyledModal = styled(Modal)`
+  .ant-modal-footer {
+    border-top: 0;
+    padding: 1.5rem;
+    padding-top: 0;
+  }
+`
 const StyledIcon = styled.div`
   display: flex;
   align-items: center;
@@ -49,7 +56,7 @@ const AdminModal: React.FC<AdminModalProps> = ({
     <>
       {renderTrigger && renderTrigger({ setVisible })}
 
-      <Modal
+      <StyledModal
         title={null}
         centered
         destroyOnClose
@@ -65,7 +72,7 @@ const AdminModal: React.FC<AdminModalProps> = ({
         {children}
 
         {renderFooter && <div className="text-right">{renderFooter({ setVisible })}</div>}
-      </Modal>
+      </StyledModal>
     </>
   )
 }
