@@ -82,7 +82,10 @@ export const useProgramPackageProgramCollection = (programPackageId: string | nu
   >(
     gql`
       query GET_PROGRAM_PACKAGE_PROGRAM_COLLECTION($programPackageIds: [uuid!]) {
-        program_package_program(where: { program_package_id: { _in: $programPackageIds } }) {
+        program_package_program(
+          where: { program_package_id: { _in: $programPackageIds } }
+          order_by: { position: asc }
+        ) {
           id
           program {
             id
