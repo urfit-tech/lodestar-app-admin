@@ -22,7 +22,7 @@ const BlogAdminCollectionPage: React.FC = () => {
 
   useEffect(() => {
     refetch()
-  }, [])
+  }, [refetch])
 
   const AdminLayout = currentUserRole === 'app-owner' ? OwnerAdminLayout : CreatorAdminLayout
 

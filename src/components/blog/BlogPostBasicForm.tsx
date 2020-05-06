@@ -42,7 +42,7 @@ const BlogPostBasicForm: React.FC<BlogPostBasicFormProps> = ({
 
   useEffect(() => {
     setCodeName(post.codeName)
-  }, [JSON.stringify(post)])
+  }, [post])
 
   const handleSubmit = () => {
     validateFields((error, { title, categoryIds, tags, codeName }) => {

@@ -37,8 +37,8 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
   ]
 
   useEffect(() => {
-    refetch && refetch()
-  }, [])
+    refetch()
+  }, [refetch])
 
   return (
     <AdminLayout>

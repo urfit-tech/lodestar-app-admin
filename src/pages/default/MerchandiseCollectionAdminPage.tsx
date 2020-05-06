@@ -1,5 +1,5 @@
 import { Button, Icon, Input, Tabs } from 'antd'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -33,6 +33,10 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
   const insertMerchandise = useInsertMerchandise()
   const { merchandises, refetchMerchandises } = useMerchandiseCollection()
   const [searchText, setSearchText] = useState('')
+
+  useEffect(() => {
+    refetchMerchandises()
+  }, [refetchMerchandises])
 
   const tabContents = [
     {
