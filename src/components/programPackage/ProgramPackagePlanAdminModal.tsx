@@ -4,15 +4,16 @@ import Form, { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment-timezone'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import AppContext from '../../contexts/AppContext'
 import { commonMessages, errorMessages, programMessages, programPackageMessages } from '../../helpers/translation'
 import types from '../../types'
 import { PeriodType } from '../../types/general'
 import { ProgramPackagePlanProps } from '../../types/programPackage'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
-import AdminModal from '../admin/AdminModal'
+import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import ProgramPeriodTypeDropdown from '../program/ProgramPeriodTypeDropdown'
 
 const StyledForm = styled(Form)`
@@ -38,7 +39,6 @@ const StyledIcon = styled(Icon)`
 `
 
 const messages = defineMessages({
-  createPlan: { id: 'program.ui.createPlan', defaultMessage: '建立方案' },
   allowTempoDelivery: { id: 'programPackage.ui.allowTempoDelivery', defaultMessage: '啟用節奏交付' },
   isPublished: { id: 'programPackage.label.isPublished', defaultMessage: '是否開賣' },
   publish: { id: 'programPackage.ui.publish', defaultMessage: '發售，課程組合上架後立即開賣' },
@@ -70,25 +70,28 @@ const radioStyle = {
   lineHeight: '30px',
 }
 
-type ProgramPackagePlanCreationModalProps = {
-  programPackageId: string
-  plan?: ProgramPackagePlanProps
-  onRefetch?: () => void
-} & FormComponentProps
+type ProgramPackagePlanAdminModalProps = AdminModalProps &
+  FormComponentProps & {
+    programPackageId: string
+    plan?: ProgramPackagePlanProps
+    onRefetch?: () => void
+  }
 
-const ProgramPackagePlanCreationModal: React.FC<ProgramPackagePlanCreationModalProps> = ({
+const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> = ({
   programPackageId,
   plan,
   onRefetch,
   form: { validateFields, getFieldDecorator, resetFields, getFieldValue },
+  ...modalProps
 }) => {
   const { formatMessage } = useIntl()
-  const [isLoading, setLoading] = useState<boolean>(false)
-  const [isSubscription, setSubscription] = useState<boolean>(false)
+  const { enabledModules } = useContext(AppContext)
+  const createProgramPackagePlan = useCreateProgramPackagePlan(programPackageId)
 
   const [hasSalePrice, setHasSalePrice] = useState(plan?.salePrice ? true : false)
   const [hasDiscountDownPrice, setHasDiscountDownPrice] = useState(plan?.discountDownPrice ? true : false)
-  const createProgramPackagePlan = useCreateProgramPackagePlan(programPackageId)
+  const [isLoading, setLoading] = useState(false)
+  const [isSubscription, setSubscription] = useState(false)
 
   const handleSubmit = (onVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     validateFields(
@@ -139,13 +142,9 @@ const ProgramPackagePlanCreationModal: React.FC<ProgramPackagePlanCreationModalP
 
   return (
     <AdminModal
-      renderTrigger={({ setVisible }) => (
-        <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
-          {formatMessage(messages.createPlan)}
-        </Button>
-      )}
       icon={<Icon type="file-add" />}
       title={formatMessage(programPackageMessages.ui.connectProgram)}
+      footer={null}
       renderFooter={({ setVisible }) => (
         <div>
           <Button
@@ -162,6 +161,7 @@ const ProgramPackagePlanCreationModal: React.FC<ProgramPackagePlanCreationModalP
           </Button>
         </div>
       )}
+      {...modalProps}
     >
       <StyledForm hideRequiredMark>
         <Form.Item label={formatMessage(programMessages.label.planTitle)} className="mb-0">
@@ -178,15 +178,17 @@ const ProgramPackagePlanCreationModal: React.FC<ProgramPackagePlanCreationModalP
           })(<Input />)}
         </Form.Item>
 
-        <Form.Item>
-          {getFieldDecorator('isTempoDelivery', { initialValue: plan?.isTempoDelivery || false })(
-            <Checkbox>{formatMessage(messages.allowTempoDelivery)}</Checkbox>,
-          )}
-        </Form.Item>
+        {enabledModules.tempo_delivery && (
+          <Form.Item>
+            {getFieldDecorator('isTempoDelivery', { initialValue: !!plan?.isTempoDelivery, valuePropName: 'checked' })(
+              <Checkbox>{formatMessage(messages.allowTempoDelivery)}</Checkbox>,
+            )}
+          </Form.Item>
+        )}
 
         <Form.Item label={formatMessage(messages.isPublished)}>
           {getFieldDecorator('isPublish', {
-            initialValue: plan?.publishedAt,
+            initialValue: !!plan?.publishedAt,
             rules: [{ required: true }],
           })(
             <Radio.Group>
@@ -397,4 +399,4 @@ const useCreateProgramPackagePlan = (programPackageId: string) => {
   return createProgramPackagePlan
 }
 
-export default Form.create<ProgramPackagePlanCreationModalProps>()(ProgramPackagePlanCreationModal)
+export default Form.create<ProgramPackagePlanAdminModalProps>()(ProgramPackagePlanAdminModal)

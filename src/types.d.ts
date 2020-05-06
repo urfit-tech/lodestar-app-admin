@@ -2007,6 +2007,33 @@ export interface INSERT_PROGRAM_PACKAGE_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION
+// ====================================================
+
+export interface UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION_insert_program_package_plan {
+  __typename: "program_package_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION {
+  /**
+   * insert data into the table: "program_package_plan"
+   */
+  insert_program_package_plan: UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTION_insert_program_package_plan | null;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTIONVariables {
+  data: program_package_plan_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION
 // ====================================================
 
@@ -2059,10 +2086,10 @@ export interface GET_PERPETUAL_PROGRAM_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_PROGRAM
+// GraphQL mutation operation: INSERT_PROGRAM_PACKAGE_PROGRAM
 // ====================================================
 
-export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program {
+export interface INSERT_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program {
   __typename: "program_package_program_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -2070,27 +2097,14 @@ export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program {
   affected_rows: number;
 }
 
-export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program {
-  __typename: "program_package_program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_PACKAGE_PROGRAM {
-  /**
-   * delete data from the table: "program_package_program"
-   */
-  delete_program_package_program: UPDATE_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program | null;
+export interface INSERT_PROGRAM_PACKAGE_PROGRAM {
   /**
    * insert data into the table: "program_package_program"
    */
-  insert_program_package_program: UPDATE_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program | null;
+  insert_program_package_program: INSERT_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program | null;
 }
 
-export interface UPDATE_PROGRAM_PACKAGE_PROGRAMVariables {
-  programPackageId: any;
+export interface INSERT_PROGRAM_PACKAGE_PROGRAMVariables {
   programs: program_package_program_insert_input[];
 }
 
@@ -8808,7 +8822,6 @@ export enum program_package_constraint {
  */
 export enum program_package_plan_constraint {
   program_package_plan_pkey = "program_package_plan_pkey",
-  program_package_plan_program_package_id_position_key = "program_package_plan_program_package_id_position_key",
 }
 
 /**

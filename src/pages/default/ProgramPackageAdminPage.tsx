@@ -15,8 +15,8 @@ import {
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import ProgramPackageBasicForm from '../../components/programPackage/ProgramPackageBasicFrom'
 import ProgramPackageDescriptionForm from '../../components/programPackage/ProgramPackageDescriptionForm'
+import ProgramPackagePlanAdminModal from '../../components/programPackage/ProgramPackagePlanAdminModal'
 import ProgramPackagePlanCollectionBlock from '../../components/programPackage/ProgramPackagePlanCollectionBlock'
-import ProgramPackagePlanCreationModal from '../../components/programPackage/ProgramPackagePlanCreationModal'
 import ProgramPackageProgramCollectionBlock from '../../components/programPackage/ProgramPackageProgramCollectionBlock'
 import ProgramPackageProgramConnectionModal from '../../components/programPackage/ProgramPackageProgramConnectionModal'
 import ProgramPackagePublishBlock from '../../components/programPackage/ProgramPackagePublishBlock'
@@ -106,7 +106,15 @@ const ProgramPackageAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.salesPlan)}</AdminPaneTitle>
 
-              <ProgramPackagePlanCreationModal programPackageId={id} onRefetch={refetch} />
+              <ProgramPackagePlanAdminModal
+                programPackageId={id}
+                onRefetch={refetch}
+                renderTrigger={({ setVisible }) => (
+                  <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
+                    {formatMessage(programPackageMessages.ui.createPlan)}
+                  </Button>
+                )}
+              />
 
               <ProgramPackagePlanCollectionBlock
                 programPackageId={id}

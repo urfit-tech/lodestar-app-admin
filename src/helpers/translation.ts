@@ -451,28 +451,15 @@ export const programMessages = {
 
 export const programPackageMessages = {
   ui: defineMessages({
-    createProgramPackage: {
-      id: 'programPackage.ui.createProgramPackage',
-      defaultMessage: '建立課程組合',
-    },
-    connectProgram: {
-      id: 'programPacakge.ui.connectProgram',
-      defaultMessage: '加入課程',
-    },
+    createProgramPackage: { id: 'programPackage.ui.createProgramPackage', defaultMessage: '建立課程組合' },
+    connectProgram: { id: 'programPackage.ui.connectProgram', defaultMessage: '加入課程' },
+    createPlan: { id: 'programPackage.ui.createPlan', defaultMessage: '建立方案' },
+    editPlan: { id: 'programPackage.ui.editPlan', defaultMessage: '編輯方案' },
   }),
   label: defineMessages({
-    generalSetting: {
-      id: 'programPackage.label.generalSetting',
-      defaultMessage: '一般設定',
-    },
-    program: {
-      id: 'programPackage.label.program',
-      defaultMessage: '課程項目',
-    },
-    deleteProgramPackage: {
-      id: 'programPackage.label.delete',
-      defaultMessage: '刪除課程組合',
-    },
+    generalSetting: { id: 'programPackage.label.generalSetting', defaultMessage: '一般設定' },
+    program: { id: 'programPackage.label.program', defaultMessage: '課程項目' },
+    deleteProgramPackage: { id: 'programPackage.label.delete', defaultMessage: '刪除課程組合' },
   }),
 }
 

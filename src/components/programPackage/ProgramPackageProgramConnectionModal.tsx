@@ -10,14 +10,14 @@ import { commonMessages, programPackageMessages } from '../../helpers/translatio
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
 
-type ProgramPackageProgramConnectionModalProps = {
+type ProgramPackageProgramConnectionModalProps = FormComponentProps & {
   programPackageId: string
   programs: {
     id: string
     title: string
   }[]
   onRefetch?: () => void
-} & FormComponentProps
+}
 
 const ProgramPackageProgramConnectionModal: React.FC<ProgramPackageProgramConnectionModalProps> = ({
   programPackageId,
