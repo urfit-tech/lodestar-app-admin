@@ -2007,10 +2007,10 @@ export interface INSERT_PROGRAM_PACKAGE_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_PROGRAMS_POSITION
+// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION
 // ====================================================
 
-export interface UPDATE_PROGRAM_PACKAGE_PROGRAMS_POSITION_insert_program_package_program {
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION_insert_program_package_program {
   __typename: "program_package_program_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -2018,14 +2018,14 @@ export interface UPDATE_PROGRAM_PACKAGE_PROGRAMS_POSITION_insert_program_package
   affected_rows: number;
 }
 
-export interface UPDATE_PROGRAM_PACKAGE_PROGRAMS_POSITION {
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION {
   /**
    * insert data into the table: "program_package_program"
    */
-  insert_program_package_program: UPDATE_PROGRAM_PACKAGE_PROGRAMS_POSITION_insert_program_package_program | null;
+  insert_program_package_program: UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION_insert_program_package_program | null;
 }
 
-export interface UPDATE_PROGRAM_PACKAGE_PROGRAMS_POSITIONVariables {
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTIONVariables {
   data: program_package_program_insert_input[];
 }
 

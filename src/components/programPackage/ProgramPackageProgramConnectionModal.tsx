@@ -23,13 +23,13 @@ const ProgramPackageProgramConnectionModal: React.FC<ProgramPackageProgramConnec
   programPackageId,
   programs,
   onRefetch,
-  form: { getFieldDecorator, validateFields, resetFields },
+  form: { getFieldDecorator, validateFields },
 }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useContext(AppContext)
   const { perpetualPrograms } = useGetPerpetualProgramCollection(appId)
   const [isLoading, setLoading] = useState<boolean>(false)
-  const updateProgramPackageProgram = useUpdateProgramPackageProgram(programPackageId)
+  const insertProgramPackageProgram = useInsertProgramPackageProgram(programPackageId)
 
   const handleSubmit = (onVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     validateFields((error, { programValues }) => {
@@ -39,7 +39,7 @@ const ProgramPackageProgramConnectionModal: React.FC<ProgramPackageProgramConnec
 
       const programIds = programValues.map((value: string) => value.split('_')[0])
 
-      updateProgramPackageProgram(programIds)
+      insertProgramPackageProgram(programIds)
         .then(() => {
           onRefetch && onRefetch()
           onVisible(false)
@@ -59,15 +59,12 @@ const ProgramPackageProgramConnectionModal: React.FC<ProgramPackageProgramConnec
       )}
       icon={<Icon type="file-add" />}
       title={formatMessage(programPackageMessages.ui.connectProgram)}
+      footer={null}
+      destroyOnClose
+      maskClosable={false}
       renderFooter={({ setVisible }) => (
         <div>
-          <Button
-            onClick={() => {
-              setVisible(false)
-              resetFields()
-            }}
-            className="mr-2"
-          >
+          <Button onClick={() => setVisible(false)} className="mr-2">
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" loading={isLoading} onClick={() => handleSubmit(setVisible)}>
@@ -140,35 +137,30 @@ const useGetPerpetualProgramCollection = (appId: string) => {
   }
 }
 
-const useUpdateProgramPackageProgram = (programPackageId: string) => {
-  const [updateProgramPackageProgramHandler] = useMutation(gql`
-    mutation UPDATE_PROGRAM_PACKAGE_PROGRAM(
-      $programPackageId: uuid!
-      $programs: [program_package_program_insert_input!]!
-    ) {
-      delete_program_package_program(where: { program_package_id: { _eq: $programPackageId } }) {
-        affected_rows
-      }
-      insert_program_package_program(objects: $programs) {
+const useInsertProgramPackageProgram = (programPackageId: string) => {
+  const [insertProgramPackageProgram] = useMutation(gql`
+    mutation INSERT_PROGRAM_PACKAGE_PROGRAM($programs: [program_package_program_insert_input!]!) {
+      insert_program_package_program(
+        objects: $programs
+        on_conflict: {
+          constraint: program_package_program_program_package_id_program_id_key
+          update_columns: program_package_id
+        }
+      ) {
         affected_rows
       }
     }
   `)
 
-  const updateProgramPackageProgram = (programIds: String[]) => {
-    return updateProgramPackageProgramHandler({
+  return (programIds: string[]) =>
+    insertProgramPackageProgram({
       variables: {
-        programPackageId,
-        programs: programIds.map((programId, index) => ({
+        programs: programIds.map(programId => ({
           program_package_id: programPackageId,
           program_id: programId,
-          position: index,
         })),
       },
     })
-  }
-
-  return updateProgramPackageProgram
 }
 
 export default Form.create<ProgramPackageProgramConnectionModalProps>()(ProgramPackageProgramConnectionModal)

@@ -117,7 +117,7 @@ const ProgramPackageProgramCollectionBlock: React.FC<{
 }
 
 const UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION = gql`
-  mutation UPDATE_PROGRAM_PACKAGE_PROGRAMS_POSITION($data: [program_package_program_insert_input!]!) {
+  mutation UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION($data: [program_package_program_insert_input!]!) {
     insert_program_package_program(
       objects: $data
       on_conflict: { constraint: program_package_program_pkey, update_columns: position }
