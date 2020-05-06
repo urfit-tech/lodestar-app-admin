@@ -1,7 +1,7 @@
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
-import { PeriodType } from '../../schemas/common'
+import { PeriodType } from '../../types/general'
 
 export const PeriodTypeLabel: React.FC<{ periodType: PeriodType | string }> = ({ periodType }) => {
   const { formatMessage } = useIntl()

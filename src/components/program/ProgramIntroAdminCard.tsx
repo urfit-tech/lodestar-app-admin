@@ -16,7 +16,7 @@ import { CustomRatioImage } from '../common/Image'
 import { BREAK_POINT } from '../common/Responsive'
 import SingleUploader from '../common/SingleUploader'
 
-const CoverBlock = styled.div`
+export const CoverBlock = styled.div`
   margin-bottom: 2rem;
   width: 100%;
   max-width: 12rem;
@@ -29,7 +29,7 @@ const CoverBlock = styled.div`
     margin-bottom: 0;
   }
 `
-const StyledSingleUploader = styled(SingleUploader)`
+export const StyledSingleUploader = styled(SingleUploader)`
   && {
     width: auto;
   }

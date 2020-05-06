@@ -17,7 +17,7 @@ export type Category = {
   position: number
 }
 
-export type ClassType = 'program' | 'podcastProgram' | 'activity' | 'post' | 'merchandise'
+export type ClassType = 'program' | 'podcastProgram' | 'activity' | 'post' | 'merchandise' | 'programPackage'
 
 export type Member = {
   id: string
@@ -62,3 +62,5 @@ export type Issue = {
   reactedMemberIds: Array<string>
   issueRepliesCount: number
 }
+
+export type PeriodType = 'D' | 'W' | 'M' | 'Y'

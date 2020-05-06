@@ -12,24 +12,11 @@ import { BlogPostProps } from '../../types/blog'
 import { StyledTips } from '../admin'
 import { CustomRatioImage } from '../common/Image'
 import MerchandiseSelector from '../common/MerchandiseSelector'
-import { BREAK_POINT } from '../common/Responsive'
 import SingleUploader from '../common/SingleUploader'
+import { CoverBlock } from '../program/ProgramIntroAdminCard'
 
 type BlogPostSettingFormProps = BlogPostProps & FormComponentProps
 
-const StyledCoverBlock = styled.div`
-  margin-bottom: 2rem;
-  width: 100%;
-  max-width: 12rem;
-  overflow: hidden;
-  border-radius: 4px;
-  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
-
-  @media (min-width: ${BREAK_POINT}px) {
-    margin-right: 2rem;
-    margin-bottom: 0;
-  }
-`
 const StyledSingleUploader = styled(SingleUploader)`
   && {
     width: auto;
@@ -78,7 +65,7 @@ const BlogPostSettingForm: React.FC<BlogPostSettingFormProps> = ({
   }
 
   const handleSubmit = () => {
-    validateFields((err, { cover, merchandiseIds }) => {
+    validateFields((err, { merchandiseIds }) => {
       if (!err) {
         setLoading(true)
         const uploadTime = Date.now()
@@ -119,9 +106,9 @@ const BlogPostSettingForm: React.FC<BlogPostSettingFormProps> = ({
       >
         <div className="d-flex align-items-center justify-content-between">
           {!!post.coverUrl && (
-            <StyledCoverBlock>
+            <CoverBlock>
               <CustomRatioImage src={post.coverUrl} width="100%" ratio={9 / 16} />
-            </StyledCoverBlock>
+            </CoverBlock>
           )}
 
           {getFieldDecorator('postCover')(

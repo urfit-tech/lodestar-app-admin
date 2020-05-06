@@ -1,5 +1,64 @@
+import { List } from 'antd'
 import { insert, remove } from 'ramda'
 import React from 'react'
+import styled from 'styled-components'
+
+export const OverlayWrapper = styled.div`
+  position: relative;
+`
+export const OverlayBlock = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+
+  :hover {
+    opacity: 1;
+  }
+
+  > div {
+    width: 8rem;
+  }
+`
+export const OverlayList = styled(List)`
+  width: 25rem;
+  overflow: hidden;
+  .ant-list-header {
+    padding: 1rem;
+  }
+`
+export const OverlayListContent = styled.div`
+  max-height: 20rem;
+  overflow: auto;
+`
+export const OverlayListItem = styled(List.Item)`
+  && {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+  }
+  &.active,
+  :hover {
+    background: var(--gray-lighter);
+    color: ${props => props.theme['@primary-color']};
+  }
+
+  > span:first-child {
+    width: 2rem;
+  }
+  > span:nth-child(2) {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+`
 
 type MoveTargetProps = (from: number, to: number) => void
 type PositionAdminLayoutProps<V> = {

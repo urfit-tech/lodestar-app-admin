@@ -8,8 +8,8 @@ import PodcastPlanUpdateModal from '../../containers/podcast/PodcastPlanUpdateMo
 import { currencyFormatter } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import DefaultAvatar from '../../images/default/avatar.svg'
-import { PeriodType } from '../../schemas/common'
 import types from '../../types'
+import { PeriodType } from '../../types/general'
 import { AvatarImage } from '../common/Image'
 import { ShortenPeriodTypeLabel } from '../common/Period'
 

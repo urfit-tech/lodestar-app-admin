@@ -222,6 +222,7 @@ export const commonMessages = {
     programAdmin: { id: 'common.menu.programAdmin', defaultMessage: '線上課程' },
     programs: { id: 'common.menu.programs', defaultMessage: '課程管理' },
     programIssues: { id: 'common.menu.programIssues', defaultMessage: '課程問題' },
+    programPackage: { id: 'common.menu.programPackage', defaultMessage: '課程組合管理' },
     programProgress: { id: 'common.menu.programProgress', defaultMessage: '學習進度' },
     tempoDelivery: { id: 'common.menu.tempoDelivery', defaultMessage: '節奏交付' },
     programCategory: { id: 'common.menu.programCategory', defaultMessage: '課程分類' },
@@ -445,6 +446,33 @@ export const programMessages = {
     editProgram: { id: 'program.ui.editProgram', defaultMessage: '編輯課程' },
     delivery: { id: 'program.ui.delivery', defaultMessage: '交付課程' },
     deliver: { id: 'program.ui.deliver', defaultMessage: '啟用' },
+  }),
+}
+
+export const programPackageMessages = {
+  ui: defineMessages({
+    createProgramPackage: {
+      id: 'programPackage.ui.createProgramPackage',
+      defaultMessage: '建立課程組合',
+    },
+    connectProgram: {
+      id: 'programPacakge.ui.connectProgram',
+      defaultMessage: '加入課程',
+    },
+  }),
+  label: defineMessages({
+    generalSetting: {
+      id: 'programPackage.label.generalSetting',
+      defaultMessage: '一般設定',
+    },
+    program: {
+      id: 'programPackage.label.program',
+      defaultMessage: '課程項目',
+    },
+    deleteProgramPackage: {
+      id: 'programPackage.label.delete',
+      defaultMessage: '刪除課程組合',
+    },
   }),
 }
 

@@ -15,6 +15,7 @@ type ProductCreationModalProps = FormComponentProps &
     classType: ClassType
     withCreatorSelector?: boolean
     withProgramType?: boolean
+    withCategorySelector?: boolean
     onCreate?: (values: {
       title: string
       categoryIds: string[]
@@ -28,6 +29,7 @@ const ProductCreationModal: React.FC<ProductCreationModalProps> = ({
   classType,
   withCreatorSelector,
   withProgramType,
+  withCategorySelector,
   onCreate,
   ...props
 }) => {
@@ -36,16 +38,16 @@ const ProductCreationModal: React.FC<ProductCreationModalProps> = ({
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
-    form.validateFields((errors, values) => {
+    form.validateFields((errors, { title, categoryIds, creatorId, isSubscription }) => {
       if (errors || !onCreate) {
         return
       }
       setLoading(true)
       onCreate({
-        title: values.title,
-        categoryIds: values.categoryIds || [],
-        creatorId: values.creatorId,
-        isSubscription: values.isSubscription,
+        title,
+        categoryIds: categoryIds || [],
+        creatorId,
+        isSubscription,
       }).catch(error => {
         handleError(error)
         setLoading(false)
@@ -88,9 +90,11 @@ const ProductCreationModal: React.FC<ProductCreationModalProps> = ({
             ],
           })(<Input />)}
         </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.term.category)}>
-          {form.getFieldDecorator('categoryIds', { initialValue: [] })(<CategorySelector classType={classType} />)}
-        </Form.Item>
+        {withCategorySelector && (
+          <Form.Item label={formatMessage(commonMessages.term.category)}>
+            {form.getFieldDecorator('categoryIds', { initialValue: [] })(<CategorySelector classType={classType} />)}
+          </Form.Item>
+        )}
         {withProgramType && (
           <Form.Item label={formatMessage(programMessages.label.programPlanType)}>
             {form.getFieldDecorator('isSubscription', {

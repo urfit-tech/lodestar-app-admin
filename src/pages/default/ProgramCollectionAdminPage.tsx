@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Icon, List, Popover, Spin, Tabs, Typography } from 'antd'
+import { Button, Icon, Popover, Spin, Tabs, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext, useEffect } from 'react'
 import { useIntl } from 'react-intl'
@@ -7,7 +7,13 @@ import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import { AvatarImage } from '../../components/common/Image'
-import PositionAdminLayout from '../../components/common/PositionAdminLayout'
+import PositionAdminLayout, {
+  OverlayBlock,
+  OverlayList,
+  OverlayListContent,
+  OverlayListItem,
+  OverlayWrapper,
+} from '../../components/common/PositionAdminLayout'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import CreatorAdminLayout from '../../components/layout/CreatorAdminLayout'
 import OwnerAdminLayout from '../../components/layout/OwnerAdminLayout'
@@ -27,66 +33,11 @@ const AvatarPlaceHolder = styled.div`
   color: #9b9b9b;
   font-size: 14px;
 `
-const StyledWrapper = styled.div`
-  position: relative;
-`
-const OverlayBlock = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: rgba(0, 0, 0, 0.8);
-  border-radius: 4px;
-  opacity: 0;
-  transition: opacity 0.2s ease-in-out;
-
-  :hover {
-    opacity: 1;
-  }
-`
-const OverlayContentBlock = styled.div`
-  width: 8rem;
-`
 const StyledButton = styled(Button)`
   && {
     background: none;
     border: 1px solid white;
     color: white;
-  }
-`
-const StyledList = styled(List)`
-  width: 25rem;
-  overflow: hidden;
-  .ant-list-header {
-    padding: 1rem;
-  }
-`
-const ListWrapper = styled.div`
-  max-height: 20rem;
-  overflow: auto;
-`
-const StyledListItem = styled(List.Item)`
-  && {
-    padding: 0.75rem 1rem;
-    cursor: pointer;
-  }
-  &.active,
-  :hover {
-    background: var(--gray-lighter);
-    color: ${props => props.theme['@primary-color']};
-  }
-
-  > span:first-child {
-    width: 2rem;
-  }
-  > span:nth-child(2) {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
   }
 `
 
@@ -197,10 +148,10 @@ const ProgramCollectionAdminPage: React.FC = () => {
                       )}
                     </AvatarPlaceHolder>
 
-                    <StyledWrapper>
+                    <OverlayWrapper>
                       <ProgramAdminCard {...program} />
                       <OverlayBlock>
-                        <OverlayContentBlock>
+                        <div>
                           <Link to={`/programs/${program.id}`}>
                             <StyledButton block icon="edit">
                               {formatMessage(programMessages.ui.editProgram)}
@@ -211,24 +162,24 @@ const ProgramCollectionAdminPage: React.FC = () => {
                             <Popover
                               placement="bottomLeft"
                               content={
-                                <StyledList
+                                <OverlayList
                                   header={formatMessage(commonMessages.label.currentPosition, {
                                     position: currentIndex + 1,
                                   })}
                                 >
-                                  <ListWrapper>
+                                  <OverlayListContent>
                                     {tabContent.programs.map((program, index) => (
-                                      <StyledListItem
+                                      <OverlayListItem
                                         key={program.id}
                                         className={currentIndex === index ? 'active' : ''}
                                         onClick={() => moveTarget(currentIndex, index)}
                                       >
                                         <span className="flex-shrink-0">{index + 1}</span>
                                         <span>{program.title}</span>
-                                      </StyledListItem>
+                                      </OverlayListItem>
                                     ))}
-                                  </ListWrapper>
-                                </StyledList>
+                                  </OverlayListContent>
+                                </OverlayList>
                               }
                             >
                               <StyledButton block className="mt-4">
@@ -237,9 +188,9 @@ const ProgramCollectionAdminPage: React.FC = () => {
                               </StyledButton>
                             </Popover>
                           )}
-                        </OverlayContentBlock>
+                        </div>
                       </OverlayBlock>
-                    </StyledWrapper>
+                    </OverlayWrapper>
                   </div>
                 )}
               />

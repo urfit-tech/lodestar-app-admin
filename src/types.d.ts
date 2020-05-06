@@ -1911,6 +1911,222 @@ export interface UPDATE_PROGRAM_SUBSCRIPTION_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_BASIC
+// ====================================================
+
+export interface UPDATE_PROGRAM_PACKAGE_BASIC_update_program_package {
+  __typename: "program_package_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_BASIC {
+  /**
+   * update data of the table: "program_package"
+   */
+  update_program_package: UPDATE_PROGRAM_PACKAGE_BASIC_update_program_package | null;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_BASICVariables {
+  programPackageId: any;
+  title?: string | null;
+  coverUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_DESCIRPTION
+// ====================================================
+
+export interface UPDATE_PROGRAM_PACKAGE_DESCIRPTION_update_program_package {
+  __typename: "program_package_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_DESCIRPTION {
+  /**
+   * update data of the table: "program_package"
+   */
+  update_program_package: UPDATE_PROGRAM_PACKAGE_DESCIRPTION_update_program_package | null;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_DESCIRPTIONVariables {
+  description?: string | null;
+  programPackageId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_PROGRAM_PACKAGE_PLAN
+// ====================================================
+
+export interface INSERT_PROGRAM_PACKAGE_PLAN_insert_program_package_plan {
+  __typename: "program_package_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_PROGRAM_PACKAGE_PLAN {
+  /**
+   * insert data into the table: "program_package_plan"
+   */
+  insert_program_package_plan: INSERT_PROGRAM_PACKAGE_PLAN_insert_program_package_plan | null;
+}
+
+export interface INSERT_PROGRAM_PACKAGE_PLANVariables {
+  programPackageId: any;
+  isSubscription: boolean;
+  title?: string | null;
+  description?: string | null;
+  publishedAt?: any | null;
+  periodAmount: any;
+  periodType: string;
+  listPrice: any;
+  salePrice?: any | null;
+  soldAt?: any | null;
+  discountDownPrice?: any | null;
+  position?: any | null;
+  isTempoDelivery: boolean;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_PROGRAMS_POSITION
+// ====================================================
+
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAMS_POSITION_insert_program_package_program {
+  __typename: "program_package_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAMS_POSITION {
+  /**
+   * insert data into the table: "program_package_program"
+   */
+  insert_program_package_program: UPDATE_PROGRAM_PACKAGE_PROGRAMS_POSITION_insert_program_package_program | null;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAMS_POSITIONVariables {
+  data: program_package_program_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PERPETUAL_PROGRAM_COLLECTION
+// ====================================================
+
+export interface GET_PERPETUAL_PROGRAM_COLLECTION_program {
+  __typename: "program";
+  id: any;
+  title: string;
+}
+
+export interface GET_PERPETUAL_PROGRAM_COLLECTION {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_PERPETUAL_PROGRAM_COLLECTION_program[];
+}
+
+export interface GET_PERPETUAL_PROGRAM_COLLECTIONVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_PROGRAM
+// ====================================================
+
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program {
+  __typename: "program_package_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program {
+  __typename: "program_package_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAM {
+  /**
+   * delete data from the table: "program_package_program"
+   */
+  delete_program_package_program: UPDATE_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program | null;
+  /**
+   * insert data into the table: "program_package_program"
+   */
+  insert_program_package_program: UPDATE_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program | null;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAMVariables {
+  programPackageId: any;
+  programs: program_package_program_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PROGRAM_PACKAGE_PUBLISH
+// ====================================================
+
+export interface PROGRAM_PACKAGE_PUBLISH_update_program_package {
+  __typename: "program_package_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PROGRAM_PACKAGE_PUBLISH {
+  /**
+   * update data of the table: "program_package"
+   */
+  update_program_package: PROGRAM_PACKAGE_PUBLISH_update_program_package | null;
+}
+
+export interface PROGRAM_PACKAGE_PUBLISHVariables {
+  id: any;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ORDERS
 // ====================================================
 
@@ -6526,20 +6742,20 @@ export interface GET_PROGRAM_PROGRESSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PROGRAM_PACKAGE
+// GraphQL query operation: GET_PROGRAM_PACKAGE_COLLECTION
 // ====================================================
 
-export interface GET_PROGRAM_PACKAGE_program_package {
+export interface GET_PROGRAM_PACKAGE_COLLECTION_program_package {
   __typename: "program_package";
   id: any;
   title: string;
 }
 
-export interface GET_PROGRAM_PACKAGE {
+export interface GET_PROGRAM_PACKAGE_COLLECTION {
   /**
    * fetch data from the table: "program_package"
    */
-  program_package: GET_PROGRAM_PACKAGE_program_package[];
+  program_package: GET_PROGRAM_PACKAGE_COLLECTION_program_package[];
 }
 
 /* tslint:disable */
@@ -6699,6 +6915,173 @@ export interface DELIVER_PROGRAM_COLLECTION {
 
 export interface DELIVER_PROGRAM_COLLECTIONVariables {
   data: program_tempo_delivery_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_PACKAGES
+// ====================================================
+
+export interface GET_PROGRAM_PACKAGES_program_package_program_package_plans_program_package_plan_enrollments_aggregate_aggregate {
+  __typename: "program_package_plan_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROGRAM_PACKAGES_program_package_program_package_plans_program_package_plan_enrollments_aggregate {
+  __typename: "program_package_plan_enrollment_aggregate";
+  aggregate: GET_PROGRAM_PACKAGES_program_package_program_package_plans_program_package_plan_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_PACKAGES_program_package_program_package_plans {
+  __typename: "program_package_plan";
+  /**
+   * An aggregated array relationship
+   */
+  program_package_plan_enrollments_aggregate: GET_PROGRAM_PACKAGES_program_package_program_package_plans_program_package_plan_enrollments_aggregate;
+}
+
+export interface GET_PROGRAM_PACKAGES_program_package {
+  __typename: "program_package";
+  id: any;
+  cover_url: string | null;
+  title: string;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  program_package_plans: GET_PROGRAM_PACKAGES_program_package_program_package_plans[];
+}
+
+export interface GET_PROGRAM_PACKAGES {
+  /**
+   * fetch data from the table: "program_package"
+   */
+  program_package: GET_PROGRAM_PACKAGES_program_package[];
+}
+
+export interface GET_PROGRAM_PACKAGESVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_PACKAGE
+// ====================================================
+
+export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_programs_program {
+  __typename: "program";
+  id: any;
+  title: string;
+  cover_url: string | null;
+}
+
+export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_programs {
+  __typename: "program_package_program";
+  id: any;
+  /**
+   * An object relationship
+   */
+  program: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_programs_program;
+}
+
+export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans_program_package_plan_enrollments_aggregate_aggregate {
+  __typename: "program_package_plan_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans_program_package_plan_enrollments_aggregate {
+  __typename: "program_package_plan_enrollment_aggregate";
+  aggregate: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans_program_package_plan_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans {
+  __typename: "program_package_plan";
+  id: any;
+  title: string;
+  list_price: any;
+  sale_price: any | null;
+  sold_at: any | null;
+  period_type: string;
+  period_amount: any;
+  description: string | null;
+  is_subscription: boolean;
+  discount_down_price: any | null;
+  published_at: any | null;
+  is_tempo_delivery: boolean;
+  /**
+   * An aggregated array relationship
+   */
+  program_package_plan_enrollments_aggregate: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans_program_package_plan_enrollments_aggregate;
+}
+
+export interface GET_PROGRAM_PACKAGE_program_package_by_pk {
+  __typename: "program_package";
+  title: string;
+  cover_url: string | null;
+  published_at: any | null;
+  description: string | null;
+  /**
+   * An array relationship
+   */
+  program_package_programs: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_programs[];
+  /**
+   * An array relationship
+   */
+  program_package_plans: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans[];
+}
+
+export interface GET_PROGRAM_PACKAGE {
+  /**
+   * fetch data from the table: "program_package" using primary key columns
+   */
+  program_package_by_pk: GET_PROGRAM_PACKAGE_program_package_by_pk | null;
+}
+
+export interface GET_PROGRAM_PACKAGEVariables {
+  id: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_PROGRAM_PACKAGE
+// ====================================================
+
+export interface INSERT_PROGRAM_PACKAGE_insert_program_package_returning {
+  __typename: "program_package";
+  id: any;
+}
+
+export interface INSERT_PROGRAM_PACKAGE_insert_program_package {
+  __typename: "program_package_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_PROGRAM_PACKAGE_insert_program_package_returning[];
+}
+
+export interface INSERT_PROGRAM_PACKAGE {
+  /**
+   * insert data into the table: "program_package"
+   */
+  insert_program_package: INSERT_PROGRAM_PACKAGE_insert_program_package | null;
+}
+
+export interface INSERT_PROGRAM_PACKAGEVariables {
+  title: string;
+  appId: string;
 }
 
 /* tslint:disable */
@@ -8541,6 +8924,24 @@ export enum program_role_update_column {
   member_id = "member_id",
   name = "name",
   program_id = "program_id",
+}
+
+/**
+ * unique or primary key constraints on table "program_tempo_delivery"
+ */
+export enum program_tempo_delivery_constraint {
+  program_tempo_delivery_member_id_program_package_program_id_key = "program_tempo_delivery_member_id_program_package_program_id_key",
+  program_tempo_delivery_pkey = "program_tempo_delivery_pkey",
+}
+
+/**
+ * update columns of table "program_tempo_delivery"
+ */
+export enum program_tempo_delivery_update_column {
+  delivered_at = "delivered_at",
+  id = "id",
+  member_id = "member_id",
+  program_package_program_id = "program_package_program_id",
 }
 
 /**
@@ -12926,6 +13327,7 @@ export interface program_package_program_bool_exp {
   program_id?: uuid_comparison_exp | null;
   program_package?: program_package_bool_exp | null;
   program_package_id?: uuid_comparison_exp | null;
+  program_tempo_deliveries?: program_tempo_delivery_bool_exp | null;
 }
 
 /**
@@ -12938,6 +13340,7 @@ export interface program_package_program_insert_input {
   program_id?: any | null;
   program_package?: program_package_obj_rel_insert_input | null;
   program_package_id?: any | null;
+  program_tempo_deliveries?: program_tempo_delivery_arr_rel_insert_input | null;
 }
 
 /**
@@ -13136,6 +13539,29 @@ export interface program_role_on_conflict {
 }
 
 /**
+ * input type for inserting array relation for remote table "program_tempo_delivery"
+ */
+export interface program_tempo_delivery_arr_rel_insert_input {
+  data: program_tempo_delivery_insert_input[];
+  on_conflict?: program_tempo_delivery_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_tempo_delivery". All fields are combined with a logical 'AND'.
+ */
+export interface program_tempo_delivery_bool_exp {
+  _and?: (program_tempo_delivery_bool_exp | null)[] | null;
+  _not?: program_tempo_delivery_bool_exp | null;
+  _or?: (program_tempo_delivery_bool_exp | null)[] | null;
+  delivered_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_public_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  program_package_program?: program_package_program_bool_exp | null;
+  program_package_program_id?: uuid_comparison_exp | null;
+}
+
+/**
  * input type for inserting data into table "program_tempo_delivery"
  */
 export interface program_tempo_delivery_insert_input {
@@ -13144,6 +13570,15 @@ export interface program_tempo_delivery_insert_input {
   member_id?: string | null;
   program_package_program?: program_package_program_obj_rel_insert_input | null;
   program_package_program_id?: any | null;
+}
+
+/**
+ * on conflict condition type for table "program_tempo_delivery"
+ */
+export interface program_tempo_delivery_on_conflict {
+  constraint: program_tempo_delivery_constraint;
+  update_columns: program_tempo_delivery_update_column[];
+  where?: program_tempo_delivery_bool_exp | null;
 }
 
 /**

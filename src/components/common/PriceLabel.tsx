@@ -3,7 +3,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { currencyFormatter } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { ProgramPlanPeriodType } from '../../schemas/program'
+import { PeriodType } from '../../types/general'
 
 const StyledPriceLabel = styled.div`
   color: var(--gray-darker);
@@ -45,7 +45,7 @@ const PriceLabel: React.FC<{
   salePrice?: number
   downPrice?: number
   periodAmount?: number
-  periodType?: ProgramPlanPeriodType
+  periodType?: PeriodType
 }> = ({ listPrice, salePrice, downPrice, periodAmount, periodType }) => {
   const { formatMessage } = useIntl()
   const price = salePrice || listPrice
@@ -63,7 +63,7 @@ const PriceLabel: React.FC<{
 
       {typeof salePrice === 'number' && (
         <StyledPriceLabel className="sale-price">
-          <span>
+          <span className="mr-1">
             {typeof downPrice === 'number' ? formatMessage(messages.second) : ''}
             {salePrice === 0 ? formatMessage(messages.free) : ''}
             {' ' + currencyFormatter(salePrice)}
@@ -73,7 +73,9 @@ const PriceLabel: React.FC<{
               formatMessage(messages.perPeriods, {
                 amount: periodAmount && periodAmount > 1 ? ` ${periodAmount} ` : '',
                 unit:
-                  periodType === 'W'
+                  periodType === 'D'
+                    ? formatMessage(commonMessages.label.day)
+                    : periodType === 'W'
                     ? formatMessage(commonMessages.label.week)
                     : periodType === 'M'
                     ? formatMessage(commonMessages.label.month)
@@ -86,7 +88,7 @@ const PriceLabel: React.FC<{
       )}
 
       <StyledPriceLabel>
-        <span>
+        <span className="mr-1">
           {typeof downPrice === 'number' && typeof salePrice === 'undefined' ? formatMessage(messages.second) : ''}
           {typeof salePrice === 'number' ? formatMessage(messages.originalPrice) : ''}
           {listPrice === 0 ? formatMessage(messages.free) : ''}
@@ -97,7 +99,9 @@ const PriceLabel: React.FC<{
             formatMessage(messages.perPeriods, {
               amount: periodAmount && periodAmount > 1 ? ` ${periodAmount} ` : '',
               unit:
-                periodType === 'W'
+                periodType === 'D'
+                  ? formatMessage(commonMessages.label.day)
+                  : periodType === 'W'
                   ? formatMessage(commonMessages.label.week)
                   : periodType === 'M'
                   ? formatMessage(commonMessages.label.month)
