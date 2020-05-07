@@ -218,6 +218,9 @@ export const commonMessages = {
     publiclyPublish: { id: 'common.status.publicyPublish', defaultMessage: '公開發佈' },
     privatelyPublish: { id: 'common.status.privatelyPublish', defaultMessage: '私密發佈' },
     draft: { id: 'common.label.draft', defaultMessage: '草稿' },
+    notPublished: { id: 'common.status.notPublished', defaultMessage: '尚未發售' },
+    selling: { id: 'common.status.selling', defaultMessage: '販售中' },
+    soldOut: { id: 'common.status.soldOut', defaultMessage: '已售完' },
   }),
   menu: defineMessages({
     salesAdmin: { id: 'common.menu.salesAdmin', defaultMessage: '銷售管理' },
@@ -507,7 +510,6 @@ export const merchandiseMessages = {
   }),
   status: defineMessages({
     selling: { id: 'merchandise.status.selling', defaultMessage: '販賣中' },
-    soldOut: { id: 'merchandise.status.soldOut', defaultMessage: '已售完' },
     unpublished: { id: 'merchandise.status.unpublished', defaultMessage: '未上架' },
   }),
   label: defineMessages({

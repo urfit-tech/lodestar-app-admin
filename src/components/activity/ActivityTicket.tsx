@@ -3,7 +3,7 @@ import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { currencyFormatter, dateRangeFormatter } from '../../helpers'
-import { activityMessages } from '../../helpers/translation'
+import { activityMessages, commonMessages } from '../../helpers/translation'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
 import { BraftContent } from '../common/StyledBraftEditor'
 
@@ -74,10 +74,7 @@ const StyledExtraAdmin = styled.div`
 `
 
 const messages = defineMessages({
-  notPublished: { id: 'activity.status.notPublished', defaultMessage: '尚未發售' },
-  soldOut: { id: 'activity.status.soldOut', defaultMessage: '已售完' },
   expired: { id: 'activity.status.expired', defaultMessage: '已截止' },
-  selling: { id: 'activity.status.selling', defaultMessage: '販售中' },
 })
 
 export type ActivityTicketProps = {
@@ -117,18 +114,20 @@ const ActivityTicket: React.FC<ActivityTicketProps> = ({
 
   const status =
     !isPublished || Date.now() < startedAt.getTime()
-      ? formatMessage(messages.notPublished)
+      ? formatMessage(commonMessages.status.notPublished)
       : participants >= count
-      ? formatMessage(messages.soldOut)
+      ? formatMessage(commonMessages.status.soldOut)
       : Date.now() > endedAt.getTime()
       ? formatMessage(messages.expired)
-      : formatMessage(messages.selling)
+      : formatMessage(commonMessages.status.selling)
 
   return (
     <StyledWrapper>
       <StyledTitle className="d-flex align-items-start justify-content-between mb-3">
         <span>{title}</span>
-        {variant === 'admin' && <StyledLabel active={status === formatMessage(messages.selling)}>{status}</StyledLabel>}
+        {variant === 'admin' && (
+          <StyledLabel active={status === formatMessage(commonMessages.status.selling)}>{status}</StyledLabel>
+        )}
       </StyledTitle>
       <StyledPrice>{currencyFormatter(price)}</StyledPrice>
 

@@ -143,6 +143,24 @@ const ProgramPackagePlanCollectionBlock: React.FC<{
   )
 }
 
+const StyledLabel = styled.div<{ active?: boolean }>`
+  position: relative;
+  color: var(--gray-dark);
+  font-size: 14px;
+  letter-spacing: 0.4px;
+
+  &::before {
+    display: block;
+    position: absolute;
+    top: 5px;
+    left: -18px;
+    width: 10px;
+    height: 10px;
+    background-color: ${props => (props.active ? 'var(--success)' : 'var(--gray)')};
+    content: '';
+    border-radius: 50%;
+  }
+`
 const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps> = ({
   title,
   description,
@@ -153,14 +171,22 @@ const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps> = ({
   soldAt,
   discountDownPrice,
   isSubscription,
+  publishedAt,
   soldQuantity,
 }) => {
   const { formatMessage } = useIntl()
   const isOnSale = soldAt && soldAt.getTime() > Date.now()
+  const status =
+    publishedAt && Date.now() > publishedAt.getTime()
+      ? formatMessage(commonMessages.status.selling)
+      : formatMessage(commonMessages.status.notPublished)
 
   return (
     <StyledCard>
-      <StyledTitle className="mb-3">{title}</StyledTitle>
+      <StyledTitle className="mb-3 d-flex justify-content-between">
+        <span>{title}</span>
+        <StyledLabel active={status === formatMessage(commonMessages.status.selling)}>{status}</StyledLabel>
+      </StyledTitle>
       <PriceLabel
         listPrice={listPrice}
         salePrice={isOnSale && salePrice ? salePrice : undefined}

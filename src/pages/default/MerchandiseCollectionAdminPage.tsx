@@ -48,7 +48,7 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
     },
     // {
     //   key: 'soldOut',
-    //   name: formatMessage(merchandiseMessages.status.soldOut),
+    //   name: formatMessage(commonMessages.status.soldOut),
     //   merchandises: [],
     // },
     {
