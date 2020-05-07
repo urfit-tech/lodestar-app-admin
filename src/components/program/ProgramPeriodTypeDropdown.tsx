@@ -1,18 +1,18 @@
 import { Button, Dropdown, Icon, Menu } from 'antd'
 import React from 'react'
-import { ProgramPlanPeriodType } from '../../schemas/program'
+import { PeriodType } from '../../types/general'
 import { PeriodTypeLabel, ShortenPeriodTypeLabel } from '../common/Period'
 
 type ProgramPeriodTypeDropdownProps = {
   isShortenPeriodType?: boolean
-  value?: ProgramPlanPeriodType
-  onChange?: (periodType: ProgramPlanPeriodType) => void
+  value?: PeriodType
+  onChange?: (periodType: PeriodType) => void
 }
 const ProgramPeriodTypeDropdown: React.FC<ProgramPeriodTypeDropdownProps> = (
   { isShortenPeriodType, value, onChange },
   form,
 ) => {
-  const periodTypes: ProgramPlanPeriodType[] = ['W', 'M', 'Y']
+  const periodTypes: PeriodType[] = ['D', 'W', 'M', 'Y']
 
   return (
     <Dropdown

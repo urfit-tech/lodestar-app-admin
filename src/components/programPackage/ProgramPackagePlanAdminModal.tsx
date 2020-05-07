@@ -238,7 +238,7 @@ const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> 
             )}
           </Form.Item>
           <Form.Item className="d-inline-block mr-2">
-            {getFieldDecorator('periodType', { initialValue: plan?.periodType || 'M' })(
+            {getFieldDecorator('periodType', { initialValue: plan?.periodType || 'D' })(
               <ProgramPeriodTypeDropdown isShortenPeriodType />,
             )}
           </Form.Item>

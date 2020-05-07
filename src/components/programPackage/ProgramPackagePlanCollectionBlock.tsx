@@ -146,6 +146,7 @@ const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps> = ({
   salePrice,
   soldAt,
   discountDownPrice,
+  isSubscription,
   soldQuantity,
 }) => {
   const { formatMessage } = useIntl()
@@ -158,7 +159,7 @@ const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps> = ({
         listPrice={listPrice}
         salePrice={isOnSale && salePrice ? salePrice : undefined}
         downPrice={discountDownPrice || undefined}
-        periodType={periodType}
+        periodType={isSubscription ? periodType : undefined}
         periodAmount={periodAmount}
       />
       <Divider className="my-3" />
