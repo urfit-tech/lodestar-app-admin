@@ -109,7 +109,14 @@ const useGetPerpetualProgramCollection = (appId: string) => {
   >(
     gql`
       query GET_PERPETUAL_PROGRAM_COLLECTION($appId: String!) {
-        program(where: { _and: [{ is_subscription: { _eq: false } }, { app_id: { _eq: $appId } }] }) {
+        program(
+          where: {
+            is_subscription: { _eq: false }
+            published_at: { _is_null: false }
+            is_deleted: { _eq: false }
+            app_id: { _eq: $appId }
+          }
+        ) {
           id
           title
         }
