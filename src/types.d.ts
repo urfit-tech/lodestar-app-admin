@@ -6194,6 +6194,7 @@ export interface GET_PROGRAM_PREVIEW_COLLECTION_program {
    */
   program_enrollments_aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate;
   published_at: any | null;
+  is_private: boolean;
 }
 
 export interface GET_PROGRAM_PREVIEW_COLLECTION {

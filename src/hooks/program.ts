@@ -54,6 +54,7 @@ export const useProgramPreviewCollection = (memberId: string | null) => {
             }
           }
           published_at
+          is_private
         }
       }
     `,
@@ -91,6 +92,7 @@ export const useProgramPreviewCollection = (memberId: string | null) => {
               ? (plan && plan.program_plan_enrollments_aggregate.aggregate?.count) || 0
               : program.program_enrollments_aggregate.aggregate?.count || 0,
             isDraft: !program.published_at,
+            isPrivate: program.is_private
           }
         })
 

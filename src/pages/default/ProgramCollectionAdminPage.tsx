@@ -69,13 +69,21 @@ const ProgramCollectionAdminPage: React.FC = () => {
   const tabContents = [
     {
       key: 'draft',
+      status: 'unpublished',
       tab: formatMessage(commonMessages.status.draft),
       programs: programPreviews.filter(program => program.isDraft),
     },
     {
-      key: 'published',
-      tab: formatMessage(commonMessages.status.published),
-      programs: programPreviews.filter(program => !program.isDraft),
+      key: 'publiclyPublish',
+      status: 'published',
+      tab: formatMessage(commonMessages.status.publiclyPublish),
+      programs: programPreviews.filter(program => !program.isDraft && !program.isPrivate),
+    },
+    {
+      key: 'privatelyPublish',
+      status: 'published',
+      tab: formatMessage(commonMessages.status.privatelyPublish),
+      programs: programPreviews.filter(program => !program.isDraft && program.isPrivate),
     },
   ]
 
@@ -158,7 +166,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
                             </StyledButton>
                           </Link>
 
-                          {currentUserRole === 'app-owner' && tabContent.key === 'published' && (
+                          {currentUserRole === 'app-owner' && tabContent.status === 'published' && (
                             <Popover
                               placement="bottomLeft"
                               content={

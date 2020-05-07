@@ -63,7 +63,7 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
   const { formatMessage } = useIntl()
   const theme = useContext(ThemeContext)
   const publishProgram = usePublishProgram()
-  const [publishState, setPublishState] = useState<string>(formatMessage(commonMessages.ui.publiclyPublish))
+  const [publishState, setPublishState] = useState<string>(formatMessage(commonMessages.ui.publiclyPublished))
   const [isVisible, setVisible] = useState<boolean>(false)
 
   if (!program) {
@@ -141,7 +141,7 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
 
   const overlay = (
     <Menu>
-      {[formatMessage(commonMessages.ui.publiclyPublish), formatMessage(commonMessages.ui.privatelyPublish)]
+      {[formatMessage(commonMessages.ui.publiclyPublished), formatMessage(commonMessages.ui.privatelyPublished)]
         .filter(publishType => publishType !== publishState)
         .map(publishType => (
           <Menu.Item key={publishType}>
@@ -149,7 +149,7 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
               type="link"
               onClick={() => {
                 setPublishState(publishType)
-                handlePublish(publishType !== formatMessage(commonMessages.ui.publiclyPublish))
+                handlePublish(publishType !== formatMessage(commonMessages.ui.publiclyPublished))
               }}
             >
               {publishType}
@@ -178,8 +178,8 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
                 <Typography.Title level={4}>
                   {isPublished
                     ? isPrivate
-                      ? formatMessage(commonMessages.status.privatelyPublish)
-                      : formatMessage(commonMessages.status.publiclyPublish)
+                      ? formatMessage(commonMessages.status.privatelyPublished)
+                      : formatMessage(commonMessages.status.publiclyPublished)
                     : isValidate
                     ? formatMessage(commonMessages.status.unpublished)
                     : formatMessage(commonMessages.status.notComplete)}
@@ -223,7 +223,7 @@ const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({
                       icon={<Icon type="down" />}
                       overlay={overlay}
                       onClick={() => {
-                        handlePublish(publishState === formatMessage(commonMessages.ui.privatelyPublish))
+                        handlePublish(publishState === formatMessage(commonMessages.ui.privatelyPublished))
                       }}
                     >
                       <div>{publishState}</div>

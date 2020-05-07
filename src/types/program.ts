@@ -17,6 +17,7 @@ export type ProgramPreviewProps = {
   periodType: ProgramPlanPeriodType | null
   enrollment: number
   isDraft: boolean
+  isPrivate: boolean
 }
 
 export type ProgramType = {
