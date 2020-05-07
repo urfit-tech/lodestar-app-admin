@@ -17,6 +17,7 @@ export type ProgramPackageProgramProps = {
     title: string
     coverUrl: string | null
   }
+  position: number
 }
 
 export type ProgramPackagePlanProps = {
@@ -25,12 +26,13 @@ export type ProgramPackagePlanProps = {
   listPrice: number
   salePrice: number | null
   soldAt: Date | null
-  discountDownPrice: number
+  discountDownPrice: number | null
   description: string | null
   soldQuantity: number
   isSubscription: boolean
   periodAmount: number
   periodType: PeriodType
-  publishedAt: Date
+  publishedAt: Date | null
   isTempoDelivery: boolean
+  position: number
 }

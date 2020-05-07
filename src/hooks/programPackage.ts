@@ -337,6 +337,7 @@ export const useGetProgramPackage = (id: string) => {
               title
               cover_url
             }
+            position
           }
           program_package_plans(order_by: { position: asc }) {
             id
@@ -353,6 +354,7 @@ export const useGetProgramPackage = (id: string) => {
             period_type
             published_at
             is_tempo_delivery
+            position
             program_package_plan_enrollments_aggregate {
               aggregate {
                 count
@@ -393,7 +395,7 @@ export const useGetProgramPackage = (id: string) => {
               title: programPackageProgram.program.title,
               coverUrl: programPackageProgram.program.cover_url,
             },
-            position: -1,
+            position: programPackageProgram.position,
           })),
           plans:
             data.program_package_by_pk.program_package_plans.map(plan => ({
@@ -401,14 +403,15 @@ export const useGetProgramPackage = (id: string) => {
               title: plan.title,
               listPrice: plan.list_price || 0,
               salePrice: plan.sale_price || null,
-              soldAt: plan.sold_at,
+              soldAt: plan.sold_at ? new Date(plan.sold_at) : null,
               periodType: plan.period_type as PeriodType,
               periodAmount: plan.period_amount,
               description: plan.description,
               isSubscription: plan.is_subscription,
               discountDownPrice: plan.discount_down_price,
-              publishedAt: plan.published_at,
+              publishedAt: plan.published_at ? new Date(plan.published_at) : null,
               isTempoDelivery: plan.is_tempo_delivery,
+              position: plan.position,
               soldQuantity: plan.program_package_plan_enrollments_aggregate.aggregate?.count ?? 0,
             })) ?? [],
         }

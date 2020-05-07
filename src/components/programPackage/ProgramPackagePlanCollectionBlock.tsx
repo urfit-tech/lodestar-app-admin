@@ -7,7 +7,6 @@ import styled from 'styled-components'
 import { commonMessages, programPackageMessages } from '../../helpers/translation'
 import { ReactComponent as MoveIcon } from '../../images/icon/move.svg'
 import types from '../../types'
-import { PeriodType } from '../../types/general'
 import { ProgramPackagePlanProps } from '../../types/programPackage'
 import PositionAdminLayout, {
   OverlayBlock,
@@ -84,17 +83,7 @@ const ProgramPackagePlanCollectionBlock: React.FC<{
         renderItem={(plan, currentIndex, moveTarget) => (
           <div key={plan.id} className="col-12 col-md-6 mb-4">
             <OverlayWrapper>
-              <ProgramPackagePlanCard
-                title={plan.title}
-                description={plan.description}
-                periodAmount={plan.periodAmount}
-                periodType={plan.periodType}
-                listPrice={plan.listPrice}
-                salePrice={plan.salePrice ?? 0}
-                soldAt={plan.soldAt}
-                discountDownPrice={plan.discountDownPrice}
-                soldQuantity={plan.soldQuantity}
-              />
+              <ProgramPackagePlanCard {...plan} />
 
               <OverlayBlock>
                 <div>
@@ -102,6 +91,7 @@ const ProgramPackagePlanCollectionBlock: React.FC<{
                     programPackageId={programPackageId}
                     onRefetch={onRefetch}
                     plan={plan}
+                    title={formatMessage(programPackageMessages.ui.editPlan)}
                     renderTrigger={({ setVisible }) => (
                       <StyledButton block icon="edit" onClick={() => setVisible(true)}>
                         {formatMessage(programPackageMessages.ui.editPlan)}
@@ -147,17 +137,7 @@ const ProgramPackagePlanCollectionBlock: React.FC<{
   )
 }
 
-const ProgramPackagePlanCard: React.FC<{
-  title: string
-  description: string | null
-  periodAmount: number
-  periodType: PeriodType
-  listPrice: number
-  salePrice: number
-  soldAt: Date | null
-  discountDownPrice: number
-  soldQuantity: number
-}> = ({
+const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps> = ({
   title,
   description,
   periodAmount,
@@ -176,7 +156,7 @@ const ProgramPackagePlanCard: React.FC<{
       <StyledTitle className="mb-3">{title}</StyledTitle>
       <PriceLabel
         listPrice={listPrice}
-        salePrice={isOnSale ? salePrice : undefined}
+        salePrice={isOnSale && salePrice ? salePrice : undefined}
         downPrice={discountDownPrice || undefined}
         periodType={periodType}
         periodAmount={periodAmount}

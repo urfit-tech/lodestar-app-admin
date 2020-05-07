@@ -109,6 +109,7 @@ const ProgramPackageAdminPage: React.FC = () => {
               <ProgramPackagePlanAdminModal
                 programPackageId={id}
                 onRefetch={refetch}
+                title={formatMessage(programPackageMessages.ui.createPlan)}
                 renderTrigger={({ setVisible }) => (
                   <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
                     {formatMessage(programPackageMessages.ui.createPlan)}

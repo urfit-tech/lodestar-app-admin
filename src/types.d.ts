@@ -1987,19 +1987,7 @@ export interface INSERT_PROGRAM_PACKAGE_PLAN {
 }
 
 export interface INSERT_PROGRAM_PACKAGE_PLANVariables {
-  programPackageId: any;
-  isSubscription: boolean;
-  title?: string | null;
-  description?: string | null;
-  publishedAt?: any | null;
-  periodAmount: any;
-  periodType: string;
-  listPrice: any;
-  salePrice?: any | null;
-  soldAt?: any | null;
-  discountDownPrice?: any | null;
-  position?: any | null;
-  isTempoDelivery: boolean;
+  data: program_package_plan_insert_input;
 }
 
 /* tslint:disable */
@@ -7003,6 +6991,7 @@ export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_progr
    * An object relationship
    */
   program: GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_programs_program;
+  position: number;
 }
 
 export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans_program_package_plan_enrollments_aggregate_aggregate {
@@ -7029,6 +7018,7 @@ export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans
   discount_down_price: any | null;
   published_at: any | null;
   is_tempo_delivery: boolean;
+  position: any;
   /**
    * An aggregated array relationship
    */
