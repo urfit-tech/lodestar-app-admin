@@ -9888,6 +9888,7 @@ export interface card_bool_exp {
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
   card_discounts?: card_discount_bool_exp | null;
+  card_enrollment?: card_enrollment_bool_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   template?: String_comparison_exp | null;
@@ -9938,6 +9939,20 @@ export interface card_discount_on_conflict {
   constraint: card_discount_constraint;
   update_columns: card_discount_update_column[];
   where?: card_discount_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "card_enrollment". All fields are combined with a logical 'AND'.
+ */
+export interface card_enrollment_bool_exp {
+  _and?: (card_enrollment_bool_exp | null)[] | null;
+  _not?: card_enrollment_bool_exp | null;
+  _or?: (card_enrollment_bool_exp | null)[] | null;
+  card?: card_bool_exp | null;
+  card_id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**

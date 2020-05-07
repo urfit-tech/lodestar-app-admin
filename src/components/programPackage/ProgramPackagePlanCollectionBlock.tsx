@@ -21,6 +21,8 @@ import ProgramPackagePlanAdminModal from './ProgramPackagePlanAdminModal'
 
 const messages = defineMessages({
   people: { id: 'programPackage.term.people', defaultMessage: '人' },
+  availableForLimitTime: { id: 'programPackage.label.availableForLimitTime', defaultMessage: '可觀看 {amount} {unit}' },
+  unknownPeriod: { id: 'common.term.unknownPeriod', defaultMessage: '未知週期' },
 })
 
 const StyledButton = styled(Button)`
@@ -47,6 +49,10 @@ const StyledEnrollment = styled.div`
   text-align: right;
   font-size: 14px;
   letter-spacing: 0.18px;
+`
+const StyledText = styled.span`
+  color: ${props => props.theme['@primary-color']};
+  font-size: 14px;
 `
 
 const ProgramPackagePlanCollectionBlock: React.FC<{
@@ -163,6 +169,24 @@ const ProgramPackagePlanCard: React.FC<ProgramPackagePlanProps> = ({
         periodAmount={periodAmount}
       />
       <Divider className="my-3" />
+
+      {!isSubscription && (
+        <StyledText>
+          {formatMessage(messages.availableForLimitTime, {
+            amount: periodAmount,
+            unit:
+              periodType === 'D'
+                ? formatMessage(commonMessages.label.day)
+                : periodType === 'W'
+                ? formatMessage(commonMessages.label.week)
+                : periodType === 'M'
+                ? formatMessage(commonMessages.label.month)
+                : periodType === 'Y'
+                ? formatMessage(commonMessages.label.year)
+                : formatMessage(messages.unknownPeriod),
+          })}
+        </StyledText>
+      )}
 
       <div className="mb-3">
         <BraftContent>{description}</BraftContent>
