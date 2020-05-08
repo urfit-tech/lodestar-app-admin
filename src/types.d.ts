@@ -5284,57 +5284,67 @@ export interface GET_COUPON_PLAN_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_COUPON_PLAN_CODE_COLLECTION
+// GraphQL query operation: GET_COUPON__CODE_COLLECTION
 // ====================================================
 
-export interface GET_COUPON_PLAN_CODE_COLLECTION_coupon_code_coupons_member {
+export interface GET_COUPON__CODE_COLLECTION_coupon_code_coupons_member {
   __typename: "member";
   id: string;
   email: string;
 }
 
-export interface GET_COUPON_PLAN_CODE_COLLECTION_coupon_code_coupons {
+export interface GET_COUPON__CODE_COLLECTION_coupon_code_coupons_status {
+  __typename: "coupon_status";
+  used: boolean | null;
+}
+
+export interface GET_COUPON__CODE_COLLECTION_coupon_code_coupons {
   __typename: "coupon";
   id: any;
   /**
    * An object relationship
    */
-  member: GET_COUPON_PLAN_CODE_COLLECTION_coupon_code_coupons_member;
+  member: GET_COUPON__CODE_COLLECTION_coupon_code_coupons_member;
+  /**
+   * An object relationship
+   */
+  status: GET_COUPON__CODE_COLLECTION_coupon_code_coupons_status | null;
 }
 
-export interface GET_COUPON_PLAN_CODE_COLLECTION_coupon_code_coupons_aggregate_aggregate {
+export interface GET_COUPON__CODE_COLLECTION_coupon_code_coupons_aggregate_aggregate {
   __typename: "coupon_aggregate_fields";
   count: number | null;
 }
 
-export interface GET_COUPON_PLAN_CODE_COLLECTION_coupon_code_coupons_aggregate {
+export interface GET_COUPON__CODE_COLLECTION_coupon_code_coupons_aggregate {
   __typename: "coupon_aggregate";
-  aggregate: GET_COUPON_PLAN_CODE_COLLECTION_coupon_code_coupons_aggregate_aggregate | null;
+  aggregate: GET_COUPON__CODE_COLLECTION_coupon_code_coupons_aggregate_aggregate | null;
 }
 
-export interface GET_COUPON_PLAN_CODE_COLLECTION_coupon_code {
+export interface GET_COUPON__CODE_COLLECTION_coupon_code {
   __typename: "coupon_code";
   id: any;
   code: string;
   count: number;
+  remaining: number;
   /**
    * An array relationship
    */
-  coupons: GET_COUPON_PLAN_CODE_COLLECTION_coupon_code_coupons[];
+  coupons: GET_COUPON__CODE_COLLECTION_coupon_code_coupons[];
   /**
    * An aggregated array relationship
    */
-  coupons_aggregate: GET_COUPON_PLAN_CODE_COLLECTION_coupon_code_coupons_aggregate;
+  coupons_aggregate: GET_COUPON__CODE_COLLECTION_coupon_code_coupons_aggregate;
 }
 
-export interface GET_COUPON_PLAN_CODE_COLLECTION {
+export interface GET_COUPON__CODE_COLLECTION {
   /**
    * fetch data from the table: "coupon_code"
    */
-  coupon_code: GET_COUPON_PLAN_CODE_COLLECTION_coupon_code[];
+  coupon_code: GET_COUPON__CODE_COLLECTION_coupon_code[];
 }
 
-export interface GET_COUPON_PLAN_CODE_COLLECTIONVariables {
+export interface GET_COUPON__CODE_COLLECTIONVariables {
   couponPlanId: any;
 }
 

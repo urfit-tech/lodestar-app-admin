@@ -19,6 +19,7 @@ export type CouponCodeProps = {
   id: string
   code: string
   count: number
+  remaining: number
   used: number
 }
 
@@ -28,4 +29,5 @@ export type CouponProps = {
     id: string
     email: string
   }
+  used: boolean
 }

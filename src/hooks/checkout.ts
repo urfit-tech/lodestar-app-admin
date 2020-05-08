@@ -76,22 +76,26 @@ export const useCouponPlanCollection = () => {
   }
 }
 
-export const useCouponPlanCodeCollection = (couponPlanId: string) => {
+export const useCouponCodeCollection = (couponPlanId: string) => {
   const { loading, data, error, refetch } = useQuery<
-    types.GET_COUPON_PLAN_CODE_COLLECTION,
-    types.GET_COUPON_PLAN_CODE_COLLECTIONVariables
+    types.GET_COUPON__CODE_COLLECTION,
+    types.GET_COUPON__CODE_COLLECTIONVariables
   >(
     gql`
-      query GET_COUPON_PLAN_CODE_COLLECTION($couponPlanId: uuid!) {
+      query GET_COUPON__CODE_COLLECTION($couponPlanId: uuid!) {
         coupon_code(where: { coupon_plan: { id: { _eq: $couponPlanId } } }) {
           id
           code
           count
+          remaining
           coupons {
             id
             member {
               id
               email
+            }
+            status {
+              used
             }
           }
           coupons_aggregate {
@@ -99,18 +103,13 @@ export const useCouponPlanCodeCollection = (couponPlanId: string) => {
               count
             }
           }
-          #   coupons_aggregate(where: { order_logs: { status: { _eq: "SUCCESS" } } }) {
-          #     aggregate {
-          #       count
-          #     }
-          #   }
         }
       }
     `,
     { variables: { couponPlanId } },
   )
 
-  const couponPlanCodes: (CouponCodeProps & {
+  const couponCodes: (CouponCodeProps & {
     coupons: CouponProps[]
   })[] =
     loading || error || !data
@@ -119,6 +118,7 @@ export const useCouponPlanCodeCollection = (couponPlanId: string) => {
           id: couponCode.id,
           code: couponCode.code,
           count: couponCode.count,
+          remaining: couponCode.remaining,
           used: couponCode.coupons_aggregate.aggregate?.count || 0,
           coupons: couponCode.coupons.map(coupon => ({
             id: coupon.id,
@@ -126,13 +126,14 @@ export const useCouponPlanCodeCollection = (couponPlanId: string) => {
               id: coupon.member.id,
               email: coupon.member.email,
             },
+            used: !!coupon.status?.used,
           })),
         }))
 
   return {
-    loadingCouponPlanCodes: loading,
-    errorCouponPlanCodes: error,
-    couponPlanCodes,
-    refetchCouponPlanCodes: refetch,
+    loadingCouponCodes: loading,
+    errorCouponCodes: error,
+    couponCodes,
+    refetchCouponCodes: refetch,
   }
 }

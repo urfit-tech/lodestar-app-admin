@@ -390,6 +390,7 @@ export const promotionMessages = {
     addVoucher: { id: 'promotion.ui.addVoucher', defaultMessage: '新增兌換券' },
     createVoucherPlan: { id: 'promotion.ui.createVoucherPlan', defaultMessage: '建立兌換方案' },
     createCouponPlan: { id: 'promotion.ui.createCouponPlan', defaultMessage: '建立折價方案' },
+    exportCodes: { id: 'promotion.ui.exportCodes', defaultMessage: '匯出代碼' },
   }),
   label: defineMessages({
     constraintAmount: { id: 'promotion.label.constraintAmount', defaultMessage: '消費滿 {amount} 折抵' },
@@ -416,6 +417,7 @@ export const promotionMessages = {
   status: defineMessages({
     available: { id: 'promotion.status.available', defaultMessage: '可使用' },
     unavailable: { id: 'promotion.status.unavailable', defaultMessage: '已失效' },
+    used: { id: 'promotion.status.used', defaultMessage: '已使用' },
   }),
 }
 
