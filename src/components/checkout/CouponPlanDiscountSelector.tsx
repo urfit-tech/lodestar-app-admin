@@ -2,9 +2,8 @@ import { Input, InputNumber, Select } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { InferType } from 'yup'
 import { promotionMessages } from '../../helpers/translation'
-import { couponPlanTypeSchema } from '../../schemas/coupon'
+import { CouponPlanType } from '../../types/checkout'
 
 const StyledGroup = styled(Input.Group)`
   .ant-select-selection--single .ant-select-selection__rendered {
@@ -12,7 +11,6 @@ const StyledGroup = styled(Input.Group)`
   }
 `
 
-type CouponPlanType = InferType<typeof couponPlanTypeSchema>
 const CouponPlanDiscountSelector: React.FC<{
   value?: { type: CouponPlanType; amount: number }
   onChange?: (value: { type: CouponPlanType; amount: number }) => void

@@ -7,18 +7,17 @@ import moment from 'moment'
 import { times } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { InferType } from 'yup'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
-import { couponPlanSchema } from '../../schemas/coupon'
 import types from '../../types'
+import { CouponPlanProps } from '../../types/checkout'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CouponPlanDiscountSelector from './CouponPlanDiscountSelector'
 import PlanCodeSelector, { PlanCodeProps } from './PlanCodeSelector'
 
 type CouponPlanAdminModalProps = AdminModalProps &
   FormComponentProps & {
-    couponPlan?: InferType<typeof couponPlanSchema>
+    couponPlan?: CouponPlanProps
   }
 const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, couponPlan, ...props }) => {
   const { formatMessage } = useIntl()

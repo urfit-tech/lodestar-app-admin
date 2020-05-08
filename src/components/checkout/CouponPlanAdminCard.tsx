@@ -2,10 +2,9 @@ import { Button, Divider, Dropdown, Icon, Menu } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { InferType } from 'yup'
 import { currencyFormatter, dateFormatter } from '../../helpers'
 import { commonMessages, promotionMessages } from '../../helpers/translation'
-import { couponPlanSchema } from '../../schemas/coupon'
+import { CouponPlanProps } from '../../types/checkout'
 import AdminCard from '../admin/AdminCard'
 import CouponPlanAdminModal from './CouponPlanAdminModal'
 import CouponPlanDescriptionModal from './CouponPlanDescriptionModal'
@@ -74,11 +73,11 @@ const StyledText = styled.span<{ outdated?: boolean }>`
 `
 
 const CouponPlanAdminCard: React.FC<{
-  couponPlan: InferType<typeof couponPlanSchema>
+  couponPlan: CouponPlanProps
   outdated?: boolean
 }> = ({ couponPlan, outdated }) => {
   const { formatMessage } = useIntl()
-  const [modalVisible, setModalVisible] = useState()
+  const [modalVisible, setModalVisible] = useState(false)
 
   return (
     <StyledAdminCard
@@ -139,9 +138,9 @@ const CouponPlanAdminCard: React.FC<{
               letterSpacing: '0.4px',
             }}
           >
-            {`${formatMessage(promotionMessages.term.amount)} ${couponPlan.count - couponPlan.remaining} / ${
+            {/* {`${formatMessage(promotionMessages.term.amount)} ${couponPlan.count - couponPlan.remaining} / ${
               couponPlan.count
-            }`}
+            }`} */}
           </span>
         </div>
 

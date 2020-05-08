@@ -1,6 +1,4 @@
-import { useQuery } from '@apollo/react-hooks'
 import { Button, Icon, Tabs, Typography } from 'antd'
-import gql from 'graphql-tag'
 import { reverse } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -8,46 +6,13 @@ import CouponPlanAdminCard from '../../../components/checkout/CouponPlanAdminCar
 import CouponPlanAdminModal from '../../../components/checkout/CouponPlanAdminModal'
 import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import { commonMessages, promotionMessages } from '../../../helpers/translation'
+import { useCouponPlanCollection } from '../../../hooks/checkout'
 import { ReactComponent as DiscountIcon } from '../../../images/icon/discount.svg'
-import types from '../../../types'
+import { CouponPlanProps } from '../../../types/checkout'
 
 const CouponPlanCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { loading, error, data } = useQuery<
-    types.GET_COUPON_PLAN_COLLECTION,
-    types.GET_COUPON_PLAN_COLLECTIONVariables
-  >(GET_COUPON_PLAN_COLLECTION, {
-    variables: { appId: localStorage.getItem('kolable.app.id') || '' },
-  })
-
-  const couponPlans =
-    loading || error || !data
-      ? []
-      : data.coupon_plan.map(value => {
-          const [count, remaining] =
-            value.coupon_codes_aggregate.aggregate && value.coupon_codes_aggregate.aggregate.sum
-              ? [
-                  value.coupon_codes_aggregate.aggregate.sum.count || 0,
-                  value.coupon_codes_aggregate.aggregate.sum.remaining || 0,
-                ]
-              : [0, 0]
-
-          return {
-            id: value.id,
-            title: value.title,
-            amount: value.amount,
-            scope: value.scope || '',
-            type: value.type,
-            constraint: value.constraint,
-            startedAt: value.started_at && new Date(value.started_at),
-            endedAt: value.ended_at && new Date(value.ended_at),
-            description: value.description,
-            count,
-            remaining,
-
-            available: remaining > 0 && (value.ended_at ? new Date(value.ended_at).getTime() > Date.now() : true),
-          }
-        })
+  const { couponPlans } = useCouponPlanCollection()
 
   return (
     <OwnerAdminLayout>
@@ -79,20 +44,7 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
 }
 
 const CouponCollectionBlock: React.FC<{
-  couponPlans: {
-    id: string
-    title: string
-    amount: number
-    scope: string
-    type: number
-    constraint: number
-    startedAt: Date | null
-    endedAt: Date | null
-    description: string | null
-    count: number
-    remaining: number
-    available: boolean
-  }[]
+  couponPlans: CouponPlanProps[]
 }> = ({ couponPlans }) => {
   return (
     <div className="row">
@@ -104,29 +56,5 @@ const CouponCollectionBlock: React.FC<{
     </div>
   )
 }
-
-const GET_COUPON_PLAN_COLLECTION = gql`
-  query GET_COUPON_PLAN_COLLECTION($appId: String!) {
-    coupon_plan(where: { coupon_codes: { app_id: { _eq: $appId } } }) {
-      id
-      title
-      amount
-      scope
-      type
-      constraint
-      started_at
-      ended_at
-      description
-      coupon_codes_aggregate {
-        aggregate {
-          sum {
-            count
-            remaining
-          }
-        }
-      }
-    }
-  }
-`
 
 export default CouponPlanCollectionAdminPage

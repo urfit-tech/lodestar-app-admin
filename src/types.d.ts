@@ -449,45 +449,6 @@ export interface UPDATE_COUPON_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_COUPON_PLAN_CODES
-// ====================================================
-
-export interface GET_COUPON_PLAN_CODES_coupon_code_coupons_aggregate_aggregate {
-  __typename: "coupon_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_COUPON_PLAN_CODES_coupon_code_coupons_aggregate {
-  __typename: "coupon_aggregate";
-  aggregate: GET_COUPON_PLAN_CODES_coupon_code_coupons_aggregate_aggregate | null;
-}
-
-export interface GET_COUPON_PLAN_CODES_coupon_code {
-  __typename: "coupon_code";
-  code: string;
-  count: number;
-  /**
-   * An aggregated array relationship
-   */
-  coupons_aggregate: GET_COUPON_PLAN_CODES_coupon_code_coupons_aggregate;
-}
-
-export interface GET_COUPON_PLAN_CODES {
-  /**
-   * fetch data from the table: "coupon_code"
-   */
-  coupon_code: GET_COUPON_PLAN_CODES_coupon_code[];
-}
-
-export interface GET_COUPON_PLAN_CODESVariables {
-  couponPlanId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_CREATOR_COLLECTION
 // ====================================================
 
@@ -5268,128 +5229,113 @@ export interface GET_ENROLLED_CARDSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_CART_PRODUCT
+// GraphQL query operation: GET_COUPON_PLAN_COLLECTION
 // ====================================================
 
-export interface GET_CART_PRODUCT_cart_product {
-  __typename: "cart_product";
+export interface GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate_aggregate_sum {
+  __typename: "coupon_code_sum_fields";
+  count: number | null;
+  remaining: number | null;
+}
+
+export interface GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate_aggregate {
+  __typename: "coupon_code_aggregate_fields";
+  sum: GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate_aggregate_sum | null;
+}
+
+export interface GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate {
+  __typename: "coupon_code_aggregate";
+  aggregate: GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate_aggregate | null;
+}
+
+export interface GET_COUPON_PLAN_COLLECTION_coupon_plan {
+  __typename: "coupon_plan";
   id: any;
-  product_id: string;
-  created_at: any;
-}
-
-export interface GET_CART_PRODUCT {
+  title: string;
+  amount: any;
+  scope: string | null;
   /**
-   * fetch data from the table: "cart_product"
+   * 1 - cash / 2 - percent
    */
-  cart_product: GET_CART_PRODUCT_cart_product[];
-}
-
-export interface GET_CART_PRODUCTVariables {
-  appId: string;
-  memberId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_CART_PRODUCT
-// ====================================================
-
-export interface INSERT_CART_PRODUCT_insert_cart_product {
-  __typename: "cart_product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface INSERT_CART_PRODUCT {
-  /**
-   * insert data into the table: "cart_product"
-   */
-  insert_cart_product: INSERT_CART_PRODUCT_insert_cart_product | null;
-}
-
-export interface INSERT_CART_PRODUCTVariables {
-  appId: string;
-  memberId: string;
-  productId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_CART_PRODUCT
-// ====================================================
-
-export interface DELETE_CART_PRODUCT_delete_cart_product {
-  __typename: "cart_product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_CART_PRODUCT {
-  /**
-   * delete data from the table: "cart_product"
-   */
-  delete_cart_product: DELETE_CART_PRODUCT_delete_cart_product | null;
-}
-
-export interface DELETE_CART_PRODUCTVariables {
-  cartProductId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ORDER_PRODUCT
-// ====================================================
-
-export interface GET_ORDER_PRODUCT_order_product_by_pk_product {
-  __typename: "product";
-  /**
-   * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
-   */
-  id: string;
-  /**
-   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket /
-   * Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan /
-   * AppointmentServicePlan
-   */
-  type: string;
-  target: string;
-}
-
-export interface GET_ORDER_PRODUCT_order_product_by_pk {
-  __typename: "order_product";
-  id: any;
-  name: string;
+  type: number;
+  constraint: any | null;
+  started_at: any | null;
+  ended_at: any | null;
   description: string | null;
-  created_at: any;
+  /**
+   * An aggregated array relationship
+   */
+  coupon_codes_aggregate: GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate;
+}
+
+export interface GET_COUPON_PLAN_COLLECTION {
+  /**
+   * fetch data from the table: "coupon_plan"
+   */
+  coupon_plan: GET_COUPON_PLAN_COLLECTION_coupon_plan[];
+}
+
+export interface GET_COUPON_PLAN_COLLECTIONVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_COUPON_PLAN_CODE_COLLECTION
+// ====================================================
+
+export interface GET_COUPON_PLAN_CODE_COLLECTION_coupon_code_coupons_member {
+  __typename: "member";
+  id: string;
+  email: string;
+}
+
+export interface GET_COUPON_PLAN_CODE_COLLECTION_coupon_code_coupons {
+  __typename: "coupon";
+  id: any;
   /**
    * An object relationship
    */
-  product: GET_ORDER_PRODUCT_order_product_by_pk_product;
+  member: GET_COUPON_PLAN_CODE_COLLECTION_coupon_code_coupons_member;
 }
 
-export interface GET_ORDER_PRODUCT {
+export interface GET_COUPON_PLAN_CODE_COLLECTION_coupon_code_coupons_aggregate_aggregate {
+  __typename: "coupon_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_COUPON_PLAN_CODE_COLLECTION_coupon_code_coupons_aggregate {
+  __typename: "coupon_aggregate";
+  aggregate: GET_COUPON_PLAN_CODE_COLLECTION_coupon_code_coupons_aggregate_aggregate | null;
+}
+
+export interface GET_COUPON_PLAN_CODE_COLLECTION_coupon_code {
+  __typename: "coupon_code";
+  id: any;
+  code: string;
+  count: number;
   /**
-   * fetch data from the table: "order_product" using primary key columns
+   * An array relationship
    */
-  order_product_by_pk: GET_ORDER_PRODUCT_order_product_by_pk | null;
+  coupons: GET_COUPON_PLAN_CODE_COLLECTION_coupon_code_coupons[];
+  /**
+   * An aggregated array relationship
+   */
+  coupons_aggregate: GET_COUPON_PLAN_CODE_COLLECTION_coupon_code_coupons_aggregate;
 }
 
-export interface GET_ORDER_PRODUCTVariables {
-  orderProductId: any;
+export interface GET_COUPON_PLAN_CODE_COLLECTION {
+  /**
+   * fetch data from the table: "coupon_code"
+   */
+  coupon_code: GET_COUPON_PLAN_CODE_COLLECTION_coupon_code[];
+}
+
+export interface GET_COUPON_PLAN_CODE_COLLECTIONVariables {
+  couponPlanId: any;
 }
 
 /* tslint:disable */
@@ -5437,67 +5383,6 @@ export interface GET_CATEGORIES {
 export interface GET_CATEGORIESVariables {
   appId: string;
   classType?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_COUPON_COLLECTION
-// ====================================================
-
-export interface GET_COUPON_COLLECTION_coupon_status {
-  __typename: "coupon_status";
-  outdated: boolean | null;
-  used: boolean | null;
-}
-
-export interface GET_COUPON_COLLECTION_coupon_coupon_code_coupon_plan {
-  __typename: "coupon_plan";
-  title: string;
-  amount: any;
-  /**
-   * 1 - cash / 2 - percent
-   */
-  type: number;
-  constraint: any | null;
-  started_at: any | null;
-  ended_at: any | null;
-  description: string | null;
-}
-
-export interface GET_COUPON_COLLECTION_coupon_coupon_code {
-  __typename: "coupon_code";
-  code: string;
-  /**
-   * An object relationship
-   */
-  coupon_plan: GET_COUPON_COLLECTION_coupon_coupon_code_coupon_plan;
-}
-
-export interface GET_COUPON_COLLECTION_coupon {
-  __typename: "coupon";
-  id: any;
-  /**
-   * An object relationship
-   */
-  status: GET_COUPON_COLLECTION_coupon_status | null;
-  /**
-   * An object relationship
-   */
-  coupon_code: GET_COUPON_COLLECTION_coupon_coupon_code;
-}
-
-export interface GET_COUPON_COLLECTION {
-  /**
-   * fetch data from the table: "coupon"
-   */
-  coupon: GET_COUPON_COLLECTION_coupon[];
-}
-
-export interface GET_COUPON_COLLECTIONVariables {
-  memberId: string;
 }
 
 /* tslint:disable */
@@ -7187,61 +7072,6 @@ export interface GET_FUNDING {
 
 export interface GET_FUNDINGVariables {
   fundingId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_COUPON_PLAN_COLLECTION
-// ====================================================
-
-export interface GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate_aggregate_sum {
-  __typename: "coupon_code_sum_fields";
-  count: number | null;
-  remaining: number | null;
-}
-
-export interface GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate_aggregate {
-  __typename: "coupon_code_aggregate_fields";
-  sum: GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate_aggregate_sum | null;
-}
-
-export interface GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate {
-  __typename: "coupon_code_aggregate";
-  aggregate: GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate_aggregate | null;
-}
-
-export interface GET_COUPON_PLAN_COLLECTION_coupon_plan {
-  __typename: "coupon_plan";
-  id: any;
-  title: string;
-  amount: any;
-  scope: string | null;
-  /**
-   * 1 - cash / 2 - percent
-   */
-  type: number;
-  constraint: any | null;
-  started_at: any | null;
-  ended_at: any | null;
-  description: string | null;
-  /**
-   * An aggregated array relationship
-   */
-  coupon_codes_aggregate: GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate;
-}
-
-export interface GET_COUPON_PLAN_COLLECTION {
-  /**
-   * fetch data from the table: "coupon_plan"
-   */
-  coupon_plan: GET_COUPON_PLAN_COLLECTION_coupon_plan[];
-}
-
-export interface GET_COUPON_PLAN_COLLECTIONVariables {
-  appId: string;
 }
 
 /* tslint:disable */
