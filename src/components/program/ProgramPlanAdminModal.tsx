@@ -43,14 +43,6 @@ const messages = defineMessages({
   availableForPastContent: { id: 'program.label.availableForPastContent', defaultMessage: '可看過去內容' },
   unavailableForPastContent: { id: 'program.label.unavailableForPastContent', defaultMessage: '不可看過去內容' },
   subscriptionPeriodType: { id: 'program.label.subscriptionPeriodType', defaultMessage: '訂閱週期' },
-  salePriceNotation: {
-    id: 'program.text.salePriceNotation',
-    defaultMessage: '購買到優惠價的會員，往後每期皆以優惠價收款',
-  },
-  discountDownNotation: {
-    id: 'program.text.discountDownNotation',
-    defaultMessage: '定價或優惠價 - 首期折扣 = 首期支付金額\nEX：100 - 20 = 80，此欄填入 20',
-  },
   planDescription: { id: 'program.label.planDescription', defaultMessage: '方案描述' },
 })
 
@@ -73,8 +65,8 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
   )
 
   const [loading, setLoading] = useState(false)
-  const [hasSalePrice, setHasSalePrice] = useState(programPlan && programPlan.salePrice ? true : false)
-  const [hasDiscountDownPrice, setHasDiscountDownPrice] = useState(
+  const [withSalePrice, setWithSalePrice] = useState(programPlan && programPlan.salePrice ? true : false)
+  const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(
     programPlan && programPlan.discountDownPrice ? true : false,
   )
 
@@ -90,10 +82,10 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
             title: values.title,
             description: values.description.toRAW(),
             listPrice: values.listPrice,
-            salePrice: hasSalePrice ? values.salePrice : 0,
-            discountDownPrice: hasDiscountDownPrice ? values.discountDownPrice : 0,
+            salePrice: withSalePrice ? values.salePrice : 0,
+            discountDownPrice: withDiscountDownPrice ? values.discountDownPrice : 0,
             periodType: values.periodType,
-            soldAt: hasSalePrice && values.soldAt ? values.soldAt.toDate() : null,
+            soldAt: withSalePrice && values.soldAt ? values.soldAt.toDate() : null,
           },
         })
           .then(() => {
@@ -178,12 +170,12 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
         </Form.Item>
 
         <div className="mb-4">
-          <Checkbox defaultChecked={hasSalePrice} onChange={e => setHasSalePrice(e.target.checked)}>
+          <Checkbox defaultChecked={withSalePrice} onChange={e => setWithSalePrice(e.target.checked)}>
             {formatMessage(commonMessages.term.salePrice)}
           </Checkbox>
-          {hasSalePrice && <div className="notation">{formatMessage(messages.salePriceNotation)}</div>}
+          {withSalePrice && <div className="notation">{formatMessage(commonMessages.text.salePriceNotation)}</div>}
         </div>
-        <Form.Item className={hasSalePrice ? 'm-0' : 'd-none'}>
+        <Form.Item className={withSalePrice ? 'm-0' : 'd-none'}>
           <Form.Item className="d-inline-block mr-2">
             {form.getFieldDecorator('salePrice', {
               initialValue: (programPlan && programPlan.salePrice) || 0,
@@ -198,7 +190,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
           <Form.Item className="d-inline-block mr-2">
             {form.getFieldDecorator('soldAt', {
               initialValue: programPlan && programPlan.soldAt ? moment(programPlan.soldAt) : null,
-              rules: [{ required: hasSalePrice, message: formatMessage(errorMessages.form.date) }],
+              rules: [{ required: withSalePrice, message: formatMessage(errorMessages.form.date) }],
             })(<DatePicker placeholder={formatMessage(commonMessages.label.salePriceEndTime)} />)}
           </Form.Item>
           {form.getFieldValue('soldAt') && moment(form.getFieldValue('soldAt')).isBefore(moment()) ? (
@@ -210,12 +202,14 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
         </Form.Item>
 
         <div className="mb-4">
-          <Checkbox defaultChecked={hasDiscountDownPrice} onChange={e => setHasDiscountDownPrice(e.target.checked)}>
+          <Checkbox defaultChecked={withDiscountDownPrice} onChange={e => setWithDiscountDownPrice(e.target.checked)}>
             {formatMessage(commonMessages.label.discountDownPrice)}
           </Checkbox>
-          {hasDiscountDownPrice && <div className="notation">{formatMessage(messages.discountDownNotation)}</div>}
+          {withDiscountDownPrice && (
+            <div className="notation">{formatMessage(commonMessages.text.discountDownNotation)}</div>
+          )}
         </div>
-        <Form.Item className={hasDiscountDownPrice ? '' : 'd-none'}>
+        <Form.Item className={withDiscountDownPrice ? '' : 'd-none'}>
           {form.getFieldDecorator('discountDownPrice', {
             initialValue: (programPlan && programPlan.discountDownPrice) || 0,
           })(

@@ -3,7 +3,6 @@ import gql from 'graphql-tag'
 import { useContext } from 'react'
 import { array, date, object, string } from 'yup'
 import AppContext from '../contexts/AppContext'
-import { couponSchema } from '../schemas/coupon'
 import types from '../types'
 import { Category, ClassType } from '../types/general'
 
@@ -56,45 +55,6 @@ export const useCategory = (classType: ClassType) => {
     categories,
     error,
     refetch,
-  }
-}
-
-export const useCouponCollection = (memberId: string) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_COUPON_COLLECTION, types.GET_COUPON_COLLECTIONVariables>(
-    gql`
-      query GET_COUPON_COLLECTION($memberId: String!) {
-        coupon(where: { member_id: { _eq: $memberId } }) {
-          id
-          status {
-            outdated
-            used
-          }
-          coupon_code {
-            code
-            coupon_plan {
-              title
-              amount
-              type
-              constraint
-              started_at
-              ended_at
-              description
-            }
-          }
-        }
-      }
-    `,
-    {
-      variables: { memberId },
-    },
-  )
-  return {
-    coupons: object({ coupon: array(couponSchema).default([]) })
-      .camelCase()
-      .cast(data).coupon,
-    errorCoupons: error,
-    refetchCoupons: refetch,
-    loadingCoupons: loading,
   }
 }
 
@@ -228,7 +188,10 @@ export const useUpdateCategory = () => {
 }
 
 export const useUpdateCategoryPosition = () => {
-  const [updateCategoryPosition] = useMutation<types.UPDATE_CATEGORY_POSITION, types.UPDATE_CATEGORY_POSITIONVariables>(gql`
+  const [updateCategoryPosition] = useMutation<
+    types.UPDATE_CATEGORY_POSITION,
+    types.UPDATE_CATEGORY_POSITIONVariables
+  >(gql`
     mutation UPDATE_CATEGORY_POSITION($data: [category_insert_input!]!) {
       insert_category(objects: $data, on_conflict: { constraint: category_pkey, update_columns: position }) {
         affected_rows
