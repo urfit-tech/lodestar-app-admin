@@ -41,6 +41,7 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
       updateMerchandiseIntroduction({
         abstract: values.abstract,
         link: values.link,
+        meta: values.meta,
       })
         .then(() => {
           refetch && refetch()
@@ -80,6 +81,12 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
       <Form.Item label={formatMessage(merchandiseMessages.label.abstract)}>
         {form.getFieldDecorator('abstract', {
           initialValue: merchandise.abstract,
+        })(<Input.TextArea rows={5} />)}
+      </Form.Item>
+      <Form.Item label={formatMessage(merchandiseMessages.label.meta)}>
+        {form.getFieldDecorator('meta', {
+          initialValue: merchandise.meta,
+          rules: [{ required: true }],
         })(<Input />)}
       </Form.Item>
       <Form.Item label={formatMessage(merchandiseMessages.label.paymentLink)}>
@@ -142,22 +149,27 @@ const useUpdateMerchandiseIntroduction = (merchandiseId: string) => {
     types.UPDATE_MERCHANDISE_INTRODUCTION,
     types.UPDATE_MERCHANDISE_INTRODUCTIONVariables
   >(gql`
-    mutation UPDATE_MERCHANDISE_INTRODUCTION($merchandiseId: uuid!, $abstract: String, $link: String) {
-      update_merchandise(where: { id: { _eq: $merchandiseId } }, _set: { abstract: $abstract, link: $link }) {
+    mutation UPDATE_MERCHANDISE_INTRODUCTION($merchandiseId: uuid!, $abstract: String, $meta: String, $link: String) {
+      update_merchandise(
+        where: { id: { _eq: $merchandiseId } }
+        _set: { abstract: $abstract, meta: $meta, link: $link }
+      ) {
         affected_rows
       }
     }
   `)
 
-  const updateMerchandiseIntroduction: (data: { abstract: string; link: string }) => Promise<void> = async ({
-    abstract,
-    link,
-  }) => {
+  const updateMerchandiseIntroduction: (data: {
+    abstract: string
+    link: string
+    meta: string
+  }) => Promise<void> = async ({ abstract, link, meta }) => {
     try {
       await updateIntroduction({
         variables: {
-          merchandiseId: merchandiseId,
+          merchandiseId,
           abstract,
+          meta,
           link,
         },
       })
