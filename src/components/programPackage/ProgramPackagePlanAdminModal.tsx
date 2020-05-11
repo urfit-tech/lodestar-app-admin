@@ -258,6 +258,7 @@ const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> 
           <Checkbox defaultChecked={withSalePrice} onChange={e => setWithSalePrice(e.target.checked)}>
             {formatMessage(commonMessages.term.salePrice)}
           </Checkbox>
+          {withSalePrice && <div className="notation">{formatMessage(messages.salePriceNotation)}</div>}
         </div>
         <Form.Item className={withSalePrice ? 'm-0' : 'd-none'}>
           <Form.Item className="d-inline-block mr-2">
@@ -297,6 +298,7 @@ const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> 
               >
                 {formatMessage(commonMessages.label.discountDownPrice)}
               </Checkbox>
+              {withDiscountDownPrice && <div className="notation">{formatMessage(messages.discountDownNotation)}</div>}
             </div>
 
             <Form.Item className={withDiscountDownPrice ? 'm-0' : 'd-none'}>
