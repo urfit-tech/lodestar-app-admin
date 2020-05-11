@@ -25,3 +25,11 @@ export type MerchandiseProps = {
   price: number
   publishedAt: Date | null
 }
+
+export type MerchandiseInventoryLog = {
+  id: string
+  createdAt: Date
+  status: string
+  meta: string
+  amount: number
+}

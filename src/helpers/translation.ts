@@ -138,6 +138,7 @@ export const commonMessages = {
     currentPosition: { id: 'common.label.currentPosition', defaultMessage: '目前排序：{position}' },
     roleType: { id: 'common.label.roleType', defaultMessage: '會員類型' },
     exportFields: { id: 'common.label.exportFields', defaultMessage: '匯出欄位' },
+    date: { id: 'common.label.date', defaultMessage: '日期' },
   }),
   term: defineMessages({
     instructor: { id: 'common.term.instructor', defaultMessage: '老師' },
@@ -521,6 +522,9 @@ export const merchandiseMessages = {
   status: defineMessages({
     selling: { id: 'merchandise.status.selling', defaultMessage: '販賣中' },
     unpublished: { id: 'merchandise.status.unpublished', defaultMessage: '未上架' },
+    currentInventory: { id: 'merchandise.status.currentInventory', defaultMessage: '現有庫存' },
+    shipping: { id: 'merchandise.status.shipping', defaultMessage: '待出貨' },
+    shipped: { id: 'merchandise.status.shipped', defaultMessage: '已出貨' },
   }),
   label: defineMessages({
     images: { id: 'merchandise.label.images', defaultMessage: '商品圖片' },
@@ -530,6 +534,8 @@ export const merchandiseMessages = {
     price: { id: 'merchandise.label.price', defaultMessage: '商品售價' },
     cover: { id: 'merchandise.label.cover', defaultMessage: '封面圖片' },
     delete: { id: 'merchandise.label.delete', defaultMessage: '刪除商品' },
+    status: { id: 'merchandise.label.status', defaultMessage: '狀態' },
+    amount: { id: 'merchandise.label.amount', defaultMessage: '數量' },
   }),
   text: defineMessages({
     searchMerchandise: { id: 'merchandise.text.searchMerchandise', defaultMessage: '搜尋商品名稱' },

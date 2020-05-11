@@ -2,6 +2,7 @@ import { Button, Icon, Tabs } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
+import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
 import {
@@ -17,6 +18,7 @@ import MerchandiseBasicForm from '../../components/merchandise/MerchandiseBasicF
 import MerchandiseDeleteBlock from '../../components/merchandise/MerchandiseDeleteBlock'
 import MerchandiseDescriptionForm from '../../components/merchandise/MerchandiseDescriptionForm'
 import MerchandiseIntroductionForm from '../../components/merchandise/MerchandiseIntroductionForm'
+import MerchandiseInventoryTable from '../../components/merchandise/MerchandiseInventoryTable'
 import MerchandisePublishBlock from '../../components/merchandise/MerchandisePublishBlock'
 import MerchandiseSalesForm from '../../components/merchandise/MerchandiseSalesForm'
 import { merchandiseMessages } from '../../helpers/translation'
@@ -25,6 +27,7 @@ import { useMerchandise } from '../../hooks/merchandise'
 
 const messages = defineMessages({
   settings: { id: 'merchandise.label.settings', defaultMessage: '商品資訊' },
+  inventoryAdmin: { id: 'merchandise.label.inventoryAdmin', defaultMessage: '庫存管理' },
   salesAdmin: { id: 'merchandise.label.salesAdmin', defaultMessage: '銷售設定' },
   publishAdmin: { id: 'merchandise.label.publishAdmin', defaultMessage: '上架設定' },
   basicSettings: { id: 'merchandise.label.basicSettings', defaultMessage: '基本設定' },
@@ -32,6 +35,20 @@ const messages = defineMessages({
   description: { id: 'merchandise.label.description', defaultMessage: '商品詳情' },
   price: { id: 'merchandise.label.price', defaultMessage: '商品售價' },
 })
+
+const StatusCardTitle = styled.div`
+  margin-bottom: 0.75rem;
+  color: var(--gray-darker);
+  font-size: 14px;
+  line-height: 1.57;
+  letter-spacing: 0.18px;
+`
+const StatusCardNumber = styled.div`
+  color: var(--gray-darker);
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 0.2px;
+`
 
 const MerchandiseAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -101,6 +118,36 @@ const MerchandiseAdminPage: React.FC = () => {
               </AdminBlock>
             </div>
           </Tabs.TabPane>
+
+          <Tabs.TabPane key="inventory" tab={formatMessage(messages.inventoryAdmin)}>
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(messages.inventoryAdmin)}</AdminPaneTitle>
+              <div className="row mb-1">
+                <div className="col-12 col-lg-4">
+                  <AdminBlock className="p-4">
+                    <StatusCardTitle>{formatMessage(merchandiseMessages.status.currentInventory)}</StatusCardTitle>
+                    <StatusCardNumber>0</StatusCardNumber>
+                  </AdminBlock>
+                </div>
+                <div className="col-12 col-lg-4">
+                  <AdminBlock className="p-4">
+                    <StatusCardTitle>{formatMessage(merchandiseMessages.status.shipping)}</StatusCardTitle>
+                    <StatusCardNumber>0</StatusCardNumber>
+                  </AdminBlock>
+                </div>
+                <div className="col-12 col-lg-4">
+                  <AdminBlock className="p-4">
+                    <StatusCardTitle>{formatMessage(merchandiseMessages.status.shipped)}</StatusCardTitle>
+                    <StatusCardNumber>0</StatusCardNumber>
+                  </AdminBlock>
+                </div>
+              </div>
+              <AdminBlock>
+                <MerchandiseInventoryTable merchandiseId={merchandiseId} inventoryLogs={[]} />
+              </AdminBlock>
+            </div>
+          </Tabs.TabPane>
+
           <Tabs.TabPane key="sales" tab={formatMessage(messages.salesAdmin)}>
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(messages.salesAdmin)}</AdminPaneTitle>
@@ -114,6 +161,7 @@ const MerchandiseAdminPage: React.FC = () => {
               </AdminBlock>
             </div>
           </Tabs.TabPane>
+
           <Tabs.TabPane key="publish" tab={formatMessage(messages.publishAdmin)}>
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(messages.publishAdmin)}</AdminPaneTitle>
