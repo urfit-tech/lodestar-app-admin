@@ -196,6 +196,14 @@ export const commonMessages = {
     newPasswordAgain: { id: 'common.label.newPasswordAgain', defaultMessage: '再次輸入新密碼' },
     forgotPassword: { id: 'common.text.forgotPassword', defaultMessage: '忘記密碼？' },
     locale: { id: 'common.text.locale', defaultMessage: '當前台為指定語系時才會顯示，若不選擇全語系皆顯示' },
+    salePriceNotation: {
+      id: 'program.text.salePriceNotation',
+      defaultMessage: '購買到優惠價的會員，往後每期皆以優惠價收款',
+    },
+    discountDownNotation: {
+      id: 'program.text.discountDownNotation',
+      defaultMessage: '定價或優惠價 - 首期折扣 = 首期支付金額\nEX：100 - 20 = 80，此欄填入 20',
+    },
   }),
   event: defineMessages({
     successfullySaved: { id: 'common.event.successfullySaved', defaultMessage: '儲存成功' },
