@@ -516,8 +516,9 @@ export const merchandiseMessages = {
   ui: defineMessages({
     createMerchandise: { id: 'merchandise.ui.createMerchandise', defaultMessage: '建立商品' },
     deleteMerchandise: { id: 'merchandise.ui.deleteMerchandise', defaultMessage: '刪除商品' },
-    setCover: { id: 'merchandise.text.setCover', defaultMessage: '設為封面' },
-    deleteImage: { id: 'merchandise.text.deleteImage', defaultMessage: '刪除圖片' },
+    setCover: { id: 'merchandise.ui.setCover', defaultMessage: '設為封面' },
+    deleteImage: { id: 'merchandise.ui.deleteImage', defaultMessage: '刪除圖片' },
+    modifyInventory: { id: 'merchandise.ui.modifyInventory', defaultMessage: '調整庫存' },
   }),
   status: defineMessages({
     selling: { id: 'merchandise.status.selling', defaultMessage: '販賣中' },
