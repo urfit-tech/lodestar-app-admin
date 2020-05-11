@@ -1046,6 +1046,7 @@ export interface UPDATE_MERCHANDISE_INTRODUCTION {
 export interface UPDATE_MERCHANDISE_INTRODUCTIONVariables {
   merchandiseId: any;
   abstract?: string | null;
+  meta?: string | null;
   link?: string | null;
 }
 
@@ -5884,6 +5885,7 @@ export interface GET_MERCHANDISE_merchandise_by_pk {
   __typename: "merchandise";
   id: any;
   title: string;
+  meta: string | null;
   abstract: string | null;
   description: string | null;
   price: any;
@@ -8010,6 +8012,7 @@ export enum merchandise_update_column {
   id = "id",
   is_deleted = "is_deleted",
   link = "link",
+  meta = "meta",
   position = "position",
   price = "price",
   published_at = "published_at",
@@ -10964,6 +10967,7 @@ export interface merchandise_bool_exp {
   merchandise_categories?: merchandise_category_bool_exp | null;
   merchandise_imgs?: merchandise_img_bool_exp | null;
   merchandise_tags?: merchandise_tag_bool_exp | null;
+  meta?: String_comparison_exp | null;
   position?: Int_comparison_exp | null;
   post_merchandises?: post_merchandise_bool_exp | null;
   price?: numeric_comparison_exp | null;
@@ -11075,6 +11079,7 @@ export interface merchandise_insert_input {
   merchandise_categories?: merchandise_category_arr_rel_insert_input | null;
   merchandise_imgs?: merchandise_img_arr_rel_insert_input | null;
   merchandise_tags?: merchandise_tag_arr_rel_insert_input | null;
+  meta?: string | null;
   position?: number | null;
   post_merchandises?: post_merchandise_arr_rel_insert_input | null;
   price?: any | null;

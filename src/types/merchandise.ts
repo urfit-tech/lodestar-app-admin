@@ -19,6 +19,7 @@ export type MerchandiseProps = {
     isCover: boolean
   }[]
   abstract: string | null
+  meta: string | null
   link: string | null
   description: string | null
   price: number

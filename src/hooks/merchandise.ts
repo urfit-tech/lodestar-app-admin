@@ -72,6 +72,7 @@ export const useMerchandise = (id: string) => {
         merchandise_by_pk(id: $id) {
           id
           title
+          meta
           abstract
           description
           price
@@ -114,6 +115,7 @@ export const useMerchandise = (id: string) => {
             isCover: img.type === 'cover',
           })),
           abstract: data.merchandise_by_pk.abstract,
+          meta: data.merchandise_by_pk.meta,
           link: data.merchandise_by_pk.link,
           description: data.merchandise_by_pk.description,
           price: data.merchandise_by_pk.price,

@@ -524,7 +524,8 @@ export const merchandiseMessages = {
   }),
   label: defineMessages({
     images: { id: 'merchandise.label.images', defaultMessage: '商品圖片' },
-    abstract: { id: 'merchandise.label.abstract', defaultMessage: '規格說明' },
+    meta: { id: 'merchandise.label.meta', defaultMessage: '規格說明' },
+    abstract: { id: 'merchandise.label.abstract', defaultMessage: '商品摘要' },
     paymentLink: { id: 'merchandise.label.paymentLink', defaultMessage: '付款連結' },
     price: { id: 'merchandise.label.price', defaultMessage: '商品售價' },
     cover: { id: 'merchandise.label.cover', defaultMessage: '封面圖片' },
