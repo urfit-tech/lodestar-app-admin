@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Spin } from 'antd'
 import gql from 'graphql-tag'
-import React, { forwardRef, useContext } from 'react'
+import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import AppContext from '../../contexts/AppContext'
 import { errorMessages } from '../../helpers/translation'
@@ -11,7 +11,7 @@ import MemberSelector, { MemberOptionProps } from './MemberSelector'
 const CreatorSelector: React.FC<{
   value?: string
   onChange?: (value: string | null) => void
-}> = ({ value, onChange }, ref) => {
+}> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
   const { loading, error, members } = useGetCreatorCollection()
 
@@ -23,7 +23,7 @@ const CreatorSelector: React.FC<{
     return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
-  return <MemberSelector ref={ref} members={members} value={value} onChange={onChange} />
+  return <MemberSelector members={members} value={value} onChange={onChange} />
 }
 
 const useGetCreatorCollection = () => {
@@ -51,7 +51,7 @@ const useGetCreatorCollection = () => {
   const members: MemberOptionProps[] =
     loading || error || !data
       ? []
-      : data.member.map(member => ({
+      : data.member.map((member) => ({
           id: member.id,
           avatarUrl: member.picture_url,
           name: member.name || member.username,
@@ -66,4 +66,4 @@ const useGetCreatorCollection = () => {
   }
 }
 
-export default forwardRef(CreatorSelector)
+export default CreatorSelector

@@ -7,7 +7,7 @@ import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import uuid from 'uuid'
+import { v4 as uuid } from 'uuid'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramPlanType } from '../../types/program'
@@ -76,7 +76,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
         setLoading(true)
         upsertProgramPlan({
           variables: {
-            id: programPlan ? programPlan.id : uuid.v4(),
+            id: programPlan ? programPlan.id : uuid(),
             programId,
             type: values.type,
             title: values.title,
@@ -92,7 +92,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
             onRefetch && onRefetch()
             setVisible(false)
           })
-          .catch(error => {
+          .catch((error) => {
             message.error(error.message)
           })
           .finally(() => setLoading(false))
@@ -163,14 +163,14 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
           })(
             <InputNumber
               min={0}
-              formatter={value => `NT$ ${value}`}
-              parser={value => (value ? value.replace(/\D/g, '') : '')}
+              formatter={(value) => `NT$ ${value}`}
+              parser={(value) => (value ? value.replace(/\D/g, '') : '')}
             />,
           )}
         </Form.Item>
 
         <div className="mb-4">
-          <Checkbox defaultChecked={withSalePrice} onChange={e => setWithSalePrice(e.target.checked)}>
+          <Checkbox defaultChecked={withSalePrice} onChange={(e) => setWithSalePrice(e.target.checked)}>
             {formatMessage(commonMessages.term.salePrice)}
           </Checkbox>
           {withSalePrice && <div className="notation">{formatMessage(commonMessages.text.salePriceNotation)}</div>}
@@ -182,8 +182,8 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
             })(
               <InputNumber
                 min={0}
-                formatter={value => `NT$ ${value}`}
-                parser={value => (value ? value.replace(/\D/g, '') : '')}
+                formatter={(value) => `NT$ ${value}`}
+                parser={(value) => (value ? value.replace(/\D/g, '') : '')}
               />,
             )}
           </Form.Item>
@@ -202,7 +202,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
         </Form.Item>
 
         <div className="mb-4">
-          <Checkbox defaultChecked={withDiscountDownPrice} onChange={e => setWithDiscountDownPrice(e.target.checked)}>
+          <Checkbox defaultChecked={withDiscountDownPrice} onChange={(e) => setWithDiscountDownPrice(e.target.checked)}>
             {formatMessage(commonMessages.label.discountDownPrice)}
           </Checkbox>
           {withDiscountDownPrice && (
@@ -215,8 +215,8 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
           })(
             <InputNumber
               min={0}
-              formatter={value => `NT$ ${value}`}
-              parser={value => (value ? value.replace(/\D/g, '') : '')}
+              formatter={(value) => `NT$ ${value}`}
+              parser={(value) => (value ? value.replace(/\D/g, '') : '')}
             />,
           )}
         </Form.Item>

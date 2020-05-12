@@ -47,7 +47,7 @@ const BlogAdminPage: React.FC = () => {
       <div style={{ backgroundColor: '#f7f8f8', minHeight: 'calc(100vh - 64px)' }}>
         {post && (
           <Tabs
-            activeKey={tabkey}
+            activeKey={tabkey || 'content'}
             onChange={setTabkey}
             renderTabBar={(tabsProps, DefaultTabBar) => (
               <div style={{ backgroundColor: 'white' }}>

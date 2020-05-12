@@ -8,17 +8,17 @@ import types from '../../types'
 type ProgramPlanSelectorProps = SelectProps & {
   programId: string
 }
-const ProgramPlanSelector: React.FC<ProgramPlanSelectorProps> = ({ programId, ...selectProps }, ref) => {
+const ProgramPlanSelector: React.FC<ProgramPlanSelectorProps> = ({ programId, ...selectProps }) => {
   const { loading, data } = useQuery<types.GET_PROGRAM_PLANS, types.GET_PROGRAM_PLANSVariables>(GET_PROGRAM_PLANS, {
     variables: { programId },
     fetchPolicy: 'no-cache',
   })
 
   return (
-    <Select ref={ref} mode="multiple" loading={loading} style={{ width: '100%' }} {...selectProps}>
+    <Select mode="multiple" loading={loading} style={{ width: '100%' }} {...selectProps}>
       {data &&
         data.program_plan &&
-        data.program_plan.map(programPlan => <Select.Option key={programPlan.id}>{programPlan.title}</Select.Option>)}
+        data.program_plan.map((programPlan) => <Select.Option key={programPlan.id}>{programPlan.title}</Select.Option>)}
     </Select>
   )
 }
@@ -32,4 +32,4 @@ const GET_PROGRAM_PLANS = gql`
   }
 `
 
-export default React.forwardRef(ProgramPlanSelector)
+export default ProgramPlanSelector

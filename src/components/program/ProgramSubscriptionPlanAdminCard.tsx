@@ -107,7 +107,7 @@ const PerpetualPlanForm: React.FC<PerpetualPlanFormProps> = ({ form, programPlan
     types.UPDATE_PROGRAM_SUBSCRIPTION_PLAN,
     types.UPDATE_PROGRAM_SUBSCRIPTION_PLANVariables
   >(UPDATE_PROGRAM_SUBSCRIPTION_PLAN)
-  const [loading, setLoading] = useState()
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

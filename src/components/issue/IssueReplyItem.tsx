@@ -87,7 +87,7 @@ const IssueReplyItem: React.FC<IssueReplyItemProps> = ({
     UPDATE_ISSUE_REPLY,
   )
 
-  const [editing, setEditing] = useState()
+  const [editing, setEditing] = useState(false)
   const [focus, setFocus] = useState(qIssueReplyId === issueReplyId)
   const [contentState, setContentState] = useState(BraftEditor.createEditorState(content))
   const [reacted, setReacted] = useState(false)

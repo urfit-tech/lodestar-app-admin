@@ -2,11 +2,10 @@ import { DatePicker, TimePicker } from 'antd'
 import { Moment } from 'moment'
 import React from 'react'
 
-type DatetimePickerProps = {
+const DatetimePicker: React.FC<{
   value?: Moment
   onChange?: (value: Moment | null) => void
-}
-const DatetimePicker: React.FC<DatetimePickerProps> = ({ value, onChange }, ref) => {
+}> = ({ value, onChange }) => {
   return (
     <div>
       <DatePicker size="default" value={value} onChange={onChange} className="mr-2" />
@@ -15,4 +14,4 @@ const DatetimePicker: React.FC<DatetimePickerProps> = ({ value, onChange }, ref)
   )
 }
 
-export default React.forwardRef(DatetimePicker)
+export default DatetimePicker

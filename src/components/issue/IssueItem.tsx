@@ -2,7 +2,6 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Dropdown, Form, Icon, Input, Menu, message, Tag, Typography } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
-import { ExecutionResult } from 'graphql'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
@@ -26,7 +25,7 @@ const StyledIssueItem = styled.div`
   transition: background-color 1s ease-in-out;
 
   &.focus {
-    background: ${props => rgba(props.theme['@primary-color'], 0.1)};
+    background: ${(props) => rgba(props.theme['@primary-color'], 0.1)};
   }
 `
 const IssueContentBlock = styled.div`
@@ -38,7 +37,7 @@ const IssueContentBlock = styled.div`
 `
 const StyledAction = styled.span<{ reacted?: boolean }>`
   padding: 0;
-  color: ${props => (props.reacted ? props.theme['@primary-color'] : props.theme['@text-color-secondary'])};
+  color: ${(props) => (props.reacted ? props.theme['@primary-color'] : props.theme['@text-color-secondary'])};
   cursor: pointer;
 `
 const IssueState = styled(Typography.Text)`
@@ -48,7 +47,7 @@ const IssueState = styled(Typography.Text)`
 `
 const StyledTag = styled(Tag)<{ variant?: string }>`
   &.ant-tag-has-color {
-    ${props => (props.variant && props.variant === 'assistant' ? `color: ${props.theme['@primary-color']};` : '')}
+    ${(props) => (props.variant && props.variant === 'assistant' ? `color: ${props.theme['@primary-color']};` : '')}
   }
 `
 
@@ -98,7 +97,7 @@ const IssueItem: React.FC<IssueItemProps> = ({
   const [repliesVisible, setRepliesVisible] = useState(defaultRepliesVisible)
   const [reacted, setReacted] = useState(false)
 
-  const otherReactedMemberIds = reactedMemberIds.filter(id => id !== currentMemberId).length
+  const otherReactedMemberIds = reactedMemberIds.filter((id) => id !== currentMemberId).length
 
   useEffect(() => {
     if (currentMemberId && reactedMemberIds.includes(currentMemberId)) {
@@ -135,7 +134,7 @@ const IssueItem: React.FC<IssueItemProps> = ({
   return (
     <StyledIssueItem
       className={focus ? 'focus' : ''}
-      ref={ref => {
+      ref={(ref) => {
         if (ref && focus) {
           ref.scrollIntoView()
           setTimeout(() => {
@@ -151,8 +150,8 @@ const IssueItem: React.FC<IssueItemProps> = ({
             renderText={() =>
               programRoles &&
               programRoles
-                .filter(role => role?.member?.id === memberId)
-                .map(role =>
+                .filter((role) => role?.member?.id === memberId)
+                .map((role) =>
                   role.name === 'instructor' ? (
                     <StyledTag key={role.id} color={theme['@primary-color']} className="ml-2 mr-0">
                       <ProgramRoleLabel role={role.name} />
@@ -217,7 +216,7 @@ const IssueItem: React.FC<IssueItemProps> = ({
       <IssueContentBlock>
         {editing ? (
           <Form
-            onSubmit={e => {
+            onSubmit={(e) => {
               e.preventDefault()
               handleSubmit()
             }}
@@ -284,7 +283,7 @@ const IssueItem: React.FC<IssueItemProps> = ({
 }
 
 const useUpdateIssue = (issueId: string) => {
-  const [updIssue] = useMutation<types.UPDATE_ISSUE, types.UPDATE_ISSUEVariables>(gql`
+  const [updateIssue] = useMutation<types.UPDATE_ISSUE, types.UPDATE_ISSUEVariables>(gql`
     mutation UPDATE_ISSUE($issueId: uuid!, $title: String, $description: String, $solvedAt: timestamptz) {
       update_issue(
         where: { id: { _eq: $issueId } }
@@ -295,12 +294,8 @@ const useUpdateIssue = (issueId: string) => {
     }
   `)
 
-  const updateIssue: (data: {
-    title: string
-    description: string
-    solvedAt?: Date
-  }) => Promise<ExecutionResult<types.UPDATE_ISSUE>> = ({ title, description, solvedAt }) => {
-    return updIssue({
+  return ({ title, description, solvedAt }: { title: string; description: string; solvedAt?: Date }) =>
+    updateIssue({
       variables: {
         issueId,
         title,
@@ -308,13 +303,10 @@ const useUpdateIssue = (issueId: string) => {
         solvedAt,
       },
     })
-  }
-
-  return updateIssue
 }
 
 const useDeleteIssue = (issueId: string) => {
-  const [delIssue] = useMutation<types.DELETE_ISSUE, types.DELETE_ISSUEVariables>(gql`
+  const [deleteIssue] = useMutation<types.DELETE_ISSUE, types.DELETE_ISSUEVariables>(gql`
     mutation DELETE_ISSUE($issueId: uuid!) {
       delete_issue_reply_reaction(where: { issue_reply: { issue_id: { _eq: $issueId } } }) {
         affected_rows
@@ -331,15 +323,11 @@ const useDeleteIssue = (issueId: string) => {
     }
   `)
 
-  const deleteIssue: () => Promise<ExecutionResult<types.DELETE_ISSUE>> = () => {
-    return delIssue({ variables: { issueId } })
-  }
-
-  return deleteIssue
+  return () => deleteIssue({ variables: { issueId } })
 }
 
 const useInsertIssueReaction = (issueId: string) => {
-  const [insIssueReaction] = useMutation<types.INSERT_ISSUE_REACTION, types.INSERT_ISSUE_REACTIONVariables>(
+  const [insertIssueReaction] = useMutation<types.INSERT_ISSUE_REACTION, types.INSERT_ISSUE_REACTIONVariables>(
     gql`
       mutation INSERT_ISSUE_REACTION($memberId: String!, $issueId: uuid!) {
         insert_issue_reaction(objects: { member_id: $memberId, issue_id: $issueId }) {
@@ -349,20 +337,17 @@ const useInsertIssueReaction = (issueId: string) => {
     `,
   )
 
-  const insertIssueReaction: (memberId: string) => Promise<ExecutionResult<types.INSERT_ISSUE_REACTION>> = memberId => {
-    return insIssueReaction({
+  return (memberId: string) =>
+    insertIssueReaction({
       variables: {
         issueId,
         memberId,
       },
     })
-  }
-
-  return insertIssueReaction
 }
 
 const useDeleteIssueReaction = (issueId: string) => {
-  const [delIssueReaction] = useMutation<types.DELETE_ISSUE_REACTION, types.DELETE_ISSUE_REACTIONVariables>(
+  const [deleteIssueReaction] = useMutation<types.DELETE_ISSUE_REACTION, types.DELETE_ISSUE_REACTIONVariables>(
     gql`
       mutation DELETE_ISSUE_REACTION($memberId: String!, $issueId: uuid!) {
         delete_issue_reaction(where: { member_id: { _eq: $memberId }, issue_id: { _eq: $issueId } }) {
@@ -372,11 +357,7 @@ const useDeleteIssueReaction = (issueId: string) => {
     `,
   )
 
-  const deleteIssueReaction: (memberId: string) => Promise<ExecutionResult<types.DELETE_ISSUE_REACTION>> = memberId => {
-    return delIssueReaction({ variables: { issueId, memberId } })
-  }
-
-  return deleteIssueReaction
+  return (memberId: string) => deleteIssueReaction({ variables: { issueId, memberId } })
 }
 
 export default Form.create<IssueItemProps>()(IssueItem)

@@ -1,7 +1,6 @@
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
-import { ExecutionResult } from 'graphql'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -41,7 +40,7 @@ const ProgramPackageBasicForm: React.FC<ProgramPackageBasicFormProps> = ({
             onRefetch && onRefetch()
             message.success(formatMessage(commonMessages.event.successfullySaved))
           })
-          .catch(err => handleError(err))
+          .catch((err) => handleError(err))
           .finally(() => setLoading(false))
       }
     })
@@ -52,7 +51,7 @@ const ProgramPackageBasicForm: React.FC<ProgramPackageBasicFormProps> = ({
       hideRequiredMark
       labelCol={{ span: 24, md: { span: 4 } }}
       wrapperCol={{ span: 24, md: { span: 8 } }}
-      onSubmit={e => {
+      onSubmit={(e) => {
         e.preventDefault()
         handleUpload()
       }}
@@ -101,13 +100,8 @@ const ProgramPackageBasicForm: React.FC<ProgramPackageBasicFormProps> = ({
   )
 }
 
-const useUpdateProgramPackageBasic: (
-  programPackageId: string,
-) => (
-  title: string,
-  coverUrl: string,
-) => Promise<ExecutionResult<types.UPDATE_PROGRAM_PACKAGE_BASIC>> = programPackageId => {
-  const [updateProgramPackageBasicHandler] = useMutation<
+const useUpdateProgramPackageBasic = (programPackageId: string) => {
+  const [updateProgramPackageBasic] = useMutation<
     types.UPDATE_PROGRAM_PACKAGE_BASIC,
     types.UPDATE_PROGRAM_PACKAGE_BASICVariables
   >(gql`
@@ -118,17 +112,14 @@ const useUpdateProgramPackageBasic: (
     }
   `)
 
-  const updateProgramPackageBasic = (title: string, coverUrl: string) => {
-    return updateProgramPackageBasicHandler({
+  return (title: string, coverUrl: string) =>
+    updateProgramPackageBasic({
       variables: {
         programPackageId,
         title,
         coverUrl,
       },
     })
-  }
-
-  return updateProgramPackageBasic
 }
 
 export default Form.create<ProgramPackageBasicFormProps>()(ProgramPackageBasicForm)

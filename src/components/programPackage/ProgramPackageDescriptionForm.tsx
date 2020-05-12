@@ -2,7 +2,6 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, message } from 'antd'
 import Form, { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
-import { ExecutionResult } from 'graphql'
 import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -40,7 +39,7 @@ const ProgramPackageDescriptionForm: React.FC<ProgramPackageDescriptionFromProps
   return (
     <>
       <Form
-        onSubmit={e => {
+        onSubmit={(e) => {
           e.preventDefault()
           handleSubmit()
         }}
@@ -61,32 +60,25 @@ const ProgramPackageDescriptionForm: React.FC<ProgramPackageDescriptionFromProps
   )
 }
 
-const useUpdateProgramPackageDescription: (
-  programPackageId: string,
-) => (description: string) => Promise<ExecutionResult<types.UPDATE_PROGRAM_PACKAGE_DESCIRPTION>> = (
-  programPackageId: string,
-) => {
-  const [updateProgramPackageDescriptionHandler] = useMutation<
-    types.UPDATE_PROGRAM_PACKAGE_DESCIRPTION,
-    types.UPDATE_PROGRAM_PACKAGE_DESCIRPTIONVariables
+const useUpdateProgramPackageDescription = (programPackageId: string) => {
+  const [updateProgramPackageDescription] = useMutation<
+    types.UPDATE_PROGRAM_PACKAGE_DESCRIPTION,
+    types.UPDATE_PROGRAM_PACKAGE_DESCRIPTIONVariables
   >(gql`
-    mutation UPDATE_PROGRAM_PACKAGE_DESCIRPTION($description: String, $programPackageId: uuid!) {
+    mutation UPDATE_PROGRAM_PACKAGE_DESCRIPTION($description: String, $programPackageId: uuid!) {
       update_program_package(_set: { description: $description }, where: { id: { _eq: $programPackageId } }) {
         affected_rows
       }
     }
   `)
 
-  const updateProgramPackageDescription = (description: string) => {
-    return updateProgramPackageDescriptionHandler({
+  return (description: string) =>
+    updateProgramPackageDescription({
       variables: {
         programPackageId,
         description,
       },
     })
-  }
-
-  return updateProgramPackageDescription
 }
 
 export default Form.create<ProgramPackageDescriptionFromProps>()(ProgramPackageDescriptionForm)

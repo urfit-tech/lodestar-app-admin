@@ -28,18 +28,17 @@ const StyledSelect = styled(Select)<{ value?: any; onChange?: any }>`
   }
 `
 
-type CategorySelectorProps = {
+const CategorySelector: React.FC<{
   classType: ClassType
   value?: string
   onChange?: (value: string) => void
   flatten?: boolean
-}
-const CategorySelector: React.FC<CategorySelectorProps> = ({ flatten, value, onChange, classType }, ref) => {
+}> = ({ flatten, value, onChange, classType }) => {
   const { loading, categories } = useCategory(classType)
 
   return flatten ? (
     <>
-      {categories.map(category => {
+      {categories.map((category) => {
         return (
           <StyledButton
             className="mr-2 mb-2"
@@ -54,8 +53,8 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({ flatten, value, onC
       })}
     </>
   ) : (
-    <StyledSelect ref={ref} mode="multiple" loading={loading} value={value} onChange={onChange}>
-      {categories.map(category => (
+    <StyledSelect mode="multiple" loading={loading} value={value} onChange={onChange}>
+      {categories.map((category) => (
         <Select.Option style={{ borderRadius: '4px' }} key={category.id}>
           {category.name}
         </Select.Option>
@@ -64,4 +63,4 @@ const CategorySelector: React.FC<CategorySelectorProps> = ({ flatten, value, onC
   )
 }
 
-export default React.forwardRef(CategorySelector)
+export default CategorySelector

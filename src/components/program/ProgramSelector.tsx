@@ -9,42 +9,42 @@ type ProgramSelectorProps = SelectProps<string> & {
   memberId: string
 }
 
-const WrappedOwnedProgramSelector: React.FC<SelectProps<string>> = (selectProps, ref) => {
+export const OwnedProgramSelector: React.FC<SelectProps<string>> = (selectProps) => {
   const { formatMessage } = useIntl()
   const { loadingPrograms, programs } = useOwnedPrograms()
 
   return (
-    <Select ref={ref} loading={loadingPrograms} style={{ width: '100%' }} defaultValue="all" {...selectProps}>
+    <Select loading={loadingPrograms} style={{ width: '100%' }} defaultValue="all" {...selectProps}>
       <Select.Option key="all">{formatMessage(programMessages.label.programTitle)}</Select.Option>
-      {programs.map(program => (
+      {programs.map((program) => (
         <Select.Option key={program.id}>{program.title}</Select.Option>
       ))}
     </Select>
   )
 }
 
-const WrappedEditableProgramSelector: React.FC<ProgramSelectorProps> = ({ memberId, ...selectProps }, ref) => {
+export const EditableProgramSelector: React.FC<ProgramSelectorProps> = ({ memberId, ...selectProps }) => {
   const { formatMessage } = useIntl()
   const { programs, loadingPrograms } = useEditablePrograms(memberId)
 
   return (
-    <Select ref={ref} loading={loadingPrograms} style={{ width: '100%' }} defaultValue="all" {...selectProps}>
+    <Select loading={loadingPrograms} style={{ width: '100%' }} defaultValue="all" {...selectProps}>
       <Select.Option key="all">{formatMessage(programMessages.label.programTitle)}</Select.Option>
-      {programs.map(program => (
+      {programs.map((program) => (
         <Select.Option key={program.id}>{program.title}</Select.Option>
       ))}
     </Select>
   )
 }
 
-const WrappedEnrolledProgramSelector: React.FC<ProgramSelectorProps> = ({ memberId, ...selectProps }, ref) => {
+export const EnrolledProgramSelector: React.FC<ProgramSelectorProps> = ({ memberId, ...selectProps }) => {
   const { formatMessage } = useIntl()
   const { enrolledProgramIds, loadingProgramIds } = useEnrolledProgramIds(memberId, true)
 
   return (
-    <Select ref={ref} loading={loadingProgramIds} style={{ width: '100%' }} defaultValue="all" {...selectProps}>
+    <Select loading={loadingProgramIds} style={{ width: '100%' }} defaultValue="all" {...selectProps}>
       <Select.Option key="all">{formatMessage(programMessages.label.programTitle)}</Select.Option>
-      {enrolledProgramIds.map(programId => {
+      {enrolledProgramIds.map((programId) => {
         return (
           <Select.Option key={programId}>
             <ProgramSelectOptionValue programId={programId} />
@@ -58,7 +58,3 @@ const ProgramSelectOptionValue: React.FC<{ programId: string }> = ({ programId }
   const { program } = useProgram(programId)
   return <>{program && program.title}</>
 }
-
-export const OwnedProgramSelector = React.forwardRef(WrappedOwnedProgramSelector)
-export const EditableProgramSelector = React.forwardRef(WrappedEditableProgramSelector)
-export const EnrolledProgramSelector = React.forwardRef(WrappedEnrolledProgramSelector)

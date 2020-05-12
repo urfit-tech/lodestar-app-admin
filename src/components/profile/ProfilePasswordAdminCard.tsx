@@ -19,7 +19,7 @@ type ProfilePasswordAdminCardProps = CardProps & FormComponentProps & { memberId
 const ProfilePasswordAdminCard: React.FC<ProfilePasswordAdminCardProps> = ({ form, memberId, ...cardProps }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
-  const [loading, setLoading] = useState()
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
     form.validateFields((error, values) => {

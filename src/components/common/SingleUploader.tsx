@@ -18,7 +18,7 @@ const messages = defineMessages({
 
 const StyledUpload = styled(Upload)`
   .ant-progress-bg {
-    background: ${props => props.theme['@primary-color']};
+    background: ${(props) => props.theme['@primary-color']};
   }
 `
 
@@ -36,25 +36,22 @@ type SingleUploaderProps = UploadProps & {
   onError?: (info: UploadChangeParam<UploadFile>) => void
   withExtension?: boolean
 }
-const SingleUploader: React.FC<SingleUploaderProps> = (
-  {
-    path,
-    value,
-    onChange,
-    trigger,
-    uploadText,
-    reUploadText,
-    onUploading,
-    onSuccess,
-    onError,
-    onCancel,
-    isPublic,
-    withExtension,
-    fileList,
-    ...uploadProps
-  },
-  ref,
-) => {
+const SingleUploader: React.FC<SingleUploaderProps> = ({
+  path,
+  value,
+  onChange,
+  trigger,
+  uploadText,
+  reUploadText,
+  onUploading,
+  onSuccess,
+  onError,
+  onCancel,
+  isPublic,
+  withExtension,
+  fileList,
+  ...uploadProps
+}) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState<boolean>(false)
   const uploadCanceler = useRef<Canceler>()
@@ -62,7 +59,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = (
   const props: UploadProps = {
     ...uploadProps,
     fileList: fileList || [value].filter(notEmpty),
-    onChange: info => {
+    onChange: (info) => {
       onChange && onChange(info.file)
       if (info.file.status === 'uploading') {
         onUploading && onUploading(info)
@@ -89,12 +86,12 @@ const SingleUploader: React.FC<SingleUploaderProps> = (
         withExtension ? path + extname(file.name) : path,
         file,
         {
-          onUploadProgress: progressEvent => {
+          onUploadProgress: (progressEvent) => {
             onProgress({
               percent: (progressEvent.loaded / progressEvent.total) * 100,
             })
           },
-          cancelToken: new axios.CancelToken(canceler => {
+          cancelToken: new axios.CancelToken((canceler) => {
             uploadCanceler.current = canceler
           }),
         },
@@ -124,4 +121,4 @@ const SingleUploader: React.FC<SingleUploaderProps> = (
   )
 }
 
-export default React.forwardRef(SingleUploader)
+export default SingleUploader

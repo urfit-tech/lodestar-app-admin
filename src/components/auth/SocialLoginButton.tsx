@@ -73,10 +73,10 @@ const socialLogin = async (provider: string, providerToken: any) => {
   }
 }
 
-export const FacebookLoginButton = () => {
+export const FacebookLoginButton: React.FC = () => {
   const { formatMessage } = useIntl()
   const { setVisible } = useContext(AuthModalContext)
-  const [loading, setLoading] = useState()
+  const [loading, setLoading] = useState(false)
 
   return (
     <SocialLoginButton
@@ -95,7 +95,7 @@ export const FacebookLoginButton = () => {
       onLoginSuccess={({ _provider, _token }: any) => {
         setLoading(true)
         socialLogin(_provider, _token)
-          .then(token => {
+          .then((token) => {
             setVisible && setVisible(false)
           })
           .finally(() => setLoading(false))
@@ -111,10 +111,10 @@ export const FacebookLoginButton = () => {
   )
 }
 
-export const GoogleLoginButton = () => {
+export const GoogleLoginButton: React.FC = () => {
   const { formatMessage } = useIntl()
   const { setVisible } = useContext(AuthModalContext)
-  const [loading, setLoading] = useState()
+  const [loading, setLoading] = useState(false)
 
   return (
     <SocialLoginButton
@@ -133,7 +133,7 @@ export const GoogleLoginButton = () => {
       onLoginSuccess={({ _provider, _token }: any) => {
         setLoading(true)
         socialLogin(_provider, _token)
-          .then(token => {
+          .then((token) => {
             setVisible && setVisible(false)
           })
           .finally(() => setLoading(false))

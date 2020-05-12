@@ -1,17 +1,16 @@
 import { Select } from 'antd'
-import React, { forwardRef } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
 
 const LanguageSelector: React.FC<{
   value?: string
   onChange?: (value: string) => void
-}> = ({ value, onChange }, ref) => {
+}> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
 
   return (
     <Select
-      ref={ref}
       mode="multiple"
       value={value}
       onChange={onChange}
@@ -24,4 +23,4 @@ const LanguageSelector: React.FC<{
   )
 }
 
-export default forwardRef(LanguageSelector)
+export default LanguageSelector

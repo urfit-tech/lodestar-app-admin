@@ -11,29 +11,34 @@ const StyledGroup = styled(Input.Group)`
   }
 `
 
+type CouponPlanDiscountProps = { type: CouponPlanType; amount: number }
+
 const CouponPlanDiscountSelector: React.FC<{
-  value?: { type: CouponPlanType; amount: number }
-  onChange?: (value: { type: CouponPlanType; amount: number }) => void
-}> = ({ value, onChange }, ref) => {
+  value?: CouponPlanDiscountProps
+  onChange?: (value: CouponPlanDiscountProps) => void
+}> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
 
   return (
-    <div ref={ref}>
+    <div>
       {value ? (
         <StyledGroup compact>
-          <Select value={value.type} onChange={(type: CouponPlanType) => onChange && onChange({ ...value, type })}>
+          <Select<CouponPlanType>
+            value={value.type}
+            onChange={(type: CouponPlanType) => onChange && onChange({ ...value, type })}
+          >
             <Select.Option value={1}>{formatMessage(promotionMessages.term.priceType)}</Select.Option>
             <Select.Option value={2}>{formatMessage(promotionMessages.term.ratioType)}</Select.Option>
           </Select>
           <InputNumber
             style={{ width: '40%' }}
-            formatter={v => `${v} ${value.type === 1 ? formatMessage(promotionMessages.term.dollar) : '%'}`}
-            parser={v =>
+            formatter={(v) => `${v} ${value.type === 1 ? formatMessage(promotionMessages.term.dollar) : '%'}`}
+            parser={(v) =>
               (v && parseFloat(v.replace(` ${formatMessage(promotionMessages.term.dollar)}`, '').replace(' %', ''))) ||
               0
             }
             value={value.amount}
-            onChange={amount => amount && onChange && onChange({ ...value, amount })}
+            onChange={(amount) => amount && onChange && onChange({ ...value, amount })}
           />
         </StyledGroup>
       ) : null}
@@ -41,4 +46,4 @@ const CouponPlanDiscountSelector: React.FC<{
   )
 }
 
-export default React.forwardRef(CouponPlanDiscountSelector)
+export default CouponPlanDiscountSelector

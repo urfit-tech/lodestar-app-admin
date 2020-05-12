@@ -76,8 +76,8 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
   const { formatMessage } = useIntl()
 
   const [status, setStatus] = useState()
-  const [orderIdLike, setOrderIdLike] = useState()
-  const [memberNameAndEmailLike, setMemberNameAndEmailLike] = useState()
+  const [orderIdLike, setOrderIdLike] = useState<string | null>(null)
+  const [memberNameAndEmailLike, setMemberNameAndEmailLike] = useState<string | null>(null)
   const [pagination, setPagination] = useState<PaginationConfig>({})
 
   const pageSize = pagination.pageSize || DEFAULT_PAGE_SIZE
@@ -102,7 +102,7 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
       ...getColumnSearchProps({
         onReset: clearFilters => {
           clearFilters()
-          setOrderIdLike(undefined)
+          setOrderIdLike(null)
         },
         onSearch: (selectedKeys, confirm) => {
           confirm && confirm()
@@ -131,7 +131,7 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
       ...getColumnSearchProps({
         onReset: clearFilters => {
           clearFilters()
-          setMemberNameAndEmailLike(undefined)
+          setMemberNameAndEmailLike(null)
         },
         onSearch: (selectedKeys, confirm) => {
           confirm && confirm()
@@ -303,8 +303,8 @@ const useDataSource = (
   pageSize: number,
   pagination: PaginationConfig,
   status: any,
-  orderIdLike: any,
-  memberNameAndEmailLike: any,
+  orderIdLike: string | null,
+  memberNameAndEmailLike: string | null,
 ): {
   loading: boolean
   dataSource?: OrderRow[]

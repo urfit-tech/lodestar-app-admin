@@ -29,7 +29,7 @@ const IssueReplyCreationBlock: React.FC<IssueReplyCreationBlockProps> = ({ membe
     INSERT_ISSUE_REPLY,
   )
 
-  const [replying, setReplying] = useState()
+  const [replying, setReplying] = useState(false)
 
   const handleSubmit = () => {
     form.validateFields((error, values) => {
@@ -46,14 +46,14 @@ const IssueReplyCreationBlock: React.FC<IssueReplyCreationBlockProps> = ({ membe
             form.resetFields()
             onRefetch && onRefetch()
           })
-          .catch(err => message.error(err.message))
+          .catch((err) => message.error(err.message))
           .finally(() => setReplying(false))
       }
     })
   }
   return (
     <Form
-      onSubmit={e => {
+      onSubmit={(e) => {
         e.preventDefault()
         handleSubmit()
       }}

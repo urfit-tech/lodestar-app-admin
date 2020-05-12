@@ -26,8 +26,8 @@ const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps
     types.UPDATE_PROGRAM_PERPETUAL_PLANVariables
   >(UPDATE_PROGRAM_PERPETUAL_PLAN)
   const { formatMessage } = useIntl()
-  const [loading, setLoading] = useState()
-  const [hasSalePrice, setHasSalePrice] = useState(program.salePrice ? true : false)
+  const [loading, setLoading] = useState(false)
+  const [withSalePrice, setWithSalePrice] = useState(program.salePrice ? true : false)
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -39,7 +39,7 @@ const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps
             programId: program.id,
             listPrice: values.listPrice || 0,
             salePrice: values.salePrice || 0,
-            soldAt: hasSalePrice && values.soldAt ? moment(values.soldAt).toDate() : null,
+            soldAt: withSalePrice && values.soldAt ? moment(values.soldAt).toDate() : null,
           },
         })
           .then(() => {
@@ -62,33 +62,33 @@ const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps
           })(
             <InputNumber
               min={0}
-              formatter={value => `NT$ ${value}`}
-              parser={value => (value ? value.replace(/\D/g, '') : '')}
+              formatter={(value) => `NT$ ${value}`}
+              parser={(value) => (value ? value.replace(/\D/g, '') : '')}
             />,
           )}
         </Form.Item>
 
         <div className="mb-4">
-          <Checkbox defaultChecked={hasSalePrice} onChange={e => setHasSalePrice(e.target.checked)}>
+          <Checkbox defaultChecked={withSalePrice} onChange={(e) => setWithSalePrice(e.target.checked)}>
             {formatMessage(commonMessages.term.salePrice)}
           </Checkbox>
         </div>
-        <Form.Item className={hasSalePrice ? 'm-0' : 'd-none'}>
+        <Form.Item className={withSalePrice ? 'm-0' : 'd-none'}>
           <Form.Item className="d-inline-block mr-2">
             {form.getFieldDecorator('salePrice', {
               initialValue: program.salePrice || 0,
             })(
               <InputNumber
                 min={0}
-                formatter={value => `NT$ ${value}`}
-                parser={value => (value ? value.replace(/\D/g, '') : '')}
+                formatter={(value) => `NT$ ${value}`}
+                parser={(value) => (value ? value.replace(/\D/g, '') : '')}
               />,
             )}
           </Form.Item>
           <Form.Item className="d-inline-block mr-2">
             {form.getFieldDecorator('soldAt', {
               initialValue: program && program.soldAt ? moment(program.soldAt) : null,
-              rules: [{ required: hasSalePrice, message: formatMessage(errorMessages.form.date) }],
+              rules: [{ required: withSalePrice, message: formatMessage(errorMessages.form.date) }],
             })(<DatePicker />)}
           </Form.Item>
           {form.getFieldValue('soldAt') && moment(form.getFieldValue('soldAt')).isBefore(moment()) ? (

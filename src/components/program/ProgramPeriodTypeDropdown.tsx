@@ -8,10 +8,11 @@ type ProgramPeriodTypeDropdownProps = {
   value?: PeriodType
   onChange?: (periodType: PeriodType) => void
 }
-const ProgramPeriodTypeDropdown: React.FC<ProgramPeriodTypeDropdownProps> = (
-  { isShortenPeriodType, value, onChange },
-  form,
-) => {
+const ProgramPeriodTypeDropdown: React.FC<ProgramPeriodTypeDropdownProps> = ({
+  isShortenPeriodType,
+  value,
+  onChange,
+}) => {
   const periodTypes: PeriodType[] = ['D', 'W', 'M', 'Y']
 
   return (
@@ -19,7 +20,7 @@ const ProgramPeriodTypeDropdown: React.FC<ProgramPeriodTypeDropdownProps> = (
       trigger={['click']}
       overlay={
         <Menu>
-          {periodTypes.map(periodType => (
+          {periodTypes.map((periodType) => (
             <Menu.Item key={periodType} onClick={() => onChange && onChange(periodType)}>
               {isShortenPeriodType ? (
                 <ShortenPeriodTypeLabel periodType={periodType} />
@@ -40,4 +41,4 @@ const ProgramPeriodTypeDropdown: React.FC<ProgramPeriodTypeDropdownProps> = (
   )
 }
 
-export default React.forwardRef(ProgramPeriodTypeDropdown)
+export default ProgramPeriodTypeDropdown

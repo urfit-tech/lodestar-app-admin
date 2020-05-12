@@ -1,5 +1,5 @@
 import { Select } from 'antd'
-import React, { forwardRef } from 'react'
+import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AvatarImage } from './Image'
@@ -26,27 +26,27 @@ export type MemberOptionProps = {
   email?: string
   disabled?: boolean
 }
+
 const MemberSelector: React.FC<{
   members: MemberOptionProps[]
   value?: string
   onChange?: (value: string | null) => void
   disabled?: boolean
-}> = ({ members, value, onChange, disabled }, ref) => {
+}> = ({ members, value, onChange, disabled }) => {
   const { formatMessage } = useIntl()
 
   return (
     <Select<string | null>
-      ref={ref}
       showSearch
       placeholder={formatMessage(messages.memberSelect)}
       value={value}
-      onChange={value => onChange && onChange(value)}
+      onChange={(value) => onChange && onChange(value)}
       optionLabelProp="title"
       optionFilterProp="data-source"
       style={{ width: '100%' }}
       disabled={disabled}
     >
-      {members.map(member => (
+      {members.map((member) => (
         <Select.Option
           key={member.id}
           value={member.id}
@@ -65,4 +65,4 @@ const MemberSelector: React.FC<{
   )
 }
 
-export default forwardRef(MemberSelector)
+export default MemberSelector

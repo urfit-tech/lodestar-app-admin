@@ -1,5 +1,5 @@
 import { ControlType, EditorState } from 'braft-editor'
-import React, { forwardRef, useContext } from 'react'
+import React, { useContext } from 'react'
 import { v4 as uuid } from 'uuid'
 import AppContext from '../../contexts/AppContext'
 import { uploadFile } from '../../helpers'
@@ -107,11 +107,11 @@ const AdminBraftEditor: React.FC<{
   variant?: AdminBraftVariant
   value?: EditorState
   onChange?: (editorState: EditorState) => void
-}> = ({ variant, value, onChange }, ref) => {
+}> = ({ variant, value, onChange }) => {
   const { id: appId } = useContext(AppContext)
+
   return (
     <StyledBraftEditor
-      ref={ref}
       value={value}
       onChange={onChange}
       contentClassName={variant === 'short' ? 'short-bf-content' : undefined}
@@ -122,4 +122,4 @@ const AdminBraftEditor: React.FC<{
   )
 }
 
-export default forwardRef(AdminBraftEditor)
+export default AdminBraftEditor
