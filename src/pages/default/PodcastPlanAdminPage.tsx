@@ -2,14 +2,14 @@ import { Button, Icon, Skeleton } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import AdminCard from '../../../components/admin/AdminCard'
-import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
-import PodcastPlanCollectionAdminTable from '../../../containers/podcast/PodcastPlanCollectionAdminTable'
-import PodcastPlanCreationModal from '../../../containers/podcast/PodcastPlanCreationModal'
-import { useAuth } from '../../../contexts/AuthContext'
-import { commonMessages, podcastMessages } from '../../../helpers/translation'
-import { usePodcastPlanAdminCollection } from '../../../hooks/podcast'
-import { ReactComponent as DiscountIcon } from '../../../images/icon/discount.svg'
+import AdminCard from '../../components/admin/AdminCard'
+import AdminLayout from '../../components/layout/AdminLayout'
+import PodcastPlanCollectionAdminTable from '../../containers/podcast/PodcastPlanCollectionAdminTable'
+import PodcastPlanCreationModal from '../../containers/podcast/PodcastPlanCreationModal'
+import { useAuth } from '../../contexts/AuthContext'
+import { commonMessages, podcastMessages } from '../../helpers/translation'
+import { usePodcastPlanAdminCollection } from '../../hooks/podcast'
+import { ReactComponent as DiscountIcon } from '../../images/icon/discount.svg'
 
 const StyledTitle = styled.h1`
   color: var(--gray-darker);
@@ -29,7 +29,7 @@ const PodcastPlanAdminPage: React.FC = () => {
   const [isVisible, setVisible] = useState(false)
 
   return (
-    <OwnerAdminLayout>
+    <AdminLayout>
       <StyledTitle className="mb-4">
         <Icon component={() => <DiscountIcon />} className="mr-2" />
         <span>{formatMessage(commonMessages.menu.podcastPlans)}</span>
@@ -61,7 +61,7 @@ const PodcastPlanAdminPage: React.FC = () => {
           </AdminCard>
         </>
       )}
-    </OwnerAdminLayout>
+    </AdminLayout>
   )
 }
 

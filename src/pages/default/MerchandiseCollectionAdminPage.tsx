@@ -6,8 +6,7 @@ import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
 import { AdminPageTitle } from '../../components/admin'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
-import CreatorAdminLayout from '../../components/layout/CreatorAdminLayout'
-import OwnerAdminLayout from '../../components/layout/OwnerAdminLayout'
+import AdminLayout from '../../components/layout/AdminLayout'
 import MerchandiseAdminItem from '../../components/merchandise/MerchandiseAdminItem'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
@@ -17,7 +16,7 @@ import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
 import LoadingPage from './LoadingPage'
 
 const StyledHeader = styled.div<{ width?: string }>`
-  ${props => (props.width ? `width: ${props.width};` : '')}
+  ${(props) => (props.width ? `width: ${props.width};` : '')}
   color: var(--gray-darker);
   font-weight: bold;
   letter-spacing: 0.2px;
@@ -27,7 +26,7 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { history } = useRouter()
   const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { currentMemberId } = useAuth()
 
   const { id: appId } = useContext(AppContext)
   const insertMerchandise = useInsertMerchandise()
@@ -43,7 +42,7 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
       key: 'selling',
       name: formatMessage(merchandiseMessages.status.selling),
       merchandises: merchandises.filter(
-        merchandise => merchandise.publishedAt && merchandise.publishedAt.getTime() < Date.now(),
+        (merchandise) => merchandise.publishedAt && merchandise.publishedAt.getTime() < Date.now(),
       ),
     },
     // {
@@ -55,16 +54,14 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
       key: 'unpublished',
       name: formatMessage(merchandiseMessages.status.unpublished),
       merchandises: merchandises.filter(
-        merchandise => !merchandise.publishedAt || merchandise.publishedAt.getTime() > Date.now(),
+        (merchandise) => !merchandise.publishedAt || merchandise.publishedAt.getTime() > Date.now(),
       ),
     },
   ]
 
-  if (!currentMemberId || !currentUserRole || !appId) {
+  if (!currentMemberId || !appId) {
     return <LoadingPage />
   }
-
-  const AdminLayout = currentUserRole === 'app-owner' ? OwnerAdminLayout : CreatorAdminLayout
 
   return (
     <AdminLayout>
@@ -107,14 +104,14 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
           <div className="col-4">
             <Input.Search
               placeholder={formatMessage(merchandiseMessages.text.searchMerchandise)}
-              onChange={e => setSearchText(e.target.value.toLowerCase())}
+              onChange={(e) => setSearchText(e.target.value.toLowerCase())}
             />
           </div>
         </div>
       </div>
 
-      <Tabs activeKey={activeKey || 'selling'} onChange={key => setActiveKey(key)}>
-        {tabContents.map(tabContent => (
+      <Tabs activeKey={activeKey || 'selling'} onChange={(key) => setActiveKey(key)}>
+        {tabContents.map((tabContent) => (
           <Tabs.TabPane key={tabContent.key} tab={`${tabContent.name} (${tabContent.merchandises.length})`}>
             <div className="d-flex align-items-center justify-content-between p-3">
               <StyledHeader className="flex-grow-1">{formatMessage(commonMessages.term.merchandise)}</StyledHeader>
@@ -124,8 +121,8 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
             </div>
 
             {tabContent.merchandises
-              .filter(merchandise => !searchText || merchandise.title.toLowerCase().includes(searchText))
-              .map(merchandise => (
+              .filter((merchandise) => !searchText || merchandise.title.toLowerCase().includes(searchText))
+              .map((merchandise) => (
                 <MerchandiseAdminItem key={merchandise.id} {...merchandise} />
               ))}
           </Tabs.TabPane>

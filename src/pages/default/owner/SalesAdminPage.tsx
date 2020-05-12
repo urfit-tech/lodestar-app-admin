@@ -1,7 +1,7 @@
 import { Icon, Typography } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
+import AdminLayout from '../../../components/layout/AdminLayout'
 import SaleCollectionAdminCard from '../../../components/sale/SaleCollectionAdminCard'
 import SaleSummaryCard from '../../../components/sale/SaleSummaryAdminCard'
 import OrderExportModal from '../../../containers/sale/OrderExportModal'
@@ -11,7 +11,7 @@ const SalesAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
 
   return (
-    <OwnerAdminLayout>
+    <AdminLayout>
       <Typography.Title level={3} className="mb-4">
         <Icon type="dollar" className="mr-3" />
         <span>{formatMessage(commonMessages.menu.salesAdmin)}</span>
@@ -28,7 +28,7 @@ const SalesAdminPage: React.FC = () => {
       </div>
 
       <SaleCollectionAdminCard />
-    </OwnerAdminLayout>
+    </AdminLayout>
   )
 }
 

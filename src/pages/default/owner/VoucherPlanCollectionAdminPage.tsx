@@ -1,8 +1,8 @@
 import { Icon, Skeleton, Typography } from 'antd'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
+import AdminLayout from '../../../components/layout/AdminLayout'
 import DefaultLayout from '../../../components/layout/DefaultLayout'
-import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import VoucherPlanCollectionBlock from '../../../containers/voucher/VoucherPlanCollectionBlock'
 import AppContext from '../../../contexts/AppContext'
 import { commonMessages } from '../../../helpers/translation'
@@ -26,14 +26,14 @@ const VoucherPlanCollectionAdminPage = () => {
   }
 
   return (
-    <OwnerAdminLayout>
+    <AdminLayout>
       <Typography.Title level={3} className="mb-4">
         <Icon component={() => <DiscountIcon />} className="mr-3" />
         <span>{formatMessage(commonMessages.menu.vouchers)}</span>
       </Typography.Title>
 
       <VoucherPlanCollectionBlock />
-    </OwnerAdminLayout>
+    </AdminLayout>
   )
 }
 

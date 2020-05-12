@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
-import { useAuth } from '../../contexts/AuthContext'
 import { currencyFormatter } from '../../helpers'
 import { appointmentMessages } from '../../helpers/translation'
 import { AvatarImage } from '../common/Image'
@@ -28,7 +27,7 @@ const StyledPlanTitle = styled.div`
   letter-spacing: 0.2px;
 `
 const StyledPlanPrice = styled.div`
-  color: ${props => props.theme['@primary-color']};
+  color: ${(props) => props.theme['@primary-color']};
   letter-spacing: 0.2px;
 `
 const StyledText = styled.div`
@@ -48,7 +47,7 @@ const StyledPublished = styled.div<{ active?: boolean }>`
     margin-right: 0.5rem;
     width: 10px;
     height: 10px;
-    background: ${props => (props.active ? 'var(--success)' : 'var(--gray)')};
+    background: ${(props) => (props.active ? 'var(--success)' : 'var(--gray)')};
     content: ' ';
     border-radius: 50%;
   }
@@ -86,13 +85,12 @@ const AppointmentPlanCollectionTable: React.FC<{
 }> = ({ appointmentPlans, loading }) => {
   const { formatMessage } = useIntl()
   const { history } = useRouter()
-  const { currentUserRole } = useAuth()
 
   const [searchName, setSearchName] = useState<string | null>(null)
   const [searchTitle, setSearchTitle] = useState<string | null>(null)
 
   const data = appointmentPlans.filter(
-    appointmentPlan =>
+    (appointmentPlan) =>
       (!searchName && !searchTitle) ||
       (searchName && appointmentPlan.creatorName.includes(searchName)) ||
       (searchTitle && appointmentPlan.title.includes(searchTitle)),
@@ -103,13 +101,8 @@ const AppointmentPlanCollectionTable: React.FC<{
       rowKey="id"
       rowClassName={() => 'cursor-pointer'}
       loading={loading}
-      onRow={record => ({
-        onClick: () =>
-          history.push(
-            currentUserRole === 'app-owner'
-              ? `/admin/appointment-plans/${record.id}`
-              : `/studio/appointment-plans/${record.id}`,
-          ),
+      onRow={(record) => ({
+        onClick: () => history.push(`/appointment-plans/${record.id}`),
       })}
       columns={[
         {
@@ -126,7 +119,7 @@ const AppointmentPlanCollectionTable: React.FC<{
               <Input
                 autoFocus
                 value={searchName || ''}
-                onChange={e => {
+                onChange={(e) => {
                   searchTitle && setSearchTitle('')
                   setSearchName(e.target.value)
                 }}
@@ -144,7 +137,7 @@ const AppointmentPlanCollectionTable: React.FC<{
               <Input
                 autoFocus
                 value={searchTitle || ''}
-                onChange={e => {
+                onChange={(e) => {
                   searchName && setSearchName('')
                   setSearchTitle(e.target.value)
                 }}

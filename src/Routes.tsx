@@ -53,6 +53,11 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'NotificationPage',
     authenticated: false,
   },
+  settings_admin: {
+    path: '/settings',
+    pageName: 'SettingAdminPage',
+    authenticated: true,
+  },
 
   // program
   program_collection_admin: {
@@ -66,11 +71,10 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'ProgramAdminPage',
     authenticated: true,
   },
-  program_issues_admin: {
+  program_issue_collection_admin: {
     path: '/program-issues',
     pageName: 'ProgramIssueCollectionAdminPage',
     authenticated: true,
-    allowedUserRole: 'content-creator',
   },
   program_package_collection_admin: {
     path: '/program-packages',
@@ -100,85 +104,58 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   },
 
   // podcast program
-  owner_podcast_program_collection_admin: {
-    path: '/admin/podcast-programs',
-    pageName: 'owner/PodcastProgramCollectionAdminPage',
+  podcast_program_collection_admin: {
+    path: '/podcast-programs',
+    pageName: 'PodcastProgramCollectionAdminPage',
     authenticated: true,
-    allowedUserRole: 'app-owner',
   },
-  owner_podcast_program_admin: {
-    path: '/admin/podcast-programs/:podcastProgramId',
-    pageName: 'owner/PodcastProgramAdminPage',
+  podcast_program_admin: {
+    path: '/podcast-programs/:podcastProgramId',
+    pageName: 'PodcastProgramAdminPage',
     authenticated: true,
-    allowedUserRole: 'app-owner',
   },
-  owner_podcast_program_category_admin: {
-    path: '/admin/podcast-program-category',
+  podcast_plan_admin: {
+    path: '/podcast-plan',
+    pageName: 'PodcastPlanAdminPage',
+    authenticated: true,
+  },
+  podcast_program_category_admin: {
+    path: '/podcast-program-category',
     pageName: 'PodcastProgramCategoryPage',
     authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
-  owner_podcast_plan_admin: {
-    path: '/admin/podcast-plan',
-    pageName: 'owner/PodcastPlanAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
   },
 
   // appointment
-  owner_appointment_plan_collection_admin: {
-    path: '/admin/appointment-plans',
-    pageName: 'owner/AppointmentPlanCollectionAdminPage',
+  appointment_plan_collection_admin: {
+    path: '/appointment-plans',
+    pageName: 'AppointmentPlanCollectionAdminPage',
     authenticated: true,
-    allowedUserRole: 'app-owner',
   },
-  owner_appointment_plan_admin: {
-    path: '/admin/appointment-plans/:appointmentPlanId',
-    pageName: 'owner/AppointmentPlanAdminPage',
+  appointment_plan_admin: {
+    path: '/appointment-plans/:appointmentPlanId',
+    pageName: 'AppointmentPlanAdminPage',
     authenticated: true,
-    allowedUserRole: 'app-owner',
   },
-  owner_appointment_period_collection_admin: {
-    path: '/admin/appointment-periods',
-    pageName: 'owner/AppointmentPeriodCollectionAdminPage',
+  appointment_period_collection_admin: {
+    path: '/appointment-periods',
+    pageName: 'AppointmentPeriodCollectionAdminPage',
     authenticated: true,
-    allowedUserRole: 'app-owner',
   },
 
   // activity
-  owner_activity_collection_admin: {
-    path: '/admin/activities',
-    pageName: 'creator/ActivityCollectionAdminPage',
+  activity_collection_admin: {
+    path: '/activities',
+    pageName: 'ActivityCollectionAdminPage',
     authenticated: true,
-    allowedUserRole: 'app-owner',
   },
-  owner_activity_admin: {
-    path: '/admin/activities/:activityId',
-    pageName: 'creator/ActivityAdminPage',
+  activity_admin: {
+    path: '/activities/:activityId',
+    pageName: 'ActivityAdminPage',
     authenticated: true,
-    allowedUserRole: 'app-owner',
   },
-  owner_activity_category_admin: {
-    path: '/admin/activity-category',
+  activity_category_admin: {
+    path: '/activity-category',
     pageName: 'ActivityCategoryPage',
-    authenticated: true,
-  },
-
-  // blog
-  blog_collection_admin: {
-    path: '/blog',
-    pageName: 'owner/BlogCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
-  blog_admin: {
-    path: '/blog/:postId',
-    pageName: 'owner/BlogAdminPage',
-    authenticated: true,
-  },
-  blog_category_admin: {
-    path: '/blog-post-category',
-    pageName: 'BlogPostCategoryPage',
     authenticated: true,
   },
 
@@ -193,9 +170,31 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'MerchandiseAdminPage',
     authenticated: true,
   },
+  merchandise_shipping_admin: {
+    path: '/merchandise-shipping',
+    pageName: 'MerchandiseShippingPage',
+    authenticated: true,
+  },
   merchandise_category_admin: {
     path: '/merchandise-category',
     pageName: 'MerchandiseCategoryPage',
+    authenticated: true,
+  },
+
+  // blog
+  blog_collection_admin: {
+    path: '/blog',
+    pageName: 'BlogCollectionAdminPage',
+    authenticated: true,
+  },
+  blog_admin: {
+    path: '/blog/:postId',
+    pageName: 'BlogAdminPage',
+    authenticated: true,
+  },
+  blog_category_admin: {
+    path: '/blog-post-category',
+    pageName: 'BlogPostCategoryPage',
     authenticated: true,
   },
 
@@ -224,77 +223,11 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
-  owner_settings_admin: {
-    path: '/admin/settings',
-    pageName: 'owner/SettingAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
-  owner_edm_admin: {
-    path: '/admin/edm',
-    pageName: 'owner/EdmAdminPage',
-    authenticated: true,
-    allowedUserRole: 'app-owner',
-  },
 
   // content creator admin
-  creator_appointment_plan_collection_admin: {
-    path: '/studio/appointment-plans',
-    pageName: 'owner/AppointmentPlanCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'content-creator',
-  },
-  creator_appointment_plan_admin: {
-    path: '/studio/appointment-plans/:appointmentPlanId',
-    pageName: 'owner/AppointmentPlanAdminPage',
-    authenticated: true,
-    allowedUserRole: 'content-creator',
-  },
-  creator_appointment_period_collection_admin: {
-    path: '/studio/appointment-periods',
-    pageName: 'owner/AppointmentPeriodCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'content-creator',
-  },
-  creator_activity_collection_admin: {
-    path: '/studio/activities',
-    pageName: 'creator/ActivityCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'content-creator',
-  },
-  creator_activity_admin: {
-    path: '/studio/activities/:activityId',
-    pageName: 'creator/ActivityAdminPage',
-    authenticated: true,
-    allowedUserRole: 'content-creator',
-  },
-  creator_products_admin: {
-    path: '/studio/products',
-    pageName: 'creator/ProductCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'content-creator',
-  },
-  creator_product_issues_admin: {
-    path: '/studio/product_issues',
-    pageName: 'creator/ProductIssueCollectionAdminPage',
-    authenticated: true,
-    allowedUserRole: 'content-creator',
-  },
   creator_sales_admin: {
     path: '/studio/sales',
     pageName: 'creator/SalesAdminPage',
-    authenticated: true,
-    allowedUserRole: 'content-creator',
-  },
-  creator_support_admin: {
-    path: '/studio/support',
-    pageName: 'creator/SupportAdminPage',
-    authenticated: true,
-    allowedUserRole: 'content-creator',
-  },
-  creator_settings_admin: {
-    path: '/studio/settings',
-    pageName: 'creator/SettingAdminPage',
     authenticated: true,
     allowedUserRole: 'content-creator',
   },
@@ -303,14 +236,14 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
 export default () => (
   <Suspense fallback={<LoadingPage></LoadingPage>}>
     <Switch>
-      {Object.keys(routesProps).map(routeKey => {
+      {Object.keys(routesProps).map((routeKey) => {
         const routeProps = routesProps[routeKey as keyof typeof routesProps]
         return (
           <Route
             exact
             key={routeKey}
             path={routeProps.path}
-            render={props => (
+            render={(props) => (
               <LoadablePage
                 {...props}
                 pageName={routeProps.pageName}
@@ -324,7 +257,7 @@ export default () => (
       <Route
         exact
         path="/admin"
-        render={props => (
+        render={(props) => (
           <Redirect
             to={{
               pathname: '/admin/sales',
@@ -336,7 +269,7 @@ export default () => (
       <Route
         exact
         path="/studio"
-        render={props => (
+        render={(props) => (
           <Redirect
             to={{
               pathname: '/studio/sales',

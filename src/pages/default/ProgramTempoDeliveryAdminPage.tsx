@@ -8,7 +8,7 @@ import { AdminBlock, AdminPageTitle } from '../../components/admin'
 import AdminModal from '../../components/admin/AdminModal'
 import DatetimePicker from '../../components/common/DatetimePicker'
 import { AvatarImage } from '../../components/common/Image'
-import OwnerAdminLayout from '../../components/layout/OwnerAdminLayout'
+import AdminLayout from '../../components/layout/AdminLayout'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import {
@@ -86,7 +86,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
   const { loadingEnrollment, members } = useProgramPackagePlanEnrollment(planId)
   const { loadingTempoDelivery, tempoDelivery, allDeliveredProgramIds, refetchTempoDelivery } = useProgramTempoDelivery(
     packageId,
-    members.map(member => member.id),
+    members.map((member) => member.id),
   )
 
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([])
@@ -112,7 +112,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
   }
 
   return (
-    <OwnerAdminLayout>
+    <AdminLayout>
       <AdminPageTitle className="mb-5">
         <Icon component={() => <BookIcon />} className="mr-3" />
         <span>{formatMessage(commonMessages.menu.tempoDelivery)}</span>
@@ -132,7 +132,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
                     setSelectedPlanId(null)
                   }}
                 >
-                  {programPackages.map(programPackage => (
+                  {programPackages.map((programPackage) => (
                     <StyledItem key={programPackage.id}>{programPackage.title}</StyledItem>
                   ))}
                 </Menu>
@@ -140,7 +140,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
             >
               <StyledProgramPackageTitle className="d-flex align-items-center justify-content-center cursor-pointer">
                 <div className="mx-2">
-                  {programPackages.find(programPackage => programPackage.id === packageId)?.title}
+                  {programPackages.find((programPackage) => programPackage.id === packageId)?.title}
                 </div>
                 <Icon type="caret-down" className="ml-1" />
               </StyledProgramPackageTitle>
@@ -156,7 +156,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
               trigger={['click']}
               overlay={
                 <Menu onClick={({ key }) => setSelectedPlanId(key)}>
-                  {programPackagePlans.map(programPackagePlan => (
+                  {programPackagePlans.map((programPackagePlan) => (
                     <StyledItem key={programPackagePlan.id}>{programPackagePlan.title}</StyledItem>
                   ))}
                 </Menu>
@@ -165,7 +165,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
               <StyledProgramPackagePlanTitle className="d-flex align-items-center justify-content-center cursor-pointer">
                 <div className="mr-1">{formatMessage(programMessages.label.planField)}</div>
                 <div className="mx-2">
-                  {programPackagePlans.find(programPackagePlan => programPackagePlan.id === planId)?.title}
+                  {programPackagePlans.find((programPackagePlan) => programPackagePlan.id === planId)?.title}
                 </div>
                 <Icon type="caret-down" className="ml-1" />
               </StyledProgramPackagePlanTitle>
@@ -202,8 +202,8 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
             >
               <Form colon={false}>
                 <Form.Item label={formatMessage(programMessages.label.select)}>
-                  <Select<string[]> mode="multiple" onChange={value => setSelectedProgramIds(value)}>
-                    {programs.map(program => (
+                  <Select<string[]> mode="multiple" onChange={(value) => setSelectedProgramIds(value)}>
+                    {programs.map((program) => (
                       <Select.Option key={program.id} value={program.programPackageProgramId}>
                         {program.title}
                       </Select.Option>
@@ -211,13 +211,13 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
                   </Select>
                 </Form.Item>
                 <Form.Item label={formatMessage(programMessages.label.selectDeliveryAt)}>
-                  <DatetimePicker value={deliveredAt || undefined} onChange={value => setDeliveredAt(value)} />
+                  <DatetimePicker value={deliveredAt || undefined} onChange={(value) => setDeliveredAt(value)} />
                 </Form.Item>
               </Form>
             </AdminModal>
           </div>
           <div>
-            <Checkbox checked={notDeliveryOnly} onChange={e => setNotDeliveryOnly(e.target.checked)}>
+            <Checkbox checked={notDeliveryOnly} onChange={(e) => setNotDeliveryOnly(e.target.checked)}>
               {formatMessage(programMessages.label.notDeliveryOnly)}
             </Checkbox>
           </div>
@@ -244,8 +244,8 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
                   },
                 },
                 ...programs
-                  .filter(program => !notDeliveryOnly || !allDeliveredProgramIds.includes(program.id))
-                  .map(program => ({
+                  .filter((program) => !notDeliveryOnly || !allDeliveredProgramIds.includes(program.id))
+                  .map((program) => ({
                     title: (
                       <Tooltip title={program.title}>
                         <StyledHeader>{program.title}</StyledHeader>
@@ -261,10 +261,10 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
                   })),
               ]}
               dataSource={members}
-              rowKey={record => record.id}
+              rowKey={(record) => record.id}
               rowSelection={{
                 onChange: (selectedRowKeys, selectedRows) => {
-                  setSelectedMemberIds(selectedRows.map(row => row.id))
+                  setSelectedMemberIds(selectedRows.map((row) => row.id))
                 },
               }}
               size="small"
@@ -277,7 +277,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
           )}
         </StyledTableBlock>
       </AdminBlock>
-    </OwnerAdminLayout>
+    </AdminLayout>
   )
 }
 

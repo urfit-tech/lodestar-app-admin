@@ -11,7 +11,7 @@ import AdminCard from '../../../components/admin/AdminCard'
 import AdminModal from '../../../components/admin/AdminModal'
 import { AvatarImage } from '../../../components/common/Image'
 import { UserRoleName } from '../../../components/common/UserRole'
-import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
+import AdminLayout from '../../../components/layout/AdminLayout'
 import MemberAdminModal, { MemberInfo } from '../../../containers/common/MemberAdminModal'
 import { currencyFormatter, downloadCSV, toCSV } from '../../../helpers'
 import { commonMessages } from '../../../helpers/translation'
@@ -57,7 +57,7 @@ const getColumnSearchProps = ({
       <Input
         autoFocus
         value={selectedKeys && selectedKeys[0]}
-        onChange={e => {
+        onChange={(e) => {
           setSelectedKeys && setSelectedKeys([e.target.value || ''])
           onSearch([e.target.value || ''], confirm)
         }}
@@ -65,7 +65,7 @@ const getColumnSearchProps = ({
       />
     </div>
   ),
-  filterIcon: filtered => <Icon type="search" style={{ color: filtered ? theme['@primary-color'] : undefined }} />,
+  filterIcon: (filtered) => <Icon type="search" style={{ color: filtered ? theme['@primary-color'] : undefined }} />,
 })
 
 const MemberCollectionAdminPage: React.FC = () => {
@@ -147,9 +147,9 @@ const MemberCollectionAdminPage: React.FC = () => {
     loading || error || !data
       ? []
       : data.member
-          .filter(member => nameSearch.length === 0 || (member.name || member.username).includes(nameSearch))
-          .filter(member => emailSearch.length === 0 || (member.email || member.username).includes(emailSearch))
-          .map(member => ({
+          .filter((member) => nameSearch.length === 0 || (member.name || member.username).includes(nameSearch))
+          .filter((member) => emailSearch.length === 0 || (member.email || member.username).includes(emailSearch))
+          .map((member) => ({
             id: member.id,
             avatarUrl: member.picture_url,
             name: member.name || member.username,
@@ -173,15 +173,15 @@ const MemberCollectionAdminPage: React.FC = () => {
           </StyledMenuItem>
           <StyledMenuItem onClick={() => setRoleFilter('app-owner')}>
             {formatMessage(commonMessages.term.appOwner)}
-            {` (${dataSource.filter(row => row.role === 'app-owner').length})`}
+            {` (${dataSource.filter((row) => row.role === 'app-owner').length})`}
           </StyledMenuItem>
           <StyledMenuItem onClick={() => setRoleFilter('content-creator')}>
             {formatMessage(commonMessages.term.contentCreator)}
-            {` (${dataSource.filter(row => row.role === 'content-creator').length})`}
+            {` (${dataSource.filter((row) => row.role === 'content-creator').length})`}
           </StyledMenuItem>
           <StyledMenuItem onClick={() => setRoleFilter('general-member')}>
             {formatMessage(commonMessages.term.generalMember)}
-            {` (${dataSource.filter(row => row.role === 'general-member').length})`}
+            {` (${dataSource.filter((row) => row.role === 'general-member').length})`}
           </StyledMenuItem>
         </Menu>
       }
@@ -189,7 +189,7 @@ const MemberCollectionAdminPage: React.FC = () => {
       <Button className="d-flex justify-content-between align-items-center">
         <span>
           {roleFilter ? <UserRoleName userRole={roleFilter} /> : formatMessage(commonMessages.label.allMembers)}
-          {` (${dataSource.filter(member => !roleFilter || member.role === roleFilter).length})`}
+          {` (${dataSource.filter((member) => !roleFilter || member.role === roleFilter).length})`}
         </span>
         <Icon type="caret-down" />
       </Button>
@@ -205,16 +205,18 @@ const MemberCollectionAdminPage: React.FC = () => {
 
   const exportMemberList = () => {
     const data: string[][] = [
-      options.filter(option => selectedExportFields.some(field => field === option.value)).map(option => option.label),
+      options
+        .filter((option) => selectedExportFields.some((field) => field === option.value))
+        .map((option) => option.label),
       ...dataSource
-        .filter(member => !roleFilter || member.role === roleFilter)
-        .map(member => {
+        .filter((member) => !roleFilter || member.role === roleFilter)
+        .map((member) => {
           const row: string[] = []
-          selectedExportFields.some(field => field === 'name') && row.push(member.name)
-          selectedExportFields.some(field => field === 'email') && row.push(member.email)
-          selectedExportFields.some(field => field === 'lastLogin') &&
+          selectedExportFields.some((field) => field === 'name') && row.push(member.name)
+          selectedExportFields.some((field) => field === 'email') && row.push(member.email)
+          selectedExportFields.some((field) => field === 'lastLogin') &&
             row.push(member.loginedAt ? moment(member.loginedAt).format('YYYYMMDD HH:mm') : '')
-          selectedExportFields.some(field => field === 'consumption') && row.push(`${member.consumption}`)
+          selectedExportFields.some((field) => field === 'consumption') && row.push(`${member.consumption}`)
           return row
         }),
     ]
@@ -223,7 +225,7 @@ const MemberCollectionAdminPage: React.FC = () => {
   }
 
   return (
-    <OwnerAdminLayout>
+    <AdminLayout>
       <Typography.Title level={3} className="mb-4">
         <Icon type="user" className="mr-3" />
         <span>{formatMessage(commonMessages.menu.members)}</span>
@@ -250,7 +252,7 @@ const MemberCollectionAdminPage: React.FC = () => {
                 <Checkbox.Group
                   options={options}
                   value={selectedExportFields}
-                  onChange={checkedValues => setSelectedExportFields(checkedValues.map(v => v.toString()))}
+                  onChange={(checkedValues) => setSelectedExportFields(checkedValues.map((v) => v.toString()))}
                 />
               </Form.Item>
             </Form>
@@ -264,10 +266,10 @@ const MemberCollectionAdminPage: React.FC = () => {
             columns={columns}
             rowKey="id"
             loading={loading}
-            dataSource={dataSource.filter(member => !roleFilter || member.role === roleFilter)}
+            dataSource={dataSource.filter((member) => !roleFilter || member.role === roleFilter)}
             pagination={{ position: 'bottom' }}
             rowClassName={() => 'cursor-pointer'}
-            onRow={record => ({
+            onRow={(record) => ({
               onClick: () => {
                 setSelectedMember(record)
                 setVisible(true)
@@ -289,7 +291,7 @@ const MemberCollectionAdminPage: React.FC = () => {
           }}
         />
       )}
-    </OwnerAdminLayout>
+    </AdminLayout>
   )
 }
 

@@ -4,8 +4,7 @@ import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import IssueAdminCard from '../../components/issue/IssueAdminCard'
-import CreatorAdminLayout from '../../components/layout/CreatorAdminLayout'
-import OwnerAdminLayout from '../../components/layout/OwnerAdminLayout'
+import AdminLayout from '../../components/layout/AdminLayout'
 import { EditableProgramSelector, OwnedProgramSelector } from '../../components/program/ProgramSelector'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
@@ -18,7 +17,6 @@ const ProgramIssueCollectionAdminPage = () => {
   const { currentMemberId, currentUserRole } = useAuth()
   const [selectedProgramId, setSelectedProgramId] = useState<string>('all')
   const [selectedStatus, setSelectedStatus] = useState<string>('unsolved')
-  const AdminLayout = currentUserRole === 'app-owner' ? OwnerAdminLayout : CreatorAdminLayout
 
   return (
     <AdminLayout>
@@ -37,13 +35,13 @@ const ProgramIssueCollectionAdminPage = () => {
         </div>
         <div className="col-12 col-sm-9 pl-md-0">
           {currentMemberId && currentUserRole === 'app-owner' && (
-            <OwnedProgramSelector value={selectedProgramId} onChange={key => setSelectedProgramId(key)} />
+            <OwnedProgramSelector value={selectedProgramId} onChange={(key) => setSelectedProgramId(key)} />
           )}
           {currentMemberId && currentUserRole === 'content-creator' && (
             <EditableProgramSelector
               value={selectedProgramId}
               memberId={currentMemberId}
-              onChange={key => setSelectedProgramId(key)}
+              onChange={(key) => setSelectedProgramId(key)}
             />
           )}
         </div>
@@ -78,7 +76,7 @@ const AllProgramIssueCollectionBlock: React.FC<{
       {!loading && error && formatMessage(errorMessages.data.fetch)}
       {!loading && issues.length === 0 && formatMessage(programMessages.text.emptyProgramIssue)}
 
-      {issues.map(issue => (
+      {issues.map((issue) => (
         <IssueAdminCard
           key={issue.id}
           issueId={issue.id}
@@ -114,7 +112,7 @@ const useGetCreatorProgramIssue = (selectedProgramId: string, unsolved?: boolean
   const issues: Issue[] =
     loading || error || !data
       ? []
-      : data.issue.map(issue => ({
+      : data.issue.map((issue) => ({
           id: issue.id,
           title: issue.title,
           description: issue.description,
@@ -122,7 +120,7 @@ const useGetCreatorProgramIssue = (selectedProgramId: string, unsolved?: boolean
           createdAt: new Date(issue.created_at),
           memberId: issue.member_id,
           threadId: issue.thread_id,
-          reactedMemberIds: issue.issue_reactions.map(reaction => reaction.member_id),
+          reactedMemberIds: issue.issue_reactions.map((reaction) => reaction.member_id),
           issueRepliesCount: issue?.issue_replies_aggregate?.aggregate?.count || 0,
         }))
 

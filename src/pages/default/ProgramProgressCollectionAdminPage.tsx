@@ -3,8 +3,7 @@ import { SelectProps } from 'antd/lib/select'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageBlock } from '../../components/admin'
-import CreatorAdminLayout from '../../components/layout/CreatorAdminLayout'
-import OwnerAdminLayout from '../../components/layout/OwnerAdminLayout'
+import AdminLayout from '../../components/layout/AdminLayout'
 import ProgramProgressTable from '../../containers/program/ProgramProgressTable'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
@@ -15,19 +14,17 @@ import NotFoundPage from './NotFoundPage'
 
 const ProgramProgressCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { currentMemberId } = useAuth()
   const { enabledModules } = useContext(AppContext)
   const [selectedProgramId, setSelectedProgramId] = useState('all')
 
-  if (!currentMemberId || !currentUserRole) {
+  if (!currentMemberId) {
     return <LoadingPage />
   }
 
   if (!enabledModules.learning_statistics) {
     return <NotFoundPage />
   }
-
-  const AdminLayout = currentUserRole === 'app-owner' ? OwnerAdminLayout : CreatorAdminLayout
 
   return (
     <AdminLayout>
@@ -38,7 +35,7 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
       <ProgramSelector
         className="mb-3"
         allText={formatMessage(commonMessages.label.allProgramProgress)}
-        onChange={programId => setSelectedProgramId(`${programId}`)}
+        onChange={(programId) => setSelectedProgramId(`${programId}`)}
       />
       <AdminPageBlock>
         <ProgramProgressTable programId={selectedProgramId === 'all' ? null : selectedProgramId} />
@@ -47,16 +44,18 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
   )
 }
 
-const ProgramSelector: React.FC<SelectProps & {
-  allText?: string
-}> = ({ allText, ...selectProps }) => {
+const ProgramSelector: React.FC<
+  SelectProps & {
+    allText?: string
+  }
+> = ({ allText, ...selectProps }) => {
   const { formatMessage } = useIntl()
   const { loading, error, data: programs } = useProgramContentEnrollment()
 
   return (
     <Select disabled={!!error} loading={loading} style={{ width: '100%' }} defaultValue="all" {...selectProps}>
       <Select.Option key="all">{allText || formatMessage(commonMessages.label.allProgram)}</Select.Option>
-      {programs.map(program => (
+      {programs.map((program) => (
         <Select.Option key={program.id}>{program.title}</Select.Option>
       ))}
     </Select>

@@ -42,7 +42,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
   )
 }
 
-export const OwnerAdminMenu = (props: MenuProps) => {
+export const OwnerAdminMenu: React.FC<MenuProps> = (props) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useContext(AppContext)
 
@@ -75,7 +75,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
           }
         >
           <Menu.Item key="program_collection_admin">{formatMessage(commonMessages.menu.programs)}</Menu.Item>
-          <Menu.Item key="program_issues_admin">{formatMessage(commonMessages.menu.programIssues)}</Menu.Item>
+          <Menu.Item key="program_issue_collection_admin">{formatMessage(commonMessages.menu.programIssues)}</Menu.Item>
           {enabledModules.program_package && (
             <Menu.Item key="program_package_collection_admin">
               {formatMessage(commonMessages.menu.programPackage)}
@@ -100,11 +100,11 @@ export const OwnerAdminMenu = (props: MenuProps) => {
               </span>
             }
           >
-            <Menu.Item key="owner_podcast_program_collection_admin">
+            <Menu.Item key="podcast_program_collection_admin">
               {formatMessage(commonMessages.menu.podcastPrograms)}
             </Menu.Item>
-            <Menu.Item key="owner_podcast_plan_admin">{formatMessage(commonMessages.menu.podcastPlans)}</Menu.Item>
-            <Menu.Item key="owner_podcast_program_category_admin">
+            <Menu.Item key="podcast_plan_admin">{formatMessage(commonMessages.menu.podcastPlans)}</Menu.Item>
+            <Menu.Item key="podcast_program_category_admin">
               {formatMessage(commonMessages.menu.podcastCategory)}
             </Menu.Item>
           </Menu.SubMenu>
@@ -120,10 +120,10 @@ export const OwnerAdminMenu = (props: MenuProps) => {
               </span>
             }
           >
-            <Menu.Item key="owner_appointment_plan_collection_admin">
+            <Menu.Item key="appointment_plan_collection_admin">
               {formatMessage(commonMessages.menu.appointmentPlans)}
             </Menu.Item>
-            <Menu.Item key="owner_appointment_period_collection_admin">
+            <Menu.Item key="appointment_period_collection_admin">
               {formatMessage(commonMessages.menu.appointments)}
             </Menu.Item>
           </Menu.SubMenu>
@@ -139,10 +139,8 @@ export const OwnerAdminMenu = (props: MenuProps) => {
               </span>
             }
           >
-            <Menu.Item key="owner_activity_collection_admin">{formatMessage(commonMessages.menu.activities)}</Menu.Item>
-            <Menu.Item key="owner_activity_category_admin">
-              {formatMessage(commonMessages.menu.activityCategory)}
-            </Menu.Item>
+            <Menu.Item key="activity_collection_admin">{formatMessage(commonMessages.menu.activities)}</Menu.Item>
+            <Menu.Item key="activity_category_admin">{formatMessage(commonMessages.menu.activityCategory)}</Menu.Item>
           </Menu.SubMenu>
         )}
 
@@ -157,6 +155,9 @@ export const OwnerAdminMenu = (props: MenuProps) => {
             }
           >
             <Menu.Item key="merchandise_collection_admin">{formatMessage(commonMessages.menu.merchandises)}</Menu.Item>
+            <Menu.Item key="merchandise_shipping_admin">
+              {formatMessage(commonMessages.menu.merchandiseShipping)}
+            </Menu.Item>
             <Menu.Item key="merchandise_category_admin">
               {formatMessage(commonMessages.menu.merchandiseCategory)}
             </Menu.Item>
@@ -197,7 +198,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
           <Icon component={() => <UsersIcon />} />
           <span>{formatMessage(commonMessages.menu.members)}</span>
         </Menu.Item>
-        <Menu.Item key="owner_settings_admin">
+        <Menu.Item key="settings_admin">
           <Icon component={() => <UserIcon />} />
           <span>{formatMessage(commonMessages.menu.ownerSettings)}</span>
         </Menu.Item>
@@ -206,7 +207,7 @@ export const OwnerAdminMenu = (props: MenuProps) => {
   )
 }
 
-export const CreatorAdminMenu = (props: MenuProps) => {
+export const CreatorAdminMenu: React.FC<MenuProps> = (props: MenuProps) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useContext(AppContext)
 
@@ -231,7 +232,7 @@ export const CreatorAdminMenu = (props: MenuProps) => {
           }
         >
           <Menu.Item key="program_collection_admin">{formatMessage(commonMessages.menu.programs)}</Menu.Item>
-          <Menu.Item key="program_issues_admin">{formatMessage(commonMessages.menu.programIssues)}</Menu.Item>
+          <Menu.Item key="program_issue_collection_admin">{formatMessage(commonMessages.menu.programIssues)}</Menu.Item>
         </Menu.SubMenu>
 
         {enabledModules.appointment && (
@@ -244,10 +245,10 @@ export const CreatorAdminMenu = (props: MenuProps) => {
               </span>
             }
           >
-            <Menu.Item key="creator_appointment_plan_collection_admin">
+            <Menu.Item key="appointment_plan_collection_admin">
               {formatMessage(commonMessages.menu.appointmentPlans)}
             </Menu.Item>
-            <Menu.Item key="creator_appointment_period_collection_admin">
+            <Menu.Item key="appointment_period_collection_admin">
               {formatMessage(commonMessages.menu.appointments)}
             </Menu.Item>
           </Menu.SubMenu>
@@ -263,12 +264,12 @@ export const CreatorAdminMenu = (props: MenuProps) => {
               </span>
             }
           >
-            <Menu.Item key="creator_activity_collection_admin">
+            <Menu.Item key="activity_collection_admin">
               {formatMessage(commonMessages.menu.activities)}
             </Menu.Item>
           </Menu.SubMenu>
         )}
-        <Menu.Item key="creator_settings_admin">
+        <Menu.Item key="settings_admin">
           <Icon component={() => <UserIcon />} />
           <span>{formatMessage(commonMessages.menu.creatorSettings)}</span>
         </Menu.Item>
