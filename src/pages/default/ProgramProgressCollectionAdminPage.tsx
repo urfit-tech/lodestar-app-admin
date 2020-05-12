@@ -35,7 +35,7 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
       <ProgramSelector
         className="mb-3"
         allText={formatMessage(commonMessages.label.allProgramProgress)}
-        onChange={(programId) => setSelectedProgramId(`${programId}`)}
+        onChange={programId => setSelectedProgramId(`${programId}`)}
       />
       <AdminPageBlock>
         <ProgramProgressTable programId={selectedProgramId === 'all' ? null : selectedProgramId} />
@@ -44,18 +44,16 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
   )
 }
 
-const ProgramSelector: React.FC<
-  SelectProps & {
-    allText?: string
-  }
-> = ({ allText, ...selectProps }) => {
+const ProgramSelector: React.FC<SelectProps & {
+  allText?: string
+}> = ({ allText, ...selectProps }) => {
   const { formatMessage } = useIntl()
   const { loading, error, data: programs } = useProgramContentEnrollment()
 
   return (
     <Select disabled={!!error} loading={loading} style={{ width: '100%' }} defaultValue="all" {...selectProps}>
       <Select.Option key="all">{allText || formatMessage(commonMessages.label.allProgram)}</Select.Option>
-      {programs.map((program) => (
+      {programs.map(program => (
         <Select.Option key={program.id}>{program.title}</Select.Option>
       ))}
     </Select>

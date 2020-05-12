@@ -37,7 +37,7 @@ const StyledText = styled.div`
   white-space: nowrap;
 `
 const StyledPriceLabel = styled.span`
-  color: ${(props) => props.theme['@primary-color']};
+  color: ${props => props.theme['@primary-color']};
   font-weight: 500;
   letter-spacing: 0.2px;
   white-space: nowrap;
@@ -58,7 +58,7 @@ const StyledStatusLabel = styled.div<{ active?: boolean }>`
     margin-right: 0.5rem;
     width: 10px;
     height: 10px;
-    background-color: ${(props) => (props.active ? 'var(--success)' : 'var(--gray)')};
+    background-color: ${props => (props.active ? 'var(--success)' : 'var(--gray)')};
     border-radius: 50%;
     content: '';
   }
@@ -73,7 +73,7 @@ const getColumnSearchProps: (events: {
       <Input
         autoFocus
         value={selectedKeys && selectedKeys[0]}
-        onChange={(e) => setSelectedKeys && setSelectedKeys(e.target.value ? [e.target.value] : [])}
+        onChange={e => setSelectedKeys && setSelectedKeys(e.target.value ? [e.target.value] : [])}
         onPressEnter={() => onSearch(selectedKeys, confirm)}
         style={{ width: 188, marginBottom: 8, display: 'block' }}
       />
@@ -91,7 +91,7 @@ const getColumnSearchProps: (events: {
       </div>
     </div>
   ),
-  filterIcon: (filtered) => <Icon type="search" style={{ color: filtered ? 'var(--primary)' : undefined }} />,
+  filterIcon: filtered => <Icon type="search" style={{ color: filtered ? 'var(--primary)' : undefined }} />,
 })
 
 const PodcastProgramCollectionAdminTable: React.FC<{
@@ -120,7 +120,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
         </div>
       ),
       ...getColumnSearchProps({
-        onReset: (clearFilters) => {
+        onReset: clearFilters => {
           clearFilters()
           setTitleSearch('')
         },
@@ -137,7 +137,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       width: '12rem',
       render: (text, record, index) => <StyledText>{text}</StyledText>,
       ...getColumnSearchProps({
-        onReset: (clearFilters) => {
+        onReset: clearFilters => {
           clearFilters()
           setNameSearch('')
         },
@@ -205,9 +205,9 @@ const PodcastProgramCollectionAdminTable: React.FC<{
       rowClassName={() => 'cursor-pointer'}
       columns={columns}
       dataSource={podcastPrograms
-        .filter((podcastProgram) => !titleSearch || podcastProgram.title.includes(titleSearch))
-        .filter((podcastProgram) => !nameSearch || podcastProgram.instructorName.includes(nameSearch))}
-      onRow={(record) => ({
+        .filter(podcastProgram => !titleSearch || podcastProgram.title.includes(titleSearch))
+        .filter(podcastProgram => !nameSearch || podcastProgram.instructorName.includes(nameSearch))}
+      onRow={record => ({
         onClick: () => history.push(`/podcast-programs/${record.id}`),
       })}
     />

@@ -236,14 +236,14 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
 export default () => (
   <Suspense fallback={<LoadingPage></LoadingPage>}>
     <Switch>
-      {Object.keys(routesProps).map((routeKey) => {
+      {Object.keys(routesProps).map(routeKey => {
         const routeProps = routesProps[routeKey as keyof typeof routesProps]
         return (
           <Route
             exact
             key={routeKey}
             path={routeProps.path}
-            render={(props) => (
+            render={props => (
               <LoadablePage
                 {...props}
                 pageName={routeProps.pageName}
@@ -257,7 +257,7 @@ export default () => (
       <Route
         exact
         path="/admin"
-        render={(props) => (
+        render={props => (
           <Redirect
             to={{
               pathname: '/admin/sales',
@@ -269,7 +269,7 @@ export default () => (
       <Route
         exact
         path="/studio"
-        render={(props) => (
+        render={props => (
           <Redirect
             to={{
               pathname: '/studio/sales',

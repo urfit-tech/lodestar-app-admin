@@ -74,8 +74,8 @@ const BlogAdminCollectionPage: React.FC = () => {
         <Tabs.TabPane key="published" tab={formatMessage(commonMessages.status.published)}>
           <div className="row py-5">
             {posts
-              .filter((post) => post.publishedAt)
-              .map((post) => (
+              .filter(post => post.publishedAt)
+              .map(post => (
                 <div key={post.id} className="col-12 col-md-6 col-lg-4 mb-5">
                   <BlogPostCard
                     title={post.title}
@@ -93,8 +93,8 @@ const BlogAdminCollectionPage: React.FC = () => {
         <Tabs.TabPane key="draft" tab={formatMessage(commonMessages.status.draft)}>
           <div className="row py-5">
             {posts
-              .filter((post) => !post.publishedAt)
-              .map((post) => (
+              .filter(post => !post.publishedAt)
+              .map(post => (
                 <div key={post.id} className="col-12 col-md-6 col-lg-4 mb-5">
                   <BlogPostCard
                     title={post.title}

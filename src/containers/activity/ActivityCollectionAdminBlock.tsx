@@ -22,7 +22,7 @@ const ActivityCollectionAdminBlock: React.FC<{
   const activities: ActivityProps[] =
     loading || error || !data
       ? []
-      : data.activity.map((activity) => ({
+      : data.activity.map(activity => ({
           id: activity.id,
           title: activity.title,
           coverUrl: activity.cover_url,
@@ -46,7 +46,7 @@ const ActivityCollectionAdminBlock: React.FC<{
               : null,
           link: `/activities/${activity.id}`,
           action: (
-            <div className="text-right" onClick={(e) => e.preventDefault()}>
+            <div className="text-right" onClick={e => e.preventDefault()}>
               <ActivityParticipantCollection activityId={activity.id} />
             </div>
           ),
@@ -74,7 +74,7 @@ const ActivityCollectionAdminBlock: React.FC<{
         refetch && refetch()
         data && data.insert_activity && onSuccess && onSuccess(data.insert_activity.returning[0].id)
       })
-      .catch((error) => onError && onError(error))
+      .catch(error => onError && onError(error))
       .finally(() => onFinally && onFinally())
   }
 

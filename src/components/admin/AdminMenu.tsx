@@ -42,7 +42,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
   )
 }
 
-export const OwnerAdminMenu: React.FC<MenuProps> = (props) => {
+export const OwnerAdminMenu: React.FC<MenuProps> = props => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useContext(AppContext)
 
@@ -264,9 +264,7 @@ export const CreatorAdminMenu: React.FC<MenuProps> = (props: MenuProps) => {
               </span>
             }
           >
-            <Menu.Item key="activity_collection_admin">
-              {formatMessage(commonMessages.menu.activities)}
-            </Menu.Item>
+            <Menu.Item key="activity_collection_admin">{formatMessage(commonMessages.menu.activities)}</Menu.Item>
           </Menu.SubMenu>
         )}
         <Menu.Item key="settings_admin">

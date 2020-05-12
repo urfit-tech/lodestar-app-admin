@@ -33,10 +33,10 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
 
       <Tabs>
         <Tabs.TabPane key="live" tab={formatMessage(promotionMessages.status.available)}>
-          <CouponCollectionBlock couponPlans={couponPlans.filter((couponPlan) => couponPlan.available)} />
+          <CouponCollectionBlock couponPlans={couponPlans.filter(couponPlan => couponPlan.available)} />
         </Tabs.TabPane>
         <Tabs.TabPane key="outdated" tab={formatMessage(promotionMessages.status.unavailable)}>
-          <CouponCollectionBlock couponPlans={couponPlans.filter((couponPlan) => !couponPlan.available)} />
+          <CouponCollectionBlock couponPlans={couponPlans.filter(couponPlan => !couponPlan.available)} />
         </Tabs.TabPane>
       </Tabs>
     </AdminLayout>
@@ -48,7 +48,7 @@ const CouponCollectionBlock: React.FC<{
 }> = ({ couponPlans }) => {
   return (
     <div className="row">
-      {reverse(couponPlans).map((couponPlan) => (
+      {reverse(couponPlans).map(couponPlan => (
         <div key={couponPlan.id} className="col-12 col-md-6 mb-3">
           <CouponPlanAdminCard couponPlan={couponPlan} outdated={!couponPlan.available} />
         </div>

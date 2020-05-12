@@ -17,7 +17,7 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
   const { programPackages, refetch } = useGetProgramPackageCollection(appId)
   const createProgramPackage = useInsertProgramPackage(appId)
 
-  const publishedQuantity = programPackages.filter((programPackage) => !!programPackage.publishedAt === true).length
+  const publishedQuantity = programPackages.filter(programPackage => !!programPackage.publishedAt === true).length
   const tabContents = [
     {
       key: 'published',
@@ -60,12 +60,12 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
       </div>
 
       <Tabs>
-        {tabContents.map((tabContent) => (
+        {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
             <div className="row py-5">
               {programPackages
-                .filter((programPackage) => !!programPackage.publishedAt === tabContent.isPublished)
-                .map((programPackage) => (
+                .filter(programPackage => !!programPackage.publishedAt === tabContent.isPublished)
+                .map(programPackage => (
                   <div key={programPackage.id} className="col-md-6 col-lg-4 col-12 mb-5">
                     <ProgramPackageAdminCard
                       id={programPackage.id}

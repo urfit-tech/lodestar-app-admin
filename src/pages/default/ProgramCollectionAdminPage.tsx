@@ -68,19 +68,19 @@ const ProgramCollectionAdminPage: React.FC = () => {
       key: 'draft',
       status: 'unpublished',
       tab: formatMessage(commonMessages.status.draft),
-      programs: programPreviews.filter((program) => program.isDraft),
+      programs: programPreviews.filter(program => program.isDraft),
     },
     {
       key: 'publiclyPublish',
       status: 'published',
       tab: formatMessage(commonMessages.status.publiclyPublish),
-      programs: programPreviews.filter((program) => !program.isDraft && !program.isPrivate),
+      programs: programPreviews.filter(program => !program.isDraft && !program.isPrivate),
     },
     {
       key: 'privatelyPublish',
       status: 'published',
       tab: formatMessage(commonMessages.status.privatelyPublish),
-      programs: programPreviews.filter((program) => !program.isDraft && program.isPrivate),
+      programs: programPreviews.filter(program => !program.isDraft && program.isPrivate),
     },
   ]
 
@@ -96,7 +96,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
           classType="program"
           withCreatorSelector={currentUserRole === 'app-owner'}
           withProgramType
-          onCreate={(values) =>
+          onCreate={values =>
             createProgram({
               variables: {
                 ownerId: currentMemberId,
@@ -109,7 +109,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
                   position: index,
                 })),
               },
-            }).then((res) => {
+            }).then(res => {
               refetchProgramPreviews().then(() => {
                 const programId = res.data?.insert_program?.returning[0].id
                 programId && history.push(`/programs/${programId}`)
@@ -120,14 +120,14 @@ const ProgramCollectionAdminPage: React.FC = () => {
       </div>
 
       <Tabs defaultActiveKey="draft">
-        {tabContents.map((tabContent) => (
+        {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
             {loadingProgramPreviews && <Spin />}
 
             <div className="row py-3">
               <PositionAdminLayout<ProgramPreviewProps>
                 value={tabContent.programs}
-                onChange={(value) => {
+                onChange={value => {
                   updatePositions({
                     variables: {
                       data: value.map((program, index) => ({
