@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import types from '../types'
-import { MerchandisePreviewProps, MerchandiseProps } from '../types/merchandise'
+import { MerchandiseInventoryLog, MerchandisePreviewProps, MerchandiseProps } from '../types/merchandise'
 
 export const useInsertMerchandise = () => {
   const [insertMerchandise] = useMutation<types.INSERT_MERCHANDISE, types.INSERT_MERCHANDISEVariables>(gql`
@@ -128,4 +128,71 @@ export const useMerchandise = (id: string) => {
     merchandise,
     refetchMerchandise: refetch,
   }
+}
+
+export const useMerchandiseInventoryLog = (merchandiseId: string) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_MERCHANDISE_INVENTORY,
+    types.GET_MERCHANDISE_INVENTORYVariables
+  >(
+    gql`
+      query GET_MERCHANDISE_INVENTORY($merchandiseId: uuid!) {
+        merchandise_inventory(where: { merchandise_id: { _eq: $merchandiseId } }, order_by: { created_at: desc }) {
+          id
+          created_at
+          status
+          specification
+          quantity
+        }
+      }
+    `,
+    { variables: { merchandiseId } },
+  )
+
+  const inventoryLogs: MerchandiseInventoryLog[] =
+    loading || error || !data
+      ? []
+      : data.merchandise_inventory.map(merchandiseInventory => ({
+          id: merchandiseInventory.id,
+          createdAt: new Date(merchandiseInventory.created_at),
+          status: merchandiseInventory.status,
+          specification: merchandiseInventory.specification,
+          quantity: merchandiseInventory.quantity,
+        }))
+
+  return {
+    loadingInventoryLogs: loading,
+    errorInventoryLogs: error,
+    inventoryLogs,
+    refetchInventoryLogs: refetch,
+  }
+}
+
+export const useArrangeMerchandiseInventory = (merchandiseId: string) => {
+  const [arrangeMerchandiseInventory] = useMutation<
+    types.ARRANGE_MERCHANDISE_INVENTORY,
+    types.ARRANGE_MERCHANDISE_INVENTORYVariables
+  >(
+    gql`
+      mutation ARRANGE_MERCHANDISE_INVENTORY($data: [merchandise_inventory_insert_input!]!) {
+        insert_merchandise_inventory(objects: $data) {
+          affected_rows
+        }
+      }
+    `,
+  )
+
+  return (data: { specification: string; quantity: number }[]) =>
+    arrangeMerchandiseInventory({
+      variables: {
+        data: data
+          .filter(data => data.quantity)
+          .map(data => ({
+            merchandise_id: merchandiseId,
+            status: 'arrange',
+            specification: data.specification,
+            quantity: data.quantity,
+          })),
+      },
+    })
 }

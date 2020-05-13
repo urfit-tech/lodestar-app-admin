@@ -4453,6 +4453,11 @@ export interface UPDATE_LOGINED_ATVariables {
 export interface GET_APP_app_by_pk_app_modules {
   __typename: "app_module";
   id: any;
+  /**
+   * activity | appointment | blog | invoice | learning_statistics | locale |
+   * member_card | merchandise | podcast | program_package | qrcode |
+   * social_connect | tempo_delivery | voucher
+   */
   module_id: string;
 }
 
@@ -5354,6 +5359,30 @@ export interface GET_COUPON__CODE_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_ORDER_LOG_COLLECTION_WITH_MERCHANDISE
+// ====================================================
+
+export interface GET_ORDER_LOG_COLLECTION_WITH_MERCHANDISE_order_log {
+  __typename: "order_log";
+  id: string;
+}
+
+export interface GET_ORDER_LOG_COLLECTION_WITH_MERCHANDISE {
+  /**
+   * fetch data from the table: "order_log"
+   */
+  order_log: GET_ORDER_LOG_COLLECTION_WITH_MERCHANDISE_order_log[];
+}
+
+export interface GET_ORDER_LOG_COLLECTION_WITH_MERCHANDISEVariables {
+  search?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_TAGS
 // ====================================================
 
@@ -5914,6 +5943,61 @@ export interface GET_MERCHANDISE {
 
 export interface GET_MERCHANDISEVariables {
   id: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MERCHANDISE_INVENTORY
+// ====================================================
+
+export interface GET_MERCHANDISE_INVENTORY_merchandise_inventory {
+  __typename: "merchandise_inventory";
+  id: any;
+  created_at: any;
+  status: string;
+  specification: string;
+  quantity: number;
+}
+
+export interface GET_MERCHANDISE_INVENTORY {
+  /**
+   * fetch data from the table: "merchandise_inventory"
+   */
+  merchandise_inventory: GET_MERCHANDISE_INVENTORY_merchandise_inventory[];
+}
+
+export interface GET_MERCHANDISE_INVENTORYVariables {
+  merchandiseId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: ARRANGE_MERCHANDISE_INVENTORY
+// ====================================================
+
+export interface ARRANGE_MERCHANDISE_INVENTORY_insert_merchandise_inventory {
+  __typename: "merchandise_inventory_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARRANGE_MERCHANDISE_INVENTORY {
+  /**
+   * insert data into the table: "merchandise_inventory"
+   */
+  insert_merchandise_inventory: ARRANGE_MERCHANDISE_INVENTORY_insert_merchandise_inventory | null;
+}
+
+export interface ARRANGE_MERCHANDISE_INVENTORYVariables {
+  data: merchandise_inventory_insert_input[];
 }
 
 /* tslint:disable */
@@ -8120,6 +8204,8 @@ export enum order_log_constraint {
  */
 export enum order_log_update_column {
   created_at = "created_at",
+  deliver_message = "deliver_message",
+  delivered_at = "delivered_at",
   discount_coupon_id = "discount_coupon_id",
   discount_point = "discount_point",
   discount_price = "discount_price",
@@ -11089,6 +11175,18 @@ export interface merchandise_insert_input {
 }
 
 /**
+ * input type for inserting data into table "merchandise_inventory"
+ */
+export interface merchandise_inventory_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  merchandise_id?: any | null;
+  quantity?: number | null;
+  specification?: string | null;
+  status?: string | null;
+}
+
+/**
  * input type for inserting object relation for remote table "merchandise"
  */
 export interface merchandise_obj_rel_insert_input {
@@ -11395,6 +11493,8 @@ export interface order_log_bool_exp {
   _or?: (order_log_bool_exp | null)[] | null;
   coupon?: coupon_bool_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  deliver_message?: String_comparison_exp | null;
+  delivered_at?: timestamptz_comparison_exp | null;
   discount_coupon_id?: uuid_comparison_exp | null;
   discount_point?: numeric_comparison_exp | null;
   discount_price?: numeric_comparison_exp | null;
@@ -11419,6 +11519,8 @@ export interface order_log_bool_exp {
 export interface order_log_insert_input {
   coupon?: coupon_obj_rel_insert_input | null;
   created_at?: any | null;
+  deliver_message?: string | null;
+  delivered_at?: any | null;
   discount_coupon_id?: any | null;
   discount_point?: any | null;
   discount_price?: any | null;

@@ -30,6 +30,6 @@ export type MerchandiseInventoryLog = {
   id: string
   createdAt: Date
   status: string
-  meta: string
-  amount: number
+  specification: string
+  quantity: number
 }

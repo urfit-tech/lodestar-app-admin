@@ -526,10 +526,12 @@ export const merchandiseMessages = {
     currentInventory: { id: 'merchandise.status.currentInventory', defaultMessage: '現有庫存' },
     shipping: { id: 'merchandise.status.shipping', defaultMessage: '待出貨' },
     shipped: { id: 'merchandise.status.shipped', defaultMessage: '已出貨' },
+    arrange: { id: 'merchandise.status.arrange', defaultMessage: '調整庫存' },
   }),
   label: defineMessages({
     images: { id: 'merchandise.label.images', defaultMessage: '商品圖片' },
     meta: { id: 'merchandise.label.meta', defaultMessage: '規格說明' },
+    specification: { id: 'merchandise.label.specification', defaultMessage: '規格' },
     abstract: { id: 'merchandise.label.abstract', defaultMessage: '商品摘要' },
     paymentLink: { id: 'merchandise.label.paymentLink', defaultMessage: '付款連結' },
     price: { id: 'merchandise.label.price', defaultMessage: '商品售價' },

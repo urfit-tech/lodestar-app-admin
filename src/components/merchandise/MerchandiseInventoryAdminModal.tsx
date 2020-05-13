@@ -2,11 +2,13 @@ import { Button } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { handleError } from '../../helpers'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
+import { useArrangeMerchandiseInventory } from '../../hooks/merchandise'
 import AdminModal from '../admin/AdminModal'
-import AmountInput from '../admin/AmountInput'
+import QuantityInput from '../admin/QuantityInput'
 
-const MerchandiseMeta = styled.div`
+const MerchandiseSpecification = styled.div`
   color: var(--gray-darker);
   line-height: 1.5;
   letter-spacing: 0.2px;
@@ -14,18 +16,36 @@ const MerchandiseMeta = styled.div`
 
 const MerchandiseInventoryAdminModal: React.FC<{
   merchandiseId: string
-  metaCollection: string[]
-}> = ({ merchandiseId, metaCollection }) => {
+  specifications: string[]
+  refetch?: () => void
+}> = ({ merchandiseId, specifications, refetch }) => {
   const { formatMessage } = useIntl()
+  const arrangeMerchandiseInventory = useArrangeMerchandiseInventory(merchandiseId)
   const [loading, setLoading] = useState(false)
-  const [amount, setAmount] = useState(1)
+  const [quantities, setQuantities] = useState<number[]>(Array(specifications.length).fill(0))
+
+  const handleSubmit = (closeModal: () => void) => {
+    setLoading(true)
+    arrangeMerchandiseInventory(
+      specifications.map((specification, index) => ({
+        specification,
+        quantity: quantities[index],
+      })),
+    )
+      .then(() => {
+        refetch && refetch()
+        closeModal()
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
+  }
 
   return (
     <AdminModal
       title={formatMessage(merchandiseMessages.ui.modifyInventory)}
       footer={null}
       renderTrigger={({ setVisible }) => (
-        <Button type="primary" icon="file-add" disabled={metaCollection.length === 0} onClick={() => setVisible(true)}>
+        <Button type="primary" icon="file-add" disabled={specifications.length === 0} onClick={() => setVisible(true)}>
           {formatMessage(merchandiseMessages.ui.modifyInventory)}
         </Button>
       )}
@@ -34,26 +54,28 @@ const MerchandiseInventoryAdminModal: React.FC<{
           <Button className="mr-2" onClick={() => setVisible(false)}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={loading} onClick={() => {}}>
+          <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
             {formatMessage(commonMessages.ui.confirm)}
           </Button>
         </>
       )}
       destroyOnClose
     >
-      {metaCollection.map(meta => (
-        <div key={meta} className="d-flex align-items-center justify-content-between mb-3">
-          <MerchandiseMeta>{meta}</MerchandiseMeta>
-          <AmountInput
-            value={amount}
-            onChange={value => typeof value === 'number' && setAmount(value)}
+      {specifications.map((specification, index) => (
+        <div key={specification} className="d-flex align-items-center justify-content-between mb-3">
+          <MerchandiseSpecification>{specification}</MerchandiseSpecification>
+          <QuantityInput
+            value={quantities[index]}
+            onChange={value =>
+              typeof value === 'number' && setQuantities(quantities.map((q, i) => (i === index ? value : q)))
+            }
             onDecrease={async () => {
-              setAmount(amount - 1)
-              return amount - 1
+              setQuantities(quantities.map((q, i) => (i === index ? q - 1 : q)))
+              return quantities[index] - 1
             }}
             onIncrease={async () => {
-              setAmount(amount + 1)
-              return amount + 1
+              setQuantities(quantities.map((q, i) => (i === index ? q + 1 : q)))
+              return quantities[index] + 1
             }}
           />
         </div>

@@ -12,7 +12,7 @@ const StyledInputGroup = styled(Input.Group)`
   }
 `
 
-const AmountInput: React.FC<{
+const QuantityInput: React.FC<{
   value?: number
   onChange?: (value: number | undefined) => void
   onDecrease?: () => Promise<number>
@@ -38,4 +38,4 @@ const AmountInput: React.FC<{
   )
 }
 
-export default forwardRef(AmountInput)
+export default forwardRef(QuantityInput)

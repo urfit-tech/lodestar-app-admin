@@ -24,7 +24,7 @@ import MerchandisePublishBlock from '../../components/merchandise/MerchandisePub
 import MerchandiseSalesForm from '../../components/merchandise/MerchandiseSalesForm'
 import { merchandiseMessages } from '../../helpers/translation'
 // import AppContext from '../../contexts/AppContext'
-import { useMerchandise } from '../../hooks/merchandise'
+import { useMerchandise, useMerchandiseInventoryLog } from '../../hooks/merchandise'
 
 const messages = defineMessages({
   settings: { id: 'merchandise.label.settings', defaultMessage: '商品資訊' },
@@ -58,6 +58,7 @@ const MerchandiseAdminPage: React.FC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
   // const { settings } = useContext(AppContext)
   const { merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
+  const { inventoryLogs, refetchInventoryLogs } = useMerchandiseInventoryLog(merchandiseId)
 
   return (
     <>
@@ -124,10 +125,13 @@ const MerchandiseAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(messages.inventoryAdmin)}</AdminPaneTitle>
               <div className="mb-4">
-                <MerchandiseInventoryAdminModal
-                  merchandiseId={merchandiseId}
-                  metaCollection={merchandise ? [merchandise.meta || ''] : []}
-                />
+                {!!merchandise && (
+                  <MerchandiseInventoryAdminModal
+                    merchandiseId={merchandiseId}
+                    specifications={[merchandise.meta || '']}
+                    refetch={refetchInventoryLogs}
+                  />
+                )}
               </div>
               <div className="row mb-1">
                 <div className="col-12 col-lg-4">
@@ -150,7 +154,7 @@ const MerchandiseAdminPage: React.FC = () => {
                 </div>
               </div>
               <AdminBlock>
-                <MerchandiseInventoryTable merchandiseId={merchandiseId} inventoryLogs={[]} />
+                <MerchandiseInventoryTable inventoryLogs={inventoryLogs} />
               </AdminBlock>
             </div>
           </Tabs.TabPane>

@@ -7,10 +7,13 @@ import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { MerchandiseInventoryLog } from '../../types/merchandise'
 
 const MerchandiseInventoryTable: React.FC<{
-  merchandiseId: string
   inventoryLogs: MerchandiseInventoryLog[]
 }> = ({ inventoryLogs }) => {
   const { formatMessage } = useIntl()
+
+  const STATUS: { [Key: string]: string } = {
+    arrange: formatMessage(merchandiseMessages.status.arrange),
+  }
 
   const columns: ColumnProps<MerchandiseInventoryLog>[] = [
     {
@@ -21,19 +24,26 @@ const MerchandiseInventoryTable: React.FC<{
     {
       dataIndex: 'status',
       title: formatMessage(merchandiseMessages.label.status),
+      render: (text, record, index) => STATUS[text] || 'unknown',
     },
     {
-      dataIndex: 'meta',
-      title: formatMessage(merchandiseMessages.label.meta),
+      dataIndex: 'specification',
+      title: formatMessage(merchandiseMessages.label.specification),
     },
     {
-      dataIndex: 'amount',
+      dataIndex: 'quantity',
       title: formatMessage(merchandiseMessages.label.amount),
       align: 'right',
     },
   ]
 
-  return <Table<MerchandiseInventoryLog> columns={columns} dataSource={inventoryLogs} />
+  return (
+    <Table<MerchandiseInventoryLog>
+      columns={columns}
+      rowKey={inventoryLog => inventoryLog.id}
+      dataSource={inventoryLogs}
+    />
+  )
 }
 
 export default MerchandiseInventoryTable
