@@ -5830,6 +5830,7 @@ export interface INSERT_MERCHANDISE {
 
 export interface INSERT_MERCHANDISEVariables {
   appId: string;
+  memberId: string;
   title: string;
   merchandiseCategories: merchandise_category_insert_input[];
 }

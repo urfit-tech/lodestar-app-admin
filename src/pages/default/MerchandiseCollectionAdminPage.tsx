@@ -86,6 +86,7 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
                 insertMerchandise({
                   variables: {
                     appId,
+                    memberId: currentMemberId,
                     title,
                     merchandiseCategories: categoryIds.map((categoryId, index) => ({
                       category_id: categoryId,

@@ -7,11 +7,17 @@ export const useInsertMerchandise = () => {
   const [insertMerchandise] = useMutation<types.INSERT_MERCHANDISE, types.INSERT_MERCHANDISEVariables>(gql`
     mutation INSERT_MERCHANDISE(
       $appId: String!
+      $memberId: String!
       $title: String!
       $merchandiseCategories: [merchandise_category_insert_input!]!
     ) {
       insert_merchandise(
-        objects: { app_id: $appId, title: $title, merchandise_categories: { data: $merchandiseCategories } }
+        objects: {
+          app_id: $appId
+          title: $title
+          member_id: $memberId
+          merchandise_categories: { data: $merchandiseCategories }
+        }
       ) {
         affected_rows
         returning {
