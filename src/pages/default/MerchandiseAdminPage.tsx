@@ -1,4 +1,4 @@
-import { Button, Icon, Tabs } from 'antd'
+import { Button, Icon, Spin, Tabs } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
@@ -24,7 +24,7 @@ import MerchandisePublishBlock from '../../components/merchandise/MerchandisePub
 import MerchandiseSalesForm from '../../components/merchandise/MerchandiseSalesForm'
 import { merchandiseMessages } from '../../helpers/translation'
 // import AppContext from '../../contexts/AppContext'
-import { useMerchandise, useMerchandiseInventoryLog } from '../../hooks/merchandise'
+import { useMerchandise, useMerchandiseInventoryLog, useMerchandiseInventoryStatus } from '../../hooks/merchandise'
 
 const messages = defineMessages({
   settings: { id: 'merchandise.label.settings', defaultMessage: '商品資訊' },
@@ -59,6 +59,7 @@ const MerchandiseAdminPage: React.FC = () => {
   // const { settings } = useContext(AppContext)
   const { merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
   const { inventoryLogs, refetchInventoryLogs } = useMerchandiseInventoryLog(merchandiseId)
+  const { loadingInventoryStatus, inventoryStatus } = useMerchandiseInventoryStatus(merchandiseId)
 
   return (
     <>
@@ -137,19 +138,25 @@ const MerchandiseAdminPage: React.FC = () => {
                 <div className="col-12 col-lg-4">
                   <AdminBlock className="p-4">
                     <StatusCardTitle>{formatMessage(merchandiseMessages.status.currentInventory)}</StatusCardTitle>
-                    <StatusCardNumber>0</StatusCardNumber>
+                    <StatusCardNumber>
+                      {loadingInventoryStatus ? <Spin /> : inventoryStatus.buyableQuantity}
+                    </StatusCardNumber>
                   </AdminBlock>
                 </div>
                 <div className="col-12 col-lg-4">
                   <AdminBlock className="p-4">
                     <StatusCardTitle>{formatMessage(merchandiseMessages.status.shipping)}</StatusCardTitle>
-                    <StatusCardNumber>0</StatusCardNumber>
+                    <StatusCardNumber>
+                      {loadingInventoryStatus ? <Spin /> : inventoryStatus.undeliveredQuantity}
+                    </StatusCardNumber>
                   </AdminBlock>
                 </div>
                 <div className="col-12 col-lg-4">
                   <AdminBlock className="p-4">
                     <StatusCardTitle>{formatMessage(merchandiseMessages.status.shipped)}</StatusCardTitle>
-                    <StatusCardNumber>0</StatusCardNumber>
+                    <StatusCardNumber>
+                      {loadingInventoryStatus ? <Spin /> : inventoryStatus.deliveredQuantity}
+                    </StatusCardNumber>
                   </AdminBlock>
                 </div>
               </div>

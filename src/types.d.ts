@@ -5950,6 +5950,32 @@ export interface GET_MERCHANDISEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_MERCHANDISE_INVENTORY_STATUS
+// ====================================================
+
+export interface GET_MERCHANDISE_INVENTORY_STATUS_merchandise_inventory_status {
+  __typename: "merchandise_inventory_status";
+  buyable_quantity: any | null;
+  undelivered_quantity: any | null;
+  delivered_quantity: any | null;
+}
+
+export interface GET_MERCHANDISE_INVENTORY_STATUS {
+  /**
+   * fetch data from the table: "merchandise_inventory_status"
+   */
+  merchandise_inventory_status: GET_MERCHANDISE_INVENTORY_STATUS_merchandise_inventory_status[];
+}
+
+export interface GET_MERCHANDISE_INVENTORY_STATUSVariables {
+  merchandiseId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MERCHANDISE_INVENTORY
 // ====================================================
 
@@ -8096,6 +8122,7 @@ export enum merchandise_update_column {
   id = "id",
   is_deleted = "is_deleted",
   link = "link",
+  member_id = "member_id",
   meta = "meta",
   position = "position",
   price = "price",
@@ -8215,6 +8242,7 @@ export enum order_log_update_column {
   member_id = "member_id",
   message = "message",
   payment_model = "payment_model",
+  shipping = "shipping",
   status = "status",
   updated_at = "updated_at",
 }
@@ -11050,6 +11078,8 @@ export interface merchandise_bool_exp {
   id?: uuid_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
   link?: String_comparison_exp | null;
+  member?: member_public_bool_exp | null;
+  member_id?: String_comparison_exp | null;
   merchandise_categories?: merchandise_category_bool_exp | null;
   merchandise_imgs?: merchandise_img_bool_exp | null;
   merchandise_tags?: merchandise_tag_bool_exp | null;
@@ -11162,6 +11192,7 @@ export interface merchandise_insert_input {
   id?: any | null;
   is_deleted?: boolean | null;
   link?: string | null;
+  member_id?: string | null;
   merchandise_categories?: merchandise_category_arr_rel_insert_input | null;
   merchandise_imgs?: merchandise_img_arr_rel_insert_input | null;
   merchandise_tags?: merchandise_tag_arr_rel_insert_input | null;
@@ -11180,6 +11211,7 @@ export interface merchandise_insert_input {
 export interface merchandise_inventory_insert_input {
   created_at?: any | null;
   id?: any | null;
+  merchandise?: merchandise_obj_rel_insert_input | null;
   merchandise_id?: any | null;
   quantity?: number | null;
   specification?: string | null;
@@ -11509,6 +11541,7 @@ export interface order_log_bool_exp {
   order_products?: order_product_bool_exp | null;
   payment_logs?: payment_log_bool_exp | null;
   payment_model?: jsonb_comparison_exp | null;
+  shipping?: jsonb_comparison_exp | null;
   status?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -11535,6 +11568,7 @@ export interface order_log_insert_input {
   order_products?: order_product_arr_rel_insert_input | null;
   payment_logs?: payment_log_arr_rel_insert_input | null;
   payment_model?: any | null;
+  shipping?: any | null;
   status?: string | null;
   updated_at?: any | null;
 }

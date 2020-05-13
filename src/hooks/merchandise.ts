@@ -130,6 +130,48 @@ export const useMerchandise = (id: string) => {
   }
 }
 
+export const useMerchandiseInventoryStatus = (merchandiseId: string) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_MERCHANDISE_INVENTORY_STATUS,
+    types.GET_MERCHANDISE_INVENTORY_STATUSVariables
+  >(
+    gql`
+      query GET_MERCHANDISE_INVENTORY_STATUS($merchandiseId: uuid!) {
+        merchandise_inventory_status(where: { merchandise_id: { _eq: $merchandiseId } }) {
+          buyable_quantity
+          undelivered_quantity
+          delivered_quantity
+        }
+      }
+    `,
+    { variables: { merchandiseId } },
+  )
+
+  const inventoryStatus: {
+    buyableQuantity: number
+    undeliveredQuantity: number
+    deliveredQuantity: number
+  } =
+    loading || error || !data || !data.merchandise_inventory_status[0]
+      ? {
+          buyableQuantity: 0,
+          undeliveredQuantity: 0,
+          deliveredQuantity: 0,
+        }
+      : {
+          buyableQuantity: data.merchandise_inventory_status[0].buyable_quantity,
+          undeliveredQuantity: data.merchandise_inventory_status[0].undelivered_quantity,
+          deliveredQuantity: data.merchandise_inventory_status[0].delivered_quantity,
+        }
+
+  return {
+    loadingInventoryStatus: loading,
+    errorInventoryStatus: error,
+    inventoryStatus,
+    refetchInventoryStatus: refetch,
+  }
+}
+
 export const useMerchandiseInventoryLog = (merchandiseId: string) => {
   const { loading, error, data, refetch } = useQuery<
     types.GET_MERCHANDISE_INVENTORY,
