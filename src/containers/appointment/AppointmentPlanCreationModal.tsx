@@ -41,7 +41,7 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
       })
         .then(({ data }) =>
           history.push(
-            `/${currentUserRole === 'app-owner' ? 'admin' : 'studio'}/appointment-plans/${
+            `/appointment-plans/${
               data && data.insert_appointment_plan ? data.insert_appointment_plan.returning[0].id : ''
             }`,
           ),
