@@ -20,7 +20,7 @@ const ProgramPeriodTypeDropdown: React.FC<ProgramPeriodTypeDropdownProps> = ({
       trigger={['click']}
       overlay={
         <Menu>
-          {periodTypes.map((periodType) => (
+          {periodTypes.map(periodType => (
             <Menu.Item key={periodType} onClick={() => onChange && onChange(periodType)}>
               {isShortenPeriodType ? (
                 <ShortenPeriodTypeLabel periodType={periodType} />

@@ -40,7 +40,7 @@ const ProgramPackageBasicForm: React.FC<ProgramPackageBasicFormProps> = ({
             onRefetch && onRefetch()
             message.success(formatMessage(commonMessages.event.successfullySaved))
           })
-          .catch((err) => handleError(err))
+          .catch(handleError)
           .finally(() => setLoading(false))
       }
     })
@@ -51,7 +51,7 @@ const ProgramPackageBasicForm: React.FC<ProgramPackageBasicFormProps> = ({
       hideRequiredMark
       labelCol={{ span: 24, md: { span: 4 } }}
       wrapperCol={{ span: 24, md: { span: 8 } }}
-      onSubmit={(e) => {
+      onSubmit={e => {
         e.preventDefault()
         handleUpload()
       }}

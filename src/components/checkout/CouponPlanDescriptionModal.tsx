@@ -31,9 +31,11 @@ const StyledDescription = styled.div`
   white-space: pre-wrap;
 `
 
-const CouponPlanDescriptionModal: React.FC<ModalProps & {
-  couponPlan: CouponPlanProps
-}> = ({ couponPlan, ...modalProps }) => {
+const CouponPlanDescriptionModal: React.FC<
+  ModalProps & {
+    couponPlan: CouponPlanProps
+  }
+> = ({ couponPlan, ...modalProps }) => {
   const { formatMessage } = useIntl()
   const { loadingCouponCodes, errorCouponCodes, couponCodes } = useCouponCodeCollection(couponPlan.id)
 

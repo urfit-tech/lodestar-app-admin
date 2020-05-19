@@ -93,9 +93,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
           <StyledTimeStandardBlock>
             {formatMessage(appointmentMessages.text.timezone, {
               city: momentTz.tz.guess().split('/')[1],
-              timezone: moment()
-                .zone(momentTz.tz.guess())
-                .format('Z'),
+              timezone: moment().zone(momentTz.tz.guess()).format('Z'),
             })}
           </StyledTimeStandardBlock>
         </>
@@ -107,9 +105,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
           <StyledTimeZoneBlock>
             {formatMessage(appointmentMessages.text.timezone, {
               city: momentTz.tz.guess().split('/')[1],
-              timezone: moment()
-                .zone(momentTz.tz.guess())
-                .format('Z'),
+              timezone: moment().zone(momentTz.tz.guess()).format('Z'),
             })}
           </StyledTimeZoneBlock>
         </>
@@ -130,9 +126,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
       <Form hideRequiredMark colon={false}>
         <Form.Item label={formatMessage(appointmentMessages.term.startedAt)}>
           {form.getFieldDecorator('startedAt', {
-            initialValue: moment()
-              .add(1, 'hour')
-              .startOf('hour'),
+            initialValue: moment().add(1, 'hour').startOf('hour'),
             rules: [{ required: true, message: formatMessage(appointmentMessages.text.selectStartedAt) }],
           })(
             <DatePicker

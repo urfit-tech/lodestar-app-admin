@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, message } from 'antd'
+import { Button, Form } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
@@ -8,6 +8,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import MemberAvatar from '../../containers/common/MemberAvatar'
 import AppContext from '../../contexts/AppContext'
+import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import { createUploadFn } from '../admin/AdminBraftEditor'
@@ -46,14 +47,14 @@ const IssueReplyCreationBlock: React.FC<IssueReplyCreationBlockProps> = ({ membe
             form.resetFields()
             onRefetch && onRefetch()
           })
-          .catch((err) => message.error(err.message))
+          .catch(handleError)
           .finally(() => setReplying(false))
       }
     })
   }
   return (
     <Form
-      onSubmit={(e) => {
+      onSubmit={e => {
         e.preventDefault()
         handleSubmit()
       }}

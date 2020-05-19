@@ -10,7 +10,7 @@ const MerchandiseSelector: React.FC<{
 
   return (
     <Select<string> mode="multiple" loading={loadingMerchandises} value={value} onChange={onChange}>
-      {merchandises.map((merchandise) => (
+      {merchandises.map(merchandise => (
         <Select.Option key={merchandise.id}>{merchandise.title}</Select.Option>
       ))}
     </Select>

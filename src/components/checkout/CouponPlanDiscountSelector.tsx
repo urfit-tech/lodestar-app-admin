@@ -32,13 +32,13 @@ const CouponPlanDiscountSelector: React.FC<{
           </Select>
           <InputNumber
             style={{ width: '40%' }}
-            formatter={(v) => `${v} ${value.type === 1 ? formatMessage(promotionMessages.term.dollar) : '%'}`}
-            parser={(v) =>
+            formatter={v => `${v} ${value.type === 1 ? formatMessage(promotionMessages.term.dollar) : '%'}`}
+            parser={v =>
               (v && parseFloat(v.replace(` ${formatMessage(promotionMessages.term.dollar)}`, '').replace(' %', ''))) ||
               0
             }
             value={value.amount}
-            onChange={(amount) => amount && onChange && onChange({ ...value, amount })}
+            onChange={amount => amount && onChange && onChange({ ...value, amount })}
           />
         </StyledGroup>
       ) : null}

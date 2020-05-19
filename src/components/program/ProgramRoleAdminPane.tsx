@@ -24,11 +24,13 @@ const messages = defineMessages({
   programOwner: { id: 'program.label.programOwner', defaultMessage: '課程負責人' },
 })
 
-const ProgramRoleAdminPane: React.FC<CardProps & {
-  program: ProgramType | null
-  onProgramUpdate: UpdateProgramProps
-  onProgramDelete: DeleteProgramProps
-}> = ({ program, onProgramUpdate, onProgramDelete }) => {
+const ProgramRoleAdminPane: React.FC<
+  CardProps & {
+    program: ProgramType | null
+    onProgramUpdate: UpdateProgramProps
+    onProgramDelete: DeleteProgramProps
+  }
+> = ({ program, onProgramUpdate, onProgramDelete }) => {
   const { formatMessage } = useIntl()
   const [visible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)

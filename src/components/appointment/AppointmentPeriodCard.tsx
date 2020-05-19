@@ -68,12 +68,8 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
   const { formatMessage } = useIntl()
   const [visible, setVisible] = useState(false)
 
-  const startedTime = moment(startedAt)
-    .utc()
-    .format('YYYYMMDD[T]HHmmss[Z]')
-  const endedTime = moment(endedAt)
-    .utc()
-    .format('YYYYMMDD[T]HHmmss[Z]')
+  const startedTime = moment(startedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
+  const endedTime = moment(endedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const isFinished = endedAt.getTime() < Date.now()
 
   return (

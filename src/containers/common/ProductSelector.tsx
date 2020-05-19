@@ -32,7 +32,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({ allowTypes, value, on
       ? {}
       : {
           Program: allowTypes.includes('Program')
-            ? data.program.map((program) => ({
+            ? data.program.map(program => ({
                 id: `Program_${program.id}`,
                 title: program.title,
                 type: 'Program',
@@ -41,14 +41,14 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({ allowTypes, value, on
 
           Card:
             enabledModules.member_card && allowTypes.includes('Card')
-              ? data.card.map((card) => ({
+              ? data.card.map(card => ({
                   id: `Card_${card.id}`,
                   title: card.title,
                   type: 'Card',
                 }))
               : [],
           ActivityTicket: allowTypes.includes('ActivityTicket')
-            ? data.activity_ticket.map((activityTicket) => ({
+            ? data.activity_ticket.map(activityTicket => ({
                 id: `ActivityTicket_${activityTicket.id}`,
                 title: `${activityTicket.activity.title} - ${activityTicket.title}`,
                 type: 'ActivityTicket',
@@ -59,8 +59,8 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({ allowTypes, value, on
   const handleChange = (changedValue: string[]) => {
     if (onChange) {
       onChange(
-        changedValue.flatMap((productId) =>
-          products[productId] ? products[productId].map((product) => product.id) : productId,
+        changedValue.flatMap(productId =>
+          products[productId] ? products[productId].map(product => product.id) : productId,
         ),
       )
     }

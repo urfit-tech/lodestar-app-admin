@@ -38,7 +38,7 @@ const CategorySelector: React.FC<{
 
   return flatten ? (
     <>
-      {categories.map((category) => {
+      {categories.map(category => {
         return (
           <StyledButton
             className="mr-2 mb-2"
@@ -54,7 +54,7 @@ const CategorySelector: React.FC<{
     </>
   ) : (
     <StyledSelect mode="multiple" loading={loading} value={value} onChange={onChange}>
-      {categories.map((category) => (
+      {categories.map(category => (
         <Select.Option style={{ borderRadius: '4px' }} key={category.id}>
           {category.name}
         </Select.Option>

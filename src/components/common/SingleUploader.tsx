@@ -18,7 +18,7 @@ const messages = defineMessages({
 
 const StyledUpload = styled(Upload)`
   .ant-progress-bg {
-    background: ${(props) => props.theme['@primary-color']};
+    background: ${props => props.theme['@primary-color']};
   }
 `
 
@@ -59,7 +59,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
   const props: UploadProps = {
     ...uploadProps,
     fileList: fileList || [value].filter(notEmpty),
-    onChange: (info) => {
+    onChange: info => {
       onChange && onChange(info.file)
       if (info.file.status === 'uploading') {
         onUploading && onUploading(info)
@@ -86,12 +86,12 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
         withExtension ? path + extname(file.name) : path,
         file,
         {
-          onUploadProgress: (progressEvent) => {
+          onUploadProgress: progressEvent => {
             onProgress({
               percent: (progressEvent.loaded / progressEvent.total) * 100,
             })
           },
-          cancelToken: new axios.CancelToken((canceler) => {
+          cancelToken: new axios.CancelToken(canceler => {
             uploadCanceler.current = canceler
           }),
         },

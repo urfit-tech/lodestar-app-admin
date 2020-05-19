@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, DatePicker, Form, Icon, Input, InputNumber, message, Radio } from 'antd'
+import { Button, Checkbox, DatePicker, Form, Icon, Input, InputNumber, Radio } from 'antd'
 import { FormComponentProps } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
@@ -8,6 +8,7 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
+import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramPlanType } from '../../types/program'
@@ -92,9 +93,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
             onRefetch && onRefetch()
             setVisible(false)
           })
-          .catch((error) => {
-            message.error(error.message)
-          })
+          .catch(handleError)
           .finally(() => setLoading(false))
       }
     })
@@ -163,14 +162,14 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
           })(
             <InputNumber
               min={0}
-              formatter={(value) => `NT$ ${value}`}
-              parser={(value) => (value ? value.replace(/\D/g, '') : '')}
+              formatter={value => `NT$ ${value}`}
+              parser={value => (value ? value.replace(/\D/g, '') : '')}
             />,
           )}
         </Form.Item>
 
         <div className="mb-4">
-          <Checkbox defaultChecked={withSalePrice} onChange={(e) => setWithSalePrice(e.target.checked)}>
+          <Checkbox defaultChecked={withSalePrice} onChange={e => setWithSalePrice(e.target.checked)}>
             {formatMessage(commonMessages.term.salePrice)}
           </Checkbox>
           {withSalePrice && <div className="notation">{formatMessage(commonMessages.text.salePriceNotation)}</div>}
@@ -182,8 +181,8 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
             })(
               <InputNumber
                 min={0}
-                formatter={(value) => `NT$ ${value}`}
-                parser={(value) => (value ? value.replace(/\D/g, '') : '')}
+                formatter={value => `NT$ ${value}`}
+                parser={value => (value ? value.replace(/\D/g, '') : '')}
               />,
             )}
           </Form.Item>
@@ -202,7 +201,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
         </Form.Item>
 
         <div className="mb-4">
-          <Checkbox defaultChecked={withDiscountDownPrice} onChange={(e) => setWithDiscountDownPrice(e.target.checked)}>
+          <Checkbox defaultChecked={withDiscountDownPrice} onChange={e => setWithDiscountDownPrice(e.target.checked)}>
             {formatMessage(commonMessages.label.discountDownPrice)}
           </Checkbox>
           {withDiscountDownPrice && (
@@ -215,8 +214,8 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
           })(
             <InputNumber
               min={0}
-              formatter={(value) => `NT$ ${value}`}
-              parser={(value) => (value ? value.replace(/\D/g, '') : '')}
+              formatter={value => `NT$ ${value}`}
+              parser={value => (value ? value.replace(/\D/g, '') : '')}
             />,
           )}
         </Form.Item>

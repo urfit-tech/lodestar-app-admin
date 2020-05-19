@@ -69,14 +69,6 @@ const MerchandiseInventoryAdminModal: React.FC<{
             onChange={value =>
               typeof value === 'number' && setQuantities(quantities.map((q, i) => (i === index ? value : q)))
             }
-            onDecrease={async () => {
-              setQuantities(quantities.map((q, i) => (i === index ? q - 1 : q)))
-              return quantities[index] - 1
-            }}
-            onIncrease={async () => {
-              setQuantities(quantities.map((q, i) => (i === index ? q + 1 : q)))
-              return quantities[index] + 1
-            }}
           />
         </div>
       ))}

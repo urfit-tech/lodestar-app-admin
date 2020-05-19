@@ -95,7 +95,7 @@ export const FacebookLoginButton: React.FC = () => {
       onLoginSuccess={({ _provider, _token }: any) => {
         setLoading(true)
         socialLogin(_provider, _token)
-          .then((token) => {
+          .then(token => {
             setVisible && setVisible(false)
           })
           .finally(() => setLoading(false))
@@ -133,7 +133,7 @@ export const GoogleLoginButton: React.FC = () => {
       onLoginSuccess={({ _provider, _token }: any) => {
         setLoading(true)
         socialLogin(_provider, _token)
-          .then((token) => {
+          .then(token => {
             setVisible && setVisible(false)
           })
           .finally(() => setLoading(false))

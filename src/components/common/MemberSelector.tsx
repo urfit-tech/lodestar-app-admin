@@ -40,13 +40,13 @@ const MemberSelector: React.FC<{
       showSearch
       placeholder={formatMessage(messages.memberSelect)}
       value={value}
-      onChange={(value) => onChange && onChange(value)}
+      onChange={value => onChange && onChange(value)}
       optionLabelProp="title"
       optionFilterProp="data-source"
       style={{ width: '100%' }}
       disabled={disabled}
     >
-      {members.map((member) => (
+      {members.map(member => (
         <Select.Option
           key={member.id}
           value={member.id}

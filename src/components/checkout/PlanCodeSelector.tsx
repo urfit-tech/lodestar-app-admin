@@ -27,7 +27,7 @@ const PlanCodeSelector: React.FC<{
             planType={planType}
             value={couponCode}
             onDelete={() => onChange && onChange([...value.slice(0, idx), ...value.slice(idx + 1)])}
-            onChange={(updatedCouponCode) =>
+            onChange={updatedCouponCode =>
               onChange && onChange([...value.slice(0, idx), updatedCouponCode, ...value.slice(idx + 1)])
             }
           />
@@ -67,16 +67,16 @@ const PlanCodeInputGroup: React.FC<{
           style={{ width: '20%' }}
           placeholder={formatMessage(promotionMessages.term.amount)}
           value={value.count}
-          onChange={(count) => count && onChange({ ...value, count })}
-          formatter={(v) => `${v} ${formatMessage(promotionMessages.label.unit)}`}
-          parser={(v) => (v && parseInt(v.replace(` ${formatMessage(promotionMessages.label.unit)}`, ''))) || 0}
+          onChange={count => count && onChange({ ...value, count })}
+          formatter={v => `${v} ${formatMessage(promotionMessages.label.unit)}`}
+          parser={v => (v && parseInt(v.replace(` ${formatMessage(promotionMessages.label.unit)}`, ''))) || 0}
         />
 
         {value.type === 'custom' && (
           <Input
             style={{ width: '50%' }}
             value={value.code || ''}
-            onChange={(e) => onChange({ ...value, code: e.target.value })}
+            onChange={e => onChange({ ...value, code: e.target.value })}
             placeholder={`${formatMessage(promotionMessages.ui.custom)} ${
               planType === 'coupon'
                 ? formatMessage(promotionMessages.term.couponCodes)

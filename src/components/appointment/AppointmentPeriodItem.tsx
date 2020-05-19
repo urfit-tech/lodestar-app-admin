@@ -67,15 +67,7 @@ const AppointmentPeriodItem: React.FC<AppointmentPeriodProps> = ({ id, startedAt
   return (
     <StyledItemWrapper variant={isEnrolled ? 'disabled' : isExcluded ? 'excluded' : 'default'}>
       <StyledItemTitle>
-        {startedAt
-          .getHours()
-          .toString()
-          .padStart(2, '0')}
-        :
-        {startedAt
-          .getMinutes()
-          .toString()
-          .padStart(2, '0')}
+        {startedAt.getHours().toString().padStart(2, '0')}:{startedAt.getMinutes().toString().padStart(2, '0')}
       </StyledItemTitle>
       <StyledItemMeta>
         {isEnrolled

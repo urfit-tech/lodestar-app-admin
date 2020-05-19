@@ -10,8 +10,8 @@ const CurrencyInput: React.FC<{
       value={value}
       onChange={onChange}
       min={0}
-      formatter={(value) => `NT$ ${value}`}
-      parser={(value) => (value ? value.replace(/\D/g, '') : '')}
+      formatter={value => `NT$ ${value}`}
+      parser={value => (value ? value.replace(/\D/g, '') : '')}
     />
   )
 }

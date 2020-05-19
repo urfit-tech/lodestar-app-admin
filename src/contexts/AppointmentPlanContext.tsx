@@ -41,9 +41,7 @@ export const AppointmentPlanProvider: React.FC<{
   >(GET_APPOINTMENT_PLAN_ADMIN, {
     variables: {
       appointmentPlanId,
-      now: moment()
-        .startOf('hour')
-        .toDate(),
+      now: moment().startOf('hour').toDate(),
     },
   })
 

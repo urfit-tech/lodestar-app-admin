@@ -62,14 +62,14 @@ const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps
           })(
             <InputNumber
               min={0}
-              formatter={(value) => `NT$ ${value}`}
-              parser={(value) => (value ? value.replace(/\D/g, '') : '')}
+              formatter={value => `NT$ ${value}`}
+              parser={value => (value ? value.replace(/\D/g, '') : '')}
             />,
           )}
         </Form.Item>
 
         <div className="mb-4">
-          <Checkbox defaultChecked={withSalePrice} onChange={(e) => setWithSalePrice(e.target.checked)}>
+          <Checkbox defaultChecked={withSalePrice} onChange={e => setWithSalePrice(e.target.checked)}>
             {formatMessage(commonMessages.term.salePrice)}
           </Checkbox>
         </div>
@@ -80,8 +80,8 @@ const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps
             })(
               <InputNumber
                 min={0}
-                formatter={(value) => `NT$ ${value}`}
-                parser={(value) => (value ? value.replace(/\D/g, '') : '')}
+                formatter={value => `NT$ ${value}`}
+                parser={value => (value ? value.replace(/\D/g, '') : '')}
               />,
             )}
           </Form.Item>

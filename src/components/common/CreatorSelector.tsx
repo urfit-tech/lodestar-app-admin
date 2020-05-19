@@ -51,7 +51,7 @@ const useGetCreatorCollection = () => {
   const members: MemberOptionProps[] =
     loading || error || !data
       ? []
-      : data.member.map((member) => ({
+      : data.member.map(member => ({
           id: member.id,
           avatarUrl: member.picture_url,
           name: member.name || member.username,

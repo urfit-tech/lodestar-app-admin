@@ -39,7 +39,7 @@ const ProgramPackageDescriptionForm: React.FC<ProgramPackageDescriptionFromProps
   return (
     <>
       <Form
-        onSubmit={(e) => {
+        onSubmit={e => {
           e.preventDefault()
           handleSubmit()
         }}

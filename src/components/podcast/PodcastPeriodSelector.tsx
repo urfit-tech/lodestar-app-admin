@@ -17,7 +17,7 @@ const PodcastPeriodSelector: React.FC<{
           <InputNumber
             min={1}
             value={value.amount}
-            onChange={(amount) => amount && onChange && onChange({ ...value, amount })}
+            onChange={amount => amount && onChange && onChange({ ...value, amount })}
             className="mr-3"
           />
           <Select

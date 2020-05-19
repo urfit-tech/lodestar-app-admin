@@ -18,7 +18,7 @@ const ProgramPlanSelector: React.FC<ProgramPlanSelectorProps> = ({ programId, ..
     <Select mode="multiple" loading={loading} style={{ width: '100%' }} {...selectProps}>
       {data &&
         data.program_plan &&
-        data.program_plan.map((programPlan) => <Select.Option key={programPlan.id}>{programPlan.title}</Select.Option>)}
+        data.program_plan.map(programPlan => <Select.Option key={programPlan.id}>{programPlan.title}</Select.Option>)}
     </Select>
   )
 }

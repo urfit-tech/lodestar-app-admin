@@ -44,9 +44,11 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
   )
 }
 
-const ProgramSelector: React.FC<SelectProps & {
-  allText?: string
-}> = ({ allText, ...selectProps }) => {
+const ProgramSelector: React.FC<
+  SelectProps & {
+    allText?: string
+  }
+> = ({ allText, ...selectProps }) => {
   const { formatMessage } = useIntl()
   const { loading, error, data: programs } = useProgramContentEnrollment()
 

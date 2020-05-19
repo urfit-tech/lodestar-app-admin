@@ -25,7 +25,7 @@ const StyledIssueItem = styled.div`
   transition: background-color 1s ease-in-out;
 
   &.focus {
-    background: ${(props) => rgba(props.theme['@primary-color'], 0.1)};
+    background: ${props => rgba(props.theme['@primary-color'], 0.1)};
   }
 `
 const IssueContentBlock = styled.div`
@@ -37,7 +37,7 @@ const IssueContentBlock = styled.div`
 `
 const StyledAction = styled.span<{ reacted?: boolean }>`
   padding: 0;
-  color: ${(props) => (props.reacted ? props.theme['@primary-color'] : props.theme['@text-color-secondary'])};
+  color: ${props => (props.reacted ? props.theme['@primary-color'] : props.theme['@text-color-secondary'])};
   cursor: pointer;
 `
 const IssueState = styled(Typography.Text)`
@@ -47,7 +47,7 @@ const IssueState = styled(Typography.Text)`
 `
 const StyledTag = styled(Tag)<{ variant?: string }>`
   &.ant-tag-has-color {
-    ${(props) => (props.variant && props.variant === 'assistant' ? `color: ${props.theme['@primary-color']};` : '')}
+    ${props => (props.variant && props.variant === 'assistant' ? `color: ${props.theme['@primary-color']};` : '')}
   }
 `
 
@@ -97,7 +97,7 @@ const IssueItem: React.FC<IssueItemProps> = ({
   const [repliesVisible, setRepliesVisible] = useState(defaultRepliesVisible)
   const [reacted, setReacted] = useState(false)
 
-  const otherReactedMemberIds = reactedMemberIds.filter((id) => id !== currentMemberId).length
+  const otherReactedMemberIds = reactedMemberIds.filter(id => id !== currentMemberId).length
 
   useEffect(() => {
     if (currentMemberId && reactedMemberIds.includes(currentMemberId)) {
@@ -134,7 +134,7 @@ const IssueItem: React.FC<IssueItemProps> = ({
   return (
     <StyledIssueItem
       className={focus ? 'focus' : ''}
-      ref={(ref) => {
+      ref={ref => {
         if (ref && focus) {
           ref.scrollIntoView()
           setTimeout(() => {
@@ -150,8 +150,8 @@ const IssueItem: React.FC<IssueItemProps> = ({
             renderText={() =>
               programRoles &&
               programRoles
-                .filter((role) => role?.member?.id === memberId)
-                .map((role) =>
+                .filter(role => role?.member?.id === memberId)
+                .map(role =>
                   role.name === 'instructor' ? (
                     <StyledTag key={role.id} color={theme['@primary-color']} className="ml-2 mr-0">
                       <ProgramRoleLabel role={role.name} />
@@ -216,7 +216,7 @@ const IssueItem: React.FC<IssueItemProps> = ({
       <IssueContentBlock>
         {editing ? (
           <Form
-            onSubmit={(e) => {
+            onSubmit={e => {
               e.preventDefault()
               handleSubmit()
             }}

@@ -1,5 +1,5 @@
 import { Button, Input } from 'antd'
-import React, { forwardRef, useState } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 
 const StyledInputGroup = styled(Input.Group)`
@@ -15,14 +15,19 @@ const StyledInputGroup = styled(Input.Group)`
 const QuantityInput: React.FC<{
   value?: number
   onChange?: (value: number | undefined) => void
-  onDecrease?: () => Promise<number>
-  onIncrease?: () => Promise<number>
-}> = ({ value, onChange, onDecrease, onIncrease }, ref) => {
+}> = ({ value = 0, onChange }, ref) => {
   const [inputValue, setInputValue] = useState(`${value}`)
 
   return (
     <StyledInputGroup compact>
-      <Button icon="minus" onClick={() => onDecrease && onDecrease().then(value => setInputValue(`${value}`))} />
+      <Button
+        icon="minus"
+        onClick={() => {
+          const newValue = value - 1
+          onChange && onChange(newValue)
+          setInputValue(`${newValue}`)
+        }}
+      />
       <Input
         ref={ref}
         value={inputValue}
@@ -33,9 +38,16 @@ const QuantityInput: React.FC<{
           onChange && onChange(newValue)
         }}
       />
-      <Button icon="plus" onClick={() => onIncrease && onIncrease().then(value => setInputValue(`${value}`))} />
+      <Button
+        icon="plus"
+        onClick={() => {
+          const newValue = value + 1
+          onChange && onChange(newValue)
+          setInputValue(`${newValue}`)
+        }}
+      />
     </StyledInputGroup>
   )
 }
 
-export default forwardRef(QuantityInput)
+export default QuantityInput
