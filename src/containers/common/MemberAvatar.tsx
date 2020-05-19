@@ -1,7 +1,6 @@
-import { AvatarProps } from 'antd/lib/avatar'
 import React from 'react'
 import styled from 'styled-components'
-import { AvatarImage } from '../../components/common/Image'
+import { AvatarImage, AvatarImageProps } from '../../components/common/Image'
 import { usePublicMember } from '../../hooks/member'
 import { MemberPublic } from '../../types/general'
 
@@ -10,13 +9,14 @@ const MemberName = styled.span`
   color: #9b9b9b;
 `
 
-type MemberAvatarProps = AvatarProps & {
-  memberId: string
-  renderAvatar?: (member: MemberPublic) => React.ReactNode
-  renderText?: (member: MemberPublic) => React.ReactNode
-  withName?: boolean
-}
-const MemberAvatar: React.FC<MemberAvatarProps> = ({ memberId, shape, size, renderAvatar, renderText, withName }) => {
+const MemberAvatar: React.FC<
+  AvatarImageProps & {
+    memberId: string
+    renderAvatar?: (member: MemberPublic) => React.ReactNode
+    renderText?: (member: MemberPublic) => React.ReactNode
+    withName?: boolean
+  }
+> = ({ memberId, renderAvatar, renderText, withName, ...props }) => {
   const { member } = usePublicMember(memberId)
   if (!member) {
     return null
@@ -24,7 +24,7 @@ const MemberAvatar: React.FC<MemberAvatarProps> = ({ memberId, shape, size, rend
 
   return (
     <div className="d-flex align-items-center">
-      {renderAvatar ? renderAvatar(member) : <AvatarImage src={member.pictureUrl || ''} shape={shape} size={size} />}
+      {renderAvatar ? renderAvatar(member) : <AvatarImage src={member.pictureUrl || ''} {...props} />}
       {renderText && renderText(member)}
       {withName && <MemberName className="ml-3">{member.name}</MemberName>}
     </div>

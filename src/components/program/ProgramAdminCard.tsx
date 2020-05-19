@@ -50,6 +50,7 @@ const ProgramAdminCard: React.FC<ProgramPreviewProps & CardProps> = ({
   periodType,
   enrollment,
   isDraft,
+  isPrivate,
   ...props
 }) => {
   const { formatMessage } = useIntl()
