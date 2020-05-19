@@ -1,12 +1,10 @@
 import { Button, Icon, Tabs, Typography } from 'antd'
 import { reverse } from 'ramda'
-import React, { useContext } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import CouponPlanAdminCard from '../../../components/checkout/CouponPlanAdminCard'
 import CouponPlanAdminModal from '../../../components/checkout/CouponPlanAdminModal'
 import AdminLayout from '../../../components/layout/AdminLayout'
-import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
-import AppContext from '../../../contexts/AppContext'
 import { commonMessages, promotionMessages } from '../../../helpers/translation'
 import { useCouponPlanCollection } from '../../../hooks/checkout'
 import { ReactComponent as DiscountIcon } from '../../../images/icon/discount.svg'
@@ -14,42 +12,7 @@ import { CouponPlanProps } from '../../../types/checkout'
 
 const CouponPlanCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { id: appId } = useContext(AppContext)
-  const { loading, error, data } = useQuery<
-    types.GET_COUPON_PLAN_COLLECTION,
-    types.GET_COUPON_PLAN_COLLECTIONVariables
-  >(GET_COUPON_PLAN_COLLECTION, {
-    variables: { appId },
-  })
-
-  const couponPlans =
-    loading || error || !data
-      ? []
-      : data.coupon_plan.map(value => {
-          const [count, remaining] =
-            value.coupon_codes_aggregate.aggregate && value.coupon_codes_aggregate.aggregate.sum
-              ? [
-                  value.coupon_codes_aggregate.aggregate.sum.count || 0,
-                  value.coupon_codes_aggregate.aggregate.sum.remaining || 0,
-                ]
-              : [0, 0]
-
-          return {
-            id: value.id,
-            title: value.title,
-            amount: value.amount,
-            scope: value.scope || '',
-            type: value.type,
-            constraint: value.constraint,
-            startedAt: value.started_at && new Date(value.started_at),
-            endedAt: value.ended_at && new Date(value.ended_at),
-            description: value.description,
-            count,
-            remaining,
-
-            available: remaining > 0 && (value.ended_at ? new Date(value.ended_at).getTime() > Date.now() : true),
-          }
-        })
+  const { couponPlans } = useCouponPlanCollection()
 
   return (
     <AdminLayout>

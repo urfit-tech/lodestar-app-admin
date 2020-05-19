@@ -1,6 +1,5 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/react-hooks'
 import { Button, Icon, Typography } from 'antd'
-import gql from 'graphql-tag'
 import React, { useContext, useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import Sortable from 'react-sortablejs'
@@ -11,6 +10,7 @@ import OwnerAdminLayout from '../../../components/layout/OwnerAdminLayout'
 import { GET_PROGRAM_CATEGORIES } from '../../../components/program/ProgramCategorySelector'
 import AppContext from '../../../contexts/AppContext'
 import { commonMessages } from '../../../helpers/translation'
+import { useDeleteCategory, useInsertCategory, useUpdateCategory } from '../../../hooks/data'
 import { categorySchema } from '../../../schemas/program'
 import types from '../../../types'
 
@@ -30,15 +30,9 @@ const CategoryAdminPage: React.FC = () => {
       variables: { appId },
     },
   )
-  const [insertProgramCategory] = useMutation<types.INSERT_PROGRAM_CATEGORY, types.INSERT_PROGRAM_CATEGORYVariables>(
-    INSERT_PROGRAM_CATEGORY,
-  )
-  const [updateProgramCategory] = useMutation<types.UPDATE_PROGRAM_CATEGORY, types.UPDATE_PROGRAM_CATEGORYVariables>(
-    UPDATE_PROGRAM_CATEGORY,
-  )
-  const [deleteProgramCategory] = useMutation<types.DELETE_PROGRAM_CATEGORY, types.DELETE_PROGRAM_CATEGORYVariables>(
-    DELETE_PROGRAM_CATEGORY,
-  )
+  const insertCategory = useInsertCategory()
+  const updateCategory = useUpdateCategory()
+  const deleteCategory = useDeleteCategory()
   const [categories, setCategories] = useState<InferType<typeof categorySchema>[]>([])
 
   useEffect(() => {
@@ -61,7 +55,7 @@ const CategoryAdminPage: React.FC = () => {
             const newCategories = categoryStrings.map(categoryString => JSON.parse(categoryString))
             setCategories(newCategories)
             newCategories.map((category, idx) =>
-              updateProgramCategory({
+              updateCategory({
                 variables: {
                   categoryId: category.id,
                   name: category.name,
@@ -83,7 +77,7 @@ const CategoryAdminPage: React.FC = () => {
                   key="delete"
                   onClick={() => {
                     if (window.confirm(formatMessage(messages.deleteCategoryNotation))) {
-                      deleteProgramCategory({
+                      deleteCategory({
                         variables: { categoryId: category.id },
                       }).then(() => refetch())
                     }
@@ -94,7 +88,7 @@ const CategoryAdminPage: React.FC = () => {
               <Typography.Text
                 editable={{
                   onChange: name => {
-                    updateProgramCategory({
+                    updateCategory({
                       variables: {
                         categoryId: category.id,
                         name,
@@ -114,11 +108,12 @@ const CategoryAdminPage: React.FC = () => {
           type="link"
           onClick={() => {
             appId &&
-              insertProgramCategory({
+              insertCategory({
                 variables: {
                   appId,
                   name: `Untitled-${categories.length + 1}`,
                   position: categories.length,
+                  classType: 'program',
                 },
               }).then(() => refetch())
           }}
@@ -129,29 +124,5 @@ const CategoryAdminPage: React.FC = () => {
     </OwnerAdminLayout>
   )
 }
-
-const INSERT_PROGRAM_CATEGORY = gql`
-  mutation INSERT_PROGRAM_CATEGORY($appId: String!, $name: String, $position: Int) {
-    insert_category(objects: { app_id: $appId, name: $name, class: "program", position: $position }) {
-      affected_rows
-    }
-  }
-`
-
-const UPDATE_PROGRAM_CATEGORY = gql`
-  mutation UPDATE_PROGRAM_CATEGORY($categoryId: String!, $name: String, $position: Int) {
-    update_category(where: { id: { _eq: $categoryId } }, _set: { name: $name, position: $position }) {
-      affected_rows
-    }
-  }
-`
-
-const DELETE_PROGRAM_CATEGORY = gql`
-  mutation DELETE_PROGRAM_CATEGORY($categoryId: String!) {
-    delete_category(where: { id: { _eq: $categoryId } }) {
-      affected_rows
-    }
-  }
-`
 
 export default CategoryAdminPage

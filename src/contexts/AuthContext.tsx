@@ -43,7 +43,7 @@ export const AuthProvider: React.FC = ({ children }) => {
       setIsAuthenticating(true)
       Axios({
         method: 'POST',
-        url: `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/refreshToken`,
+        url: `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/refresh-token`,
         withCredentials: true,
       })
         .then(({ data: { code, message, result } }) => {
@@ -93,7 +93,7 @@ export const AuthProvider: React.FC = ({ children }) => {
           }),
         login: async ({ appId, account, password }) =>
           Axios.post(
-            `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/generalLogin`,
+            `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/general-login`,
             { appId, account, password },
             { withCredentials: true },
           ).then(({ data: { code, result } }) => {
@@ -108,7 +108,7 @@ export const AuthProvider: React.FC = ({ children }) => {
           }),
         socialLogin: async ({ provider, providerToken }) =>
           Axios.post(
-            `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/socialLogin`,
+            `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/social-login`,
             {
               appId: app.id,
               provider,

@@ -63,7 +63,6 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
   const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
-  const app = useContext(AppContext)
   const { member, refetchMember } = useMember(memberId)
   const { tags } = useTags()
   const updateMemberBasic = useUpdateMemberBasic()

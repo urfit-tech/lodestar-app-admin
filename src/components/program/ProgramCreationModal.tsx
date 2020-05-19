@@ -1,15 +1,13 @@
-import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Icon, Input, message, Radio } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
-import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import useRouter from 'use-react-router'
-import CreatorSelector from '../../containers/common/CreatorSelector'
+import CreatorSelector from '../../components/common/CreatorSelector'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, programMessages } from '../../helpers/translation'
-import types from '../../types'
+import { useCreateProgram } from '../../hooks/program'
 import AdminModal from '../admin/AdminModal'
 import ProgramCategorySelector from './ProgramCategorySelector'
 
@@ -29,7 +27,7 @@ const ProgramCreationModal: React.FC<ProgramCreationModalProps> = ({ form, withS
   const { currentMemberId } = useAuth()
   const { history } = useRouter()
 
-  const [createProgram] = useMutation<types.INSERT_PROGRAM, types.INSERT_PROGRAMVariables>(INSERT_PROGRAM)
+  const createProgram = useCreateProgram()
 
   const [loading, setLoading] = useState(false)
 
@@ -118,30 +116,4 @@ const ProgramCreationModal: React.FC<ProgramCreationModalProps> = ({ form, withS
   )
 }
 
-const INSERT_PROGRAM = gql`
-  mutation INSERT_PROGRAM(
-    $ownerId: String!
-    $instructorId: String!
-    $appId: String!
-    $title: String!
-    $isSubscription: Boolean!
-    $programCategories: [program_category_insert_input!]!
-  ) {
-    insert_program(
-      objects: {
-        app_id: $appId
-        title: $title
-        is_subscription: $isSubscription
-        program_roles: {
-          data: [{ member_id: $ownerId, name: "owner" }, { member_id: $instructorId, name: "instructor" }]
-        }
-        program_categories: { data: $programCategories }
-      }
-    ) {
-      returning {
-        id
-      }
-    }
-  }
-`
 export default Form.create<ProgramCreationModalProps>()(ProgramCreationModal)

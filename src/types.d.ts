@@ -1235,6 +1235,32 @@ export interface UPDATE_PROGRAM_CATEGORIESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAM_CATEGORIES
+// ====================================================
+
+export interface GET_PROGRAM_CATEGORIES_category {
+  __typename: "category";
+  id: string;
+  name: string;
+  position: number;
+}
+
+export interface GET_PROGRAM_CATEGORIES {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_PROGRAM_CATEGORIES_category[];
+}
+
+export interface GET_PROGRAM_CATEGORIESVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: PUBLISH_PROGRAM_CONTENT
 // ====================================================
 
@@ -1577,43 +1603,6 @@ export interface UPDATE_PROGRAM_CONTENT_SECTION {
 export interface UPDATE_PROGRAM_CONTENT_SECTIONVariables {
   id: any;
   title?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_PROGRAM
-// ====================================================
-
-export interface INSERT_PROGRAM_insert_program_returning {
-  __typename: "program";
-  id: any;
-}
-
-export interface INSERT_PROGRAM_insert_program {
-  __typename: "program_mutation_response";
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: INSERT_PROGRAM_insert_program_returning[];
-}
-
-export interface INSERT_PROGRAM {
-  /**
-   * insert data into the table: "program"
-   */
-  insert_program: INSERT_PROGRAM_insert_program | null;
-}
-
-export interface INSERT_PROGRAMVariables {
-  ownerId: string;
-  instructorId: string;
-  appId: string;
-  title: string;
-  isSubscription: boolean;
-  programCategories: program_category_insert_input[];
 }
 
 /* tslint:disable */
@@ -5672,6 +5661,7 @@ export interface INSERT_PROGRAM_CATEGORY {
 export interface INSERT_PROGRAM_CATEGORYVariables {
   appId: string;
   name?: string | null;
+  classType?: string | null;
   position?: number | null;
 }
 
@@ -6893,6 +6883,43 @@ export interface GET_PROGRAM_PROGRESSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_PROGRAM
+// ====================================================
+
+export interface INSERT_PROGRAM_insert_program_returning {
+  __typename: "program";
+  id: any;
+}
+
+export interface INSERT_PROGRAM_insert_program {
+  __typename: "program_mutation_response";
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_PROGRAM_insert_program_returning[];
+}
+
+export interface INSERT_PROGRAM {
+  /**
+   * insert data into the table: "program"
+   */
+  insert_program: INSERT_PROGRAM_insert_program | null;
+}
+
+export interface INSERT_PROGRAMVariables {
+  ownerId: string;
+  instructorId: string;
+  appId: string;
+  title: string;
+  isSubscription: boolean;
+  programCategories: program_category_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PROGRAM_PACKAGE_COLLECTION
 // ====================================================
 
@@ -7335,35 +7362,6 @@ export interface GET_FUNDING {
 
 export interface GET_FUNDINGVariables {
   fundingId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_CATEGORY
-// ====================================================
-
-export interface UPDATE_PROGRAM_CATEGORY_update_category {
-  __typename: "category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_CATEGORY {
-  /**
-   * update data of the table: "category"
-   */
-  update_category: UPDATE_PROGRAM_CATEGORY_update_category | null;
-}
-
-export interface UPDATE_PROGRAM_CATEGORYVariables {
-  categoryId: string;
-  name?: string | null;
-  position?: number | null;
 }
 
 /* tslint:disable */

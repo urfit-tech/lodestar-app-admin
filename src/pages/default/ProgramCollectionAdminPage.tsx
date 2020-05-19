@@ -20,7 +20,7 @@ import ProgramAdminCard from '../../components/program/ProgramAdminCard'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, programMessages } from '../../helpers/translation'
-import { useProgramPreviewCollection } from '../../hooks/program'
+import { useCreateProgram, useProgramPreviewCollection } from '../../hooks/program'
 import { ReactComponent as MoveIcon } from '../../images/icon/move.svg'
 import types from '../../types'
 import { ProgramPreviewProps } from '../../types/program'
@@ -49,7 +49,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
   const { loadingProgramPreviews, programPreviews, refetchProgramPreviews } = useProgramPreviewCollection(
     currentUserRole === 'content-creator' ? currentMemberId : null,
   )
-  const [createProgram] = useMutation<types.INSERT_PROGRAM, types.INSERT_PROGRAMVariables>(INSERT_PROGRAM)
+  const createProgram = useCreateProgram()
   const [updatePositions] = useMutation<
     types.UPDATE_PROGRAM_POSITION_COLLECTION,
     types.UPDATE_PROGRAM_POSITION_COLLECTIONVariables
@@ -207,32 +207,6 @@ const ProgramCollectionAdminPage: React.FC = () => {
   )
 }
 
-const INSERT_PROGRAM = gql`
-  mutation INSERT_PROGRAM(
-    $ownerId: String!
-    $instructorId: String!
-    $appId: String!
-    $title: String!
-    $isSubscription: Boolean!
-    $programCategories: [program_category_insert_input!]!
-  ) {
-    insert_program(
-      objects: {
-        app_id: $appId
-        title: $title
-        is_subscription: $isSubscription
-        program_roles: {
-          data: [{ member_id: $ownerId, name: "owner" }, { member_id: $instructorId, name: "instructor" }]
-        }
-        program_categories: { data: $programCategories }
-      }
-    ) {
-      returning {
-        id
-      }
-    }
-  }
-`
 const UPDATE_PROGRAM_POSITION_COLLECTION = gql`
   mutation UPDATE_PROGRAM_POSITION_COLLECTION($data: [program_insert_input!]!) {
     insert_program(objects: $data, on_conflict: { constraint: program_pkey, update_columns: position }) {
