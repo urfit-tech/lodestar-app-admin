@@ -1047,7 +1047,6 @@ export interface UPDATE_MERCHANDISE_INTRODUCTIONVariables {
   merchandiseId: any;
   abstract?: string | null;
   meta?: string | null;
-  link?: string | null;
 }
 
 /* tslint:disable */
@@ -5359,30 +5358,6 @@ export interface GET_COUPON__CODE_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ORDER_LOG_COLLECTION_WITH_MERCHANDISE
-// ====================================================
-
-export interface GET_ORDER_LOG_COLLECTION_WITH_MERCHANDISE_order_log {
-  __typename: "order_log";
-  id: string;
-}
-
-export interface GET_ORDER_LOG_COLLECTION_WITH_MERCHANDISE {
-  /**
-   * fetch data from the table: "order_log"
-   */
-  order_log: GET_ORDER_LOG_COLLECTION_WITH_MERCHANDISE_order_log[];
-}
-
-export interface GET_ORDER_LOG_COLLECTION_WITH_MERCHANDISEVariables {
-  search?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_TAGS
 // ====================================================
 
@@ -8096,6 +8071,25 @@ export enum merchandise_img_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "merchandise_inventory"
+ */
+export enum merchandise_inventory_constraint {
+  merchandise_inventory_pkey = "merchandise_inventory_pkey",
+}
+
+/**
+ * update columns of table "merchandise_inventory"
+ */
+export enum merchandise_inventory_update_column {
+  created_at = "created_at",
+  id = "id",
+  merchandise_id = "merchandise_id",
+  quantity = "quantity",
+  specification = "specification",
+  status = "status",
+}
+
+/**
  * unique or primary key constraints on table "merchandise_tag"
  */
 export enum merchandise_tag_constraint {
@@ -9829,6 +9823,21 @@ export interface appointment_schedule_on_conflict {
 }
 
 /**
+ * expression to compare columns of type bigint. All fields are combined with logical 'AND'.
+ */
+export interface bigint_comparison_exp {
+  _eq?: any | null;
+  _gt?: any | null;
+  _gte?: any | null;
+  _in?: any[] | null;
+  _is_null?: boolean | null;
+  _lt?: any | null;
+  _lte?: any | null;
+  _neq?: any | null;
+  _nin?: any[] | null;
+}
+
+/**
  * input type for inserting array relation for remote table "card"
  */
 export interface card_arr_rel_insert_input {
@@ -9846,7 +9855,7 @@ export interface card_bool_exp {
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
   card_discounts?: card_discount_bool_exp | null;
-  card_enrollment?: card_enrollment_bool_exp | null;
+  card_enrollments?: card_enrollment_bool_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   template?: String_comparison_exp | null;
@@ -11083,6 +11092,8 @@ export interface merchandise_bool_exp {
   member_id?: String_comparison_exp | null;
   merchandise_categories?: merchandise_category_bool_exp | null;
   merchandise_imgs?: merchandise_img_bool_exp | null;
+  merchandise_inventories?: merchandise_inventory_bool_exp | null;
+  merchandise_inventory_status?: merchandise_inventory_status_bool_exp | null;
   merchandise_tags?: merchandise_tag_bool_exp | null;
   meta?: String_comparison_exp | null;
   position?: Int_comparison_exp | null;
@@ -11196,6 +11207,7 @@ export interface merchandise_insert_input {
   member_id?: string | null;
   merchandise_categories?: merchandise_category_arr_rel_insert_input | null;
   merchandise_imgs?: merchandise_img_arr_rel_insert_input | null;
+  merchandise_inventories?: merchandise_inventory_arr_rel_insert_input | null;
   merchandise_tags?: merchandise_tag_arr_rel_insert_input | null;
   meta?: string | null;
   position?: number | null;
@@ -11204,6 +11216,30 @@ export interface merchandise_insert_input {
   published_at?: any | null;
   title?: string | null;
   updated_at?: any | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "merchandise_inventory"
+ */
+export interface merchandise_inventory_arr_rel_insert_input {
+  data: merchandise_inventory_insert_input[];
+  on_conflict?: merchandise_inventory_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "merchandise_inventory". All fields are combined with a logical 'AND'.
+ */
+export interface merchandise_inventory_bool_exp {
+  _and?: (merchandise_inventory_bool_exp | null)[] | null;
+  _not?: merchandise_inventory_bool_exp | null;
+  _or?: (merchandise_inventory_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  merchandise?: merchandise_bool_exp | null;
+  merchandise_id?: uuid_comparison_exp | null;
+  quantity?: Int_comparison_exp | null;
+  specification?: String_comparison_exp | null;
+  status?: String_comparison_exp | null;
 }
 
 /**
@@ -11217,6 +11253,31 @@ export interface merchandise_inventory_insert_input {
   quantity?: number | null;
   specification?: string | null;
   status?: string | null;
+}
+
+/**
+ * on conflict condition type for table "merchandise_inventory"
+ */
+export interface merchandise_inventory_on_conflict {
+  constraint: merchandise_inventory_constraint;
+  update_columns: merchandise_inventory_update_column[];
+  where?: merchandise_inventory_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "merchandise_inventory_status".
+ * All fields are combined with a logical 'AND'.
+ */
+export interface merchandise_inventory_status_bool_exp {
+  _and?: (merchandise_inventory_status_bool_exp | null)[] | null;
+  _not?: merchandise_inventory_status_bool_exp | null;
+  _or?: (merchandise_inventory_status_bool_exp | null)[] | null;
+  buyable_quantity?: bigint_comparison_exp | null;
+  delivered_quantity?: bigint_comparison_exp | null;
+  merchandise?: merchandise_bool_exp | null;
+  merchandise_id?: uuid_comparison_exp | null;
+  total_quantity?: bigint_comparison_exp | null;
+  undelivered_quantity?: bigint_comparison_exp | null;
 }
 
 /**
@@ -12586,10 +12647,24 @@ export interface product_bool_exp {
   cart_products?: cart_product_bool_exp | null;
   id?: String_comparison_exp | null;
   order_products?: order_product_bool_exp | null;
+  product_enrollments?: product_enrollment_bool_exp | null;
   product_owner?: product_owner_bool_exp | null;
   target?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
   voucher_plan_products?: voucher_plan_product_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "product_enrollment". All fields are combined with a logical 'AND'.
+ */
+export interface product_enrollment_bool_exp {
+  _and?: (product_enrollment_bool_exp | null)[] | null;
+  _not?: product_enrollment_bool_exp | null;
+  _or?: (product_enrollment_bool_exp | null)[] | null;
+  member?: member_public_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  product?: product_bool_exp | null;
+  product_id?: String_comparison_exp | null;
 }
 
 /**
@@ -12629,7 +12704,9 @@ export interface product_owner_bool_exp {
   _and?: (product_owner_bool_exp | null)[] | null;
   _not?: product_owner_bool_exp | null;
   _or?: (product_owner_bool_exp | null)[] | null;
+  member?: member_public_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  product?: product_bool_exp | null;
   product_id?: String_comparison_exp | null;
 }
 

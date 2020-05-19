@@ -5,7 +5,7 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
-import { commonMessages, merchandiseMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
 import { StyledTips } from '../admin'
@@ -40,7 +40,6 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
       setLoading(true)
       updateMerchandiseIntroduction({
         abstract: values.abstract,
-        link: values.link,
         meta: values.meta,
       })
         .then(() => {
@@ -57,7 +56,6 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
 
   return (
     <Form
-      hideRequiredMark
       labelCol={{ span: 24, md: { span: 4 } }}
       wrapperCol={{ span: 24, md: { span: 8 } }}
       onSubmit={e => {
@@ -86,12 +84,14 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
       <Form.Item label={formatMessage(merchandiseMessages.label.meta)}>
         {form.getFieldDecorator('meta', {
           initialValue: merchandise.meta,
-          rules: [{ required: true }],
-        })(<Input />)}
-      </Form.Item>
-      <Form.Item label={formatMessage(merchandiseMessages.label.paymentLink)}>
-        {form.getFieldDecorator('link', {
-          initialValue: merchandise.link,
+          rules: [
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(merchandiseMessages.label.meta),
+              }),
+            },
+          ],
         })(<Input />)}
       </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
@@ -149,28 +149,23 @@ const useUpdateMerchandiseIntroduction = (merchandiseId: string) => {
     types.UPDATE_MERCHANDISE_INTRODUCTION,
     types.UPDATE_MERCHANDISE_INTRODUCTIONVariables
   >(gql`
-    mutation UPDATE_MERCHANDISE_INTRODUCTION($merchandiseId: uuid!, $abstract: String, $meta: String, $link: String) {
-      update_merchandise(
-        where: { id: { _eq: $merchandiseId } }
-        _set: { abstract: $abstract, meta: $meta, link: $link }
-      ) {
+    mutation UPDATE_MERCHANDISE_INTRODUCTION($merchandiseId: uuid!, $abstract: String, $meta: String) {
+      update_merchandise(where: { id: { _eq: $merchandiseId } }, _set: { abstract: $abstract, meta: $meta }) {
         affected_rows
       }
     }
   `)
 
-  const updateMerchandiseIntroduction: (data: {
-    abstract: string
-    link: string
-    meta: string
-  }) => Promise<void> = async ({ abstract, link, meta }) => {
+  const updateMerchandiseIntroduction: (data: { abstract: string; meta: string }) => Promise<void> = async ({
+    abstract,
+    meta,
+  }) => {
     try {
       await updateIntroduction({
         variables: {
           merchandiseId,
           abstract,
           meta,
-          link,
         },
       })
     } catch (error) {

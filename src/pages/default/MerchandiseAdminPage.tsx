@@ -1,5 +1,5 @@
 import { Button, Icon, Spin, Tabs } from 'antd'
-import React from 'react'
+import React, { useContext } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
@@ -22,8 +22,8 @@ import MerchandiseInventoryAdminModal from '../../components/merchandise/Merchan
 import MerchandiseInventoryTable from '../../components/merchandise/MerchandiseInventoryTable'
 import MerchandisePublishBlock from '../../components/merchandise/MerchandisePublishBlock'
 import MerchandiseSalesForm from '../../components/merchandise/MerchandiseSalesForm'
-import { merchandiseMessages } from '../../helpers/translation'
-// import AppContext from '../../contexts/AppContext'
+import AppContext from '../../contexts/AppContext'
+import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { useMerchandise, useMerchandiseInventoryLog, useMerchandiseInventoryStatus } from '../../hooks/merchandise'
 
 const messages = defineMessages({
@@ -56,7 +56,7 @@ const MerchandiseAdminPage: React.FC = () => {
   const { match } = useRouter<{ merchandiseId: string }>()
   const merchandiseId = match.params.merchandiseId
   const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
-  // const { settings } = useContext(AppContext)
+  const { settings } = useContext(AppContext)
   const { merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
   const { inventoryLogs, refetchInventoryLogs } = useMerchandiseInventoryLog(merchandiseId)
   const { loadingInventoryStatus, inventoryStatus } = useMerchandiseInventoryStatus(merchandiseId)
@@ -72,9 +72,9 @@ const MerchandiseAdminPage: React.FC = () => {
 
         <AdminHeaderTitle>{merchandise?.title || merchandiseId}</AdminHeaderTitle>
 
-        {/* <a href={`//${settings['host']}/merchandises/${merchandiseId}`} target="_blank" rel="noopener noreferrer">
-          <Button>預覽</Button>
-        </a> */}
+        <a href={`https://${settings['host']}/merchandises/${merchandiseId}`} target="_blank" rel="noopener noreferrer">
+          <Button>{formatMessage(commonMessages.ui.preview)}</Button>
+        </a>
       </AdminHeader>
 
       <StyledLayoutContent variant="gray">
