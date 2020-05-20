@@ -131,7 +131,12 @@ const MerchandiseAdminPage: React.FC = () => {
                 {!!merchandise && (
                   <MerchandiseInventoryAdminModal
                     merchandiseId={merchandiseId}
-                    specifications={[merchandise.meta || '']}
+                    inventories={[
+                      {
+                        specification: merchandise.meta || '',
+                        buyableQuantity: inventoryStatus.buyableQuantity,
+                      },
+                    ]}
                     refetch={() => {
                       refetchInventoryLogs()
                       refetchInventoryStatus()

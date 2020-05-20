@@ -16,19 +16,22 @@ const MerchandiseSpecification = styled.div`
 
 const MerchandiseInventoryAdminModal: React.FC<{
   merchandiseId: string
-  specifications: string[]
+  inventories: {
+    specification: string
+    buyableQuantity: number
+  }[]
   refetch?: () => void
-}> = ({ merchandiseId, specifications, refetch }) => {
+}> = ({ merchandiseId, inventories, refetch }) => {
   const { formatMessage } = useIntl()
   const arrangeMerchandiseInventory = useArrangeMerchandiseInventory(merchandiseId)
   const [loading, setLoading] = useState(false)
-  const [quantities, setQuantities] = useState<number[]>(Array(specifications.length).fill(0))
+  const [quantities, setQuantities] = useState<number[]>(Array(inventories.length).fill(0))
 
   const handleSubmit = (closeModal: () => void) => {
     setLoading(true)
     arrangeMerchandiseInventory(
-      specifications.map((specification, index) => ({
-        specification,
+      inventories.map((inventory, index) => ({
+        specification: inventory.specification,
         quantity: quantities[index],
       })),
     )
@@ -45,29 +48,33 @@ const MerchandiseInventoryAdminModal: React.FC<{
       title={formatMessage(merchandiseMessages.ui.modifyInventory)}
       footer={null}
       renderTrigger={({ setVisible }) => (
-        <Button type="primary" icon="file-add" disabled={specifications.length === 0} onClick={() => setVisible(true)}>
+        <Button type="primary" icon="file-add" disabled={inventories.length === 0} onClick={() => setVisible(true)}>
           {formatMessage(merchandiseMessages.ui.modifyInventory)}
         </Button>
       )}
       renderFooter={({ setVisible }) => (
-        <>
+        <div className="mt-4">
           <Button className="mr-2" onClick={() => setVisible(false)}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
+          <Button
+            type="primary"
+            loading={loading}
+            disabled={inventories.some((inventory, index) => quantities[index] + inventory.buyableQuantity < 0)}
+            onClick={() => handleSubmit(() => setVisible(false))}
+          >
             {formatMessage(commonMessages.ui.confirm)}
           </Button>
-        </>
+        </div>
       )}
       destroyOnClose
+      maskClosable={false}
     >
-      {specifications.map((specification, index) => (
-        <div key={specification} className="d-flex align-items-center justify-content-between mb-3">
-          <MerchandiseSpecification>{specification}</MerchandiseSpecification>
+      {inventories.map((inventory, index) => (
+        <div key={inventory.specification} className="d-flex align-items-center justify-content-between mb-3">
+          <MerchandiseSpecification>{inventory.specification}</MerchandiseSpecification>
           <QuantityInput
             value={quantities[index]}
-            min={-5}
-            max={5}
             onChange={value =>
               typeof value === 'number' && setQuantities(quantities.map((q, i) => (i === index ? value : q)))
             }
