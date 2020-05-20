@@ -1,8 +1,8 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import { sum, uniq, uniqBy, unnest } from 'ramda'
+import { sum, uniqBy } from 'ramda'
 import { useContext } from 'react'
-import { array, object, string } from 'yup'
+import { array, object } from 'yup'
 import AppContext from '../contexts/AppContext'
 import { programContentSchema, ProgramPlanPeriodType, programSchema } from '../schemas/program'
 import types from '../types'
@@ -439,80 +439,6 @@ export const useEditablePrograms = (memberId: string) => {
     error,
     loadingPrograms: loading,
     refetchPrograms: refetch,
-  }
-}
-
-export const useEnrolledProgramIds = (memberId: string, noFunding?: boolean) => {
-  const { loading, data, error, refetch } = useQuery<
-    types.GET_ENROLLED_PROGRAM_IDS,
-    types.GET_ENROLLED_PROGRAM_IDSVariables
-  >(
-    gql`
-      query GET_ENROLLED_PROGRAM_IDS($memberId: String!, $noFunding: Boolean) {
-        program_enrollment(
-          where: { member_id: { _eq: $memberId }, program: { funding_id: { _is_null: $noFunding } } }
-          distinct_on: program_id
-        ) {
-          program_id
-        }
-        program_plan_enrollment(
-          where: { member_id: { _eq: $memberId }, program_plan: { program: { funding_id: { _is_null: $noFunding } } } }
-        ) {
-          program_plan {
-            id
-            program_id
-          }
-        }
-        program_content_enrollment(
-          where: { member_id: { _eq: $memberId }, program: { funding_id: { _is_null: $noFunding } } }
-          distinct_on: program_id
-        ) {
-          program_id
-        }
-      }
-    `,
-    {
-      variables: { memberId, noFunding },
-      fetchPolicy: 'no-cache',
-    },
-  )
-
-  const castData = object({
-    programEnrollment: array(
-      object({
-        programId: string(),
-      }).camelCase(),
-    ).default([]),
-    programPlanEnrollment: array(
-      object({
-        programPlan: object({
-          id: string(),
-          programId: string(),
-        }).camelCase(),
-      }).camelCase(),
-    ).default([]),
-    programContentEnrollment: array(
-      object({
-        programId: string(),
-      }).camelCase(),
-    ).default([]),
-  })
-    .camelCase()
-    .cast(data)
-
-  const enrolledProgramIds = uniq(
-    unnest([
-      castData.programEnrollment.map(value => value.programId),
-      castData.programPlanEnrollment.map(value => value.programPlan.programId),
-      castData.programContentEnrollment.map(value => value.programId),
-    ]),
-  )
-
-  return {
-    enrolledProgramIds: loading || error ? [] : enrolledProgramIds,
-    errorProgramIds: error,
-    loadingProgramIds: loading,
-    refetchProgramIds: refetch,
   }
 }
 

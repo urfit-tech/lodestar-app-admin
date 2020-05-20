@@ -1,6 +1,6 @@
 import { array, bool, boolean, date, mixed, number, object, string } from 'yup'
 
-export const categorySchema = object({
+const categorySchema = object({
   id: string(),
   name: string(),
   position: number(),
