@@ -27,7 +27,7 @@ const ProfilePasswordAdminCard: React.FC<ProfilePasswordAdminCardProps> = ({ for
         setLoading(true)
         axios
           .post(
-            `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/changePassword`,
+            `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/change-password`,
             {
               password: values.password,
               newPassword: values.newPassword,

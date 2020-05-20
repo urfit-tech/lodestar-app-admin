@@ -27,17 +27,14 @@ export const validateImage = (file: RcFile, fileSize?: number) => {
   return isImage && inSize
 }
 
-export const uploadFile = async (key: string, file: File | null, config?: AxiosRequestConfig, isPublic?: boolean) => {
+export const uploadFile = async (key: string, file: File | null, config?: AxiosRequestConfig) => {
   let signedUrl = ''
   file &&
     (await axios
-      .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/signUrl`, {
-        isPublic,
+      .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/sys/sign-url`, {
         operation: 'putObject',
         params: {
           Key: key,
-          ContentType: file.type,
-          Expires: 86400,
         },
       })
       .then(res => {

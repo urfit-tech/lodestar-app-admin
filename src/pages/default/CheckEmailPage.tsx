@@ -52,7 +52,7 @@ const CheckEmailPage = () => {
       return
     }
     axios
-      .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/forgotPassword`, {
+      .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/forgot-password`, {
         appId: app.id,
         account: email,
       })

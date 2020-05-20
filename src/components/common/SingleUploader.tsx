@@ -82,21 +82,16 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
       const { file, onProgress, onError, onSuccess } = option
       setLoading(true)
       onChange && onChange(file)
-      uploadFile(
-        withExtension ? path + extname(file.name) : path,
-        file,
-        {
-          onUploadProgress: progressEvent => {
-            onProgress({
-              percent: (progressEvent.loaded / progressEvent.total) * 100,
-            })
-          },
-          cancelToken: new axios.CancelToken(canceler => {
-            uploadCanceler.current = canceler
-          }),
+      uploadFile(withExtension ? path + extname(file.name) : path, file, {
+        onUploadProgress: progressEvent => {
+          onProgress({
+            percent: (progressEvent.loaded / progressEvent.total) * 100,
+          })
         },
-        isPublic,
-      )
+        cancelToken: new axios.CancelToken(canceler => {
+          uploadCanceler.current = canceler
+        }),
+      })
         .then(onSuccess)
         .catch(onError)
     },
