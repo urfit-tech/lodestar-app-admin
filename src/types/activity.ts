@@ -1,16 +1,16 @@
-export type CategoryProps = {
+type CategoryProps = {
   id: string
   name: string
   class?: string
   position: number
 }
 
-export type ActivityCategoryProps = {
+type ActivityCategoryProps = {
   id: string
   category: CategoryProps
 }
 
-export type ActivitySessionProps = {
+type ActivitySessionProps = {
   id: string
   title: string
   description: string | null
@@ -21,12 +21,12 @@ export type ActivitySessionProps = {
   activityId: string
 }
 
-export type ActivitySessionTicketProps = {
+type ActivitySessionTicketProps = {
   id: string
   session: ActivitySessionProps
 }
 
-export type ActivityTicketProps = {
+type ActivityTicketProps = {
   id: string
   title: string
   startedAt: Date

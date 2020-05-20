@@ -59,7 +59,9 @@ const MerchandiseAdminPage: React.FC = () => {
   const { settings } = useContext(AppContext)
   const { merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
   const { inventoryLogs, refetchInventoryLogs } = useMerchandiseInventoryLog(merchandiseId)
-  const { loadingInventoryStatus, inventoryStatus } = useMerchandiseInventoryStatus(merchandiseId)
+  const { loadingInventoryStatus, inventoryStatus, refetchInventoryStatus } = useMerchandiseInventoryStatus(
+    merchandiseId,
+  )
 
   return (
     <>
@@ -130,7 +132,10 @@ const MerchandiseAdminPage: React.FC = () => {
                   <MerchandiseInventoryAdminModal
                     merchandiseId={merchandiseId}
                     specifications={[merchandise.meta || '']}
-                    refetch={refetchInventoryLogs}
+                    refetch={() => {
+                      refetchInventoryLogs()
+                      refetchInventoryStatus()
+                    }}
                   />
                 )}
               </div>

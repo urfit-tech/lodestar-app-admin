@@ -66,6 +66,8 @@ const MerchandiseInventoryAdminModal: React.FC<{
           <MerchandiseSpecification>{specification}</MerchandiseSpecification>
           <QuantityInput
             value={quantities[index]}
+            min={-5}
+            max={5}
             onChange={value =>
               typeof value === 'number' && setQuantities(quantities.map((q, i) => (i === index ? value : q)))
             }

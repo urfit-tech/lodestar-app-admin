@@ -14,8 +14,10 @@ const StyledInputGroup = styled(Input.Group)`
 
 const QuantityInput: React.FC<{
   value?: number
+  min?: number
+  max?: number
   onChange?: (value: number | undefined) => void
-}> = ({ value = 0, onChange }, ref) => {
+}> = ({ value = 0, min, max, onChange }) => {
   const [inputValue, setInputValue] = useState(`${value}`)
 
   return (
@@ -24,16 +26,22 @@ const QuantityInput: React.FC<{
         icon="minus"
         onClick={() => {
           const newValue = value - 1
+          if (typeof min === 'number' && newValue < min) {
+            return
+          }
           onChange && onChange(newValue)
           setInputValue(`${newValue}`)
         }}
       />
       <Input
-        ref={ref}
         value={inputValue}
         onChange={e => setInputValue(e.target.value)}
         onBlur={e => {
           const newValue = Number.isSafeInteger(parseInt(e.target.value)) ? parseInt(e.target.value) : value
+          if ((typeof min === 'number' && newValue < min) || (typeof max === 'number' && newValue > max)) {
+            setInputValue(`${value}`)
+            return
+          }
           setInputValue(`${newValue}`)
           onChange && onChange(newValue)
         }}
@@ -42,6 +50,9 @@ const QuantityInput: React.FC<{
         icon="plus"
         onClick={() => {
           const newValue = value + 1
+          if (typeof max === 'number' && newValue > max) {
+            return
+          }
           onChange && onChange(newValue)
           setInputValue(`${newValue}`)
         }}

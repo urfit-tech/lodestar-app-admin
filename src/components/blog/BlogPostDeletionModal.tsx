@@ -18,7 +18,7 @@ const messages = defineMessages({
   },
 })
 
-export const StyledModal = styled(Modal)`
+const StyledModal = styled(Modal)`
   && {
     .ant-modal-body {
       padding: 32px 32px 0;
@@ -29,13 +29,13 @@ export const StyledModal = styled(Modal)`
     }
   }
 `
-export const StyledModalTitle = styled.h3`
+const StyledModalTitle = styled.h3`
   font-size: 18px;
   font-weight: bold;
   color: var(--gray-darker);
   letter-spacing: 0.8px;
 `
-export const StyledModalParagraph = styled.p`
+const StyledModalParagraph = styled.p`
   font-size: 16px;
   font-weight: 500;
   color: var(--gray-darker);

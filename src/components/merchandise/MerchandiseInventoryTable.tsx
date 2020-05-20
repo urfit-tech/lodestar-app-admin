@@ -3,8 +3,13 @@ import { ColumnProps } from 'antd/lib/table'
 import moment from 'moment'
 import React from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { MerchandiseInventoryLog } from '../../types/merchandise'
+
+const StyledQuantity = styled.span<{ quantity: number }>`
+  color: ${props => (props.quantity > 0 ? '#4ed1b3' : '#ff7d62')};
+`
 
 const MerchandiseInventoryTable: React.FC<{
   inventoryLogs: MerchandiseInventoryLog[]
@@ -32,8 +37,13 @@ const MerchandiseInventoryTable: React.FC<{
     },
     {
       dataIndex: 'quantity',
-      title: formatMessage(merchandiseMessages.label.amount),
+      title: formatMessage(merchandiseMessages.label.quantity),
       align: 'right',
+      render: (text, record, index) => (
+        <StyledQuantity quantity={record.quantity}>
+          {record.quantity > 0 ? `+${record.quantity}` : record.quantity}
+        </StyledQuantity>
+      ),
     },
   ]
 

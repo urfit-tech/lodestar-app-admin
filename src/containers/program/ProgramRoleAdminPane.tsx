@@ -6,18 +6,16 @@ import ProgramRoleAdminPaneComponent from '../../components/program/ProgramRoleA
 import types from '../../types'
 import { ProgramType } from '../../types/program'
 
-export type instructorId = {
-  memberId: string
-  name: string
-}
-
 export type UpdateProgramProps = (props: {
   onSuccess?: () => void
   onError?: (error: Error) => void
   onFinally?: () => void
   data: {
     programId: string
-    instructorIds: instructorId[]
+    instructorIds: {
+      memberId: string
+      name: string
+    }[]
   }
 }) => void
 

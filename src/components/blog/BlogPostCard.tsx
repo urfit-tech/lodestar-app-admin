@@ -58,7 +58,7 @@ const StyledViews = styled.div`
   text-align: center;
 `
 
-export type BlogPostCardProps = {
+const BlogPostCard: React.FC<{
   coverUrl: string | null
   videoUrl: string | null
   title: string
@@ -67,16 +67,7 @@ export type BlogPostCardProps = {
   link: string
   action?: React.ReactNode
   memberName?: string | null
-}
-const BlogPostCard: React.FC<BlogPostCardProps> = ({
-  title,
-  coverUrl,
-  videoUrl,
-  views,
-  publishedAt,
-  link,
-  memberName,
-}) => {
+}> = ({ title, coverUrl, videoUrl, views, publishedAt, link, memberName }) => {
   return (
     <StyledWrapper>
       <Link to={link}>

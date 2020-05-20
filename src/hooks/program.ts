@@ -92,7 +92,7 @@ export const useProgramPreviewCollection = (memberId: string | null) => {
               ? (plan && plan.program_plan_enrollments_aggregate.aggregate?.count) || 0
               : program.program_enrollments_aggregate.aggregate?.count || 0,
             isDraft: !program.published_at,
-            isPrivate: program.is_private
+            isPrivate: program.is_private,
           }
         })
 
@@ -513,85 +513,6 @@ export const useEnrolledProgramIds = (memberId: string, noFunding?: boolean) => 
     errorProgramIds: error,
     loadingProgramIds: loading,
     refetchProgramIds: refetch,
-  }
-}
-
-export const useEnrolledPlanIds = (memberId: string, noFunding?: boolean) => {
-  const { loading, data, error, refetch } = useQuery<
-    types.GET_ENROLLED_PROGRAM_PLANS,
-    types.GET_ENROLLED_PROGRAM_PLANSVariables
-  >(
-    gql`
-      query GET_ENROLLED_PROGRAM_PLANS($memberId: String!, $noFunding: Boolean) {
-        program_plan_enrollment(
-          where: { member_id: { _eq: $memberId }, program_plan: { program: { funding_id: { _is_null: $noFunding } } } }
-        ) {
-          program_plan_id
-        }
-      }
-    `,
-    { variables: { memberId, noFunding } },
-  )
-
-  const programPlanIds: string[] =
-    loading || error || !data ? [] : data.program_plan_enrollment.map((value: any) => value.program_plan_id)
-
-  return {
-    programPlanIds,
-    loadingProgramPlanIds: loading,
-    refetchProgramPlanIds: refetch,
-  }
-}
-
-export const useProgramDuration = (programId: string) => {
-  const { loading, error, data } = useQuery<types.GET_PROGRAM_DURATION, types.GET_PROGRAM_DURATIONVariables>(
-    gql`
-      query GET_PROGRAM_DURATION($programId: uuid!) {
-        program_content_aggregate(where: { program_content_section: { program_id: { _eq: $programId } } }) {
-          aggregate {
-            sum {
-              duration
-            }
-          }
-        }
-      }
-    `,
-    { variables: { programId } },
-  )
-
-  return loading ||
-    error ||
-    !data ||
-    !data.program_content_aggregate.aggregate ||
-    !data.program_content_aggregate.aggregate.sum
-    ? null
-    : data.program_content_aggregate.aggregate.sum.duration
-}
-
-export const useProgramPlanEnrollment = (programPlanId: string) => {
-  const { loading, error, data, refetch } = useQuery<
-    types.GET_PROGRAM_PLAN_ENROLLMENT,
-    types.GET_PROGRAM_PLAN_ENROLLMENTVariables
-  >(
-    gql`
-      query GET_PROGRAM_PLAN_ENROLLMENT($programPlanId: uuid!) {
-        program_plan_enrollment_aggregate(where: { program_plan_id: { _eq: $programPlanId } }) {
-          aggregate {
-            count
-          }
-        }
-      }
-    `,
-    { variables: { programPlanId } },
-  )
-
-  return {
-    numProgramPlanEnrollments:
-      loading || error || !data || !data.program_plan_enrollment_aggregate.aggregate
-        ? 0
-        : data.program_plan_enrollment_aggregate.aggregate.count || 0,
-    loadingProgramPlanEnrollments: loading,
-    refetchProgramPlanEnrollments: refetch,
   }
 }
 

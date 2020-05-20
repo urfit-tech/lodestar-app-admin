@@ -1,19 +1,19 @@
 import { array, boolean, date, number, object, string } from 'yup'
 
-export const categorySchema = object({
+const categorySchema = object({
   id: string(),
   name: string(),
   class: string(),
   position: number(),
 }).camelCase()
 
-export const activityCategorySchema = object({
+const activityCategorySchema = object({
   id: string(),
   category: categorySchema,
   position: number(),
 }).camelCase()
 
-export const activitySessionSchema = object({
+const activitySessionSchema = object({
   id: string(),
   title: string(),
   description: string().nullable(),
@@ -24,7 +24,7 @@ export const activitySessionSchema = object({
   activityId: string(),
 }).camelCase()
 
-export const activitySessionTicketSchema = object({
+const activitySessionTicketSchema = object({
   id: string(),
   session: activitySessionSchema,
 })

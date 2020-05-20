@@ -14,23 +14,6 @@ type PodcastPlanCreationModalProps = {
   ) => Promise<ApolloQueryResult<types.GET_PODCAST_PLAN_ADMIN_COLLECTION>>
 }
 
-export type CreatePodcastPlanProps = (props: {
-  onSuccess?: () => void
-  onError?: (error: Error) => void
-  onFinally?: () => void
-  data: {
-    title: string
-    isPublished: boolean
-    isSubscription: boolean
-    listPrice: number
-    salePrice: number
-    soldAt: Date | null
-    periodAmount: number
-    periodType: string
-    creatorId: string
-  }
-}) => void
-
 const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({
   isVisible,
   onVisibleSet,
@@ -42,7 +25,22 @@ const PodcastPlanCreationModal: React.FC<PodcastPlanCreationModalProps> = ({
   )
   const { refetchPodcastPlanAdminCollection } = usePodcastPlanAdminCollection()
 
-  const handleCreate: CreatePodcastPlanProps = ({ onSuccess, onError, onFinally, data }) => {
+  const handleCreate: (props: {
+    onSuccess?: () => void
+    onError?: (error: Error) => void
+    onFinally?: () => void
+    data: {
+      title: string
+      isPublished: boolean
+      isSubscription: boolean
+      listPrice: number
+      salePrice: number
+      soldAt: Date | null
+      periodAmount: number
+      periodType: string
+      creatorId: string
+    }
+  }) => void = ({ onSuccess, onError, onFinally, data }) => {
     createPodcastPlan({
       variables: {
         isSubscription: true,

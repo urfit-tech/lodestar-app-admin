@@ -167,7 +167,7 @@ const StyledBraftEditor = styled(BraftEditor)`
   }
 `
 
-export const StyledBraftContent = styled.div`
+const StyledBraftContent = styled.div`
   ${OutputMixin}
 `
 

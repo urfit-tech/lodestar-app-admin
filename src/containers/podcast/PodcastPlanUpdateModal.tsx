@@ -6,23 +6,6 @@ import PodcastPlanAdminModal from '../../components/podcast/PodcastPlanAdminModa
 import { usePodcastPlan } from '../../hooks/podcast'
 import types from '../../types'
 
-export type UpdatePodcastPlanProps = (props: {
-  onSuccess?: () => void
-  onError?: (error: Error) => void
-  onFinally?: () => void
-  data: {
-    title: string
-    isPublished: boolean
-    isSubscription: boolean
-    listPrice: number
-    salePrice: number
-    soldAt: Date | null
-    periodAmount: number
-    periodType: string
-    creatorId: string
-    podcastPlanId?: string
-  }
-}) => void
 type PodcastPlanUpdateModalProps = {
   isVisible: boolean
   onVisibleSet: Dispatch<SetStateAction<boolean>>
@@ -41,7 +24,23 @@ const PodcastPlanUpdateModal: React.FC<PodcastPlanUpdateModalProps> = ({
     UPDATE_PODCAST_PLAN,
   )
 
-  const handleUpdate: UpdatePodcastPlanProps = ({ onSuccess, onError, onFinally, data }) => {
+  const handleUpdate: (props: {
+    onSuccess?: () => void
+    onError?: (error: Error) => void
+    onFinally?: () => void
+    data: {
+      title: string
+      isPublished: boolean
+      isSubscription: boolean
+      listPrice: number
+      salePrice: number
+      soldAt: Date | null
+      periodAmount: number
+      periodType: string
+      creatorId: string
+      podcastPlanId?: string
+    }
+  }) => void = ({ onSuccess, onError, onFinally, data }) => {
     updatePodcastPlan({
       variables: {
         podcastPlanId: podcastPlanId,

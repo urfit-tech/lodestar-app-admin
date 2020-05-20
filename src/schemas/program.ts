@@ -5,14 +5,14 @@ export const categorySchema = object({
   name: string(),
   position: number(),
 }).camelCase()
-export const programCategorySchema = object({
+const programCategorySchema = object({
   id: string(),
   category: categorySchema,
   position: number(),
 })
 
 export type ProgramRoleName = 'owner' | 'instructor' | 'assistant'
-export const programRoleSchema = object({
+const programRoleSchema = object({
   id: string(),
   name: mixed<ProgramRoleName>(),
   member: object({
@@ -23,7 +23,7 @@ export const programRoleSchema = object({
 }).camelCase()
 
 export type ProgramPlanPeriodType = 'W' | 'M' | 'Y'
-export const programPlanSchema = object({
+const programPlanSchema = object({
   id: string(),
   type: number().oneOf([1, 2]),
   title: string(),
@@ -36,13 +36,13 @@ export const programPlanSchema = object({
   periodType: mixed<ProgramPlanPeriodType>(),
 }).camelCase()
 
-export const programContentBodySchema = object({
+const programContentBodySchema = object({
   id: string(),
   type: string().nullable(),
   data: mixed().nullable(),
   description: string().nullable(),
 }).camelCase()
-export const programContentPlanSchema = object({
+const programContentPlanSchema = object({
   id: string(),
   programPlan: programPlanSchema,
 }).camelCase()
@@ -97,12 +97,8 @@ export const programSchema = object({
   contentSections: array(programContentSectionSchema).default([]),
   roles: array(programRoleSchema).default([]),
   plans: array(programPlanSchema).default([]),
-  salePrice: number()
-    .nullable()
-    .default(0),
-  listPrice: number()
-    .nullable()
-    .default(0),
+  salePrice: number().nullable().default(0),
+  listPrice: number().nullable().default(0),
   soldAt: date().nullable(),
   programCategories: array(programCategorySchema).default([]),
   isSoldOut: bool().nullable(),

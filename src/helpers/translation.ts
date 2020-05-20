@@ -538,7 +538,7 @@ export const merchandiseMessages = {
     cover: { id: 'merchandise.label.cover', defaultMessage: '封面圖片' },
     delete: { id: 'merchandise.label.delete', defaultMessage: '刪除商品' },
     status: { id: 'merchandise.label.status', defaultMessage: '狀態' },
-    amount: { id: 'merchandise.label.amount', defaultMessage: '數量' },
+    quantity: { id: 'merchandise.label.quantity', defaultMessage: '數量' },
   }),
   text: defineMessages({
     searchMerchandise: { id: 'merchandise.text.searchMerchandise', defaultMessage: '搜尋商品名稱' },
