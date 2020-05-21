@@ -2,6 +2,7 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, InputNumber, Typography } from 'antd'
 import Form, { FormComponentProps, FormProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
+import moment from 'moment-timezone'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -60,7 +61,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<ProgramSubscriptionPlanAdminCar
   onRefetch,
 }) => {
   const { formatMessage } = useIntl()
-  const isOnSale = programPlan.soldAt && new Date() < programPlan.soldAt
+  const isOnSale = programPlan.soldAt && moment() < moment(programPlan.soldAt)
   const { salePrice, listPrice, discountDownPrice, periodType } = programPlan
 
   return isSubscription ? (
@@ -68,7 +69,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<ProgramSubscriptionPlanAdminCar
       <Typography.Text>{programPlan.title}</Typography.Text>
       <PriceLabel
         listPrice={listPrice}
-        salePrice={isOnSale ? salePrice : undefined}
+        salePrice={isOnSale && salePrice ? salePrice : undefined}
         downPrice={discountDownPrice || undefined}
         periodAmount={1}
         periodType={periodType as ProgramPlanPeriodType}
