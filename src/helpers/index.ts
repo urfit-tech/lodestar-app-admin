@@ -35,6 +35,7 @@ export const uploadFile = async (key: string, file: File | null, authToken: stri
         operation: 'putObject',
         params: {
           Key: key,
+          ContentType: file.type,
         },
       }, {
         headers: { authorization: `Bearer ${authToken}` },
@@ -47,7 +48,10 @@ export const uploadFile = async (key: string, file: File | null, authToken: stri
         const { query } = queryString.parseUrl(url)
         return axios.put<{ status: number; data: string }>(url, file, {
           ...config,
-          headers: query,
+          headers: {
+            ...query,
+            'Content-Type': file.type,
+          }
         })
       }))
   return signedUrl
