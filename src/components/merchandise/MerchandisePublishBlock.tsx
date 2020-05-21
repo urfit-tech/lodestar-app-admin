@@ -56,12 +56,6 @@ const MerchandisePublishBlock: React.FC<{
       text: formatMessage(messages.noMeta),
       tabkey: 'settings',
     })
-  !merchandise.link &&
-    checklist.push({
-      id: 'NO_LINK',
-      text: formatMessage(messages.noLink),
-      tabkey: 'settings',
-    })
   !merchandise.price &&
     checklist.push({
       id: 'NO_PRICE',
