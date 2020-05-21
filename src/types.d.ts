@@ -5436,6 +5436,54 @@ export interface GET_CATEGORIESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_ENROLLED_PRODUCTS
+// ====================================================
+
+export interface GET_ENROLLED_PRODUCTS_product_enrollment {
+  __typename: "product_enrollment";
+  product_id: string | null;
+}
+
+export interface GET_ENROLLED_PRODUCTS {
+  /**
+   * fetch data from the table: "product_enrollment"
+   */
+  product_enrollment: GET_ENROLLED_PRODUCTS_product_enrollment[];
+}
+
+export interface GET_ENROLLED_PRODUCTSVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ENROLLED_PROGRAM_PACKAGE_PLAN_IDS
+// ====================================================
+
+export interface GET_ENROLLED_PROGRAM_PACKAGE_PLAN_IDS_program_package_plan_enrollment {
+  __typename: "program_package_plan_enrollment";
+  program_package_plan_id: any | null;
+}
+
+export interface GET_ENROLLED_PROGRAM_PACKAGE_PLAN_IDS {
+  /**
+   * fetch data from the table: "program_package_plan_enrollment"
+   */
+  program_package_plan_enrollment: GET_ENROLLED_PROGRAM_PACKAGE_PLAN_IDS_program_package_plan_enrollment[];
+}
+
+export interface GET_ENROLLED_PROGRAM_PACKAGE_PLAN_IDSVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_NOTIFICATIONS
 // ====================================================
 
