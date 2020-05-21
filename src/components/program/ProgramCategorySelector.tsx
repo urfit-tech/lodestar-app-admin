@@ -34,7 +34,7 @@ type ProgramCategorySelectorProps = {
   onChange?: (value: string) => void
   flatten?: boolean
 }
-const ProgramCategorySelector: React.FC<ProgramCategorySelectorProps> = ({ flatten, value, onChange }, ref) => {
+const ProgramCategorySelector = ({ flatten, value, onChange }: ProgramCategorySelectorProps, ref: any) => {
   const { id: appId } = useContext(AppContext)
   const { loading, data } = useQuery<types.GET_PROGRAM_CATEGORIES, types.GET_PROGRAM_CATEGORIESVariables>(
     GET_PROGRAM_CATEGORIES,
