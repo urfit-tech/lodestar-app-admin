@@ -6,6 +6,7 @@ import { extname } from 'path'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { useAuth } from '../../contexts/AuthContext'
 import { notEmpty, uploadFile } from '../../helpers'
 
 const messages = defineMessages({
@@ -56,6 +57,8 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
   const [loading, setLoading] = useState<boolean>(false)
   const uploadCanceler = useRef<Canceler>()
 
+  const { authToken } = useAuth()
+
   const props: UploadProps = {
     ...uploadProps,
     fileList: fileList || [value].filter(notEmpty),
@@ -82,7 +85,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
       const { file, onProgress, onError, onSuccess } = option
       setLoading(true)
       onChange && onChange(file)
-      uploadFile(withExtension ? path + extname(file.name) : path, file, {
+      uploadFile(withExtension ? path + extname(file.name) : path, file, authToken, {
         onUploadProgress: progressEvent => {
           onProgress({
             percent: (progressEvent.loaded / progressEvent.total) * 100,
@@ -93,7 +96,10 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
         }),
       })
         .then(onSuccess)
-        .catch(onError)
+        .catch(error => {
+          console.log(error)
+          onError(error)
+        })
     },
   }
   return (

@@ -8,6 +8,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import MemberAvatar from '../../containers/common/MemberAvatar'
 import AppContext from '../../contexts/AppContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -29,6 +30,8 @@ const IssueReplyCreationBlock: React.FC<IssueReplyCreationBlockProps> = ({ membe
   const [insertIssueReply] = useMutation<types.INSERT_ISSUE_REPLY, types.INSERT_ISSUE_REPLYVariables>(
     INSERT_ISSUE_REPLY,
   )
+
+  const { authToken } = useAuth()
 
   const [replying, setReplying] = useState(false)
 
@@ -71,7 +74,7 @@ const IssueReplyCreationBlock: React.FC<IssueReplyCreationBlockProps> = ({ membe
             style={{ border: '1px solid #cdcdcd', borderRadius: '4px' }}
             language="zh-hant"
             controls={['bold', 'italic', 'underline', 'separator', 'media']}
-            media={{ uploadFn: createUploadFn(appId) }}
+            media={{ uploadFn: createUploadFn(appId, authToken) }}
           />,
         )}
       </Form.Item>

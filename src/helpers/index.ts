@@ -27,7 +27,7 @@ export const validateImage = (file: RcFile, fileSize?: number) => {
   return isImage && inSize
 }
 
-export const uploadFile = async (key: string, file: File | null, config?: AxiosRequestConfig) => {
+export const uploadFile = async (key: string, file: File | null, authToken: string | null, config?: AxiosRequestConfig) => {
   let signedUrl = ''
   file &&
     (await axios
@@ -36,10 +36,12 @@ export const uploadFile = async (key: string, file: File | null, config?: AxiosR
         params: {
           Key: key,
         },
+      }, {
+        headers: { authorization: `Bearer ${authToken}` },
       })
       .then(res => {
-        signedUrl = res.data.signedUrl
-        return res.data.signedUrl
+        signedUrl = res.data.result
+        return res.data.result
       })
       .then(url => {
         const { query } = queryString.parseUrl(url)

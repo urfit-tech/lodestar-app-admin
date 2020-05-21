@@ -69,7 +69,7 @@ const IssueReplyItem: React.FC<IssueReplyItemProps> = ({
   const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const [qIssueReplyId] = useQueryParam('issueReplyId', StringParam)
-  const { currentMemberId } = useAuth()
+  const { currentMemberId, authToken } = useAuth()
   const theme = useContext(ThemeContext)
 
   const [insertIssueReplyReaction] = useMutation<
@@ -182,7 +182,7 @@ const IssueReplyItem: React.FC<IssueReplyItemProps> = ({
                 value={contentState}
                 onChange={value => setContentState(value)}
                 controls={['bold', 'italic', 'underline', 'separator', 'media']}
-                media={{ uploadFn: createUploadFn(appId) }}
+                media={{ uploadFn: createUploadFn(appId, authToken) }}
               />
               <div>
                 <Button className="mr-2" onClick={() => setEditing(false)}>
