@@ -60,7 +60,7 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
           'owner_blog_admin',
         ]}
       >
-        <Menu.Item key="owner_sales_admin">
+        <Menu.Item key="owner_sales">
           <Icon component={() => <MoneyCircleIcon />} />
           <span>{formatMessage(commonMessages.menu.salesAdmin)}</span>
         </Menu.Item>
@@ -74,20 +74,18 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
             </span>
           }
         >
-          <Menu.Item key="program_collection_admin">{formatMessage(commonMessages.menu.programs)}</Menu.Item>
-          <Menu.Item key="program_issue_collection_admin">{formatMessage(commonMessages.menu.programIssues)}</Menu.Item>
+          <Menu.Item key="program_collection">{formatMessage(commonMessages.menu.programs)}</Menu.Item>
+          <Menu.Item key="program_issue_collection">{formatMessage(commonMessages.menu.programIssues)}</Menu.Item>
           {enabledModules.program_package && (
-            <Menu.Item key="program_package_collection_admin">
-              {formatMessage(commonMessages.menu.programPackage)}
-            </Menu.Item>
+            <Menu.Item key="program_package_collection">{formatMessage(commonMessages.menu.programPackage)}</Menu.Item>
           )}
           {enabledModules.learning_statistics && (
-            <Menu.Item key="program_progress_admin">{formatMessage(commonMessages.menu.programProgress)}</Menu.Item>
+            <Menu.Item key="program_progress">{formatMessage(commonMessages.menu.programProgress)}</Menu.Item>
           )}
           {enabledModules.tempo_delivery && (
             <Menu.Item key="program_tempo_delivery">{formatMessage(commonMessages.menu.tempoDelivery)}</Menu.Item>
           )}
-          <Menu.Item key="program_category_admin">{formatMessage(commonMessages.menu.programCategory)}</Menu.Item>
+          <Menu.Item key="program_category">{formatMessage(commonMessages.menu.programCategory)}</Menu.Item>
         </Menu.SubMenu>
 
         {enabledModules.podcast && (
@@ -100,13 +98,9 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
               </span>
             }
           >
-            <Menu.Item key="podcast_program_collection_admin">
-              {formatMessage(commonMessages.menu.podcastPrograms)}
-            </Menu.Item>
-            <Menu.Item key="podcast_plan_admin">{formatMessage(commonMessages.menu.podcastPlans)}</Menu.Item>
-            <Menu.Item key="podcast_program_category_admin">
-              {formatMessage(commonMessages.menu.podcastCategory)}
-            </Menu.Item>
+            <Menu.Item key="podcast_program_collection">{formatMessage(commonMessages.menu.podcastPrograms)}</Menu.Item>
+            <Menu.Item key="podcast_plan">{formatMessage(commonMessages.menu.podcastPlans)}</Menu.Item>
+            <Menu.Item key="podcast_program_category">{formatMessage(commonMessages.menu.podcastCategory)}</Menu.Item>
           </Menu.SubMenu>
         )}
 
@@ -120,12 +114,10 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
               </span>
             }
           >
-            <Menu.Item key="appointment_plan_collection_admin">
+            <Menu.Item key="appointment_plan_collection">
               {formatMessage(commonMessages.menu.appointmentPlans)}
             </Menu.Item>
-            <Menu.Item key="appointment_period_collection_admin">
-              {formatMessage(commonMessages.menu.appointments)}
-            </Menu.Item>
+            <Menu.Item key="appointment_period_collection">{formatMessage(commonMessages.menu.appointments)}</Menu.Item>
           </Menu.SubMenu>
         )}
 
@@ -139,8 +131,8 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
               </span>
             }
           >
-            <Menu.Item key="activity_collection_admin">{formatMessage(commonMessages.menu.activities)}</Menu.Item>
-            <Menu.Item key="activity_category_admin">{formatMessage(commonMessages.menu.activityCategory)}</Menu.Item>
+            <Menu.Item key="activity_collection">{formatMessage(commonMessages.menu.activities)}</Menu.Item>
+            <Menu.Item key="activity_category">{formatMessage(commonMessages.menu.activityCategory)}</Menu.Item>
           </Menu.SubMenu>
         )}
 
@@ -154,13 +146,12 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
               </span>
             }
           >
-            <Menu.Item key="merchandise_collection_admin">{formatMessage(commonMessages.menu.merchandises)}</Menu.Item>
-            <Menu.Item key="merchandise_shipping_admin">
-              {formatMessage(commonMessages.menu.merchandiseShipping)}
+            <Menu.Item key="merchandise_collection">{formatMessage(commonMessages.menu.merchandises)}</Menu.Item>
+            <Menu.Item key="merchandise_shipping">{formatMessage(commonMessages.menu.merchandiseShipping)}</Menu.Item>
+            <Menu.Item key="merchandise_shop_collection">
+              {formatMessage(commonMessages.menu.merchandiseShop)}
             </Menu.Item>
-            <Menu.Item key="merchandise_category_admin">
-              {formatMessage(commonMessages.menu.merchandiseCategory)}
-            </Menu.Item>
+            <Menu.Item key="merchandise_category">{formatMessage(commonMessages.menu.merchandiseCategory)}</Menu.Item>
           </Menu.SubMenu>
         )}
 
@@ -174,8 +165,8 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
               </span>
             }
           >
-            <Menu.Item key="blog_collection_admin">{formatMessage(commonMessages.menu.blogPosts)}</Menu.Item>
-            <Menu.Item key="blog_category_admin">{formatMessage(commonMessages.menu.blogCategory)}</Menu.Item>
+            <Menu.Item key="blog_collection">{formatMessage(commonMessages.menu.blogPosts)}</Menu.Item>
+            <Menu.Item key="blog_category">{formatMessage(commonMessages.menu.blogCategory)}</Menu.Item>
           </Menu.SubMenu>
         )}
 
@@ -188,17 +179,17 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
             </span>
           }
         >
-          <Menu.Item key="owner_coupon_plans_admin">{formatMessage(commonMessages.menu.coupons)}</Menu.Item>
+          <Menu.Item key="owner_coupon_plans">{formatMessage(commonMessages.menu.coupons)}</Menu.Item>
           {enabledModules.voucher && (
-            <Menu.Item key="owner_voucher_plans_admin">{formatMessage(commonMessages.menu.vouchers)}</Menu.Item>
+            <Menu.Item key="owner_voucher_plans">{formatMessage(commonMessages.menu.vouchers)}</Menu.Item>
           )}
         </Menu.SubMenu>
 
-        <Menu.Item key="owner_members_admin">
+        <Menu.Item key="owner_members">
           <Icon component={() => <UsersIcon />} />
           <span>{formatMessage(commonMessages.menu.members)}</span>
         </Menu.Item>
-        <Menu.Item key="settings_admin">
+        <Menu.Item key="settings">
           <Icon component={() => <UserIcon />} />
           <span>{formatMessage(commonMessages.menu.ownerSettings)}</span>
         </Menu.Item>
@@ -217,7 +208,7 @@ export const CreatorAdminMenu: React.FC<MenuProps> = (props: MenuProps) => {
         {...props}
         defaultOpenKeys={['creator_program_admin', 'creator_appointment_admin', 'creator_activity_admin']}
       >
-        <Menu.Item key="creator_sales_admin">
+        <Menu.Item key="creator_sales">
           <Icon component={() => <MoneyCircleIcon />} />
           <span>{formatMessage(commonMessages.menu.salesAdmin)}</span>
         </Menu.Item>
@@ -231,8 +222,8 @@ export const CreatorAdminMenu: React.FC<MenuProps> = (props: MenuProps) => {
             </span>
           }
         >
-          <Menu.Item key="program_collection_admin">{formatMessage(commonMessages.menu.programs)}</Menu.Item>
-          <Menu.Item key="program_issue_collection_admin">{formatMessage(commonMessages.menu.programIssues)}</Menu.Item>
+          <Menu.Item key="program_collection">{formatMessage(commonMessages.menu.programs)}</Menu.Item>
+          <Menu.Item key="program_issue_collection">{formatMessage(commonMessages.menu.programIssues)}</Menu.Item>
         </Menu.SubMenu>
 
         {enabledModules.appointment && (
@@ -245,12 +236,10 @@ export const CreatorAdminMenu: React.FC<MenuProps> = (props: MenuProps) => {
               </span>
             }
           >
-            <Menu.Item key="appointment_plan_collection_admin">
+            <Menu.Item key="appointment_plan_collection">
               {formatMessage(commonMessages.menu.appointmentPlans)}
             </Menu.Item>
-            <Menu.Item key="appointment_period_collection_admin">
-              {formatMessage(commonMessages.menu.appointments)}
-            </Menu.Item>
+            <Menu.Item key="appointment_period_collection">{formatMessage(commonMessages.menu.appointments)}</Menu.Item>
           </Menu.SubMenu>
         )}
 
@@ -264,10 +253,10 @@ export const CreatorAdminMenu: React.FC<MenuProps> = (props: MenuProps) => {
               </span>
             }
           >
-            <Menu.Item key="activity_collection_admin">{formatMessage(commonMessages.menu.activities)}</Menu.Item>
+            <Menu.Item key="activity_collection">{formatMessage(commonMessages.menu.activities)}</Menu.Item>
           </Menu.SubMenu>
         )}
-        <Menu.Item key="settings_admin">
+        <Menu.Item key="settings">
           <Icon component={() => <UserIcon />} />
           <span>{formatMessage(commonMessages.menu.creatorSettings)}</span>
         </Menu.Item>

@@ -254,6 +254,7 @@ export const commonMessages = {
     merchandises: { id: 'common.menu.merchandises', defaultMessage: '商品管理' },
     merchandiseShipping: { id: 'common.menu.merchandiseShipping', defaultMessage: '出貨管理' },
     merchandiseIssues: { id: 'common.menu.merchandiseIssues', defaultMessage: '問答管理' },
+    merchandiseShop: { id: 'common.menu.merchandiseShop', defaultMessage: '商城管理' },
     merchandiseCategory: { id: 'common.menu.merchandiseCategory', defaultMessage: '商品分類' },
     blogAdmin: { id: 'common.menu.blogAdmin', defaultMessage: '媒體文章' },
     blogPosts: { id: 'common.menu.blogPosts', defaultMessage: '文章管理' },
