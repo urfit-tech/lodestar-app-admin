@@ -69,7 +69,7 @@ const MerchandiseShopCollectionAdminPage: React.FC = () => {
           <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
             <div className="row py-3">
               {tabContent.memberShops.map(memberShop => (
-                <div className="col-6 col-md-4 col-lg-3">
+                <div key={memberShop.id} className="col-6 col-md-4 col-lg-3">
                   <Link to={`/merchandise-shops/${memberShop.id}`}>
                     <StyledCard className="text-center">
                       <CustomRatioImage

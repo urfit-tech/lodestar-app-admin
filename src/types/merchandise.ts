@@ -45,3 +45,16 @@ export type MemberShopPreviewProps = {
   merchandisesCount: number
   publishedAt: Date | null
 }
+
+export type MemberShopProps = {
+  id: string
+  name: string
+  shippingMethods: {
+    [MethodId: string]: {
+      enabled: boolean
+      price: number
+      days: number
+    }
+  }
+  publishedAt: Date | null
+}

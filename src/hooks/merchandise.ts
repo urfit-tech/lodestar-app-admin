@@ -2,10 +2,11 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import types from '../types'
 import {
+  MemberShopPreviewProps,
+  MemberShopProps,
   MerchandiseInventoryLog,
   MerchandisePreviewProps,
   MerchandiseProps,
-  MemberShopPreviewProps,
 } from '../types/merchandise'
 
 export const useInsertMerchandise = () => {
@@ -292,5 +293,38 @@ export const useMemberShopCollection = () => {
     errorMemberShops: error,
     memberShops,
     refetchShops: refetch,
+  }
+}
+
+export const useMemberShop = (shopId: string) => {
+  const { loading, error, data, refetch } = useQuery<types.GET_MEMBER_SHOP, types.GET_MEMBER_SHOPVariables>(
+    gql`
+      query GET_MEMBER_SHOP($shopId: uuid!) {
+        member_shop_by_pk(id: $shopId) {
+          id
+          name
+          shipping_methods
+          published_at
+        }
+      }
+    `,
+    { variables: { shopId } },
+  )
+
+  const memberShop: MemberShopProps | null =
+    loading || error || !data
+      ? null
+      : {
+          id: '',
+          name: '',
+          shippingMethods: {},
+          publishedAt: null,
+        }
+
+  return {
+    loadingMemberShop: loading,
+    errorMemberShop: error,
+    memberShop,
+    refetchMemberShop: refetch,
   }
 }

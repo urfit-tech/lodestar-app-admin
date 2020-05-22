@@ -6235,6 +6235,34 @@ export interface GET_MEMBER_SHOP_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_MEMBER_SHOP
+// ====================================================
+
+export interface GET_MEMBER_SHOP_member_shop_by_pk {
+  __typename: "member_shop";
+  id: any;
+  name: string;
+  shipping_methods: any | null;
+  published_at: any | null;
+}
+
+export interface GET_MEMBER_SHOP {
+  /**
+   * fetch data from the table: "member_shop" using primary key columns
+   */
+  member_shop_by_pk: GET_MEMBER_SHOP_member_shop_by_pk | null;
+}
+
+export interface GET_MEMBER_SHOPVariables {
+  shopId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PODCAST_PLAN
 // ====================================================
 
