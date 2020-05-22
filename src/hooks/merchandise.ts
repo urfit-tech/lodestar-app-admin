@@ -1,7 +1,12 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import types from '../types'
-import { MerchandiseInventoryLog, MerchandisePreviewProps, MerchandiseProps } from '../types/merchandise'
+import {
+  MerchandiseInventoryLog,
+  MerchandisePreviewProps,
+  MerchandiseProps,
+  MemberShopPreviewProps,
+} from '../types/merchandise'
 
 export const useInsertMerchandise = () => {
   const [insertMerchandise] = useMutation<types.INSERT_MERCHANDISE, types.INSERT_MERCHANDISEVariables>(gql`
@@ -243,4 +248,49 @@ export const useArrangeMerchandiseInventory = (merchandiseId: string) => {
           })),
       },
     })
+}
+
+export const useMemberShopCollection = () => {
+  const { loading, error, data, refetch } = useQuery<types.GET_MEMBER_SHOP_COLLECTION>(gql`
+    query GET_MEMBER_SHOP_COLLECTION {
+      member_shop(order_by: { member_id: asc }) {
+        id
+        name
+        member {
+          id
+          name
+          username
+          picture_url
+          merchandises_aggregate {
+            aggregate {
+              count
+            }
+          }
+        }
+        published_at
+      }
+    }
+  `)
+
+  const memberShops: MemberShopPreviewProps[] =
+    loading || error || !data
+      ? []
+      : data.member_shop.map(memberShop => ({
+          id: memberShop.id,
+          name: memberShop.name,
+          member: {
+            id: memberShop.member.id,
+            name: memberShop.member.name || memberShop.member.username,
+            pictureUrl: memberShop.member.picture_url,
+          },
+          merchandisesCount: memberShop.member.merchandises_aggregate.aggregate?.count || 0,
+          publishedAt: memberShop.published_at ? new Date(memberShop.published_at) : null,
+        }))
+
+  return {
+    loadingMemberShops: loading,
+    errorMemberShops: error,
+    memberShops,
+    refetchShops: refetch,
+  }
 }

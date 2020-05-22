@@ -528,6 +528,8 @@ export const merchandiseMessages = {
     shipping: { id: 'merchandise.status.shipping', defaultMessage: '待出貨' },
     shipped: { id: 'merchandise.status.shipped', defaultMessage: '已出貨' },
     arrange: { id: 'merchandise.status.arrange', defaultMessage: '調整庫存' },
+    inOperation: { id: 'merchandise.status.inOperation', defaultMessage: '經營中' },
+    inactivated: { id: 'merchandise.status.inactivated', defaultMessage: '未啟用' },
   }),
   label: defineMessages({
     images: { id: 'merchandise.label.images', defaultMessage: '商品圖片' },
@@ -571,6 +573,7 @@ export const blogMessages = {
     noVideoFound: { id: 'blog.text.noVideoFound', defaultMessage: '找不到影片' },
   }),
 }
+
 export const codeMessages = defineMessages({
   SUCCESS: {
     id: 'code.SUCCESS',

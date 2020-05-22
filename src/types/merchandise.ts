@@ -33,3 +33,15 @@ export type MerchandiseInventoryLog = {
   specification: string
   quantity: number
 }
+
+export type MemberShopPreviewProps = {
+  id: string
+  name: string
+  member: {
+    id: string
+    name: string
+    pictureUrl: string | null
+  }
+  merchandisesCount: number
+  publishedAt: Date | null
+}
