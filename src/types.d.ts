@@ -6350,6 +6350,48 @@ export interface GET_MEMBER_SHOPVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_MERCHANDISE_ORDER_LOG
+// ====================================================
+
+export interface GET_MERCHANDISE_ORDER_LOG_orderLogs_orderMerchandises {
+  __typename: "order_product";
+  id: any;
+  product_id: string;
+}
+
+export interface GET_MERCHANDISE_ORDER_LOG_orderLogs {
+  __typename: "order_log";
+  id: string;
+  updated_at: any | null;
+  delivered_at: any | null;
+  deliver_message: string | null;
+  shipping: any | null;
+  /**
+   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
+   */
+  invoice: any;
+  /**
+   * An array relationship
+   */
+  orderMerchandises: GET_MERCHANDISE_ORDER_LOG_orderLogs_orderMerchandises[];
+}
+
+export interface GET_MERCHANDISE_ORDER_LOG {
+  /**
+   * fetch data from the table: "order_log"
+   */
+  orderLogs: GET_MERCHANDISE_ORDER_LOG_orderLogs[];
+}
+
+export interface GET_MERCHANDISE_ORDER_LOGVariables {
+  memberId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PODCAST_PLAN
 // ====================================================
 
