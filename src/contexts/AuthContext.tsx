@@ -30,7 +30,7 @@ const defaultAuthContext: AuthContext = {
 const AuthContext = React.createContext<AuthContext>(defaultAuthContext)
 
 export const AuthProvider: React.FC = ({ children }) => {
-  const app = useContext(AppContext)
+  const { id: appId } = useContext(AppContext)
   const [isAuthenticating, setIsAuthenticating] = useState(defaultAuthContext.isAuthenticating)
   const [authToken, setAuthToken] = useState<string | null>(null)
 
@@ -45,9 +45,13 @@ export const AuthProvider: React.FC = ({ children }) => {
         method: 'POST',
         url: `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/refresh-token`,
         withCredentials: true,
-        data: {
-          appId: app.id,
-        },
+        data: appId
+          ? {
+              appId,
+            }
+          : {
+              appHost: window.location.host,
+            },
       })
         .then(({ data: { code, message, result } }) => {
           code === 'SUCCESS' ? setAuthToken(result.authToken) : setAuthToken(null)
@@ -113,7 +117,7 @@ export const AuthProvider: React.FC = ({ children }) => {
           Axios.post(
             `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/social-login`,
             {
-              appId: app.id,
+              appId,
               provider,
               providerToken,
             },
