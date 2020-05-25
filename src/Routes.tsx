@@ -53,40 +53,40 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'NotificationPage',
     authenticated: false,
   },
-  settings_admin: {
+  settings: {
     path: '/settings',
     pageName: 'SettingAdminPage',
     authenticated: true,
   },
 
   // program
-  program_collection_admin: {
+  program_collection: {
     path: '/programs',
     pageName: 'ProgramCollectionAdminPage',
     authenticated: true,
     allowedUserRole: 'content-creator',
   },
-  program_admin: {
+  program: {
     path: '/programs/:programId',
     pageName: 'ProgramAdminPage',
     authenticated: true,
   },
-  program_issue_collection_admin: {
+  program_issue_collection: {
     path: '/program-issues',
     pageName: 'ProgramIssueCollectionAdminPage',
     authenticated: true,
   },
-  program_package_collection_admin: {
+  program_package_collection: {
     path: '/program-packages',
     pageName: 'ProgramPackageCollectionAdminPage',
     authenticated: true,
   },
-  program_package_admin: {
+  program_package: {
     path: '/program-packages/:programPackageId',
     pageName: 'ProgramPackageAdminPage',
     authenticated: true,
   },
-  program_progress_admin: {
+  program_progress: {
     path: '/program-progress',
     pageName: 'ProgramProgressCollectionAdminPage',
     authenticated: true,
@@ -97,127 +97,137 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'ProgramTempoDeliveryAdminPage',
     authenticated: true,
   },
-  program_category_admin: {
+  program_category: {
     path: '/program-category',
     pageName: 'ProgramCategoryPage',
     authenticated: true,
   },
 
   // podcast program
-  podcast_program_collection_admin: {
+  podcast_program_collection: {
     path: '/podcast-programs',
     pageName: 'PodcastProgramCollectionAdminPage',
     authenticated: true,
   },
-  podcast_program_admin: {
+  podcast_program: {
     path: '/podcast-programs/:podcastProgramId',
     pageName: 'PodcastProgramAdminPage',
     authenticated: true,
   },
-  podcast_plan_admin: {
+  podcast_plan: {
     path: '/podcast-plan',
     pageName: 'PodcastPlanAdminPage',
     authenticated: true,
   },
-  podcast_program_category_admin: {
+  podcast_program_category: {
     path: '/podcast-program-category',
     pageName: 'PodcastProgramCategoryPage',
     authenticated: true,
   },
 
   // appointment
-  appointment_plan_collection_admin: {
+  appointment_plan_collection: {
     path: '/appointment-plans',
     pageName: 'AppointmentPlanCollectionAdminPage',
     authenticated: true,
   },
-  appointment_plan_admin: {
+  appointment_plan: {
     path: '/appointment-plans/:appointmentPlanId',
     pageName: 'AppointmentPlanAdminPage',
     authenticated: true,
   },
-  appointment_period_collection_admin: {
+  appointment_period_collection: {
     path: '/appointment-periods',
     pageName: 'AppointmentPeriodCollectionAdminPage',
     authenticated: true,
   },
 
   // activity
-  activity_collection_admin: {
+  activity_collection: {
     path: '/activities',
     pageName: 'ActivityCollectionAdminPage',
     authenticated: true,
   },
-  activity_admin: {
+  activity: {
     path: '/activities/:activityId',
     pageName: 'ActivityAdminPage',
     authenticated: true,
   },
-  activity_category_admin: {
+  activity_category: {
     path: '/activity-category',
     pageName: 'ActivityCategoryPage',
     authenticated: true,
   },
 
   // merchandise
-  merchandise_collection_admin: {
+  merchandise_collection: {
     path: '/merchandises',
     pageName: 'MerchandiseCollectionAdminPage',
     authenticated: true,
   },
-  merchandise_admin: {
+  merchandise: {
     path: '/merchandises/:merchandiseId',
     pageName: 'MerchandiseAdminPage',
     authenticated: true,
   },
-  merchandise_shipping_admin: {
+  merchandise_shipping: {
     path: '/merchandise-shipping',
-    pageName: 'MerchandiseShippingPage',
+    pageName: 'MerchandiseShippingAdminPage',
     authenticated: true,
   },
-  merchandise_category_admin: {
+  merchandise_category: {
     path: '/merchandise-category',
     pageName: 'MerchandiseCategoryPage',
     authenticated: true,
   },
+  merchandise_shop_collection: {
+    path: '/merchandise-shops',
+    pageName: 'MerchandiseShopCollectionAdminPage',
+    authenticated: true,
+  },
+  merchandise_shop: {
+    path: '/merchandise-shops/:shopId',
+    pageName: 'MerchandiseShopAdminPage',
+    authenticated: true,
+  },
 
   // blog
-  blog_collection_admin: {
+  blog_collection: {
     path: '/blog',
     pageName: 'BlogCollectionAdminPage',
     authenticated: true,
   },
-  blog_admin: {
+  blog: {
     path: '/blog/:postId',
     pageName: 'BlogAdminPage',
     authenticated: true,
   },
-  blog_category_admin: {
+  blog_category: {
     path: '/blog-post-category',
     pageName: 'BlogPostCategoryPage',
     authenticated: true,
   },
 
   // app owner admin
-  owner_sales_admin: {
+  owner_sales: {
     path: '/admin/sales',
     pageName: 'owner/SalesAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
-  owner_coupon_plans_admin: {
+  owner_coupon_plans: {
     path: '/admin/coupon_plans',
     pageName: 'owner/CouponPlanCollectionAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
-  owner_voucher_plans_admin: {
+  owner_voucher_plans: {
     path: '/admin/voucher_plans',
     pageName: 'owner/VoucherPlanCollectionAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
-  owner_members_admin: {
+  owner_members: {
     path: '/admin/members',
     pageName: 'owner/MemberCollectionAdminPage',
     authenticated: true,
@@ -225,7 +235,7 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   },
 
   // content creator admin
-  creator_sales_admin: {
+  creator_sales: {
     path: '/studio/sales',
     pageName: 'creator/SalesAdminPage',
     authenticated: true,
