@@ -9,7 +9,7 @@ import { VoucherPlanFields } from '../../components/voucher/VoucherPlanAdminModa
 import VoucherPlanCollectionBlockComponent from '../../components/voucher/VoucherPlanCollectionBlock'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const VoucherPlanCollectionBlock: React.FC = () => {
@@ -88,7 +88,11 @@ const VoucherPlanCollectionBlock: React.FC = () => {
         refetch()
       })
       .catch(error => {
-        handleError(error)
+        if (/^GraphQL error: Uniqueness violation/.test(error.message)) {
+          message.error(formatMessage(errorMessages.event.duplicateVoucherCode))
+        } else {
+          handleError(error)
+        }
         setLoading(false)
       })
   }

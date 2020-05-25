@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { DatePicker, Form, Input, InputNumber } from 'antd'
+import { DatePicker, Form, Input, InputNumber, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import { generate } from 'coupon-code'
 import gql from 'graphql-tag'
@@ -93,7 +93,11 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             window.location.reload()
           })
           .catch(error => {
-            handleError(error)
+            if (/^GraphQL error: Uniqueness violation/.test(error.message)) {
+              message.error(formatMessage(errorMessages.event.duplicateVoucherCode))
+            } else {
+              handleError(error)
+            }
             setLoading(false)
           })
       }
