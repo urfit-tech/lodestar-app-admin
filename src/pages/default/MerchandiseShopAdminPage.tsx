@@ -1,4 +1,4 @@
-import { Button, Icon, Tabs } from 'antd'
+import { Button, Icon, Skeleton, Tabs } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
@@ -13,6 +13,8 @@ import {
   AdminTabBarWrapper,
 } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
+import MerchandiseShopBasicForm from '../../components/merchandise/MerchandiseShopBasicForm'
+import ShippingMethodAdminBlock from '../../components/merchandise/ShippingMethodAdminBlock'
 import { useMemberShop } from '../../hooks/merchandise'
 
 const messages = defineMessages({
@@ -28,7 +30,7 @@ const MerchandiseShopAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { match } = useRouter<{ shopId: string }>()
   const shopId = match.params.shopId
-  const { memberShop } = useMemberShop(shopId)
+  const { memberShop, refetchMemberShop } = useMemberShop(shopId)
   const [activeKey, setActiveKey] = useQueryParam('activeKey', StringParam)
 
   return (
@@ -58,6 +60,11 @@ const MerchandiseShopAdminPage: React.FC = () => {
               <AdminPaneTitle>{formatMessage(messages.settingsAdmin)}</AdminPaneTitle>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(messages.basicSettings)}</AdminBlockTitle>
+                {memberShop ? (
+                  <MerchandiseShopBasicForm memberShop={memberShop} refetch={refetchMemberShop} />
+                ) : (
+                  <Skeleton active />
+                )}
               </AdminBlock>
             </div>
           </Tabs.TabPane>
@@ -66,6 +73,11 @@ const MerchandiseShopAdminPage: React.FC = () => {
               <AdminPaneTitle>{formatMessage(messages.shippingMethodsAdmin)}</AdminPaneTitle>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(messages.shippingMethod)}</AdminBlockTitle>
+                {memberShop ? (
+                  <ShippingMethodAdminBlock memberShop={memberShop} refetch={refetchMemberShop} />
+                ) : (
+                  <Skeleton active />
+                )}
               </AdminBlock>
             </div>
           </Tabs.TabPane>

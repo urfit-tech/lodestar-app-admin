@@ -1140,6 +1140,64 @@ export interface UPDATE_MERCHANDISE_SALESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_SHOP_NAME
+// ====================================================
+
+export interface UPDATE_MEMBER_SHOP_NAME_update_member_shop {
+  __typename: "member_shop_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_SHOP_NAME {
+  /**
+   * update data of the table: "member_shop"
+   */
+  update_member_shop: UPDATE_MEMBER_SHOP_NAME_update_member_shop | null;
+}
+
+export interface UPDATE_MEMBER_SHOP_NAMEVariables {
+  memberShopId: any;
+  name: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_SHIPPING_METHODS
+// ====================================================
+
+export interface UPDATE_SHIPPING_METHODS_update_member_shop {
+  __typename: "member_shop_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_SHIPPING_METHODS {
+  /**
+   * update data of the table: "member_shop"
+   */
+  update_member_shop: UPDATE_SHIPPING_METHODS_update_member_shop | null;
+}
+
+export interface UPDATE_SHIPPING_METHODSVariables {
+  memberShopId: any;
+  shippingMethods: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: READ_ALL_NOTIFICATIONS
 // ====================================================
 

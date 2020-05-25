@@ -312,13 +312,13 @@ export const useMemberShop = (shopId: string) => {
   )
 
   const memberShop: MemberShopProps | null =
-    loading || error || !data
+    loading || error || !data || !data.member_shop_by_pk
       ? null
       : {
-          id: '',
-          name: '',
-          shippingMethods: {},
-          publishedAt: null,
+          id: data.member_shop_by_pk.id,
+          name: data.member_shop_by_pk.name,
+          shippingMethods: data.member_shop_by_pk.shipping_methods,
+          publishedAt: data.member_shop_by_pk.published_at,
         }
 
   return {

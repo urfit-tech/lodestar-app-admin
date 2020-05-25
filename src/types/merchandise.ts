@@ -46,15 +46,18 @@ export type MemberShopPreviewProps = {
   publishedAt: Date | null
 }
 
+export type ShippingMethod = 'sevenEleven' | 'familyMart' | 'hiLife' | 'okMart' | 'homeDelivery'
+export const ShippingMethodIds: ShippingMethod[] = ['sevenEleven', 'familyMart', 'hiLife', 'okMart', 'homeDelivery']
+export type ShippingMethodProps = {
+  id: ShippingMethod
+  enabled: boolean
+  fee: number
+  days: number
+}
+
 export type MemberShopProps = {
   id: string
   name: string
-  shippingMethods: {
-    [MethodId: string]: {
-      enabled: boolean
-      price: number
-      days: number
-    }
-  }
+  shippingMethods: ShippingMethodProps[]
   publishedAt: Date | null
 }
