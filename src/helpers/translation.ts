@@ -309,7 +309,8 @@ export const errorMessages = {
     failedGoogleLogin: { id: 'error.event.failedGoogleLogin', defaultMessage: '無法從 Google 登入/註冊' },
     checkSamePassword: { id: 'error.event.checkSamePassword', defaultMessage: '請確認密碼與新密碼相同' },
     checkSameCodeName: { id: 'error.event.checkSameCodeName', defaultMessage: '網址代碼已被使用' },
-    duplicateVoucherCode: { id: 'error.event.duplicateVoucherCode', defaultMessage: '該兌換碼已被使用' }
+    duplicateVoucherCode: { id: 'error.event.duplicateVoucherCode', defaultMessage: '該兌換碼已被使用' },
+    duplicateCouponCode: { id: 'error.event.duplicateCouponCode', defaultMessage: '該折扣碼碼已被使用' },
   }),
   text: defineMessages({
     forbidden: { id: 'error.text.forbidden', defaultMessage: '你沒有此頁面的讀取權限' },
