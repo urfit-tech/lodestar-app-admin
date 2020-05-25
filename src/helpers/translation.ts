@@ -544,7 +544,7 @@ export const merchandiseMessages = {
     delete: { id: 'merchandise.label.delete', defaultMessage: '刪除商品' },
     status: { id: 'merchandise.label.status', defaultMessage: '狀態' },
     quantity: { id: 'merchandise.label.quantity', defaultMessage: '數量' },
-    shopName: { id: 'merchandise.label.shopName', defaultMessage: '賣場名稱' },
+    shopTitle: { id: 'merchandise.label.shopTitle', defaultMessage: '賣場名稱' },
     sevenEleven: { id: 'merchandise.label.sevenEleven', defaultMessage: '7-11超商取貨' },
     familyMart: { id: 'merchandise.label.familyMart', defaultMessage: '全家超商取貨' },
     hiLife: { id: 'merchandise.label.hiLife', defaultMessage: '萊爾富超商取貨' },

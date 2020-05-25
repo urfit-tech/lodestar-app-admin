@@ -36,9 +36,9 @@ const ShippingMethodAdminBlock: React.FC<{
         <ShippingMethodItem
           key={value.id}
           value={value}
-          onChange={value => {
+          onChange={newValue => {
             const newShippingMethodValues = [...values]
-            newShippingMethodValues.splice(index, 1, value)
+            newShippingMethodValues.splice(index, 1, newValue)
             setValues(newShippingMethodValues)
           }}
         />

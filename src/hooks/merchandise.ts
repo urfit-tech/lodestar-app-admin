@@ -256,7 +256,7 @@ export const useMemberShopCollection = () => {
     query GET_MEMBER_SHOP_COLLECTION {
       member_shop(order_by: { member_id: asc }) {
         id
-        name
+        title
         member {
           id
           name
@@ -278,7 +278,7 @@ export const useMemberShopCollection = () => {
       ? []
       : data.member_shop.map(memberShop => ({
           id: memberShop.id,
-          name: memberShop.name,
+          title: memberShop.title,
           member: {
             id: memberShop.member.id,
             name: memberShop.member.name || memberShop.member.username,
@@ -302,7 +302,7 @@ export const useMemberShop = (shopId: string) => {
       query GET_MEMBER_SHOP($shopId: uuid!) {
         member_shop_by_pk(id: $shopId) {
           id
-          name
+          title
           shipping_methods
           published_at
         }
@@ -316,7 +316,7 @@ export const useMemberShop = (shopId: string) => {
       ? null
       : {
           id: data.member_shop_by_pk.id,
-          name: data.member_shop_by_pk.name,
+          title: data.member_shop_by_pk.title,
           shippingMethods: data.member_shop_by_pk.shipping_methods,
           publishedAt: data.member_shop_by_pk.published_at,
         }

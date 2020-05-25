@@ -8,15 +8,15 @@ import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MemberShopProps } from '../../types/merchandise'
 
-type MerchandiseShopBasicFormProps = FormComponentProps & {
+type MemberShopBasicFormProps = FormComponentProps & {
   memberShop: MemberShopProps
   refetch?: () => void
 }
-const MerchandiseShopBasicForm: React.FC<MerchandiseShopBasicFormProps> = ({ memberShop, refetch, form }) => {
+const MemberShopBasicForm: React.FC<MemberShopBasicFormProps> = ({ memberShop, refetch, form }) => {
   const { formatMessage } = useIntl()
 
-  const [updateMemberShopName] = useMutation<types.UPDATE_MEMBER_SHOP_NAME, types.UPDATE_MEMBER_SHOP_NAMEVariables>(
-    UPDATE_MEMBER_SHOP_NAME,
+  const [updateMemberShopName] = useMutation<types.UPDATE_MEMBER_SHOP_TITLE, types.UPDATE_MEMBER_SHOP_TITLEVariables>(
+    UPDATE_MEMBER_SHOP_TITLE,
   )
   const [loading, setLoading] = useState(false)
 
@@ -30,7 +30,7 @@ const MerchandiseShopBasicForm: React.FC<MerchandiseShopBasicFormProps> = ({ mem
       updateMemberShopName({
         variables: {
           memberShopId: memberShop.id,
-          name: values.name,
+          title: values.title,
         },
       })
         .then(() => {
@@ -50,9 +50,9 @@ const MerchandiseShopBasicForm: React.FC<MerchandiseShopBasicFormProps> = ({ mem
         handleSubmit()
       }}
     >
-      <Form.Item label={formatMessage(merchandiseMessages.label.shopName)}>
-        {form.getFieldDecorator('name', {
-          initialValue: memberShop.name,
+      <Form.Item label={formatMessage(merchandiseMessages.label.shopTitle)}>
+        {form.getFieldDecorator('title', {
+          initialValue: memberShop.title,
           rules: [{ required: true }],
         })(<Input />)}
       </Form.Item>
@@ -69,12 +69,12 @@ const MerchandiseShopBasicForm: React.FC<MerchandiseShopBasicFormProps> = ({ mem
   )
 }
 
-const UPDATE_MEMBER_SHOP_NAME = gql`
-  mutation UPDATE_MEMBER_SHOP_NAME($memberShopId: uuid!, $name: String!) {
-    update_member_shop(where: { id: { _eq: $memberShopId } }, _set: { name: $name }) {
+const UPDATE_MEMBER_SHOP_TITLE = gql`
+  mutation UPDATE_MEMBER_SHOP_TITLE($memberShopId: uuid!, $title: String!) {
+    update_member_shop(where: { id: { _eq: $memberShopId } }, _set: { title: $title }) {
       affected_rows
     }
   }
 `
 
-export default Form.create<MerchandiseShopBasicFormProps>()(MerchandiseShopBasicForm)
+export default Form.create<MemberShopBasicFormProps>()(MemberShopBasicForm)

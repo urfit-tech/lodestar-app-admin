@@ -39,7 +39,7 @@ const StyledCardMeta = styled.div`
   font-size: 14px;
 `
 
-const MerchandiseShopCollectionAdminPage: React.FC = () => {
+const MemberShopCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { memberShops } = useMemberShopCollection()
   const [activeKey, setActiveKey] = useQueryParam('activeKey', StringParam)
@@ -70,7 +70,7 @@ const MerchandiseShopCollectionAdminPage: React.FC = () => {
             <div className="row py-3">
               {tabContent.memberShops.map(memberShop => (
                 <div key={memberShop.id} className="col-6 col-md-4 col-lg-3">
-                  <Link to={`/merchandise-shops/${memberShop.id}`}>
+                  <Link to={`/member-shops/${memberShop.id}`}>
                     <StyledCard className="text-center">
                       <CustomRatioImage
                         width="128px"
@@ -79,7 +79,7 @@ const MerchandiseShopCollectionAdminPage: React.FC = () => {
                         shape="circle"
                         className="mb-4 mx-auto"
                       />
-                      <StyledCardTitle className="mb-2">{memberShop.name}</StyledCardTitle>
+                      <StyledCardTitle className="mb-2">{memberShop.title}</StyledCardTitle>
                       <StyledCardSubTitle className="mb-4">{memberShop.member.name}</StyledCardSubTitle>
                       <StyledCardMeta>
                         {formatMessage(commonMessages.term.merchandise)} {memberShop.merchandisesCount}
@@ -96,4 +96,4 @@ const MerchandiseShopCollectionAdminPage: React.FC = () => {
   )
 }
 
-export default MerchandiseShopCollectionAdminPage
+export default MemberShopCollectionAdminPage

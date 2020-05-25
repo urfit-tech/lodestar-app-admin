@@ -10,10 +10,11 @@ import {
   AdminHeader,
   AdminHeaderTitle,
   AdminPaneTitle,
-  AdminTabBarWrapper,
+  AdminTabBarWrapper
 } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
-import MerchandiseShopBasicForm from '../../components/merchandise/MerchandiseShopBasicForm'
+import MemberShopBasicForm from '../../components/merchandise/MemberShopBasicForm'
+import MemberShopPublishBlock from '../../components/merchandise/MemberShopPublishBlock'
 import ShippingMethodAdminBlock from '../../components/merchandise/ShippingMethodAdminBlock'
 import { useMemberShop } from '../../hooks/merchandise'
 
@@ -26,7 +27,7 @@ const messages = defineMessages({
   shippingMethod: { id: 'merchandise.label.shippingMethod', defaultMessage: '寄送方式' },
 })
 
-const MerchandiseShopAdminPage: React.FC = () => {
+const MemberShopAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { match } = useRouter<{ shopId: string }>()
   const shopId = match.params.shopId
@@ -42,7 +43,7 @@ const MerchandiseShopAdminPage: React.FC = () => {
           </Button>
         </Link>
 
-        <AdminHeaderTitle>{memberShop?.name || shopId}</AdminHeaderTitle>
+        <AdminHeaderTitle>{memberShop?.title || shopId}</AdminHeaderTitle>
       </AdminHeader>
 
       <StyledLayoutContent variant="gray">
@@ -61,7 +62,7 @@ const MerchandiseShopAdminPage: React.FC = () => {
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(messages.basicSettings)}</AdminBlockTitle>
                 {memberShop ? (
-                  <MerchandiseShopBasicForm memberShop={memberShop} refetch={refetchMemberShop} />
+                  <MemberShopBasicForm memberShop={memberShop} refetch={refetchMemberShop} />
                 ) : (
                   <Skeleton active />
                 )}
@@ -84,7 +85,13 @@ const MerchandiseShopAdminPage: React.FC = () => {
           <Tabs.TabPane key="publish" tab={formatMessage(messages.publishAdmin)}>
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(messages.publishAdmin)}</AdminPaneTitle>
-              <AdminBlock></AdminBlock>
+              <AdminBlock>
+                {memberShop ? (
+                  <MemberShopPublishBlock memberShop={memberShop} refetch={refetchMemberShop} />
+                ) : (
+                  <Skeleton active />
+                )}
+              </AdminBlock>
             </div>
           </Tabs.TabPane>
         </Tabs>
@@ -93,4 +100,4 @@ const MerchandiseShopAdminPage: React.FC = () => {
   )
 }
 
-export default MerchandiseShopAdminPage
+export default MemberShopAdminPage

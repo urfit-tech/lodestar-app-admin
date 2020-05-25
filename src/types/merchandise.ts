@@ -36,7 +36,7 @@ export type MerchandiseInventoryLog = {
 
 export type MemberShopPreviewProps = {
   id: string
-  name: string
+  title: string
   member: {
     id: string
     name: string
@@ -57,7 +57,7 @@ export type ShippingMethodProps = {
 
 export type MemberShopProps = {
   id: string
-  name: string
+  title: string
   shippingMethods: ShippingMethodProps[]
   publishedAt: Date | null
 }
