@@ -59,6 +59,7 @@ export const commonMessages = {
     goToLogin: { id: 'common.label.goToLogin', defaultMessage: '前往登入' },
     optional: { id: 'common.label.optional', defaultMessage: '非必填' },
     day: { id: 'common.label.day', defaultMessage: '天' },
+    days: { id: 'common.label.days', defaultMessage: '天' },
     week: { id: 'common.label.week', defaultMessage: '週' },
     month: { id: 'common.label.month', defaultMessage: '月' },
     year: { id: 'common.label.year', defaultMessage: '年' },
@@ -205,6 +206,7 @@ export const commonMessages = {
       id: 'program.text.discountDownNotation',
       defaultMessage: '定價或優惠價 - 首期折扣 = 首期支付金額\nEX：100 - 20 = 80，此欄填入 20',
     },
+    period: { id: 'common.text.period', defaultMessage: '，' },
   }),
   event: defineMessages({
     successfullySaved: { id: 'common.event.successfullySaved', defaultMessage: '儲存成功' },
@@ -530,6 +532,8 @@ export const merchandiseMessages = {
     shipping: { id: 'merchandise.status.shipping', defaultMessage: '待出貨' },
     shipped: { id: 'merchandise.status.shipped', defaultMessage: '已出貨' },
     arrange: { id: 'merchandise.status.arrange', defaultMessage: '調整庫存' },
+    inOperation: { id: 'merchandise.status.inOperation', defaultMessage: '經營中' },
+    inactivated: { id: 'merchandise.status.inactivated', defaultMessage: '未啟用' },
   }),
   label: defineMessages({
     images: { id: 'merchandise.label.images', defaultMessage: '商品圖片' },
@@ -542,10 +546,18 @@ export const merchandiseMessages = {
     delete: { id: 'merchandise.label.delete', defaultMessage: '刪除商品' },
     status: { id: 'merchandise.label.status', defaultMessage: '狀態' },
     quantity: { id: 'merchandise.label.quantity', defaultMessage: '數量' },
+    shopTitle: { id: 'merchandise.label.shopTitle', defaultMessage: '賣場名稱' },
+    sevenEleven: { id: 'merchandise.label.sevenEleven', defaultMessage: '7-11超商取貨' },
+    familyMart: { id: 'merchandise.label.familyMart', defaultMessage: '全家超商取貨' },
+    hiLife: { id: 'merchandise.label.hiLife', defaultMessage: '萊爾富超商取貨' },
+    okMart: { id: 'merchandise.label.okMart', defaultMessage: 'OK超商取貨' },
+    homeDelivery: { id: 'merchandise.label.homeDelivery', defaultMessage: '宅配' },
+    shippingFee: { id: 'merchandise.label.shippingFee', defaultMessage: '運費' },
   }),
   text: defineMessages({
     searchMerchandise: { id: 'merchandise.text.searchMerchandise', defaultMessage: '搜尋商品名稱' },
     imageTips: { id: 'merchandise.text.imageTips', defaultMessage: '建議圖片尺寸：600*600px 以上' },
+    estimatedShippingDays: { id: 'merchandise.text.estimatedShippingDays', defaultMessage: '預估寄送天數' },
   }),
 }
 
@@ -573,6 +585,7 @@ export const blogMessages = {
     noVideoFound: { id: 'blog.text.noVideoFound', defaultMessage: '找不到影片' },
   }),
 }
+
 export const codeMessages = defineMessages({
   SUCCESS: {
     id: 'code.SUCCESS',

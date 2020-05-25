@@ -181,13 +181,13 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
   },
   merchandise_shop_collection: {
-    path: '/merchandise-shops',
-    pageName: 'MerchandiseShopCollectionAdminPage',
+    path: '/member-shops',
+    pageName: 'MemberShopCollectionAdminPage',
     authenticated: true,
   },
   merchandise_shop: {
-    path: '/merchandise-shops/:shopId',
-    pageName: 'MerchandiseShopAdminPage',
+    path: '/member-shops/:shopId',
+    pageName: 'MemberShopAdminPage',
     authenticated: true,
   },
 

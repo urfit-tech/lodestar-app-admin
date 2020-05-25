@@ -1,6 +1,7 @@
 import { Button, Icon, Tabs } from 'antd'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
+import { Link } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
 import useRouter from 'use-react-router'
 import { AdminBlock, AdminBlockTitle, AdminHeader, AdminHeaderTitle, AdminPaneTitle } from '../../components/admin'
@@ -19,23 +20,21 @@ import { usePublicMember } from '../../hooks/member'
 
 const BlogAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { history, match } = useRouter<{ postId: string }>()
+  const { match } = useRouter<{ postId: string }>()
   const postId = match.params.postId
   const { post, refetch: refetchPost } = usePost(postId)
   const { member } = usePublicMember(post?.creatorId || '')
   const [tabkey, setTabkey] = useQueryParam('tabkey', StringParam)
   const { settings } = useContext(AppContext)
 
-  useEffect(() => {
-    !tabkey && setTabkey('content')
-  }, [tabkey, setTabkey])
-
   return (
     <>
       <AdminHeader>
-        <Button type="link" onClick={() => history.goBack()} className="mr-3">
-          <Icon type="arrow-left" />
-        </Button>
+        <Link to="/blog">
+          <Button type="link" className="mr-3">
+            <Icon type="arrow-left" />
+          </Button>
+        </Link>
 
         <AdminHeaderTitle>{post.title || postId}</AdminHeaderTitle>
 
