@@ -81,7 +81,7 @@ const MerchandiseOrderCollectionBlock: React.FC<{
                 {orderLog.createdAt && (
                   <StyledDate className="mb-4 d-flex align-items-center">
                     <CalendarOIcon className="mr-2" />
-                    {`${moment(orderLog.createdAt).format('YYYY-MM-DD hh:mm')}
+                    {`${moment(orderLog.createdAt).format('YYYY-MM-DD HH:mm')}
                     ${formatMessage(messages.purchase)}`}
                   </StyledDate>
                 )}
