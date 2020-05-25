@@ -862,6 +862,64 @@ export interface UPDATE_ISSUE_REPLYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_SHOP_TITLE
+// ====================================================
+
+export interface UPDATE_MEMBER_SHOP_TITLE_update_member_shop {
+  __typename: "member_shop_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_SHOP_TITLE {
+  /**
+   * update data of the table: "member_shop"
+   */
+  update_member_shop: UPDATE_MEMBER_SHOP_TITLE_update_member_shop | null;
+}
+
+export interface UPDATE_MEMBER_SHOP_TITLEVariables {
+  memberShopId: any;
+  title: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_MEMBER_SHOP
+// ====================================================
+
+export interface PUBLISH_MEMBER_SHOP_update_member_shop {
+  __typename: "member_shop_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_MEMBER_SHOP {
+  /**
+   * update data of the table: "member_shop"
+   */
+  update_member_shop: PUBLISH_MEMBER_SHOP_update_member_shop | null;
+}
+
+export interface PUBLISH_MEMBER_SHOPVariables {
+  memberShopId: any;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_MERCHANDISE_BASIC
 // ====================================================
 
@@ -1132,6 +1190,35 @@ export interface UPDATE_MERCHANDISE_SALES {
 export interface UPDATE_MERCHANDISE_SALESVariables {
   merchandiseId: any;
   price?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_SHIPPING_METHODS
+// ====================================================
+
+export interface UPDATE_SHIPPING_METHODS_update_member_shop {
+  __typename: "member_shop_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_SHIPPING_METHODS {
+  /**
+   * update data of the table: "member_shop"
+   */
+  update_member_shop: UPDATE_SHIPPING_METHODS_update_member_shop | null;
+}
+
+export interface UPDATE_SHIPPING_METHODSVariables {
+  memberShopId: any;
+  shippingMethods: any;
 }
 
 /* tslint:disable */
@@ -6178,6 +6265,83 @@ export interface ARRANGE_MERCHANDISE_INVENTORY {
 
 export interface ARRANGE_MERCHANDISE_INVENTORYVariables {
   data: merchandise_inventory_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MEMBER_SHOP_COLLECTION
+// ====================================================
+
+export interface GET_MEMBER_SHOP_COLLECTION_member_shop_member_merchandises_aggregate_aggregate {
+  __typename: "merchandise_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_MEMBER_SHOP_COLLECTION_member_shop_member_merchandises_aggregate {
+  __typename: "merchandise_aggregate";
+  aggregate: GET_MEMBER_SHOP_COLLECTION_member_shop_member_merchandises_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_SHOP_COLLECTION_member_shop_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+  picture_url: string | null;
+  /**
+   * An aggregated array relationship
+   */
+  merchandises_aggregate: GET_MEMBER_SHOP_COLLECTION_member_shop_member_merchandises_aggregate;
+}
+
+export interface GET_MEMBER_SHOP_COLLECTION_member_shop {
+  __typename: "member_shop";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  member: GET_MEMBER_SHOP_COLLECTION_member_shop_member;
+  published_at: any | null;
+}
+
+export interface GET_MEMBER_SHOP_COLLECTION {
+  /**
+   * fetch data from the table: "member_shop"
+   */
+  member_shop: GET_MEMBER_SHOP_COLLECTION_member_shop[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MEMBER_SHOP
+// ====================================================
+
+export interface GET_MEMBER_SHOP_member_shop_by_pk {
+  __typename: "member_shop";
+  id: any;
+  title: string;
+  shipping_methods: any | null;
+  published_at: any | null;
+}
+
+export interface GET_MEMBER_SHOP {
+  /**
+   * fetch data from the table: "member_shop" using primary key columns
+   */
+  member_shop_by_pk: GET_MEMBER_SHOP_member_shop_by_pk | null;
+}
+
+export interface GET_MEMBER_SHOPVariables {
+  shopId: any;
 }
 
 /* tslint:disable */
