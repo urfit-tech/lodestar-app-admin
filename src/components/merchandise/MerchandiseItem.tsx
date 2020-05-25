@@ -1,4 +1,4 @@
-import { Divider } from 'antd'
+import { Divider, Spin } from 'antd'
 import React from 'react'
 import { useMerchandise } from '../../hooks/merchandise'
 import { CustomRatioImage } from '../common/Image'
@@ -9,7 +9,7 @@ const MerchandiseItem: React.FC<{ merchandiseId: string }> = ({ merchandiseId })
   return (
     <>
       {loadingMerchandise ? (
-        <></>
+        <Spin />
       ) : (
         <div>
           <Divider />
