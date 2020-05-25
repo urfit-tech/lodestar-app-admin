@@ -6,12 +6,12 @@ import { InvoiceProps, ShippingProps } from '../../types/merchandise'
 import AdminModal from '../admin/AdminModal'
 
 const messages = defineMessages({
-  shippingInfo: { id: 'product.merchandise.ui.shippingInfo', defaultMessage: '收件資訊' },
-  shippingName: { id: 'product.merchandise.ui.shippingName', defaultMessage: '收件姓名' },
-  shippingMethod: { id: 'product.merchandise.ui.shippingMethod', defaultMessage: '收件方式' },
-  shippingPhone: { id: 'product.merchandise.ui.shippingPhone', defaultMessage: '收件人電話' },
-  shippingAddress: { id: 'product.merchandise.ui.shippingAddress', defaultMessage: '收件地址' },
-  shippingMail: { id: 'product.merchandise.ui.shippingMail', defaultMessage: '收件人信箱' },
+  shippingInfo: { id: 'merchandise.ui.shippingInfo', defaultMessage: '收件資訊' },
+  shippingName: { id: 'merchandise.ui.shippingName', defaultMessage: '收件姓名' },
+  shippingMethod: { id: 'merchandise.ui.shippingMethod', defaultMessage: '收件方式' },
+  shippingPhone: { id: 'merchandise.ui.shippingPhone', defaultMessage: '收件人電話' },
+  shippingAddress: { id: 'merchandise.ui.shippingAddress', defaultMessage: '收件地址' },
+  shippingMail: { id: 'merchandise.ui.shippingMail', defaultMessage: '收件人信箱' },
 })
 
 const StyledShippingInfoSubtitle = styled.h4`
