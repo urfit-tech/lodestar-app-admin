@@ -1,12 +1,16 @@
 import { Icon, Input, Tabs } from 'antd'
 import React, { useState } from 'react'
-import { useIntl } from 'react-intl'
+import { defineMessages, useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import MerchandiseOrderCollectionBlock from '../../components/merchandise/MerchandiseOrderCollectionBlock'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { useMerchandiseOrderLogCollection } from '../../hooks/merchandise'
 import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
+
+const messages = defineMessages({
+  noMerchandiseOrder: { id: 'merchandise.ui.noMerchandiseOrder', defaultMessage: '沒有任何商品記錄' },
+})
 
 const MerchandiseShippingAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -44,10 +48,14 @@ const MerchandiseShippingAdminPage: React.FC = () => {
       <Tabs>
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={`${tabContent.name} (${tabContent.merchandiseOrderLogs.length})`}>
-            <MerchandiseOrderCollectionBlock
-              merchandiseOrderLogs={tabContent.merchandiseOrderLogs}
-              searchText={searchText}
-            />
+            {tabContent.merchandiseOrderLogs.length ? (
+              <MerchandiseOrderCollectionBlock
+                merchandiseOrderLogs={tabContent.merchandiseOrderLogs}
+                searchText={searchText}
+              />
+            ) : (
+              formatMessage(messages.noMerchandiseOrder)
+            )}
           </Tabs.TabPane>
         ))}
       </Tabs>

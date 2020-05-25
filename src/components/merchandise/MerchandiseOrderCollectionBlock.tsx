@@ -11,8 +11,9 @@ import MerchandiseItem from './MerchandiseItem'
 import MerchandiseShippingInfoModal from './MerchandiseShippingInfoModal'
 
 const messages = defineMessages({
-  purchase: { id: 'product.merchandise.text.purchase', defaultMessage: '購買' },
-  seller: { id: 'product.merchandise.ui.seller', defaultMessage: '賣家通知' },
+  purchase: { id: 'merchandise.text.purchase', defaultMessage: '購買' },
+  seller: { id: 'merchandise.ui.seller', defaultMessage: '賣家通知' },
+  noMatchingItems: { id: 'merchandise.text.noMatchingItems', defaultMessage: '沒有任何符合項目' },
 })
 
 const StyledOrderTitle = styled.h3`
@@ -86,14 +87,14 @@ const MerchandiseOrderCollectionBlock: React.FC<{
   searchText: string
 }> = ({ merchandiseOrderLogs, searchText }) => {
   const { formatMessage } = useIntl()
+  merchandiseOrderLogs = merchandiseOrderLogs.filter(
+    merchandise => !searchText || merchandise.id.toLowerCase().includes(searchText),
+  )
 
   return (
     <div className="container">
-      {/* {formatMessage(productMessages.merchandise.content.noMerchandiseOrder)} */}
-
-      {merchandiseOrderLogs
-        .filter(merchandise => !searchText || merchandise.id.toLowerCase().includes(searchText))
-        .map(orderLog => (
+      {merchandiseOrderLogs.length ? (
+        merchandiseOrderLogs.map(orderLog => (
           <AdminCard key={orderLog.id} className="mb-4">
             <StyledShippingInfo className="d-flex">
               <div>
@@ -134,7 +135,12 @@ const MerchandiseOrderCollectionBlock: React.FC<{
               </StyledMerchandiseDiliverMessage>
             )}
           </AdminCard>
-        ))}
+        ))
+      ) : (
+        <div className="container d-flex align-items-center">
+          <div>{formatMessage(messages.noMatchingItems)}</div>
+        </div>
+      )}
     </div>
   )
 }
