@@ -6038,6 +6038,48 @@ export interface ARRANGE_MERCHANDISE_INVENTORYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_MERCHANDISE_ORDER_LOG
+// ====================================================
+
+export interface GET_MERCHANDISE_ORDER_LOG_orderLogs_orderMerchandises {
+  __typename: "order_product";
+  id: any;
+  product_id: string;
+}
+
+export interface GET_MERCHANDISE_ORDER_LOG_orderLogs {
+  __typename: "order_log";
+  id: string;
+  updated_at: any | null;
+  delivered_at: any | null;
+  deliver_message: string | null;
+  shipping: any | null;
+  /**
+   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
+   */
+  invoice: any;
+  /**
+   * An array relationship
+   */
+  orderMerchandises: GET_MERCHANDISE_ORDER_LOG_orderLogs_orderMerchandises[];
+}
+
+export interface GET_MERCHANDISE_ORDER_LOG {
+  /**
+   * fetch data from the table: "order_log"
+   */
+  orderLogs: GET_MERCHANDISE_ORDER_LOG_orderLogs[];
+}
+
+export interface GET_MERCHANDISE_ORDER_LOGVariables {
+  memberId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PODCAST_PLAN
 // ====================================================
 
@@ -10654,6 +10696,7 @@ export interface member_bool_exp {
   media?: media_bool_exp | null;
   member_cards?: member_card_bool_exp | null;
   member_tags?: member_tag_bool_exp | null;
+  merchandises?: merchandise_bool_exp | null;
   metadata?: jsonb_comparison_exp | null;
   name?: String_comparison_exp | null;
   notifications?: notification_bool_exp | null;
@@ -10752,6 +10795,7 @@ export interface member_insert_input {
   media?: media_arr_rel_insert_input | null;
   member_cards?: member_card_arr_rel_insert_input | null;
   member_tags?: member_tag_arr_rel_insert_input | null;
+  merchandises?: merchandise_arr_rel_insert_input | null;
   metadata?: any | null;
   name?: string | null;
   notifications?: notification_arr_rel_insert_input | null;

@@ -1,7 +1,13 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import types from '../types'
-import { MerchandiseInventoryLog, MerchandisePreviewProps, MerchandiseProps } from '../types/merchandise'
+import {
+  MerchandiseInventoryLog,
+  MerchandisePreviewProps,
+  MerchandiseProps,
+  ShippingProps,
+  InvoiceProps,
+} from '../types/merchandise'
 
 export const useInsertMerchandise = () => {
   const [insertMerchandise] = useMutation<types.INSERT_MERCHANDISE, types.INSERT_MERCHANDISEVariables>(gql`
@@ -243,4 +249,65 @@ export const useArrangeMerchandiseInventory = (merchandiseId: string) => {
           })),
       },
     })
+}
+
+export const useMerchandiseOrderLogCollection = () => {
+  const { error, loading, data, refetch } = useQuery<
+    types.GET_MERCHANDISE_ORDER_LOG,
+    types.GET_MERCHANDISE_ORDER_LOGVariables
+  >(
+    gql`
+      query GET_MERCHANDISE_ORDER_LOG {
+        orderLogs: order_log(where: { _and: [{ status: { _eq: "SUCCESS" } }] }) {
+          id
+          updated_at
+          delivered_at
+          deliver_message
+          shipping
+          invoice
+
+          orderMerchandises: order_products(where: { product_id: { _like: "Merchandise_%" } }) {
+            id
+            product_id
+          }
+        }
+      }
+    `,
+  )
+
+  const merchandiseOrderLogs: {
+    id: string
+    updatedAt: Date
+    deliveredAt: Date
+    deliverMessage: string | null
+    shipping: ShippingProps
+    invoice: InvoiceProps
+    orderMerchandises: {
+      id: string
+      merchandiseId: string
+    }[]
+  }[] =
+    error || loading || !data
+      ? []
+      : data?.orderLogs
+          .filter(orderLog => orderLog.orderMerchandises.length)
+          .map(orderLog => ({
+            id: orderLog.id,
+            updatedAt: orderLog.updated_at,
+            deliveredAt: orderLog.delivered_at,
+            deliverMessage: orderLog.deliver_message,
+            shipping: orderLog.shipping,
+            invoice: orderLog.invoice,
+            orderMerchandises: orderLog.orderMerchandises.map(orderMerchandise => ({
+              id: orderMerchandise.id,
+              merchandiseId: orderMerchandise.product_id.split('_')[1],
+            })),
+          }))
+
+  return {
+    error,
+    loading,
+    merchandiseOrderLogs,
+    refetch,
+  }
 }

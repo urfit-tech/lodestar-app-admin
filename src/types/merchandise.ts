@@ -33,3 +33,24 @@ export type MerchandiseInventoryLog = {
   specification: string
   quantity: number
 }
+
+export type ShippingProps = {
+  name: string
+  phone: string
+  address: string
+  shippingMethod: string
+  specification: string
+}
+
+export type InvoiceProps = {
+  name: string
+  phone: string
+  email: string
+  phoneBarCode?: string
+  citizenCode?: string
+  uniformNumber?: string
+  uniformTitle?: string
+  donationCode?: string
+  postCode?: string
+  address?: string
+}
