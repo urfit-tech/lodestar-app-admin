@@ -14,7 +14,7 @@ const messages = defineMessages({
 
 const MerchandiseShippingAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { error, loading, merchandiseOrderLogs } = useMerchandiseOrderLogCollection()
+  const { merchandiseOrderLogs, refetch } = useMerchandiseOrderLogCollection()
   const [searchText, setSearchText] = useState('')
 
   const tabContents = [
@@ -52,6 +52,7 @@ const MerchandiseShippingAdminPage: React.FC = () => {
               <MerchandiseOrderCollectionBlock
                 merchandiseOrderLogs={tabContent.merchandiseOrderLogs}
                 searchText={searchText}
+                onRefetch={refetch}
               />
             ) : (
               formatMessage(messages.noMerchandiseOrder)

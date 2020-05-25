@@ -252,14 +252,12 @@ export const useArrangeMerchandiseInventory = (merchandiseId: string) => {
 }
 
 export const useMerchandiseOrderLogCollection = () => {
-  const { error, loading, data, refetch } = useQuery<
-    types.GET_MERCHANDISE_ORDER_LOG,
-    types.GET_MERCHANDISE_ORDER_LOGVariables
-  >(
+  const { error, loading, data, refetch } = useQuery<types.GET_MERCHANDISE_ORDER_LOG>(
     gql`
       query GET_MERCHANDISE_ORDER_LOG {
-        orderLogs: order_log(where: { _and: [{ status: { _eq: "SUCCESS" } }] }) {
+        orderLogs: order_log(where: { _and: [{ status: { _eq: "SUCCESS" } }] }, order_by: { updated_at: desc }) {
           id
+          created_at
           updated_at
           delivered_at
           deliver_message
@@ -277,6 +275,7 @@ export const useMerchandiseOrderLogCollection = () => {
 
   const merchandiseOrderLogs: {
     id: string
+    createdAt: Date
     updatedAt: Date
     deliveredAt: Date
     deliverMessage: string | null
@@ -293,6 +292,7 @@ export const useMerchandiseOrderLogCollection = () => {
           .filter(orderLog => orderLog.orderMerchandises.length)
           .map(orderLog => ({
             id: orderLog.id,
+            createdAt: orderLog.created_at,
             updatedAt: orderLog.updated_at,
             deliveredAt: orderLog.delivered_at,
             deliverMessage: orderLog.deliver_message,
