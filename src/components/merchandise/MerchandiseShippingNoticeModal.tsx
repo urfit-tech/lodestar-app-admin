@@ -108,7 +108,7 @@ const MerchandiseShippingNoticeModal: React.FC<MerchandiseShippingNoticeModalPro
         <>
           <StyledDate className="mb-4 d-flex align-items-center">
             <CalendarOIcon className="mr-2" />
-            {moment(deliveredAt).format('YYYY-MM-DD hh:mm')}
+            {moment(deliveredAt).format('YYYY-MM-DD HH:mm')}
           </StyledDate>
           <p>{deliverMessage}</p>
         </>
