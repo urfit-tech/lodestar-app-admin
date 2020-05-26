@@ -117,7 +117,8 @@ const MerchandiseShippingNoticeModal: React.FC<MerchandiseShippingNoticeModalPro
           <Form>
             <StyledFormItem>
               {getFieldDecorator('deliverMessage', {
-                initialValue: `您好，商品已於 ${moment().format('YYYY-MM-DD')} 出貨。`,
+                initialValue: `您好，商品已於 ${moment().format('YYYY-MM-DD')} 出貨。
+物流編號是 [請填入您的物流編號]，謝謝！`,
               })(<TextArea rows={3} />)}
               <StyledNotice>{formatMessage(messages.notice)}</StyledNotice>
             </StyledFormItem>
