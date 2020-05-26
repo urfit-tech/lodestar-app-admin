@@ -1256,6 +1256,35 @@ export interface UPDATE_DELIVER_INFOVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_DELIVER_INFO
+// ====================================================
+
+export interface UPDATE_DELIVER_INFO_update_order_log {
+  __typename: "order_log_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_DELIVER_INFO {
+  /**
+   * update data of the table: "order_log"
+   */
+  update_order_log: UPDATE_DELIVER_INFO_update_order_log | null;
+}
+
+export interface UPDATE_DELIVER_INFOVariables {
+  deliverMessage?: string | null;
+  deliveredAt?: any | null;
+  orderLogId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: READ_ALL_NOTIFICATIONS
 // ====================================================
 
@@ -6376,6 +6405,46 @@ export interface GET_MEMBER_SHOPVariables {
 /* tslint:disable */
 /* eslint-disable */
 // @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MERCHANDISE_ORDER_LOG
+// ====================================================
+
+export interface GET_MERCHANDISE_ORDER_LOG_orderLogs_orderMerchandises {
+  __typename: "order_product";
+  id: any;
+  name: string;
+  product_id: string;
+}
+
+export interface GET_MERCHANDISE_ORDER_LOG_orderLogs {
+  __typename: "order_log";
+  id: string;
+  created_at: any;
+  updated_at: any | null;
+  delivered_at: any | null;
+  deliver_message: string | null;
+  shipping: any | null;
+  /**
+   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
+   */
+  invoice: any;
+  /**
+   * An array relationship
+   */
+  orderMerchandises: GET_MERCHANDISE_ORDER_LOG_orderLogs_orderMerchandises[];
+}
+
+export interface GET_MERCHANDISE_ORDER_LOG {
+  /**
+   * fetch data from the table: "order_log"
+   */
+  orderLogs: GET_MERCHANDISE_ORDER_LOG_orderLogs[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
 // This file was automatically generated and should not be edited.
 
 // ====================================================
