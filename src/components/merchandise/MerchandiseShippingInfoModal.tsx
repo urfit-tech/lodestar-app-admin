@@ -40,6 +40,7 @@ const MerchandiseShippingInfoModal: React.FC<{
           {formatMessage(messages.shippingInfo)}
         </Button>
       )}
+      footer={null}
     >
       <div>
         <h3>{formatMessage(messages.shippingInfo)}</h3>

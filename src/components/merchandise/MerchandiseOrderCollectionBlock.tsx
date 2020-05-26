@@ -72,10 +72,10 @@ const MerchandiseOrderCollectionBlock: React.FC<{
   )
 
   return (
-    <div className="container">
+    <div className="container mt-4">
       {merchandiseOrderLogs.length ? (
         merchandiseOrderLogs.map(orderLog => (
-          <AdminCard key={orderLog.id} className="mb-4">
+          <AdminCard key={orderLog.id} className="mb-3">
             <StyledShippingInfo className="d-flex">
               <div>
                 <StyledOrderTitle className="mb-2">{`${formatMessage(commonMessages.label.orderLogId)} ${
