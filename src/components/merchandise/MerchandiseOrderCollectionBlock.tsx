@@ -90,7 +90,7 @@ const MerchandiseOrderCollectionBlock: React.FC<{
                   </StyledDate>
                 )}
 
-                <StyledSpcification className="mb-2">{orderLog.shipping.specification}</StyledSpcification>
+                <StyledSpcification className="mb-2">{orderLog?.shipping?.specification}</StyledSpcification>
               </div>
 
               <div>

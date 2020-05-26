@@ -48,31 +48,31 @@ const MerchandiseShippingInfoModal: React.FC<{
             <StyledShippingInfoSubtitle className="mb-1">
               {formatMessage(messages.shippingName)}
             </StyledShippingInfoSubtitle>
-            <StyledShippingInfoContent className="mb-2">{shipping.name}</StyledShippingInfoContent>
+            <StyledShippingInfoContent className="mb-2">{shipping?.name}</StyledShippingInfoContent>
           </div>
           <div className="col-8">
             <StyledShippingInfoSubtitle className="mb-1">
               {formatMessage(messages.shippingMethod)}
             </StyledShippingInfoSubtitle>
-            <StyledShippingInfoContent className="mb-3">{shipping.shippingMethod}</StyledShippingInfoContent>
+            <StyledShippingInfoContent className="mb-3">{shipping?.shippingMethod}</StyledShippingInfoContent>
           </div>
           <div className="col-12">
             <StyledShippingInfoSubtitle className="mb-1">
               {formatMessage(messages.shippingPhone)}
             </StyledShippingInfoSubtitle>
-            <StyledShippingInfoContent className="mb-3">{shipping.phone}</StyledShippingInfoContent>
+            <StyledShippingInfoContent className="mb-3">{shipping?.phone}</StyledShippingInfoContent>
           </div>
           <div className="col-12">
             <StyledShippingInfoSubtitle className="mb-1">
               {formatMessage(messages.shippingAddress)}
             </StyledShippingInfoSubtitle>
-            <StyledShippingInfoContent className="mb-3">{shipping.address}</StyledShippingInfoContent>
+            <StyledShippingInfoContent className="mb-3">{shipping?.address}</StyledShippingInfoContent>
           </div>
           <div className="col-12">
             <StyledShippingInfoSubtitle className="mb-1">
               {formatMessage(messages.shippingMail)}
             </StyledShippingInfoSubtitle>
-            <StyledShippingInfoContent className="mb-3">{invoice.email}</StyledShippingInfoContent>
+            <StyledShippingInfoContent className="mb-3">{invoice?.email}</StyledShippingInfoContent>
           </div>
         </div>
       </div>
