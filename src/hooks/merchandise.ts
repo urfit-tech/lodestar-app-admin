@@ -346,6 +346,7 @@ export const useMerchandiseOrderLogCollection = () => {
 
           orderMerchandises: order_products(where: { product_id: { _like: "Merchandise_%" } }) {
             id
+            name
             product_id
           }
         }
@@ -362,7 +363,9 @@ export const useMerchandiseOrderLogCollection = () => {
     shipping: ShippingProps
     invoice: InvoiceProps
     orderMerchandises: {
+      key: string,
       id: string
+      name: string
       merchandiseId: string
     }[]
   }[] =
@@ -379,7 +382,9 @@ export const useMerchandiseOrderLogCollection = () => {
             shipping: orderLog.shipping,
             invoice: orderLog.invoice,
             orderMerchandises: orderLog.orderMerchandises.map(orderMerchandise => ({
+              key: `${orderLog.id}_${orderMerchandise.name}`,
               id: orderMerchandise.id,
+              name: orderMerchandise.name,
               merchandiseId: orderMerchandise.product_id.split('_')[1],
             })),
           }))

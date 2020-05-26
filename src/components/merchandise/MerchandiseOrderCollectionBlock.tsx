@@ -55,7 +55,9 @@ const MerchandiseOrderCollectionBlock: React.FC<{
     shipping: ShippingProps
     invoice: InvoiceProps
     orderMerchandises: {
+      key: string
       id: string
+      name: string
       merchandiseId: string
     }[]
   }[]
@@ -63,8 +65,10 @@ const MerchandiseOrderCollectionBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ merchandiseOrderLogs, searchText, onRefetch }) => {
   const { formatMessage } = useIntl()
-  merchandiseOrderLogs = merchandiseOrderLogs.filter(
-    merchandise => !searchText || merchandise.id.toLowerCase().includes(searchText),
+  merchandiseOrderLogs = merchandiseOrderLogs.filter(merchandiseOrderLog =>
+    merchandiseOrderLog.orderMerchandises
+      .map(orderMerchandise => !searchText || orderMerchandise.key.toLowerCase().includes(searchText))
+      .includes(true),
   )
 
   return (
