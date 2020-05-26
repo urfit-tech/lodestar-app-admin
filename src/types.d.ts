@@ -6073,6 +6073,7 @@ export interface ARRANGE_MERCHANDISE_INVENTORYVariables {
 export interface GET_MERCHANDISE_ORDER_LOG_orderLogs_orderMerchandises {
   __typename: "order_product";
   id: any;
+  name: string;
   product_id: string;
 }
 
@@ -7635,6 +7636,7 @@ export enum comment_update_column {
  * unique or primary key constraints on table "coupon_code"
  */
 export enum coupon_code_constraint {
+  coupon_code_code_key = "coupon_code_code_key",
   coupon_plan_code_app_id_code_key = "coupon_plan_code_app_id_code_key",
   coupon_plan_code_pkey = "coupon_plan_code_pkey",
 }
@@ -8810,6 +8812,7 @@ export enum tag_update_column {
  * unique or primary key constraints on table "voucher_code"
  */
 export enum voucher_code_constraint {
+  voucher_code_code_key = "voucher_code_code_key",
   voucher_code_pkey = "voucher_code_pkey",
 }
 
