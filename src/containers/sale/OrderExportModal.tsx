@@ -96,7 +96,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           totalProductPrice - totalDiscountPrice,
           orderLog.invoice.name || '',
           orderLog.invoice.email || '',
-          orderLog.invoice.buyerPhone || '',
+          orderLog.invoice.buyerPhone || orderLog.invoice.phone || '', // buyerPhone is a deprecated field
           orderLog.invoice.donationCode ? '捐贈' : orderLog.invoice.uniformNumber ? '公司' : '個人',
           orderLog.invoice.donationCode || '',
           orderLog.invoice.phoneBarCode ? '手機' : orderLog.invoice.citizenCode ? '自然人憑證' : '',
