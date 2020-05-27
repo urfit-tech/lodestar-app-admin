@@ -29,6 +29,9 @@ const StyledFormItem = styled(Form.Item)`
     }
   }
 `
+const StyledDeliverMessages = styled.p`
+  white-space: pre-wrap;
+`
 const StyledNotice = styled.span`
   font-size: 14px;
   font-weight: 500;
@@ -110,7 +113,7 @@ const MerchandiseShippingNoticeModal: React.FC<MerchandiseShippingNoticeModalPro
             <CalendarOIcon className="mr-2" />
             {moment(deliveredAt).format('YYYY-MM-DD HH:mm')}
           </StyledDate>
-          <p>{deliverMessage}</p>
+          <StyledDeliverMessages>{deliverMessage}</StyledDeliverMessages>
         </>
       ) : (
         <div>
