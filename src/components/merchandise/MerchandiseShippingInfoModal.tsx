@@ -2,6 +2,7 @@ import { Button } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { shippingMethodFormatter } from '../../helpers'
 import { InvoiceProps, ShippingProps } from '../../types/merchandise'
 import AdminModal from '../admin/AdminModal'
 
@@ -55,7 +56,9 @@ const MerchandiseShippingInfoModal: React.FC<{
             <StyledShippingInfoSubtitle className="mb-1">
               {formatMessage(messages.shippingMethod)}
             </StyledShippingInfoSubtitle>
-            <StyledShippingInfoContent className="mb-3">{shipping?.shippingMethod}</StyledShippingInfoContent>
+            <StyledShippingInfoContent className="mb-3">
+              {shippingMethodFormatter(shipping?.shippingMethod)}
+            </StyledShippingInfoContent>
           </div>
           <div className="col-12">
             <StyledShippingInfoSubtitle className="mb-1">
