@@ -45,13 +45,6 @@ export const AuthProvider: React.FC = ({ children }) => {
         method: 'POST',
         url: `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/refresh-token`,
         withCredentials: true,
-        data: appId
-          ? {
-              appId,
-            }
-          : {
-              appHost: window.location.host,
-            },
       })
         .then(({ data: { code, message, result } }) => {
           code === 'SUCCESS' ? setAuthToken(result.authToken) : setAuthToken(null)
