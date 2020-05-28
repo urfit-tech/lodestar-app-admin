@@ -72,7 +72,7 @@ const MerchandiseOrderCollectionBlock: React.FC<{
   )
 
   return (
-    <div className="container mt-4">
+    <div className="mt-4">
       {merchandiseOrderLogs.length ? (
         merchandiseOrderLogs.map(orderLog => (
           <AdminCard key={orderLog.id} className="mb-3">
