@@ -48,9 +48,7 @@ const ActivityCreationModal: React.FC<ActivityCreationModalProps> = ({ form, onC
             activityCategoryIds: values.categoryIds,
           },
           onSuccess: activityId => {
-            history.push(
-              currentUserRole === 'app-owner' ? `/admin/activities/${activityId}` : `/studio/activities/${activityId}`,
-            )
+            history.push(`/activities/${activityId}`)
           },
           onError: error => {
             handleError(error)
