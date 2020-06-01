@@ -40,7 +40,7 @@ const PodcastProgramCreationModal: React.FC<{
         data &&
           data.insert_podcast_program &&
           data.insert_podcast_program.returning &&
-          history.push(`/admin/podcast-programs/${data.insert_podcast_program.returning[0].id}`)
+          history.push(`/podcast-programs/${data.insert_podcast_program.returning[0].id}`)
       })
       .catch(error => {
         onError && onError(error)
