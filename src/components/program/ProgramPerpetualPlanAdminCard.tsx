@@ -58,7 +58,17 @@ const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps
         <Form.Item label={formatMessage(commonMessages.term.listPrice)}>
           {form.getFieldDecorator('listPrice', {
             initialValue: program.listPrice || 0,
-            rules: [{ required: true }, { type: 'number' }],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.term.listPrice),
+                }),
+              },
+              {
+                type: 'number',
+              },
+            ],
           })(
             <InputNumber
               min={0}
