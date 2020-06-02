@@ -31,7 +31,7 @@ const MerchandiseSalesForm: React.FC<MerchandiseSalesFormProps> = ({ form, merch
   const updateMerchandiseSales = useUpdateMerchandiseSales(merchandiseId)
   const [loading, setLoading] = useState<boolean>(false)
   const [hasSalePrice, setHasSalePrice] = useState<boolean>(Boolean(merchandise.soldAt && merchandise.salePrice))
-  const [hasSellingTime, setHasSellingTime] = useState<boolean>(Boolean(merchandise.startedAt && merchandise.endedAt))
+  const [hasSellingTime, setHasSellingTime] = useState<boolean>(Boolean(merchandise.startedAt || merchandise.endedAt))
 
   const handleSubmit = () => {
     form.validateFields((errors, values) => {
