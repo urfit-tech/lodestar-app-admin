@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Icon, Input, message, Skeleton, Tooltip } from 'antd'
+import { Button, Form, Icon, Input, message, Tooltip } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
@@ -12,7 +12,7 @@ import { StyledTips } from '../admin'
 import MerchandiseImagesUploader from './MerchandiseImagesUploader'
 
 type MerchandiseIntroductionFormProps = FormComponentProps & {
-  merchandise: MerchandiseProps | null
+  merchandise: MerchandiseProps
   merchandiseId: string
   refetch?: () => void
 }
@@ -26,10 +26,6 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
   const updateMerchandiseImages = useUpdateMerchandiseImages(merchandiseId)
   const updateMerchandiseIntroduction = useUpdateMerchandiseIntroduction(merchandiseId)
   const [loading, setLoading] = useState(false)
-
-  if (!merchandise) {
-    return <Skeleton active />
-  }
 
   const handleSubmit = () => {
     form.validateFields((errors, values) => {

@@ -26,7 +26,7 @@ const StyledPriceLabel = styled.div`
   color: ${props => props.theme['@primary-color']};
 `
 
-const MerchandiseAdminItem: React.FC<MerchandisePreviewProps> = ({ id, coverUrl, title, price }) => {
+const MerchandiseAdminItem: React.FC<MerchandisePreviewProps> = ({ id, coverUrl, title, listPrice }) => {
   return (
     <Link to={`/merchandises/${id}`}>
       <StyledWrapper className="d-flex align-items-center justify-content-between p-3">
@@ -34,7 +34,7 @@ const MerchandiseAdminItem: React.FC<MerchandisePreviewProps> = ({ id, coverUrl,
           <CustomRatioImage width="56px" ratio={1} src={coverUrl || EmptyCover} shape="rounded" className="mr-3" />
           <StyledTitle>{title}</StyledTitle>
         </div>
-        <StyledPriceLabel className="flex-shrink-0">{currencyFormatter(price)}</StyledPriceLabel>
+        <StyledPriceLabel className="flex-shrink-0">{currencyFormatter(listPrice)}</StyledPriceLabel>
       </StyledWrapper>
     </Link>
   )

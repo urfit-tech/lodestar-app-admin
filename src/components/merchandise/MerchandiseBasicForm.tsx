@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Input, message, Skeleton } from 'antd'
+import { Button, Form, Input, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
@@ -13,7 +13,7 @@ import { MerchandiseProps } from '../../types/merchandise'
 import CategorySelector from '../common/CategorySelector'
 
 type MerchandiseBasicFormProps = FormComponentProps & {
-  merchandise: MerchandiseProps | null
+  merchandise: MerchandiseProps
   merchandiseId: string
   refetch?: () => void
 }
@@ -39,10 +39,6 @@ const MerchandiseBasicForm: React.FC<MerchandiseBasicFormProps> = ({ form, merch
         })
         .finally(() => setLoading(false))
     })
-  }
-
-  if (!merchandise) {
-    return <Skeleton active />
   }
 
   return (

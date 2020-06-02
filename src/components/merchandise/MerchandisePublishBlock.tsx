@@ -1,5 +1,4 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -29,7 +28,7 @@ const messages = defineMessages({
 })
 
 const MerchandisePublishBlock: React.FC<{
-  merchandise: MerchandiseProps | null
+  merchandise: MerchandiseProps
   merchandiseId: string
   refetch?: () => void
 }> = ({ merchandise, merchandiseId, refetch }) => {
@@ -37,10 +36,6 @@ const MerchandisePublishBlock: React.FC<{
   const [publishMerchandise] = useMutation<types.PUBLISH_MERCHANDISE, types.PUBLISH_MERCHANDISEVariables>(
     PUBLISH_MERCHANDISE,
   )
-
-  if (!merchandise) {
-    return <Skeleton active />
-  }
 
   const checklist: ChecklistItemProps[] = []
 
@@ -56,7 +51,7 @@ const MerchandisePublishBlock: React.FC<{
       text: formatMessage(messages.noMeta),
       tabkey: 'settings',
     })
-  !merchandise.price &&
+  !merchandise.listPrice &&
     checklist.push({
       id: 'NO_PRICE',
       text: formatMessage(messages.noPrice),
