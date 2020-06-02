@@ -2,7 +2,7 @@ export type MerchandisePreviewProps = {
   id: string
   coverUrl: string | null
   title: string
-  price: number
+  listPrice: number
   publishedAt: Date | null
 }
 
@@ -22,7 +22,11 @@ export type MerchandiseProps = {
   meta: string | null
   link: string | null
   description: string | null
-  price: number
+  listPrice: number
+  salePrice: number | null
+  soldAt: Date | null
+  startedAt: Date | null
+  endedAt: Date | null
   publishedAt: Date | null
 }
 

@@ -48,7 +48,7 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
         ) {
           id
           title
-          price
+          list_price
           published_at
           merchandise_imgs(where: { type: { _eq: "cover" } }) {
             id
@@ -66,7 +66,7 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
       : data.merchandise.map(merchandise => ({
           id: merchandise.id,
           title: merchandise.title,
-          price: merchandise.price,
+          listPrice: merchandise.list_price,
           publishedAt: merchandise.published_at ? new Date(merchandise.published_at) : null,
           coverUrl: merchandise.merchandise_imgs[0]?.url || null,
         }))
@@ -89,7 +89,11 @@ export const useMerchandise = (id: string) => {
           meta
           abstract
           description
-          price
+          list_price
+          sale_price
+          sold_at
+          started_at
+          ended_at
           link
           published_at
           merchandise_categories(order_by: { position: asc }) {
@@ -113,9 +117,25 @@ export const useMerchandise = (id: string) => {
     `,
     { variables: { id } },
   )
-  const merchandise: MerchandiseProps | null =
+  const merchandise: MerchandiseProps =
     loading || error || !data || !data.merchandise_by_pk
-      ? null
+      ? {
+          id: '',
+          title: '',
+          categories: [],
+          tags: [],
+          images: [],
+          abstract: '',
+          meta: '',
+          link: '',
+          description: '',
+          listPrice: 0,
+          salePrice: null,
+          soldAt: null,
+          startedAt: null,
+          endedAt: null,
+          publishedAt: null,
+        }
       : {
           id,
           title: data.merchandise_by_pk.title,
@@ -132,7 +152,11 @@ export const useMerchandise = (id: string) => {
           meta: data.merchandise_by_pk.meta,
           link: data.merchandise_by_pk.link,
           description: data.merchandise_by_pk.description,
-          price: data.merchandise_by_pk.price,
+          listPrice: data.merchandise_by_pk.list_price,
+          salePrice: data.merchandise_by_pk.sale_price,
+          soldAt: data.merchandise_by_pk.sold_at,
+          startedAt: data.merchandise_by_pk.started_at,
+          endedAt: data.merchandise_by_pk.ended_at,
           publishedAt: data.merchandise_by_pk.published_at ? new Date(data.merchandise_by_pk.published_at) : null,
         }
 
@@ -363,7 +387,7 @@ export const useMerchandiseOrderLogCollection = () => {
     shipping: ShippingProps
     invoice: InvoiceProps
     orderMerchandises: {
-      key: string,
+      key: string
       id: string
       name: string
       merchandiseId: string

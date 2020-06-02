@@ -1,4 +1,4 @@
-import { Button, Icon, Spin, Tabs } from 'antd'
+import { Button, Icon, Skeleton, Spin, Tabs } from 'antd'
 import React, { useContext } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
@@ -57,11 +57,13 @@ const MerchandiseAdminPage: React.FC = () => {
   const merchandiseId = match.params.merchandiseId
   const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
   const { settings } = useContext(AppContext)
-  const { merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
+  const { loadingMerchandise, errorMerchandise, merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
   const { inventoryLogs, refetchInventoryLogs } = useMerchandiseInventoryLog(merchandiseId)
   const { loadingInventoryStatus, inventoryStatus, refetchInventoryStatus } = useMerchandiseInventoryStatus(
     merchandiseId,
   )
+
+  if (loadingMerchandise || errorMerchandise) return <Skeleton active />
 
   return (
     <>

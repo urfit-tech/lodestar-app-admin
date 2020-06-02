@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, message, Skeleton } from 'antd'
+import { Button, Form, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
@@ -11,7 +11,7 @@ import { MerchandiseProps } from '../../types/merchandise'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 
 type MerchandiseDescriptionFormProps = FormComponentProps & {
-  merchandise: MerchandiseProps | null
+  merchandise: MerchandiseProps
   merchandiseId: string
   refetch?: () => void
 }
@@ -41,10 +41,6 @@ const MerchandiseDescriptionForm: React.FC<MerchandiseDescriptionFormProps> = ({
         })
         .finally(() => setLoading(false))
     })
-  }
-
-  if (!merchandise) {
-    return <Skeleton active />
   }
 
   return (
