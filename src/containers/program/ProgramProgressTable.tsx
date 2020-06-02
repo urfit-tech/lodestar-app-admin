@@ -1,7 +1,7 @@
 import { Progress, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { groupBy, sum } from 'ramda'
-import React from 'react'
+import React, { Dispatch, SetStateAction, useEffect } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import MemberAvatar from '../../components/common/MemberAvatar'
@@ -11,6 +11,7 @@ import { useProgramProgressCollection } from '../../hooks/program'
 const messages = defineMessages({
   learningDuration: { id: 'common.term.learningDuration', defaultMessage: '學習時數' },
   learningProgress: { id: 'common.term.learningProgress', defaultMessage: '學習進度' },
+  exportProgramProgress: { id: 'common.ui.exportProgramProgress', defaultMessage: '匯出學習進度' },
 })
 
 const StyledProgress = styled(Progress)`
@@ -34,12 +35,28 @@ type MemberProgressProps = MemberProps & {
   duration: number
   progress: number
 }
-
 const ProgramProgressTable: React.FC<{
   programId?: string | null
-}> = ({ programId }) => {
+  onMemberListSet: Dispatch<SetStateAction<string[][]>>
+}> = ({ programId, onMemberListSet }) => {
   const { formatMessage } = useIntl()
   const { loading, error, programEnrollments, programContentProgress } = useProgramProgressCollection(programId)
+
+  useEffect(() => {
+    const data: string[][] = [
+      [
+        formatMessage(commonMessages.term.memberName),
+        formatMessage(messages.learningDuration),
+        formatMessage(messages.learningProgress),
+      ],
+    ]
+
+    dataSource.forEach(member => {
+      data.push([member.name, `${Math.floor(member.duration / 60)}`, `${Math.floor(member.progress * 100)}`])
+    })
+
+    onMemberListSet(data)
+  }, [JSON.stringify(programEnrollments)])
 
   if (error) {
     return <div>{formatMessage(errorMessages.data.fetch)}</div>

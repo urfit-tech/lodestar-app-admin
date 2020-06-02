@@ -1,22 +1,30 @@
-import { Icon, Select, Typography } from 'antd'
+import { Button, Icon, Select, Typography } from 'antd'
 import { SelectProps } from 'antd/lib/select'
 import React, { useContext, useState } from 'react'
-import { useIntl } from 'react-intl'
+import { defineMessages, useIntl } from 'react-intl'
 import { AdminPageBlock } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ProgramProgressTable from '../../containers/program/ProgramProgressTable'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { downloadCSV, toCSV } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useProgramContentEnrollment } from '../../hooks/program'
 import LoadingPage from './LoadingPage'
 import NotFoundPage from './NotFoundPage'
+
+const messages = defineMessages({
+  learningDuration: { id: 'common.term.learningDuration', defaultMessage: '學習時數' },
+  learningProgress: { id: 'common.term.learningProgress', defaultMessage: '學習進度' },
+  exportProgramProgress: { id: 'common.ui.exportProgramProgress', defaultMessage: '匯出學習進度' },
+})
 
 const ProgramProgressCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const { enabledModules } = useContext(AppContext)
   const [selectedProgramId, setSelectedProgramId] = useState('all')
+  const [memberList, setMemberList] = useState<string[][]>([[]])
 
   if (!currentMemberId) {
     return <LoadingPage />
@@ -32,23 +40,32 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
         <Icon type="file-text" theme="filled" className="mr-3" />
         <span>{formatMessage(commonMessages.menu.programProgress)}</span>
       </Typography.Title>
+      <Button
+        type="primary"
+        icon="download"
+        className="mb-4"
+        onClick={() => downloadCSV('program-progress', toCSV(memberList))}
+      >
+        {formatMessage(messages.exportProgramProgress)}
+      </Button>
       <ProgramSelector
         className="mb-3"
         allText={formatMessage(commonMessages.label.allProgramProgress)}
         onChange={programId => setSelectedProgramId(`${programId}`)}
       />
       <AdminPageBlock>
-        <ProgramProgressTable programId={selectedProgramId === 'all' ? null : selectedProgramId} />
+        <ProgramProgressTable
+          programId={selectedProgramId === 'all' ? null : selectedProgramId}
+          onMemberListSet={setMemberList}
+        />
       </AdminPageBlock>
     </AdminLayout>
   )
 }
 
-const ProgramSelector: React.FC<
-  SelectProps & {
-    allText?: string
-  }
-> = ({ allText, ...selectProps }) => {
+const ProgramSelector: React.FC<SelectProps & {
+  allText?: string
+}> = ({ allText, ...selectProps }) => {
   const { formatMessage } = useIntl()
   const { loading, error, data: programs } = useProgramContentEnrollment()
 
