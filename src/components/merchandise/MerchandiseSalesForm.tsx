@@ -39,7 +39,7 @@ const MerchandiseSalesForm: React.FC<MerchandiseSalesFormProps> = ({ form, merch
   const { formatMessage } = useIntl()
   const updateMerchandiseSales = useUpdateMerchandiseSales(merchandiseId)
   const [loading, setLoading] = useState<boolean>(false)
-  const [hasSalePrice, setHasSalePrice] = useState<boolean>(Boolean(merchandise.soldAt && merchandise.salePrice))
+  // const [hasSalePrice, setHasSalePrice] = useState<boolean>(Boolean(merchandise.soldAt && merchandise.salePrice))
   const [hasSellingTime, setHasSellingTime] = useState<boolean>(Boolean(merchandise.startedAt || merchandise.endedAt))
 
   const handleSubmit = () => {
@@ -86,7 +86,7 @@ const MerchandiseSalesForm: React.FC<MerchandiseSalesFormProps> = ({ form, merch
         />,
       )}
 
-      <Row className="mb-4">
+      {/* <Row className="mb-4">
         <Checkbox checked={hasSalePrice} onChange={e => setHasSalePrice(e.target.checked)} className="mr-1" />
         <span>{formatMessage(messages.setSalePrice)}</span>
       </Row>
@@ -107,7 +107,8 @@ const MerchandiseSalesForm: React.FC<MerchandiseSalesFormProps> = ({ form, merch
             initialValue: merchandise.soldAt && moment(merchandise.soldAt),
           })(<DatePicker showTime showToday={false} />)}
         </div>
-      )}
+      )} */}
+
       <Row className="mb-4">
         <Checkbox checked={hasSellingTime} onChange={e => setHasSellingTime(e.target.checked)} className="mr-1" />
         <span>{formatMessage(messages.setSellingTime)}</span>
