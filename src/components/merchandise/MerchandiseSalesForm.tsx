@@ -5,6 +5,7 @@ import gql from 'graphql-tag'
 import moment from 'moment-timezone'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -20,6 +21,14 @@ const messages = defineMessages({
     defaultMessage: '限定販售時間',
   },
 })
+
+const StyledFormItemTitle = styled.h3`
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.2px;
+  color: var(--gray-darker);
+`
 
 type MerchandiseSalesFormProps = FormComponentProps & {
   merchandise: MerchandiseProps
@@ -65,25 +74,25 @@ const MerchandiseSalesForm: React.FC<MerchandiseSalesFormProps> = ({ form, merch
         handleSubmit()
       }}
     >
-      <Form.Item label={formatMessage(commonMessages.term.listPrice)}>
-        {form.getFieldDecorator('listPrice', {
-          initialValue: merchandise.listPrice,
-        })(
-          <InputNumber
-            min={0}
-            formatter={value => `NT$ ${value}`}
-            parser={value => (value ? value.replace(/\D/g, '') : '')}
-          />,
-        )}
-      </Form.Item>
+      <StyledFormItemTitle>{formatMessage(commonMessages.term.listPrice)}</StyledFormItemTitle>
+      {form.getFieldDecorator('listPrice', {
+        initialValue: merchandise.listPrice,
+      })(
+        <InputNumber
+          min={0}
+          formatter={value => `NT$ ${value}`}
+          parser={value => (value ? value.replace(/\D/g, '') : '')}
+          className="mb-4"
+        />,
+      )}
 
-      <Row className="mb-3">
-        <Checkbox checked={hasSalePrice} onChange={e => setHasSalePrice(e.target.checked)} />{' '}
-        {formatMessage(messages.setSalePrice)}
+      <Row className="mb-4">
+        <Checkbox checked={hasSalePrice} onChange={e => setHasSalePrice(e.target.checked)} className="mr-1" />
+        <span>{formatMessage(messages.setSalePrice)}</span>
       </Row>
 
       {hasSalePrice && (
-        <Form.Item label={formatMessage(commonMessages.term.salePrice)}>
+        <div className="mb-3">
           {form.getFieldDecorator('salePrice', {
             initialValue: merchandise.salePrice || 1,
           })(
@@ -97,25 +106,24 @@ const MerchandiseSalesForm: React.FC<MerchandiseSalesFormProps> = ({ form, merch
           {form.getFieldDecorator('soldAt', {
             initialValue: merchandise.soldAt && moment(merchandise.soldAt),
           })(<DatePicker showTime showToday={false} />)}
-        </Form.Item>
+        </div>
       )}
-      <Row className="mb-3">
-        <Checkbox checked={hasSellingTime} onChange={e => setHasSellingTime(e.target.checked)} />{' '}
-        {formatMessage(messages.setSellingTime)}
+      <Row className="mb-4">
+        <Checkbox checked={hasSellingTime} onChange={e => setHasSellingTime(e.target.checked)} className="mr-1" />
+        <span>{formatMessage(messages.setSellingTime)}</span>
       </Row>
 
       {hasSellingTime && (
         <>
-          <Form.Item label={formatMessage(commonMessages.term.startedAt)}>
-            {form.getFieldDecorator('startedAt', {
-              initialValue: merchandise.startedAt && moment(merchandise.startedAt),
-            })(<DatePicker showTime showToday />)}
-          </Form.Item>
-          <Form.Item label={formatMessage(commonMessages.term.endedAt)}>
-            {form.getFieldDecorator('endedAt', {
-              initialValue: merchandise.endedAt && moment(merchandise.endedAt),
-            })(<DatePicker showTime showToday={false} />)}
-          </Form.Item>
+          <StyledFormItemTitle>{formatMessage(commonMessages.term.startedAt)}</StyledFormItemTitle>
+          {form.getFieldDecorator('startedAt', {
+            initialValue: merchandise.startedAt && moment(merchandise.startedAt),
+          })(<DatePicker showTime showToday className="mb-4" />)}
+
+          <StyledFormItemTitle>{formatMessage(commonMessages.term.endedAt)}</StyledFormItemTitle>
+          {form.getFieldDecorator('endedAt', {
+            initialValue: merchandise.endedAt && moment(merchandise.endedAt),
+          })(<DatePicker showTime showToday={false} className="mb-4" />)}
         </>
       )}
 
