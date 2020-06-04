@@ -56,6 +56,7 @@ const ProgramProgressTable: React.FC<{
     })
 
     onMemberListSet(data)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(programEnrollments)])
 
   if (error) {

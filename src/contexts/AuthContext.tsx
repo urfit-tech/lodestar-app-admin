@@ -57,6 +57,7 @@ export const AuthProvider: React.FC = ({ children }) => {
     } else {
       setIsAuthenticating(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(payload)])
 
   return (

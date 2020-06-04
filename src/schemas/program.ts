@@ -93,7 +93,6 @@ export const programSchema = object({
   isSubscription: bool(),
   inAdvance: bool(),
   appId: string(),
-  fundingId: string().nullable(),
   contentSections: array(programContentSectionSchema).default([]),
   roles: array(programRoleSchema).default([]),
   plans: array(programPlanSchema).default([]),

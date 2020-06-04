@@ -122,7 +122,6 @@ export const useProgram = (programId: string) => {
           cover_video_url
           published_at
           in_advance
-          funding_id
           is_sold_out
           support_locales
           is_deleted
@@ -197,7 +196,6 @@ export const useProgram = (programId: string) => {
     coverVideoUrl: string | null
     publishedAt: Date | null
     inAdvance: boolean
-    fundingId: any | null
     isSoldOut: boolean | null
     supportLocales: string[]
     isDeleted: boolean
@@ -270,7 +268,6 @@ export const useProgram = (programId: string) => {
           coverVideoUrl: data.program_by_pk.cover_video_url,
           publishedAt: data.program_by_pk.published_at,
           inAdvance: data.program_by_pk.in_advance,
-          fundingId: data.program_by_pk.funding_id,
           isSoldOut: data.program_by_pk.is_sold_out,
           supportLocales: data.program_by_pk.support_locales || [],
           isDeleted: data.program_by_pk.is_deleted,

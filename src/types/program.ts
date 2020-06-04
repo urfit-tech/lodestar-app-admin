@@ -34,7 +34,6 @@ export type ProgramType = {
   coverVideoUrl: string | null
   publishedAt: Date | null
   inAdvance: boolean
-  fundingId: any | null
   isSoldOut: boolean | null
   supportLocales: string[]
   contentSections: ProgramContentSectionType[]
