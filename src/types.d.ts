@@ -6257,24 +6257,27 @@ export interface GET_MERCHANDISE_INVENTORY_STATUSVariables {
 // GraphQL query operation: GET_MERCHANDISE_INVENTORY
 // ====================================================
 
-export interface GET_MERCHANDISE_INVENTORY_merchandise_inventory {
-  __typename: "merchandise_inventory";
+export interface GET_MERCHANDISE_INVENTORY_product_inventory {
+  __typename: "product_inventory";
   id: any;
   created_at: any;
-  status: string;
-  specification: string;
+  /**
+   * e.g. Arrange
+   */
+  status: string | null;
+  specification: string | null;
   quantity: number;
 }
 
 export interface GET_MERCHANDISE_INVENTORY {
   /**
-   * fetch data from the table: "merchandise_inventory"
+   * fetch data from the table: "product_inventory"
    */
-  merchandise_inventory: GET_MERCHANDISE_INVENTORY_merchandise_inventory[];
+  product_inventory: GET_MERCHANDISE_INVENTORY_product_inventory[];
 }
 
 export interface GET_MERCHANDISE_INVENTORYVariables {
-  merchandiseId: any;
+  productId: string;
 }
 
 /* tslint:disable */
@@ -6286,8 +6289,8 @@ export interface GET_MERCHANDISE_INVENTORYVariables {
 // GraphQL mutation operation: ARRANGE_MERCHANDISE_INVENTORY
 // ====================================================
 
-export interface ARRANGE_MERCHANDISE_INVENTORY_insert_merchandise_inventory {
-  __typename: "merchandise_inventory_mutation_response";
+export interface ARRANGE_MERCHANDISE_INVENTORY_insert_product_inventory {
+  __typename: "product_inventory_mutation_response";
   /**
    * number of affected rows by the mutation
    */
@@ -6296,13 +6299,13 @@ export interface ARRANGE_MERCHANDISE_INVENTORY_insert_merchandise_inventory {
 
 export interface ARRANGE_MERCHANDISE_INVENTORY {
   /**
-   * insert data into the table: "merchandise_inventory"
+   * insert data into the table: "product_inventory"
    */
-  insert_merchandise_inventory: ARRANGE_MERCHANDISE_INVENTORY_insert_merchandise_inventory | null;
+  insert_product_inventory: ARRANGE_MERCHANDISE_INVENTORY_insert_product_inventory | null;
 }
 
 export interface ARRANGE_MERCHANDISE_INVENTORYVariables {
-  data: merchandise_inventory_insert_input[];
+  data: product_inventory_insert_input[];
 }
 
 /* tslint:disable */
@@ -8858,6 +8861,7 @@ export enum program_content_progress_constraint {
  */
 export enum program_content_progress_update_column {
   id = "id",
+  last_progress = "last_progress",
   member_id = "member_id",
   program_content_id = "program_content_id",
   progress = "progress",
@@ -12665,6 +12669,7 @@ export interface product_enrollment_bool_exp {
   _and?: (product_enrollment_bool_exp | null)[] | null;
   _not?: product_enrollment_bool_exp | null;
   _or?: (product_enrollment_bool_exp | null)[] | null;
+  is_physical?: Boolean_comparison_exp | null;
   member?: member_public_bool_exp | null;
   member_id?: String_comparison_exp | null;
   product?: product_bool_exp | null;
@@ -12682,6 +12687,18 @@ export interface product_insert_input {
   target?: string | null;
   type?: string | null;
   voucher_plan_products?: voucher_plan_product_arr_rel_insert_input | null;
+}
+
+/**
+ * input type for inserting data into table "product_inventory"
+ */
+export interface product_inventory_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  product_id?: string | null;
+  quantity?: number | null;
+  specification?: string | null;
+  status?: string | null;
 }
 
 /**
@@ -13050,6 +13067,7 @@ export interface program_content_progress_bool_exp {
   _not?: program_content_progress_bool_exp | null;
   _or?: (program_content_progress_bool_exp | null)[] | null;
   id?: uuid_comparison_exp | null;
+  last_progress?: numeric_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   program_content?: program_content_bool_exp | null;
@@ -13062,6 +13080,7 @@ export interface program_content_progress_bool_exp {
  */
 export interface program_content_progress_insert_input {
   id?: any | null;
+  last_progress?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   program_content?: program_content_obj_rel_insert_input | null;

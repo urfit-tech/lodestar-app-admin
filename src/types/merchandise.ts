@@ -33,8 +33,8 @@ export type MerchandiseProps = {
 export type MerchandiseInventoryLog = {
   id: string
   createdAt: Date
-  status: string
-  specification: string
+  status: string | null
+  specification: string | null
   quantity: number
 }
 

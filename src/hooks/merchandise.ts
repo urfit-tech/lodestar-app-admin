@@ -210,14 +210,15 @@ export const useMerchandiseInventoryStatus = (merchandiseId: string) => {
   }
 }
 
+// TODO: change GET_MERCHANDISE_INVENTORY to GET_PRODUCT_INVENTORY
 export const useMerchandiseInventoryLog = (merchandiseId: string) => {
   const { loading, error, data, refetch } = useQuery<
     types.GET_MERCHANDISE_INVENTORY,
     types.GET_MERCHANDISE_INVENTORYVariables
   >(
     gql`
-      query GET_MERCHANDISE_INVENTORY($merchandiseId: uuid!) {
-        merchandise_inventory(where: { merchandise_id: { _eq: $merchandiseId } }, order_by: { created_at: desc }) {
+      query GET_MERCHANDISE_INVENTORY($productId: String!) {
+        product_inventory(where: { product_id: { _eq: $productId } }, order_by: { created_at: desc }) {
           id
           created_at
           status
@@ -226,13 +227,13 @@ export const useMerchandiseInventoryLog = (merchandiseId: string) => {
         }
       }
     `,
-    { variables: { merchandiseId } },
+    { variables: { productId: `Merchandise_${merchandiseId}` } },
   )
 
   const inventoryLogs: MerchandiseInventoryLog[] =
     loading || error || !data
       ? []
-      : data.merchandise_inventory.map(merchandiseInventory => ({
+      : data.product_inventory.map(merchandiseInventory => ({
           id: merchandiseInventory.id,
           createdAt: new Date(merchandiseInventory.created_at),
           status: merchandiseInventory.status,
@@ -248,14 +249,15 @@ export const useMerchandiseInventoryLog = (merchandiseId: string) => {
   }
 }
 
+// TODO: change ARRANGE_MERCHANDISE_INVENTORY to ARRANGE_PRODUCT_INVENTORY
 export const useArrangeMerchandiseInventory = (merchandiseId: string) => {
   const [arrangeMerchandiseInventory] = useMutation<
     types.ARRANGE_MERCHANDISE_INVENTORY,
     types.ARRANGE_MERCHANDISE_INVENTORYVariables
   >(
     gql`
-      mutation ARRANGE_MERCHANDISE_INVENTORY($data: [merchandise_inventory_insert_input!]!) {
-        insert_merchandise_inventory(objects: $data) {
+      mutation ARRANGE_MERCHANDISE_INVENTORY($data: [product_inventory_insert_input!]!) {
+        insert_product_inventory(objects: $data) {
           affected_rows
         }
       }
@@ -268,7 +270,7 @@ export const useArrangeMerchandiseInventory = (merchandiseId: string) => {
         data: data
           .filter(data => data.quantity)
           .map(data => ({
-            merchandise_id: merchandiseId,
+            product_id: `Merchandise_${merchandiseId}`,
             status: 'arrange',
             specification: data.specification,
             quantity: data.quantity,
