@@ -7,11 +7,11 @@ import { PeriodType } from '../../types/general'
 const PodcastPeriodSelector: React.FC<{
   value?: { type: PeriodType; amount: number }
   onChange?: (value: { type: PeriodType; amount: number }) => void
-}> = ({ value, onChange }, ref) => {
+}> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
 
   return (
-    <div ref={ref}>
+    <div>
       {typeof value !== 'undefined' && (
         <div className="d-flex">
           <InputNumber
