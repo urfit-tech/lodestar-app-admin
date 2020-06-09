@@ -27,19 +27,28 @@ export const validateImage = (file: RcFile, fileSize?: number) => {
   return isImage && inSize
 }
 
-export const uploadFile = async (key: string, file: File | null, authToken: string | null, config?: AxiosRequestConfig) => {
+export const uploadFile = async (
+  key: string,
+  file: File | null,
+  authToken: string | null,
+  config?: AxiosRequestConfig,
+) => {
   let signedUrl = ''
   file &&
     (await axios
-      .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/sys/sign-url`, {
-        operation: 'putObject',
-        params: {
-          Key: key,
-          ContentType: file.type,
+      .post(
+        `${process.env.REACT_APP_BACKEND_ENDPOINT}/sys/sign-url`,
+        {
+          operation: 'putObject',
+          params: {
+            Key: key,
+            ContentType: file.type,
+          },
         },
-      }, {
-        headers: { authorization: `Bearer ${authToken}` },
-      })
+        {
+          headers: { authorization: `Bearer ${authToken}` },
+        },
+      )
       .then(res => {
         signedUrl = res.data.result
         return res.data.result
@@ -51,7 +60,7 @@ export const uploadFile = async (key: string, file: File | null, authToken: stri
           headers: {
             ...query,
             'Content-Type': file.type,
-          }
+          },
         })
       }))
   return signedUrl
@@ -65,17 +74,22 @@ export const currencyFormatter = (value?: number | string | null) =>
 
 export const dateFormatter = (value: Date, format?: string) => moment(value).format(format || `YYYY/MM/DD HH:mm`)
 
-export const dateRangeFormatter = (startedAt: Date, endedAt: Date, timeFormat?: string) => {
-  const fullTimeFormat = timeFormat || 'YYYY-MM-DD(dd) HH:mm'
-  const shortTimeFormat = 'HH:mm'
-  const startedDate = moment(startedAt).format('YYYYMMDD')
-  const endedDate = moment(endedAt).format('YYYYMMDD')
+export const dateRangeFormatter: (props: {
+  startedAt: Date
+  endedAt: Date
+  dateFormat?: string
+  timeFormat?: string
+}) => string = ({ startedAt, endedAt, dateFormat, timeFormat }) => {
+  const startedMoment = moment(startedAt)
+  const endedMoment = moment(endedAt)
+  const isInSameDay = startedMoment.format('YYYY/MM/DD') === endedMoment.format('YYYY/MM/DD')
 
-  return (
-    moment(startedAt).format(fullTimeFormat) +
-    ' ~ ' +
-    moment(endedAt).format(startedDate === endedDate ? shortTimeFormat : fullTimeFormat)
-  )
+  return 'STARTED_DATE STARTED_TIME ~ ENDED_DATE ENDED_TIME'
+    .replace('STARTED_DATE', startedMoment.format(dateFormat || 'YYYY-MM-DD(dd)'))
+    .replace('STARTED_TIME', startedMoment.format(timeFormat || 'HH:mm'))
+    .replace('ENDED_DATE', isInSameDay ? '' : endedMoment.format(dateFormat || 'YYYY-MM-DD(dd)'))
+    .replace('ENDED_TIME', endedMoment.format(timeFormat || 'HH:mm'))
+    .replace(/  +/g, ' ')
 }
 
 export const durationFormatter = (value?: number | null) => {
@@ -106,12 +120,7 @@ export const rgba = (hexColor: string, alpha: number) => {
 }
 
 export const snakeToCamel = (snakeValue: string) =>
-  snakeValue.replace(/([-_][a-z])/g, group =>
-    group
-      .toUpperCase()
-      .replace('-', '')
-      .replace('_', ''),
-  )
+  snakeValue.replace(/([-_][a-z])/g, group => group.toUpperCase().replace('-', '').replace('_', ''))
 
 export const handleError = (error: any) => {
   process.env.NODE_ENV === 'development' && console.error(error)

@@ -148,7 +148,7 @@ const ActivityTicket: React.FC<ActivityTicketProps> = ({
       )}
 
       <StyledSubTitle>{formatMessage(activityMessages.term.sellingTime)}</StyledSubTitle>
-      <StyledMeta>{dateRangeFormatter(startedAt, endedAt)}</StyledMeta>
+      <StyledMeta>{dateRangeFormatter({ startedAt, endedAt })}</StyledMeta>
 
       {variant === 'admin' && (
         <StyledExtraAdmin className="d-flex align-items-center justify-content-between">

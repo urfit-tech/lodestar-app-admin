@@ -1,7 +1,7 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import { AppointmentPeriodCardProps } from '../components/appointment/AppointmentPeriodCard'
+import { AppointmentPeriodProps } from '../components/appointment/AppointmentPeriodCard'
 import { notEmpty } from '../helpers'
 import types from '../types'
 
@@ -27,21 +27,26 @@ export const useAppointmentEnrollmentCollection = () => {
         member_email
         member_phone
         order_product_id
+        order_product {
+          id
+          options
+        }
+        issue
+        result
       }
     }
   `)
 
-  const appointmentEnrollments: AppointmentPeriodCardProps[] =
+  const appointmentEnrollments: AppointmentPeriodProps[] =
     loading || !!error || !data
       ? []
       : data.appointment_enrollment
-          .map<AppointmentPeriodCardProps | undefined>(enrollment => {
+          .map<AppointmentPeriodProps | undefined>(enrollment => {
             if (!enrollment.appointment_plan || !enrollment.member || !enrollment.appointment_plan.creator) {
               return undefined
             }
 
             return {
-              id: `${enrollment.appointment_plan.id}_${enrollment.started_at}`,
               avatarUrl: enrollment.member.picture_url,
               member: {
                 name: enrollment.member_name || '',
@@ -50,14 +55,17 @@ export const useAppointmentEnrollmentCollection = () => {
               },
               appointmentPlanTitle: enrollment.appointment_plan.title,
               startedAt: new Date(enrollment.started_at),
-              endedAt: moment(enrollment.started_at)
-                .add(enrollment.appointment_plan.duration, 'minutes')
-                .toDate(),
+              endedAt: moment(enrollment.started_at).add(enrollment.appointment_plan.duration, 'minutes').toDate(),
               creator: {
                 id: enrollment.appointment_plan.creator.id || '',
                 name: enrollment.appointment_plan.creator.name || '',
               },
-              orderProductId: enrollment.order_product_id,
+              orderProduct: {
+                id: enrollment.order_product_id,
+                options: enrollment.order_product?.options,
+              },
+              appointmentIssue: enrollment.issue,
+              appointmentResult: enrollment.result,
             }
           })
           .filter(notEmpty)
@@ -68,4 +76,28 @@ export const useAppointmentEnrollmentCollection = () => {
     appointmentEnrollments,
     refetchAppointmentEnrollments: refetch,
   }
+}
+
+export const useUpdateAppointmentResult = (orderProductId: string, options: any) => {
+  const [updateAppointmentResult] = useMutation<
+    types.UPDATE_APPOINTMENT_Result,
+    types.UPDATE_APPOINTMENT_ResultVariables
+  >(gql`
+    mutation UPDATE_APPOINTMENT_Result($orderProductId: uuid!, $data: jsonb) {
+      update_order_product(where: { id: { _eq: $orderProductId } }, _set: { options: $data }) {
+        affected_rows
+      }
+    }
+  `)
+
+  return (appointmentResult: string) =>
+    updateAppointmentResult({
+      variables: {
+        orderProductId,
+        data: {
+          ...options,
+          appointmentResult,
+        },
+      },
+    })
 }

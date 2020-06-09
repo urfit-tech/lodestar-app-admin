@@ -1,18 +1,22 @@
 import { Icon } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { AdminPageTitle } from '../../components/admin'
 import AppointmentPeriodCollectionTabs from '../../components/appointment/AppointmentPeriodCollectionTabs'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
 import { useAppointmentEnrollmentCollection } from '../../hooks/appointment'
+import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 
 const AppointmentPeriodCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { currentUserRole } = useAuth()
-  const { appointmentEnrollments } = useAppointmentEnrollmentCollection()
+  const {
+    loadingAppointmentEnrollments,
+    appointmentEnrollments,
+    refetchAppointmentEnrollments,
+  } = useAppointmentEnrollmentCollection()
 
   return (
     <AdminLayout>
@@ -22,8 +26,10 @@ const AppointmentPeriodCollectionAdminPage: React.FC = () => {
       </AdminPageTitle>
 
       <AppointmentPeriodCollectionTabs
+        loading={loadingAppointmentEnrollments}
         periods={appointmentEnrollments}
         withSelector={currentUserRole === 'app-owner'}
+        onRefetch={refetchAppointmentEnrollments}
       />
     </AdminLayout>
   )

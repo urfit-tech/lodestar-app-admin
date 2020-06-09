@@ -62,7 +62,9 @@ const ActivitySessionItem: React.FC<{
       <StyledContent>
         <div>
           <Icon type="calendar" className="mr-2" />
-          <span>{dateRangeFormatter(activitySession.started_at, activitySession.ended_at)}</span>
+          <span>
+            {dateRangeFormatter({ startedAt: activitySession.started_at, endedAt: activitySession.ended_at })}
+          </span>
         </div>
 
         <div>

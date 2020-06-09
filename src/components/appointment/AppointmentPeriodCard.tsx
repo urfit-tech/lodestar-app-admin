@@ -1,13 +1,32 @@
-import { Button, Divider, Icon, Modal } from 'antd'
+import { Button, Divider, Form, Icon, message, Modal } from 'antd'
+import { FormComponentProps } from 'antd/lib/form'
+import BraftEditor from 'braft-editor'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { dateRangeFormatter } from '../../helpers'
+import { dateRangeFormatter, handleError } from '../../helpers'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
+import { useUpdateAppointmentResult } from '../../hooks/appointment'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
+import AdminBraftEditor from '../admin/AdminBraftEditor'
 import { AvatarImage } from '../common/Image'
+import { BraftContent } from '../common/StyledBraftEditor'
+
+const messages = defineMessages({
+  appointmentText: { id: 'appointment.ui.appointmentText', defaultMessage: '{name} 已預約你的「{title}」' },
+  addToCalendar: { id: 'appointment.ui.addToCalendar', defaultMessage: '加入行事曆' },
+  joinMeeting: { id: 'appointment.ui.joinMeeting', defaultMessage: '進入會議' },
+  appointmentIssueAndResult: { id: 'appointment.ui.appointmentIssueAndResult', defaultMessage: '提問紀錄單' },
+  appointmentDate: { id: 'appointment.label.appointmentDate', defaultMessage: '諮詢日期' },
+  appointmentIssue: { id: 'appointment.label.appointmentIssue', defaultMessage: '學員提問' },
+  appointmentResult: { id: 'appointment.label.appointmentResult', defaultMessage: '諮詢重點紀錄' },
+  appointmentResultNotation: {
+    id: 'appointment.text.appointmentResultNotation',
+    defaultMessage: '※此紀錄不會公開給學員看到',
+  },
+})
 
 const StyledWrapper = styled.div`
   margin-bottom: 0.75rem;
@@ -31,20 +50,35 @@ const StyledButton = styled(Button)`
   line-height: normal;
   padding: 0 1.25rem;
 `
+const StyledModal = styled(Modal)`
+  && .ant-modal-footer {
+    border-top: 0;
+  }
+`
+const StyledModalTitle = styled.div`
+  color: var(--gray-darker);
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.8px;
+`
+const StyledModalMetaBlock = styled.div`
+  padding: 0.75rem;
+  background-color: var(--gray-lighter);
+  border-radius: 4px;
+`
+const StyledModalNotation = styled.div`
+  color: var(--gray-dark);
+  font-size: 14px;
+  line-height: normal;
+  letter-spacing: 0.4px;
+`
 
-const messages = defineMessages({
-  appointmentText: { id: 'appointment.ui.appointmentText', defaultMessage: '{name} 已預約你的「{title}」' },
-  addToCalendar: { id: 'appointment.ui.addToCalendar', defaultMessage: '加入行事曆' },
-  joinMeeting: { id: 'appointment.ui.joinMeeting', defaultMessage: '進入會議' },
-})
-
-export type AppointmentPeriodCardProps = {
-  id: string
-  avatarUrl?: string | null
+export type AppointmentPeriodProps = {
+  avatarUrl: string | null
   member: {
     name: string
-    email?: string | null
-    phone?: string | null
+    email: string | null
+    phone: string | null
   }
   appointmentPlanTitle: string
   startedAt: Date
@@ -53,9 +87,17 @@ export type AppointmentPeriodCardProps = {
     id: string
     name: string
   }
-  orderProductId: string | null
+  orderProduct: {
+    id: string
+    options: any
+  }
+  appointmentIssue: string | null
+  appointmentResult: string | null
 }
-
+type AppointmentPeriodCardProps = FormComponentProps &
+  AppointmentPeriodProps & {
+    onRefetch?: () => void
+  }
 const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
   avatarUrl,
   member,
@@ -63,14 +105,40 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
   startedAt,
   endedAt,
   creator,
-  orderProductId,
+  orderProduct,
+  appointmentIssue,
+  appointmentResult,
+  onRefetch,
+  form,
 }) => {
   const { formatMessage } = useIntl()
+  const updateAppointmentResult = useUpdateAppointmentResult(orderProduct.id, orderProduct.options)
+
   const [visible, setVisible] = useState(false)
+  const [issueModalVisible, setIssueModalVisible] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const startedTime = moment(startedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const endedTime = moment(endedAt).utc().format('YYYYMMDD[T]HHmmss[Z]')
   const isFinished = endedAt.getTime() < Date.now()
+
+  const handleSubmit = () => {
+    form.validateFields((errors, values) => {
+      if (errors) {
+        return
+      }
+
+      setLoading(true)
+      updateAppointmentResult(values.appointmentResult.toRAW())
+        .then(() => {
+          onRefetch && onRefetch()
+          setIssueModalVisible(false)
+          message.success(formatMessage(commonMessages.event.successfullySaved))
+        })
+        .catch(handleError)
+        .finally(() => setLoading(false))
+    })
+  }
 
   return (
     <StyledWrapper className="d-flex align-items-center justify-content-between">
@@ -82,7 +150,7 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
           </StyledTitle>
           <StyledMeta>
             <Icon component={() => <CalendarAltOIcon />} className="mr-1" />
-            <span>{dateRangeFormatter(startedAt, endedAt, 'MM/DD(dd) HH:mm')}</span>
+            <span>{dateRangeFormatter({ startedAt, endedAt, dateFormat: 'MM/DD(dd)' })}</span>
             {creator.name && (
               <>
                 <Icon component={() => <UserOIcon />} className="ml-3 mr-1" />
@@ -94,6 +162,10 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
       </div>
 
       <div>
+        <Button type="link" size="small" onClick={() => setIssueModalVisible(true)}>
+          {formatMessage(messages.appointmentIssueAndResult)}
+        </Button>
+        <Divider type="vertical" />
         <Button type="link" size="small" onClick={() => setVisible(true)}>
           {formatMessage(commonMessages.ui.detail)}
         </Button>
@@ -113,11 +185,11 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
           </StyledButton>
         ) : (
           <a
-            href={`https://meet.jit.si/${orderProductId}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`}
+            href={`https://meet.jit.si/${orderProduct.id}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`}
             target="_blank"
             rel="noopener noreferrer"
           >
-            <StyledButton type="primary" className="ml-2" disabled={!orderProductId}>
+            <StyledButton type="primary" className="ml-2" disabled={!orderProduct.id}>
               {formatMessage(messages.joinMeeting)}
             </StyledButton>
           </a>
@@ -130,7 +202,7 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
           <StyledTitle>{member.name}</StyledTitle>
           <StyledMeta>
             <Icon component={() => <CalendarAltOIcon />} className="mr-1" />
-            <span>{dateRangeFormatter(startedAt, endedAt, 'MM/DD(dd) HH:mm')}</span>
+            <span>{dateRangeFormatter({ startedAt, endedAt, dateFormat: 'MM/DD(dd)' })}</span>
           </StyledMeta>
         </div>
 
@@ -147,8 +219,43 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
           </StyledMeta>
         )}
       </Modal>
+
+      <StyledModal
+        width={660}
+        visible={issueModalVisible}
+        okText={formatMessage(commonMessages.ui.save)}
+        cancelText={formatMessage(commonMessages.ui.cancel)}
+        okButtonProps={{ loading }}
+        onOk={handleSubmit}
+        onCancel={() => setIssueModalVisible(false)}
+      >
+        <StyledModalTitle className="mb-4">{formatMessage(messages.appointmentIssueAndResult)}</StyledModalTitle>
+        <StyledModalMetaBlock className="mb-4">
+          <span className="mr-2">{formatMessage(messages.appointmentDate)}</span>
+          <span>{dateRangeFormatter({ startedAt, endedAt, dateFormat: 'MM/DD(dd)' })}</span>
+        </StyledModalMetaBlock>
+
+        <div className="mb-4">
+          <strong className="mb-3">{formatMessage(messages.appointmentIssue)}</strong>
+          <BraftContent>{appointmentIssue}</BraftContent>
+        </div>
+
+        <div>
+          <strong>{formatMessage(messages.appointmentResult)}</strong>
+          <StyledModalNotation className="mb-2">
+            {formatMessage(messages.appointmentResultNotation)}
+          </StyledModalNotation>
+        </div>
+        <Form>
+          <Form.Item>
+            {form.getFieldDecorator('appointmentResult', {
+              initialValue: BraftEditor.createEditorState(appointmentResult),
+            })(<AdminBraftEditor />)}
+          </Form.Item>
+        </Form>
+      </StyledModal>
     </StyledWrapper>
   )
 }
 
-export default AppointmentPeriodCard
+export default Form.create<AppointmentPeriodCardProps>()(AppointmentPeriodCard)

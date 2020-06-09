@@ -5128,6 +5128,12 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_me
   picture_url: string | null;
 }
 
+export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product {
+  __typename: "order_product";
+  id: any;
+  options: any | null;
+}
+
 export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment {
   __typename: "appointment_enrollment";
   /**
@@ -5143,6 +5149,12 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment {
   member_email: string | null;
   member_phone: string | null;
   order_product_id: any | null;
+  /**
+   * An object relationship
+   */
+  order_product: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product | null;
+  issue: string | null;
+  result: string | null;
 }
 
 export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION {
@@ -5150,6 +5162,35 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION {
    * fetch data from the table: "appointment_enrollment"
    */
   appointment_enrollment: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_APPOINTMENT_Result
+// ====================================================
+
+export interface UPDATE_APPOINTMENT_Result_update_order_product {
+  __typename: "order_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APPOINTMENT_Result {
+  /**
+   * update data of the table: "order_product"
+   */
+  update_order_product: UPDATE_APPOINTMENT_Result_update_order_product | null;
+}
+
+export interface UPDATE_APPOINTMENT_ResultVariables {
+  orderProductId: any;
+  data?: any | null;
 }
 
 /* tslint:disable */
@@ -9814,6 +9855,7 @@ export interface appointment_enrollment_bool_exp {
   appointment_plan?: appointment_plan_bool_exp | null;
   appointment_plan_id?: uuid_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
+  issue?: String_comparison_exp | null;
   join_url?: String_comparison_exp | null;
   member?: member_public_bool_exp | null;
   member_email?: String_comparison_exp | null;
@@ -9822,6 +9864,7 @@ export interface appointment_enrollment_bool_exp {
   member_phone?: String_comparison_exp | null;
   order_product?: order_product_bool_exp | null;
   order_product_id?: uuid_comparison_exp | null;
+  result?: String_comparison_exp | null;
   start_url?: String_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
 }
@@ -12693,8 +12736,10 @@ export interface product_insert_input {
  * input type for inserting data into table "product_inventory"
  */
 export interface product_inventory_insert_input {
+  comment?: string | null;
   created_at?: any | null;
   id?: any | null;
+  product?: product_obj_rel_insert_input | null;
   product_id?: string | null;
   quantity?: number | null;
   specification?: string | null;

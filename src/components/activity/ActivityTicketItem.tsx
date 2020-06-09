@@ -117,7 +117,9 @@ const ActivityTicket: React.FC<{
                 <span className="mr-2">{session.title}</span>
               </div>
               <div>
-                <span className="mr-2">{dateRangeFormatter(session.startedAt, session.endedAt)}</span>
+                <span className="mr-2">
+                  {dateRangeFormatter({ startedAt: session.startedAt, endedAt: session.endedAt })}
+                </span>
 
                 {now.isBefore(session.startedAt) && now.diff(session.startedAt, 'days', true) > -7 && (
                   <StyledBadge>{formatMessage(messages.aboutToStart)}</StyledBadge>

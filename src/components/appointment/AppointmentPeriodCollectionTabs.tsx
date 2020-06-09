@@ -1,11 +1,11 @@
-import { Select, Tabs } from 'antd'
+import { Select, Skeleton, Tabs } from 'antd'
 import { uniqBy } from 'ramda'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { appointmentMessages } from '../../helpers/translation'
-import AppointmentPeriodCard, { AppointmentPeriodCardProps } from './AppointmentPeriodCard'
+import AppointmentPeriodCard, { AppointmentPeriodProps } from './AppointmentPeriodCard'
 
 const StyledTabs = styled(Tabs)`
   && {
@@ -35,9 +35,11 @@ const messages = defineMessages({
 })
 
 const AppointmentPeriodCollectionTabs: React.FC<{
-  periods: AppointmentPeriodCardProps[]
+  loading?: boolean
+  periods: AppointmentPeriodProps[]
   withSelector?: boolean
-}> = ({ periods, withSelector }) => {
+  onRefetch?: () => void
+}> = ({ loading, periods, withSelector, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
   const [selectedCreatorId, setSelectedCreatorId] = useState<string>('')
@@ -55,7 +57,7 @@ const AppointmentPeriodCollectionTabs: React.FC<{
     .sort((a, b) => b.endedAt.getTime() - a.endedAt.getTime() || b.startedAt.getTime() - a.startedAt.getTime())
 
   return (
-    <StyledTabs defaultActiveKey="scheduled" activeKey={activeKey || 'scheduled'} onChange={key => setActiveKey(key)}>
+    <StyledTabs activeKey={activeKey || 'scheduled'} onChange={key => setActiveKey(key)}>
       <Tabs.TabPane tab={formatMessage(messages.aboutToStart)} key="scheduled">
         <div className="py-4">
           {withSelector && (
@@ -71,19 +73,11 @@ const AppointmentPeriodCollectionTabs: React.FC<{
             </StyledFilterBlock>
           )}
 
-          {scheduledPeriod.length ? (
+          {loading ? (
+            <Skeleton />
+          ) : scheduledPeriod.length ? (
             scheduledPeriod.map(period => (
-              <AppointmentPeriodCard
-                key={period.id}
-                id={period.id}
-                avatarUrl={period.avatarUrl}
-                member={period.member}
-                appointmentPlanTitle={period.appointmentPlanTitle}
-                startedAt={period.startedAt}
-                endedAt={period.endedAt}
-                creator={period.creator}
-                orderProductId={period.orderProductId}
-              />
+              <AppointmentPeriodCard key={period.orderProduct.id} {...period} onRefetch={onRefetch} />
             ))
           ) : (
             <EmptyBlock>{formatMessage(messages.emptyAppointment)}</EmptyBlock>
@@ -105,8 +99,12 @@ const AppointmentPeriodCollectionTabs: React.FC<{
             </StyledFilterBlock>
           )}
 
-          {finishedPeriod.length ? (
-            finishedPeriod.map(period => <AppointmentPeriodCard key={period.id} {...period} />)
+          {loading ? (
+            <Skeleton />
+          ) : finishedPeriod.length ? (
+            finishedPeriod.map(period => (
+              <AppointmentPeriodCard key={period.orderProduct.id} {...period} onRefetch={onRefetch} />
+            ))
           ) : (
             <EmptyBlock>{formatMessage(messages.emptyAppointment)}</EmptyBlock>
           )}
