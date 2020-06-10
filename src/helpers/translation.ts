@@ -553,6 +553,7 @@ export const merchandiseMessages = {
     okMart: { id: 'merchandise.label.okMart', defaultMessage: 'OK超商取貨' },
     homeDelivery: { id: 'merchandise.label.homeDelivery', defaultMessage: '宅配' },
     shippingFee: { id: 'merchandise.label.shippingFee', defaultMessage: '運費' },
+    comment: { id: 'merchandise.label.comment', defaultMessage: '備註' },
   }),
   text: defineMessages({
     searchMerchandise: { id: 'merchandise.text.searchMerchandise', defaultMessage: '搜尋商品名稱' },

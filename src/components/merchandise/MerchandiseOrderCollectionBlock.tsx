@@ -29,7 +29,7 @@ export const StyledDate = styled.div`
   letter-spacing: 0.4px;
   color: var(--gray-dark);
 `
-const StyledSpcification = styled.div`
+const StyledSpecification = styled.div`
   font-family: NotoSansCJKtc
   font-size: 16px;
   font-weight: 500;
@@ -90,7 +90,7 @@ const MerchandiseOrderCollectionBlock: React.FC<{
                   </StyledDate>
                 )}
 
-                <StyledSpcification className="mb-2">{orderLog?.shipping?.specification}</StyledSpcification>
+                <StyledSpecification className="mb-2">{orderLog?.shipping?.specification}</StyledSpecification>
               </div>
 
               <div>
@@ -109,10 +109,7 @@ const MerchandiseOrderCollectionBlock: React.FC<{
             </StyledShippingInfo>
 
             {orderLog.orderMerchandises.map(orderMerchandise => (
-              <MerchandiseItem
-                key={orderMerchandise.id}
-                merchandiseId={orderMerchandise.merchandiseId}
-              ></MerchandiseItem>
+              <MerchandiseItem key={orderMerchandise.id} merchandiseId={orderMerchandise.merchandiseId} />
             ))}
           </AdminCard>
         ))

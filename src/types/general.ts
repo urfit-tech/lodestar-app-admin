@@ -64,3 +64,18 @@ export type Issue = {
 }
 
 export type PeriodType = 'D' | 'W' | 'M' | 'Y'
+
+export type ProductInventoryStatusProps = {
+  buyableQuantity: number
+  undeliveredQuantity: number
+  deliveredQuantity: number
+}
+
+export type ProductInventoryLogProps = {
+  id: string
+  createdAt: Date
+  status: string | null
+  specification: string | null
+  quantity: number
+  comment: string | null
+}

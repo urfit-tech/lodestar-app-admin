@@ -1,14 +1,14 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import types from '../types'
+import { ProductInventoryStatusProps } from '../types/general'
 import {
+  InvoiceProps,
   MemberShopPreviewProps,
   MemberShopProps,
-  MerchandiseInventoryLog,
   MerchandisePreviewProps,
   MerchandiseProps,
-  ShippingProps,
-  InvoiceProps,
+  ShippingProps
 } from '../types/merchandise'
 
 export const useInsertMerchandise = () => {
@@ -112,30 +112,23 @@ export const useMerchandise = (id: string) => {
             type
             url
           }
+          merchandise_inventory_status {
+            buyable_quantity
+            undelivered_quantity
+            delivered_quantity
+          }
         }
       }
     `,
     { variables: { id } },
   )
-  const merchandise: MerchandiseProps =
+  const merchandise:
+    | (MerchandiseProps & {
+        merchandiseInventoryStatus: ProductInventoryStatusProps
+      })
+    | null =
     loading || error || !data || !data.merchandise_by_pk
-      ? {
-          id: '',
-          title: '',
-          categories: [],
-          tags: [],
-          images: [],
-          abstract: '',
-          meta: '',
-          link: '',
-          description: '',
-          listPrice: 0,
-          salePrice: null,
-          soldAt: null,
-          startedAt: null,
-          endedAt: null,
-          publishedAt: null,
-        }
+      ? null
       : {
           id,
           title: data.merchandise_by_pk.title,
@@ -158,6 +151,11 @@ export const useMerchandise = (id: string) => {
           startedAt: data.merchandise_by_pk.started_at,
           endedAt: data.merchandise_by_pk.ended_at,
           publishedAt: data.merchandise_by_pk.published_at ? new Date(data.merchandise_by_pk.published_at) : null,
+          merchandiseInventoryStatus: {
+            buyableQuantity: data.merchandise_by_pk.merchandise_inventory_status?.buyable_quantity || 0,
+            undeliveredQuantity: data.merchandise_by_pk.merchandise_inventory_status?.undelivered_quantity || 0,
+            deliveredQuantity: data.merchandise_by_pk.merchandise_inventory_status?.delivered_quantity || 0,
+          },
         }
 
   return {
@@ -166,117 +164,6 @@ export const useMerchandise = (id: string) => {
     merchandise,
     refetchMerchandise: refetch,
   }
-}
-
-export const useMerchandiseInventoryStatus = (merchandiseId: string) => {
-  const { loading, error, data, refetch } = useQuery<
-    types.GET_MERCHANDISE_INVENTORY_STATUS,
-    types.GET_MERCHANDISE_INVENTORY_STATUSVariables
-  >(
-    gql`
-      query GET_MERCHANDISE_INVENTORY_STATUS($merchandiseId: uuid!) {
-        merchandise_inventory_status(where: { merchandise_id: { _eq: $merchandiseId } }) {
-          buyable_quantity
-          undelivered_quantity
-          delivered_quantity
-        }
-      }
-    `,
-    { variables: { merchandiseId } },
-  )
-
-  const inventoryStatus: {
-    buyableQuantity: number
-    undeliveredQuantity: number
-    deliveredQuantity: number
-  } =
-    loading || error || !data || !data.merchandise_inventory_status[0]
-      ? {
-          buyableQuantity: 0,
-          undeliveredQuantity: 0,
-          deliveredQuantity: 0,
-        }
-      : {
-          buyableQuantity: data.merchandise_inventory_status[0].buyable_quantity,
-          undeliveredQuantity: data.merchandise_inventory_status[0].undelivered_quantity,
-          deliveredQuantity: data.merchandise_inventory_status[0].delivered_quantity,
-        }
-
-  return {
-    loadingInventoryStatus: loading,
-    errorInventoryStatus: error,
-    inventoryStatus,
-    refetchInventoryStatus: refetch,
-  }
-}
-
-// TODO: change GET_MERCHANDISE_INVENTORY to GET_PRODUCT_INVENTORY
-export const useMerchandiseInventoryLog = (merchandiseId: string) => {
-  const { loading, error, data, refetch } = useQuery<
-    types.GET_MERCHANDISE_INVENTORY,
-    types.GET_MERCHANDISE_INVENTORYVariables
-  >(
-    gql`
-      query GET_MERCHANDISE_INVENTORY($productId: String!) {
-        product_inventory(where: { product_id: { _eq: $productId } }, order_by: { created_at: desc }) {
-          id
-          created_at
-          status
-          specification
-          quantity
-        }
-      }
-    `,
-    { variables: { productId: `Merchandise_${merchandiseId}` } },
-  )
-
-  const inventoryLogs: MerchandiseInventoryLog[] =
-    loading || error || !data
-      ? []
-      : data.product_inventory.map(merchandiseInventory => ({
-          id: merchandiseInventory.id,
-          createdAt: new Date(merchandiseInventory.created_at),
-          status: merchandiseInventory.status,
-          specification: merchandiseInventory.specification,
-          quantity: merchandiseInventory.quantity,
-        }))
-
-  return {
-    loadingInventoryLogs: loading,
-    errorInventoryLogs: error,
-    inventoryLogs,
-    refetchInventoryLogs: refetch,
-  }
-}
-
-// TODO: change ARRANGE_MERCHANDISE_INVENTORY to ARRANGE_PRODUCT_INVENTORY
-export const useArrangeMerchandiseInventory = (merchandiseId: string) => {
-  const [arrangeMerchandiseInventory] = useMutation<
-    types.ARRANGE_MERCHANDISE_INVENTORY,
-    types.ARRANGE_MERCHANDISE_INVENTORYVariables
-  >(
-    gql`
-      mutation ARRANGE_MERCHANDISE_INVENTORY($data: [product_inventory_insert_input!]!) {
-        insert_product_inventory(objects: $data) {
-          affected_rows
-        }
-      }
-    `,
-  )
-
-  return (data: { specification: string; quantity: number }[]) =>
-    arrangeMerchandiseInventory({
-      variables: {
-        data: data
-          .filter(data => data.quantity)
-          .map(data => ({
-            product_id: `Merchandise_${merchandiseId}`,
-            status: 'arrange',
-            specification: data.specification,
-            quantity: data.quantity,
-          })),
-      },
-    })
 }
 
 export const useMemberShopCollection = () => {

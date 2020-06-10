@@ -1,4 +1,4 @@
-import { Button, Icon, Skeleton, Spin, Tabs } from 'antd'
+import { Button, Icon, Skeleton, Tabs } from 'antd'
 import React, { useContext } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
@@ -11,7 +11,7 @@ import {
   AdminHeader,
   AdminHeaderTitle,
   AdminPaneTitle,
-  AdminTabBarWrapper,
+  AdminTabBarWrapper
 } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import MerchandiseBasicForm from '../../components/merchandise/MerchandiseBasicForm'
@@ -24,7 +24,8 @@ import MerchandisePublishBlock from '../../components/merchandise/MerchandisePub
 import MerchandiseSalesForm from '../../components/merchandise/MerchandiseSalesForm'
 import AppContext from '../../contexts/AppContext'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
-import { useMerchandise, useMerchandiseInventoryLog, useMerchandiseInventoryStatus } from '../../hooks/merchandise'
+import { useProductInventoryLog } from '../../hooks/data'
+import { useMerchandise } from '../../hooks/merchandise'
 
 const messages = defineMessages({
   settings: { id: 'merchandise.label.settings', defaultMessage: '商品資訊' },
@@ -58,12 +59,11 @@ const MerchandiseAdminPage: React.FC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
   const { settings } = useContext(AppContext)
   const { loadingMerchandise, errorMerchandise, merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
-  const { inventoryLogs, refetchInventoryLogs } = useMerchandiseInventoryLog(merchandiseId)
-  const { loadingInventoryStatus, inventoryStatus, refetchInventoryStatus } = useMerchandiseInventoryStatus(
-    merchandiseId,
-  )
+  const { inventoryLogs, refetchInventoryLogs } = useProductInventoryLog(`Merchandise_${merchandiseId}`)
 
-  if (loadingMerchandise || errorMerchandise) return <Skeleton active />
+  if (loadingMerchandise || errorMerchandise || !merchandise) {
+    return <Skeleton active />
+  }
 
   return (
     <>
@@ -136,12 +136,12 @@ const MerchandiseAdminPage: React.FC = () => {
                     inventories={[
                       {
                         specification: merchandise.meta || '',
-                        buyableQuantity: inventoryStatus.buyableQuantity,
+                        buyableQuantity: merchandise.merchandiseInventoryStatus.buyableQuantity,
                       },
                     ]}
                     refetch={() => {
+                      refetchMerchandise()
                       refetchInventoryLogs()
-                      refetchInventoryStatus()
                     }}
                   />
                 )}
@@ -150,25 +150,19 @@ const MerchandiseAdminPage: React.FC = () => {
                 <div className="col-12 col-lg-4">
                   <AdminBlock className="p-4">
                     <StatusCardTitle>{formatMessage(merchandiseMessages.status.currentInventory)}</StatusCardTitle>
-                    <StatusCardNumber>
-                      {loadingInventoryStatus ? <Spin /> : inventoryStatus.buyableQuantity}
-                    </StatusCardNumber>
+                    <StatusCardNumber>{merchandise.merchandiseInventoryStatus.buyableQuantity}</StatusCardNumber>
                   </AdminBlock>
                 </div>
                 <div className="col-12 col-lg-4">
                   <AdminBlock className="p-4">
                     <StatusCardTitle>{formatMessage(merchandiseMessages.status.shipping)}</StatusCardTitle>
-                    <StatusCardNumber>
-                      {loadingInventoryStatus ? <Spin /> : inventoryStatus.undeliveredQuantity}
-                    </StatusCardNumber>
+                    <StatusCardNumber>{merchandise.merchandiseInventoryStatus.undeliveredQuantity}</StatusCardNumber>
                   </AdminBlock>
                 </div>
                 <div className="col-12 col-lg-4">
                   <AdminBlock className="p-4">
                     <StatusCardTitle>{formatMessage(merchandiseMessages.status.shipped)}</StatusCardTitle>
-                    <StatusCardNumber>
-                      {loadingInventoryStatus ? <Spin /> : inventoryStatus.deliveredQuantity}
-                    </StatusCardNumber>
+                    <StatusCardNumber>{merchandise.merchandiseInventoryStatus.deliveredQuantity}</StatusCardNumber>
                   </AdminBlock>
                 </div>
               </div>

@@ -5929,6 +5929,67 @@ export interface DELETE_PROGRAM_CATEGORYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PRODUCT_INVENTORY
+// ====================================================
+
+export interface GET_PRODUCT_INVENTORY_product_inventory {
+  __typename: "product_inventory";
+  id: any;
+  created_at: any;
+  /**
+   * e.g. Arrange
+   */
+  status: string | null;
+  specification: string | null;
+  quantity: number;
+  comment: string | null;
+}
+
+export interface GET_PRODUCT_INVENTORY {
+  /**
+   * fetch data from the table: "product_inventory"
+   */
+  product_inventory: GET_PRODUCT_INVENTORY_product_inventory[];
+}
+
+export interface GET_PRODUCT_INVENTORYVariables {
+  productId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: ARRANGE_PRODUCT_INVENTORY
+// ====================================================
+
+export interface ARRANGE_PRODUCT_INVENTORY_insert_product_inventory {
+  __typename: "product_inventory_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface ARRANGE_PRODUCT_INVENTORY {
+  /**
+   * insert data into the table: "product_inventory"
+   */
+  insert_product_inventory: ARRANGE_PRODUCT_INVENTORY_insert_product_inventory | null;
+}
+
+export interface ARRANGE_PRODUCT_INVENTORYVariables {
+  data: product_inventory_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER
 // ====================================================
 
@@ -6223,6 +6284,13 @@ export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_imgs {
   url: string;
 }
 
+export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_inventory_status {
+  __typename: "merchandise_inventory_status";
+  buyable_quantity: any | null;
+  undelivered_quantity: any | null;
+  delivered_quantity: any | null;
+}
+
 export interface GET_MERCHANDISE_merchandise_by_pk {
   __typename: "merchandise";
   id: any;
@@ -6249,6 +6317,10 @@ export interface GET_MERCHANDISE_merchandise_by_pk {
    * An array relationship
    */
   merchandise_imgs: GET_MERCHANDISE_merchandise_by_pk_merchandise_imgs[];
+  /**
+   * An object relationship
+   */
+  merchandise_inventory_status: GET_MERCHANDISE_merchandise_by_pk_merchandise_inventory_status | null;
 }
 
 export interface GET_MERCHANDISE {
@@ -6260,93 +6332,6 @@ export interface GET_MERCHANDISE {
 
 export interface GET_MERCHANDISEVariables {
   id: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_MERCHANDISE_INVENTORY_STATUS
-// ====================================================
-
-export interface GET_MERCHANDISE_INVENTORY_STATUS_merchandise_inventory_status {
-  __typename: "merchandise_inventory_status";
-  buyable_quantity: any | null;
-  undelivered_quantity: any | null;
-  delivered_quantity: any | null;
-}
-
-export interface GET_MERCHANDISE_INVENTORY_STATUS {
-  /**
-   * fetch data from the table: "merchandise_inventory_status"
-   */
-  merchandise_inventory_status: GET_MERCHANDISE_INVENTORY_STATUS_merchandise_inventory_status[];
-}
-
-export interface GET_MERCHANDISE_INVENTORY_STATUSVariables {
-  merchandiseId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_MERCHANDISE_INVENTORY
-// ====================================================
-
-export interface GET_MERCHANDISE_INVENTORY_product_inventory {
-  __typename: "product_inventory";
-  id: any;
-  created_at: any;
-  /**
-   * e.g. Arrange
-   */
-  status: string | null;
-  specification: string | null;
-  quantity: number;
-}
-
-export interface GET_MERCHANDISE_INVENTORY {
-  /**
-   * fetch data from the table: "product_inventory"
-   */
-  product_inventory: GET_MERCHANDISE_INVENTORY_product_inventory[];
-}
-
-export interface GET_MERCHANDISE_INVENTORYVariables {
-  productId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: ARRANGE_MERCHANDISE_INVENTORY
-// ====================================================
-
-export interface ARRANGE_MERCHANDISE_INVENTORY_insert_product_inventory {
-  __typename: "product_inventory_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface ARRANGE_MERCHANDISE_INVENTORY {
-  /**
-   * insert data into the table: "product_inventory"
-   */
-  insert_product_inventory: ARRANGE_MERCHANDISE_INVENTORY_insert_product_inventory | null;
-}
-
-export interface ARRANGE_MERCHANDISE_INVENTORYVariables {
-  data: product_inventory_insert_input[];
 }
 
 /* tslint:disable */
@@ -8287,25 +8272,6 @@ export enum merchandise_img_update_column {
 }
 
 /**
- * unique or primary key constraints on table "merchandise_inventory"
- */
-export enum merchandise_inventory_constraint {
-  merchandise_inventory_pkey = "merchandise_inventory_pkey",
-}
-
-/**
- * update columns of table "merchandise_inventory"
- */
-export enum merchandise_inventory_update_column {
-  created_at = "created_at",
-  id = "id",
-  merchandise_id = "merchandise_id",
-  quantity = "quantity",
-  specification = "specification",
-  status = "status",
-}
-
-/**
  * unique or primary key constraints on table "merchandise_tag"
  */
 export enum merchandise_tag_constraint {
@@ -9854,6 +9820,8 @@ export interface appointment_enrollment_bool_exp {
   _or?: (appointment_enrollment_bool_exp | null)[] | null;
   appointment_plan?: appointment_plan_bool_exp | null;
   appointment_plan_id?: uuid_comparison_exp | null;
+  canceled_at?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   issue?: String_comparison_exp | null;
   join_url?: String_comparison_exp | null;
@@ -11208,7 +11176,6 @@ export interface merchandise_bool_exp {
   member_shop_id?: uuid_comparison_exp | null;
   merchandise_categories?: merchandise_category_bool_exp | null;
   merchandise_imgs?: merchandise_img_bool_exp | null;
-  merchandise_inventories?: merchandise_inventory_bool_exp | null;
   merchandise_inventory_status?: merchandise_inventory_status_bool_exp | null;
   merchandise_tags?: merchandise_tag_bool_exp | null;
   meta?: String_comparison_exp | null;
@@ -11328,7 +11295,6 @@ export interface merchandise_insert_input {
   member_shop_id?: any | null;
   merchandise_categories?: merchandise_category_arr_rel_insert_input | null;
   merchandise_imgs?: merchandise_img_arr_rel_insert_input | null;
-  merchandise_inventories?: merchandise_inventory_arr_rel_insert_input | null;
   merchandise_tags?: merchandise_tag_arr_rel_insert_input | null;
   meta?: string | null;
   position?: number | null;
@@ -11339,52 +11305,6 @@ export interface merchandise_insert_input {
   started_at?: any | null;
   title?: string | null;
   updated_at?: any | null;
-}
-
-/**
- * input type for inserting array relation for remote table "merchandise_inventory"
- */
-export interface merchandise_inventory_arr_rel_insert_input {
-  data: merchandise_inventory_insert_input[];
-  on_conflict?: merchandise_inventory_on_conflict | null;
-}
-
-/**
- * Boolean expression to filter rows from the table "merchandise_inventory". All fields are combined with a logical 'AND'.
- */
-export interface merchandise_inventory_bool_exp {
-  _and?: (merchandise_inventory_bool_exp | null)[] | null;
-  _not?: merchandise_inventory_bool_exp | null;
-  _or?: (merchandise_inventory_bool_exp | null)[] | null;
-  created_at?: timestamptz_comparison_exp | null;
-  id?: uuid_comparison_exp | null;
-  merchandise?: merchandise_bool_exp | null;
-  merchandise_id?: uuid_comparison_exp | null;
-  quantity?: Int_comparison_exp | null;
-  specification?: String_comparison_exp | null;
-  status?: String_comparison_exp | null;
-}
-
-/**
- * input type for inserting data into table "merchandise_inventory"
- */
-export interface merchandise_inventory_insert_input {
-  created_at?: any | null;
-  id?: any | null;
-  merchandise?: merchandise_obj_rel_insert_input | null;
-  merchandise_id?: any | null;
-  quantity?: number | null;
-  specification?: string | null;
-  status?: string | null;
-}
-
-/**
- * on conflict condition type for table "merchandise_inventory"
- */
-export interface merchandise_inventory_on_conflict {
-  constraint: merchandise_inventory_constraint;
-  update_columns: merchandise_inventory_update_column[];
-  where?: merchandise_inventory_bool_exp | null;
 }
 
 /**

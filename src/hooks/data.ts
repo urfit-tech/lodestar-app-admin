@@ -4,7 +4,7 @@ import { useContext } from 'react'
 import { array, date, object, string } from 'yup'
 import AppContext from '../contexts/AppContext'
 import types from '../types'
-import { Category, ClassType } from '../types/general'
+import { Category, ClassType, ProductInventoryLogProps } from '../types/general'
 
 export const useTags = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_TAGS>(
@@ -212,4 +212,71 @@ export const useDeleteCategory = () => {
   `)
 
   return deleteCategory
+}
+
+export const useProductInventoryLog = (productId: string) => {
+  const { loading, error, data, refetch } = useQuery<types.GET_PRODUCT_INVENTORY, types.GET_PRODUCT_INVENTORYVariables>(
+    gql`
+      query GET_PRODUCT_INVENTORY($productId: String!) {
+        product_inventory(where: { product_id: { _eq: $productId } }, order_by: { created_at: desc }) {
+          id
+          created_at
+          status
+          specification
+          quantity
+          comment
+        }
+      }
+    `,
+    { variables: { productId } },
+  )
+
+  const inventoryLogs: ProductInventoryLogProps[] =
+    loading || error || !data
+      ? []
+      : data.product_inventory.map(productInventory => ({
+          id: productInventory.id,
+          createdAt: new Date(productInventory.created_at),
+          status: productInventory.status,
+          specification: productInventory.specification,
+          quantity: productInventory.quantity,
+          comment: productInventory.comment,
+        }))
+
+  return {
+    loadingInventoryLogs: loading,
+    errorInventoryLogs: error,
+    inventoryLogs,
+    refetchInventoryLogs: refetch,
+  }
+}
+
+export const useArrangeProductInventory = (productId: string) => {
+  const [arrangeMerchandiseInventory] = useMutation<
+    types.ARRANGE_PRODUCT_INVENTORY,
+    types.ARRANGE_PRODUCT_INVENTORYVariables
+  >(
+    gql`
+      mutation ARRANGE_PRODUCT_INVENTORY($data: [product_inventory_insert_input!]!) {
+        insert_product_inventory(objects: $data) {
+          affected_rows
+        }
+      }
+    `,
+  )
+
+  return (data: { specification: string; quantity: number; comment: string | null }[]) =>
+    arrangeMerchandiseInventory({
+      variables: {
+        data: data
+          .filter(data => data.quantity)
+          .map(data => ({
+            product_id: productId,
+            status: 'arrange',
+            specification: data.specification,
+            quantity: data.quantity,
+            comment: data.comment,
+          })),
+      },
+    })
 }

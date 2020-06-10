@@ -30,14 +30,6 @@ export type MerchandiseProps = {
   publishedAt: Date | null
 }
 
-export type MerchandiseInventoryLog = {
-  id: string
-  createdAt: Date
-  status: string | null
-  specification: string | null
-  quantity: number
-}
-
 export type MemberShopPreviewProps = {
   id: string
   title: string

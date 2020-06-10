@@ -1,18 +1,29 @@
-import { Table } from 'antd'
+import { Icon, Popover, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import moment from 'moment'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
-import { MerchandiseInventoryLog } from '../../types/merchandise'
+import { ReactComponent as TextIcon } from '../../images/icon/text.svg'
+import { ProductInventoryLogProps } from '../../types/general'
 
 const StyledQuantity = styled.span<{ quantity: number }>`
   color: ${props => (props.quantity > 0 ? '#4ed1b3' : '#ff7d62')};
 `
+const StyledIcon = styled(Icon)`
+  color: ${props => props.theme['@primary-color']};
+`
+const StyledContent = styled.div`
+  padding: 0.75rem;
+  max-width: 13rem;
+  color: var(--gray-darker);
+  font-size: 14px;
+  letter-spacing: 0.4px;
+`
 
 const MerchandiseInventoryTable: React.FC<{
-  inventoryLogs: MerchandiseInventoryLog[]
+  inventoryLogs: ProductInventoryLogProps[]
 }> = ({ inventoryLogs }) => {
   const { formatMessage } = useIntl()
 
@@ -20,16 +31,25 @@ const MerchandiseInventoryTable: React.FC<{
     arrange: formatMessage(merchandiseMessages.status.arrange),
   }
 
-  const columns: ColumnProps<MerchandiseInventoryLog>[] = [
+  const columns: ColumnProps<ProductInventoryLogProps>[] = [
     {
       dataIndex: 'date',
       title: formatMessage(commonMessages.label.date),
-      render: (text, record, index) => moment(record.createdAt).format('YYYYMMDD HH:mm'),
+      render: (text, record, index) => moment(record.createdAt).format('YYYY-MM-DD HH:mm'),
     },
     {
       dataIndex: 'status',
       title: formatMessage(merchandiseMessages.label.status),
-      render: (text, record, index) => STATUS[text] || 'unknown',
+      render: (text, record, index) => (
+        <>
+          <span>{STATUS[text] || 'unknown'}</span>
+          {!!record.comment && (
+            <Popover placement="topLeft" content={<StyledContent>{record.comment}</StyledContent>} trigger="click">
+              <StyledIcon component={() => <TextIcon />} className="ml-2" />
+            </Popover>
+          )}
+        </>
+      ),
     },
     {
       dataIndex: 'specification',
@@ -48,7 +68,7 @@ const MerchandiseInventoryTable: React.FC<{
   ]
 
   return (
-    <Table<MerchandiseInventoryLog>
+    <Table<ProductInventoryLogProps>
       columns={columns}
       rowKey={inventoryLog => inventoryLog.id}
       dataSource={inventoryLogs}

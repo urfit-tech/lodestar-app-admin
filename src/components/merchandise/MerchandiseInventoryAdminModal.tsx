@@ -1,10 +1,10 @@
-import { Button } from 'antd'
+import { Button, Input } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
-import { useArrangeMerchandiseInventory } from '../../hooks/merchandise'
+import { useArrangeProductInventory } from '../../hooks/data'
 import AdminModal from '../admin/AdminModal'
 import QuantityInput from '../admin/QuantityInput'
 
@@ -12,6 +12,12 @@ const MerchandiseSpecification = styled.div`
   color: var(--gray-darker);
   line-height: 1.5;
   letter-spacing: 0.2px;
+`
+const StyledLabel = styled.div`
+  color: var(--gray-darker);
+  font-size: 14px;
+  line-height: 1.57;
+  letter-spacing: 0.18px;
 `
 
 const MerchandiseInventoryAdminModal: React.FC<{
@@ -23,16 +29,18 @@ const MerchandiseInventoryAdminModal: React.FC<{
   refetch?: () => void
 }> = ({ merchandiseId, inventories, refetch }) => {
   const { formatMessage } = useIntl()
-  const arrangeMerchandiseInventory = useArrangeMerchandiseInventory(merchandiseId)
+  const arrangeProductInventory = useArrangeProductInventory(`Merchandise_${merchandiseId}`)
   const [loading, setLoading] = useState(false)
   const [quantities, setQuantities] = useState<number[]>(Array(inventories.length).fill(0))
+  const [comment, setComment] = useState('')
 
   const handleSubmit = (closeModal: () => void) => {
     setLoading(true)
-    arrangeMerchandiseInventory(
+    arrangeProductInventory(
       inventories.map((inventory, index) => ({
         specification: inventory.specification,
         quantity: quantities[index],
+        comment: comment || null,
       })),
     )
       .then(() => {
@@ -81,6 +89,9 @@ const MerchandiseInventoryAdminModal: React.FC<{
           />
         </div>
       ))}
+
+      <StyledLabel className="mb-1">{formatMessage(merchandiseMessages.label.comment)}</StyledLabel>
+      <Input.TextArea rows={3} onBlur={e => setComment(e.target.value)} />
     </AdminModal>
   )
 }
