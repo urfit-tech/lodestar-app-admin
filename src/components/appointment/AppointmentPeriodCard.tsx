@@ -53,6 +53,7 @@ const StyledButton = styled(Button)`
 const StyledModal = styled(Modal)`
   && .ant-modal-footer {
     border-top: 0;
+    padding: 0 1.5rem 1.5rem;
   }
 `
 const StyledModalTitle = styled.div`
