@@ -1,11 +1,11 @@
-export type CouponPlanType = 1 | 2
+export type CouponPlanType = 'cash' | 'percent'
 
 export type CouponPlanProps = {
   id: string
   title: string
   description: string | null
-  scope: string | null
-  type: CouponPlanType
+  scope: string[]
+  type: CouponPlanType | null
   amount: number
   constraint: number | null
   startedAt: Date | null
