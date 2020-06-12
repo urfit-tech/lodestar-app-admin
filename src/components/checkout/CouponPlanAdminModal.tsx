@@ -173,7 +173,6 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             })(<PlanCodeSelector planType="coupon" />)}
           </Form.Item>
         )}
-
         <Form.Item label={formatMessage(promotionMessages.label.availableDateRange)}>
           <Input.Group compact>
             {form.getFieldDecorator('startedAt', {
