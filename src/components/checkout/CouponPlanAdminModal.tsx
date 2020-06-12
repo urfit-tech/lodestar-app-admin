@@ -85,7 +85,7 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             scope: 'all',
             startedAt: values.startedAt,
             title: values.title,
-            type: values.discount.type,
+            type: values.discount.type === 'cash' ? 1 : values.discount.type === 'percent' ? 2 : 1,
             amount: values.discount.amount,
           },
         })
@@ -106,13 +106,13 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
 
   return (
     <AdminModal
-      cancelText={formatMessage(commonMessages.ui.cancel)}
       okText={formatMessage(commonMessages.ui.confirm)}
+      cancelText={formatMessage(commonMessages.ui.cancel)}
       okButtonProps={{ loading }}
       onOk={() => handleSubmit()}
       {...props}
     >
-      <Form>
+      <Form colon={false} hideRequiredMark>
         <Form.Item label={formatMessage(promotionMessages.term.couponPlanTitle)}>
           {form.getFieldDecorator('title', {
             initialValue: couponPlan && couponPlan.title,
@@ -144,7 +144,9 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
           help={formatMessage(promotionMessages.label.discountHelp)}
         >
           {form.getFieldDecorator('discount', {
-            initialValue: couponPlan ? { type: couponPlan.type, amount: couponPlan.amount } : { type: 1, amount: 0 },
+            initialValue: couponPlan
+              ? { type: couponPlan.type, amount: couponPlan.amount }
+              : { type: 'cash', amount: 0 },
           })(<CouponPlanDiscountSelector />)}
         </Form.Item>
         <Form.Item label={formatMessage(promotionMessages.label.availableDateRange)}>

@@ -408,7 +408,7 @@ export const promotionMessages = {
     price: { id: 'promotion.label.price', defaultMessage: '金額 {amount} 元' },
     ratio: { id: 'promotion.label.ratio', defaultMessage: '比例 {amount}%' },
     constraint: { id: 'promotion.label.constraint', defaultMessage: '消費需達' },
-    discountHelp: { id: 'promotion.label.discountHelp', defaultMessage: '折抵方式為比例時，額度範圍為 0 - 100Ｆ' },
+    discountHelp: { id: 'promotion.label.discountHelp', defaultMessage: '折抵方式為比例時，額度範圍為 0 - 100%' },
     availableDateRange: { id: 'promotion.label.availableDateRange', defaultMessage: '有效期限' },
     unit: { id: 'promotion.label.unit', defaultMessage: '張' },
     create: { id: 'promotion.label.create', defaultMessage: '新增' },
