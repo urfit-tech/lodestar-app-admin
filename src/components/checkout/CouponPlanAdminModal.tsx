@@ -151,10 +151,22 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
           <Input.Group compact>
             {form.getFieldDecorator('startedAt', {
               initialValue: couponPlan && couponPlan.startedAt && moment(couponPlan.startedAt),
-            })(<DatePicker placeholder={formatMessage(commonMessages.term.startedAt)} />)}
+            })(
+              <DatePicker
+                showTime
+                format="YYYY-MM-DD HH:mm"
+                placeholder={formatMessage(commonMessages.term.startedAt)}
+              />,
+            )}
             {form.getFieldDecorator('endedAt', {
               initialValue: couponPlan && couponPlan.endedAt && moment(couponPlan.endedAt),
-            })(<DatePicker placeholder={formatMessage(commonMessages.term.endedAt)} />)}
+            })(
+              <DatePicker
+                showTime
+                format="YYYY-MM-DD HH:mm"
+                placeholder={formatMessage(commonMessages.term.endedAt)}
+              />,
+            )}
           </Input.Group>
         </Form.Item>
         <Form.Item label={formatMessage(promotionMessages.term.description)}>
