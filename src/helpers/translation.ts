@@ -362,6 +362,8 @@ export const appointmentMessages = {
     createPeriod: { id: 'appointment.label.createPeriod', defaultMessage: '建立時段' },
   }),
   status: defineMessages({
+    aboutToStart: { id: 'appointment.status.aboutToStart', defaultMessage: '即將舉行' },
+    canceled: { id: 'appointment.status.canceled', defaultMessage: '已取消' },
     finished: { id: 'appointment.status.finished', defaultMessage: '已結束' },
   }),
   text: defineMessages({
