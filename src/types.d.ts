@@ -5023,6 +5023,7 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment {
    */
   member: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_member | null;
   started_at: any | null;
+  canceled_at: string | null;
   member_name: string | null;
   member_email: string | null;
   member_phone: string | null;

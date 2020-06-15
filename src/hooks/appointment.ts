@@ -23,6 +23,7 @@ export const useAppointmentEnrollmentCollection = () => {
           picture_url
         }
         started_at
+        canceled_at
         member_name
         member_email
         member_phone
@@ -56,6 +57,7 @@ export const useAppointmentEnrollmentCollection = () => {
               appointmentPlanTitle: enrollment.appointment_plan.title,
               startedAt: new Date(enrollment.started_at),
               endedAt: moment(enrollment.started_at).add(enrollment.appointment_plan.duration, 'minutes').toDate(),
+              canceledAt: enrollment.canceled_at ? new Date(enrollment.canceled_at) : null,
               creator: {
                 id: enrollment.appointment_plan.creator.id || '',
                 name: enrollment.appointment_plan.creator.name || '',

@@ -26,6 +26,7 @@ const messages = defineMessages({
     id: 'appointment.text.appointmentResultNotation',
     defaultMessage: '※此紀錄不會公開給學員看到',
   },
+  appointmentCanceledAt: { id: 'appointment.label.appointmentCanceledAt', defaultMessage: '已於 {time} 取消預約' },
 })
 
 const StyledWrapper = styled.div`
@@ -34,6 +35,9 @@ const StyledWrapper = styled.div`
   border-radius: 4px;
   background-color: white;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
+`
+const StyledInfo = styled.div<{ withMask?: boolean }>`
+  ${props => (props.withMask ? 'opacity: 0.2;' : '')}
 `
 const StyledTitle = styled.div`
   margin-bottom: 0.75rem;
@@ -49,6 +53,11 @@ const StyledMeta = styled.div`
 const StyledButton = styled(Button)`
   line-height: normal;
   padding: 0 1.25rem;
+`
+const StyledCanceledText = styled.span`
+  color: var(--gray-dark);
+  font-size: 14px;
+  letter-spacing: 0.4px;
 `
 const StyledModal = styled(Modal)`
   && .ant-modal-footer {
@@ -84,6 +93,7 @@ export type AppointmentPeriodProps = {
   appointmentPlanTitle: string
   startedAt: Date
   endedAt: Date
+  canceledAt: Date | null
   creator: {
     id: string
     name: string
@@ -105,6 +115,7 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
   appointmentPlanTitle,
   startedAt,
   endedAt,
+  canceledAt,
   creator,
   orderProduct,
   appointmentIssue,
@@ -143,7 +154,7 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
 
   return (
     <StyledWrapper className="d-flex align-items-center justify-content-between">
-      <div className="d-flex align-items-center justify-content-start">
+      <StyledInfo className="d-flex align-items-center justify-content-start" withMask={!!canceledAt}>
         <AvatarImage src={avatarUrl} size={48} className="mr-4" />
         <div>
           <StyledTitle>
@@ -160,40 +171,52 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
             )}
           </StyledMeta>
         </div>
-      </div>
+      </StyledInfo>
 
       <div>
-        <Button type="link" size="small" onClick={() => setIssueModalVisible(true)}>
-          {formatMessage(messages.appointmentIssueAndResult)}
-        </Button>
-        <Divider type="vertical" />
+        {!canceledAt && (
+          <>
+            <Button type="link" size="small" onClick={() => setIssueModalVisible(true)}>
+              {formatMessage(messages.appointmentIssueAndResult)}
+            </Button>
+            <Divider type="vertical" />
+          </>
+        )}
+
         <Button type="link" size="small" onClick={() => setVisible(true)}>
           {formatMessage(commonMessages.ui.detail)}
         </Button>
         <Divider type="vertical" />
-        <a
-          href={`https://www.google.com/calendar/render?action=TEMPLATE&text=${appointmentPlanTitle}&dates=${startedTime}%2F${endedTime}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Button type="link" size="small">
-            {formatMessage(messages.addToCalendar)}
-          </Button>
-        </a>
-        {isFinished ? (
-          <StyledButton type="link" size="small" disabled={true} className="ml-2">
+
+        {canceledAt ? (
+          <StyledCanceledText className="ml-2">
+            {formatMessage(messages.appointmentCanceledAt, { time: moment(canceledAt).format('MM/DD(dd) HH:mm') })}
+          </StyledCanceledText>
+        ) : isFinished ? (
+          <StyledButton type="link" size="small" disabled>
             {formatMessage(appointmentMessages.status.finished)}
           </StyledButton>
         ) : (
-          <a
-            href={`https://meet.jit.si/${orderProduct.id}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <StyledButton type="primary" className="ml-2" disabled={!orderProduct.id}>
-              {formatMessage(messages.joinMeeting)}
-            </StyledButton>
-          </a>
+          <>
+            <a
+              href={`https://www.google.com/calendar/render?action=TEMPLATE&text=${appointmentPlanTitle}&dates=${startedTime}%2F${endedTime}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button type="link" size="small">
+                {formatMessage(messages.addToCalendar)}
+              </Button>
+            </a>
+            <a
+              href={`https://meet.jit.si/${orderProduct.id}#config.startWithVideoMuted=true&userInfo.displayName="${creator.name}"`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <StyledButton type="primary" className="ml-2" disabled={!orderProduct.id}>
+                {formatMessage(messages.joinMeeting)}
+              </StyledButton>
+            </a>
+          </>
         )}
       </div>
 
