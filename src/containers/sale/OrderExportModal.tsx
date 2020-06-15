@@ -90,7 +90,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           orderLog.status,
           orderLog.member.name,
           orderLog.member.email,
-          dateFormatter(orderLog.created_at),
+          dateFormatter(orderLog.updated_at),
           totalProductPrice,
           totalDiscountPrice,
           totalProductPrice - totalDiscountPrice,
@@ -383,9 +383,10 @@ const GET_ORDER_LOG_COLLECTION = gql`
     order_log(
       where: {
         member: { app_id: { _eq: $appId } }
-        created_at: { _gte: $startedAt, _lte: $endedAt }
+        updated_at: { _gte: $startedAt, _lte: $endedAt }
         status: { _in: $orderStatuses }
       }
+      order_by: { updated_at: desc }
     ) {
       id
       status
@@ -394,7 +395,7 @@ const GET_ORDER_LOG_COLLECTION = gql`
         name
         email
       }
-      created_at
+      updated_at
       invoice
 
       order_products_aggregate {
@@ -426,10 +427,11 @@ const GET_ORDER_PRODUCT_COLLECTION = gql`
       where: {
         order_log: {
           member: { app_id: { _eq: $appId } }
-          created_at: { _gte: $startedAt, _lte: $endedAt }
+          updated_at: { _gte: $startedAt, _lte: $endedAt }
           status: { _in: $orderStatuses }
         }
       }
+      order_by: { order_log: { updated_at: desc } }
     ) {
       id
       order_log {
@@ -458,10 +460,11 @@ const GET_ORDER_DISCOUNT_COLLECTION = gql`
       where: {
         order_log: {
           member: { app_id: { _eq: $appId } }
-          created_at: { _gte: $startedAt, _lte: $endedAt }
+          updated_at: { _gte: $startedAt, _lte: $endedAt }
           status: { _in: $orderStatuses }
         }
       }
+      order_by: { order_log: { updated_at: desc } }
     ) {
       id
       order_log {
