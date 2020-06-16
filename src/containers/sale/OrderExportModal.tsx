@@ -64,7 +64,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           formatMessage(commonMessages.label.orderLogStatus),
           formatMessage(commonMessages.label.orderLogMemberName),
           formatMessage(commonMessages.label.orderLogMemberEmail),
-          formatMessage(commonMessages.label.orderLogDate),
+          formatMessage(commonMessages.label.orderLogPaymentDate),
           formatMessage(commonMessages.label.orderProductPriceTotal),
           formatMessage(commonMessages.label.orderDiscountPriceTotal),
           formatMessage(commonMessages.label.orderLogPriceTotal),
