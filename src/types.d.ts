@@ -412,11 +412,12 @@ export interface INSERT_COUPON_PLANVariables {
   constraint?: any | null;
   description?: string | null;
   endedAt?: any | null;
-  scope?: string | null;
+  scope?: any | null;
   startedAt?: any | null;
   title?: string | null;
   type?: number | null;
   amount?: any | null;
+  couponPlanProduct: coupon_plan_product_insert_input[];
 }
 
 /* tslint:disable */
@@ -436,11 +437,35 @@ export interface UPDATE_COUPON_PLAN_update_coupon_plan {
   affected_rows: number;
 }
 
+export interface UPDATE_COUPON_PLAN_delete_coupon_plan_product {
+  __typename: "coupon_plan_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_COUPON_PLAN_insert_coupon_plan_product {
+  __typename: "coupon_plan_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_COUPON_PLAN {
   /**
    * update data of the table: "coupon_plan"
    */
   update_coupon_plan: UPDATE_COUPON_PLAN_update_coupon_plan | null;
+  /**
+   * delete data from the table: "coupon_plan_product"
+   */
+  delete_coupon_plan_product: UPDATE_COUPON_PLAN_delete_coupon_plan_product | null;
+  /**
+   * insert data into the table: "coupon_plan_product"
+   */
+  insert_coupon_plan_product: UPDATE_COUPON_PLAN_insert_coupon_plan_product | null;
 }
 
 export interface UPDATE_COUPON_PLANVariables {
@@ -449,9 +474,11 @@ export interface UPDATE_COUPON_PLANVariables {
   description?: string | null;
   endedAt?: any | null;
   startedAt?: any | null;
+  scope?: any | null;
   title?: string | null;
   type?: number | null;
   amount?: any | null;
+  couponPlanProduct: coupon_plan_product_insert_input[];
 }
 
 /* tslint:disable */
@@ -5440,12 +5467,18 @@ export interface GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate {
   aggregate: GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate_aggregate | null;
 }
 
+export interface GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_plan_products {
+  __typename: "coupon_plan_product";
+  id: any;
+  product_id: string;
+}
+
 export interface GET_COUPON_PLAN_COLLECTION_coupon_plan {
   __typename: "coupon_plan";
   id: any;
   title: string;
   amount: any;
-  scope: string | null;
+  scope: any | null;
   /**
    * 1 - cash / 2 - percent
    */
@@ -5458,6 +5491,10 @@ export interface GET_COUPON_PLAN_COLLECTION_coupon_plan {
    * An aggregated array relationship
    */
   coupon_codes_aggregate: GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate;
+  /**
+   * An array relationship
+   */
+  coupon_plan_products: GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_plan_products[];
 }
 
 export interface GET_COUPON_PLAN_COLLECTION {
@@ -5982,6 +6019,170 @@ export interface ARRANGE_PRODUCT_INVENTORY {
 
 export interface ARRANGE_PRODUCT_INVENTORYVariables {
   data: product_inventory_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ALL_BRIEF_PRODUCT_COLLECTION
+// ====================================================
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program {
+  __typename: "program";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan_program {
+  __typename: "program";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan {
+  __typename: "program_plan";
+  id: any;
+  title: string | null;
+  /**
+   * An object relationship
+   */
+  program: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan_program;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket_activity {
+  __typename: "activity";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket {
+  __typename: "activity_ticket";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  activity: GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket_activity;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_program {
+  __typename: "podcast_program";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan {
+  __typename: "podcast_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  creator: GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan_creator | null;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan {
+  __typename: "appointment_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  creator: GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan_creator | null;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise {
+  __typename: "merchandise";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan_project {
+  __typename: "project";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan {
+  __typename: "project_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  project: GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan_project;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan_program_package {
+  __typename: "program_package";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan {
+  __typename: "program_package_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  program_package: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan_program_package;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_ALL_BRIEF_PRODUCT_COLLECTION_program[];
+  /**
+   * fetch data from the table: "program_plan"
+   */
+  program_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan[];
+  /**
+   * fetch data from the table: "activity_ticket"
+   */
+  activity_ticket: GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket[];
+  /**
+   * fetch data from the table: "podcast_program"
+   */
+  podcast_program: GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_program[];
+  /**
+   * fetch data from the table: "podcast_plan"
+   */
+  podcast_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan[];
+  /**
+   * fetch data from the table: "appointment_plan"
+   */
+  appointment_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan[];
+  /**
+   * fetch data from the table: "merchandise"
+   */
+  merchandise: GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise[];
+  /**
+   * fetch data from the table: "project_plan"
+   */
+  project_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan[];
+  /**
+   * fetch data from the table: "program_package_plan"
+   */
+  program_package_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan[];
 }
 
 /* tslint:disable */
@@ -7866,6 +8067,7 @@ export enum card_discount_update_column {
  */
 export enum card_update_column {
   app_id = "app_id",
+  creator_id = "creator_id",
   description = "description",
   id = "id",
   template = "template",
@@ -8032,6 +8234,22 @@ export enum coupon_constraint {
  */
 export enum coupon_plan_constraint {
   coupon_plan_pkey = "coupon_plan_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "coupon_plan_product"
+ */
+export enum coupon_plan_product_constraint {
+  coupon_plan_product_pkey = "coupon_plan_product_pkey",
+}
+
+/**
+ * update columns of table "coupon_plan_product"
+ */
+export enum coupon_plan_product_update_column {
+  coupon_plan_id = "coupon_plan_id",
+  id = "id",
+  product_id = "product_id",
 }
 
 /**
@@ -8974,6 +9192,7 @@ export enum program_package_update_column {
   app_id = "app_id",
   cover_url = "cover_url",
   created_at = "created_at",
+  creator_id = "creator_id",
   description = "description",
   id = "id",
   published_at = "published_at",
@@ -9256,7 +9475,7 @@ export interface activity_bool_exp {
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_participants_visible?: Boolean_comparison_exp | null;
-  organizer?: member_bool_exp | null;
+  organizer?: member_public_bool_exp | null;
   organizer_id?: String_comparison_exp | null;
   package_items?: package_item_bool_exp | null;
   position?: Int_comparison_exp | null;
@@ -9342,7 +9561,6 @@ export interface activity_insert_input {
   description?: string | null;
   id?: any | null;
   is_participants_visible?: boolean | null;
-  organizer?: member_obj_rel_insert_input | null;
   organizer_id?: string | null;
   package_items?: package_item_arr_rel_insert_input | null;
   position?: number | null;
@@ -10005,6 +10223,8 @@ export interface card_bool_exp {
   app_id?: String_comparison_exp | null;
   card_discounts?: card_discount_bool_exp | null;
   card_enrollments?: card_enrollment_bool_exp | null;
+  creator?: member_public_bool_exp | null;
+  creator_id?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   template?: String_comparison_exp | null;
@@ -10078,6 +10298,7 @@ export interface card_insert_input {
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
   card_discounts?: card_discount_arr_rel_insert_input | null;
+  creator_id?: string | null;
   description?: string | null;
   id?: any | null;
   template?: string | null;
@@ -10566,10 +10787,11 @@ export interface coupon_plan_bool_exp {
   amount?: numeric_comparison_exp | null;
   constraint?: numeric_comparison_exp | null;
   coupon_codes?: coupon_code_bool_exp | null;
+  coupon_plan_products?: coupon_plan_product_bool_exp | null;
   description?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
-  scope?: String_comparison_exp | null;
+  scope?: jsonb_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
   title?: String_comparison_exp | null;
   type?: Int_comparison_exp | null;
@@ -10582,10 +10804,11 @@ export interface coupon_plan_insert_input {
   amount?: any | null;
   constraint?: any | null;
   coupon_codes?: coupon_code_arr_rel_insert_input | null;
+  coupon_plan_products?: coupon_plan_product_arr_rel_insert_input | null;
   description?: string | null;
   ended_at?: any | null;
   id?: any | null;
-  scope?: string | null;
+  scope?: any | null;
   started_at?: any | null;
   title?: string | null;
   type?: number | null;
@@ -10606,6 +10829,48 @@ export interface coupon_plan_on_conflict {
   constraint: coupon_plan_constraint;
   update_columns: coupon_plan_update_column[];
   where?: coupon_plan_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "coupon_plan_product"
+ */
+export interface coupon_plan_product_arr_rel_insert_input {
+  data: coupon_plan_product_insert_input[];
+  on_conflict?: coupon_plan_product_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "coupon_plan_product". All fields are combined with a logical 'AND'.
+ */
+export interface coupon_plan_product_bool_exp {
+  _and?: (coupon_plan_product_bool_exp | null)[] | null;
+  _not?: coupon_plan_product_bool_exp | null;
+  _or?: (coupon_plan_product_bool_exp | null)[] | null;
+  coupon_plan?: coupon_plan_bool_exp | null;
+  coupon_plan_id?: uuid_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  product?: product_bool_exp | null;
+  product_id?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "coupon_plan_product"
+ */
+export interface coupon_plan_product_insert_input {
+  coupon_plan?: coupon_plan_obj_rel_insert_input | null;
+  coupon_plan_id?: any | null;
+  id?: any | null;
+  product?: product_obj_rel_insert_input | null;
+  product_id?: string | null;
+}
+
+/**
+ * on conflict condition type for table "coupon_plan_product"
+ */
+export interface coupon_plan_product_on_conflict {
+  constraint: coupon_plan_product_constraint;
+  update_columns: coupon_plan_product_update_column[];
+  where?: coupon_plan_product_bool_exp | null;
 }
 
 /**
@@ -13244,6 +13509,8 @@ export interface program_package_bool_exp {
   app_id?: String_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  creator?: member_public_bool_exp | null;
+  creator_id?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   program_package_plans?: program_package_plan_bool_exp | null;
@@ -13260,6 +13527,7 @@ export interface program_package_insert_input {
   app_id?: string | null;
   cover_url?: string | null;
   created_at?: any | null;
+  creator_id?: string | null;
   description?: string | null;
   id?: any | null;
   program_package_plans?: program_package_plan_arr_rel_insert_input | null;

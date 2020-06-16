@@ -36,6 +36,10 @@ export const useCouponPlanCollection = () => {
               }
             }
           }
+          coupon_plan_products {
+            id
+            product_id
+          }
         }
       }
     `,
@@ -54,7 +58,7 @@ export const useCouponPlanCollection = () => {
             id: couponPlan.id,
             title: couponPlan.title,
             description: couponPlan.description,
-            scope: couponPlan.scope?.split('') || [],
+            scope: couponPlan.scope,
             type: couponPlan.type === 1 ? 'cash' : couponPlan.type === 2 ? 'percent' : null,
             amount: couponPlan.amount,
             constraint: couponPlan.constraint,
@@ -63,6 +67,7 @@ export const useCouponPlanCollection = () => {
             count: couponPlan.coupon_codes_aggregate.aggregate?.sum?.count || 0,
             remaining,
             available,
+            productIds: couponPlan.coupon_plan_products.map(couponPlanProduct => couponPlanProduct.product_id),
           }
         })
 
