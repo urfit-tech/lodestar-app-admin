@@ -2,12 +2,12 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { useContext } from 'react'
 import AppContext from '../contexts/AppContext'
-import types from '../types'
-import { CouponCodeProps, CouponPlanProps, CouponPlanType, CouponProps } from '../types/checkout'
 import { useAuth } from '../contexts/AuthContext'
+import types from '../types'
+import { CouponCodeProps, CouponPlanProps, CouponProps } from '../types/checkout'
+import { ProductType } from '../types/general'
 import { CartProduct } from '../types/payment'
 import { useEnrolledProductIds } from './data'
-import { ProductType } from '../types/general'
 
 export const useCouponPlanCollection = () => {
   const app = useContext(AppContext)
@@ -36,6 +36,10 @@ export const useCouponPlanCollection = () => {
               }
             }
           }
+          coupon_plan_products {
+            id
+            product_id
+          }
         }
       }
     `,
@@ -46,13 +50,7 @@ export const useCouponPlanCollection = () => {
     loading || error || !data
       ? []
       : data.coupon_plan.map(couponPlan => {
-          const [count, remaining] =
-            couponPlan.coupon_codes_aggregate.aggregate && couponPlan.coupon_codes_aggregate.aggregate.sum
-              ? [
-                  couponPlan.coupon_codes_aggregate.aggregate.sum.count || 0,
-                  couponPlan.coupon_codes_aggregate.aggregate.sum.remaining || 0,
-                ]
-              : [0, 0]
+          const remaining = couponPlan.coupon_codes_aggregate.aggregate?.sum?.remaining || 0
           const available =
             remaining > 0 && (couponPlan.ended_at ? new Date(couponPlan.ended_at).getTime() > Date.now() : true)
 
@@ -60,15 +58,16 @@ export const useCouponPlanCollection = () => {
             id: couponPlan.id,
             title: couponPlan.title,
             description: couponPlan.description,
-            scope: couponPlan.scope || '',
-            type: couponPlan.type as CouponPlanType,
+            scope: couponPlan.scope,
+            type: couponPlan.type === 1 ? 'cash' : couponPlan.type === 2 ? 'percent' : null,
             amount: couponPlan.amount,
             constraint: couponPlan.constraint,
-            startedAt: couponPlan.started_at && new Date(couponPlan.started_at),
-            endedAt: couponPlan.ended_at && new Date(couponPlan.ended_at),
-            count,
+            startedAt: couponPlan.started_at ? new Date(couponPlan.started_at) : null,
+            endedAt: couponPlan.ended_at ? new Date(couponPlan.ended_at) : null,
+            count: couponPlan.coupon_codes_aggregate.aggregate?.sum?.count || 0,
             remaining,
             available,
+            productIds: couponPlan.coupon_plan_products.map(couponPlanProduct => couponPlanProduct.product_id),
           }
         })
 

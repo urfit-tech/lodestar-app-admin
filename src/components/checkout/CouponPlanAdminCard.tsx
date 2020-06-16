@@ -85,9 +85,9 @@ const CouponPlanAdminCard: React.FC<{
         <StyledTitle className="d-flex align-items-start justify-content-between py-4">
           <span className="flex-grow-1">{couponPlan.title}</span>
           <StyledPriceLabel className="flex-shrink-0" outdated={outdated}>
-            {couponPlan.type === 1
+            {couponPlan.type === 'cash'
               ? currencyFormatter(couponPlan.amount)
-              : couponPlan.type === 2
+              : couponPlan.type === 'percent'
               ? `${couponPlan.amount}% off`
               : null}
           </StyledPriceLabel>
@@ -100,14 +100,15 @@ const CouponPlanAdminCard: React.FC<{
               amount: currencyFormatter(couponPlan.constraint),
             })
           : formatMessage(promotionMessages.label.withoutConstraintAmount)}
-        {couponPlan.type === 1
+        {couponPlan.type === 'cash'
           ? formatMessage(promotionMessages.label.price, {
               amount: currencyFormatter(couponPlan.amount),
             })
-          : couponPlan.type === 2
+          : couponPlan.type === 'percent'
           ? formatMessage(promotionMessages.label.ratio, { amount: couponPlan.amount })
           : null}
       </StyledText>
+
       <div style={{ fontFamily: 'Roboto', fontSize: '14px', paddingTop: '12px' }}>
         {couponPlan.startedAt ? dateFormatter(couponPlan.startedAt) : formatMessage(promotionMessages.label.fromNow)}
         {' - '}
@@ -117,35 +118,23 @@ const CouponPlanAdminCard: React.FC<{
       <Divider className="mt-3" />
 
       <div className="d-flex align-items-center justify-content-between">
-        <div>
-          <Button
-            type="link"
-            onClick={() => setModalVisible(true)}
-            style={{
-              fontSize: '14px',
-              padding: 0,
-              letterSpacing: '-1px',
-              height: 'auto',
-              paddingRight: '24px',
-            }}
-          >
-            {formatMessage(commonMessages.ui.detail)}
-          </Button>
-          <span
-            style={{
-              fontSize: '14px',
-              color: '#9b9b9b',
-              letterSpacing: '0.4px',
-            }}
-          >
-            {/* {`${formatMessage(promotionMessages.term.amount)} ${couponPlan.count - couponPlan.remaining} / ${
-              couponPlan.count
-            }`} */}
-          </span>
-        </div>
+        <Button
+          type="link"
+          onClick={() => setModalVisible(true)}
+          style={{
+            fontSize: '14px',
+            padding: 0,
+            letterSpacing: '-1px',
+            height: 'auto',
+            paddingRight: '24px',
+          }}
+        >
+          {formatMessage(commonMessages.ui.detail)}
+        </Button>
 
         <Dropdown
           placement="bottomRight"
+          trigger={['click']}
           overlay={
             <Menu>
               <Menu.Item>
@@ -160,7 +149,6 @@ const CouponPlanAdminCard: React.FC<{
               </Menu.Item>
             </Menu>
           }
-          trigger={['click']}
         >
           <Icon type="more" />
         </Dropdown>

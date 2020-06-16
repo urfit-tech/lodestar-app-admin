@@ -4,7 +4,7 @@ import { useContext } from 'react'
 import { array, date, object, string } from 'yup'
 import AppContext from '../contexts/AppContext'
 import types from '../types'
-import { Category, ClassType, ProductInventoryLogProps } from '../types/general'
+import { Category, ClassType, ProductInventoryLogProps, ProductType } from '../types/general'
 
 export const useTags = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_TAGS>(
@@ -279,4 +279,131 @@ export const useArrangeProductInventory = (productId: string) => {
           })),
       },
     })
+}
+
+export const useAllBriefProductCollection = () => {
+  const { loading, error, data, refetch } = useQuery<types.GET_ALL_BRIEF_PRODUCT_COLLECTION>(gql`
+    query GET_ALL_BRIEF_PRODUCT_COLLECTION {
+      program(where: { published_at: { _is_null: false } }) {
+        id
+        title
+      }
+      program_plan(where: { program: { published_at: { _is_null: false } } }) {
+        id
+        title
+        program {
+          id
+          title
+        }
+      }
+      activity_ticket(where: { is_published: { _eq: true }, activity: { published_at: { _is_null: false } } }) {
+        id
+        title
+        activity {
+          id
+          title
+        }
+      }
+      podcast_program(where: { published_at: { _is_null: false } }) {
+        id
+        title
+      }
+      podcast_plan(where: { published_at: { _is_null: false } }) {
+        id
+        title
+        creator {
+          id
+          name
+          username
+        }
+      }
+      appointment_plan(where: { published_at: { _is_null: false } }) {
+        id
+        title
+        creator {
+          id
+          name
+          username
+        }
+      }
+      merchandise(where: { published_at: { _is_null: false } }) {
+        id
+        title
+      }
+      project_plan(where: { project: { published_at: { _is_null: false } } }) {
+        id
+        title
+        project {
+          id
+          title
+        }
+      }
+      program_package_plan(
+        where: { published_at: { _is_null: false }, program_package: { published_at: { _is_null: false } } }
+      ) {
+        id
+        title
+        program_package {
+          id
+          title
+        }
+      }
+    }
+  `)
+
+  const briefProducts: {
+    [key in ProductType]?: {
+      productId: string
+      title: string
+    }[]
+  } =
+    loading || error || !data
+      ? {}
+      : {
+          Program: data.program.map(program => ({
+            productId: `Program_${program.id}`,
+            title: program.title,
+          })),
+          ProgramPlan: data.program_plan.map(programPlan => ({
+            productId: `ProgramPlan_${programPlan.id}`,
+            title: `${programPlan.program.title} - ${programPlan.title}`,
+          })),
+          ActivityTicket: data.activity_ticket.map(activityTicket => ({
+            productId: `ActivityTicket_${activityTicket.id}`,
+            title: `${activityTicket.activity.title} - ${activityTicket.title}`,
+          })),
+          PodcastProgram: data.podcast_program.map(podcastProgram => ({
+            productId: `PodcastProgram_${podcastProgram.id}`,
+            title: podcastProgram.title,
+          })),
+          PodcastPlan: data.podcast_plan.map(podcastPlan => ({
+            productId: `PodcastPlan_${podcastPlan.id}`,
+            title: `${podcastPlan.creator?.name || podcastPlan.creator?.username || ''}`,
+          })),
+          AppointmentPlan: data.appointment_plan.map(appointmentPlan => ({
+            productId: `AppointmentPlan_${appointmentPlan.id}`,
+            title: `${appointmentPlan.creator?.name || appointmentPlan.creator?.username || ''} - ${
+              appointmentPlan.title
+            }`,
+          })),
+          Merchandise: data.merchandise.map(merchandise => ({
+            productId: `Merchandise_${merchandise.id}`,
+            title: merchandise.title,
+          })),
+          ProjectPlan: data.project_plan.map(projectPlan => ({
+            productId: `ProjectPlan_${projectPlan.id}`,
+            title: `${projectPlan.project.title} - ${projectPlan.title}`,
+          })),
+          ProgramPackagePlan: data.program_package_plan.map(programPackagePlan => ({
+            productId: `ProgramPackagePlan_${programPackagePlan.id}`,
+            title: `${programPackagePlan.program_package.title} - ${programPackagePlan.title}`,
+          })),
+        }
+
+  return {
+    loadingBriefProducts: loading,
+    errorBriefProducts: error,
+    briefProducts,
+    refetchBriefProducts: refetch,
+  }
 }
