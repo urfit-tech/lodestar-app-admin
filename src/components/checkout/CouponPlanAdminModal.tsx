@@ -15,6 +15,7 @@ import { CouponPlanProps } from '../../types/checkout'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CouponPlanDiscountSelector from './CouponPlanDiscountSelector'
 import PlanCodeSelector, { PlanCodeProps } from './PlanCodeSelector'
+import CouponPlanScopeSelector from './CouponPlanScopeSelector'
 
 type CouponPlanAdminModalProps = AdminModalProps &
   FormComponentProps & {
@@ -46,9 +47,14 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             description: values.description,
             endedAt: values.endedAt,
             startedAt: values.startedAt,
+            scope: values.scope.scope,
             title: values.title,
-            type: values.discount.type,
+            type: values.discount.type === 'cash' ? 1 : values.discount.type === 'percent' ? 2 : 1,
             amount: values.discount.amount,
+            couponPlanProduct: values.scope.productIds.map((productId: string) => ({
+              coupon_plan_id: couponPlan.id,
+              product_id: productId,
+            })),
           },
         })
           .then(() => window.location.reload())
@@ -82,11 +88,14 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             constraint: values.constraint,
             description: values.description,
             endedAt: values.endedAt,
-            scope: 'all',
+            scope: values.scope.scope,
             startedAt: values.startedAt,
             title: values.title,
             type: values.discount.type === 'cash' ? 1 : values.discount.type === 'percent' ? 2 : 1,
             amount: values.discount.amount,
+            couponPlanProduct: values.scope.productIds.map((productId: string) => ({
+              product_id: productId,
+            })),
           },
         })
           .then(() => {
@@ -106,6 +115,7 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
 
   return (
     <AdminModal
+      maskClosable={false}
       okText={formatMessage(commonMessages.ui.confirm)}
       cancelText={formatMessage(commonMessages.ui.cancel)}
       okButtonProps={{ loading }}
@@ -132,13 +142,6 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             rules: [{ required: true }],
           })(<InputNumber formatter={v => `${v}`} parser={v => (v ? parseFloat(v) : 0)} />)}
         </Form.Item>
-        {!couponPlan && (
-          <Form.Item label={formatMessage(promotionMessages.term.couponCodes)}>
-            {form.getFieldDecorator('codes', {
-              rules: [{ required: true, message: formatMessage(errorMessages.form.couponCodes) }],
-            })(<PlanCodeSelector planType="coupon" />)}
-          </Form.Item>
-        )}
         <Form.Item
           label={formatMessage(promotionMessages.term.discount)}
           help={formatMessage(promotionMessages.label.discountHelp)}
@@ -149,6 +152,24 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
               : { type: 'cash', amount: 0 },
           })(<CouponPlanDiscountSelector />)}
         </Form.Item>
+
+        <Form.Item label={formatMessage(promotionMessages.label.scope)}>
+          {form.getFieldDecorator('scope', {
+            initialValue: {
+              scope: couponPlan?.scope || null,
+              productIds: couponPlan?.productIds || [],
+            },
+          })(<CouponPlanScopeSelector />)}
+        </Form.Item>
+
+        {!couponPlan && (
+          <Form.Item label={formatMessage(promotionMessages.term.couponCodes)}>
+            {form.getFieldDecorator('codes', {
+              rules: [{ required: true, message: formatMessage(errorMessages.form.couponCodes) }],
+            })(<PlanCodeSelector planType="coupon" />)}
+          </Form.Item>
+        )}
+
         <Form.Item label={formatMessage(promotionMessages.label.availableDateRange)}>
           <Input.Group compact>
             {form.getFieldDecorator('startedAt', {
@@ -187,11 +208,12 @@ const INSERT_COUPON_PLAN = gql`
     $constraint: numeric
     $description: String
     $endedAt: timestamptz
-    $scope: String
+    $scope: jsonb
     $startedAt: timestamptz
     $title: String
     $type: Int
     $amount: numeric
+    $couponPlanProduct: [coupon_plan_product_insert_input!]!
   ) {
     insert_coupon_plan(
       objects: {
@@ -204,6 +226,7 @@ const INSERT_COUPON_PLAN = gql`
         title: $title
         type: $type
         amount: $amount
+        coupon_plan_products: { data: $couponPlanProduct }
       }
     ) {
       affected_rows
@@ -218,9 +241,11 @@ const UPDATE_COUPON_PLAN = gql`
     $description: String
     $endedAt: timestamptz
     $startedAt: timestamptz
+    $scope: jsonb
     $title: String
     $type: Int
     $amount: numeric
+    $couponPlanProduct: [coupon_plan_product_insert_input!]!
   ) {
     update_coupon_plan(
       where: { id: { _eq: $couponPlanId } }
@@ -229,11 +254,18 @@ const UPDATE_COUPON_PLAN = gql`
         description: $description
         ended_at: $endedAt
         started_at: $startedAt
+        scope: $scope
         title: $title
         type: $type
         amount: $amount
       }
     ) {
+      affected_rows
+    }
+    delete_coupon_plan_product(where: { coupon_plan_id: { _eq: $couponPlanId } }) {
+      affected_rows
+    }
+    insert_coupon_plan_product(objects: $couponPlanProduct) {
       affected_rows
     }
   }
