@@ -111,16 +111,16 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
       }),
     },
     {
-      title: formatMessage(commonMessages.label.orderLogDate),
-      dataIndex: 'createdAt',
-      key: 'createdAt',
+      title: formatMessage(commonMessages.label.orderLogPaymentDate),
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
       render: (value: Date) => {
-        const orderLogDate = moment(value)
+        const orderLogPaymentDate = moment(value)
 
         return (
           <StyledCell>
-            <div>{orderLogDate.format('YYYY-MM-DD')}</div>
-            <div>{orderLogDate.format('HH:mm')}</div>
+            <div>{orderLogPaymentDate.format('YYYY-MM-DD')}</div>
+            <div>{orderLogPaymentDate.format('HH:mm')}</div>
           </StyledCell>
         )
       },
