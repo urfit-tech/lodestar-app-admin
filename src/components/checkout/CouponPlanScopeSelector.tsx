@@ -1,11 +1,12 @@
 import { Checkbox, Radio, TreeSelect } from 'antd'
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { promotionMessages } from '../../helpers/translation'
 import { useAllBriefProductCollection } from '../../hooks/data'
 import { ProductType } from '../../types/general'
 import ProductTypeLabel from '../common/ProductTypeLabel'
+import AppContext from '../../contexts/AppContext'
 
 const messages = defineMessages({
   allProgram: { id: 'common.product.allProgram', defaultMessage: '全部單次課程' },
@@ -35,6 +36,7 @@ const CouponPlanScopeSelector: React.FC<{
   onChange?: (value: { scope: string[] | null; productIds: string[] }) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useContext(AppContext)
   const { briefProducts } = useAllBriefProductCollection()
 
   const [scopeType, setScopeType] = useState<'all' | 'specific'>(
@@ -87,30 +89,42 @@ const CouponPlanScopeSelector: React.FC<{
               <div className="col-6 mb-3">
                 <Checkbox value="Program">{formatMessage(messages.allProgram)}</Checkbox>
               </div>
-              <div className="col-6 mb-3">
-                <Checkbox value="AppointmentPlan">{formatMessage(messages.allAppointmentPlan)}</Checkbox>
-              </div>
+              {enabledModules.appointment && (
+                <div className="col-6 mb-3">
+                  <Checkbox value="AppointmentPlan">{formatMessage(messages.allAppointmentPlan)}</Checkbox>
+                </div>
+              )}
               <div className="col-6 mb-3">
                 <Checkbox value="ProgramPlan">{formatMessage(messages.allProgramPlan)}</Checkbox>
               </div>
-              <div className="col-6 mb-3">
-                <Checkbox value="Merchandise">{formatMessage(messages.allMerchandise)}</Checkbox>
-              </div>
-              <div className="col-6 mb-3">
-                <Checkbox value="ActivityTicket">{formatMessage(messages.allActivityTicket)}</Checkbox>
-              </div>
+              {enabledModules.merchandise && (
+                <div className="col-6 mb-3">
+                  <Checkbox value="Merchandise">{formatMessage(messages.allMerchandise)}</Checkbox>
+                </div>
+              )}
+              {enabledModules.activity && (
+                <div className="col-6 mb-3">
+                  <Checkbox value="ActivityTicket">{formatMessage(messages.allActivityTicket)}</Checkbox>
+                </div>
+              )}
               <div className="col-6 mb-3">
                 <Checkbox value="ProjectPlan">{formatMessage(messages.allProjectPlan)}</Checkbox>
               </div>
-              <div className="col-6 mb-3">
-                <Checkbox value="PodcastProgram">{formatMessage(messages.allPodcastProgram)}</Checkbox>
-              </div>
-              <div className="col-6 mb-3">
-                <Checkbox value="ProgramPackagePlan">{formatMessage(messages.allProgramPackagePlan)}</Checkbox>
-              </div>
-              <div className="col-6 mb-3">
-                <Checkbox value="PodcastPlan">{formatMessage(messages.allPodcastPlan)}</Checkbox>
-              </div>
+              {enabledModules.podcast && (
+                <div className="col-6 mb-3">
+                  <Checkbox value="PodcastProgram">{formatMessage(messages.allPodcastProgram)}</Checkbox>
+                </div>
+              )}
+              {enabledModules.program_package && (
+                <div className="col-6 mb-3">
+                  <Checkbox value="ProgramPackagePlan">{formatMessage(messages.allProgramPackagePlan)}</Checkbox>
+                </div>
+              )}
+              {enabledModules.podcast && (
+                <div className="col-6 mb-3">
+                  <Checkbox value="PodcastPlan">{formatMessage(messages.allPodcastPlan)}</Checkbox>
+                </div>
+              )}
             </div>
           </Checkbox.Group>
 

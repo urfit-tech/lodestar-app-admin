@@ -22,7 +22,7 @@ type CouponPlanAdminModalProps = AdminModalProps &
     couponPlan?: CouponPlanProps
   }
 const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, couponPlan, ...props }) => {
-  const { id: appId } = useContext(AppContext)
+  const { id: appId, enabledModules } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const [createCouponPlan] = useMutation<types.INSERT_COUPON_PLAN, types.INSERT_COUPON_PLANVariables>(
     INSERT_COUPON_PLAN,
@@ -153,14 +153,16 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
           })(<CouponPlanDiscountSelector />)}
         </Form.Item>
 
-        <Form.Item label={formatMessage(promotionMessages.label.scope)}>
-          {form.getFieldDecorator('scope', {
-            initialValue: {
-              scope: couponPlan?.scope || null,
-              productIds: couponPlan?.productIds || [],
-            },
-          })(<CouponPlanScopeSelector />)}
-        </Form.Item>
+        {enabledModules.coupon_scope && (
+          <Form.Item label={formatMessage(promotionMessages.label.scope)}>
+            {form.getFieldDecorator('scope', {
+              initialValue: {
+                scope: couponPlan?.scope || null,
+                productIds: couponPlan?.productIds || [],
+              },
+            })(<CouponPlanScopeSelector />)}
+          </Form.Item>
+        )}
 
         {!couponPlan && (
           <Form.Item label={formatMessage(promotionMessages.term.couponCodes)}>
