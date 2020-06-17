@@ -1,10 +1,12 @@
+import { ProductType } from './general'
+
 export type CouponPlanType = 'cash' | 'percent'
 
 export type CouponPlanProps = {
   id: string
   title: string
   description: string | null
-  scope: string[]
+  scope: ProductType[]
   type: CouponPlanType | null
   amount: number
   constraint: number | null

@@ -62,6 +62,7 @@ export const commonMessages = {
     days: { id: 'common.label.days', defaultMessage: '天' },
     week: { id: 'common.label.week', defaultMessage: '週' },
     month: { id: 'common.label.month', defaultMessage: '月' },
+    monthWithQuantifier: { id: 'common.label.monthWithQuantifier', defaultMessage: '個月' },
     year: { id: 'common.label.year', defaultMessage: '年' },
     perDay: { id: 'common.label.perDay', defaultMessage: '每日' },
     perWeek: { id: 'common.label.perWeek', defaultMessage: '每週' },
@@ -78,7 +79,7 @@ export const commonMessages = {
     totalPrice: { id: 'common.label.totalPrice', defaultMessage: '總金額' },
     orderLogId: { id: 'common.label.orderLogId', defaultMessage: '訂單編號' },
     orderLogDate: { id: 'common.label.orderLogDate', defaultMessage: '訂單日期' },
-    orderLogPaymentDate: {id: "common.label.orderLogPaymentDate", defaultMessage: "付款日期"},
+    orderLogPaymentDate: { id: 'common.label.orderLogPaymentDate', defaultMessage: '付款日期' },
     orderLogPrice: { id: 'common.label.orderLogPrice', defaultMessage: '訂單金額' },
     orderLogStatus: { id: 'common.label.orderLogStatus', defaultMessage: '訂單狀態' },
     orderProductPriceTotal: { id: 'common.label.orderProductPriceTotal', defaultMessage: '項目總額' },
@@ -141,6 +142,7 @@ export const commonMessages = {
     roleType: { id: 'common.label.roleType', defaultMessage: '會員類型' },
     exportFields: { id: 'common.label.exportFields', defaultMessage: '匯出欄位' },
     date: { id: 'common.label.date', defaultMessage: '日期' },
+    podcastSubscription: { id: 'common.label.podcastSubscription', defaultMessage: '訂閱廣播頻道' },
   }),
   term: defineMessages({
     instructor: { id: 'common.term.instructor', defaultMessage: '老師' },
@@ -208,6 +210,10 @@ export const commonMessages = {
       defaultMessage: '定價或優惠價 - 首期折扣 = 首期支付金額\nEX：100 - 20 = 80，此欄填入 20',
     },
     period: { id: 'common.text.period', defaultMessage: '，' },
+    availableForLimitTime: {
+      id: 'programPackage.label.availableForLimitTime',
+      defaultMessage: '可觀看 {amount} {unit}',
+    },
   }),
   event: defineMessages({
     successfullySaved: { id: 'common.event.successfullySaved', defaultMessage: '儲存成功' },
@@ -417,6 +423,9 @@ export const promotionMessages = {
     allProductScope: { id: 'promotion.label.allProductScope', defaultMessage: '全站折抵' },
     specificProductScope: { id: 'promotion.label.specificProductScope', defaultMessage: '指定項目折抵' },
     otherSpecificProduct: { id: 'promotion.label.otherSpecificProduct', defaultMessage: '其他特定項目' },
+    rules: { id: 'promotion.label.rules', defaultMessage: '使用規則' },
+    description: { id: 'promotion.label.description', defaultMessage: '使用描述' },
+    discountTarget: { id: 'promotion.label.discountTarget', defaultMessage: '折抵項目' },
   }),
   text: defineMessages({
     exchangeItemsNumber: { id: 'promotion.text.exchangeItemsNumber', defaultMessage: '可兌換 {number} 個項目' },
@@ -426,6 +435,8 @@ export const promotionMessages = {
     },
     enterVoucherCode: { id: 'promotion.text.enterVoucherCode', defaultMessage: '輸入兌換碼' },
     exchangedCount: { id: 'promotion.text.exchangedCount', defaultMessage: '{exchanged}/{total} 張' },
+    constraints: { id: 'promotion.text.constraints', defaultMessage: '消費滿 {total} 折抵 {discount}' },
+    directly: { id: 'promotion.text.directly', defaultMessage: '直接折抵 {discount}' },
   }),
   status: defineMessages({
     available: { id: 'promotion.status.available', defaultMessage: '可使用' },
