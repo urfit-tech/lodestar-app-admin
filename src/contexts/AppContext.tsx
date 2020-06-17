@@ -16,6 +16,7 @@ type Module =
   | 'merchandise'
   | 'podcast'
   | 'program_package'
+  | 'project'
   | 'qrcode'
   | 'social_connect'
   | 'tempo_delivery'

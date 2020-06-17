@@ -1,12 +1,12 @@
 import { Checkbox, Radio, TreeSelect } from 'antd'
-import React, { useState, useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import AppContext from '../../contexts/AppContext'
 import { promotionMessages } from '../../helpers/translation'
 import { useAllBriefProductCollection } from '../../hooks/data'
 import { ProductType } from '../../types/general'
 import ProductTypeLabel from '../common/ProductTypeLabel'
-import AppContext from '../../contexts/AppContext'
 
 const messages = defineMessages({
   allProgram: { id: 'common.product.allProgram', defaultMessage: '全部單次課程' },
@@ -26,6 +26,19 @@ const StyledLabel = styled.div`
   font-size: 14px;
   line-height: 1.71;
   letter-spacing: 0.4px;
+`
+const StyledProductTitle = styled.span`
+  display: inline-block;
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  & + &:before {
+    content: ' - ';
+  }
+`
+const StyledColumns = styled.div`
+  columns: 2;
 `
 
 const CouponPlanScopeSelector: React.FC<{
@@ -84,48 +97,67 @@ const CouponPlanScopeSelector: React.FC<{
                   productIds: selectedProductIds,
                 })
             }}
+            style={{ width: '100%' }}
           >
-            <div className="row">
-              <div className="col-6 mb-3">
-                <Checkbox value="Program">{formatMessage(messages.allProgram)}</Checkbox>
+            <StyledColumns>
+              <div className="mb-3">
+                <Checkbox value="Program">
+                  {formatMessage(messages.allProgram)}
+                </Checkbox>
               </div>
-              {enabledModules.appointment && (
-                <div className="col-6 mb-3">
-                  <Checkbox value="AppointmentPlan">{formatMessage(messages.allAppointmentPlan)}</Checkbox>
-                </div>
-              )}
-              <div className="col-6 mb-3">
-                <Checkbox value="ProgramPlan">{formatMessage(messages.allProgramPlan)}</Checkbox>
+              <div className="mb-3">
+                <Checkbox value="ProgramPlan">
+                  {formatMessage(messages.allProgramPlan)}
+                </Checkbox>
               </div>
-              {enabledModules.merchandise && (
-                <div className="col-6 mb-3">
-                  <Checkbox value="Merchandise">{formatMessage(messages.allMerchandise)}</Checkbox>
-                </div>
-              )}
               {enabledModules.activity && (
-                <div className="col-6 mb-3">
-                  <Checkbox value="ActivityTicket">{formatMessage(messages.allActivityTicket)}</Checkbox>
+                <div className="mb-3">
+                  <Checkbox value="ActivityTicket">
+                    {formatMessage(messages.allActivityTicket)}
+                  </Checkbox>
                 </div>
               )}
-              <div className="col-6 mb-3">
-                <Checkbox value="ProjectPlan">{formatMessage(messages.allProjectPlan)}</Checkbox>
+              {enabledModules.podcast && (
+                <div className="mb-3">
+                  <Checkbox value="PodcastProgram">
+                    {formatMessage(messages.allPodcastProgram)}
+                  </Checkbox>
+                </div>
+              )}
+              {enabledModules.podcast && (
+                <div className="mb-3">
+                  <Checkbox value="PodcastPlan">
+                    {formatMessage(messages.allPodcastPlan)}
+                  </Checkbox>
+                </div>
+              )}
+              {enabledModules.appointment && (
+                <div className="mb-3">
+                  <Checkbox value="AppointmentPlan">
+                    {formatMessage(messages.allAppointmentPlan)}
+                  </Checkbox>
+                </div>
+              )}
+              {enabledModules.merchandise && (
+                <div className="mb-3">
+                  <Checkbox value="Merchandise">
+                    {formatMessage(messages.allMerchandise)}
+                  </Checkbox>
+                </div>
+              )}
+              <div className="mb-3">
+                <Checkbox value="ProjectPlan">
+                  {formatMessage(messages.allProjectPlan)}
+                </Checkbox>
               </div>
-              {enabledModules.podcast && (
-                <div className="col-6 mb-3">
-                  <Checkbox value="PodcastProgram">{formatMessage(messages.allPodcastProgram)}</Checkbox>
-                </div>
-              )}
               {enabledModules.program_package && (
-                <div className="col-6 mb-3">
-                  <Checkbox value="ProgramPackagePlan">{formatMessage(messages.allProgramPackagePlan)}</Checkbox>
+                <div className="mb-3">
+                  <Checkbox value="ProgramPackagePlan">
+                    {formatMessage(messages.allProgramPackagePlan)}
+                  </Checkbox>
                 </div>
               )}
-              {enabledModules.podcast && (
-                <div className="col-6 mb-3">
-                  <Checkbox value="PodcastPlan">{formatMessage(messages.allPodcastPlan)}</Checkbox>
-                </div>
-              )}
-            </div>
+            </StyledColumns>
           </Checkbox.Group>
 
           <StyledLabel>{formatMessage(promotionMessages.label.otherSpecificProduct)}</StyledLabel>
@@ -155,7 +187,16 @@ const CouponPlanScopeSelector: React.FC<{
                 checkable={false}
               >
                 {briefProducts[productType as ProductType]?.map(product => (
-                  <TreeSelect.TreeNode key={product.productId} value={product.productId} title={product.title} />
+                  <TreeSelect.TreeNode
+                    key={product.productId}
+                    value={product.productId}
+                    title={
+                      <>
+                        {product.parent && <StyledProductTitle>{product.parent}</StyledProductTitle>}
+                        <StyledProductTitle>{product.title}</StyledProductTitle>
+                      </>
+                    }
+                  />
                 ))}
               </TreeSelect.TreeNode>
             ))}
