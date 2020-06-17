@@ -89,13 +89,14 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             description: values.description,
             startedAt: values.startedAt,
             endedAt: values.endedAt,
-            scope: values.scope.scope,
+            scope: values.scope?.scope || null,
             title: values.title,
             type: values.discount.type === 'cash' ? 1 : values.discount.type === 'percent' ? 2 : 1,
             amount: values.discount.amount,
-            couponPlanProduct: values.scope.productIds.map((productId: string) => ({
-              product_id: productId,
-            })),
+            couponPlanProduct:
+              values.scope?.productIds.map((productId: string) => ({
+                product_id: productId,
+              })) || [],
           },
         })
           .then(() => {
