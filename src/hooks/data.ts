@@ -358,6 +358,7 @@ export const useAllBriefProductCollection = () => {
     [key in ProductType]?: {
       productId: string
       title: string
+      parent?: string
     }[]
   } =
     loading || error || !data
@@ -369,11 +370,13 @@ export const useAllBriefProductCollection = () => {
           })),
           ProgramPlan: data.program_plan.map(programPlan => ({
             productId: `ProgramPlan_${programPlan.id}`,
-            title: `${programPlan.program.title} - ${programPlan.title}`,
+            title: programPlan.title || '',
+            parent: programPlan.program.title,
           })),
           ActivityTicket: data.activity_ticket.map(activityTicket => ({
             productId: `ActivityTicket_${activityTicket.id}`,
-            title: `${activityTicket.activity.title} - ${activityTicket.title}`,
+            title: activityTicket.title,
+            parent: activityTicket.activity.title,
           })),
           PodcastProgram: data.podcast_program.map(podcastProgram => ({
             productId: `PodcastProgram_${podcastProgram.id}`,
@@ -385,9 +388,8 @@ export const useAllBriefProductCollection = () => {
           })),
           AppointmentPlan: data.appointment_plan.map(appointmentPlan => ({
             productId: `AppointmentPlan_${appointmentPlan.id}`,
-            title: `${appointmentPlan.creator?.name || appointmentPlan.creator?.username || ''} - ${
-              appointmentPlan.title
-            }`,
+            title: appointmentPlan.title,
+            parent: appointmentPlan.creator?.name || appointmentPlan.creator?.username || '',
           })),
           Merchandise: data.merchandise.map(merchandise => ({
             productId: `Merchandise_${merchandise.id}`,
@@ -395,11 +397,13 @@ export const useAllBriefProductCollection = () => {
           })),
           ProjectPlan: data.project_plan.map(projectPlan => ({
             productId: `ProjectPlan_${projectPlan.id}`,
-            title: `${projectPlan.project.title} - ${projectPlan.title}`,
+            title: projectPlan.title,
+            parent: projectPlan.project.title,
           })),
           ProgramPackagePlan: data.program_package_plan.map(programPackagePlan => ({
             productId: `ProgramPackagePlan_${programPackagePlan.id}`,
-            title: `${programPackagePlan.program_package.title} - ${programPackagePlan.title}`,
+            title: programPackagePlan.title,
+            parent: programPackagePlan.program_package.title,
           })),
         }
 

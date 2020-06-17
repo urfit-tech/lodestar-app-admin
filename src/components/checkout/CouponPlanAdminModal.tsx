@@ -87,9 +87,9 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             }),
             constraint: values.constraint,
             description: values.description,
+            startedAt: values.startedAt,
             endedAt: values.endedAt,
             scope: values.scope.scope,
-            startedAt: values.startedAt,
             title: values.title,
             type: values.discount.type === 'cash' ? 1 : values.discount.type === 'percent' ? 2 : 1,
             amount: values.discount.amount,
@@ -178,7 +178,7 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
               initialValue: couponPlan && couponPlan.startedAt && moment(couponPlan.startedAt),
             })(
               <DatePicker
-                showTime
+                showTime={{ format: 'HH:mm' }}
                 format="YYYY-MM-DD HH:mm"
                 placeholder={formatMessage(commonMessages.term.startedAt)}
               />,
@@ -187,7 +187,7 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
               initialValue: couponPlan && couponPlan.endedAt && moment(couponPlan.endedAt),
             })(
               <DatePicker
-                showTime
+                showTime={{ format: 'HH:mm' }}
                 format="YYYY-MM-DD HH:mm"
                 placeholder={formatMessage(commonMessages.term.endedAt)}
               />,
