@@ -22,7 +22,7 @@ const programRoleSchema = object({
   }).camelCase(),
 }).camelCase()
 
-export type ProgramPlanPeriodType = 'W' | 'M' | 'Y'
+export type ProgramPlanPeriodType = 'D' | 'W' | 'M' | 'Y'
 const programPlanSchema = object({
   id: string(),
   type: number().oneOf([1, 2]),

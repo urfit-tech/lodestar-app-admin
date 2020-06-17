@@ -1,8 +1,11 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { useContext } from 'react'
+import { useIntl } from 'react-intl'
 import { array, date, object, string } from 'yup'
 import AppContext from '../contexts/AppContext'
+import { commonMessages } from '../helpers/translation'
+import { ProgramPlanPeriodType } from '../schemas/program'
 import types from '../types'
 import { Category, ClassType, ProductInventoryLogProps, ProductType } from '../types/general'
 
@@ -405,5 +408,271 @@ export const useAllBriefProductCollection = () => {
     errorBriefProducts: error,
     briefProducts,
     refetchBriefProducts: refetch,
+  }
+}
+
+export const useSimpleProduct = (
+  targetId: string,
+  options: {
+    startedAt?: Date
+    quantity?: number
+  },
+) => {
+  const { formatMessage } = useIntl()
+
+  const { loading, error, data } = useQuery<types.GET_PRODUCT_SIMPLE, types.GET_PRODUCT_SIMPLEVariables>(
+    gql`
+      query GET_PRODUCT_SIMPLE($id: uuid!, $startedAt: timestamptz) {
+        program_by_pk(id: $id) {
+          id
+          title
+          cover_url
+          is_subscription
+          list_price
+          sale_price
+          sold_at
+        }
+        program_plan_by_pk(id: $id) {
+          id
+          title
+          list_price
+          sale_price
+          sold_at
+          discount_down_price
+          period_type
+          program {
+            id
+            title
+            cover_url
+          }
+        }
+        program_package_plan_by_pk(id: $id) {
+          id
+          title
+          list_price
+          sale_price
+          sold_at
+          discount_down_price
+          period_amount
+          period_type
+          is_subscription
+          program_package {
+            id
+            title
+            cover_url
+          }
+        }
+        card_by_pk(id: $id) {
+          id
+          title
+        }
+        activity_ticket_by_pk(id: $id) {
+          id
+          title
+          price
+          activity {
+            id
+            title
+            cover_url
+          }
+        }
+        project_plan_by_pk(id: $id) {
+          id
+          title
+          cover_url
+          list_price
+          sale_price
+          sold_at
+          discount_down_price
+          period_amount
+          period_type
+          project {
+            id
+            title
+          }
+        }
+        podcast_program_by_pk(id: $id) {
+          id
+          title
+          cover_url
+          list_price
+          sale_price
+          sold_at
+        }
+        podcast_plan_by_pk(id: $id) {
+          id
+          title
+          list_price
+          sale_price
+          sold_at
+          creator {
+            name
+            username
+          }
+        }
+        appointment_plan_by_pk(id: $id) {
+          id
+          title
+          price
+          creator {
+            name
+            username
+            picture_url
+          }
+          appointment_periods(where: { started_at: { _eq: $startedAt } }) {
+            started_at
+            ended_at
+            booked
+          }
+        }
+        merchandise_by_pk(id: $id) {
+          id
+          title
+          list_price
+          merchandise_imgs(where: { type: { _eq: "cover" } }) {
+            url
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        id: targetId,
+        startedAt: options.startedAt,
+      },
+    },
+  )
+
+  const target: {
+    id: string
+    productType: ProductType | null
+    title: string
+    coverUrl?: string | null
+    listPrice?: number
+    salePrice?: number
+    discountDownPrice?: number
+    periodAmount?: number
+    periodType?: ProgramPlanPeriodType
+    startedAt?: Date
+    endedAt?: Date
+    quantity?: number
+    isSubscription?: boolean
+  } | null =
+    loading || error || !data
+      ? null
+      : data.program_by_pk
+      ? {
+          id: data.program_by_pk.id,
+          productType: 'Program',
+          title: data.program_by_pk.title,
+          coverUrl: data.program_by_pk.cover_url || undefined,
+          listPrice: data.program_by_pk.list_price,
+          salePrice:
+            data.program_by_pk.sold_at && new Date(data.program_by_pk.sold_at).getTime() > Date.now()
+              ? data.program_by_pk.sale_price
+              : undefined,
+        }
+      : data.program_plan_by_pk
+      ? {
+          id: data.program_plan_by_pk.id,
+          productType: 'ProgramPlan',
+          title: `${data.program_plan_by_pk.program.title} - ${data.program_plan_by_pk.title || ''}`,
+          coverUrl: data.program_plan_by_pk.program.cover_url || undefined,
+          listPrice: data.program_plan_by_pk.list_price,
+          salePrice:
+            data.program_plan_by_pk.sold_at && new Date(data.program_plan_by_pk.sold_at).getTime() > Date.now()
+              ? data.program_plan_by_pk.sale_price
+              : undefined,
+          discountDownPrice: data.program_plan_by_pk.discount_down_price || undefined,
+          periodType: data.program_plan_by_pk.period_type as ProgramPlanPeriodType,
+        }
+      : data.program_package_plan_by_pk
+      ? {
+          id: data.program_package_plan_by_pk.id,
+          productType: 'ProgramPackagePlan',
+          title: data.program_package_plan_by_pk.title,
+          coverUrl: data.program_package_plan_by_pk.program_package.cover_url || undefined,
+          listPrice: data.program_package_plan_by_pk.list_price,
+          salePrice:
+            data.program_package_plan_by_pk.sold_at &&
+            new Date(data.program_package_plan_by_pk.sold_at).getTime() > Date.now()
+              ? data.program_package_plan_by_pk.sale_price
+              : undefined,
+          discountDownPrice: data.program_package_plan_by_pk.discount_down_price,
+          periodAmount: data.program_package_plan_by_pk.period_amount,
+          periodType: data.program_package_plan_by_pk.period_type as ProgramPlanPeriodType,
+          isSubscription: data.program_package_plan_by_pk.is_subscription,
+        }
+      : data.card_by_pk
+      ? {
+          id: data.card_by_pk.id,
+          productType: 'Card',
+          title: data.card_by_pk.title,
+          listPrice: 0,
+        }
+      : data.project_plan_by_pk
+      ? {
+          id: data.project_plan_by_pk.id,
+          productType: 'ProjectPlan',
+          title: `${data.project_plan_by_pk.project.title} - ${data.project_plan_by_pk.title}`,
+          coverUrl: data.project_plan_by_pk.cover_url || undefined,
+          listPrice: data.project_plan_by_pk.list_price,
+          salePrice:
+            data.project_plan_by_pk.sold_at && new Date(data.project_plan_by_pk.sold_at).getTime() > Date.now()
+              ? data.project_plan_by_pk.sale_price
+              : undefined,
+          discountDownPrice: data.project_plan_by_pk.discount_down_price || undefined,
+          periodAmount: data.project_plan_by_pk.period_amount,
+          periodType: data.project_plan_by_pk.period_type as ProgramPlanPeriodType,
+        }
+      : data.podcast_program_by_pk
+      ? {
+          id: data.podcast_program_by_pk.id,
+          productType: 'PodcastProgram',
+          title: data.podcast_program_by_pk.title,
+          coverUrl: data.podcast_program_by_pk.cover_url,
+          listPrice: data.podcast_program_by_pk.list_price,
+          salePrice:
+            data.podcast_program_by_pk.sold_at && new Date(data.podcast_program_by_pk.sold_at).getTime() > Date.now()
+              ? data.podcast_program_by_pk.sale_price
+              : undefined,
+        }
+      : data.podcast_plan_by_pk && data.podcast_plan_by_pk.creator
+      ? {
+          id: data.podcast_plan_by_pk.id,
+          productType: 'PodcastPlan',
+          title: `${formatMessage(commonMessages.label.podcastSubscription)} - ${
+            data.podcast_plan_by_pk.creator.name || data.podcast_plan_by_pk.creator.username
+          }`,
+          coverUrl: 'https://static.kolable.com/images/default/reservation.svg',
+        }
+      : data.appointment_plan_by_pk
+      ? {
+          id: data.appointment_plan_by_pk.id,
+          productType: 'AppointmentPlan',
+          title: data.appointment_plan_by_pk.title,
+          coverUrl: data.appointment_plan_by_pk.creator && data.appointment_plan_by_pk.creator.picture_url,
+          startedAt: data.appointment_plan_by_pk.appointment_periods[0].started_at,
+          endedAt: data.appointment_plan_by_pk.appointment_periods[0].ended_at,
+        }
+      : data.merchandise_by_pk
+      ? {
+          id: data.merchandise_by_pk.id,
+          productType: 'Merchandise',
+          title: data.merchandise_by_pk.title,
+          listPrice: data.merchandise_by_pk.list_price,
+          coverUrl: data.merchandise_by_pk.merchandise_imgs[0]?.url,
+          quantity: options.quantity,
+        }
+      : {
+          id: targetId,
+          productType: null,
+          title: '',
+        }
+
+  return {
+    loading,
+    error,
+    target,
   }
 }
