@@ -8,6 +8,7 @@ type Module =
   | 'activity'
   | 'appointment'
   | 'blog'
+  | 'coupon_scope'
   | 'invoice'
   | 'learning_statistics'
   | 'locale'
