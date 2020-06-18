@@ -114,8 +114,8 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
       title: formatMessage(commonMessages.label.orderLogPaymentDate),
       dataIndex: 'updatedAt',
       key: 'updatedAt',
-      render: (value: Date) => {
-        const orderLogPaymentDate = moment(value)
+      render: (value: Date, record: OrderRow) => {
+        const orderLogPaymentDate = moment(value || record.createdAt)
 
         return (
           <StyledCell>
