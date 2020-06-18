@@ -75,12 +75,9 @@ const StyledListLabelBLock = styled.div`
   letter-spacing: 0.4px;
 `
 const StyledListTitleBlock = styled.div`
-  overflow: hidden;
   color: var(--gray-dark);
   font-size: 14px;
   letter-spacing: 0.4px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
 `
 
 type ProductItemProps = {

@@ -137,22 +137,6 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             ],
           })(<Input />)}
         </Form.Item>
-        <Form.Item label={formatMessage(promotionMessages.label.constraint)}>
-          {form.getFieldDecorator('constraint', {
-            initialValue: (couponPlan && couponPlan.constraint) || 0,
-            rules: [{ required: true }],
-          })(<InputNumber formatter={v => `${v}`} parser={v => (v ? parseFloat(v) : 0)} />)}
-        </Form.Item>
-        <Form.Item
-          label={formatMessage(promotionMessages.term.discount)}
-          help={formatMessage(promotionMessages.label.discountHelp)}
-        >
-          {form.getFieldDecorator('discount', {
-            initialValue: couponPlan
-              ? { type: couponPlan.type, amount: couponPlan.amount }
-              : { type: 'cash', amount: 0 },
-          })(<CouponPlanDiscountSelector />)}
-        </Form.Item>
 
         {enabledModules.coupon_scope && (
           <Form.Item label={formatMessage(promotionMessages.label.scope)}>
@@ -164,6 +148,23 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             })(<CouponPlanScopeSelector />)}
           </Form.Item>
         )}
+
+        <Form.Item
+          label={formatMessage(promotionMessages.term.discount)}
+          help={formatMessage(promotionMessages.label.discountHelp)}
+        >
+          {form.getFieldDecorator('discount', {
+            initialValue: couponPlan
+              ? { type: couponPlan.type, amount: couponPlan.amount }
+              : { type: 'cash', amount: 0 },
+          })(<CouponPlanDiscountSelector />)}
+        </Form.Item>
+        <Form.Item label={formatMessage(promotionMessages.label.constraint)}>
+          {form.getFieldDecorator('constraint', {
+            initialValue: (couponPlan && couponPlan.constraint) || 0,
+            rules: [{ required: true }],
+          })(<InputNumber formatter={v => `${v}`} parser={v => (v ? parseFloat(v) : 0)} />)}
+        </Form.Item>
 
         {!couponPlan && (
           <Form.Item label={formatMessage(promotionMessages.term.couponCodes)}>

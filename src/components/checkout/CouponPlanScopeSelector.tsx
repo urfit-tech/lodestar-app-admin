@@ -27,14 +27,21 @@ const StyledLabel = styled.div`
   line-height: 1.71;
   letter-spacing: 0.4px;
 `
-const StyledProductTitle = styled.span`
-  display: inline-block;
+const StyledProductParent = styled.div`
   max-width: 10rem;
   overflow: hidden;
   text-overflow: ellipsis;
+`
+const StyledProductTitle = styled.div`
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
-  & + &:before {
-    content: ' - ';
+  ${StyledProductParent} + & {
+    max-width: 14rem;
+    :before {
+      content: ' - ';
+    }
   }
 `
 const StyledColumns = styled.div`
@@ -101,60 +108,42 @@ const CouponPlanScopeSelector: React.FC<{
           >
             <StyledColumns>
               <div className="mb-3">
-                <Checkbox value="Program">
-                  {formatMessage(messages.allProgram)}
-                </Checkbox>
+                <Checkbox value="Program">{formatMessage(messages.allProgram)}</Checkbox>
               </div>
               <div className="mb-3">
-                <Checkbox value="ProgramPlan">
-                  {formatMessage(messages.allProgramPlan)}
-                </Checkbox>
+                <Checkbox value="ProgramPlan">{formatMessage(messages.allProgramPlan)}</Checkbox>
               </div>
               {enabledModules.activity && (
                 <div className="mb-3">
-                  <Checkbox value="ActivityTicket">
-                    {formatMessage(messages.allActivityTicket)}
-                  </Checkbox>
+                  <Checkbox value="ActivityTicket">{formatMessage(messages.allActivityTicket)}</Checkbox>
                 </div>
               )}
               {enabledModules.podcast && (
                 <div className="mb-3">
-                  <Checkbox value="PodcastProgram">
-                    {formatMessage(messages.allPodcastProgram)}
-                  </Checkbox>
+                  <Checkbox value="PodcastProgram">{formatMessage(messages.allPodcastProgram)}</Checkbox>
                 </div>
               )}
               {enabledModules.podcast && (
                 <div className="mb-3">
-                  <Checkbox value="PodcastPlan">
-                    {formatMessage(messages.allPodcastPlan)}
-                  </Checkbox>
+                  <Checkbox value="PodcastPlan">{formatMessage(messages.allPodcastPlan)}</Checkbox>
                 </div>
               )}
               {enabledModules.appointment && (
                 <div className="mb-3">
-                  <Checkbox value="AppointmentPlan">
-                    {formatMessage(messages.allAppointmentPlan)}
-                  </Checkbox>
+                  <Checkbox value="AppointmentPlan">{formatMessage(messages.allAppointmentPlan)}</Checkbox>
                 </div>
               )}
               {enabledModules.merchandise && (
                 <div className="mb-3">
-                  <Checkbox value="Merchandise">
-                    {formatMessage(messages.allMerchandise)}
-                  </Checkbox>
+                  <Checkbox value="Merchandise">{formatMessage(messages.allMerchandise)}</Checkbox>
                 </div>
               )}
               <div className="mb-3">
-                <Checkbox value="ProjectPlan">
-                  {formatMessage(messages.allProjectPlan)}
-                </Checkbox>
+                <Checkbox value="ProjectPlan">{formatMessage(messages.allProjectPlan)}</Checkbox>
               </div>
               {enabledModules.program_package && (
                 <div className="mb-3">
-                  <Checkbox value="ProgramPackagePlan">
-                    {formatMessage(messages.allProgramPackagePlan)}
-                  </Checkbox>
+                  <Checkbox value="ProgramPackagePlan">{formatMessage(messages.allProgramPackagePlan)}</Checkbox>
                 </div>
               )}
             </StyledColumns>
@@ -191,10 +180,10 @@ const CouponPlanScopeSelector: React.FC<{
                     key={product.productId}
                     value={product.productId}
                     title={
-                      <>
-                        {product.parent && <StyledProductTitle>{product.parent}</StyledProductTitle>}
+                      <div className="d-flex">
+                        {product.parent && <StyledProductParent>{product.parent}</StyledProductParent>}
                         <StyledProductTitle>{product.title}</StyledProductTitle>
-                      </>
+                      </div>
                     }
                   />
                 ))}
