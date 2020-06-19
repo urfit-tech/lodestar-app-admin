@@ -8,7 +8,7 @@ import types from '../../types'
 import { MemberShopProps, ShippingMethodProps, ShippingMethodType } from '../../types/merchandise'
 import CurrencyInput from '../admin/CurrencyInput'
 
-const ShippingMethodIds: ShippingMethodType[] = ['sevenEleven', 'familyMart', 'hiLife', 'okMart', 'homeDelivery']
+const ShippingMethodIds: ShippingMethodType[] = ['seven-eleven', 'family-mart', 'hi-life', 'ok-mart', 'home-delivery']
 
 const ShippingMethodAdminBlock: React.FC<{
   memberShop: MemberShopProps
@@ -99,6 +99,25 @@ const ShippingMethodAdminBlock: React.FC<{
   )
 }
 
+const ShippingMethodLabel: React.FC<{ shippingMethodId: string }> = ({ shippingMethodId }) => {
+  const { formatMessage } = useIntl()
+
+  switch (shippingMethodId) {
+    case 'seven-eleven':
+      return <>{formatMessage(merchandiseMessages.label.sevenEleven)}</>
+    case 'family-mart':
+      return <>{formatMessage(merchandiseMessages.label.familyMart)}</>
+    case 'hi-life':
+      return <>{formatMessage(merchandiseMessages.label.hiLife)}</>
+    case 'ok-mart':
+      return <>{formatMessage(merchandiseMessages.label.okMart)}</>
+    case 'home-delivery':
+      return <>{formatMessage(merchandiseMessages.label.homeDelivery)}</>
+    default:
+      return null
+  }
+}
+
 const ShippingMethodItem: React.FC<{
   value?: ShippingMethodProps
   onChange?: (value: ShippingMethodProps) => void
@@ -123,7 +142,7 @@ const ShippingMethodItem: React.FC<{
         className="mr-3"
         style={{ width: '10rem' }}
       >
-        {formatMessage(merchandiseMessages.label[value.id])}
+        <ShippingMethodLabel shippingMethodId={value.id} />
       </Checkbox>
       <CurrencyInput
         value={value.fee}

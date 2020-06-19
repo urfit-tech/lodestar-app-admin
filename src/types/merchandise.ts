@@ -42,7 +42,7 @@ export type MemberShopPreviewProps = {
   publishedAt: Date | null
 }
 
-export type ShippingMethodType = 'sevenEleven' | 'familyMart' | 'hiLife' | 'okMart' | 'homeDelivery'
+export type ShippingMethodType = 'seven-eleven' | 'family-mart' | 'hi-life' | 'ok-mart' | 'home-delivery'
 export type ShippingMethodProps = {
   id: ShippingMethodType
   enabled: boolean
