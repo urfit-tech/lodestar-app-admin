@@ -232,7 +232,7 @@ export const useMemberShop = (shopId: string) => {
       : {
           id: data.member_shop_by_pk.id,
           title: data.member_shop_by_pk.title,
-          shippingMethods: data.member_shop_by_pk.shipping_methods,
+          shippingMethods: data.member_shop_by_pk.shipping_methods || [],
           publishedAt: data.member_shop_by_pk.published_at,
         }
 

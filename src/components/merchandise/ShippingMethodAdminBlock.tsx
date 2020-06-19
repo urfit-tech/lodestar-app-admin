@@ -5,8 +5,10 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import types from '../../types'
-import { MemberShopProps, ShippingMethodIds, ShippingMethodProps } from '../../types/merchandise'
+import { MemberShopProps, ShippingMethodProps, ShippingMethodType } from '../../types/merchandise'
 import CurrencyInput from '../admin/CurrencyInput'
+
+const ShippingMethodIds: ShippingMethodType[] = ['sevenEleven', 'familyMart', 'hiLife', 'okMart', 'homeDelivery']
 
 const ShippingMethodAdminBlock: React.FC<{
   memberShop: MemberShopProps
