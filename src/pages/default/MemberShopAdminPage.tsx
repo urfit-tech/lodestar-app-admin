@@ -37,7 +37,7 @@ const MemberShopAdminPage: React.FC = () => {
   return (
     <>
       <AdminHeader>
-        <Link to="/merchandise-shops">
+        <Link to="/member-shops">
           <Button type="link" className="mr-3">
             <Icon type="arrow-left" />
           </Button>
