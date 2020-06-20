@@ -14,8 +14,8 @@ import types from '../../types'
 import { CouponPlanProps } from '../../types/checkout'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CouponPlanDiscountSelector from './CouponPlanDiscountSelector'
-import PlanCodeSelector, { PlanCodeProps } from './PlanCodeSelector'
 import CouponPlanScopeSelector from './CouponPlanScopeSelector'
+import PlanCodeSelector, { PlanCodeProps } from './PlanCodeSelector'
 
 type CouponPlanAdminModalProps = AdminModalProps &
   FormComponentProps & {
@@ -40,6 +40,8 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
 
       setLoading(true)
       if (couponPlan) {
+        console.log('update')
+        console.log(values)
         updateCouponPlan({
           variables: {
             couponPlanId: couponPlan.id,
@@ -47,14 +49,15 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             description: values.description,
             endedAt: values.endedAt,
             startedAt: values.startedAt,
-            scope: values.scope.scope,
+            scope: values.scope?.scope || null,
             title: values.title,
             type: values.discount.type === 'cash' ? 1 : values.discount.type === 'percent' ? 2 : 1,
             amount: values.discount.amount,
-            couponPlanProduct: values.scope.productIds.map((productId: string) => ({
-              coupon_plan_id: couponPlan.id,
-              product_id: productId,
-            })),
+            couponPlanProduct:
+              values.scope?.productIds.map((productId: string) => ({
+                coupon_plan_id: couponPlan.id,
+                product_id: productId,
+              })) || [],
           },
         })
           .then(() => window.location.reload())
@@ -62,6 +65,7 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             handleError(error)
             setLoading(false)
           })
+          .finally(() => setLoading(false))
       } else {
         // create a new coupon plan
         createCouponPlan({
