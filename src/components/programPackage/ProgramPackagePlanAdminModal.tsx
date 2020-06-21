@@ -21,6 +21,9 @@ const messages = defineMessages({
   isPublished: { id: 'programPackage.label.isPublished', defaultMessage: '是否開賣' },
   publish: { id: 'programPackage.ui.publish', defaultMessage: '發售，課程組合上架後立即開賣' },
   unpublish: { id: 'programPackage.ui.unpublish', defaultMessage: '停售，此方案暫停對外銷售，並從課程組合中隱藏' },
+  isParticipantsVisible: { id: 'programPackage.ui.isParticipantsVisible', defaultMessage: '購買人數' },
+  visible: { id: 'programPackage.ui.visible', defaultMessage: '顯示' },
+  invisible: { id: 'programPackage.ui.invisible', defaultMessage: '隱藏' },
   paymentType: { id: 'programPackage.label.paymentType', defaultMessage: '付費類型' },
   perpetual: { id: 'programPackage.label.perpetual', defaultMessage: '單次' },
   subscription: { id: 'programPackage.ui.subscription', defaultMessage: '訂閱' },
@@ -105,6 +108,7 @@ const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> 
           isTempoDelivery,
           isPublish,
           isSubscription,
+          isParticipantsVisible,
           periodAmount,
           periodType,
           listPrice,
@@ -128,6 +132,7 @@ const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> 
               is_tempo_delivery: isTempoDelivery,
               published_at: isPublish ? new Date() : null,
               is_subscription: isSubscription,
+              is_participants_visible: isParticipantsVisible,
               period_amount: periodAmount,
               period_type: periodType,
               list_price: listPrice,
@@ -207,6 +212,21 @@ const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> 
               </Radio>
               <Radio value={false} style={radioStyle}>
                 {formatMessage(messages.unpublish)}
+              </Radio>
+            </Radio.Group>,
+          )}
+        </Form.Item>
+
+        <Form.Item label={formatMessage(messages.isParticipantsVisible)}>
+          {getFieldDecorator('isParticipantsVisible', {
+            initialValue: plan ? !!plan.isParticipantsVisible : true,
+          })(
+            <Radio.Group>
+              <Radio value={true} style={radioStyle}>
+                {formatMessage(messages.visible)}
+              </Radio>
+              <Radio value={false} style={radioStyle}>
+                {formatMessage(messages.invisible)}
               </Radio>
             </Radio.Group>,
           )}
@@ -339,6 +359,7 @@ const INSERT_PROGRAM_PACKAGE_PLAN = gql`
           title
           is_tempo_delivery
           is_subscription
+          is_participants_visible
           published_at
           period_amount
           period_type
