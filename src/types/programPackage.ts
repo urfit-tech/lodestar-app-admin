@@ -34,5 +34,6 @@ export type ProgramPackagePlanProps = {
   periodType: PeriodType
   publishedAt: Date | null
   isTempoDelivery: boolean
+  isParticipantsVisible: boolean
   position: number
 }

@@ -7659,6 +7659,7 @@ export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_plans
   discount_down_price: any | null;
   published_at: any | null;
   is_tempo_delivery: boolean;
+  is_participants_visible: boolean;
   position: any;
   /**
    * An aggregated array relationship
@@ -8498,6 +8499,26 @@ export enum member_constraint {
 }
 
 /**
+ * unique or primary key constraints on table "member_shop"
+ */
+export enum member_shop_constraint {
+  member_shop_pkey = "member_shop_pkey",
+}
+
+/**
+ * update columns of table "member_shop"
+ */
+export enum member_shop_update_column {
+  created_at = "created_at",
+  id = "id",
+  member_id = "member_id",
+  published_at = "published_at",
+  shipping_methods = "shipping_methods",
+  title = "title",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "member_tag"
  */
 export enum member_tag_constraint {
@@ -9075,6 +9096,26 @@ export enum product_constraint {
 }
 
 /**
+ * unique or primary key constraints on table "product_inventory"
+ */
+export enum product_inventory_constraint {
+  product_inventory_pkey = "product_inventory_pkey",
+}
+
+/**
+ * update columns of table "product_inventory"
+ */
+export enum product_inventory_update_column {
+  comment = "comment",
+  created_at = "created_at",
+  id = "id",
+  product_id = "product_id",
+  quantity = "quantity",
+  specification = "specification",
+  status = "status",
+}
+
+/**
  * update columns of table "product"
  */
 export enum product_update_column {
@@ -9247,6 +9288,7 @@ export enum program_package_plan_update_column {
   description = "description",
   discount_down_price = "discount_down_price",
   id = "id",
+  is_participants_visible = "is_participants_visible",
   is_subscription = "is_subscription",
   is_tempo_delivery = "is_tempo_delivery",
   list_price = "list_price",
@@ -11297,6 +11339,7 @@ export interface member_bool_exp {
   logined_at?: timestamptz_comparison_exp | null;
   media?: media_bool_exp | null;
   member_cards?: member_card_bool_exp | null;
+  member_shops?: member_shop_bool_exp | null;
   member_tags?: member_tag_bool_exp | null;
   merchandises?: merchandise_bool_exp | null;
   metadata?: jsonb_comparison_exp | null;
@@ -11397,6 +11440,7 @@ export interface member_insert_input {
   logined_at?: any | null;
   media?: media_arr_rel_insert_input | null;
   member_cards?: member_card_arr_rel_insert_input | null;
+  member_shops?: member_shop_arr_rel_insert_input | null;
   member_tags?: member_tag_arr_rel_insert_input | null;
   merchandises?: merchandise_arr_rel_insert_input | null;
   metadata?: any | null;
@@ -11460,6 +11504,54 @@ export interface member_public_bool_exp {
   title?: String_comparison_exp | null;
   username?: String_comparison_exp | null;
   zoom_user_id?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "member_shop"
+ */
+export interface member_shop_arr_rel_insert_input {
+  data: member_shop_insert_input[];
+  on_conflict?: member_shop_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_shop". All fields are combined with a logical 'AND'.
+ */
+export interface member_shop_bool_exp {
+  _and?: (member_shop_bool_exp | null)[] | null;
+  _not?: member_shop_bool_exp | null;
+  _or?: (member_shop_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+  shipping_methods?: jsonb_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_shop"
+ */
+export interface member_shop_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  published_at?: any | null;
+  shipping_methods?: any | null;
+  title?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "member_shop"
+ */
+export interface member_shop_on_conflict {
+  constraint: member_shop_constraint;
+  update_columns: member_shop_update_column[];
+  where?: member_shop_bool_exp | null;
 }
 
 /**
@@ -12977,6 +13069,8 @@ export interface product_bool_exp {
   id?: String_comparison_exp | null;
   order_products?: order_product_bool_exp | null;
   product_enrollments?: product_enrollment_bool_exp | null;
+  product_inventories?: product_inventory_bool_exp | null;
+  product_inventory_status?: product_inventory_status_bool_exp | null;
   product_owner?: product_owner_bool_exp | null;
   target?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
@@ -13005,9 +13099,35 @@ export interface product_insert_input {
   cart_products?: cart_product_arr_rel_insert_input | null;
   id?: string | null;
   order_products?: order_product_arr_rel_insert_input | null;
+  product_inventories?: product_inventory_arr_rel_insert_input | null;
   target?: string | null;
   type?: string | null;
   voucher_plan_products?: voucher_plan_product_arr_rel_insert_input | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "product_inventory"
+ */
+export interface product_inventory_arr_rel_insert_input {
+  data: product_inventory_insert_input[];
+  on_conflict?: product_inventory_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "product_inventory". All fields are combined with a logical 'AND'.
+ */
+export interface product_inventory_bool_exp {
+  _and?: (product_inventory_bool_exp | null)[] | null;
+  _not?: product_inventory_bool_exp | null;
+  _or?: (product_inventory_bool_exp | null)[] | null;
+  comment?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  product?: product_bool_exp | null;
+  product_id?: String_comparison_exp | null;
+  quantity?: Int_comparison_exp | null;
+  specification?: String_comparison_exp | null;
+  status?: String_comparison_exp | null;
 }
 
 /**
@@ -13022,6 +13142,30 @@ export interface product_inventory_insert_input {
   quantity?: number | null;
   specification?: string | null;
   status?: string | null;
+}
+
+/**
+ * on conflict condition type for table "product_inventory"
+ */
+export interface product_inventory_on_conflict {
+  constraint: product_inventory_constraint;
+  update_columns: product_inventory_update_column[];
+  where?: product_inventory_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "product_inventory_status". All fields are combined with a logical 'AND'.
+ */
+export interface product_inventory_status_bool_exp {
+  _and?: (product_inventory_status_bool_exp | null)[] | null;
+  _not?: product_inventory_status_bool_exp | null;
+  _or?: (product_inventory_status_bool_exp | null)[] | null;
+  buyable_quantity?: bigint_comparison_exp | null;
+  delivered_quantity?: bigint_comparison_exp | null;
+  product?: product_bool_exp | null;
+  product_id?: String_comparison_exp | null;
+  total_quantity?: bigint_comparison_exp | null;
+  undelivered_quantity?: bigint_comparison_exp | null;
 }
 
 /**
@@ -13665,6 +13809,7 @@ export interface program_package_plan_bool_exp {
   description?: String_comparison_exp | null;
   discount_down_price?: numeric_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_participants_visible?: Boolean_comparison_exp | null;
   is_subscription?: Boolean_comparison_exp | null;
   is_tempo_delivery?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
@@ -13702,6 +13847,7 @@ export interface program_package_plan_insert_input {
   description?: string | null;
   discount_down_price?: any | null;
   id?: any | null;
+  is_participants_visible?: boolean | null;
   is_subscription?: boolean | null;
   is_tempo_delivery?: boolean | null;
   list_price?: any | null;

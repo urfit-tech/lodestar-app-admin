@@ -354,6 +354,7 @@ export const useGetProgramPackage = (id: string) => {
             period_type
             published_at
             is_tempo_delivery
+            is_participants_visible
             position
             program_package_plan_enrollments_aggregate {
               aggregate {
@@ -411,6 +412,7 @@ export const useGetProgramPackage = (id: string) => {
               discountDownPrice: plan.discount_down_price,
               publishedAt: plan.published_at ? new Date(plan.published_at) : null,
               isTempoDelivery: plan.is_tempo_delivery,
+              isParticipantsVisible: plan.is_participants_visible,
               position: plan.position,
               soldQuantity: plan.program_package_plan_enrollments_aggregate.aggregate?.count ?? 0,
             })) ?? [],
