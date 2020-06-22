@@ -45,7 +45,6 @@ export const useProgramPackagePlanCollection = (programPackageId: string | null,
           where: {
             program_package_id: { _in: $programPackageIds }
             is_tempo_delivery: { _eq: $isTempoDelivery }
-            published_at: { _is_null: false }
           }
           order_by: { position: asc, published_at: desc }
         ) {
