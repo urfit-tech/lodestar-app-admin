@@ -6719,6 +6719,7 @@ export interface GET_MERCHANDISE_ORDER_LOG_orderLogs_orderMerchandises {
   id: any;
   name: string;
   product_id: string;
+  options: any | null;
 }
 
 export interface GET_MERCHANDISE_ORDER_LOG_orderLogs {
@@ -8359,6 +8360,7 @@ export enum coupon_plan_update_column {
   started_at = "started_at",
   title = "title",
   type = "type",
+  updated_at = "updated_at",
 }
 
 /**
@@ -10930,6 +10932,7 @@ export interface coupon_plan_bool_exp {
   started_at?: timestamptz_comparison_exp | null;
   title?: String_comparison_exp | null;
   type?: Int_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**
@@ -10947,6 +10950,7 @@ export interface coupon_plan_insert_input {
   started_at?: any | null;
   title?: string | null;
   type?: number | null;
+  updated_at?: any | null;
 }
 
 /**
