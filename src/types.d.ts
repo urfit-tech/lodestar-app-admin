@@ -5009,10 +5009,20 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_me
   picture_url: string | null;
 }
 
+export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product_order_log {
+  __typename: "order_log";
+  created_at: any;
+  updated_at: any | null;
+}
+
 export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product {
   __typename: "order_product";
   id: any;
   options: any | null;
+  /**
+   * An object relationship
+   */
+  order_log: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product_order_log;
 }
 
 export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment {

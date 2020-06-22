@@ -27,6 +27,7 @@ const messages = defineMessages({
     defaultMessage: '※此紀錄不會公開給學員看到',
   },
   appointmentCanceledAt: { id: 'appointment.label.appointmentCanceledAt', defaultMessage: '已於 {time} 取消預約' },
+  orderUpdatedTime: { id: 'appointment.label.orderUpdatedTime', defaultMessage: '訂單更新日期' },
 })
 
 const StyledWrapper = styled.div`
@@ -101,6 +102,10 @@ export type AppointmentPeriodProps = {
   orderProduct: {
     id: string
     options: any
+    orderLog?: {
+      createdAt: Date
+      updatedAt: Date | null
+    }
   }
   appointmentIssue: string | null
   appointmentResult: string | null
@@ -237,9 +242,17 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
           </StyledMeta>
         )}
         {member.phone && (
-          <StyledMeta className="d-flex justify-content-between">
+          <StyledMeta className="d-flex justify-content-between mb-3">
             <div>{formatMessage(commonMessages.term.phone)}</div>
             <div>{member.phone}</div>
+          </StyledMeta>
+        )}
+        {orderProduct.orderLog?.createdAt && (
+          <StyledMeta className="d-flex justify-content-between">
+            <div>{formatMessage(messages.orderUpdatedTime)}</div>
+            <div>
+              {moment(orderProduct.orderLog?.updatedAt || orderProduct.orderLog?.createdAt).format('YYYY-MM-DD HH:mm')}
+            </div>
           </StyledMeta>
         )}
       </Modal>
