@@ -18,7 +18,7 @@ export const useCouponPlanCollection = () => {
   >(
     gql`
       query GET_COUPON_PLAN_COLLECTION($appId: String!) {
-        coupon_plan(where: { coupon_codes: { app_id: { _eq: $appId } } }) {
+        coupon_plan(where: { coupon_codes: { app_id: { _eq: $appId } } }, order_by: { updated_at: desc }) {
           id
           title
           amount

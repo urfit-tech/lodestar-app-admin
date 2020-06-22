@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { DatePicker, Form, Input, InputNumber, message } from 'antd'
+import { Button, DatePicker, Form, Input, InputNumber, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import { generate } from 'coupon-code'
 import gql from 'graphql-tag'
@@ -20,8 +20,9 @@ import PlanCodeSelector, { PlanCodeProps } from './PlanCodeSelector'
 type CouponPlanAdminModalProps = AdminModalProps &
   FormComponentProps & {
     couponPlan?: CouponPlanProps
+    onRefetch?: () => void
   }
-const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, couponPlan, ...props }) => {
+const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, couponPlan, onRefetch, ...props }) => {
   const { id: appId, enabledModules } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const [createCouponPlan] = useMutation<types.INSERT_COUPON_PLAN, types.INSERT_COUPON_PLANVariables>(
@@ -32,16 +33,15 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
   )
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = () => {
+  const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     form.validateFieldsAndScroll((error, values) => {
       if (error) {
         return
       }
 
       setLoading(true)
+
       if (couponPlan) {
-        console.log('update')
-        console.log(values)
         updateCouponPlan({
           variables: {
             couponPlanId: couponPlan.id,
@@ -60,11 +60,12 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
               })) || [],
           },
         })
-          .then(() => window.location.reload())
-          .catch(error => {
-            handleError(error)
-            setLoading(false)
+          .then(() => {
+            message.success(formatMessage(commonMessages.event.successfullySaved))
+            onRefetch && onRefetch()
+            setVisible(false)
           })
+          .catch(handleError)
           .finally(() => setLoading(false))
       } else {
         // create a new coupon plan
@@ -104,7 +105,9 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
           },
         })
           .then(() => {
-            window.location.reload()
+            message.success(formatMessage(commonMessages.event.successfullyCreated))
+            onRefetch && onRefetch()
+            setVisible(false)
           })
           .catch(error => {
             if (/^GraphQL error: Uniqueness violation/.test(error.message)) {
@@ -112,8 +115,8 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             } else {
               handleError(error)
             }
-            setLoading(false)
           })
+          .finally(() => setLoading(false))
       }
     })
   }
@@ -121,10 +124,17 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
   return (
     <AdminModal
       maskClosable={false}
-      okText={formatMessage(commonMessages.ui.confirm)}
-      cancelText={formatMessage(commonMessages.ui.cancel)}
-      okButtonProps={{ loading }}
-      onOk={() => handleSubmit()}
+      footer={null}
+      renderFooter={({ setVisible }) => (
+        <>
+          <Button className="mr-2" onClick={() => setVisible(false)}>
+            {formatMessage(commonMessages.ui.cancel)}
+          </Button>
+          <Button type="primary" loading={loading} onClick={() => handleSubmit(setVisible)}>
+            {formatMessage(commonMessages.ui.confirm)}
+          </Button>
+        </>
+      )}
       {...props}
     >
       <Form colon={false} hideRequiredMark>
@@ -153,6 +163,12 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
           </Form.Item>
         )}
 
+        <Form.Item label={formatMessage(promotionMessages.label.constraint)}>
+          {form.getFieldDecorator('constraint', {
+            initialValue: (couponPlan && couponPlan.constraint) || 0,
+            rules: [{ required: true }],
+          })(<InputNumber formatter={v => `${v}`} parser={v => (v ? parseFloat(v) : 0)} />)}
+        </Form.Item>
         <Form.Item
           label={formatMessage(promotionMessages.term.discount)}
           help={formatMessage(promotionMessages.label.discountHelp)}
@@ -162,12 +178,6 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
               ? { type: couponPlan.type, amount: couponPlan.amount }
               : { type: 'cash', amount: 0 },
           })(<CouponPlanDiscountSelector />)}
-        </Form.Item>
-        <Form.Item label={formatMessage(promotionMessages.label.constraint)}>
-          {form.getFieldDecorator('constraint', {
-            initialValue: (couponPlan && couponPlan.constraint) || 0,
-            rules: [{ required: true }],
-          })(<InputNumber formatter={v => `${v}`} parser={v => (v ? parseFloat(v) : 0)} />)}
         </Form.Item>
 
         {!couponPlan && (
