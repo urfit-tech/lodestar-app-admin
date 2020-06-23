@@ -27,7 +27,7 @@ export const usePodcastPlan = (podcastPlanId: string) => {
           id: data.podcast_plan_by_pk.id,
           listPrice: data.podcast_plan_by_pk.list_price,
           salePrice: data.podcast_plan_by_pk.sale_price,
-          soldAt: new Date(data.podcast_plan_by_pk.sold_at),
+          soldAt: data.podcast_plan_by_pk.sold_at,
           periodAmount: data.podcast_plan_by_pk.period_amount,
           periodType: data.podcast_plan_by_pk.period_type as 'Y' | 'M' | 'W',
           isPublished: new Date(data.podcast_plan_by_pk.published_at).getTime() < Date.now(),

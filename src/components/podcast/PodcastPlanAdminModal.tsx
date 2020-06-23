@@ -1,12 +1,12 @@
-import { Button, Checkbox, DatePicker, Form, Icon, InputNumber, Modal, Radio } from 'antd'
+import { Button, Form, Icon, InputNumber, Modal, Radio } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
-import moment from 'moment'
 import React, { Dispatch, SetStateAction, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAuth } from '../../contexts/AuthContext'
 import { rgba } from '../../helpers'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
+import SaleInput from '../admin/SaleInput'
 import CreatorSelector from '../common/CreatorSelector'
 import { BREAK_POINT } from '../common/Responsive'
 import PodcastPeriodSelector from './PodcastPeriodSelector'
@@ -90,9 +90,7 @@ const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
 }) => {
   const { formatMessage } = useIntl()
   const { currentUserRole } = useAuth()
-
   const [loading, setLoading] = useState(false)
-  const [withSalePrice, setWithSalePrice] = useState<boolean>(Boolean(podcastPlan && podcastPlan.salePrice))
 
   const handleSubmit = () => {
     form.validateFields((error, values) => {
@@ -112,8 +110,8 @@ const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
             isPublished: values.status,
             isSubscription: true,
             listPrice: values.listPrice,
-            salePrice: values.salePrice,
-            soldAt: values.soldAt,
+            salePrice: values.sale ? values.sale.price : null,
+            soldAt: values.sale ? values.sale.soldAt : null,
             periodAmount: values.period.amount,
             periodType: values.period.type,
             creatorId: values.creatorId,
@@ -139,7 +137,7 @@ const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
           <Icon type="file-add" />
         </StyledIcon>
         <StyledTitle>{formatMessage(podcastMessages.term.podcastPlan)}</StyledTitle>
-        <Form>
+        <Form hideRequiredMark colon={false}>
           {currentUserRole !== 'content-creator' && (
             <Form.Item label={formatMessage(commonMessages.label.selectInstructor)}>
               {form.getFieldDecorator('creatorId', {
@@ -195,37 +193,20 @@ const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
               />,
             )}
           </Form.Item>
-          <Checkbox checked={withSalePrice} onChange={e => setWithSalePrice(e.target.checked)}>
-            {formatMessage(commonMessages.term.salePrice)}
-          </Checkbox>
-          {withSalePrice && (
-            <Form.Item>
-              {form.getFieldDecorator('salePrice', {
-                initialValue: podcastPlan ? podcastPlan.salePrice : 0,
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage(errorMessages.form.isRequired, {
-                      field: formatMessage(commonMessages.term.salePrice),
-                    }),
-                  },
-                  { type: 'number' },
-                ],
-              })(
-                <InputNumber
-                  min={0}
-                  formatter={value => `NT$ ${value}`}
-                  parser={value => (value ? value.replace(/\D/g, '') : '')}
-                  className="mr-2"
-                />,
-              )}
-              {form.getFieldDecorator('soldAt', {
-                initialValue: podcastPlan && podcastPlan.soldAt ? moment(podcastPlan.soldAt) : null,
-                rules: [{ required: true }],
-              })(<DatePicker placeholder={formatMessage(commonMessages.label.salePriceEndTime)} />)}
-            </Form.Item>
-          )}
+
+          <Form.Item>
+            {form.getFieldDecorator('sale', {
+              initialValue: podcastPlan?.soldAt
+                ? {
+                    price: podcastPlan.salePrice || 0,
+                    soldAt: podcastPlan.soldAt,
+                  }
+                : null,
+              rules: [{ validator: (rule, value, callback) => callback((value && !value.soldAt) || undefined) }],
+            })(<SaleInput />)}
+          </Form.Item>
         </Form>
+
         <div className="text-right">
           <Button className="mr-2" onClick={() => onVisibleSet(false)}>
             {formatMessage(commonMessages.ui.cancel)}

@@ -1946,10 +1946,10 @@ export interface UPSERT_PROGRAM_PLANVariables {
   title: string;
   description: string;
   listPrice: any;
-  salePrice: any;
+  salePrice?: any | null;
+  soldAt?: any | null;
   discountDownPrice: any;
   periodType: string;
-  soldAt?: any | null;
 }
 
 /* tslint:disable */
@@ -6082,7 +6082,7 @@ export interface GET_PRODUCT_SIMPLE_program_plan_by_pk {
   id: any;
   title: string | null;
   list_price: any;
-  sale_price: any;
+  sale_price: any | null;
   sold_at: any | null;
   discount_down_price: any;
   period_type: string | null;
@@ -6881,7 +6881,7 @@ export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans {
   __typename: "program_plan";
   id: any;
   list_price: any;
-  sale_price: any;
+  sale_price: any | null;
   sold_at: any | null;
   period_type: string | null;
   /**
@@ -7027,7 +7027,7 @@ export interface GET_PROGRAM_program_by_pk_program_plans {
   title: string | null;
   description: string | null;
   gains: any | null;
-  sale_price: any;
+  sale_price: any | null;
   discount_down_price: any;
   list_price: any;
   period_type: string | null;

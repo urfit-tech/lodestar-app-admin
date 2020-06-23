@@ -1,37 +1,26 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, DatePicker, Form, Icon, InputNumber, message, Skeleton } from 'antd'
+import { Button, Form, InputNumber, message, Skeleton } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
-import moment from 'moment'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
-import styled from 'styled-components'
+import SaleInput from '../../components/admin/SaleInput'
 import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
-
-const StyledIcon = styled(Icon)`
-  color: #ff7d62;
-`
 
 const PodcastProgramPlanForm: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
   const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
     PodcastProgramContext,
   )
-
   const [updatePodcastProgramPlan] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_PLAN,
     types.UPDATE_PODCAST_PROGRAM_PLANVariables
   >(UPDATE_PODCAST_PROGRAM_PLAN)
 
-  const [withSalePrice, setWithSalePrice] = useState(false)
   const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    setWithSalePrice(!!podcastProgram && typeof podcastProgram.salePrice === 'number')
-  }, [podcastProgram])
 
   if (loadingPodcastProgram) {
     return <Skeleton active />
@@ -54,8 +43,8 @@ const PodcastProgramPlanForm: React.FC<FormComponentProps> = ({ form }) => {
           updatedAt: new Date(),
           podcastProgramId: podcastProgram.id,
           listPrice: values.listPrice,
-          salePrice: withSalePrice ? values.salePrice || 0 : null,
-          soldAt: withSalePrice && values.soldAt ? moment(values.soldAt).toDate() : null,
+          salePrice: values.sale ? values.sale.price : null,
+          soldAt: values.sale ? values.sale.soldAt : null,
         },
       })
         .then(() => {
@@ -87,36 +76,19 @@ const PodcastProgramPlanForm: React.FC<FormComponentProps> = ({ form }) => {
           />,
         )}
       </Form.Item>
-      <div className="mb-4">
-        <Checkbox checked={withSalePrice} onChange={e => setWithSalePrice(e.target.checked)}>
-          {formatMessage(commonMessages.term.salePrice)}
-        </Checkbox>
-      </div>
-      <Form.Item className={withSalePrice ? 'm-0' : 'd-none'}>
-        <Form.Item className="d-inline-block mr-2">
-          {form.getFieldDecorator('salePrice', {
-            initialValue: podcastProgram.salePrice || 0,
-          })(
-            <InputNumber
-              min={0}
-              formatter={value => `NT$ ${value}`}
-              parser={value => (value ? value.replace(/\D/g, '') : '')}
-            />,
-          )}
-        </Form.Item>
-        <Form.Item className="d-inline-block mr-2">
-          {form.getFieldDecorator('soldAt', {
-            initialValue: podcastProgram && podcastProgram.soldAt ? moment(podcastProgram.soldAt) : null,
-            rules: [{ required: withSalePrice, message: formatMessage(errorMessages.form.date) }],
-          })(<DatePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" />)}
-        </Form.Item>
-        {form.getFieldValue('soldAt') && moment(form.getFieldValue('soldAt')).isBefore(moment()) ? (
-          <div className="d-inline-block">
-            <StyledIcon type="exclamation-circle" theme="filled" className="mr-1" />
-            <span>{formatMessage(commonMessages.label.outdated)}</span>
-          </div>
-        ) : null}
+
+      <Form.Item>
+        {form.getFieldDecorator('sale', {
+          initialValue: podcastProgram.soldAt
+            ? {
+                price: podcastProgram.salePrice || 0,
+                soldAt: podcastProgram.soldAt,
+              }
+            : null,
+          rules: [{ validator: (rule, value, callback) => callback((value && !value.soldAt) || undefined) }],
+        })(<SaleInput />)}
       </Form.Item>
+
       <Form.Item>
         <Button onClick={() => form.resetFields()} className="mr-2">
           {formatMessage(commonMessages.ui.cancel)}
