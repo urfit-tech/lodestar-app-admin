@@ -15,7 +15,7 @@ type AuthContext = {
   register?: (data: { appId: string; username: string; email: string; password: string }) => Promise<void>
   login?: (data: { appId: string; account: string; password: string }) => Promise<void>
   socialLogin?: (data: { provider: string; providerToken: any }) => Promise<void>
-  logout?: () => Promise<void>
+  logout?: () => void
 }
 
 const defaultAuthContext: AuthContext = {
@@ -44,7 +44,10 @@ export const AuthProvider: React.FC = ({ children }) => {
       Axios({
         method: 'POST',
         url: `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/refresh-token`,
-        withCredentials: true,
+        data: {
+          appId: process.env.REACT_APP_ID,
+          refreshToken: localStorage.getItem('kolable.refreshToken'),
+        },
       })
         .then(({ data: { code, message, result } }) => {
           code === 'SUCCESS' ? setAuthToken(result.authToken) : setAuthToken(null)
@@ -93,31 +96,27 @@ export const AuthProvider: React.FC = ({ children }) => {
             }
           }),
         login: async ({ appId, account, password }) =>
-          Axios.post(
-            `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/general-login`,
-            { appId, account, password },
-            { withCredentials: true },
-          ).then(({ data: { code, result } }) => {
-            if (code !== 'SUCCESS') {
-              setAuthToken(null)
-              throw new Error(code)
-            } else if (result === null) {
-              window.location.assign(`/check-email?email=${account}&type=reset-password`)
-            } else {
-              setAuthToken(result.authToken)
-            }
-          }),
-        socialLogin: async ({ provider, providerToken }) =>
-          Axios.post(
-            `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/social-login`,
-            {
-              appId,
-              provider,
-              providerToken,
+          Axios.post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/general-login`, { appId, account, password }).then(
+            ({ data: { code, result } }) => {
+              if (code !== 'SUCCESS') {
+                setAuthToken(null)
+                throw new Error(code)
+              } else if (result === null) {
+                window.location.assign(`/check-email?email=${account}&type=reset-password`)
+              } else {
+                localStorage.setItem('kolable.refreshToken', result.refreshToken)
+                setAuthToken(result.authToken)
+              }
             },
-            { withCredentials: true },
-          ).then(({ data: { code, message, result } }) => {
+          ),
+        socialLogin: async ({ provider, providerToken }) =>
+          Axios.post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/social-login`, {
+            appId,
+            provider,
+            providerToken,
+          }).then(({ data: { code, message, result } }) => {
             if (code === 'SUCCESS') {
+              localStorage.setItem('kolable.refreshToken', result.refreshToken)
               setAuthToken(result.authToken)
             } else {
               setAuthToken(null)
@@ -125,12 +124,8 @@ export const AuthProvider: React.FC = ({ children }) => {
             }
           }),
         logout: async () => {
-          return Axios(`${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/logout`, {
-            method: 'POST',
-            withCredentials: true,
-          }).then(() => {
-            setAuthToken(null)
-          })
+          localStorage.removeItem('kolable.refreshToken')
+          setAuthToken(null)
         },
       }}
     >
