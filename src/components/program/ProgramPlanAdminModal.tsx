@@ -1,9 +1,8 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, DatePicker, Form, Icon, Input, InputNumber, Radio } from 'antd'
+import { Button, Checkbox, Form, Icon, Input, InputNumber, Radio } from 'antd'
 import { FormComponentProps } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
-import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -14,6 +13,7 @@ import types from '../../types'
 import { ProgramPlanType } from '../../types/program'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
+import SaleInput from '../admin/SaleInput'
 import ProgramPeriodTypeDropdown from './ProgramPeriodTypeDropdown'
 
 const StyledForm = styled(Form)`
@@ -33,9 +33,6 @@ const StyledForm = styled(Form)`
       display: block;
     }
   }
-`
-const StyledIcon = styled(Icon)`
-  color: #ff7d62;
 `
 
 const messages = defineMessages({
@@ -66,10 +63,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
   )
 
   const [loading, setLoading] = useState(false)
-  const [withSalePrice, setWithSalePrice] = useState(programPlan && programPlan.salePrice ? true : false)
-  const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(
-    programPlan && programPlan.discountDownPrice ? true : false,
-  )
+  const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(programPlan && !!programPlan.discountDownPrice)
 
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     form.validateFieldsAndScroll((error, values) => {
@@ -83,10 +77,10 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
             title: values.title,
             description: values.description.toRAW(),
             listPrice: values.listPrice,
-            salePrice: withSalePrice ? values.salePrice : 0,
+            salePrice: values.sale ? values.sale.price : null,
+            soldAt: values.sale ? values.sale.soldAt : null,
             discountDownPrice: withDiscountDownPrice ? values.discountDownPrice : 0,
             periodType: values.periodType,
-            soldAt: withSalePrice && values.soldAt ? values.soldAt.toDate() : null,
           },
         })
           .then(() => {
@@ -122,7 +116,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
         </>
       )}
     >
-      <StyledForm>
+      <StyledForm hideRequiredMark colon={false}>
         <Form.Item label={formatMessage(programMessages.label.planTitle)}>
           {form.getFieldDecorator('title', {
             initialValue: programPlan && programPlan.title,
@@ -168,36 +162,16 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
           )}
         </Form.Item>
 
-        <div className="mb-4">
-          <Checkbox defaultChecked={withSalePrice} onChange={e => setWithSalePrice(e.target.checked)}>
-            {formatMessage(commonMessages.term.salePrice)}
-          </Checkbox>
-          {withSalePrice && <div className="notation">{formatMessage(commonMessages.text.salePriceNotation)}</div>}
-        </div>
-        <Form.Item className={withSalePrice ? 'm-0' : 'd-none'}>
-          <Form.Item className="d-inline-block mr-2">
-            {form.getFieldDecorator('salePrice', {
-              initialValue: (programPlan && programPlan.salePrice) || 0,
-            })(
-              <InputNumber
-                min={0}
-                formatter={value => `NT$ ${value}`}
-                parser={value => (value ? value.replace(/\D/g, '') : '')}
-              />,
-            )}
-          </Form.Item>
-          <Form.Item className="d-inline-block mr-2">
-            {form.getFieldDecorator('soldAt', {
-              initialValue: programPlan && programPlan.soldAt ? moment(programPlan.soldAt) : null,
-              rules: [{ required: withSalePrice, message: formatMessage(errorMessages.form.date) }],
-            })(<DatePicker placeholder={formatMessage(commonMessages.label.salePriceEndTime)} />)}
-          </Form.Item>
-          {form.getFieldValue('soldAt') && moment(form.getFieldValue('soldAt')).isBefore(moment()) ? (
-            <div className="d-inline-block">
-              <StyledIcon type="exclamation-circle" theme="filled" className="mr-1" />
-              <span>{formatMessage(commonMessages.label.outdated)}</span>
-            </div>
-          ) : null}
+        <Form.Item>
+          {form.getFieldDecorator('sale', {
+            initialValue: programPlan?.soldAt
+              ? {
+                  price: programPlan.salePrice || 0,
+                  soldAt: programPlan.soldAt,
+                }
+              : null,
+            rules: [{ validator: (rule, value, callback) => callback((value && !value.soldAt) || undefined) }],
+          })(<SaleInput />)}
         </Form.Item>
 
         <div className="mb-4">
@@ -238,10 +212,10 @@ const UPSERT_PROGRAM_PLAN = gql`
     $title: String!
     $description: String!
     $listPrice: numeric!
-    $salePrice: numeric!
+    $salePrice: numeric
+    $soldAt: timestamptz
     $discountDownPrice: numeric!
     $periodType: String!
-    $soldAt: timestamptz
   ) {
     insert_program_plan(
       objects: {

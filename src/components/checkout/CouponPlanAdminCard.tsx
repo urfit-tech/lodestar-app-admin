@@ -75,7 +75,8 @@ const StyledText = styled.span<{ outdated?: boolean }>`
 const CouponPlanAdminCard: React.FC<{
   couponPlan: CouponPlanProps
   outdated?: boolean
-}> = ({ couponPlan, outdated }) => {
+  onRefetch?: () => void
+}> = ({ couponPlan, outdated, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [modalVisible, setModalVisible] = useState(false)
 
@@ -145,6 +146,7 @@ const CouponPlanAdminCard: React.FC<{
                   icon={<Icon type="edit" />}
                   title={formatMessage(promotionMessages.ui.editCouponPlan)}
                   couponPlan={couponPlan}
+                  onRefetch={onRefetch}
                 />
               </Menu.Item>
             </Menu>

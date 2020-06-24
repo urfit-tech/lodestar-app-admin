@@ -31,6 +31,10 @@ export const useAppointmentEnrollmentCollection = () => {
         order_product {
           id
           options
+          order_log {
+            created_at
+            updated_at
+          }
         }
         issue
         result
@@ -65,6 +69,10 @@ export const useAppointmentEnrollmentCollection = () => {
               orderProduct: {
                 id: enrollment.order_product_id,
                 options: enrollment.order_product?.options,
+                orderLog: {
+                  createdAt: enrollment.order_product?.order_log.created_at,
+                  updatedAt: enrollment.order_product?.order_log.updated_at,
+                },
               },
               appointmentIssue: enrollment.issue,
               appointmentResult: enrollment.result,

@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { DatePicker, Form, Input, InputNumber, message } from 'antd'
+import { Button, DatePicker, Form, Input, InputNumber, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import { generate } from 'coupon-code'
 import gql from 'graphql-tag'
@@ -14,15 +14,16 @@ import types from '../../types'
 import { CouponPlanProps } from '../../types/checkout'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CouponPlanDiscountSelector from './CouponPlanDiscountSelector'
-import PlanCodeSelector, { PlanCodeProps } from './PlanCodeSelector'
 import CouponPlanScopeSelector from './CouponPlanScopeSelector'
+import PlanCodeSelector, { PlanCodeProps } from './PlanCodeSelector'
 
 type CouponPlanAdminModalProps = AdminModalProps &
   FormComponentProps & {
     couponPlan?: CouponPlanProps
+    onRefetch?: () => void
   }
-const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, couponPlan, ...props }) => {
-  const { id: appId } = useContext(AppContext)
+const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, couponPlan, onRefetch, ...props }) => {
+  const { id: appId, enabledModules } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const [createCouponPlan] = useMutation<types.INSERT_COUPON_PLAN, types.INSERT_COUPON_PLANVariables>(
     INSERT_COUPON_PLAN,
@@ -32,13 +33,14 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
   )
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = () => {
+  const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     form.validateFieldsAndScroll((error, values) => {
       if (error) {
         return
       }
 
       setLoading(true)
+
       if (couponPlan) {
         updateCouponPlan({
           variables: {
@@ -47,21 +49,24 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             description: values.description,
             endedAt: values.endedAt,
             startedAt: values.startedAt,
-            scope: values.scope.scope,
+            scope: values.scope?.scope || null,
             title: values.title,
             type: values.discount.type === 'cash' ? 1 : values.discount.type === 'percent' ? 2 : 1,
             amount: values.discount.amount,
-            couponPlanProduct: values.scope.productIds.map((productId: string) => ({
-              coupon_plan_id: couponPlan.id,
-              product_id: productId,
-            })),
+            couponPlanProduct:
+              values.scope?.productIds.map((productId: string) => ({
+                coupon_plan_id: couponPlan.id,
+                product_id: productId,
+              })) || [],
           },
         })
-          .then(() => window.location.reload())
-          .catch(error => {
-            handleError(error)
-            setLoading(false)
+          .then(() => {
+            message.success(formatMessage(commonMessages.event.successfullySaved))
+            onRefetch && onRefetch()
+            setVisible(false)
           })
+          .catch(handleError)
+          .finally(() => setLoading(false))
       } else {
         // create a new coupon plan
         createCouponPlan({
@@ -87,19 +92,22 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             }),
             constraint: values.constraint,
             description: values.description,
-            endedAt: values.endedAt,
-            scope: values.scope.scope,
             startedAt: values.startedAt,
+            endedAt: values.endedAt,
+            scope: values.scope?.scope || null,
             title: values.title,
             type: values.discount.type === 'cash' ? 1 : values.discount.type === 'percent' ? 2 : 1,
             amount: values.discount.amount,
-            couponPlanProduct: values.scope.productIds.map((productId: string) => ({
-              product_id: productId,
-            })),
+            couponPlanProduct:
+              values.scope?.productIds.map((productId: string) => ({
+                product_id: productId,
+              })) || [],
           },
         })
           .then(() => {
-            window.location.reload()
+            message.success(formatMessage(commonMessages.event.successfullyCreated))
+            onRefetch && onRefetch()
+            setVisible(false)
           })
           .catch(error => {
             if (/^GraphQL error: Uniqueness violation/.test(error.message)) {
@@ -107,8 +115,8 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             } else {
               handleError(error)
             }
-            setLoading(false)
           })
+          .finally(() => setLoading(false))
       }
     })
   }
@@ -116,10 +124,17 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
   return (
     <AdminModal
       maskClosable={false}
-      okText={formatMessage(commonMessages.ui.confirm)}
-      cancelText={formatMessage(commonMessages.ui.cancel)}
-      okButtonProps={{ loading }}
-      onOk={() => handleSubmit()}
+      footer={null}
+      renderFooter={({ setVisible }) => (
+        <>
+          <Button className="mr-2" onClick={() => setVisible(false)}>
+            {formatMessage(commonMessages.ui.cancel)}
+          </Button>
+          <Button type="primary" loading={loading} onClick={() => handleSubmit(setVisible)}>
+            {formatMessage(commonMessages.ui.confirm)}
+          </Button>
+        </>
+      )}
       {...props}
     >
       <Form colon={false} hideRequiredMark>
@@ -136,6 +151,18 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             ],
           })(<Input />)}
         </Form.Item>
+
+        {enabledModules.coupon_scope && (
+          <Form.Item label={formatMessage(promotionMessages.label.scope)}>
+            {form.getFieldDecorator('scope', {
+              initialValue: {
+                scope: couponPlan?.scope || null,
+                productIds: couponPlan?.productIds || [],
+              },
+            })(<CouponPlanScopeSelector />)}
+          </Form.Item>
+        )}
+
         <Form.Item label={formatMessage(promotionMessages.label.constraint)}>
           {form.getFieldDecorator('constraint', {
             initialValue: (couponPlan && couponPlan.constraint) || 0,
@@ -153,15 +180,6 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
           })(<CouponPlanDiscountSelector />)}
         </Form.Item>
 
-        <Form.Item label={formatMessage(promotionMessages.label.scope)}>
-          {form.getFieldDecorator('scope', {
-            initialValue: {
-              scope: couponPlan?.scope || null,
-              productIds: couponPlan?.productIds || [],
-            },
-          })(<CouponPlanScopeSelector />)}
-        </Form.Item>
-
         {!couponPlan && (
           <Form.Item label={formatMessage(promotionMessages.term.couponCodes)}>
             {form.getFieldDecorator('codes', {
@@ -169,14 +187,13 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
             })(<PlanCodeSelector planType="coupon" />)}
           </Form.Item>
         )}
-
         <Form.Item label={formatMessage(promotionMessages.label.availableDateRange)}>
           <Input.Group compact>
             {form.getFieldDecorator('startedAt', {
               initialValue: couponPlan && couponPlan.startedAt && moment(couponPlan.startedAt),
             })(
               <DatePicker
-                showTime
+                showTime={{ format: 'HH:mm' }}
                 format="YYYY-MM-DD HH:mm"
                 placeholder={formatMessage(commonMessages.term.startedAt)}
               />,
@@ -185,7 +202,7 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
               initialValue: couponPlan && couponPlan.endedAt && moment(couponPlan.endedAt),
             })(
               <DatePicker
-                showTime
+                showTime={{ format: 'HH:mm' }}
                 format="YYYY-MM-DD HH:mm"
                 placeholder={formatMessage(commonMessages.term.endedAt)}
               />,

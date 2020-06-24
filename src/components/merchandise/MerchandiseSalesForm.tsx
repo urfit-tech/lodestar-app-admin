@@ -1,34 +1,20 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, DatePicker, Form, InputNumber, message, Row } from 'antd'
+import { Button, Checkbox, DatePicker, Form, InputNumber, message } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import moment from 'moment-timezone'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
+import SaleInput from '../admin/SaleInput'
 
 const messages = defineMessages({
-  setSalePrice: {
-    id: 'merchandiseMessages.label.setSalePrice',
-    defaultMessage: '設定優惠價',
-  },
-  setSellingTime: {
-    id: 'merchandiseMessages.label.setSellingTime',
-    defaultMessage: '限定販售時間',
-  },
+  setSalePrice: { id: 'merchandise.label.setSalePrice', defaultMessage: '設定優惠價' },
+  setSellingTime: { id: 'merchandise.label.setSellingTime', defaultMessage: '限定販售時間' },
 })
-
-const StyledFormItemTitle = styled.h3`
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.5;
-  letter-spacing: 0.2px;
-  color: var(--gray-darker);
-`
 
 type MerchandiseSalesFormProps = FormComponentProps & {
   merchandise: MerchandiseProps
@@ -38,9 +24,9 @@ type MerchandiseSalesFormProps = FormComponentProps & {
 const MerchandiseSalesForm: React.FC<MerchandiseSalesFormProps> = ({ form, merchandise, merchandiseId, refetch }) => {
   const { formatMessage } = useIntl()
   const updateMerchandiseSales = useUpdateMerchandiseSales(merchandiseId)
-  const [loading, setLoading] = useState<boolean>(false)
-  // const [hasSalePrice, setHasSalePrice] = useState<boolean>(Boolean(merchandise.soldAt && merchandise.salePrice))
-  const [hasSellingTime, setHasSellingTime] = useState<boolean>(Boolean(merchandise.startedAt || merchandise.endedAt))
+
+  const [loading, setLoading] = useState(false)
+  const [withSellingTime, setWithSellingTime] = useState(!!merchandise.startedAt || !!merchandise.endedAt)
 
   const handleSubmit = () => {
     form.validateFields((errors, values) => {
@@ -51,10 +37,10 @@ const MerchandiseSalesForm: React.FC<MerchandiseSalesFormProps> = ({ form, merch
       setLoading(true)
       updateMerchandiseSales({
         listPrice: values.listPrice,
-        salePrice: values.salePrice || null,
-        soldAt: values.soldAt || null,
-        startedAt: values.startedAt || null,
-        endedAt: values.endedAt || null,
+        salePrice: values.sale ? values.sale.price : null,
+        soldAt: values.sale ? values.sale.soldAt : null,
+        startedAt: withSellingTime ? moment(values.startedAt).startOf('minute').toDate() : null,
+        endedAt: withSellingTime ? moment(values.endedAt).startOf('minute').toDate() : null,
       })
         .then(() => {
           refetch && refetch()
@@ -67,75 +53,63 @@ const MerchandiseSalesForm: React.FC<MerchandiseSalesFormProps> = ({ form, merch
   return (
     <Form
       hideRequiredMark
-      labelCol={{ span: 24, md: { span: 4 } }}
-      wrapperCol={{ span: 24, md: { span: 8 } }}
+      colon={false}
       onSubmit={e => {
         e.preventDefault()
         handleSubmit()
       }}
     >
-      <StyledFormItemTitle>{formatMessage(commonMessages.term.listPrice)}</StyledFormItemTitle>
-      {form.getFieldDecorator('listPrice', {
-        initialValue: merchandise.listPrice,
-      })(
-        <InputNumber
-          min={0}
-          formatter={value => `NT$ ${value}`}
-          parser={value => (value ? value.replace(/\D/g, '') : '')}
-          className="mb-4"
-        />,
-      )}
+      <Form.Item label={formatMessage(commonMessages.term.listPrice)}>
+        {form.getFieldDecorator('listPrice', {
+          initialValue: merchandise.listPrice,
+        })(
+          <InputNumber
+            min={0}
+            formatter={value => `NT$ ${value}`}
+            parser={value => (value ? value.replace(/\D/g, '') : '')}
+          />,
+        )}
+      </Form.Item>
 
-      {/* <Row className="mb-4">
-        <Checkbox checked={hasSalePrice} onChange={e => setHasSalePrice(e.target.checked)} className="mr-1" />
-        <span>{formatMessage(messages.setSalePrice)}</span>
-      </Row>
+      <Form.Item>
+        {form.getFieldDecorator('sale', {
+          initialValue: merchandise.soldAt
+            ? {
+                price: merchandise.salePrice,
+                soldAt: merchandise.soldAt,
+              }
+            : null,
+          rules: [{ validator: (rule, value, callback) => callback((value && !value.soldAt) || undefined) }],
+        })(<SaleInput />)}
+      </Form.Item>
 
-      {hasSalePrice && (
-        <div className="mb-3">
-          {form.getFieldDecorator('salePrice', {
-            initialValue: merchandise.salePrice || 1,
-          })(
-            <InputNumber
-              min={1}
-              formatter={value => `NT$ ${value}`}
-              parser={value => (value ? value.replace(/\D/g, '') : '')}
-              className="mr-3"
-            />,
-          )}
-          {form.getFieldDecorator('soldAt', {
-            initialValue: merchandise.soldAt && moment(merchandise.soldAt),
-          })(<DatePicker showTime showToday={false} />)}
+      <div className="mb-4">
+        <Checkbox checked={withSellingTime} onChange={e => setWithSellingTime(e.target.checked)}>
+          {formatMessage(messages.setSellingTime)}
+        </Checkbox>
+        <div className={`mt-2 ${withSellingTime ? 'd-block' : 'd-none'}`}>
+          <Form.Item label={formatMessage(commonMessages.term.startedAt)} className="mb-0">
+            {form.getFieldDecorator('startedAt', {
+              initialValue: merchandise.startedAt && moment(merchandise.startedAt),
+            })(<DatePicker format="YYYY-MM-DD HH:mm" showTime={{ format: 'HH:mm' }} />)}
+          </Form.Item>
+
+          <Form.Item label={formatMessage(commonMessages.term.endedAt)}>
+            {form.getFieldDecorator('endedAt', {
+              initialValue: merchandise.endedAt && moment(merchandise.endedAt),
+            })(<DatePicker format="YYYY-MM-DD HH:mm" showTime={{ format: 'HH:mm' }} showToday={false} />)}
+          </Form.Item>
         </div>
-      )} */}
+      </div>
 
-      <Row className="mb-4">
-        <Checkbox checked={hasSellingTime} onChange={e => setHasSellingTime(e.target.checked)} className="mr-1" />
-        <span>{formatMessage(messages.setSellingTime)}</span>
-      </Row>
-
-      {hasSellingTime && (
-        <>
-          <StyledFormItemTitle>{formatMessage(commonMessages.term.startedAt)}</StyledFormItemTitle>
-          {form.getFieldDecorator('startedAt', {
-            initialValue: merchandise.startedAt && moment(merchandise.startedAt),
-          })(<DatePicker showTime showToday className="mb-4" />)}
-
-          <StyledFormItemTitle>{formatMessage(commonMessages.term.endedAt)}</StyledFormItemTitle>
-          {form.getFieldDecorator('endedAt', {
-            initialValue: merchandise.endedAt && moment(merchandise.endedAt),
-          })(<DatePicker showTime showToday={false} className="mb-4" />)}
-        </>
-      )}
-
-      <Row>
+      <div>
         <Button onClick={() => form.resetFields()} className="mr-2">
           {formatMessage(commonMessages.ui.cancel)}
         </Button>
         <Button type="primary" htmlType="submit" loading={loading}>
           {formatMessage(commonMessages.ui.save)}
         </Button>
-      </Row>
+      </div>
     </Form>
   )
 }

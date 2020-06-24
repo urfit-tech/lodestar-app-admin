@@ -2,7 +2,7 @@ import { Button, Checkbox, Divider, Modal } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import ProductItem from '../../containers/common/ProductItem'
+import ProductItem from '../../components/common/ProductItem'
 import { commonMessages, promotionMessages } from '../../helpers/translation'
 
 const StyledTitle = styled.div`

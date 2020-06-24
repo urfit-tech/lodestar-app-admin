@@ -45,6 +45,7 @@
   "appointment.label.appointmentDate": "諮詢日期",
   "appointment.label.appointmentIssue": "學員提問",
   "appointment.label.appointmentResult": "諮詢重點紀錄",
+  "appointment.label.orderUpdatedTime": "訂單更新日期",
   "appointment.label.createPeriod": "Create Period",
   "appointment.label.duration": "Duration (minutes)",
   "appointment.label.enrollments": "Enrollments",

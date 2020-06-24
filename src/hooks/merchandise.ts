@@ -8,7 +8,7 @@ import {
   MemberShopProps,
   MerchandisePreviewProps,
   MerchandiseProps,
-  ShippingProps
+  ShippingProps,
 } from '../types/merchandise'
 
 export const useInsertMerchandise = () => {
@@ -232,7 +232,7 @@ export const useMemberShop = (shopId: string) => {
       : {
           id: data.member_shop_by_pk.id,
           title: data.member_shop_by_pk.title,
-          shippingMethods: data.member_shop_by_pk.shipping_methods,
+          shippingMethods: data.member_shop_by_pk.shipping_methods || [],
           publishedAt: data.member_shop_by_pk.published_at,
         }
 
@@ -261,6 +261,7 @@ export const useMerchandiseOrderLogCollection = () => {
             id
             name
             product_id
+            options
           }
         }
       }
@@ -280,6 +281,7 @@ export const useMerchandiseOrderLogCollection = () => {
       id: string
       name: string
       merchandiseId: string
+      quantity: number
     }[]
   }[] =
     error || loading || !data
@@ -299,6 +301,7 @@ export const useMerchandiseOrderLogCollection = () => {
               id: orderMerchandise.id,
               name: orderMerchandise.name,
               merchandiseId: orderMerchandise.product_id.split('_')[1],
+              quantity: orderMerchandise.options?.quantity || 1,
             })),
           }))
 

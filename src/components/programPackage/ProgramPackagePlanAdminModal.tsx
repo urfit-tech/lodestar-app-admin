@@ -1,9 +1,8 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, DatePicker, Icon, Input, InputNumber, Radio } from 'antd'
+import { Button, Checkbox, Icon, Input, InputNumber, Radio } from 'antd'
 import Form, { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
-import moment from 'moment-timezone'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -14,6 +13,7 @@ import types from '../../types'
 import { ProgramPackagePlanProps } from '../../types/programPackage'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
+import SaleInput from '../admin/SaleInput'
 import ProgramPeriodTypeDropdown from '../program/ProgramPeriodTypeDropdown'
 
 const messages = defineMessages({
@@ -21,6 +21,9 @@ const messages = defineMessages({
   isPublished: { id: 'programPackage.label.isPublished', defaultMessage: '是否開賣' },
   publish: { id: 'programPackage.ui.publish', defaultMessage: '發售，課程組合上架後立即開賣' },
   unpublish: { id: 'programPackage.ui.unpublish', defaultMessage: '停售，此方案暫停對外銷售，並從課程組合中隱藏' },
+  isParticipantsVisible: { id: 'programPackage.ui.isParticipantsVisible', defaultMessage: '購買人數' },
+  visible: { id: 'programPackage.ui.visible', defaultMessage: '顯示' },
+  invisible: { id: 'programPackage.ui.invisible', defaultMessage: '隱藏' },
   paymentType: { id: 'programPackage.label.paymentType', defaultMessage: '付費類型' },
   perpetual: { id: 'programPackage.label.perpetual', defaultMessage: '單次' },
   subscription: { id: 'programPackage.ui.subscription', defaultMessage: '訂閱' },
@@ -60,9 +63,6 @@ const StyledForm = styled(Form)`
     }
   }
 `
-const StyledIcon = styled(Icon)`
-  color: #ff7d62;
-`
 
 const radioStyle = {
   display: 'block',
@@ -81,7 +81,7 @@ const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> 
   programPackageId,
   plan,
   onRefetch,
-  form: { validateFields, getFieldDecorator, resetFields, getFieldValue },
+  form: { validateFields, getFieldDecorator, resetFields },
   ...modalProps
 }) => {
   const { formatMessage } = useIntl()
@@ -91,7 +91,6 @@ const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> 
     types.INSERT_PROGRAM_PACKAGE_PLANVariables
   >(INSERT_PROGRAM_PACKAGE_PLAN)
 
-  const [withSalePrice, setWithSalePrice] = useState(typeof plan?.salePrice === 'number')
   const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(typeof plan?.discountDownPrice === 'number')
   const [isSubscription, setSubscription] = useState(!!plan?.isSubscription)
   const [isLoading, setLoading] = useState(false)
@@ -99,27 +98,26 @@ const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> 
   const handleSubmit = (onVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     validateFields(
       (
-        error,
+        errors,
         {
           title,
           isTempoDelivery,
           isPublish,
           isSubscription,
+          isParticipantsVisible,
           periodAmount,
           periodType,
           listPrice,
-          salePrice,
-          soldAt,
+          sale,
           discountDownPrice,
           description,
         },
       ) => {
-        if (error) {
+        if (errors) {
           return
         }
 
         setLoading(true)
-
         insertProgramPackagePlan({
           variables: {
             data: {
@@ -128,11 +126,12 @@ const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> 
               is_tempo_delivery: isTempoDelivery,
               published_at: isPublish ? new Date() : null,
               is_subscription: isSubscription,
+              is_participants_visible: isParticipantsVisible,
               period_amount: periodAmount,
               period_type: periodType,
               list_price: listPrice,
-              sale_price: withSalePrice ? salePrice : null,
-              sold_at: withSalePrice ? soldAt.toDate() : null,
+              sale_price: sale ? sale.price : null,
+              sold_at: sale ? sale.soldAt : null,
               discount_down_price: withDiscountDownPrice ? discountDownPrice : null,
               description: description.toRAW(),
               position: plan?.position || -1,
@@ -174,7 +173,7 @@ const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> 
       )}
       {...modalProps}
     >
-      <StyledForm hideRequiredMark>
+      <StyledForm hideRequiredMark colon={false}>
         <Form.Item label={formatMessage(programMessages.label.planTitle)} className="mb-0">
           {getFieldDecorator('title', {
             initialValue: plan?.title ?? '',
@@ -207,6 +206,21 @@ const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> 
               </Radio>
               <Radio value={false} style={radioStyle}>
                 {formatMessage(messages.unpublish)}
+              </Radio>
+            </Radio.Group>,
+          )}
+        </Form.Item>
+
+        <Form.Item label={formatMessage(messages.isParticipantsVisible)}>
+          {getFieldDecorator('isParticipantsVisible', {
+            initialValue: plan ? !!plan.isParticipantsVisible : true,
+          })(
+            <Radio.Group>
+              <Radio value={true} style={radioStyle}>
+                {formatMessage(messages.visible)}
+              </Radio>
+              <Radio value={false} style={radioStyle}>
+                {formatMessage(messages.invisible)}
               </Radio>
             </Radio.Group>,
           )}
@@ -254,41 +268,16 @@ const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> 
           )}
         </Form.Item>
 
-        <div className="mb-4">
-          <Checkbox defaultChecked={withSalePrice} onChange={e => setWithSalePrice(e.target.checked)}>
-            {formatMessage(commonMessages.term.salePrice)}
-          </Checkbox>
-          {isSubscription && withSalePrice && (
-            <div className="notation">{formatMessage(commonMessages.text.salePriceNotation)}</div>
-          )}
-        </div>
-        <Form.Item className={withSalePrice ? 'm-0' : 'd-none'}>
-          <Form.Item className="d-inline-block mr-2">
-            {getFieldDecorator('salePrice', { initialValue: plan?.salePrice || 0 })(
-              <InputNumber
-                min={0}
-                formatter={value => `NT$ ${value}`}
-                parser={value => (value ? value.replace(/\D/g, '') : '')}
-              />,
-            )}
-          </Form.Item>
-          <Form.Item className="d-inline-block mr-2">
-            {getFieldDecorator('soldAt', {
-              initialValue: plan?.soldAt ? moment(plan.soldAt) : null,
-              rules: [
-                {
-                  required: withSalePrice,
-                  message: formatMessage(errorMessages.form.date),
-                },
-              ],
-            })(<DatePicker placeholder={formatMessage(commonMessages.label.salePriceEndTime)} />)}
-          </Form.Item>
-          {getFieldValue('soldAt') && moment(getFieldValue('soldAt')).isBefore(moment()) && (
-            <div className="d-inline-block">
-              <StyledIcon type="exclamation-circle" theme="filled" className="mr-1" />
-              <span>{formatMessage(commonMessages.label.outdated)}</span>
-            </div>
-          )}
+        <Form.Item>
+          {getFieldDecorator('sale', {
+            initialValue: plan?.soldAt
+              ? {
+                  price: plan.salePrice || 0,
+                  soldAt: plan.soldAt,
+                }
+              : null,
+            rules: [{ validator: (rule, value, callback) => callback((value && !value.soldAt) || undefined) }],
+          })(<SaleInput />)}
         </Form.Item>
 
         {isSubscription && (
@@ -339,6 +328,7 @@ const INSERT_PROGRAM_PACKAGE_PLAN = gql`
           title
           is_tempo_delivery
           is_subscription
+          is_participants_visible
           published_at
           period_amount
           period_type

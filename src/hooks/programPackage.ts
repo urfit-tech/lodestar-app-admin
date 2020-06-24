@@ -42,11 +42,7 @@ export const useProgramPackagePlanCollection = (programPackageId: string | null,
     gql`
       query GET_PROGRAM_PACKAGE_PLAN_COLLECTION($programPackageIds: [uuid!], $isTempoDelivery: Boolean) {
         program_package_plan(
-          where: {
-            program_package_id: { _in: $programPackageIds }
-            is_tempo_delivery: { _eq: $isTempoDelivery }
-            published_at: { _is_null: false }
-          }
+          where: { program_package_id: { _in: $programPackageIds }, is_tempo_delivery: { _eq: $isTempoDelivery } }
           order_by: { position: asc, published_at: desc }
         ) {
           id
@@ -354,6 +350,7 @@ export const useGetProgramPackage = (id: string) => {
             period_type
             published_at
             is_tempo_delivery
+            is_participants_visible
             position
             program_package_plan_enrollments_aggregate {
               aggregate {
@@ -401,9 +398,9 @@ export const useGetProgramPackage = (id: string) => {
             data.program_package_by_pk.program_package_plans.map(plan => ({
               id: plan.id,
               title: plan.title,
-              listPrice: plan.list_price || 0,
-              salePrice: plan.sale_price || null,
-              soldAt: plan.sold_at ? new Date(plan.sold_at) : null,
+              listPrice: plan.list_price,
+              salePrice: plan.sale_price,
+              soldAt: plan.sold_at,
               periodType: plan.period_type as PeriodType,
               periodAmount: plan.period_amount,
               description: plan.description,
@@ -411,6 +408,7 @@ export const useGetProgramPackage = (id: string) => {
               discountDownPrice: plan.discount_down_price,
               publishedAt: plan.published_at ? new Date(plan.published_at) : null,
               isTempoDelivery: plan.is_tempo_delivery,
+              isParticipantsVisible: plan.is_participants_visible,
               position: plan.position,
               soldQuantity: plan.program_package_plan_enrollments_aggregate.aggregate?.count ?? 0,
             })) ?? [],

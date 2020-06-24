@@ -1,5 +1,4 @@
 import { Button, Icon, Tabs, Typography } from 'antd'
-import { reverse } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import CouponPlanAdminCard from '../../../components/checkout/CouponPlanAdminCard'
@@ -12,7 +11,7 @@ import { CouponPlanProps } from '../../../types/checkout'
 
 const CouponPlanCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { couponPlans } = useCouponPlanCollection()
+  const { couponPlans, refetchCouponPlans } = useCouponPlanCollection()
 
   return (
     <AdminLayout>
@@ -33,10 +32,16 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
 
       <Tabs>
         <Tabs.TabPane key="live" tab={formatMessage(promotionMessages.status.available)}>
-          <CouponCollectionBlock couponPlans={couponPlans.filter(couponPlan => couponPlan.available)} />
+          <CouponCollectionBlock
+            couponPlans={couponPlans.filter(couponPlan => couponPlan.available)}
+            onRefetch={refetchCouponPlans}
+          />
         </Tabs.TabPane>
         <Tabs.TabPane key="outdated" tab={formatMessage(promotionMessages.status.unavailable)}>
-          <CouponCollectionBlock couponPlans={couponPlans.filter(couponPlan => !couponPlan.available)} />
+          <CouponCollectionBlock
+            couponPlans={couponPlans.filter(couponPlan => !couponPlan.available)}
+            onRefetch={refetchCouponPlans}
+          />
         </Tabs.TabPane>
       </Tabs>
     </AdminLayout>
@@ -45,12 +50,13 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
 
 const CouponCollectionBlock: React.FC<{
   couponPlans: CouponPlanProps[]
-}> = ({ couponPlans }) => {
+  onRefetch?: () => void
+}> = ({ couponPlans, onRefetch }) => {
   return (
     <div className="row">
-      {reverse(couponPlans).map(couponPlan => (
+      {couponPlans.map(couponPlan => (
         <div key={couponPlan.id} className="col-12 col-md-6 mb-3">
-          <CouponPlanAdminCard couponPlan={couponPlan} outdated={!couponPlan.available} />
+          <CouponPlanAdminCard couponPlan={couponPlan} outdated={!couponPlan.available} onRefetch={onRefetch} />
         </div>
       ))}
     </div>

@@ -1,7 +1,8 @@
 import { Checkbox, Radio, TreeSelect } from 'antd'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import AppContext from '../../contexts/AppContext'
 import { promotionMessages } from '../../helpers/translation'
 import { useAllBriefProductCollection } from '../../hooks/data'
 import { ProductType } from '../../types/general'
@@ -26,6 +27,26 @@ const StyledLabel = styled.div`
   line-height: 1.71;
   letter-spacing: 0.4px;
 `
+const StyledProductParent = styled.div`
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+const StyledProductTitle = styled.div`
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  ${StyledProductParent} + & {
+    max-width: 14rem;
+    :before {
+      content: ' - ';
+    }
+  }
+`
+const StyledColumns = styled.div`
+  columns: 2;
+`
 
 const CouponPlanScopeSelector: React.FC<{
   value?: {
@@ -35,6 +56,7 @@ const CouponPlanScopeSelector: React.FC<{
   onChange?: (value: { scope: string[] | null; productIds: string[] }) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useContext(AppContext)
   const { briefProducts } = useAllBriefProductCollection()
 
   const [scopeType, setScopeType] = useState<'all' | 'specific'>(
@@ -82,36 +104,49 @@ const CouponPlanScopeSelector: React.FC<{
                   productIds: selectedProductIds,
                 })
             }}
+            style={{ width: '100%' }}
           >
-            <div className="row">
-              <div className="col-6 mb-3">
+            <StyledColumns>
+              <div className="mb-3">
                 <Checkbox value="Program">{formatMessage(messages.allProgram)}</Checkbox>
               </div>
-              <div className="col-6 mb-3">
-                <Checkbox value="AppointmentPlan">{formatMessage(messages.allAppointmentPlan)}</Checkbox>
-              </div>
-              <div className="col-6 mb-3">
+              <div className="mb-3">
                 <Checkbox value="ProgramPlan">{formatMessage(messages.allProgramPlan)}</Checkbox>
               </div>
-              <div className="col-6 mb-3">
-                <Checkbox value="Merchandise">{formatMessage(messages.allMerchandise)}</Checkbox>
-              </div>
-              <div className="col-6 mb-3">
-                <Checkbox value="ActivityTicket">{formatMessage(messages.allActivityTicket)}</Checkbox>
-              </div>
-              <div className="col-6 mb-3">
+              {enabledModules.activity && (
+                <div className="mb-3">
+                  <Checkbox value="ActivityTicket">{formatMessage(messages.allActivityTicket)}</Checkbox>
+                </div>
+              )}
+              {enabledModules.podcast && (
+                <div className="mb-3">
+                  <Checkbox value="PodcastProgram">{formatMessage(messages.allPodcastProgram)}</Checkbox>
+                </div>
+              )}
+              {enabledModules.podcast && (
+                <div className="mb-3">
+                  <Checkbox value="PodcastPlan">{formatMessage(messages.allPodcastPlan)}</Checkbox>
+                </div>
+              )}
+              {enabledModules.appointment && (
+                <div className="mb-3">
+                  <Checkbox value="AppointmentPlan">{formatMessage(messages.allAppointmentPlan)}</Checkbox>
+                </div>
+              )}
+              {enabledModules.merchandise && (
+                <div className="mb-3">
+                  <Checkbox value="Merchandise">{formatMessage(messages.allMerchandise)}</Checkbox>
+                </div>
+              )}
+              <div className="mb-3">
                 <Checkbox value="ProjectPlan">{formatMessage(messages.allProjectPlan)}</Checkbox>
               </div>
-              <div className="col-6 mb-3">
-                <Checkbox value="PodcastProgram">{formatMessage(messages.allPodcastProgram)}</Checkbox>
-              </div>
-              <div className="col-6 mb-3">
-                <Checkbox value="ProgramPackagePlan">{formatMessage(messages.allProgramPackagePlan)}</Checkbox>
-              </div>
-              <div className="col-6 mb-3">
-                <Checkbox value="PodcastPlan">{formatMessage(messages.allPodcastPlan)}</Checkbox>
-              </div>
-            </div>
+              {enabledModules.program_package && (
+                <div className="mb-3">
+                  <Checkbox value="ProgramPackagePlan">{formatMessage(messages.allProgramPackagePlan)}</Checkbox>
+                </div>
+              )}
+            </StyledColumns>
           </Checkbox.Group>
 
           <StyledLabel>{formatMessage(promotionMessages.label.otherSpecificProduct)}</StyledLabel>
@@ -141,7 +176,16 @@ const CouponPlanScopeSelector: React.FC<{
                 checkable={false}
               >
                 {briefProducts[productType as ProductType]?.map(product => (
-                  <TreeSelect.TreeNode key={product.productId} value={product.productId} title={product.title} />
+                  <TreeSelect.TreeNode
+                    key={product.productId}
+                    value={product.productId}
+                    title={
+                      <div className="d-flex">
+                        {product.parent && <StyledProductParent>{product.parent}</StyledProductParent>}
+                        <StyledProductTitle>{product.title}</StyledProductTitle>
+                      </div>
+                    }
+                  />
                 ))}
               </TreeSelect.TreeNode>
             ))}

@@ -65,7 +65,7 @@ export const PodcastProgramProvider: React.FC<{
           abstract: data.podcast_program_by_pk.abstract,
           listPrice: data.podcast_program_by_pk.list_price,
           salePrice: data.podcast_program_by_pk.sale_price,
-          soldAt: data.podcast_program_by_pk.sold_at ? new Date(data.podcast_program_by_pk.sold_at) : null,
+          soldAt: data.podcast_program_by_pk.sold_at,
           creatorId: data.podcast_program_by_pk.creator_id,
           instructors: data.podcast_program_by_pk.podcast_program_roles.map(podcastProgramRole => ({
             id: podcastProgramRole.member?.id || '',

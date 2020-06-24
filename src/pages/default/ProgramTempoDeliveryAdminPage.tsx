@@ -202,7 +202,16 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
             >
               <Form colon={false}>
                 <Form.Item label={formatMessage(programMessages.label.select)}>
-                  <Select<string[]> mode="multiple" onChange={value => setSelectedProgramIds(value)}>
+                  <Select<string[]>
+                    mode="multiple"
+                    onChange={value => setSelectedProgramIds(value)}
+                    showSearch
+                    filterOption={(input, option) =>
+                      option?.props?.children
+                        ? (option.props.children as string).toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        : true
+                    }
+                  >
                     {programs.map(program => (
                       <Select.Option key={program.id} value={program.programPackageProgramId}>
                         {program.title}

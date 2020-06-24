@@ -6,7 +6,6 @@ import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as CalendarOIcon } from '../../images/default/calendar-alt-o.svg'
 import { InvoiceProps, ShippingProps } from '../../types/merchandise'
 import AdminCard from '../admin/AdminCard'
-import { BREAK_POINT } from '../common/Responsive'
 import MerchandiseItem from './MerchandiseItem'
 import MerchandiseShippingInfoModal from './MerchandiseShippingInfoModal'
 import MerchandiseShippingNoticeModal from './MerchandiseShippingNoticeModal'
@@ -18,32 +17,21 @@ const messages = defineMessages({
 })
 
 const StyledOrderTitle = styled.h3`
+  color: var(--gray-darker);
   font-size: 18px;
   font-weight: bold;
   letter-spacing: 0.8px;
-  color: var(--gray-darker);
 `
 export const StyledDate = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.4px;
   color: var(--gray-dark);
+  font-size: 14px;
+  letter-spacing: 0.4px;
 `
 const StyledSpecification = styled.div`
-  font-family: NotoSansCJKtc
-  font-size: 16px;
-  font-weight: 500;
-  letter-spacing: 0.2px;
   color: var(--gray-darker);
+  letter-spacing: 0.2px;
 `
-const StyledShippingInfo = styled.div`
-  justify-content: space-between;
-  flex-flow: column;
-
-  @media (min-width: ${BREAK_POINT}px) {
-    flex-flow: row;
-  }
-`
+const StyledShippingInfo = styled.div``
 
 const MerchandiseOrderCollectionBlock: React.FC<{
   merchandiseOrderLogs: {
@@ -59,12 +47,14 @@ const MerchandiseOrderCollectionBlock: React.FC<{
       id: string
       name: string
       merchandiseId: string
+      quantity: number
     }[]
   }[]
   searchText: string
   onRefetch?: () => void
 }> = ({ merchandiseOrderLogs, searchText, onRefetch }) => {
   const { formatMessage } = useIntl()
+
   merchandiseOrderLogs = merchandiseOrderLogs.filter(merchandiseOrderLog =>
     merchandiseOrderLog.orderMerchandises
       .map(orderMerchandise => !searchText || orderMerchandise.key.toLowerCase().includes(searchText))
@@ -72,25 +62,26 @@ const MerchandiseOrderCollectionBlock: React.FC<{
   )
 
   return (
-    <div className="mt-4">
+    <div className="pt-4">
       {merchandiseOrderLogs.length ? (
         merchandiseOrderLogs.map(orderLog => (
           <AdminCard key={orderLog.id} className="mb-3">
-            <StyledShippingInfo className="d-flex">
+            <StyledShippingInfo className="d-lg-flex justify-content-between">
               <div>
-                <StyledOrderTitle className="mb-2">{`${formatMessage(commonMessages.label.orderLogId)} ${
-                  orderLog.id
-                }`}</StyledOrderTitle>
+                <StyledOrderTitle className="mb-2">
+                  {`${formatMessage(commonMessages.label.orderLogId)} ${orderLog.id}`}
+                </StyledOrderTitle>
 
                 {orderLog.createdAt && (
                   <StyledDate className="mb-4 d-flex align-items-center">
                     <CalendarOIcon className="mr-2" />
-                    {`${moment(orderLog.createdAt).format('YYYY-MM-DD HH:mm')}
-                    ${formatMessage(messages.purchase)}`}
+                    {`${moment(orderLog.createdAt).format('YYYY-MM-DD HH:mm')} ${formatMessage(messages.purchase)}`}
                   </StyledDate>
                 )}
 
-                <StyledSpecification className="mb-2">{orderLog?.shipping?.specification}</StyledSpecification>
+                {orderLog?.shipping?.specification ? (
+                  <StyledSpecification className="mb-2">{orderLog.shipping.specification}</StyledSpecification>
+                ) : null}
               </div>
 
               <div>
@@ -109,7 +100,11 @@ const MerchandiseOrderCollectionBlock: React.FC<{
             </StyledShippingInfo>
 
             {orderLog.orderMerchandises.map(orderMerchandise => (
-              <MerchandiseItem key={orderMerchandise.id} merchandiseId={orderMerchandise.merchandiseId} />
+              <MerchandiseItem
+                key={orderMerchandise.id}
+                merchandiseId={orderMerchandise.merchandiseId}
+                quantity={orderMerchandise.quantity}
+              />
             ))}
           </AdminCard>
         ))

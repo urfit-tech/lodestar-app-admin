@@ -1,60 +1,63 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, DatePicker, Icon, InputNumber, message } from 'antd'
+import { Button, InputNumber, message } from 'antd'
 import Form, { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
-import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramType } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
-
-const StyledIcon = styled(Icon)`
-  color: #ff7d62;
-`
+import SaleInput from '../admin/SaleInput'
 
 type ProgramPerpetualPlanAdminCardProps = FormComponentProps & {
   program: ProgramType
   onRefetch?: () => void
 }
 const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps> = ({ program, onRefetch, form }) => {
+  const { formatMessage } = useIntl()
   const [updateProgram] = useMutation<
     types.UPDATE_PROGRAM_PERPETUAL_PLAN,
     types.UPDATE_PROGRAM_PERPETUAL_PLANVariables
   >(UPDATE_PROGRAM_PERPETUAL_PLAN)
-  const { formatMessage } = useIntl()
-  const [loading, setLoading] = useState(false)
-  const [withSalePrice, setWithSalePrice] = useState(program.salePrice ? true : false)
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    form.validateFields((error, values) => {
-      if (!error) {
-        setLoading(true)
-        updateProgram({
-          variables: {
-            programId: program.id,
-            listPrice: values.listPrice || 0,
-            salePrice: values.salePrice || 0,
-            soldAt: withSalePrice && values.soldAt ? moment(values.soldAt).toDate() : null,
-          },
-        })
-          .then(() => {
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-            onRefetch && onRefetch()
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = () => {
+    form.validateFields((errors, values) => {
+      if (errors) {
+        return
       }
+
+      setLoading(true)
+      updateProgram({
+        variables: {
+          programId: program.id,
+          listPrice: values.listPrice || 0,
+          salePrice: values.sale ? values.sale.price : null,
+          soldAt: values.sale ? values.sale.soldAt : null,
+        },
+      })
+        .then(() => {
+          message.success(formatMessage(commonMessages.event.successfullySaved))
+          onRefetch && onRefetch()
+        })
+        .catch(handleError)
+        .finally(() => setLoading(false))
     })
   }
 
   return (
     <AdminCard>
-      <Form onSubmit={handleSubmit}>
+      <Form
+        hideRequiredMark
+        colon={false}
+        onSubmit={e => {
+          e.preventDefault()
+          handleSubmit()
+        }}
+      >
         <Form.Item label={formatMessage(commonMessages.term.listPrice)}>
           {form.getFieldDecorator('listPrice', {
             initialValue: program.listPrice || 0,
@@ -78,45 +81,26 @@ const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps
           )}
         </Form.Item>
 
-        <div className="mb-4">
-          <Checkbox defaultChecked={withSalePrice} onChange={e => setWithSalePrice(e.target.checked)}>
-            {formatMessage(commonMessages.term.salePrice)}
-          </Checkbox>
-        </div>
-        <Form.Item className={withSalePrice ? 'm-0' : 'd-none'}>
-          <Form.Item className="d-inline-block mr-2">
-            {form.getFieldDecorator('salePrice', {
-              initialValue: program.salePrice || 0,
-            })(
-              <InputNumber
-                min={0}
-                formatter={value => `NT$ ${value}`}
-                parser={value => (value ? value.replace(/\D/g, '') : '')}
-              />,
-            )}
-          </Form.Item>
-          <Form.Item className="d-inline-block mr-2">
-            {form.getFieldDecorator('soldAt', {
-              initialValue: program && program.soldAt ? moment(program.soldAt) : null,
-              rules: [{ required: withSalePrice, message: formatMessage(errorMessages.form.date) }],
-            })(<DatePicker />)}
-          </Form.Item>
-          {form.getFieldValue('soldAt') && moment(form.getFieldValue('soldAt')).isBefore(moment()) ? (
-            <div className="d-inline-block">
-              <StyledIcon type="exclamation-circle" theme="filled" className="mr-1" />
-              <span>{formatMessage(commonMessages.label.outdated)}</span>
-            </div>
-          ) : null}
+        <Form.Item>
+          {form.getFieldDecorator('sale', {
+            initialValue: program.soldAt
+              ? {
+                  price: program.salePrice,
+                  soldAt: program.soldAt,
+                }
+              : null,
+            rules: [{ validator: (rule, value, callback) => callback((value && !value.soldAt) || undefined) }],
+          })(<SaleInput />)}
         </Form.Item>
 
-        <Form.Item>
+        <div>
           <Button disabled={loading} onClick={() => form.resetFields()} className="mr-2">
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button loading={loading} type="primary" htmlType="submit">
             {formatMessage(commonMessages.ui.save)}
           </Button>
-        </Form.Item>
+        </div>
       </Form>
     </AdminCard>
   )
