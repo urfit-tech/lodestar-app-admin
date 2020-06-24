@@ -89,7 +89,13 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
           </BorderedItem>
         </Responsive.Default>
 
-        <List.Item style={{ cursor: 'pointer' }} onClick={() => logout && logout().then(() => history.push('/'))}>
+        <List.Item
+          style={{ cursor: 'pointer' }}
+          onClick={() => {
+            logout && logout()
+            history.push('/')
+          }}
+        >
           <Icon type="logout" className="mr-2" />
           {formatMessage(commonMessages.ui.logout)}
         </List.Item>
