@@ -16,14 +16,18 @@ const messages = defineMessages({
   exportOrderLog: { id: 'common.ui.exportOrderLog', defaultMessage: '匯出訂單' },
   exportOrderProduct: { id: 'common.ui.exportOrderProduct', defaultMessage: '訂單明細' },
   exportOrderDiscount: { id: 'common.ui.exportOrderDiscount', defaultMessage: '折扣明細' },
+
+  invoiceSuccess: { id: 'payment.status.invoiceSuccess', defaultMessage: '開立成功' },
+  invoiceFailed: { id: 'payment.status.invoiceFailed', defaultMessage: '開立失敗 {errorCode}' },
+  invoicePending: { id: 'payment.status.invoicePending', defaultMessage: '未開立電子發票' },
 })
 
 const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
-  const app = useContext(AppContext)
   const { formatMessage } = useIntl()
+  const app = useContext(AppContext)
   const client = useApolloClient()
-  const [loading, setLoading] = useState(false)
   const { data: orderStatuses } = useOrderStatuses()
+  const [loading, setLoading] = useState(false)
   const failOrderStatuses =
     orderStatuses?.filter(
       status => !(status === 'REFUND' || status === 'UNPAID' || status === 'SUCCESS' || status === 'FAILED'),
@@ -78,34 +82,44 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           formatMessage(commonMessages.label.invoiceUniformTitle),
           formatMessage(commonMessages.label.invoiceAddress),
           formatMessage(commonMessages.label.invoiceId),
+          formatMessage(commonMessages.label.invoiceStatus),
         ],
       ]
 
-      orderLogResult.data.order_log.forEach(orderLog => {
-        const totalProductPrice = orderLog.order_products_aggregate.aggregate?.sum?.price || 0
-        const totalDiscountPrice = orderLog.order_discounts_aggregate.aggregate?.sum?.price || 0
+      orderLogResult.data.order_log
+        .sort(
+          (a, b) => new Date(a.updated_at || a.created_at).valueOf() - new Date(b.updated_at || b.created_at).valueOf(),
+        )
+        .forEach(orderLog => {
+          const totalProductPrice = orderLog.order_products_aggregate.aggregate?.sum?.price || 0
+          const totalDiscountPrice = orderLog.order_discounts_aggregate.aggregate?.sum?.price || 0
 
-        data.push([
-          orderLog.id,
-          orderLog.status,
-          orderLog.member.name,
-          orderLog.member.email,
-          dateFormatter(orderLog.updated_at),
-          totalProductPrice,
-          totalDiscountPrice,
-          totalProductPrice - totalDiscountPrice,
-          orderLog.invoice.name || '',
-          orderLog.invoice.email || '',
-          orderLog.invoice.buyerPhone || orderLog.invoice.phone || '', // buyerPhone is a deprecated field
-          orderLog.invoice.donationCode ? '捐贈' : orderLog.invoice.uniformNumber ? '公司' : '個人',
-          orderLog.invoice.donationCode || '',
-          orderLog.invoice.phoneBarCode ? '手機' : orderLog.invoice.citizenCode ? '自然人憑證' : '',
-          orderLog.invoice.uniformNumber || '',
-          orderLog.invoice.uniformTitle || '',
-          `${orderLog.invoice.postCode || ''} ${orderLog.invoice.address || ''}`,
-          orderLog.invoice.id || '',
-        ])
-      })
+          data.push([
+            orderLog.id,
+            orderLog.status,
+            orderLog.member.name,
+            orderLog.member.email,
+            dateFormatter(orderLog.updated_at || orderLog.created_at),
+            totalProductPrice,
+            totalDiscountPrice,
+            totalProductPrice - totalDiscountPrice,
+            orderLog.invoice.name || '',
+            orderLog.invoice.email || '',
+            orderLog.invoice.phone || orderLog.invoice.buyerPhone || '', // buyerPhone is a deprecated field
+            orderLog.invoice.donationCode ? '捐贈' : orderLog.invoice.uniformNumber ? '公司' : '個人',
+            orderLog.invoice.donationCode || '',
+            orderLog.invoice.phoneBarCode ? '手機' : orderLog.invoice.citizenCode ? '自然人憑證' : '',
+            orderLog.invoice.uniformNumber || '',
+            orderLog.invoice.uniformTitle || '',
+            `${orderLog.invoice.postCode || ''} ${orderLog.invoice.address || ''}`,
+            orderLog.invoice.id || '',
+            !orderLog.invoice.status
+              ? formatMessage(messages.invoicePending)
+              : orderLog.invoice.status === 'SUCCESS'
+              ? formatMessage(messages.invoiceSuccess)
+              : formatMessage(messages.invoiceFailed, { errorCode: orderLog.invoice.status }),
+          ])
+        })
 
       return toCSV(data)
     },
@@ -224,7 +238,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
 
         const startedAt = moment(values.startedAt).toDate()
         const endedAt = moment(values.endedAt).toDate()
-        let orderStatuses: Array<string> = []
+        let orderStatuses: string[] = []
         if (values.orderStatuses.includes('FAILED')) {
           orderStatuses = failOrderStatuses
         }
@@ -386,7 +400,6 @@ const GET_ORDER_LOG_COLLECTION = gql`
         updated_at: { _gte: $startedAt, _lte: $endedAt }
         status: { _in: $orderStatuses }
       }
-      order_by: { updated_at: desc }
     ) {
       id
       status
@@ -395,6 +408,7 @@ const GET_ORDER_LOG_COLLECTION = gql`
         name
         email
       }
+      created_at
       updated_at
       invoice
 

@@ -3926,6 +3926,7 @@ export interface GET_ORDER_LOG_COLLECTION_order_log {
    * An object relationship
    */
   member: GET_ORDER_LOG_COLLECTION_order_log_member;
+  created_at: any;
   updated_at: any | null;
   /**
    * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber

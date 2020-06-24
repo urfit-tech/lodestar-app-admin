@@ -99,6 +99,7 @@ export const commonMessages = {
     invoicePostCode: { id: 'common.label.invoicePostCode', defaultMessage: '發票郵遞區號' },
     invoiceAddress: { id: 'common.label.invoiceAddress', defaultMessage: '發票地址' },
     invoiceId: { id: 'common.label.invoiceId', defaultMessage: '發票編號' },
+    invoiceStatus: {id: 'common.label.invoiceStatus', defaultMessage: '發票狀態'},
     orderProductId: { id: 'common.label.orderProductId', defaultMessage: '項目編號' },
     orderProductName: { id: 'common.label.orderProductName', defaultMessage: '項目名稱' },
     orderProductType: { id: 'common.label.orderProductType', defaultMessage: '項目種類' },
