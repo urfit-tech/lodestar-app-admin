@@ -8,7 +8,15 @@ import types from '../../types'
 import { MemberShopProps, ShippingMethodProps, ShippingMethodType } from '../../types/merchandise'
 import CurrencyInput from '../admin/CurrencyInput'
 
-const ShippingMethodIds: ShippingMethodType[] = ['seven-eleven', 'family-mart', 'hi-life', 'ok-mart', 'home-delivery']
+const ShippingMethodIds: ShippingMethodType[] = [
+  'seven-eleven',
+  'family-mart',
+  'hi-life',
+  'ok-mart',
+  'home-delivery',
+  'send-by-post',
+  'other',
+]
 
 const ShippingMethodAdminBlock: React.FC<{
   memberShop: MemberShopProps
@@ -113,6 +121,10 @@ const ShippingMethodLabel: React.FC<{ shippingMethodId: string }> = ({ shippingM
       return <>{formatMessage(merchandiseMessages.label.okMart)}</>
     case 'home-delivery':
       return <>{formatMessage(merchandiseMessages.label.homeDelivery)}</>
+    case 'send-by-post':
+      return <>{formatMessage(merchandiseMessages.label.sendByPost)}</>
+    case 'other':
+      return <>{formatMessage(merchandiseMessages.label.other)}</>
     default:
       return null
   }
