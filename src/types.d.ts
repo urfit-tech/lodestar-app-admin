@@ -981,6 +981,28 @@ export interface PUBLISH_MEMBER_SHOPVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_MEMBER_SHOP_TITLE_COLLECTION
+// ====================================================
+
+export interface GET_MEMBER_SHOP_TITLE_COLLECTION_member_shop {
+  __typename: "member_shop";
+  id: any;
+  title: string;
+}
+
+export interface GET_MEMBER_SHOP_TITLE_COLLECTION {
+  /**
+   * fetch data from the table: "member_shop"
+   */
+  member_shop: GET_MEMBER_SHOP_TITLE_COLLECTION_member_shop[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_MERCHANDISE_BASIC
 // ====================================================
 
@@ -1193,6 +1215,7 @@ export interface UPDATE_MERCHANDISE_INTRODUCTIONVariables {
   merchandiseId: any;
   abstract?: string | null;
   meta?: string | null;
+  memberShopId?: any | null;
 }
 
 /* tslint:disable */
@@ -6644,6 +6667,7 @@ export interface GET_MERCHANDISE_merchandise_by_pk {
   ended_at: any | null;
   link: string | null;
   published_at: any | null;
+  member_shop_id: any | null;
   /**
    * An array relationship
    */
@@ -6682,26 +6706,22 @@ export interface GET_MERCHANDISEVariables {
 // GraphQL query operation: GET_MEMBER_SHOP_COLLECTION
 // ====================================================
 
-export interface GET_MEMBER_SHOP_COLLECTION_member_shop_member_merchandises_aggregate_aggregate {
+export interface GET_MEMBER_SHOP_COLLECTION_member_shop_member {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+  picture_url: string | null;
+}
+
+export interface GET_MEMBER_SHOP_COLLECTION_member_shop_merchandises_aggregate_aggregate {
   __typename: "merchandise_aggregate_fields";
   count: number | null;
 }
 
-export interface GET_MEMBER_SHOP_COLLECTION_member_shop_member_merchandises_aggregate {
+export interface GET_MEMBER_SHOP_COLLECTION_member_shop_merchandises_aggregate {
   __typename: "merchandise_aggregate";
-  aggregate: GET_MEMBER_SHOP_COLLECTION_member_shop_member_merchandises_aggregate_aggregate | null;
-}
-
-export interface GET_MEMBER_SHOP_COLLECTION_member_shop_member {
-  __typename: "member";
-  id: string;
-  name: string;
-  username: string;
-  picture_url: string | null;
-  /**
-   * An aggregated array relationship
-   */
-  merchandises_aggregate: GET_MEMBER_SHOP_COLLECTION_member_shop_member_merchandises_aggregate;
+  aggregate: GET_MEMBER_SHOP_COLLECTION_member_shop_merchandises_aggregate_aggregate | null;
 }
 
 export interface GET_MEMBER_SHOP_COLLECTION_member_shop {
@@ -6711,8 +6731,12 @@ export interface GET_MEMBER_SHOP_COLLECTION_member_shop {
   /**
    * An object relationship
    */
-  member: GET_MEMBER_SHOP_COLLECTION_member_shop_member;
+  member: GET_MEMBER_SHOP_COLLECTION_member_shop_member | null;
   published_at: any | null;
+  /**
+   * An aggregated array relationship
+   */
+  merchandises_aggregate: GET_MEMBER_SHOP_COLLECTION_member_shop_merchandises_aggregate;
 }
 
 export interface GET_MEMBER_SHOP_COLLECTION {
@@ -11572,8 +11596,9 @@ export interface member_shop_bool_exp {
   _or?: (member_shop_bool_exp | null)[] | null;
   created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
-  member?: member_bool_exp | null;
+  member?: member_public_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  merchandises?: merchandise_bool_exp | null;
   published_at?: timestamptz_comparison_exp | null;
   shipping_methods?: jsonb_comparison_exp | null;
   title?: String_comparison_exp | null;
@@ -11586,8 +11611,8 @@ export interface member_shop_bool_exp {
 export interface member_shop_insert_input {
   created_at?: any | null;
   id?: any | null;
-  member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
+  merchandises?: merchandise_arr_rel_insert_input | null;
   published_at?: any | null;
   shipping_methods?: any | null;
   title?: string | null;

@@ -560,6 +560,7 @@ export const merchandiseMessages = {
     meta: { id: 'merchandise.label.meta', defaultMessage: '規格說明' },
     specification: { id: 'merchandise.label.specification', defaultMessage: '規格' },
     abstract: { id: 'merchandise.label.abstract', defaultMessage: '商品摘要' },
+    memberShop: { id: 'merchandise.label.memberShop', defaultMessage: '販售商店' },
     paymentLink: { id: 'merchandise.label.paymentLink', defaultMessage: '付款連結' },
     price: { id: 'merchandise.label.price', defaultMessage: '商品售價' },
     cover: { id: 'merchandise.label.cover', defaultMessage: '封面圖片' },
@@ -571,6 +572,7 @@ export const merchandiseMessages = {
     familyMart: { id: 'merchandise.label.familyMart', defaultMessage: '全家超商取貨' },
     hiLife: { id: 'merchandise.label.hiLife', defaultMessage: '萊爾富超商取貨' },
     okMart: { id: 'merchandise.label.okMart', defaultMessage: 'OK超商取貨' },
+    sendByPost: { id: 'merchandise.label.sendByPost', defaultMessage: '郵寄' },
     homeDelivery: { id: 'merchandise.label.homeDelivery', defaultMessage: '宅配' },
     shippingFee: { id: 'merchandise.label.shippingFee', defaultMessage: '運費' },
     comment: { id: 'merchandise.label.comment', defaultMessage: '備註' },
@@ -582,6 +584,10 @@ export const merchandiseMessages = {
     searchMerchandiseOrder: { id: 'merchandise.text.searchMerchandiseOrder', defaultMessage: '搜尋訂單編號、商品名稱' },
     imageTips: { id: 'merchandise.text.imageTips', defaultMessage: '建議圖片尺寸：600*600px 以上' },
     estimatedShippingDays: { id: 'merchandise.text.estimatedShippingDays', defaultMessage: '預估寄送天數' },
+    selectMemberShopPlaceholder: {
+      id: 'merchandise.text.selectMemberShopPlaceholder',
+      defaultMessage: '請選擇販售於哪個商城',
+    },
   }),
 }
 

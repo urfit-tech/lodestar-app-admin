@@ -9,6 +9,7 @@ import { commonMessages, errorMessages, merchandiseMessages } from '../../helper
 import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
 import { StyledTips } from '../admin'
+import MemberShopSelector from './MemberShopSelector'
 import MerchandiseImagesUploader from './MerchandiseImagesUploader'
 
 type MerchandiseIntroductionFormProps = FormComponentProps & {
@@ -37,6 +38,7 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
       updateMerchandiseIntroduction({
         abstract: values.abstract,
         meta: values.meta,
+        memberShopId: values.memberShopId,
       })
         .then(() => {
           refetch && refetch()
@@ -90,6 +92,20 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
           ],
         })(<Input />)}
       </Form.Item>
+      <Form.Item label={formatMessage(merchandiseMessages.label.memberShop)}>
+        {form.getFieldDecorator('memberShopId', {
+          initialValue: merchandise.memberShopId,
+          rules: [
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(merchandiseMessages.label.memberShop),
+              }),
+            },
+          ],
+        })(<MemberShopSelector />)}
+      </Form.Item>
+
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
           {formatMessage(commonMessages.ui.cancel)}
@@ -145,23 +161,33 @@ const useUpdateMerchandiseIntroduction = (merchandiseId: string) => {
     types.UPDATE_MERCHANDISE_INTRODUCTION,
     types.UPDATE_MERCHANDISE_INTRODUCTIONVariables
   >(gql`
-    mutation UPDATE_MERCHANDISE_INTRODUCTION($merchandiseId: uuid!, $abstract: String, $meta: String) {
-      update_merchandise(where: { id: { _eq: $merchandiseId } }, _set: { abstract: $abstract, meta: $meta }) {
+    mutation UPDATE_MERCHANDISE_INTRODUCTION(
+      $merchandiseId: uuid!
+      $abstract: String
+      $meta: String
+      $memberShopId: uuid
+    ) {
+      update_merchandise(
+        where: { id: { _eq: $merchandiseId } }
+        _set: { abstract: $abstract, meta: $meta, member_shop_id: $memberShopId }
+      ) {
         affected_rows
       }
     }
   `)
 
-  const updateMerchandiseIntroduction: (data: { abstract: string; meta: string }) => Promise<void> = async ({
-    abstract,
-    meta,
-  }) => {
+  const updateMerchandiseIntroduction: (data: {
+    abstract: string
+    meta: string
+    memberShopId: string
+  }) => Promise<void> = async ({ abstract, meta, memberShopId }) => {
     try {
       await updateIntroduction({
         variables: {
           merchandiseId,
           abstract,
           meta,
+          memberShopId,
         },
       })
     } catch (error) {

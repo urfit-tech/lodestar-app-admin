@@ -96,6 +96,7 @@ export const useMerchandise = (id: string) => {
           ended_at
           link
           published_at
+          member_shop_id
           merchandise_categories(order_by: { position: asc }) {
             id
             category {
@@ -151,6 +152,7 @@ export const useMerchandise = (id: string) => {
           startedAt: data.merchandise_by_pk.started_at,
           endedAt: data.merchandise_by_pk.ended_at,
           publishedAt: data.merchandise_by_pk.published_at ? new Date(data.merchandise_by_pk.published_at) : null,
+          memberShopId: data.merchandise_by_pk.member_shop_id,
           merchandiseInventoryStatus: {
             buyableQuantity: data.merchandise_by_pk.merchandise_inventory_status?.buyable_quantity || 0,
             undeliveredQuantity: data.merchandise_by_pk.merchandise_inventory_status?.undelivered_quantity || 0,
@@ -177,13 +179,13 @@ export const useMemberShopCollection = () => {
           name
           username
           picture_url
-          merchandises_aggregate {
-            aggregate {
-              count
-            }
-          }
         }
         published_at
+        merchandises_aggregate {
+          aggregate {
+            count
+          }
+        }
       }
     }
   `)
@@ -195,11 +197,11 @@ export const useMemberShopCollection = () => {
           id: memberShop.id,
           title: memberShop.title,
           member: {
-            id: memberShop.member.id,
-            name: memberShop.member.name || memberShop.member.username,
-            pictureUrl: memberShop.member.picture_url,
+            id: memberShop.member?.id || '',
+            name: memberShop.member?.name || memberShop.member?.username || '',
+            pictureUrl: memberShop.member?.picture_url || '',
           },
-          merchandisesCount: memberShop.member.merchandises_aggregate.aggregate?.count || 0,
+          merchandisesCount: memberShop.merchandises_aggregate.aggregate?.count || 0,
           publishedAt: memberShop.published_at ? new Date(memberShop.published_at) : null,
         }))
 

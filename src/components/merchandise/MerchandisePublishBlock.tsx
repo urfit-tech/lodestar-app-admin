@@ -10,6 +10,7 @@ import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } fr
 const messages = defineMessages({
   noTitle: { id: 'merchandise.text.noTitle', defaultMessage: '尚未填寫名稱' },
   noMeta: { id: 'merchandise.text.noMeta', defaultMessage: '尚未填寫規格' },
+  noMemberShop: { id: 'merchandise.text.noMemberShop', defaultMessage: '尚未選擇販售商店' },
   noLink: { id: 'merchandise.text.noLink', defaultMessage: '尚未設定付款連結' },
   noPrice: { id: 'merchandise.text.noPrice', defaultMessage: '尚未設定售價' },
 
@@ -49,6 +50,12 @@ const MerchandisePublishBlock: React.FC<{
     checklist.push({
       id: 'NO_META',
       text: formatMessage(messages.noMeta),
+      tabkey: 'settings',
+    })
+  !merchandise.memberShopId &&
+    checklist.push({
+      id: 'NO_MEMBER_SHOP',
+      text: formatMessage(messages.noMemberShop),
       tabkey: 'settings',
     })
   !merchandise.listPrice &&
