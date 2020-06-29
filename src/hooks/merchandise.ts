@@ -49,6 +49,8 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
           id
           title
           list_price
+          sale_price
+          sold_at
           published_at
           merchandise_imgs(where: { type: { _eq: "cover" } }) {
             id
@@ -67,6 +69,8 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
           id: merchandise.id,
           title: merchandise.title,
           listPrice: merchandise.list_price,
+          salePrice: merchandise.sale_price,
+          soldAt: merchandise.sold_at ? new Date(merchandise.sold_at) : null,
           publishedAt: merchandise.published_at ? new Date(merchandise.published_at) : null,
           coverUrl: merchandise.merchandise_imgs[0]?.url || null,
         }))

@@ -24,9 +24,21 @@ const StyledPriceLabel = styled.div`
   width: 7rem;
   letter-spacing: 0.2px;
   color: ${props => props.theme['@primary-color']};
+
+  &:not(:last-child) {
+    color: var(--gray-dark);
+    text-decoration: line-through;
+  }
 `
 
-const MerchandiseAdminItem: React.FC<MerchandisePreviewProps> = ({ id, coverUrl, title, listPrice }) => {
+const MerchandiseAdminItem: React.FC<MerchandisePreviewProps> = ({
+  id,
+  coverUrl,
+  title,
+  listPrice,
+  salePrice,
+  soldAt,
+}) => {
   return (
     <Link to={`/merchandises/${id}`}>
       <StyledWrapper className="d-flex align-items-center justify-content-between p-3">
@@ -34,7 +46,12 @@ const MerchandiseAdminItem: React.FC<MerchandisePreviewProps> = ({ id, coverUrl,
           <CustomRatioImage width="56px" ratio={1} src={coverUrl || EmptyCover} shape="rounded" className="mr-3" />
           <StyledTitle>{title}</StyledTitle>
         </div>
-        <StyledPriceLabel className="flex-shrink-0">{currencyFormatter(listPrice)}</StyledPriceLabel>
+        <div>
+          <StyledPriceLabel className="flex-shrink-0">{currencyFormatter(listPrice)}</StyledPriceLabel>
+          {soldAt && Date.now() < soldAt.getTime() && (
+            <StyledPriceLabel className="flex-shrink-0">{currencyFormatter(salePrice)}</StyledPriceLabel>
+          )}
+        </div>
       </StyledWrapper>
     </Link>
   )

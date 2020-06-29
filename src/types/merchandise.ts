@@ -3,6 +3,8 @@ export type MerchandisePreviewProps = {
   coverUrl: string | null
   title: string
   listPrice: number
+  salePrice: number | null
+  soldAt: Date | null
   publishedAt: Date | null
 }
 

@@ -6588,6 +6588,8 @@ export interface GET_MERCHANDISE_COLLECTION_merchandise {
   id: any;
   title: string;
   list_price: any;
+  sale_price: any | null;
+  sold_at: any | null;
   published_at: any | null;
   /**
    * An array relationship
