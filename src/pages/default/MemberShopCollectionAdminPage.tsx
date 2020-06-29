@@ -7,6 +7,7 @@ import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminPageTitle } from '../../components/admin'
 import { CustomRatioImage } from '../../components/common/Image'
 import AdminLayout from '../../components/layout/AdminLayout'
+import MemberShopCreationModal from '../../components/merchandise/MemberShopCreationModal'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { useMemberShopCollection } from '../../hooks/merchandise'
 import DefaultAvatar from '../../images/default/avatar.svg'
@@ -63,6 +64,10 @@ const MemberShopCollectionAdminPage: React.FC = () => {
         <Icon component={() => <ShopIcon />} className="mr-2" />
         <span>{formatMessage(commonMessages.menu.merchandiseShop)}</span>
       </AdminPageTitle>
+
+      <div className="mb-5">
+        <MemberShopCreationModal />
+      </div>
 
       <Tabs activeKey={activeKey || 'activated'} onChange={key => setActiveKey(key)}>
         {tabContents.map(tabContent => (

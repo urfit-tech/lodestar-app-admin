@@ -918,6 +918,40 @@ export interface UPDATE_MEMBER_SHOP_TITLEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_MEMBER_SHOP
+// ====================================================
+
+export interface INSERT_MEMBER_SHOP_insert_member_shop_returning {
+  __typename: "member_shop";
+  id: any;
+}
+
+export interface INSERT_MEMBER_SHOP_insert_member_shop {
+  __typename: "member_shop_mutation_response";
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_MEMBER_SHOP_insert_member_shop_returning[];
+}
+
+export interface INSERT_MEMBER_SHOP {
+  /**
+   * insert data into the table: "member_shop"
+   */
+  insert_member_shop: INSERT_MEMBER_SHOP_insert_member_shop | null;
+}
+
+export interface INSERT_MEMBER_SHOPVariables {
+  memberId: string;
+  title: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: PUBLISH_MEMBER_SHOP
 // ====================================================
 
@@ -11561,6 +11595,14 @@ export interface member_shop_insert_input {
 }
 
 /**
+ * input type for inserting object relation for remote table "member_shop"
+ */
+export interface member_shop_obj_rel_insert_input {
+  data: member_shop_insert_input;
+  on_conflict?: member_shop_on_conflict | null;
+}
+
+/**
  * on conflict condition type for table "member_shop"
  */
 export interface member_shop_on_conflict {
@@ -11638,6 +11680,7 @@ export interface merchandise_bool_exp {
   list_price?: numeric_comparison_exp | null;
   member?: member_public_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  member_shop?: member_shop_bool_exp | null;
   member_shop_id?: uuid_comparison_exp | null;
   merchandise_categories?: merchandise_category_bool_exp | null;
   merchandise_imgs?: merchandise_img_bool_exp | null;
@@ -11757,6 +11800,7 @@ export interface merchandise_insert_input {
   link?: string | null;
   list_price?: any | null;
   member_id?: string | null;
+  member_shop?: member_shop_obj_rel_insert_input | null;
   member_shop_id?: any | null;
   merchandise_categories?: merchandise_category_arr_rel_insert_input | null;
   merchandise_imgs?: merchandise_img_arr_rel_insert_input | null;
