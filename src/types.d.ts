@@ -1,6 +1,5 @@
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -69,7 +68,6 @@ export interface GET_ACTIVITY_SESSIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -123,7 +121,6 @@ export interface UPDATE_POST_ROLEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -216,7 +213,6 @@ export interface UPDATE_POST_BASICVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -245,7 +241,6 @@ export interface UPDATE_POST_DESCRIPTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -273,7 +268,6 @@ export interface UPDATE_POST_IS_DELETEDVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -302,7 +296,6 @@ export interface PUBLISH_POSTVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -356,7 +349,6 @@ export interface UPDATE_POST_SETTINGVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -385,7 +377,6 @@ export interface UPDATE_POST_VIDEO_URLVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -422,7 +413,6 @@ export interface INSERT_COUPON_PLANVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -483,7 +473,6 @@ export interface UPDATE_COUPON_PLANVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -512,7 +501,6 @@ export interface GET_CREATOR_COLLECTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -541,7 +529,6 @@ export interface UPDATE_ISSUE_STATUSVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -572,7 +559,6 @@ export interface UPDATE_ISSUEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -636,7 +622,6 @@ export interface DELETE_ISSUEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -665,7 +650,6 @@ export interface INSERT_ISSUE_REACTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -694,7 +678,6 @@ export interface DELETE_ISSUE_REACTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -740,7 +723,6 @@ export interface GET_ISSUE_REPLIESVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -770,7 +752,6 @@ export interface INSERT_ISSUE_REPLYVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -799,7 +780,6 @@ export interface INSERT_ISSUE_REPLY_REACTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -828,7 +808,6 @@ export interface DELETE_ISSUE_REPLY_REACTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -856,7 +835,6 @@ export interface DELETE_ISSUE_REPLYVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -885,7 +863,6 @@ export interface UPDATE_ISSUE_REPLYVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -914,7 +891,6 @@ export interface UPDATE_MEMBER_SHOP_TITLEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -948,7 +924,6 @@ export interface INSERT_MEMBER_SHOPVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -977,7 +952,6 @@ export interface PUBLISH_MEMBER_SHOPVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -999,7 +973,6 @@ export interface GET_MEMBER_SHOP_TITLE_COLLECTION {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1091,7 +1064,6 @@ export interface UPDATE_MERCHANDISE_BASICVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1119,7 +1091,6 @@ export interface DELETE_MERCHANDISEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1148,7 +1119,6 @@ export interface UPDATE_MERCHANDISE_DESCRIPTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1189,7 +1159,6 @@ export interface UPDATE_MERCHANDISE_IMAGESVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1220,7 +1189,6 @@ export interface UPDATE_MERCHANDISE_INTRODUCTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1249,7 +1217,6 @@ export interface PUBLISH_MERCHANDISEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1282,7 +1249,6 @@ export interface UPDATE_MERCHANDISE_SALESVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1312,7 +1278,6 @@ export interface UPDATE_DELIVER_INFOVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1341,7 +1306,6 @@ export interface UPDATE_SHIPPING_METHODSVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1369,7 +1333,6 @@ export interface READ_ALL_NOTIFICATIONSVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1398,7 +1361,6 @@ export interface READ_NOTIFICATIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1429,7 +1391,6 @@ export interface UPDATE_PROGRAM_TITLEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1470,7 +1431,6 @@ export interface UPDATE_PROGRAM_CATEGORIESVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1497,7 +1457,6 @@ export interface GET_PROGRAM_CATEGORIESVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1526,7 +1485,6 @@ export interface PUBLISH_PROGRAM_CONTENTVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1575,7 +1533,6 @@ export interface UPDATE_PROGRAM_CONTENTVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1616,7 +1573,6 @@ export interface UPDATE_PROGRAM_CONTENT_PLANVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1644,7 +1600,6 @@ export interface DELETE_PROGRAM_CONTENTVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1679,7 +1634,6 @@ export interface INSERT_PROGRAM_CONTENT_SECTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1750,7 +1704,6 @@ export interface GET_PROGRAM_CONTENTS_WITH_BODYVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1790,7 +1743,6 @@ export interface DELETE_PROGRAM_CONTENT_SECTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1826,7 +1778,6 @@ export interface INSERT_PROGRAM_CONTENTVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1855,7 +1806,6 @@ export interface UPDATE_PROGRAM_CONTENT_SECTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1883,7 +1833,6 @@ export interface UPDATE_PROGRAM_IS_DELETEDVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1912,7 +1861,6 @@ export interface UPDATE_PROGRAM_COVERVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1943,7 +1891,6 @@ export interface UPDATE_PROGRAM_INTROVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -1974,7 +1921,6 @@ export interface UPDATE_PROGRAM_PERPETUAL_PLANVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2011,7 +1957,6 @@ export interface UPSERT_PROGRAM_PLANVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2037,7 +1982,6 @@ export interface GET_PROGRAM_PLANSVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2067,7 +2011,6 @@ export interface PUBLISH_PROGRAMVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2095,7 +2038,6 @@ export interface UPSERT_PROGRAM_CONTENT_SECTIONSVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2123,7 +2065,6 @@ export interface UPSERT_PROGRAM_CONTENTSVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2153,7 +2094,6 @@ export interface UPDATE_PROGRAM_SUBSCRIPTION_PLANVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2183,7 +2123,6 @@ export interface UPDATE_PROGRAM_PACKAGE_BASICVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2212,7 +2151,6 @@ export interface UPDATE_PROGRAM_PACKAGE_DESCRIPTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2240,7 +2178,6 @@ export interface INSERT_PROGRAM_PACKAGE_PLANVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2268,7 +2205,6 @@ export interface UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2296,7 +2232,6 @@ export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2322,7 +2257,6 @@ export interface GET_PERPETUAL_PROGRAM_COLLECTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2350,7 +2284,6 @@ export interface INSERT_PROGRAM_PACKAGE_PROGRAMVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2379,7 +2312,6 @@ export interface PROGRAM_PACKAGE_PUBLISHVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2477,7 +2409,6 @@ export interface GET_ORDERSVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2527,7 +2458,6 @@ export interface GET_TOTAL_ORDER_AMOUNT {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2583,7 +2513,6 @@ export interface UPDATE_ACTIVITY_BASICVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2651,7 +2580,6 @@ export interface GET_ACTIVITY_COLLECTION_ADMINVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2692,7 +2620,6 @@ export interface INSERT_ACTIVITYVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2721,7 +2648,6 @@ export interface UPDATE_ACTIVITY_COVERVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2750,7 +2676,6 @@ export interface UPDATE_ACTIVITY_INTRODUCTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2802,7 +2727,6 @@ export interface GET_ACTIVITY_PARTICIPANTSVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2831,7 +2755,6 @@ export interface PUBLISH_ACTIVITYVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2865,7 +2788,6 @@ export interface INSERT_ACTIVITY_SESSIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2899,7 +2821,6 @@ export interface UPDATE_ACTIVITY_SESSIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2935,7 +2856,6 @@ export interface INSERT_ACTIVITY_TICKETVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -2995,7 +2915,6 @@ export interface UPDATE_ACTIVITY_TICKETVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3026,7 +2945,6 @@ export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3084,7 +3002,6 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3122,7 +3039,6 @@ export interface CREATE_APPOINTMENT_PLANVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3151,7 +3067,6 @@ export interface UPDATE_APPOINTMENT_PLAN_DESCRIPTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3180,7 +3095,6 @@ export interface PUBLISH_APPOINTMENT_PLANVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3210,7 +3124,6 @@ export interface UPDATE_APPOINTMENT_PLAN_SALEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3239,7 +3152,6 @@ export interface UPDATE_APPOINTMENT_SCHEDULEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3267,7 +3179,6 @@ export interface DELETE_APPOINTMENT_SCHEDULEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3298,7 +3209,6 @@ export interface CREATE_APPOINTMENT_SCHEDULEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3329,7 +3239,6 @@ export interface UPDATE_MEMBER_INFOVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3382,7 +3291,6 @@ export interface GET_ALLTYPE_PRODUCT_COLLECTION {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3418,7 +3326,6 @@ export interface CREATE_PODCAST_PLANVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3453,7 +3360,6 @@ export interface UPDATE_PODCAST_PLANVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3509,7 +3415,6 @@ export interface UPDATE_PODCAST_PROGRAM_BASICVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3605,7 +3510,6 @@ export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3635,7 +3539,6 @@ export interface UPDATE_PODCAST_PROGRAM_CONTENTVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3678,7 +3581,6 @@ export interface UPDATE_PODCAST_PROGRAM_BODYVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3717,7 +3619,6 @@ export interface CREATE_PODCAST_PROGRAMVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3771,7 +3672,6 @@ export interface UPDATE_PODCAST_PROGRAM_ROLEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3802,7 +3702,6 @@ export interface UPDATE_PODCAST_PROGRAM_INTROVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3834,7 +3733,6 @@ export interface UPDATE_PODCAST_PROGRAM_PLANVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3863,7 +3761,6 @@ export interface PUBLISH_PODCAST_PROGRAMVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3904,7 +3801,6 @@ export interface UPDATE_PROGRAM_ROLEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -3932,7 +3828,6 @@ export interface DELETE_PROGRAM_ROLEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -4016,7 +3911,6 @@ export interface GET_ORDER_LOG_COLLECTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -4076,7 +3970,6 @@ export interface GET_ORDER_PRODUCT_COLLECTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -4124,7 +4017,6 @@ export interface GET_ORDER_DISCOUNT_COLLECTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -4145,7 +4037,6 @@ export interface GET_ORDER_LOG_STATUS {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -4184,7 +4075,6 @@ export interface GET_PRODUCT_OWNER_ORDERSVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -4238,7 +4128,6 @@ export interface GET_PRODUCT_OWNER_TOTAL_AMOUNTVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -4306,7 +4195,6 @@ export interface GET_VOUCHER_PLAN_COLLECTION {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -4341,7 +4229,6 @@ export interface INSERT_VOUCHER_PLANVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -4400,7 +4287,6 @@ export interface UPDATE_VOUCHER_PLANVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -4547,7 +4433,6 @@ export interface GET_ACTIVITY_ADMINVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -4576,7 +4461,6 @@ export interface UPDATE_LOGINED_ATVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -4629,7 +4513,6 @@ export interface GET_APPVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -4654,7 +4537,6 @@ export interface GET_APPLICATIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -4743,7 +4625,6 @@ export interface GET_APPOINTMENT_PLAN_ADMINVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -4833,7 +4714,6 @@ export interface GET_PODCAST_PROGRAM_ADMINVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -4918,7 +4798,6 @@ export interface GET_PUBLISHED_ACTIVITY_COLLECTION {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -4945,7 +4824,6 @@ export interface GET_ENROLLED_ACTIVITY_TICKETSVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5035,7 +4913,6 @@ export interface GET_TICKETVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5117,7 +4994,6 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5146,7 +5022,6 @@ export interface UPDATE_APPOINTMENT_ResultVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5249,7 +5124,6 @@ export interface GET_POSTVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5299,7 +5173,6 @@ export interface GET_POSTS {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5339,7 +5212,6 @@ export interface INSERT_POSTVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5368,7 +5240,6 @@ export interface GET_ENROLLED_CARDVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5434,7 +5305,6 @@ export interface GET_COUPON_PLAN_COLLECTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5504,7 +5374,6 @@ export interface GET_COUPON__CODE_COLLECTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5532,7 +5401,6 @@ export interface GET_CART_PRODUCTVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5562,7 +5430,6 @@ export interface INSERT_CART_PRODUCTVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5590,7 +5457,6 @@ export interface DELETE_CART_PRODUCTVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5637,7 +5503,6 @@ export interface GET_ORDER_PRODUCTVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5658,7 +5523,6 @@ export interface GET_TAGS {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5686,7 +5550,6 @@ export interface GET_CATEGORIESVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5711,7 +5574,6 @@ export interface GET_ENROLLED_PRODUCTSVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5736,7 +5598,6 @@ export interface GET_ENROLLED_PROGRAM_PACKAGE_PLAN_IDSVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5769,7 +5630,6 @@ export interface GET_NOTIFICATIONSVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5800,7 +5660,6 @@ export interface INSERT_PROGRAM_CATEGORYVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5830,7 +5689,6 @@ export interface UPDATE_CATEGORYVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5858,7 +5716,6 @@ export interface UPDATE_CATEGORY_POSITIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5886,7 +5743,6 @@ export interface DELETE_PROGRAM_CATEGORYVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5919,7 +5775,6 @@ export interface GET_PRODUCT_INVENTORYVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -5947,7 +5802,6 @@ export interface ARRANGE_PRODUCT_INVENTORYVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -6111,7 +5965,6 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -6349,7 +6202,6 @@ export interface GET_PRODUCT_SIMPLEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -6395,7 +6247,6 @@ export interface GET_MEMBERVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -6425,7 +6276,6 @@ export interface GET_PUBLIC_MEMBERVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -6498,7 +6348,6 @@ export interface UPDATE_MEMBER_BASICVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -6531,7 +6380,6 @@ export interface UPDATE_MEMBER_ACCOUNTVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -6571,7 +6419,6 @@ export interface INSERT_MERCHANDISEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -6611,7 +6458,6 @@ export interface GET_MERCHANDISE_COLLECTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -6702,7 +6548,6 @@ export interface GET_MERCHANDISEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -6751,7 +6596,6 @@ export interface GET_MEMBER_SHOP_COLLECTION {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -6779,7 +6623,6 @@ export interface GET_MEMBER_SHOPVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -6821,7 +6664,6 @@ export interface GET_MERCHANDISE_ORDER_LOG {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -6853,7 +6695,6 @@ export interface GET_PODCAST_PLANVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -6905,7 +6746,6 @@ export interface GET_PODCAST_PLAN_ADMIN_COLLECTION {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7001,7 +6841,6 @@ export interface GET_PROGRAM_PREVIEW_COLLECTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7162,7 +7001,6 @@ export interface GET_PROGRAMVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7242,7 +7080,6 @@ export interface GET_PROGRAM_CONTENTVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7268,7 +7105,6 @@ export interface GET_OWNED_PROGRAMSVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7294,7 +7130,6 @@ export interface GET_EDITABLE_PROGRAMSVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7324,7 +7159,6 @@ export interface GET_PROGRAM_CONTENT_ENROLLMENT {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7410,7 +7244,6 @@ export interface GET_PROGRAM_PROGRESSVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7448,7 +7281,6 @@ export interface INSERT_PROGRAMVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7470,7 +7302,6 @@ export interface GET_PROGRAM_PACKAGE_COLLECTION {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7497,7 +7328,6 @@ export interface GET_PROGRAM_PACKAGE_PLAN_COLLECTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7532,7 +7362,6 @@ export interface GET_PROGRAM_PACKAGE_PROGRAM_COLLECTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7569,7 +7398,6 @@ export interface GET_PROGRAM_PACKAGE_PLAN_ENROLLMENTVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7606,7 +7434,6 @@ export interface GET_PROGRAM_TEMPO_DELIVERYVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7634,7 +7461,6 @@ export interface DELIVER_PROGRAM_COLLECTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7684,7 +7510,6 @@ export interface GET_PROGRAM_PACKAGESVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7769,7 +7594,6 @@ export interface GET_PROGRAM_PACKAGEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7807,7 +7631,6 @@ export interface INSERT_PROGRAM_PACKAGEVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7873,7 +7696,6 @@ export interface GET_MEMBER_COLLECTION {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7901,7 +7723,6 @@ export interface UPDATE_PROGRAM_POSITION_COLLECTIONVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7957,7 +7778,6 @@ export interface GET_CREATOR_PROGRAM_ISSUESVariables {
 
 /* tslint:disable */
 /* eslint-disable */
-// @generated
 // This file was automatically generated and should not be edited.
 
 //==============================================================

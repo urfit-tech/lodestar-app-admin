@@ -98,11 +98,10 @@ const CategoryAdminCard: React.FC<{ classType: ClassType }> = ({ classType }) =>
         icon="plus"
         type="link"
         onClick={() => {
-          const appId = localStorage.getItem('kolable.app.id')
-          appId &&
+          app.id &&
             insertCategory({
               variables: {
-                appId,
+                appId: app.id,
                 name: `Untitled-${categories.length + 1}`,
                 position: categories.length,
                 classType,
