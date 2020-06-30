@@ -53,6 +53,7 @@ type OrderProduct = {
     id: string
     type: string
   }
+  quantity: number
 }
 
 type OrderDiscount = {
@@ -190,6 +191,7 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
                   )})`}
                 </span>
               )}
+              {orderProduct.quantity && <span>{` X${orderProduct.quantity} `}</span>}
             </div>
             <div className="col-2 text-right">{currencyFormatter(orderProduct.price)}</div>
           </div>
@@ -331,6 +333,7 @@ const useDataSource = (
         price: orderProduct.price,
         endedAt: orderProduct.ended_at,
         product: orderProduct.product,
+        quantity: orderProduct.options?.quantity,
       })),
       orderDiscounts: log.order_discounts.map(orderDiscount => ({
         id: orderDiscount.id,
@@ -381,6 +384,7 @@ const GET_ORDERS = gql`
           id
           type
         }
+        options
       }
       order_discounts {
         id

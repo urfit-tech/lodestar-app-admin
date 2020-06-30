@@ -2420,6 +2420,7 @@ export interface GET_ORDERS_order_log_order_products {
    * An object relationship
    */
   product: GET_ORDERS_order_log_order_products_product;
+  options: any | null;
 }
 
 export interface GET_ORDERS_order_log_order_discounts {
