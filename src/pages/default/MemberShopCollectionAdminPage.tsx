@@ -1,5 +1,5 @@
 import { Icon, Tabs } from 'antd'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
@@ -42,8 +42,12 @@ const StyledCardMeta = styled.div`
 
 const MemberShopCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { memberShops } = useMemberShopCollection()
-  const [activeKey, setActiveKey] = useQueryParam('activeKey', StringParam)
+  const { memberShops, refetchMemberShops } = useMemberShopCollection()
+  const [activeKey, setActiveKey] = useQueryParam('tabKey', StringParam)
+
+  useEffect(() => {
+    refetchMemberShops()
+  }, [refetchMemberShops])
 
   const tabContents = [
     {

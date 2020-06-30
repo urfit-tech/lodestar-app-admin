@@ -72,8 +72,10 @@ const AdminPublishBlock: React.FC<{
   title?: string
   description?: string
   checklist?: ChecklistItemProps[]
+  publishText?: string
+  unPublishText?: string
   onPublish?: (event: PublishEvent) => void
-}> = ({ type, title, description, checklist, onPublish }) => {
+}> = ({ type, title, description, checklist, publishText, unPublishText, onPublish }) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
 
@@ -121,22 +123,23 @@ const AdminPublishBlock: React.FC<{
           disabled={type === 'alert'}
           loading={loading}
           onClick={() => {
+            if (!onPublish) {
+              return
+            }
             setLoading(true)
-
-            onPublish &&
-              onPublish({
-                values: {
-                  publishedAt: type === 'ordinary' ? new Date() : null,
-                },
-                onSuccess: () => message.success(formatMessage(messages.publishedSuccessfully)),
-                onError: () => message.error(formatMessage(messages.publishingFailed)),
-                onFinally: () => setLoading(false),
-              })
+            onPublish({
+              values: {
+                publishedAt: type === 'ordinary' ? new Date() : null,
+              },
+              onSuccess: () => message.success(formatMessage(commonMessages.event.successfullySaved)),
+              onError: () => message.error(formatMessage(messages.publishingFailed)),
+              onFinally: () => setLoading(false),
+            })
           }}
         >
           {type === 'success'
-            ? formatMessage(commonMessages.ui.cancelPublishing)
-            : formatMessage(commonMessages.ui.publish)}
+            ? unPublishText || formatMessage(commonMessages.ui.cancelPublishing)
+            : publishText || formatMessage(commonMessages.ui.publish)}
         </Button>
       </div>
     </>

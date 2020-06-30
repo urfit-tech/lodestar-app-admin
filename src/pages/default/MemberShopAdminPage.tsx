@@ -10,7 +10,7 @@ import {
   AdminHeader,
   AdminHeaderTitle,
   AdminPaneTitle,
-  AdminTabBarWrapper
+  AdminTabBarWrapper,
 } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import MemberShopBasicForm from '../../components/merchandise/MemberShopBasicForm'
@@ -32,7 +32,7 @@ const MemberShopAdminPage: React.FC = () => {
   const { match } = useRouter<{ shopId: string }>()
   const shopId = match.params.shopId
   const { memberShop, refetchMemberShop } = useMemberShop(shopId)
-  const [activeKey, setActiveKey] = useQueryParam('activeKey', StringParam)
+  const [activeKey, setActiveKey] = useQueryParam('tabKey', StringParam)
 
   return (
     <>

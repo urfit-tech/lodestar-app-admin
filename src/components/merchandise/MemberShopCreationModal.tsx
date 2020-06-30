@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import useRouter from 'use-react-router'
 import { handleError } from '../../helpers'
-import { commonMessages, merchandiseMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
 import CreatorSelector from '../common/CreatorSelector'
@@ -60,7 +60,14 @@ const MemberShopCreationModal: React.FC<FormComponentProps> = ({ form }) => {
         </Form.Item>
         <Form.Item label={formatMessage(merchandiseMessages.label.memberShopTitle)}>
           {form.getFieldDecorator('title', {
-            rules: [{ required: true }],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.term.title),
+                }),
+              },
+            ],
           })(<Input />)}
         </Form.Item>
       </Form>

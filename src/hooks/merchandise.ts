@@ -213,7 +213,7 @@ export const useMemberShopCollection = () => {
     loadingMemberShops: loading,
     errorMemberShops: error,
     memberShops,
-    refetchShops: refetch,
+    refetchMemberShops: refetch,
   }
 }
 

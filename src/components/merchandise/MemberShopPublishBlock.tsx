@@ -10,19 +10,21 @@ import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } fr
 const messages = defineMessages({
   notCompleteNotation: {
     id: 'merchandise.text.notCompleteNotation',
-    defaultMessage: '請填寫以下必填資料，填寫完畢即可啟用你的商城',
+    defaultMessage: '請填寫以下必填資料，填寫完畢即可啟用你的商店',
   },
   unpublishedNotation: {
     id: 'merchandise.text.unpublishedNotation',
-    defaultMessage: '你的商城未啟用，你的所有商品並不會顯示在頁面上。',
+    defaultMessage: '你的商店未啟用，你的所有商品並不會顯示在頁面上。',
   },
   publishedNotation: {
     id: 'merchandise.text.publishedNotation',
-    defaultMessage: '現在你的商城已啟用，你的所有商品會出現在頁面上。',
+    defaultMessage: '現在你的商店已啟用，你的所有商品會出現在頁面上。',
   },
   noTitle: { id: 'merchandise.text.noShopTitle', defaultMessage: '尚未填寫商店名稱' },
   noShippingMethod: { id: 'merchandise.text.noShippingMethod', defaultMessage: '尚未設定物流' },
   noShippingDays: { id: 'merchandise.text.noShippingDays', defaultMessage: '尚未填寫寄送天數' },
+  activateShop: { id: 'merchandise.ui.activateShop', defaultMessage: '啟用商店' },
+  closeShop: { id: 'merchandise.ui.closeShop', defaultMessage: '關閉商店' },
 })
 
 const MemberShopPublishBlock: React.FC<{
@@ -87,6 +89,8 @@ const MemberShopPublishBlock: React.FC<{
       checklist={checklist}
       title={title}
       description={description}
+      publishText={formatMessage(messages.activateShop)}
+      unPublishText={formatMessage(messages.closeShop)}
       onPublish={handlePublish}
     />
   )
