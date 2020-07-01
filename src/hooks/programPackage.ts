@@ -400,7 +400,7 @@ export const useGetProgramPackage = (id: string) => {
               title: plan.title,
               listPrice: plan.list_price,
               salePrice: plan.sale_price,
-              soldAt: plan.sold_at,
+              soldAt: plan.sold_at ? new Date(plan.sold_at) : null,
               periodType: plan.period_type as PeriodType,
               periodAmount: plan.period_amount,
               description: plan.description,
