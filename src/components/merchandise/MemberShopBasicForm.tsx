@@ -57,7 +57,7 @@ const MemberShopBasicForm: React.FC<MemberShopBasicFormProps> = ({ memberShop, r
             {
               required: true,
               message: formatMessage(errorMessages.form.isRequired, {
-                fields: formatMessage(merchandiseMessages.label.shopTitle),
+                field: formatMessage(merchandiseMessages.label.shopTitle),
               }),
             },
           ],
