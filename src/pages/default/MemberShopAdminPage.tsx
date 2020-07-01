@@ -32,7 +32,7 @@ const MemberShopAdminPage: React.FC = () => {
   const { match } = useRouter<{ shopId: string }>()
   const shopId = match.params.shopId
   const { memberShop, refetchMemberShop } = useMemberShop(shopId)
-  const [activeKey, setActiveKey] = useQueryParam('tabKey', StringParam)
+  const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
 
   return (
     <>

@@ -172,6 +172,7 @@ const ShippingMethodItem: React.FC<{
         {formatMessage(merchandiseMessages.text.estimatedShippingDays)}
       </span>
       <InputNumber
+        min={0}
         value={value.days}
         onChange={newValue =>
           typeof newValue === 'number' &&

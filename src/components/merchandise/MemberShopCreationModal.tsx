@@ -55,7 +55,14 @@ const MemberShopCreationModal: React.FC<FormComponentProps> = ({ form }) => {
       <Form hideRequiredMark colon={false}>
         <Form.Item label={formatMessage(merchandiseMessages.label.selectContentCreator)}>
           {form.getFieldDecorator('creatorId', {
-            rules: [{ required: true }],
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(merchandiseMessages.label.selectContentCreator),
+                }),
+              },
+            ],
           })(<CreatorSelector />)}
         </Form.Item>
         <Form.Item label={formatMessage(merchandiseMessages.label.memberShopTitle)}>

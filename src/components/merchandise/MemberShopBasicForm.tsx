@@ -4,7 +4,7 @@ import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { commonMessages, merchandiseMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MemberShopProps } from '../../types/merchandise'
 
@@ -53,7 +53,14 @@ const MemberShopBasicForm: React.FC<MemberShopBasicFormProps> = ({ memberShop, r
       <Form.Item label={formatMessage(merchandiseMessages.label.shopTitle)}>
         {form.getFieldDecorator('title', {
           initialValue: memberShop.title,
-          rules: [{ required: true }],
+          rules: [
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                fields: formatMessage(merchandiseMessages.label.shopTitle),
+              }),
+            },
+          ],
         })(<Input />)}
       </Form.Item>
 
