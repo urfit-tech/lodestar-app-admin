@@ -8,7 +8,7 @@ import { prop, sum } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
-import { currencyFormatter, desktopViewMixin } from '../../helpers'
+import { currencyFormatter, desktopViewMixin, dateRangeFormatter } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
@@ -48,6 +48,7 @@ type OrderProduct = {
   id: string
   name: string
   price: number
+  startedAt: Date | null
   endedAt: Date | null
   product: {
     id: string
@@ -184,11 +185,20 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
             </div>
             <div className="col-8">
               {orderProduct.name}
-              {orderProduct.endedAt && (
+              {orderProduct.endedAt && orderProduct.product.type !== 'AppointmentPlan' && (
                 <span className="ml-2">
                   {`(${moment(orderProduct.endedAt).format('YYYY-MM-DD')} ${formatMessage(
                     commonMessages.status.productExpired,
                   )})`}
+                </span>
+              )}
+              {orderProduct.startedAt && orderProduct.endedAt && orderProduct.product.type === 'AppointmentPlan' && (
+                <span>
+                  {`(${dateRangeFormatter({
+                    startedAt: orderProduct.startedAt,
+                    endedAt: orderProduct.endedAt,
+                    dateFormat: 'YYYY-MM-DD',
+                  })})`}
                 </span>
               )}
               {orderProduct.quantity && <span>{` X${orderProduct.quantity} `}</span>}
@@ -331,6 +341,7 @@ const useDataSource = (
         id: orderProduct.id,
         name: orderProduct.name,
         price: orderProduct.price,
+        startedAt: orderProduct.started_at,
         endedAt: orderProduct.ended_at,
         product: orderProduct.product,
         quantity: orderProduct.options?.quantity,
@@ -379,6 +390,7 @@ const GET_ORDERS = gql`
         id
         name
         price
+        started_at
         ended_at
         product {
           id
