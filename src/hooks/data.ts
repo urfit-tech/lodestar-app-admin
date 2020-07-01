@@ -229,6 +229,15 @@ export const useProductInventoryLog = (productId: string) => {
           quantity
           comment
         }
+        order_product(
+          where: { _and: [{ product_id: { _eq: $productId } }, { order_log: { status: { _eq: "SUCCESS" } } }] }
+        ) {
+          id
+          options
+          order_log {
+            delivered_at
+          }
+        }
       }
     `,
     { variables: { productId } },
@@ -237,19 +246,29 @@ export const useProductInventoryLog = (productId: string) => {
   const inventoryLogs: ProductInventoryLogProps[] =
     loading || error || !data
       ? []
-      : data.product_inventory.map(productInventory => ({
-          id: productInventory.id,
-          createdAt: new Date(productInventory.created_at),
-          status: productInventory.status,
-          specification: productInventory.specification,
-          quantity: productInventory.quantity,
-          comment: productInventory.comment,
-        }))
+      : [
+          ...data.order_product.map(shippedProduct => ({
+            id: shippedProduct.id,
+            createdAt: new Date(shippedProduct.order_log.delivered_at),
+            status: 'shipped',
+            specification: '',
+            quantity: -shippedProduct.options?.quantity,
+            comment: '',
+          })),
+          ...data.product_inventory.map(productInventory => ({
+            id: productInventory.id,
+            createdAt: new Date(productInventory.created_at),
+            status: productInventory.status,
+            specification: productInventory.specification,
+            quantity: productInventory.quantity,
+            comment: productInventory.comment,
+          })),
+        ]
 
   return {
     loadingInventoryLogs: loading,
     errorInventoryLogs: error,
-    inventoryLogs,
+    inventoryLogs: inventoryLogs.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
     refetchInventoryLogs: refetch,
   }
 }
@@ -645,9 +664,8 @@ export const useSimpleProduct = (
       ? {
           id: data.podcast_plan_by_pk.id,
           productType: 'PodcastPlan',
-          title: `${formatMessage(commonMessages.label.podcastSubscription)} - ${
-            data.podcast_plan_by_pk.creator.name || data.podcast_plan_by_pk.creator.username
-          }`,
+          title: `${formatMessage(commonMessages.label.podcastSubscription)} - ${data.podcast_plan_by_pk.creator.name ||
+            data.podcast_plan_by_pk.creator.username}`,
           coverUrl: 'https://static.kolable.com/images/default/reservation.svg',
         }
       : data.appointment_plan_by_pk

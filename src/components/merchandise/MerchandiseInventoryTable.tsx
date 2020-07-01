@@ -29,6 +29,7 @@ const MerchandiseInventoryTable: React.FC<{
 
   const STATUS: { [Key: string]: string } = {
     arrange: formatMessage(merchandiseMessages.status.arrange),
+    shipped: formatMessage(merchandiseMessages.status.shipped),
   }
 
   const columns: ColumnProps<ProductInventoryLogProps>[] = [
