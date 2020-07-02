@@ -589,6 +589,7 @@ export const merchandiseMessages = {
       id: 'merchandise.text.selectMemberShopPlaceholder',
       defaultMessage: '請選擇販售於哪個商城',
     },
+    abstractLimit: { id: 'merchandise.text.abstractLimit', defaultMessage: '限 200 字' },
   }),
 }
 

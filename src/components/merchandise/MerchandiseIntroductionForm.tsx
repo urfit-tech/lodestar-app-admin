@@ -77,7 +77,13 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
       <Form.Item label={formatMessage(merchandiseMessages.label.abstract)}>
         {form.getFieldDecorator('abstract', {
           initialValue: merchandise.abstract,
-        })(<Input.TextArea rows={5} />)}
+        })(
+          <Input.TextArea
+            rows={5}
+            maxLength={200}
+            placeholder={formatMessage(merchandiseMessages.text.abstractLimit)}
+          />,
+        )}
       </Form.Item>
       <Form.Item label={formatMessage(merchandiseMessages.label.meta)}>
         {form.getFieldDecorator('meta', {
