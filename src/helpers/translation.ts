@@ -440,6 +440,7 @@ export const promotionMessages = {
     directly: { id: 'promotion.text.directly', defaultMessage: '直接折抵 {discount}' },
   }),
   status: defineMessages({
+    notYet: { id: 'promotion.status.notYet', defaultMessage: '未啟用' },
     available: { id: 'promotion.status.available', defaultMessage: '可使用' },
     unavailable: { id: 'promotion.status.unavailable', defaultMessage: '已失效' },
     used: { id: 'promotion.status.used', defaultMessage: '已使用' },

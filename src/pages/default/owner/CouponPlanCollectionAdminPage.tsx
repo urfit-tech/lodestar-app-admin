@@ -7,11 +7,32 @@ import AdminLayout from '../../../components/layout/AdminLayout'
 import { commonMessages, promotionMessages } from '../../../helpers/translation'
 import { useCouponPlanCollection } from '../../../hooks/checkout'
 import { ReactComponent as DiscountIcon } from '../../../images/icon/discount.svg'
-import { CouponPlanProps } from '../../../types/checkout'
 
 const CouponPlanCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { couponPlans, refetchCouponPlans } = useCouponPlanCollection()
+
+  const tabContents = [
+    {
+      key: 'available',
+      tab: formatMessage(promotionMessages.status.available),
+      couponPlans: couponPlans.filter(couponPlan => couponPlan.available),
+    },
+    {
+      key: 'notYet',
+      tab: formatMessage(promotionMessages.status.notYet),
+      couponPlans: couponPlans.filter(
+        couponPlan => couponPlan.remaining > 0 && couponPlan.startedAt && couponPlan.startedAt.getTime() > Date.now(),
+      ),
+    },
+    {
+      key: 'unavailable',
+      tab: formatMessage(promotionMessages.status.unavailable),
+      couponPlans: couponPlans.filter(
+        couponPlan => couponPlan.remaining <= 0 || (couponPlan.endedAt && couponPlan.endedAt.getTime() < Date.now()),
+      ),
+    },
+  ]
 
   return (
     <AdminLayout>
@@ -22,7 +43,7 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
 
       <CouponPlanAdminModal
         renderTrigger={({ setVisible }) => (
-          <Button type="primary" onClick={() => setVisible(true)} className="mb-4" icon="file-add">
+          <Button type="primary" onClick={() => setVisible(true)} className="mb-5" icon="file-add">
             {formatMessage(promotionMessages.ui.createCouponPlan)}
           </Button>
         )}
@@ -30,36 +51,24 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
         title={formatMessage(promotionMessages.ui.createCouponPlan)}
       />
 
-      <Tabs>
-        <Tabs.TabPane key="live" tab={formatMessage(promotionMessages.status.available)}>
-          <CouponCollectionBlock
-            couponPlans={couponPlans.filter(couponPlan => couponPlan.available)}
-            onRefetch={refetchCouponPlans}
-          />
-        </Tabs.TabPane>
-        <Tabs.TabPane key="outdated" tab={formatMessage(promotionMessages.status.unavailable)}>
-          <CouponCollectionBlock
-            couponPlans={couponPlans.filter(couponPlan => !couponPlan.available)}
-            onRefetch={refetchCouponPlans}
-          />
-        </Tabs.TabPane>
+      <Tabs defaultActiveKey="available">
+        {tabContents.map(tabContent => (
+          <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
+            <div className="row">
+              {tabContent.couponPlans.map(couponPlan => (
+                <div key={couponPlan.id} className="col-12 col-md-6 mb-3">
+                  <CouponPlanAdminCard
+                    couponPlan={couponPlan}
+                    isAvailable={couponPlan.available}
+                    onRefetch={refetchCouponPlans}
+                  />
+                </div>
+              ))}
+            </div>
+          </Tabs.TabPane>
+        ))}
       </Tabs>
     </AdminLayout>
-  )
-}
-
-const CouponCollectionBlock: React.FC<{
-  couponPlans: CouponPlanProps[]
-  onRefetch?: () => void
-}> = ({ couponPlans, onRefetch }) => {
-  return (
-    <div className="row">
-      {couponPlans.map(couponPlan => (
-        <div key={couponPlan.id} className="col-12 col-md-6 mb-3">
-          <CouponPlanAdminCard couponPlan={couponPlan} outdated={!couponPlan.available} onRefetch={onRefetch} />
-        </div>
-      ))}
-    </div>
   )
 }
 
