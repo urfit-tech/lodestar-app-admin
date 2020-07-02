@@ -1,32 +1,36 @@
-import { Icon, Input, Tabs } from 'antd'
+import { Icon, Input, Skeleton, Tabs } from 'antd'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
-import MerchandiseOrderCollectionBlock from '../../components/merchandise/MerchandiseOrderCollectionBlock'
+import OrderPhysicalProductCollectionBlock from '../../components/shipping/OrderPhysicalProductCollectionBlock'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
-import { useMerchandiseOrderLogCollection } from '../../hooks/merchandise'
+import { useOrderPhysicalProductLog } from '../../hooks/data'
 import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
 
 const messages = defineMessages({
   noMerchandiseOrder: { id: 'merchandise.ui.noMerchandiseOrder', defaultMessage: '沒有任何商品記錄' },
 })
 
-const MerchandiseShippingAdminPage: React.FC = () => {
+const ShippingAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { merchandiseOrderLogs, refetch } = useMerchandiseOrderLogCollection()
+  const { loading, orderPhysicalProductLogs, refetch } = useOrderPhysicalProductLog()
   const [searchText, setSearchText] = useState('')
 
   const tabContents = [
     {
       key: 'shipping',
       name: formatMessage(merchandiseMessages.status.shipping),
-      merchandiseOrderLogs: merchandiseOrderLogs.filter(merchandiseOrderLog => !merchandiseOrderLog.deliveredAt),
+      orderPhysicalProductLogs: orderPhysicalProductLogs.filter(
+        orderPhysicalProductLog => !orderPhysicalProductLog.deliveredAt,
+      ),
     },
     {
       key: 'shipped',
       name: formatMessage(merchandiseMessages.status.shipped),
-      merchandiseOrderLogs: merchandiseOrderLogs.filter(merchandiseOrderLog => merchandiseOrderLog.deliveredAt),
+      orderPhysicalProductLogs: orderPhysicalProductLogs.filter(
+        orderPhysicalProductLog => orderPhysicalProductLog.deliveredAt,
+      ),
     },
   ]
 
@@ -34,7 +38,7 @@ const MerchandiseShippingAdminPage: React.FC = () => {
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <Icon component={() => <ShopIcon />} className="mr-2" />
-        <span>{formatMessage(commonMessages.menu.merchandiseShipping)}</span>
+        <span>{formatMessage(commonMessages.menu.shipping)}</span>
       </AdminPageTitle>
       <div className="row">
         <div className="col-12 col-lg-4 mb-4">
@@ -47,15 +51,17 @@ const MerchandiseShippingAdminPage: React.FC = () => {
 
       <Tabs>
         {tabContents.map(tabContent => (
-          <Tabs.TabPane key={tabContent.key} tab={`${tabContent.name} (${tabContent.merchandiseOrderLogs.length})`}>
-            {tabContent.merchandiseOrderLogs.length ? (
-              <MerchandiseOrderCollectionBlock
-                merchandiseOrderLogs={tabContent.merchandiseOrderLogs}
+          <Tabs.TabPane key={tabContent.key} tab={`${tabContent.name} (${tabContent.orderPhysicalProductLogs.length})`}>
+            {loading ? (
+              <Skeleton />
+            ) : tabContent.orderPhysicalProductLogs.length === 0 ? (
+              formatMessage(messages.noMerchandiseOrder)
+            ) : (
+              <OrderPhysicalProductCollectionBlock
+                orderPhysicalProductLogs={tabContent.orderPhysicalProductLogs}
                 searchText={searchText}
                 onRefetch={refetch}
               />
-            ) : (
-              formatMessage(messages.noMerchandiseOrder)
             )}
           </Tabs.TabPane>
         ))}
@@ -64,4 +70,4 @@ const MerchandiseShippingAdminPage: React.FC = () => {
   )
 }
 
-export default MerchandiseShippingAdminPage
+export default ShippingAdminPage

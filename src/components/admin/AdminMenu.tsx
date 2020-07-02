@@ -136,25 +136,6 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
           </Menu.SubMenu>
         )}
 
-        {enabledModules.merchandise && (
-          <Menu.SubMenu
-            key="owner_merchandise_admin"
-            title={
-              <span>
-                <Icon component={() => <ShopIcon />} />
-                <span>{formatMessage(commonMessages.menu.merchandiseAdmin)}</span>
-              </span>
-            }
-          >
-            <Menu.Item key="merchandise_collection">{formatMessage(commonMessages.menu.merchandises)}</Menu.Item>
-            <Menu.Item key="merchandise_shipping">{formatMessage(commonMessages.menu.merchandiseShipping)}</Menu.Item>
-            <Menu.Item key="merchandise_shop_collection">
-              {formatMessage(commonMessages.menu.merchandiseShop)}
-            </Menu.Item>
-            <Menu.Item key="merchandise_category">{formatMessage(commonMessages.menu.merchandiseCategory)}</Menu.Item>
-          </Menu.SubMenu>
-        )}
-
         {enabledModules.blog && (
           <Menu.SubMenu
             key="owner_blog_admin"
@@ -168,6 +149,31 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
             <Menu.Item key="blog_collection">{formatMessage(commonMessages.menu.blogPosts)}</Menu.Item>
             <Menu.Item key="blog_category">{formatMessage(commonMessages.menu.blogCategory)}</Menu.Item>
           </Menu.SubMenu>
+        )}
+
+        {enabledModules.merchandise && (
+          <Menu.SubMenu
+            key="owner_merchandise_admin"
+            title={
+              <span>
+                <Icon component={() => <ShopIcon />} />
+                <span>{formatMessage(commonMessages.menu.merchandiseAdmin)}</span>
+              </span>
+            }
+          >
+            <Menu.Item key="merchandise_collection">{formatMessage(commonMessages.menu.merchandises)}</Menu.Item>
+            <Menu.Item key="merchandise_shop_collection">
+              {formatMessage(commonMessages.menu.merchandiseShop)}
+            </Menu.Item>
+            <Menu.Item key="merchandise_category">{formatMessage(commonMessages.menu.merchandiseCategory)}</Menu.Item>
+          </Menu.SubMenu>
+        )}
+
+        {(enabledModules.merchandise || enabledModules.project) && (
+          <Menu.Item key="shipping">
+            <Icon type="golden" theme="filled" />
+            {formatMessage(commonMessages.menu.shipping)}
+          </Menu.Item>
         )}
 
         <Menu.SubMenu

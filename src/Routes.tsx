@@ -53,6 +53,11 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'NotificationPage',
     authenticated: false,
   },
+  shipping: {
+    path: '/shipping',
+    pageName: 'ShippingAdminPage',
+    authenticated: true,
+  },
   settings: {
     path: '/settings',
     pageName: 'SettingAdminPage',
@@ -159,6 +164,23 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
   },
 
+  // blog
+  blog_collection: {
+    path: '/blog',
+    pageName: 'BlogCollectionAdminPage',
+    authenticated: true,
+  },
+  blog: {
+    path: '/blog/:postId',
+    pageName: 'BlogAdminPage',
+    authenticated: true,
+  },
+  blog_category: {
+    path: '/blog-post-category',
+    pageName: 'BlogPostCategoryPage',
+    authenticated: true,
+  },
+
   // merchandise
   merchandise_collection: {
     path: '/merchandises',
@@ -168,11 +190,6 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   merchandise: {
     path: '/merchandises/:merchandiseId',
     pageName: 'MerchandiseAdminPage',
-    authenticated: true,
-  },
-  merchandise_shipping: {
-    path: '/merchandise-shipping',
-    pageName: 'MerchandiseShippingAdminPage',
     authenticated: true,
   },
   merchandise_category: {
@@ -188,23 +205,6 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   merchandise_shop: {
     path: '/member-shops/:shopId',
     pageName: 'MemberShopAdminPage',
-    authenticated: true,
-  },
-
-  // blog
-  blog_collection: {
-    path: '/blog',
-    pageName: 'BlogCollectionAdminPage',
-    authenticated: true,
-  },
-  blog: {
-    path: '/blog/:postId',
-    pageName: 'BlogAdminPage',
-    authenticated: true,
-  },
-  blog_category: {
-    path: '/blog-post-category',
-    pageName: 'BlogPostCategoryPage',
     authenticated: true,
   },
 

@@ -29,7 +29,7 @@ const StyledShippingInfoContent = styled.div`
   color: var(--gray-darker);
 `
 
-const MerchandiseShippingInfoModal: React.FC<{
+const ShippingInfoModal: React.FC<{
   shipping: ShippingProps
   invoice: InvoiceProps
 }> = ({ shipping, invoice }) => {
@@ -84,4 +84,4 @@ const MerchandiseShippingInfoModal: React.FC<{
   )
 }
 
-export default MerchandiseShippingInfoModal
+export default ShippingInfoModal
