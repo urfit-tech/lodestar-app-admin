@@ -58,15 +58,15 @@ const StyledTitle = styled.div`
   line-height: 1.3;
   letter-spacing: 0.77px;
 `
-const StyledPriceLabel = styled.span<{ outdated?: boolean }>`
-  color: ${props => (props.outdated ? 'var(--gray)' : props.theme['@primary-color'])};
+const StyledPriceLabel = styled.span<{ active?: boolean }>`
+  color: ${props => (props.active ? props.theme['@primary-color'] : 'var(--gray)')};
   font-size: 24px;
   letter-spacing: 0.2px;
 `
-const StyledText = styled.span<{ outdated?: boolean }>`
+const StyledText = styled.span<{ active?: boolean }>`
   padding: 2px 6px;
-  color: ${props => (props.outdated ? 'var(--gray-dark)' : props.theme['@primary-color'])};
-  background-color: ${props => (props.outdated ? 'var(--gray-lighter)' : props.theme['@processing-color'])};
+  color: ${props => (props.active ? props.theme['@primary-color'] : 'var(--gray-dark)')};
+  background-color: ${props => (props.active ? props.theme['@processing-color'] : 'var(--gray-lighter)')};
   font-size: 14px;
   line-height: 1.57;
   letter-spacing: 0.4px;
@@ -74,9 +74,9 @@ const StyledText = styled.span<{ outdated?: boolean }>`
 
 const CouponPlanAdminCard: React.FC<{
   couponPlan: CouponPlanProps
-  outdated?: boolean
+  isAvailable?: boolean
   onRefetch?: () => void
-}> = ({ couponPlan, outdated, onRefetch }) => {
+}> = ({ couponPlan, isAvailable, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [modalVisible, setModalVisible] = useState(false)
 
@@ -85,7 +85,7 @@ const CouponPlanAdminCard: React.FC<{
       title={
         <StyledTitle className="d-flex align-items-start justify-content-between py-4">
           <span className="flex-grow-1">{couponPlan.title}</span>
-          <StyledPriceLabel className="flex-shrink-0" outdated={outdated}>
+          <StyledPriceLabel className="flex-shrink-0" active={isAvailable}>
             {couponPlan.type === 'cash'
               ? currencyFormatter(couponPlan.amount)
               : couponPlan.type === 'percent'
@@ -95,7 +95,7 @@ const CouponPlanAdminCard: React.FC<{
         </StyledTitle>
       }
     >
-      <StyledText outdated={outdated}>
+      <StyledText active={isAvailable}>
         {couponPlan.constraint
           ? formatMessage(promotionMessages.label.constraintAmount, {
               amount: currencyFormatter(couponPlan.constraint),

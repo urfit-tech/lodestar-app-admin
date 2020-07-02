@@ -52,7 +52,9 @@ export const useCouponPlanCollection = () => {
       : data.coupon_plan.map(couponPlan => {
           const remaining = couponPlan.coupon_codes_aggregate.aggregate?.sum?.remaining || 0
           const available =
-            remaining > 0 && (couponPlan.ended_at ? new Date(couponPlan.ended_at).getTime() > Date.now() : true)
+            remaining > 0 &&
+            (!couponPlan.started_at || new Date(couponPlan.started_at).getTime() < Date.now()) &&
+            (!couponPlan.ended_at || new Date(couponPlan.ended_at).getTime() > Date.now())
 
           return {
             id: couponPlan.id,

@@ -230,7 +230,13 @@ export const useProductInventoryLog = (productId: string) => {
           comment
         }
         order_product(
-          where: { _and: [{ product_id: { _eq: $productId } }, { order_log: { status: { _eq: "SUCCESS" } } }] }
+          where: {
+            _and: [
+              { product_id: { _eq: $productId } }
+              { order_log: { status: { _eq: "SUCCESS" } } }
+              { order_log: { delivered_at: { _is_null: false } } }
+            ]
+          }
         ) {
           id
           options
