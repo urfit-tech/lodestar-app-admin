@@ -15,6 +15,8 @@ import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
 import types from '../../types'
+import { Link } from 'react-router-dom'
+import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 
 const StyledFileBlock = styled.div`
   padding: 0.25rem 0.5rem;
@@ -111,7 +113,7 @@ const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
           </span>
         }
       >
-        {form.getFieldDecorator('coverImg')(
+        {form.getFieldDecorator('audio')(
           <SingleUploader
             withExtension
             accept=".mp3"
@@ -120,8 +122,15 @@ const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
             showUploadList={false}
             path={`audios/${appId}/${podcastProgram.id}`}
             onSuccess={info => handleUploadAudio(extname(info.file.name).replace('.', ''))}
+            className="mr-2"
           />,
         )}
+        <Link to={`/podcast-programs/${podcastProgram.id}/recording`} className="ml-2">
+          <Button>
+            <Icon component={() => <MicrophoneIcon />} className="mr-2" />
+            <span>{formatMessage(podcastMessages.ui.recordAudio)}</span>
+          </Button>
+        </Link>
         {podcastProgram.contentType ? (
           <StyledFileBlock className="d-flex align-items-center justify-content-between">
             <span>

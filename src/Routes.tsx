@@ -114,6 +114,11 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'PodcastProgramAdminPage',
     authenticated: true,
   },
+  recording: {
+    path: '/podcast-programs/:podcastProgramId/recording',
+    pageName: 'RecordingPage',
+    authenticated: true,
+  },
   podcast_plan: {
     path: '/podcast-plan',
     pageName: 'PodcastPlanAdminPage',

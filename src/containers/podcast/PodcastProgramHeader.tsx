@@ -9,7 +9,8 @@ import { commonMessages } from '../../helpers/translation'
 
 const PodcastProgramHeader: React.FC<{
   podcastProgramId: string
-}> = ({ podcastProgramId }) => {
+  noPreview?: boolean
+}> = ({ podcastProgramId, noPreview }) => {
   const { history } = useRouter()
   const app = useContext(AppContext)
   const { podcastProgram } = useContext(PodcastProgramContext)
@@ -22,13 +23,16 @@ const PodcastProgramHeader: React.FC<{
       </Button>
 
       <AdminHeaderTitle>{podcastProgram ? podcastProgram.title : podcastProgramId}</AdminHeaderTitle>
-      <a
-        href={`https://${app.settings['host']}/podcasts/${podcastProgramId}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <Button>{formatMessage(commonMessages.ui.preview)}</Button>
-      </a>
+
+      {!noPreview && (
+        <a
+          href={`https://${app.settings['host']}/podcasts/${podcastProgramId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Button>{formatMessage(commonMessages.ui.preview)}</Button>
+        </a>
+      )}
     </AdminHeader>
   )
 }

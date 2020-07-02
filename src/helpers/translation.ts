@@ -509,6 +509,7 @@ export const podcastMessages = {
     subscribe: { id: 'podcast.ui.subscribe', defaultMessage: '訂閱頻道' },
     uploadAudioFile: { id: 'podcast.ui.uploadAudioFile', defaultMessage: '上傳音檔' },
     createPodcastPlan: { id: 'podcast.ui.createPodcastPlan', defaultMessage: '建立方案' },
+    recordAudio: { id: 'podcast.ui.recordAudio', defaultMessage: '錄製音檔' },
   }),
   status: defineMessages({
     published: { id: 'podcast.status.published', defaultMessage: '已發佈' },
