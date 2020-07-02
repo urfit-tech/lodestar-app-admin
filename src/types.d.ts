@@ -1252,35 +1252,6 @@ export interface UPDATE_MERCHANDISE_SALESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_DELIVER_INFO
-// ====================================================
-
-export interface UPDATE_DELIVER_INFO_update_order_log {
-  __typename: "order_log_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_DELIVER_INFO {
-  /**
-   * update data of the table: "order_log"
-   */
-  update_order_log: UPDATE_DELIVER_INFO_update_order_log | null;
-}
-
-export interface UPDATE_DELIVER_INFOVariables {
-  deliverMessage?: string | null;
-  deliveredAt?: any | null;
-  orderLogId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_SHIPPING_METHODS
 // ====================================================
 
@@ -2455,6 +2426,35 @@ export interface GET_TOTAL_ORDER_AMOUNT {
    * fetch aggregated fields from the table: "order_discount"
    */
   order_discount_aggregate: GET_TOTAL_ORDER_AMOUNT_order_discount_aggregate;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_DELIVER_INFO
+// ====================================================
+
+export interface UPDATE_DELIVER_INFO_update_order_log {
+  __typename: "order_log_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_DELIVER_INFO {
+  /**
+   * update data of the table: "order_log"
+   */
+  update_order_log: UPDATE_DELIVER_INFO_update_order_log | null;
+}
+
+export interface UPDATE_DELIVER_INFOVariables {
+  deliverMessage?: string | null;
+  deliveredAt?: any | null;
+  orderLogId?: string | null;
 }
 
 /* tslint:disable */
@@ -6059,6 +6059,47 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PHYSICAL_PRODUCT_ORDER_LOG
+// ====================================================
+
+export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_orderLogs_orderPhysicalProducts {
+  __typename: "order_product";
+  id: any;
+  name: string;
+  product_id: string;
+  options: any | null;
+}
+
+export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_orderLogs {
+  __typename: "order_log";
+  id: string;
+  created_at: any;
+  updated_at: any | null;
+  delivered_at: any | null;
+  deliver_message: string | null;
+  shipping: any | null;
+  /**
+   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
+   */
+  invoice: any;
+  /**
+   * An array relationship
+   */
+  orderPhysicalProducts: GET_PHYSICAL_PRODUCT_ORDER_LOG_orderLogs_orderPhysicalProducts[];
+}
+
+export interface GET_PHYSICAL_PRODUCT_ORDER_LOG {
+  /**
+   * fetch data from the table: "order_log"
+   */
+  orderLogs: GET_PHYSICAL_PRODUCT_ORDER_LOG_orderLogs[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PRODUCT_SIMPLE
 // ====================================================
 
@@ -6710,47 +6751,6 @@ export interface GET_MEMBER_SHOP {
 
 export interface GET_MEMBER_SHOPVariables {
   shopId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_MERCHANDISE_ORDER_LOG
-// ====================================================
-
-export interface GET_MERCHANDISE_ORDER_LOG_orderLogs_orderMerchandises {
-  __typename: "order_product";
-  id: any;
-  name: string;
-  product_id: string;
-  options: any | null;
-}
-
-export interface GET_MERCHANDISE_ORDER_LOG_orderLogs {
-  __typename: "order_log";
-  id: string;
-  created_at: any;
-  updated_at: any | null;
-  delivered_at: any | null;
-  deliver_message: string | null;
-  shipping: any | null;
-  /**
-   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
-   */
-  invoice: any;
-  /**
-   * An array relationship
-   */
-  orderMerchandises: GET_MERCHANDISE_ORDER_LOG_orderLogs_orderMerchandises[];
-}
-
-export interface GET_MERCHANDISE_ORDER_LOG {
-  /**
-   * fetch data from the table: "order_log"
-   */
-  orderLogs: GET_MERCHANDISE_ORDER_LOG_orderLogs[];
 }
 
 /* tslint:disable */

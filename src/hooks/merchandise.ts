@@ -3,12 +3,10 @@ import gql from 'graphql-tag'
 import types from '../types'
 import { ProductInventoryStatusProps } from '../types/general'
 import {
-  InvoiceProps,
   MemberShopPreviewProps,
   MemberShopProps,
   MerchandisePreviewProps,
-  MerchandiseProps,
-  ShippingProps,
+  MerchandiseProps
 } from '../types/merchandise'
 
 export const useInsertMerchandise = () => {
@@ -247,74 +245,5 @@ export const useMemberShop = (shopId: string) => {
     errorMemberShop: error,
     memberShop,
     refetchMemberShop: refetch,
-  }
-}
-
-export const useMerchandiseOrderLogCollection = () => {
-  const { error, loading, data, refetch } = useQuery<types.GET_MERCHANDISE_ORDER_LOG>(
-    gql`
-      query GET_MERCHANDISE_ORDER_LOG {
-        orderLogs: order_log(where: { _and: [{ status: { _eq: "SUCCESS" } }] }, order_by: { updated_at: desc }) {
-          id
-          created_at
-          updated_at
-          delivered_at
-          deliver_message
-          shipping
-          invoice
-
-          orderMerchandises: order_products(where: { product_id: { _like: "Merchandise_%" } }) {
-            id
-            name
-            product_id
-            options
-          }
-        }
-      }
-    `,
-  )
-
-  const merchandiseOrderLogs: {
-    id: string
-    createdAt: Date
-    updatedAt: Date
-    deliveredAt: Date
-    deliverMessage: string | null
-    shipping: ShippingProps
-    invoice: InvoiceProps
-    orderMerchandises: {
-      key: string
-      id: string
-      name: string
-      merchandiseId: string
-      quantity: number
-    }[]
-  }[] =
-    error || loading || !data
-      ? []
-      : data?.orderLogs
-          .filter(orderLog => orderLog.orderMerchandises.length)
-          .map(orderLog => ({
-            id: orderLog.id,
-            createdAt: orderLog.created_at,
-            updatedAt: orderLog.updated_at,
-            deliveredAt: orderLog.delivered_at,
-            deliverMessage: orderLog.deliver_message,
-            shipping: orderLog.shipping,
-            invoice: orderLog.invoice,
-            orderMerchandises: orderLog.orderMerchandises.map(orderMerchandise => ({
-              key: `${orderLog.id}_${orderMerchandise.name}`,
-              id: orderMerchandise.id,
-              name: orderMerchandise.name,
-              merchandiseId: orderMerchandise.product_id.split('_')[1],
-              quantity: orderMerchandise.options?.quantity || 1,
-            })),
-          }))
-
-  return {
-    error,
-    loading,
-    merchandiseOrderLogs,
-    refetch,
   }
 }

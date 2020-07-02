@@ -12,7 +12,7 @@ import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as CalendarOIcon } from '../../images/default/calendar-alt-o.svg'
 import AdminModal from '../admin/AdminModal'
-import { StyledDate } from './MerchandiseOrderCollectionBlock'
+import { StyledDate } from './OrderPhysicalProductCollectionBlock'
 
 const messages = defineMessages({
   shippingNotice: { id: 'merchandise.ui.shippingNotice', defaultMessage: '通知出貨' },
@@ -38,13 +38,13 @@ const StyledNotice = styled.span`
   letter-spacing: 0.4px;
   color: var(--gray-darker);
 `
-type MerchandiseShippingNoticeModalProps = FormComponentProps & {
+type ShippingNoticeModalProps = FormComponentProps & {
   orderLogId: string
   deliveredAt: Date | null
   deliverMessage: string | null
   onRefetch?: () => void
 }
-const MerchandiseShippingNoticeModal: React.FC<MerchandiseShippingNoticeModalProps> = ({
+const ShippingNoticeModal: React.FC<ShippingNoticeModalProps> = ({
   form: { getFieldDecorator, validateFields },
   orderLogId,
   deliveredAt,
@@ -162,4 +162,4 @@ const useUpdateDeliverInfo = (orderLogId: string) => {
   return updateDeliverInfo
 }
 
-export default Form.create<MerchandiseShippingNoticeModalProps>()(MerchandiseShippingNoticeModal)
+export default Form.create<ShippingNoticeModalProps>()(ShippingNoticeModal)

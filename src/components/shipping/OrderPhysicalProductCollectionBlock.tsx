@@ -1,14 +1,17 @@
+import { Divider, Spin } from 'antd'
 import moment from 'moment-timezone'
-import React from 'react'
+import { default as React } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
+import { useSimpleProduct } from '../../hooks/data'
 import { ReactComponent as CalendarOIcon } from '../../images/default/calendar-alt-o.svg'
+import EmptyCover from '../../images/default/empty-cover.png'
 import { InvoiceProps, ShippingProps } from '../../types/merchandise'
 import AdminCard from '../admin/AdminCard'
-import MerchandiseItem from './MerchandiseItem'
-import MerchandiseShippingInfoModal from './MerchandiseShippingInfoModal'
-import MerchandiseShippingNoticeModal from './MerchandiseShippingNoticeModal'
+import { CustomRatioImage } from '../common/Image'
+import ShippingInfoModal from './ShippingInfoModal'
+import ShippingNoticeModal from './ShippingNoticeModal'
 
 const messages = defineMessages({
   purchase: { id: 'merchandise.text.purchase', defaultMessage: '購買' },
@@ -33,8 +36,8 @@ const StyledSpecification = styled.div`
 `
 const StyledShippingInfo = styled.div``
 
-const MerchandiseOrderCollectionBlock: React.FC<{
-  merchandiseOrderLogs: {
+const OrderPhysicalProductCollectionBlock: React.FC<{
+  orderPhysicalProductLogs: {
     id: string
     createdAt: Date
     updatedAt: Date
@@ -42,29 +45,29 @@ const MerchandiseOrderCollectionBlock: React.FC<{
     deliverMessage: string | null
     shipping: ShippingProps
     invoice: InvoiceProps
-    orderMerchandises: {
+    orderPhysicalProducts: {
       key: string
       id: string
       name: string
-      merchandiseId: string
+      productId: string
       quantity: number
     }[]
   }[]
   searchText: string
   onRefetch?: () => void
-}> = ({ merchandiseOrderLogs, searchText, onRefetch }) => {
+}> = ({ orderPhysicalProductLogs, searchText, onRefetch }) => {
   const { formatMessage } = useIntl()
 
-  merchandiseOrderLogs = merchandiseOrderLogs.filter(merchandiseOrderLog =>
-    merchandiseOrderLog.orderMerchandises
-      .map(orderMerchandise => !searchText || orderMerchandise.key.toLowerCase().includes(searchText))
+  orderPhysicalProductLogs = orderPhysicalProductLogs.filter(orderPhysicalProductLog =>
+    orderPhysicalProductLog.orderPhysicalProducts
+      .map(orderPhysicalProduct => !searchText || orderPhysicalProduct.key.toLowerCase().includes(searchText))
       .includes(true),
   )
 
   return (
     <div className="pt-4">
-      {merchandiseOrderLogs.length ? (
-        merchandiseOrderLogs.map(orderLog => (
+      {orderPhysicalProductLogs.length ? (
+        orderPhysicalProductLogs.map(orderLog => (
           <AdminCard key={orderLog.id} className="mb-3">
             <StyledShippingInfo className="d-lg-flex justify-content-between">
               <div>
@@ -86,10 +89,10 @@ const MerchandiseOrderCollectionBlock: React.FC<{
 
               <div>
                 <span className="mr-2">
-                  <MerchandiseShippingInfoModal shipping={orderLog.shipping} invoice={orderLog.invoice} />
+                  <ShippingInfoModal shipping={orderLog.shipping} invoice={orderLog.invoice} />
                 </span>
                 <span>
-                  <MerchandiseShippingNoticeModal
+                  <ShippingNoticeModal
                     orderLogId={orderLog.id}
                     deliveredAt={orderLog.deliveredAt}
                     deliverMessage={orderLog.deliverMessage}
@@ -99,11 +102,11 @@ const MerchandiseOrderCollectionBlock: React.FC<{
               </div>
             </StyledShippingInfo>
 
-            {orderLog.orderMerchandises.map(orderMerchandise => (
-              <MerchandiseItem
-                key={orderMerchandise.id}
-                merchandiseId={orderMerchandise.merchandiseId}
-                quantity={orderMerchandise.quantity}
+            {orderLog.orderPhysicalProducts.map(orderPhysicalProduct => (
+              <ShippingProductItem
+                key={orderPhysicalProduct.id}
+                productId={orderPhysicalProduct.productId}
+                quantity={orderPhysicalProduct.quantity}
               />
             ))}
           </AdminCard>
@@ -117,4 +120,40 @@ const MerchandiseOrderCollectionBlock: React.FC<{
   )
 }
 
-export default MerchandiseOrderCollectionBlock
+const StyledQuantity = styled.div`
+  color: var(--gray-darker);
+  font-size: 14px;
+  line-height: 1.71;
+  letter-spacing: 0.4px;
+`
+
+const ShippingProductItem: React.FC<{
+  productId: string
+  quantity: number
+}> = ({ productId, quantity }) => {
+  const { loading, target } = useSimpleProduct(productId, {})
+
+  if (loading || !target) {
+    return <Spin />
+  }
+
+  return (
+    <div>
+      <Divider />
+
+      <div className="d-flex align-items-center">
+        <CustomRatioImage
+          className="mr-3 flex-shrink-0"
+          width="64px"
+          ratio={1}
+          src={target.coverUrl || EmptyCover}
+          shape="rounded"
+        />
+        <div className="flex-grow-1">{target.title}</div>
+        <StyledQuantity className="px-4">x{quantity}</StyledQuantity>
+      </div>
+    </div>
+  )
+}
+
+export default OrderPhysicalProductCollectionBlock

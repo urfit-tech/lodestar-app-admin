@@ -8,6 +8,7 @@ import { commonMessages } from '../helpers/translation'
 import { ProgramPlanPeriodType } from '../schemas/program'
 import types from '../types'
 import { Category, ClassType, ProductInventoryLogProps, ProductType } from '../types/general'
+import { InvoiceProps, ShippingProps } from '../types/merchandise'
 
 export const useTags = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_TAGS>(
@@ -439,6 +440,76 @@ export const useAllBriefProductCollection = () => {
     refetchBriefProducts: refetch,
   }
 }
+
+export const useOrderPhysicalProductLog = () => {
+  const { error, loading, data, refetch } = useQuery<types.GET_PHYSICAL_PRODUCT_ORDER_LOG>(
+    gql`
+      query GET_PHYSICAL_PRODUCT_ORDER_LOG {
+        orderLogs: order_log(where: { _and: [{ status: { _eq: "SUCCESS" } }] }, order_by: { updated_at: desc }) {
+          id
+          created_at
+          updated_at
+          delivered_at
+          deliver_message
+          shipping
+          invoice
+
+          orderPhysicalProducts: order_products(where: { order_log: { shipping: { _is_null: false } } }) {
+            id
+            name
+            product_id
+            options
+          }
+        }
+      }
+    `,
+  )
+
+  const orderPhysicalProductLogs: {
+    id: string
+    createdAt: Date
+    updatedAt: Date
+    deliveredAt: Date
+    deliverMessage: string | null
+    shipping: ShippingProps
+    invoice: InvoiceProps
+    orderPhysicalProducts: {
+      key: string
+      id: string
+      name: string
+      productId: string
+      quantity: number
+    }[]
+  }[] =
+    error || loading || !data
+      ? []
+      : data?.orderLogs
+          .filter(orderLog => orderLog.orderPhysicalProducts.length)
+          .map(orderLog => ({
+            id: orderLog.id,
+            createdAt: orderLog.created_at,
+            updatedAt: orderLog.updated_at,
+            deliveredAt: orderLog.delivered_at,
+            deliverMessage: orderLog.deliver_message,
+            shipping: orderLog.shipping,
+            invoice: orderLog.invoice,
+            orderPhysicalProducts: orderLog.orderPhysicalProducts.map(orderPhysicalProduct => ({
+              key: `${orderLog.id}_${orderPhysicalProduct.name}`,
+              id: orderPhysicalProduct.id,
+              name: orderPhysicalProduct.name,
+              productId: orderPhysicalProduct.product_id.split('_')[1],
+              quantity: orderPhysicalProduct.options?.quantity || 1,
+            })),
+          }))
+
+  return {
+    error,
+    loading,
+    orderPhysicalProductLogs,
+    refetch,
+  }
+}
+
 
 export const useSimpleProduct = (
   targetId: string,
