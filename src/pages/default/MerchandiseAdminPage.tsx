@@ -1,5 +1,5 @@
 import { Button, Icon, Skeleton, Tabs } from 'antd'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
@@ -11,7 +11,7 @@ import {
   AdminHeader,
   AdminHeaderTitle,
   AdminPaneTitle,
-  AdminTabBarWrapper
+  AdminTabBarWrapper,
 } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import MerchandiseBasicForm from '../../components/merchandise/MerchandiseBasicForm'
@@ -60,6 +60,10 @@ const MerchandiseAdminPage: React.FC = () => {
   const { settings } = useContext(AppContext)
   const { loadingMerchandise, errorMerchandise, merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
   const { inventoryLogs, refetchInventoryLogs } = useProductInventoryLog(`Merchandise_${merchandiseId}`)
+
+  useEffect(() => {
+    refetchInventoryLogs && refetchInventoryLogs()
+  }, [])
 
   if (loadingMerchandise || errorMerchandise || !merchandise) {
     return <Skeleton active />
