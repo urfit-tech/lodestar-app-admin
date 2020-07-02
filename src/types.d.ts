@@ -4021,6 +4021,77 @@ export interface GET_ORDER_DISCOUNT_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PAYMENT_LOG_COLLECTION
+// ====================================================
+
+export interface GET_PAYMENT_LOG_COLLECTION_payment_log_order_log_member {
+  __typename: "member";
+  name: string;
+  email: string;
+}
+
+export interface GET_PAYMENT_LOG_COLLECTION_payment_log_order_log_order_products_aggregate_aggregate_sum {
+  __typename: "order_product_sum_fields";
+  price: any | null;
+}
+
+export interface GET_PAYMENT_LOG_COLLECTION_payment_log_order_log_order_products_aggregate_aggregate {
+  __typename: "order_product_aggregate_fields";
+  sum: GET_PAYMENT_LOG_COLLECTION_payment_log_order_log_order_products_aggregate_aggregate_sum | null;
+}
+
+export interface GET_PAYMENT_LOG_COLLECTION_payment_log_order_log_order_products_aggregate {
+  __typename: "order_product_aggregate";
+  aggregate: GET_PAYMENT_LOG_COLLECTION_payment_log_order_log_order_products_aggregate_aggregate | null;
+}
+
+export interface GET_PAYMENT_LOG_COLLECTION_payment_log_order_log {
+  __typename: "order_log";
+  id: string;
+  /**
+   * An object relationship
+   */
+  member: GET_PAYMENT_LOG_COLLECTION_payment_log_order_log_member;
+  status: string;
+  /**
+   * An aggregated array relationship
+   */
+  order_products_aggregate: GET_PAYMENT_LOG_COLLECTION_payment_log_order_log_order_products_aggregate;
+}
+
+export interface GET_PAYMENT_LOG_COLLECTION_payment_log {
+  __typename: "payment_log";
+  /**
+   * An object relationship
+   */
+  order_log: GET_PAYMENT_LOG_COLLECTION_payment_log_order_log;
+  no: any;
+  /**
+   * merchant order number 
+   */
+  created_at: any;
+}
+
+export interface GET_PAYMENT_LOG_COLLECTION {
+  /**
+   * fetch data from the table: "payment_log"
+   */
+  payment_log: GET_PAYMENT_LOG_COLLECTION_payment_log[];
+}
+
+export interface GET_PAYMENT_LOG_COLLECTIONVariables {
+  appId: string;
+  startedAt: any;
+  endedAt: any;
+  orderStatuses?: string[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ORDER_LOG_STATUS
 // ====================================================
 

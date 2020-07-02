@@ -16,6 +16,7 @@ const messages = defineMessages({
   exportOrderLog: { id: 'common.ui.exportOrderLog', defaultMessage: '匯出訂單' },
   exportOrderProduct: { id: 'common.ui.exportOrderProduct', defaultMessage: '訂單明細' },
   exportOrderDiscount: { id: 'common.ui.exportOrderDiscount', defaultMessage: '折扣明細' },
+  exportPaymentLog: { id: 'common.ui.exportPaymentLog', defaultMessage: '交易明細' },
 
   invoiceSuccess: { id: 'payment.status.invoiceSuccess', defaultMessage: '開立成功' },
   invoiceFailed: { id: 'payment.status.invoiceFailed', defaultMessage: '開立失敗 {errorCode}' },
@@ -220,7 +221,57 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
     [app, client, formatMessage],
   )
 
-  const handleExport: (exportTarget: 'orderLog' | 'orderProduct' | 'orderDiscount') => void = exportTarget => {
+  const getPaymentLogContent: (
+    startedAt: Date,
+    endedAt: Date,
+    orderStatuses: string[],
+  ) => Promise<string> = useCallback(
+    async (startedAt, endedAt, orderStatuses) => {
+      const paymentLogResult = await client.query<
+        types.GET_PAYMENT_LOG_COLLECTION,
+        types.GET_PAYMENT_LOG_COLLECTIONVariables
+      >({
+        query: GET_PAYMENT_LOG_COLLECTION,
+        variables: {
+          appId: app.id,
+          startedAt,
+          endedAt,
+          orderStatuses,
+        },
+      })
+
+      const data: string[][] = [
+        [
+          formatMessage(commonMessages.label.orderLogMemberName),
+          formatMessage(commonMessages.label.orderLogMemberEmail),
+          formatMessage(commonMessages.label.orderLogId),
+          formatMessage(commonMessages.label.paymentNo),
+          formatMessage(commonMessages.label.orderLogStatus),
+          formatMessage(commonMessages.label.paymentCreatedAt),
+          formatMessage(commonMessages.label.paymentPrice),
+        ],
+      ]
+
+      paymentLogResult.data.payment_log.forEach(paymentLog => {
+        data.push([
+          paymentLog.order_log.member.name,
+          paymentLog.order_log.member.email,
+          paymentLog.order_log.id,
+          paymentLog.no,
+          paymentLog.order_log.status,
+          paymentLog.created_at,
+          paymentLog.order_log.order_products_aggregate.aggregate?.sum?.price || 0,
+        ])
+      })
+
+      return toCSV(data)
+    },
+    [app, client, formatMessage],
+  )
+
+  const handleExport: (
+    exportTarget: 'orderLog' | 'orderProduct' | 'orderDiscount' | 'paymentLog',
+  ) => void = exportTarget => {
     form.validateFields(
       async (
         error,
@@ -264,6 +315,11 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
             fileName = 'discounts'
             csvContent = await getOrderDiscountContent(startedAt, endedAt, orderStatuses)
             break
+
+          case 'paymentLog':
+            fileName = 'payments'
+            csvContent = await getPaymentLogContent(startedAt, endedAt, orderStatuses)
+            break
         }
 
         downloadCSV(
@@ -300,6 +356,9 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
                 </Menu.Item>
                 <Menu.Item key="order-discount" onClick={() => handleExport('orderDiscount')}>
                   <Button type="link">{formatMessage(messages.exportOrderDiscount)}</Button>
+                </Menu.Item>
+                <Menu.Item key="payment-log" onClick={() => handleExport('paymentLog')}>
+                  <Button type="link">{formatMessage(messages.exportPaymentLog)}</Button>
                 </Menu.Item>
               </Menu>
             }
@@ -489,6 +548,43 @@ const GET_ORDER_DISCOUNT_COLLECTION = gql`
       target
       name
       price
+    }
+  }
+`
+const GET_PAYMENT_LOG_COLLECTION = gql`
+  query GET_PAYMENT_LOG_COLLECTION(
+    $appId: String!
+    $startedAt: timestamptz!
+    $endedAt: timestamptz!
+    $orderStatuses: [String!]
+  ) {
+    payment_log(
+      where: {
+        order_log: {
+          member: { app_id: { _eq: $appId } }
+          updated_at: { _gte: $startedAt, _lte: $endedAt }
+          status: { _in: $orderStatuses }
+        }
+      }
+      order_by: { order_log: { updated_at: desc } }
+    ) {
+      order_log {
+        id
+        member {
+          name
+          email
+        }
+        status
+        order_products_aggregate {
+          aggregate {
+            sum {
+              price
+            }
+          }
+        }
+      }
+      no
+      created_at
     }
   }
 `
