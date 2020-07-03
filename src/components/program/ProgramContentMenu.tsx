@@ -8,7 +8,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import useRouter from 'use-react-router'
 import { array, InferType, object } from 'yup'
-import { dateFormatter, durationFormatter } from '../../helpers'
+import { dateFormatter } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { programContentSchema, programContentSectionSchema, programSchema } from '../../schemas/program'
 import types from '../../types'
@@ -99,6 +99,7 @@ const messages = defineMessages({
   sortBySection: { id: 'program.ui.sortBySection', defaultMessage: '單元排序' },
   sortByDate: { id: 'program.ui.sortByDate', defaultMessage: '時間排序' },
   emptyContentMenu: { id: 'program.text.emptyContentMenu', defaultMessage: '初次購買還沒有新的內容喔～' },
+  durationLabel: { id: 'program.text.durationLabel', defaultMessage: '約 {minutes} 分鐘' },
 })
 
 type ProgramContentMenuProps = {
@@ -245,7 +246,9 @@ const SortBySectionItem: React.FC<{
   active?: boolean
   onClick?: () => void
 }> = ({ program, programContent, active, onClick }) => {
+  const { formatMessage } = useIntl()
   const { history } = useRouter()
+
   const progressStatus =
     !programContent.programContentProgress ||
     programContent.programContentProgress.length === 0 ||
@@ -272,7 +275,9 @@ const SortBySectionItem: React.FC<{
       {programContent.programContentBody && programContent.programContentBody.type === 'video' ? (
         <div>
           <Icon type="video-camera" className="mr-2" />
-          {durationFormatter(programContent.duration)}
+          {programContent.duration
+            ? formatMessage(messages.durationLabel, { minutes: (programContent.duration / 60).toFixed(0) })
+            : null}
         </div>
       ) : (
         <div>

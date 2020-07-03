@@ -5,6 +5,7 @@ import { useInterval } from '../../hooks/util'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import { ReactComponent as StopCircleIcon } from '../../images/icon/stop-circle.svg'
 import { ButtonProps } from 'antd/lib/button'
+import { durationFormatter } from '../../helpers'
 
 const StyledButton = styled(Button)`
   && {
@@ -38,7 +39,7 @@ const RecordButton: React.FC<
     } else if (duration) {
       setDuration(0)
     }
-  }, 1000)
+  }, 100)
 
   return (
     <StyledButton
@@ -65,12 +66,7 @@ const RecordButton: React.FC<
           <StyledIcon component={() => <MicrophoneIcon />} size={36} />
         )}
 
-        {isRecording && (
-          <span className="ml-2">
-            {`${Math.floor(duration / 3600)}`.padStart(2, '0')}:{`${Math.floor((duration / 60) % 60)}`.padStart(2, '0')}
-            :{`${Math.floor(duration % 60)}`.padStart(2, '0')}
-          </span>
-        )}
+        {isRecording && <span className="ml-2">{durationFormatter(duration)}</span>}
       </div>
     </StyledButton>
   )
