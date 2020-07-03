@@ -1,4 +1,4 @@
-import { defineMessages } from 'react-intl'
+import { defineMessages, defineMessage } from 'react-intl'
 
 export const commonMessages = {
   ui: defineMessages({
@@ -355,6 +355,9 @@ export const activityMessages = {
     public: { id: 'activity.status.public', defaultMessage: '公開' },
     hidden: { id: 'activity.status.hidden', defaultMessage: '不公開' },
   }),
+  text: defineMessage({
+    imageTips: { id: 'activity.text.imageTips', defaultMessage: '建議圖片尺寸：1200*675px' },
+  }),
 }
 
 export const appointmentMessages = {
@@ -535,7 +538,7 @@ export const podcastMessages = {
   }),
   text: defineMessages({
     audioFileTips: { id: 'podcast.text.audioFileTips', defaultMessage: '建議格式：MP3\n檔案大小限制：5MB' },
-    podcastCoverTips: { id: 'podcast.text.podcastCoverTips', defaultMessage: '建議尺寸：1080*1080px' },
+    podcastCoverTips: { id: 'podcast.text.podcastCoverTips', defaultMessage: '建議圖片尺寸：1200*1200px' },
     abstractLimit: { id: 'podcast.text.abstractLimit', defaultMessage: '限 100 字' },
   }),
 }

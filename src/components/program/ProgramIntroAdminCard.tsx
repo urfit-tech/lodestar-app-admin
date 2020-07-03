@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Input, message, Typography } from 'antd'
+import { Button, Input, message, Typography, Tooltip, Icon } from 'antd'
 import Form, { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
@@ -16,6 +16,7 @@ import AdminCard from '../admin/AdminCard'
 import { CustomRatioImage } from '../common/Image'
 import { BREAK_POINT } from '../common/Responsive'
 import SingleUploader from '../common/SingleUploader'
+import { StyledTips } from '../admin'
 
 export const CoverBlock = styled.div`
   margin-bottom: 2rem;
@@ -55,6 +56,7 @@ const messages = defineMessages({
   videoPlaceholder: { id: 'program.text.videoPlaceholder', defaultMessage: '貼上影片網址' },
   programAbstract: { id: 'program.label.programAbstract', defaultMessage: '課程摘要' },
   programDescription: { id: 'program.label.programDescription', defaultMessage: '課程描述' },
+  imageTips: { id: 'program.text.programImgTips', defaultMessage: '建議圖片尺寸：1200*675px' },
 })
 
 type ProgramIntroAdminCardProps = FormComponentProps & {
@@ -126,7 +128,19 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
 
       {program && (
         <Form labelCol={{ span: 24, md: { span: 4 } }} wrapperCol={{ span: 24, md: { span: 10 } }}>
-          <Form.Item label={formatMessage(messages.programCover)}>
+          <Form.Item
+            label={
+              <>
+                {formatMessage(messages.programCover)}
+                <Tooltip
+                  placement="topLeft"
+                  title={<StyledTips>{formatMessage(messages.imageTips)}</StyledTips>}
+                >
+                  <Icon type="question-circle" theme="filled" className="ml-2" />
+                </Tooltip>
+              </>
+            }
+          >
             <div className="d-flex align-items-center flex-wrap">
               {program.coverUrl && (
                 <CoverBlock>

@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, message, Skeleton } from 'antd'
+import { Button, Form, message, Skeleton, Icon, Tooltip } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
@@ -11,8 +11,9 @@ import { StyledSingleUploader } from '../../components/program/ProgramIntroAdmin
 import ActivityContext from '../../contexts/ActivityContext'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
-import { commonMessages, errorMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages, activityMessages } from '../../helpers/translation'
 import types from '../../types'
+import { StyledTips } from '../../components/admin'
 
 const StyledCover = styled.div<{ src: string }>`
   width: 160px;
@@ -97,7 +98,19 @@ const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
         handleSubmit()
       }}
     >
-      <Form.Item label={formatMessage(commonMessages.term.cover)}>
+      <Form.Item
+        label={
+          <>
+            {formatMessage(commonMessages.term.cover)}
+            <Tooltip
+              placement="topLeft"
+              title={<StyledTips>{formatMessage(activityMessages.text.imageTips)}</StyledTips>}
+            >
+              <Icon type="question-circle" theme="filled" className="ml-2" />
+            </Tooltip>
+          </>
+        }
+      >
         <div className="d-flex align-items-center justify-content-between">
           {activity.coverUrl && <StyledCover className="flex-shrink-0 mr-3" src={activity.coverUrl} />}
           {form.getFieldDecorator('coverImg', {
