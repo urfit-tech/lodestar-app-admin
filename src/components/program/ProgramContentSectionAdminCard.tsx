@@ -3,17 +3,10 @@ import { Button, Dropdown, Icon, Menu, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import styled from 'styled-components'
 import types from '../../types'
 import { ProgramContentSectionType, ProgramType } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
 import ProgramContentAdminItem from './ProgramContentAdminItem'
-
-const StyledAdminCard = styled(AdminCard)`
-  h4 {
-    font-size: 16px;
-  }
-`
 
 const messages = defineMessages({
   deleteSectionWarning: {
@@ -45,10 +38,10 @@ const ProgramContentSectionAdminCard: React.FC<{
   >(DELETE_PROGRAM_CONTENT_SECTION)
 
   return (
-    <StyledAdminCard>
-      <div className="d-flex justify-content-between align-items-center">
+    <AdminCard>
+      <div className="d-flex justify-content-between align-items-center mb-4">
         <Typography.Title
-          className="mb-4"
+          className="flex-grow-1 m-0"
           level={4}
           editable={{
             onChange: title => {
@@ -110,7 +103,7 @@ const ProgramContentSectionAdminCard: React.FC<{
       >
         {formatMessage(messages.createContent)}
       </Button>
-    </StyledAdminCard>
+    </AdminCard>
   )
 }
 
