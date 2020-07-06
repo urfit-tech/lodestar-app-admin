@@ -510,6 +510,8 @@ export const podcastMessages = {
     uploadAudioFile: { id: 'podcast.ui.uploadAudioFile', defaultMessage: '上傳音檔' },
     createPodcastPlan: { id: 'podcast.ui.createPodcastPlan', defaultMessage: '建立方案' },
     recordAudio: { id: 'podcast.ui.recordAudio', defaultMessage: '錄製音檔' },
+    deleteAudio: { id: 'podcast.ui.deleteAudio', defaultMessage: '刪除音檔' },
+    bulkUpload: { id: 'podcast.ui.bulkUpload', defaultMessage: '合併上傳' },
   }),
   status: defineMessages({
     published: { id: 'podcast.status.published', defaultMessage: '已發佈' },

@@ -39,6 +39,7 @@ const StyledText = styled.div`
   color: var(--gray-dark);
   font-size: 12px;
   letter-spacing: 0.6px;
+  line-height: 1.5rem;
 `
 
 const AudioTrackCard: React.FC<
@@ -65,7 +66,11 @@ const AudioTrackCard: React.FC<
 
         <div className="d-flex align-items-center justify-content-start">
           {typeof isSelected === 'boolean' && (
-            <Checkbox onChange={e => onSelected && onSelected(id, e.target.checked)} className="mr-2" />
+            <Checkbox
+              defaultChecked={isSelected}
+              onChange={e => onSelected && onSelected(id, e.target.checked)}
+              className="mr-2"
+            />
           )}
           <StyledText>
             {formatMessage(podcastMessages.label.totalDuration)} {durationFormatter(duration)}
