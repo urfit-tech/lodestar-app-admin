@@ -30,7 +30,11 @@ const PodcastProgramAdminPage: React.FC = () => {
 
   return (
     <StyledWrapper>
-      <PodcastProgramHeader podcastProgramId={podcastProgramId} title={podcastProgram?.title} />
+      <PodcastProgramHeader
+        podcastProgramId={podcastProgramId}
+        title={podcastProgram?.title}
+        goBackLink="/podcast-programs"
+      />
 
       <StyledLayoutContent>
         <Tabs

@@ -10,14 +10,15 @@ const PodcastProgramHeader: React.FC<{
   podcastProgramId: string
   title?: string | null
   noPreview?: boolean
-}> = ({ podcastProgramId, title, noPreview }) => {
+  goBackLink?: string | null
+}> = ({ podcastProgramId, title, noPreview, goBackLink }) => {
   const { formatMessage } = useIntl()
   const { history } = useRouter()
   const app = useContext(AppContext)
 
   return (
     <AdminHeader>
-      <Button type="link" onClick={() => history.goBack()} className="mr-3">
+      <Button type="link" onClick={() => (goBackLink ? history.push(goBackLink) : history.goBack())} className="mr-3">
         <Icon type="arrow-left" />
       </Button>
 
