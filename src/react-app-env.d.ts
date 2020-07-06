@@ -1,7 +1,6 @@
 /// <reference types="react-scripts" />
 
 declare module 'coupon-code'
-declare module 'react-sortablejs'
 declare module 'react-social-login'
 declare module 'react-snapshot'
 declare module 'console' {

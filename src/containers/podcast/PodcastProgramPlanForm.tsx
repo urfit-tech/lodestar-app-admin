@@ -2,19 +2,20 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, InputNumber, message, Skeleton } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import SaleInput from '../../components/admin/SaleInput'
-import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
-import { commonMessages, errorMessages } from '../../helpers/translation'
+import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
+import { PodcastProgramProps } from '../../types/podcast'
 
-const PodcastProgramPlanForm: React.FC<FormComponentProps> = ({ form }) => {
+type PodcastProgramPlanFormProps = FormComponentProps & {
+  podcastProgram: PodcastProgramProps | null
+  onRefetch?: () => Promise<any>
+}
+const PodcastProgramPlanForm: React.FC<PodcastProgramPlanFormProps> = ({ form, podcastProgram, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
-    PodcastProgramContext,
-  )
   const [updatePodcastProgramPlan] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_PLAN,
     types.UPDATE_PODCAST_PROGRAM_PLANVariables
@@ -22,12 +23,8 @@ const PodcastProgramPlanForm: React.FC<FormComponentProps> = ({ form }) => {
 
   const [loading, setLoading] = useState(false)
 
-  if (loadingPodcastProgram) {
+  if (!podcastProgram) {
     return <Skeleton active />
-  }
-
-  if (errorPodcastProgram || !podcastProgram) {
-    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const handleSubmit = () => {
@@ -48,8 +45,7 @@ const PodcastProgramPlanForm: React.FC<FormComponentProps> = ({ form }) => {
         },
       })
         .then(() => {
-          refetchPodcastProgram && refetchPodcastProgram()
-          message.success(formatMessage(commonMessages.event.successfullySaved))
+          onRefetch && onRefetch().then(() => message.success(formatMessage(commonMessages.event.successfullySaved)))
         })
         .catch(error => handleError(error))
         .finally(() => setLoading(false))
@@ -118,4 +114,4 @@ const UPDATE_PODCAST_PROGRAM_PLAN = gql`
   }
 `
 
-export default Form.create()(PodcastProgramPlanForm)
+export default Form.create<PodcastProgramPlanFormProps>()(PodcastProgramPlanForm)

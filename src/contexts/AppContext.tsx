@@ -15,6 +15,7 @@ type Module =
   | 'member_card'
   | 'merchandise'
   | 'podcast'
+  | 'podcast_recording'
   | 'program_package'
   | 'project'
   | 'qrcode'

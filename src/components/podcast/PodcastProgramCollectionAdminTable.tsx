@@ -9,7 +9,7 @@ import { commonMessages, podcastMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { CustomRatioImage } from '../common/Image'
 
-export type PodcastProgramProps = {
+export type PodcastProgramColumnProps = {
   id: string
   coverUrl?: string | null
   title: string
@@ -67,7 +67,7 @@ const StyledStatusLabel = styled.div<{ active?: boolean }>`
 const getColumnSearchProps: (events: {
   onReset: (clearFilters: any) => void
   onSearch: (selectedKeys?: React.ReactText[], confirm?: () => void) => void
-}) => ColumnProps<PodcastProgramProps> = ({ onReset, onSearch }) => ({
+}) => ColumnProps<PodcastProgramColumnProps> = ({ onReset, onSearch }) => ({
   filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
     <div className="p-2">
       <Input
@@ -95,7 +95,7 @@ const getColumnSearchProps: (events: {
 })
 
 const PodcastProgramCollectionAdminTable: React.FC<{
-  podcastPrograms: PodcastProgramProps[]
+  podcastPrograms: PodcastProgramColumnProps[]
 }> = ({ podcastPrograms }) => {
   const { formatMessage } = useIntl()
   const { history } = useRouter()
@@ -103,7 +103,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
   const [titleSearch, setTitleSearch] = useState('')
   const [nameSearch, setNameSearch] = useState('')
 
-  const columns: ColumnProps<PodcastProgramProps>[] = [
+  const columns: ColumnProps<PodcastProgramColumnProps>[] = [
     {
       title: formatMessage(commonMessages.term.title),
       dataIndex: 'title',

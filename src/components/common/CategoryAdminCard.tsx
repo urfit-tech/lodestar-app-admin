@@ -1,7 +1,7 @@
 import { Button, Icon, Typography } from 'antd'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import Sortable from 'react-sortablejs'
+import { ReactSortable } from 'react-sortablejs'
 import AppContext from '../../contexts/AppContext'
 import { commonMessages } from '../../helpers/translation'
 import {
@@ -11,7 +11,7 @@ import {
   useUpdateCategory,
   useUpdateCategoryPosition,
 } from '../../hooks/data'
-import { Category, ClassType } from '../../types/general'
+import { ClassType } from '../../types/general'
 import AdminCard from '../admin/AdminCard'
 import DraggableItem from './DraggableItem'
 
@@ -22,7 +22,9 @@ const messages = defineMessages({
   },
 })
 
-const CategoryAdminCard: React.FC<{ classType: ClassType }> = ({ classType }) => {
+const CategoryAdminCard: React.FC<{
+  classType: ClassType
+}> = ({ classType }) => {
   const { formatMessage } = useIntl()
   const app = useContext(AppContext)
   const { loading: loadingCategory, categories, refetch } = useCategory(classType)
@@ -37,12 +39,12 @@ const CategoryAdminCard: React.FC<{ classType: ClassType }> = ({ classType }) =>
   return (
     <AdminCard loading={loadingCategory} className={loading ? 'mask' : ''}>
       <Typography.Text>{formatMessage(commonMessages.label.categoryItem)}</Typography.Text>
-      <Sortable
+      <ReactSortable
         className="mt-3"
-        options={{ handle: '.draggable-category' }}
-        onChange={(categoryStrings: string[]) => {
+        handle=".draggable-category"
+        list={categories}
+        setList={newCategories => {
           setLoading(true)
-          const newCategories = categoryStrings.map(categoryString => JSON.parse(categoryString) as Category)
           updateCategoryPosition({
             variables: {
               data: newCategories.map((category, index) => ({
@@ -60,7 +62,7 @@ const CategoryAdminCard: React.FC<{ classType: ClassType }> = ({ classType }) =>
           <DraggableItem
             key={category.id}
             className="mb-2"
-            dataId={JSON.stringify(category)}
+            dataId={category.id}
             handlerClassName="draggable-category"
             actions={[
               <Icon
@@ -93,20 +95,20 @@ const CategoryAdminCard: React.FC<{ classType: ClassType }> = ({ classType }) =>
             </Typography.Text>
           </DraggableItem>
         ))}
-      </Sortable>
+      </ReactSortable>
+
       <Button
         icon="plus"
         type="link"
         onClick={() => {
-          app.id &&
-            insertCategory({
-              variables: {
-                appId: app.id,
-                name: `Untitled-${categories.length + 1}`,
-                position: categories.length,
-                classType,
-              },
-            }).then(() => refetch())
+          insertCategory({
+            variables: {
+              appId: app.id,
+              name: `Untitled-${categories.length + 1}`,
+              position: categories.length,
+              classType,
+            },
+          }).then(() => refetch())
         }}
       >
         {formatMessage(commonMessages.ui.addCategory)}

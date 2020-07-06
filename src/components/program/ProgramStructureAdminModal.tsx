@@ -1,9 +1,10 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button } from 'antd'
+import { Button, Icon } from 'antd'
 import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import Sortable from 'react-sortablejs'
+import { ReactSortable } from 'react-sortablejs'
+import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramType } from '../../types/program'
@@ -14,6 +15,10 @@ const messages = defineMessages({
   sortProgram: { id: 'program.ui.sortProgram', defaultMessage: '課程排序' },
   contentSorting: { id: 'program.label.contentSorting', defaultMessage: '內容排序' },
 })
+
+const StyledDraggableSectionLabel = styled.div`
+  color: ${props => props.theme['@primary-color']};
+`
 
 type ProgramStructureAdminModalProps = {
   program: ProgramType | null
@@ -122,29 +127,30 @@ const ProgramStructureAdminModal: React.FC<ProgramStructureAdminModalProps> = ({
         </>
       )}
     >
-      <Sortable
-        options={{ handle: '.draggable-section' }}
-        onChange={(sectionStrings: string[]) =>
-          setSections(sectionStrings.map(sectionString => JSON.parse(sectionString)))
-        }
+      <ReactSortable
+        handle=".draggable-section"
+        list={sections}
+        setList={newSections => {
+          setSections(newSections)
+        }}
       >
-        {sections.map((section, idx) => (
-          <div key={section.id} data-id={JSON.stringify(section)}>
-            <Button type="link" icon="drag" className="draggable-section">
-              {section.title}
-            </Button>
-            <Sortable
-              options={{ group: 'shared', handle: '.draggable-content' }}
-              onChange={(programContentStrings: string[]) => {
+        {sections.map((section, index) => (
+          <div key={section.id} className="mb-3">
+            <StyledDraggableSectionLabel className="draggable-section cursor-pointer mb-2">
+              <Icon type="drag" className="mr-2" />
+              <span>{section.title}</span>
+            </StyledDraggableSectionLabel>
+            <ReactSortable
+              handle=".draggable-content"
+              list={section.programContents}
+              setList={newProgramContents => {
                 setSections([
-                  ...sections.slice(0, idx),
+                  ...sections.slice(0, index),
                   {
                     ...section,
-                    programContents: programContentStrings.map(programContentString =>
-                      JSON.parse(programContentString),
-                    ),
+                    programContents: newProgramContents,
                   },
-                  ...sections.slice(idx + 1),
+                  ...sections.slice(index + 1),
                 ])
               }}
             >
@@ -152,16 +158,16 @@ const ProgramStructureAdminModal: React.FC<ProgramStructureAdminModalProps> = ({
                 <DraggableItem
                   key={programContent.id}
                   className="mb-1"
-                  dataId={JSON.stringify(programContent)}
+                  dataId={programContent.id}
                   handlerClassName="draggable-content"
                 >
                   {programContent.title}
                 </DraggableItem>
               ))}
-            </Sortable>
+            </ReactSortable>
           </div>
         ))}
-      </Sortable>
+      </ReactSortable>
     </AdminModal>
   )
 }

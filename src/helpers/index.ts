@@ -92,8 +92,10 @@ export const dateRangeFormatter: (props: {
     .replace(/  +/g, ' ')
 }
 
-export const durationFormatter = (value?: number | null) => {
-  return value && `約 ${(value / 60).toFixed(0)} 分鐘`
+export const durationFormatter = (seconds: number) => {
+  return `MINUTES:SECONDS`
+    .replace('MINUTES', `${Math.floor(seconds / 60)}`.padStart(2, '0'))
+    .replace('SECONDS', `${(seconds % 60).toFixed(2)}`.padStart(5, '0'))
 }
 
 export const getNotificationIconType = (type: string) => {

@@ -8,17 +8,18 @@ import { StyledTips } from '../../components/admin'
 import CategorySelector from '../../components/common/CategorySelector'
 import LanguageSelector from '../../components/common/LanguageSelector'
 import AppContext from '../../contexts/AppContext'
-import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
 import types from '../../types'
+import { PodcastProgramProps } from '../../types/podcast'
 
-const PodcastProgramBasicForm: React.FC<FormComponentProps> = ({ form }) => {
+type PodcastProgramBasicFormProps = FormComponentProps & {
+  podcastProgram: PodcastProgramProps | null
+  onRefetch?: () => Promise<any>
+}
+const PodcastProgramBasicForm: React.FC<PodcastProgramBasicFormProps> = ({ form, podcastProgram, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useContext(AppContext)
-  const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
-    PodcastProgramContext,
-  )
   const [loading, setLoading] = useState(false)
 
   const [updatePodcastProgramBasic] = useMutation<
@@ -26,12 +27,8 @@ const PodcastProgramBasicForm: React.FC<FormComponentProps> = ({ form }) => {
     types.UPDATE_PODCAST_PROGRAM_BASICVariables
   >(UPDATE_PODCAST_PROGRAM_BASIC)
 
-  if (loadingPodcastProgram) {
+  if (!podcastProgram) {
     return <Skeleton active />
-  }
-
-  if (errorPodcastProgram || !podcastProgram) {
-    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const handleSubmit = () => {
@@ -62,8 +59,7 @@ const PodcastProgramBasicForm: React.FC<FormComponentProps> = ({ form }) => {
         },
       })
         .then(() => {
-          refetchPodcastProgram && refetchPodcastProgram()
-          message.success(formatMessage(commonMessages.event.successfullySaved))
+          onRefetch && onRefetch().then(() => message.success(formatMessage(commonMessages.event.successfullySaved)))
         })
         .catch(error => handleError(error))
         .finally(() => setLoading(false))
@@ -150,4 +146,4 @@ const UPDATE_PODCAST_PROGRAM_BASIC = gql`
   }
 `
 
-export default Form.create()(PodcastProgramBasicForm)
+export default Form.create<PodcastProgramBasicFormProps>()(PodcastProgramBasicForm)

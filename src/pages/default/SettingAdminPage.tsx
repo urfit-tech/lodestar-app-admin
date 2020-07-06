@@ -1,7 +1,6 @@
 import { Icon, Skeleton } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import { ReactComponent as UserIcon } from '../../images/icon/user.svg'
 import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ProfileAccountAdminCard from '../../components/profile/ProfileAccountAdminCard'
@@ -9,6 +8,7 @@ import ProfileBasicCard from '../../components/profile/ProfileBasicCard'
 import ProfilePasswordAdminCard from '../../components/profile/ProfilePasswordAdminCard'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
+import { ReactComponent as UserIcon } from '../../images/icon/user.svg'
 
 const SettingAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()

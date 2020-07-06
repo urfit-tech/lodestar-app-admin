@@ -9,8 +9,8 @@ import { ReactComponent as PlaySpeed10xIcon } from '../../images/icon/multiple-1
 import { ReactComponent as PlaySpeed15xIcon } from '../../images/icon/multiple-1-5.svg'
 import { ReactComponent as PlaySpeed20xIcon } from '../../images/icon/multiple-2-0.svg'
 import { ReactComponent as MuteIcon } from '../../images/icon/mute.svg'
+import { ReactComponent as PauseCircleIcon } from '../../images/icon/pause-circle.svg'
 import { ReactComponent as PlayCircleIcon } from '../../images/icon/play-circle.svg'
-import { ReactComponent as StopCircleIcon } from '../../images/icon/stop-circle.svg'
 import { ReactComponent as VoiceIcon } from '../../images/icon/voice.svg'
 
 const StyledWrapper = styled.div`
@@ -134,7 +134,7 @@ const PodcastPlayer: React.FC = () => {
 
         <div className="container d-flex align-items-center justify-content-between py-2">
           <Button type="link" className="flex-shrink-0 control-play" onClick={() => setIsPlaying(!isPlaying)}>
-            <Icon component={() => (isPlaying ? <StopCircleIcon /> : <PlayCircleIcon />)} />
+            <Icon component={() => (isPlaying ? <PauseCircleIcon /> : <PlayCircleIcon />)} />
           </Button>
 
           <StyledInformationBlock className="flex-grow-1">

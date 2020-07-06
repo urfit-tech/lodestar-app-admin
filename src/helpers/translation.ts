@@ -515,6 +515,9 @@ export const podcastMessages = {
     subscribe: { id: 'podcast.ui.subscribe', defaultMessage: '訂閱頻道' },
     uploadAudioFile: { id: 'podcast.ui.uploadAudioFile', defaultMessage: '上傳音檔' },
     createPodcastPlan: { id: 'podcast.ui.createPodcastPlan', defaultMessage: '建立方案' },
+    recordAudio: { id: 'podcast.ui.recordAudio', defaultMessage: '錄製音檔' },
+    deleteAudio: { id: 'podcast.ui.deleteAudio', defaultMessage: '刪除音檔' },
+    bulkUpload: { id: 'podcast.ui.bulkUpload', defaultMessage: '合併上傳' },
   }),
   status: defineMessages({
     published: { id: 'podcast.status.published', defaultMessage: '已發佈' },
@@ -529,6 +532,7 @@ export const podcastMessages = {
     podcastContent: { id: 'podcast.label.podcastContent', defaultMessage: '廣播內容' },
     podcastSettings: { id: 'podcast.label.podcastSettings', defaultMessage: '廣播設定' },
     podcastIntroduction: { id: 'podcast.label.podcastIntroduction', defaultMessage: '廣播介紹' },
+    totalDuration: { id: 'podcast.label.totalDuration', defaultMessage: '總時長' },
   }),
   term: defineMessages({
     podcastPlan: { id: 'podcast.term.podcastPlan', defaultMessage: '廣播頻道訂閱方案' },
