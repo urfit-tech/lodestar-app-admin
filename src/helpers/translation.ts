@@ -524,6 +524,7 @@ export const podcastMessages = {
     podcastContent: { id: 'podcast.label.podcastContent', defaultMessage: '廣播內容' },
     podcastSettings: { id: 'podcast.label.podcastSettings', defaultMessage: '廣播設定' },
     podcastIntroduction: { id: 'podcast.label.podcastIntroduction', defaultMessage: '廣播介紹' },
+    totalDuration: { id: 'podcast.label.totalDuration', defaultMessage: '總時長' },
   }),
   term: defineMessages({
     podcastPlan: { id: 'podcast.term.podcastPlan', defaultMessage: '廣播頻道訂閱方案' },

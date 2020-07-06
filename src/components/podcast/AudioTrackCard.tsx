@@ -1,10 +1,14 @@
-import { Icon } from 'antd'
+import { Checkbox, Icon } from 'antd'
 import React, { HTMLAttributes } from 'react'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { durationFormatter } from '../../helpers'
+import { podcastMessages } from '../../helpers/translation'
 import { ReactComponent as MoveIcon } from '../../images/icon/move.svg'
 
 const TrackWrapper = styled.div`
+  display: flex;
+  align-items: center;
   margin-bottom: 2.5rem;
 `
 const ActionBlock = styled.div`
@@ -39,20 +43,34 @@ const StyledText = styled.div`
 
 const AudioTrackCard: React.FC<
   HTMLAttributes<HTMLDivElement> & {
+    id: string
     handleClassName?: string
     position: number
     duration: number
+    isSelected?: boolean
+    onSelected?: (id: string, checked: boolean) => void
   }
-> = ({ handleClassName, position, duration, children, ...divProps }) => {
+> = ({ id, handleClassName, position, duration, isSelected, onSelected, children, ...divProps }) => {
+  const { formatMessage } = useIntl()
+
   return (
-    <TrackWrapper {...divProps} className="d-flex align-items-center">
+    <TrackWrapper {...divProps}>
       <ActionBlock className="flex-shrink-0 text-center">
         <div>{`${position + 1}`.padStart(2, '0')}</div>
         <StyledIcon component={() => <MoveIcon />} className={`cursor-pointer ${handleClassName || 'handle'}`} />
       </ActionBlock>
+
       <StyledCard className="p-4 flex-grow-1">
         <WaveWrapper className="mb-3">{children}</WaveWrapper>
-        <StyledText>{durationFormatter(duration)}</StyledText>
+
+        <div className="d-flex align-items-center justify-content-start">
+          {typeof isSelected === 'boolean' && (
+            <Checkbox onChange={e => onSelected && onSelected(id, e.target.checked)} className="mr-2" />
+          )}
+          <StyledText>
+            {formatMessage(podcastMessages.label.totalDuration)} {durationFormatter(duration)}
+          </StyledText>
+        </div>
       </StyledCard>
     </TrackWrapper>
   )

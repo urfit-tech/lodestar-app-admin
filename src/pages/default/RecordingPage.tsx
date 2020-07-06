@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'
 import styled, { ThemeContext } from 'styled-components'
@@ -27,6 +27,9 @@ const RecordingPage: React.FC = () => {
   const { match } = useRouter<{ podcastProgramId: string }>()
   const podcastProgramId = match.params.podcastProgramId
   const theme = useContext(ThemeContext)
+
+  const [isSelectMode, setIsSelectMode] = useState(false)
+  const [selectedWaveIds, setSelectedWaveIds] = useState<string[]>([])
 
   // ! fake data
   const [waveCollection, setWaveCollection] = useState<
@@ -65,7 +68,18 @@ const RecordingPage: React.FC = () => {
             setList={newWaveCollection => setWaveCollection(newWaveCollection)}
           >
             {waveCollection.map((wave, index) => (
-              <AudioTrackCard key={wave.id} position={index} duration={wave.duration}>
+              <AudioTrackCard
+                key={wave.id}
+                id={wave.id}
+                position={index}
+                duration={wave.duration}
+                isSelected={isSelectMode ? selectedWaveIds.includes(wave.id) : undefined}
+                onSelected={(id, checked) => {
+                  checked
+                    ? setSelectedWaveIds([...selectedWaveIds, id])
+                    : setSelectedWaveIds(selectedWaveIds.filter(waveId => waveId !== id))
+                }}
+              >
                 {/* // ! fake data */}
                 <WaveBlock ref={null} width={wave.duration * 10} style={{ background: theme['@primary-color'] }} />
               </AudioTrackCard>
