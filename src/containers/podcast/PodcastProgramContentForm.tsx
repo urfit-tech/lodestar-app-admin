@@ -6,17 +6,17 @@ import gql from 'graphql-tag'
 import { extname } from 'path'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { StyledTips } from '../../components/admin'
 import AdminBraftEditor from '../../components/admin/AdminBraftEditor'
 import SingleUploader from '../../components/common/SingleUploader'
 import { AppContext } from '../../contexts/AppContext'
-import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
-import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
-import types from '../../types'
-import { Link } from 'react-router-dom'
+import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
+import types from '../../types'
+import { PodcastProgramProps } from '../../types/podcast'
 
 const StyledFileBlock = styled.div`
   padding: 0.25rem 0.5rem;
@@ -28,12 +28,13 @@ const StyledFileBlock = styled.div`
   }
 `
 
-const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
-  const { id: appId } = useContext(AppContext)
+type PodcastProgramContentFormProps = FormComponentProps & {
+  podcastProgram: PodcastProgramProps | null
+  onRefetch?: () => Promise<any>
+}
+const PodcastProgramContentForm: React.FC<PodcastProgramContentFormProps> = ({ form, podcastProgram, onRefetch }) => {
+  const { id: appId, enabledModules } = useContext(AppContext)
   const { formatMessage } = useIntl()
-  const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
-    PodcastProgramContext,
-  )
 
   const [updatePodcastProgramContent] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_CONTENT,
@@ -46,12 +47,8 @@ const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
 
   const [loading, setLoading] = useState(false)
 
-  if (loadingPodcastProgram) {
+  if (!podcastProgram) {
     return <Skeleton active />
-  }
-
-  if (errorPodcastProgram || !podcastProgram) {
-    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const handleUploadAudio = (contentType: string | null) => {
@@ -63,8 +60,7 @@ const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
       },
     })
       .then(() => {
-        refetchPodcastProgram && refetchPodcastProgram()
-        message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch && onRefetch().then(() => message.success(formatMessage(commonMessages.event.successfullySaved)))
       })
       .catch(error => handleError(error))
   }
@@ -86,7 +82,7 @@ const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
         },
       })
         .then(() => {
-          refetchPodcastProgram && refetchPodcastProgram()
+          onRefetch && onRefetch()
           message.success(formatMessage(commonMessages.event.successfullySaved))
         })
         .catch(error => handleError(error))
@@ -125,12 +121,14 @@ const PodcastProgramContentForm: React.FC<FormComponentProps> = ({ form }) => {
             className="mr-2"
           />,
         )}
-        <Link to={`/podcast-programs/${podcastProgram.id}/recording`} className="ml-2">
-          <Button>
-            <Icon component={() => <MicrophoneIcon />} />
-            <span>{formatMessage(podcastMessages.ui.recordAudio)}</span>
-          </Button>
-        </Link>
+        {enabledModules.podcast_recording && (
+          <Link to={`/podcast-programs/${podcastProgram.id}/recording`} className="ml-2">
+            <Button>
+              <Icon component={() => <MicrophoneIcon />} />
+              <span>{formatMessage(podcastMessages.ui.recordAudio)}</span>
+            </Button>
+          </Link>
+        )}
         {podcastProgram.contentType ? (
           <StyledFileBlock className="d-flex align-items-center justify-content-between">
             <span>
@@ -194,4 +192,4 @@ const UPDATE_PODCAST_PROGRAM_BODY = gql`
   }
 `
 
-export default Form.create()(PodcastProgramContentForm)
+export default Form.create<PodcastProgramContentFormProps>()(PodcastProgramContentForm)

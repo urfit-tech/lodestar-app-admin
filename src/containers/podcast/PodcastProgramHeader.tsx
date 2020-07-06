@@ -4,17 +4,16 @@ import { useIntl } from 'react-intl'
 import useRouter from 'use-react-router'
 import { AdminHeader, AdminHeaderTitle } from '../../components/admin'
 import AppContext from '../../contexts/AppContext'
-import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { commonMessages } from '../../helpers/translation'
 
 const PodcastProgramHeader: React.FC<{
   podcastProgramId: string
+  title?: string | null
   noPreview?: boolean
-}> = ({ podcastProgramId, noPreview }) => {
+}> = ({ podcastProgramId, title, noPreview }) => {
+  const { formatMessage } = useIntl()
   const { history } = useRouter()
   const app = useContext(AppContext)
-  const { podcastProgram } = useContext(PodcastProgramContext)
-  const { formatMessage } = useIntl()
 
   return (
     <AdminHeader>
@@ -22,7 +21,7 @@ const PodcastProgramHeader: React.FC<{
         <Icon type="arrow-left" />
       </Button>
 
-      <AdminHeaderTitle>{podcastProgram ? podcastProgram.title : podcastProgramId}</AdminHeaderTitle>
+      <AdminHeaderTitle>{title || podcastProgramId}</AdminHeaderTitle>
 
       {!noPreview && (
         <a

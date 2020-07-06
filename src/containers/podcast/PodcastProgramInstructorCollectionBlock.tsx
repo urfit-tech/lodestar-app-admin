@@ -1,15 +1,15 @@
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, message, Modal, Skeleton } from 'antd'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import RoleAdminBlock from '../../components/admin/RoleAdminBlock'
 import CreatorSelector from '../../components/common/CreatorSelector'
-import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
-import { commonMessages, errorMessages } from '../../helpers/translation'
+import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
+import { PodcastProgramProps } from '../../types/podcast'
 
 const StyledModalTitle = styled.div`
   color: var(--gray-darker);
@@ -19,11 +19,11 @@ const StyledModalTitle = styled.div`
   letter-spacing: 0.77px;
 `
 
-const PodcastProgramInstructorCollectionBlock: React.FC = () => {
+const PodcastProgramInstructorCollectionBlock: React.FC<{
+  podcastProgram: PodcastProgramProps | null
+  onRefetch?: () => Promise<any>
+}> = ({ podcastProgram, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
-    PodcastProgramContext,
-  )
   const [updatePodcastProgramRole] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_ROLE,
     types.UPDATE_PODCAST_PROGRAM_ROLEVariables
@@ -33,12 +33,8 @@ const PodcastProgramInstructorCollectionBlock: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null)
 
-  if (loadingPodcastProgram) {
+  if (!podcastProgram) {
     return <Skeleton active />
-  }
-
-  if (errorPodcastProgram || !podcastProgram) {
-    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const handleSubmit = () => {
@@ -62,10 +58,12 @@ const PodcastProgramInstructorCollectionBlock: React.FC = () => {
       },
     })
       .then(() => {
-        refetchPodcastProgram && refetchPodcastProgram()
-        setSelectedMemberId(null)
-        setVisible(false)
-        message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch &&
+          onRefetch().then(() => {
+            setSelectedMemberId(null)
+            setVisible(false)
+            message.success(formatMessage(commonMessages.event.successfullySaved))
+          })
       })
       .catch(error => handleError(error))
       .finally(() => setLoading(false))
@@ -86,7 +84,7 @@ const PodcastProgramInstructorCollectionBlock: React.FC = () => {
       },
     })
       .then(() => {
-        refetchPodcastProgram && refetchPodcastProgram()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(error => handleError(error))

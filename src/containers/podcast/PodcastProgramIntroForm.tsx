@@ -9,10 +9,10 @@ import { StyledTips } from '../../components/admin/index'
 import { CustomRatioImage } from '../../components/common/Image'
 import { StyledSingleUploader } from '../../components/program/ProgramIntroAdminCard'
 import { AppContext } from '../../contexts/AppContext'
-import PodcastProgramContext from '../../contexts/PodcastProgramContext'
 import { handleError } from '../../helpers'
-import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
+import { commonMessages, podcastMessages } from '../../helpers/translation'
 import types from '../../types'
+import { PodcastProgramProps } from '../../types/podcast'
 
 const StyledCoverBlock = styled.div`
   overflow: hidden;
@@ -21,12 +21,13 @@ const StyledCoverBlock = styled.div`
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
 `
 
-const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
+type PodcastProgramIntroFormProps = FormComponentProps & {
+  podcastProgram: PodcastProgramProps | null
+  onRefetch?: () => Promise<any>
+}
+const PodcastProgramIntroForm: React.FC<PodcastProgramIntroFormProps> = ({ form, podcastProgram, onRefetch }) => {
   const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
-  const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
-    PodcastProgramContext,
-  )
   const [loading, setLoading] = useState(false)
 
   const [updatePodcastProgramIntro] = useMutation<
@@ -34,12 +35,8 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
     types.UPDATE_PODCAST_PROGRAM_INTROVariables
   >(UPDATE_PODCAST_PROGRAM_INTRO)
 
-  if (loadingPodcastProgram) {
+  if (!podcastProgram) {
     return <Skeleton active />
-  }
-
-  if (errorPodcastProgram || !podcastProgram) {
-    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const handleUpload = () => {
@@ -59,8 +56,7 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
         },
       })
         .then(() => {
-          refetchPodcastProgram && refetchPodcastProgram()
-          message.success(formatMessage(commonMessages.event.successfullyUpload))
+          onRefetch && onRefetch().then(() => message.success(formatMessage(commonMessages.event.successfullyUpload)))
         })
         .catch(error => handleError(error))
     })
@@ -73,7 +69,6 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
       }
 
       setLoading(true)
-
       updatePodcastProgramIntro({
         variables: {
           updatedAt: new Date(),
@@ -83,8 +78,7 @@ const PodcastProgramIntroForm: React.FC<FormComponentProps> = ({ form }) => {
         },
       })
         .then(() => {
-          refetchPodcastProgram && refetchPodcastProgram()
-          message.success(formatMessage(commonMessages.event.successfullySaved))
+          onRefetch && onRefetch().then(() => message.success(formatMessage(commonMessages.event.successfullySaved)))
         })
         .catch(error => handleError(error))
         .finally(() => setLoading(false))
@@ -171,4 +165,4 @@ const UPDATE_PODCAST_PROGRAM_INTRO = gql`
   }
 `
 
-export default Form.create()(PodcastProgramIntroForm)
+export default Form.create<PodcastProgramIntroFormProps>()(PodcastProgramIntroForm)

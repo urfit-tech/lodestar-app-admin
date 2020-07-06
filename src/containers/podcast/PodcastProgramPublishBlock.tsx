@@ -1,16 +1,16 @@
 import { useMutation } from '@apollo/react-hooks'
 import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
-import React, { useContext } from 'react'
+import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import AdminPublishBlock, {
   ChecklistItemProps,
   PublishEvent,
   PublishStatus,
 } from '../../components/admin/AdminPublishBlock'
-import PodcastProgramContext from '../../contexts/PodcastProgramContext'
-import { commonMessages, errorMessages } from '../../helpers/translation'
+import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
+import { PodcastProgramProps } from '../../types/podcast'
 
 const messages = defineMessages({
   noAudio: { id: 'podcast.text.noAudio', defaultMessage: '尚未上傳音頻檔案' },
@@ -32,21 +32,17 @@ const messages = defineMessages({
   },
 })
 
-const PodcastProgramPublishBlock: React.FC = () => {
+const PodcastProgramPublishBlock: React.FC<{
+  podcastProgram: PodcastProgramProps | null
+  onRefetch?: () => Promise<any>
+}> = ({ podcastProgram, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { loadingPodcastProgram, errorPodcastProgram, podcastProgram, refetchPodcastProgram } = useContext(
-    PodcastProgramContext,
-  )
   const [publishPodcastProgram] = useMutation<types.PUBLISH_PODCAST_PROGRAM, types.PUBLISH_PODCAST_PROGRAMVariables>(
     PUBLISH_PODCAST_PROGRAM,
   )
 
-  if (loadingPodcastProgram) {
+  if (!podcastProgram) {
     return <Skeleton active />
-  }
-
-  if (errorPodcastProgram || !podcastProgram) {
-    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const checklist: ChecklistItemProps[] = []
@@ -101,10 +97,7 @@ const PodcastProgramPublishBlock: React.FC = () => {
         publishedAt: values.publishedAt,
       },
     })
-      .then(() => {
-        refetchPodcastProgram && refetchPodcastProgram()
-        onSuccess && onSuccess()
-      })
+      .then(() => onRefetch && onRefetch().then(() => onSuccess && onSuccess()))
       .catch(error => onError && onError(error))
       .finally(() => onFinally && onFinally())
   }

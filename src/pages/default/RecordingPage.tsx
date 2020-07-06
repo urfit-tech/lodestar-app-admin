@@ -8,6 +8,7 @@ import RecordButton from '../../components/podcast/RecordButton'
 import RecordingController from '../../components/podcast/RecordingController'
 import PodcastProgramHeader from '../../containers/podcast/PodcastProgramHeader'
 import { podcastMessages } from '../../helpers/translation'
+import { usePodcastProgramCollection } from '../../hooks/podcast'
 
 const StyledLayoutContent = styled.div`
   height: calc(100vh - 64px);
@@ -29,11 +30,12 @@ const RecordingPage: React.FC = () => {
   const { match } = useRouter<{ podcastProgramId: string }>()
   const podcastProgramId = match.params.podcastProgramId
   const theme = useContext(ThemeContext)
+  const { podcastProgram } = usePodcastProgramCollection(podcastProgramId)
 
   const [isRecording, setIsRecording] = useState(false)
-  const [selectedWaveIds, setSelectedWaveIds] = useState<string[]>([])
   const [isPlaying, setIsPlaying] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
+  const [selectedWaveIds, setSelectedWaveIds] = useState<string[]>([])
 
   // ! fake data
   const [waveCollection, setWaveCollection] = useState<
@@ -58,7 +60,7 @@ const RecordingPage: React.FC = () => {
 
   return (
     <div>
-      <PodcastProgramHeader podcastProgramId={podcastProgramId} noPreview />
+      <PodcastProgramHeader podcastProgramId={podcastProgramId} title={podcastProgram?.title} noPreview />
       <StyledLayoutContent>
         <StyledContainer className="container">
           <div className="text-center mb-5">

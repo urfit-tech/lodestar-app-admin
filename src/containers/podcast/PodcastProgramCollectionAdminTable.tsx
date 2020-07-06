@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 import React, { useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import PodcastProgramCollectionAdminTableComponent, {
-  PodcastProgramProps,
+  PodcastProgramColumnProps,
 } from '../../components/podcast/PodcastProgramCollectionAdminTable'
 import { errorMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -27,7 +27,7 @@ const PodcastProgramCollectionAdminTable: React.FC = () => {
     return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
-  const podcastPrograms: PodcastProgramProps[] = data.podcast_program.map(podcastProgram => ({
+  const podcastPrograms: PodcastProgramColumnProps[] = data.podcast_program.map(podcastProgram => ({
     id: podcastProgram.id,
     coverUrl: podcastProgram.cover_url,
     title: podcastProgram.title,
