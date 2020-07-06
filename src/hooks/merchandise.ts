@@ -6,7 +6,7 @@ import {
   MemberShopPreviewProps,
   MemberShopProps,
   MerchandisePreviewProps,
-  MerchandiseProps
+  MerchandiseProps,
 } from '../types/merchandise'
 
 export const useInsertMerchandise = () => {

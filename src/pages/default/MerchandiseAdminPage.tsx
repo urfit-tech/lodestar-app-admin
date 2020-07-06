@@ -63,7 +63,7 @@ const MerchandiseAdminPage: React.FC = () => {
 
   useEffect(() => {
     refetchInventoryLogs && refetchInventoryLogs()
-  }, [])
+  }, [refetchInventoryLogs])
 
   if (loadingMerchandise || errorMerchandise || !merchandise) {
     return <Skeleton active />

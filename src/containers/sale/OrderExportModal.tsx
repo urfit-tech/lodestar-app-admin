@@ -458,7 +458,7 @@ const GET_ORDER_LOG_COLLECTION = gql`
         member: { app_id: { _eq: $appId } }
         status: { _in: $orderStatuses }
         _or: [
-          { updated_at: { _gte: $startedAt, _lte: $endedAt } },
+          { updated_at: { _gte: $startedAt, _lte: $endedAt } }
           { updated_at: { _is_null: true }, created_at: { _gte: $startedAt, _lte: $endedAt } }
         ]
       }

@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Input, message, Typography, Tooltip, Icon } from 'antd'
+import { Button, Icon, Input, message, Tooltip, Typography } from 'antd'
 import Form, { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
@@ -11,12 +11,12 @@ import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramType } from '../../types/program'
+import { StyledTips } from '../admin'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminCard from '../admin/AdminCard'
 import { CustomRatioImage } from '../common/Image'
 import { BREAK_POINT } from '../common/Responsive'
 import SingleUploader from '../common/SingleUploader'
-import { StyledTips } from '../admin'
 
 export const CoverBlock = styled.div`
   margin-bottom: 2rem;
@@ -132,10 +132,7 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
             label={
               <>
                 {formatMessage(messages.programCover)}
-                <Tooltip
-                  placement="topLeft"
-                  title={<StyledTips>{formatMessage(messages.imageTips)}</StyledTips>}
-                >
+                <Tooltip placement="topLeft" title={<StyledTips>{formatMessage(messages.imageTips)}</StyledTips>}>
                   <Icon type="question-circle" theme="filled" className="ml-2" />
                 </Tooltip>
               </>
