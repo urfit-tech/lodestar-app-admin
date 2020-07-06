@@ -1,5 +1,6 @@
 import { Button, Icon } from 'antd'
 import React, { useContext } from 'react'
+import { Link } from 'react-router-dom'
 import { useIntl } from 'react-intl'
 import useRouter from 'use-react-router'
 import { AdminHeader, AdminHeaderTitle } from '../../components/admin'
@@ -17,10 +18,11 @@ const PodcastProgramHeader: React.FC<{
 
   return (
     <AdminHeader>
-      <Button type="link" onClick={() => history.goBack()} className="mr-3">
-        <Icon type="arrow-left" />
-      </Button>
-
+      <Link to="/podcast-programs">
+        <Button type="link" className="mr-3">
+          <Icon type="arrow-left" />
+        </Button>
+      </Link>
       <AdminHeaderTitle>{podcastProgram ? podcastProgram.title : podcastProgramId}</AdminHeaderTitle>
       <a
         href={`https://${app.settings['host']}/podcasts/${podcastProgramId}`}
