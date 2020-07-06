@@ -1,4 +1,4 @@
-import { defineMessages, defineMessage } from 'react-intl'
+import { defineMessages } from 'react-intl'
 
 export const commonMessages = {
   ui: defineMessages({
@@ -355,7 +355,7 @@ export const activityMessages = {
     public: { id: 'activity.status.public', defaultMessage: '公開' },
     hidden: { id: 'activity.status.hidden', defaultMessage: '不公開' },
   }),
-  text: defineMessage({
+  text: defineMessages({
     imageTips: { id: 'activity.text.imageTips', defaultMessage: '建議圖片尺寸：1200*675px' },
   }),
 }
