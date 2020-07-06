@@ -259,7 +259,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           paymentLog.order_log.id,
           paymentLog.no,
           paymentLog.order_log.status,
-          paymentLog.created_at,
+          dateFormatter(paymentLog.paid_at || paymentLog.created_at),
           paymentLog.order_log.order_products_aggregate.aggregate?.sum?.price || 0,
         ])
       })
@@ -588,6 +588,7 @@ const GET_PAYMENT_LOG_COLLECTION = gql`
       }
       no
       created_at
+      paid_at
     }
   }
 `
