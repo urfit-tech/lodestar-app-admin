@@ -1,11 +1,11 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
+import { useContext } from 'react'
 import { object } from 'yup'
+import AppContext from '../contexts/AppContext'
 import { activitySchema, activityTicketSchema } from '../schemas/activity'
 import types from '../types'
 import { ActivityProps } from '../types/activity'
-import { useContext } from 'react'
-import AppContext from '../contexts/AppContext'
 
 export const usePublishedActivityCollection = () => {
   const { id: appId } = useContext(AppContext)

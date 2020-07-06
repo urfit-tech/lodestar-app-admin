@@ -1,12 +1,12 @@
 import { Icon } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { AdminPageBlock, AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import AppointmentPlanCollectionTable from '../../containers/appointment/AppointmentPlanCollectionTable'
 import AppointmentPlanCreationModal from '../../containers/appointment/AppointmentPlanCreationModal'
 import { commonMessages } from '../../helpers/translation'
+import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 
 const AppointmentPlanCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()

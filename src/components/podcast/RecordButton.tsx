@@ -1,11 +1,11 @@
 import { Button, Icon } from 'antd'
+import { ButtonProps } from 'antd/lib/button'
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { durationFormatter } from '../../helpers'
 import { useInterval } from '../../hooks/util'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import { ReactComponent as StopCircleIcon } from '../../images/icon/stop-circle.svg'
-import { ButtonProps } from 'antd/lib/button'
-import { durationFormatter } from '../../helpers'
 
 const StyledButton = styled(Button)`
   && {

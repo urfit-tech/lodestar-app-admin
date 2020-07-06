@@ -4,12 +4,12 @@ import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'
+import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramType } from '../../types/program'
 import AdminModal from '../admin/AdminModal'
 import DraggableItem from '../common/DraggableItem'
-import styled from 'styled-components'
 
 const messages = defineMessages({
   sortProgram: { id: 'program.ui.sortProgram', defaultMessage: '課程排序' },
@@ -135,7 +135,7 @@ const ProgramStructureAdminModal: React.FC<ProgramStructureAdminModalProps> = ({
         }}
       >
         {sections.map((section, index) => (
-          <div key={section.id} className='mb-3'>
+          <div key={section.id} className="mb-3">
             <StyledDraggableSectionLabel className="draggable-section cursor-pointer mb-2">
               <Icon type="drag" className="mr-2" />
               <span>{section.title}</span>

@@ -1,11 +1,11 @@
 import { Icon, Typography } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import { ReactComponent as CalendarAltIcon } from '../../images/icon/calendar-alt.svg'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ActivityCollectionAdminBlock from '../../containers/activity/ActivityCollectionAdminBlock'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
+import { ReactComponent as CalendarAltIcon } from '../../images/icon/calendar-alt.svg'
 
 const ActivityCollectionAdminPage = () => {
   const { formatMessage } = useIntl()
