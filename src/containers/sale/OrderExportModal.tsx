@@ -11,6 +11,8 @@ import { dateFormatter, downloadCSV, toCSV } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 
+const { RangePicker } = DatePicker
+
 const messages = defineMessages({
   exportOrder: { id: 'common.ui.exportOrder', defaultMessage: '匯出資料' },
   exportOrderLog: { id: 'common.ui.exportOrderLog', defaultMessage: '匯出訂單' },
@@ -272,12 +274,12 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
   const handleExport: (
     exportTarget: 'orderLog' | 'orderProduct' | 'orderDiscount' | 'paymentLog',
   ) => void = exportTarget => {
+
     form.validateFields(
       async (
         error,
         values: {
-          startedAt: Date
-          endedAt: Date
+          timeRange: Array<Date>
           orderStatuses: string[]
         },
       ) => {
@@ -287,8 +289,8 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
 
         setLoading(true)
 
-        const startedAt = moment(values.startedAt).toDate()
-        const endedAt = moment(values.endedAt).toDate()
+        const startedAt = moment(values.timeRange[0]).toDate()
+        const endedAt = moment(values.timeRange[1]).toDate()
         let orderStatuses: string[] = []
         if (values.orderStatuses.includes('FAILED')) {
           orderStatuses = failOrderStatuses
@@ -372,41 +374,21 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
     >
       <Form colon={false} hideRequiredMark>
         <Form.Item label={formatMessage(commonMessages.label.dateRange)}>
-          <Form.Item className="mb-2">
-            {form.getFieldDecorator('startedAt', {
-              rules: [
-                {
-                  required: true,
-                  message: formatMessage(errorMessages.form.isRequired, {
-                    field: formatMessage(commonMessages.term.startedAt),
-                  }),
-                },
-              ],
-            })(
-              <DatePicker
-                style={{ width: '100%' }}
-                placeholder={formatMessage(commonMessages.term.startedAt)}
-                format="YYYY-MM-DD HH:mm"
-                showTime={{ defaultValue: moment('00:00:00', 'HH:mm') }}
-              />,
-            )}
-          </Form.Item>
           <Form.Item>
-            {form.getFieldDecorator('endedAt', {
+            {form.getFieldDecorator('timeRange', {
               rules: [
                 {
                   required: true,
                   message: formatMessage(errorMessages.form.isRequired, {
-                    field: formatMessage(commonMessages.term.endedAt),
+                    field: formatMessage(commonMessages.term.timeRange),
                   }),
                 },
               ],
             })(
-              <DatePicker
+              <RangePicker
                 style={{ width: '100%' }}
-                placeholder={formatMessage(commonMessages.term.endedAt)}
                 format="YYYY-MM-DD HH:mm"
-                showTime={{ defaultValue: moment('23:59:59', 'HH:mm') }}
+                showTime={{ defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')] }}
               />,
             )}
           </Form.Item>

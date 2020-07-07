@@ -170,6 +170,7 @@ export const commonMessages = {
     tag: { id: 'common.term.tag', defaultMessage: '標籤' },
     startedAt: { id: 'common.term.startedAt', defaultMessage: '開始時間' },
     endedAt: { id: 'common.term.endedAt', defaultMessage: '結束時間' },
+    timeRange: { id: 'common.term.timeRange', defaultMessage: '日期範圍' },
     orderStatus: { id: 'common.term.orderStatus', defaultMessage: '訂單狀態' },
     listPrice: { id: 'common.term.listPrice', defaultMessage: '定價' },
     email: { id: 'common.term.email', defaultMessage: '信箱' },
