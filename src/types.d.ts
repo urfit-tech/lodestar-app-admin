@@ -6473,6 +6473,154 @@ export interface GET_PUBLIC_MEMBERVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_MEMBER_ROLE_COUNT
+// ====================================================
+
+export interface GET_MEMBER_ROLE_COUNT_all_aggregate {
+  __typename: "member_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_MEMBER_ROLE_COUNT_all {
+  __typename: "member_aggregate";
+  aggregate: GET_MEMBER_ROLE_COUNT_all_aggregate | null;
+}
+
+export interface GET_MEMBER_ROLE_COUNT_app_owner_aggregate {
+  __typename: "member_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_MEMBER_ROLE_COUNT_app_owner {
+  __typename: "member_aggregate";
+  aggregate: GET_MEMBER_ROLE_COUNT_app_owner_aggregate | null;
+}
+
+export interface GET_MEMBER_ROLE_COUNT_content_creator_aggregate {
+  __typename: "member_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_MEMBER_ROLE_COUNT_content_creator {
+  __typename: "member_aggregate";
+  aggregate: GET_MEMBER_ROLE_COUNT_content_creator_aggregate | null;
+}
+
+export interface GET_MEMBER_ROLE_COUNT_general_member_aggregate {
+  __typename: "member_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_MEMBER_ROLE_COUNT_general_member {
+  __typename: "member_aggregate";
+  aggregate: GET_MEMBER_ROLE_COUNT_general_member_aggregate | null;
+}
+
+export interface GET_MEMBER_ROLE_COUNT {
+  /**
+   * fetch aggregated fields from the table: "member"
+   */
+  all: GET_MEMBER_ROLE_COUNT_all;
+  /**
+   * fetch aggregated fields from the table: "member"
+   */
+  app_owner: GET_MEMBER_ROLE_COUNT_app_owner;
+  /**
+   * fetch aggregated fields from the table: "member"
+   */
+  content_creator: GET_MEMBER_ROLE_COUNT_content_creator;
+  /**
+   * fetch aggregated fields from the table: "member"
+   */
+  general_member: GET_MEMBER_ROLE_COUNT_general_member;
+}
+
+export interface GET_MEMBER_ROLE_COUNTVariables {
+  appId?: string | null;
+  email?: string | null;
+  name?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PAGE_MEMBER_COLLECTION
+// ====================================================
+
+export interface GET_PAGE_MEMBER_COLLECTION_member_point_status {
+  __typename: "point_status";
+  points: any | null;
+}
+
+export interface GET_PAGE_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate_sum {
+  __typename: "order_product_sum_fields";
+  price: any | null;
+}
+
+export interface GET_PAGE_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate {
+  __typename: "order_product_aggregate_fields";
+  sum: GET_PAGE_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate_sum | null;
+}
+
+export interface GET_PAGE_MEMBER_COLLECTION_member_order_logs_order_products_aggregate {
+  __typename: "order_product_aggregate";
+  aggregate: GET_PAGE_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate | null;
+}
+
+export interface GET_PAGE_MEMBER_COLLECTION_member_order_logs {
+  __typename: "order_log";
+  /**
+   * An aggregated array relationship
+   */
+  order_products_aggregate: GET_PAGE_MEMBER_COLLECTION_member_order_logs_order_products_aggregate;
+}
+
+export interface GET_PAGE_MEMBER_COLLECTION_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+  logined_at: any | null;
+  /**
+   * app-owner / content-creator
+   */
+  role: string;
+  /**
+   * An object relationship
+   */
+  point_status: GET_PAGE_MEMBER_COLLECTION_member_point_status | null;
+  /**
+   * An array relationship
+   */
+  order_logs: GET_PAGE_MEMBER_COLLECTION_member_order_logs[];
+}
+
+export interface GET_PAGE_MEMBER_COLLECTION {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_PAGE_MEMBER_COLLECTION_member[];
+}
+
+export interface GET_PAGE_MEMBER_COLLECTIONVariables {
+  offset: number;
+  limit?: number | null;
+  role?: string | null;
+  email?: string | null;
+  name?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_BASIC
 // ====================================================
 
@@ -7895,72 +8043,6 @@ export interface INSERT_PROGRAM_PACKAGE {
 export interface INSERT_PROGRAM_PACKAGEVariables {
   title: string;
   appId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_MEMBER_COLLECTION
-// ====================================================
-
-export interface GET_MEMBER_COLLECTION_member_point_status {
-  __typename: "point_status";
-  points: any | null;
-}
-
-export interface GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate_sum {
-  __typename: "order_product_sum_fields";
-  price: any | null;
-}
-
-export interface GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate {
-  __typename: "order_product_aggregate_fields";
-  sum: GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate_sum | null;
-}
-
-export interface GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate {
-  __typename: "order_product_aggregate";
-  aggregate: GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate | null;
-}
-
-export interface GET_MEMBER_COLLECTION_member_order_logs {
-  __typename: "order_log";
-  /**
-   * An aggregated array relationship
-   */
-  order_products_aggregate: GET_MEMBER_COLLECTION_member_order_logs_order_products_aggregate;
-}
-
-export interface GET_MEMBER_COLLECTION_member {
-  __typename: "member";
-  id: string;
-  picture_url: string | null;
-  name: string;
-  username: string;
-  email: string;
-  logined_at: any | null;
-  /**
-   * app-owner / content-creator
-   */
-  role: string;
-  /**
-   * An object relationship
-   */
-  point_status: GET_MEMBER_COLLECTION_member_point_status | null;
-  /**
-   * An array relationship
-   */
-  order_logs: GET_MEMBER_COLLECTION_member_order_logs[];
-}
-
-export interface GET_MEMBER_COLLECTION {
-  /**
-   * fetch data from the table: "member"
-   */
-  member: GET_MEMBER_COLLECTION_member[];
 }
 
 /* tslint:disable */
