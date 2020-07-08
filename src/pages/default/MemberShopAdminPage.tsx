@@ -1,9 +1,8 @@
 import { Button, Icon, Skeleton, Tabs } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
-import useRouter from 'use-react-router'
 import {
   AdminBlock,
   AdminBlockTitle,
@@ -29,10 +28,9 @@ const messages = defineMessages({
 
 const MemberShopAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { match } = useRouter<{ shopId: string }>()
-  const shopId = match.params.shopId
-  const { memberShop, refetchMemberShop } = useMemberShop(shopId)
+  const { shopId } = useParams<{ shopId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
+  const { memberShop, refetchMemberShop } = useMemberShop(shopId)
 
   return (
     <>

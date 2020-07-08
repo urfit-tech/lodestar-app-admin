@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React from 'react'
-import useRouter from 'use-react-router'
+import { useHistory } from 'react-router-dom'
 import PodcastProgramCreationModalComponent from '../../components/podcast/PodcastProgramCreationModal'
 import types from '../../types'
 
@@ -18,7 +18,7 @@ export type CreatePodcastProgramProps = (props: {
 const PodcastProgramCreationModal: React.FC<{
   memberId: string
 }> = ({ memberId }) => {
-  const { history } = useRouter()
+  const history = useHistory()
   const [createPodcastProgram] = useMutation<types.CREATE_PODCAST_PROGRAM, types.CREATE_PODCAST_PROGRAMVariables>(
     CREATE_PODCAST_PROGRAM,
   )

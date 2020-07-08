@@ -1,7 +1,7 @@
 import { Button, Icon, Tabs } from 'antd'
 import React, { useContext, useEffect } from 'react'
 import { useIntl } from 'react-intl'
-import useRouter from 'use-react-router'
+import { useHistory } from 'react-router-dom'
 import { AdminPageTitle } from '../../components/admin'
 import BlogPostCard from '../../components/blog/BlogPostCard'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
@@ -13,11 +13,11 @@ import { useInsertPost, usePostCollection } from '../../hooks/blog'
 
 const BlogAdminCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { history } = useRouter()
+  const history = useHistory()
+  const { id: appId } = useContext(AppContext)
   const { currentMemberId } = useAuth()
   const { posts, refetch } = usePostCollection()
   const insertPost = useInsertPost()
-  const { id: appId } = useContext(AppContext)
 
   useEffect(() => {
     refetch()

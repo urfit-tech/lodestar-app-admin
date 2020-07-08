@@ -1,9 +1,9 @@
 import { Tabs } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
+import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
-import useRouter from 'use-react-router'
 import { AdminBlock, AdminBlockTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import PodcastProgramBasicForm from '../../containers/podcast/PodcastProgramBasicForm'
@@ -23,8 +23,7 @@ const StyledWrapper = styled.div`
 
 const PodcastProgramAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { match } = useRouter<{ podcastProgramId: string }>()
-  const podcastProgramId = match.params.podcastProgramId
+  const { podcastProgramId } = useParams<{ podcastProgramId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
   const { podcastProgram, refetchPodcastProgram } = usePodcastProgramCollection(podcastProgramId)
 

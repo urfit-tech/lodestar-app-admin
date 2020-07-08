@@ -2,8 +2,8 @@ import { Icon, Menu } from 'antd'
 import { ClickParam, MenuProps } from 'antd/lib/menu'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import useRouter from 'use-react-router'
 import AppContext from '../../contexts/AppContext'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
@@ -23,8 +23,8 @@ const StyledMenu = styled(Menu)`
 `
 
 const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
-  const { history } = useRouter()
   const { formatMessage } = useIntl()
+  const history = useHistory()
 
   const handleClick = ({ key, item }: ClickParam) => {
     if (key.startsWith('_blank')) {

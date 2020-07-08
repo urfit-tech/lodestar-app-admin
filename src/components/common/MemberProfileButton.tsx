@@ -1,8 +1,8 @@
 import { Button, Icon, List, Popover } from 'antd'
 import React, { useContext } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import useRouter from 'use-react-router'
 import MemberAvatar from '../../containers/common/MemberAvatar'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
@@ -45,10 +45,10 @@ const messages = defineMessages({
 
 const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
-  const { history } = useRouter()
-  const { member } = useMember(memberId)
+  const history = useHistory()
   const { currentMemberId, isAuthenticated, currentUserRole, logout } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
+  const { member } = useMember(memberId)
   const navLinks = settings.navLinks
 
   const CustomNavLinks = navLinks.map((navLink, idx) => (

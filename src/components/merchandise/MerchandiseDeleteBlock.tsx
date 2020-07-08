@@ -3,8 +3,8 @@ import { Button, Modal } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import useRouter from 'use-react-router'
 import { handleError } from '../../helpers'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -46,7 +46,7 @@ const MerchandiseDeleteBlock: React.FC<{ merchandiseId: string; refetch?: () => 
   refetch,
 }) => {
   const { formatMessage } = useIntl()
-  const { history } = useRouter()
+  const history = useHistory()
   const [deleteMerchandise] = useMutation<types.DELETE_MERCHANDISE, types.DELETE_MERCHANDISEVariables>(
     DELETE_MERCHANDISE,
   )

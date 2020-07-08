@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
+import { useParams } from 'react-router-dom'
 import { ReactSortable } from 'react-sortablejs'
 import styled, { ThemeContext } from 'styled-components'
-import useRouter from 'use-react-router'
 import AudioTrackCard, { WaveBlock } from '../../components/podcast/AudioTrackCard'
 import RecordButton from '../../components/podcast/RecordButton'
 import RecordingController from '../../components/podcast/RecordingController'
@@ -27,8 +27,7 @@ const StyledPageTitle = styled.h1`
 
 const RecordingPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { match } = useRouter<{ podcastProgramId: string }>()
-  const podcastProgramId = match.params.podcastProgramId
+  const { podcastProgramId } = useParams<{ podcastProgramId: string }>()
   const theme = useContext(ThemeContext)
   const { podcastProgram } = usePodcastProgramCollection(podcastProgramId)
 

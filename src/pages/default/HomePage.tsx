@@ -1,8 +1,8 @@
 import { message } from 'antd'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import useRouter from 'use-react-router'
 import AuthModal, { AuthModalContext } from '../../components/auth/AuthModal'
 import { BREAK_POINT } from '../../components/common/Responsive'
 import AppContext from '../../contexts/AppContext'
@@ -70,9 +70,9 @@ const messages = defineMessages({
   isContentCreator: { id: 'common.isContentCreator', defaultMessage: '我是創作者' },
 })
 
-const HomePage = () => {
-  const { history } = useRouter()
+const HomePage: React.FC = () => {
   const { formatMessage } = useIntl()
+  const history = useHistory()
   const { isAuthenticated, currentUserRole, logout } = useAuth()
   const app = useContext(AppContext)
   const [visible, setVisible] = useState(false)

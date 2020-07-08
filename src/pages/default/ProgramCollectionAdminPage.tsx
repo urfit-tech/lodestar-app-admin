@@ -3,16 +3,15 @@ import { Button, Icon, Popover, Spin, Tabs, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext, useEffect } from 'react'
 import { useIntl } from 'react-intl'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import useRouter from 'use-react-router'
 import { AvatarImage } from '../../components/common/Image'
 import PositionAdminLayout, {
   OverlayBlock,
   OverlayList,
   OverlayListContent,
   OverlayListItem,
-  OverlayWrapper,
+  OverlayWrapper
 } from '../../components/common/PositionAdminLayout'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
@@ -42,9 +41,9 @@ const StyledButton = styled(Button)`
 
 const ProgramCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
+  const history = useHistory()
   const { currentMemberId, currentUserRole } = useAuth()
-  const { history } = useRouter()
-  const app = useContext(AppContext)
+  const { loading, id: appId } = useContext(AppContext)
 
   const { loadingProgramPreviews, programPreviews, refetchProgramPreviews } = useProgramPreviewCollection(
     currentUserRole === 'content-creator' ? currentMemberId : null,
@@ -59,7 +58,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
     refetchProgramPreviews()
   }, [refetchProgramPreviews])
 
-  if (!currentMemberId || !currentUserRole || app.loading) {
+  if (!currentMemberId || !currentUserRole || loading) {
     return <LoadingPage />
   }
 
@@ -101,7 +100,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
               variables: {
                 ownerId: currentMemberId,
                 instructorId: values.creatorId || currentMemberId,
-                appId: app.id,
+                appId: appId,
                 title: values.title,
                 isSubscription: values.isSubscription || false,
                 programCategories: values.categoryIds.map((categoryId, index) => ({
@@ -131,7 +130,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
                   updatePositions({
                     variables: {
                       data: value.map((program, index) => ({
-                        app_id: app.id,
+                        app_id: appId,
                         id: program.id,
                         title: program.title,
                         is_subscription: program.isSubscription,

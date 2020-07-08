@@ -1,13 +1,13 @@
 import { Button } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import useRouter from 'use-react-router'
+import { useHistory } from 'react-router-dom'
 import DefaultLayout from '../../components/layout/DefaultLayout'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 
 const ForbiddenPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { history } = useRouter()
+  const history = useHistory()
 
   return (
     <DefaultLayout>

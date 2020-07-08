@@ -1,9 +1,8 @@
 import { Button, Icon, Tabs } from 'antd'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
-import useRouter from 'use-react-router'
 import {
   AdminBlock,
   AdminBlockTitle,
@@ -26,14 +25,10 @@ import { useGetProgramPackage } from '../../hooks/programPackage'
 
 const ProgramPackageAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { settings } = useContext(AppContext)
-  const {
-    match: {
-      params: { programPackageId: id },
-    },
-  } = useRouter<{ programPackageId: string }>()
-  const { programPackage, refetch } = useGetProgramPackage(id)
+  const { programPackageId } = useParams<{ programPackageId: string }>()
   const [tabkey, setTabkey] = useQueryParam('tabkey', StringParam)
+  const { settings } = useContext(AppContext)
+  const { programPackage, refetch } = useGetProgramPackage(programPackageId)
 
   return (
     <>
@@ -44,9 +39,13 @@ const ProgramPackageAdminPage: React.FC = () => {
           </Button>
         </Link>
 
-        <AdminHeaderTitle>{programPackage.title || id}</AdminHeaderTitle>
+        <AdminHeaderTitle>{programPackage.title || programPackageId}</AdminHeaderTitle>
 
-        <a href={`//${settings['host']}/program-packages/${id}`} target="_blank" rel="noopener noreferrer">
+        <a
+          href={`//${settings['host']}/program-packages/${programPackageId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <Button>{formatMessage(commonMessages.ui.preview)}</Button>
         </a>
       </AdminHeader>
@@ -66,7 +65,7 @@ const ProgramPackageAdminPage: React.FC = () => {
               <AdminPaneTitle>{formatMessage(programPackageMessages.label.program)}</AdminPaneTitle>
 
               <ProgramPackageProgramConnectionModal
-                programPackageId={id}
+                programPackageId={programPackageId}
                 programs={programPackage.programs.map(program => ({
                   id: program.program.id,
                   title: program.program.title,
@@ -74,7 +73,7 @@ const ProgramPackageAdminPage: React.FC = () => {
                 onRefetch={refetch}
               />
               <ProgramPackageProgramCollectionBlock
-                programPackageId={id}
+                programPackageId={programPackageId}
                 programs={programPackage.programs}
                 onRefetch={refetch}
               />
@@ -107,7 +106,7 @@ const ProgramPackageAdminPage: React.FC = () => {
               <AdminPaneTitle>{formatMessage(commonMessages.label.salesPlan)}</AdminPaneTitle>
 
               <ProgramPackagePlanAdminModal
-                programPackageId={id}
+                programPackageId={programPackageId}
                 onRefetch={refetch}
                 title={formatMessage(programPackageMessages.ui.createPlan)}
                 renderTrigger={({ setVisible }) => (
@@ -118,7 +117,7 @@ const ProgramPackageAdminPage: React.FC = () => {
               />
 
               <ProgramPackagePlanCollectionBlock
-                programPackageId={id}
+                programPackageId={programPackageId}
                 plans={programPackage.plans}
                 onRefetch={refetch}
               />

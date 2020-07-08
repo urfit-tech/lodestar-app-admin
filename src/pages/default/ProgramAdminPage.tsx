@@ -1,9 +1,9 @@
 import { Button, Dropdown, Menu, PageHeader, Tabs } from 'antd'
 import React, { useContext, useEffect } from 'react'
 import { useIntl } from 'react-intl'
+import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
-import useRouter from 'use-react-router'
 import ProgramContentAdminPane from '../../components/program/ProgramContentAdminPane'
 import ProgramPlanAdminPane from '../../components/program/ProgramPlanAdminPane'
 import ProgramPublishingAdminPane from '../../components/program/ProgramPublishingAdminPane'
@@ -38,11 +38,11 @@ const StyledPageHeader = styled(PageHeader)`
 
 const ProgramAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { history, match } = useRouter<{ programId: string }>()
-  const programId = match.params.programId
-  const { program, refetch: refetchProgram } = useProgram(programId)
+  const history = useHistory()
+  const { programId } = useParams<{ programId: string }>()
+  const { settings } = useContext(AppContext)
   const [active, setActive] = useQueryParam('active', StringParam)
-  const app = useContext(AppContext)
+  const { program, refetch: refetchProgram } = useProgram(programId)
 
   useEffect(() => {
     !active && setActive('content')
@@ -58,7 +58,7 @@ const ProgramAdminPage: React.FC = () => {
             <Dropdown
               placement="bottomRight"
               overlay={
-                <Menu onClick={({ key }) => window.open(`//${app.settings['host']}${key}`, '_blank')}>
+                <Menu onClick={({ key }) => window.open(`//${settings['host']}${key}`, '_blank')}>
                   <Menu.Item className="py-2 px-3" key={`/programs/${program.id}`}>
                     {formatMessage(commonMessages.ui.previewIntroduction)}
                   </Menu.Item>

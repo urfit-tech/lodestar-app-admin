@@ -4,7 +4,7 @@ import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import useRouter from 'use-react-router'
+import { useHistory } from 'react-router-dom'
 import AdminModal from '../../components/admin/AdminModal'
 import CreatorSelector from '../../components/common/CreatorSelector'
 import { useAuth } from '../../contexts/AuthContext'
@@ -15,7 +15,7 @@ import types from '../../types'
 
 const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
-  const { history } = useRouter()
+  const history = useHistory()
   const { currentMemberId, currentUserRole } = useAuth()
   const { member } = useMember(currentMemberId || '')
 

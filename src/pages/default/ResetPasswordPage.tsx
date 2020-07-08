@@ -3,9 +3,9 @@ import { FormComponentProps } from 'antd/lib/form'
 import axios from 'axios'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
-import useRouter from 'use-react-router'
 import { BREAK_POINT } from '../../components/common/Responsive'
 import DefaultLayout from '../../components/layout/DefaultLayout'
 import { handleError } from '../../helpers'
@@ -35,7 +35,7 @@ const StyledTitle = styled.h1`
 
 const ResetPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
-  const { history } = useRouter()
+  const history = useHistory()
   const [token] = useQueryParam('token', StringParam)
   const [loading, setLoading] = useState(false)
 

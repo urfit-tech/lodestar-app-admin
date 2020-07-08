@@ -3,8 +3,8 @@ import { Badge, Button, List, Popover } from 'antd'
 import gql from 'graphql-tag'
 import React, { useEffect } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import useRouter from 'use-react-router'
 import { useNotifications } from '../../hooks/data'
 import types from '../../types'
 import NotificationItem from './NotificationItem'
@@ -59,7 +59,7 @@ const NotificationDropdown: React.FC<{
   memberId: string
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
-  const { history } = useRouter()
+  const history = useHistory()
   const { notifications, startPolling, refetch } = useNotifications(memberId, 15)
 
   const [readAllNotification] = useMutation<types.READ_ALL_NOTIFICATIONS, types.READ_ALL_NOTIFICATIONSVariables>(

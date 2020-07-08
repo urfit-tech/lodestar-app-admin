@@ -1,8 +1,8 @@
 import { Icon, Input, Table } from 'antd'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import useRouter from 'use-react-router'
 import { currencyFormatter } from '../../helpers'
 import { appointmentMessages } from '../../helpers/translation'
 import { AvatarImage } from '../common/Image'
@@ -84,7 +84,7 @@ const AppointmentPlanCollectionTable: React.FC<{
   loading?: boolean
 }> = ({ appointmentPlans, loading }) => {
   const { formatMessage } = useIntl()
-  const { history } = useRouter()
+  const history = useHistory()
 
   const [searchName, setSearchName] = useState<string | null>(null)
   const [searchTitle, setSearchTitle] = useState<string | null>(null)

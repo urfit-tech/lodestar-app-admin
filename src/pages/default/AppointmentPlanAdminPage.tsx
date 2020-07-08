@@ -1,9 +1,9 @@
 import { Tabs } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
-import useRouter from 'use-react-router'
 import { AdminBlock, AdminBlockTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import AppointmentPlanBasicForm from '../../containers/appointment/AppointmentPlanBasicForm'
@@ -16,10 +16,6 @@ import AppointmentPlanScheduleCreationModal from '../../containers/appointment/A
 import { AppointmentPlanProvider } from '../../contexts/AppointmentPlanContext'
 import { commonMessages } from '../../helpers/translation'
 
-const StyledWrapper = styled.div`
-  background: #f7f8f8;
-`
-
 const messages = defineMessages({
   planSettings: { id: 'appointment.label.planSettings', defaultMessage: '方案設定' },
   planDescription: { id: 'appointment.label.planDescription', defaultMessage: '方案簡介' },
@@ -27,10 +23,13 @@ const messages = defineMessages({
   scheduleSettings: { id: 'appointment.label.scheduleSettings', defaultMessage: '時段設定' },
 })
 
+const StyledWrapper = styled.div`
+  background: #f7f8f8;
+`
+
 const AppointmentPlanAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { match } = useRouter<{ appointmentPlanId: string }>()
-  const appointmentPlanId = match.params.appointmentPlanId
+  const { appointmentPlanId } = useParams<{ appointmentPlanId: string }>()
 
   const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
 

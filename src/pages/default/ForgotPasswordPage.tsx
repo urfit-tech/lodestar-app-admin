@@ -3,13 +3,18 @@ import { FormComponentProps } from 'antd/lib/form'
 import axios from 'axios'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import useRouter from 'use-react-router'
 import { BREAK_POINT } from '../../components/common/Responsive'
 import DefaultLayout from '../../components/layout/DefaultLayout'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { codeMessages, commonMessages, errorMessages } from '../../helpers/translation'
+
+const messages = defineMessages({
+  forgotPassword: { id: 'common.label.forgotPassword', defaultMessage: '忘記密碼' },
+  enterRegisteredEmail: { id: 'common.text.enterRegisteredEmail', defaultMessage: '輸入你註冊的信箱' },
+})
 
 const StyledContainer = styled.div`
   padding: 4rem 1rem;
@@ -33,15 +38,10 @@ const StyledTitle = styled.h1`
   letter-spacing: 0.8px;
 `
 
-const messages = defineMessages({
-  forgotPassword: { id: 'common.label.forgotPassword', defaultMessage: '忘記密碼' },
-  enterRegisteredEmail: { id: 'common.text.enterRegisteredEmail', defaultMessage: '輸入你註冊的信箱' },
-})
-
 const ForgotPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
   const app = useContext(AppContext)
   const { formatMessage } = useIntl()
-  const { history } = useRouter()
+  const history = useHistory()
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

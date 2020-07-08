@@ -2,7 +2,7 @@ import { Button, Form, Icon, Input } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import useRouter from 'use-react-router'
+import { useHistory } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
@@ -26,9 +26,9 @@ type ActivityCreationModalProps = FormComponentProps & {
   onCreate?: (event: CreateActivityEvent) => void
 }
 const ActivityCreationModal: React.FC<ActivityCreationModalProps> = ({ form, onCreate }) => {
-  const { currentMemberId, currentUserRole } = useAuth()
-  const { history } = useRouter()
   const { formatMessage } = useIntl()
+  const history = useHistory()
+  const { currentMemberId, currentUserRole } = useAuth()
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {

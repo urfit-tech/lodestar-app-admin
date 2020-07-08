@@ -1,9 +1,8 @@
 import { Button, Icon, Tabs } from 'antd'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
-import useRouter from 'use-react-router'
 import { AdminBlock, AdminBlockTitle, AdminHeader, AdminHeaderTitle, AdminPaneTitle } from '../../components/admin'
 import RoleAdminBlock from '../../components/admin/RoleAdminBlock'
 import BlogPostAuthorCollectionBlock from '../../components/blog/BlogPostAuthorCollectionBlock'
@@ -20,12 +19,12 @@ import { usePublicMember } from '../../hooks/member'
 
 const BlogAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { match } = useRouter<{ postId: string }>()
-  const postId = match.params.postId
+  const { postId } = useParams<{ postId: string }>()
+  const { settings } = useContext(AppContext)
+  const [tabkey, setTabkey] = useQueryParam('tabkey', StringParam)
+
   const { post, refetch: refetchPost } = usePost(postId)
   const { member } = usePublicMember(post?.creatorId || '')
-  const [tabkey, setTabkey] = useQueryParam('tabkey', StringParam)
-  const { settings } = useContext(AppContext)
 
   return (
     <>

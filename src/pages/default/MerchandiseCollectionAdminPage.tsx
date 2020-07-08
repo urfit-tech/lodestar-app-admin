@@ -1,9 +1,9 @@
 import { Button, Icon, Input, Tabs } from 'antd'
 import React, { useContext, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
-import useRouter from 'use-react-router'
 import { AdminPageTitle } from '../../components/admin'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
@@ -24,11 +24,11 @@ const StyledHeader = styled.div<{ width?: string }>`
 
 const MerchandiseCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { history } = useRouter()
+  const history = useHistory()
   const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
   const { currentMemberId } = useAuth()
-
   const { id: appId } = useContext(AppContext)
+
   const insertMerchandise = useInsertMerchandise()
   const { merchandises, refetchMerchandises } = useMerchandiseCollection()
   const [searchText, setSearchText] = useState('')

@@ -1,7 +1,7 @@
 import { Button, Icon, Tabs, Typography } from 'antd'
 import React, { useContext, useEffect } from 'react'
 import { useIntl } from 'react-intl'
-import useRouter from 'use-react-router'
+import { useHistory } from 'react-router-dom'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ProgramPackageAdminCard from '../../components/programPackage/ProgramPackageAdminCard'
@@ -12,7 +12,7 @@ import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
 
 const ProgramPackageCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { history } = useRouter()
+  const history = useHistory()
   const { id: appId } = useContext(AppContext)
   const { programPackages, refetch } = useGetProgramPackageCollection(appId)
   const createProgramPackage = useInsertProgramPackage(appId)

@@ -1,10 +1,9 @@
 import { Button, Icon, Skeleton, Tabs } from 'antd'
 import React, { useContext, useEffect } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
-import useRouter from 'use-react-router'
 import {
   AdminBlock,
   AdminBlockTitle,
@@ -54,8 +53,7 @@ const StatusCardNumber = styled.div`
 
 const MerchandiseAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { match } = useRouter<{ merchandiseId: string }>()
-  const merchandiseId = match.params.merchandiseId
+  const { merchandiseId } = useParams<{ merchandiseId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
   const { settings } = useContext(AppContext)
   const { loadingMerchandise, errorMerchandise, merchandise, refetchMerchandise } = useMerchandise(merchandiseId)

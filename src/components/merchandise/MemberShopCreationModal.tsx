@@ -4,7 +4,7 @@ import { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import useRouter from 'use-react-router'
+import { useHistory } from 'react-router-dom'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -13,7 +13,7 @@ import CreatorSelector from '../common/CreatorSelector'
 
 const MemberShopCreationModal: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
-  const { history } = useRouter()
+  const history = useHistory()
   const [insertMemberShop] = useMutation<types.INSERT_MEMBER_SHOP, types.INSERT_MEMBER_SHOPVariables>(
     INSERT_MEMBER_SHOP,
   )

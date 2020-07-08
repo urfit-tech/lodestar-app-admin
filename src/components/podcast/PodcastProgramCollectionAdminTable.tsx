@@ -2,8 +2,8 @@ import { Button, Icon, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import useRouter from 'use-react-router'
 import { currencyFormatter } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
@@ -98,7 +98,7 @@ const PodcastProgramCollectionAdminTable: React.FC<{
   podcastPrograms: PodcastProgramColumnProps[]
 }> = ({ podcastPrograms }) => {
   const { formatMessage } = useIntl()
-  const { history } = useRouter()
+  const history = useHistory()
 
   const [titleSearch, setTitleSearch] = useState('')
   const [nameSearch, setNameSearch] = useState('')

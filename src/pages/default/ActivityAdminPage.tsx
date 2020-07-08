@@ -1,9 +1,9 @@
 import { Tabs } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
-import useRouter from 'use-react-router'
 import { AdminBlock, AdminBlockTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import ActivityBasicForm from '../../containers/activity/ActivityBasicForm'
@@ -25,10 +25,10 @@ const messages = defineMessages({
 const StyledWrapper = styled.div`
   background: #f7f8f8;
 `
+
 const ActivityAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { match } = useRouter<{ activityId: string }>()
-  const activityId = match.params.activityId
+  const { activityId } = useParams<{ activityId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
 
   return (

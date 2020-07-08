@@ -1,7 +1,7 @@
 import { Button, Icon } from 'antd'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
-import useRouter from 'use-react-router'
+import { useHistory } from 'react-router-dom'
 import { AdminHeader, AdminHeaderTitle } from '../../components/admin'
 import AppContext from '../../contexts/AppContext'
 import { commonMessages } from '../../helpers/translation'
@@ -13,8 +13,8 @@ const PodcastProgramHeader: React.FC<{
   goBackLink?: string | null
 }> = ({ podcastProgramId, title, noPreview, goBackLink }) => {
   const { formatMessage } = useIntl()
-  const { history } = useRouter()
-  const app = useContext(AppContext)
+  const history = useHistory()
+  const { settings } = useContext(AppContext)
 
   return (
     <AdminHeader>
@@ -25,11 +25,7 @@ const PodcastProgramHeader: React.FC<{
       <AdminHeaderTitle>{title || podcastProgramId}</AdminHeaderTitle>
 
       {!noPreview && (
-        <a
-          href={`https://${app.settings['host']}/podcasts/${podcastProgramId}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href={`https://${settings['host']}/podcasts/${podcastProgramId}`} target="_blank" rel="noopener noreferrer">
           <Button>{formatMessage(commonMessages.ui.preview)}</Button>
         </a>
       )}

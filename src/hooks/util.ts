@@ -2,15 +2,16 @@ import { filter } from 'ramda'
 import { useEffect, useRef } from 'react'
 import ReactPixel from 'react-facebook-pixel'
 import ReactGA from 'react-ga'
-import useRouter from 'use-react-router'
+import { useLocation } from 'react-router-dom'
 import { TPDirect } from '../helpers'
 import { routesProps } from '../Routes'
 import settings from '../settings'
 
 export const useRouteKeys = () => {
-  const { location } = useRouter()
+  const location = useLocation()
   return Object.keys(filter(routeProps => routeProps.path === location.pathname, routesProps))
 }
+
 export const useInterval = (callback: Function, delay: number | null, immediately?: boolean) => {
   const savedCallback = useRef<Function>()
 
