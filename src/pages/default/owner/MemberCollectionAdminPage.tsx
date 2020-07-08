@@ -71,7 +71,7 @@ const MemberCollectionAdminPage: React.FC = () => {
   const theme = useContext(ThemeContext)
 
   // pagination
-  const [current, resetCurrent] = useState(1)
+  const [currentPage, setCurrentPage] = useState(1)
 
   // get member info
   const [roleFilter, setRoleFilter] = useState<UserRole | null>(null)
@@ -89,7 +89,7 @@ const MemberCollectionAdminPage: React.FC = () => {
   // dropdown
   const { id: appId } = useContext(AppContext)
   const { menu } = useMemberRoleCount({ appId, nameSearch, emailSearch })
-  const dropdownMenu = menu.map((menuItem, i) => ({
+  const dropdownMenu = menu.map(menuItem => ({
     ...menuItem,
     text: formatMessage(menuItem.text),
   }))
@@ -104,7 +104,7 @@ const MemberCollectionAdminPage: React.FC = () => {
               key={item.text}
               onClick={() => {
                 setRoleFilter(item.role as UserRole)
-                resetCurrent(1)
+                setCurrentPage(1)
                 setOffset(0)
               }}
             >
@@ -150,6 +150,7 @@ const MemberCollectionAdminPage: React.FC = () => {
         theme,
         onSearch: (selectedKeys, confirm) => {
           selectedKeys && setNameSearch(selectedKeys[0].length ? selectedKeys[0] : null)
+          setCurrentPage(1)
           setEmailSearch(null)
         },
       }),
@@ -162,6 +163,7 @@ const MemberCollectionAdminPage: React.FC = () => {
         theme,
         onSearch: (selectedKeys, confirm) => {
           selectedKeys && setEmailSearch(selectedKeys[0].length ? selectedKeys[0] : null)
+          setCurrentPage(1)
           setNameSearch(null)
         },
       }),
@@ -224,11 +226,11 @@ const MemberCollectionAdminPage: React.FC = () => {
           <div className="mt-4 d-flex justify-content-end">
             <Pagination
               defaultCurrent={1}
-              current={current}
+              current={currentPage}
               total={menu.filter(item => item.role === roleFilter)[0].count}
               onChange={page => {
                 setOffset((page - 1) * 10)
-                resetCurrent(page)
+                setCurrentPage(page)
               }}
             />
           </div>
