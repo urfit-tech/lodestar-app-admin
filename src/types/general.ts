@@ -1,3 +1,6 @@
+export type UserRole = 'app-owner' | 'content-creator' | 'general-member' | 'anonymous'
+export type AuthState = 'login' | 'register' | 'forgotPassword' | 'confirm'
+export type ClassType = 'program' | 'podcastProgram' | 'activity' | 'post' | 'merchandise' | 'programPackage'
 export type ProductType =
   | 'Program'
   | 'ProgramPlan'
@@ -16,8 +19,6 @@ export type Category = {
   name: string
   position: number
 }
-
-export type ClassType = 'program' | 'podcastProgram' | 'activity' | 'post' | 'merchandise' | 'programPackage'
 
 export type Member = {
   id: string

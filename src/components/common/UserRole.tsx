@@ -1,8 +1,8 @@
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
-import { UserRole } from '../../schemas/general'
 import { ProgramRoleName } from '../../schemas/program'
+import { UserRole } from '../../types/general'
 
 export const UserRoleName: React.FC<{ userRole: UserRole | string | null }> = ({ userRole }) => {
   const { formatMessage } = useIntl()

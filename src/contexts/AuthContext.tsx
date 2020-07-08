@@ -2,7 +2,7 @@ import Axios from 'axios'
 import jwt from 'jsonwebtoken'
 import React, { useContext, useEffect, useState } from 'react'
 import { handleError } from '../helpers'
-import { UserRole } from '../schemas/general'
+import { UserRole } from '../types/general'
 import { AppContext } from './AppContext'
 
 type AuthContext = {

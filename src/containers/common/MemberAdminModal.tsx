@@ -11,8 +11,8 @@ import { AvatarImage } from '../../components/common/Image'
 import { AppContext } from '../../contexts/AppContext'
 import { currencyFormatter, handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import { UserRole } from '../../schemas/general'
 import types from '../../types'
+import { UserRole } from '../../types/general'
 
 const messages = defineMessages({
   creatorPageLink: { id: 'common.ui.creatorPageLink', defaultMessage: '創作者主頁' },

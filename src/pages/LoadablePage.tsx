@@ -5,8 +5,8 @@ import useRouter from 'use-react-router'
 import { useAuth } from '../contexts/AuthContext'
 import { getUserRoleLevel } from '../helpers'
 import { useGAPageView } from '../hooks/util'
-import { UserRole } from '../schemas/general'
 import settings from '../settings'
+import { UserRole } from '../types/general'
 import LoadingPage from './default/LoadingPage'
 
 type LoadablePageProps = {

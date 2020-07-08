@@ -1,11 +1,10 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import types from '../types'
-import { Member, MemberPublic } from '../types/general'
-import { UserRole } from '../schemas/general'
+import { sum } from 'ramda'
 import { MemberInfo } from '../containers/common/MemberAdminModal'
 import { commonMessages } from '../helpers/translation'
-import { sum } from 'ramda'
+import types from '../types'
+import { Member, MemberPublic, UserRole } from '../types/general'
 
 export const useMember = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<types.GET_MEMBER, types.GET_MEMBERVariables>(

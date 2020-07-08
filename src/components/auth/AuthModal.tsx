@@ -1,7 +1,7 @@
 import { Divider, Modal } from 'antd'
 import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
-import { AuthState } from '../../schemas/general'
+import { AuthState } from '../../types/general'
 import { BREAK_POINT } from '../common/Responsive'
 import LoginSection from './LoginSection'
 import RegisterSection from './RegisterSection'
