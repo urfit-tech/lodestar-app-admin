@@ -197,7 +197,12 @@ const MemberCollectionAdminPage: React.FC = () => {
       <div className="d-flex align-items-center justify-content-between mb-4">
         {roleSelectDropdown}
 
-        <MemberExportModal role={roleFilter} roleSelectDropdown={roleSelectDropdown} />
+        <MemberExportModal
+          role={roleFilter}
+          roleSelectDropdown={roleSelectDropdown}
+          nameSearch={nameSearch}
+          emailSearch={emailSearch}
+        />
       </div>
 
       <AdminCard>
@@ -246,13 +251,15 @@ const MemberCollectionAdminPage: React.FC = () => {
   )
 }
 
-const MemberExportModal: React.FC<{ role: UserRole | null; roleSelectDropdown: JSX.Element }> = ({
-  role,
-  roleSelectDropdown,
-}) => {
+const MemberExportModal: React.FC<{
+  role: UserRole | null
+  roleSelectDropdown: JSX.Element
+  nameSearch: string | null
+  emailSearch: string | null
+}> = ({ role, roleSelectDropdown, nameSearch, emailSearch }) => {
   const { formatMessage } = useIntl()
   const [selectedExportFields, setSelectedExportFields] = useState<string[]>(['name', 'email'])
-  const { loading, dataSource } = useMemberCollection({ role })
+  const { loading, dataSource } = useMemberCollection({ role, nameSearch, emailSearch })
 
   const options = [
     { label: formatMessage(commonMessages.term.memberName), value: 'name' },
