@@ -45,36 +45,35 @@ const StyledAction = styled.div`
   `)}
 `
 
-type StyledButtonProps = {
-  variant?: 'overlay' | 'bar-icon'
-  height?: string
-  iconSize?: string
-}
-const StyledButton = styled(Button)<StyledButtonProps>`
-  && {
-    height: ${props =>
-      props.height
-        ? props.height
-        : props.variant === 'overlay'
-        ? '52px'
-        : props.variant === 'bar-icon'
-        ? '24px'
-        : '44px'};
-    color: ${props => (props.variant === 'overlay' ? 'var(--gray-darker)' : 'white')};
-    i {
-      font-size: ${props => props.iconSize || '24px'};
-    }
-    span {
-      line-height: 1.5;
-    }
-    ${props =>
-      props.variant === 'bar-icon'
-        ? css`
-            &:hover i {
-              color: #cdcdcd;
-            }
-          `
-        : ''}
+const StyledOverlayButton = styled(Button)`
+  height: 52px;
+  color: var(--gray-darker);
+  i {
+    font-size: 24px;
+  }
+`
+const StyledBarIconButton = styled(Button)<{ height?: string; iconSize?: string }>`
+  height: ${props => (props.height ? props.height : '24px')};
+  color: white;
+  i {
+    font-size: ${props => props.iconSize || '24px'};
+  }
+  span {
+    line-height: 1.5;
+  }
+  &:hover i {
+    color: #cdcdcd;
+  }
+`
+const StyledButton = styled(Button)`
+  height: 36px;
+  color: white;
+  span {
+    line-height: 1.5;
+  }
+  &:hover {
+    color: var(--gray);
+    border-color: var(--gray);
   }
 `
 const TooltipText = styled.span`
@@ -117,17 +116,17 @@ const RecordingController: React.FC<{
       <Responsive.Default>
         <StyledOverlay className="d-flex align-items-center justify-content-around" active={isEditing}>
           <div className="flex-grow-1 text-center">
-            <StyledButton type="link" size="small" variant="overlay" onClick={() => onDelete && onDelete()}>
+            <StyledOverlayButton type="link" size="small" onClick={() => onDelete && onDelete()}>
               <Icon component={() => <TrashOIcon />} className="d-block mb-1" />
               <div>{formatMessage(podcastMessages.ui.deleteAudio)}</div>
-            </StyledButton>
+            </StyledOverlayButton>
           </div>
           <Divider type="vertical" style={{ height: '49px' }} />
           <div className="flex-grow-1 text-center">
-            <StyledButton type="link" size="small" variant="overlay">
+            <StyledOverlayButton type="link" size="small">
               <Icon component={() => <UploadIcon />} className="d-block mb-1" onClick={() => onUpload && onUpload()} />
               <div>{formatMessage(podcastMessages.ui.bulkUpload)}</div>
-            </StyledButton>
+            </StyledOverlayButton>
           </div>
         </StyledOverlay>
       </Responsive.Default>
@@ -144,9 +143,9 @@ const RecordingController: React.FC<{
             <div className="col-3 col-lg-4 d-flex align-items-center">
               <Responsive.Default>
                 <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.trim)}</TooltipText>}>
-                  <StyledButton type="link" variant="bar-icon" className="p-0" onClick={() => onTrim && onTrim()}>
+                  <StyledBarIconButton type="link" className="p-0" onClick={() => onTrim && onTrim()}>
                     <Icon component={() => <TrimIcon />} />
-                  </StyledButton>
+                  </StyledBarIconButton>
                 </Tooltip>
               </Responsive.Default>
               <Responsive.Desktop>
@@ -158,35 +157,34 @@ const RecordingController: React.FC<{
 
             <div className="col-6 col-lg-4 d-flex align-items-center justify-content-center">
               <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.backward)}</TooltipText>}>
-                <StyledButton type="link" variant="bar-icon" className="p-0" onClick={() => onBackward && onBackward()}>
+                <StyledBarIconButton type="link" className="p-0" onClick={() => onBackward && onBackward()}>
                   <Icon component={() => <Backward5Icon />} />
-                </StyledButton>
+                </StyledBarIconButton>
               </Tooltip>
-              <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.play)}</TooltipText>}>
-                <StyledButton
-                  type="link"
-                  variant="bar-icon"
-                  className="mx-1"
-                  height="44px"
-                  iconSize="44px"
-                  onClick={() => (isPlaying ? onPause && onPause() : onPlay && onPlay())}
-                >
-                  <Icon component={() => (isPlaying ? <PauseCircleIcon /> : <PlayCircleIcon />)} />
-                </StyledButton>
-              </Tooltip>
+
+              <StyledBarIconButton
+                type="link"
+                className="mx-1"
+                height="44px"
+                iconSize="44px"
+                onClick={() => (isPlaying ? onPause && onPause() : onPlay && onPlay())}
+              >
+                <Icon component={() => (isPlaying ? <PauseCircleIcon /> : <PlayCircleIcon />)} />
+              </StyledBarIconButton>
+
               <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.forward)}</TooltipText>}>
-                <StyledButton type="link" variant="bar-icon" className="p-0" onClick={() => onForward && onForward()}>
+                <StyledBarIconButton type="link" className="p-0" onClick={() => onForward && onForward()}>
                   <Icon component={() => <Forward5Icon />} />
-                </StyledButton>
+                </StyledBarIconButton>
               </Tooltip>
             </div>
 
             <StyledAction className="col-3 col-lg-4 d-flex align-items-center justify-content-end">
               <Responsive.Desktop>
                 <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.trim)}</TooltipText>}>
-                  <StyledButton type="link" variant="bar-icon" className="p-0 m-0" onClick={() => onTrim && onTrim()}>
+                  <StyledBarIconButton type="link" className="p-0 m-0" onClick={() => onTrim && onTrim()}>
                     <Icon component={() => <TrimIcon />} />
-                  </StyledButton>
+                  </StyledBarIconButton>
                 </Tooltip>
                 <Divider
                   type="vertical"
@@ -195,36 +193,19 @@ const RecordingController: React.FC<{
                 {isEditing && (
                   <>
                     <Tooltip title={<TooltipText>{formatMessage(commonMessages.ui.delete)}</TooltipText>}>
-                      <StyledButton
-                        type="link"
-                        variant="bar-icon"
-                        className="p-0"
-                        onClick={() => onDelete && onDelete()}
-                      >
+                      <StyledBarIconButton type="link" className="p-0" onClick={() => onDelete && onDelete()}>
                         <Icon component={() => <TrashOIcon />} />
-                      </StyledButton>
+                      </StyledBarIconButton>
                     </Tooltip>
                     <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.upload)}</TooltipText>}>
-                      <StyledButton
-                        type="link"
-                        variant="bar-icon"
-                        className="p-0"
-                        onClick={() => onUpload && onUpload()}
-                      >
+                      <StyledBarIconButton type="link" className="p-0" onClick={() => onUpload && onUpload()}>
                         <Icon component={() => <UploadIcon />} />
-                      </StyledButton>
+                      </StyledBarIconButton>
                     </Tooltip>
                   </>
                 )}
               </Responsive.Desktop>
-              <StyledButton
-                className="py-2 px-3"
-                size="small"
-                ghost
-                variant="bar-icon"
-                height="36px"
-                onClick={() => onEdit && onEdit()}
-              >
+              <StyledButton className="py-2 px-3" size="small" ghost onClick={() => onEdit && onEdit()}>
                 {isEditing ? formatMessage(commonMessages.ui.cancel) : formatMessage(commonMessages.ui.edit)}
               </StyledButton>
             </StyledAction>
