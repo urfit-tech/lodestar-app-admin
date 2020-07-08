@@ -199,12 +199,9 @@ const MemberCollectionAdminPage: React.FC = () => {
       <div className="d-flex align-items-center justify-content-between mb-4">
         {roleSelectDropdown}
 
-        <MemberExportModal
-          role={roleFilter}
-          roleSelectDropdown={roleSelectDropdown}
-          nameSearch={nameSearch}
-          emailSearch={emailSearch}
-        />
+        <MemberExportModal role={roleFilter} nameSearch={nameSearch} emailSearch={emailSearch}>
+          {roleSelectDropdown}
+        </MemberExportModal>
       </div>
 
       <AdminCard>
@@ -255,10 +252,9 @@ const MemberCollectionAdminPage: React.FC = () => {
 
 const MemberExportModal: React.FC<{
   role: UserRole | null
-  roleSelectDropdown: JSX.Element
   nameSearch: string | null
   emailSearch: string | null
-}> = ({ role, roleSelectDropdown, nameSearch, emailSearch }) => {
+}> = ({ role, nameSearch, emailSearch, children }) => {
   const { formatMessage } = useIntl()
   const [selectedExportFields, setSelectedExportFields] = useState<string[]>(['name', 'email'])
   const { loading, dataSource } = useMemberCollection({ role, nameSearch, emailSearch })
@@ -301,7 +297,7 @@ const MemberExportModal: React.FC<{
       onOk={() => exportMemberList()}
     >
       <Form hideRequiredMark colon={false}>
-        <Form.Item label={formatMessage(commonMessages.label.roleType)}>{roleSelectDropdown}</Form.Item>
+        <Form.Item label={formatMessage(commonMessages.label.roleType)}>{children}</Form.Item>
         <Form.Item label={formatMessage(commonMessages.label.exportFields)}>
           <Checkbox.Group
             options={options}
