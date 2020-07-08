@@ -57,6 +57,7 @@ const RecordButton: React.FC<
           setStartedAt(Date.now())
         }
       }}
+      className={isRecording ? 'px-2' : undefined}
       {...buttonProps}
     >
       <div className="d-flex align-items-center justify-content-start">

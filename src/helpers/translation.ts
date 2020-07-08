@@ -519,6 +519,12 @@ export const podcastMessages = {
     recordAudio: { id: 'podcast.ui.recordAudio', defaultMessage: '錄製音檔' },
     deleteAudio: { id: 'podcast.ui.deleteAudio', defaultMessage: '刪除音檔' },
     bulkUpload: { id: 'podcast.ui.bulkUpload', defaultMessage: '合併上傳' },
+    play: { id: 'podcast.ui.play', defaultMessage: '播放' },
+    pause: { id: 'podcast.ui.pause', defaultMessage: '暫停' },
+    backward: { id: 'podcast.ui.backward', defaultMessage: '往後5秒' },
+    forward: { id: 'podcast.ui.forward', defaultMessage: '往前5秒' },
+    trim: { id: 'podcast.ui.trim', defaultMessage: '裁切' },
+    upload: { id: 'podcast.ui.upload', defaultMessage: '合併上傳' },
   }),
   status: defineMessages({
     published: { id: 'podcast.status.published', defaultMessage: '已發佈' },

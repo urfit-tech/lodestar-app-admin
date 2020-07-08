@@ -2,7 +2,6 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import { AppointmentPeriodProps } from '../components/appointment/AppointmentPeriodCard'
-import { notEmpty } from '../helpers'
 import types from '../types'
 
 export const useAppointmentEnrollmentCollection = () => {
@@ -43,42 +42,36 @@ export const useAppointmentEnrollmentCollection = () => {
   `)
 
   const appointmentEnrollments: AppointmentPeriodProps[] =
-    loading || !!error || !data
+    loading || error || !data
       ? []
-      : data.appointment_enrollment
-          .map<AppointmentPeriodProps | undefined>(enrollment => {
-            if (!enrollment.appointment_plan || !enrollment.member || !enrollment.appointment_plan.creator) {
-              return undefined
-            }
-
-            return {
-              avatarUrl: enrollment.member.picture_url,
-              member: {
-                name: enrollment.member_name || '',
-                email: enrollment.member_email,
-                phone: enrollment.member_phone,
-              },
-              appointmentPlanTitle: enrollment.appointment_plan.title,
-              startedAt: new Date(enrollment.started_at),
-              endedAt: moment(enrollment.started_at).add(enrollment.appointment_plan.duration, 'minutes').toDate(),
-              canceledAt: enrollment.canceled_at ? new Date(enrollment.canceled_at) : null,
-              creator: {
-                id: enrollment.appointment_plan.creator.id || '',
-                name: enrollment.appointment_plan.creator.name || '',
-              },
-              orderProduct: {
-                id: enrollment.order_product_id,
-                options: enrollment.order_product?.options,
-                orderLog: {
-                  createdAt: enrollment.order_product?.order_log.created_at,
-                  updatedAt: enrollment.order_product?.order_log.updated_at,
-                },
-              },
-              appointmentIssue: enrollment.issue,
-              appointmentResult: enrollment.result,
-            }
-          })
-          .filter(notEmpty)
+      : data.appointment_enrollment.map(enrollment => ({
+          avatarUrl: enrollment.member?.picture_url || null,
+          member: {
+            name: enrollment.member_name || '',
+            email: enrollment.member_email,
+            phone: enrollment.member_phone,
+          },
+          appointmentPlanTitle: enrollment.appointment_plan?.title || '',
+          startedAt: new Date(enrollment.started_at),
+          endedAt: moment(enrollment.started_at)
+            .add(enrollment.appointment_plan?.duration || 0, 'minutes')
+            .toDate(),
+          canceledAt: enrollment.canceled_at ? new Date(enrollment.canceled_at) : null,
+          creator: {
+            id: enrollment.appointment_plan?.creator?.id || '',
+            name: enrollment.appointment_plan?.creator?.name || '',
+          },
+          orderProduct: {
+            id: enrollment.order_product_id,
+            options: enrollment.order_product?.options,
+            orderLog: {
+              createdAt: enrollment.order_product?.order_log.created_at,
+              updatedAt: enrollment.order_product?.order_log.updated_at,
+            },
+          },
+          appointmentIssue: enrollment.issue,
+          appointmentResult: enrollment.result,
+        }))
 
   return {
     loadingAppointmentEnrollments: loading,
