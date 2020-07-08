@@ -307,7 +307,6 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
   const handleExport: (
     exportTarget: 'orderLog' | 'orderProduct' | 'orderDiscount' | 'paymentLog',
   ) => void = exportTarget => {
-
     form.validateFields(
       async (
         error,

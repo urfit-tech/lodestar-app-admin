@@ -62,68 +62,6 @@ export const useCategory = (classType: ClassType) => {
   }
 }
 
-export const useEnrolledProductIds = (memberId: string) => {
-  const { loading, data, error, refetch } = useQuery<types.GET_ENROLLED_PRODUCTS, types.GET_ENROLLED_PRODUCTSVariables>(
-    gql`
-      query GET_ENROLLED_PRODUCTS($memberId: String!) {
-        product_enrollment(where: { member_id: { _eq: $memberId } }) {
-          product_id
-        }
-      }
-    `,
-    { variables: { memberId } },
-  )
-
-  const castData = object({
-    productEnrollment: array(
-      object({
-        productId: string(),
-      }).camelCase(),
-    ).default([]),
-  })
-    .camelCase()
-    .cast(data)
-
-  const enrolledProductsIds = castData.productEnrollment.map(product => product.productId)
-
-  return {
-    enrolledProductIds: loading || error ? [] : enrolledProductsIds,
-    errorProductIds: error,
-    loadingProductIds: loading,
-    refetchProgramIds: refetch,
-  }
-}
-
-export const useEnrolledProgramPackagePlanIds = (memberId: string) => {
-  const { loading, data, error, refetch } = useQuery<
-    types.GET_ENROLLED_PROGRAM_PACKAGE_PLAN_IDS,
-    types.GET_ENROLLED_PROGRAM_PACKAGE_PLAN_IDSVariables
-  >(
-    gql`
-      query GET_ENROLLED_PROGRAM_PACKAGE_PLAN_IDS($memberId: String!) {
-        program_package_plan_enrollment(where: { member_id: { _eq: $memberId } }) {
-          program_package_plan_id
-        }
-      }
-    `,
-    { variables: { memberId } },
-  )
-
-  const enrolledProgramPackagePlanIds =
-    loading || !!error || !data
-      ? []
-      : data.program_package_plan_enrollment.map(
-          programPackagePlanEnrollment => programPackagePlanEnrollment.program_package_plan_id,
-        )
-
-  return {
-    loadingProgramPackageIds: loading,
-    enrolledProgramPackagePlanIds,
-    errorProgramPackageIds: error,
-    refetchProgramPackageIds: refetch,
-  }
-}
-
 export const useNotifications = (memberId: string, limit?: number) => {
   const { data, loading, error, refetch, startPolling } = useQuery<
     types.GET_NOTIFICATIONS,
@@ -510,7 +448,6 @@ export const useOrderPhysicalProductLog = () => {
   }
 }
 
-
 export const useSimpleProduct = (
   targetId: string,
   options: {
@@ -741,8 +678,9 @@ export const useSimpleProduct = (
       ? {
           id: data.podcast_plan_by_pk.id,
           productType: 'PodcastPlan',
-          title: `${formatMessage(commonMessages.label.podcastSubscription)} - ${data.podcast_plan_by_pk.creator.name ||
-            data.podcast_plan_by_pk.creator.username}`,
+          title: `${formatMessage(commonMessages.label.podcastSubscription)} - ${
+            data.podcast_plan_by_pk.creator.name || data.podcast_plan_by_pk.creator.username
+          }`,
           coverUrl: 'https://static.kolable.com/images/default/reservation.svg',
         }
       : data.appointment_plan_by_pk

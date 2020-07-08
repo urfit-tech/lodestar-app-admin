@@ -4820,91 +4820,6 @@ export interface GET_APPOINTMENT_PLAN_ADMINVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PUBLISHED_ACTIVITY_COLLECTION
-// ====================================================
-
-export interface GET_PUBLISHED_ACTIVITY_COLLECTION_activity_activity_categories_category {
-  __typename: "category";
-  id: string;
-  name: string;
-  position: number;
-}
-
-export interface GET_PUBLISHED_ACTIVITY_COLLECTION_activity_activity_categories {
-  __typename: "activity_category";
-  id: any;
-  /**
-   * An object relationship
-   */
-  category: GET_PUBLISHED_ACTIVITY_COLLECTION_activity_activity_categories_category;
-}
-
-export interface GET_PUBLISHED_ACTIVITY_COLLECTION_activity_activity_enrollments_aggregate_aggregate {
-  __typename: "activity_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_PUBLISHED_ACTIVITY_COLLECTION_activity_activity_enrollments_aggregate {
-  __typename: "activity_enrollment_aggregate";
-  aggregate: GET_PUBLISHED_ACTIVITY_COLLECTION_activity_activity_enrollments_aggregate_aggregate | null;
-}
-
-export interface GET_PUBLISHED_ACTIVITY_COLLECTION_activity_activity_sessions_aggregate_aggregate_min {
-  __typename: "activity_session_min_fields";
-  started_at: any | null;
-}
-
-export interface GET_PUBLISHED_ACTIVITY_COLLECTION_activity_activity_sessions_aggregate_aggregate_max {
-  __typename: "activity_session_max_fields";
-  ended_at: any | null;
-}
-
-export interface GET_PUBLISHED_ACTIVITY_COLLECTION_activity_activity_sessions_aggregate_aggregate {
-  __typename: "activity_session_aggregate_fields";
-  min: GET_PUBLISHED_ACTIVITY_COLLECTION_activity_activity_sessions_aggregate_aggregate_min | null;
-  max: GET_PUBLISHED_ACTIVITY_COLLECTION_activity_activity_sessions_aggregate_aggregate_max | null;
-}
-
-export interface GET_PUBLISHED_ACTIVITY_COLLECTION_activity_activity_sessions_aggregate {
-  __typename: "activity_session_aggregate";
-  aggregate: GET_PUBLISHED_ACTIVITY_COLLECTION_activity_activity_sessions_aggregate_aggregate | null;
-}
-
-export interface GET_PUBLISHED_ACTIVITY_COLLECTION_activity {
-  __typename: "activity";
-  id: any;
-  title: string;
-  cover_url: string | null;
-  published_at: any | null;
-  is_participants_visible: boolean;
-  organizer_id: string;
-  /**
-   * An array relationship
-   */
-  activity_categories: GET_PUBLISHED_ACTIVITY_COLLECTION_activity_activity_categories[];
-  /**
-   * An aggregated array relationship
-   */
-  activity_enrollments_aggregate: GET_PUBLISHED_ACTIVITY_COLLECTION_activity_activity_enrollments_aggregate;
-  /**
-   * An aggregated array relationship
-   */
-  activity_sessions_aggregate: GET_PUBLISHED_ACTIVITY_COLLECTION_activity_activity_sessions_aggregate;
-}
-
-export interface GET_PUBLISHED_ACTIVITY_COLLECTION {
-  /**
-   * fetch data from the table: "activity"
-   */
-  activity: GET_PUBLISHED_ACTIVITY_COLLECTION_activity[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_ENROLLED_ACTIVITY_TICKETS
 // ====================================================
 
@@ -4944,10 +4859,12 @@ export interface GET_TICKET_activity_ticket_by_pk_activity_session_tickets_activ
   started_at: any;
   ended_at: any;
   threshold: any | null;
+  activity_id: any;
 }
 
 export interface GET_TICKET_activity_ticket_by_pk_activity_session_tickets {
   __typename: "activity_session_ticket";
+  id: any;
   /**
    * An object relationship
    */

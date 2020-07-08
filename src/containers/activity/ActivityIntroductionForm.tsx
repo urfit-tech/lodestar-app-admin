@@ -104,10 +104,7 @@ const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
         label={
           <span>
             {formatMessage(commonMessages.term.cover)}
-            <Tooltip
-              placement="top"
-              title={<StyledTips>{formatMessage(activityMessages.text.imageTips)}</StyledTips>}
-            >
+            <Tooltip placement="top" title={<StyledTips>{formatMessage(activityMessages.text.imageTips)}</StyledTips>}>
               <Icon type="question-circle" theme="filled" className="ml-2" />
             </Tooltip>
           </span>

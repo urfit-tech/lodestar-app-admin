@@ -46,7 +46,7 @@ const messages = defineMessages({
   },
 })
 
-export type PodcastPlanProps = (props: {
+type PodcastPlanProps = (props: {
   onSuccess?: () => void
   onError?: (error: Error) => void
   onFinally?: () => void

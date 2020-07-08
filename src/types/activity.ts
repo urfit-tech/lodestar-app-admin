@@ -1,13 +1,7 @@
 type CategoryProps = {
   id: string
   name: string
-  class?: string
   position: number
-}
-
-type ActivityCategoryProps = {
-  id: string
-  category: CategoryProps
 }
 
 type ActivitySessionProps = {
@@ -52,7 +46,7 @@ export type ActivityProps = {
   organizerId: string
   appId: string
 
-  categories: ActivityCategoryProps[]
+  categories: CategoryProps[]
   sessions: ActivitySessionProps[]
   tickets: ActivityTicketProps[]
 }

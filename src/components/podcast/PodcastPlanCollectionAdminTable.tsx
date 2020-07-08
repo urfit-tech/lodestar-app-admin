@@ -81,7 +81,7 @@ const getColumnSearchProps: (
   filterIcon: filtered => <Icon type="search" style={{ color: filtered ? 'var(--primary)' : undefined }} />,
 })
 
-export type PodcastPlan = {
+type PodcastPlan = {
   id: string
   avatarUrl?: string | null
   creator: string
@@ -100,7 +100,7 @@ type PodcastPlanCollectionAdminTableProps = {
     variables?: Record<string, any> | undefined,
   ) => Promise<ApolloQueryResult<types.GET_PODCAST_PLAN_ADMIN_COLLECTION>>
 }
-export type PodcastPlanProps = PodcastPlan & {
+type PodcastPlanProps = PodcastPlan & {
   sorter?: number
 }
 const PodcastPlanCollectionAdminTable: React.FC<PodcastPlanCollectionAdminTableProps> = ({ podcastPlans, refetch }) => {

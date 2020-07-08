@@ -454,12 +454,6 @@ export const promotionMessages = {
   }),
 }
 
-export const membershipCardMessages = {
-  label: defineMessages({
-    selectMembershipCard: { id: 'membershipCard.label.selectMembershipCard', defaultMessage: '選擇會員卡' },
-  }),
-}
-
 export const programMessages = {
   status: defineMessages({
     issueOpen: { id: 'program.status.issueOpen', defaultMessage: '解決中' },
