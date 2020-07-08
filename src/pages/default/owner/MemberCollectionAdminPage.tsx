@@ -1,9 +1,6 @@
-import { useQuery } from '@apollo/react-hooks'
-import { Button, Checkbox, Dropdown, Form, Icon, Input, Menu, Table, Tag, Typography } from 'antd'
+import { Button, Checkbox, Dropdown, Form, Icon, Input, Menu, Pagination, Table, Tag, Typography } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import gql from 'graphql-tag'
 import moment from 'moment'
-import { sum } from 'ramda'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { ThemeContext } from 'styled-components'
@@ -13,10 +10,11 @@ import { AvatarImage } from '../../../components/common/Image'
 import { UserRoleName } from '../../../components/common/UserRole'
 import AdminLayout from '../../../components/layout/AdminLayout'
 import MemberAdminModal, { MemberInfo } from '../../../containers/common/MemberAdminModal'
+import AppContext from '../../../contexts/AppContext'
 import { currencyFormatter, downloadCSV, toCSV } from '../../../helpers'
 import { commonMessages } from '../../../helpers/translation'
+import { useMemberCollection, useMemberRoleCount } from '../../../hooks/member'
 import { UserRole } from '../../../schemas/general'
-import types from '../../../types'
 
 const StyledDropdown = styled(Dropdown)`
   width: 240px;
@@ -71,15 +69,62 @@ const getColumnSearchProps = ({
 const MemberCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const theme = useContext(ThemeContext)
-  const { loading, error, data, refetch } = useQuery<types.GET_MEMBER_COLLECTION>(GET_MEMBER_COLLECTION)
 
+  // pagination
+  const [currentPage, setCurrentPage] = useState(1)
+
+  // get member info
   const [roleFilter, setRoleFilter] = useState<UserRole | null>(null)
-  const [nameSearch, setNameSearch] = useState('')
-  const [emailSearch, setEmailSearch] = useState('')
-  const [visible, setVisible] = useState(false)
-  const [selectedMember, setSelectedMember] = useState<MemberInfo | null>(null)
-  const [selectedExportFields, setSelectedExportFields] = useState<string[]>(['name', 'email'])
+  const [offset, setOffset] = useState(0)
+  const [nameSearch, setNameSearch] = useState<string | null>(null)
+  const [emailSearch, setEmailSearch] = useState<string | null>(null)
+  const { loading, dataSource, refetch } = useMemberCollection({
+    role: roleFilter,
+    offset,
+    limit: 10,
+    nameSearch,
+    emailSearch,
+  })
 
+  // dropdown
+  const { id: appId } = useContext(AppContext)
+  const { menu } = useMemberRoleCount({ appId, nameSearch, emailSearch })
+  const dropdownMenu = menu.map(menuItem => ({
+    ...menuItem,
+    text: formatMessage(menuItem.text),
+  }))
+
+  const roleSelectDropdown = (
+    <StyledDropdown
+      trigger={['click']}
+      overlay={
+        <Menu>
+          {dropdownMenu.map(item => (
+            <StyledMenuItem
+              key={item.text}
+              onClick={() => {
+                setRoleFilter(item.role as UserRole)
+                setCurrentPage(1)
+                setOffset(0)
+              }}
+            >
+              {item.text} ({item.count})
+            </StyledMenuItem>
+          ))}
+        </Menu>
+      }
+    >
+      <Button className="d-flex justify-content-between align-items-center">
+        <span>
+          {roleFilter ? <UserRoleName userRole={roleFilter} /> : formatMessage(commonMessages.label.allMembers)}
+          {` (${menu.filter(item => item.role === roleFilter)[0].count})`}
+        </span>
+        <Icon type="caret-down" />
+      </Button>
+    </StyledDropdown>
+  )
+
+  // table
   const columns: ColumnProps<MemberInfo>[] = [
     {
       title: formatMessage(commonMessages.term.memberName),
@@ -104,8 +149,9 @@ const MemberCollectionAdminPage: React.FC = () => {
       ...getColumnSearchProps({
         theme,
         onSearch: (selectedKeys, confirm) => {
-          selectedKeys && setNameSearch(selectedKeys[0] || '')
-          setEmailSearch('')
+          selectedKeys && setNameSearch(selectedKeys[0].length ? selectedKeys[0] : null)
+          setCurrentPage(1)
+          setEmailSearch(null)
         },
       }),
     },
@@ -116,8 +162,9 @@ const MemberCollectionAdminPage: React.FC = () => {
       ...getColumnSearchProps({
         theme,
         onSearch: (selectedKeys, confirm) => {
-          selectedKeys && setEmailSearch(selectedKeys[0] || '')
-          setNameSearch('')
+          selectedKeys && setEmailSearch(selectedKeys[0].length ? selectedKeys[0] : null)
+          setCurrentPage(1)
+          setNameSearch(null)
         },
       }),
     },
@@ -128,11 +175,6 @@ const MemberCollectionAdminPage: React.FC = () => {
       render: (text, record, index) => (record.loginedAt ? moment(record.loginedAt).fromNow() : ''),
       sorter: (a, b) => (b.loginedAt ? b.loginedAt.getTime() : 0) - (a.loginedAt ? a.loginedAt.getTime() : 0),
     },
-    // {
-    //   title: formatMessage(commonMessages.label.holdingPoints),
-    //   dataIndex: 'points',
-    //   key: 'points',
-    // },
     {
       title: formatMessage(commonMessages.label.consumption),
       dataIndex: 'consumption',
@@ -143,84 +185,9 @@ const MemberCollectionAdminPage: React.FC = () => {
     },
   ]
 
-  const dataSource: MemberInfo[] =
-    loading || error || !data
-      ? []
-      : data.member
-          .filter(member => nameSearch.length === 0 || (member.name || member.username).includes(nameSearch))
-          .filter(member => emailSearch.length === 0 || (member.email || member.username).includes(emailSearch))
-          .map(member => ({
-            id: member.id,
-            avatarUrl: member.picture_url,
-            name: member.name || member.username,
-            email: member.email,
-            loginedAt: member.logined_at ? new Date(member.logined_at) : null,
-            role: member.role as UserRole,
-            points: member.point_status ? member.point_status.points : 0,
-            consumption: sum(
-              member.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
-            ),
-          }))
-          .sort((a, b) => (b.loginedAt ? b.loginedAt.getTime() : 0) - (a.loginedAt ? a.loginedAt.getTime() : 0))
-
-  const roleSelectDropdown = (
-    <StyledDropdown
-      trigger={['click']}
-      overlay={
-        <Menu>
-          <StyledMenuItem onClick={() => setRoleFilter(null)}>
-            {formatMessage(commonMessages.label.allMembers)} ({dataSource.length})
-          </StyledMenuItem>
-          <StyledMenuItem onClick={() => setRoleFilter('app-owner')}>
-            {formatMessage(commonMessages.term.appOwner)}
-            {` (${dataSource.filter(row => row.role === 'app-owner').length})`}
-          </StyledMenuItem>
-          <StyledMenuItem onClick={() => setRoleFilter('content-creator')}>
-            {formatMessage(commonMessages.term.contentCreator)}
-            {` (${dataSource.filter(row => row.role === 'content-creator').length})`}
-          </StyledMenuItem>
-          <StyledMenuItem onClick={() => setRoleFilter('general-member')}>
-            {formatMessage(commonMessages.term.generalMember)}
-            {` (${dataSource.filter(row => row.role === 'general-member').length})`}
-          </StyledMenuItem>
-        </Menu>
-      }
-    >
-      <Button className="d-flex justify-content-between align-items-center">
-        <span>
-          {roleFilter ? <UserRoleName userRole={roleFilter} /> : formatMessage(commonMessages.label.allMembers)}
-          {` (${dataSource.filter(member => !roleFilter || member.role === roleFilter).length})`}
-        </span>
-        <Icon type="caret-down" />
-      </Button>
-    </StyledDropdown>
-  )
-
-  const options = [
-    { label: formatMessage(commonMessages.term.memberName), value: 'name' },
-    { label: 'Email', value: 'email' },
-    { label: formatMessage(commonMessages.label.lastLogin), value: 'lastLogin' },
-    { label: formatMessage(commonMessages.label.consumption), value: 'consumption' },
-  ]
-
-  const exportMemberList = () => {
-    const data: string[][] = [
-      options.filter(option => selectedExportFields.some(field => field === option.value)).map(option => option.label),
-      ...dataSource
-        .filter(member => !roleFilter || member.role === roleFilter)
-        .map(member => {
-          const row: string[] = []
-          selectedExportFields.some(field => field === 'name') && row.push(member.name)
-          selectedExportFields.some(field => field === 'email') && row.push(member.email)
-          selectedExportFields.some(field => field === 'lastLogin') &&
-            row.push(member.loginedAt ? moment(member.loginedAt).format('YYYYMMDD HH:mm') : '')
-          selectedExportFields.some(field => field === 'consumption') && row.push(`${member.consumption}`)
-          return row
-        }),
-    ]
-
-    downloadCSV('members', toCSV(data))
-  }
+  // MemberAdminModal
+  const [isMemberAdminModalVisible, setMemberAdminModalVisible] = useState(false)
+  const [selectedMember, setSelectedMember] = useState<MemberInfo | null>(null)
 
   return (
     <AdminLayout>
@@ -232,30 +199,12 @@ const MemberCollectionAdminPage: React.FC = () => {
       <div className="d-flex align-items-center justify-content-between mb-4">
         {roleSelectDropdown}
 
-        <div>
-          <AdminModal
-            renderTrigger={({ setVisible }) => (
-              <Button type="primary" icon="download" onClick={() => setVisible(true)}>
-                {formatMessage(commonMessages.ui.downloadMemberList)}
-              </Button>
-            )}
-            title={formatMessage(commonMessages.ui.downloadMemberList)}
-            cancelText={formatMessage(commonMessages.ui.cancel)}
-            okText={formatMessage(commonMessages.ui.export)}
-            onOk={() => exportMemberList()}
-          >
-            <Form hideRequiredMark colon={false}>
-              <Form.Item label={formatMessage(commonMessages.label.roleType)}>{roleSelectDropdown}</Form.Item>
-              <Form.Item label={formatMessage(commonMessages.label.exportFields)}>
-                <Checkbox.Group
-                  options={options}
-                  value={selectedExportFields}
-                  onChange={checkedValues => setSelectedExportFields(checkedValues.map(v => v.toString()))}
-                />
-              </Form.Item>
-            </Form>
-          </AdminModal>
-        </div>
+        <MemberExportModal
+          role={roleFilter}
+          roleSelectDropdown={roleSelectDropdown}
+          nameSearch={nameSearch}
+          emailSearch={emailSearch}
+        />
       </div>
 
       <AdminCard>
@@ -264,28 +213,39 @@ const MemberCollectionAdminPage: React.FC = () => {
             columns={columns}
             rowKey="id"
             loading={loading}
-            dataSource={dataSource.filter(member => !roleFilter || member.role === roleFilter)}
-            pagination={{ position: 'bottom' }}
+            dataSource={dataSource}
+            pagination={false}
             rowClassName={() => 'cursor-pointer'}
             onRow={record => ({
               onClick: () => {
                 setSelectedMember(record)
-                setVisible(true)
+                setMemberAdminModalVisible(true)
               },
             })}
           />
+          <div className="mt-4 d-flex justify-content-end">
+            <Pagination
+              defaultCurrent={1}
+              current={currentPage}
+              total={menu.filter(item => item.role === roleFilter)[0].count}
+              onChange={page => {
+                setOffset((page - 1) * 10)
+                setCurrentPage(page)
+              }}
+            />
+          </div>
         </StyledWrapper>
       </AdminCard>
 
-      {visible && (
+      {isMemberAdminModalVisible && (
         <MemberAdminModal
           visible
           width="24rem"
           member={selectedMember}
-          onCancel={() => setVisible(false)}
+          onCancel={() => setMemberAdminModalVisible(false)}
           onSuccess={() => {
             refetch()
-            setVisible(false)
+            setMemberAdminModalVisible(false)
           }}
         />
       )}
@@ -293,30 +253,65 @@ const MemberCollectionAdminPage: React.FC = () => {
   )
 }
 
-const GET_MEMBER_COLLECTION = gql`
-  query GET_MEMBER_COLLECTION {
-    member {
-      id
-      picture_url
-      name
-      username
-      email
-      logined_at
-      role
-      point_status {
-        points
-      }
-      order_logs(where: { status: { _eq: "SUCCESS" } }) {
-        order_products_aggregate {
-          aggregate {
-            sum {
-              price
-            }
-          }
-        }
-      }
-    }
+const MemberExportModal: React.FC<{
+  role: UserRole | null
+  roleSelectDropdown: JSX.Element
+  nameSearch: string | null
+  emailSearch: string | null
+}> = ({ role, roleSelectDropdown, nameSearch, emailSearch }) => {
+  const { formatMessage } = useIntl()
+  const [selectedExportFields, setSelectedExportFields] = useState<string[]>(['name', 'email'])
+  const { loading, dataSource } = useMemberCollection({ role, nameSearch, emailSearch })
+
+  const options = [
+    { label: formatMessage(commonMessages.term.memberName), value: 'name' },
+    { label: 'Email', value: 'email' },
+    { label: formatMessage(commonMessages.label.lastLogin), value: 'lastLogin' },
+    { label: formatMessage(commonMessages.label.consumption), value: 'consumption' },
+  ]
+
+  const exportMemberList = () => {
+    const data: string[][] = [
+      options.filter(option => selectedExportFields.some(field => field === option.value)).map(option => option.label),
+      ...dataSource.map(member => {
+        const row: string[] = []
+        selectedExportFields.some(field => field === 'name') && row.push(member.name)
+        selectedExportFields.some(field => field === 'email') && row.push(member.email)
+        selectedExportFields.some(field => field === 'lastLogin') &&
+          row.push(member.loginedAt ? moment(member.loginedAt).format('YYYYMMDD HH:mm') : '')
+        selectedExportFields.some(field => field === 'consumption') && row.push(`${member.consumption}`)
+        return row
+      }),
+    ]
+
+    downloadCSV('members', toCSV(data))
   }
-`
+
+  return (
+    <AdminModal
+      renderTrigger={({ setVisible }) => (
+        <Button type="primary" icon="download" onClick={() => setVisible(true)}>
+          {formatMessage(commonMessages.ui.downloadMemberList)}
+        </Button>
+      )}
+      confirmLoading={loading}
+      title={formatMessage(commonMessages.ui.downloadMemberList)}
+      cancelText={formatMessage(commonMessages.ui.cancel)}
+      okText={formatMessage(commonMessages.ui.export)}
+      onOk={() => exportMemberList()}
+    >
+      <Form hideRequiredMark colon={false}>
+        <Form.Item label={formatMessage(commonMessages.label.roleType)}>{roleSelectDropdown}</Form.Item>
+        <Form.Item label={formatMessage(commonMessages.label.exportFields)}>
+          <Checkbox.Group
+            options={options}
+            value={selectedExportFields}
+            onChange={checkedValues => setSelectedExportFields(checkedValues.map(v => v.toString()))}
+          />
+        </Form.Item>
+      </Form>
+    </AdminModal>
+  )
+}
 
 export default MemberCollectionAdminPage

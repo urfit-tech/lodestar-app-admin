@@ -1,4 +1,4 @@
-import { Button, Divider, Icon } from 'antd'
+import { Button, Divider, Icon, Tooltip } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
@@ -67,7 +67,18 @@ const StyledButton = styled(Button)<StyledButtonProps>`
     span {
       line-height: 1.5;
     }
+    ${props =>
+      props.variant === 'bar-icon'
+        ? css`
+            &:hover i {
+              color: #cdcdcd;
+            }
+          `
+        : ''}
   }
+`
+const TooltipText = styled.span`
+  font-size: 12px;
 `
 
 const RecordingController: React.FC<{
@@ -132,9 +143,11 @@ const RecordingController: React.FC<{
           <div className="row justify-content-between py-2">
             <div className="col-3 col-lg-4 d-flex align-items-center">
               <Responsive.Default>
-                <StyledButton type="link" variant="bar-icon" className="p-0" onClick={() => onTrim && onTrim()}>
-                  <Icon component={() => <TrimIcon />} />
-                </StyledButton>
+                <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.trim)}</TooltipText>}>
+                  <StyledButton type="link" variant="bar-icon" className="p-0" onClick={() => onTrim && onTrim()}>
+                    <Icon component={() => <TrimIcon />} />
+                  </StyledButton>
+                </Tooltip>
               </Responsive.Default>
               <Responsive.Desktop>
                 <div className="text-center">
@@ -144,41 +157,63 @@ const RecordingController: React.FC<{
             </div>
 
             <div className="col-6 col-lg-4 d-flex align-items-center justify-content-center">
-              <StyledButton type="link" variant="bar-icon" className="p-0" onClick={() => onBackward && onBackward()}>
-                <Icon component={() => <Backward5Icon />} />
-              </StyledButton>
-              <StyledButton
-                type="link"
-                variant="bar-icon"
-                className="mx-1"
-                height="44px"
-                iconSize="44px"
-                onClick={() => (isPlaying ? onPause && onPause() : onPlay && onPlay())}
-              >
-                <Icon component={() => (isPlaying ? <PauseCircleIcon /> : <PlayCircleIcon />)} />
-              </StyledButton>
-              <StyledButton type="link" variant="bar-icon" className="p-0" onClick={() => onForward && onForward()}>
-                <Icon component={() => <Forward5Icon />} />
-              </StyledButton>
+              <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.backward)}</TooltipText>}>
+                <StyledButton type="link" variant="bar-icon" className="p-0" onClick={() => onBackward && onBackward()}>
+                  <Icon component={() => <Backward5Icon />} />
+                </StyledButton>
+              </Tooltip>
+              <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.play)}</TooltipText>}>
+                <StyledButton
+                  type="link"
+                  variant="bar-icon"
+                  className="mx-1"
+                  height="44px"
+                  iconSize="44px"
+                  onClick={() => (isPlaying ? onPause && onPause() : onPlay && onPlay())}
+                >
+                  <Icon component={() => (isPlaying ? <PauseCircleIcon /> : <PlayCircleIcon />)} />
+                </StyledButton>
+              </Tooltip>
+              <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.forward)}</TooltipText>}>
+                <StyledButton type="link" variant="bar-icon" className="p-0" onClick={() => onForward && onForward()}>
+                  <Icon component={() => <Forward5Icon />} />
+                </StyledButton>
+              </Tooltip>
             </div>
 
             <StyledAction className="col-3 col-lg-4 d-flex align-items-center justify-content-end">
               <Responsive.Desktop>
-                <StyledButton type="link" variant="bar-icon" className="p-0 m-0" onClick={() => onTrim && onTrim()}>
-                  <Icon component={() => <TrimIcon />} />
-                </StyledButton>
+                <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.trim)}</TooltipText>}>
+                  <StyledButton type="link" variant="bar-icon" className="p-0 m-0" onClick={() => onTrim && onTrim()}>
+                    <Icon component={() => <TrimIcon />} />
+                  </StyledButton>
+                </Tooltip>
                 <Divider
                   type="vertical"
                   style={{ top: 0, marginRight: '0', height: '24px', backgroundColor: 'white' }}
                 />
                 {isEditing && (
                   <>
-                    <StyledButton type="link" variant="bar-icon" className="p-0" onClick={() => onDelete && onDelete()}>
-                      <Icon component={() => <TrashOIcon />} />
-                    </StyledButton>
-                    <StyledButton type="link" variant="bar-icon" className="p-0" onClick={() => onUpload && onUpload()}>
-                      <Icon component={() => <UploadIcon />} />
-                    </StyledButton>
+                    <Tooltip title={<TooltipText>{formatMessage(commonMessages.ui.delete)}</TooltipText>}>
+                      <StyledButton
+                        type="link"
+                        variant="bar-icon"
+                        className="p-0"
+                        onClick={() => onDelete && onDelete()}
+                      >
+                        <Icon component={() => <TrashOIcon />} />
+                      </StyledButton>
+                    </Tooltip>
+                    <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.upload)}</TooltipText>}>
+                      <StyledButton
+                        type="link"
+                        variant="bar-icon"
+                        className="p-0"
+                        onClick={() => onUpload && onUpload()}
+                      >
+                        <Icon component={() => <UploadIcon />} />
+                      </StyledButton>
+                    </Tooltip>
                   </>
                 )}
               </Responsive.Desktop>

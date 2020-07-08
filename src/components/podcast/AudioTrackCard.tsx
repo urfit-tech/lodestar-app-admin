@@ -19,11 +19,12 @@ const StyledIcon = styled(Icon)`
   margin-top: 0.75rem;
   font-size: 24px;
 `
-const StyledCard = styled.div`
+const StyledCard = styled.div<{ isActive?: boolean }>`
   overflow: hidden;
   background: white;
   border-radius: 10px;
-  box-shadow: 0 6px 10px 1px rgba(76, 91, 143, 0.3);
+  box-shadow: ${props =>
+    props.isActive ? '0 6px 10px 1px rgba(76, 91, 143, 0.3)' : '0 6px 12px 2px rgba(221, 221, 221, 0.5)'};
 `
 const WaveWrapper = styled.div`
   height: 106px;
@@ -48,10 +49,11 @@ const AudioTrackCard: React.FC<
     handleClassName?: string
     position: number
     duration: number
+    isActive?: boolean
     isSelected?: boolean
     onSelected?: (id: string, checked: boolean) => void
   }
-> = ({ id, handleClassName, position, duration, isSelected, onSelected, children, ...divProps }) => {
+> = ({ id, handleClassName, position, duration, isActive, isSelected, onSelected, children, ...divProps }) => {
   const { formatMessage } = useIntl()
 
   return (
@@ -61,7 +63,7 @@ const AudioTrackCard: React.FC<
         <StyledIcon component={() => <MoveIcon />} className={`cursor-pointer ${handleClassName || 'handle'}`} />
       </ActionBlock>
 
-      <StyledCard className="p-4 flex-grow-1">
+      <StyledCard className="p-4 flex-grow-1" isActive={isActive}>
         <WaveWrapper className="mb-3">{children}</WaveWrapper>
 
         <div className="d-flex align-items-center justify-content-start">
