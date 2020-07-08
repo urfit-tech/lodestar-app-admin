@@ -91,8 +91,10 @@ const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
   return (
     <Form
       hideRequiredMark
-      labelCol={{ span: 24, md: { span: 4 } }}
-      wrapperCol={{ span: 24, md: { span: 8 } }}
+      colon={false}
+      labelAlign="left"
+      labelCol={{ md: { span: 4 } }}
+      wrapperCol={{ md: { span: 8 } }}
       onSubmit={e => {
         e.preventDefault()
         handleSubmit()
@@ -100,15 +102,15 @@ const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
     >
       <Form.Item
         label={
-          <>
+          <span>
             {formatMessage(commonMessages.term.cover)}
             <Tooltip
-              placement="topLeft"
+              placement="top"
               title={<StyledTips>{formatMessage(activityMessages.text.imageTips)}</StyledTips>}
             >
               <Icon type="question-circle" theme="filled" className="ml-2" />
             </Tooltip>
-          </>
+          </span>
         }
       >
         <div className="d-flex align-items-center justify-content-between">

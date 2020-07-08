@@ -84,8 +84,10 @@ const BlogPostSettingForm: React.FC<BlogPostSettingFormProps> = ({
   }
   return (
     <Form
-      labelCol={{ span: 24, md: { span: 4 } }}
-      wrapperCol={{ span: 24, md: { span: 8 } }}
+      colon={false}
+      labelAlign="left"
+      labelCol={{ md: { span: 4 } }}
+      wrapperCol={{ md: { span: 8 } }}
       onSubmit={e => {
         e.preventDefault()
         handleSubmit()
@@ -93,15 +95,15 @@ const BlogPostSettingForm: React.FC<BlogPostSettingFormProps> = ({
     >
       <Form.Item
         label={
-          <>
+          <span>
             {formatMessage(commonMessages.term.cover)}
             <Tooltip
-              placement="topLeft"
+              placement="top"
               title={<StyledTips>{formatMessage(blogMessages.text.suggestedPictureSize)}</StyledTips>}
             >
               <Icon type="question-circle" theme="filled" className="ml-2" />
             </Tooltip>
-          </>
+          </span>
         }
       >
         <div className="d-flex align-items-center justify-content-between">

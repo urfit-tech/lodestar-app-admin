@@ -67,7 +67,10 @@ const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
         label={
           <span>
             <span className="mr-2">{formatMessage(appointmentMessages.label.duration)}</span>
-            <Tooltip title={<StyledTips>{formatMessage(appointmentMessages.text.durationTips)}</StyledTips>}>
+            <Tooltip
+              placement="top"
+              title={<StyledTips>{formatMessage(appointmentMessages.text.durationTips)}</StyledTips>}
+            >
               <Icon type="question-circle" theme="filled" />
             </Tooltip>
           </span>

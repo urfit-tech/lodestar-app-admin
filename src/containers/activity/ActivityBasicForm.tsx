@@ -65,8 +65,10 @@ const ActivityBasicForm: React.FC<FormComponentProps> = ({ form }) => {
   return (
     <Form
       hideRequiredMark
-      labelCol={{ span: 24, md: { span: 4 } }}
-      wrapperCol={{ span: 24, md: { span: 8 } }}
+      colon={false}
+      labelAlign="left"
+      labelCol={{ md: { span: 4 } }}
+      wrapperCol={{ md: { span: 8 } }}
       onSubmit={e => {
         e.preventDefault()
         handleSubmit()
@@ -93,12 +95,12 @@ const ActivityBasicForm: React.FC<FormComponentProps> = ({ form }) => {
       {enabledModules.locale && (
         <Form.Item
           label={
-            <>
+            <span>
               {formatMessage(commonMessages.label.languages)}
-              <Tooltip placement="topLeft" title={<StyledTips>{formatMessage(commonMessages.text.locale)}</StyledTips>}>
+              <Tooltip placement="top" title={<StyledTips>{formatMessage(commonMessages.text.locale)}</StyledTips>}>
                 <Icon type="question-circle" theme="filled" className="ml-2" />
               </Tooltip>
-            </>
+            </span>
           }
         >
           {form.getFieldDecorator('languages', {

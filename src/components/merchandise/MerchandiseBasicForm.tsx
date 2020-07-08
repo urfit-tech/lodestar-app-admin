@@ -44,8 +44,10 @@ const MerchandiseBasicForm: React.FC<MerchandiseBasicFormProps> = ({ form, merch
   return (
     <Form
       hideRequiredMark
-      labelCol={{ span: 24, md: { span: 4 } }}
-      wrapperCol={{ span: 24, md: { span: 8 } }}
+      colon={false}
+      labelAlign="left"
+      labelCol={{ md: { span: 4 } }}
+      wrapperCol={{ md: { span: 8 } }}
       onSubmit={e => {
         e.preventDefault()
         handleSubmit()

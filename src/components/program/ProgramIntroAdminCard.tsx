@@ -127,15 +127,15 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
       <Typography.Title level={4}>{formatMessage(messages.programIntroduction)}</Typography.Title>
 
       {program && (
-        <Form labelCol={{ span: 24, md: { span: 4 } }} wrapperCol={{ span: 24, md: { span: 10 } }}>
+        <Form colon={false} labelAlign="left" labelCol={{ md: { span: 4 } }} wrapperCol={{ md: { span: 10 } }}>
           <Form.Item
             label={
-              <>
+              <span>
                 {formatMessage(messages.programCover)}
-                <Tooltip placement="topLeft" title={<StyledTips>{formatMessage(messages.imageTips)}</StyledTips>}>
+                <Tooltip placement="top" title={<StyledTips>{formatMessage(messages.imageTips)}</StyledTips>}>
                   <Icon type="question-circle" theme="filled" className="ml-2" />
                 </Tooltip>
-              </>
+              </span>
             }
           >
             <div className="d-flex align-items-center flex-wrap">
@@ -165,8 +165,10 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
             e.preventDefault()
             handleSubmit()
           }}
-          labelCol={{ span: 24, md: { span: 4 } }}
-          wrapperCol={{ span: 24, md: { span: 10 } }}
+          colon={false}
+          labelAlign="left"
+          labelCol={{ md: { span: 4 } }}
+          wrapperCol={{ md: { span: 10 } }}
         >
           <Form.Item label={formatMessage(messages.introductionVideo)}>
             {form.getFieldDecorator('coverVideoUrl', {

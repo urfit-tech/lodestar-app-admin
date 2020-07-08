@@ -68,8 +68,10 @@ const BlogPostBasicForm: React.FC<BlogPostBasicFormProps> = ({
   return (
     post && (
       <Form
-        labelCol={{ span: 24, md: { span: 4 } }}
-        wrapperCol={{ span: 24, md: { span: 8 } }}
+        colon={false}
+        labelAlign="left"
+        labelCol={{ md: { span: 4 } }}
+        wrapperCol={{ md: { span: 8 } }}
         onSubmit={e => {
           e.preventDefault()
           handleSubmit()
@@ -90,12 +92,12 @@ const BlogPostBasicForm: React.FC<BlogPostBasicFormProps> = ({
         </Form.Item>
         <Form.Item
           label={
-            <>
+            <span>
               {formatMessage(blogMessages.label.codeName)}
-              <Tooltip placement="topLeft" title={<StyledTips>{formatMessage(blogMessages.text.url)}</StyledTips>}>
+              <Tooltip placement="top" title={<StyledTips>{formatMessage(blogMessages.text.url)}</StyledTips>}>
                 <Icon type="question-circle" theme="filled" className="ml-2" />
               </Tooltip>
-            </>
+            </span>
           }
           hasFeedback
           validateStatus={codeName.length ? (canCodeNameUse ? 'success' : 'error') : ''}

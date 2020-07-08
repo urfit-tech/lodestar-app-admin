@@ -54,8 +54,10 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
 
   return (
     <Form
-      labelCol={{ span: 24, md: { span: 4 } }}
-      wrapperCol={{ span: 24, md: { span: 8 } }}
+      colon={false}
+      labelAlign="left"
+      labelCol={{ md: { span: 4 } }}
+      wrapperCol={{ md: { span: 8 } }}
       onSubmit={e => {
         e.preventDefault()
         handleSubmit()
@@ -63,12 +65,15 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
     >
       <Form.Item
         label={
-          <>
+          <span>
             {formatMessage(merchandiseMessages.label.images)}
-            <Tooltip title={<StyledTips>{formatMessage(merchandiseMessages.text.imageTips)}</StyledTips>}>
+            <Tooltip
+              placement="top"
+              title={<StyledTips>{formatMessage(merchandiseMessages.text.imageTips)}</StyledTips>}
+            >
               <Icon type="question-circle" theme="filled" />
             </Tooltip>
-          </>
+          </span>
         }
         wrapperCol={{ span: 24, md: { span: 16 } }}
       >

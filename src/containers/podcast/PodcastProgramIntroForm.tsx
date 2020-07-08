@@ -89,8 +89,9 @@ const PodcastProgramIntroForm: React.FC<PodcastProgramIntroFormProps> = ({ form,
     <Form
       hideRequiredMark
       colon={false}
-      labelCol={{ span: 24, md: { span: 4 } }}
-      wrapperCol={{ span: 24, md: { span: 8 } }}
+      labelAlign="left"
+      labelCol={{ md: { span: 4 } }}
+      wrapperCol={{ md: { span: 8 } }}
       onSubmit={e => {
         e.preventDefault()
         handleSubmit()
@@ -100,7 +101,10 @@ const PodcastProgramIntroForm: React.FC<PodcastProgramIntroFormProps> = ({ form,
         label={
           <span>
             <span className="mr-2">{formatMessage(podcastMessages.term.podcastCover)}</span>
-            <Tooltip title={<StyledTips>{formatMessage(podcastMessages.text.podcastCoverTips)}</StyledTips>}>
+            <Tooltip
+              placement="top"
+              title={<StyledTips>{formatMessage(podcastMessages.text.podcastCoverTips)}</StyledTips>}
+            >
               <Icon type="question-circle" theme="filled" />
             </Tooltip>
           </span>

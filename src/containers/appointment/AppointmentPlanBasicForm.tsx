@@ -59,8 +59,9 @@ const AppointmentPlanBasicForm: React.FC<FormComponentProps> = ({ form }) => {
     <Form
       hideRequiredMark
       colon={false}
-      labelCol={{ span: 24, md: { span: 4 } }}
-      wrapperCol={{ span: 24, md: { span: 8 } }}
+      labelAlign="left"
+      labelCol={{ md: { span: 4 } }}
+      wrapperCol={{ md: { span: 8 } }}
       onSubmit={e => {
         e.preventDefault()
         handleSubmit()
