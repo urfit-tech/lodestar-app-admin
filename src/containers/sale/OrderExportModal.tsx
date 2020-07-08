@@ -5,6 +5,7 @@ import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useCallback, useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import styled from 'styled-components'
 import AdminModal from '../../components/admin/AdminModal'
 import AppContext from '../../contexts/AppContext'
 import { dateFormatter, downloadCSV, toCSV } from '../../helpers'
@@ -12,6 +13,19 @@ import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const { RangePicker } = DatePicker
+
+const StyledRangePicker = styled.div`
+  input {
+    text-align: left;
+    &:placeholder-shown {
+      text-align: left;
+    }
+  }
+  .ant-calendar-range-picker-separator {
+    min-width: 32px;
+    vertical-align: unset;
+  }
+`
 
 const messages = defineMessages({
   exportOrder: { id: 'common.ui.exportOrder', defaultMessage: '匯出資料' },
@@ -24,6 +38,25 @@ const messages = defineMessages({
   invoiceFailed: { id: 'payment.status.invoiceFailed', defaultMessage: '開立失敗 {errorCode}' },
   invoicePending: { id: 'payment.status.invoicePending', defaultMessage: '未開立電子發票' },
 })
+
+const disabledRangeTime = (_: any, type: string) => {
+  const range = (start: number, end: number) => {
+    const result = []
+    let i: number
+    for (i = start; i < end; i++) {
+      result.push(i)
+    }
+    return result
+  }
+  if (type === 'start') {
+    return {
+      disabledSeconds: () => range(1, 60),
+    }
+  }
+  return {
+    disabledSeconds: () => range(0, 59),
+  }
+}
 
 const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
@@ -374,24 +407,30 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
     >
       <Form colon={false} hideRequiredMark>
         <Form.Item label={formatMessage(commonMessages.label.dateRange)}>
-          <Form.Item>
-            {form.getFieldDecorator('timeRange', {
-              rules: [
-                {
-                  required: true,
-                  message: formatMessage(errorMessages.form.isRequired, {
-                    field: formatMessage(commonMessages.term.timeRange),
-                  }),
-                },
-              ],
-            })(
-              <RangePicker
-                style={{ width: '100%' }}
-                format="YYYY-MM-DD HH:mm"
-                showTime={{ defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')] }}
-              />,
-            )}
-          </Form.Item>
+          <StyledRangePicker>
+            <Form.Item>
+              {form.getFieldDecorator('timeRange', {
+                rules: [
+                  {
+                    required: true,
+                    message: formatMessage(errorMessages.form.isRequired, {
+                      field: formatMessage(commonMessages.term.timeRange),
+                    }),
+                  },
+                ],
+              })(
+                <RangePicker
+                  style={{ width: '100%' }}
+                  format="YYYY-MM-DD HH:mm"
+                  disabledTime={disabledRangeTime}
+                  showTime={{
+                    hideDisabledOptions: true,
+                    defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+                  }}
+                />,
+              )}
+            </Form.Item>
+          </StyledRangePicker>
         </Form.Item>
         <Form.Item label={formatMessage(commonMessages.label.orderLogStatus)}>
           {form.getFieldDecorator('orderStatuses', {
