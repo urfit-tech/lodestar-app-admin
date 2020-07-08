@@ -7,10 +7,14 @@ import MemberAvatar from '../../containers/common/MemberAvatar'
 import { DeleteProgramProps, UpdateProgramProps } from '../../containers/program/ProgramRoleAdminPane'
 import { notEmpty } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { ProgramType } from '../../types/program'
+import { ProgramProps } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
 import CreatorSelector from '../common/CreatorSelector'
+
+const messages = defineMessages({
+  programOwner: { id: 'program.label.programOwner', defaultMessage: '課程負責人' },
+})
 
 const StyledModalTitle = styled.div`
   color: var(--gray-darker);
@@ -20,13 +24,9 @@ const StyledModalTitle = styled.div`
   letter-spacing: 0.77px;
 `
 
-const messages = defineMessages({
-  programOwner: { id: 'program.label.programOwner', defaultMessage: '課程負責人' },
-})
-
 const ProgramRoleAdminPane: React.FC<
   CardProps & {
-    program: ProgramType | null
+    program: ProgramProps | null
     onProgramUpdate: UpdateProgramProps
     onProgramDelete: DeleteProgramProps
   }

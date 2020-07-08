@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
-import { ProgramType } from '../../types/program'
+import { ProgramProps } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
 
 const messages = defineMessages({
@@ -54,11 +54,10 @@ const StyledText = styled.span`
   padding-top: 4px;
 `
 
-type ProgramDeletionAdminCardProps = {
-  program: ProgramType | null
+const ProgramDeletionAdminCard: React.FC<{
+  program: ProgramProps | null
   onRefetch?: () => void
-}
-const ProgramDeletionAdminCard: React.FC<ProgramDeletionAdminCardProps> = ({ program, onRefetch }) => {
+}> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [isVisible, setVisible] = useState(false)
 

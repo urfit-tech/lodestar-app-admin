@@ -8,14 +8,14 @@ import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramType } from '../../types/program'
+import { ProgramProps } from '../../types/program'
 import { StyledTips } from '../admin'
 import AdminCard from '../admin/AdminCard'
 import CategorySelector from '../common/CategorySelector'
 import LanguageSelector from '../common/LanguageSelector'
 
 type ProgramBasicAdminCardProps = FormComponentProps & {
-  program: ProgramType | null
+  program: ProgramProps | null
   onRefetch?: () => void
 }
 const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, form, onRefetch }) => {

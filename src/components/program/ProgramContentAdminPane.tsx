@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { programMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramType } from '../../types/program'
+import { ProgramProps } from '../../types/program'
 import ProgramContentSectionAdminCard from './ProgramContentSectionAdminCard'
 import ProgramStructureAdminModal from './ProgramStructureAdminModal'
 
@@ -15,7 +15,7 @@ const messages = defineMessages({
 })
 
 const ProgramContentAdminPane: React.FC<{
-  program: ProgramType | null
+  program: ProgramProps | null
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()

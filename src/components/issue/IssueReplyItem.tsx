@@ -13,7 +13,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { rgba } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramRoleType } from '../../types/program'
+import { ProgramRoleProps } from '../../types/program'
 import { createUploadFn } from '../admin/AdminBraftEditor'
 import { BraftContent } from '../common/StyledBraftEditor'
 import { ProgramRoleLabel } from '../common/UserRole'
@@ -48,24 +48,15 @@ const StyledTag = styled(Tag)`
   border: 0;
 `
 
-type IssueReplyItemProps = {
-  programRoles: ProgramRoleType[]
+const IssueReplyItem: React.FC<{
+  programRoles: ProgramRoleProps[]
   issueReplyId: string
   content: string
   reactedMemberIds: string[]
   createdAt: Date
   memberId: string
   onRefetch?: () => void
-}
-const IssueReplyItem: React.FC<IssueReplyItemProps> = ({
-  programRoles,
-  issueReplyId,
-  content,
-  reactedMemberIds,
-  createdAt,
-  memberId,
-  onRefetch,
-}) => {
+}> = ({ programRoles, issueReplyId, content, reactedMemberIds, createdAt, memberId, onRefetch }) => {
   const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const [qIssueReplyId] = useQueryParam('issueReplyId', StringParam)

@@ -10,7 +10,7 @@ import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramType } from '../../types/program'
+import { ProgramProps } from '../../types/program'
 import { StyledTips } from '../admin'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminCard from '../admin/AdminCard'
@@ -60,7 +60,7 @@ const messages = defineMessages({
 })
 
 type ProgramIntroAdminCardProps = FormComponentProps & {
-  program: ProgramType | null
+  program: ProgramProps | null
   onRefetch?: () => void
 }
 const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, form, onRefetch }) => {

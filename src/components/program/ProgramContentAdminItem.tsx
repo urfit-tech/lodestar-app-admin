@@ -7,7 +7,7 @@ import styled from 'styled-components'
 import { dateFormatter, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramContentType, ProgramType } from '../../types/program'
+import { ProgramContentProps, ProgramProps } from '../../types/program'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
 
 const StyledTitle = styled.div`
@@ -28,8 +28,8 @@ const messages = defineMessages({
 
 const ProgramContentAdminItem: React.FC<{
   showPlans?: boolean | null
-  program: ProgramType
-  programContent: ProgramContentType
+  program: ProgramProps
+  programContent: ProgramContentProps
   onRefetch?: () => void
 }> = ({ showPlans, programContent, program, onRefetch }) => {
   const { formatMessage } = useIntl()
@@ -44,8 +44,8 @@ const ProgramContentAdminItem: React.FC<{
         {showPlans && (
           <StyledDescriptions type="secondary">
             {formatMessage(messages.programContentPlans)}
-            {programContent.programContentPlans
-              .map(programContentPlan => programContentPlan.programPlan.title)
+            {programContent.programPlans
+              ?.map(programPlan => programPlan.title)
               .join(formatMessage(commonMessages.ui.comma))}
           </StyledDescriptions>
         )}

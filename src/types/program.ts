@@ -1,4 +1,6 @@
-import { ProgramPlanPeriodType } from '../schemas/program'
+export type ProgramPlanType = 'subscribeFromNow' | 'subscribeAll' | 'unknown'
+export type ProgramPlanPeriodType = 'D' | 'W' | 'M' | 'Y'
+export type ProgramRoleName = 'owner' | 'instructor' | 'assistant'
 
 export type ProgramPreviewProps = {
   id: string
@@ -20,7 +22,7 @@ export type ProgramPreviewProps = {
   isPrivate: boolean
 }
 
-export type ProgramType = {
+export type ProgramProps = {
   id: string
   title: string
   appId: string
@@ -36,9 +38,9 @@ export type ProgramType = {
   inAdvance: boolean
   isSoldOut: boolean | null
   supportLocales: string[]
-  contentSections: ProgramContentSectionType[]
-  roles: ProgramRoleType[]
-  plans: ProgramPlanType[]
+  contentSections: ProgramContentSectionProps[]
+  roles: ProgramRoleProps[]
+  plans: ProgramPlanProps[]
   isDeleted: boolean
   isPrivate: boolean
   isIssuesOpen: boolean
@@ -51,32 +53,28 @@ export type ProgramType = {
   }[]
 }
 
-export type ProgramContentSectionType = {
+export type ProgramContentSectionProps = {
   id: string
   title: string
-  programContents: ProgramContentType[]
+  programContents: ProgramContentProps[]
 }
 
-export type ProgramContentType = {
+export type ProgramContentProps = {
   id: string
   title: string
   publishedAt: Date | null
   listPrice: number | null
   duration: number | null
-  programContentType: {
+  programContentType: string | null
+  isNotifyUpdate: boolean
+  notifiedAt: Date | null
+  programPlans?: {
     id: string
-    type: string | null
-  } | null
-  programContentPlans: {
-    id: any
-    programPlan: {
-      id: any
-      title: string | null
-    }
+    title: string | null
   }[]
 }
 
-export type ProgramPlanType = {
+export type ProgramPlanProps = {
   id: string
   type: number
   title: string | null
@@ -89,9 +87,9 @@ export type ProgramPlanType = {
   soldAt: Date | null
 }
 
-export type ProgramRoleType = {
+export type ProgramRoleProps = {
   id: string
-  name: string
+  name: ProgramRoleName
   member: {
     id: string | null
     name: string | null

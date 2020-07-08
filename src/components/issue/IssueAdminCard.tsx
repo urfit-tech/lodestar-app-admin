@@ -84,7 +84,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
       <StyledAdminCard className="mb-3" {...cardProps}>
         <IssueItem
           showSolvedCheckbox
-          programRoles={programRoles}
+          programRoles={program?.roles || []}
           issueId={issueId}
           title={title}
           description={description}

@@ -2,13 +2,12 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { useContext } from 'react'
 import { useIntl } from 'react-intl'
-import { array, date, object, string } from 'yup'
 import AppContext from '../contexts/AppContext'
 import { commonMessages } from '../helpers/translation'
-import { ProgramPlanPeriodType } from '../schemas/program'
 import types from '../types'
 import { Category, ClassType, ProductInventoryLogProps, ProductType } from '../types/general'
 import { InvoiceProps, ShippingProps } from '../types/merchandise'
+import { ProgramPlanPeriodType } from '../types/program'
 
 export const useTags = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_TAGS>(
@@ -83,25 +82,36 @@ export const useNotifications = (memberId: string, limit?: number) => {
     `,
     { variables: { memberId, limit } },
   )
+
+  const notifications: {
+    id: string
+    description: string
+    type: string | null
+    referenceUrl: string | null
+    extra: string | null
+    avatar: string | null
+    readAt: Date | null
+    updatedAt: Date
+  }[] =
+    loading || error || !data
+      ? []
+      : data.notification.map(notification => ({
+          id: notification.id,
+          description: notification.description,
+          type: notification.type,
+          referenceUrl: notification.reference_url,
+          extra: notification.extra,
+          avatar: notification.avatar,
+          readAt: notification.read_at && new Date(notification.read_at),
+          updatedAt: new Date(notification.updated_at),
+        }))
+
   return {
-    refetch,
     loading,
     error,
+    notifications,
+    refetch,
     startPolling,
-    notifications: object({
-      notification: array(
-        object({
-          id: string(),
-          description: string(),
-          type: string(),
-          referenceUrl: string().nullable(),
-          extra: string().nullable(),
-          avatar: string().nullable(),
-          readAt: date().nullable(),
-          updatedAt: date(),
-        }).camelCase(),
-      ).default([]),
-    }).cast(data).notification,
   }
 }
 

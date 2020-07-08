@@ -7,7 +7,7 @@ import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramType } from '../../types/program'
+import { ProgramContentSectionProps, ProgramProps } from '../../types/program'
 import AdminModal from '../admin/AdminModal'
 import DraggableItem from '../common/DraggableItem'
 
@@ -20,11 +20,10 @@ const StyledDraggableSectionLabel = styled.div`
   color: ${props => props.theme['@primary-color']};
 `
 
-type ProgramStructureAdminModalProps = {
-  program: ProgramType | null
+const ProgramStructureAdminModal: React.FC<{
+  program: ProgramProps | null
   onStructureChange?: () => void
-}
-const ProgramStructureAdminModal: React.FC<ProgramStructureAdminModalProps> = ({ program, onStructureChange }) => {
+}> = ({ program, onStructureChange }) => {
   const { formatMessage } = useIntl()
 
   const [updateProgramContentSections] = useMutation<
@@ -36,30 +35,7 @@ const ProgramStructureAdminModal: React.FC<ProgramStructureAdminModalProps> = ({
   )
 
   const [loading, setLoading] = useState(false)
-  const [sections, setSections] = useState<
-    {
-      id: string
-      title: string
-      programContents: {
-        id: string
-        title: string
-        publishedAt: Date | null
-        listPrice: number | null
-        duration: number | null
-        programContentType: {
-          id: string
-          type: string | null
-        } | null
-        programContentPlans: {
-          id: any
-          programPlan: {
-            id: any
-            title: string | null
-          }
-        }[]
-      }[]
-    }[]
-  >([])
+  const [sections, setSections] = useState<ProgramContentSectionProps[]>([])
 
   useEffect(() => {
     if (program) {

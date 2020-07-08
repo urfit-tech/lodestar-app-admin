@@ -2,11 +2,15 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { sum, uniqBy } from 'ramda'
 import { useContext } from 'react'
-import { array, object } from 'yup'
 import AppContext from '../contexts/AppContext'
-import { programContentSchema, ProgramPlanPeriodType, programSchema } from '../schemas/program'
 import types from '../types'
-import { ProgramPreviewProps } from '../types/program'
+import {
+  ProgramContentProps,
+  ProgramPlanPeriodType,
+  ProgramPreviewProps,
+  ProgramProps,
+  ProgramRoleName,
+} from '../types/program'
 
 export const useProgramPreviewCollection = (memberId: string | null) => {
   const { loading, error, data, refetch } = useQuery<
@@ -136,6 +140,8 @@ export const useProgram = (programId: string) => {
               published_at
               list_price
               duration
+              is_notify_update
+              notified_at
               program_content_type {
                 id
                 type
@@ -182,76 +188,7 @@ export const useProgram = (programId: string) => {
     `,
     { variables: { programId }, fetchPolicy: 'network-only' },
   )
-  const program: {
-    id: string
-    title: string
-    appId: string
-    isSubscription: boolean
-    soldAt: Date | null
-    coverUrl: string | null
-    abstract: string | null
-    description: string | null
-    salePrice: number | null
-    listPrice: number
-    coverVideoUrl: string | null
-    publishedAt: Date | null
-    inAdvance: boolean
-    isSoldOut: boolean | null
-    supportLocales: string[]
-    isDeleted: boolean
-    isPrivate: boolean
-    isIssuesOpen: boolean
-    contentSections: {
-      id: string
-      title: string
-      programContents: {
-        id: string
-        title: string
-        publishedAt: Date | null
-        listPrice: number | null
-        duration: number | null
-        programContentType: {
-          id: string
-          type: string | null
-        } | null
-        programContentPlans: {
-          id: any
-          programPlan: {
-            id: any
-            title: string | null
-          }
-        }[]
-      }[]
-    }[]
-    roles: {
-      id: string
-      name: string
-      member: {
-        id: string | null
-        name: string | null
-        pictureUrl: string | null
-      } | null
-    }[]
-    plans: {
-      id: string
-      type: number
-      title: string | null
-      description: string | null
-      gains: string | null
-      salePrice: number
-      listPrice: number
-      discountDownPrice: number
-      periodType: string | null
-      soldAt: Date | null
-    }[]
-    categories: {
-      position: number
-      category: {
-        id: string
-        name: string
-      }
-    }[]
-  } | null =
+  const program: ProgramProps | null =
     loading || error || !data || !data.program_by_pk
       ? null
       : {
@@ -282,19 +219,18 @@ export const useProgram = (programId: string) => {
               publishedAt: programContent.published_at,
               listPrice: programContent.list_price,
               duration: programContent.duration,
-              programContentType: programContent.program_content_type,
-              programContentPlans: programContent.program_content_plans.map(programContentPlan => ({
-                id: programContentPlan.id,
-                programPlan: {
-                  id: programContentPlan.program_plan.id,
-                  title: programContentPlan.program_plan.title,
-                },
+              programContentType: programContent.program_content_type?.type || null,
+              isNotifyUpdate: programContent.is_notify_update,
+              notifiedAt: programContent.notified_at,
+              programPlans: programContent.program_content_plans.map(programContentPlan => ({
+                id: programContentPlan.program_plan.id,
+                title: programContentPlan.program_plan.title,
               })),
             })),
           })),
           roles: data.program_by_pk.program_roles.map(programRole => ({
             id: programRole.id,
-            name: programRole.name,
+            name: programRole.name as ProgramRoleName,
             member: {
               id: programRole.member && programRole.member.id,
               name: programRole.member && programRole.member.name,
@@ -330,7 +266,7 @@ export const useProgram = (programId: string) => {
 }
 
 export const useProgramContent = (programContentId: string) => {
-  const { loading, data, refetch } = useQuery<types.GET_PROGRAM_CONTENT, types.GET_PROGRAM_CONTENTVariables>(
+  const { loading, error, data, refetch } = useQuery<types.GET_PROGRAM_CONTENT, types.GET_PROGRAM_CONTENTVariables>(
     gql`
       query GET_PROGRAM_CONTENT($programContentId: uuid!) {
         program_content_by_pk(id: $programContentId) {
@@ -366,19 +302,41 @@ export const useProgramContent = (programContentId: string) => {
         }
       }
     `,
-    {
-      variables: {
-        programContentId,
-      },
-    },
+    { variables: { programContentId } },
   )
+
+  const programContent:
+    | (ProgramContentProps & {
+        programContentBody: {
+          id: string
+          type: string | null
+          description: string | null
+          data: any
+        }
+      })
+    | null =
+    loading || error || !data || !data.program_content_by_pk
+      ? null
+      : {
+          id: data.program_content_by_pk.id,
+          title: data.program_content_by_pk.title,
+          publishedAt: data.program_content_by_pk.published_at && new Date(data.program_content_by_pk.published_at),
+          listPrice: data.program_content_by_pk.list_price,
+          duration: data.program_content_by_pk.duration,
+          programContentType: data.program_content_by_pk.program_content_body.type,
+          isNotifyUpdate: data.program_content_by_pk.is_notify_update,
+          notifiedAt: data.program_content_by_pk.notified_at && new Date(data.program_content_by_pk.notified_at),
+          programContentBody: {
+            id: data.program_content_by_pk.program_content_body.id,
+            type: data.program_content_by_pk.program_content_body.type,
+            description: data.program_content_by_pk.program_content_body.description,
+            data: data.program_content_by_pk.program_content_body.data,
+          },
+        }
+
   return {
     loadingProgramContent: loading,
-    programContent: object({
-      programContentByPk: programContentSchema,
-    })
-      .camelCase()
-      .cast(data).programContentByPk,
+    programContent,
     refetchProgramContent: refetch,
   }
 }
@@ -417,7 +375,7 @@ export const useOwnedPrograms = () => {
 }
 
 export const useEditablePrograms = (memberId: string) => {
-  const { loading, data, error, refetch } = useQuery<types.GET_EDITABLE_PROGRAMS, types.GET_EDITABLE_PROGRAMSVariables>(
+  const { loading, error, data, refetch } = useQuery<types.GET_EDITABLE_PROGRAMS, types.GET_EDITABLE_PROGRAMSVariables>(
     gql`
       query GET_EDITABLE_PROGRAMS($memberId: String!) {
         program(where: { editors: { member_id: { _eq: $memberId } } }) {
@@ -431,10 +389,21 @@ export const useEditablePrograms = (memberId: string) => {
     },
   )
 
+  const programs: {
+    id: string
+    title: string
+  }[] =
+    loading || error || !data
+      ? []
+      : data.program.map(program => ({
+          id: program.id,
+          title: program.title,
+        }))
+
   return {
-    programs: object({ program: array(programSchema).default([]) }).cast(data).program,
-    error,
     loadingPrograms: loading,
+    errorPrograms: error,
+    programs,
     refetchPrograms: refetch,
   }
 }

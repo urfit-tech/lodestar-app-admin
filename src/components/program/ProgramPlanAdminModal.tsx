@@ -10,7 +10,7 @@ import { v4 as uuid } from 'uuid'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramPlanType } from '../../types/program'
+import { ProgramPlanProps } from '../../types/program'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import SaleInput from '../admin/SaleInput'
@@ -47,7 +47,7 @@ const messages = defineMessages({
 type ProgramPlanAdminModalProps = FormComponentProps &
   AdminModalProps & {
     programId: string
-    programPlan?: ProgramPlanType
+    programPlan?: ProgramPlanProps
     onRefetch?: () => void
   }
 const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({

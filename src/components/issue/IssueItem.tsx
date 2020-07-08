@@ -13,7 +13,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { rgba } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramRoleType } from '../../types/program'
+import { ProgramRoleProps } from '../../types/program'
 import { BraftContent } from '../common/StyledBraftEditor'
 import { ProgramRoleLabel } from '../common/UserRole'
 import IssueReplyCollectionBlock from './IssueReplyCollectionBlock'
@@ -58,7 +58,7 @@ const messages = defineMessages({
 })
 
 type IssueItemProps = FormComponentProps & {
-  programRoles: ProgramRoleType[]
+  programRoles: ProgramRoleProps[]
   issueId: string
   title: string
   description: string

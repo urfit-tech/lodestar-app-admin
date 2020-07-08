@@ -3,7 +3,7 @@ import { CardProps } from 'antd/lib/card'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
-import { ProgramType } from '../../types/program'
+import { ProgramProps } from '../../types/program'
 import ProgramPerpetualPlanAdminCard from './ProgramPerpetualPlanAdminCard'
 import ProgramPlanAdminModal from './ProgramPlanAdminModal'
 import ProgramSubscriptionPlanAdminCard from './ProgramSubscriptionPlanAdminCard'
@@ -12,11 +12,12 @@ const messages = defineMessages({
   createPlan: { id: 'program.ui.createPlan', defaultMessage: '建立方案' },
 })
 
-type ProgramPlanAdminPaneProps = CardProps & {
-  program: ProgramType | null
-  onRefetch?: () => void
-}
-const ProgramPlanAdminPane: React.FC<ProgramPlanAdminPaneProps> = ({ program, onRefetch }) => {
+const ProgramPlanAdminPane: React.FC<
+  CardProps & {
+    program: ProgramProps | null
+    onRefetch?: () => void
+  }
+> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
 
   return (

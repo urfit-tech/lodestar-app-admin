@@ -4,75 +4,6 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ACTIVITY_SESSION
-// ====================================================
-
-export interface GET_ACTIVITY_SESSION_activity_session_by_pk_activity_session_tickets_activity_ticket {
-  __typename: "activity_ticket";
-  /**
-   * unlimited as 99999999
-   */
-  count: number;
-}
-
-export interface GET_ACTIVITY_SESSION_activity_session_by_pk_activity_session_tickets {
-  __typename: "activity_session_ticket";
-  /**
-   * An object relationship
-   */
-  activity_ticket: GET_ACTIVITY_SESSION_activity_session_by_pk_activity_session_tickets_activity_ticket;
-}
-
-export interface GET_ACTIVITY_SESSION_activity_session_by_pk_activity {
-  __typename: "activity";
-  is_participants_visible: boolean;
-}
-
-export interface GET_ACTIVITY_SESSION_activity_session_by_pk_activity_enrollments {
-  __typename: "activity_enrollment";
-  member_id: string | null;
-}
-
-export interface GET_ACTIVITY_SESSION_activity_session_by_pk {
-  __typename: "activity_session";
-  id: any;
-  title: string;
-  started_at: any;
-  ended_at: any;
-  location: string;
-  description: string | null;
-  threshold: any | null;
-  /**
-   * An array relationship
-   */
-  activity_session_tickets: GET_ACTIVITY_SESSION_activity_session_by_pk_activity_session_tickets[];
-  /**
-   * An object relationship
-   */
-  activity: GET_ACTIVITY_SESSION_activity_session_by_pk_activity;
-  /**
-   * An array relationship
-   */
-  activity_enrollments: GET_ACTIVITY_SESSION_activity_session_by_pk_activity_enrollments[];
-}
-
-export interface GET_ACTIVITY_SESSION {
-  /**
-   * fetch data from the table: "activity_session" using primary key columns
-   */
-  activity_session_by_pk: GET_ACTIVITY_SESSION_activity_session_by_pk | null;
-}
-
-export interface GET_ACTIVITY_SESSIONVariables {
-  activitySessionId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_POST_ROLE
 // ====================================================
 
@@ -1444,33 +1375,6 @@ export interface UPDATE_PROGRAM_CATEGORIESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PROGRAM_CATEGORIES
-// ====================================================
-
-export interface GET_PROGRAM_CATEGORIES_category {
-  __typename: "category";
-  id: string;
-  name: string;
-  position: number;
-}
-
-export interface GET_PROGRAM_CATEGORIES {
-  /**
-   * fetch data from the table: "category"
-   */
-  category: GET_PROGRAM_CATEGORIES_category[];
-}
-
-export interface GET_PROGRAM_CATEGORIESVariables {
-  appId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: PUBLISH_PROGRAM_CONTENT
 // ====================================================
 
@@ -1645,77 +1549,6 @@ export interface INSERT_PROGRAM_CONTENT_SECTIONVariables {
   programId: any;
   title: string;
   position: number;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PROGRAM_CONTENTS_WITH_BODY
-// ====================================================
-
-export interface GET_PROGRAM_CONTENTS_WITH_BODY_program_content_body_program_contents_program_content_progress {
-  __typename: "program_content_progress";
-  id: any;
-  progress: any;
-}
-
-export interface GET_PROGRAM_CONTENTS_WITH_BODY_program_content_body_program_contents_program_content_body {
-  __typename: "program_content_body";
-  id: any;
-  type: string | null;
-}
-
-export interface GET_PROGRAM_CONTENTS_WITH_BODY_program_content_body_program_contents_program_content_section {
-  __typename: "program_content_section";
-  id: any;
-  title: string;
-  position: number;
-}
-
-export interface GET_PROGRAM_CONTENTS_WITH_BODY_program_content_body_program_contents {
-  __typename: "program_content";
-  id: any;
-  title: string;
-  position: number;
-  published_at: any | null;
-  /**
-   * sec
-   */
-  duration: any | null;
-  /**
-   * An array relationship
-   */
-  program_content_progress: GET_PROGRAM_CONTENTS_WITH_BODY_program_content_body_program_contents_program_content_progress[];
-  /**
-   * An object relationship
-   */
-  program_content_body: GET_PROGRAM_CONTENTS_WITH_BODY_program_content_body_program_contents_program_content_body;
-  /**
-   * An object relationship
-   */
-  program_content_section: GET_PROGRAM_CONTENTS_WITH_BODY_program_content_body_program_contents_program_content_section;
-}
-
-export interface GET_PROGRAM_CONTENTS_WITH_BODY_program_content_body {
-  __typename: "program_content_body";
-  /**
-   * An array relationship
-   */
-  program_contents: GET_PROGRAM_CONTENTS_WITH_BODY_program_content_body_program_contents[];
-}
-
-export interface GET_PROGRAM_CONTENTS_WITH_BODY {
-  /**
-   * fetch data from the table: "program_content_body"
-   */
-  program_content_body: GET_PROGRAM_CONTENTS_WITH_BODY_program_content_body[];
-}
-
-export interface GET_PROGRAM_CONTENTS_WITH_BODYVariables {
-  programId: any;
 }
 
 /* tslint:disable */
@@ -4820,125 +4653,6 @@ export interface GET_APPOINTMENT_PLAN_ADMINVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ENROLLED_ACTIVITY_TICKETS
-// ====================================================
-
-export interface GET_ENROLLED_ACTIVITY_TICKETS_activity_ticket_enrollment {
-  __typename: "activity_ticket_enrollment";
-  order_log_id: string | null;
-  order_product_id: any | null;
-  activity_ticket_id: any | null;
-}
-
-export interface GET_ENROLLED_ACTIVITY_TICKETS {
-  /**
-   * fetch data from the table: "activity_ticket_enrollment"
-   */
-  activity_ticket_enrollment: GET_ENROLLED_ACTIVITY_TICKETS_activity_ticket_enrollment[];
-}
-
-export interface GET_ENROLLED_ACTIVITY_TICKETSVariables {
-  memberId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_TICKET
-// ====================================================
-
-export interface GET_TICKET_activity_ticket_by_pk_activity_session_tickets_activity_session {
-  __typename: "activity_session";
-  id: any;
-  title: string;
-  description: string | null;
-  location: string;
-  started_at: any;
-  ended_at: any;
-  threshold: any | null;
-  activity_id: any;
-}
-
-export interface GET_TICKET_activity_ticket_by_pk_activity_session_tickets {
-  __typename: "activity_session_ticket";
-  id: any;
-  /**
-   * An object relationship
-   */
-  activity_session: GET_TICKET_activity_ticket_by_pk_activity_session_tickets_activity_session;
-}
-
-export interface GET_TICKET_activity_ticket_by_pk_activity_activity_categories_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_TICKET_activity_ticket_by_pk_activity_activity_categories {
-  __typename: "activity_category";
-  /**
-   * An object relationship
-   */
-  category: GET_TICKET_activity_ticket_by_pk_activity_activity_categories_category;
-  position: number;
-}
-
-export interface GET_TICKET_activity_ticket_by_pk_activity {
-  __typename: "activity";
-  id: any;
-  title: string;
-  is_participants_visible: boolean;
-  cover_url: string | null;
-  published_at: any | null;
-  /**
-   * An array relationship
-   */
-  activity_categories: GET_TICKET_activity_ticket_by_pk_activity_activity_categories[];
-}
-
-export interface GET_TICKET_activity_ticket_by_pk {
-  __typename: "activity_ticket";
-  id: any;
-  title: string;
-  description: string | null;
-  is_published: boolean;
-  started_at: any;
-  ended_at: any;
-  /**
-   * unlimited as 99999999
-   */
-  count: number;
-  price: any;
-  /**
-   * An array relationship
-   */
-  activity_session_tickets: GET_TICKET_activity_ticket_by_pk_activity_session_tickets[];
-  /**
-   * An object relationship
-   */
-  activity: GET_TICKET_activity_ticket_by_pk_activity;
-}
-
-export interface GET_TICKET {
-  /**
-   * fetch data from the table: "activity_ticket" using primary key columns
-   */
-  activity_ticket_by_pk: GET_TICKET_activity_ticket_by_pk | null;
-}
-
-export interface GET_TICKETVariables {
-  ticketId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_APPOINTMENT_ENROLLMENT_COLLECTION
 // ====================================================
 
@@ -5243,35 +4957,6 @@ export interface INSERT_POSTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ENROLLED_CARD
-// ====================================================
-
-export interface GET_ENROLLED_CARD_card_by_pk {
-  __typename: "card";
-  id: any;
-  title: string;
-  description: string;
-  template: string;
-  app_id: string;
-}
-
-export interface GET_ENROLLED_CARD {
-  /**
-   * fetch data from the table: "card" using primary key columns
-   */
-  card_by_pk: GET_ENROLLED_CARD_card_by_pk | null;
-}
-
-export interface GET_ENROLLED_CARDVariables {
-  cardId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_COUPON_PLAN_COLLECTION
 // ====================================================
 
@@ -5408,139 +5093,6 @@ export interface GET_COUPON__CODE_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_CART_PRODUCT
-// ====================================================
-
-export interface GET_CART_PRODUCT_cart_product {
-  __typename: "cart_product";
-  id: any;
-  product_id: string;
-  created_at: any;
-}
-
-export interface GET_CART_PRODUCT {
-  /**
-   * fetch data from the table: "cart_product"
-   */
-  cart_product: GET_CART_PRODUCT_cart_product[];
-}
-
-export interface GET_CART_PRODUCTVariables {
-  appId: string;
-  memberId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_CART_PRODUCT
-// ====================================================
-
-export interface INSERT_CART_PRODUCT_insert_cart_product {
-  __typename: "cart_product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface INSERT_CART_PRODUCT {
-  /**
-   * insert data into the table: "cart_product"
-   */
-  insert_cart_product: INSERT_CART_PRODUCT_insert_cart_product | null;
-}
-
-export interface INSERT_CART_PRODUCTVariables {
-  appId: string;
-  memberId: string;
-  productId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_CART_PRODUCT
-// ====================================================
-
-export interface DELETE_CART_PRODUCT_delete_cart_product {
-  __typename: "cart_product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_CART_PRODUCT {
-  /**
-   * delete data from the table: "cart_product"
-   */
-  delete_cart_product: DELETE_CART_PRODUCT_delete_cart_product | null;
-}
-
-export interface DELETE_CART_PRODUCTVariables {
-  cartProductId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ORDER_PRODUCT
-// ====================================================
-
-export interface GET_ORDER_PRODUCT_order_product_by_pk_product {
-  __typename: "product";
-  /**
-   * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
-   */
-  id: string;
-  /**
-   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket /
-   * Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan /
-   * AppointmentServicePlan
-   */
-  type: string;
-  target: string;
-}
-
-export interface GET_ORDER_PRODUCT_order_product_by_pk {
-  __typename: "order_product";
-  id: any;
-  name: string;
-  description: string | null;
-  created_at: any;
-  /**
-   * An object relationship
-   */
-  product: GET_ORDER_PRODUCT_order_product_by_pk_product;
-}
-
-export interface GET_ORDER_PRODUCT {
-  /**
-   * fetch data from the table: "order_product" using primary key columns
-   */
-  order_product_by_pk: GET_ORDER_PRODUCT_order_product_by_pk | null;
-}
-
-export interface GET_ORDER_PRODUCTVariables {
-  orderProductId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_TAGS
 // ====================================================
 
@@ -5582,56 +5134,6 @@ export interface GET_CATEGORIES {
 export interface GET_CATEGORIESVariables {
   appId: string;
   classType?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ENROLLED_PRODUCTS
-// ====================================================
-
-export interface GET_ENROLLED_PRODUCTS_product_enrollment {
-  __typename: "product_enrollment";
-  product_id: string | null;
-}
-
-export interface GET_ENROLLED_PRODUCTS {
-  /**
-   * fetch data from the table: "product_enrollment"
-   */
-  product_enrollment: GET_ENROLLED_PRODUCTS_product_enrollment[];
-}
-
-export interface GET_ENROLLED_PRODUCTSVariables {
-  memberId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ENROLLED_PROGRAM_PACKAGE_PLAN_IDS
-// ====================================================
-
-export interface GET_ENROLLED_PROGRAM_PACKAGE_PLAN_IDS_program_package_plan_enrollment {
-  __typename: "program_package_plan_enrollment";
-  program_package_plan_id: any | null;
-}
-
-export interface GET_ENROLLED_PROGRAM_PACKAGE_PLAN_IDS {
-  /**
-   * fetch data from the table: "program_package_plan_enrollment"
-   */
-  program_package_plan_enrollment: GET_ENROLLED_PROGRAM_PACKAGE_PLAN_IDS_program_package_plan_enrollment[];
-}
-
-export interface GET_ENROLLED_PROGRAM_PACKAGE_PLAN_IDSVariables {
-  memberId: string;
 }
 
 /* tslint:disable */
@@ -7196,6 +6698,8 @@ export interface GET_PROGRAM_program_by_pk_program_content_sections_program_cont
    * sec
    */
   duration: any | null;
+  is_notify_update: boolean;
+  notified_at: any | null;
   /**
    * An object relationship
    */

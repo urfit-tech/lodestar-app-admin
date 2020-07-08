@@ -86,7 +86,7 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                 texttrack: values.texttrack || null,
               },
               isNotifyUpdate: values.isNotifyUpdate,
-              notifiedAt: values.isNotifyUpdate ? new Date() : programContent.notifiedAt,
+              notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
             },
           }),
           program.isSubscription
@@ -157,7 +157,7 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
               {program ? (
                 <div className="d-flex align-items-center">
                   {form.getFieldDecorator('isTrial', {
-                    initialValue: programContent.price === 0,
+                    initialValue: programContent.listPrice === 0,
                   })(
                     <Checkbox checked={form.getFieldValue('isTrial')}>
                       {formatMessage(commonMessages.ui.trial)}
@@ -219,18 +219,13 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
             </div>
             <Form.Item label={formatMessage(messages.contentTitle)}>
               {form.getFieldDecorator('title', {
-                initialValue: programContent && programContent.title,
+                initialValue: programContent?.title,
               })(<Input />)}
             </Form.Item>
-            {program && program.isSubscription && (
+            {program?.isSubscription && (
               <Form.Item label={formatMessage(messages.contentPlan)}>
                 {form.getFieldDecorator('planIds', {
-                  initialValue:
-                    (programContent &&
-                      programContent.programContentPlans.map(
-                        programContentPlan => programContentPlan.programPlan.id,
-                      )) ||
-                    [],
+                  initialValue: programContent?.programPlans?.map(programPlan => programPlan.id) || [],
                 })(<ProgramPlanSelector programId={programId} placeholder={formatMessage(messages.contentPlan)} />)}
               </Form.Item>
             )}

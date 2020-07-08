@@ -7,9 +7,8 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
-import { ProgramPlanPeriodType } from '../../schemas/program'
 import types from '../../types'
-import { ProgramPlanType } from '../../types/program'
+import { ProgramPlanPeriodType, ProgramPlanProps } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
 import PriceLabel from '../common/PriceLabel'
 import { BraftContent } from '../common/StyledBraftEditor'
@@ -51,7 +50,7 @@ const StyledAdminCard = styled(AdminCard)`
 type ProgramSubscriptionPlanAdminCardProps = {
   programId: string
   isSubscription: boolean
-  programPlan: ProgramPlanType
+  programPlan: ProgramPlanProps
   onRefetch?: () => void
 }
 const ProgramSubscriptionPlanAdminCard: React.FC<ProgramSubscriptionPlanAdminCardProps> = ({
@@ -99,7 +98,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<ProgramSubscriptionPlanAdminCar
 
 type PerpetualPlanFormProps = FormComponentProps &
   FormProps & {
-    programPlan: ProgramPlanType
+    programPlan: ProgramPlanProps
   }
 const PerpetualPlanForm: React.FC<PerpetualPlanFormProps> = ({ form, programPlan }) => {
   const { formatMessage } = useIntl()

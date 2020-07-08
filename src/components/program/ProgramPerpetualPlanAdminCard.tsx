@@ -7,12 +7,12 @@ import { useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramType } from '../../types/program'
+import { ProgramProps } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
 import SaleInput from '../admin/SaleInput'
 
 type ProgramPerpetualPlanAdminCardProps = FormComponentProps & {
-  program: ProgramType
+  program: ProgramProps
   onRefetch?: () => void
 }
 const ProgramPerpetualPlanAdminCard: React.FC<ProgramPerpetualPlanAdminCardProps> = ({ program, onRefetch, form }) => {

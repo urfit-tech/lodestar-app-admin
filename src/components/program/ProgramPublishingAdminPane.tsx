@@ -9,7 +9,7 @@ import { ThemeContext } from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramType } from '../../types/program'
+import { ProgramProps } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
 import { StyledModal, StyledModalParagraph, StyledModalTitle } from './ProgramDeletionAdminCard'
 
@@ -55,11 +55,12 @@ const messages = defineMessages({
   noPrice: { id: 'program.text.noPrice', defaultMessage: '尚未訂定售價' },
 })
 
-type ProgramPublishingAdminPaneProps = CardProps & {
-  program: ProgramType | null
-  onRefetch?: () => void
-}
-const ProgramPublishingAdminPane: React.FC<ProgramPublishingAdminPaneProps> = ({ program, onRefetch }) => {
+const ProgramPublishingAdminPane: React.FC<
+  CardProps & {
+    program: ProgramProps | null
+    onRefetch?: () => void
+  }
+> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
   const theme = useContext(ThemeContext)
   const publishProgram = usePublishProgram()

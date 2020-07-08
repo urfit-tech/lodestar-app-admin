@@ -5,22 +5,19 @@ import { useIntl } from 'react-intl'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramRoleType } from '../../types/program'
+import { ProgramRoleProps } from '../../types/program'
 import IssueReplyCreationBlock from './IssueReplyCreationBlock'
 import IssueReplyItem from './IssueReplyItem'
 
-interface IssueReplyCollectionBlockProps {
-  programRoles: ProgramRoleType[]
+const IssueReplyCollectionBlock: React.FC<{
+  programRoles: ProgramRoleProps[]
   issueId: string
-}
-const IssueReplyCollectionBlock: React.FC<IssueReplyCollectionBlockProps> = ({ programRoles, issueId }) => {
+}> = ({ programRoles, issueId }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const { loading, data, error, refetch } = useQuery<types.GET_ISSUE_REPLIES, types.GET_ISSUE_REPLIESVariables>(
     GET_ISSUE_REPLIES,
-    {
-      variables: { issueId },
-    },
+    { variables: { issueId } },
   )
 
   return (

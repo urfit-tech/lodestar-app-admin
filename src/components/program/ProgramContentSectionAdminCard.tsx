@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import types from '../../types'
-import { ProgramContentSectionType, ProgramType } from '../../types/program'
+import { ProgramContentSectionProps, ProgramProps } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
 import ProgramContentAdminItem from './ProgramContentAdminItem'
 
@@ -18,8 +18,8 @@ const messages = defineMessages({
 })
 
 const ProgramContentSectionAdminCard: React.FC<{
-  program: ProgramType
-  programContentSection: ProgramContentSectionType
+  program: ProgramProps
+  programContentSection: ProgramContentSectionProps
   onDelete?: () => void
   onUpdate?: () => void
   onRefetch?: () => void
