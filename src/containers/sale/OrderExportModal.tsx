@@ -1,8 +1,7 @@
-import { useApolloClient, useQuery } from '@apollo/react-hooks'
+import { useApolloClient } from '@apollo/react-hooks'
 import { Button, DatePicker, Dropdown, Form, Icon, Menu, Select } from 'antd'
 import { FormComponentProps } from 'antd/lib/form'
-import gql from 'graphql-tag'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import React, { useCallback, useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -10,11 +9,16 @@ import AdminModal from '../../components/admin/AdminModal'
 import AppContext from '../../contexts/AppContext'
 import { dateFormatter, downloadCSV, toCSV } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
+import {
+  GET_ORDER_DISCOUNT_COLLECTION,
+  GET_ORDER_LOG_COLLECTION,
+  GET_ORDER_PRODUCT_COLLECTION,
+  GET_PAYMENT_LOG_COLLECTION,
+  useOrderStatuses,
+} from '../../hooks/order'
 import types from '../../types'
 
-const { RangePicker } = DatePicker
-
-const StyledRangePicker = styled.div`
+const StyledRangePicker = styled(DatePicker.RangePicker)`
   input {
     width: 33%;
     text-align: left;
@@ -42,14 +46,11 @@ const messages = defineMessages({
 
 const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
-  const app = useContext(AppContext)
   const client = useApolloClient()
-  const { data: orderStatuses } = useOrderStatuses()
+  const { id: appId } = useContext(AppContext)
+  const { data: allOrderStatuses } = useOrderStatuses()
+
   const [loading, setLoading] = useState(false)
-  const failOrderStatuses =
-    orderStatuses?.filter(
-      status => !(status === 'REFUND' || status === 'UNPAID' || status === 'SUCCESS' || status === 'FAILED'),
-    ) || []
 
   const productTypeLabel: { [key: string]: string } = {
     Program: formatMessage(commonMessages.product.program),
@@ -65,7 +66,11 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
     AppointmentPlan: formatMessage(commonMessages.product.appointmentPlan),
   }
 
-  const getOrderLogContent: (startedAt: Date, endedAt: Date, orderStatuses: string[]) => Promise<string> = useCallback(
+  const getOrderLogContent: (
+    startedAt: Date,
+    endedAt: Date,
+    orderStatuses: string[],
+  ) => Promise<string[][]> = useCallback(
     async (startedAt, endedAt, orderStatuses) => {
       const orderLogResult = await client.query<
         types.GET_ORDER_LOG_COLLECTION,
@@ -73,7 +78,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
       >({
         query: GET_ORDER_LOG_COLLECTION,
         variables: {
-          appId: app.id,
+          appId,
           startedAt,
           endedAt,
           orderStatuses,
@@ -102,53 +107,53 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           formatMessage(commonMessages.label.invoiceId),
           formatMessage(commonMessages.label.invoiceStatus),
         ],
+        ...orderLogResult.data.order_log
+          .sort(
+            (a, b) =>
+              new Date(a.updated_at || a.created_at).valueOf() - new Date(b.updated_at || b.created_at).valueOf(),
+          )
+          .map(orderLog => {
+            const totalProductPrice = orderLog.order_products_aggregate.aggregate?.sum?.price || 0
+            const totalDiscountPrice = orderLog.order_discounts_aggregate.aggregate?.sum?.price || 0
+
+            return [
+              orderLog.id,
+              orderLog.status,
+              orderLog.member.name,
+              orderLog.member.email,
+              dateFormatter(orderLog.updated_at || orderLog.created_at),
+              totalProductPrice,
+              totalDiscountPrice,
+              totalProductPrice - totalDiscountPrice,
+              orderLog.invoice.name || '',
+              orderLog.invoice.email || '',
+              orderLog.invoice.phone || orderLog.invoice.buyerPhone || '', // buyerPhone is a deprecated field
+              orderLog.invoice.donationCode ? '捐贈' : orderLog.invoice.uniformNumber ? '公司' : '個人',
+              orderLog.invoice.donationCode || '',
+              orderLog.invoice.phoneBarCode ? '手機' : orderLog.invoice.citizenCode ? '自然人憑證' : '',
+              orderLog.invoice.uniformNumber || '',
+              orderLog.invoice.uniformTitle || '',
+              `${orderLog.invoice.postCode || ''} ${orderLog.invoice.address || ''}`,
+              orderLog.invoice.id || '',
+              !orderLog.invoice.status
+                ? formatMessage(messages.invoicePending)
+                : orderLog.invoice.status === 'SUCCESS'
+                ? formatMessage(messages.invoiceSuccess)
+                : formatMessage(messages.invoiceFailed, { errorCode: orderLog.invoice.status }),
+            ]
+          }),
       ]
 
-      orderLogResult.data.order_log
-        .sort(
-          (a, b) => new Date(a.updated_at || a.created_at).valueOf() - new Date(b.updated_at || b.created_at).valueOf(),
-        )
-        .forEach(orderLog => {
-          const totalProductPrice = orderLog.order_products_aggregate.aggregate?.sum?.price || 0
-          const totalDiscountPrice = orderLog.order_discounts_aggregate.aggregate?.sum?.price || 0
-
-          data.push([
-            orderLog.id,
-            orderLog.status,
-            orderLog.member.name,
-            orderLog.member.email,
-            dateFormatter(orderLog.updated_at || orderLog.created_at),
-            totalProductPrice,
-            totalDiscountPrice,
-            totalProductPrice - totalDiscountPrice,
-            orderLog.invoice.name || '',
-            orderLog.invoice.email || '',
-            orderLog.invoice.phone || orderLog.invoice.buyerPhone || '', // buyerPhone is a deprecated field
-            orderLog.invoice.donationCode ? '捐贈' : orderLog.invoice.uniformNumber ? '公司' : '個人',
-            orderLog.invoice.donationCode || '',
-            orderLog.invoice.phoneBarCode ? '手機' : orderLog.invoice.citizenCode ? '自然人憑證' : '',
-            orderLog.invoice.uniformNumber || '',
-            orderLog.invoice.uniformTitle || '',
-            `${orderLog.invoice.postCode || ''} ${orderLog.invoice.address || ''}`,
-            orderLog.invoice.id || '',
-            !orderLog.invoice.status
-              ? formatMessage(messages.invoicePending)
-              : orderLog.invoice.status === 'SUCCESS'
-              ? formatMessage(messages.invoiceSuccess)
-              : formatMessage(messages.invoiceFailed, { errorCode: orderLog.invoice.status }),
-          ])
-        })
-
-      return toCSV(data)
+      return data
     },
-    [app, client, formatMessage],
+    [appId, client, formatMessage],
   )
 
   const getOrderProductContent: (
     startedAt: Date,
     endedAt: Date,
     orderStatuses: string[],
-  ) => Promise<string> = useCallback(
+  ) => Promise<string[][]> = useCallback(
     async (startedAt, endedAt, orderStatuses) => {
       const orderProductResult = await client.query<
         types.GET_ORDER_PRODUCT_COLLECTION,
@@ -156,7 +161,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
       >({
         query: GET_ORDER_PRODUCT_COLLECTION,
         variables: {
-          appId: app.id,
+          appId,
           startedAt,
           endedAt,
           orderStatuses,
@@ -174,10 +179,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           formatMessage(commonMessages.term.endedAt),
           formatMessage(commonMessages.label.orderProductAutoRenew),
         ],
-      ]
-
-      orderProductResult.data.order_product.forEach(orderProduct => {
-        data.push([
+        ...orderProductResult.data.order_product.map(orderProduct => [
           orderProduct.order_log.id,
           orderProduct.product.id,
           productTypeLabel[orderProduct.product.type] || formatMessage(commonMessages.product.unknownType),
@@ -186,19 +188,19 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           dateFormatter(orderProduct.started_at),
           dateFormatter(orderProduct.ended_at),
           orderProduct.auto_renewed,
-        ])
-      })
+        ]),
+      ]
 
-      return toCSV(data)
+      return data
     },
-    [app, client, formatMessage, productTypeLabel],
+    [appId, client, formatMessage, productTypeLabel],
   )
 
   const getOrderDiscountContent: (
     startedAt: Date,
     endedAt: Date,
     orderStatuses: string[],
-  ) => Promise<string> = useCallback(
+  ) => Promise<string[][]> = useCallback(
     async (startedAt, endedAt, orderStatuses) => {
       const orderDiscountResult = await client.query<
         types.GET_ORDER_DISCOUNT_COLLECTION,
@@ -206,7 +208,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
       >({
         query: GET_ORDER_DISCOUNT_COLLECTION,
         variables: {
-          appId: app.id,
+          appId,
           startedAt,
           endedAt,
           orderStatuses,
@@ -221,28 +223,25 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           formatMessage(commonMessages.label.orderDiscountName),
           formatMessage(commonMessages.label.orderDiscountPrice),
         ],
-      ]
-
-      orderDiscountResult.data.order_discount.forEach(orderDiscount => {
-        data.push([
+        ...orderDiscountResult.data.order_discount.map(orderDiscount => [
           orderDiscount.order_log.id,
           orderDiscount.type,
           orderDiscount.id,
           orderDiscount.name,
           orderDiscount.price,
-        ])
-      })
+        ]),
+      ]
 
-      return toCSV(data)
+      return data
     },
-    [app, client, formatMessage],
+    [appId, client, formatMessage],
   )
 
   const getPaymentLogContent: (
     startedAt: Date,
     endedAt: Date,
     orderStatuses: string[],
-  ) => Promise<string> = useCallback(
+  ) => Promise<string[][]> = useCallback(
     async (startedAt, endedAt, orderStatuses) => {
       const paymentLogResult = await client.query<
         types.GET_PAYMENT_LOG_COLLECTION,
@@ -250,7 +249,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
       >({
         query: GET_PAYMENT_LOG_COLLECTION,
         variables: {
-          appId: app.id,
+          appId,
           startedAt,
           endedAt,
           orderStatuses,
@@ -267,10 +266,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           formatMessage(commonMessages.label.paymentCreatedAt),
           formatMessage(commonMessages.label.paymentPrice),
         ],
-      ]
-
-      paymentLogResult.data.payment_log.forEach(paymentLog => {
-        data.push([
+        ...paymentLogResult.data.payment_log.map(paymentLog => [
           paymentLog.order_log.member.name,
           paymentLog.order_log.member.email,
           paymentLog.order_log.id,
@@ -278,71 +274,69 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           paymentLog.order_log.status,
           dateFormatter(paymentLog.paid_at || paymentLog.created_at),
           paymentLog.order_log.order_products_aggregate.aggregate?.sum?.price || 0,
-        ])
-      })
+        ]),
+      ]
 
-      return toCSV(data)
+      return data
     },
-    [app, client, formatMessage],
+    [appId, client, formatMessage],
   )
 
-  const handleExport: (
-    exportTarget: 'orderLog' | 'orderProduct' | 'orderDiscount' | 'paymentLog',
-  ) => void = exportTarget => {
+  const handleExport = (exportTarget: 'orderLog' | 'orderProduct' | 'orderDiscount' | 'paymentLog') => {
     form.validateFields(
       async (
-        error,
+        errors,
         values: {
-          timeRange: Array<Date>
+          timeRange: Moment[]
           orderStatuses: string[]
         },
       ) => {
-        if (error) {
+        if (errors) {
           return
         }
 
         setLoading(true)
 
-        const startedAt = moment(values.timeRange[0]).toDate()
-        const endedAt = moment(values.timeRange[1]).toDate()
-        let orderStatuses: string[] = []
-        if (values.orderStatuses.includes('FAILED')) {
-          orderStatuses = failOrderStatuses
-        }
-        orderStatuses = orderStatuses.concat(values.orderStatuses)
-
-        // const data: string[][] = []
+        const startedAt = values.timeRange[0].toDate()
+        const endedAt = values.timeRange[1].toDate()
+        const orderStatuses: string[] = values.orderStatuses.includes('FAILED')
+          ? [
+              ...values.orderStatuses,
+              ...(allOrderStatuses.filter(
+                status => !(status === 'REFUND' || status === 'UNPAID' || status === 'SUCCESS' || status === 'FAILED'),
+              ) || []),
+            ]
+          : values.orderStatuses
 
         let fileName = 'untitled.csv'
-        let csvContent = ''
+        let content: string[][] = []
 
         switch (exportTarget) {
           case 'orderLog':
             fileName = 'orders'
-            csvContent = await getOrderLogContent(startedAt, endedAt, orderStatuses)
+            content = await getOrderLogContent(startedAt, endedAt, orderStatuses)
             break
 
           case 'orderProduct':
             fileName = 'items'
-            csvContent = await getOrderProductContent(startedAt, endedAt, orderStatuses)
+            content = await getOrderProductContent(startedAt, endedAt, orderStatuses)
             break
 
           case 'orderDiscount':
             fileName = 'discounts'
-            csvContent = await getOrderDiscountContent(startedAt, endedAt, orderStatuses)
+            content = await getOrderDiscountContent(startedAt, endedAt, orderStatuses)
             break
 
           case 'paymentLog':
             fileName = 'payments'
-            csvContent = await getPaymentLogContent(startedAt, endedAt, orderStatuses)
+            content = await getPaymentLogContent(startedAt, endedAt, orderStatuses)
             break
         }
 
         downloadCSV(
           `${fileName}_${moment(startedAt).format('YYYYMMDD')}_${moment(endedAt).format('YYYYMMDD')}.csv`,
-          csvContent,
+          toCSV(content),
         )
-
         setLoading(false)
       },
     )
@@ -388,30 +382,27 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
     >
       <Form colon={false} hideRequiredMark>
         <Form.Item label={formatMessage(commonMessages.label.dateRange)}>
-          <StyledRangePicker>
-            <Form.Item>
-              {form.getFieldDecorator('timeRange', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage(errorMessages.form.isRequired, {
-                      field: formatMessage(commonMessages.term.timeRange),
-                    }),
-                  },
-                ],
-              })(
-                <RangePicker
-                  style={{ width: '100%' }}
-                  format="YYYY-MM-DD HH:mm:ss"
-                  showTime={{
-                    format: 'HH:mm:ss',
-                    defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
-                  }}
-                />,
-              )}
-            </Form.Item>
-          </StyledRangePicker>
+          {form.getFieldDecorator('timeRange', {
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.term.timeRange),
+                }),
+              },
+            ],
+          })(
+            <StyledRangePicker
+              style={{ width: '100%' }}
+              format="YYYY-MM-DD HH:mm:ss"
+              showTime={{
+                format: 'YYYY-MM-DD HH:mm:ss',
+                defaultValue: [moment().startOf('day'), moment().endOf('day')],
+              }}
+            />,
+          )}
         </Form.Item>
+
         <Form.Item label={formatMessage(commonMessages.label.orderLogStatus)}>
           {form.getFieldDecorator('orderStatuses', {
             initialValue: [],
@@ -436,170 +427,5 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
     </AdminModal>
   )
 }
-
-const useOrderStatuses = () => {
-  const { loading, error, data } = useQuery<types.GET_ORDER_LOG_STATUS>(GET_ORDER_LOG_STATUS)
-
-  return {
-    loading,
-    error,
-    data: data?.order_log?.map(log => log.status),
-  }
-}
-
-const GET_ORDER_LOG_COLLECTION = gql`
-  query GET_ORDER_LOG_COLLECTION(
-    $appId: String!
-    $startedAt: timestamptz!
-    $endedAt: timestamptz!
-    $orderStatuses: [String!]
-  ) {
-    order_log(
-      where: {
-        member: { app_id: { _eq: $appId } }
-        status: { _in: $orderStatuses }
-        _or: [
-          { updated_at: { _gte: $startedAt, _lte: $endedAt } }
-          { updated_at: { _is_null: true }, created_at: { _gte: $startedAt, _lte: $endedAt } }
-        ]
-      }
-    ) {
-      id
-      status
-      member {
-        id
-        name
-        email
-      }
-      created_at
-      updated_at
-      invoice
-
-      order_products_aggregate {
-        aggregate {
-          sum {
-            price
-          }
-        }
-      }
-
-      order_discounts_aggregate {
-        aggregate {
-          sum {
-            price
-          }
-        }
-      }
-    }
-  }
-`
-const GET_ORDER_PRODUCT_COLLECTION = gql`
-  query GET_ORDER_PRODUCT_COLLECTION(
-    $appId: String!
-    $startedAt: timestamptz!
-    $endedAt: timestamptz!
-    $orderStatuses: [String!]
-  ) {
-    order_product(
-      where: {
-        order_log: {
-          member: { app_id: { _eq: $appId } }
-          updated_at: { _gte: $startedAt, _lte: $endedAt }
-          status: { _in: $orderStatuses }
-        }
-      }
-      order_by: { order_log: { updated_at: desc } }
-    ) {
-      id
-      order_log {
-        id
-      }
-      product {
-        id
-        type
-      }
-      name
-      price
-      started_at
-      ended_at
-      auto_renewed
-    }
-  }
-`
-const GET_ORDER_DISCOUNT_COLLECTION = gql`
-  query GET_ORDER_DISCOUNT_COLLECTION(
-    $appId: String!
-    $startedAt: timestamptz!
-    $endedAt: timestamptz!
-    $orderStatuses: [String!]
-  ) {
-    order_discount(
-      where: {
-        order_log: {
-          member: { app_id: { _eq: $appId } }
-          updated_at: { _gte: $startedAt, _lte: $endedAt }
-          status: { _in: $orderStatuses }
-        }
-      }
-      order_by: { order_log: { updated_at: desc } }
-    ) {
-      id
-      order_log {
-        id
-        invoice
-      }
-      type
-      target
-      name
-      price
-    }
-  }
-`
-const GET_PAYMENT_LOG_COLLECTION = gql`
-  query GET_PAYMENT_LOG_COLLECTION(
-    $appId: String!
-    $startedAt: timestamptz!
-    $endedAt: timestamptz!
-    $orderStatuses: [String!]
-  ) {
-    payment_log(
-      where: {
-        order_log: {
-          member: { app_id: { _eq: $appId } }
-          updated_at: { _gte: $startedAt, _lte: $endedAt }
-          status: { _in: $orderStatuses }
-        }
-      }
-      order_by: { order_log: { updated_at: desc } }
-    ) {
-      order_log {
-        id
-        member {
-          name
-          email
-        }
-        status
-        order_products_aggregate {
-          aggregate {
-            sum {
-              price
-            }
-          }
-        }
-      }
-      no
-      created_at
-      paid_at
-    }
-  }
-`
-
-const GET_ORDER_LOG_STATUS = gql`
-  query GET_ORDER_LOG_STATUS {
-    order_log(distinct_on: status) {
-      status
-    }
-  }
-`
 
 export default Form.create<FormComponentProps>()(OrderExportModal)

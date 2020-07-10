@@ -13,8 +13,8 @@ import { commonMessages, errorMessages, promotionMessages } from '../../helpers/
 import types from '../../types'
 import { CouponPlanProps } from '../../types/checkout'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
+import ScopeSelector from '../admin/ScopeSelector'
 import CouponPlanDiscountSelector from './CouponPlanDiscountSelector'
-import CouponPlanScopeSelector from './CouponPlanScopeSelector'
 import PlanCodeSelector, { PlanCodeProps } from './PlanCodeSelector'
 
 type CouponPlanAdminModalProps = AdminModalProps &
@@ -156,10 +156,16 @@ const CouponPlanAdminModal: React.FC<CouponPlanAdminModalProps> = ({ form, coupo
           <Form.Item label={formatMessage(promotionMessages.label.scope)}>
             {form.getFieldDecorator('scope', {
               initialValue: {
-                scope: couponPlan?.scope || null,
+                productTypes: couponPlan?.scope || null,
                 productIds: couponPlan?.productIds || [],
               },
-            })(<CouponPlanScopeSelector />)}
+            })(
+              <ScopeSelector
+                allText={formatMessage(promotionMessages.label.allProductScope)}
+                specificTypeText={formatMessage(promotionMessages.label.specificProductScope)}
+                otherProductText={formatMessage(promotionMessages.label.otherSpecificProduct)}
+              />,
+            )}
           </Form.Item>
         )}
 

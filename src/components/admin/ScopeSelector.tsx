@@ -3,12 +3,14 @@ import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import AppContext from '../../contexts/AppContext'
-import { promotionMessages } from '../../helpers/translation'
 import { useAllBriefProductCollection } from '../../hooks/data'
 import { ProductType } from '../../types/general'
 import ProductTypeLabel from '../common/ProductTypeLabel'
 
 const messages = defineMessages({
+  allItem: { id: 'common.product.allItem', defaultMessage: '全部項目' },
+  specificItem: { id: 'common.product.specificItem', defaultMessage: '指定項目' },
+  otherItem: { id: 'common.product.otherItem', defaultMessage: '其他指定項目' },
   allProgram: { id: 'common.product.allProgram', defaultMessage: '全部單次課程' },
   allProgramPlan: { id: 'common.product.allProgramPlan', defaultMessage: '全部訂閱課程' },
   allActivityTicket: { id: 'common.product.allActivityTicket', defaultMessage: '全部線下實體' },
@@ -48,21 +50,26 @@ const StyledColumns = styled.div`
   columns: 2;
 `
 
-const CouponPlanScopeSelector: React.FC<{
-  value?: {
-    scope: string[] | null
-    productIds: string[]
-  }
-  onChange?: (value: { scope: string[] | null; productIds: string[] }) => void
-}> = ({ value, onChange }) => {
+export type ScopeProps = {
+  productTypes: ProductType[] | null
+  productIds: string[]
+}
+
+const ScopeSelector: React.FC<{
+  value?: ScopeProps
+  onChange?: (value: ScopeProps) => void
+  allText?: string
+  specificTypeText?: string
+  otherProductText?: string
+}> = ({ value, onChange, allText, specificTypeText, otherProductText }) => {
   const { formatMessage } = useIntl()
   const { enabledModules } = useContext(AppContext)
   const { briefProducts } = useAllBriefProductCollection()
 
   const [scopeType, setScopeType] = useState<'all' | 'specific'>(
-    !value || (value.scope === null && value.productIds.length === 0) ? 'all' : 'specific',
+    !value || (value.productTypes === null && value.productIds.length === 0) ? 'all' : 'specific',
   )
-  const [selectedProductTypes, setSelectedProductTypes] = useState<string[]>(value?.scope || [])
+  const [selectedProductTypes, setSelectedProductTypes] = useState<ProductType[]>(value?.productTypes || [])
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>(value?.productIds || [])
 
   return (
@@ -75,21 +82,21 @@ const CouponPlanScopeSelector: React.FC<{
             onChange(
               value.target.value === 'all'
                 ? {
-                    scope: null,
+                    productTypes: null,
                     productIds: [],
                   }
                 : {
-                    scope: selectedProductTypes,
+                    productTypes: selectedProductTypes,
                     productIds: selectedProductIds,
                   },
             )
         }}
       >
         <Radio value="all" className="d-block mb-4">
-          {formatMessage(promotionMessages.label.allProductScope)}
+          {allText || formatMessage(messages.allItem)}
         </Radio>
         <Radio value="specific" className="d-block">
-          {formatMessage(promotionMessages.label.specificProductScope)}
+          {specificTypeText || formatMessage(messages.specificItem)}
         </Radio>
 
         <div className={`mt-3 pl-3 ${scopeType === 'all' ? 'd-none' : ''}`}>
@@ -97,10 +104,10 @@ const CouponPlanScopeSelector: React.FC<{
             className="mb-3"
             value={selectedProductTypes}
             onChange={value => {
-              setSelectedProductTypes(value as string[])
+              setSelectedProductTypes(value as ProductType[])
               onChange &&
                 onChange({
-                  scope: value as string[],
+                  productTypes: value as ProductType[],
                   productIds: selectedProductIds,
                 })
             }}
@@ -149,7 +156,7 @@ const CouponPlanScopeSelector: React.FC<{
             </StyledColumns>
           </Checkbox.Group>
 
-          <StyledLabel>{formatMessage(promotionMessages.label.otherSpecificProduct)}</StyledLabel>
+          <StyledLabel>{otherProductText || formatMessage(messages.otherItem)}</StyledLabel>
           <TreeSelect
             showSearch
             multiple
@@ -163,7 +170,7 @@ const CouponPlanScopeSelector: React.FC<{
               setSelectedProductIds(value)
               onChange &&
                 onChange({
-                  scope: selectedProductTypes,
+                  productTypes: selectedProductTypes,
                   productIds: value,
                 })
             }}
@@ -199,4 +206,4 @@ const CouponPlanScopeSelector: React.FC<{
   )
 }
 
-export default CouponPlanScopeSelector
+export default ScopeSelector
