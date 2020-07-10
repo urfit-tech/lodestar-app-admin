@@ -53,7 +53,7 @@ const ShippingAdminPage: React.FC = () => {
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={`${tabContent.name} (${tabContent.orderPhysicalProductLogs.length})`}>
             {loading ? (
-              <Skeleton />
+              <Skeleton active />
             ) : tabContent.orderPhysicalProductLogs.length === 0 ? (
               formatMessage(messages.noMerchandiseOrder)
             ) : (
