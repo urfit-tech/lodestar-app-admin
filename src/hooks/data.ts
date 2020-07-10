@@ -259,74 +259,78 @@ export const useArrangeProductInventory = (productId: string) => {
 }
 
 export const useAllBriefProductCollection = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_ALL_BRIEF_PRODUCT_COLLECTION>(gql`
-    query GET_ALL_BRIEF_PRODUCT_COLLECTION {
-      program(where: { published_at: { _is_null: false } }) {
-        id
-        title
-      }
-      program_plan(where: { program: { published_at: { _is_null: false } } }) {
-        id
-        title
-        program {
+  const { enabledModules } = useContext(AppContext)
+
+  const { loading, error, data, refetch } = useQuery<types.GET_ALL_BRIEF_PRODUCT_COLLECTION>(
+    gql`
+      query GET_ALL_BRIEF_PRODUCT_COLLECTION {
+        program(where: { published_at: { _is_null: false } }) {
           id
           title
         }
-      }
-      activity_ticket(where: { is_published: { _eq: true }, activity: { published_at: { _is_null: false } } }) {
-        id
-        title
-        activity {
+        program_plan(where: { program: { published_at: { _is_null: false } } }) {
+          id
+          title
+          program {
+            id
+            title
+          }
+        }
+        activity_ticket(where: { is_published: { _eq: true }, activity: { published_at: { _is_null: false } } }) {
+          id
+          title
+          activity {
+            id
+            title
+          }
+        }
+        podcast_program(where: { published_at: { _is_null: false } }) {
           id
           title
         }
-      }
-      podcast_program(where: { published_at: { _is_null: false } }) {
-        id
-        title
-      }
-      podcast_plan(where: { published_at: { _is_null: false } }) {
-        id
-        title
-        creator {
+        podcast_plan(where: { published_at: { _is_null: false } }) {
           id
-          name
-          username
+          title
+          creator {
+            id
+            name
+            username
+          }
         }
-      }
-      appointment_plan(where: { published_at: { _is_null: false } }) {
-        id
-        title
-        creator {
+        appointment_plan(where: { published_at: { _is_null: false } }) {
           id
-          name
-          username
+          title
+          creator {
+            id
+            name
+            username
+          }
         }
-      }
-      merchandise(where: { published_at: { _is_null: false } }) {
-        id
-        title
-      }
-      project_plan(where: { project: { published_at: { _is_null: false } } }) {
-        id
-        title
-        project {
+        merchandise(where: { published_at: { _is_null: false } }) {
           id
           title
         }
-      }
-      program_package_plan(
-        where: { published_at: { _is_null: false }, program_package: { published_at: { _is_null: false } } }
-      ) {
-        id
-        title
-        program_package {
+        project_plan(where: { project: { published_at: { _is_null: false } } }) {
           id
           title
+          project {
+            id
+            title
+          }
+        }
+        program_package_plan(
+          where: { published_at: { _is_null: false }, program_package: { published_at: { _is_null: false } } }
+        ) {
+          id
+          title
+          program_package {
+            id
+            title
+          }
         }
       }
-    }
-  `)
+    `,
+  )
 
   const briefProducts: {
     [key in ProductType]?: {
@@ -347,38 +351,51 @@ export const useAllBriefProductCollection = () => {
             title: programPlan.title || '',
             parent: programPlan.program.title,
           })),
-          ActivityTicket: data.activity_ticket.map(activityTicket => ({
-            productId: `ActivityTicket_${activityTicket.id}`,
-            title: activityTicket.title,
-            parent: activityTicket.activity.title,
-          })),
-          PodcastProgram: data.podcast_program.map(podcastProgram => ({
-            productId: `PodcastProgram_${podcastProgram.id}`,
-            title: podcastProgram.title,
-          })),
-          PodcastPlan: data.podcast_plan.map(podcastPlan => ({
-            productId: `PodcastPlan_${podcastPlan.id}`,
-            title: `${podcastPlan.creator?.name || podcastPlan.creator?.username || ''}`,
-          })),
-          AppointmentPlan: data.appointment_plan.map(appointmentPlan => ({
-            productId: `AppointmentPlan_${appointmentPlan.id}`,
-            title: appointmentPlan.title,
-            parent: appointmentPlan.creator?.name || appointmentPlan.creator?.username || '',
-          })),
-          Merchandise: data.merchandise.map(merchandise => ({
-            productId: `Merchandise_${merchandise.id}`,
-            title: merchandise.title,
-          })),
+          ActivityTicket: enabledModules.activity
+            ? data.activity_ticket.map(activityTicket => ({
+                productId: `ActivityTicket_${activityTicket.id}`,
+                title: activityTicket.title,
+                parent: activityTicket.activity.title,
+              }))
+            : undefined,
+          PodcastProgram: enabledModules.podcast
+            ? data.podcast_program.map(podcastProgram => ({
+                productId: `PodcastProgram_${podcastProgram.id}`,
+                title: podcastProgram.title,
+              }))
+            : undefined,
+          PodcastPlan: enabledModules.podcast
+            ? data.podcast_plan.map(podcastPlan => ({
+                productId: `PodcastPlan_${podcastPlan.id}`,
+                title: `${podcastPlan.creator?.name || podcastPlan.creator?.username || ''}`,
+              }))
+            : undefined,
+          AppointmentPlan: enabledModules.appointment
+            ? data.appointment_plan.map(appointmentPlan => ({
+                productId: `AppointmentPlan_${appointmentPlan.id}`,
+                title: appointmentPlan.title,
+                parent: appointmentPlan.creator?.name || appointmentPlan.creator?.username || '',
+              }))
+            : undefined,
+          Merchandise: enabledModules.merchandise
+            ? data.merchandise.map(merchandise => ({
+                productId: `Merchandise_${merchandise.id}`,
+                title: merchandise.title,
+              }))
+            : undefined,
+          // todo: add module check of project
           ProjectPlan: data.project_plan.map(projectPlan => ({
             productId: `ProjectPlan_${projectPlan.id}`,
             title: projectPlan.title,
             parent: projectPlan.project.title,
           })),
-          ProgramPackagePlan: data.program_package_plan.map(programPackagePlan => ({
-            productId: `ProgramPackagePlan_${programPackagePlan.id}`,
-            title: programPackagePlan.title,
-            parent: programPackagePlan.program_package.title,
-          })),
+          ProgramPackagePlan: enabledModules.program_package
+            ? data.program_package_plan.map(programPackagePlan => ({
+                productId: `ProgramPackagePlan_${programPackagePlan.id}`,
+                title: programPackagePlan.title,
+                parent: programPackagePlan.program_package.title,
+              }))
+            : undefined,
         }
 
   return {

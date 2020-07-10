@@ -168,27 +168,30 @@ const CouponPlanScopeSelector: React.FC<{
                 })
             }}
           >
-            {Object.keys(briefProducts).map(productType => (
-              <TreeSelect.TreeNode
-                key={productType}
-                value={productType}
-                title={<ProductTypeLabel productType={productType} />}
-                checkable={false}
-              >
-                {briefProducts[productType as ProductType]?.map(product => (
+            {Object.keys(briefProducts).map(
+              productType =>
+                briefProducts[productType as ProductType]?.length && (
                   <TreeSelect.TreeNode
-                    key={product.productId}
-                    value={product.productId}
-                    title={
-                      <div className="d-flex">
-                        {product.parent && <StyledProductParent>{product.parent}</StyledProductParent>}
-                        <StyledProductTitle>{product.title}</StyledProductTitle>
-                      </div>
-                    }
-                  />
-                ))}
-              </TreeSelect.TreeNode>
-            ))}
+                    key={productType}
+                    value={productType}
+                    title={<ProductTypeLabel productType={productType} />}
+                    checkable={false}
+                  >
+                    {briefProducts[productType as ProductType]?.map(product => (
+                      <TreeSelect.TreeNode
+                        key={product.productId}
+                        value={product.productId}
+                        title={
+                          <div className="d-flex">
+                            {product.parent && <StyledProductParent>{product.parent}</StyledProductParent>}
+                            <StyledProductTitle>{product.title}</StyledProductTitle>
+                          </div>
+                        }
+                      />
+                    ))}
+                  </TreeSelect.TreeNode>
+                ),
+            )}
           </TreeSelect>
         </div>
       </Radio.Group>
