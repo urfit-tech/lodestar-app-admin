@@ -179,15 +179,10 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
       </StyledInfo>
 
       <div>
-        {!canceledAt && (
-          <>
-            <Button type="link" size="small" onClick={() => setIssueModalVisible(true)}>
-              {formatMessage(messages.appointmentIssueAndResult)}
-            </Button>
-            <Divider type="vertical" />
-          </>
-        )}
-
+        <Button type="link" size="small" onClick={() => setIssueModalVisible(true)}>
+          {formatMessage(messages.appointmentIssueAndResult)}
+        </Button>
+        <Divider type="vertical" />
         <Button type="link" size="small" onClick={() => setVisible(true)}>
           {formatMessage(commonMessages.ui.detail)}
         </Button>

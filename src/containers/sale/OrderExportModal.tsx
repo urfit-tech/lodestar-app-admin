@@ -16,6 +16,7 @@ const { RangePicker } = DatePicker
 
 const StyledRangePicker = styled.div`
   input {
+    width: 33%;
     text-align: left;
     &:placeholder-shown {
       text-align: left;
@@ -38,25 +39,6 @@ const messages = defineMessages({
   invoiceFailed: { id: 'payment.status.invoiceFailed', defaultMessage: '開立失敗 {errorCode}' },
   invoicePending: { id: 'payment.status.invoicePending', defaultMessage: '未開立電子發票' },
 })
-
-const disabledRangeTime = (_: any, type: string) => {
-  const range = (start: number, end: number) => {
-    const result = []
-    let i: number
-    for (i = start; i < end; i++) {
-      result.push(i)
-    }
-    return result
-  }
-  if (type === 'start') {
-    return {
-      disabledSeconds: () => range(1, 60),
-    }
-  }
-  return {
-    disabledSeconds: () => range(0, 59),
-  }
-}
 
 const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
@@ -420,10 +402,9 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
               })(
                 <RangePicker
                   style={{ width: '100%' }}
-                  format="YYYY-MM-DD HH:mm"
-                  disabledTime={disabledRangeTime}
+                  format="YYYY-MM-DD HH:mm:ss"
                   showTime={{
-                    hideDisabledOptions: true,
+                    format: 'HH:mm:ss',
                     defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
                   }}
                 />,
