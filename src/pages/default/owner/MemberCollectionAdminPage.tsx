@@ -104,8 +104,8 @@ const MemberCollectionAdminPage: React.FC = () => {
               key={item.text}
               onClick={() => {
                 setRoleFilter(item.role as UserRole)
-                setCurrentPage(1)
                 setOffset(0)
+                setCurrentPage(1)
               }}
             >
               {item.text} ({item.count})
@@ -150,6 +150,7 @@ const MemberCollectionAdminPage: React.FC = () => {
         theme,
         onSearch: (selectedKeys, confirm) => {
           selectedKeys && setNameSearch(selectedKeys[0].length ? selectedKeys[0] : null)
+          setOffset(0)
           setCurrentPage(1)
           setEmailSearch(null)
         },
@@ -163,6 +164,7 @@ const MemberCollectionAdminPage: React.FC = () => {
         theme,
         onSearch: (selectedKeys, confirm) => {
           selectedKeys && setEmailSearch(selectedKeys[0].length ? selectedKeys[0] : null)
+          setOffset(0)
           setCurrentPage(1)
           setNameSearch(null)
         },
