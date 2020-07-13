@@ -20,7 +20,7 @@ import types from '../../types'
 
 const StyledRangePicker = styled(DatePicker.RangePicker)`
   input {
-    width: 33%;
+    width: 38%;
     text-align: left;
     &:placeholder-shown {
       text-align: left;
