@@ -49,6 +49,7 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
         )}
         icon={<Icon type="file-add" />}
         title={formatMessage(promotionMessages.ui.createCouponPlan)}
+        onRefetch={refetchCouponPlans}
       />
 
       <Tabs defaultActiveKey="available">
