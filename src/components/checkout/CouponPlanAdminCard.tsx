@@ -52,11 +52,18 @@ const StyledAdminCard = styled(AdminCard)`
     border-radius: 0px;
   }
 `
-const StyledTitle = styled.div`
+
+const StyledTitle = styled.span`
+  display: -webkit-box;
+  height: 3.25rem;
+  line-height: 1.3;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  letter-spacing: 0.77px;
   font-size: 20px;
   font-weight: bold;
-  line-height: 1.3;
-  letter-spacing: 0.77px;
+  overflow: hidden;
+  white-space: break-spaces;
 `
 const StyledPriceLabel = styled.span<{ active?: boolean }>`
   color: ${props => (props.active ? props.theme['@primary-color'] : 'var(--gray)')};
@@ -83,16 +90,16 @@ const CouponPlanAdminCard: React.FC<{
   return (
     <StyledAdminCard
       title={
-        <StyledTitle className="d-flex align-items-start justify-content-between py-4">
-          <span className="flex-grow-1">{couponPlan.title}</span>
-          <StyledPriceLabel className="flex-shrink-0" active={isAvailable}>
+        <div className="py-4 d-flex justify-content-between">
+          <StyledTitle>{couponPlan.title}</StyledTitle>
+          <StyledPriceLabel className="ml-4" active={isAvailable}>
             {couponPlan.type === 'cash'
               ? currencyFormatter(couponPlan.amount)
               : couponPlan.type === 'percent'
               ? `${couponPlan.amount}% off`
               : null}
           </StyledPriceLabel>
-        </StyledTitle>
+        </div>
       }
     >
       <StyledText active={isAvailable}>
