@@ -716,8 +716,8 @@ export const useSimpleProduct = (
           productType: 'AppointmentPlan',
           title: data.appointment_plan_by_pk.title,
           coverUrl: data.appointment_plan_by_pk.creator && data.appointment_plan_by_pk.creator.picture_url,
-          startedAt: data.appointment_plan_by_pk.appointment_periods[0].started_at,
-          endedAt: data.appointment_plan_by_pk.appointment_periods[0].ended_at,
+          startedAt: data.appointment_plan_by_pk.appointment_periods[0]?.started_at,
+          endedAt: data.appointment_plan_by_pk.appointment_periods[0]?.ended_at,
         }
       : data.merchandise_by_pk
       ? {
