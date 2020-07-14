@@ -90,7 +90,7 @@ const CouponPlanAdminCard: React.FC<{
   return (
     <StyledAdminCard
       title={
-        <div className="py-4 d-flex justify-content-between">
+        <div className="d-flex justify-content-between py-4">
           <StyledTitle>{couponPlan.title}</StyledTitle>
           <StyledPriceLabel className="ml-4" active={isAvailable}>
             {couponPlan.type === 'cash'
