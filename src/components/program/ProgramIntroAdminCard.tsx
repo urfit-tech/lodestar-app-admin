@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Icon, Input, message, Tooltip, Typography } from 'antd'
+import { Button, Icon, Input, message, Tooltip, Typography, Row, Col } from 'antd'
 import Form, { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
@@ -54,6 +54,7 @@ const messages = defineMessages({
   programCover: { id: 'program.label.programCover', defaultMessage: '課程封面' },
   introductionVideo: { id: 'program.label.introductionVideo', defaultMessage: '介紹影片' },
   videoPlaceholder: { id: 'program.text.videoPlaceholder', defaultMessage: '貼上影片網址' },
+  uploadVideo: { id: 'program.text.uploadVideo', defaultMessage: '上傳影片' },
   programAbstract: { id: 'program.label.programAbstract', defaultMessage: '課程摘要' },
   programDescription: { id: 'program.label.programDescription', defaultMessage: '課程描述' },
   imageTips: { id: 'program.text.programImgTips', defaultMessage: '建議圖片尺寸：1200*675px' },
@@ -66,9 +67,12 @@ type ProgramIntroAdminCardProps = FormComponentProps & {
 const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, form, onRefetch }) => {
   const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
+  const [introVideoUrl, setIntroVideoUrl] = useState('')
+
   const [updateProgramCover] = useMutation<types.UPDATE_PROGRAM_COVER, types.UPDATE_PROGRAM_COVERVariables>(
     UPDATE_PROGRAM_COVER,
   )
+
   const [updateProgramIntro] = useMutation<types.UPDATE_PROGRAM_INTRO, types.UPDATE_PROGRAM_INTROVariables>(
     UPDATE_PROGRAM_INTRO,
   )
@@ -109,7 +113,9 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
               programId: program.id,
               abstract: values.abstract || '',
               description: values.description.toRAW(),
-              coverVideoUrl: values.coverVideoUrl,
+              coverVideoUrl: values.video
+                ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${program.id}_video`
+                : values.coverVideoUrl,
             },
           })
             .then(() => {
@@ -171,9 +177,35 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
           wrapperCol={{ md: { span: 10 } }}
         >
           <Form.Item label={formatMessage(messages.introductionVideo)}>
-            {form.getFieldDecorator('coverVideoUrl', {
-              initialValue: program.coverVideoUrl,
-            })(<Input placeholder={formatMessage(messages.videoPlaceholder)} />)}
+            <Row>
+              <Col span={18} style={{ paddingRight: 0 }}>
+                {form.getFieldDecorator(introVideoUrl ? `${introVideoUrl}` : `coverVideoUrl`, {
+                  initialValue: program.coverVideoUrl || introVideoUrl,
+                })(
+                  <Input
+                    placeholder={formatMessage(messages.videoPlaceholder)}
+                    onChange={e => setIntroVideoUrl(e.target.value)}
+                  />,
+                )}
+              </Col>
+              <Col span={2} style={{ paddingLeft: 0 }}>
+                <Form.Item>
+                  {form.getFieldDecorator('video')(
+                    <SingleUploader
+                      accept="video/*,.mp3"
+                      uploadText={formatMessage(messages.uploadVideo)}
+                      path={`program_covers/${appId}/${program.id}_video`}
+                      showUploadList={false}
+                      onSuccess={() => {
+                        setIntroVideoUrl(
+                          `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${program.id}_video`,
+                        )
+                      }}
+                    />,
+                  )}
+                </Form.Item>
+              </Col>
+            </Row>
           </Form.Item>
           <Form.Item label={formatMessage(messages.programAbstract)}>
             {form.getFieldDecorator('abstract', {
