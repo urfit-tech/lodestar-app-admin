@@ -1497,8 +1497,16 @@ export interface UPDATE_PROGRAM_CONTENT_PLANVariables {
 // GraphQL mutation operation: DELETE_PROGRAM_CONTENT
 // ====================================================
 
-export interface DELETE_PROGRAM_CONTENT_delete_program_content {
-  __typename: "program_content_mutation_response";
+export interface DELETE_PROGRAM_CONTENT_delete_program_content_progress {
+  __typename: "program_content_progress_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CONTENT_delete_program_content_body {
+  __typename: "program_content_body_mutation_response";
   /**
    * number of affected rows by the mutation
    */
@@ -1507,9 +1515,13 @@ export interface DELETE_PROGRAM_CONTENT_delete_program_content {
 
 export interface DELETE_PROGRAM_CONTENT {
   /**
-   * delete data from the table: "program_content"
+   * delete data from the table: "program_content_progress"
    */
-  delete_program_content: DELETE_PROGRAM_CONTENT_delete_program_content | null;
+  delete_program_content_progress: DELETE_PROGRAM_CONTENT_delete_program_content_progress | null;
+  /**
+   * delete data from the table: "program_content_body"
+   */
+  delete_program_content_body: DELETE_PROGRAM_CONTENT_delete_program_content_body | null;
 }
 
 export interface DELETE_PROGRAM_CONTENTVariables {
@@ -8529,6 +8541,44 @@ export enum payment_log_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "playlist"
+ */
+export enum playlist_constraint {
+  playlist_pkey = "playlist_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "playlist_podcast_program"
+ */
+export enum playlist_podcast_program_constraint {
+  playlist_podcast_program_pkey = "playlist_podcast_program_pkey",
+}
+
+/**
+ * update columns of table "playlist_podcast_program"
+ */
+export enum playlist_podcast_program_update_column {
+  created_at = "created_at",
+  id = "id",
+  playlist_id = "playlist_id",
+  podcast_program_id = "podcast_program_id",
+  position = "position",
+  updated_at = "updated_at",
+}
+
+/**
+ * update columns of table "playlist"
+ */
+export enum playlist_update_column {
+  created_at = "created_at",
+  id = "id",
+  member_id = "member_id",
+  position = "position",
+  title = "title",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "podcast"
  */
 export enum podcast_constraint {
@@ -12094,6 +12144,102 @@ export interface payment_log_on_conflict {
 }
 
 /**
+ * Boolean expression to filter rows from the table "playlist". All fields are combined with a logical 'AND'.
+ */
+export interface playlist_bool_exp {
+  _and?: (playlist_bool_exp | null)[] | null;
+  _not?: playlist_bool_exp | null;
+  _or?: (playlist_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  playlist_podcast_programs?: playlist_podcast_program_bool_exp | null;
+  position?: Int_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "playlist"
+ */
+export interface playlist_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  playlist_podcast_programs?: playlist_podcast_program_arr_rel_insert_input | null;
+  position?: number | null;
+  title?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "playlist"
+ */
+export interface playlist_obj_rel_insert_input {
+  data: playlist_insert_input;
+  on_conflict?: playlist_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "playlist"
+ */
+export interface playlist_on_conflict {
+  constraint: playlist_constraint;
+  update_columns: playlist_update_column[];
+  where?: playlist_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "playlist_podcast_program"
+ */
+export interface playlist_podcast_program_arr_rel_insert_input {
+  data: playlist_podcast_program_insert_input[];
+  on_conflict?: playlist_podcast_program_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "playlist_podcast_program". All fields are combined with a logical 'AND'.
+ */
+export interface playlist_podcast_program_bool_exp {
+  _and?: (playlist_podcast_program_bool_exp | null)[] | null;
+  _not?: playlist_podcast_program_bool_exp | null;
+  _or?: (playlist_podcast_program_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  playlist?: playlist_bool_exp | null;
+  playlist_id?: uuid_comparison_exp | null;
+  podcast_program?: podcast_program_bool_exp | null;
+  podcast_program_id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "playlist_podcast_program"
+ */
+export interface playlist_podcast_program_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  playlist?: playlist_obj_rel_insert_input | null;
+  playlist_id?: any | null;
+  podcast_program?: podcast_program_obj_rel_insert_input | null;
+  podcast_program_id?: any | null;
+  position?: number | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "playlist_podcast_program"
+ */
+export interface playlist_podcast_program_on_conflict {
+  constraint: playlist_podcast_program_constraint;
+  update_columns: playlist_podcast_program_update_column[];
+  where?: playlist_podcast_program_bool_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "podcast"
  */
 export interface podcast_arr_rel_insert_input {
@@ -12294,6 +12440,7 @@ export interface podcast_program_bool_exp {
   duration?: numeric_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
+  playlist_podcast_programs?: playlist_podcast_program_bool_exp | null;
   podcast?: podcast_bool_exp | null;
   podcast_id?: uuid_comparison_exp | null;
   podcast_program_bodies?: podcast_program_body_bool_exp | null;
@@ -12376,6 +12523,7 @@ export interface podcast_program_insert_input {
   duration?: any | null;
   id?: any | null;
   list_price?: any | null;
+  playlist_podcast_programs?: playlist_podcast_program_arr_rel_insert_input | null;
   podcast?: podcast_obj_rel_insert_input | null;
   podcast_id?: any | null;
   podcast_program_bodies?: podcast_program_body_arr_rel_insert_input | null;
