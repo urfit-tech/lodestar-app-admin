@@ -75,8 +75,11 @@ export const GET_ORDER_PRODUCT_COLLECTION = gql`
       where: {
         order_log: {
           member: { app_id: { _eq: $appId } }
-          updated_at: { _gte: $startedAt, _lte: $endedAt }
           status: { _in: $orderStatuses }
+          _or: [
+            { updated_at: { _gte: $startedAt, _lte: $endedAt } }
+            { updated_at: { _is_null: true }, created_at: { _gte: $startedAt, _lte: $endedAt } }
+          ]
         }
       }
       order_by: { order_log: { updated_at: desc } }
@@ -108,8 +111,11 @@ export const GET_ORDER_DISCOUNT_COLLECTION = gql`
       where: {
         order_log: {
           member: { app_id: { _eq: $appId } }
-          updated_at: { _gte: $startedAt, _lte: $endedAt }
           status: { _in: $orderStatuses }
+          _or: [
+            { updated_at: { _gte: $startedAt, _lte: $endedAt } }
+            { updated_at: { _is_null: true }, created_at: { _gte: $startedAt, _lte: $endedAt } }
+          ]
         }
       }
       order_by: { order_log: { updated_at: desc } }
@@ -137,8 +143,11 @@ export const GET_PAYMENT_LOG_COLLECTION = gql`
       where: {
         order_log: {
           member: { app_id: { _eq: $appId } }
-          updated_at: { _gte: $startedAt, _lte: $endedAt }
           status: { _in: $orderStatuses }
+          _or: [
+            { updated_at: { _gte: $startedAt, _lte: $endedAt } }
+            { updated_at: { _is_null: true }, created_at: { _gte: $startedAt, _lte: $endedAt } }
+          ]
         }
       }
       order_by: { order_log: { updated_at: desc } }
