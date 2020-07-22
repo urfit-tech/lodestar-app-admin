@@ -64,6 +64,9 @@ const StyledBarIconButton = styled(Button)<{ height?: string; iconSize?: string 
   &:hover i {
     color: #cdcdcd;
   }
+  &[disabled] {
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
 `
 const StyledButton = styled(Button)`
   height: 36px;
@@ -86,6 +89,8 @@ const RecordingController: React.FC<{
   duration: number
   isPlaying?: boolean
   isEditing?: boolean
+  isDeleteDisabled?: boolean
+  isUploadDisabled?: boolean
   onPlay?: () => void
   onPause?: () => void
   onForward?: () => void
@@ -100,6 +105,8 @@ const RecordingController: React.FC<{
   duration,
   isPlaying,
   isEditing,
+  isDeleteDisabled,
+  isUploadDisabled,
   onPlay,
   onPause,
   onForward,
@@ -193,12 +200,22 @@ const RecordingController: React.FC<{
                 {isEditing && (
                   <>
                     <Tooltip title={<TooltipText>{formatMessage(commonMessages.ui.delete)}</TooltipText>}>
-                      <StyledBarIconButton type="link" className="p-0" onClick={() => onDelete && onDelete()}>
+                      <StyledBarIconButton
+                        disabled={isDeleteDisabled}
+                        type="link"
+                        className="p-0"
+                        onClick={() => onDelete && onDelete()}
+                      >
                         <Icon component={() => <TrashOIcon />} />
                       </StyledBarIconButton>
                     </Tooltip>
                     <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.upload)}</TooltipText>}>
-                      <StyledBarIconButton type="link" className="p-0" onClick={() => onUpload && onUpload()}>
+                      <StyledBarIconButton
+                        disabled={isUploadDisabled}
+                        type="link"
+                        className="p-0"
+                        onClick={() => onUpload && onUpload()}
+                      >
                         <Icon component={() => <UploadIcon />} />
                       </StyledBarIconButton>
                     </Tooltip>

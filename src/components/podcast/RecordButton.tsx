@@ -1,11 +1,17 @@
 import { Button, Icon } from 'antd'
 import { ButtonProps } from 'antd/lib/button'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { durationFormatter } from '../../helpers'
+import { decodeAudio } from '../../helpers/audio'
 import { useInterval } from '../../hooks/util'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import { ReactComponent as StopCircleIcon } from '../../images/icon/stop-circle.svg'
+const { default: AudioRecorder } = require('audio-recorder-polyfill')
+const { default: mpegEncoder } = require('audio-recorder-polyfill/mpeg-encoder')
+
+AudioRecorder.encoder = mpegEncoder
+AudioRecorder.prototype.mimeType = 'audio/mpeg'
 
 const StyledButton = styled(Button)`
   && {
@@ -26,12 +32,44 @@ const StyledIcon = styled(Icon)<{ size?: number }>`
 const RecordButton: React.FC<
   ButtonProps & {
     onStart?: () => void
-    onStop?: () => void
+    onStop?: (audioBuffer: AudioBuffer | null) => void
   }
 > = ({ onStart, onStop, ...buttonProps }) => {
   const [isRecording, setIsRecording] = useState(false)
   const [startedAt, setStartedAt] = useState(0)
   const [duration, setDuration] = useState(0)
+
+  const [recorder, setRecorder] = useState<any | null>(null)
+
+  useEffect(() => {
+    const initRecorder = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const _recorder = new AudioRecorder(stream)
+      _recorder.addEventListener('dataavailable', async (e: any) => {
+        const audioBuffer = await decodeAudio(e.data)
+        onStop && onStop(audioBuffer)
+        setRecorder(null)
+      })
+
+      return _recorder
+    }
+
+    !recorder && initRecorder().then(recorder => setRecorder(recorder))
+  }, [recorder, onStop])
+
+  const handleClickRecordButton = () => {
+    if (isRecording) {
+      recorder?.stop()
+      recorder?.stream.getTracks().forEach((track: any) => track.stop())
+      setIsRecording(false)
+      setStartedAt(0)
+    } else {
+      onStart && onStart()
+      recorder?.start()
+      setIsRecording(true)
+      setStartedAt(Date.now())
+    }
+  }
 
   useInterval(() => {
     if (startedAt) {
@@ -46,17 +84,7 @@ const RecordButton: React.FC<
       type="primary"
       size="large"
       shape="round"
-      onClick={() => {
-        if (isRecording) {
-          onStop && onStop()
-          setIsRecording(false)
-          setStartedAt(0)
-        } else {
-          onStart && onStart()
-          setIsRecording(true)
-          setStartedAt(Date.now())
-        }
-      }}
+      onClick={handleClickRecordButton}
       className={isRecording ? 'px-2' : undefined}
       {...buttonProps}
     >
