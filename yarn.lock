@@ -1903,6 +1903,13 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
+"@babel/runtime@^7.10.5":
+  version "7.10.5"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.10.5.tgz#303d8bd440ecd5a491eae6117fd3367698674c5c"
+  integrity sha512-otddXKhdNn7d0ptoFRHtMLa8LqDxLYwTjB4nYgM1yy5N6gU/MUf8zqyyLltCH3yAVitBzmwK4us+DD0l/MauAg==
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
 "@babel/template@^7.10.4":
   version "7.10.4"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.10.4.tgz#3251996c4200ebc71d1a8fc405fba940f36ba278"
@@ -3033,6 +3040,11 @@
   resolved "https://registry.yarnpkg.com/@types/warning/-/warning-3.0.0.tgz#0d2501268ad8f9962b740d387c4654f5f8e23e52"
   integrity sha1-DSUBJorY+ZYrdA04fEZU9fjiPlI=
 
+"@types/wavesurfer.js@^3.3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@types/wavesurfer.js/-/wavesurfer.js-3.3.1.tgz#e276ca371b382072b894b57a166c5f6ecdfb4964"
+  integrity sha512-TpWT5eW57ZyhH7uOlHBAnQ+kpp5f+lyjaoGSYk5q447U9ulIOm5eUURiYBIZUlIZqrL0Levaniq8flnug0ir0w==
+
 "@types/yargs-parser@*":
   version "15.0.0"
   resolved "https://registry.yarnpkg.com/@types/yargs-parser/-/yargs-parser-15.0.0.tgz#cb3f9f741869e20cce330ffbeb9271590483882d"
@@ -4049,6 +4061,19 @@ atob@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
+
+audio-recorder-polyfill@^0.3.6:
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/audio-recorder-polyfill/-/audio-recorder-polyfill-0.3.6.tgz#8d866541efe41d65d56e1093ee0240f571f427be"
+  integrity sha512-yPFXIQMKfIsHTCiNt8Vm4e0UQbnJxeOaVUStEEkV1satYcxaG02ZNite8lpVMCAXJoNnxF2GHVGfIgukPXvtAw==
+
+automation-events@^2.0.15:
+  version "2.0.15"
+  resolved "https://registry.yarnpkg.com/automation-events/-/automation-events-2.0.15.tgz#e1bc62bcec4d23d8dd7c4925eb664dbf10da4676"
+  integrity sha512-By9iNAR0EwP8hiteg77HU7EAEyJB3vMaRlUOWnGJFmcftexuBGnIe0s1ZoBn9t60hPEgy4+bmWZdieKfSUA69Q==
+  dependencies:
+    "@babel/runtime" "^7.10.5"
+    tslib "^2.0.0"
 
 autoprefixer@^9.6.1:
   version "9.7.6"
@@ -14284,6 +14309,15 @@ stack-utils@^1.0.1:
   resolved "https://registry.yarnpkg.com/stack-utils/-/stack-utils-1.0.2.tgz#33eba3897788558bebfc2db059dc158ec36cebb8"
   integrity sha512-MTX+MeG5U994cazkjd/9KNAapsHnibjMLnfXodlkXw76JEea0UiNzrqidzo1emMwk7w5Qhc9jd4Bn9TBb1MFwA==
 
+standardized-audio-context@^24.1.22:
+  version "24.1.22"
+  resolved "https://registry.yarnpkg.com/standardized-audio-context/-/standardized-audio-context-24.1.22.tgz#6d328ed6cbb9d698db04930283d840d2c9aae676"
+  integrity sha512-TnTotPfL3JU00yVxjz95up1gVJdpVeVrWZlG5nIIaGxccReMoD4Iahn1k3tFGwygMJtMOzT5AH9CMXb7nbiAjQ==
+  dependencies:
+    "@babel/runtime" "^7.10.5"
+    automation-events "^2.0.15"
+    tslib "^2.0.0"
+
 static-extend@^0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/static-extend/-/static-extend-0.1.2.tgz#60809c39cbff55337226fd5e0b520f341f1fb5c6"
@@ -14985,6 +15019,11 @@ tslib@^1, tslib@^1.10.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.11.2.tgz#9c79d83272c9a7aaf166f73915c9667ecdde3cc9"
   integrity sha512-tTSkux6IGPnUGUd1XAZHcpu85MOkIl5zX49pO+jfsie3eP0B6pyhOlLXm3cAC6T7s+euSDDUUV+Acop5WmtkVg==
 
+tslib@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.0.0.tgz#18d13fc2dce04051e20f074cc8387fd8089ce4f3"
+  integrity sha512-lTqkx847PI7xEDYJntxZH89L2/aXInsyF2luSafe/+0fHOMjlBNXdH6th7f70qxLDhul7KZK0zC8V5ZIyHl0/g==
+
 tsutils@^3.17.1:
   version "3.17.1"
   resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-3.17.1.tgz#ed719917f11ca0dee586272b2ac49e015a2dd759"
@@ -15431,6 +15470,11 @@ watchpack@^1.6.0:
     chokidar "^2.1.8"
     graceful-fs "^4.1.2"
     neo-async "^2.5.0"
+
+wavesurfer.js@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/wavesurfer.js/-/wavesurfer.js-4.0.1.tgz#392502f4956fc96cff9dbb0fccdc9debfaed4e97"
+  integrity sha512-MvFVjxGVstYZqRI/BzkGupRuB1S7MtQClWPqgjTBTg+2ssxUAJlOGFhZsrtxDvCocneuWXqZ0g+sm/8OGl7X1w==
 
 wbuf@^1.1.0, wbuf@^1.7.3:
   version "1.7.3"

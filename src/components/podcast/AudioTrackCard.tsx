@@ -1,10 +1,12 @@
 import { Checkbox, Icon } from 'antd'
-import React, { HTMLAttributes } from 'react'
+import React, { HTMLAttributes, useContext, useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
-import styled from 'styled-components'
+import styled, { ThemeContext } from 'styled-components'
+import WaveSurfer from 'wavesurfer.js'
 import { durationFormatter } from '../../helpers'
 import { podcastMessages } from '../../helpers/translation'
 import { ReactComponent as MoveIcon } from '../../images/icon/move.svg'
+const TimelinePlugin = require('wavesurfer.js/dist/plugin/wavesurfer.timeline.min.js')
 
 const TrackWrapper = styled.div`
   display: flex;
@@ -27,7 +29,7 @@ const StyledCard = styled.div<{ isActive?: boolean }>`
     props.isActive ? '0 6px 10px 1px rgba(76, 91, 143, 0.3)' : '0 6px 12px 2px rgba(221, 221, 221, 0.5)'};
 `
 const WaveWrapper = styled.div`
-  height: 106px;
+  height: 116px;
   width: 100%;
   overflow-x: auto;
 `
@@ -35,6 +37,11 @@ export const WaveBlock = styled.div<{ width?: number }>`
   width: ${props => props.width}px;
   min-width: 100%;
   height: 90px;
+`
+export const WaveTimelineBlock = styled.div<{ width?: number }>`
+  width: ${props => props.width}px;
+  min-width: 100%;
+  height: 25px;
 `
 const StyledText = styled.div`
   color: var(--gray-dark);
@@ -48,13 +55,61 @@ const AudioTrackCard: React.FC<
     id: string
     handleClassName?: string
     position: number
-    duration: number
+    audioBuffer: AudioBuffer
     isActive?: boolean
+    isPlaying?: boolean
     isSelected?: boolean
     onSelected?: (id: string, checked: boolean) => void
+    onAudioPlaying?: (second: number) => void
+    onFinishPlaying?: () => void
   }
-> = ({ id, handleClassName, position, duration, isActive, isSelected, onSelected, children, ...divProps }) => {
+> = ({
+  id,
+  handleClassName,
+  position,
+  audioBuffer,
+  isActive,
+  isPlaying,
+  isSelected,
+  onSelected,
+  onAudioPlaying,
+  onFinishPlaying,
+  children,
+  ...divProps
+}) => {
   const { formatMessage } = useIntl()
+  const theme = useContext(ThemeContext)
+
+  const waveformRef = useRef() as React.MutableRefObject<HTMLInputElement>
+  const waveformTimelineRef = useRef() as React.MutableRefObject<HTMLInputElement>
+  const [wavesurfer, setWaveSurfer] = useState<WaveSurfer | null>(null)
+  useEffect(() => {
+    if (!wavesurfer && waveformRef.current && audioBuffer) {
+      const _wavesurfer = WaveSurfer.create({
+        container: waveformRef.current,
+        waveColor: '#cecece',
+        progressColor: theme['@primary-color'],
+        skipLength: 5,
+        height: 90,
+        plugins: [
+          TimelinePlugin.create({
+            container: waveformTimelineRef.current,
+            height: 20,
+          }),
+        ],
+      })
+      _wavesurfer.on('finish', () => onFinishPlaying && onFinishPlaying())
+      _wavesurfer.on('seek', (progress: number) => onAudioPlaying && onAudioPlaying(audioBuffer.duration * progress))
+      _wavesurfer.on('audioprocess', (second: number) => onAudioPlaying && onAudioPlaying(second))
+      _wavesurfer.loadDecodedBuffer(audioBuffer)
+      setWaveSurfer(_wavesurfer)
+    }
+  }, [wavesurfer, waveformRef, waveformTimelineRef, audioBuffer, theme, onAudioPlaying, onFinishPlaying])
+
+  useEffect(() => {
+    if (isPlaying === true) wavesurfer?.play()
+    if (isPlaying === false) wavesurfer?.pause()
+  }, [isPlaying, wavesurfer])
 
   return (
     <TrackWrapper {...divProps}>
@@ -64,7 +119,10 @@ const AudioTrackCard: React.FC<
       </ActionBlock>
 
       <StyledCard className="p-4 flex-grow-1" isActive={isActive}>
-        <WaveWrapper className="mb-3">{children}</WaveWrapper>
+        <WaveWrapper className="mb-3">
+          <WaveTimelineBlock ref={waveformTimelineRef} width={audioBuffer.duration * 75} />
+          <WaveBlock ref={waveformRef} width={audioBuffer.duration * 75} />
+        </WaveWrapper>
 
         <div className="d-flex align-items-center justify-content-start">
           {typeof isSelected === 'boolean' && (
@@ -75,7 +133,7 @@ const AudioTrackCard: React.FC<
             />
           )}
           <StyledText>
-            {formatMessage(podcastMessages.label.totalDuration)} {durationFormatter(duration)}
+            {formatMessage(podcastMessages.label.totalDuration)} {durationFormatter(audioBuffer.duration)}
           </StyledText>
         </div>
       </StyledCard>
