@@ -14,6 +14,7 @@ import SingleUploader from '../../components/common/SingleUploader'
 import { AppContext } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
+import { useUpdatePodcastProgramContent } from '../../hooks/podcast'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import types from '../../types'
 import { PodcastProgramProps } from '../../types/podcast'
@@ -36,10 +37,7 @@ const PodcastProgramContentForm: React.FC<PodcastProgramContentFormProps> = ({ f
   const { id: appId, enabledModules } = useContext(AppContext)
   const { formatMessage } = useIntl()
 
-  const [updatePodcastProgramContent] = useMutation<
-    types.UPDATE_PODCAST_PROGRAM_CONTENT,
-    types.UPDATE_PODCAST_PROGRAM_CONTENTVariables
-  >(UPDATE_PODCAST_PROGRAM_CONTENT)
+  const updatePodcastProgramContent = useUpdatePodcastProgramContent()
   const [updatePodcastProgramBody] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_BODY,
     types.UPDATE_PODCAST_PROGRAM_BODYVariables
@@ -160,16 +158,6 @@ const PodcastProgramContentForm: React.FC<PodcastProgramContentFormProps> = ({ f
   )
 }
 
-const UPDATE_PODCAST_PROGRAM_CONTENT = gql`
-  mutation UPDATE_PODCAST_PROGRAM_CONTENT($podcastProgramId: uuid!, $contentType: String, $updatedAt: timestamptz!) {
-    update_podcast_program(
-      where: { id: { _eq: $podcastProgramId } }
-      _set: { content_type: $contentType, updated_at: $updatedAt }
-    ) {
-      affected_rows
-    }
-  }
-`
 const UPDATE_PODCAST_PROGRAM_BODY = gql`
   mutation UPDATE_PODCAST_PROGRAM_BODY(
     $podcastProgramId: uuid!

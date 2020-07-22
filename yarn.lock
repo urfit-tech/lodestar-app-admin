@@ -2713,6 +2713,11 @@
     multimatch "^4.0.0"
     typescript "~3.7.2"
 
+"@types/audiobuffer-to-wav@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/audiobuffer-to-wav/-/audiobuffer-to-wav-1.0.0.tgz#4b974f50b96f3f760231b11b2e22dac33b2d2fbf"
+  integrity sha512-SbhLEr/BOWStZ0w9mPJLjUc6REGl+lUsf8M/opXy1jvAFfm+Ontt/8c0KZEvNY+TWy9NO1j/V+32uPCBNExpRg==
+
 "@types/babel__core@^7.1.0", "@types/babel__core@^7.1.7":
   version "7.1.7"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.7.tgz#1dacad8840364a57c98d0dd4855c6dd3752c6b89"
@@ -4066,6 +4071,11 @@ audio-recorder-polyfill@^0.3.6:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/audio-recorder-polyfill/-/audio-recorder-polyfill-0.3.6.tgz#8d866541efe41d65d56e1093ee0240f571f427be"
   integrity sha512-yPFXIQMKfIsHTCiNt8Vm4e0UQbnJxeOaVUStEEkV1satYcxaG02ZNite8lpVMCAXJoNnxF2GHVGfIgukPXvtAw==
+
+audiobuffer-to-wav@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/audiobuffer-to-wav/-/audiobuffer-to-wav-1.0.0.tgz#d5b432271455e7fee56b111cd0f8d620d7f9e105"
+  integrity sha1-1bQyJxRV5/7laxEc0PjWINf54QU=
 
 automation-events@^2.0.15:
   version "2.0.15"

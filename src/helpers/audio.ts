@@ -95,6 +95,34 @@ export function sliceAudioBuffer(audioBuffer: AudioBuffer, start = 0, end = audi
 }
 
 /**
+ * merge two AudioBuffer into one
+ * @param {AudioBuffer} audioBuffer1
+ * @param {AudioBuffer} audioBuffer2
+ * @return {AudioBuffer}
+ */
+export function mergeAudioBuffer(audioBuffer1: AudioBuffer, audioBuffer2: AudioBuffer) {
+  if (
+    audioBuffer1.numberOfChannels !== audioBuffer2.numberOfChannels ||
+    audioBuffer1.sampleRate !== audioBuffer2.sampleRate
+  ) {
+    return null
+  }
+  const newBuffer = new OfflineAudioContext(
+    audioBuffer1.numberOfChannels,
+    audioBuffer1.length + audioBuffer2.length,
+    audioBuffer1.sampleRate,
+  ).createBuffer(audioBuffer1.numberOfChannels, audioBuffer1.length + audioBuffer2.length, audioBuffer1.sampleRate)
+
+  for (var i = 0; i < newBuffer.numberOfChannels; i++) {
+    const data = newBuffer.getChannelData(i)
+    data.set(audioBuffer1.getChannelData(i))
+    data.set(audioBuffer2.getChannelData(i), audioBuffer1.length)
+  }
+
+  return newBuffer
+}
+
+/**
  * serialize AudioBuffer for message send
  * @param {AudioBuffer} audioBuffer
  */
