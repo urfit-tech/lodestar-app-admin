@@ -158,16 +158,16 @@ export const useVoucherPlanCollection = () => {
 
           return {
             ...voucherPlan,
-            description: decodeURI(voucherPlan.description || ''),
-            startedAt: voucherPlan.started_at,
-            endedAt: voucherPlan.ended_at,
+            startedAt: voucherPlan?.started_at || null,
+            endedAt: voucherPlan?.ended_at || null,
             productQuantityLimit: voucherPlan.product_quantity_limit,
             available:
-              remaining > 0 && (voucherPlan.ended_at ? new Date(voucherPlan.ended_at).getTime() > Date.now() : true),
-            voucherCodes: voucherPlan.voucher_codes,
+            remaining > 0 && (voucherPlan.ended_at ? new Date(voucherPlan.ended_at).getTime() > Date.now() : true),
+            description: decodeURI(voucherPlan.description || ''),
             count: count,
             remaining: remaining,
             productIds: voucherPlan.voucher_plan_products.map(product => product.product_id),
+            voucherCodes: voucherPlan.voucher_codes,
           }
         })
 

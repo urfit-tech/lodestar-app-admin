@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages, promotionMessages } from '../../helpers/translation'
-import { ProductType } from '../../types/general'
+import { VoucherCodeBriefProps } from '../../types/checkout'
 
 const StyledTriggerText = styled.span`
   color: ${props => props.theme['@primary-color']};
@@ -23,20 +23,9 @@ const StyledVoucherCode = styled.div<{ isFinished: boolean }>`
 
 type VoucherPlanDetailModalProps = {
   title: string
-  productCounts?: {
-    id: string
-    name: string
-    coverUrl?: string
-    type: ProductType
-    count: number
-  }[]
-  voucherCodes: {
-    code: string
-    used: number
-    count: number
-  }[]
+  voucherCodes: VoucherCodeBriefProps[]
 }
-const VoucherPlanDetailModal: React.FC<VoucherPlanDetailModalProps> = ({ title, productCounts, voucherCodes }) => {
+const VoucherPlanDetailModal: React.FC<VoucherPlanDetailModalProps> = ({ title, voucherCodes }) => {
   const { formatMessage } = useIntl()
   const [visible, setVisible] = useState(false)
   const [activeKey, setActiveKey] = useState('codes')
@@ -51,27 +40,6 @@ const VoucherPlanDetailModal: React.FC<VoucherPlanDetailModalProps> = ({ title, 
         <StyledTitle className="mb-4">{title}</StyledTitle>
 
         <Tabs activeKey={activeKey} onChange={key => setActiveKey(key)}>
-          {/* <Tabs.TabPane key="status" tab="兌換狀態" className="pt-4">
-            {productCounts.map(product => (
-              <div key={product.id}>
-                <div className="d-flex justify-content-between align-items-center">
-                  <StyledCoverImage
-                    src={product.coverUrl || EmptyCover}
-                    alt={product.id}
-                    className="flex-shrink-0 mr-3"
-                  />
-                  <Typography.Paragraph ellipsis={{ rows: 2 }} className="flex-grow-1 m-0 mr-5">
-                    {product.name}
-                  </Typography.Paragraph>
-                  <StyledMeta className="mr-5">{ProductTypeLabel[product.type] || '未知'}</StyledMeta>
-                  <StyledMeta>{product.count}</StyledMeta>
-                </div>
-
-                <Divider className="my-4" />
-              </div>
-            ))}
-          </Tabs.TabPane> */}
-
           <Tabs.TabPane key="codes" tab={formatMessage(promotionMessages.term.voucherCode)} className="pt-4">
             {voucherCodes.map(voucherCode => (
               <StyledVoucherCode

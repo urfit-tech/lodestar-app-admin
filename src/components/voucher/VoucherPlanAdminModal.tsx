@@ -5,6 +5,7 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import ProductSelector from '../../containers/common/ProductSelector'
 import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
+import { VoucherPlanProps } from '../../types/checkout'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import PlanCodeSelector, { PlanCodeProps } from '../checkout/PlanCodeSelector'
 
@@ -24,15 +25,7 @@ export type VoucherPlanFields = {
 }
 type VoucherPlanAdminModalProps = AdminModalProps &
   FormComponentProps & {
-    voucherPlan?: {
-      id: string
-      title: string
-      description: string | null
-      startedAt?: Date
-      endedAt?: Date
-      productQuantityLimit: number
-      productIds: string[]
-    }
+    voucherPlan?: VoucherPlanProps
     onSubmit?: (
       setVisible: React.Dispatch<React.SetStateAction<boolean>>,
       setLoading: React.Dispatch<React.SetStateAction<boolean>>,

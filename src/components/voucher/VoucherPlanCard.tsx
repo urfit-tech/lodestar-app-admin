@@ -6,7 +6,7 @@ import styled from 'styled-components'
 import { rgba } from '../../helpers'
 import { promotionMessages } from '../../helpers/translation'
 import { ReactComponent as GiftIcon } from '../../images/icon/gift.svg'
-import { VoucherProps } from '../../types/checkout'
+import { VoucherPlanBriefProps } from '../../types/checkout'
 import { BREAK_POINT } from '../common/Responsive'
 
 const StyledWrapper = styled.div`
@@ -85,15 +85,12 @@ const StyledTitle = styled.div`
   text-overflow: ellipsis;
 `
 
-const VoucherCard: React.FC<VoucherProps> = ({
-  id,
+const VoucherPlanCard: React.FC<VoucherPlanBriefProps> = ({
   title,
-  description,
   startedAt,
   endedAt,
   productQuantityLimit,
   available,
-  extra,
   action,
 }) => {
   const { formatMessage } = useIntl()
@@ -115,7 +112,6 @@ const VoucherCard: React.FC<VoucherProps> = ({
 
           <StyledExtra className="d-flex align-items-center justify-content-between mt-4">
             <div>{formatMessage(promotionMessages.text.exchangeItemsNumber, { number: productQuantityLimit })}</div>
-            {available && extra && <div>{extra}</div>}
           </StyledExtra>
         </StyledContent>
       </div>
@@ -130,4 +126,4 @@ const VoucherCard: React.FC<VoucherProps> = ({
   )
 }
 
-export default VoucherCard
+export default VoucherPlanCard

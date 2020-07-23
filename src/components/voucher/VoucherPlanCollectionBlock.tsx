@@ -6,7 +6,7 @@ import VoucherPlanDetailModal from '../../components/voucher/VoucherPlanDetailMo
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
 import { useMutateVoucherPlan, useVoucherPlanCollection } from '../../hooks/checkout'
-import VoucherCard from './VoucherCard'
+import VoucherPlanCard from './VoucherPlanCard'
 
 const VoucherPlanCollectionBlock: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -67,14 +67,13 @@ const VoucherPlanCollectionBlock: React.FC = () => {
     return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
-  const vouchers = voucherPlanCollection.map(voucherPlan => {
+  const voucherPlans = voucherPlanCollection.map(voucherPlan => {
     return {
       ...voucherPlan,
       action: (
         <>
           <VoucherPlanDetailModal
             title={voucherPlan.title}
-            productCounts={[]}
             voucherCodes={voucherPlan.voucherCodes.map(voucherCode => {
               return {
                 ...voucherCode,
@@ -122,12 +121,12 @@ const VoucherPlanCollectionBlock: React.FC = () => {
     {
       key: 'available',
       tab: formatMessage(promotionMessages.status.available),
-      vouchers: vouchers.filter(voucher => voucher.available),
+      voucherPlans: voucherPlans.filter(voucherPlan => voucherPlan.available),
     },
     {
       key: 'unavailable',
       tab: formatMessage(promotionMessages.status.unavailable),
-      vouchers: vouchers.filter(voucher => !voucher.available),
+      voucherPlans: voucherPlans.filter(voucherPlan => !voucherPlan.available),
     },
   ]
 
@@ -150,18 +149,16 @@ const VoucherPlanCollectionBlock: React.FC = () => {
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
             <div className="row">
-              {tabContent.vouchers.map(voucher => (
-                <div key={voucher.id} className="col-12 col-lg-6">
-                  <VoucherCard
-                    id={voucher.id}
-                    title={voucher.title}
-                    description={voucher.description}
-                    startedAt={voucher.startedAt}
-                    endedAt={voucher.endedAt}
-                    productQuantityLimit={voucher.productQuantityLimit}
-                    available={voucher.available}
-                    extra={voucher.extra}
-                    action={voucher.action}
+              {tabContent.voucherPlans.map(voucherPlan => (
+                <div key={voucherPlan.id} className="col-12 col-lg-6">
+                  <VoucherPlanCard
+                    id={voucherPlan.id}
+                    title={voucherPlan.title}
+                    startedAt={voucherPlan.startedAt}
+                    endedAt={voucherPlan.endedAt}
+                    productQuantityLimit={voucherPlan.productQuantityLimit}
+                    available={voucherPlan.available}
+                    action={voucherPlan.action}
                   />
                 </div>
               ))}

@@ -35,28 +35,31 @@ export type CouponProps = {
   used: boolean
 }
 
-export type VoucherPlanProps = VoucherProps & {
-  voucherCodes: VoucherCodeProps[]
+export type VoucherPlanBriefProps = {
+  id: string
+  title: string
+  startedAt: Date | null
+  endedAt: Date | null
+  productQuantityLimit: number
+  available?: boolean
+  action?: React.ReactNode
+}
+
+export type VoucherPlanProps = VoucherPlanBriefProps & {
+  description: string | null
   count: number
   remaining: number
   productIds: string[]
+  voucherCodes: VoucherCodeProps[]
 }
 
-export type VoucherCodeProps = {
+export type VoucherCodeBriefProps = {
   id: string
   code: string
   count: number
-  remaining: number
+  used?: number
 }
 
-export type VoucherProps = {
-  id: string
-  title: string
-  description: string | null
-  startedAt?: Date
-  endedAt?: Date
-  productQuantityLimit: number
-  available: boolean
-  extra?: React.ReactNode
-  action?: React.ReactNode
+export type VoucherCodeProps = VoucherCodeBriefProps & {
+  remaining: number
 }
