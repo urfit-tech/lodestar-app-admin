@@ -82,6 +82,9 @@ const StyledButton = styled(Button)`
 const TooltipText = styled.span`
   font-size: 12px;
 `
+const StyledOnTopWrapper = styled(StyledWrapper)`
+  z-index: 100;
+`
 
 const RecordingController: React.FC<{
   hidden?: boolean
@@ -119,7 +122,7 @@ const RecordingController: React.FC<{
   const { formatMessage } = useIntl()
 
   return (
-    <StyledWrapper hidden={hidden}>
+    <StyledOnTopWrapper hidden={hidden}>
       <Responsive.Default>
         <StyledOverlay className="d-flex align-items-center justify-content-around" active={isEditing}>
           <div className="flex-grow-1 text-center">
@@ -229,7 +232,7 @@ const RecordingController: React.FC<{
           </div>
         </div>
       </StyledBar>
-    </StyledWrapper>
+    </StyledOnTopWrapper>
   )
 }
 

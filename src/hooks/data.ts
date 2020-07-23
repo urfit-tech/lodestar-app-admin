@@ -410,7 +410,10 @@ export const useOrderPhysicalProductLog = () => {
   const { error, loading, data, refetch } = useQuery<types.GET_PHYSICAL_PRODUCT_ORDER_LOG>(
     gql`
       query GET_PHYSICAL_PRODUCT_ORDER_LOG {
-        orderLogs: order_log(where: { _and: [{ status: { _eq: "SUCCESS" } }] }, order_by: { updated_at: desc }) {
+        order_log(
+          where: { status: { _eq: "SUCCESS" }, shipping: { _has_key: "shippingMethod" } }
+          order_by: [{ updated_at: desc_nulls_last }, { created_at: desc }]
+        ) {
           id
           created_at
           updated_at
@@ -418,8 +421,7 @@ export const useOrderPhysicalProductLog = () => {
           deliver_message
           shipping
           invoice
-
-          orderPhysicalProducts: order_products(where: { order_log: { shipping: { _is_null: false } } }) {
+          order_products(where: { product_id: { _similar: "(ProjectPlan|Merchandise)_%" } }) {
             id
             name
             product_id
@@ -448,8 +450,8 @@ export const useOrderPhysicalProductLog = () => {
   }[] =
     error || loading || !data
       ? []
-      : data?.orderLogs
-          .filter(orderLog => orderLog.orderPhysicalProducts.length)
+      : data.order_log
+          .filter(orderLog => orderLog.order_products.length)
           .map(orderLog => ({
             id: orderLog.id,
             createdAt: orderLog.created_at,
@@ -458,7 +460,7 @@ export const useOrderPhysicalProductLog = () => {
             deliverMessage: orderLog.deliver_message,
             shipping: orderLog.shipping,
             invoice: orderLog.invoice,
-            orderPhysicalProducts: orderLog.orderPhysicalProducts.map(orderPhysicalProduct => ({
+            orderPhysicalProducts: orderLog.order_products.map(orderPhysicalProduct => ({
               key: `${orderLog.id}_${orderPhysicalProduct.name}`,
               id: orderPhysicalProduct.id,
               name: orderPhysicalProduct.name,

@@ -141,16 +141,22 @@ export const GET_PAYMENT_LOG_COLLECTION = gql`
   ) {
     payment_log(
       where: {
-        order_log: {
-          member: { app_id: { _eq: $appId } }
-          status: { _in: $orderStatuses }
-          _or: [
-            { updated_at: { _gte: $startedAt, _lte: $endedAt } }
-            { updated_at: { _is_null: true }, created_at: { _gte: $startedAt, _lte: $endedAt } }
-          ]
-        }
+        status: { _in: $orderStatuses }
+        order_log: { member: { app_id: { _eq: $appId } } }
+        _or: [
+          { paid_at: { _gte: $startedAt, _lte: $endedAt } }
+          { paid_at: { _is_null: true }, created_at: { _gte: $startedAt, _lte: $endedAt } }
+          {
+            order_log: {
+              _or: [
+                { updated_at: { _gte: $startedAt, _lte: $endedAt } }
+                { updated_at: { _is_null: true }, created_at: { _gte: $startedAt, _lte: $endedAt } }
+              ]
+            }
+          }
+        ]
       }
-      order_by: { order_log: { updated_at: desc } }
+      order_by: { created_at: asc, paid_at: asc }
     ) {
       order_log {
         id
@@ -168,6 +174,7 @@ export const GET_PAYMENT_LOG_COLLECTION = gql`
         }
       }
       no
+      status
       created_at
       paid_at
     }

@@ -177,20 +177,3 @@ export const desktopViewMixin = (children: FlattenSimpleInterpolation) => css`
     ${children}
   }
 `
-
-export const shippingMethodFormatter = (value: string) => {
-  switch (value) {
-    case 'home-delivery':
-      return '宅配'
-    case 'seven-eleven':
-      return '7-11 超商取貨'
-    case 'family-mart':
-      return '全家超商取貨'
-    case 'hi-life':
-      return '萊爾富超商取貨'
-    case 'ok-mart':
-      return 'OK 超商取貨'
-    default:
-      return '未知配送方式'
-  }
-}

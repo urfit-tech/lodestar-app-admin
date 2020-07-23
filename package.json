@@ -50,6 +50,7 @@
     "fingerprintjs2": "^2.1.0",
     "graphql-tag": "^2.10.3",
     "jsonwebtoken": "^8.5.1",
+    "lamejs": "^1.2.0",
     "less": "^3.11.3",
     "moment-timezone": "^0.5.31",
     "mustache": "^4.0.1",

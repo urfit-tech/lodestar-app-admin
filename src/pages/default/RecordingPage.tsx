@@ -1,9 +1,8 @@
 import { message } from 'antd'
-import toWav from 'audiobuffer-to-wav'
 import { extname } from 'path'
 import React, { useCallback, useContext, useLayoutEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
 import { v4 as uuidv4 } from 'uuid'
@@ -14,7 +13,7 @@ import PodcastProgramHeader from '../../containers/podcast/PodcastProgramHeader'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError, uploadFile } from '../../helpers'
-import { mergeAudioBuffer, sliceAudioBuffer } from '../../helpers/audio'
+import { convertAudioBufferToMp3, mergeAudioBuffer, sliceAudioBuffer } from '../../helpers/audio'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { usePodcastProgramCollection, useUpdatePodcastProgramContent } from '../../hooks/podcast'
 
@@ -56,6 +55,7 @@ const RecordingPage: React.FC = () => {
   const audioObjectRef = useRef<{ waveCollection: WaveCollectionProps[]; selectedAudioTarget: string | undefined }>()
 
   const updatePodcastProgramContent = useUpdatePodcastProgramContent()
+  const history = useHistory()
 
   useLayoutEffect(() => {
     audioObjectRef.current = {
@@ -138,11 +138,10 @@ const RecordingPage: React.FC = () => {
 
   const onUploadAudio = () => {
     let dstAudioData = null
-    if (waveCollection.length === 1) {
-      dstAudioData = waveCollection[0].audioBuffer
+    const selectWaveCollection = waveCollection.filter(wave => selectedWaveIds.includes(wave.id))
+    if (selectWaveCollection.length === 1) {
+      dstAudioData = selectWaveCollection[0].audioBuffer
     } else {
-      const selectWaveCollection = waveCollection.filter(wave => selectedWaveIds.includes(wave.id))
-      dstAudioData = mergeAudioBuffer(selectWaveCollection[0].audioBuffer, selectWaveCollection[1].audioBuffer)
       for (let i = 2; i < selectWaveCollection.length; i++) {
         if (dstAudioData) {
           dstAudioData = mergeAudioBuffer(dstAudioData, selectWaveCollection[i].audioBuffer)
@@ -150,20 +149,21 @@ const RecordingPage: React.FC = () => {
       }
     }
     if (dstAudioData) {
-      const wav = toWav(dstAudioData as AudioBuffer)
-      const file = new File([new DataView(wav)], 'record.wav', { type: 'audio/wav', lastModified: Date.now() })
-      uploadFile(`avatars/${appId}/${podcastProgramId}` + extname(file.name), file, authToken, {})
+      const mp3Data = convertAudioBufferToMp3(dstAudioData)
+      const file = new File([mp3Data], 'record.mp3', { type: 'audio/mp3', lastModified: Date.now() })
+      uploadFile(`audios/${appId}/${podcastProgramId}` + extname(file.name), file, authToken, {})
         .then(() => {
           updatePodcastProgramContent({
             variables: {
               updatedAt: new Date(),
               podcastProgramId,
-              contentType: 'wav',
+              contentType: 'mp3',
             },
           })
-            .then(() => {
-              refetchPodcastProgram()
+            .then(async () => {
+              await refetchPodcastProgram()
               message.success(formatMessage(commonMessages.event.successfullyUpload))
+              history.push(`/podcast-programs/${podcastProgramId}`)
             })
             .catch(error => handleError(error))
         })
@@ -230,8 +230,14 @@ const RecordingPage: React.FC = () => {
         onPause={() => setIsPlaying(false)}
         onEdit={() => setIsEditing(isEditing => !isEditing)}
         onTrim={onTrimAudio}
-        onDelete={() => setWaveCollection(waveCollection.filter(wave => !selectedWaveIds.includes(wave.id)))}
-        onUpload={onUploadAudio}
+        onDelete={() => {
+          setWaveCollection(waveCollection.filter(wave => !selectedWaveIds.includes(wave.id)))
+          setIsEditing(false)
+        }}
+        onUpload={() => {
+          onUploadAudio()
+          setIsEditing(false)
+        }}
       />
     </div>
   )
