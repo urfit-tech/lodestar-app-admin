@@ -43,7 +43,7 @@ const StyledCardMeta = styled.div`
 const MemberShopCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { memberShops, refetchMemberShops } = useMemberShopCollection()
-  const [activeKey, setActiveKey] = useQueryParam('tabKey', StringParam)
+  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
 
   useEffect(() => {
     refetchMemberShops()

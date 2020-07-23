@@ -13,7 +13,7 @@ const messages = defineMessages({
 const ActivityCollectionTabs: React.FC<{
   activities: ActivityProps[]
 }> = ({ activities }) => {
-  const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
+  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { formatMessage } = useIntl()
 
   const tabContents = [

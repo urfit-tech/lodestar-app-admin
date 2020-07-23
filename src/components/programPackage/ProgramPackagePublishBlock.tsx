@@ -35,13 +35,13 @@ const ProgramPackagePublishBlock: React.FC<{
     checklist.push({
       id: 'NO_TITLE',
       text: formatMessage(messages.noTitle),
-      tabkey: 'basic',
+      tab: 'basic',
     })
   !programPackage.plans.length &&
     checklist.push({
       id: 'NO_PROGRAM_PACKAGE',
       text: formatMessage(messages.noProgramPackagePlan),
-      tabkey: 'sales',
+      tab: 'sales',
     })
 
   const publishStatus: PublishStatus =

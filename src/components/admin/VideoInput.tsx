@@ -1,14 +1,12 @@
 import { Input } from 'antd'
+import { UploadFile } from 'antd/lib/upload/interface'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import SingleUploader from '../common/SingleUploader'
 import { programMessages } from '../../helpers/translation'
-import { UploadFile } from 'antd/lib/upload/interface'
+import SingleUploader from '../common/SingleUploader'
 
-const InputGroup = Input.Group
-
-const StyleInputGroup = styled(InputGroup)`
+const StyleInputGroup = styled(Input.Group)`
   display: flex !important;
   .ant-input {
     width: calc(100% - 120px);
@@ -57,4 +55,5 @@ const VideoInput: React.FC<{
     </>
   )
 }
+
 export default VideoInput

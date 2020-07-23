@@ -56,7 +56,7 @@ export type PublishStatus = 'alert' | 'ordinary' | 'success'
 export type ChecklistItemProps = {
   id: string
   text: string
-  tabkey?: string
+  tab?: string
 }
 export type PublishEvent = {
   values: {
@@ -99,10 +99,10 @@ const AdminPublishBlock: React.FC<{
                   <ExclamationCircleIcon className="mr-2" />
                   <span className="mr-2">{checkItem.text}</span>
 
-                  {checkItem.tabkey && (
+                  {checkItem.tab && (
                     <Link
                       to={{
-                        search: `tabkey=${checkItem.tabkey}`,
+                        search: `tab=${checkItem.tab}`,
                       }}
                     >
                       <Button type="link" size="small">

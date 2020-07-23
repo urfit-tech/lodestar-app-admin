@@ -54,7 +54,7 @@ const StatusCardNumber = styled.div`
 const MerchandiseAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { merchandiseId } = useParams<{ merchandiseId: string }>()
-  const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
+  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { settings } = useContext(AppContext)
   const { loadingMerchandise, errorMerchandise, merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
   const { inventoryLogs, refetchInventoryLogs } = useProductInventoryLog(`Merchandise_${merchandiseId}`)

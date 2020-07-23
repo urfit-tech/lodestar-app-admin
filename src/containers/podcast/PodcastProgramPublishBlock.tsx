@@ -51,31 +51,31 @@ const PodcastProgramPublishBlock: React.FC<{
     checklist.push({
       id: 'NO_AUDIO',
       text: formatMessage(messages.noAudio),
-      tabkey: 'content',
+      tab: 'content',
     })
   !podcastProgram.duration &&
     checklist.push({
       id: 'NO_DURATION',
       text: formatMessage(messages.noDuration),
-      tabkey: 'content',
+      tab: 'content',
     })
   !podcastProgram.coverUrl &&
     checklist.push({
       id: 'NO_COVER',
       text: formatMessage(messages.noCover),
-      tabkey: 'settings',
+      tab: 'settings',
     })
   podcastProgram.listPrice <= 0 &&
     checklist.push({
       id: 'NO_PRICE',
       text: formatMessage(messages.noPrice),
-      tabkey: 'plan',
+      tab: 'plan',
     })
   podcastProgram.instructors.length === 0 &&
     checklist.push({
       id: 'NO_INSTRUCTOR',
       text: formatMessage(messages.noInstructor),
-      tabkey: 'role',
+      tab: 'role',
     })
 
   const publishStatus: PublishStatus =

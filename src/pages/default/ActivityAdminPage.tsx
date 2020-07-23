@@ -29,7 +29,7 @@ const StyledWrapper = styled.div`
 const ActivityAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { activityId } = useParams<{ activityId: string }>()
-  const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
+  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
 
   return (
     <ActivityProvider activityId={activityId}>

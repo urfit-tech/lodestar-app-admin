@@ -31,7 +31,7 @@ const AppointmentPlanAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { appointmentPlanId } = useParams<{ appointmentPlanId: string }>()
 
-  const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
+  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
 
   return (
     <AppointmentPlanProvider appointmentPlanId={appointmentPlanId}>

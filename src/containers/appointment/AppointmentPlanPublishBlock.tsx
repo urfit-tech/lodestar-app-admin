@@ -48,25 +48,25 @@ const AppointmentPlanPublishBlock: React.FC = () => {
     checklist.push({
       id: 'NO_TITLE',
       text: formatMessage(messages.noTitle),
-      tabkey: 'settings',
+      tab: 'settings',
     })
   !appointmentPlan.duration &&
     checklist.push({
       id: 'NO_DURATION',
       text: formatMessage(messages.noDuration),
-      tabkey: 'sale',
+      tab: 'sale',
     })
   !appointmentPlan.listPrice &&
     checklist.push({
       id: 'NO_LIST_PRICE',
       text: formatMessage(messages.noListPrice),
-      tabkey: 'sale',
+      tab: 'sale',
     })
   !appointmentPlan.periods.length &&
     checklist.push({
       id: 'NO_PERIOD',
       text: formatMessage(messages.noPeriod),
-      tabkey: 'schedule',
+      tab: 'schedule',
     })
 
   const publishStatus: PublishStatus =

@@ -35,7 +35,7 @@ const BlogPostPublishBlock: React.FC<BlogPostProps> = ({ post, onRefetch }) => {
     checklist.push({
       id: 'NO_TITLE',
       text: formatMessage(messages.noTitle),
-      tabkey: 'general',
+      tab: 'general',
     })
 
   const publishStatus: PublishStatus = checklist.length > 0 ? 'alert' : !post.publishedAt ? 'ordinary' : 'success'

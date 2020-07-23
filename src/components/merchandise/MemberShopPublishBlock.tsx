@@ -42,19 +42,19 @@ const MemberShopPublishBlock: React.FC<{
     checklist.push({
       id: 'NO_TITLE',
       text: formatMessage(messages.noTitle),
-      tabkey: 'settings',
+      tab: 'settings',
     })
   memberShop.shippingMethods.length === 0 &&
     checklist.push({
       id: 'NO_SHIPPING_METHOD',
       text: formatMessage(messages.noShippingMethod),
-      tabkey: 'shipping-methods',
+      tab: 'shipping-methods',
     })
   memberShop.shippingMethods.some(shippingMethod => shippingMethod.days === 0) &&
     checklist.push({
       id: 'NO_SHIPPING_DAYS',
       text: formatMessage(messages.noShippingDays),
-      tabkey: 'shipping-methods',
+      tab: 'shipping-methods',
     })
 
   const publishStatus: PublishStatus = checklist.length > 0 ? 'alert' : !memberShop.publishedAt ? 'ordinary' : 'success'

@@ -24,7 +24,7 @@ const StyledWrapper = styled.div`
 const PodcastProgramAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { podcastProgramId } = useParams<{ podcastProgramId: string }>()
-  const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
+  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { podcastProgram, refetchPodcastProgram } = usePodcastProgramCollection(podcastProgramId)
 
   return (

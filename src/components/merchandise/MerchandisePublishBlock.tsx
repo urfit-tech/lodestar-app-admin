@@ -44,25 +44,25 @@ const MerchandisePublishBlock: React.FC<{
     checklist.push({
       id: 'NO_TITLE',
       text: formatMessage(messages.noTitle),
-      tabkey: 'settings',
+      tab: 'settings',
     })
   !merchandise.meta &&
     checklist.push({
       id: 'NO_META',
       text: formatMessage(messages.noMeta),
-      tabkey: 'settings',
+      tab: 'settings',
     })
   !merchandise.memberShopId &&
     checklist.push({
       id: 'NO_MEMBER_SHOP',
       text: formatMessage(messages.noMemberShop),
-      tabkey: 'settings',
+      tab: 'settings',
     })
   !merchandise.listPrice &&
     checklist.push({
       id: 'NO_PRICE',
       text: formatMessage(messages.noPrice),
-      tabkey: 'sales',
+      tab: 'sales',
     })
 
   const publishStatus: PublishStatus =

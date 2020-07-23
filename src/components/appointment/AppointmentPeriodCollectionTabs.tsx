@@ -40,7 +40,7 @@ const AppointmentPeriodCollectionTabs: React.FC<{
   onRefetch?: () => void
 }> = ({ loading, periods, withSelector, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
+  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const [selectedCreatorId, setSelectedCreatorId] = useState('')
 
   const creators = uniqBy(

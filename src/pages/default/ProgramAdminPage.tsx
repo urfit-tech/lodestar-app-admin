@@ -1,5 +1,5 @@
 import { Button, Dropdown, Menu, PageHeader, Tabs } from 'antd'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -41,12 +41,8 @@ const ProgramAdminPage: React.FC = () => {
   const history = useHistory()
   const { programId } = useParams<{ programId: string }>()
   const { settings } = useContext(AppContext)
-  const [active, setActive] = useQueryParam('active', StringParam)
+  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { program, refetch: refetchProgram } = useProgram(programId)
-
-  useEffect(() => {
-    !active && setActive('content')
-  }, [active, setActive])
 
   return (
     <>
@@ -76,8 +72,8 @@ const ProgramAdminPage: React.FC = () => {
 
       <div style={{ backgroundColor: '#f7f8f8', minHeight: 'calc(100vh - 64px)' }}>
         <Tabs
-          activeKey={active || 'content'}
-          onChange={setActive}
+          activeKey={activeKey || 'content'}
+          onChange={key => setActiveKey(key)}
           renderTabBar={(tabsProps, DefaultTabBar) => (
             <div style={{ backgroundColor: 'white' }}>
               <div className="container text-center">

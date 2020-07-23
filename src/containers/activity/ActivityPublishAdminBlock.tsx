@@ -48,14 +48,14 @@ const ActivityPublishAdminBlock: React.FC = () => {
     checklist.push({
       id: 'NO_TICKET',
       text: formatMessage(messages.noTicketPlan),
-      tabkey: 'tickets',
+      tab: 'tickets',
     })
 
   !activity.description &&
     checklist.push({
       id: 'NO_DESCRIPTION',
       text: formatMessage(messages.noDescription),
-      tabkey: 'settings',
+      tab: 'settings',
     })
 
   const publishStatus: PublishStatus = checklist.length > 0 ? 'alert' : !activity.publishedAt ? 'ordinary' : 'success'

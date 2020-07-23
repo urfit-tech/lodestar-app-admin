@@ -21,7 +21,7 @@ const BlogAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { postId } = useParams<{ postId: string }>()
   const { settings } = useContext(AppContext)
-  const [tabkey, setTabkey] = useQueryParam('tabkey', StringParam)
+  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
 
   const { post, refetch: refetchPost } = usePost(postId)
   const { member } = usePublicMember(post?.creatorId || '')
@@ -45,8 +45,8 @@ const BlogAdminPage: React.FC = () => {
       <div style={{ backgroundColor: '#f7f8f8', minHeight: 'calc(100vh - 64px)' }}>
         {post && (
           <Tabs
-            activeKey={tabkey || 'content'}
-            onChange={setTabkey}
+            activeKey={activeKey || 'content'}
+            onChange={key => setActiveKey(key)}
             renderTabBar={(tabsProps, DefaultTabBar) => (
               <div style={{ backgroundColor: 'white' }}>
                 <div className="container text-center">

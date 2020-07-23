@@ -26,7 +26,7 @@ import { useGetProgramPackage } from '../../hooks/programPackage'
 const ProgramPackageAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { programPackageId } = useParams<{ programPackageId: string }>()
-  const [tabkey, setTabkey] = useQueryParam('tabkey', StringParam)
+  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { settings } = useContext(AppContext)
   const { programPackage, refetch } = useGetProgramPackage(programPackageId)
 
@@ -52,8 +52,8 @@ const ProgramPackageAdminPage: React.FC = () => {
 
       <StyledLayoutContent variant="gray">
         <Tabs
-          activeKey={tabkey || 'programs'}
-          onChange={key => setTabkey(key)}
+          activeKey={activeKey || 'programs'}
+          onChange={key => setActiveKey(key)}
           renderTabBar={(props, DefaultTabBar) => (
             <AdminTabBarWrapper>
               <DefaultTabBar {...props} />

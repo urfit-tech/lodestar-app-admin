@@ -25,7 +25,7 @@ const StyledHeader = styled.div<{ width?: string }>`
 const MerchandiseCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
+  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { currentMemberId } = useAuth()
   const { id: appId } = useContext(AppContext)
 

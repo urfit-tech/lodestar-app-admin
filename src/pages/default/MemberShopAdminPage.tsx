@@ -29,7 +29,7 @@ const messages = defineMessages({
 const MemberShopAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { shopId } = useParams<{ shopId: string }>()
-  const [activeKey, setActiveKey] = useQueryParam('tabkey', StringParam)
+  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { memberShop, refetchMemberShop } = useMemberShop(shopId)
 
   return (

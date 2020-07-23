@@ -11,7 +11,7 @@ import PositionAdminLayout, {
   OverlayList,
   OverlayListContent,
   OverlayListItem,
-  OverlayWrapper
+  OverlayWrapper,
 } from '../../components/common/PositionAdminLayout'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
