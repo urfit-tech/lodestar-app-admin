@@ -2,7 +2,8 @@ import { Tabs } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { promotionMessages } from '../../helpers/translation'
-import VoucherCard, { VoucherProps } from './VoucherCard'
+import { VoucherProps } from '../../types/checkout'
+import VoucherCard from './VoucherCard'
 
 const VoucherCollectionTabs: React.FC<{
   vouchers: VoucherProps[]

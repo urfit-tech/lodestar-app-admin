@@ -1,46 +1,61 @@
-import { Button, Dropdown, Icon, Menu, Skeleton } from 'antd'
+import { Button, Dropdown, Icon, Menu, message, Skeleton } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import VoucherCollectionTabs from '../../components/voucher/VoucherCollectionTabs'
 import VoucherPlanAdminModal, { VoucherPlanFields } from '../../components/voucher/VoucherPlanAdminModal'
 import VoucherPlanDetailModal from '../../components/voucher/VoucherPlanDetailModal'
+import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
-import { VoucherProps } from './VoucherCard'
+import { useMutateVoucherPlan, useVoucherPlanCollection } from '../../hooks/checkout'
 
-type VoucherPlanCollectionBlockProps = {
-  loading?: boolean
-  error?: Error
-  voucherPlanCollection: (VoucherProps & {
-    voucherCodes: {
-      id: string
-      code: string
-      count: number
-      remaining: number
-    }[]
-    count: number
-    remaining: number
-    productIds: string[]
-  })[]
-  onInsert: (
+const VoucherPlanCollectionBlock: React.FC = () => {
+  const { formatMessage } = useIntl()
+  const { insertVoucherPlan, updateVoucherPlan } = useMutateVoucherPlan()
+  const { loading, error, voucherPlanCollection, refetch } = useVoucherPlanCollection()
+
+  const handleInsert = (
     setVisible: React.Dispatch<React.SetStateAction<boolean>>,
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
     values: VoucherPlanFields,
-  ) => void
-  onUpdate: (
+  ) => {
+    setLoading(true)
+
+    insertVoucherPlan(values)
+      .then(() => {
+        message.success(formatMessage(commonMessages.event.successfullyCreated))
+        setVisible(false)
+        refetch()
+      })
+      .catch(error => {
+        if (/^GraphQL error: Uniqueness violation/.test(error.message)) {
+          message.error(formatMessage(errorMessages.event.duplicateVoucherCode))
+        } else {
+          handleError(error)
+        }
+      })
+      .finally(() => setLoading(false))
+  }
+
+  const handleUpdate = (
     setVisible: React.Dispatch<React.SetStateAction<boolean>>,
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
     values: VoucherPlanFields,
     voucherPlanId: string,
-  ) => void
-}
-const VoucherPlanCollectionBlock: React.FC<VoucherPlanCollectionBlockProps> = ({
-  loading,
-  error,
-  voucherPlanCollection,
-  onInsert,
-  onUpdate,
-}) => {
-  const { formatMessage } = useIntl()
+  ) => {
+    setLoading(true)
+
+    updateVoucherPlan(values, voucherPlanId)
+      .then(() => {
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+        setVisible(false)
+        refetch()
+      })
+      .catch(error => {
+        handleError(error)
+        setLoading(false)
+      })
+      .finally(() => setLoading(false))
+  }
 
   if (loading) {
     return <Skeleton active />
@@ -86,7 +101,7 @@ const VoucherPlanCollectionBlock: React.FC<VoucherPlanCollectionBlockProps> = ({
                     title={formatMessage(promotionMessages.ui.editVoucherPlan)}
                     voucherPlan={voucherPlan}
                     onSubmit={(setVisible, setLoading, values) =>
-                      onUpdate(setVisible, setLoading, values, voucherPlan.id)
+                      handleUpdate(setVisible, setLoading, values, voucherPlan.id)
                     }
                   />
                 </Menu.Item>
@@ -112,7 +127,7 @@ const VoucherPlanCollectionBlock: React.FC<VoucherPlanCollectionBlockProps> = ({
           )}
           icon={<Icon type="file-add" />}
           title={formatMessage(promotionMessages.ui.createVoucherPlan)}
-          onSubmit={onInsert}
+          onSubmit={(setVisible, setLoading, values) => handleInsert(setVisible, setLoading, values)}
         />
       </div>
 

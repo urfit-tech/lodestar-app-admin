@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import { rgba } from '../../helpers'
 import { promotionMessages } from '../../helpers/translation'
 import { ReactComponent as GiftIcon } from '../../images/icon/gift.svg'
+import { VoucherProps } from '../../types/checkout'
 import { BREAK_POINT } from '../common/Responsive'
 
 const StyledWrapper = styled.div`
@@ -84,17 +85,6 @@ const StyledTitle = styled.div`
   text-overflow: ellipsis;
 `
 
-export type VoucherProps = {
-  id: string
-  title: string
-  description: string | null
-  startedAt?: Date
-  endedAt?: Date
-  productQuantityLimit: number
-  available: boolean
-  extra?: React.ReactNode
-  action?: React.ReactNode
-}
 const VoucherCard: React.FC<VoucherProps> = ({
   title,
   startedAt,
