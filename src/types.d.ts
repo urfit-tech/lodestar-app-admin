@@ -1972,6 +1972,36 @@ export interface UPDATE_PROGRAM_SUBSCRIPTION_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT
+// ====================================================
+
+export interface GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT_program_plan_enrollment_aggregate_aggregate {
+  __typename: "program_plan_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT_program_plan_enrollment_aggregate {
+  __typename: "program_plan_enrollment_aggregate";
+  aggregate: GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT_program_plan_enrollment_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT {
+  /**
+   * fetch aggregated fields from the table: "program_plan_enrollment"
+   */
+  program_plan_enrollment_aggregate: GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT_program_plan_enrollment_aggregate;
+}
+
+export interface GET_PROGRAM_SUBSCRIPTION_PLAN_COUNTVariables {
+  programPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_BASIC
 // ====================================================
 

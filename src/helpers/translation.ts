@@ -483,7 +483,7 @@ export const programMessages = {
     programDescription: { id: 'program.label.programDescription', defaultMessage: '課程描述' },
   }),
   text: defineMessages({
-    enrolledSubscriptionCount: { id: 'program.text.enrolledSubscriptionCount', defaultMessage: '已訂閱 {count} 人' },
+    enrolledSubscriptionCount: { id: 'program.text.enrolledSubscriptionCount', defaultMessage: '目前 {count} 人訂閱中' },
     enrolledPerpetualCount: { id: 'program.text.enrolledPerpetualCount', defaultMessage: '已售 {count} 人' },
     emptyProgramIssue: { id: 'program.text.empty', defaultMessage: '沒有課程問題' },
     noAssignedInstructor: { id: 'common.text.noAssignedInstructor', defaultMessage: '尚未指定講師' },

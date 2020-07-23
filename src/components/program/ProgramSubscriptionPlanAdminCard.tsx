@@ -1,10 +1,10 @@
-import { useMutation } from '@apollo/react-hooks'
-import { Button, Divider, InputNumber, Typography } from 'antd'
+import { useMutation, useQuery } from '@apollo/react-hooks'
+import { Button, Divider, InputNumber, Typography, Dropdown, Menu, Icon } from 'antd'
 import Form, { FormComponentProps, FormProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import moment from 'moment-timezone'
 import React, { useState } from 'react'
-import { useIntl } from 'react-intl'
+import { useIntl, defineMessages } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -47,6 +47,10 @@ const StyledAdminCard = styled(AdminCard)`
   }
 `
 
+const messages = defineMessages({
+  subscriptionCount: { id: 'program.text.subscriptionCount', defaultMessage: '{count} 人' },
+})
+
 type ProgramSubscriptionPlanAdminCardProps = {
   programId: string
   isSubscription: boolean
@@ -62,6 +66,12 @@ const ProgramSubscriptionPlanAdminCard: React.FC<ProgramSubscriptionPlanAdminCar
   const { formatMessage } = useIntl()
   const isOnSale = programPlan.soldAt && moment() < moment(programPlan.soldAt)
   const { salePrice, listPrice, discountDownPrice, periodType } = programPlan
+  const { loading, error, data } = useQuery<
+    types.GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT,
+    types.GET_PROGRAM_SUBSCRIPTION_PLAN_COUNTVariables
+  >(GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT, { variables: { programPlanId: programPlan.id } })
+  const programSubscriptionPlanCount =
+    loading || !!error || !data ? '' : data?.program_plan_enrollment_aggregate.aggregate?.count
 
   return isSubscription ? (
     <StyledAdminCard>
@@ -73,21 +83,35 @@ const ProgramSubscriptionPlanAdminCard: React.FC<ProgramSubscriptionPlanAdminCar
         periodAmount={1}
         periodType={periodType as ProgramPlanPeriodType}
       />
-
       <Divider />
-
       <div className="mb-4">
         <BraftContent>{programPlan.description}</BraftContent>
       </div>
-
-      <ProgramPlanAdminModal
-        onRefetch={onRefetch}
-        programId={programId}
-        programPlan={programPlan}
-        renderTrigger={({ setVisible }) => (
-          <Button onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</Button>
-        )}
-      />
+      <div className="d-flex justify-content-between align-items-center mt-3">
+        <div className="flex-grow-1 m-0" style={{ lineHeight: '20px' }}>
+          {!loading && formatMessage(messages.subscriptionCount, { count: `${programSubscriptionPlanCount}` })}
+        </div>
+        <Dropdown
+          placement="bottomRight"
+          overlay={
+            <Menu>
+              <Menu.Item>
+                <ProgramPlanAdminModal
+                  onRefetch={onRefetch}
+                  programId={programId}
+                  programPlan={programPlan}
+                  renderTrigger={({ setVisible }) => (
+                    <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</span>
+                  )}
+                />
+              </Menu.Item>
+            </Menu>
+          }
+          trigger={['click']}
+        >
+          <Icon type="more" style={{ fontSize: '24px' }} />
+        </Dropdown>
+      </div>
     </StyledAdminCard>
   ) : (
     <AdminCard>
@@ -159,6 +183,16 @@ const UPDATE_PROGRAM_SUBSCRIPTION_PLAN = gql`
       _set: { list_price: $listPrice, sale_price: $salePrice }
     ) {
       affected_rows
+    }
+  }
+`
+
+const GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT = gql`
+  query GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT($programPlanId: uuid!) {
+    program_plan_enrollment_aggregate(where: { program_plan_id: { _eq: $programPlanId } }) {
+      aggregate {
+        count
+      }
     }
   }
 `
