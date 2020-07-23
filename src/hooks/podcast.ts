@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import types from '../types'
 import { PodcastProgramProps } from '../types/podcast'
@@ -171,6 +171,15 @@ export const usePodcastPlanAdminCollection = () => {
   }
 }
 
+export const useUpdatePodcastProgramContent = () => {
+  const [updatePodcastProgramContent] = useMutation<
+    types.UPDATE_PODCAST_PROGRAM_CONTENT,
+    types.UPDATE_PODCAST_PROGRAM_CONTENTVariables
+  >(UPDATE_PODCAST_PROGRAM_CONTENT)
+
+  return updatePodcastProgramContent
+}
+
 const GET_PODCAST_PLAN = gql`
   query GET_PODCAST_PLAN($podcastPlanId: uuid!) {
     podcast_plan_by_pk(id: $podcastPlanId) {
@@ -206,6 +215,16 @@ const GET_PODCAST_PLAN_ADMIN_COLLECTION = gql`
         username
         picture_url
       }
+    }
+  }
+`
+const UPDATE_PODCAST_PROGRAM_CONTENT = gql`
+  mutation UPDATE_PODCAST_PROGRAM_CONTENT($podcastProgramId: uuid!, $contentType: String, $updatedAt: timestamptz!) {
+    update_podcast_program(
+      where: { id: { _eq: $podcastProgramId } }
+      _set: { content_type: $contentType, updated_at: $updatedAt }
+    ) {
+      affected_rows
     }
   }
 `

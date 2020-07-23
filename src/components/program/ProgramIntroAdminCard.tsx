@@ -1,14 +1,14 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Icon, Input, message, Tooltip, Typography } from 'antd'
+import { Button, Col, Icon, Input, message, Row, Tooltip, Typography } from 'antd'
 import Form, { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
-import { useIntl } from 'react-intl'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
-import { commonMessages, programMessages } from '../../helpers/translation'
+import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramProps } from '../../types/program'
 import { StyledTips } from '../admin'
@@ -17,7 +17,6 @@ import AdminCard from '../admin/AdminCard'
 import { CustomRatioImage } from '../common/Image'
 import { BREAK_POINT } from '../common/Responsive'
 import SingleUploader from '../common/SingleUploader'
-import VideoInput from '../../components/admin/VideoInput'
 
 export const CoverBlock = styled.div`
   margin-bottom: 2rem;
@@ -50,6 +49,17 @@ export const StyledSingleUploader = styled(SingleUploader)`
   }
 `
 
+const messages = defineMessages({
+  programIntroduction: { id: 'program.label.programIntroduction', defaultMessage: '課程介紹' },
+  programCover: { id: 'program.label.programCover', defaultMessage: '課程封面' },
+  introductionVideo: { id: 'program.label.introductionVideo', defaultMessage: '介紹影片' },
+  videoPlaceholder: { id: 'program.text.videoPlaceholder', defaultMessage: '貼上影片網址' },
+  uploadVideo: { id: 'program.text.uploadVideo', defaultMessage: '上傳影片' },
+  programAbstract: { id: 'program.label.programAbstract', defaultMessage: '課程摘要' },
+  programDescription: { id: 'program.label.programDescription', defaultMessage: '課程描述' },
+  imageTips: { id: 'program.text.programImgTips', defaultMessage: '建議圖片尺寸：1200*675px' },
+})
+
 type ProgramIntroAdminCardProps = FormComponentProps & {
   program: ProgramProps | null
   onRefetch?: () => void
@@ -57,10 +67,12 @@ type ProgramIntroAdminCardProps = FormComponentProps & {
 const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, form, onRefetch }) => {
   const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
+  const [introVideoUrl, setIntroVideoUrl] = useState('')
 
   const [updateProgramCover] = useMutation<types.UPDATE_PROGRAM_COVER, types.UPDATE_PROGRAM_COVERVariables>(
     UPDATE_PROGRAM_COVER,
   )
+
   const [updateProgramIntro] = useMutation<types.UPDATE_PROGRAM_INTRO, types.UPDATE_PROGRAM_INTROVariables>(
     UPDATE_PROGRAM_INTRO,
   )
@@ -118,18 +130,15 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
 
   return (
     <AdminCard loading={!program}>
-      <Typography.Title level={4}>{formatMessage(programMessages.label.programIntroduction)}</Typography.Title>
+      <Typography.Title level={4}>{formatMessage(messages.programIntroduction)}</Typography.Title>
 
       {program && (
         <Form colon={false} labelAlign="left" labelCol={{ md: { span: 4 } }} wrapperCol={{ md: { span: 10 } }}>
           <Form.Item
             label={
               <span>
-                {formatMessage(programMessages.label.programCover)}
-                <Tooltip
-                  placement="top"
-                  title={<StyledTips>{formatMessage(programMessages.text.imageTips)}</StyledTips>}
-                >
+                {formatMessage(messages.programCover)}
+                <Tooltip placement="top" title={<StyledTips>{formatMessage(messages.imageTips)}</StyledTips>}>
                   <Icon type="question-circle" theme="filled" className="ml-2" />
                 </Tooltip>
               </span>
@@ -167,17 +176,43 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
           labelCol={{ md: { span: 4 } }}
           wrapperCol={{ md: { span: 10 } }}
         >
-          <Form.Item label={formatMessage(programMessages.label.introductionVideo)}>
-            {form.getFieldDecorator('coverVideoUrl', {
-              initialValue: program.coverVideoUrl,
-            })(<VideoInput appId={appId} programId={program.id} />)}
+          <Form.Item label={formatMessage(messages.introductionVideo)}>
+            <Row>
+              <Col span={18} style={{ paddingRight: 0 }}>
+                {form.getFieldDecorator(introVideoUrl ? `${introVideoUrl}` : `coverVideoUrl`, {
+                  initialValue: program.coverVideoUrl || introVideoUrl,
+                })(
+                  <Input
+                    placeholder={formatMessage(messages.videoPlaceholder)}
+                    onChange={e => setIntroVideoUrl(e.target.value)}
+                  />,
+                )}
+              </Col>
+              <Col span={2} style={{ paddingLeft: 0 }}>
+                <Form.Item>
+                  {form.getFieldDecorator('video')(
+                    <SingleUploader
+                      accept="video/*,.mp3"
+                      uploadText={formatMessage(messages.uploadVideo)}
+                      path={`program_covers/${appId}/${program.id}_video`}
+                      showUploadList={false}
+                      onSuccess={() => {
+                        setIntroVideoUrl(
+                          `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${program.id}_video`,
+                        )
+                      }}
+                    />,
+                  )}
+                </Form.Item>
+              </Col>
+            </Row>
           </Form.Item>
-          <Form.Item label={formatMessage(programMessages.label.programAbstract)}>
+          <Form.Item label={formatMessage(messages.programAbstract)}>
             {form.getFieldDecorator('abstract', {
               initialValue: program.abstract,
             })(<Input.TextArea rows={5} />)}
           </Form.Item>
-          <Form.Item label={formatMessage(programMessages.label.programDescription)} wrapperCol={{ md: { span: 20 } }}>
+          <Form.Item label={formatMessage(messages.programDescription)} wrapperCol={{ md: { span: 20 } }}>
             {form.getFieldDecorator('description', {
               initialValue: BraftEditor.createEditorState(program.description),
             })(<AdminBraftEditor />)}
