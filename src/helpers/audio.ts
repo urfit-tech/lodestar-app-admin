@@ -1,4 +1,6 @@
 import { AudioContext, OfflineAudioContext } from 'standardized-audio-context'
+import toWav from 'audiobuffer-to-wav'
+const lamejs = require('lamejs')
 
 /**
  * detect if a file is an audio.
@@ -139,4 +141,26 @@ export const decodeAudio = async (blob: File) => {
   const _audioBuffer = _arrayBuffer ? await new AudioContext().decodeAudioData(_arrayBuffer) : null
 
   return _audioBuffer
+}
+
+export const convertAudioBufferToMp3 = (audioBuffer: AudioBuffer, kbps = 128) => {
+  const wav = toWav(audioBuffer)
+  const wavData = lamejs.WavHeader.readHeader(new DataView(wav))
+  const samples = new Int16Array(wav, wavData.dataOffset, wavData.dataLen / 2)
+  const sampleBlockSize = 1152
+  const mp3encoder = new lamejs.Mp3Encoder(wavData.channels, wavData.sampleRate, kbps)
+  const mp3Data = []
+  for (var i = 0; i < samples.length; i += sampleBlockSize) {
+    const sampleChunk = samples.subarray(i, i + sampleBlockSize)
+    const mp3buf = mp3encoder.encodeBuffer(sampleChunk)
+    if (mp3buf.length > 0) {
+      mp3Data.push(Buffer.from(mp3buf))
+    }
+  }
+  const mp3buf = mp3encoder.flush()
+  if (mp3buf.length > 0) {
+    mp3Data.push(Buffer.from(mp3buf))
+  }
+
+  return Buffer.concat(mp3Data)
 }
