@@ -28,6 +28,7 @@ const messages = defineMessages({
   },
   appointmentCanceledAt: { id: 'appointment.label.appointmentCanceledAt', defaultMessage: '已於 {time} 取消預約' },
   orderUpdatedTime: { id: 'appointment.label.orderUpdatedTime', defaultMessage: '訂單更新日期' },
+  canceledReason: { id: 'appointment.label.canceledReason', defaultMessage: '取消原因' },
 })
 
 const StyledWrapper = styled.div`
@@ -75,7 +76,14 @@ const StyledModalTitle = styled.div`
 const StyledModalMetaBlock = styled.div`
   padding: 0.75rem;
   background-color: var(--gray-lighter);
+  font-size: 14px;
   border-radius: 4px;
+`
+const StyledModalMetaTitle = styled.div`
+  margin-bottom: 0.75rem;
+  color: var(--gray-darker);
+  font-weight: bold;
+  letter-spacing: 0.4px;
 `
 const StyledModalNotation = styled.div`
   color: var(--gray-dark);
@@ -243,12 +251,18 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
           </StyledMeta>
         )}
         {orderProduct.orderLog?.createdAt && (
-          <StyledMeta className="d-flex justify-content-between">
+          <StyledMeta className="d-flex justify-content-between mb-3">
             <div>{formatMessage(messages.orderUpdatedTime)}</div>
             <div>
               {moment(orderProduct.orderLog?.updatedAt || orderProduct.orderLog?.createdAt).format('YYYY-MM-DD HH:mm')}
             </div>
           </StyledMeta>
+        )}
+        {orderProduct.options.appointmentCanceledReason && (
+          <StyledModalMetaBlock>
+            <StyledModalMetaTitle>{formatMessage(messages.canceledReason)}</StyledModalMetaTitle>
+            {orderProduct.options.appointmentCanceledReason}
+          </StyledModalMetaBlock>
         )}
       </Modal>
 
