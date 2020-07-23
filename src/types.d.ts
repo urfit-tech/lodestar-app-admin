@@ -5266,7 +5266,7 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
 // GraphQL query operation: GET_PHYSICAL_PRODUCT_ORDER_LOG
 // ====================================================
 
-export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_orderLogs_orderPhysicalProducts {
+export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products {
   __typename: "order_product";
   id: any;
   name: string;
@@ -5274,7 +5274,7 @@ export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_orderLogs_orderPhysicalProducts 
   options: any | null;
 }
 
-export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_orderLogs {
+export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log {
   __typename: "order_log";
   id: string;
   created_at: any;
@@ -5289,14 +5289,14 @@ export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_orderLogs {
   /**
    * An array relationship
    */
-  orderPhysicalProducts: GET_PHYSICAL_PRODUCT_ORDER_LOG_orderLogs_orderPhysicalProducts[];
+  order_products: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products[];
 }
 
 export interface GET_PHYSICAL_PRODUCT_ORDER_LOG {
   /**
    * fetch data from the table: "order_log"
    */
-  orderLogs: GET_PHYSICAL_PRODUCT_ORDER_LOG_orderLogs[];
+  order_log: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log[];
 }
 
 /* tslint:disable */

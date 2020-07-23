@@ -2,9 +2,9 @@ import { Button } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { shippingMethodFormatter } from '../../helpers'
 import { InvoiceProps, ShippingProps } from '../../types/merchandise'
 import AdminModal from '../admin/AdminModal'
+import ShippingMethodLabel from '../common/ShippingMethodLabel'
 
 const messages = defineMessages({
   shippingInfo: { id: 'merchandise.ui.shippingInfo', defaultMessage: '收件資訊' },
@@ -57,7 +57,7 @@ const ShippingInfoModal: React.FC<{
               {formatMessage(messages.shippingMethod)}
             </StyledShippingInfoSubtitle>
             <StyledShippingInfoContent className="mb-3">
-              {shippingMethodFormatter(shipping?.shippingMethod)}
+              <ShippingMethodLabel shippingMethodId={shipping?.shippingMethod || ''} />
             </StyledShippingInfoContent>
           </div>
           <div className="col-12">
