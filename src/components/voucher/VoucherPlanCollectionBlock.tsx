@@ -1,17 +1,19 @@
-import { Button, Dropdown, Icon, Menu, message, Skeleton } from 'antd'
-import React from 'react'
+import { Button, Dropdown, Icon, Menu, message, Skeleton, Tabs } from 'antd'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import VoucherCollectionTabs from '../../components/voucher/VoucherCollectionTabs'
 import VoucherPlanAdminModal, { VoucherPlanFields } from '../../components/voucher/VoucherPlanAdminModal'
 import VoucherPlanDetailModal from '../../components/voucher/VoucherPlanDetailModal'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
 import { useMutateVoucherPlan, useVoucherPlanCollection } from '../../hooks/checkout'
+import VoucherCard from './VoucherCard'
 
 const VoucherPlanCollectionBlock: React.FC = () => {
   const { formatMessage } = useIntl()
   const { insertVoucherPlan, updateVoucherPlan } = useMutateVoucherPlan()
   const { loading, error, voucherPlanCollection, refetch } = useVoucherPlanCollection()
+
+  const [activeKey, setActiveKey] = useState('available')
 
   const handleInsert = (
     setVisible: React.Dispatch<React.SetStateAction<boolean>>,
@@ -116,6 +118,19 @@ const VoucherPlanCollectionBlock: React.FC = () => {
     }
   })
 
+  const tabContents = [
+    {
+      key: 'available',
+      tab: formatMessage(promotionMessages.status.available),
+      vouchers: vouchers.filter(voucher => voucher.available),
+    },
+    {
+      key: 'unavailable',
+      tab: formatMessage(promotionMessages.status.unavailable),
+      vouchers: vouchers.filter(voucher => !voucher.available),
+    },
+  ]
+
   return (
     <>
       <div className="mb-5">
@@ -131,7 +146,29 @@ const VoucherPlanCollectionBlock: React.FC = () => {
         />
       </div>
 
-      <VoucherCollectionTabs vouchers={vouchers} />
+      <Tabs activeKey={activeKey} onChange={key => setActiveKey(key)}>
+        {tabContents.map(tabContent => (
+          <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
+            <div className="row">
+              {tabContent.vouchers.map(voucher => (
+                <div key={voucher.id} className="col-12 col-lg-6">
+                  <VoucherCard
+                    id={voucher.id}
+                    title={voucher.title}
+                    description={voucher.description}
+                    startedAt={voucher.startedAt}
+                    endedAt={voucher.endedAt}
+                    productQuantityLimit={voucher.productQuantityLimit}
+                    available={voucher.available}
+                    extra={voucher.extra}
+                    action={voucher.action}
+                  />
+                </div>
+              ))}
+            </div>
+          </Tabs.TabPane>
+        ))}
+      </Tabs>
     </>
   )
 }

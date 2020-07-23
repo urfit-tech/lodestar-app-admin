@@ -86,7 +86,9 @@ const StyledTitle = styled.div`
 `
 
 const VoucherCard: React.FC<VoucherProps> = ({
+  id,
   title,
+  description,
   startedAt,
   endedAt,
   productQuantityLimit,
