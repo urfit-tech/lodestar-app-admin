@@ -58,8 +58,19 @@ export type VoucherCodeBriefProps = {
   code: string
   count: number
   used?: number
+
+  vouchers: VoucherProps[]
 }
 
 export type VoucherCodeProps = VoucherCodeBriefProps & {
   remaining: number
+}
+
+export type VoucherProps = {
+  id: string
+
+  used?: boolean
+  member?: {
+    email: string
+  }
 }

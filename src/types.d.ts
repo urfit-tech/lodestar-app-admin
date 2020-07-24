@@ -4813,12 +4813,40 @@ export interface GET_COUPON__CODE_COLLECTIONVariables {
 // GraphQL query operation: GET_VOUCHER_PLAN_COLLECTION
 // ====================================================
 
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_vouchers_member {
+  __typename: "member";
+  id: string;
+  email: string;
+}
+
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_vouchers_status {
+  __typename: "voucher_status";
+  used: boolean | null;
+}
+
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_vouchers {
+  __typename: "voucher";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_vouchers_member;
+  /**
+   * An object relationship
+   */
+  status: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_vouchers_status | null;
+}
+
 export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes {
   __typename: "voucher_code";
   id: any;
   code: string;
   count: number;
   remaining: number;
+  /**
+   * An array relationship
+   */
+  vouchers: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_vouchers[];
 }
 
 export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate_sum {

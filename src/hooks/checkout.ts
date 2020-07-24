@@ -162,15 +162,27 @@ export const useVoucherPlanCollection = () => {
             endedAt: voucherPlan?.ended_at || null,
             productQuantityLimit: voucherPlan.product_quantity_limit,
             available:
-            remaining > 0 && (voucherPlan.ended_at ? new Date(voucherPlan.ended_at).getTime() > Date.now() : true),
+              remaining > 0 && (voucherPlan.ended_at ? new Date(voucherPlan.ended_at).getTime() > Date.now() : true),
             description: decodeURI(voucherPlan.description || ''),
             count: count,
-            remaining: remaining,
+            remaining,
             productIds: voucherPlan.voucher_plan_products.map(product => product.product_id),
-            voucherCodes: voucherPlan.voucher_codes,
+            voucherCodes: voucherPlan.voucher_codes.map(voucherCode => ({
+              id: voucherCode.id,
+              code: voucherCode.code,
+              count: voucherCode.count,
+              remaining: voucherCode.remaining,
+              vouchers: voucherCode.vouchers.map(voucher => ({
+                id: voucher.id,
+                member: {
+                  email: voucher.member?.email
+                },
+                used: !!voucher.status?.used,
+              })),
+            })),
           }
         })
-
+  console.log(1, voucherPlanCollection.map(voucherPlan => voucherPlan.voucherCodes).map(voucherCode => voucherCode))
   return {
     loading,
     error,
@@ -193,6 +205,16 @@ const GET_VOUCHER_PLAN_COLLECTION = gql`
         code
         count
         remaining
+        vouchers {
+          id
+          member {
+            id
+            email
+          }
+          status {
+            used
+          }
+        }
       }
       voucher_codes_aggregate {
         aggregate {

@@ -1,9 +1,10 @@
-import { Modal, Tabs } from 'antd'
+import { Button, Modal, Tabs } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { downloadCSV, toCSV } from '../../helpers'
 import { commonMessages, promotionMessages } from '../../helpers/translation'
-import { VoucherCodeBriefProps } from '../../types/checkout'
+import { VoucherCodeProps } from '../../types/checkout'
 
 const StyledTriggerText = styled.span`
   color: ${props => props.theme['@primary-color']};
@@ -23,12 +24,32 @@ const StyledVoucherCode = styled.div<{ isFinished: boolean }>`
 
 type VoucherPlanDetailModalProps = {
   title: string
-  voucherCodes: VoucherCodeBriefProps[]
+  voucherCodes: VoucherCodeProps[]
 }
 const VoucherPlanDetailModal: React.FC<VoucherPlanDetailModalProps> = ({ title, voucherCodes }) => {
   const { formatMessage } = useIntl()
   const [visible, setVisible] = useState(false)
   const [activeKey, setActiveKey] = useState('codes')
+
+  const exportCodes = () => {
+    const data: string[][] = [
+      [formatMessage(promotionMessages.term.couponCodes), formatMessage(promotionMessages.status.used), 'Email'],
+    ]
+
+    voucherCodes.forEach(voucherCode => {
+      voucherCode.vouchers.forEach(voucher => {
+        data.push([voucherCode.code, voucher.used ? 'v' : '', voucher.member?.email || ''])
+      })
+
+      if (voucherCode.remaining) {
+        for (let i = 0; i < voucherCode.remaining; i++) {
+          data.push([voucherCode.code, '', ''])
+        }
+      }
+    })
+
+    downloadCSV(`${title}.csv`, toCSV(data))
+  }
 
   return (
     <>
@@ -38,6 +59,9 @@ const VoucherPlanDetailModal: React.FC<VoucherPlanDetailModalProps> = ({ title, 
 
       <Modal centered destroyOnClose footer={null} visible={visible} onCancel={() => setVisible(false)}>
         <StyledTitle className="mb-4">{title}</StyledTitle>
+        <Button type="primary" icon="download" className="mb-4" onClick={() => exportCodes()}>
+          {formatMessage(promotionMessages.ui.exportCodes)}
+        </Button>
 
         <Tabs activeKey={activeKey} onChange={key => setActiveKey(key)}>
           <Tabs.TabPane key="codes" tab={formatMessage(promotionMessages.term.voucherCode)} className="pt-4">
