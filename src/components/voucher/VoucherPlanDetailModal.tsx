@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { downloadCSV, toCSV } from '../../helpers'
 import { commonMessages, promotionMessages } from '../../helpers/translation'
-import { VoucherCodeProps } from '../../types/checkout'
+import { VoucherCodeProps, VoucherProps } from '../../types/checkout'
 
 const StyledTriggerText = styled.span`
   color: ${props => props.theme['@primary-color']};
@@ -24,7 +24,7 @@ const StyledVoucherCode = styled.div<{ isFinished: boolean }>`
 
 type VoucherPlanDetailModalProps = {
   title: string
-  voucherCodes: VoucherCodeProps[]
+  voucherCodes: (VoucherCodeProps & { vouchers: (VoucherProps & { member: { email: string } })[] })[]
 }
 const VoucherPlanDetailModal: React.FC<VoucherPlanDetailModalProps> = ({ title, voucherCodes }) => {
   const { formatMessage } = useIntl()
@@ -38,7 +38,7 @@ const VoucherPlanDetailModal: React.FC<VoucherPlanDetailModalProps> = ({ title, 
 
     voucherCodes.forEach(voucherCode => {
       voucherCode.vouchers.forEach(voucher => {
-        data.push([voucherCode.code, voucher.used ? 'v' : '', voucher.member?.email || ''])
+        data.push([voucherCode.code, voucher.used ? 'v' : '', voucher.member.email || ''])
       })
 
       if (voucherCode.remaining) {

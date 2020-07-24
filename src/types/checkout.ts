@@ -41,6 +41,7 @@ export type VoucherPlanBriefProps = {
   startedAt: Date | null
   endedAt: Date | null
   productQuantityLimit: number
+
   available?: boolean
   action?: React.ReactNode
 }
@@ -50,27 +51,19 @@ export type VoucherPlanProps = VoucherPlanBriefProps & {
   count: number
   remaining: number
   productIds: string[]
-  voucherCodes: VoucherCodeProps[]
 }
 
-export type VoucherCodeBriefProps = {
+export type VoucherCodeProps = {
   id: string
   code: string
   count: number
-  used?: number
-
-  vouchers: VoucherProps[]
-}
-
-export type VoucherCodeProps = VoucherCodeBriefProps & {
   remaining: number
+
+  used?: number
 }
 
 export type VoucherProps = {
   id: string
 
   used?: boolean
-  member?: {
-    email: string
-  }
 }

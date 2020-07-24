@@ -6,7 +6,14 @@ import { useContext } from 'react'
 import { VoucherPlanFields } from '../components/voucher/VoucherPlanAdminModal'
 import AppContext from '../contexts/AppContext'
 import types from '../types'
-import { CouponCodeProps, CouponPlanProps, CouponProps, VoucherPlanProps } from '../types/checkout'
+import {
+  CouponPlanProps,
+  CouponCodeProps,
+  CouponProps,
+  VoucherPlanProps,
+  VoucherCodeProps,
+  VoucherProps,
+} from '../types/checkout'
 
 export const useCouponPlanCollection = () => {
   const app = useContext(AppContext)
@@ -144,7 +151,9 @@ export const useCouponCodeCollection = (couponPlanId: string) => {
 
 export const useVoucherPlanCollection = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_VOUCHER_PLAN_COLLECTION>(GET_VOUCHER_PLAN_COLLECTION)
-  const voucherPlanCollection: VoucherPlanProps[] =
+  const voucherPlanCollection: (VoucherPlanProps & {
+    voucherCodes: (VoucherCodeProps & { vouchers: (VoucherProps & { member: { email: string } })[] })[]
+  })[] =
     loading || error || !data
       ? []
       : reverse(data.voucher_plan).map(voucherPlan => {
@@ -175,14 +184,14 @@ export const useVoucherPlanCollection = () => {
               vouchers: voucherCode.vouchers.map(voucher => ({
                 id: voucher.id,
                 member: {
-                  email: voucher.member?.email
+                  email: voucher.member?.email || '',
                 },
                 used: !!voucher.status?.used,
               })),
             })),
           }
         })
-  console.log(1, voucherPlanCollection.map(voucherPlan => voucherPlan.voucherCodes).map(voucherCode => voucherCode))
+
   return {
     loading,
     error,
