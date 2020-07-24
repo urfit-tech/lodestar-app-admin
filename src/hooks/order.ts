@@ -161,6 +161,7 @@ export const GET_PAYMENT_LOG_COLLECTION = gql`
       order_log {
         id
         member {
+          id
           name
           email
         }

@@ -3875,168 +3875,6 @@ export interface GET_PRODUCT_OWNER_TOTAL_AMOUNTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_VOUCHER_PLAN_COLLECTION
-// ====================================================
-
-export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes {
-  __typename: "voucher_code";
-  id: any;
-  code: string;
-  count: number;
-  remaining: number;
-}
-
-export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate_sum {
-  __typename: "voucher_code_sum_fields";
-  count: number | null;
-  remaining: number | null;
-}
-
-export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate {
-  __typename: "voucher_code_aggregate_fields";
-  sum: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate_sum | null;
-}
-
-export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate {
-  __typename: "voucher_code_aggregate";
-  aggregate: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate | null;
-}
-
-export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_plan_products {
-  __typename: "voucher_plan_product";
-  id: any;
-  product_id: string;
-}
-
-export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan {
-  __typename: "voucher_plan";
-  id: any;
-  title: string;
-  description: string | null;
-  started_at: any | null;
-  ended_at: any | null;
-  product_quantity_limit: number;
-  /**
-   * An array relationship
-   */
-  voucher_codes: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes[];
-  /**
-   * An aggregated array relationship
-   */
-  voucher_codes_aggregate: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate;
-  /**
-   * An array relationship
-   */
-  voucher_plan_products: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_plan_products[];
-}
-
-export interface GET_VOUCHER_PLAN_COLLECTION {
-  /**
-   * fetch data from the table: "voucher_plan"
-   */
-  voucher_plan: GET_VOUCHER_PLAN_COLLECTION_voucher_plan[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_VOUCHER_PLAN
-// ====================================================
-
-export interface INSERT_VOUCHER_PLAN_insert_voucher_plan {
-  __typename: "voucher_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface INSERT_VOUCHER_PLAN {
-  /**
-   * insert data into the table: "voucher_plan"
-   */
-  insert_voucher_plan: INSERT_VOUCHER_PLAN_insert_voucher_plan | null;
-}
-
-export interface INSERT_VOUCHER_PLANVariables {
-  title: string;
-  description?: string | null;
-  appId: string;
-  startedAt?: any | null;
-  endedAt?: any | null;
-  productQuantityLimit: number;
-  voucherCodes: voucher_code_insert_input[];
-  voucherPlanProducts: voucher_plan_product_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_VOUCHER_PLAN
-// ====================================================
-
-export interface UPDATE_VOUCHER_PLAN_update_voucher_plan {
-  __typename: "voucher_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_VOUCHER_PLAN_delete_voucher_plan_product {
-  __typename: "voucher_plan_product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_VOUCHER_PLAN_insert_voucher_plan_product {
-  __typename: "voucher_plan_product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_VOUCHER_PLAN {
-  /**
-   * update data of the table: "voucher_plan"
-   */
-  update_voucher_plan: UPDATE_VOUCHER_PLAN_update_voucher_plan | null;
-  /**
-   * delete data from the table: "voucher_plan_product"
-   */
-  delete_voucher_plan_product: UPDATE_VOUCHER_PLAN_delete_voucher_plan_product | null;
-  /**
-   * insert data into the table: "voucher_plan_product"
-   */
-  insert_voucher_plan_product: UPDATE_VOUCHER_PLAN_insert_voucher_plan_product | null;
-}
-
-export interface UPDATE_VOUCHER_PLANVariables {
-  voucherPlanId: any;
-  title: string;
-  description?: string | null;
-  appId: string;
-  startedAt?: any | null;
-  endedAt?: any | null;
-  productQuantityLimit: number;
-  voucherPlanProducts: voucher_plan_product_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_ACTIVITY_ADMIN
 // ====================================================
 
@@ -4964,6 +4802,168 @@ export interface GET_COUPON__CODE_COLLECTION {
 
 export interface GET_COUPON__CODE_COLLECTIONVariables {
   couponPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_VOUCHER_PLAN_COLLECTION
+// ====================================================
+
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes {
+  __typename: "voucher_code";
+  id: any;
+  code: string;
+  count: number;
+  remaining: number;
+}
+
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate_sum {
+  __typename: "voucher_code_sum_fields";
+  count: number | null;
+  remaining: number | null;
+}
+
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate {
+  __typename: "voucher_code_aggregate_fields";
+  sum: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate_sum | null;
+}
+
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate {
+  __typename: "voucher_code_aggregate";
+  aggregate: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate | null;
+}
+
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_plan_products {
+  __typename: "voucher_plan_product";
+  id: any;
+  product_id: string;
+}
+
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan {
+  __typename: "voucher_plan";
+  id: any;
+  title: string;
+  description: string | null;
+  started_at: any | null;
+  ended_at: any | null;
+  product_quantity_limit: number;
+  /**
+   * An array relationship
+   */
+  voucher_codes: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes[];
+  /**
+   * An aggregated array relationship
+   */
+  voucher_codes_aggregate: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate;
+  /**
+   * An array relationship
+   */
+  voucher_plan_products: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_plan_products[];
+}
+
+export interface GET_VOUCHER_PLAN_COLLECTION {
+  /**
+   * fetch data from the table: "voucher_plan"
+   */
+  voucher_plan: GET_VOUCHER_PLAN_COLLECTION_voucher_plan[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_VOUCHER_PLAN
+// ====================================================
+
+export interface INSERT_VOUCHER_PLAN_insert_voucher_plan {
+  __typename: "voucher_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_VOUCHER_PLAN {
+  /**
+   * insert data into the table: "voucher_plan"
+   */
+  insert_voucher_plan: INSERT_VOUCHER_PLAN_insert_voucher_plan | null;
+}
+
+export interface INSERT_VOUCHER_PLANVariables {
+  title: string;
+  description?: string | null;
+  appId: string;
+  startedAt?: any | null;
+  endedAt?: any | null;
+  productQuantityLimit: number;
+  voucherCodes: voucher_code_insert_input[];
+  voucherPlanProducts: voucher_plan_product_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_VOUCHER_PLAN
+// ====================================================
+
+export interface UPDATE_VOUCHER_PLAN_update_voucher_plan {
+  __typename: "voucher_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_VOUCHER_PLAN_delete_voucher_plan_product {
+  __typename: "voucher_plan_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_VOUCHER_PLAN_insert_voucher_plan_product {
+  __typename: "voucher_plan_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_VOUCHER_PLAN {
+  /**
+   * update data of the table: "voucher_plan"
+   */
+  update_voucher_plan: UPDATE_VOUCHER_PLAN_update_voucher_plan | null;
+  /**
+   * delete data from the table: "voucher_plan_product"
+   */
+  delete_voucher_plan_product: UPDATE_VOUCHER_PLAN_delete_voucher_plan_product | null;
+  /**
+   * insert data into the table: "voucher_plan_product"
+   */
+  insert_voucher_plan_product: UPDATE_VOUCHER_PLAN_insert_voucher_plan_product | null;
+}
+
+export interface UPDATE_VOUCHER_PLANVariables {
+  voucherPlanId: any;
+  title: string;
+  description?: string | null;
+  appId: string;
+  startedAt?: any | null;
+  endedAt?: any | null;
+  productQuantityLimit: number;
+  voucherPlanProducts: voucher_plan_product_insert_input[];
 }
 
 /* tslint:disable */
@@ -6491,6 +6491,7 @@ export interface GET_ORDER_DISCOUNT_COLLECTIONVariables {
 
 export interface GET_PAYMENT_LOG_COLLECTION_payment_log_order_log_member {
   __typename: "member";
+  id: string;
   name: string;
   email: string;
 }
