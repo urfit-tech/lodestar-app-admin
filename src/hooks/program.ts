@@ -40,7 +40,7 @@ export const useProgramPreviewCollection = (memberId: string | null) => {
           list_price
           sale_price
           sold_at
-          program_plans(limit: 1) {
+          program_plans {
             id
             list_price
             sale_price
@@ -92,9 +92,9 @@ export const useProgramPreviewCollection = (memberId: string | null) => {
               : null,
             periodAmount: program.is_subscription && plan ? 1 : null,
             periodType: program.is_subscription && plan ? (plan.period_type as ProgramPlanPeriodType) : null,
-            enrollment: program.is_subscription
-              ? (plan && plan.program_plan_enrollments_aggregate.aggregate?.count) || 0
-              : program.program_enrollments_aggregate.aggregate?.count || 0,
+            enrollment: sum(
+              program.program_plans.map(plan => plan.program_plan_enrollments_aggregate.aggregate?.count || 0),
+            ),
             isDraft: !program.published_at,
             isPrivate: program.is_private,
           }
