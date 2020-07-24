@@ -142,6 +142,7 @@ const RecordingPage: React.FC = () => {
     if (selectWaveCollection.length === 1) {
       dstAudioData = selectWaveCollection[0].audioBuffer
     } else {
+      dstAudioData = mergeAudioBuffer(selectWaveCollection[0].audioBuffer, selectWaveCollection[1].audioBuffer)
       for (let i = 2; i < selectWaveCollection.length; i++) {
         if (dstAudioData) {
           dstAudioData = mergeAudioBuffer(dstAudioData, selectWaveCollection[i].audioBuffer)
@@ -170,6 +171,8 @@ const RecordingPage: React.FC = () => {
         .catch(error => {
           handleError(error)
         })
+    } else {
+      handleError(new Error('錄音失敗'))
     }
   }
 
