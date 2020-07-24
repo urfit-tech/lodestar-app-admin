@@ -1,5 +1,5 @@
-import { Icon } from 'antd'
-import React from 'react'
+import { Icon, Skeleton } from 'antd'
+import React, { useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../components/admin'
 import AppointmentPeriodCollectionTabs from '../../components/appointment/AppointmentPeriodCollectionTabs'
@@ -18,6 +18,10 @@ const AppointmentPeriodCollectionAdminPage: React.FC = () => {
     refetchAppointmentEnrollments,
   } = useAppointmentEnrollmentCollection()
 
+  useEffect(() => {
+    refetchAppointmentEnrollments && refetchAppointmentEnrollments()
+  }, [refetchAppointmentEnrollments])
+
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
@@ -25,12 +29,15 @@ const AppointmentPeriodCollectionAdminPage: React.FC = () => {
         <span>{formatMessage(commonMessages.menu.appointments)}</span>
       </AdminPageTitle>
 
-      <AppointmentPeriodCollectionTabs
-        loading={loadingAppointmentEnrollments}
-        periods={appointmentEnrollments}
-        withSelector={currentUserRole === 'app-owner'}
-        onRefetch={refetchAppointmentEnrollments}
-      />
+      {loadingAppointmentEnrollments ? (
+        <Skeleton active />
+      ) : (
+        <AppointmentPeriodCollectionTabs
+          periods={appointmentEnrollments}
+          withSelector={currentUserRole === 'app-owner'}
+          onRefetch={refetchAppointmentEnrollments}
+        />
+      )}
     </AdminLayout>
   )
 }

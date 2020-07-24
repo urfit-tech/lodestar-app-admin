@@ -258,7 +258,7 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
             </div>
           </StyledMeta>
         )}
-        {orderProduct.options.appointmentCanceledReason && (
+        {orderProduct.options?.appointmentCanceledReason && (
           <StyledModalMetaBlock>
             <StyledModalMetaTitle>{formatMessage(messages.canceledReason)}</StyledModalMetaTitle>
             {orderProduct.options.appointmentCanceledReason}

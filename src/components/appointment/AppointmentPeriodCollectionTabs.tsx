@@ -1,4 +1,4 @@
-import { Select, Skeleton, Tabs } from 'antd'
+import { Select, Tabs } from 'antd'
 import { uniqBy } from 'ramda'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -34,11 +34,10 @@ const messages = defineMessages({
 })
 
 const AppointmentPeriodCollectionTabs: React.FC<{
-  loading?: boolean
   periods: AppointmentPeriodProps[]
   withSelector?: boolean
   onRefetch?: () => void
-}> = ({ loading, periods, withSelector, onRefetch }) => {
+}> = ({ periods, withSelector, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const [selectedCreatorId, setSelectedCreatorId] = useState('')
@@ -90,9 +89,7 @@ const AppointmentPeriodCollectionTabs: React.FC<{
               </StyledFilterBlock>
             )}
 
-            {loading ? (
-              <Skeleton />
-            ) : tabContent.periods.length ? (
+            {tabContent.periods.length > 0 ? (
               tabContent.periods.map(period => (
                 <AppointmentPeriodCard key={period.orderProduct.id} {...period} onRefetch={onRefetch} />
               ))
