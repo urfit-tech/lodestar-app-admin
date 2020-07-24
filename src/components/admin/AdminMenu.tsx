@@ -199,6 +199,10 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
           <Icon component={() => <UserIcon />} />
           <span>{formatMessage(commonMessages.menu.ownerSettings)}</span>
         </Menu.Item>
+        <Menu.Item key="app_admin">
+          <Icon type="global" />
+          <span>{formatMessage(commonMessages.menu.appAdmin)}</span>
+        </Menu.Item>
       </AdminMenu>
     </div>
   )

@@ -280,6 +280,7 @@ export const commonMessages = {
     members: { id: 'common.menu.members', defaultMessage: '會員管理' },
     ownerSettings: { id: 'common.menu.ownerSettings', defaultMessage: '管理員設定' },
     creatorSettings: { id: 'common.menu.creatorSettings', defaultMessage: '創作者設定' },
+    appAdmin: { id: 'common.menu.appAdmin', defaultMessage: '網站管理' },
   }),
   product: defineMessages({
     program: { id: 'common.product.program', defaultMessage: '單次課程' },

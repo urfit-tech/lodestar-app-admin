@@ -4380,6 +4380,158 @@ export interface GET_APPOINTMENT_PLAN_ADMINVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_APP_BY_PK
+// ====================================================
+
+export interface GET_APP_BY_PK_app_by_pk_app_modules {
+  __typename: "app_module";
+  id: any;
+  /**
+   * activity | appointment | blog | invoice | learning_statistics | locale |
+   * member_card | merchandise | podcast | program_package | qrcode |
+   * social_connect | tempo_delivery | voucher
+   */
+  module_id: string;
+}
+
+export interface GET_APP_BY_PK_app_by_pk_app_settings {
+  __typename: "app_setting";
+  key: string;
+  value: string;
+}
+
+export interface GET_APP_BY_PK_app_by_pk_app_secrets {
+  __typename: "app_secret";
+  key: string;
+  value: string;
+}
+
+export interface GET_APP_BY_PK_app_by_pk {
+  __typename: "app";
+  id: string;
+  name: string | null;
+  title: string | null;
+  description: string | null;
+  vimeo_project_id: string | null;
+  /**
+   * An array relationship
+   */
+  app_modules: GET_APP_BY_PK_app_by_pk_app_modules[];
+  /**
+   * An array relationship
+   */
+  app_settings: GET_APP_BY_PK_app_by_pk_app_settings[];
+  /**
+   * An array relationship
+   */
+  app_secrets: GET_APP_BY_PK_app_by_pk_app_secrets[];
+}
+
+export interface GET_APP_BY_PK {
+  /**
+   * fetch data from the table: "app" using primary key columns
+   */
+  app_by_pk: GET_APP_BY_PK_app_by_pk | null;
+}
+
+export interface GET_APP_BY_PKVariables {
+  appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_APP
+// ====================================================
+
+export interface UPDATE_APP_update_app {
+  __typename: "app_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APP {
+  /**
+   * update data of the table: "app"
+   */
+  update_app: UPDATE_APP_update_app | null;
+}
+
+export interface UPDATE_APPVariables {
+  appId: string;
+  name?: string | null;
+  title?: string | null;
+  description?: string | null;
+  vimeoProjectId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPSERT_APP_SETTINGS
+// ====================================================
+
+export interface UPSERT_APP_SETTINGS_insert_app_setting {
+  __typename: "app_setting_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_APP_SETTINGS {
+  /**
+   * insert data into the table: "app_setting"
+   */
+  insert_app_setting: UPSERT_APP_SETTINGS_insert_app_setting | null;
+}
+
+export interface UPSERT_APP_SETTINGSVariables {
+  appSettings: app_setting_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPSERT_APP_SECRETS
+// ====================================================
+
+export interface UPSERT_APP_SECRETS_insert_app_secret {
+  __typename: "app_secret_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_APP_SECRETS {
+  /**
+   * insert data into the table: "app_secret"
+   */
+  insert_app_secret: UPSERT_APP_SECRETS_insert_app_secret | null;
+}
+
+export interface UPSERT_APP_SECRETSVariables {
+  appSecrets: app_secret_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_APPOINTMENT_ENROLLMENT_COLLECTION
 // ====================================================
 
@@ -7765,6 +7917,24 @@ export enum app_nav_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "app_secret"
+ */
+export enum app_secret_constraint {
+  app_secret_app_id_key_key = "app_secret_app_id_key_key",
+  app_secret_pkey = "app_secret_pkey",
+}
+
+/**
+ * update columns of table "app_secret"
+ */
+export enum app_secret_update_column {
+  app_id = "app_id",
+  id = "id",
+  key = "key",
+  value = "value",
+}
+
+/**
  * unique or primary key constraints on table "app_setting"
  */
 export enum app_setting_constraint {
@@ -9708,6 +9878,7 @@ export interface app_bool_exp {
   app_admins?: app_admin_bool_exp | null;
   app_modules?: app_module_bool_exp | null;
   app_navs?: app_nav_bool_exp | null;
+  app_secrets?: app_secret_bool_exp | null;
   app_settings?: app_setting_bool_exp | null;
   cards?: card_bool_exp | null;
   cart_items?: cart_item_bool_exp | null;
@@ -9740,6 +9911,7 @@ export interface app_insert_input {
   app_admins?: app_admin_arr_rel_insert_input | null;
   app_modules?: app_module_arr_rel_insert_input | null;
   app_navs?: app_nav_arr_rel_insert_input | null;
+  app_secrets?: app_secret_arr_rel_insert_input | null;
   app_settings?: app_setting_arr_rel_insert_input | null;
   cards?: card_arr_rel_insert_input | null;
   cart_items?: cart_item_arr_rel_insert_input | null;
@@ -9877,6 +10049,46 @@ export interface app_on_conflict {
   constraint: app_constraint;
   update_columns: app_update_column[];
   where?: app_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "app_secret"
+ */
+export interface app_secret_arr_rel_insert_input {
+  data: app_secret_insert_input[];
+  on_conflict?: app_secret_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "app_secret". All fields are combined with a logical 'AND'.
+ */
+export interface app_secret_bool_exp {
+  _and?: (app_secret_bool_exp | null)[] | null;
+  _not?: app_secret_bool_exp | null;
+  _or?: (app_secret_bool_exp | null)[] | null;
+  app_id?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  key?: String_comparison_exp | null;
+  value?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "app_secret"
+ */
+export interface app_secret_insert_input {
+  app_id?: string | null;
+  id?: any | null;
+  key?: string | null;
+  value?: string | null;
+}
+
+/**
+ * on conflict condition type for table "app_secret"
+ */
+export interface app_secret_on_conflict {
+  constraint: app_secret_constraint;
+  update_columns: app_secret_update_column[];
+  where?: app_secret_bool_exp | null;
 }
 
 /**

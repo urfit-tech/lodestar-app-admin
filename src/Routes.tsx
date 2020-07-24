@@ -246,6 +246,14 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'content-creator',
   },
+
+  // app settings admin
+  app_admin: {
+    path: '/app',
+    pageName: 'AppAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
 }
 
 export default () => (

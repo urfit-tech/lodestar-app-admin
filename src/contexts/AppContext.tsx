@@ -3,40 +3,10 @@ import { message } from 'antd'
 import gql from 'graphql-tag'
 import React, { createContext, useEffect, useState } from 'react'
 import types from '../types'
+import { AppProps, Module } from '../types/app'
 
-type Module =
-  | 'activity'
-  | 'appointment'
-  | 'blog'
-  | 'coupon_scope'
-  | 'invoice'
-  | 'learning_statistics'
-  | 'locale'
-  | 'member_card'
-  | 'merchandise'
-  | 'podcast'
-  | 'podcast_recording'
-  | 'program_package'
-  | 'project'
-  | 'qrcode'
-  | 'social_connect'
-  | 'tempo_delivery'
-  | 'voucher'
-
-type AppProps = {
-  loading: boolean
-  id: string
-  name: string | null
-  title: string | null
-  description: string | null
-  enabledModules: {
-    [key in Module]?: boolean
-  }
-  settings: {
-    [key: string]: string
-  }
-}
-const defaultAppProps: AppProps = {
+type AppContextProps = { loading: boolean } & AppProps
+const defaultAppProps: AppContextProps = {
   loading: true,
   id: process.env.REACT_APP_ID || '',
   name: '',
@@ -45,7 +15,7 @@ const defaultAppProps: AppProps = {
   enabledModules: {},
   settings: {},
 }
-export const AppContext = createContext<AppProps>(defaultAppProps)
+export const AppContext = createContext<AppContextProps>(defaultAppProps)
 
 export const AppProvider: React.FC = ({ children }) => {
   const apolloClient = useApolloClient()
@@ -93,7 +63,7 @@ export const AppProvider: React.FC = ({ children }) => {
     },
   )
 
-  const app: AppProps =
+  const app: AppContextProps =
     loading || error || !data || !data.app_by_pk
       ? defaultAppProps
       : (() => {
