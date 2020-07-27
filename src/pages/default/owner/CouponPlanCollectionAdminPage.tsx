@@ -1,4 +1,5 @@
-import { Button, Icon, Tabs, Typography } from 'antd'
+import Icon, { FileAddOutlined } from '@ant-design/icons'
+import { Button, Tabs, Typography } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import CouponPlanAdminCard from '../../../components/checkout/CouponPlanAdminCard'
@@ -43,11 +44,11 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
 
       <CouponPlanAdminModal
         renderTrigger={({ setVisible }) => (
-          <Button type="primary" onClick={() => setVisible(true)} className="mb-5" icon="file-add">
+          <Button type="primary" onClick={() => setVisible(true)} className="mb-5" icon={<FileAddOutlined />}>
             {formatMessage(promotionMessages.ui.createCouponPlan)}
           </Button>
         )}
-        icon={<Icon type="file-add" />}
+        icon={<FileAddOutlined />}
         title={formatMessage(promotionMessages.ui.createCouponPlan)}
         onRefetch={refetchCouponPlans}
       />

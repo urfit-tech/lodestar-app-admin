@@ -1,4 +1,5 @@
-import { Button, Divider, Dropdown, Icon, Menu } from 'antd'
+import { EditOutlined, MoreOutlined } from '@ant-design/icons'
+import { Button, Divider, Dropdown, Menu } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -150,7 +151,7 @@ const CouponPlanAdminCard: React.FC<{
                   renderTrigger={({ setVisible }) => (
                     <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</span>
                   )}
-                  icon={<Icon type="edit" />}
+                  icon={<EditOutlined />}
                   title={formatMessage(promotionMessages.ui.editCouponPlan)}
                   couponPlan={couponPlan}
                   onRefetch={onRefetch}
@@ -159,7 +160,7 @@ const CouponPlanAdminCard: React.FC<{
             </Menu>
           }
         >
-          <Icon type="more" />
+          <MoreOutlined />
         </Dropdown>
       </div>
 

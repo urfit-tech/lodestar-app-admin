@@ -3,12 +3,12 @@ import React from 'react'
 
 const CurrencyInput: React.FC<{
   value?: number
-  onChange?: (value: number | undefined) => void
+  onChange?: (value?: number) => void
 }> = ({ value, onChange }) => {
   return (
     <InputNumber
       value={value}
-      onChange={onChange}
+      onChange={v => onChange && onChange(typeof v === 'number' ? v : undefined)}
       min={0}
       formatter={value => `NT$ ${value}`}
       parser={value => (value ? value.replace(/\D/g, '') : '')}

@@ -1,6 +1,8 @@
-import { Button, Form, Input, message, Select, Typography } from 'antd'
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { Button, Input, message, Select, Typography } from 'antd'
 import { CardProps } from 'antd/lib/card'
-import { FormComponentProps } from 'antd/lib/form'
 import BraftEditor from 'braft-editor'
 import React, { useContext } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -161,7 +163,7 @@ const ProfileBasicCard: React.FC<ProfileBasicCardProps> = ({
             })(
               <Select mode="tags">
                 {tags.map(tag => (
-                  <Select.Option key={tag}>{tag}</Select.Option>
+                  <Select.Option value={tag}>{tag}</Select.Option>
                 ))}
               </Select>,
             )}

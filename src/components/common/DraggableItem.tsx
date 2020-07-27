@@ -1,4 +1,4 @@
-import { Icon } from 'antd'
+import { DragOutlined } from '@ant-design/icons'
 import React, { HTMLAttributes } from 'react'
 import styled from 'styled-components'
 
@@ -18,7 +18,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ dataId, handlerClassName,
   return (
     <StyledDraggableItem {...divProps} data-id={dataId}>
       <div className="d-flex align-items-center">
-        <Icon type="drag" onClick={() => {}} className={handlerClassName + ' mr-3'} />
+        <DragOutlined onClick={() => {}} className={handlerClassName + ' mr-3'} />
         {children}
       </div>
       <div>{actions}</div>

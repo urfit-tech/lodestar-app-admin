@@ -1,4 +1,5 @@
-import { Button, Icon, Tabs } from 'antd'
+import { ArrowLeftOutlined, FileAddOutlined } from '@ant-design/icons'
+import { Button, Tabs } from 'antd'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
@@ -35,7 +36,7 @@ const ProgramPackageAdminPage: React.FC = () => {
       <AdminHeader>
         <Link to="/program-packages">
           <Button type="link" className="mr-3">
-            <Icon type="arrow-left" />
+            <ArrowLeftOutlined />
           </Button>
         </Link>
 
@@ -95,9 +96,9 @@ const ProgramPackageAdminPage: React.FC = () => {
               </AdminBlock>
 
               {/* <AdminBlock>
-                <AdminBlockTitle>{formatMessage(programPackageMessages.label.deleteProgramPackage)}</AdminBlockTitle>
-                <ProgramPackageDeletionBlock />
-              </AdminBlock> */}
+              <AdminBlockTitle>{formatMessage(programPackageMessages.label.deleteProgramPackage)}</AdminBlockTitle>
+              <ProgramPackageDeletionBlock />
+            </AdminBlock> */}
             </div>
           </Tabs.TabPane>
 
@@ -110,7 +111,7 @@ const ProgramPackageAdminPage: React.FC = () => {
                 onRefetch={refetch}
                 title={formatMessage(programPackageMessages.ui.createPlan)}
                 renderTrigger={({ setVisible }) => (
-                  <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
+                  <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
                     {formatMessage(programPackageMessages.ui.createPlan)}
                   </Button>
                 )}

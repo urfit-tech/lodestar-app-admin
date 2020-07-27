@@ -81,9 +81,7 @@ const AppointmentPeriodCollectionTabs: React.FC<{
                 <Select value={selectedCreatorId} onChange={(value: string) => setSelectedCreatorId(value)}>
                   <Select.Option value="">{formatMessage(messages.allInstructors)}</Select.Option>
                   {creators.map(creator => (
-                    <Select.Option key={creator.id} value={creator.id}>
-                      {creator.name}
-                    </Select.Option>
+                    <Select.Option value={creator.id}>{creator.name}</Select.Option>
                   ))}
                 </Select>
               </StyledFilterBlock>

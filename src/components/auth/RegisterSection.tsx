@@ -1,5 +1,8 @@
-import { Button, Form, Icon, Input } from 'antd'
-import { FormComponentProps } from 'antd/lib/form'
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons'
+import { Button, Input } from 'antd'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { AppContext } from '../../contexts/AppContext'
@@ -73,7 +76,7 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChan
         <Form.Item>
           {form.getFieldDecorator('username', {
             rules: [{ required: true, message: formatMessage(errorMessages.form.accountNameOrEmail) }],
-          })(<Input placeholder={formatMessage(commonMessages.term.username)} suffix={<Icon type="user" />} />)}
+          })(<Input placeholder={formatMessage(commonMessages.term.username)} suffix={<UserOutlined />} />)}
         </Form.Item>
         <Form.Item>
           {form.getFieldDecorator('email', {
@@ -86,7 +89,7 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChan
               },
               { type: 'email', message: formatMessage(errorMessages.form.emailFormat) },
             ],
-          })(<Input placeholder="Email" suffix={<Icon type="mail" />} />)}
+          })(<Input placeholder="Email" suffix={<MailOutlined />} />)}
         </Form.Item>
         <Form.Item>
           {form.getFieldDecorator('password', {
@@ -102,7 +105,7 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({ form, onAuthStateChan
             <Input
               type="password"
               placeholder={formatMessage(commonMessages.term.password)}
-              suffix={<Icon type="lock" />}
+              suffix={<LockOutlined />}
             />,
           )}
         </Form.Item>

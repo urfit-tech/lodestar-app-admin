@@ -1,4 +1,5 @@
-import { Button, Icon, Modal, Tabs, Typography } from 'antd'
+import Icon, { DownloadOutlined } from '@ant-design/icons'
+import { Button, Modal, Tabs, Typography } from 'antd'
 import { ModalProps } from 'antd/lib/modal'
 import BraftEditor, { EditorState } from 'braft-editor'
 import React, { useState } from 'react'
@@ -99,7 +100,7 @@ const CouponPlanDescriptionModal: React.FC<
 
       <Tabs activeKey={activeKey || 'coupon-codes'} onChange={key => setActiveKey(key)}>
         <Tabs.TabPane key="coupon-codes" tab={formatMessage(promotionMessages.term.couponCode)} className="pt-4">
-          <Button type="primary" icon="download" className="mb-4" onClick={() => exportCodes()}>
+          <Button type="primary" icon={<DownloadOutlined />} className="mb-4" onClick={() => exportCodes()}>
             {formatMessage(promotionMessages.ui.exportCodes)}
           </Button>
 

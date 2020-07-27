@@ -1,4 +1,4 @@
-import { Icon } from 'antd'
+import { DeleteOutlined } from '@ant-design/icons'
 import React from 'react'
 import styled from 'styled-components'
 import { AvatarImage } from '../common/Image'
@@ -27,7 +27,7 @@ const RoleAdminBlock: React.FC<{
     <StyledInstructorBlock className="d-flex align-items-center justify-content-center">
       <AvatarImage src={pictureUrl} size={36} className="mr-3" />
       <StyledName className="flex-grow-1">{name}</StyledName>
-      {onDelete && <Icon type="delete" onClick={() => onDelete()} />}
+      {onDelete && <DeleteOutlined onClick={() => onDelete()} />}
     </StyledInstructorBlock>
   )
 }

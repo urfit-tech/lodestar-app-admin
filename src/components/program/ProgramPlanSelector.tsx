@@ -5,7 +5,7 @@ import gql from 'graphql-tag'
 import React from 'react'
 import types from '../../types'
 
-type ProgramPlanSelectorProps = SelectProps & {
+type ProgramPlanSelectorProps = SelectProps<string> & {
   programId: string
 }
 const ProgramPlanSelector: React.FC<ProgramPlanSelectorProps> = ({ programId, ...selectProps }) => {
@@ -18,7 +18,7 @@ const ProgramPlanSelector: React.FC<ProgramPlanSelectorProps> = ({ programId, ..
     <Select mode="multiple" loading={loading} style={{ width: '100%' }} {...selectProps}>
       {data &&
         data.program_plan &&
-        data.program_plan.map(programPlan => <Select.Option key={programPlan.id}>{programPlan.title}</Select.Option>)}
+        data.program_plan.map(programPlan => <Select.Option value={programPlan.id}>{programPlan.title}</Select.Option>)}
     </Select>
   )
 }

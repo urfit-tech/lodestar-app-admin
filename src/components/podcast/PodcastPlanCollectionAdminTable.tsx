@@ -1,4 +1,5 @@
-import { Icon, Input, Table } from 'antd'
+import { SearchOutlined } from '@ant-design/icons'
+import { Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { ApolloError, ApolloQueryResult } from 'apollo-client'
 import React, { useState } from 'react'
@@ -78,7 +79,7 @@ const getColumnSearchProps: (
       />
     </div>
   ),
-  filterIcon: filtered => <Icon type="search" style={{ color: filtered ? 'var(--primary)' : undefined }} />,
+  filterIcon: filtered => <SearchOutlined style={{ color: filtered ? 'var(--primary)' : undefined }} />,
 })
 
 type PodcastPlan = {

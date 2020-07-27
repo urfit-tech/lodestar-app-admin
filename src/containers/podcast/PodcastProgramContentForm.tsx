@@ -1,6 +1,9 @@
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import Icon, { CloseOutlined, QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Icon, InputNumber, message, Skeleton, Tooltip } from 'antd'
-import { FormComponentProps } from 'antd/lib/form'
+import { Button, InputNumber, message, Skeleton, Tooltip } from 'antd'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import { extname } from 'path'
@@ -102,7 +105,7 @@ const PodcastProgramContentForm: React.FC<PodcastProgramContentFormProps> = ({ f
           <span>
             <span className="mr-2">{formatMessage(podcastMessages.term.audioFile)}</span>
             <Tooltip title={<StyledTips>{formatMessage(podcastMessages.text.audioFileTips)}</StyledTips>}>
-              <Icon type="question-circle" theme="filled" />
+              <QuestionCircleFilled />
             </Tooltip>
           </span>
         }
@@ -132,7 +135,7 @@ const PodcastProgramContentForm: React.FC<PodcastProgramContentFormProps> = ({ f
             <span>
               {podcastProgram.id}.{podcastProgram.contentType}
             </span>
-            <Icon type="close" className="cursor-pointer" onClick={() => handleUploadAudio(null)} />
+            <CloseOutlined className="cursor-pointer" onClick={() => handleUploadAudio(null)} />
           </StyledFileBlock>
         ) : null}
       </Form.Item>

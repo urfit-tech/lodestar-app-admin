@@ -1,5 +1,8 @@
-import { Button, Form, Icon, InputNumber, Modal, Radio } from 'antd'
-import { FormComponentProps } from 'antd/lib/form'
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { FileAddOutlined } from '@ant-design/icons'
+import { Button, InputNumber, Modal, Radio } from 'antd'
 import React, { Dispatch, SetStateAction, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -134,7 +137,7 @@ const PodcastPlanAdminModal: React.FC<PodcastPlanCreationModalProps> = ({
         onCancel={() => onVisibleSet(false)}
       >
         <StyledIcon>
-          <Icon type="file-add" />
+          <FileAddOutlined />
         </StyledIcon>
         <StyledTitle>{formatMessage(podcastMessages.term.podcastPlan)}</StyledTitle>
         <Form hideRequiredMark colon={false}>

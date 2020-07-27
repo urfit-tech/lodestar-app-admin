@@ -1,3 +1,4 @@
+import { FileAddOutlined } from '@ant-design/icons'
 import { Button, Input } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -56,7 +57,12 @@ const MerchandiseInventoryAdminModal: React.FC<{
       title={formatMessage(merchandiseMessages.ui.modifyInventory)}
       footer={null}
       renderTrigger={({ setVisible }) => (
-        <Button type="primary" icon="file-add" disabled={inventories.length === 0} onClick={() => setVisible(true)}>
+        <Button
+          type="primary"
+          icon={<FileAddOutlined />}
+          disabled={inventories.length === 0}
+          onClick={() => setVisible(true)}
+        >
           {formatMessage(merchandiseMessages.ui.modifyInventory)}
         </Button>
       )}

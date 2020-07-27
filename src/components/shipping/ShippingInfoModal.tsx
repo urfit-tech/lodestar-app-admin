@@ -37,9 +37,7 @@ const ShippingInfoModal: React.FC<{
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button icon="" onClick={() => setVisible(true)}>
-          {formatMessage(messages.shippingInfo)}
-        </Button>
+        <Button onClick={() => setVisible(true)}>{formatMessage(messages.shippingInfo)}</Button>
       )}
       footer={null}
     >

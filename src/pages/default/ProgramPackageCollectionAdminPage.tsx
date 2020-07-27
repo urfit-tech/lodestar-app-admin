@@ -1,4 +1,5 @@
-import { Button, Icon, Tabs, Typography } from 'antd'
+import Icon, { FileAddOutlined } from '@ant-design/icons'
+import { Button, Tabs, Typography } from 'antd'
 import React, { useContext, useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -46,7 +47,7 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
         <ProductCreationModal
           classType="programPackage"
           renderTrigger={({ setVisible }) => (
-            <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
+            <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
               {formatMessage(programPackageMessages.ui.createProgramPackage)}
             </Button>
           )}

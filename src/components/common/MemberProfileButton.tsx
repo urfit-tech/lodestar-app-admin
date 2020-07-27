@@ -1,4 +1,6 @@
-import { Button, Icon, List, Popover } from 'antd'
+import { Icon as LegacyIcon } from '@ant-design/compatible'
+import { LogoutOutlined, MenuOutlined } from '@ant-design/icons'
+import { Button, List, Popover } from 'antd'
 import React, { useContext } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -57,7 +59,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
       onClick={() => (navLink.external ? window.location.assign(navLink.href) : history.push(navLink.href))}
       style={{ cursor: 'pointer' }}
     >
-      {navLink.icon ? <Icon type={navLink.icon} className="mr-2" /> : <BlankIcon className="mr-2" />}
+      {navLink.icon ? <LegacyIcon type={navLink.icon} className="mr-2" /> : <BlankIcon className="mr-2" />}
       {navLink.label}
     </List.Item>
   ))
@@ -96,7 +98,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
             history.push('/')
           }}
         >
-          <Icon type="logout" className="mr-2" />
+          <LogoutOutlined className="mr-2" />
           {formatMessage(commonMessages.ui.logout)}
         </List.Item>
       </StyledList>
@@ -104,17 +106,20 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
   )
 
   return isAuthenticated ? (
-    <Popover placement="bottomRight" trigger="click" content={content} className="ml-2">
+    <>
       <Responsive.Default>
-        <Button type="link" icon="menu" />
+        <Popover placement="bottomRight" trigger="click" content={content} className="ml-2">
+          <Button type="link" icon={<MenuOutlined />} />
+        </Popover>
       </Responsive.Default>
-
       <Responsive.Desktop>
-        <div className="cursor-pointer">
-          <MemberAvatar memberId={currentMemberId || ''} size={36} />
-        </div>
+        <Popover placement="bottomRight" trigger="click" content={content} className="ml-2">
+          <div className="cursor-pointer">
+            <MemberAvatar memberId={currentMemberId || ''} size={36} />
+          </div>
+        </Popover>
       </Responsive.Desktop>
-    </Popover>
+    </>
   ) : (
     <>
       <Responsive.Default>
@@ -130,7 +135,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
             </Wrapper>
           }
         >
-          <Button type="link" icon="menu" />
+          <Button type="link" icon={<MenuOutlined />} />
         </Popover>
       </Responsive.Default>
 

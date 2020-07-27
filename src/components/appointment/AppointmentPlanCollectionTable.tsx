@@ -1,4 +1,5 @@
-import { Icon, Input, Table } from 'antd'
+import { SearchOutlined } from '@ant-design/icons'
+import { Input, Table } from 'antd'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -64,9 +65,7 @@ const messages = defineMessages({
   people: { id: 'appointment.label.people', defaultMessage: '{count} 人' },
 })
 
-const filterIcon = (filtered: boolean) => (
-  <Icon type="search" style={{ color: filtered ? 'var(--primary)' : undefined }} />
-)
+const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filtered ? 'var(--primary)' : undefined }} />
 
 export type AppointmentPlanProps = {
   id: string

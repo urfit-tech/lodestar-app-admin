@@ -1,5 +1,8 @@
-import { Button, Form, Icon, Input } from 'antd'
-import { FormComponentProps } from 'antd/lib/form'
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { FileAddOutlined } from '@ant-design/icons'
+import { Button, Input } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -62,11 +65,11 @@ const ActivityCreationModal: React.FC<ActivityCreationModalProps> = ({ form, onC
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
+        <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
           {formatMessage(commonMessages.ui.create)}
         </Button>
       )}
-      icon={<Icon type="file-add" />}
+      icon={<FileAddOutlined />}
       title={formatMessage(commonMessages.ui.create)}
       cancelText={formatMessage(commonMessages.ui.cancel)}
       okText={formatMessage(commonMessages.ui.create)}

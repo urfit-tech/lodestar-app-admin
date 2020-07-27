@@ -1,11 +1,14 @@
-import { Checkbox, DatePicker, Form, Icon, InputNumber } from 'antd'
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { ExclamationCircleFilled } from '@ant-design/icons'
+import { Checkbox, DatePicker, InputNumber } from 'antd'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
 
-const StyledIcon = styled(Icon)`
+const StyledIcon = styled(ExclamationCircleFilled)`
   color: #ff7d62;
 `
 
@@ -51,7 +54,7 @@ const SaleInput: React.FC<{
             onChange={price =>
               onChange &&
               onChange({
-                price: price || 0,
+                price: typeof price === 'number' ? price : 0,
                 soldAt: value?.soldAt || null,
               })
             }
@@ -75,7 +78,7 @@ const SaleInput: React.FC<{
         </Form.Item>
         {value?.soldAt && moment(value.soldAt).isBefore(moment()) ? (
           <div className="d-inline-block">
-            <StyledIcon type="exclamation-circle" theme="filled" className="mr-1" />
+            <StyledIcon className="mr-1" />
             <span>{formatMessage(commonMessages.label.outdated)}</span>
           </div>
         ) : null}

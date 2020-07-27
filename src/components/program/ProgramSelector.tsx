@@ -15,9 +15,9 @@ export const OwnedProgramSelector: React.FC<SelectProps<string>> = selectProps =
 
   return (
     <Select loading={loadingPrograms} style={{ width: '100%' }} defaultValue="all" {...selectProps}>
-      <Select.Option key="all">{formatMessage(programMessages.label.programTitle)}</Select.Option>
+      <Select.Option value="all">{formatMessage(programMessages.label.programTitle)}</Select.Option>
       {programs.map(program => (
-        <Select.Option key={program.id}>{program.title}</Select.Option>
+        <Select.Option value={program.id}>{program.title}</Select.Option>
       ))}
     </Select>
   )
@@ -29,9 +29,9 @@ export const EditableProgramSelector: React.FC<ProgramSelectorProps> = ({ member
 
   return (
     <Select loading={loadingPrograms} style={{ width: '100%' }} defaultValue="all" {...selectProps}>
-      <Select.Option key="all">{formatMessage(programMessages.label.programTitle)}</Select.Option>
+      <Select.Option value="all">{formatMessage(programMessages.label.programTitle)}</Select.Option>
       {programs.map(program => (
-        <Select.Option key={program.id}>{program.title}</Select.Option>
+        <Select.Option value={program.id}>{program.title}</Select.Option>
       ))}
     </Select>
   )

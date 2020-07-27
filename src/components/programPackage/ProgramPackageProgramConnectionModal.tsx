@@ -1,6 +1,9 @@
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { FileAddOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Button, Form, Icon, message, TreeSelect } from 'antd'
-import { FormComponentProps } from 'antd/lib/form'
+import { Button, message, TreeSelect } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -53,11 +56,11 @@ const ProgramPackageProgramConnectionModal: React.FC<ProgramPackageProgramConnec
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
+        <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
           {formatMessage(programPackageMessages.ui.connectProgram)}
         </Button>
       )}
-      icon={<Icon type="file-add" />}
+      icon={<FileAddOutlined />}
       title={formatMessage(programPackageMessages.ui.connectProgram)}
       footer={null}
       destroyOnClose

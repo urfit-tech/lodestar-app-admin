@@ -8,7 +8,7 @@ const TagSelector: React.FC<{ value?: string; onChange?: (value: string) => void
   return (
     <Select mode="tags" value={value} onChange={onChange}>
       {tags.map(tag => (
-        <Select.Option key={tag}>{tag}</Select.Option>
+        <Select.Option value={tag}>{tag}</Select.Option>
       ))}
     </Select>
   )

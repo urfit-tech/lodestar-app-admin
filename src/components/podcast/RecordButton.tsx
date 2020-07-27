@@ -1,4 +1,5 @@
-import { Button, Icon } from 'antd'
+import Icon from '@ant-design/icons'
+import { Button } from 'antd'
 import { ButtonProps } from 'antd/lib/button'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'

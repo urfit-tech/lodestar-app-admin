@@ -1,5 +1,6 @@
+import { BookFilled } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Icon, Select, Skeleton, Typography } from 'antd'
+import { Select, Skeleton, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -21,16 +22,16 @@ const ProgramIssueCollectionAdminPage = () => {
   return (
     <AdminLayout>
       <Typography.Title level={3} className="mb-4">
-        <Icon type="book" theme="filled" className="mr-3" />
+        <BookFilled className="mr-3" />
         <span>{formatMessage(commonMessages.menu.programIssues)}</span>
       </Typography.Title>
 
       <div className="row mb-4">
         <div className="col-12 col-sm-3 mb-2 mb-md-0">
           <Select style={{ width: '100%' }} value={selectedStatus} onChange={(key: string) => setSelectedStatus(key)}>
-            <Select.Option key="unsolved">{formatMessage(programMessages.status.issueOpen)}</Select.Option>
-            <Select.Option key="solved">{formatMessage(programMessages.status.issueSolved)}</Select.Option>
-            <Select.Option key="all">{formatMessage(commonMessages.label.all)}</Select.Option>
+            <Select.Option value="unsolved">{formatMessage(programMessages.status.issueOpen)}</Select.Option>
+            <Select.Option value="solved">{formatMessage(programMessages.status.issueSolved)}</Select.Option>
+            <Select.Option value="all">{formatMessage(commonMessages.label.all)}</Select.Option>
           </Select>
         </div>
         <div className="col-12 col-sm-9 pl-md-0">

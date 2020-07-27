@@ -1,3 +1,4 @@
+import { BellOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Badge, Button, List, Popover } from 'antd'
 import gql from 'graphql-tag'
@@ -121,7 +122,7 @@ const NotificationDropdown: React.FC<{
       content={content}
     >
       <StyledBadge count={notifications.filter(notification => notification.readAt === null).length} className="mr-2">
-        <StyledButton type="link" icon="bell" />
+        <StyledButton type="link" icon={<BellOutlined />} />
       </StyledBadge>
     </Popover>
   )

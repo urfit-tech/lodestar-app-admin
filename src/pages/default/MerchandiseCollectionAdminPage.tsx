@@ -1,4 +1,5 @@
-import { Button, Icon, Input, Tabs } from 'antd'
+import Icon, { FileAddOutlined } from '@ant-design/icons'
+import { Button, Input, Tabs } from 'antd'
 import React, { useContext, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -77,7 +78,7 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
               withCategorySelector
               classType="merchandise"
               renderTrigger={({ setVisible }) => (
-                <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
+                <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
                   {formatMessage(merchandiseMessages.ui.createMerchandise)}
                 </Button>
               )}

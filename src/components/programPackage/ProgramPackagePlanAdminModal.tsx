@@ -1,6 +1,8 @@
+import { Form } from '@ant-design/compatible'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, Icon, Input, InputNumber, Radio } from 'antd'
-import Form, { FormComponentProps } from 'antd/lib/form'
+import { Button, Checkbox, Input, InputNumber, Radio } from 'antd'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
@@ -152,7 +154,7 @@ const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> 
 
   return (
     <AdminModal
-      icon={<Icon type="file-add" />}
+      icon={<FileAddOutlined />}
       footer={null}
       destroyOnClose
       renderFooter={({ setVisible }) => (

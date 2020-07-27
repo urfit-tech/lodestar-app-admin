@@ -1,4 +1,5 @@
-import { Icon, Tabs } from 'antd'
+import Icon from '@ant-design/icons'
+import { Tabs } from 'antd'
 import React, { useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'

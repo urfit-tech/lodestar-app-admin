@@ -1,5 +1,6 @@
+import { Icon as LegacyIcon } from '@ant-design/compatible'
 import { useMutation } from '@apollo/react-hooks'
-import { Icon, Tag, Typography } from 'antd'
+import { Tag, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -62,7 +63,7 @@ const ProgramContentAdminItem: React.FC<{
             </StyledDescriptions>
           )
         ) : (
-          <Icon
+          <LegacyIcon
             type={programContent.publishedAt ? 'eye' : 'eye-invisible'}
             className="mr-3"
             onClick={() =>

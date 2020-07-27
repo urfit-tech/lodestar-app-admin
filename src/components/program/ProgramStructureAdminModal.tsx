@@ -1,5 +1,6 @@
+import { DragOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Icon } from 'antd'
+import { Button } from 'antd'
 import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -86,7 +87,7 @@ const ProgramStructureAdminModal: React.FC<{
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button type="link" icon="drag" onClick={() => setVisible(true)}>
+        <Button type="link" icon={<DragOutlined />} onClick={() => setVisible(true)}>
           {formatMessage(messages.sortProgram)}
         </Button>
       )}
@@ -113,7 +114,7 @@ const ProgramStructureAdminModal: React.FC<{
         {sections.map((section, index) => (
           <div key={section.id} className="mb-3">
             <StyledDraggableSectionLabel className="draggable-section cursor-pointer mb-2">
-              <Icon type="drag" className="mr-2" />
+              <DragOutlined className="mr-2" />
               <span>{section.title}</span>
             </StyledDraggableSectionLabel>
             <ReactSortable

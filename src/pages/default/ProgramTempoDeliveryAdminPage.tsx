@@ -1,4 +1,7 @@
-import { Button, Checkbox, Divider, Dropdown, Form, Icon, Menu, Select, Spin, Table, Tooltip } from 'antd'
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import Icon, { CaretDownOutlined } from '@ant-design/icons'
+import { Button, Checkbox, Divider, Dropdown, Menu, Select, Spin, Table, Tooltip } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
@@ -128,7 +131,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
               overlay={
                 <Menu
                   onClick={({ key }) => {
-                    setSelectedPackageId(key)
+                    setSelectedPackageId(key as string)
                     setSelectedPlanId(null)
                   }}
                 >
@@ -142,7 +145,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
                 <div className="mx-2">
                   {programPackages.find(programPackage => programPackage.id === packageId)?.title}
                 </div>
-                <Icon type="caret-down" className="ml-1" />
+                <CaretDownOutlined className="ml-1" />
               </StyledProgramPackageTitle>
             </Dropdown>
           ) : null}
@@ -155,7 +158,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
             <Dropdown
               trigger={['click']}
               overlay={
-                <Menu onClick={({ key }) => setSelectedPlanId(key)}>
+                <Menu onClick={({ key }) => setSelectedPlanId(key as string)}>
                   {programPackagePlans.map(programPackagePlan => (
                     <StyledItem key={programPackagePlan.id}>{programPackagePlan.title}</StyledItem>
                   ))}
@@ -167,7 +170,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
                 <div className="mx-2">
                   {programPackagePlans.find(programPackagePlan => programPackagePlan.id === planId)?.title}
                 </div>
-                <Icon type="caret-down" className="ml-1" />
+                <CaretDownOutlined className="ml-1" />
               </StyledProgramPackagePlanTitle>
             </Dropdown>
           ) : null}
@@ -213,9 +216,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
                     }
                   >
                     {programs.map(program => (
-                      <Select.Option key={program.id} value={program.programPackageProgramId}>
-                        {program.title}
-                      </Select.Option>
+                      <Select.Option value={program.programPackageProgramId}>{program.title}</Select.Option>
                     ))}
                   </Select>
                 </Form.Item>

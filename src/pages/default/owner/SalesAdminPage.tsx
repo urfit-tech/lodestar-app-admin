@@ -1,4 +1,5 @@
-import { Icon, Typography } from 'antd'
+import { DollarOutlined } from '@ant-design/icons'
+import { Typography } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import AdminLayout from '../../../components/layout/AdminLayout'
@@ -13,7 +14,7 @@ const SalesAdminPage: React.FC = () => {
   return (
     <AdminLayout>
       <Typography.Title level={3} className="mb-4">
-        <Icon type="dollar" className="mr-3" />
+        <DollarOutlined className="mr-3" />
         <span>{formatMessage(commonMessages.menu.salesAdmin)}</span>
       </Typography.Title>
 

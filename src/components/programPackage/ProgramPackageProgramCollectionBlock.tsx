@@ -1,5 +1,6 @@
+import Icon from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Icon, Popover, Typography } from 'antd'
+import { Button, Popover, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'

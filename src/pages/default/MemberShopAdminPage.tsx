@@ -1,4 +1,5 @@
-import { Button, Icon, Skeleton, Tabs } from 'antd'
+import { ArrowLeftOutlined } from '@ant-design/icons'
+import { Button, Skeleton, Tabs } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
@@ -37,7 +38,7 @@ const MemberShopAdminPage: React.FC = () => {
       <AdminHeader>
         <Link to="/member-shops">
           <Button type="link" className="mr-3">
-            <Icon type="arrow-left" />
+            <ArrowLeftOutlined />
           </Button>
         </Link>
 

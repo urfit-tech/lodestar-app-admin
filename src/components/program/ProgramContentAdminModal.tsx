@@ -1,6 +1,9 @@
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { EditOutlined, MoreOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, Dropdown, Form, Icon, Input, InputNumber, Menu, Modal, Spin } from 'antd'
-import { FormComponentProps } from 'antd/lib/form'
+import { Button, Checkbox, Dropdown, Input, InputNumber, Menu, Modal, Spin } from 'antd'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment'
@@ -131,8 +134,7 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
 
   return (
     <>
-      <Icon
-        type="edit"
+      <EditOutlined
         onClick={() => {
           setVisible(true)
         }}
@@ -213,7 +215,7 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
                   }
                   trigger={['click']}
                 >
-                  <Icon type="more" />
+                  <MoreOutlined />
                 </Dropdown>
               </div>
             </div>

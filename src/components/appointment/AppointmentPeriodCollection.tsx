@@ -111,7 +111,7 @@ const AppointmentPeriodCollection: React.FC<{
             <div className="col-6">
               {selectedPeriod && (
                 <Button
-                  type="danger"
+                  danger
                   block
                   onClick={() =>
                     onDelete &&

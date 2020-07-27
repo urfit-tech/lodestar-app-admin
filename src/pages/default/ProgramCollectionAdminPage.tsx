@@ -1,5 +1,6 @@
+import Icon, { FileTextFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Icon, Popover, Spin, Tabs, Typography } from 'antd'
+import { Button, Popover, Spin, Tabs, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext, useEffect } from 'react'
 import { useIntl } from 'react-intl'
@@ -86,7 +87,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
   return (
     <AdminLayout>
       <Typography.Title level={3} className="mb-4">
-        <Icon type="file-text" theme="filled" className="mr-3" />
+        <FileTextFilled className="mr-3" />
         <span>{formatMessage(commonMessages.menu.programs)}</span>
       </Typography.Title>
 

@@ -1,4 +1,5 @@
-import { Button, Dropdown, Icon, Menu } from 'antd'
+import Icon, { FileAddOutlined, FileTextOutlined, MoreOutlined } from '@ant-design/icons'
+import { Button, Dropdown, Menu } from 'antd'
 import { sum } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -84,11 +85,11 @@ const ActivitySessionsAdminBlock: React.FC<{
     <>
       <ActivitySessionAdminModal
         renderTrigger={({ setVisible }) => (
-          <Button type="primary" icon="file-add" onClick={() => setVisible(true)} className="mb-5">
+          <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)} className="mb-5">
             {formatMessage(activityMessages.ui.createSession)}
           </Button>
         )}
-        icon={<Icon type="file-add" />}
+        icon={<FileAddOutlined />}
         onSubmit={onInsert}
       />
 
@@ -140,7 +141,7 @@ const ActivitySessionsAdminBlock: React.FC<{
                         renderTrigger={({ setVisible }) => (
                           <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</span>
                         )}
-                        icon={<Icon type="file-edit" />}
+                        icon={<FileTextOutlined />}
                         onSubmit={onUpdate}
                         activitySession={session}
                       />
@@ -149,7 +150,7 @@ const ActivitySessionsAdminBlock: React.FC<{
                 }
                 trigger={['click']}
               >
-                <Icon type="more" />
+                <MoreOutlined />
               </Dropdown>
             </StyledDescription>
           </StyledWrapper>

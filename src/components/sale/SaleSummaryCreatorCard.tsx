@@ -1,4 +1,5 @@
-import { Icon, Tooltip } from 'antd'
+import { QuestionCircleFilled } from '@ant-design/icons'
+import { Tooltip } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -69,7 +70,7 @@ const SaleSummaryCreatorCard: React.FC<SaleSummaryCreatorCardProps> = ({
             </span>
             {totalDiscount > 0 && (
               <Tooltip placement="top" title={<TipsText>{formatMessage(messages.totalActualSalesNotation)}</TipsText>}>
-                <Icon type="question-circle" theme="filled" />
+                <QuestionCircleFilled />
               </Tooltip>
             )}
           </p>

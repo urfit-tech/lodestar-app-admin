@@ -1,4 +1,5 @@
-import { Button, Icon, message } from 'antd'
+import { RightOutlined } from '@ant-design/icons'
+import { Button, message } from 'antd'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
@@ -107,7 +108,7 @@ const AdminPublishBlock: React.FC<{
                     >
                       <Button type="link" size="small">
                         <span>{formatMessage(messages.goTo)}</span>
-                        <Icon type="right" />
+                        <RightOutlined />
                       </Button>
                     </Link>
                   )}

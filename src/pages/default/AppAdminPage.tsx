@@ -1,5 +1,6 @@
 // import AppSecretCard from '../../components/app/AppSecretCard'
-import { Icon, Typography } from 'antd'
+import { GlobalOutlined } from '@ant-design/icons'
+import { Typography } from 'antd'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import AppBasicCard from '../../components/app/AppBasicCard'
@@ -15,7 +16,7 @@ const AppAdminPage: React.FC = () => {
   return (
     <AdminLayout>
       <Typography.Title level={3} className="mb-4">
-        <Icon type="global" className="mr-3" />
+        <GlobalOutlined className="mr-3" />
         <span>{formatMessage(commonMessages.menu.appAdmin)}</span>
       </Typography.Title>
 

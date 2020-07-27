@@ -1,6 +1,9 @@
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { DownloadOutlined, DownOutlined, LoadingOutlined } from '@ant-design/icons'
 import { useApolloClient } from '@apollo/react-hooks'
-import { Button, DatePicker, Dropdown, Form, Icon, Menu, Select } from 'antd'
-import { FormComponentProps } from 'antd/lib/form'
+import { Button, DatePicker, Dropdown, Menu, Select } from 'antd'
 import moment, { Moment } from 'moment'
 import React, { useCallback, useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -345,7 +348,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button type="primary" icon="download" onClick={() => setVisible(true)}>
+        <Button type="primary" icon={<DownloadOutlined />} onClick={() => setVisible(true)}>
           {formatMessage(messages.exportOrder)}
         </Button>
       )}
@@ -358,7 +361,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           </Button>
           <Dropdown.Button
             type="primary"
-            icon={<Icon type="down" />}
+            icon={<DownOutlined />}
             overlay={
               <Menu>
                 <Menu.Item key="order-product" onClick={() => handleExport('orderProduct')}>
@@ -374,7 +377,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
             }
             onClick={() => !loading && handleExport('orderLog')}
           >
-            {loading ? <Icon type="loading" /> : <div>{formatMessage(messages.exportOrderLog)}</div>}
+            {loading ? <LoadingOutlined /> : <div>{formatMessage(messages.exportOrderLog)}</div>}
           </Dropdown.Button>
         </>
       )}
@@ -395,10 +398,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
             <StyledRangePicker
               style={{ width: '100%' }}
               format="YYYY-MM-DD HH:mm:ss"
-              showTime={{
-                format: 'YYYY-MM-DD HH:mm:ss',
-                defaultValue: [moment().startOf('day'), moment().endOf('day')],
-              }}
+              defaultValue={[moment().startOf('day'), moment().endOf('day')]}
             />,
           )}
         </Form.Item>
@@ -416,10 +416,10 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
             ],
           })(
             <Select mode="multiple" placeholder={formatMessage(commonMessages.label.orderLogStatus)}>
-              <Select.Option key="UNPAID">{formatMessage(commonMessages.status.orderUnpaid)}</Select.Option>
-              <Select.Option key="SUCCESS">{formatMessage(commonMessages.status.orderSuccess)}</Select.Option>
-              <Select.Option key="FAILED">{formatMessage(commonMessages.status.orderFailed)}</Select.Option>
-              <Select.Option key="REFUND">{formatMessage(commonMessages.status.orderRefund)}</Select.Option>
+              <Select.Option value="UNPAID">{formatMessage(commonMessages.status.orderUnpaid)}</Select.Option>
+              <Select.Option value="SUCCESS">{formatMessage(commonMessages.status.orderSuccess)}</Select.Option>
+              <Select.Option value="FAILED">{formatMessage(commonMessages.status.orderFailed)}</Select.Option>
+              <Select.Option value="REFUND">{formatMessage(commonMessages.status.orderRefund)}</Select.Option>
             </Select>,
           )}
         </Form.Item>

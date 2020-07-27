@@ -1,7 +1,8 @@
+import { SearchOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Button, Divider, Icon, Input, Table, Tooltip, Typography } from 'antd'
+import { Button, Divider, Input, Table, Tooltip, Typography } from 'antd'
 import { CardProps } from 'antd/lib/card'
-import { ColumnProps, PaginationConfig } from 'antd/lib/table'
+import { ColumnProps, TablePaginationConfig } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import { prop, sum } from 'ramda'
@@ -80,7 +81,7 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
   const [status, setStatus] = useState()
   const [orderIdLike, setOrderIdLike] = useState<string | null>(null)
   const [memberNameAndEmailLike, setMemberNameAndEmailLike] = useState<string | null>(null)
-  const [pagination, setPagination] = useState<PaginationConfig>({})
+  const [pagination, setPagination] = useState<TablePaginationConfig>({})
 
   const pageSize = pagination.pageSize || DEFAULT_PAGE_SIZE
   const { loading, dataSource, totalCount } = useDataSource(
@@ -245,7 +246,7 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
     </div>
   )
 
-  const handleTableChange = ({ current }: PaginationConfig, filters: any) => {
+  const handleTableChange = ({ current }: TablePaginationConfig, filters: any) => {
     setPagination({ ...pagination, current })
     filters.status && setStatus(filters.status[0])
   }
@@ -308,12 +309,12 @@ const getColumnSearchProps = ({
       </StyledFilterButton>
     </div>
   ),
-  filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#1890ff' : undefined }} />,
+  filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
 })
 
 const useDataSource = (
   pageSize: number,
-  pagination: PaginationConfig,
+  pagination: TablePaginationConfig,
   status: any,
   orderIdLike: string | null,
   memberNameAndEmailLike: string | null,

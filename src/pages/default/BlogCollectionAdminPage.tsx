@@ -1,4 +1,5 @@
-import { Button, Icon, Tabs } from 'antd'
+import { FileAddOutlined, ShoppingFilled } from '@ant-design/icons'
+import { Button, Tabs } from 'antd'
 import React, { useContext, useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -26,7 +27,7 @@ const BlogAdminCollectionPage: React.FC = () => {
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
-        <Icon type="shopping" theme="filled" className="mr-3" />
+        <ShoppingFilled className="mr-3" />
         <span>{formatMessage(commonMessages.menu.blogPosts)}</span>
       </AdminPageTitle>
 
@@ -35,7 +36,7 @@ const BlogAdminCollectionPage: React.FC = () => {
           withCategorySelector
           classType="post"
           renderTrigger={({ setVisible }) => (
-            <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
+            <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
               {formatMessage(blogMessages.ui.createPost)}
             </Button>
           )}

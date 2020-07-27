@@ -1,6 +1,9 @@
+import { Form } from '@ant-design/compatible'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { MoreOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Button, Divider, Dropdown, Icon, InputNumber, Menu, Typography } from 'antd'
-import Form, { FormComponentProps, FormProps } from 'antd/lib/form'
+import { Button, Divider, Dropdown, InputNumber, Menu, Typography } from 'antd'
+import { FormProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import moment from 'moment-timezone'
 import React, { useState } from 'react'
@@ -109,7 +112,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<ProgramSubscriptionPlanAdminCar
           }
           trigger={['click']}
         >
-          <Icon type="more" style={{ fontSize: '24px' }} />
+          <MoreOutlined style={{ fontSize: '24px' }} />
         </Dropdown>
       </div>
     </StyledAdminCard>

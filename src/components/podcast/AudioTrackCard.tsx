@@ -1,4 +1,5 @@
-import { Checkbox, Icon } from 'antd'
+import Icon from '@ant-design/icons'
+import { Checkbox } from 'antd'
 import React, { HTMLAttributes, useContext, useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { ThemeContext } from 'styled-components'

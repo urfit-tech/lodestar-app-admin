@@ -1,5 +1,8 @@
-import { Button, Form, Icon, Input, message } from 'antd'
-import { FormComponentProps } from 'antd/lib/form'
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { LockOutlined } from '@ant-design/icons'
+import { Button, Input, message } from 'antd'
 import axios from 'axios'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -92,7 +95,7 @@ const ResetPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
               <Input
                 type="password"
                 placeholder={formatMessage(commonMessages.label.newPassword)}
-                suffix={<Icon type="lock" />}
+                suffix={<LockOutlined />}
               />,
             )}
           </Form.Item>
@@ -120,7 +123,7 @@ const ResetPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
               <Input
                 type="password"
                 placeholder={formatMessage(commonMessages.text.newPasswordAgain)}
-                suffix={<Icon type="lock" />}
+                suffix={<LockOutlined />}
               />,
             )}
           </Form.Item>

@@ -1,4 +1,5 @@
-import { Button, Dropdown, Icon, Menu } from 'antd'
+import { DownOutlined } from '@ant-design/icons'
+import { Button, Dropdown, Menu } from 'antd'
 import React from 'react'
 import { PeriodType } from '../../types/general'
 import { PeriodTypeLabel, ShortenPeriodTypeLabel } from '../common/Period'
@@ -35,7 +36,7 @@ const ProgramPeriodTypeDropdown: React.FC<ProgramPeriodTypeDropdownProps> = ({
       <Button>
         {value && !isShortenPeriodType && <PeriodTypeLabel periodType={value} />}
         {value && isShortenPeriodType && <ShortenPeriodTypeLabel periodType={value} />}
-        <Icon type="down" />
+        <DownOutlined />
       </Button>
     </Dropdown>
   )

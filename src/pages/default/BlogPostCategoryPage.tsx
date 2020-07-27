@@ -1,4 +1,5 @@
-import { Icon, Typography } from 'antd'
+import { BookOutlined } from '@ant-design/icons'
+import { Typography } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import CategoryAdminCard from '../../components/common/CategoryAdminCard'
@@ -10,7 +11,7 @@ const BlogPostCategoryPage: React.FC = () => {
   return (
     <AdminLayout>
       <Typography.Title level={3} className="mb-4">
-        <Icon type="book" className="mr-3" />
+        <BookOutlined className="mr-3" />
         <span>{formatMessage(commonMessages.menu.blogCategory)}</span>
       </Typography.Title>
       <CategoryAdminCard classType="post" />

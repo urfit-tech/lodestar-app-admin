@@ -1,3 +1,4 @@
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Spin, Typography } from 'antd'
 import gql from 'graphql-tag'
@@ -68,11 +69,11 @@ const ProgramContentAdminPane: React.FC<{
 
       <Divider>
         {loading ? (
-          <Button type="link" icon="loading">
+          <Button type="link" icon={<LoadingOutlined />}>
             {formatMessage(messages.creatingBlock)}
           </Button>
         ) : (
-          <Button type="link" icon="plus" onClick={handleContentSectionAdd}>
+          <Button type="link" icon={<PlusOutlined />} onClick={handleContentSectionAdd}>
             {formatMessage(messages.createBlock)}
           </Button>
         )}

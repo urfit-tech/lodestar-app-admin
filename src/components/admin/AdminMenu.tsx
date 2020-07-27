@@ -1,5 +1,7 @@
-import { Icon, Menu } from 'antd'
-import { ClickParam, MenuProps } from 'antd/lib/menu'
+import Icon, { GlobalOutlined, GoldenFilled, ShoppingFilled } from '@ant-design/icons'
+import { Menu } from 'antd'
+import { MenuProps } from 'antd/lib/menu'
+import { MenuClickEventHandler } from 'rc-menu/lib/interface'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -26,9 +28,10 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
 
-  const handleClick = ({ key, item }: ClickParam) => {
-    if (key.startsWith('_blank')) {
-      window.open(item.props['data-href'])
+  const handleClick: MenuClickEventHandler = ({ key, item }) => {
+    if (typeof key === 'string' && key.startsWith('_blank')) {
+      console.log(key, item)
+      // window.open(item['data-href'])
     } else {
       const route = routesProps[key]
       route ? history.push(route.path) : alert(formatMessage(errorMessages.route.notFound))
@@ -141,7 +144,7 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
             key="owner_blog_admin"
             title={
               <span>
-                <Icon type="shopping" theme="filled" />
+                <ShoppingFilled />
                 <span>{formatMessage(commonMessages.menu.blogAdmin)}</span>
               </span>
             }
@@ -171,7 +174,7 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
 
         {(enabledModules.merchandise || enabledModules.project) && (
           <Menu.Item key="shipping">
-            <Icon type="golden" theme="filled" />
+            <GoldenFilled />
             {formatMessage(commonMessages.menu.shipping)}
           </Menu.Item>
         )}
@@ -200,7 +203,7 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
           <span>{formatMessage(commonMessages.menu.ownerSettings)}</span>
         </Menu.Item>
         <Menu.Item key="app_admin">
-          <Icon type="global" />
+          <GlobalOutlined />
           <span>{formatMessage(commonMessages.menu.appAdmin)}</span>
         </Menu.Item>
       </AdminMenu>

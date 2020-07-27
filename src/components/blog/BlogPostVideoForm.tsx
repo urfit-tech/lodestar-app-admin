@@ -1,6 +1,9 @@
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { CloseCircleOutlined, LoadingOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Col, Form, Icon, Input, message, Row } from 'antd'
-import { FormComponentProps } from 'antd/lib/form'
+import { Button, Col, Input, message, Row } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -103,7 +106,7 @@ const BlogPostPlayer: React.FC<{ url: string | null }> = ({ url }) => {
       {status === 'loading' && (
         <StyledStatusBlock>
           <StyledNotation>
-            <Icon type="loading" style={{ fontSize: 22 }} spin />
+            <LoadingOutlined style={{ fontSize: 22 }} spin />
             <div>{formatMessage(blogMessages.text.uploading)}</div>
           </StyledNotation>
         </StyledStatusBlock>
@@ -111,7 +114,7 @@ const BlogPostPlayer: React.FC<{ url: string | null }> = ({ url }) => {
       {status === 'error' && (
         <StyledStatusBlock>
           <StyledNotation>
-            <Icon type="close-circle" style={{ fontSize: 22 }} />
+            <CloseCircleOutlined style={{ fontSize: 22 }} />
             <div>{formatMessage(blogMessages.text.noVideoFound)}</div>
           </StyledNotation>
         </StyledStatusBlock>

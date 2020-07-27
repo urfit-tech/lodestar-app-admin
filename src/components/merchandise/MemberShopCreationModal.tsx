@@ -1,6 +1,9 @@
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Input } from 'antd'
-import { FormComponentProps } from 'antd/lib/form'
+import { Button, Input } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -22,7 +25,7 @@ const MemberShopCreationModal: React.FC<FormComponentProps> = ({ form }) => {
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
+        <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
           {formatMessage(merchandiseMessages.ui.createMemberShop)}
         </Button>
       )}

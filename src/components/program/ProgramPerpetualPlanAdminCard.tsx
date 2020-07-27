@@ -1,6 +1,7 @@
+import { Form } from '@ant-design/compatible'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, InputNumber, message } from 'antd'
-import Form, { FormComponentProps } from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'

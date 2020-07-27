@@ -1,3 +1,4 @@
+import { MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Input } from 'antd'
 import React, { useState } from 'react'
 import styled from 'styled-components'
@@ -23,7 +24,7 @@ const QuantityInput: React.FC<{
   return (
     <StyledInputGroup compact>
       <Button
-        icon="minus"
+        icon={<MinusOutlined />}
         onClick={() => {
           const newValue = value - 1
           if (typeof min === 'number' && newValue < min) {
@@ -47,7 +48,7 @@ const QuantityInput: React.FC<{
         }}
       />
       <Button
-        icon="plus"
+        icon={<PlusOutlined />}
         onClick={() => {
           const newValue = value + 1
           if (typeof max === 'number' && newValue > max) {

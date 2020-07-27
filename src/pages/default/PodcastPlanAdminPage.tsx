@@ -1,4 +1,5 @@
-import { Button, Icon, Skeleton } from 'antd'
+import Icon, { FileAddOutlined } from '@ant-design/icons'
+import { Button, Skeleton } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -45,7 +46,7 @@ const PodcastPlanAdminPage: React.FC = () => {
               onVisibleSet={setVisible}
               refetch={refetchPodcastPlanAdminCollection}
             >
-              <Button icon="file-add" type="primary" onClick={() => setVisible(true)}>
+              <Button icon={<FileAddOutlined />} type="primary" onClick={() => setVisible(true)}>
                 {formatMessage(podcastMessages.ui.createPodcastPlan)}
               </Button>
             </PodcastPlanCreationModal>

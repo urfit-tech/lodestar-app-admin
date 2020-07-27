@@ -1,4 +1,5 @@
-import { Icon, List, Typography } from 'antd'
+import { BellOutlined } from '@ant-design/icons'
+import { List, Typography } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import AdminCard from '../../components/admin/AdminCard'
@@ -22,7 +23,7 @@ const NotificationPage = () => {
       <div className="py-5">
         <div className="container">
           <Typography.Title className="mb-4" level={3}>
-            <Icon type="bell" className="mr-1" />
+            <BellOutlined className="mr-1" />
             <span>{formatMessage(messages.yourNotification)}</span>
           </Typography.Title>
           {currentMemberId && <NotificationCard memberId={currentMemberId} />}

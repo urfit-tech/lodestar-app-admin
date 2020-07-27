@@ -1,4 +1,5 @@
-import { Divider, Icon, Tag } from 'antd'
+import Icon from '@ant-design/icons'
+import { Divider, Tag } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'

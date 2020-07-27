@@ -1,4 +1,5 @@
-import { Icon, Skeleton, Typography } from 'antd'
+import Icon from '@ant-design/icons'
+import { Skeleton, Typography } from 'antd'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import AdminLayout from '../../../components/layout/AdminLayout'

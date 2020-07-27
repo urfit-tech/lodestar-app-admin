@@ -1,6 +1,8 @@
+import { Form } from '@ant-design/compatible'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Col, Icon, Input, message, Row, Tooltip, Typography } from 'antd'
-import Form, { FormComponentProps } from 'antd/lib/form'
+import { Button, Col, Input, message, Row, Tooltip, Typography } from 'antd'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
@@ -139,7 +141,7 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
               <span>
                 {formatMessage(messages.programCover)}
                 <Tooltip placement="top" title={<StyledTips>{formatMessage(messages.imageTips)}</StyledTips>}>
-                  <Icon type="question-circle" theme="filled" className="ml-2" />
+                  <QuestionCircleFilled className="ml-2" />
                 </Tooltip>
               </span>
             }

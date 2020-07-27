@@ -1,5 +1,6 @@
+import { Icon as LegacyIcon } from '@ant-design/compatible'
 import { useMutation } from '@apollo/react-hooks'
-import { Icon, List } from 'antd'
+import { List } from 'antd'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React from 'react'
@@ -50,7 +51,7 @@ const NotificationItem: React.FC<{
         title={description}
         description={
           <div style={{ color: '#9b9b9b' }}>
-            <span className="mr-1">{type && <Icon type={getNotificationIconType(type)} />}</span>
+            <span className="mr-1">{type && <LegacyIcon type={getNotificationIconType(type)} />}</span>
             <span>{moment(updatedAt).fromNow()}</span>
             {extra && <span>・{extra}</span>}
           </div>

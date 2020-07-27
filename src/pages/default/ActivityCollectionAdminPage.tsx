@@ -1,4 +1,5 @@
-import { Icon, Typography } from 'antd'
+import Icon from '@ant-design/icons'
+import { Typography } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import AdminLayout from '../../components/layout/AdminLayout'

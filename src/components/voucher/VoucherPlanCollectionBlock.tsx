@@ -1,4 +1,5 @@
-import { Button, Dropdown, Icon, Menu, message, Skeleton, Tabs } from 'antd'
+import { EditOutlined, FileAddOutlined, MoreOutlined } from '@ant-design/icons'
+import { Button, Dropdown, Menu, message, Skeleton, Tabs } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import VoucherPlanAdminModal, { VoucherPlanFields } from '../../components/voucher/VoucherPlanAdminModal'
@@ -98,7 +99,7 @@ const VoucherPlanCollectionBlock: React.FC = () => {
                     renderTrigger={({ setVisible }) => (
                       <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</span>
                     )}
-                    icon={<Icon type="edit" />}
+                    icon={<EditOutlined />}
                     title={formatMessage(promotionMessages.ui.editVoucherPlan)}
                     voucherPlan={voucherPlan}
                     onSubmit={(setVisible, setLoading, values) =>
@@ -110,7 +111,7 @@ const VoucherPlanCollectionBlock: React.FC = () => {
             }
             placement="bottomRight"
           >
-            <Icon type="more" className="cursor-pointer" />
+            <MoreOutlined className="cursor-pointer" />
           </Dropdown>
         </>
       ),
@@ -135,11 +136,11 @@ const VoucherPlanCollectionBlock: React.FC = () => {
       <div className="mb-5">
         <VoucherPlanAdminModal
           renderTrigger={({ setVisible }) => (
-            <Button type="primary" onClick={() => setVisible(true)} icon="file-add">
+            <Button type="primary" onClick={() => setVisible(true)} icon={<FileAddOutlined />}>
               {formatMessage(commonMessages.ui.create)}
             </Button>
           )}
-          icon={<Icon type="file-add" />}
+          icon={<FileAddOutlined />}
           title={formatMessage(promotionMessages.ui.createVoucherPlan)}
           onSubmit={(setVisible, setLoading, values) => handleInsert(setVisible, setLoading, values)}
         />

@@ -1,3 +1,4 @@
+import { PlusOutlined } from '@ant-design/icons'
 import { Button, Spin, Typography } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import React from 'react'
@@ -30,7 +31,7 @@ const ProgramPlanAdminPane: React.FC<
           onRefetch={onRefetch}
           programId={program.id}
           renderTrigger={({ setVisible }) => (
-            <Button icon="plus" type="primary" className="mb-3" onClick={() => setVisible(true)}>
+            <Button icon={<PlusOutlined />} type="primary" className="mb-3" onClick={() => setVisible(true)}>
               {formatMessage(messages.createPlan)}
             </Button>
           )}

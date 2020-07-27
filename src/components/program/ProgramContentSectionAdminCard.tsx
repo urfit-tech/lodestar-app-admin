@@ -1,5 +1,6 @@
+import { MoreOutlined, PlusOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Dropdown, Icon, Menu, Typography } from 'antd'
+import { Button, Dropdown, Menu, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -72,7 +73,7 @@ const ProgramContentSectionAdminCard: React.FC<{
           }
           trigger={['click']}
         >
-          <Icon type="more" />
+          <MoreOutlined />
         </Dropdown>
       </div>
 
@@ -88,7 +89,7 @@ const ProgramContentSectionAdminCard: React.FC<{
       ))}
 
       <Button
-        icon="plus"
+        icon={<PlusOutlined />}
         type="link"
         onClick={() =>
           createProgramContent({

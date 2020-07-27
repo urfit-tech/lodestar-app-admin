@@ -1,4 +1,5 @@
-import { Icon, Input, Skeleton, Tabs } from 'antd'
+import Icon from '@ant-design/icons'
+import { Input, Skeleton, Tabs } from 'antd'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../components/admin'

@@ -1,6 +1,9 @@
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Icon, InputNumber, message, Skeleton, Tooltip } from 'antd'
-import { FormComponentProps } from 'antd/lib/form'
+import { Button, InputNumber, message, Skeleton, Tooltip } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -71,7 +74,7 @@ const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
               placement="top"
               title={<StyledTips>{formatMessage(appointmentMessages.text.durationTips)}</StyledTips>}
             >
-              <Icon type="question-circle" theme="filled" />
+              <QuestionCircleFilled />
             </Tooltip>
           </span>
         }

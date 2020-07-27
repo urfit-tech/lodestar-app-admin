@@ -36,7 +36,7 @@ const MemberSelector: React.FC<{
   const { formatMessage } = useIntl()
 
   return (
-    <Select<string | null>
+    <Select<string>
       showSearch
       placeholder={formatMessage(messages.memberSelect)}
       value={value}

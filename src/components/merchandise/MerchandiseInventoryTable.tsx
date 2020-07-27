@@ -1,4 +1,5 @@
-import { Icon, Popover, Table } from 'antd'
+import Icon from '@ant-design/icons'
+import { Popover, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import moment from 'moment'
 import React from 'react'

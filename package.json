@@ -33,8 +33,10 @@
     ]
   },
   "dependencies": {
+    "@ant-design/compatible": "^1.0.4",
+    "@ant-design/icons": "^4.2.1",
     "@apollo/react-hooks": "^3.1.5",
-    "antd": "3",
+    "antd": "^4.4.3",
     "apollo-cache-inmemory": "^1.6.6",
     "apollo-client": "^2.6.10",
     "apollo-link": "^1.2.14",
@@ -52,6 +54,7 @@
     "jsonwebtoken": "^8.5.1",
     "lamejs": "^1.2.0",
     "less": "^3.11.3",
+    "moment": "^2.27.0",
     "moment-timezone": "^0.5.31",
     "mustache": "^4.0.1",
     "node-sass": "^4.14.1",
@@ -92,6 +95,7 @@
     "@types/braft-editor": "^2.2.0",
     "@types/fingerprintjs2": "^2.0.0",
     "@types/jsonwebtoken": "^8.5.0",
+    "@types/moment": "^2.13.0",
     "@types/moment-timezone": "^0.5.13",
     "@types/mustache": "^4.0.1",
     "@types/node": "^14.0.19",

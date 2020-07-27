@@ -1,5 +1,8 @@
-import { Button, Dropdown, Form, Icon, Menu } from 'antd'
-import { FormComponentProps } from 'antd/lib/form'
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import Icon, { LoadingOutlined } from '@ant-design/icons'
+import { Button, Dropdown, Menu } from 'antd'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -156,7 +159,7 @@ const MerchandiseImagesUploader: React.FC<MerchandiseImagesUploaderProps> = ({
             <Button type="link" disabled={loading}>
               {loading ? (
                 <>
-                  <Icon type="loading" />
+                  <LoadingOutlined />
                   <StyledButtonText>{formatMessage(commonMessages.label.uploading)}</StyledButtonText>
                 </>
               ) : (

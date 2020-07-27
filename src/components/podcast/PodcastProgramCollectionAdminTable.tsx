@@ -1,4 +1,5 @@
-import { Button, Icon, Input, Table } from 'antd'
+import { SearchOutlined } from '@ant-design/icons'
+import { Button, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -79,7 +80,13 @@ const getColumnSearchProps: (events: {
       />
       <div className="row">
         <div className="col-6">
-          <Button type="primary" size="small" icon="search" block onClick={() => onSearch(selectedKeys, confirm)}>
+          <Button
+            type="primary"
+            size="small"
+            icon={<SearchOutlined />}
+            block
+            onClick={() => onSearch(selectedKeys, confirm)}
+          >
             Search
           </Button>
         </div>
@@ -91,7 +98,7 @@ const getColumnSearchProps: (events: {
       </div>
     </div>
   ),
-  filterIcon: filtered => <Icon type="search" style={{ color: filtered ? 'var(--primary)' : undefined }} />,
+  filterIcon: filtered => <SearchOutlined style={{ color: filtered ? 'var(--primary)' : undefined }} />,
 })
 
 const PodcastProgramCollectionAdminTable: React.FC<{

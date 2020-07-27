@@ -1,6 +1,9 @@
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Icon, Input, message, Radio, Tooltip, Typography } from 'antd'
-import { FormComponentProps } from 'antd/lib/form'
+import { Button, Input, message, Radio, Tooltip, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
@@ -92,7 +95,7 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
                 <span>
                   {formatMessage(commonMessages.label.languages)}
                   <Tooltip placement="top" title={<StyledTips>{formatMessage(commonMessages.text.locale)}</StyledTips>}>
-                    <Icon type="question-circle" theme="filled" className="ml-2" />
+                    <QuestionCircleFilled className="ml-2" />
                   </Tooltip>
                 </span>
               }

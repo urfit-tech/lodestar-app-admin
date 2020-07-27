@@ -1,5 +1,7 @@
-import { Button, DatePicker, Icon, Input, InputNumber, Radio, Select } from 'antd'
-import Form, { FormComponentProps } from 'antd/lib/form'
+import { Form } from '@ant-design/compatible'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { FileAddOutlined } from '@ant-design/icons'
+import { Button, DatePicker, Input, InputNumber, Radio, Select } from 'antd'
 import BraftEditor from 'braft-editor'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -66,7 +68,7 @@ const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
 
   return (
     <AdminModal
-      icon={<Icon type="file-add" />}
+      icon={<FileAddOutlined />}
       title={formatMessage(activityMessages.term.ticketPlan)}
       maskClosable={false}
       footer={null}
@@ -109,9 +111,7 @@ const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
               onChange={() => {}}
             >
               {activitySessions.map(session => (
-                <Select.Option key={session.id} value={session.id}>
-                  {session.title}
-                </Select.Option>
+                <Select.Option value={session.id}>{session.title}</Select.Option>
               ))}
             </Select>,
           )}

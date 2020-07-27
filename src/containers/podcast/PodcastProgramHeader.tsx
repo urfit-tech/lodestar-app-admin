@@ -1,4 +1,5 @@
-import { Button, Icon } from 'antd'
+import { ArrowLeftOutlined } from '@ant-design/icons'
+import { Button } from 'antd'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -19,7 +20,7 @@ const PodcastProgramHeader: React.FC<{
   return (
     <AdminHeader>
       <Button type="link" onClick={() => (goBackLink ? history.push(goBackLink) : history.goBack())} className="mr-3">
-        <Icon type="arrow-left" />
+        <ArrowLeftOutlined />
       </Button>
 
       <AdminHeaderTitle>{title || podcastProgramId}</AdminHeaderTitle>

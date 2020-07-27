@@ -1,4 +1,5 @@
-import { Button, Icon, Typography } from 'antd'
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
+import { Button, Typography } from 'antd'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'
@@ -65,8 +66,7 @@ const CategoryAdminCard: React.FC<{
             dataId={category.id}
             handlerClassName="draggable-category"
             actions={[
-              <Icon
-                type="delete"
+              <DeleteOutlined
                 key="delete"
                 onClick={() => {
                   if (window.confirm(formatMessage(messages.deleteCategoryNotation))) {
@@ -98,7 +98,7 @@ const CategoryAdminCard: React.FC<{
       </ReactSortable>
 
       <Button
-        icon="plus"
+        icon={<PlusOutlined />}
         type="link"
         onClick={() => {
           insertCategory({

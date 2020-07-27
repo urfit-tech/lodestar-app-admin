@@ -1,4 +1,4 @@
-import { Icon } from 'antd'
+import { CalendarOutlined, UserOutlined } from '@ant-design/icons'
 import moment from 'moment'
 import React from 'react'
 import { Link } from 'react-router-dom'
@@ -76,14 +76,14 @@ const Activity: React.FC<ActivityProps> = ({
           <StyledMeta className="mb-2">
             {isParticipantsVisible && (
               <>
-                <Icon type="user" className="mr-2" />
+                <UserOutlined className="mr-2" />
                 <span>{participantCount}</span>
               </>
             )}
           </StyledMeta>
 
           <StyledMeta>
-            <Icon type="calendar" className="mr-2" />
+            <CalendarOutlined className="mr-2" />
             {startDate && endDate ? (
               <span>
                 {startDate}

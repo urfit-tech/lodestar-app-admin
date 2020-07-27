@@ -1,5 +1,8 @@
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { PlusOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, message, Modal, Skeleton } from 'antd'
+import { Button, message, Modal, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -102,7 +105,7 @@ const PodcastProgramInstructorCollectionBlock: React.FC<{
       ))}
 
       {podcastProgram.instructors.length < 1 && (
-        <Button type="link" icon="plus" size="small" onClick={() => setVisible(true)}>
+        <Button type="link" icon={<PlusOutlined />} size="small" onClick={() => setVisible(true)}>
           {formatMessage(commonMessages.ui.addInstructor)}
         </Button>
       )}

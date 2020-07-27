@@ -1,4 +1,5 @@
-import { Button, Icon, Input, InputNumber, Select } from 'antd'
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
+import { Button, Input, InputNumber, Select } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { promotionMessages } from '../../helpers/translation'
@@ -36,7 +37,7 @@ const PlanCodeSelector: React.FC<{
       <Button
         style={{ color: '#585858' }}
         onClick={() => onChange && onChange([...(value || []), { type: 'random', code: null, count: 1 }])}
-        icon="plus"
+        icon={<PlusOutlined />}
       >
         {formatMessage(promotionMessages.label.create)}{' '}
         {planType === 'coupon'
@@ -67,7 +68,7 @@ const PlanCodeInputGroup: React.FC<{
           style={{ width: '20%' }}
           placeholder={formatMessage(promotionMessages.term.amount)}
           value={value.count}
-          onChange={count => count && onChange({ ...value, count })}
+          onChange={count => typeof count === 'number' && onChange({ ...value, count })}
           formatter={v => `${v} ${formatMessage(promotionMessages.label.unit)}`}
           parser={v => (v && parseInt(v.replace(` ${formatMessage(promotionMessages.label.unit)}`, ''))) || 0}
         />
@@ -86,7 +87,7 @@ const PlanCodeInputGroup: React.FC<{
         )}
       </Input.Group>
 
-      <Icon type="delete" onClick={onDelete} />
+      <DeleteOutlined onClick={onDelete} />
     </div>
   )
 }

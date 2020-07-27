@@ -1,5 +1,7 @@
+import { Icon as LegacyIcon } from '@ant-design/compatible'
+import { MoreOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Dropdown, Icon, Menu, message, Tag } from 'antd'
+import { Button, Dropdown, Menu, message, Tag } from 'antd'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment'
@@ -160,7 +162,7 @@ const IssueReplyItem: React.FC<{
             }
             trigger={['click']}
           >
-            <Icon type="more" />
+            <MoreOutlined />
           </Dropdown>
         )}
       </div>
@@ -209,7 +211,7 @@ const IssueReplyItem: React.FC<{
             }}
             reacted={reacted}
           >
-            <Icon className="mr-1" type="heart" theme={reacted ? 'filled' : 'outlined'} />
+            <LegacyIcon className="mr-1" type="heart" theme={reacted ? 'filled' : 'outlined'} />
             <span>{reacted ? otherReactedMemberIds + 1 : otherReactedMemberIds}</span>
           </StyledAction>
         </div>

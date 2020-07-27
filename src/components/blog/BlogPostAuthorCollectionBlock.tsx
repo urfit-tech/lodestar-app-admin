@@ -1,6 +1,7 @@
+import { Form } from '@ant-design/compatible'
+import { PlusOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, message, Modal } from 'antd'
-import Form from 'antd/lib/form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -62,7 +63,7 @@ const BlogPostAuthorCollectionBlock: React.FC<BlogPostProps> = ({ post, onRefetc
         ))}
 
       {post.authors && post.authors.length < 1 && (
-        <Button type="link" icon="plus" size="small" onClick={() => setVisible(true)}>
+        <Button type="link" icon={<PlusOutlined />} size="small" onClick={() => setVisible(true)}>
           {formatMessage(commonMessages.ui.addAuthor)}
         </Button>
       )}

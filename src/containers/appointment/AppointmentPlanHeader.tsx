@@ -1,4 +1,5 @@
-import { Button, Icon } from 'antd'
+import { ArrowLeftOutlined } from '@ant-design/icons'
+import { Button } from 'antd'
 import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { AdminHeader, AdminHeaderTitle } from '../../components/admin'
@@ -13,7 +14,7 @@ const AppointmentPlanHeader: React.FC<{
     <AdminHeader>
       <Link to="/appointment-plans">
         <Button type="link" className="mr-3">
-          <Icon type="arrow-left" />
+          <ArrowLeftOutlined />
         </Button>
       </Link>
 

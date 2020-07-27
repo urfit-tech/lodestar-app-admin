@@ -1,6 +1,9 @@
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { MessageOutlined, MoreOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Dropdown, Form, Icon, Input, Menu, message, Tag, Typography } from 'antd'
-import { FormComponentProps } from 'antd/lib/form'
+import { Button, Dropdown, Input, Menu, message, Tag, Typography } from 'antd'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment'
@@ -208,7 +211,7 @@ const IssueItem: React.FC<IssueItemProps> = ({
             }
             trigger={['click']}
           >
-            <div>{defaultRepliesVisible && <Icon type="more" />}</div>
+            <div>{defaultRepliesVisible && <MoreOutlined />}</div>
           </Dropdown>
         )}
       </div>
@@ -257,11 +260,11 @@ const IssueItem: React.FC<IssueItemProps> = ({
               }}
               reacted={reacted}
             >
-              <Icon type="heart" theme={reacted ? 'filled' : 'outlined'} className="mr-1" />
+              <LegacyIcon type="heart" theme={reacted ? 'filled' : 'outlined'} className="mr-1" />
               <span>{reacted ? otherReactedMemberIds + 1 : otherReactedMemberIds}</span>
             </StyledAction>
             <StyledAction onClick={() => setRepliesVisible(!repliesVisible)}>
-              <Icon type="message" className="mr-1" />
+              <MessageOutlined className="mr-1" />
               <span>{numReplies}</span>
             </StyledAction>
           </div>

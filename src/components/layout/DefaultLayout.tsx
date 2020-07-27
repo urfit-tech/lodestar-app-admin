@@ -1,4 +1,5 @@
-import { Button, Divider, Dropdown, Icon, Layout, Menu } from 'antd'
+import { DownOutlined } from '@ant-design/icons'
+import { Button, Divider, Dropdown, Layout, Menu } from 'antd'
 import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled, { css } from 'styled-components'
@@ -137,7 +138,7 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ white, noFooter, centered
                 >
                   <StyledButton type="link" size="small">
                     {currentLanguage === 'en' ? 'EN' : currentLanguage === 'vi' ? 'Tiếng việt' : '繁中'}
-                    <Icon type="down" />
+                    <DownOutlined />
                   </StyledButton>
                 </Dropdown>
                 <Divider type="vertical" />

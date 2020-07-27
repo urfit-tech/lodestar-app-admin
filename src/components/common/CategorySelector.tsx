@@ -55,7 +55,7 @@ const CategorySelector: React.FC<{
   ) : (
     <StyledSelect mode="multiple" loading={loading} value={value} onChange={onChange}>
       {categories.map(category => (
-        <Select.Option style={{ borderRadius: '4px' }} key={category.id}>
+        <Select.Option style={{ borderRadius: '4px' }} value={category.id}>
           {category.name}
         </Select.Option>
       ))}

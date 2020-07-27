@@ -1,4 +1,5 @@
-import { Button, Dropdown, Icon, Menu } from 'antd'
+import { FileAddOutlined, FileTextOutlined, MoreOutlined } from '@ant-design/icons'
+import { Button, Dropdown, Menu } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { ActivityAdminProps } from '../../contexts/ActivityContext'
@@ -44,7 +45,7 @@ const ActivityTicketsAdminBlock: React.FC<{
     <>
       <ActivityTicketAdminModal
         renderTrigger={({ setVisible }) => (
-          <Button type="primary" icon="file-add" onClick={() => setVisible(true)} className="mb-5">
+          <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)} className="mb-5">
             {formatMessage(activityMessages.ui.createTicketPlan)}
           </Button>
         )}
@@ -70,7 +71,7 @@ const ActivityTicketsAdminBlock: React.FC<{
                           renderTrigger={({ setVisible }) => (
                             <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</span>
                           )}
-                          icon={() => <Icon type="file-edit" />}
+                          icon={() => <FileTextOutlined />}
                           onSubmit={onUpdate}
                           activityTicket={ticket}
                           activitySessions={activityAdmin.activitySessions.map(session => ({
@@ -83,7 +84,7 @@ const ActivityTicketsAdminBlock: React.FC<{
                   }
                   trigger={['click']}
                 >
-                  <Icon type="more" />
+                  <MoreOutlined />
                 </Dropdown>
               }
             />

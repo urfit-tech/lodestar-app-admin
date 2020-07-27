@@ -1,6 +1,9 @@
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, DatePicker, Form, Icon, message, Select } from 'antd'
-import { FormComponentProps } from 'antd/lib/form'
+import { Button, Checkbox, DatePicker, message, Select } from 'antd'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import momentTz from 'moment-timezone'
@@ -49,7 +52,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
 
   if (loadingAppointmentPlan || errorAppointmentPlan || !appointmentPlan) {
     return (
-      <Button type="primary" icon="file-add" disabled>
+      <Button type="primary" icon={<FileAddOutlined />} disabled>
         {formatMessage(appointmentMessages.label.createPeriod)}
       </Button>
     )
@@ -87,7 +90,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
     <AdminModal
       renderTrigger={({ setVisible }) => (
         <>
-          <Button type="primary" icon="file-add" onClick={() => setVisible(true)} className="mb-4">
+          <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)} className="mb-4">
             {formatMessage(appointmentMessages.label.createPeriod)}
           </Button>
           <StyledTimeStandardBlock>
@@ -98,7 +101,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
           </StyledTimeStandardBlock>
         </>
       )}
-      icon={<Icon type="file-add" />}
+      icon={<FileAddOutlined />}
       title={
         <>
           <div className="mb-3">{formatMessage(appointmentMessages.label.createPeriod)}</div>

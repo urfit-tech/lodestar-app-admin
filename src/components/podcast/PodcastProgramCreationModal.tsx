@@ -1,5 +1,8 @@
-import { Button, Form, Input, Modal } from 'antd'
-import { FormComponentProps } from 'antd/lib/form'
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { FileAddOutlined } from '@ant-design/icons'
+import { Button, Input, Modal } from 'antd'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -49,7 +52,7 @@ const PodcastProgramCreationModal: React.FC<PodcastProgramCreationModalProps> = 
 
   return (
     <>
-      <Button icon="file-add" type="primary" loading={loading} onClick={() => setVisible(true)}>
+      <Button icon={<FileAddOutlined />} type="primary" loading={loading} onClick={() => setVisible(true)}>
         {formatMessage(messages.createPodcastProgram)}
       </Button>
 

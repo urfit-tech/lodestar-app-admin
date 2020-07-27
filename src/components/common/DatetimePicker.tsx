@@ -8,8 +8,8 @@ const DatetimePicker: React.FC<{
 }> = ({ value, onChange }) => {
   return (
     <div>
-      <DatePicker size="default" value={value} onChange={onChange} className="mr-2" />
-      <TimePicker size="default" value={value} onChange={onChange} format="HH:mm" />
+      <DatePicker size="middle" value={value} onChange={onChange} className="mr-2" />
+      <TimePicker size="middle" value={value} onChange={onChange} format="HH:mm" />
     </div>
   )
 }

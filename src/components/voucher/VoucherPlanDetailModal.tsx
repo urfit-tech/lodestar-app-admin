@@ -1,3 +1,4 @@
+import { DownloadOutlined } from '@ant-design/icons'
 import { Button, Modal, Tabs } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -59,7 +60,7 @@ const VoucherPlanDetailModal: React.FC<VoucherPlanDetailModalProps> = ({ title, 
 
       <Modal centered destroyOnClose footer={null} visible={visible} onCancel={() => setVisible(false)}>
         <StyledTitle className="mb-4">{title}</StyledTitle>
-        <Button type="primary" icon="download" className="mb-4" onClick={() => exportCodes()}>
+        <Button type="primary" icon={<DownloadOutlined />} className="mb-4" onClick={() => exportCodes()}>
           {formatMessage(promotionMessages.ui.exportCodes)}
         </Button>
 

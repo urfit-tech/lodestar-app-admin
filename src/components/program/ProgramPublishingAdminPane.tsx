@@ -1,5 +1,7 @@
+import { Icon as LegacyIcon } from '@ant-design/compatible'
+import { DownOutlined, ExclamationCircleOutlined, RightOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Dropdown, Icon, Menu, Modal, Skeleton, Typography } from 'antd'
+import { Button, Dropdown, Menu, Modal, Skeleton, Typography } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
@@ -170,7 +172,7 @@ const ProgramPublishingAdminPane: React.FC<
           {program && (
             <div className="d-flex flex-column align-items-center py-3  ">
               <div className="mb-3">
-                <Icon
+                <LegacyIcon
                   type={isPublished ? 'check-circle' : isValidate ? 'warning' : 'close-circle'}
                   style={{ fontSize: 64, color: theme['@primary-color'] }}
                 />
@@ -202,11 +204,11 @@ const ProgramPublishingAdminPane: React.FC<
                   {errors.map((error, idx) => {
                     return (
                       <div key={idx} className="d-flex align-items-center mb-2">
-                        <Icon type="exclamation-circle" className="mr-1" />
+                        <ExclamationCircleOutlined className="mr-1" />
                         <span className="mr-1">{error.message}</span>
                         <span>
                           <Link to={error.to}>
-                            {formatMessage(messages.jumpTo)} <Icon type="right" />
+                            {formatMessage(messages.jumpTo)} <RightOutlined />
                           </Link>
                         </span>
                       </div>
@@ -221,7 +223,7 @@ const ProgramPublishingAdminPane: React.FC<
                   {isValidate ? (
                     <Dropdown.Button
                       type="primary"
-                      icon={<Icon type="down" />}
+                      icon={<DownOutlined />}
                       overlay={overlay}
                       onClick={() => {
                         handlePublish(publishState === formatMessage(commonMessages.ui.privatelyPublished))
@@ -230,7 +232,7 @@ const ProgramPublishingAdminPane: React.FC<
                       <div>{publishState}</div>
                     </Dropdown.Button>
                   ) : (
-                    <Dropdown.Button disabled icon={<Icon type="down" />} overlay={overlay}>
+                    <Dropdown.Button disabled icon={<DownOutlined />} overlay={overlay}>
                       <div>{publishState}</div>
                     </Dropdown.Button>
                   )}

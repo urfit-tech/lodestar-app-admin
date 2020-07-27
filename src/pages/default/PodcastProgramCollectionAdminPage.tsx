@@ -1,4 +1,5 @@
-import { Icon, Skeleton } from 'antd'
+import Icon from '@ant-design/icons'
+import { Skeleton } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'

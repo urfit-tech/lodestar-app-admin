@@ -1,4 +1,5 @@
-import { Button, Icon, Tabs } from 'antd'
+import { ArrowLeftOutlined } from '@ant-design/icons'
+import { Button, Tabs } from 'antd'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
@@ -31,7 +32,7 @@ const BlogAdminPage: React.FC = () => {
       <AdminHeader>
         <Link to="/blog">
           <Button type="link" className="mr-3">
-            <Icon type="arrow-left" />
+            <ArrowLeftOutlined />
           </Button>
         </Link>
 

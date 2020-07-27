@@ -1,6 +1,9 @@
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, Icon, Input } from 'antd'
-import { FormComponentProps } from 'antd/lib/form'
+import { Button, Input } from 'antd'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -55,7 +58,7 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
 
   if (!member) {
     return (
-      <Button icon="file-add" disabled>
+      <Button icon={<FileAddOutlined />} disabled>
         {formatMessage(appointmentMessages.ui.createPlan)}
       </Button>
     )
@@ -64,12 +67,12 @@ const AppointmentPlanCreationModal: React.FC<FormComponentProps> = ({ form }) =>
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button type="primary" icon="file-add" onClick={() => setVisible(true)}>
+        <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
           {formatMessage(appointmentMessages.ui.createPlan)}
         </Button>
       )}
       title={formatMessage(appointmentMessages.ui.createPlan)}
-      icon={<Icon type="file-add" />}
+      icon={<FileAddOutlined />}
       cancelText={formatMessage(commonMessages.ui.cancel)}
       okText={formatMessage(commonMessages.ui.create)}
       okButtonProps={{ loading }}

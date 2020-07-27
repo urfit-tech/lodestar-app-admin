@@ -1,4 +1,5 @@
-import { Icon, Typography } from 'antd'
+import Icon, { CalendarOutlined, UserOutlined } from '@ant-design/icons'
+import { Typography } from 'antd'
 import moment from 'moment-timezone'
 import React from 'react'
 import { Link } from 'react-router-dom'
@@ -80,12 +81,12 @@ const BlogPostCard: React.FC<{
 
           <StyledMeta className="mb-2 d-flex">
             <StyledMemberName className="mr-2">
-              <Icon type="user" className="mr-2" />
+              <UserOutlined className="mr-2" />
               {memberName}
             </StyledMemberName>
             {publishedAt && (
               <div className="flex-shrink-0">
-                <Icon type="calendar" className="mr-2" />
+                <CalendarOutlined className="mr-2" />
                 {moment(publishedAt).format('YYYY-MM-DD')}
               </div>
             )}

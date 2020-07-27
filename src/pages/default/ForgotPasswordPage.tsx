@@ -1,5 +1,8 @@
-import { Button, Form, Icon, Input } from 'antd'
-import { FormComponentProps } from 'antd/lib/form'
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { MailOutlined } from '@ant-design/icons'
+import { Button, Input } from 'antd'
 import axios from 'axios'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -88,7 +91,7 @@ const ForgotPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
                 },
                 { type: 'email', message: formatMessage(errorMessages.form.emailFormat) },
               ],
-            })(<Input placeholder={formatMessage(messages.enterRegisteredEmail)} suffix={<Icon type="mail" />} />)}
+            })(<Input placeholder={formatMessage(messages.enterRegisteredEmail)} suffix={<MailOutlined />} />)}
           </Form.Item>
           <Form.Item className="m-0">
             <Button htmlType="submit" type="primary" block loading={loading}>

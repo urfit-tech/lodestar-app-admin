@@ -1,3 +1,4 @@
+import { UploadOutlined } from '@ant-design/icons'
 import { Button, message, Spin, Upload } from 'antd'
 import { UploadProps } from 'antd/lib/upload'
 import { UploadChangeParam, UploadFile } from 'antd/lib/upload/interface'
@@ -112,7 +113,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
           <div style={{ color: '#585858' }}>{formatMessage(messages.uploading)}</div>
         </div>
       ) : (
-        <Button icon="upload" loading={loading} disabled={loading}>
+        <Button icon={<UploadOutlined />} loading={loading} disabled={loading}>
           {value
             ? reUploadText || formatMessage(messages.uploadRetry)
             : uploadText || formatMessage(messages.uploadFile)}

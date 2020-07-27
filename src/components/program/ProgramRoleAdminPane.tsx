@@ -1,4 +1,7 @@
-import { Button, Form, Modal, Typography } from 'antd'
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { PlusOutlined } from '@ant-design/icons'
+import { Button, Modal, Typography } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -101,7 +104,7 @@ const ProgramRoleAdminPane: React.FC<
                 />
               ))}
           {program && !program.roles.find(role => role.name === 'instructor') && (
-            <Button type="link" icon="plus" size="small" onClick={() => setVisible(true)}>
+            <Button type="link" icon={<PlusOutlined />} size="small" onClick={() => setVisible(true)}>
               {formatMessage(commonMessages.ui.addInstructor)}
             </Button>
           )}

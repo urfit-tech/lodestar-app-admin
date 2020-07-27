@@ -1,4 +1,7 @@
-import { Button, Checkbox, Dropdown, Form, Icon, Input, Menu, Pagination, Table, Tag, Typography } from 'antd'
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { CaretDownOutlined, DownloadOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
+import { Button, Checkbox, Dropdown, Input, Menu, Pagination, Table, Tag, Typography } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import moment from 'moment'
 import React, { useContext, useState } from 'react'
@@ -63,7 +66,7 @@ const getColumnSearchProps = ({
       />
     </div>
   ),
-  filterIcon: filtered => <Icon type="search" style={{ color: filtered ? theme['@primary-color'] : undefined }} />,
+  filterIcon: filtered => <SearchOutlined style={{ color: filtered ? theme['@primary-color'] : undefined }} />,
 })
 
 const MemberCollectionAdminPage: React.FC = () => {
@@ -119,7 +122,7 @@ const MemberCollectionAdminPage: React.FC = () => {
           {roleFilter ? <UserRoleName userRole={roleFilter} /> : formatMessage(commonMessages.label.allMembers)}
           {` (${menu.filter(item => item.role === roleFilter)[0].count})`}
         </span>
-        <Icon type="caret-down" />
+        <CaretDownOutlined />
       </Button>
     </StyledDropdown>
   )
@@ -194,7 +197,7 @@ const MemberCollectionAdminPage: React.FC = () => {
   return (
     <AdminLayout>
       <Typography.Title level={3} className="mb-4">
-        <Icon type="user" className="mr-3" />
+        <UserOutlined className="mr-3" />
         <span>{formatMessage(commonMessages.menu.members)}</span>
       </Typography.Title>
 
@@ -288,7 +291,7 @@ const MemberExportModal: React.FC<{
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button type="primary" icon="download" onClick={() => setVisible(true)}>
+        <Button type="primary" icon={<DownloadOutlined />} onClick={() => setVisible(true)}>
           {formatMessage(commonMessages.ui.downloadMemberList)}
         </Button>
       )}

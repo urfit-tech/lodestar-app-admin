@@ -1,4 +1,5 @@
-import { Button, Divider, Icon, Tooltip } from 'antd'
+import Icon from '@ant-design/icons'
+import { Button, Divider, Tooltip } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'

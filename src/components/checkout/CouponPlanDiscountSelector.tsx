@@ -35,7 +35,7 @@ const CouponPlanDiscountSelector: React.FC<{
               0
             }
             value={value.amount}
-            onChange={amount => amount && onChange && onChange({ ...value, amount })}
+            onChange={amount => typeof amount === 'number' && onChange && onChange({ ...value, amount })}
           />
         </StyledGroup>
       ) : null}
