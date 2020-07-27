@@ -327,6 +327,7 @@ export const errorMessages = {
     checkSameCodeName: { id: 'error.event.checkSameCodeName', defaultMessage: '網址代碼已被使用' },
     duplicateVoucherCode: { id: 'error.event.duplicateVoucherCode', defaultMessage: '該兌換碼已被使用' },
     duplicateCouponCode: { id: 'error.event.duplicateCouponCode', defaultMessage: '該折扣碼碼已被使用' },
+    failedPodcastRecording: { id: 'error.event.failedPodcastRecording', defaultMessage: '錄音失敗' },
   }),
   text: defineMessages({
     forbidden: { id: 'error.text.forbidden', defaultMessage: '你沒有此頁面的讀取權限' },
@@ -532,6 +533,7 @@ export const podcastMessages = {
     forward: { id: 'podcast.ui.forward', defaultMessage: '往前5秒' },
     trim: { id: 'podcast.ui.trim', defaultMessage: '裁切' },
     upload: { id: 'podcast.ui.upload', defaultMessage: '合併上傳' },
+    voiceFile: { id: 'podcast.ui.voiceFile', defaultMessage: '音檔' },
   }),
   status: defineMessages({
     published: { id: 'podcast.status.published', defaultMessage: '已發佈' },
@@ -558,6 +560,8 @@ export const podcastMessages = {
     audioFileTips: { id: 'podcast.text.audioFileTips', defaultMessage: '建議格式：MP3\n檔案大小限制：5MB' },
     podcastCoverTips: { id: 'podcast.text.podcastCoverTips', defaultMessage: '建議圖片尺寸：1200*1200px' },
     abstractLimit: { id: 'podcast.text.abstractLimit', defaultMessage: '限 100 字' },
+    uploadingVoice: { id: 'podcast.text.uploadingVoice', defaultMessage: '正在上傳中，請稍待片刻' },
+    bulkUploadMessage: { id: 'podcast.text.bulkUploadMessage', defaultMessage: '將會合併上傳您所勾選的音檔，未選擇的音檔即會刪除，確定要上傳嗎？ ' },
   }),
 }
 

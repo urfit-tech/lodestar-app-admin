@@ -1,4 +1,4 @@
-import { message } from 'antd'
+import { message, Modal, Spin } from 'antd'
 import { extname } from 'path'
 import React, { useCallback, useContext, useLayoutEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -14,7 +14,7 @@ import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError, uploadFile } from '../../helpers'
 import { convertAudioBufferToMp3, mergeAudioBuffer, sliceAudioBuffer } from '../../helpers/audio'
-import { commonMessages, podcastMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
 import { usePodcastProgramCollection, useUpdatePodcastProgramContent } from '../../hooks/podcast'
 
 const StyledLayoutContent = styled.div`
@@ -63,6 +63,31 @@ const RecordingPage: React.FC = () => {
       selectedAudioTarget,
     }
   })
+
+  const showUploadingModal = () => {
+    return Modal.info({
+      icon: null,
+      content: (
+        <div className="text-center">
+          <Spin size="large" className="my-5" />
+          <p>{formatMessage(podcastMessages.text.uploadingVoice)}</p>
+        </div>
+      ),
+      centered: true,
+      okButtonProps: { disabled: true, className: 'modal-footer-hiden-button' },
+    })
+  }
+
+  const showUploadConfirmationModal = () => {
+    return Modal.confirm({
+      icon: null,
+      title: formatMessage(podcastMessages.ui.bulkUpload),
+      content: formatMessage(podcastMessages.text.bulkUploadMessage),
+      okText: formatMessage(podcastMessages.ui.bulkUpload),
+      centered: true,
+      onOk: () => onUploadAudio(),
+    })
+  }
 
   const onRecordStop = useCallback(
     (audioBuffer: AudioBuffer | null) => {
@@ -150,6 +175,7 @@ const RecordingPage: React.FC = () => {
       }
     }
     if (dstAudioData) {
+      const modal = showUploadingModal()
       const mp3Data = convertAudioBufferToMp3(dstAudioData)
       const file = new File([mp3Data], 'record.mp3', { type: 'audio/mp3', lastModified: Date.now() })
       uploadFile(`audios/${appId}/${podcastProgramId}` + extname(file.name), file, authToken, {})
@@ -167,12 +193,13 @@ const RecordingPage: React.FC = () => {
               history.push(`/podcast-programs/${podcastProgramId}`)
             })
             .catch(error => handleError(error))
+            .finally(() => modal.destroy())
         })
         .catch(error => {
           handleError(error)
         })
     } else {
-      handleError(new Error('錄音失敗'))
+      handleError(new Error(formatMessage(errorMessages.event.failedPodcastRecording)))
     }
   }
 
@@ -223,7 +250,7 @@ const RecordingPage: React.FC = () => {
         hidden={isRecording}
         name={`${(waveCollection.findIndex(wave => wave.id === selectedAudioTarget) + 1)
           .toString()
-          .padStart(2, '0')} 音檔`}
+          .padStart(2, '0')} ${formatMessage(podcastMessages.ui.voiceFile)}`}
         duration={currentPlayingSecond}
         isPlaying={isPlaying}
         isEditing={isEditing}
@@ -231,14 +258,19 @@ const RecordingPage: React.FC = () => {
         isUploadDisabled={selectedWaveIds.length < 1}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
-        onEdit={() => setIsEditing(isEditing => !isEditing)}
+        onEdit={() => {
+          setIsEditing(isEditing => !isEditing)
+          if (isEditing) {
+            setSelectedWaveIds([])
+          }
+        }}
         onTrim={onTrimAudio}
         onDelete={() => {
           setWaveCollection(waveCollection.filter(wave => !selectedWaveIds.includes(wave.id)))
           setIsEditing(false)
         }}
         onUpload={() => {
-          onUploadAudio()
+          showUploadConfirmationModal()
           setIsEditing(false)
         }}
       />

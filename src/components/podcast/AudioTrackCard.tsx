@@ -96,6 +96,15 @@ const AudioTrackCard: React.FC<
           TimelinePlugin.create({
             container: waveformTimelineRef.current,
             height: 20,
+            timeInterval: 0.2,
+            primaryLabelInterval: 5,
+            formatTimeCallback: (recordingSeconds: number) => {
+              const recordingDateObj = new Date(0)
+              recordingDateObj.setSeconds(recordingSeconds)
+              return recordingSeconds >= 3600
+                ? recordingDateObj.toISOString().substr(11, 11)
+                : recordingDateObj.toISOString().substr(14, 8)
+            },
           }),
         ],
       })

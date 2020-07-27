@@ -44,6 +44,10 @@ const StyledAction = styled.div`
       margin-left: 2rem;
     }
   `)}
+  .ant-btn-link[disabled] {
+    color: #fff !important;
+    padding: 0;
+  }
 `
 
 const StyledOverlayButton = styled(Button)`
@@ -54,17 +58,16 @@ const StyledOverlayButton = styled(Button)`
   }
 `
 const StyledBarIconButton = styled(Button)<{ height?: string; iconSize?: string }>`
-  display: flex;
-  align-items: center;
-  height: ${props => (props.height ? props.height : '24px')};
+  height: ${props => (props.height ? props.height : '36px')};
   color: white;
-  .anticon {
-    font-size: ${props => props.iconSize || '24px'};
-  }
+  font-size: ${props => props.iconSize || '24px'};
+  line-height: 1;
   span {
-    line-height: 1.5;
+    line-height: 1;
   }
-  &:hover .anticon {
+  &:hover,
+  &:focus,
+  &:active {
     color: #cdcdcd;
   }
   &[disabled] {
@@ -72,12 +75,14 @@ const StyledBarIconButton = styled(Button)<{ height?: string; iconSize?: string 
   }
 `
 const StyledButton = styled(Button)`
-  height: 36px;
+  height: 40px;
   color: white;
   span {
     line-height: 1.5;
   }
-  &:hover {
+  &:hover,
+  &:focus,
+  &:active {
     color: var(--gray);
     border-color: var(--gray);
   }
@@ -171,23 +176,23 @@ const RecordingController: React.FC<{
             <div className="col-6 col-lg-4 d-flex align-items-center justify-content-center">
               <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.backward)}</TooltipText>}>
                 <StyledBarIconButton type="link" className="p-0" onClick={() => onBackward && onBackward()}>
-                  <Icon component={() => <Backward5Icon />} />
+                  <Backward5Icon />
                 </StyledBarIconButton>
               </Tooltip>
 
               <StyledBarIconButton
                 type="link"
                 className="mx-1"
-                height="44px"
+                height="66px"
                 iconSize="44px"
                 onClick={() => (isPlaying ? onPause && onPause() : onPlay && onPlay())}
               >
-                <Icon component={() => (isPlaying ? <PauseCircleIcon /> : <PlayCircleIcon />)} />
+                {isPlaying ? <PauseCircleIcon /> : <PlayCircleIcon />}
               </StyledBarIconButton>
 
               <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.forward)}</TooltipText>}>
                 <StyledBarIconButton type="link" className="p-0" onClick={() => onForward && onForward()}>
-                  <Icon component={() => <Forward5Icon />} />
+                  <Forward5Icon />
                 </StyledBarIconButton>
               </Tooltip>
             </div>
@@ -196,7 +201,7 @@ const RecordingController: React.FC<{
               <Responsive.Desktop>
                 <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.trim)}</TooltipText>}>
                   <StyledBarIconButton type="link" className="p-0 m-0" onClick={() => onTrim && onTrim()}>
-                    <Icon component={() => <TrimIcon />} />
+                    <TrimIcon />
                   </StyledBarIconButton>
                 </Tooltip>
                 <Divider
@@ -212,7 +217,7 @@ const RecordingController: React.FC<{
                         className="p-0"
                         onClick={() => onDelete && onDelete()}
                       >
-                        <Icon component={() => <TrashOIcon />} />
+                        <TrashOIcon />
                       </StyledBarIconButton>
                     </Tooltip>
                     <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.upload)}</TooltipText>}>
@@ -222,7 +227,7 @@ const RecordingController: React.FC<{
                         className="p-0"
                         onClick={() => onUpload && onUpload()}
                       >
-                        <Icon component={() => <UploadIcon />} />
+                        <UploadIcon />
                       </StyledBarIconButton>
                     </Tooltip>
                   </>
