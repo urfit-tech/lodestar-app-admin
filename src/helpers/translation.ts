@@ -80,6 +80,7 @@ export const commonMessages = {
     orderLogId: { id: 'common.label.orderLogId', defaultMessage: '訂單編號' },
     orderLogDate: { id: 'common.label.orderLogDate', defaultMessage: '訂單日期' },
     orderLogPaymentDate: { id: 'common.label.orderLogPaymentDate', defaultMessage: '付款日期' },
+    orderLogUpdatedDate: { id: 'common.label.orderLogUpdatedDate', defaultMessage: '更新日期' },
     orderLogPrice: { id: 'common.label.orderLogPrice', defaultMessage: '訂單金額' },
     orderLogStatus: { id: 'common.label.orderLogStatus', defaultMessage: '訂單狀態' },
     orderProductPriceTotal: { id: 'common.label.orderProductPriceTotal', defaultMessage: '項目總額' },
