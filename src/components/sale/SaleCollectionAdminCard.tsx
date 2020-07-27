@@ -165,6 +165,14 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
           text: formatMessage(commonMessages.status.orderUnpaid),
           value: 'UNPAID',
         },
+        {
+          text: formatMessage(commonMessages.status.orderRefund),
+          value: 'REFUND',
+        },
+        {
+          text: formatMessage(commonMessages.status.orderExpired),
+          value: 'EXPIRED',
+        },
       ],
     },
     {

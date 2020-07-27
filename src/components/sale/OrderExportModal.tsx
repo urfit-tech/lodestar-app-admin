@@ -8,7 +8,6 @@ import moment, { Moment } from 'moment'
 import React, { useCallback, useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import AdminModal from '../../components/admin/AdminModal'
 import AppContext from '../../contexts/AppContext'
 import { dateFormatter, downloadCSV, toCSV } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
@@ -17,9 +16,10 @@ import {
   GET_ORDER_LOG_COLLECTION,
   GET_ORDER_PRODUCT_COLLECTION,
   GET_PAYMENT_LOG_COLLECTION,
-  useOrderStatuses,
+  useOrderStatuses
 } from '../../hooks/order'
 import types from '../../types'
+import AdminModal from '../admin/AdminModal'
 
 const StyledRangePicker = styled(DatePicker.RangePicker)`
   input {
