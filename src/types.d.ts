@@ -4417,6 +4417,7 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_or
 
 export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment {
   __typename: "appointment_enrollment";
+  id: any | null;
   /**
    * An object relationship
    */
@@ -10174,6 +10175,7 @@ export interface appointment_enrollment_bool_exp {
   canceled_at?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
   issue?: String_comparison_exp | null;
   join_url?: String_comparison_exp | null;
   member?: member_public_bool_exp | null;

@@ -8,7 +8,6 @@ import moment, { Moment } from 'moment'
 import React, { useCallback, useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import AdminModal from '../../components/admin/AdminModal'
 import AppContext from '../../contexts/AppContext'
 import { dateFormatter, downloadCSV, toCSV } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
@@ -17,9 +16,10 @@ import {
   GET_ORDER_LOG_COLLECTION,
   GET_ORDER_PRODUCT_COLLECTION,
   GET_PAYMENT_LOG_COLLECTION,
-  useOrderStatuses,
+  useOrderStatuses
 } from '../../hooks/order'
 import types from '../../types'
+import AdminModal from '../admin/AdminModal'
 
 const StyledRangePicker = styled(DatePicker.RangePicker)`
   input {
@@ -88,6 +88,8 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
         },
       })
 
+      const orderLogs: types.GET_ORDER_LOG_COLLECTION['order_log'] = orderLogResult.data?.order_log || []
+
       const data: string[][] = [
         [
           formatMessage(commonMessages.label.orderLogId),
@@ -110,7 +112,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           formatMessage(commonMessages.label.invoiceId),
           formatMessage(commonMessages.label.invoiceStatus),
         ],
-        ...orderLogResult.data.order_log
+        ...orderLogs
           .sort(
             (a, b) =>
               new Date(a.updated_at || a.created_at).valueOf() - new Date(b.updated_at || b.created_at).valueOf(),
@@ -171,6 +173,9 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
         },
       })
 
+      const orderProducts: types.GET_ORDER_PRODUCT_COLLECTION['order_product'] =
+        orderProductResult.data?.order_product || []
+
       const data: string[][] = [
         [
           formatMessage(commonMessages.label.orderLogId),
@@ -182,7 +187,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           formatMessage(commonMessages.term.endedAt),
           formatMessage(commonMessages.label.orderProductAutoRenew),
         ],
-        ...orderProductResult.data.order_product.map(orderProduct => [
+        ...orderProducts.map(orderProduct => [
           orderProduct.order_log.id,
           orderProduct.product.id,
           productTypeLabel[orderProduct.product.type] || formatMessage(commonMessages.product.unknownType),
@@ -218,6 +223,9 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
         },
       })
 
+      const orderDiscounts: types.GET_ORDER_DISCOUNT_COLLECTION['order_discount'] =
+        orderDiscountResult.data?.order_discount || []
+
       const data: string[][] = [
         [
           formatMessage(commonMessages.label.orderLogId),
@@ -226,7 +234,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           formatMessage(commonMessages.label.orderDiscountName),
           formatMessage(commonMessages.label.orderDiscountPrice),
         ],
-        ...orderDiscountResult.data.order_discount.map(orderDiscount => [
+        ...orderDiscounts.map(orderDiscount => [
           orderDiscount.order_log.id,
           orderDiscount.type,
           orderDiscount.id,
@@ -259,6 +267,8 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
         },
       })
 
+      const paymentLogs: types.GET_PAYMENT_LOG_COLLECTION['payment_log'] = paymentLogResult.data?.payment_log || []
+
       const data: string[][] = [
         [
           formatMessage(commonMessages.label.orderLogMemberName),
@@ -269,7 +279,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           formatMessage(commonMessages.label.paymentCreatedAt),
           formatMessage(commonMessages.label.paymentPrice),
         ],
-        ...paymentLogResult.data.payment_log.map(paymentLog => [
+        ...paymentLogs.map(paymentLog => [
           paymentLog.order_log.member.name,
           paymentLog.order_log.member.email,
           paymentLog.order_log.id,

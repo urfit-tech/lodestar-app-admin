@@ -3,9 +3,9 @@ import { Typography } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import AdminLayout from '../../../components/layout/AdminLayout'
+import OrderExportModal from '../../../components/sale/OrderExportModal'
 import SaleCollectionAdminCard from '../../../components/sale/SaleCollectionAdminCard'
 import SaleSummaryCard from '../../../components/sale/SaleSummaryAdminCard'
-import OrderExportModal from '../../../containers/sale/OrderExportModal'
 import { commonMessages } from '../../../helpers/translation'
 
 const SalesAdminPage: React.FC = () => {
@@ -22,10 +22,8 @@ const SalesAdminPage: React.FC = () => {
         <OrderExportModal />
       </div>
 
-      <div className="row mb-3">
-        <div className="col-12">
-          <SaleSummaryCard />
-        </div>
+      <div className="mb-3">
+        <SaleSummaryCard />
       </div>
 
       <SaleCollectionAdminCard />

@@ -232,6 +232,7 @@ export const commonMessages = {
     orderSuccess: { id: 'common.status.orderSuccess', defaultMessage: '已完成' },
     orderUnpaid: { id: 'common.status.orderUnpaid', defaultMessage: '待付款' },
     orderRefund: { id: 'common.status.orderRefund', defaultMessage: '已退款' },
+    orderExpired: { id: 'common.status.orderExpired', defaultMessage: '已失效' },
     orderFailed: { id: 'common.status.orderFailed', defaultMessage: '付款失敗' },
     notComplete: { id: 'common.status.notComplete', defaultMessage: '尚有未完成項目' },
     unpublished: { id: 'common.status.unpublished', defaultMessage: '尚未發佈' },
@@ -484,7 +485,10 @@ export const programMessages = {
     programDescription: { id: 'program.label.programDescription', defaultMessage: '課程描述' },
   }),
   text: defineMessages({
-    enrolledSubscriptionCount: { id: 'program.text.enrolledSubscriptionCount', defaultMessage: '目前 {count} 人訂閱中' },
+    enrolledSubscriptionCount: {
+      id: 'program.text.enrolledSubscriptionCount',
+      defaultMessage: '目前 {count} 人訂閱中',
+    },
     enrolledPerpetualCount: { id: 'program.text.enrolledPerpetualCount', defaultMessage: '已售 {count} 人' },
     emptyProgramIssue: { id: 'program.text.empty', defaultMessage: '沒有課程問題' },
     noAssignedInstructor: { id: 'common.text.noAssignedInstructor', defaultMessage: '尚未指定講師' },
