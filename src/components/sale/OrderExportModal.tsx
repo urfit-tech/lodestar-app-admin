@@ -16,7 +16,7 @@ import {
   GET_ORDER_LOG_COLLECTION,
   GET_ORDER_PRODUCT_COLLECTION,
   GET_PAYMENT_LOG_COLLECTION,
-  useOrderStatuses
+  useOrderStatuses,
 } from '../../hooks/order'
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
@@ -96,7 +96,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           formatMessage(commonMessages.label.orderLogStatus),
           formatMessage(commonMessages.label.orderLogMemberName),
           formatMessage(commonMessages.label.orderLogMemberEmail),
-          formatMessage(commonMessages.label.orderLogPaymentDate),
+          formatMessage(commonMessages.label.orderLogUpdatedDate),
           formatMessage(commonMessages.label.orderProductPriceTotal),
           formatMessage(commonMessages.label.orderDiscountPriceTotal),
           formatMessage(commonMessages.label.orderLogPriceTotal),
