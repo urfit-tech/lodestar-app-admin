@@ -261,7 +261,7 @@ export const commonMessages = {
     podcastCategory: { id: 'common.menu.podcastCategory', defaultMessage: '廣播分類' },
     appointmentAdmin: { id: 'common.menu.appointmentAdmin', defaultMessage: '預約服務' },
     appointmentPlans: { id: 'common.menu.appointmentPlans', defaultMessage: '預約方案' },
-    appointments: { id: 'common.menu.appointments', defaultMessage: '預約記錄' },
+    appointments: { id: 'common.menu.appointments', defaultMessage: '預約紀錄' },
     activityAdmin: { id: 'common.menu.activityAdmin', defaultMessage: '線下實體' },
     activities: { id: 'common.menu.activities', defaultMessage: '線下實體管理' },
     activityCategory: { id: 'common.menu.activityCategory', defaultMessage: '線下實體分類' },

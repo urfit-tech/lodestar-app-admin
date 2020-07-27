@@ -10,7 +10,7 @@ import { useOrderPhysicalProductLog } from '../../hooks/data'
 import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
 
 const messages = defineMessages({
-  noMerchandiseOrder: { id: 'merchandise.ui.noMerchandiseOrder', defaultMessage: '沒有任何商品記錄' },
+  noMerchandiseOrder: { id: 'merchandise.ui.noMerchandiseOrder', defaultMessage: '沒有任何商品紀錄' },
 })
 
 const ShippingAdminPage: React.FC = () => {
