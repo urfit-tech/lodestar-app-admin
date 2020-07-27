@@ -54,15 +54,17 @@ const StyledOverlayButton = styled(Button)`
   }
 `
 const StyledBarIconButton = styled(Button)<{ height?: string; iconSize?: string }>`
+  display: flex;
+  align-items: center;
   height: ${props => (props.height ? props.height : '24px')};
   color: white;
-  i {
+  .anticon {
     font-size: ${props => props.iconSize || '24px'};
   }
   span {
     line-height: 1.5;
   }
-  &:hover i {
+  &:hover .anticon {
     color: #cdcdcd;
   }
   &[disabled] {
