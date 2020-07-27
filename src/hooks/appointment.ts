@@ -8,6 +8,7 @@ export const useAppointmentEnrollmentCollection = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_APPOINTMENT_ENROLLMENT_COLLECTION>(gql`
     query GET_APPOINTMENT_ENROLLMENT_COLLECTION {
       appointment_enrollment(order_by: { started_at: desc }) {
+        id
         appointment_plan {
           id
           title
@@ -31,6 +32,7 @@ export const useAppointmentEnrollmentCollection = () => {
           id
           options
           order_log {
+            id
             created_at
             updated_at
           }
@@ -45,6 +47,7 @@ export const useAppointmentEnrollmentCollection = () => {
     loading || error || !data
       ? []
       : data.appointment_enrollment.map(enrollment => ({
+          id: enrollment.id,
           avatarUrl: enrollment.member?.picture_url || null,
           member: {
             name: enrollment.member_name || '',
@@ -62,7 +65,7 @@ export const useAppointmentEnrollmentCollection = () => {
             name: enrollment.appointment_plan?.creator?.name || '',
           },
           orderProduct: {
-            id: enrollment.order_product_id,
+            id: enrollment.order_product_id || '',
             options: enrollment.order_product?.options,
             orderLog: {
               createdAt: enrollment.order_product?.order_log.created_at,

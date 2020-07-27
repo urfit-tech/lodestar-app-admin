@@ -1,11 +1,12 @@
-import { Select, Tabs } from 'antd'
+import { Select, Skeleton, Tabs } from 'antd'
 import { uniqBy } from 'ramda'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { appointmentMessages } from '../../helpers/translation'
-import AppointmentPeriodCard, { AppointmentPeriodProps } from './AppointmentPeriodCard'
+import { useAppointmentEnrollmentCollection } from '../../hooks/appointment'
+import AppointmentPeriodCard from './AppointmentPeriodCard'
 
 const StyledTabs = styled(Tabs)`
   && {
@@ -34,19 +35,29 @@ const messages = defineMessages({
 })
 
 const AppointmentPeriodCollectionTabs: React.FC<{
-  periods: AppointmentPeriodProps[]
   withSelector?: boolean
-  onRefetch?: () => void
-}> = ({ periods, withSelector, onRefetch }) => {
+}> = ({ withSelector }) => {
   const { formatMessage } = useIntl()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const [selectedCreatorId, setSelectedCreatorId] = useState('')
 
+  const {
+    loadingAppointmentEnrollments,
+    appointmentEnrollments,
+    refetchAppointmentEnrollments,
+  } = useAppointmentEnrollmentCollection()
+
+  useEffect(() => {
+    refetchAppointmentEnrollments()
+  }, [refetchAppointmentEnrollments])
+
   const creators = uniqBy(
     creator => creator.id,
-    periods.map(period => period.creator),
+    appointmentEnrollments.map(period => period.creator),
   )
-  const filteredPeriods = periods.filter(period => !selectedCreatorId || period.creator.id === selectedCreatorId)
+  const filteredPeriods = appointmentEnrollments.filter(
+    period => !selectedCreatorId || period.creator.id === selectedCreatorId,
+  )
   const tabContents = [
     {
       key: 'scheduled',
@@ -87,9 +98,15 @@ const AppointmentPeriodCollectionTabs: React.FC<{
               </StyledFilterBlock>
             )}
 
-            {tabContent.periods.length > 0 ? (
+            {loadingAppointmentEnrollments ? (
+              <Skeleton active />
+            ) : tabContent.periods.length > 0 ? (
               tabContent.periods.map(period => (
-                <AppointmentPeriodCard key={period.orderProduct.id} {...period} onRefetch={onRefetch} />
+                <AppointmentPeriodCard
+                  key={period.orderProduct.id}
+                  {...period}
+                  onRefetch={refetchAppointmentEnrollments}
+                />
               ))
             ) : (
               <EmptyBlock>{formatMessage(messages.emptyAppointment)}</EmptyBlock>

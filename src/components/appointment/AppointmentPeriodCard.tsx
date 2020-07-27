@@ -96,6 +96,7 @@ const StyledModalNotation = styled.div`
 `
 
 export type AppointmentPeriodProps = {
+  id: string
   avatarUrl: string | null
   member: {
     name: string
