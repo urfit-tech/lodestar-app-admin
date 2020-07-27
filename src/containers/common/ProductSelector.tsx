@@ -4,7 +4,7 @@ import React, { useContext, useEffect } from 'react'
 import ProductSelectorComponent from '../../components/common/ProductSelector'
 import AppContext from '../../contexts/AppContext'
 import types from '../../types'
-import { ProductType } from '../../types/general'
+import { ProductType, Product } from '../../types/general'
 
 type ProductSelectorProps = {
   allowTypes: ProductType[]
@@ -22,11 +22,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({ allowTypes, value, on
   }, [refetch])
 
   const products: {
-    [key: string]: {
-      id: string
-      title: string
-      type: string
-    }[]
+    [key: string]: Product[]
   } =
     loading || error || !data
       ? {}
@@ -38,7 +34,6 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({ allowTypes, value, on
                 type: 'Program',
               }))
             : [],
-
           Card:
             enabledModules.member_card && allowTypes.includes('Card')
               ? data.card.map(card => ({
@@ -53,6 +48,22 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({ allowTypes, value, on
                 title: `${activityTicket.activity.title} - ${activityTicket.title}`,
                 type: 'ActivityTicket',
               }))
+            : [],
+          ProgramPackage: allowTypes.includes('ProgramPackage')
+            ? data.program_package.map(programPackage => {
+                return {
+                  id: `ProgramPackage_${programPackage.id}`,
+                  title: programPackage.title,
+                  type: 'ProgramPackage',
+                  children: programPackage.program_package_plans.map(programPackagePlan => {
+                    return {
+                      id: `ProgramPackagePlan_${programPackagePlan.id}`,
+                      title: programPackagePlan.title,
+                      type: 'ProgramPackagePlan',
+                    }
+                  }),
+                }
+              })
             : [],
         }
 
@@ -106,6 +117,16 @@ const GET_ALLTYPE_PRODUCT_COLLECTION = gql`
       activity {
         id
         title
+      }
+    }
+    program_package {
+      id
+      title
+      published_at
+      program_package_plans {
+        id
+        title
+        published_at
       }
     }
   }

@@ -2,12 +2,23 @@ import { Spin, TreeSelect } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { commonMessages, errorMessages } from '../../helpers/translation'
+import { Product } from '../../types/general'
 
-const productTypes = ['Program', 'ProgramPlan', 'ProgramContent', 'Card', 'ActivityTicket', 'Merchandise']
+const productTypes = [
+  'Program',
+  'ProgramPackage',
+  'ProgramPlan',
+  'ProgramContent',
+  'Card',
+  'ActivityTicket',
+  'Merchandise',
+]
 const productTypeLabel = (productType: string) => {
   switch (productType) {
     case 'Program':
       return commonMessages.label.allProgram
+    case 'ProgramPackage':
+      return commonMessages.label.allProgramPackage
     case 'ProgramPlan':
       return commonMessages.label.allProgramPlan
     case 'ProgramContent':
@@ -30,11 +41,7 @@ const messages = defineMessages({
 type ProductSelectorProps = {
   loading?: boolean
   error?: Error
-  products: {
-    id: string
-    title: string
-    type: string
-  }[]
+  products: Product[]
   value?: string[]
   onChange?: (value: string[]) => void
 }
@@ -62,6 +69,13 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({ loading, error, produ
             title: product.title,
             value: product.id,
             key: product.id,
+            children: product?.children?.map(programPackagePlan => {
+              return {
+                title: programPackagePlan.title,
+                value: programPackagePlan.id,
+                key: programPackagePlan.id,
+              }
+            }),
           }
         }),
     }))

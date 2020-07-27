@@ -3241,6 +3241,24 @@ export interface GET_ALLTYPE_PRODUCT_COLLECTION_activity_ticket {
   activity: GET_ALLTYPE_PRODUCT_COLLECTION_activity_ticket_activity;
 }
 
+export interface GET_ALLTYPE_PRODUCT_COLLECTION_program_package_program_package_plans {
+  __typename: "program_package_plan";
+  id: any;
+  title: string;
+  published_at: any | null;
+}
+
+export interface GET_ALLTYPE_PRODUCT_COLLECTION_program_package {
+  __typename: "program_package";
+  id: any;
+  title: string;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  program_package_plans: GET_ALLTYPE_PRODUCT_COLLECTION_program_package_program_package_plans[];
+}
+
 export interface GET_ALLTYPE_PRODUCT_COLLECTION {
   /**
    * fetch data from the table: "program"
@@ -3254,6 +3272,10 @@ export interface GET_ALLTYPE_PRODUCT_COLLECTION {
    * fetch data from the table: "activity_ticket"
    */
   activity_ticket: GET_ALLTYPE_PRODUCT_COLLECTION_activity_ticket[];
+  /**
+   * fetch data from the table: "program_package"
+   */
+  program_package: GET_ALLTYPE_PRODUCT_COLLECTION_program_package[];
 }
 
 /* tslint:disable */

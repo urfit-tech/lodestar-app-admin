@@ -94,7 +94,7 @@ const VoucherPlanAdminModal: React.FC<VoucherPlanAdminModalProps> = ({ form, vou
           {form.getFieldDecorator('voucherPlanProducts', {
             initialValue: voucherPlan ? voucherPlan.productIds : [],
             rules: [{ required: true, message: formatMessage(errorMessages.form.exchangeItems) }],
-          })(<ProductSelector allowTypes={['Program', 'Card', 'ActivityTicket']} />)}
+          })(<ProductSelector allowTypes={['Program', 'Card', 'ActivityTicket', 'ProgramPackage']} />)}
         </Form.Item>
 
         <Form.Item label={formatMessage(messages.exchangeItemsAmount)}>

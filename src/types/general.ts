@@ -5,6 +5,7 @@ export type ProductType =
   | 'Program'
   | 'ProgramPlan'
   | 'ProgramContent'
+  | 'ProgramPackage'
   | 'ProgramPackagePlan'
   | 'ProjectPlan'
   | 'Card'
@@ -13,6 +14,13 @@ export type ProductType =
   | 'PodcastProgram'
   | 'PodcastPlan'
   | 'AppointmentPlan'
+
+export type Product = {
+  id: string
+  title: string
+  type: ProductType
+  children?: Product[]
+}
 
 export type Category = {
   id: string
