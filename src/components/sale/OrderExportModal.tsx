@@ -179,7 +179,6 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
       const data: string[][] = [
         [
           formatMessage(commonMessages.label.orderLogId),
-          formatMessage(commonMessages.label.orderProductId),
           formatMessage(commonMessages.label.orderProductType),
           formatMessage(commonMessages.label.orderProductName),
           formatMessage(commonMessages.label.orderProductPrice),
@@ -191,7 +190,6 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
         ],
         ...orderProducts.map(orderProduct => [
           orderProduct.order_log.id,
-          orderProduct.product.id,
           productTypeLabel[orderProduct.product.type] || formatMessage(commonMessages.product.unknownType),
           orderProduct.name,
           orderProduct.price,
