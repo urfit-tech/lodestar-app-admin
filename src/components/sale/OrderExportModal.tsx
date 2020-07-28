@@ -179,25 +179,25 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
       const data: string[][] = [
         [
           formatMessage(commonMessages.label.orderLogId),
+          formatMessage(commonMessages.label.orderLogMemberName),
+          formatMessage(commonMessages.label.invoicePhone),
           formatMessage(commonMessages.label.orderProductType),
           formatMessage(commonMessages.label.orderProductName),
           formatMessage(commonMessages.label.orderProductPrice),
           formatMessage(commonMessages.term.startedAt),
           formatMessage(commonMessages.term.endedAt),
           formatMessage(commonMessages.label.orderProductAutoRenew),
-          formatMessage(commonMessages.label.orderLogMemberName),
-          formatMessage(commonMessages.label.invoicePhone),
         ],
         ...orderProducts.map(orderProduct => [
           orderProduct.order_log.id,
+          orderProduct.order_log.name,
+          orderProduct.order_log.phone,
           productTypeLabel[orderProduct.product.type] || formatMessage(commonMessages.product.unknownType),
           orderProduct.name,
           orderProduct.price,
           dateFormatter(orderProduct.started_at),
           dateFormatter(orderProduct.ended_at),
           orderProduct.auto_renewed,
-          orderProduct.order_log.name,
-          orderProduct.order_log.phone,
         ]),
       ]
 
