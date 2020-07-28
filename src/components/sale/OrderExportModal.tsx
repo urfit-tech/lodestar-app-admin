@@ -186,6 +186,8 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           formatMessage(commonMessages.term.startedAt),
           formatMessage(commonMessages.term.endedAt),
           formatMessage(commonMessages.label.orderProductAutoRenew),
+          formatMessage(commonMessages.label.orderLogMemberName),
+          formatMessage(commonMessages.label.invoicePhone),
         ],
         ...orderProducts.map(orderProduct => [
           orderProduct.order_log.id,
@@ -196,6 +198,8 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           dateFormatter(orderProduct.started_at),
           dateFormatter(orderProduct.ended_at),
           orderProduct.auto_renewed,
+          orderProduct.order_log.name,
+          orderProduct.order_log.phone,
         ]),
       ]
 

@@ -4423,6 +4423,7 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_me
 
 export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product_order_log {
   __typename: "order_log";
+  id: string;
   created_at: any;
   updated_at: any | null;
 }
@@ -6435,6 +6436,14 @@ export interface GET_ORDER_LOG_COLLECTIONVariables {
 export interface GET_ORDER_PRODUCT_COLLECTION_order_product_order_log {
   __typename: "order_log";
   id: string;
+  /**
+   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
+   */
+  name: any;
+  /**
+   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
+   */
+  phone: any;
 }
 
 export interface GET_ORDER_PRODUCT_COLLECTION_order_product_product {

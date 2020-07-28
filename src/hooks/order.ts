@@ -87,6 +87,8 @@ export const GET_ORDER_PRODUCT_COLLECTION = gql`
       id
       order_log {
         id
+        name: invoice(path: "$.name")
+        phone: invoice(path: "$.phone")
       }
       product {
         id
