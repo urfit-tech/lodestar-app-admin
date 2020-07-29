@@ -4423,6 +4423,7 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_me
 
 export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product_order_log {
   __typename: "order_log";
+  id: string;
   created_at: any;
   updated_at: any | null;
 }
@@ -6435,14 +6436,18 @@ export interface GET_ORDER_LOG_COLLECTIONVariables {
 export interface GET_ORDER_PRODUCT_COLLECTION_order_product_order_log {
   __typename: "order_log";
   id: string;
+  /**
+   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
+   */
+  name: any;
+  /**
+   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
+   */
+  phone: any;
 }
 
 export interface GET_ORDER_PRODUCT_COLLECTION_order_product_product {
   __typename: "product";
-  /**
-   * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
-   */
-  id: string;
   /**
    * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket /
    * Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan /
@@ -8965,9 +8970,11 @@ export enum point_log_constraint {
 export enum point_log_update_column {
   created_at = "created_at",
   description = "description",
+  ended_at = "ended_at",
   id = "id",
   member_id = "member_id",
   point = "point",
+  started_at = "started_at",
 }
 
 /**
@@ -12911,10 +12918,12 @@ export interface point_log_bool_exp {
   _or?: (point_log_bool_exp | null)[] | null;
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   point?: numeric_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
 }
 
 /**
@@ -12923,10 +12932,12 @@ export interface point_log_bool_exp {
 export interface point_log_insert_input {
   created_at?: any | null;
   description?: string | null;
+  ended_at?: any | null;
   id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   point?: any | null;
+  started_at?: any | null;
 }
 
 /**
