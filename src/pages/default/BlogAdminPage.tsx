@@ -4,7 +4,14 @@ import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
-import { AdminBlock, AdminBlockTitle, AdminHeader, AdminHeaderTitle, AdminPaneTitle } from '../../components/admin'
+import {
+  AdminBlock,
+  AdminBlockTitle,
+  AdminHeader,
+  AdminHeaderTitle,
+  AdminPaneTitle,
+  AdminTabBarWrapper
+} from '../../components/admin'
 import RoleAdminBlock from '../../components/admin/RoleAdminBlock'
 import BlogPostAuthorCollectionBlock from '../../components/blog/BlogPostAuthorCollectionBlock'
 import BlogPostBasicForm from '../../components/blog/BlogPostBasicForm'
@@ -13,6 +20,7 @@ import BlogPostDeletionModal from '../../components/blog/BlogPostDeletionModal'
 import BlogPostPublishBlock from '../../components/blog/BlogPostPublishBlock'
 import BlogPostSettingForm from '../../components/blog/BlogPostSettingForm'
 import BlogPostVideoForm from '../../components/blog/BlogPostVideoForm'
+import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import AppContext from '../../contexts/AppContext'
 import { blogMessages, commonMessages } from '../../helpers/translation'
 import { usePost } from '../../hooks/blog'
@@ -43,17 +51,15 @@ const BlogAdminPage: React.FC = () => {
         </a>
       </AdminHeader>
 
-      <div style={{ backgroundColor: '#f7f8f8', minHeight: 'calc(100vh - 64px)' }}>
+      <StyledLayoutContent variant="gray">
         {post && (
           <Tabs
             activeKey={activeKey || 'content'}
             onChange={key => setActiveKey(key)}
-            renderTabBar={(tabsProps, DefaultTabBar) => (
-              <div style={{ backgroundColor: 'white' }}>
-                <div className="container text-center">
-                  <DefaultTabBar {...tabsProps} />
-                </div>
-              </div>
+            renderTabBar={(props, DefaultTabBar) => (
+              <AdminTabBarWrapper>
+                <DefaultTabBar {...props} className="mb-0" />
+              </AdminTabBarWrapper>
             )}
           >
             <Tabs.TabPane tab={formatMessage(blogMessages.label.postContent)} key="content">
@@ -120,7 +126,7 @@ const BlogAdminPage: React.FC = () => {
             </Tabs.TabPane>
           </Tabs>
         )}
-      </div>
+      </StyledLayoutContent>
     </>
   )
 }

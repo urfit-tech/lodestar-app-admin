@@ -1,4 +1,4 @@
-import Icon, { FileTextFilled } from '@ant-design/icons'
+import Icon, { EditOutlined, FileTextFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Popover, Spin, Tabs, Typography } from 'antd'
 import gql from 'graphql-tag'
@@ -158,7 +158,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
                       <OverlayBlock>
                         <div>
                           <Link to={`/programs/${program.id}`}>
-                            <StyledButton block icon="edit">
+                            <StyledButton block icon={<EditOutlined />}>
                               {formatMessage(programMessages.ui.editProgram)}
                             </StyledButton>
                           </Link>

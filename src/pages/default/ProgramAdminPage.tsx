@@ -4,6 +4,8 @@ import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
+import { AdminTabBarWrapper } from '../../components/admin'
+import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import ProgramContentAdminPane from '../../components/program/ProgramContentAdminPane'
 import ProgramPlanAdminPane from '../../components/program/ProgramPlanAdminPane'
 import ProgramPublishingAdminPane from '../../components/program/ProgramPublishingAdminPane'
@@ -70,16 +72,14 @@ const ProgramAdminPage: React.FC = () => {
         }
       />
 
-      <div style={{ backgroundColor: '#f7f8f8', minHeight: 'calc(100vh - 64px)' }}>
+      <StyledLayoutContent variant="gray">
         <Tabs
           activeKey={activeKey || 'content'}
           onChange={key => setActiveKey(key)}
-          renderTabBar={(tabsProps, DefaultTabBar) => (
-            <div style={{ backgroundColor: 'white' }}>
-              <div className="container text-center">
-                <DefaultTabBar {...tabsProps} />
-              </div>
-            </div>
+          renderTabBar={(props, DefaultTabBar) => (
+            <AdminTabBarWrapper>
+              <DefaultTabBar {...props} className="mb-0" />
+            </AdminTabBarWrapper>
           )}
         >
           <Tabs.TabPane tab={formatMessage(programMessages.label.programContent)} key="content">
@@ -98,7 +98,7 @@ const ProgramAdminPage: React.FC = () => {
             <ProgramPublishingAdminPane program={program} onRefetch={refetchProgram} />
           </Tabs.TabPane>
         </Tabs>
-      </div>
+      </StyledLayoutContent>
     </>
   )
 }

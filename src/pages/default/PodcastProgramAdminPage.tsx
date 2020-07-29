@@ -2,7 +2,6 @@ import { Tabs } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
-import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminBlock, AdminBlockTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
@@ -17,10 +16,6 @@ import PodcastProgramPublishBlock from '../../containers/podcast/PodcastProgramP
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { usePodcastProgramCollection } from '../../hooks/podcast'
 
-const StyledWrapper = styled.div`
-  background: #f7f8f8;
-`
-
 const PodcastProgramAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { podcastProgramId } = useParams<{ podcastProgramId: string }>()
@@ -28,21 +23,21 @@ const PodcastProgramAdminPage: React.FC = () => {
   const { podcastProgram, refetchPodcastProgram } = usePodcastProgramCollection(podcastProgramId)
 
   return (
-    <StyledWrapper>
+    <>
       <PodcastProgramHeader
         podcastProgramId={podcastProgramId}
         title={podcastProgram?.title}
         goBackLink="/podcast-programs"
       />
 
-      <StyledLayoutContent>
+      <StyledLayoutContent variant="gray">
         <Tabs
           defaultActiveKey="content"
           activeKey={activeKey || 'content'}
           onChange={key => setActiveKey(key)}
           renderTabBar={(props, DefaultTabBar) => (
             <AdminTabBarWrapper>
-              <DefaultTabBar {...props} />
+              <DefaultTabBar {...props} className="mb-0" />
             </AdminTabBarWrapper>
           )}
         >
@@ -104,7 +99,7 @@ const PodcastProgramAdminPage: React.FC = () => {
           </Tabs.TabPane>
         </Tabs>
       </StyledLayoutContent>
-    </StyledWrapper>
+    </>
   )
 }
 

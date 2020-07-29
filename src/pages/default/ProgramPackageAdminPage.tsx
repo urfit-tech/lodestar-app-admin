@@ -57,7 +57,7 @@ const ProgramPackageAdminPage: React.FC = () => {
           onChange={key => setActiveKey(key)}
           renderTabBar={(props, DefaultTabBar) => (
             <AdminTabBarWrapper>
-              <DefaultTabBar {...props} />
+              <DefaultTabBar {...props} className="mb-0" />
             </AdminTabBarWrapper>
           )}
         >

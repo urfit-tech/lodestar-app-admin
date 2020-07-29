@@ -2,7 +2,6 @@ import { Tabs } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
-import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminBlock, AdminBlockTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
@@ -23,10 +22,6 @@ const messages = defineMessages({
   scheduleSettings: { id: 'appointment.label.scheduleSettings', defaultMessage: '時段設定' },
 })
 
-const StyledWrapper = styled.div`
-  background: #f7f8f8;
-`
-
 const AppointmentPlanAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { appointmentPlanId } = useParams<{ appointmentPlanId: string }>()
@@ -35,66 +30,64 @@ const AppointmentPlanAdminPage: React.FC = () => {
 
   return (
     <AppointmentPlanProvider appointmentPlanId={appointmentPlanId}>
-      <StyledWrapper>
-        <AppointmentPlanHeader appointmentPlanId={appointmentPlanId} />
+      <AppointmentPlanHeader appointmentPlanId={appointmentPlanId} />
 
-        <StyledLayoutContent>
-          <Tabs
-            defaultActiveKey="settings"
-            activeKey={activeKey || 'settings'}
-            onChange={key => setActiveKey(key)}
-            renderTabBar={(props, DefaultTabBar) => (
-              <AdminTabBarWrapper>
-                <DefaultTabBar {...props} />
-              </AdminTabBarWrapper>
-            )}
-          >
-            <Tabs.TabPane tab={formatMessage(messages.planSettings)} key="settings">
-              <div className="container py-5">
-                <AdminPaneTitle>{formatMessage(messages.planSettings)}</AdminPaneTitle>
-                <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
-                  <AppointmentPlanBasicForm />
-                </AdminBlock>
-                <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(messages.planDescription)}</AdminBlockTitle>
-                  <AppointmentPlanIntroForm />
-                </AdminBlock>
-              </div>
-            </Tabs.TabPane>
+      <StyledLayoutContent variant="gray">
+        <Tabs
+          defaultActiveKey="settings"
+          activeKey={activeKey || 'settings'}
+          onChange={key => setActiveKey(key)}
+          renderTabBar={(props, DefaultTabBar) => (
+            <AdminTabBarWrapper>
+              <DefaultTabBar {...props} className="mb-0" />
+            </AdminTabBarWrapper>
+          )}
+        >
+          <Tabs.TabPane tab={formatMessage(messages.planSettings)} key="settings">
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(messages.planSettings)}</AdminPaneTitle>
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
+                <AppointmentPlanBasicForm />
+              </AdminBlock>
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(messages.planDescription)}</AdminBlockTitle>
+                <AppointmentPlanIntroForm />
+              </AdminBlock>
+            </div>
+          </Tabs.TabPane>
 
-            <Tabs.TabPane tab={formatMessage(messages.salesSettings)} key="sale">
-              <div className="container py-5">
-                <AdminPaneTitle>{formatMessage(messages.salesSettings)}</AdminPaneTitle>
-                <AdminBlock>
-                  <AppointmentPlanSaleForm />
-                </AdminBlock>
-              </div>
-            </Tabs.TabPane>
+          <Tabs.TabPane tab={formatMessage(messages.salesSettings)} key="sale">
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(messages.salesSettings)}</AdminPaneTitle>
+              <AdminBlock>
+                <AppointmentPlanSaleForm />
+              </AdminBlock>
+            </div>
+          </Tabs.TabPane>
 
-            <Tabs.TabPane tab={formatMessage(messages.scheduleSettings)} key="schedule">
-              <div className="container py-5">
-                <AdminPaneTitle>{formatMessage(messages.scheduleSettings)}</AdminPaneTitle>
-                <div className="mb-4">
-                  <AppointmentPlanScheduleCreationModal />
-                </div>
-                <AdminBlock>
-                  <AppointmentPlanScheduleBlock />
-                </AdminBlock>
+          <Tabs.TabPane tab={formatMessage(messages.scheduleSettings)} key="schedule">
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(messages.scheduleSettings)}</AdminPaneTitle>
+              <div className="mb-4">
+                <AppointmentPlanScheduleCreationModal />
               </div>
-            </Tabs.TabPane>
+              <AdminBlock>
+                <AppointmentPlanScheduleBlock />
+              </AdminBlock>
+            </div>
+          </Tabs.TabPane>
 
-            <Tabs.TabPane tab={formatMessage(commonMessages.label.publishAdmin)} key="publish">
-              <div className="container py-5">
-                <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
-                <AdminBlock>
-                  <AppointmentPlanPublishBlock />
-                </AdminBlock>
-              </div>
-            </Tabs.TabPane>
-          </Tabs>
-        </StyledLayoutContent>
-      </StyledWrapper>
+          <Tabs.TabPane tab={formatMessage(commonMessages.label.publishAdmin)} key="publish">
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
+              <AdminBlock>
+                <AppointmentPlanPublishBlock />
+              </AdminBlock>
+            </div>
+          </Tabs.TabPane>
+        </Tabs>
+      </StyledLayoutContent>
     </AppointmentPlanProvider>
   )
 }

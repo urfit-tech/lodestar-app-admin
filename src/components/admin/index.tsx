@@ -42,8 +42,8 @@ export const AdminHeaderTitle = styled.div`
 export const AdminTabBarWrapper = styled.div`
   background: white;
 
-  .ant-tabs-nav-scroll {
-    text-align: center;
+  .ant-tabs-nav-wrap {
+    justify-content: center;
   }
 `
 

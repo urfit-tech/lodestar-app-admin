@@ -2,7 +2,6 @@ import { Tabs } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
-import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminBlock, AdminBlockTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
@@ -22,10 +21,6 @@ const messages = defineMessages({
   publishSettings: { id: 'activity.label.publishSettings', defaultMessage: '發佈設定' },
 })
 
-const StyledWrapper = styled.div`
-  background: #f7f8f8;
-`
-
 const ActivityAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { activityId } = useParams<{ activityId: string }>()
@@ -33,59 +28,57 @@ const ActivityAdminPage: React.FC = () => {
 
   return (
     <ActivityProvider activityId={activityId}>
-      <StyledWrapper>
-        <ActivityHeader activityId={activityId} />
+      <ActivityHeader activityId={activityId} />
 
-        <StyledLayoutContent>
-          <Tabs
-            defaultActiveKey="settings"
-            activeKey={activeKey || 'settings'}
-            onChange={key => setActiveKey(key)}
-            renderTabBar={(props, DefaultTabBar) => (
-              <AdminTabBarWrapper>
-                <DefaultTabBar {...props} />
-              </AdminTabBarWrapper>
-            )}
-          >
-            <Tabs.TabPane key="settings" tab={formatMessage(messages.settings)}>
-              <div className="container py-5">
-                <AdminPaneTitle>{formatMessage(messages.settings)}</AdminPaneTitle>
-                <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
-                  <ActivityBasicForm />
-                </AdminBlock>
-                <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(messages.activityIntroduction)}</AdminBlockTitle>
-                  <ActivityIntroductionForm />
-                </AdminBlock>
-              </div>
-            </Tabs.TabPane>
+      <StyledLayoutContent variant="gray">
+        <Tabs
+          defaultActiveKey="settings"
+          activeKey={activeKey || 'settings'}
+          onChange={key => setActiveKey(key)}
+          renderTabBar={(props, DefaultTabBar) => (
+            <AdminTabBarWrapper>
+              <DefaultTabBar {...props} className="mb-0" />
+            </AdminTabBarWrapper>
+          )}
+        >
+          <Tabs.TabPane key="settings" tab={formatMessage(messages.settings)}>
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(messages.settings)}</AdminPaneTitle>
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
+                <ActivityBasicForm />
+              </AdminBlock>
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(messages.activityIntroduction)}</AdminBlockTitle>
+                <ActivityIntroductionForm />
+              </AdminBlock>
+            </div>
+          </Tabs.TabPane>
 
-            <Tabs.TabPane key="sessions" tab={formatMessage(messages.sessionAdmin)}>
-              <div className="container py-5">
-                <AdminPaneTitle>{formatMessage(messages.sessionAdmin)}</AdminPaneTitle>
-                <ActivitySessionsAdminBlock onChangeTab={() => setActiveKey('tickets')} />
-              </div>
-            </Tabs.TabPane>
+          <Tabs.TabPane key="sessions" tab={formatMessage(messages.sessionAdmin)}>
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(messages.sessionAdmin)}</AdminPaneTitle>
+              <ActivitySessionsAdminBlock onChangeTab={() => setActiveKey('tickets')} />
+            </div>
+          </Tabs.TabPane>
 
-            <Tabs.TabPane key="tickets" tab={formatMessage(activityMessages.term.ticketPlan)}>
-              <div className="container py-5">
-                <AdminPaneTitle>{formatMessage(activityMessages.term.ticketPlan)}</AdminPaneTitle>
-                <ActivityTicketsAdminBlock />
-              </div>
-            </Tabs.TabPane>
+          <Tabs.TabPane key="tickets" tab={formatMessage(activityMessages.term.ticketPlan)}>
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(activityMessages.term.ticketPlan)}</AdminPaneTitle>
+              <ActivityTicketsAdminBlock />
+            </div>
+          </Tabs.TabPane>
 
-            <Tabs.TabPane key="publish" tab={formatMessage(messages.publishSettings)}>
-              <div className="container py-5">
-                <AdminPaneTitle>{formatMessage(messages.publishSettings)}</AdminPaneTitle>
-                <AdminBlock>
-                  <ActivityPublishAdminBlock />
-                </AdminBlock>
-              </div>
-            </Tabs.TabPane>
-          </Tabs>
-        </StyledLayoutContent>
-      </StyledWrapper>
+          <Tabs.TabPane key="publish" tab={formatMessage(messages.publishSettings)}>
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(messages.publishSettings)}</AdminPaneTitle>
+              <AdminBlock>
+                <ActivityPublishAdminBlock />
+              </AdminBlock>
+            </div>
+          </Tabs.TabPane>
+        </Tabs>
+      </StyledLayoutContent>
     </ActivityProvider>
   )
 }
