@@ -29,16 +29,13 @@ const StyledAction = styled.div`
   }
 `
 const StyledBadge = styled(Badge)`
-  button {
-    font-size: 20px;
-  }
-
   .ant-badge-count {
     top: 8px;
     right: 4px;
   }
 `
 const StyledButton = styled(Button)`
+  font-size: 20px;
   &&,
   &&:hover,
   &&:active,

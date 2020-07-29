@@ -1,11 +1,11 @@
-import { Icon as LegacyIcon } from '@ant-design/compatible'
+import { BookOutlined, DollarOutlined, HeartOutlined, MessageOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { List } from 'antd'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React from 'react'
 import styled from 'styled-components'
-import { getNotificationIconType, rgba } from '../../helpers'
+import { rgba } from '../../helpers'
 import types from '../../types'
 import { AvatarImage } from '../common/Image'
 
@@ -51,7 +51,9 @@ const NotificationItem: React.FC<{
         title={description}
         description={
           <div style={{ color: '#9b9b9b' }}>
-            <span className="mr-1">{type && <LegacyIcon type={getNotificationIconType(type)} />}</span>
+            <span className="mr-1">
+              <NotificationIcon type={type} />
+            </span>
             <span>{moment(updatedAt).fromNow()}</span>
             {extra && <span>・{extra}</span>}
           </div>
@@ -59,6 +61,21 @@ const NotificationItem: React.FC<{
       />
     </StyledListItem>
   )
+}
+
+const NotificationIcon: React.FC<{ type: string | null }> = ({ type }) => {
+  switch (type) {
+    case 'message':
+      return <MessageOutlined />
+    case 'payment':
+      return <DollarOutlined />
+    case 'content':
+      return <BookOutlined />
+    case 'reaction':
+      return <HeartOutlined />
+    default:
+      return <QuestionCircleOutlined />
+  }
 }
 
 const READ_NOTIFICATION = gql`

@@ -98,21 +98,6 @@ export const durationFormatter = (seconds: number) => {
     .replace('SECONDS', `${(seconds % 60).toFixed(2)}`.padStart(5, '0'))
 }
 
-export const getNotificationIconType = (type: string) => {
-  switch (type) {
-    case 'message':
-      return 'message'
-    case 'payment':
-      return 'dollar'
-    case 'content':
-      return 'book'
-    case 'reaction':
-      return 'heart'
-    default:
-      return 'question'
-  }
-}
-
 export const rgba = (hexColor: string, alpha: number) => {
   hexColor = hexColor.replace('#', '')
   const r = parseInt(hexColor.slice(0, 2), 16)

@@ -1,7 +1,7 @@
-import { Form, Icon as LegacyIcon } from '@ant-design/compatible'
+import { Form } from '@ant-design/compatible'
 import '@ant-design/compatible/assets/index.css'
 import { FormComponentProps } from '@ant-design/compatible/lib/form'
-import { MessageOutlined, MoreOutlined } from '@ant-design/icons'
+import { HeartFilled, HeartOutlined, MessageOutlined, MoreOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Dropdown, Input, Menu, message, Tag, Typography } from 'antd'
 import BraftEditor from 'braft-editor'
@@ -260,7 +260,7 @@ const IssueItem: React.FC<IssueItemProps> = ({
               }}
               reacted={reacted}
             >
-              <LegacyIcon type="heart" theme={reacted ? 'filled' : 'outlined'} className="mr-1" />
+              {reacted ? <HeartFilled className="mr-1" /> : <HeartOutlined className="mr-1" />}
               <span>{reacted ? otherReactedMemberIds + 1 : otherReactedMemberIds}</span>
             </StyledAction>
             <StyledAction onClick={() => setRepliesVisible(!repliesVisible)}>

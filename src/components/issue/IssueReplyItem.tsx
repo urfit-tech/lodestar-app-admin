@@ -1,5 +1,4 @@
-import { Icon as LegacyIcon } from '@ant-design/compatible'
-import { MoreOutlined } from '@ant-design/icons'
+import { HeartFilled, HeartOutlined, MoreOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Dropdown, Menu, message, Tag } from 'antd'
 import BraftEditor from 'braft-editor'
@@ -211,7 +210,7 @@ const IssueReplyItem: React.FC<{
             }}
             reacted={reacted}
           >
-            <LegacyIcon className="mr-1" type="heart" theme={reacted ? 'filled' : 'outlined'} />
+            {reacted ? <HeartFilled className="mr-1" /> : <HeartOutlined className="mr-1" />}
             <span>{reacted ? otherReactedMemberIds + 1 : otherReactedMemberIds}</span>
           </StyledAction>
         </div>
