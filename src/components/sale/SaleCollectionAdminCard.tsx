@@ -6,15 +6,16 @@ import { ColumnProps, TablePaginationConfig } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import { prop, sum } from 'ramda'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
-import { currencyFormatter, dateRangeFormatter, desktopViewMixin } from '../../helpers'
+import { currencyFormatter, dateRangeFormatter, desktopViewMixin, dateFormatter } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 import ProductTypeLabel from '../common/ProductTypeLabel'
 import OrderStatusTag from './OrderStatusTag'
+import SubscriptionCancelModal from './SubscriptionCancelModal'
 
 const StyledContainer = styled.div`
   overflow: auto;
@@ -42,6 +43,8 @@ const StyledCell = styled.div`
   `)}
 `
 
+const productPlan = ['ProgramPlan', 'ProjectPlan', 'PodcastPlan', 'ProgramPackagePlan']
+
 const DEFAULT_PAGE_SIZE = 20
 const DEFAULT_PAGE_CURRENT = 1
 
@@ -56,6 +59,7 @@ type OrderProduct = {
     type: string
   }
   quantity: number
+  options: any
 }
 
 type OrderDiscount = {
@@ -84,7 +88,7 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
   const [pagination, setPagination] = useState<TablePaginationConfig>({})
 
   const pageSize = pagination.pageSize || DEFAULT_PAGE_SIZE
-  const { loading, dataSource, totalCount } = useDataSource(
+  const { loading, dataSource, totalCount, refetchUseDataSource } = useDataSource(
     pageSize,
     pagination,
     status,
@@ -184,75 +188,81 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
     },
   ]
 
-  const expandedRow = (record: OrderRow) => (
-    <div>
-      {record.orderProducts.map(orderProduct => (
-        <div key={orderProduct.id}>
-          <div className="row">
-            <div className="col-2">
-              <ProductTypeLabel productType={orderProduct.product.type} />
+  const expandedRow = (record: OrderRow) => {
+    return (
+      <div>
+        {record.orderProducts.map(orderProduct => (
+          <div key={orderProduct.id}>
+            <div className="row">
+              <div className="col-2">
+                <ProductTypeLabel productType={orderProduct.product.type} />
+              </div>
+              <div className="col-8">
+                {orderProduct.name}
+                {orderProduct.endedAt && orderProduct.product.type !== 'AppointmentPlan' && (
+                  <span className="ml-2">
+                    {`(${moment(orderProduct.endedAt).format('YYYY-MM-DD')} ${formatMessage(
+                      commonMessages.status.productExpired,
+                    )})`}
+                  </span>
+                )}
+                {orderProduct.startedAt && orderProduct.endedAt && orderProduct.product.type === 'AppointmentPlan' && (
+                  <span>
+                    {`(${dateRangeFormatter({
+                      startedAt: orderProduct.startedAt,
+                      endedAt: orderProduct.endedAt,
+                      dateFormat: 'YYYY-MM-DD',
+                    })})`}
+                  </span>
+                )}
+                {orderProduct.quantity && <span>{` X ${orderProduct.quantity} `}</span>}
+              </div>
+              <div className="col-2 text-right">{currencyFormatter(orderProduct.price)}</div>
             </div>
-            <div className="col-8">
-              {orderProduct.name}
-              {orderProduct.endedAt && orderProduct.product.type !== 'AppointmentPlan' && (
-                <span className="ml-2">
-                  {`(${moment(orderProduct.endedAt).format('YYYY-MM-DD')} ${formatMessage(
-                    commonMessages.status.productExpired,
-                  )})`}
-                </span>
-              )}
-              {orderProduct.startedAt && orderProduct.endedAt && orderProduct.product.type === 'AppointmentPlan' && (
-                <span>
-                  {`(${dateRangeFormatter({
-                    startedAt: orderProduct.startedAt,
-                    endedAt: orderProduct.endedAt,
-                    dateFormat: 'YYYY-MM-DD',
-                  })})`}
-                </span>
-              )}
-              {orderProduct.quantity && <span>{` X${orderProduct.quantity} `}</span>}
-            </div>
-            <div className="col-2 text-right">{currencyFormatter(orderProduct.price)}</div>
+            <Divider />
           </div>
-          <Divider />
-        </div>
-      ))}
-      {record.orderDiscounts.map(orderDiscount => {
-        return (
-          <div className="row" style={{ textAlign: 'right' }}>
-            <div className="col-9">
-              <div>
-                <span>{orderDiscount.name}</span>
+        ))}
+        {record.orderDiscounts.map(orderDiscount => {
+          return (
+            <div className="row" style={{ textAlign: 'right' }}>
+              <div className="col-9">
+                <div>
+                  <span>{orderDiscount.name}</span>
+                </div>
+              </div>
+              <div className="col-3">
+                <span>- {currencyFormatter(orderDiscount.price)} </span>
               </div>
             </div>
-            <div className="col-3">
-              <span>- {currencyFormatter(orderDiscount.price)} </span>
-            </div>
+          )
+        })}
+        <div className="row">
+          <div className="col-6" style={{ display: 'flex', alignItems: 'center' }}>
+            {productPlan.find(plan => plan === record.orderProducts[0].product.type) &&
+            record.orderProducts[0]?.options?.unsubscribedAt ? (
+              <span style={{ color: '#9b9b9b' }}>
+                {formatMessage(commonMessages.text.cancelSubscriptionDate, {
+                  date: dateFormatter(record.orderProducts[0]?.options?.unsubscribedAt),
+                })}
+              </span>
+            ) : (
+              <SubscriptionCancelModal
+                orderProductId={record.orderProducts[0].id}
+                orderProductOptions={record.orderProducts[0].options}
+                onRefetch={refetchUseDataSource}
+              />
+            )}
           </div>
-        )
-      })}
-      <div className="row" style={{ textAlign: 'right' }}>
-        <div className="col-9">
-          <span>{formatMessage(commonMessages.label.totalPrice)}</span>
-
-          {/* {record.status === 'UNPAID' && (
-            <Button className="mr-2">{formatMessage(commonMessages.ui.cancelOrder)}</Button>
-          )}
-          {record.status === 'UNPAID' && (
-            <Button className="mr-2" type="primary">
-              {formatMessage(commonMessages.ui.retryPayment)}
-            </Button>
-          )}
-          {record.status === 'SUCCESS' && (
-            <Button className="mr-2">{formatMessage(commonMessages.ui.checkInvoice)}</Button>
-          )} */}
-        </div>
-        <div className="col-3">
-          <span>{currencyFormatter(record.totalPrice)} </span>
+          <div className="col-3" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+            <span>{formatMessage(commonMessages.label.totalPrice)}</span>
+          </div>
+          <div className="col-3" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+            <span>{currencyFormatter(record.totalPrice)} </span>
+          </div>
         </div>
       </div>
-    </div>
-  )
+    )
+  }
 
   const handleTableChange = ({ current }: TablePaginationConfig, filters: any) => {
     setPagination({ ...pagination, current })
@@ -330,8 +340,9 @@ const useDataSource = (
   loading: boolean
   dataSource?: OrderRow[]
   totalCount?: number | null
+  refetchUseDataSource?: () => void
 } => {
-  const { loading, data } = useQuery<types.GET_ORDERS, types.GET_ORDERSVariables>(GET_ORDERS, {
+  const { loading, data, refetch } = useQuery<types.GET_ORDERS, types.GET_ORDERSVariables>(GET_ORDERS, {
     variables: {
       limit: pageSize,
       offset: pageSize * ((pagination.current || DEFAULT_PAGE_CURRENT) - 1),
@@ -354,6 +365,7 @@ const useDataSource = (
         endedAt: orderProduct.ended_at,
         product: orderProduct.product,
         quantity: orderProduct.options?.quantity,
+        options: orderProduct.options,
       })),
       orderDiscounts: log.order_discounts.map(orderDiscount => ({
         id: orderDiscount.id,
@@ -366,6 +378,7 @@ const useDataSource = (
       totalPrice: sum(log.order_products.map(prop('price'))) - sum(log.order_discounts.map(prop('price'))),
     })),
     totalCount: data ? data?.order_log_aggregate?.aggregate?.count : 0,
+    refetchUseDataSource: refetch,
   }
 }
 

@@ -222,6 +222,7 @@ export const commonMessages = {
       id: 'programPackage.label.availableForLimitTime',
       defaultMessage: '可觀看 {amount} {unit}',
     },
+    cancelSubscriptionDate: { id: 'common.text.cancelSubscriptionDate', defaultMessage: '已於 {date} 取消訂閱' },
   }),
   event: defineMessages({
     successfullySaved: { id: 'common.event.successfullySaved', defaultMessage: '儲存成功' },
@@ -564,7 +565,10 @@ export const podcastMessages = {
     podcastCoverTips: { id: 'podcast.text.podcastCoverTips', defaultMessage: '建議圖片尺寸：1200*1200px' },
     abstractLimit: { id: 'podcast.text.abstractLimit', defaultMessage: '限 100 字' },
     uploadingVoice: { id: 'podcast.text.uploadingVoice', defaultMessage: '正在上傳中，請稍待片刻' },
-    bulkUploadMessage: { id: 'podcast.text.bulkUploadMessage', defaultMessage: '將會合併上傳您所勾選的音檔，未選擇的音檔即會刪除，確定要上傳嗎？ ' },
+    bulkUploadMessage: {
+      id: 'podcast.text.bulkUploadMessage',
+      defaultMessage: '將會合併上傳您所勾選的音檔，未選擇的音檔即會刪除，確定要上傳嗎？ ',
+    },
   }),
 }
 
