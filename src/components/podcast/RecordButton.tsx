@@ -30,6 +30,11 @@ const StyledIcon = styled(Icon)<{ size?: number }>`
   font-size: ${props => props.size || 42}px;
 `
 
+const StyledStopCircleIcon = styled(StopCircleIcon)`
+  width: 2.5rem;
+  height: 2.5rem;
+`
+
 const StyledMicrophoneIcon = styled(MicrophoneIcon)`
   width: 2rem;
   height: 2rem;
@@ -96,7 +101,7 @@ const RecordButton: React.FC<
     >
       <div className="d-flex align-items-center justify-content-start">
         {isRecording ? (
-          <StyledIcon component={() => <StopCircleIcon />} />
+          <StyledIcon component={() => <StyledStopCircleIcon />} />
         ) : (
           <StyledIcon component={() => <StyledMicrophoneIcon />} size={36} />
         )}
