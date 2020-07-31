@@ -4,7 +4,7 @@ import { sum } from 'ramda'
 import { MemberInfo } from '../containers/common/MemberAdminModal'
 import { commonMessages } from '../helpers/translation'
 import types from '../types'
-import { Member, MemberPublic, UserRole } from '../types/general'
+import { MemberProps, MemberPublicProps, UserRole } from '../types/general'
 
 export const useMember = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<types.GET_MEMBER, types.GET_MEMBERVariables>(
@@ -30,7 +30,7 @@ export const useMember = (memberId: string) => {
     { variables: { memberId } },
   )
 
-  const member: Member =
+  const member: MemberProps =
     loading || error || !data
       ? {
           id: '',
@@ -85,7 +85,7 @@ export const usePublicMember = (memberId: string) => {
     { variables: { memberId } },
   )
 
-  const member: MemberPublic =
+  const member: MemberPublicProps =
     loading || error || !data
       ? {
           id: '',

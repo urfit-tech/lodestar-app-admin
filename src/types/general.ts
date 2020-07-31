@@ -28,7 +28,7 @@ export type Category = {
   position: number
 }
 
-export type Member = {
+export type MemberProps = {
   id: string
   name: string
   email: string
@@ -44,7 +44,7 @@ export type Member = {
   role: string
 }
 
-export type MemberPublic = {
+export type MemberPublicProps = {
   id: string
   name: string
   username: string
@@ -53,14 +53,14 @@ export type MemberPublic = {
   role: string
 }
 
-export type MemberBrief = {
+export type MemberBriefProps = {
   id: string
   avatarUrl: string | null
   name: string
   email: string
 }
 
-export type Issue = {
+export type IssueProps = {
   id: string
   title: string
   description: string

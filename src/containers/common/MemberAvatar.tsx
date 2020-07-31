@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { AvatarImage, AvatarImageProps } from '../../components/common/Image'
 import { usePublicMember } from '../../hooks/member'
-import { MemberPublic } from '../../types/general'
+import { MemberPublicProps } from '../../types/general'
 
 const MemberName = styled.span`
   font-size: 14px;
@@ -12,8 +12,8 @@ const MemberName = styled.span`
 const MemberAvatar: React.FC<
   AvatarImageProps & {
     memberId: string
-    renderAvatar?: (member: MemberPublic) => React.ReactNode
-    renderText?: (member: MemberPublic) => React.ReactNode
+    renderAvatar?: (member: MemberPublicProps) => React.ReactNode
+    renderText?: (member: MemberPublicProps) => React.ReactNode
     withName?: boolean
   }
 > = ({ memberId, renderAvatar, renderText, withName, ...props }) => {

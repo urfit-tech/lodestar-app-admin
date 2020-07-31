@@ -24,7 +24,7 @@ import {
 } from '../../hooks/programPackage'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
 import { ReactComponent as FileCheckIcon } from '../../images/icon/file-check.svg'
-import { MemberBrief } from '../../types/general'
+import { MemberBriefProps } from '../../types/general'
 
 const StyledProgramPackageTitle = styled.div`
   margin: 0 auto;
@@ -235,7 +235,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
 
         <StyledTableBlock>
           {programs.length > 0 && (
-            <Table<MemberBrief>
+            <Table<MemberBriefProps>
               columns={[
                 {
                   title: <StyledHeader>{formatMessage(programMessages.label.memberList)}</StyledHeader>,
@@ -262,7 +262,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
                       </Tooltip>
                     ),
                     align: 'center' as ColumnProps<any>['align'],
-                    render: (text: any, record: MemberBrief) => {
+                    render: (text: any, record: MemberBriefProps) => {
                       if (tempoDelivery[record.id] && tempoDelivery[record.id][program.id]) {
                         return moment(tempoDelivery[record.id][program.id]).format('YYYY-MM-DD HH:mm')
                       }

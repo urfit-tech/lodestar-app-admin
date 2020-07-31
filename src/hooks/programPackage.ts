@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { flatten, sum } from 'ramda'
 import types from '../types'
-import { MemberBrief, PeriodType } from '../types/general'
+import { MemberBriefProps, PeriodType } from '../types/general'
 import { ProgramPackageProps } from '../types/programPackage'
 
 export const useProgramPackageCollection = () => {
@@ -140,7 +140,7 @@ export const useProgramPackagePlanEnrollment = (programPackagePlanId: string | n
     { variables: { programPackagePlanIds: programPackagePlanId ? [programPackagePlanId] : [] } },
   )
 
-  const members: MemberBrief[] =
+  const members: MemberBriefProps[] =
     loading || error || !data
       ? []
       : data.program_package_plan_enrollment.map(enrollment => ({

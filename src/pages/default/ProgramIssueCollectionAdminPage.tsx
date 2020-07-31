@@ -12,7 +12,7 @@ import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
-import { Issue } from '../../types/general'
+import { IssueProps } from '../../types/general'
 
 const ProgramIssueCollectionAdminPage = () => {
   const { formatMessage } = useIntl()
@@ -111,7 +111,7 @@ const useGetCreatorProgramIssue = (selectedProgramId: string, unsolved?: boolean
     },
   })
 
-  const issues: Issue[] =
+  const issues: IssueProps[] =
     loading || error || !data
       ? []
       : data.issue.map(issue => ({
