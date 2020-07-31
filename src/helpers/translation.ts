@@ -50,6 +50,7 @@ export const commonMessages = {
     changePosition: { id: 'common.ui.changePosition', defaultMessage: '調整排序' },
     downloadMemberList: { id: 'common.ui.downloadMemberList', defaultMessage: '下載名單' },
     export: { id: 'common.ui.export', defaultMessage: '匯出' },
+    showMore: { id: 'common.ui.showMore', defaultMessage: '顯示更多' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -430,6 +431,7 @@ export const promotionMessages = {
     withoutConstraintAmount: { id: 'promotion.label.withoutConstraintAmount', defaultMessage: '直接折抵' },
     fromNow: { id: 'promotion.label.fromNow', defaultMessage: '即日起' },
     forever: { id: 'promotion.label.forever', defaultMessage: '無使用期限' },
+    unlimited: { id: 'promotion.label.unlimited', defaultMessage: '無限期' },
     price: { id: 'promotion.label.price', defaultMessage: '金額 {amount} 元' },
     ratio: { id: 'promotion.label.ratio', defaultMessage: '比例 {amount}%' },
     constraint: { id: 'promotion.label.constraint', defaultMessage: '消費需達' },

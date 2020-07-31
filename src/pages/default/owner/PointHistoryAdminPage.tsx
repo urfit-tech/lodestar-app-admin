@@ -1,13 +1,89 @@
 import Icon from '@ant-design/icons'
-import React from 'react'
-import { useIntl } from 'react-intl'
-import { AdminPageTitle } from '../../../components/admin'
+import { useQuery } from '@apollo/react-hooks'
+import { Button, message, Skeleton, Table, Tabs } from 'antd'
+import gql from 'graphql-tag'
+import moment from 'moment'
+import React, { useContext, useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
+import styled from 'styled-components'
+import { AdminBlock, AdminPageTitle } from '../../../components/admin'
+import { AvatarImage } from '../../../components/common/Image'
 import AdminLayout from '../../../components/layout/AdminLayout'
-import { commonMessages } from '../../../helpers/translation'
+import AppContext from '../../../contexts/AppContext'
+import { commonMessages, errorMessages, promotionMessages } from '../../../helpers/translation'
 import { ReactComponent as PointIcon } from '../../../images/icon/point.svg'
+import { ReactComponent as TextIcon } from '../../../images/icon/text.svg'
+import types from '../../../types'
+import { MemberBriefProps } from '../../../types/general'
+import LoadingPage from '../LoadingPage'
+import NotFoundPage from '../NotFoundPage'
+
+const messages = defineMessages({
+  pointReleaseHistory: { id: 'promotion.label.pointReleaseHistory', defaultMessage: '發送紀錄' },
+  pointConsumptionHistory: { id: 'promotion.label.pointConsumptionHistory', defaultMessage: '消費記錄' },
+  createdAt: { id: 'promotion.label.createdAt', defaultMessage: '建立日期' },
+  nameAndEmail: { id: 'promotion.label.nameAndEmail', defaultMessage: '姓名與 Email' },
+  pointLogTitle: { id: 'promotion.label.pointLogTitle', defaultMessage: '項目' },
+  pointAvailableDate: { id: 'promotion.label.pointAvailableDate', defaultMessage: '點數效期' },
+  points: { id: 'promotion.label.points', defaultMessage: '點數' },
+  unitOfPoints: { id: 'promotion.label.unitOfPoints', defaultMessage: '點' },
+})
+
+type PointLogProps = {
+  id: string
+  createdAt: Date
+  member: MemberBriefProps
+  title: string
+  note?: string
+  startedAt: Date | null
+  endedAt: Date | null
+  points: number
+}
+type OrderLogProps = {
+  id: string
+  member: MemberBriefProps
+  title: string
+  points: number
+}
+
+const StyledDescription = styled.div`
+  font-size: 12px;
+  color: var(--gray-dark);
+`
+const StyledLabel = styled.span<{ variant?: 'point-log' | 'discount-log' }>`
+  padding: 0.125rem 0.5rem;
+  color: white;
+  font-size: 12px;
+  border-radius: 11px;
+  background: ${props => (props.variant === 'point-log' ? 'var(--success)' : 'var(--warning)')};
+  white-space: nowrap;
+`
 
 const PointHistoryAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
+  const { loading: loadingApp, enabledModules, settings } = useContext(AppContext)
+  const pointUnit = settings['point.unit'] || formatMessage(messages.unitOfPoints)
+  const { loadingPointLogs, errorPointLogs, pointLogs, refetchPointLogs, fetchMorePointLogs } = usePointLogCollection()
+  const {
+    loadingOrderLogs,
+    errorOrderLogs,
+    orderLogs,
+    refetchOrderLogs,
+    fetchMoreOrderLogs,
+  } = useOrderLogWithPointsCollection()
+  const [loading, setLoading] = useState(false)
+
+  if (loadingApp) {
+    return <LoadingPage />
+  }
+
+  if (errorPointLogs && errorOrderLogs) {
+    message.error(errorMessages.data.fetch)
+  }
+
+  if (!enabledModules.point) {
+    return <NotFoundPage />
+  }
 
   return (
     <AdminLayout>
@@ -15,8 +91,253 @@ const PointHistoryAdminPage: React.FC = () => {
         <Icon component={() => <PointIcon />} className="mr-3" />
         <span>{formatMessage(commonMessages.menu.pointHistory)}</span>
       </AdminPageTitle>
+
+      <Tabs
+        defaultActiveKey="point-log"
+        onChange={() => {
+          refetchPointLogs()
+          refetchOrderLogs()
+        }}
+      >
+        <Tabs.TabPane key="point-log" tab={formatMessage(messages.pointReleaseHistory)}>
+          <AdminBlock>
+            {loadingPointLogs ? (
+              <Skeleton active />
+            ) : (
+              <Table<PointLogProps>
+                columns={[
+                  {
+                    title: formatMessage(messages.createdAt),
+                    dataIndex: 'createdAt',
+                    render: (text, record, index) => <div>{moment(text).format('YYYY/MM/DD')}</div>,
+                  },
+                  {
+                    title: formatMessage(messages.nameAndEmail),
+                    key: 'member',
+                    render: (text, record, index) => (
+                      <div className="d-flex align-items-center">
+                        <AvatarImage src={record.member.avatarUrl} className="mr-3 flex-shrink-0" />
+                        <div className="flex-grow-1">
+                          <div>{record.member.name}</div>
+                          <StyledDescription>{record.member.email}</StyledDescription>
+                        </div>
+                      </div>
+                    ),
+                  },
+                  {
+                    title: formatMessage(messages.pointLogTitle),
+                    dataIndex: 'title',
+                    render: (text, record, index) => (
+                      <div>
+                        {text} {record.note && <Icon component={() => <TextIcon />} className="ml-2" />}
+                      </div>
+                    ),
+                  },
+                  {
+                    title: formatMessage(messages.pointAvailableDate),
+                    key: 'date',
+                    render: (text, record, index) => (
+                      <div>
+                        {record.startedAt
+                          ? moment(record.startedAt).format('YYYY/MM/DD')
+                          : formatMessage(promotionMessages.label.fromNow)}
+                        {` ~ `}
+                        {record.endedAt
+                          ? moment(record.endedAt).format('YYYY/MM/DD')
+                          : formatMessage(promotionMessages.label.unlimited)}
+                      </div>
+                    ),
+                  },
+                  {
+                    title: formatMessage(messages.points),
+                    dataIndex: 'points',
+                    render: (text, record, index) => (
+                      <StyledLabel>
+                        {text > 0 && '+'} {text} {pointUnit}
+                      </StyledLabel>
+                    ),
+                  },
+                ]}
+                dataSource={pointLogs}
+                rowKey="id"
+                pagination={false}
+              />
+            )}
+
+            {pointLogs.length > 0 && fetchMorePointLogs && (
+              <div className="text-center mt-4">
+                <Button
+                  loading={loading}
+                  onClick={() => {
+                    setLoading(true)
+                    fetchMorePointLogs().finally(() => setLoading(false))
+                  }}
+                >
+                  {formatMessage(commonMessages.ui.showMore)}
+                </Button>
+              </div>
+            )}
+          </AdminBlock>
+        </Tabs.TabPane>
+        <Tabs.TabPane key="order-log" tab={formatMessage(messages.pointConsumptionHistory)}>
+          <AdminBlock></AdminBlock>
+        </Tabs.TabPane>
+      </Tabs>
     </AdminLayout>
   )
+}
+
+const usePointLogCollection = () => {
+  const { loading, error, data, refetch, fetchMore } = useQuery<
+    types.GET_POINT_RELEASE_HISTORY,
+    types.GET_POINT_RELEASE_HISTORYVariables
+  >(gql`
+    query GET_POINT_RELEASE_HISTORY($offset: Int) {
+      point_log(order_by: { created_at: desc }, limit: 10, offset: $offset) {
+        id
+        member {
+          id
+          picture_url
+          name
+          username
+          email
+        }
+        description
+        created_at
+        started_at
+        ended_at
+        point
+      }
+    }
+  `)
+  const [isNoMore, setIsNoMore] = useState(false)
+
+  const pointLogs: PointLogProps[] =
+    loading || error || !data
+      ? []
+      : data.point_log.map(pointLog => ({
+          id: pointLog.id,
+          createdAt: new Date(pointLog.created_at),
+          member: {
+            id: pointLog.member.id,
+            avatarUrl: pointLog.member.picture_url,
+            name: pointLog.member.name || pointLog.member.username,
+            email: pointLog.member.email,
+          },
+          title: pointLog.description,
+          startedAt: pointLog.started_at && new Date(pointLog.started_at),
+          endedAt: pointLog.ended_at && new Date(pointLog.ended_at),
+          points: pointLog.point,
+        }))
+
+  return {
+    loadingPointLogs: loading,
+    errorPointLogs: error,
+    pointLogs,
+    refetchPointLogs: () => {
+      setIsNoMore(false)
+      return refetch()
+    },
+    fetchMorePointLogs: isNoMore
+      ? undefined
+      : () =>
+          fetchMore({
+            variables: { offset: data?.point_log.length || 0 },
+            updateQuery: (prev, { fetchMoreResult }) => {
+              if (!fetchMoreResult) {
+                return prev
+              }
+              if (fetchMoreResult.point_log.length < 10) {
+                setIsNoMore(true)
+              }
+              return {
+                ...prev,
+                point_log: [...prev.point_log, ...fetchMoreResult.point_log],
+              }
+            },
+          }),
+  }
+}
+
+const useOrderLogWithPointsCollection = () => {
+  const { loading, error, data, refetch, fetchMore } = useQuery<
+    types.GET_ORDER_LOG_WITH_POINTS_COLLECTION,
+    types.GET_ORDER_LOG_WITH_POINTS_COLLECTIONVariables
+  >(gql`
+    query GET_ORDER_LOG_WITH_POINTS_COLLECTION($offset: Int) {
+      order_log(
+        where: { order_discounts: { type: { _eq: "Point" } } }
+        order_by: { created_at: desc }
+        limit: 10
+        offset: $offset
+      ) {
+        id
+        created_at
+        member {
+          id
+          picture_url
+          name
+          username
+          email
+        }
+        order_discounts(where: { type: { _eq: "Point" } }, limit: 1) {
+          id
+          name
+        }
+        order_discounts_aggregate(where: { type: { _eq: "Point" } }) {
+          aggregate {
+            sum {
+              price
+            }
+          }
+        }
+      }
+    }
+  `)
+  const [isNoMore, setIsNoMore] = useState(false)
+
+  const orderLogs: OrderLogProps[] =
+    loading || error || !data
+      ? []
+      : data.order_log.map(orderLog => ({
+          id: orderLog.id,
+          member: {
+            id: orderLog.member.id,
+            avatarUrl: orderLog.member.picture_url,
+            name: orderLog.member.name || orderLog.member.username,
+            email: orderLog.member.email,
+          },
+          title: orderLog.order_discounts[0]?.name || '',
+          points: orderLog.order_discounts_aggregate.aggregate?.sum?.price || 0,
+        }))
+
+  return {
+    loadingOrderLogs: loading,
+    errorOrderLogs: error,
+    orderLogs,
+    refetchOrderLogs: () => {
+      setIsNoMore(false)
+      return refetch()
+    },
+    fetchMoreOrderLogs: isNoMore
+      ? undefined
+      : () =>
+          fetchMore({
+            variables: { offset: data?.order_log.length || 0 },
+            updateQuery: (prev, { fetchMoreResult }) => {
+              if (!fetchMoreResult) {
+                return prev
+              }
+              if (fetchMoreResult.order_log.length < 10) {
+                setIsNoMore(true)
+              }
+              return {
+                ...prev,
+                order_log: [...prev.order_log, ...fetchMoreResult.order_log],
+              }
+            },
+          }),
+  }
 }
 
 export default PointHistoryAdminPage

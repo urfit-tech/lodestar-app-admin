@@ -2248,9 +2248,7 @@ export interface GET_ORDERS_order_log_order_products_product {
    */
   id: string;
   /**
-   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket /
-   * Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan /
-   * AppointmentServicePlan
+   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
    */
   type: string;
 }
@@ -4109,9 +4107,7 @@ export interface GET_APP_app_by_pk_app_modules {
   __typename: "app_module";
   id: any;
   /**
-   * activity | appointment | blog | invoice | learning_statistics | locale |
-   * member_card | merchandise | podcast | program_package | qrcode |
-   * social_connect | tempo_delivery | voucher
+   * activity | appointment | blog | invoice | learning_statistics | locale | member_card | merchandise | podcast | program_package | qrcode | social_connect | tempo_delivery | voucher
    */
   module_id: string;
 }
@@ -4276,9 +4272,7 @@ export interface GET_APP_BY_PK_app_by_pk_app_modules {
   __typename: "app_module";
   id: any;
   /**
-   * activity | appointment | blog | invoice | learning_statistics | locale |
-   * member_card | merchandise | podcast | program_package | qrcode |
-   * social_connect | tempo_delivery | voucher
+   * activity | appointment | blog | invoice | learning_statistics | locale | member_card | merchandise | podcast | program_package | qrcode | social_connect | tempo_delivery | voucher
    */
   module_id: string;
 }
@@ -6482,9 +6476,7 @@ export interface GET_ORDER_PRODUCT_COLLECTION_order_product_product {
    */
   id: string;
   /**
-   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket /
-   * Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan /
-   * AppointmentServicePlan
+   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
    */
   type: string;
 }
@@ -7749,6 +7741,117 @@ export interface INSERT_PROGRAM_PACKAGE {
 export interface INSERT_PROGRAM_PACKAGEVariables {
   title: string;
   appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_POINT_RELEASE_HISTORY
+// ====================================================
+
+export interface GET_POINT_RELEASE_HISTORY_point_log_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_POINT_RELEASE_HISTORY_point_log {
+  __typename: "point_log";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_POINT_RELEASE_HISTORY_point_log_member;
+  description: string;
+  created_at: any;
+  started_at: any | null;
+  ended_at: any | null;
+  point: any;
+}
+
+export interface GET_POINT_RELEASE_HISTORY {
+  /**
+   * fetch data from the table: "point_log"
+   */
+  point_log: GET_POINT_RELEASE_HISTORY_point_log[];
+}
+
+export interface GET_POINT_RELEASE_HISTORYVariables {
+  offset?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ORDER_LOG_WITH_POINTS_COLLECTION
+// ====================================================
+
+export interface GET_ORDER_LOG_WITH_POINTS_COLLECTION_order_log_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_ORDER_LOG_WITH_POINTS_COLLECTION_order_log_order_discounts {
+  __typename: "order_discount";
+  id: any;
+  name: string;
+}
+
+export interface GET_ORDER_LOG_WITH_POINTS_COLLECTION_order_log_order_discounts_aggregate_aggregate_sum {
+  __typename: "order_discount_sum_fields";
+  price: any | null;
+}
+
+export interface GET_ORDER_LOG_WITH_POINTS_COLLECTION_order_log_order_discounts_aggregate_aggregate {
+  __typename: "order_discount_aggregate_fields";
+  sum: GET_ORDER_LOG_WITH_POINTS_COLLECTION_order_log_order_discounts_aggregate_aggregate_sum | null;
+}
+
+export interface GET_ORDER_LOG_WITH_POINTS_COLLECTION_order_log_order_discounts_aggregate {
+  __typename: "order_discount_aggregate";
+  aggregate: GET_ORDER_LOG_WITH_POINTS_COLLECTION_order_log_order_discounts_aggregate_aggregate | null;
+}
+
+export interface GET_ORDER_LOG_WITH_POINTS_COLLECTION_order_log {
+  __typename: "order_log";
+  id: string;
+  created_at: any;
+  /**
+   * An object relationship
+   */
+  member: GET_ORDER_LOG_WITH_POINTS_COLLECTION_order_log_member;
+  /**
+   * An array relationship
+   */
+  order_discounts: GET_ORDER_LOG_WITH_POINTS_COLLECTION_order_log_order_discounts[];
+  /**
+   * An aggregated array relationship
+   */
+  order_discounts_aggregate: GET_ORDER_LOG_WITH_POINTS_COLLECTION_order_log_order_discounts_aggregate;
+}
+
+export interface GET_ORDER_LOG_WITH_POINTS_COLLECTION {
+  /**
+   * fetch data from the table: "order_log"
+   */
+  order_log: GET_ORDER_LOG_WITH_POINTS_COLLECTION_order_log[];
+}
+
+export interface GET_ORDER_LOG_WITH_POINTS_COLLECTIONVariables {
+  offset?: number | null;
 }
 
 /* tslint:disable */
@@ -11834,8 +11937,7 @@ export interface merchandise_insert_input {
 }
 
 /**
- * Boolean expression to filter rows from the table "merchandise_inventory_status".
- * All fields are combined with a logical 'AND'.
+ * Boolean expression to filter rows from the table "merchandise_inventory_status". All fields are combined with a logical 'AND'.
  */
 export interface merchandise_inventory_status_bool_exp {
   _and?: (merchandise_inventory_status_bool_exp | null)[] | null;
@@ -14018,8 +14120,7 @@ export interface program_package_plan_bool_exp {
 }
 
 /**
- * Boolean expression to filter rows from the table
- * "program_package_plan_enrollment". All fields are combined with a logical 'AND'.
+ * Boolean expression to filter rows from the table "program_package_plan_enrollment". All fields are combined with a logical 'AND'.
  */
 export interface program_package_plan_enrollment_bool_exp {
   _and?: (program_package_plan_enrollment_bool_exp | null)[] | null;
