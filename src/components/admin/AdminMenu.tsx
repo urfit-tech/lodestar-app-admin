@@ -13,6 +13,7 @@ import { ReactComponent as CalendarAltIcon } from '../../images/icon/calendar-al
 import { ReactComponent as DiscountIcon } from '../../images/icon/discount.svg'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import { ReactComponent as MoneyCircleIcon } from '../../images/icon/money-circle.svg'
+import { ReactComponent as PointIcon } from '../../images/icon/point.svg'
 import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
 import { ReactComponent as UserIcon } from '../../images/icon/user.svg'
 import { ReactComponent as UsersIcon } from '../../images/icon/users.svg'
@@ -61,6 +62,7 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
           'owner_activity_admin',
           'owner_merchandise_admin',
           'owner_blog_admin',
+          'owner_point_admin',
         ]}
       >
         <Menu.Item key="owner_sales">
@@ -193,6 +195,20 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
             <Menu.Item key="owner_voucher_plans">{formatMessage(commonMessages.menu.vouchers)}</Menu.Item>
           )}
         </Menu.SubMenu>
+
+        {enabledModules.point && (
+          <Menu.SubMenu
+            key="owner_point_admin"
+            title={
+              <span>
+                <Icon component={() => <PointIcon />} />
+                <span>{formatMessage(commonMessages.menu.pointAdmin)}</span>
+              </span>
+            }
+          >
+            <Menu.Item key="owner_point_history">{formatMessage(commonMessages.menu.pointHistory)}</Menu.Item>
+          </Menu.SubMenu>
+        )}
 
         <Menu.Item key="owner_members">
           <Icon component={() => <UsersIcon />} />

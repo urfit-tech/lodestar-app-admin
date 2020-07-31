@@ -10,6 +10,7 @@ export type Module =
   | 'merchandise'
   | 'podcast'
   | 'podcast_recording'
+  | 'point'
   | 'program_package'
   | 'project'
   | 'qrcode'
