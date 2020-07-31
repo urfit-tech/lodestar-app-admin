@@ -2377,6 +2377,35 @@ export interface GET_TOTAL_ORDER_AMOUNT {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_SUBSCRIPTION_CANCELED
+// ====================================================
+
+export interface UPDATE_SUBSCRIPTION_CANCELED_update_order_product {
+  __typename: "order_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_SUBSCRIPTION_CANCELED {
+  /**
+   * update data of the table: "order_product"
+   */
+  update_order_product: UPDATE_SUBSCRIPTION_CANCELED_update_order_product | null;
+}
+
+export interface UPDATE_SUBSCRIPTION_CANCELEDVariables {
+  orderProductId?: any | null;
+  options?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_DELIVER_INFO
 // ====================================================
 
@@ -6448,6 +6477,10 @@ export interface GET_ORDER_PRODUCT_COLLECTION_order_product_order_log {
 
 export interface GET_ORDER_PRODUCT_COLLECTION_order_product_product {
   __typename: "product";
+  /**
+   * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
+   */
+  id: string;
   /**
    * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket /
    * Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan /
