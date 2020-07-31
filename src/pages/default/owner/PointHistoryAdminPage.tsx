@@ -1,6 +1,6 @@
 import Icon from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Button, message, Skeleton, Table, Tabs } from 'antd'
+import { Button, message, Popover, Skeleton, Table, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useContext, useState } from 'react'
@@ -34,7 +34,7 @@ type PointLogProps = {
   createdAt: Date
   member: MemberBriefProps
   title: string
-  note?: string
+  note: string | null
   startedAt: Date | null
   endedAt: Date | null
   points: number
@@ -57,6 +57,9 @@ const StyledLabel = styled.span<{ variant?: 'point-log' | 'order-log' }>`
   border-radius: 11px;
   background: ${props => (props.variant === 'point-log' ? 'var(--success)' : 'var(--warning)')};
   white-space: nowrap;
+`
+const StyledIcon = styled(Icon)`
+  color: ${props => props.theme['@primary-color']};
 `
 
 const PointHistoryAdminPage: React.FC = () => {
@@ -129,7 +132,12 @@ const PointHistoryAdminPage: React.FC = () => {
                     dataIndex: 'title',
                     render: (text, record, index) => (
                       <div>
-                        {text} {record.note && <Icon component={() => <TextIcon />} className="ml-2" />}
+                        {text}
+                        {record.note && (
+                          <Popover title={record.note} className="cursor-pointer">
+                            <StyledIcon component={() => <TextIcon />} className="ml-2" />
+                          </Popover>
+                        )}
                       </div>
                     ),
                   },
@@ -255,6 +263,7 @@ const usePointLogCollection = () => {
           email
         }
         description
+        note
         created_at
         started_at
         ended_at
@@ -277,6 +286,7 @@ const usePointLogCollection = () => {
             email: pointLog.member.email,
           },
           title: pointLog.description,
+          note: pointLog.note,
           startedAt: pointLog.started_at && new Date(pointLog.started_at),
           endedAt: pointLog.ended_at && new Date(pointLog.ended_at),
           points: pointLog.point,

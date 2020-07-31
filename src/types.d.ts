@@ -7769,6 +7769,7 @@ export interface GET_POINT_RELEASE_HISTORY_point_log {
    */
   member: GET_POINT_RELEASE_HISTORY_point_log_member;
   description: string;
+  note: string | null;
   created_at: any;
   started_at: any | null;
   ended_at: any | null;
@@ -9109,6 +9110,7 @@ export enum point_log_update_column {
   ended_at = "ended_at",
   id = "id",
   member_id = "member_id",
+  note = "note",
   point = "point",
   started_at = "started_at",
 }
@@ -13057,6 +13059,7 @@ export interface point_log_bool_exp {
   id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  note?: String_comparison_exp | null;
   point?: numeric_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
 }
@@ -13071,6 +13074,7 @@ export interface point_log_insert_input {
   id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
+  note?: string | null;
   point?: any | null;
   started_at?: any | null;
 }
