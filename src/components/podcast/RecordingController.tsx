@@ -53,7 +53,7 @@ const StyledAction = styled.div`
 const StyledOverlayButton = styled(Button)`
   height: 52px;
   color: var(--gray-darker);
-  i {
+  .anticon {
     font-size: 24px;
   }
 `
