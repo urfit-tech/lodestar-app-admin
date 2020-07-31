@@ -1,11 +1,12 @@
 import Icon, { EditOutlined, FileTextFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Popover, Spin, Tabs, Typography } from 'antd'
+import { Button, Popover, Spin, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext, useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useHistory } from 'react-router-dom'
 import styled from 'styled-components'
+import { AdminPageTitle } from '../../components/admin'
 import { AvatarImage } from '../../components/common/Image'
 import PositionAdminLayout, {
   OverlayBlock,
@@ -86,10 +87,10 @@ const ProgramCollectionAdminPage: React.FC = () => {
 
   return (
     <AdminLayout>
-      <Typography.Title level={3} className="mb-4">
+      <AdminPageTitle className="mb-4">
         <FileTextFilled className="mr-3" />
         <span>{formatMessage(commonMessages.menu.programs)}</span>
-      </Typography.Title>
+      </AdminPageTitle>
 
       <div className="mb-5">
         <ProductCreationModal

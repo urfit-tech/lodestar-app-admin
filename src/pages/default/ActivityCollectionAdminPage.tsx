@@ -1,7 +1,7 @@
 import Icon from '@ant-design/icons'
-import { Typography } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
+import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ActivityCollectionAdminBlock from '../../containers/activity/ActivityCollectionAdminBlock'
 import { useAuth } from '../../contexts/AuthContext'
@@ -14,10 +14,10 @@ const ActivityCollectionAdminPage = () => {
 
   return (
     <AdminLayout>
-      <Typography.Title level={3} className="mb-4">
+      <AdminPageTitle className="mb-4">
         <Icon component={() => <CalendarAltIcon />} className="mr-3" />
         <span>{formatMessage(commonMessages.menu.activities)}</span>
-      </Typography.Title>
+      </AdminPageTitle>
 
       {currentMemberId && (
         <ActivityCollectionAdminBlock memberId={currentUserRole === 'app-owner' ? null : currentMemberId} />

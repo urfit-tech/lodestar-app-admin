@@ -13,7 +13,6 @@ const StyledTitle = styled(Typography.Title)`
     letter-spacing: 0.77px;
   }
 `
-
 const StyledSubTitle = styled(Typography.Title)`
   && {
     margin-top: 41px;
@@ -22,7 +21,6 @@ const StyledSubTitle = styled(Typography.Title)`
     font-weight: bold;
   }
 `
-
 const StyledCard = styled(Card)`
   && {
     margin-bottom: 20px;
@@ -46,7 +44,6 @@ const StyledCard = styled(Card)`
     }
   }
 `
-
 const StyledSection = styled.section`
   background: #f7f8f8;
   padding-top: 56px;
@@ -58,7 +55,7 @@ const StyledSection = styled.section`
   }
 `
 
-const TermsPage = () => {
+const TermsPage:React.FC = () => {
   const { name } = useContext(AppContext)
 
   return (

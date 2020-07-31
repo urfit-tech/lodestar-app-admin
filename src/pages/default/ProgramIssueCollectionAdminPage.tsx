@@ -1,9 +1,10 @@
 import { BookFilled } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Select, Skeleton, Typography } from 'antd'
+import { Select, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
+import { AdminPageTitle } from '../../components/admin'
 import IssueAdminCard from '../../components/issue/IssueAdminCard'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { EditableProgramSelector, OwnedProgramSelector } from '../../components/program/ProgramSelector'
@@ -21,10 +22,10 @@ const ProgramIssueCollectionAdminPage = () => {
 
   return (
     <AdminLayout>
-      <Typography.Title level={3} className="mb-4">
+      <AdminPageTitle className="mb-4">
         <BookFilled className="mr-3" />
         <span>{formatMessage(commonMessages.menu.programIssues)}</span>
-      </Typography.Title>
+      </AdminPageTitle>
 
       <div className="row mb-4">
         <div className="col-12 col-sm-3 mb-2 mb-md-0">

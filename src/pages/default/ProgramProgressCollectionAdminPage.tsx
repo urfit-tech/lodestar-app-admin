@@ -1,9 +1,9 @@
 import { DownloadOutlined, FileTextFilled } from '@ant-design/icons'
-import { Button, Select, Typography } from 'antd'
+import { Button, Select } from 'antd'
 import { SelectProps } from 'antd/lib/select'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { AdminPageBlock } from '../../components/admin'
+import { AdminPageBlock, AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ProgramProgressTable from '../../containers/program/ProgramProgressTable'
 import AppContext from '../../contexts/AppContext'
@@ -37,10 +37,11 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
 
   return (
     <AdminLayout>
-      <Typography.Title level={3} className="mb-4">
+      <AdminPageTitle className="mb-4">
         <FileTextFilled className="mr-3" />
         <span>{formatMessage(commonMessages.menu.programProgress)}</span>
-      </Typography.Title>
+      </AdminPageTitle>
+
       <Button
         type="primary"
         icon={<DownloadOutlined />}
@@ -49,11 +50,13 @@ const ProgramProgressCollectionAdminPage: React.FC = () => {
       >
         {formatMessage(messages.exportProgramProgress)}
       </Button>
+
       <ProgramSelector
         className="mb-3"
         allText={formatMessage(commonMessages.label.allProgramProgress)}
         onChange={programId => setSelectedProgramId(`${programId}`)}
       />
+
       <AdminPageBlock>
         <ProgramProgressTable
           programId={selectedProgramId === 'all' ? null : selectedProgramId}

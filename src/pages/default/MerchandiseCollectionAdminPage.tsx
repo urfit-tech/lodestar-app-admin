@@ -67,7 +67,7 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
-        <Icon component={() => <ShopIcon />} className="mr-2" />
+        <Icon component={() => <ShopIcon />} className="mr-3" />
         <span>{formatMessage(commonMessages.menu.merchandiseAdmin)}</span>
       </AdminPageTitle>
 

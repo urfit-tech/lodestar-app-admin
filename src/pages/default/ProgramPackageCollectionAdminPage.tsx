@@ -1,8 +1,9 @@
 import Icon, { FileAddOutlined } from '@ant-design/icons'
-import { Button, Tabs, Typography } from 'antd'
+import { Button, Tabs } from 'antd'
 import React, { useContext, useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
+import { AdminPageTitle } from '../../components/admin'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ProgramPackageAdminCard from '../../components/programPackage/ProgramPackageAdminCard'
@@ -38,10 +39,10 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
 
   return (
     <AdminLayout>
-      <Typography.Title level={3} className="mb-4">
+      <AdminPageTitle className="mb-4">
         <Icon component={() => <BookIcon />} className="mr-3" />
         <span>{formatMessage(commonMessages.menu.programPackage)}</span>
-      </Typography.Title>
+      </AdminPageTitle>
 
       <div className="mb-5">
         <ProductCreationModal

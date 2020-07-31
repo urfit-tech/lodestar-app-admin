@@ -116,7 +116,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
 
   return (
     <AdminLayout>
-      <AdminPageTitle className="mb-5">
+      <AdminPageTitle className="mb-4">
         <Icon component={() => <BookIcon />} className="mr-3" />
         <span>{formatMessage(commonMessages.menu.tempoDelivery)}</span>
       </AdminPageTitle>

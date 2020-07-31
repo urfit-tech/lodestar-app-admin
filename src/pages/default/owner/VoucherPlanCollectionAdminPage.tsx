@@ -1,7 +1,8 @@
 import Icon from '@ant-design/icons'
-import { Skeleton, Typography } from 'antd'
+import { Skeleton } from 'antd'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
+import { AdminPageTitle } from '../../../components/admin'
 import AdminLayout from '../../../components/layout/AdminLayout'
 import DefaultLayout from '../../../components/layout/DefaultLayout'
 import VoucherPlanCollectionBlock from '../../../components/voucher/VoucherPlanCollectionBlock'
@@ -28,10 +29,10 @@ const VoucherPlanCollectionAdminPage = () => {
 
   return (
     <AdminLayout>
-      <Typography.Title level={3} className="mb-4">
+      <AdminPageTitle className="mb-4">
         <Icon component={() => <DiscountIcon />} className="mr-3" />
         <span>{formatMessage(commonMessages.menu.vouchers)}</span>
-      </Typography.Title>
+      </AdminPageTitle>
 
       <VoucherPlanCollectionBlock />
     </AdminLayout>

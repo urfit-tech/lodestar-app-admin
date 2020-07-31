@@ -38,9 +38,10 @@ const ShippingAdminPage: React.FC = () => {
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
-        <Icon component={() => <ShopIcon />} className="mr-2" />
+        <Icon component={() => <ShopIcon />} className="mr-3" />
         <span>{formatMessage(commonMessages.menu.shipping)}</span>
       </AdminPageTitle>
+
       <div className="row">
         <div className="col-12 col-lg-4 mb-4">
           <Input.Search

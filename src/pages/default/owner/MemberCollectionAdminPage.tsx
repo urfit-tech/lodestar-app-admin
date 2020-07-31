@@ -1,12 +1,13 @@
 import { Form } from '@ant-design/compatible'
 import '@ant-design/compatible/assets/index.css'
 import { CaretDownOutlined, DownloadOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
-import { Button, Checkbox, Dropdown, Input, Menu, Pagination, Table, Tag, Typography } from 'antd'
+import { Button, Checkbox, Dropdown, Input, Menu, Pagination, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import moment from 'moment'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { ThemeContext } from 'styled-components'
+import { AdminPageTitle } from '../../../components/admin'
 import AdminCard from '../../../components/admin/AdminCard'
 import AdminModal from '../../../components/admin/AdminModal'
 import { AvatarImage } from '../../../components/common/Image'
@@ -196,10 +197,10 @@ const MemberCollectionAdminPage: React.FC = () => {
 
   return (
     <AdminLayout>
-      <Typography.Title level={3} className="mb-4">
+      <AdminPageTitle className="mb-4">
         <UserOutlined className="mr-3" />
         <span>{formatMessage(commonMessages.menu.members)}</span>
-      </Typography.Title>
+      </AdminPageTitle>
 
       <div className="d-flex align-items-center justify-content-between mb-4">
         {roleSelectDropdown}

@@ -2,7 +2,7 @@ import Icon, { FileAddOutlined } from '@ant-design/icons'
 import { Button, Skeleton } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import styled from 'styled-components'
+import { AdminPageTitle } from '../../components/admin'
 import AdminCard from '../../components/admin/AdminCard'
 import AdminLayout from '../../components/layout/AdminLayout'
 import PodcastPlanCollectionAdminTable from '../../containers/podcast/PodcastPlanCollectionAdminTable'
@@ -12,12 +12,6 @@ import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { usePodcastPlanAdminCollection } from '../../hooks/podcast'
 import { ReactComponent as DiscountIcon } from '../../images/icon/discount.svg'
 
-const StyledTitle = styled.h1`
-  color: var(--gray-darker);
-  font-size: 24px;
-  font-weight: bold;
-  letter-spacing: 0.2px;
-`
 const PodcastPlanAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
@@ -31,10 +25,10 @@ const PodcastPlanAdminPage: React.FC = () => {
 
   return (
     <AdminLayout>
-      <StyledTitle className="mb-4">
-        <Icon component={() => <DiscountIcon />} className="mr-2" />
+      <AdminPageTitle className="mb-4">
+        <Icon component={() => <DiscountIcon />} className="mr-3" />
         <span>{formatMessage(commonMessages.menu.podcastPlans)}</span>
-      </StyledTitle>
+      </AdminPageTitle>
 
       {!currentMemberId ? (
         <Skeleton active />
