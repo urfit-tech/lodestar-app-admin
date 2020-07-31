@@ -50,7 +50,7 @@ const StyledDescription = styled.div`
   font-size: 12px;
   color: var(--gray-dark);
 `
-const StyledLabel = styled.span<{ variant?: 'point-log' | 'discount-log' }>`
+const StyledLabel = styled.span<{ variant?: 'point-log' | 'order-log' }>`
   padding: 0.125rem 0.5rem;
   color: white;
   font-size: 12px;
@@ -152,8 +152,9 @@ const PointHistoryAdminPage: React.FC = () => {
                     title: formatMessage(messages.points),
                     dataIndex: 'points',
                     render: (text, record, index) => (
-                      <StyledLabel>
-                        {text > 0 && '+'} {text} {pointUnit}
+                      <StyledLabel variant="point-log">
+                        {text > 0 && '+'}
+                        {text} {pointUnit}
                       </StyledLabel>
                     ),
                   },
@@ -179,8 +180,59 @@ const PointHistoryAdminPage: React.FC = () => {
             )}
           </AdminBlock>
         </Tabs.TabPane>
+
         <Tabs.TabPane key="order-log" tab={formatMessage(messages.pointConsumptionHistory)}>
-          <AdminBlock></AdminBlock>
+          <AdminBlock>
+            {loadingOrderLogs ? (
+              <Skeleton active />
+            ) : (
+              <Table<OrderLogProps>
+                columns={[
+                  { title: formatMessage(messages.createdAt), dataIndex: 'createdAt' },
+                  {
+                    title: formatMessage(messages.nameAndEmail),
+                    key: 'member',
+                    render: (text, record, index) => (
+                      <div className="d-flex align-items-center">
+                        <AvatarImage src={record.member.avatarUrl} className="mr-3 flex-shrink-0" />
+                        <div className="flex-grow-1">
+                          <div>{record.member.name}</div>
+                          <StyledDescription>{record.member.email}</StyledDescription>
+                        </div>
+                      </div>
+                    ),
+                  },
+                  { title: formatMessage(messages.pointLogTitle), dataIndex: 'title' },
+                  {
+                    title: formatMessage(messages.points),
+                    dataIndex: 'points',
+                    render: (text, record, index) => (
+                      <StyledLabel variant="order-log">
+                        -{text} {pointUnit}
+                      </StyledLabel>
+                    ),
+                  },
+                ]}
+                dataSource={orderLogs}
+                rowKey="id"
+                pagination={false}
+              />
+            )}
+
+            {orderLogs.length > 0 && fetchMoreOrderLogs && (
+              <div className="text-center mt-4">
+                <Button
+                  loading={loading}
+                  onClick={() => {
+                    setLoading(true)
+                    fetchMoreOrderLogs().finally(() => setLoading(false))
+                  }}
+                >
+                  {formatMessage(commonMessages.ui.showMore)}
+                </Button>
+              </div>
+            )}
+          </AdminBlock>
         </Tabs.TabPane>
       </Tabs>
     </AdminLayout>
