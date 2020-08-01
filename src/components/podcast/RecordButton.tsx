@@ -20,24 +20,14 @@ const StyledButton = styled(Button)`
     border-radius: 56px;
     padding: 6px;
   }
-
-  span {
-    font-size: 18px;
-  }
 `
 const StyledIcon = styled(Icon)<{ size?: number }>`
   width: 42px;
   font-size: ${props => props.size || 42}px;
 `
 
-const StyledStopCircleIcon = styled(StopCircleIcon)`
-  width: 2.5rem;
-  height: 2.5rem;
-`
-
-const StyledMicrophoneIcon = styled(MicrophoneIcon)`
-  width: 2rem;
-  height: 2rem;
+const StyledDuration = styled.span`
+  font-size: 18px;
 `
 
 const RecordButton: React.FC<
@@ -101,12 +91,12 @@ const RecordButton: React.FC<
     >
       <div className="d-flex align-items-center justify-content-start">
         {isRecording ? (
-          <StyledIcon component={() => <StyledStopCircleIcon />} />
+          <StyledIcon component={() => <StopCircleIcon />} />
         ) : (
-          <StyledIcon component={() => <StyledMicrophoneIcon />} size={36} />
+          <StyledIcon component={() => <MicrophoneIcon />} size={36} />
         )}
 
-        {isRecording && <span className="ml-2">{durationFormatter(duration)}</span>}
+        {isRecording && <StyledDuration className="ml-2">{durationFormatter(duration)}</StyledDuration>}
       </div>
     </StyledButton>
   )
