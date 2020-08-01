@@ -239,19 +239,23 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
         <div className="row">
           <div className="col-6" style={{ display: 'flex', alignItems: 'center' }}>
             {productPlan.find(plan => plan === record.orderProducts[0].product.type) &&
-            record.orderProducts[0]?.options?.unsubscribedAt ? (
-              <span style={{ color: '#9b9b9b' }}>
-                {formatMessage(commonMessages.text.cancelSubscriptionDate, {
-                  date: dateFormatter(record.orderProducts[0]?.options?.unsubscribedAt),
-                })}
-              </span>
-            ) : (
-              <SubscriptionCancelModal
-                orderProductId={record.orderProducts[0].id}
-                orderProductOptions={record.orderProducts[0].options}
-                onRefetch={refetchUseDataSource}
-              />
-            )}
+              record.orderProducts[0].endedAt &&
+              new Date(record.orderProducts[0].endedAt) > new Date() &&
+              (record.orderProducts[0]?.options?.unsubscribedAt ? (
+                <span style={{ color: '#9b9b9b' }}>
+                  {formatMessage(commonMessages.text.cancelSubscriptionDate, {
+                    date: dateFormatter(record.orderProducts[0]?.options?.unsubscribedAt),
+                  })}
+                </span>
+              ) : (
+                <>
+                  <SubscriptionCancelModal
+                    orderProductId={record.orderProducts[0].id}
+                    orderProductOptions={record.orderProducts[0].options}
+                    onRefetch={refetchUseDataSource}
+                  />
+                </>
+              ))}
           </div>
           <div className="col-3" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
             <span>{formatMessage(commonMessages.label.totalPrice)}</span>

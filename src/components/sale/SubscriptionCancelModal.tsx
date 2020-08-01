@@ -6,6 +6,7 @@ import AdminModal from '../admin/AdminModal'
 import gql from 'graphql-tag'
 import types from '../../types'
 import { commonMessages } from '../../helpers/translation'
+import styled from 'styled-components'
 
 const messages = defineMessage({
   cancelSubscription: {
@@ -26,6 +27,26 @@ const messages = defineMessage({
   },
 })
 
+const StyledSaleAdminModal = styled(AdminModal)`
+  .ant-modal-body {
+    letter-spacing: 0.2px;
+    h1 {
+      font-size: 18px;
+      letter-spacing: 0.8px;
+    }
+    p {
+      margin-bottom: 2em;
+    }
+  }
+`
+
+const StyledSaleAdminButton = styled(Button)`
+  font-size: 14px;
+  border-radius: 4px;
+  height: 36px;
+  padding: 8px 16px;
+`
+
 const SubscriptionCancelModal: React.FC<{
   orderProductId: string
   orderProductOptions: any
@@ -35,7 +56,14 @@ const SubscriptionCancelModal: React.FC<{
   const [updateSubscriptionPlan] = useMutation<
     types.UPDATE_SUBSCRIPTION_CANCELED,
     types.UPDATE_SUBSCRIPTION_CANCELEDVariables
-  >(UPDATE_SUBSCRIPTION_CANCELED)
+  >(gql`
+    mutation UPDATE_SUBSCRIPTION_CANCELED($orderProductId: uuid, $options: jsonb) {
+      update_order_product(where: { id: { _eq: $orderProductId } }, _set: { auto_renewed: false, options: $options }) {
+        affected_rows
+      }
+    }
+  `)
+
   const handleSubscriptionCancel = () => {
     updateSubscriptionPlan({
       variables: {
@@ -49,20 +77,22 @@ const SubscriptionCancelModal: React.FC<{
   }
 
   return (
-    <AdminModal
+    <StyledSaleAdminModal
+      width="384px"
+      bodyStyle={{ padding: '32px 32px 0px 32px', height: '223px' }}
       renderTrigger={({ setVisible }) => (
-        <Button type="default" onClick={() => setVisible(true)} size="middle">
+        <StyledSaleAdminButton type="default" onClick={() => setVisible(true)} size="middle">
           {formatMessage(messages.cancelSubscription)}
-        </Button>
+        </StyledSaleAdminButton>
       )}
       title={formatMessage(messages.cancelSubscriptionTitle)}
       footer={null}
       renderFooter={({ setVisible }) => (
         <>
-          <Button className="mr-2" onClick={() => setVisible(false)}>
+          <StyledSaleAdminButton onClick={() => setVisible(false)} style={{ marginRight: '12px' }}>
             {formatMessage(commonMessages.ui.back)}
-          </Button>
-          <Button
+          </StyledSaleAdminButton>
+          <StyledSaleAdminButton
             danger
             type="primary"
             onClick={() => {
@@ -71,21 +101,13 @@ const SubscriptionCancelModal: React.FC<{
             }}
           >
             {formatMessage(messages.cancelSubscription)}
-          </Button>
+          </StyledSaleAdminButton>
         </>
       )}
     >
       <p>{formatMessage(messages.cancelSubscriptionDescription)}</p>
-    </AdminModal>
+    </StyledSaleAdminModal>
   )
 }
-
-const UPDATE_SUBSCRIPTION_CANCELED = gql`
-  mutation UPDATE_SUBSCRIPTION_CANCELED($orderProductId: uuid, $options: jsonb) {
-    update_order_product(where: { id: { _eq: $orderProductId } }, _set: { auto_renewed: false, options: $options }) {
-      affected_rows
-    }
-  }
-`
 
 export default SubscriptionCancelModal
