@@ -242,7 +242,7 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
               record.orderProducts[0].endedAt &&
               new Date(record.orderProducts[0].endedAt) > new Date() &&
               (record.orderProducts[0]?.options?.unsubscribedAt ? (
-                <span style={{ color: '#9b9b9b' }}>
+                <span style={{ color: '#9b9b9b', fontSize: '14px' }}>
                   {formatMessage(commonMessages.text.cancelSubscriptionDate, {
                     date: dateFormatter(record.orderProducts[0]?.options?.unsubscribedAt),
                   })}
