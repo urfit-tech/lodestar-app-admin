@@ -1331,6 +1331,114 @@ export interface READ_NOTIFICATIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: CREATE_PODCAST_PLAN
+// ====================================================
+
+export interface CREATE_PODCAST_PLAN_insert_podcast_plan {
+  __typename: "podcast_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface CREATE_PODCAST_PLAN {
+  /**
+   * insert data into the table: "podcast_plan"
+   */
+  insert_podcast_plan: CREATE_PODCAST_PLAN_insert_podcast_plan | null;
+}
+
+export interface CREATE_PODCAST_PLANVariables {
+  publishedAt?: any | null;
+  listPrice: any;
+  salePrice?: any | null;
+  soldAt?: any | null;
+  periodAmount: any;
+  periodType: string;
+  creatorId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PLAN
+// ====================================================
+
+export interface UPDATE_PODCAST_PLAN_update_podcast_plan {
+  __typename: "podcast_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PLAN {
+  /**
+   * update data of the table: "podcast_plan"
+   */
+  update_podcast_plan: UPDATE_PODCAST_PLAN_update_podcast_plan | null;
+}
+
+export interface UPDATE_PODCAST_PLANVariables {
+  podcastPlanId: any;
+  publishedAt?: any | null;
+  listPrice: any;
+  salePrice?: any | null;
+  soldAt?: any | null;
+  periodAmount: any;
+  periodType: string;
+  creatorId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CREATE_PODCAST_PROGRAM
+// ====================================================
+
+export interface CREATE_PODCAST_PROGRAM_insert_podcast_program_returning {
+  __typename: "podcast_program";
+  id: any;
+}
+
+export interface CREATE_PODCAST_PROGRAM_insert_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: CREATE_PODCAST_PROGRAM_insert_podcast_program_returning[];
+}
+
+export interface CREATE_PODCAST_PROGRAM {
+  /**
+   * insert data into the table: "podcast_program"
+   */
+  insert_podcast_program: CREATE_PODCAST_PROGRAM_insert_podcast_program | null;
+}
+
+export interface CREATE_PODCAST_PROGRAMVariables {
+  title: string;
+  creatorId: string;
+  podcastCategories: podcast_program_category_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_TITLE
 // ====================================================
 
@@ -3339,77 +3447,6 @@ export interface GET_ALLTYPE_PRODUCT_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: CREATE_PODCAST_PLAN
-// ====================================================
-
-export interface CREATE_PODCAST_PLAN_insert_podcast_plan {
-  __typename: "podcast_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface CREATE_PODCAST_PLAN {
-  /**
-   * insert data into the table: "podcast_plan"
-   */
-  insert_podcast_plan: CREATE_PODCAST_PLAN_insert_podcast_plan | null;
-}
-
-export interface CREATE_PODCAST_PLANVariables {
-  isSubscription: boolean;
-  publishedAt?: any | null;
-  title: string;
-  listPrice: any;
-  salePrice?: any | null;
-  soldAt?: any | null;
-  periodAmount: any;
-  periodType: string;
-  creatorId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PODCAST_PLAN
-// ====================================================
-
-export interface UPDATE_PODCAST_PLAN_update_podcast_plan {
-  __typename: "podcast_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PODCAST_PLAN {
-  /**
-   * update data of the table: "podcast_plan"
-   */
-  update_podcast_plan: UPDATE_PODCAST_PLAN_update_podcast_plan | null;
-}
-
-export interface UPDATE_PODCAST_PLANVariables {
-  podcastPlanId: any;
-  listPrice: any;
-  periodAmount: any;
-  periodType: string;
-  publishedAt?: any | null;
-  salePrice: any;
-  soldAt?: any | null;
-  creatorId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_BASIC
 // ====================================================
 
@@ -3597,45 +3634,6 @@ export interface UPDATE_PODCAST_PROGRAM_BODYVariables {
   description?: string | null;
   duration?: any | null;
   updatedAt: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: CREATE_PODCAST_PROGRAM
-// ====================================================
-
-export interface CREATE_PODCAST_PROGRAM_insert_podcast_program_returning {
-  __typename: "podcast_program";
-  id: any;
-}
-
-export interface CREATE_PODCAST_PROGRAM_insert_podcast_program {
-  __typename: "podcast_program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: CREATE_PODCAST_PROGRAM_insert_podcast_program_returning[];
-}
-
-export interface CREATE_PODCAST_PROGRAM {
-  /**
-   * insert data into the table: "podcast_program"
-   */
-  insert_podcast_program: CREATE_PODCAST_PROGRAM_insert_podcast_program | null;
-}
-
-export interface CREATE_PODCAST_PROGRAMVariables {
-  title: string;
-  creatorId: string;
-  podcastCategories: podcast_program_category_insert_input[];
 }
 
 /* tslint:disable */
@@ -6789,6 +6787,65 @@ export interface GET_PODCAST_PROGRAM_ADMINVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PODCAST_PLAN_ADMIN_COLLECTION
+// ====================================================
+
+export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_podcast_plan_enrollments_aggregate_aggregate {
+  __typename: "podcast_plan_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_podcast_plan_enrollments_aggregate {
+  __typename: "podcast_plan_enrollment_aggregate";
+  aggregate: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_podcast_plan_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+  picture_url: string | null;
+}
+
+export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan {
+  __typename: "podcast_plan";
+  id: any;
+  is_subscription: boolean;
+  period_type: string;
+  period_amount: any;
+  list_price: any;
+  sale_price: any | null;
+  sold_at: any | null;
+  published_at: any | null;
+  /**
+   * An aggregated array relationship
+   */
+  podcast_plan_enrollments_aggregate: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_podcast_plan_enrollments_aggregate;
+  creator_id: string;
+  /**
+   * An object relationship
+   */
+  creator: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_creator | null;
+}
+
+export interface GET_PODCAST_PLAN_ADMIN_COLLECTION {
+  /**
+   * fetch data from the table: "podcast_plan"
+   */
+  podcast_plan: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan[];
+}
+
+export interface GET_PODCAST_PLAN_ADMIN_COLLECTIONVariables {
+  creatorId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PODCAST_PLAN
 // ====================================================
 
@@ -6813,58 +6870,6 @@ export interface GET_PODCAST_PLAN {
 
 export interface GET_PODCAST_PLANVariables {
   podcastPlanId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PODCAST_PLAN_ADMIN_COLLECTION
-// ====================================================
-
-export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_podcast_plan_enrollments_aggregate_aggregate {
-  __typename: "podcast_plan_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_podcast_plan_enrollments_aggregate {
-  __typename: "podcast_plan_enrollment_aggregate";
-  aggregate: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_podcast_plan_enrollments_aggregate_aggregate | null;
-}
-
-export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_creator {
-  __typename: "member_public";
-  name: string | null;
-  username: string | null;
-  picture_url: string | null;
-}
-
-export interface GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan {
-  __typename: "podcast_plan";
-  id: any;
-  period_type: string;
-  period_amount: any;
-  list_price: any;
-  sale_price: any | null;
-  sold_at: any | null;
-  published_at: any | null;
-  /**
-   * An aggregated array relationship
-   */
-  podcast_plan_enrollments_aggregate: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_podcast_plan_enrollments_aggregate;
-  /**
-   * An object relationship
-   */
-  creator: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan_creator | null;
-}
-
-export interface GET_PODCAST_PLAN_ADMIN_COLLECTION {
-  /**
-   * fetch data from the table: "podcast_plan"
-   */
-  podcast_plan: GET_PODCAST_PLAN_ADMIN_COLLECTION_podcast_plan[];
 }
 
 /* tslint:disable */

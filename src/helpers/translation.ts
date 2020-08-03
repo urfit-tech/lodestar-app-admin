@@ -550,6 +550,7 @@ export const podcastMessages = {
     notPublished: { id: 'podcast.status.notPublished', defaultMessage: '未發佈' },
   }),
   label: defineMessages({
+    plan: { id: 'podcast.label.plan', defaultMessage: '方案' },
     podcastProgramTitle: { id: 'podcast.label.podcastProgramTitle', defaultMessage: '廣播名稱' },
     status: { id: 'podcast.label.status', defaultMessage: '狀態' },
     salesCount: { id: 'podcast.label.salesCount', defaultMessage: '購買' },

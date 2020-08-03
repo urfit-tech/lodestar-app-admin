@@ -1,93 +1,115 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { FileAddOutlined } from '@ant-design/icons'
-import { Button, Input, Modal } from 'antd'
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Form, Input } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
+import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import styled from 'styled-components'
-import { CreatePodcastProgramProps } from '../../containers/podcast/PodcastProgramCreationModal'
+import { useHistory } from 'react-router-dom'
+import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
+import types from '../../types'
+import AdminModal from '../admin/AdminModal'
 import CategorySelector from '../common/CategorySelector'
-
-const StyledTitle = styled.div`
-  color: var(--gray-darker);
-  font-size: 20px;
-  font-weight: bold;
-  line-height: 1.3;
-  letter-spacing: 0.77px;
-`
 
 const messages = defineMessages({
   createPodcastProgram: { id: 'podcast.ui.createPodcastProgram', defaultMessage: '建立廣播' },
 })
 
-type PodcastProgramCreationModalProps = FormComponentProps & {
-  onCreate?: CreatePodcastProgramProps
-}
-const PodcastProgramCreationModal: React.FC<PodcastProgramCreationModalProps> = ({ form, onCreate }) => {
+const PodcastProgramCreationModal: React.FC<{ memberId: string }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
-  const [visible, setVisible] = useState(false)
+  const history = useHistory()
+  const [form] = useForm()
+  const createPodcastProgram = useCreatePodcastProgram()
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = () => {
-    form.validateFields((error, values) => {
-      if (error) {
-        return
-      }
-
-      if (onCreate) {
-        setLoading(true)
-
-        onCreate({
-          onError: () => setLoading(false),
-          data: {
-            title: values.title,
-            categoryIds: values.categoryIds || [],
-          },
+  const handleCreate = () => {
+    setLoading(true)
+    form.validateFields().then((values: any) => {
+      createPodcastProgram(values.title, memberId, values.categoryIds)
+        .then(({ data }) => {
+          const podcastProgramId = data?.insert_podcast_program?.returning[0]?.id
+          podcastProgramId && history.push(`/podcast-programs/${podcastProgramId}`)
         })
-      }
+        .catch(handleError)
+        .finally(() => setLoading(false))
     })
   }
 
   return (
-    <>
-      <Button icon={<FileAddOutlined />} type="primary" loading={loading} onClick={() => setVisible(true)}>
-        {formatMessage(messages.createPodcastProgram)}
-      </Button>
-
-      <Modal title={null} footer={null} destroyOnClose centered visible={visible} onCancel={() => setVisible(false)}>
-        <StyledTitle>{formatMessage(messages.createPodcastProgram)}</StyledTitle>
-        <Form hideRequiredMark>
-          <Form.Item label={formatMessage(commonMessages.term.title)}>
-            {form.getFieldDecorator('title', {
-              initialValue: 'Untitled',
-              rules: [
-                {
-                  required: true,
-                  message: formatMessage(errorMessages.form.isRequired, {
-                    field: formatMessage(commonMessages.term.title),
-                  }),
-                },
-              ],
-            })(<Input type="text" />)}
-          </Form.Item>
-          <Form.Item label={formatMessage(commonMessages.term.category)}>
-            {form.getFieldDecorator('categoryIds')(<CategorySelector classType="podcastProgram" />)}
-          </Form.Item>
-        </Form>
-
-        <div className="text-right">
-          <Button className="mr-2" onClick={() => setVisible(false)}>
-            {formatMessage(commonMessages.ui.cancel)}
-          </Button>
-          <Button type="primary" htmlType="submit" loading={loading} onClick={() => handleSubmit()}>
-            {formatMessage(commonMessages.ui.create)}
-          </Button>
-        </div>
-      </Modal>
-    </>
+    <AdminModal
+      renderTrigger={({ setVisible }) => (
+        <Button icon={<FileAddOutlined />} type="primary" loading={loading} onClick={() => setVisible(true)}>
+          {formatMessage(messages.createPodcastProgram)}
+        </Button>
+      )}
+      title={formatMessage(messages.createPodcastProgram)}
+      icon={<FileAddOutlined />}
+      okText={formatMessage(commonMessages.ui.create)}
+      okButtonProps={{ loading }}
+      onOk={handleCreate}
+    >
+      <Form form={form} layout="vertical" hideRequiredMark colon={false} initialValues={{ title: 'Untitled' }}>
+        <Form.Item
+          label={formatMessage(commonMessages.term.title)}
+          name="title"
+          rules={[
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(commonMessages.term.title),
+              }),
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
+          <CategorySelector classType="podcastProgram" />
+        </Form.Item>
+      </Form>
+    </AdminModal>
   )
 }
 
-export default Form.create<PodcastProgramCreationModalProps>()(PodcastProgramCreationModal)
+const useCreatePodcastProgram = () => {
+  const [createPodcastProgram] = useMutation<types.CREATE_PODCAST_PROGRAM, types.CREATE_PODCAST_PROGRAMVariables>(
+    gql`
+      mutation CREATE_PODCAST_PROGRAM(
+        $title: String!
+        $creatorId: String!
+        $podcastCategories: [podcast_program_category_insert_input!]!
+      ) {
+        insert_podcast_program(
+          objects: {
+            title: $title
+            creator_id: $creatorId
+            podcast_program_categories: { data: $podcastCategories }
+            podcast_program_bodies: { data: { description: "" } }
+            podcast_program_roles: { data: { member_id: $creatorId, name: "instructor" } }
+          }
+        ) {
+          affected_rows
+          returning {
+            id
+          }
+        }
+      }
+    `,
+  )
+
+  return (title: string, memberId: string, categoryIds: string[]) =>
+    createPodcastProgram({
+      variables: {
+        title,
+        creatorId: memberId,
+        podcastCategories:
+          categoryIds?.map((categoryId, index) => ({
+            category_id: categoryId,
+            position: index,
+          })) || [],
+      },
+    })
+}
+
+export default PodcastProgramCreationModal

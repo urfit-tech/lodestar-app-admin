@@ -103,14 +103,14 @@ const AppointmentPeriodCollectionTabs: React.FC<{
                 <DatePicker
                   format="YYYY-MM-DD HH:mm"
                   placeholder={formatMessage(commonMessages.term.startedAt)}
-                  showTime={{ format: 'HH:mm' }}
+                  showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
                   value={startedAt && moment(startedAt)}
                   onChange={value => setStartedAt(value && value.startOf('minute').toDate())}
                 />
                 <DatePicker
                   format="YYYY-MM-DD HH:mm"
                   placeholder={formatMessage(commonMessages.term.endedAt)}
-                  showTime={{ format: 'HH:mm' }}
+                  showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
                   value={endedAt && moment(endedAt)}
                   onChange={value => setEndedAt(value && value.startOf('minute').toDate())}
                 />

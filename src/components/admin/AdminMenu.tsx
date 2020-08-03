@@ -235,7 +235,12 @@ export const CreatorAdminMenu: React.FC<MenuProps> = (props: MenuProps) => {
     <div className="d-flex flex-column flex-grow-1">
       <AdminMenu
         {...props}
-        defaultOpenKeys={['creator_program_admin', 'creator_appointment_admin', 'creator_activity_admin']}
+        defaultOpenKeys={[
+          'creator_program_admin',
+          'creator_podcast_admin',
+          'creator_appointment_admin',
+          'creator_activity_admin',
+        ]}
       >
         <Menu.Item key="creator_sales">
           <Icon component={() => <MoneyCircleIcon />} />
@@ -254,6 +259,21 @@ export const CreatorAdminMenu: React.FC<MenuProps> = (props: MenuProps) => {
           <Menu.Item key="program_collection">{formatMessage(commonMessages.menu.programs)}</Menu.Item>
           <Menu.Item key="program_issue_collection">{formatMessage(commonMessages.menu.programIssues)}</Menu.Item>
         </Menu.SubMenu>
+
+        {enabledModules.podcast && (
+          <Menu.SubMenu
+            key="creator_podcast_admin"
+            title={
+              <span>
+                <Icon component={() => <MicrophoneIcon />} />
+                <span>{formatMessage(commonMessages.menu.podcastAdmin)}</span>
+              </span>
+            }
+          >
+            <Menu.Item key="podcast_program_collection">{formatMessage(commonMessages.menu.podcastPrograms)}</Menu.Item>
+            <Menu.Item key="podcast_plan">{formatMessage(commonMessages.menu.podcastPlans)}</Menu.Item>
+          </Menu.SubMenu>
+        )}
 
         {enabledModules.appointment && (
           <Menu.SubMenu

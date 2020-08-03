@@ -1,7 +1,8 @@
-import { useQuery, useMutation } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import types from '../types'
-import { PodcastProgramProps } from '../types/podcast'
+import { PeriodType } from '../types/general'
+import { PodcastPlanProps, PodcastProgramProps } from '../types/podcast'
 
 export const usePodcastProgramCollection = (podcastProgramId: string) => {
   const { loading, error, data, refetch } = useQuery<
@@ -130,44 +131,74 @@ export const usePodcastPlan = (podcastPlanId: string) => {
   }
 }
 
-export type PodcastPlan = {
-  id: string
-  avatarUrl?: string | null
-  creator: string
-  listPrice: number
-  salePrice: number
-  salesCount: number
-  isPublished: boolean
-  periodAmount: number
-  periodType: string
-}
-
-export const usePodcastPlanAdminCollection = () => {
-  const { data, loading, error, refetch } = useQuery<types.GET_PODCAST_PLAN_ADMIN_COLLECTION>(
-    GET_PODCAST_PLAN_ADMIN_COLLECTION,
+export const usePodcastPlanAdminCollection = (creatorId?: string) => {
+  const { data, loading, error, refetch } = useQuery<
+    types.GET_PODCAST_PLAN_ADMIN_COLLECTION,
+    types.GET_PODCAST_PLAN_ADMIN_COLLECTIONVariables
+  >(
+    gql`
+      query GET_PODCAST_PLAN_ADMIN_COLLECTION($creatorId: String) {
+        podcast_plan(where: { creator_id: { _eq: $creatorId } }, order_by: { updated_at: desc }) {
+          id
+          is_subscription
+          period_type
+          period_amount
+          list_price
+          sale_price
+          sold_at
+          published_at
+          podcast_plan_enrollments_aggregate {
+            aggregate {
+              count
+            }
+          }
+          creator_id
+          creator {
+            id
+            name
+            username
+            picture_url
+          }
+        }
+      }
+    `,
+    { variables: { creatorId } },
   )
 
-  const podcastPlans: PodcastPlan[] | null =
-    loading || error || !data || !data.podcast_plan
-      ? null
+  const podcastPlans: (PodcastPlanProps & {
+    creator: {
+      id: string
+      name: string
+      avatarUrl: string | null
+    }
+    salesCount: number
+  })[] =
+    loading || error || !data
+      ? []
       : data.podcast_plan.map(podcastPlan => ({
           id: podcastPlan.id,
-          avatarUrl: podcastPlan.creator?.picture_url || '',
-          creator: podcastPlan.creator?.name || podcastPlan.creator?.username || '',
+          isSubscription: podcastPlan.is_subscription,
+          title: '',
           listPrice: podcastPlan.list_price,
-          salePrice:
-            podcastPlan.sold_at && new Date(podcastPlan.sold_at).getTime() > Date.now() ? podcastPlan.sale_price : 0,
-          salesCount: podcastPlan.podcast_plan_enrollments_aggregate.aggregate?.count || 0,
-          isPublished: !!podcastPlan.published_at,
+          salePrice: podcastPlan.sale_price,
+          soldAt: podcastPlan.sold_at && new Date(podcastPlan.sold_at),
+          publishedAt: podcastPlan.published_at && new Date(podcastPlan.published_at),
           periodAmount: podcastPlan.period_amount,
-          periodType: podcastPlan.period_type,
+          periodType: podcastPlan.period_type as PeriodType,
+          creatorId: podcastPlan.creator_id,
+          creator: {
+            id: podcastPlan.creator?.id || '',
+            name: podcastPlan.creator?.name || podcastPlan.creator?.username || '',
+            avatarUrl: podcastPlan.creator?.picture_url || null,
+          },
+          salesCount: podcastPlan.podcast_plan_enrollments_aggregate.aggregate?.count || 0,
         }))
 
   return {
-    loadingPodcastPlanAdminCollection: loading,
-    errorPodcastPlanAdminCollection: error,
+    loadingPodcastPlans: loading,
+    errorPodcastPlans: error,
     podcastPlans,
-    refetchPodcastPlanAdminCollection: refetch,
+    refetchPodcastPlans: refetch,
   }
 }
 
@@ -191,30 +222,6 @@ const GET_PODCAST_PLAN = gql`
       sale_price
       sold_at
       published_at
-    }
-  }
-`
-
-const GET_PODCAST_PLAN_ADMIN_COLLECTION = gql`
-  query GET_PODCAST_PLAN_ADMIN_COLLECTION {
-    podcast_plan(order_by: { updated_at: desc }) {
-      id
-      period_type
-      period_amount
-      list_price
-      sale_price
-      sold_at
-      published_at
-      podcast_plan_enrollments_aggregate {
-        aggregate {
-          count
-        }
-      }
-      creator {
-        name
-        username
-        picture_url
-      }
     }
   }
 `
