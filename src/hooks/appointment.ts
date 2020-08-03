@@ -4,44 +4,53 @@ import moment from 'moment'
 import { AppointmentPeriodProps } from '../components/appointment/AppointmentPeriodCard'
 import types from '../types'
 
-export const useAppointmentEnrollmentCollection = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_APPOINTMENT_ENROLLMENT_COLLECTION>(gql`
-    query GET_APPOINTMENT_ENROLLMENT_COLLECTION {
-      appointment_enrollment(order_by: { started_at: desc }) {
-        id
-        appointment_plan {
+export const useAppointmentEnrollmentCollection = (startedAt: Date | null, endedAt: Date | null) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_APPOINTMENT_ENROLLMENT_COLLECTION,
+    types.GET_APPOINTMENT_ENROLLMENT_COLLECTIONVariables
+  >(
+    gql`
+      query GET_APPOINTMENT_ENROLLMENT_COLLECTION($startedAt: timestamptz, $endedAt: timestamptz) {
+        appointment_enrollment(
+          where: { started_at: { _gte: $startedAt, _lte: $endedAt } }
+          order_by: { started_at: desc }
+        ) {
           id
-          title
-          duration
-          creator {
+          appointment_plan {
             id
-            name
+            title
+            duration
+            creator {
+              id
+              name
+            }
           }
-        }
-        member {
-          id
-          picture_url
-        }
-        started_at
-        canceled_at
-        member_name
-        member_email
-        member_phone
-        order_product_id
-        order_product {
-          id
-          options
-          order_log {
+          member {
             id
-            created_at
-            updated_at
+            picture_url
           }
+          started_at
+          canceled_at
+          member_name
+          member_email
+          member_phone
+          order_product_id
+          order_product {
+            id
+            options
+            order_log {
+              id
+              created_at
+              updated_at
+            }
+          }
+          issue
+          result
         }
-        issue
-        result
       }
-    }
-  `)
+    `,
+    { variables: { startedAt, endedAt } },
+  )
 
   const appointmentEnrollments: AppointmentPeriodProps[] =
     loading || error || !data

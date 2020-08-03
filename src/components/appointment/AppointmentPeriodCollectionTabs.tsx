@@ -1,10 +1,11 @@
-import { Select, Skeleton, Tabs } from 'antd'
+import { DatePicker, Input, Select, Skeleton, Tabs } from 'antd'
+import moment from 'moment'
 import { uniqBy } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
-import { appointmentMessages } from '../../helpers/translation'
+import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import { useAppointmentEnrollmentCollection } from '../../hooks/appointment'
 import AppointmentPeriodCard from './AppointmentPeriodCard'
 
@@ -15,11 +16,6 @@ const StyledTabs = styled(Tabs)`
 `
 const StyledFilterBlock = styled.div`
   margin-bottom: 2rem;
-  max-width: 15rem;
-
-  > * {
-    width: 100%;
-  }
 `
 const EmptyBlock = styled.div`
   padding: 13rem 0;
@@ -39,13 +35,15 @@ const AppointmentPeriodCollectionTabs: React.FC<{
 }> = ({ withSelector }) => {
   const { formatMessage } = useIntl()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const [selectedCreatorId, setSelectedCreatorId] = useState('')
+  const [selectedCreatorId, setSelectedCreatorId] = useState<string>('')
+  const [startedAt, setStartedAt] = useState<Date | null>(null)
+  const [endedAt, setEndedAt] = useState<Date | null>(null)
 
   const {
     loadingAppointmentEnrollments,
     appointmentEnrollments,
     refetchAppointmentEnrollments,
-  } = useAppointmentEnrollmentCollection()
+  } = useAppointmentEnrollmentCollection(startedAt, endedAt)
 
   useEffect(() => {
     refetchAppointmentEnrollments()
@@ -87,16 +85,37 @@ const AppointmentPeriodCollectionTabs: React.FC<{
       {tabContents.map(tabContent => (
         <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
           <div className="py-4">
-            {withSelector && (
-              <StyledFilterBlock>
-                <Select value={selectedCreatorId} onChange={(value: string) => setSelectedCreatorId(value)}>
+            <StyledFilterBlock className="d-flex">
+              {withSelector && (
+                <Select<string>
+                  value={selectedCreatorId}
+                  onChange={(value: string) => setSelectedCreatorId(value)}
+                  className="mr-3"
+                  style={{ width: '100%', maxWidth: '15rem' }}
+                >
                   <Select.Option value="">{formatMessage(messages.allInstructors)}</Select.Option>
                   {creators.map(creator => (
                     <Select.Option value={creator.id}>{creator.name}</Select.Option>
                   ))}
                 </Select>
-              </StyledFilterBlock>
-            )}
+              )}
+              <Input.Group compact>
+                <DatePicker
+                  format="YYYY-MM-DD HH:mm"
+                  placeholder={formatMessage(commonMessages.term.startedAt)}
+                  showTime={{ format: 'HH:mm' }}
+                  value={startedAt && moment(startedAt)}
+                  onChange={value => setStartedAt(value && value.startOf('minute').toDate())}
+                />
+                <DatePicker
+                  format="YYYY-MM-DD HH:mm"
+                  placeholder={formatMessage(commonMessages.term.endedAt)}
+                  showTime={{ format: 'HH:mm' }}
+                  value={endedAt && moment(endedAt)}
+                  onChange={value => setEndedAt(value && value.startOf('minute').toDate())}
+                />
+              </Input.Group>
+            </StyledFilterBlock>
 
             {loadingAppointmentEnrollments ? (
               <Skeleton active />

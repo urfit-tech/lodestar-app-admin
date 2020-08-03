@@ -4521,6 +4521,11 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION {
   appointment_enrollment: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment[];
 }
 
+export interface GET_APPOINTMENT_ENROLLMENT_COLLECTIONVariables {
+  startedAt?: any | null;
+  endedAt?: any | null;
+}
+
 /* tslint:disable */
 /* eslint-disable */
 // @generated

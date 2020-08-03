@@ -3,6 +3,7 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, DatePicker, Form, Input, InputNumber } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
+import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
@@ -96,14 +97,14 @@ const PointSendingModal: React.FC<{
               <DatePicker
                 format="YYYY-MM-DD HH:mm"
                 placeholder={formatMessage(commonMessages.term.startedAt)}
-                showTime={{ format: 'HH:mm:ss' }}
+                showTime={{ format: 'HH:mm' }}
               />
             </Form.Item>
             <Form.Item name="endedAt">
               <DatePicker
                 format="YYYY-MM-DD HH:mm"
                 placeholder={formatMessage(commonMessages.term.endedAt)}
-                showTime={{ format: 'HH:mm:ss' }}
+                showTime={{ format: 'HH:mm' }}
               />
             </Form.Item>
           </Input.Group>
@@ -142,8 +143,8 @@ const useSendPoints = () => {
           member_id: memberId,
           description: value.description,
           point: value.points,
-          started_at: value.startedAt,
-          ended_at: value.endedAt,
+          started_at: value.startedAt && moment(value.startedAt).startOf('minute').toDate(),
+          ended_at: value.endedAt && moment(value.endedAt).startOf('minute').toDate(),
           note: value.note,
         })),
       },
