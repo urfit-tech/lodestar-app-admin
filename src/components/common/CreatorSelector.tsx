@@ -35,8 +35,8 @@ const CreatorSelector: React.FC<{
 const useGetCreatorCollection = () => {
   const { data, loading, error } = useQuery<types.GET_CREATOR_COLLECTION>(
     gql`
-      query GET_CREATOR_COLLECTION($appId: String!) {
-        member(where: { app_id: { _eq: $appId }, role: { _in: ["content-creator", "app-owner"] } }) {
+      query GET_CREATOR_COLLECTION {
+        member(where: { role: { _in: ["content-creator", "app-owner"] } }) {
           id
           picture_url
           name

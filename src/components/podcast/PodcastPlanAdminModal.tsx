@@ -113,7 +113,7 @@ const PodcastPlanAdminModal: React.FC<
             : null,
         }}
       >
-        {currentUserRole !== 'content-creator' && (
+        {currentUserRole === 'app-owner' && (
           <Form.Item
             label={formatMessage(commonMessages.label.selectInstructor)}
             name="creatorId"

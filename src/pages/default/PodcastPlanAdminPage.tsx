@@ -14,10 +14,10 @@ import { ReactComponent as DiscountIcon } from '../../images/icon/discount.svg'
 
 const PodcastPlanAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { currentMemberId } = useAuth()
+  const { currentMemberId, currentUserRole } = useAuth()
 
   const { loadingPodcastPlans, podcastPlans, refetchPodcastPlans } = usePodcastPlanAdminCollection(
-    currentMemberId || '',
+    currentUserRole === 'app-owner' ? undefined : currentMemberId || '',
   )
 
   return (
