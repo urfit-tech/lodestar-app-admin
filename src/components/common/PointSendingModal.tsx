@@ -36,8 +36,19 @@ const PointSendingModal: React.FC<{
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     form.validateFields().then((values: any) => {
       setLoading(true)
-      sendPoints(values)
-        .then(() => onRefetch && onRefetch().then(() => setVisible(false)))
+      sendPoints({
+        ...values,
+        startedAt: values.startedAt && moment(values.startedAt).startOf('day'),
+        endedAt: values.endedAt && moment(values.endedAt).endOf('day'),
+      })
+        .then(
+          () =>
+            onRefetch &&
+            onRefetch().then(() => {
+              setVisible(false)
+              form.resetFields()
+            }),
+        )
         .catch(handleError)
         .finally(() => setLoading(false))
     })
@@ -87,6 +98,7 @@ const PointSendingModal: React.FC<{
         </Form.Item>
         <Form.Item label={formatMessage(messages.increasePoints)} name="points">
           <InputNumber
+            min={1}
             formatter={value => (parseInt(`${value}`) >= 0 ? `+${value}` : `${value}`)}
             parser={value => value?.replace(/\D/g, '') || ''}
           />
@@ -94,18 +106,10 @@ const PointSendingModal: React.FC<{
         <Form.Item label={formatMessage(messages.availableDateRange)}>
           <Input.Group compact>
             <Form.Item name="startedAt">
-              <DatePicker
-                format="YYYY-MM-DD HH:mm"
-                placeholder={formatMessage(commonMessages.term.startedAt)}
-                showTime={{ format: 'HH:mm' }}
-              />
+              <DatePicker format="YYYY-MM-DD" placeholder={formatMessage(commonMessages.term.startedAt)} />
             </Form.Item>
             <Form.Item name="endedAt">
-              <DatePicker
-                format="YYYY-MM-DD HH:mm"
-                placeholder={formatMessage(commonMessages.term.endedAt)}
-                showTime={{ format: 'HH:mm' }}
-              />
+              <DatePicker format="YYYY-MM-DD" placeholder={formatMessage(commonMessages.term.endedAt)} />
             </Form.Item>
           </Input.Group>
         </Form.Item>

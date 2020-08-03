@@ -107,7 +107,7 @@ const PointHistoryAdminPage: React.FC = () => {
           refetchOrderLogs()
         }}
       >
-        <Tabs.TabPane key="point-log" tab={formatMessage(messages.pointReleaseHistory)}>
+        <Tabs.TabPane key="point-log" tab={formatMessage(messages.pointReleaseHistory)} className="pt-3">
           <AdminBlock>
             {loadingPointLogs ? (
               <Skeleton active />
@@ -194,7 +194,7 @@ const PointHistoryAdminPage: React.FC = () => {
           </AdminBlock>
         </Tabs.TabPane>
 
-        <Tabs.TabPane key="order-log" tab={formatMessage(messages.pointConsumptionHistory)}>
+        <Tabs.TabPane key="order-log" tab={formatMessage(messages.pointConsumptionHistory)} className="pt-3">
           <AdminBlock>
             {loadingOrderLogs ? (
               <Skeleton active />
