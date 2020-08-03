@@ -327,6 +327,7 @@ export const errorMessages = {
     exchangeItemsAmount: { id: 'error.form.exchangeItemsAmount', defaultMessage: '數量至少為 1' },
     exchangeItems: { id: 'error.form.exchangeItems', defaultMessage: '至少選一個兌換項目' },
     duration: { id: 'error.form.duration', defaultMessage: '請輸入時間長度' },
+    memberIdIsRequired: { id: 'error.form.memberIdIsRequired', defaultMessage: '請選擇會員' },
   }),
   event: defineMessages({
     failedFacebookLogin: { id: 'error.event.failedFacebookLogin', defaultMessage: '無法從 Facebook 登入/註冊' },

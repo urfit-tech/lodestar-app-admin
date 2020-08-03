@@ -4,7 +4,7 @@ import { sum } from 'ramda'
 import { MemberInfo } from '../containers/common/MemberAdminModal'
 import { commonMessages } from '../helpers/translation'
 import types from '../types'
-import { MemberProps, MemberPublicProps, UserRole } from '../types/general'
+import { MemberOptionProps, MemberProps, MemberPublicProps, UserRole } from '../types/general'
 
 export const useMember = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<types.GET_MEMBER, types.GET_MEMBERVariables>(
@@ -307,6 +307,40 @@ export const useMemberCollection = ({
     error,
     dataSource,
     refetch,
+  }
+}
+
+export const useMemberSummaryCollection = () => {
+  const { loading, error, data, refetch } = useQuery<types.GET_MEMBER_SUMMARY_COLLECTION>(
+    gql`
+      query GET_MEMBER_SUMMARY_COLLECTION {
+        member {
+          id
+          picture_url
+          name
+          username
+          email
+        }
+      }
+    `,
+  )
+
+  const members: MemberOptionProps[] =
+    loading || error || !data
+      ? []
+      : data.member.map(member => ({
+          id: member.id,
+          avatarUrl: member.picture_url,
+          name: member.name,
+          username: member.username,
+          email: member.email,
+        }))
+
+  return {
+    loadingMembers: loading,
+    errorMembers: error,
+    members,
+    refetchMembers: refetch,
   }
 }
 

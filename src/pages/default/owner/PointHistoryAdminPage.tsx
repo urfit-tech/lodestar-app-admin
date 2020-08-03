@@ -8,6 +8,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminBlock, AdminPageTitle } from '../../../components/admin'
 import { AvatarImage } from '../../../components/common/Image'
+import PointSendingModal from '../../../components/common/PointSendingModal'
 import AdminLayout from '../../../components/layout/AdminLayout'
 import AppContext from '../../../contexts/AppContext'
 import { commonMessages, errorMessages, promotionMessages } from '../../../helpers/translation'
@@ -94,6 +95,10 @@ const PointHistoryAdminPage: React.FC = () => {
         <Icon component={() => <PointIcon />} className="mr-3" />
         <span>{formatMessage(commonMessages.menu.pointHistory)}</span>
       </AdminPageTitle>
+
+      <div className="mb-5">
+        <PointSendingModal onRefetch={refetchPointLogs} />
+      </div>
 
       <Tabs
         defaultActiveKey="point-log"
@@ -196,7 +201,11 @@ const PointHistoryAdminPage: React.FC = () => {
             ) : (
               <Table<OrderLogProps>
                 columns={[
-                  { title: formatMessage(messages.createdAt), dataIndex: 'createdAt' },
+                  {
+                    title: formatMessage(messages.createdAt),
+                    dataIndex: 'createdAt',
+                    render: (text, record, index) => moment(text).format('YYYY/MM/DD'),
+                  },
                   {
                     title: formatMessage(messages.nameAndEmail),
                     key: 'member',
