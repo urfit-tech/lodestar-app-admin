@@ -1,12 +1,12 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Spin } from 'antd'
 import gql from 'graphql-tag'
-import React, { useContext } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
 import { errorMessages } from '../../helpers/translation'
 import types from '../../types'
-import MemberSelector, { MemberOptionProps } from './MemberSelector'
+import { MemberOptionProps } from '../../types/general'
+import MemberSelector from './MemberSelector'
 
 const CreatorSelector: React.FC<{
   value?: string
@@ -23,13 +23,17 @@ const CreatorSelector: React.FC<{
     return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
-  return <MemberSelector members={members} value={value} onChange={onChange} />
+  return (
+    <MemberSelector
+      members={members}
+      value={value ? [value] : undefined}
+      onChange={value => value && onChange && onChange(value[0])}
+    />
+  )
 }
 
 const useGetCreatorCollection = () => {
-  const { id: appId } = useContext(AppContext)
-
-  const { data, loading, error } = useQuery<types.GET_CREATOR_COLLECTION, types.GET_CREATOR_COLLECTIONVariables>(
+  const { data, loading, error } = useQuery<types.GET_CREATOR_COLLECTION>(
     gql`
       query GET_CREATOR_COLLECTION($appId: String!) {
         member(where: { app_id: { _eq: $appId }, role: { _in: ["content-creator", "app-owner"] } }) {
@@ -41,11 +45,6 @@ const useGetCreatorCollection = () => {
         }
       }
     `,
-    {
-      variables: {
-        appId,
-      },
-    },
   )
 
   const members: MemberOptionProps[] =

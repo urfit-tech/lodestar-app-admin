@@ -447,6 +447,34 @@ export interface GET_CREATOR_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_POINT_LOG_COLLECTION
+// ====================================================
+
+export interface INSERT_POINT_LOG_COLLECTION_insert_point_log {
+  __typename: "point_log_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_POINT_LOG_COLLECTION {
+  /**
+   * insert data into the table: "point_log"
+   */
+  insert_point_log: INSERT_POINT_LOG_COLLECTION_insert_point_log | null;
+}
+
+export interface INSERT_POINT_LOG_COLLECTIONVariables {
+  data: point_log_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_ISSUE_STATUS
 // ====================================================
 
@@ -5986,6 +6014,31 @@ export interface GET_PAGE_MEMBER_COLLECTIONVariables {
   role?: string | null;
   email?: string | null;
   name?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MEMBER_SUMMARY_COLLECTION
+// ====================================================
+
+export interface GET_MEMBER_SUMMARY_COLLECTION_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_MEMBER_SUMMARY_COLLECTION {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_MEMBER_SUMMARY_COLLECTION_member[];
 }
 
 /* tslint:disable */

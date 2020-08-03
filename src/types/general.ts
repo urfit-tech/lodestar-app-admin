@@ -53,6 +53,15 @@ export type MemberPublicProps = {
   role: string
 }
 
+export type MemberOptionProps = {
+  id: string
+  avatarUrl?: string | null
+  name?: string
+  username: string
+  email?: string
+  disabled?: boolean
+}
+
 export type MemberBriefProps = {
   id: string
   avatarUrl: string | null
