@@ -180,6 +180,7 @@ export const GET_PAYMENT_LOG_COLLECTION = gql`
       status
       created_at
       paid_at
+      price
     }
   }
 `

@@ -6575,6 +6575,7 @@ export interface GET_PAYMENT_LOG_COLLECTION_payment_log {
    */
   created_at: any;
   paid_at: any | null;
+  price: any | null;
 }
 
 export interface GET_PAYMENT_LOG_COLLECTION {

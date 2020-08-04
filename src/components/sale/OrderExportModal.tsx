@@ -288,7 +288,7 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           paymentLog.no,
           paymentLog.status,
           dateFormatter(paymentLog.paid_at || paymentLog.created_at),
-          paymentLog.order_log.order_products_aggregate.aggregate?.sum?.price || 0,
+          paymentLog.price,
         ]),
       ]
 
