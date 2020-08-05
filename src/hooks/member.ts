@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
-import { MemberInfo } from '../containers/common/MemberAdminModal'
+import { MemberInfoProps } from '../components/common/MemberAdminModal'
 import { commonMessages } from '../helpers/translation'
 import types from '../types'
 import { MemberOptionProps, MemberProps, MemberPublicProps, UserRole } from '../types/general'
@@ -284,7 +284,7 @@ export const useMemberCollection = ({
     },
   )
 
-  const dataSource: MemberInfo[] =
+  const dataSource: MemberInfoProps[] =
     loading || error || !data
       ? []
       : data.member

@@ -1,7 +1,6 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
 import { CaretDownOutlined, DownloadOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
-import { Button, Checkbox, Dropdown, Input, Menu, Pagination, Table, Tag } from 'antd'
+import { Button, Checkbox, Dropdown, Form, Input, Menu, Pagination, Table, Tag } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import { ColumnProps } from 'antd/lib/table'
 import moment from 'moment'
 import React, { useContext, useState } from 'react'
@@ -11,9 +10,9 @@ import { AdminPageTitle } from '../../../components/admin'
 import AdminCard from '../../../components/admin/AdminCard'
 import AdminModal from '../../../components/admin/AdminModal'
 import { AvatarImage } from '../../../components/common/Image'
+import MemberAdminModal, { MemberInfoProps } from '../../../components/common/MemberAdminModal'
 import { UserRoleName } from '../../../components/common/UserRole'
 import AdminLayout from '../../../components/layout/AdminLayout'
-import MemberAdminModal, { MemberInfo } from '../../../containers/common/MemberAdminModal'
 import AppContext from '../../../contexts/AppContext'
 import { currencyFormatter, downloadCSV, toCSV } from '../../../helpers'
 import { commonMessages } from '../../../helpers/translation'
@@ -30,9 +29,6 @@ const StyledMenuItem = styled(Menu.Item)`
   }
 `
 const StyledWrapper = styled.div`
-  width: 100%;
-  overflow: auto;
-  background: white;
   td {
     color: #585858;
   }
@@ -129,7 +125,7 @@ const MemberCollectionAdminPage: React.FC = () => {
   )
 
   // table
-  const columns: ColumnProps<MemberInfo>[] = [
+  const columns: ColumnProps<MemberInfoProps>[] = [
     {
       title: formatMessage(commonMessages.term.memberName),
       dataIndex: 'id',
@@ -193,7 +189,7 @@ const MemberCollectionAdminPage: React.FC = () => {
 
   // MemberAdminModal
   const [isMemberAdminModalVisible, setMemberAdminModalVisible] = useState(false)
-  const [selectedMember, setSelectedMember] = useState<MemberInfo | null>(null)
+  const [selectedMember, setSelectedMember] = useState<MemberInfoProps | null>(null)
 
   return (
     <AdminLayout>
@@ -210,7 +206,7 @@ const MemberCollectionAdminPage: React.FC = () => {
         </MemberExportModal>
       </div>
 
-      <AdminCard>
+      <AdminCard className="mb-5">
         <StyledWrapper>
           <Table
             columns={columns}
@@ -262,8 +258,9 @@ const MemberExportModal: React.FC<{
   emailSearch: string | null
 }> = ({ role, nameSearch, emailSearch, children }) => {
   const { formatMessage } = useIntl()
-  const [selectedExportFields, setSelectedExportFields] = useState<string[]>(['name', 'email'])
+  const [form] = useForm()
   const { loading, dataSource } = useMemberCollection({ role, nameSearch, emailSearch })
+  const [selectedExportFields, setSelectedExportFields] = useState<string[]>(['name', 'email'])
 
   const options = [
     { label: formatMessage(commonMessages.term.memberName), value: 'name' },
@@ -302,7 +299,7 @@ const MemberExportModal: React.FC<{
       okText={formatMessage(commonMessages.ui.export)}
       onOk={() => exportMemberList()}
     >
-      <Form hideRequiredMark colon={false}>
+      <Form form={form} layout="vertical" hideRequiredMark colon={false}>
         <Form.Item label={formatMessage(commonMessages.label.roleType)}>{children}</Form.Item>
         <Form.Item label={formatMessage(commonMessages.label.exportFields)}>
           <Checkbox.Group

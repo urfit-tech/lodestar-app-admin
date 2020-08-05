@@ -1,20 +1,18 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Input, message, Modal, Select, Tabs } from 'antd'
+import { Button, Form, Input, message, Modal, Select, Tabs } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import { ModalProps } from 'antd/lib/modal'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { AvatarImage } from '../../components/common/Image'
 import { AppContext } from '../../contexts/AppContext'
 import { currencyFormatter, handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import { UserRole } from '../../types/general'
+import { AvatarImage } from './Image'
 
 const messages = defineMessages({
   creatorPageLink: { id: 'common.ui.creatorPageLink', defaultMessage: '創作者主頁' },
@@ -29,13 +27,9 @@ const StyledMetaBlock = styled.div`
   font-size: 14px;
   line-height: 1.57;
   letter-spacing: 0.18px;
-
-  > div {
-    display: flex;
-  }
 `
 
-export type MemberInfo = {
+export type MemberInfoProps = {
   id: string
   avatarUrl: string | null
   name: string
@@ -46,16 +40,16 @@ export type MemberInfo = {
   consumption: number
 }
 
-type MemberAdminModalProps = FormComponentProps &
+const MemberAdminModal: React.FC<
   ModalProps & {
-    member: MemberInfo | null
+    member: MemberInfoProps | null
     onCancel?: () => void
     onSuccess?: () => void
   }
-
-const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCancel, onSuccess, ...modalProps }) => {
+> = ({ member, onCancel, onSuccess, ...modalProps }) => {
   const { formatMessage } = useIntl()
   const app = useContext(AppContext)
+  const [form] = useForm()
   const [updateMemberInfo] = useMutation<types.UPDATE_MEMBER_INFO, types.UPDATE_MEMBER_INFOVariables>(gql`
     mutation UPDATE_MEMBER_INFO($memberId: String!, $name: String, $email: String, $role: String) {
       update_member(where: { id: { _eq: $memberId } }, _set: { name: $name, email: $email, role: $role }) {
@@ -63,7 +57,6 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
       }
     }
   `)
-  const [activeKey, setActiveKey] = useState<string>('')
   const [selectedRole, setSelectedRole] = useState<UserRole>(member?.role || 'anonymous')
   const [loading, setLoading] = useState(false)
 
@@ -72,32 +65,31 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
   }
 
   const handleSubmit = () => {
-    form.validateFields((errors, values) => {
-      if (errors) {
-        return
-      }
+    form
+      .validateFields()
+      .then((values: any) => {
+        setLoading(true)
 
-      setLoading(true)
-
-      updateMemberInfo({
-        variables: {
-          memberId: member.id,
-          name: values.name,
-          email: values.email,
-          role: selectedRole,
-        },
-      })
-        .then(() => {
-          message.success(formatMessage(commonMessages.event.successfullySaved))
-          onSuccess && onSuccess()
+        updateMemberInfo({
+          variables: {
+            memberId: member.id,
+            name: values.name,
+            email: values.email,
+            role: selectedRole,
+          },
         })
-        .catch(error => handleError(error))
-        .finally(() => setLoading(false))
-    })
+          .then(() => {
+            message.success(formatMessage(commonMessages.event.successfullySaved))
+            onSuccess && onSuccess()
+          })
+          .catch(error => handleError(error))
+          .finally(() => setLoading(false))
+      })
+      .catch(() => {})
   }
 
   return (
-    <Modal {...modalProps} title={null} footer={null} onCancel={() => onCancel && onCancel()}>
+    <Modal title={null} footer={null} onCancel={() => onCancel && onCancel()} {...modalProps}>
       <AvatarImage src={member.avatarUrl} size={120} className="mx-auto mb-4" />
 
       <div className="row no-gutters align-items-center justify-content-center">
@@ -123,41 +115,45 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
         )}
       </div>
 
-      <Tabs activeKey={activeKey || 'account'} onChange={key => setActiveKey(key)}>
+      <Tabs defaultActiveKey="account">
         <Tabs.TabPane key="account" tab={formatMessage(messages.accountData)}>
           <Form
+            form={form}
+            layout="vertical"
             hideRequiredMark
             colon={false}
-            onSubmit={e => {
-              e.preventDefault()
-              handleSubmit()
+            initialValues={{
+              name: member.name,
+              email: member.email,
             }}
           >
-            <Form.Item label={formatMessage(commonMessages.term.memberName)}>
-              {form.getFieldDecorator('name', {
-                initialValue: member.name,
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage(errorMessages.form.isRequired, {
-                      field: formatMessage(commonMessages.term.memberName),
-                    }),
-                  },
-                ],
-              })(<Input />)}
+            <Form.Item
+              label={formatMessage(commonMessages.term.memberName)}
+              name="name"
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(errorMessages.form.isRequired, {
+                    field: formatMessage(commonMessages.term.memberName),
+                  }),
+                },
+              ]}
+            >
+              <Input />
             </Form.Item>
-            <Form.Item label={formatMessage(commonMessages.term.email)}>
-              {form.getFieldDecorator('email', {
-                initialValue: member.email,
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage(errorMessages.form.isRequired, {
-                      field: formatMessage(commonMessages.term.email),
-                    }),
-                  },
-                ],
-              })(<Input />)}
+            <Form.Item
+              label={formatMessage(commonMessages.term.email)}
+              name="email"
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(errorMessages.form.isRequired, {
+                    field: formatMessage(commonMessages.term.email),
+                  }),
+                },
+              ]}
+            >
+              <Input />
             </Form.Item>
             <Form.Item label={formatMessage(messages.roleSettings)}>
               <Select onChange={(value: UserRole) => setSelectedRole(value)} value={selectedRole}>
@@ -207,4 +203,4 @@ const MemberAdminModal: React.FC<MemberAdminModalProps> = ({ form, member, onCan
   )
 }
 
-export default Form.create<MemberAdminModalProps>()(MemberAdminModal)
+export default MemberAdminModal
