@@ -2,7 +2,7 @@ import { Spin, TreeSelect } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import { Product } from '../../types/general'
+import { ProductProps } from '../../types/general'
 
 const productTypes = [
   'Program',
@@ -41,7 +41,7 @@ const messages = defineMessages({
 type ProductSelectorProps = {
   loading?: boolean
   error?: Error
-  products: Product[]
+  products: ProductProps[]
   value?: string[]
   onChange?: (value: string[]) => void
 }

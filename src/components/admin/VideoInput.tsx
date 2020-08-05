@@ -27,32 +27,28 @@ const VideoInput: React.FC<{
   const [file, setFile] = useState<UploadFile | undefined>(undefined)
 
   return (
-    <>
-      <StyleInputGroup compact>
-        <Input
-          value={value || ''}
-          placeholder={formatMessage(programMessages.text.videoPlaceholder)}
-          onChange={e => {
-            onChange && onChange(e.target.value)
-          }}
-        />
-        <SingleUploader
-          value={file}
-          onChange={(value: any) => {
-            setFile(value as UploadFile)
-          }}
-          accept="video/*"
-          uploadText={formatMessage(programMessages.text.uploadVideo)}
-          path={`program_covers/${appId}/${programId}_video`}
-          showUploadList={false}
-          isPublic
-          onSuccess={() => {
-            onChange &&
-              onChange(`https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}_video`)
-          }}
-        />
-      </StyleInputGroup>
-    </>
+    <StyleInputGroup compact>
+      <Input
+        value={value || ''}
+        placeholder={formatMessage(programMessages.text.videoPlaceholder)}
+        onChange={e => {
+          onChange && onChange(e.target.value)
+        }}
+      />
+
+      <SingleUploader
+        value={file}
+        accept="video/*"
+        uploadText={formatMessage(programMessages.text.uploadVideo)}
+        path={`program_covers/${appId}/${programId}_video`}
+        showUploadList={false}
+        isPublic
+        onChange={(value: any) => setFile(value as UploadFile)}
+        onSuccess={() =>
+          onChange && onChange(`https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}_video`)
+        }
+      />
+    </StyleInputGroup>
   )
 }
 

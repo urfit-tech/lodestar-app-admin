@@ -55,7 +55,7 @@ const StyledSection = styled.section`
   }
 `
 
-const TermsPage:React.FC = () => {
+const TermsPage: React.FC = () => {
   const { name } = useContext(AppContext)
 
   return (

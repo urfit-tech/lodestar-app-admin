@@ -1,12 +1,12 @@
-import React from 'react'
-import { useIntl, defineMessage } from 'react-intl'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, message } from 'antd'
-import AdminModal from '../admin/AdminModal'
 import gql from 'graphql-tag'
-import types from '../../types'
-import { commonMessages } from '../../helpers/translation'
+import React from 'react'
+import { defineMessage, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { commonMessages } from '../../helpers/translation'
+import types from '../../types'
+import AdminModal from '../admin/AdminModal'
 
 const messages = defineMessage({
   cancelSubscription: {

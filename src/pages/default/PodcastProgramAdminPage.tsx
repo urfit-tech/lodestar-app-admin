@@ -14,13 +14,13 @@ import PodcastProgramIntroForm from '../../containers/podcast/PodcastProgramIntr
 import PodcastProgramPlanForm from '../../containers/podcast/PodcastProgramPlanForm'
 import PodcastProgramPublishBlock from '../../containers/podcast/PodcastProgramPublishBlock'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
-import { usePodcastProgramCollection } from '../../hooks/podcast'
+import { usePodcastProgramAdmin } from '../../hooks/podcast'
 
 const PodcastProgramAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { podcastProgramId } = useParams<{ podcastProgramId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const { podcastProgram, refetchPodcastProgram } = usePodcastProgramCollection(podcastProgramId)
+  const { podcastProgram, refetchPodcastProgram } = usePodcastProgramAdmin(podcastProgramId)
 
   return (
     <>

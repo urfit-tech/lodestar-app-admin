@@ -4,15 +4,15 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageBlock, AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
+import PodcastProgramCollectionAdminTable from '../../components/podcast/PodcastProgramCollectionAdminTable'
 import PodcastProgramCreationModal from '../../components/podcast/PodcastProgramCreationModal'
-import PodcastProgramCollectionAdminTable from '../../containers/podcast/PodcastProgramCollectionAdminTable'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as MicrophoneOIcon } from '../../images/icon/microphone-o.svg'
 
 const PodcastProgramCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { currentMemberId } = useAuth()
+  const { currentUserRole, currentMemberId } = useAuth()
 
   return (
     <AdminLayout>
@@ -30,7 +30,9 @@ const PodcastProgramCollectionAdminPage: React.FC = () => {
           </div>
 
           <AdminPageBlock>
-            <PodcastProgramCollectionAdminTable />
+            <PodcastProgramCollectionAdminTable
+              memberId={currentUserRole === 'content-creator' ? currentMemberId : undefined}
+            />
           </AdminPageBlock>
         </>
       )}

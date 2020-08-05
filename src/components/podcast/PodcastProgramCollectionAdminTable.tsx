@@ -1,25 +1,15 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { Button, Input, Table } from 'antd'
+import { Button, Input, Skeleton, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { currencyFormatter } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
+import { usePodcastProgramCollection } from '../../hooks/podcast'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { CustomRatioImage } from '../common/Image'
-
-export type PodcastProgramColumnProps = {
-  id: string
-  coverUrl?: string | null
-  title: string
-  instructorName: string
-  listPrice: number
-  salePrice?: number
-  salesCount: number
-  isPublished: boolean
-}
 
 const StyledTitle = styled.div`
   display: -webkit-box;
@@ -65,6 +55,17 @@ const StyledStatusLabel = styled.div<{ active?: boolean }>`
   }
 `
 
+export type PodcastProgramColumnProps = {
+  id: string
+  coverUrl?: string | null
+  title: string
+  instructorName: string
+  listPrice: number
+  salePrice?: number
+  salesCount: number
+  isPublished: boolean
+}
+
 const getColumnSearchProps: (events: {
   onReset: (clearFilters: any) => void
   onSearch: (selectedKeys?: React.ReactText[], confirm?: () => void) => void
@@ -102,13 +103,22 @@ const getColumnSearchProps: (events: {
 })
 
 const PodcastProgramCollectionAdminTable: React.FC<{
-  podcastPrograms: PodcastProgramColumnProps[]
-}> = ({ podcastPrograms }) => {
+  memberId?: string
+}> = ({ memberId }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
+  const { loadingPodcastPrograms, podcastPrograms, refetchPodcastPrograms } = usePodcastProgramCollection(memberId)
 
   const [titleSearch, setTitleSearch] = useState('')
   const [nameSearch, setNameSearch] = useState('')
+
+  useEffect(() => {
+    refetchPodcastPrograms()
+  }, [refetchPodcastPrograms])
+
+  if (loadingPodcastPrograms) {
+    return <Skeleton active />
+  }
 
   const columns: ColumnProps<PodcastProgramColumnProps>[] = [
     {
@@ -207,9 +217,9 @@ const PodcastProgramCollectionAdminTable: React.FC<{
   ]
 
   return (
-    <Table
+    <Table<PodcastProgramColumnProps>
       rowKey="id"
-      rowClassName={() => 'cursor-pointer'}
+      rowClassName="cursor-pointer"
       columns={columns}
       dataSource={podcastPrograms
         .filter(podcastProgram => !titleSearch || podcastProgram.title.includes(titleSearch))

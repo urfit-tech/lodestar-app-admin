@@ -1,10 +1,9 @@
 import { DatePicker, Input, Select, Skeleton, Tabs } from 'antd'
 import moment from 'moment'
 import { uniqBy } from 'ramda'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { StringParam, useQueryParam } from 'use-query-params'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import { useAppointmentEnrollmentCollection } from '../../hooks/appointment'
 import AppointmentPeriodCard from './AppointmentPeriodCard'
@@ -34,7 +33,6 @@ const AppointmentPeriodCollectionTabs: React.FC<{
   withSelector?: boolean
 }> = ({ withSelector }) => {
   const { formatMessage } = useIntl()
-  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const [selectedCreatorId, setSelectedCreatorId] = useState<string>('')
   const [startedAt, setStartedAt] = useState<Date | null>(null)
   const [endedAt, setEndedAt] = useState<Date | null>(null)
@@ -44,10 +42,6 @@ const AppointmentPeriodCollectionTabs: React.FC<{
     appointmentEnrollments,
     refetchAppointmentEnrollments,
   } = useAppointmentEnrollmentCollection(startedAt, endedAt)
-
-  useEffect(() => {
-    refetchAppointmentEnrollments()
-  }, [refetchAppointmentEnrollments])
 
   const creators = uniqBy(
     creator => creator.id,
@@ -81,59 +75,61 @@ const AppointmentPeriodCollectionTabs: React.FC<{
   ]
 
   return (
-    <StyledTabs activeKey={activeKey || 'scheduled'} onChange={key => setActiveKey(key)}>
-      {tabContents.map(tabContent => (
-        <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
-          <div className="py-4">
-            <StyledFilterBlock className="d-flex">
-              {withSelector && (
-                <Select<string>
-                  value={selectedCreatorId}
-                  onChange={(value: string) => setSelectedCreatorId(value)}
-                  className="mr-3"
-                  style={{ width: '100%', maxWidth: '15rem' }}
-                >
-                  <Select.Option value="">{formatMessage(messages.allInstructors)}</Select.Option>
-                  {creators.map(creator => (
-                    <Select.Option value={creator.id}>{creator.name}</Select.Option>
-                  ))}
-                </Select>
-              )}
-              <Input.Group compact>
-                <DatePicker
-                  format="YYYY-MM-DD HH:mm"
-                  placeholder={formatMessage(commonMessages.term.startedAt)}
-                  showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-                  value={startedAt && moment(startedAt)}
-                  onChange={value => setStartedAt(value && value.startOf('minute').toDate())}
-                />
-                <DatePicker
-                  format="YYYY-MM-DD HH:mm"
-                  placeholder={formatMessage(commonMessages.term.endedAt)}
-                  showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
-                  value={endedAt && moment(endedAt)}
-                  onChange={value => setEndedAt(value && value.startOf('minute').toDate())}
-                />
-              </Input.Group>
-            </StyledFilterBlock>
+    <>
+      <StyledFilterBlock className="d-flex">
+        {withSelector && (
+          <Select<string>
+            value={selectedCreatorId}
+            onChange={(value: string) => setSelectedCreatorId(value)}
+            className="mr-3"
+            style={{ width: '100%', maxWidth: '15rem' }}
+          >
+            <Select.Option value="">{formatMessage(messages.allInstructors)}</Select.Option>
+            {creators.map(creator => (
+              <Select.Option value={creator.id}>{creator.name}</Select.Option>
+            ))}
+          </Select>
+        )}
+        <Input.Group compact>
+          <DatePicker
+            format="YYYY-MM-DD HH:mm"
+            placeholder={formatMessage(commonMessages.term.startedAt)}
+            showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+            value={startedAt && moment(startedAt)}
+            onChange={value => setStartedAt(value && value.startOf('minute').toDate())}
+          />
+          <DatePicker
+            format="YYYY-MM-DD HH:mm"
+            placeholder={formatMessage(commonMessages.term.endedAt)}
+            showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
+            value={endedAt && moment(endedAt)}
+            onChange={value => setEndedAt(value && value.startOf('minute').toDate())}
+          />
+        </Input.Group>
+      </StyledFilterBlock>
 
-            {loadingAppointmentEnrollments ? (
-              <Skeleton active />
-            ) : tabContent.periods.length > 0 ? (
-              tabContent.periods.map(period => (
-                <AppointmentPeriodCard
-                  key={period.orderProduct.id}
-                  {...period}
-                  onRefetch={refetchAppointmentEnrollments}
-                />
-              ))
-            ) : (
-              <EmptyBlock>{formatMessage(messages.emptyAppointment)}</EmptyBlock>
-            )}
-          </div>
-        </Tabs.TabPane>
-      ))}
-    </StyledTabs>
+      <StyledTabs defaultActiveKey={'scheduled'} onChange={() => refetchAppointmentEnrollments()}>
+        {tabContents.map(tabContent => (
+          <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
+            <div className="py-4">
+              {loadingAppointmentEnrollments ? (
+                <Skeleton active />
+              ) : tabContent.periods.length > 0 ? (
+                tabContent.periods.map(period => (
+                  <AppointmentPeriodCard
+                    key={period.orderProduct.id}
+                    {...period}
+                    onRefetch={refetchAppointmentEnrollments}
+                  />
+                ))
+              ) : (
+                <EmptyBlock>{formatMessage(messages.emptyAppointment)}</EmptyBlock>
+              )}
+            </div>
+          </Tabs.TabPane>
+        ))}
+      </StyledTabs>
+    </>
   )
 }
 

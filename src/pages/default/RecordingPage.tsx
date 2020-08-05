@@ -5,7 +5,7 @@ import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
 import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuid } from 'uuid'
 import AudioTrackCard from '../../components/podcast/AudioTrackCard'
 import RecordButton from '../../components/podcast/RecordButton'
 import RecordingController from '../../components/podcast/RecordingController'
@@ -15,7 +15,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { handleError, uploadFile } from '../../helpers'
 import { convertAudioBufferToMp3, mergeAudioBuffer, sliceAudioBuffer } from '../../helpers/audio'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
-import { usePodcastProgramCollection, useUpdatePodcastProgramContent } from '../../hooks/podcast'
+import { usePodcastProgramAdmin, useUpdatePodcastProgramContent } from '../../hooks/podcast'
 
 const StyledLayoutContent = styled.div`
   height: calc(100vh - 64px);
@@ -42,7 +42,7 @@ const RecordingPage: React.FC = () => {
   const { authToken } = useAuth()
   const { formatMessage } = useIntl()
   const { podcastProgramId } = useParams<{ podcastProgramId: string }>()
-  const { podcastProgram, refetchPodcastProgram } = usePodcastProgramCollection(podcastProgramId)
+  const { podcastProgram, refetchPodcastProgram } = usePodcastProgramAdmin(podcastProgramId)
 
   const [isRecording, setIsRecording] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -74,7 +74,7 @@ const RecordingPage: React.FC = () => {
         </div>
       ),
       centered: true,
-      okButtonProps: { disabled: true, className: 'modal-footer-hiden-button' },
+      okButtonProps: { disabled: true, className: 'modal-footer-hidden-button' },
     })
   }
 
@@ -92,7 +92,7 @@ const RecordingPage: React.FC = () => {
   const onRecordStop = useCallback(
     (audioBuffer: AudioBuffer | null) => {
       if (audioBuffer && audioObjectRef.current?.waveCollection) {
-        const waveId = uuidv4()
+        const waveId = uuid()
 
         setWaveCollection([
           ...audioObjectRef.current.waveCollection,
@@ -141,13 +141,13 @@ const RecordingPage: React.FC = () => {
       setWaveCollection(
         waveCollection.reduce((acc: WaveCollectionProps[], wave: WaveCollectionProps) => {
           if (wave.id === selectedAudioTarget) {
-            const audioSlicedFirstId = uuidv4()
+            const audioSlicedFirstId = uuid()
             acc.push({
               id: audioSlicedFirstId,
               audioBuffer: audioSlicedFirst,
             })
             acc.push({
-              id: uuidv4(),
+              id: uuid(),
               audioBuffer: audioSlicedLast,
             })
             setSelectedAudioTarget(audioSlicedFirstId)

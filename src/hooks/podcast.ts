@@ -1,10 +1,89 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
+import { PodcastProgramColumnProps } from '../components/podcast/PodcastProgramCollectionAdminTable'
 import types from '../types'
 import { PeriodType } from '../types/general'
 import { PodcastPlanProps, PodcastProgramProps } from '../types/podcast'
 
-export const usePodcastProgramCollection = (podcastProgramId: string) => {
+export const usePodcastProgramCollection = (memberId?: string) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_PODCAST_PROGRAM_ADMIN_COLLECTION,
+    types.GET_PODCAST_PROGRAM_ADMIN_COLLECTIONVariables
+  >(
+    gql`
+      query GET_PODCAST_PROGRAM_ADMIN_COLLECTION($memberId: String) {
+        podcast_program(where: { creator_id: { _eq: $memberId } }, order_by: { updated_at: desc_nulls_last }) {
+          id
+          title
+          cover_url
+          abstract
+          list_price
+          sale_price
+          sold_at
+          published_at
+          creator {
+            id
+            name
+            username
+          }
+          podcast_program_categories(order_by: { category: { position: asc } }) {
+            id
+            category {
+              id
+              name
+            }
+          }
+          podcast_program_roles(where: { name: { _eq: "instructor" } }) {
+            id
+            member {
+              id
+              name
+              username
+            }
+          }
+          podcast_program_enrollments_aggregate {
+            aggregate {
+              count
+            }
+          }
+        }
+      }
+    `,
+    { variables: { memberId } },
+  )
+
+  const podcastPrograms: PodcastProgramColumnProps[] =
+    loading || error || !data
+      ? []
+      : data.podcast_program.map(podcastProgram => ({
+          id: podcastProgram.id,
+          coverUrl: podcastProgram.cover_url,
+          title: podcastProgram.title,
+          instructorName: podcastProgram.podcast_program_roles.length
+            ? podcastProgram.podcast_program_roles[0].member?.name ||
+              podcastProgram.podcast_program_roles[0].member?.username ||
+              ''
+            : '',
+          listPrice: podcastProgram.list_price,
+          salePrice:
+            podcastProgram.sold_at && new Date(podcastProgram.sold_at).getTime() > Date.now()
+              ? podcastProgram.sale_price || 0
+              : undefined,
+          salesCount: podcastProgram.podcast_program_enrollments_aggregate.aggregate
+            ? podcastProgram.podcast_program_enrollments_aggregate.aggregate.count || 0
+            : 0,
+          isPublished: !!podcastProgram.published_at,
+        }))
+
+  return {
+    loadingPodcastPrograms: loading,
+    errorPodcastPrograms: error,
+    podcastPrograms,
+    refetchPodcastPrograms: refetch,
+  }
+}
+
+export const usePodcastProgramAdmin = (podcastProgramId: string) => {
   const { loading, error, data, refetch } = useQuery<
     types.GET_PODCAST_PROGRAM_ADMIN,
     types.GET_PODCAST_PROGRAM_ADMINVariables

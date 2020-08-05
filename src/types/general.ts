@@ -15,11 +15,11 @@ export type ProductType =
   | 'PodcastPlan'
   | 'AppointmentPlan'
 
-export type Product = {
+export type ProductProps = {
   id: string
   title: string
   type: ProductType
-  children?: Product[]
+  children?: ProductProps[]
 }
 
 export type Category = {

@@ -27,7 +27,7 @@ const PodcastPlanAdminPage: React.FC = () => {
         <span>{formatMessage(commonMessages.menu.podcastPlans)}</span>
       </AdminPageTitle>
 
-      {!currentMemberId || loadingPodcastPlans ? (
+      {!currentMemberId ? (
         <Skeleton active />
       ) : (
         <>
@@ -43,11 +43,15 @@ const PodcastPlanAdminPage: React.FC = () => {
           </div>
 
           <AdminCard>
-            <PodcastPlanCollectionAdminTable
-              memberId={currentMemberId}
-              podcastPlans={podcastPlans}
-              refetch={refetchPodcastPlans}
-            />
+            {loadingPodcastPlans ? (
+              <Skeleton active />
+            ) : (
+              <PodcastPlanCollectionAdminTable
+                memberId={currentMemberId}
+                podcastPlans={podcastPlans}
+                refetch={refetchPodcastPlans}
+              />
+            )}
           </AdminCard>
         </>
       )}

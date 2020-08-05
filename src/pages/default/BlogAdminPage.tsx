@@ -10,7 +10,7 @@ import {
   AdminHeader,
   AdminHeaderTitle,
   AdminPaneTitle,
-  AdminTabBarWrapper
+  AdminTabBarWrapper,
 } from '../../components/admin'
 import RoleAdminBlock from '../../components/admin/RoleAdminBlock'
 import BlogPostAuthorCollectionBlock from '../../components/blog/BlogPostAuthorCollectionBlock'

@@ -437,10 +437,6 @@ export interface GET_CREATOR_COLLECTION {
   member: GET_CREATOR_COLLECTION_member[];
 }
 
-export interface GET_CREATOR_COLLECTIONVariables {
-  appId: string;
-}
-
 /* tslint:disable */
 /* eslint-disable */
 // @generated
@@ -3542,10 +3538,6 @@ export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_pr
    * An object relationship
    */
   member: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles_member | null;
-  /**
-   * instructor
-   */
-  name: string;
 }
 
 export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate_aggregate {
@@ -3591,6 +3583,10 @@ export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION {
    * fetch data from the table: "podcast_program"
    */
   podcast_program: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program[];
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTIONVariables {
+  memberId?: string | null;
 }
 
 /* tslint:disable */

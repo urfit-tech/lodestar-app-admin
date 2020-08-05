@@ -4,14 +4,13 @@ import React, { useContext, useEffect } from 'react'
 import ProductSelectorComponent from '../../components/common/ProductSelector'
 import AppContext from '../../contexts/AppContext'
 import types from '../../types'
-import { ProductType, Product } from '../../types/general'
+import { ProductProps, ProductType } from '../../types/general'
 
-type ProductSelectorProps = {
+const ProductSelector: React.FC<{
   allowTypes: ProductType[]
   value?: string[]
   onChange?: (value: string[]) => void
-}
-const ProductSelector: React.FC<ProductSelectorProps> = ({ allowTypes, value, onChange }) => {
+}> = ({ allowTypes, value, onChange }) => {
   const { enabledModules } = useContext(AppContext)
   const { loading, error, data, refetch } = useQuery<types.GET_ALLTYPE_PRODUCT_COLLECTION>(
     GET_ALLTYPE_PRODUCT_COLLECTION,
@@ -22,7 +21,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({ allowTypes, value, on
   }, [refetch])
 
   const products: {
-    [key: string]: Product[]
+    [key: string]: ProductProps[]
   } =
     loading || error || !data
       ? {}
