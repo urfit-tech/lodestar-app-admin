@@ -1,4 +1,6 @@
+import { useQuery } from '@apollo/react-hooks'
 import { List, Skeleton, Typography } from 'antd'
+import gql from 'graphql-tag'
 import moment from 'moment'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -6,16 +8,13 @@ import styled from 'styled-components'
 import { currencyFormatter, dateFormatter } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { usePublicMember } from '../../hooks/member'
+import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 
-const StyledCard = styled(AdminCard)`
-  .ant-card-body {
-    padding: 16px;
-  }
-`
-const StyledWrapper = styled.div`
-  overflow: auto;
-`
+const messages = defineMessages({
+  purchasedAt: { id: 'common.text.purchasedAt', defaultMessage: '{name} 於 {date} 購買' },
+})
+
 const ListItemWrapper = styled.div`
   height: 50px;
   width: 100%;
@@ -46,86 +45,134 @@ const StyledTitle = styled.div`
   white-space: nowrap;
 `
 
-const messages = defineMessages({
-  purchasedAt: { id: 'common.text.purchasedAt', defaultMessage: '{name} 於 {date} 購買' },
-})
-
-type SaleCollectionCreatorCardProps = {
-  loading?: boolean
-  error?: Error
-  orderProducts?: {
+type SaleOrderProductProps = {
+  id: string
+  name: string
+  price: number
+  endedAt: Date | null
+  orderLog: {
     id: string
-    name: string
-    price: number
-    endedAt: Date | null
-    orderLog: {
-      id: string
-      memberId: string
-      createdAt: Date
-    }
-  }[]
+    createdAt: Date
+    memberId: string
+  }
 }
-const SaleCollectionCreatorCard: React.FC<SaleCollectionCreatorCardProps> = ({ loading, error, orderProducts }) => {
+
+const SaleCollectionCreatorCard: React.FC<{
+  memberId: string
+}> = ({ memberId }) => {
   const { formatMessage } = useIntl()
-  if (loading) {
+  const { loadingOrderProducts, errorOrderProducts, orderProducts } = useProductOwnerOrders(memberId)
+
+  if (loadingOrderProducts) {
     return (
       <AdminCard>
         <Skeleton active />
       </AdminCard>
     )
   }
-  if (error || !orderProducts) {
-    return <StyledCard>{formatMessage(errorMessages.data.fetch)}</StyledCard>
+
+  if (errorOrderProducts) {
+    return <AdminCard>{formatMessage(errorMessages.data.fetch)}</AdminCard>
   }
+
   return (
-    <StyledCard loading={loading}>
-      <StyledWrapper>
-        <div className="d-flex justify-content-end">
-          <Typography.Text type="secondary">
-            {formatMessage(commonMessages.text.totalCount, { count: orderProducts.length })}
-          </Typography.Text>
-        </div>
-        <List loading={loading} dataSource={orderProducts} renderItem={item => <ListItem {...item} />} />
-      </StyledWrapper>
-    </StyledCard>
+    <AdminCard className="mb-5">
+      <div className="d-flex justify-content-end">
+        <Typography.Text type="secondary">
+          {formatMessage(commonMessages.text.totalCount, { count: orderProducts.length })}
+        </Typography.Text>
+      </div>
+
+      <List<SaleOrderProductProps>
+        dataSource={orderProducts}
+        renderItem={orderProduct => <ListItem orderProduct={orderProduct} />}
+      />
+    </AdminCard>
   )
 }
 
-const ListItem: React.FC<{
-  name: string
-  price: number
-  endedAt: Date | null
-  orderLog: {
-    id: string
-    memberId: string
-    createdAt: Date
-  }
-}> = ({ name, price, orderLog, endedAt }) => {
+const ListItem: React.FC<{ orderProduct: SaleOrderProductProps }> = ({ orderProduct }) => {
   const { formatMessage } = useIntl()
-  const { member } = usePublicMember(orderLog.memberId)
-
-  if (!member) {
-    return null
-  }
+  const { member } = usePublicMember(orderProduct.orderLog.memberId)
 
   return (
     <List.Item className="py-4">
       <ListItemWrapper className="d-flex align-items-center justify-content-between">
         <div className="info mr-3">
           <StyledTitle>
-            {name}
-            {endedAt && (
+            {orderProduct.name}
+            {orderProduct.endedAt && (
               <span className="ml-2">
-                ({moment(endedAt).format('YYYY-MM-DD')} {formatMessage(commonMessages.status.productExpired)})
+                ({moment(orderProduct.endedAt).format('YYYY-MM-DD')}{' '}
+                {formatMessage(commonMessages.status.productExpired)})
               </span>
             )}
           </StyledTitle>
-          <p>{formatMessage(messages.purchasedAt, { name: member.name, date: dateFormatter(orderLog.createdAt) })}</p>
+          <p>
+            {formatMessage(messages.purchasedAt, {
+              name: member.name,
+              date: dateFormatter(orderProduct.orderLog.createdAt),
+            })}
+          </p>
         </div>
-        <div className="flex-shrink-0 price">{currencyFormatter(price)}</div>
+        <div className="flex-shrink-0 price">{currencyFormatter(orderProduct.price)}</div>
       </ListItemWrapper>
     </List.Item>
   )
+}
+
+const useProductOwnerOrders = (memberId: string) => {
+  const { loading, data, error, refetch } = useQuery<
+    types.GET_PRODUCT_OWNER_ORDERS,
+    types.GET_PRODUCT_OWNER_ORDERSVariables
+  >(
+    gql`
+      query GET_PRODUCT_OWNER_ORDERS($memberId: String!) {
+        order_product(
+          where: {
+            order_log: {
+              status: { _eq: "SUCCESS" }
+              order_products: { product: { product_owner: { member_id: { _eq: $memberId } } } }
+            }
+          }
+          order_by: { created_at: desc }
+        ) {
+          id
+          name
+          price
+          ended_at
+          order_log {
+            id
+            created_at
+            member_id
+          }
+        }
+      }
+    `,
+    { variables: { memberId } },
+  )
+
+  const orderProducts: SaleOrderProductProps[] =
+    loading || error || !data
+      ? []
+      : data.order_product.map(orderProduct => ({
+          id: orderProduct.id,
+          name: orderProduct.name,
+          price: orderProduct.price,
+          endedAt: orderProduct.ended_at,
+          orderLog: {
+            id: orderProduct.order_log.id,
+            createdAt: orderProduct.order_log.created_at,
+            memberId: orderProduct.order_log.member_id,
+          },
+        }))
+
+  return {
+    loadingOrderProducts: loading,
+    errorOrderProducts: error,
+    orderProducts,
+    refetchOrderProducts: refetch,
+  }
 }
 
 export default SaleCollectionCreatorCard

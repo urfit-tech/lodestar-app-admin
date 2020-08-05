@@ -2457,6 +2457,45 @@ export interface GET_ORDERSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PRODUCT_OWNER_ORDERS
+// ====================================================
+
+export interface GET_PRODUCT_OWNER_ORDERS_order_product_order_log {
+  __typename: "order_log";
+  id: string;
+  created_at: any;
+  member_id: string;
+}
+
+export interface GET_PRODUCT_OWNER_ORDERS_order_product {
+  __typename: "order_product";
+  id: any;
+  name: string;
+  price: any;
+  ended_at: any | null;
+  /**
+   * An object relationship
+   */
+  order_log: GET_PRODUCT_OWNER_ORDERS_order_product_order_log;
+}
+
+export interface GET_PRODUCT_OWNER_ORDERS {
+  /**
+   * fetch data from the table: "order_product"
+   */
+  order_product: GET_PRODUCT_OWNER_ORDERS_order_product[];
+}
+
+export interface GET_PRODUCT_OWNER_ORDERSVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_TOTAL_ORDER_AMOUNT
 // ====================================================
 
@@ -2499,6 +2538,60 @@ export interface GET_TOTAL_ORDER_AMOUNT {
    * fetch aggregated fields from the table: "order_discount"
    */
   order_discount_aggregate: GET_TOTAL_ORDER_AMOUNT_order_discount_aggregate;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PRODUCT_OWNER_TOTAL_AMOUNT
+// ====================================================
+
+export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate_aggregate_sum {
+  __typename: "order_product_sum_fields";
+  price: any | null;
+}
+
+export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate_aggregate {
+  __typename: "order_product_aggregate_fields";
+  sum: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate_aggregate_sum | null;
+}
+
+export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate {
+  __typename: "order_product_aggregate";
+  aggregate: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate_aggregate | null;
+}
+
+export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate_aggregate_sum {
+  __typename: "order_discount_sum_fields";
+  price: any | null;
+}
+
+export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate_aggregate {
+  __typename: "order_discount_aggregate_fields";
+  sum: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate_aggregate_sum | null;
+}
+
+export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate {
+  __typename: "order_discount_aggregate";
+  aggregate: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate_aggregate | null;
+}
+
+export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT {
+  /**
+   * fetch aggregated fields from the table: "order_product"
+   */
+  order_product_aggregate: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate;
+  /**
+   * fetch aggregated fields from the table: "order_discount"
+   */
+  order_discount_aggregate: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate;
+}
+
+export interface GET_PRODUCT_OWNER_TOTAL_AMOUNTVariables {
+  memberId: string;
 }
 
 /* tslint:disable */
@@ -3499,102 +3592,6 @@ export interface UPDATE_PODCAST_PROGRAM_BASICVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PODCAST_PROGRAM_ADMIN_COLLECTION
-// ====================================================
-
-export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_creator {
-  __typename: "member_public";
-  id: string | null;
-  name: string | null;
-  username: string | null;
-}
-
-export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_categories_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_categories {
-  __typename: "podcast_program_category";
-  id: any;
-  /**
-   * An object relationship
-   */
-  category: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_categories_category;
-}
-
-export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles_member {
-  __typename: "member_public";
-  id: string | null;
-  name: string | null;
-  username: string | null;
-}
-
-export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles {
-  __typename: "podcast_program_role";
-  id: any;
-  /**
-   * An object relationship
-   */
-  member: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles_member | null;
-}
-
-export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate_aggregate {
-  __typename: "podcast_program_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate {
-  __typename: "podcast_program_enrollment_aggregate";
-  aggregate: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate_aggregate | null;
-}
-
-export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program {
-  __typename: "podcast_program";
-  id: any;
-  title: string;
-  cover_url: string | null;
-  abstract: string | null;
-  list_price: any;
-  sale_price: any | null;
-  sold_at: any | null;
-  published_at: any | null;
-  /**
-   * An object relationship
-   */
-  creator: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_creator | null;
-  /**
-   * An array relationship
-   */
-  podcast_program_categories: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_categories[];
-  /**
-   * An array relationship
-   */
-  podcast_program_roles: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles[];
-  /**
-   * An aggregated array relationship
-   */
-  podcast_program_enrollments_aggregate: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate;
-}
-
-export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION {
-  /**
-   * fetch data from the table: "podcast_program"
-   */
-  podcast_program: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program[];
-}
-
-export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTIONVariables {
-  memberId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_BODY
 // ====================================================
 
@@ -3845,99 +3842,6 @@ export interface DELETE_PROGRAM_ROLE {
 
 export interface DELETE_PROGRAM_ROLEVariables {
   programId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PRODUCT_OWNER_ORDERS
-// ====================================================
-
-export interface GET_PRODUCT_OWNER_ORDERS_order_product_order_log {
-  __typename: "order_log";
-  id: string;
-  member_id: string;
-  created_at: any;
-}
-
-export interface GET_PRODUCT_OWNER_ORDERS_order_product {
-  __typename: "order_product";
-  id: any;
-  name: string;
-  price: any;
-  ended_at: any | null;
-  /**
-   * An object relationship
-   */
-  order_log: GET_PRODUCT_OWNER_ORDERS_order_product_order_log;
-}
-
-export interface GET_PRODUCT_OWNER_ORDERS {
-  /**
-   * fetch data from the table: "order_product"
-   */
-  order_product: GET_PRODUCT_OWNER_ORDERS_order_product[];
-}
-
-export interface GET_PRODUCT_OWNER_ORDERSVariables {
-  memberId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PRODUCT_OWNER_TOTAL_AMOUNT
-// ====================================================
-
-export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate_aggregate_sum {
-  __typename: "order_product_sum_fields";
-  price: any | null;
-}
-
-export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate_aggregate {
-  __typename: "order_product_aggregate_fields";
-  sum: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate_aggregate_sum | null;
-}
-
-export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate {
-  __typename: "order_product_aggregate";
-  aggregate: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate_aggregate | null;
-}
-
-export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate_aggregate_sum {
-  __typename: "order_discount_sum_fields";
-  price: any | null;
-}
-
-export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate_aggregate {
-  __typename: "order_discount_aggregate_fields";
-  sum: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate_aggregate_sum | null;
-}
-
-export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate {
-  __typename: "order_discount_aggregate";
-  aggregate: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate_aggregate | null;
-}
-
-export interface GET_PRODUCT_OWNER_TOTAL_AMOUNT {
-  /**
-   * fetch aggregated fields from the table: "order_product"
-   */
-  order_product_aggregate: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_product_aggregate;
-  /**
-   * fetch aggregated fields from the table: "order_discount"
-   */
-  order_discount_aggregate: GET_PRODUCT_OWNER_TOTAL_AMOUNT_order_discount_aggregate;
-}
-
-export interface GET_PRODUCT_OWNER_TOTAL_AMOUNTVariables {
-  memberId: string;
 }
 
 /* tslint:disable */
@@ -6685,6 +6589,102 @@ export interface GET_PAYMENT_LOG_COLLECTIONVariables {
   startedAt: any;
   endedAt: any;
   orderStatuses?: string[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PODCAST_PROGRAM_ADMIN_COLLECTION
+// ====================================================
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_categories {
+  __typename: "podcast_program_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_categories_category;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles_member {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles {
+  __typename: "podcast_program_role";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles_member | null;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate_aggregate {
+  __typename: "podcast_program_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate {
+  __typename: "podcast_program_enrollment_aggregate";
+  aggregate: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program {
+  __typename: "podcast_program";
+  id: any;
+  title: string;
+  cover_url: string | null;
+  abstract: string | null;
+  list_price: any;
+  sale_price: any | null;
+  sold_at: any | null;
+  published_at: any | null;
+  /**
+   * An object relationship
+   */
+  creator: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_creator | null;
+  /**
+   * An array relationship
+   */
+  podcast_program_categories: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_categories[];
+  /**
+   * An array relationship
+   */
+  podcast_program_roles: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_roles[];
+  /**
+   * An aggregated array relationship
+   */
+  podcast_program_enrollments_aggregate: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program_podcast_program_enrollments_aggregate;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTION {
+  /**
+   * fetch data from the table: "podcast_program"
+   */
+  podcast_program: GET_PODCAST_PROGRAM_ADMIN_COLLECTION_podcast_program[];
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTIONVariables {
+  memberId?: string | null;
 }
 
 /* tslint:disable */

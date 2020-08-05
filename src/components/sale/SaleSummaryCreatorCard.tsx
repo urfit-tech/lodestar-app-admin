@@ -1,9 +1,13 @@
 import { QuestionCircleFilled } from '@ant-design/icons'
+import { useQuery } from '@apollo/react-hooks'
 import { Tooltip } from 'antd'
+import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commaFormatter } from '../../helpers'
+import { useMember } from '../../hooks/member'
+import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 import { AvatarImage as SaleSummaryAvatarImage } from '../common/Image'
 
@@ -40,30 +44,64 @@ const messages = defineMessages({
   },
 })
 
-type SaleSummaryCreatorCardProps = {
-  loading?: boolean
-  error?: Error
-  totalPrice: number
-  totalDiscount: number
-  name: string
-  avatar: string
-}
-
-const SaleSummaryCreatorCard: React.FC<SaleSummaryCreatorCardProps> = ({
-  loading,
-  totalPrice,
-  totalDiscount,
-  avatar,
-  name,
-}) => {
+const SaleSummaryCreatorCard: React.FC<{
+  memberId: string
+}> = ({ memberId }) => {
   const { formatMessage } = useIntl()
+  const { member } = useMember(memberId)
+  const { loading, data, error } = useQuery<
+    types.GET_PRODUCT_OWNER_TOTAL_AMOUNT,
+    types.GET_PRODUCT_OWNER_TOTAL_AMOUNTVariables
+  >(
+    gql`
+      query GET_PRODUCT_OWNER_TOTAL_AMOUNT($memberId: String!) {
+        order_product_aggregate(
+          where: {
+            order_log: {
+              status: { _eq: "SUCCESS" }
+              order_products: { product: { product_owner: { member_id: { _eq: $memberId } } } }
+            }
+          }
+        ) {
+          aggregate {
+            sum {
+              price
+            }
+          }
+        }
+        order_discount_aggregate(
+          where: {
+            order_log: {
+              status: { _eq: "SUCCESS" }
+              order_products: { product: { product_owner: { member_id: { _eq: $memberId } } } }
+            }
+          }
+        ) {
+          aggregate {
+            sum {
+              price
+            }
+          }
+        }
+      }
+    `,
+    { variables: { memberId } },
+  )
+
+  const [totalPrice, totalDiscount] =
+    loading || error || !data
+      ? [0, 0]
+      : [
+          data.order_product_aggregate.aggregate?.sum?.price || 0,
+          data.order_discount_aggregate.aggregate?.sum?.price || 0,
+        ]
 
   return (
     <AdminCard loading={loading}>
       <SaleSummaryWrapper className="d-flex align-items-center justify-content-start">
-        <SaleSummaryAvatarImage className="flex-shrink-0" src={avatar} size={80} />
+        <SaleSummaryAvatarImage className="flex-shrink-0" src={member.pictureUrl} size={80} />
         <SaleSummaryInfo className="ml-4">
-          <h3>{name}</h3>
+          <h3>{member.name}</h3>
           <p>
             <span className="mr-2">
               {formatMessage(messages.totalActualSales, { dollars: commaFormatter(totalPrice - totalDiscount) })}
