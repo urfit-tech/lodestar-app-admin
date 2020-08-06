@@ -443,6 +443,37 @@ export interface GET_CREATOR_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_INFO
+// ====================================================
+
+export interface UPDATE_MEMBER_INFO_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_INFO {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_INFO_update_member | null;
+}
+
+export interface UPDATE_MEMBER_INFOVariables {
+  memberId: string;
+  name?: string | null;
+  email?: string | null;
+  role?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_POINT_LOG_COLLECTION
 // ====================================================
 
@@ -2715,115 +2746,6 @@ export interface UPDATE_ACTIVITY_BASICVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ACTIVITY_COLLECTION_ADMIN
-// ====================================================
-
-export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_enrollments_aggregate_aggregate {
-  __typename: "activity_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_enrollments_aggregate {
-  __typename: "activity_enrollment_aggregate";
-  aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_enrollments_aggregate_aggregate | null;
-}
-
-export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate_min {
-  __typename: "activity_session_min_fields";
-  started_at: any | null;
-}
-
-export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate_max {
-  __typename: "activity_session_max_fields";
-  ended_at: any | null;
-}
-
-export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate {
-  __typename: "activity_session_aggregate_fields";
-  min: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate_min | null;
-  max: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate_max | null;
-}
-
-export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate {
-  __typename: "activity_session_aggregate";
-  aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate | null;
-}
-
-export interface GET_ACTIVITY_COLLECTION_ADMIN_activity {
-  __typename: "activity";
-  id: any;
-  title: string;
-  cover_url: string | null;
-  published_at: any | null;
-  is_participants_visible: boolean;
-  /**
-   * An aggregated array relationship
-   */
-  activity_enrollments_aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_enrollments_aggregate;
-  /**
-   * An aggregated array relationship
-   */
-  activity_sessions_aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate;
-}
-
-export interface GET_ACTIVITY_COLLECTION_ADMIN {
-  /**
-   * fetch data from the table: "activity"
-   */
-  activity: GET_ACTIVITY_COLLECTION_ADMIN_activity[];
-}
-
-export interface GET_ACTIVITY_COLLECTION_ADMINVariables {
-  memberId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_ACTIVITY
-// ====================================================
-
-export interface INSERT_ACTIVITY_insert_activity_returning {
-  __typename: "activity";
-  id: any;
-}
-
-export interface INSERT_ACTIVITY_insert_activity {
-  __typename: "activity_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: INSERT_ACTIVITY_insert_activity_returning[];
-}
-
-export interface INSERT_ACTIVITY {
-  /**
-   * insert data into the table: "activity"
-   */
-  insert_activity: INSERT_ACTIVITY_insert_activity | null;
-}
-
-export interface INSERT_ACTIVITYVariables {
-  title: string;
-  description: string;
-  memberId: string;
-  appId: string;
-  activityCategories: activity_category_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_ACTIVITY_COVER
 // ====================================================
 
@@ -3422,37 +3344,6 @@ export interface CREATE_APPOINTMENT_SCHEDULEVariables {
   startedAt: any;
   intervalType?: string | null;
   intervalAmount?: number | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER_INFO
-// ====================================================
-
-export interface UPDATE_MEMBER_INFO_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_INFO {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: UPDATE_MEMBER_INFO_update_member | null;
-}
-
-export interface UPDATE_MEMBER_INFOVariables {
-  memberId: string;
-  name?: string | null;
-  email?: string | null;
-  role?: string | null;
 }
 
 /* tslint:disable */
@@ -4183,6 +4074,113 @@ export interface GET_APPOINTMENT_PLAN_ADMIN {
 export interface GET_APPOINTMENT_PLAN_ADMINVariables {
   appointmentPlanId: any;
   now?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ACTIVITY_COLLECTION_ADMIN
+// ====================================================
+
+export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_enrollments_aggregate_aggregate {
+  __typename: "activity_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_enrollments_aggregate {
+  __typename: "activity_enrollment_aggregate";
+  aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate_min {
+  __typename: "activity_session_min_fields";
+  started_at: any | null;
+}
+
+export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate_max {
+  __typename: "activity_session_max_fields";
+  ended_at: any | null;
+}
+
+export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate {
+  __typename: "activity_session_aggregate_fields";
+  min: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate_min | null;
+  max: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate_max | null;
+}
+
+export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate {
+  __typename: "activity_session_aggregate";
+  aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate | null;
+}
+
+export interface GET_ACTIVITY_COLLECTION_ADMIN_activity {
+  __typename: "activity";
+  id: any;
+  cover_url: string | null;
+  title: string;
+  published_at: any | null;
+  /**
+   * An aggregated array relationship
+   */
+  activity_enrollments_aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_enrollments_aggregate;
+  /**
+   * An aggregated array relationship
+   */
+  activity_sessions_aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate;
+}
+
+export interface GET_ACTIVITY_COLLECTION_ADMIN {
+  /**
+   * fetch data from the table: "activity"
+   */
+  activity: GET_ACTIVITY_COLLECTION_ADMIN_activity[];
+}
+
+export interface GET_ACTIVITY_COLLECTION_ADMINVariables {
+  memberId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_ACTIVITY
+// ====================================================
+
+export interface INSERT_ACTIVITY_insert_activity_returning {
+  __typename: "activity";
+  id: any;
+}
+
+export interface INSERT_ACTIVITY_insert_activity {
+  __typename: "activity_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_ACTIVITY_insert_activity_returning[];
+}
+
+export interface INSERT_ACTIVITY {
+  /**
+   * insert data into the table: "activity"
+   */
+  insert_activity: INSERT_ACTIVITY_insert_activity | null;
+}
+
+export interface INSERT_ACTIVITYVariables {
+  title: string;
+  memberId: string;
+  appId: string;
+  activityCategories: activity_category_insert_input[];
 }
 
 /* tslint:disable */

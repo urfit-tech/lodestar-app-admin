@@ -208,11 +208,13 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
                 )}
                 {orderProduct.startedAt && orderProduct.endedAt && orderProduct.product.type === 'AppointmentPlan' && (
                   <span>
-                    {`(${dateRangeFormatter({
+                    (
+                    {dateRangeFormatter({
                       startedAt: orderProduct.startedAt,
                       endedAt: orderProduct.endedAt,
                       dateFormat: 'YYYY-MM-DD',
-                    })})`}
+                    })}
+                    )
                   </span>
                 )}
                 {orderProduct.quantity && <span>{` X ${orderProduct.quantity} `}</span>}

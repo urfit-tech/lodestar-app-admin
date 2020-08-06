@@ -1,8 +1,6 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { FileAddOutlined } from '@ant-design/icons'
-import { Button, Input, Radio } from 'antd'
+import { Button, Form, Input, Radio } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useAuth } from '../../contexts/AuthContext'
@@ -13,12 +11,12 @@ import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CategorySelector from '../common/CategorySelector'
 import CreatorSelector from './CreatorSelector'
 
-type ProductCreationModalProps = FormComponentProps &
+const ProductCreationModal: React.FC<
   AdminModalProps & {
     classType: ClassType
     withCreatorSelector?: boolean
-    withProgramType?: boolean
     withCategorySelector?: boolean
+    withProgramType?: boolean
     onCreate?: (values: {
       title: string
       categoryIds: string[]
@@ -26,36 +24,30 @@ type ProductCreationModalProps = FormComponentProps &
       isSubscription?: boolean
     }) => Promise<any>
   }
-
-const ProductCreationModal: React.FC<ProductCreationModalProps> = ({
-  form,
-  classType,
-  withCreatorSelector,
-  withProgramType,
-  withCategorySelector,
-  onCreate,
-  ...props
-}) => {
+> = ({ classType, withCreatorSelector, withCategorySelector, withProgramType, onCreate, ...props }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
+  const [form] = useForm()
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
-    form.validateFields((errors, { title, categoryIds, creatorId, isSubscription }) => {
-      if (errors || !onCreate) {
-        return
-      }
-      setLoading(true)
-      onCreate({
-        title,
-        categoryIds: categoryIds || [],
-        creatorId,
-        isSubscription,
-      }).catch(error => {
-        handleError(error)
-        setLoading(false)
+    form
+      .validateFields()
+      .then((values: any) => {
+        if (!onCreate) {
+          return
+        }
+        setLoading(true)
+        onCreate({
+          title: values.title,
+          categoryIds: values.categoryIds || [],
+          creatorId: values.creatorId || currentMemberId,
+          isSubscription: withProgramType ? values.isSubscription : undefined,
+        })
+          .catch(handleError)
+          .finally(() => setLoading(false))
       })
-    })
+      .catch(() => {})
   }
 
   return (
@@ -73,44 +65,48 @@ const ProductCreationModal: React.FC<ProductCreationModalProps> = ({
       onOk={() => handleSubmit()}
       {...props}
     >
-      <Form>
+      <Form
+        form={form}
+        layout="vertical"
+        hideRequiredMark
+        colon={false}
+        initialValues={{
+          memberId: currentMemberId,
+          isSubscription: false,
+        }}
+      >
         {withCreatorSelector && (
-          <Form.Item label={formatMessage(commonMessages.label.selectInstructor)}>
-            {form.getFieldDecorator('creatorId', {
-              initialValue: currentMemberId,
-            })(<CreatorSelector />)}
+          <Form.Item label={formatMessage(commonMessages.label.selectInstructor)} name="creatorId">
+            <CreatorSelector />
           </Form.Item>
         )}
-        <Form.Item label={formatMessage(commonMessages.term.title)}>
-          {form.getFieldDecorator('title', {
-            rules: [
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.term.title),
-                }),
-              },
-            ],
-          })(<Input />)}
+        <Form.Item
+          label={formatMessage(commonMessages.term.title)}
+          name="title"
+          rules={[
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(commonMessages.term.title),
+              }),
+            },
+          ]}
+        >
+          <Input />
         </Form.Item>
         {withCategorySelector && (
-          <Form.Item label={formatMessage(commonMessages.term.category)}>
-            {form.getFieldDecorator('categoryIds', { initialValue: [] })(<CategorySelector classType={classType} />)}
+          <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
+            <CategorySelector classType={classType} />
           </Form.Item>
         )}
         {withProgramType && (
-          <Form.Item label={formatMessage(programMessages.label.programPlanType)}>
-            {form.getFieldDecorator('isSubscription', {
-              initialValue: false,
-              rules: [{ required: true }],
-            })(
-              <Radio.Group
-                options={[
-                  { label: formatMessage(programMessages.label.perpetualPlanType), value: false },
-                  { label: formatMessage(programMessages.label.subscriptionPlanType), value: true },
-                ]}
-              />,
-            )}
+          <Form.Item label={formatMessage(programMessages.label.programPlanType)} name="isSubscription">
+            <Radio.Group
+              options={[
+                { label: formatMessage(programMessages.label.perpetualPlanType), value: false },
+                { label: formatMessage(programMessages.label.subscriptionPlanType), value: true },
+              ]}
+            />
           </Form.Item>
         )}
       </Form>
@@ -118,4 +114,4 @@ const ProductCreationModal: React.FC<ProductCreationModalProps> = ({
   )
 }
 
-export default Form.create<ProductCreationModalProps>()(ProductCreationModal)
+export default ProductCreationModal

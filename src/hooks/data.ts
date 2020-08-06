@@ -5,7 +5,7 @@ import { useIntl } from 'react-intl'
 import AppContext from '../contexts/AppContext'
 import { commonMessages } from '../helpers/translation'
 import types from '../types'
-import { Category, ClassType, ProductInventoryLogProps, ProductType } from '../types/general'
+import { CategoryProps, ClassType, ProductInventoryLogProps, ProductType } from '../types/general'
 import { InvoiceProps, ShippingProps } from '../types/merchandise'
 import { ProgramPlanPeriodType } from '../types/program'
 
@@ -39,12 +39,10 @@ export const useCategory = (classType: ClassType) => {
         }
       }
     `,
-    {
-      variables: { appId, classType },
-    },
+    { variables: { appId, classType } },
   )
 
-  const categories: Category[] =
+  const categories: CategoryProps[] =
     loading || error || !data
       ? []
       : data.category.map(category => ({

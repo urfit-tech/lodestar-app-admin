@@ -103,7 +103,13 @@ const ActivitySessionsAdminBlock: React.FC<{
             <StyledTitle className="mb-3">{session.title}</StyledTitle>
             <StyledDescription>
               <Icon component={() => <CalendarOIcon />} className="mr-2" />
-              <span>{dateRangeFormatter({ startedAt: session.startedAt, endedAt: session.endedAt })}</span>
+              <span>
+                {dateRangeFormatter({
+                  startedAt: session.startedAt,
+                  endedAt: session.endedAt,
+                  dateFormat: 'YYYY-MM-DD(dd)',
+                })}
+              </span>
             </StyledDescription>
             <StyledDescription>
               <Icon component={() => <MapOIcon />} className="mr-2" />
