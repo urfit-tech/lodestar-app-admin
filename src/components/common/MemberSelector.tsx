@@ -22,15 +22,15 @@ const messages = defineMessages({
 
 const MemberSelector: React.FC<{
   members: MemberOptionProps[]
-  value?: string[]
-  onChange?: (value: string[] | null) => void
+  value?: string | string[]
+  onChange?: (value: string | string[]) => void
   disabled?: boolean
   mode?: SelectProps<string[]>['mode']
 }> = ({ members, value, onChange, disabled, mode }) => {
   const { formatMessage } = useIntl()
 
   return (
-    <Select<string[]>
+    <Select<string | string[]>
       mode={mode}
       placeholder={formatMessage(messages.memberSelect)}
       optionLabelProp="title"
