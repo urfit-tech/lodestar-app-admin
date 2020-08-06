@@ -26,8 +26,8 @@ const CreatorSelector: React.FC<{
   return (
     <MemberSelector
       members={members}
-      value={value ? [value] : undefined}
-      onChange={value => value && onChange && onChange(value[0])}
+      value={value}
+      onChange={value => typeof value === 'string' && onChange && onChange(value)}
     />
   )
 }
