@@ -1,99 +1,95 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Input, message, Radio, Skeleton, Tooltip } from 'antd'
+import { Button, Form, Input, message, Radio, Skeleton, Tooltip } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { StyledTips } from '../../components/admin'
 import CategorySelector from '../../components/common/CategorySelector'
 import LanguageSelector from '../../components/common/LanguageSelector'
-import ActivityContext from '../../contexts/ActivityContext'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { activityMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
+import { ActivityAdminProps } from '../../types/activity'
 
-const ActivityBasicForm: React.FC<FormComponentProps> = ({ form }) => {
+const ActivityBasicForm: React.FC<{
+  activityAdmin: ActivityAdminProps | null
+  refetch?: () => void
+}> = ({ activityAdmin, refetch }) => {
   const { formatMessage } = useIntl()
-  const { loadingActivity, errorActivity, activity, refetchActivity } = useContext(ActivityContext)
+  const [form] = useForm()
   const { enabledModules } = useContext(AppContext)
   const [updateActivityBasic] = useMutation<types.UPDATE_ACTIVITY_BASIC, types.UPDATE_ACTIVITY_BASICVariables>(
     UPDATE_ACTIVITY_BASIC,
   )
   const [loading, setLoading] = useState(false)
 
-  if (loadingActivity) {
+  if (!activityAdmin) {
     return <Skeleton active />
   }
 
-  if (errorActivity || !activity) {
-    return <div>{formatMessage(errorMessages.data.fetch)}</div>
-  }
-
   const handleSubmit = () => {
-    form.validateFields((error, values) => {
-      if (error) {
-        return
-      }
+    form
+      .validateFields()
+      .then((values: any) => {
+        setLoading(true)
 
-      setLoading(true)
-
-      const categoryIds: string[] = values.categoryIds
-
-      updateActivityBasic({
-        variables: {
-          activityId: activity.id,
-          title: values.title,
-          supportLocales: !values.languages || values.languages.length === 0 ? null : values.languages,
-          activityCategories: categoryIds.map((categoryId, index) => ({
-            activity_id: activity.id,
-            category_id: categoryId,
-            position: index,
-          })),
-          isParticipantsVisible: values.isParticipantsVisible === 'public',
-        },
-      })
-        .then(() => {
-          refetchActivity && refetchActivity()
-          message.success(formatMessage(commonMessages.event.successfullySaved))
+        updateActivityBasic({
+          variables: {
+            activityId: activityAdmin.id,
+            title: values.title,
+            supportLocales: !values.languages || values.languages.length === 0 ? null : values.languages,
+            activityCategories: values.categoryIds.map((categoryId: string, index: number) => ({
+              activity_id: activityAdmin.id,
+              category_id: categoryId,
+              position: index,
+            })),
+            isParticipantsVisible: values.isParticipantsVisible === 'public',
+          },
         })
-        .catch(error => handleError(error))
-        .finally(() => setLoading(false))
-    })
+          .then(() => {
+            refetch && refetch()
+            message.success(formatMessage(commonMessages.event.successfullySaved))
+          })
+          .catch(handleError)
+          .finally(() => setLoading(false))
+      })
+      .catch(() => {})
   }
 
   return (
     <Form
+      form={form}
       hideRequiredMark
       colon={false}
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
-      onSubmit={e => {
-        e.preventDefault()
-        handleSubmit()
+      initialValues={{
+        title: activityAdmin.title,
+        categoryIds: activityAdmin.categories.map(category => category.id),
+        languages: activityAdmin.supportLocales.map(supportLocale => supportLocale),
+        isParticipantsVisible: activityAdmin.isParticipantsVisible ? 'public' : 'private',
       }}
     >
-      <Form.Item label={formatMessage(commonMessages.term.title)}>
-        {form.getFieldDecorator('title', {
-          rules: [
-            {
-              required: true,
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.term.title),
-              }),
-            },
-          ],
-          initialValue: activity.title,
-        })(<Input />)}
+      <Form.Item
+        label={formatMessage(commonMessages.term.title)}
+        name="title"
+        rules={[
+          {
+            required: true,
+            message: formatMessage(errorMessages.form.isRequired, {
+              field: formatMessage(commonMessages.term.title),
+            }),
+          },
+        ]}
+      >
+        <Input />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.category)}>
-        {form.getFieldDecorator('categoryIds', {
-          initialValue: activity.activityCategories.map(activityCategory => activityCategory.category.id),
-        })(<CategorySelector classType="activity" />)}
+      <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
+        <CategorySelector classType="activity" />
       </Form.Item>
       {enabledModules.locale && (
         <Form.Item
@@ -105,27 +101,22 @@ const ActivityBasicForm: React.FC<FormComponentProps> = ({ form }) => {
               </Tooltip>
             </span>
           }
+          name="languages"
         >
-          {form.getFieldDecorator('languages', {
-            initialValue: activity.supportLocales.map(supportLocale => supportLocale),
-          })(<LanguageSelector />)}
+          <LanguageSelector />
         </Form.Item>
       )}
-      <Form.Item label={formatMessage(activityMessages.label.showParticipantsNumber)}>
-        {form.getFieldDecorator('isParticipantsVisible', {
-          initialValue: activity.isParticipantsVisible ? 'public' : 'private',
-        })(
-          <Radio.Group>
-            <Radio value="public">{formatMessage(activityMessages.status.public)}</Radio>
-            <Radio value="private">{formatMessage(activityMessages.status.hidden)}</Radio>
-          </Radio.Group>,
-        )}
+      <Form.Item label={formatMessage(activityMessages.label.showParticipantsNumber)} name="isParticipantsVisible">
+        <Radio.Group>
+          <Radio value="public">{formatMessage(activityMessages.status.public)}</Radio>
+          <Radio value="private">{formatMessage(activityMessages.status.hidden)}</Radio>
+        </Radio.Group>
       </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
           {formatMessage(commonMessages.ui.cancel)}
         </Button>
-        <Button type="primary" htmlType="submit" loading={loading}>
+        <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
           {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>
@@ -158,4 +149,4 @@ const UPDATE_ACTIVITY_BASIC = gql`
   }
 `
 
-export default Form.create<FormComponentProps>()(ActivityBasicForm)
+export default ActivityBasicForm

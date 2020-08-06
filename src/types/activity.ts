@@ -1,3 +1,5 @@
+import { CategoryProps } from "./general"
+
 export type ActivityBriefProps = {
   id: string
   coverUrl: string | null
@@ -9,7 +11,7 @@ export type ActivityBriefProps = {
 }
 
 export type ActivityProps = ActivityBriefProps & {
-  description: string
+  description: string | null
   isParticipantsVisible: boolean
   organizerId: string
   supportLocales: string[]
@@ -24,14 +26,27 @@ export type ActivityTicketProps = {
   count: number
   description: string | null
   isPublished: boolean
+  enrollmentsCount?: number
 }
 
 export type ActivitySessionProps = {
   id: string
   title: string
-  description: string | null
-  threshold: number | null
   startedAt: Date
   endedAt: Date
   location: string
+  threshold: number | null
+  description: string | null
+  enrollmentsCount?: number
+}
+
+export type ActivityAdminProps = ActivityProps & {
+  categories: CategoryProps[]
+  tickets: (ActivityTicketProps & {
+    sessions: {
+      id: string
+      title: string
+    }[]
+  })[]
+  sessions: ActivitySessionProps[]
 }
