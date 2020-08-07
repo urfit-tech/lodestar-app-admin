@@ -1,8 +1,6 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
-import { Button, Input } from 'antd'
+import { Button, Form, Input } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
@@ -25,39 +23,37 @@ const ForgetPassword = styled.div`
   }
 `
 
-type LoginSectionProps = FormComponentProps & {
+const LoginSection: React.FC<{
   onAuthStateChange: React.Dispatch<React.SetStateAction<AuthState>>
-}
-const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) => {
-  const { id: appId } = useContext(AppContext)
+}> = ({ onAuthStateChange }) => {
   const { formatMessage } = useIntl()
-  const { login } = useAuth()
+  const [form] = useForm()
   const { setVisible } = useContext(AuthModalContext)
+  const { id: appId } = useContext(AppContext)
+  const { login } = useAuth()
   const [loading, setLoading] = useState(false)
 
   const handleLogin = () => {
-    form.validateFields((error, values) => {
-      if (error || !login) {
-        return
-      }
-
-      setLoading(true)
-
-      login({
-        appId,
-        account: values.account,
-        password: values.password,
+    form
+      .validateFields()
+      .then(values => {
+        if (!login) {
+          return
+        }
+        setLoading(true)
+        login({
+          appId,
+          account: values.account,
+          password: values.password,
+        })
+          .then(() => {
+            setVisible && setVisible(false)
+            form.resetFields()
+          })
+          .catch(handleError)
+          .finally(() => setLoading(false))
       })
-        .then(() => {
-          setLoading(false)
-          setVisible && setVisible(false)
-          form.resetFields()
-        })
-        .catch(error => {
-          setLoading(false)
-          handleError(error)
-        })
-    })
+      .catch(() => {})
   }
 
   return (
@@ -78,40 +74,33 @@ const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) 
         <StyledDivider>{formatMessage(commonMessages.ui.or)}</StyledDivider>
       )}
 
-      <Form
-        onSubmit={e => {
-          e.preventDefault()
-          handleLogin()
-        }}
-      >
-        <Form.Item>
-          {form.getFieldDecorator('account', {
-            rules: [{ required: true, message: formatMessage(errorMessages.form.accountNameOrEmail) }],
-          })(<Input placeholder={formatMessage(commonMessages.term.username)} suffix={<UserOutlined />} />)}
+      <Form form={form}>
+        <Form.Item
+          name="account"
+          rules={[{ required: true, message: formatMessage(errorMessages.form.accountNameOrEmail) }]}
+        >
+          <Input placeholder={formatMessage(commonMessages.term.username)} suffix={<UserOutlined />} />
         </Form.Item>
-        <Form.Item>
-          {form.getFieldDecorator('password', {
-            rules: [
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.term.password),
-                }),
-              },
-            ],
-          })(
-            <Input
-              type="password"
-              placeholder={formatMessage(commonMessages.term.password)}
-              suffix={<LockOutlined />}
-            />,
-          )}
+        <Form.Item
+          name="password"
+          rules={[
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(commonMessages.term.password),
+              }),
+            },
+          ]}
+        >
+          <Input type="password" placeholder={formatMessage(commonMessages.term.password)} suffix={<LockOutlined />} />
         </Form.Item>
+
         <ForgetPassword>
           <Link to="/forgot-password">{formatMessage(commonMessages.text.forgotPassword)}</Link>
         </ForgetPassword>
+
         <Form.Item>
-          <Button block loading={loading} type="primary" htmlType="submit">
+          <Button type="primary" block loading={loading} onClick={() => handleLogin()}>
             {formatMessage(commonMessages.ui.login)}
           </Button>
         </Form.Item>
@@ -127,4 +116,4 @@ const LoginSection: React.FC<LoginSectionProps> = ({ form, onAuthStateChange }) 
   )
 }
 
-export default Form.create<LoginSectionProps>()(LoginSection)
+export default LoginSection
