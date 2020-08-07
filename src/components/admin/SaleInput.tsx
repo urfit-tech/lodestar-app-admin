@@ -1,7 +1,5 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
 import { ExclamationCircleFilled } from '@ant-design/icons'
-import { Checkbox, DatePicker, InputNumber } from 'antd'
+import { Checkbox, DatePicker, Form, InputNumber } from 'antd'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'

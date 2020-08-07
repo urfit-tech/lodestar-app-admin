@@ -1,6 +1,6 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { Button, Input, message } from 'antd'
+import { Button, Form, Input, message } from 'antd'
+import { CardProps } from 'antd/lib/card'
+import { useForm } from 'antd/lib/form/Form'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
@@ -8,7 +8,6 @@ import { commonMessages } from '../../helpers/translation'
 import { useAppData, useUpdateAppSettings } from '../../hooks/app'
 import AdminCard from '../admin/AdminCard'
 import { StyledForm } from '../layout'
-import { AppCardProps } from './AppBasicCard'
 
 const messages = defineMessages({
   appTitle: { id: 'app.label.title', defaultMessage: '網站標題' },
@@ -26,7 +25,7 @@ const messages = defineMessages({
 
   tappayAppId: { id: 'app.label.tappayAppId', defaultMessage: 'Tappay ID' },
   tappayAppKey: { id: 'app.label.tappayAppKey', defaultMessage: 'Tappay 金鑰' },
-  paymentDueDays: { id: 'app.label.paymentDueDays', defaultMessage: '付款節止天數' },
+  paymentDueDays: { id: 'app.label.paymentDueDays', defaultMessage: '付款截止天數' },
 
   themeLayoutBodyBackground: { id: 'app.label.themeLayoutBodyBackground', defaultMessage: '主題色：背景色' },
   themePrimaryColor: { id: 'app.label.themePrimaryColor', defaultMessage: '主題色：主色' },
@@ -37,16 +36,24 @@ const messages = defineMessages({
   themeLayoutHeaderBackground: { id: 'app.label.themeLayoutHeaderBackground', defaultMessage: '主題色：Header背景色' },
 })
 
-const AppSettingCard: React.FC<AppCardProps> = ({ form, appId, ...cardProps }) => {
+const AppSettingCard: React.FC<
+  CardProps & {
+    appId: string
+  }
+> = ({ appId, ...cardProps }) => {
   const { formatMessage } = useIntl()
-  const [loading, setLoading] = useState(false)
+  const [form] = useForm()
   const { app, refetchApp, loadingApp } = useAppData(appId)
   const updateAppSettings = useUpdateAppSettings()
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    form.validateFields((error, values) => {
-      if (!error && app) {
+  const handleSubmit = () => {
+    form
+      .validateFields()
+      .then(values => {
+        if (!app) {
+          return
+        }
         setLoading(true)
         const appSettings = Object.keys(values)
           .filter(key => values[key])
@@ -55,145 +62,133 @@ const AppSettingCard: React.FC<AppCardProps> = ({ form, appId, ...cardProps }) =
             key,
             value: values[key],
           }))
-        setLoading(true)
         updateAppSettings({
           variables: {
             appSettings,
           },
         })
           .then(() => {
-            setLoading(false)
-            message.success(formatMessage(commonMessages.event.successfullySaved))
             refetchApp()
+            message.success(formatMessage(commonMessages.event.successfullySaved))
           })
-          .catch(error => handleError(error))
-      }
-    })
+          .catch(handleError)
+          .finally(() => setLoading(false))
+      })
+      .catch(() => {})
   }
 
   return (
     <AdminCard {...cardProps} loading={loadingApp}>
       <StyledForm
-        onSubmit={handleSubmit}
-        labelCol={{ span: 24, md: { span: 4 } }}
-        wrapperCol={{ span: 24, md: { span: 12 } }}
+        form={form}
+        hideRequiredMark
+        colon={false}
+        labelAlign="left"
+        labelCol={{ md: { span: 4 } }}
+        wrapperCol={{ md: { span: 12 } }}
+        initialValues={{
+          title: app?.settings['title'],
+          description: app?.settings['description'],
+          'open_graph.title': app?.settings['open_graph.title'],
+          'open_graph.description': app?.settings['open_graph.description'],
+          'open_graph.url': app?.settings['open_graph.url'],
+          'open_graph.image': app?.settings['open_graph.image'],
+          'seo.name': app?.settings['seo.name'],
+          'seo.url': app?.settings['seo.url'],
+          'tracking.gtm_id': app?.settings['tracking.gtm_id'],
+          'tracking.ga_id': app?.settings['tracking.ga_id'],
+          'tracking.fb_pixel_id': app?.settings['tracking.fb_pixel_id'],
+          'theme.@layout-body-background': app?.settings['theme.@layout-body-background'],
+          'theme.@primary-color': app?.settings['theme.@primary-color'],
+          'theme.@btn-primary-color': app?.settings['theme.@btn-primary-color'],
+          'theme.@btn-primary-bg': app?.settings['theme.@btn-primary-bg'],
+          'theme.@btn-danger-border': app?.settings['theme.@btn-danger-border'],
+          'theme.@btn-danger-bg': app?.settings['theme.@btn-danger-bg'],
+          'theme.@layout-header-background': app?.settings['theme.@layout-header-background'],
+          'tappay.app_id': app?.settings['tappay.app_id'],
+          'tappay.app_key': app?.settings['tappay.app_key'],
+          'payment.due_days': app?.settings['payment.due_days'],
+        }}
       >
-        <Form.Item label={formatMessage(messages.appTitle)}>
-          {form.getFieldDecorator('title', {
-            initialValue: app && app.settings['title'],
-          })(<Input />)}
+        <Form.Item label={formatMessage(messages.appTitle)} name="title">
+          <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(messages.appDescription)}>
-          {form.getFieldDecorator('description', {
-            initialValue: app && app.settings['description'],
-          })(<Input />)}
+        <Form.Item label={formatMessage(messages.appDescription)} name="description">
+          <Input />
         </Form.Item>
 
-        <Form.Item label={formatMessage(messages.ogTitle)}>
-          {form.getFieldDecorator('open_graph.title', {
-            initialValue: app && app.settings['open_graph.title'],
-          })(<Input />)}
+        {/* open graph */}
+        <Form.Item label={formatMessage(messages.ogTitle)} name="open_graph.title">
+          <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(messages.ogDescription)}>
-          {form.getFieldDecorator('open_graph.description', {
-            initialValue: app && app.settings['open_graph.description'],
-          })(<Input />)}
+        <Form.Item label={formatMessage(messages.ogDescription)} name="open_graph.description">
+          <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(messages.ogUrl)}>
-          {form.getFieldDecorator('open_graph.url', {
-            initialValue: app && app.settings['open_graph.url'],
-          })(<Input />)}
+        <Form.Item label={formatMessage(messages.ogUrl)} name="open_graph.url">
+          <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(messages.ogImage)}>
-          {form.getFieldDecorator('open_graph.image', {
-            initialValue: app && app.settings['open_graph.image'],
-          })(<Input />)}
+        <Form.Item label={formatMessage(messages.ogImage)} name="open_graph.image">
+          <Input />
         </Form.Item>
 
-        <Form.Item label={formatMessage(messages.seoName)}>
-          {form.getFieldDecorator('seo.name', {
-            initialValue: app && app.settings['seo.name'],
-          })(<Input />)}
+        {/* seo */}
+        <Form.Item label={formatMessage(messages.seoName)} name="seo.name">
+          <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(messages.seoUrl)}>
-          {form.getFieldDecorator('seo.url', {
-            initialValue: app && app.settings['seo.url'],
-          })(<Input />)}
+        <Form.Item label={formatMessage(messages.seoUrl)} name="seo.url">
+          <Input />
         </Form.Item>
 
-        <Form.Item label={formatMessage(messages.gtmId)}>
-          {form.getFieldDecorator('tracking.gtm_id', {
-            initialValue: app && app.settings['tracking.gtm_id'],
-          })(<Input />)}
+        {/* tracking */}
+        <Form.Item label={formatMessage(messages.gtmId)} name="tracking.gtm_id">
+          <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(messages.gaId)}>
-          {form.getFieldDecorator('tracking.ga_id', {
-            initialValue: app && app.settings['tracking.ga_id'],
-          })(<Input />)}
+        <Form.Item label={formatMessage(messages.gaId)} name="tracking.ga_id">
+          <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(messages.fbPixelId)}>
-          {form.getFieldDecorator('tracking.fb_pixel_id', {
-            initialValue: app && app.settings['tracking.fb_pixel_id'],
-          })(<Input />)}
+        <Form.Item label={formatMessage(messages.fbPixelId)} name="tracking.fb_pixel_id">
+          <Input />
         </Form.Item>
 
-        <Form.Item label={formatMessage(messages.themeLayoutBodyBackground)}>
-          {form.getFieldDecorator('theme.@layout-body-background', {
-            initialValue: app && app.settings['theme.@layout-body-background'],
-          })(<Input />)}
+        {/* themes */}
+        <Form.Item label={formatMessage(messages.themeLayoutBodyBackground)} name="theme.@layout-body-background">
+          <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(messages.themePrimaryColor)}>
-          {form.getFieldDecorator('theme.@primary-color', {
-            initialValue: app && app.settings['theme.@primary-color'],
-          })(<Input />)}
+        <Form.Item label={formatMessage(messages.themePrimaryColor)} name="theme.@primary-color">
+          <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(messages.themeBtnPrimaryColor)}>
-          {form.getFieldDecorator('theme.@btn-primary-color', {
-            initialValue: app && app.settings['theme.@btn-primary-color'],
-          })(<Input />)}
+        <Form.Item label={formatMessage(messages.themeBtnPrimaryColor)} name="theme.@btn-primary-color">
+          <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(messages.themeBtnPrimaryBackground)}>
-          {form.getFieldDecorator('theme.@btn-primary-bg', {
-            initialValue: app && app.settings['theme.@btn-primary-bg'],
-          })(<Input />)}
+        <Form.Item label={formatMessage(messages.themeBtnPrimaryBackground)} name="theme.@btn-primary-bg">
+          <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(messages.themeBtnDangerBorder)}>
-          {form.getFieldDecorator('theme.@btn-danger-border', {
-            initialValue: app && app.settings['theme.@btn-danger-border'],
-          })(<Input />)}
+        <Form.Item label={formatMessage(messages.themeBtnDangerBorder)} name="theme.@btn-danger-border">
+          <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(messages.themeBtnDangerBackground)}>
-          {form.getFieldDecorator('theme.@btn-danger-bg', {
-            initialValue: app && app.settings['theme.@btn-danger-bg'],
-          })(<Input />)}
+        <Form.Item label={formatMessage(messages.themeBtnDangerBackground)} name="theme.@btn-danger-bg">
+          <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(messages.themeLayoutHeaderBackground)}>
-          {form.getFieldDecorator('theme.@layout-header-background', {
-            initialValue: app && app.settings['theme.@layout-header-background'],
-          })(<Input />)}
+        <Form.Item label={formatMessage(messages.themeLayoutHeaderBackground)} name="theme.@layout-header-background">
+          <Input />
         </Form.Item>
 
-        <Form.Item label={formatMessage(messages.tappayAppId)}>
-          {form.getFieldDecorator('tappay.app_id', {
-            initialValue: app && app.settings['tappay.app_id'],
-          })(<Input />)}
+        {/* payment */}
+        <Form.Item label={formatMessage(messages.tappayAppId)} name="tappay.app_id">
+          <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(messages.tappayAppKey)}>
-          {form.getFieldDecorator('tappay.app_key', {
-            initialValue: app && app.settings['tappay.app_key'],
-          })(<Input />)}
+        <Form.Item label={formatMessage(messages.tappayAppKey)} name="tappay.app_key">
+          <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(messages.paymentDueDays)}>
-          {form.getFieldDecorator('payment.due_days', {
-            initialValue: app && app.settings['payment.due_days'],
-          })(<Input />)}
+        <Form.Item label={formatMessage(messages.paymentDueDays)} name="payment.due_days">
+          <Input />
         </Form.Item>
 
         <Form.Item wrapperCol={{ md: { offset: 4 } }}>
           <Button className="mr-2" onClick={() => form.resetFields()}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" htmlType="submit" loading={loading}>
+          <Button type="primary" htmlType="submit" loading={loading} onClick={() => handleSubmit()}>
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>
@@ -202,4 +197,4 @@ const AppSettingCard: React.FC<AppCardProps> = ({ form, appId, ...cardProps }) =
   )
 }
 
-export default Form.create<AppCardProps>()(AppSettingCard)
+export default AppSettingCard

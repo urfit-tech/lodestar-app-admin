@@ -1,13 +1,12 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
-import { Button, Input, message, Typography } from 'antd'
+import { Button, Form, Input, message, Skeleton } from 'antd'
 import { CardProps } from 'antd/lib/card'
-import React from 'react'
+import { useForm } from 'antd/lib/form/Form'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useMember, useUpdateMemberAccount } from '../../hooks/member'
+import { AdminBlockTitle } from '../admin'
 import AdminCard from '../admin/AdminCard'
 import { StyledForm } from '../layout'
 
@@ -15,19 +14,34 @@ const messages = defineMessages({
   profileAdminTitle: { id: 'common.label.profileAdminTitle', defaultMessage: '帳號資料' },
 })
 
-type ProfileAccountAdminCardProps = CardProps &
-  FormComponentProps & {
+const ProfileAccountAdminCard: React.FC<
+  CardProps & {
     memberId: string
   }
-const ProfileAccountAdminCard: React.FC<ProfileAccountAdminCardProps> = ({ form, memberId, ...cardProps }) => {
+> = ({ memberId, ...cardProps }) => {
   const { formatMessage } = useIntl()
+  const [form] = useForm()
   const { member } = useMember(memberId)
   const updateMemberAccount = useUpdateMemberAccount()
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    form.validateFields((error, values) => {
-      if (!error && member) {
+  if (!member) {
+    return (
+      <AdminCard {...cardProps}>
+        <AdminBlockTitle className="mb-4">{formatMessage(messages.profileAdminTitle)}</AdminBlockTitle>
+        <Skeleton active />
+      </AdminCard>
+    )
+  }
+
+  const handleSubmit = () => {
+    form
+      .validateFields()
+      .then(values => {
+        if (!member.id) {
+          return
+        }
+        setLoading(true)
         updateMemberAccount({
           variables: {
             memberId,
@@ -39,44 +53,54 @@ const ProfileAccountAdminCard: React.FC<ProfileAccountAdminCardProps> = ({ form,
           },
         })
           .then(() => message.success(formatMessage(commonMessages.event.successfullySaved)))
-          .catch(error => handleError(error))
-      }
-    })
+          .catch(handleError)
+          .finally(() => setLoading(false))
+      })
+      .catch(() => {})
   }
   return (
     <AdminCard {...cardProps}>
-      <Typography.Title className="mb-4" level={4}>
-        {formatMessage(messages.profileAdminTitle)}
-      </Typography.Title>
+      <AdminBlockTitle className="mb-4">{formatMessage(messages.profileAdminTitle)}</AdminBlockTitle>
+
       <StyledForm
-        onSubmit={handleSubmit}
-        labelCol={{ span: 24, md: { span: 4 } }}
-        wrapperCol={{ span: 24, md: { span: 8 } }}
+        form={form}
+        hideRequiredMark
+        colon={false}
+        labelAlign="left"
+        labelCol={{ md: { span: 4 } }}
+        wrapperCol={{ md: { span: 8 } }}
+        initialValues={{
+          username: member.username,
+          _email: member.email,
+        }}
       >
-        <Form.Item label={formatMessage(commonMessages.term.account)}>
-          {form.getFieldDecorator('username', {
-            initialValue: member && member.username,
-            rules: [{ required: true, message: formatMessage(errorMessages.form.account) }],
-          })(<Input />)}
+        <Form.Item
+          label={formatMessage(commonMessages.term.account)}
+          name="username"
+          rules={[{ required: true, message: formatMessage(errorMessages.form.account) }]}
+        >
+          <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.term.email)}>
-          {form.getFieldDecorator('_email', {
-            initialValue: member && member.email,
-            rules: [
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.term.email),
-                }),
-              },
-            ],
-          })(<Input />)}
+        <Form.Item
+          label={formatMessage(commonMessages.term.email)}
+          name="_email"
+          rules={[
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(commonMessages.term.email),
+              }),
+            },
+          ]}
+        >
+          <Input />
         </Form.Item>
+
         <Form.Item wrapperCol={{ md: { offset: 4 } }}>
           <Button className="mr-2" onClick={() => form.resetFields()}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>
@@ -85,4 +109,4 @@ const ProfileAccountAdminCard: React.FC<ProfileAccountAdminCardProps> = ({ form,
   )
 }
 
-export default Form.create<ProfileAccountAdminCardProps>()(ProfileAccountAdminCard)
+export default ProfileAccountAdminCard
