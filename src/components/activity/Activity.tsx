@@ -2,10 +2,10 @@ import { CalendarOutlined, UserOutlined } from '@ant-design/icons'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import ActivityParticipantCollection from '../../containers/activity/ActivityParticipantCollection'
 import { dateRangeFormatter } from '../../helpers'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { ActivityBriefProps } from '../../types/activity'
+import ActivityParticipantCollectionModal from './ActivityParticipantCollectionModal'
 
 const StyledWrapper = styled.div`
   overflow: hidden;
@@ -72,7 +72,7 @@ const Activity: React.FC<ActivityBriefProps> = ({ id, coverUrl, title, participa
       </Link>
 
       <StyledAction className="text-right">
-        <ActivityParticipantCollection activityId={id} />
+        <ActivityParticipantCollectionModal activityId={id} />
       </StyledAction>
     </StyledWrapper>
   )

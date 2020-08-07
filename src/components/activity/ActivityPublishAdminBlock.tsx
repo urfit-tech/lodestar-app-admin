@@ -1,16 +1,12 @@
 import { useMutation } from '@apollo/react-hooks'
 import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
-import React, { useContext } from 'react'
+import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import AdminPublishBlock, {
-  ChecklistItemProps,
-  PublishEvent,
-  PublishStatus,
-} from '../../components/admin/AdminPublishBlock'
-import ActivityContext from '../../contexts/ActivityContext'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
+import { ActivityAdminProps } from '../../types/activity'
+import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } from '../admin/AdminPublishBlock'
 
 const messages = defineMessages({
   noTicketPlan: { id: 'activity.text.noTicketPlan', defaultMessage: '尚未訂定票券方案' },
@@ -29,36 +25,35 @@ const messages = defineMessages({
   },
 })
 
-const ActivityPublishAdminBlock: React.FC = () => {
+const ActivityPublishAdminBlock: React.FC<{
+  activityAdmin: ActivityAdminProps | null
+  refetch?: () => void
+}> = ({ activityAdmin, refetch }) => {
   const { formatMessage } = useIntl()
-  const { loadingActivity, errorActivity, activity, refetchActivity } = useContext(ActivityContext)
   const [publishActivity] = useMutation<types.PUBLISH_ACTIVITY, types.PUBLISH_ACTIVITYVariables>(PUBLISH_ACTIVITY)
 
-  if (loadingActivity) {
+  if (!activityAdmin) {
     return <Skeleton active />
-  }
-
-  if (errorActivity || !activity) {
-    return <div>{formatMessage(commonMessages.event.successfullySaved)}</div>
   }
 
   const checklist: ChecklistItemProps[] = []
 
-  activity.activityTickets.length === 0 &&
+  activityAdmin.tickets.length === 0 &&
     checklist.push({
       id: 'NO_TICKET',
       text: formatMessage(messages.noTicketPlan),
       tab: 'tickets',
     })
 
-  !activity.description &&
+  !activityAdmin.description &&
     checklist.push({
       id: 'NO_DESCRIPTION',
       text: formatMessage(messages.noDescription),
       tab: 'settings',
     })
 
-  const publishStatus: PublishStatus = checklist.length > 0 ? 'alert' : !activity.publishedAt ? 'ordinary' : 'success'
+  const publishStatus: PublishStatus =
+    checklist.length > 0 ? 'alert' : !activityAdmin.publishedAt ? 'ordinary' : 'success'
 
   const [title, description] =
     publishStatus === 'alert'
@@ -72,12 +67,12 @@ const ActivityPublishAdminBlock: React.FC = () => {
   const handlePublish: (event: PublishEvent) => void = ({ values, onSuccess, onError, onFinally }) => {
     publishActivity({
       variables: {
-        activityId: activity.id,
+        activityId: activityAdmin.id,
         publishedAt: values.publishedAt,
       },
     })
       .then(() => {
-        refetchActivity && refetchActivity()
+        refetch && refetch()
         onSuccess && onSuccess()
       })
       .catch(error => onError && onError(error))

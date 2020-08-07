@@ -1,15 +1,14 @@
-import { Form } from '@ant-design/compatible'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
-import { FileAddOutlined } from '@ant-design/icons'
-import { Button, DatePicker, Input, InputNumber, Radio, Select } from 'antd'
+import { Button, DatePicker, Form, Input, InputNumber, Radio, Select } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { handleError } from '../../helpers'
 import { activityMessages, commonMessages, errorMessages } from '../../helpers/translation'
+import { ActivityTicketProps } from '../../types/activity'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
-import { ActivityTicketProps } from './ActivityTicket'
 
 const messages = defineMessages({
   published: { id: 'activity.label.published', defaultMessage: '是否開賣' },
@@ -24,51 +23,63 @@ const messages = defineMessages({
   selectSession: { id: 'activity.warning.selectSession', defaultMessage: '選擇場次' },
 })
 
-type ActivityTicketAdminModalProps = FormComponentProps &
+const ActivityTicketAdminModal: React.FC<
   AdminModalProps & {
-    activityTicket?: ActivityTicketProps
+    activityTicket?: ActivityTicketProps & {
+      sessions: {
+        id: string
+        title: string
+      }[]
+    }
     activitySessions: {
       id: string
       title: string
     }[]
-    onSubmit?: (
-      setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-      setVisible: React.Dispatch<React.SetStateAction<boolean>>,
-      values: any,
-    ) => void
+    onSubmit?: (values: {
+      title: string
+      sessionIds: string[]
+      isPublished: boolean
+      startedAt: Date | null
+      endedAt: Date | null
+      price: number
+      count: number
+      description: string | null
+    }) => Promise<any>
+    refetch?: () => void
   }
-const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
-  form,
-  activityTicket,
-  activitySessions,
-  onSubmit,
-  ...props
-}) => {
+> = ({ activityTicket, activitySessions, onSubmit, refetch, ...props }) => {
   const { formatMessage } = useIntl()
+  const [form] = useForm()
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
-    form.validateFields((error, values) => {
-      if (error) {
+    form.validateFields().then((values: any) => {
+      if (!onSubmit) {
         return
       }
-
-      if (onSubmit) {
-        onSubmit(setLoading, setVisible, {
-          ...values,
-          activityTicketId: activityTicket ? activityTicket.id : undefined,
-          isPublished: values.isPublished === 'public',
-          count: parseInt(values.count),
-          description:
-            values.description && values.description.getCurrentContent().hasText() ? values.description.toRAW() : null,
+      setLoading(true)
+      onSubmit({
+        title: values.title,
+        sessionIds: values.sessionIds,
+        isPublished: values.isPublished === 'public',
+        startedAt: values.startedAt.toDate(),
+        endedAt: values.endedAt.toDate(),
+        price: values.price,
+        count: parseInt(values.count),
+        description:
+          values.description && values.description.getCurrentContent().hasText() ? values.description.toRAW() : null,
+      })
+        .then(() => {
+          refetch && refetch()
+          setVisible(false)
         })
-      }
+        .catch(handleError)
+        .finally(() => setLoading(false))
     })
   }
 
   return (
     <AdminModal
-      icon={<FileAddOutlined />}
       title={formatMessage(activityMessages.term.ticketPlan)}
       maskClosable={false}
       footer={null}
@@ -84,112 +95,106 @@ const ActivityTicketAdminModal: React.FC<ActivityTicketAdminModalProps> = ({
       )}
       {...props}
     >
-      <Form hideRequiredMark>
-        <Form.Item label={formatMessage(activityMessages.term.ticketPlanTitle)} colon={false}>
-          {form.getFieldDecorator('title', {
-            rules: [
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(activityMessages.term.ticketPlanTitle),
-                }),
-              },
-            ],
-            initialValue: activityTicket ? activityTicket.title : '',
-          })(<Input />)}
+      <Form
+        form={form}
+        layout="vertical"
+        hideRequiredMark
+        colon={false}
+        initialValues={{
+          title: activityTicket?.title || '',
+          sessionIds: activityTicket?.sessions.map(session => session.id) || [],
+          isPublished: activityTicket?.isPublished ? 'public' : 'private',
+          startedAt: activityTicket ? moment(activityTicket.startedAt) : null,
+          endedAt: activityTicket ? moment(activityTicket.endedAt) : null,
+          price: activityTicket?.price || 0,
+          count: activityTicket?.count || 0,
+          description: activityTicket ? BraftEditor.createEditorState(activityTicket.description) : null,
+        }}
+      >
+        <Form.Item
+          label={formatMessage(activityMessages.term.ticketPlanTitle)}
+          name="title"
+          rules={[
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(activityMessages.term.ticketPlanTitle),
+              }),
+            },
+          ]}
+        >
+          <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(activityMessages.term.includingSessions)} colon={false}>
-          {form.getFieldDecorator('sessionIds', {
-            initialValue: activityTicket
-              ? activityTicket.activitySessionTickets.map(sessionTicket => sessionTicket.activitySession.id)
-              : [],
-          })(
-            <Select
-              mode="multiple"
-              style={{ width: '100%' }}
-              placeholder={formatMessage(messages.selectSession)}
-              onChange={() => {}}
-            >
-              {activitySessions.map(session => (
-                <Select.Option value={session.id}>{session.title}</Select.Option>
-              ))}
-            </Select>,
-          )}
+        <Form.Item label={formatMessage(activityMessages.term.includingSessions)} name="sessionIds">
+          <Select
+            mode="multiple"
+            style={{ width: '100%' }}
+            placeholder={formatMessage(messages.selectSession)}
+            onChange={() => {}}
+          >
+            {activitySessions.map(session => (
+              <Select.Option key={session.id} value={session.id}>
+                {session.title}
+              </Select.Option>
+            ))}
+          </Select>
         </Form.Item>
-        <Form.Item label={formatMessage(messages.published)} colon={false}>
-          {form.getFieldDecorator('isPublished', {
-            initialValue: !activityTicket || activityTicket.isPublished ? 'public' : 'private',
-          })(
-            <Radio.Group>
-              <Radio value="public">{formatMessage(messages.publishedTicket)}</Radio>
-              <Radio value="private">{formatMessage(messages.notPublishedTicket)}</Radio>
-            </Radio.Group>,
-          )}
+        <Form.Item label={formatMessage(messages.published)} name="isPublished">
+          <Radio.Group>
+            <Radio value="public">{formatMessage(messages.publishedTicket)}</Radio>
+            <Radio value="private">{formatMessage(messages.notPublishedTicket)}</Radio>
+          </Radio.Group>
         </Form.Item>
-        <Form.Item label={formatMessage(messages.ticketStartedAt)} colon={false}>
-          {form.getFieldDecorator('startedAt', {
-            rules: [
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(messages.ticketStartedAt),
-                }),
-              },
-            ],
-            initialValue: activityTicket ? moment(activityTicket.startedAt) : null,
-          })(
-            <DatePicker
-              showTime={{ format: 'HH:mm' }}
-              format="YYYY-MM-DD HH:mm"
-              disabledDate={current => !!current && current < moment().startOf('day')}
-            />,
-          )}
+        <Form.Item
+          label={formatMessage(messages.ticketStartedAt)}
+          name="startedAt"
+          rules={[
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(messages.ticketStartedAt),
+              }),
+            },
+          ]}
+        >
+          <DatePicker
+            showTime={{ format: 'HH:mm' }}
+            format="YYYY-MM-DD HH:mm"
+            disabledDate={current => !!current && current < moment().startOf('day')}
+          />
         </Form.Item>
-        <Form.Item label={formatMessage(messages.ticketEndedAt)} colon={false}>
-          {form.getFieldDecorator('endedAt', {
-            rules: [
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, { field: formatMessage(messages.ticketEndedAt) }),
-              },
-            ],
-            initialValue: activityTicket ? moment(activityTicket.endedAt) : null,
-          })(
-            <DatePicker
-              showTime={{ format: 'HH:mm' }}
-              format="YYYY-MM-DD HH:mm"
-              disabledDate={current => !!current && current < moment().startOf('day')}
-            />,
-          )}
+        <Form.Item
+          label={formatMessage(messages.ticketEndedAt)}
+          name="endedAt"
+          rules={[
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, { field: formatMessage(messages.ticketEndedAt) }),
+            },
+          ]}
+        >
+          <DatePicker
+            showTime={{ format: 'HH:mm' }}
+            format="YYYY-MM-DD HH:mm"
+            disabledDate={current => !!current && current < moment().startOf('day')}
+          />
         </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.term.listPrice)} colon={false}>
-          {form.getFieldDecorator('price', {
-            rules: [{ type: 'number' }],
-            initialValue: activityTicket ? activityTicket.price : 0,
-          })(
-            <InputNumber
-              min={0}
-              formatter={value => `NT$ ${value}`}
-              parser={value => (value ? value.replace(/\D/g, '') : '')}
-            />,
-          )}
+        <Form.Item label={formatMessage(commonMessages.term.listPrice)} name="price">
+          <InputNumber
+            min={0}
+            formatter={value => `NT$ ${value}`}
+            parser={value => (value ? value.replace(/\D/g, '') : '')}
+          />
         </Form.Item>
-
-        <Form.Item label={formatMessage(messages.limit)}>
-          {form.getFieldDecorator('count', {
-            rules: [{ type: 'number' }],
-            initialValue: activityTicket ? activityTicket.count : 1,
-          })(<InputNumber min={1} />)}
+        <Form.Item label={formatMessage(messages.limit)} name="count">
+          <InputNumber min={1} />
         </Form.Item>
-
-        <Form.Item label={formatMessage(activityMessages.term.description)} colon={false}>
-          {form.getFieldDecorator('description', {
-            initialValue: activityTicket ? BraftEditor.createEditorState(activityTicket.description) : null,
-          })(<AdminBraftEditor variant="short" />)}
+        <Form.Item label={formatMessage(activityMessages.term.description)} name="description">
+          <AdminBraftEditor variant="short" />
         </Form.Item>
       </Form>
     </AdminModal>
   )
 }
 
-export default Form.create<ActivityTicketAdminModalProps>()(ActivityTicketAdminModal)
+export default ActivityTicketAdminModal

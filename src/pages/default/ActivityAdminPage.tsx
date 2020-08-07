@@ -4,6 +4,11 @@ import React, { useContext } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
+import ActivityBasicForm from '../../components/activity/ActivityBasicForm'
+import ActivityIntroductionForm from '../../components/activity/ActivityIntroductionForm'
+import ActivityPublishAdminBlock from '../../components/activity/ActivityPublishAdminBlock'
+import ActivitySessionsAdminBlock from '../../components/activity/ActivitySessionsAdminBlock'
+import ActivityTicketsAdminBlock from '../../components/activity/ActivityTicketsAdminBlock'
 import {
   AdminBlock,
   AdminBlockTitle,
@@ -13,11 +18,6 @@ import {
   AdminTabBarWrapper,
 } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
-import ActivityBasicForm from '../../containers/activity/ActivityBasicForm'
-import ActivityIntroductionForm from '../../containers/activity/ActivityIntroductionForm'
-import ActivityPublishAdminBlock from '../../containers/activity/ActivityPublishAdminBlock'
-import ActivitySessionsAdminBlock from '../../containers/activity/ActivitySessionsAdminBlock'
-import ActivityTicketsAdminBlock from '../../containers/activity/ActivityTicketsAdminBlock'
 import AppContext from '../../contexts/AppContext'
 import { activityMessages, commonMessages } from '../../helpers/translation'
 import { useActivityAdmin } from '../../hooks/activity'
@@ -81,14 +81,18 @@ const ActivityAdminPage: React.FC = () => {
             <Tabs.TabPane key="sessions" tab={formatMessage(messages.sessionAdmin)}>
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(messages.sessionAdmin)}</AdminPaneTitle>
-                <ActivitySessionsAdminBlock onChangeTab={() => setActiveKey('tickets')} />
+                <ActivitySessionsAdminBlock
+                  activityAdmin={activityAdmin}
+                  refetch={refetchActivityAdmin}
+                  onChangeTab={() => setActiveKey('tickets')}
+                />
               </div>
             </Tabs.TabPane>
 
             <Tabs.TabPane key="tickets" tab={formatMessage(activityMessages.term.ticketPlan)}>
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(activityMessages.term.ticketPlan)}</AdminPaneTitle>
-                <ActivityTicketsAdminBlock />
+                <ActivityTicketsAdminBlock activityAdmin={activityAdmin} refetch={refetchActivityAdmin} />
               </div>
             </Tabs.TabPane>
 
@@ -96,7 +100,7 @@ const ActivityAdminPage: React.FC = () => {
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(messages.publishSettings)}</AdminPaneTitle>
                 <AdminBlock>
-                  <ActivityPublishAdminBlock />
+                  <ActivityPublishAdminBlock activityAdmin={activityAdmin} refetch={refetchActivityAdmin} />
                 </AdminBlock>
               </div>
             </Tabs.TabPane>
