@@ -33,27 +33,22 @@ const LoginSection: React.FC<{
   const { login } = useAuth()
   const [loading, setLoading] = useState(false)
 
-  const handleLogin = () => {
-    form
-      .validateFields()
-      .then(values => {
-        if (!login) {
-          return
-        }
-        setLoading(true)
-        login({
-          appId,
-          account: values.account,
-          password: values.password,
-        })
-          .then(() => {
-            setVisible && setVisible(false)
-            form.resetFields()
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
+  const handleLogin = (values: any) => {
+    if (!login) {
+      return
+    }
+    setLoading(true)
+    login({
+      appId,
+      account: values.account,
+      password: values.password,
+    })
+      .then(() => {
+        setVisible && setVisible(false)
+        form.resetFields()
       })
-      .catch(() => {})
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
@@ -74,7 +69,7 @@ const LoginSection: React.FC<{
         <StyledDivider>{formatMessage(commonMessages.ui.or)}</StyledDivider>
       )}
 
-      <Form form={form}>
+      <Form form={form} onFinish={handleLogin}>
         <Form.Item
           name="account"
           rules={[{ required: true, message: formatMessage(errorMessages.form.accountNameOrEmail) }]}
@@ -100,7 +95,7 @@ const LoginSection: React.FC<{
         </ForgetPassword>
 
         <Form.Item>
-          <Button type="primary" block loading={loading} onClick={() => handleLogin()}>
+          <Button type="primary" htmlType="submit" block loading={loading}>
             {formatMessage(commonMessages.ui.login)}
           </Button>
         </Form.Item>

@@ -95,8 +95,8 @@ const PodcastPlanAdminModal: React.FC<
       <Form
         form={form}
         layout="vertical"
-        hideRequiredMark
         colon={false}
+        hideRequiredMark
         initialValues={{
           creatorId: podcastPlan?.creatorId || '',
           isPublished: !!podcastPlan?.publishedAt,

@@ -98,8 +98,8 @@ const ActivityTicketAdminModal: React.FC<
       <Form
         form={form}
         layout="vertical"
-        hideRequiredMark
         colon={false}
+        hideRequiredMark
         initialValues={{
           title: activityTicket?.title || '',
           sessionIds: activityTicket?.sessions.map(session => session.id) || [],

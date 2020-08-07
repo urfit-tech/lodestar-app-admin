@@ -42,30 +42,25 @@ const ResetPasswordPage: React.FC = () => {
   const [form] = useForm()
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = () => {
-    form
-      .validateFields()
-      .then(values => {
-        setLoading(true)
-        axios
-          .post(
-            `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/reset-password`,
-            { newPassword: values.password },
-            {
-              headers: { authorization: `Bearer ${token}` },
-            },
-          )
-          .then(({ data: { code } }) => {
-            if (code === 'SUCCESS') {
-              history.push('/reset-password-success')
-            } else {
-              message.error(formatMessage(codeMessages[code as keyof typeof codeMessages]))
-            }
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
+  const handleSubmit = (values: any) => {
+    setLoading(true)
+    axios
+      .post(
+        `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/reset-password`,
+        { newPassword: values.password },
+        {
+          headers: { authorization: `Bearer ${token}` },
+        },
+      )
+      .then(({ data: { code } }) => {
+        if (code === 'SUCCESS') {
+          history.push('/reset-password-success')
+        } else {
+          message.error(formatMessage(codeMessages[code as keyof typeof codeMessages]))
+        }
       })
-      .catch(() => {})
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   // FIXME: set auth token to reset password
@@ -80,7 +75,7 @@ const ResetPasswordPage: React.FC = () => {
     <DefaultLayout noFooter centeredBox>
       <StyledContainer>
         <StyledTitle>{formatMessage(commonMessages.label.resetPassword)}</StyledTitle>
-        <Form form={form} colon={false} hideRequiredMark>
+        <Form form={form} colon={false} hideRequiredMark onFinish={handleSubmit}>
           <Form.Item
             name="password"
             rules={[
@@ -126,7 +121,7 @@ const ResetPasswordPage: React.FC = () => {
           </Form.Item>
 
           <Form.Item className="m-0">
-            <Button type="primary" block loading={loading} onClick={() => handleSubmit()}>
+            <Button type="primary" htmlType="submit" block loading={loading}>
               {formatMessage(commonMessages.ui.confirm)}
             </Button>
           </Form.Item>

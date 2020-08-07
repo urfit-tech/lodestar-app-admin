@@ -25,46 +25,42 @@ const AppBasicCard: React.FC<
   const updateApp = useUpdateApp()
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = () => {
-    form
-      .validateFields()
-      .then((values: any) => {
-        if (!app) {
-          return
-        }
-        setLoading(true)
-        updateApp({
-          variables: {
-            appId: app.id,
-            name: values.name,
-            title: values.title,
-            description: values.description,
-            vimeoProjectId: values.vimeoProjectId,
-          },
-        })
-          .then(() => {
-            refetchApp()
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
+  const handleSubmit = (values: any) => {
+    if (!app) {
+      return
+    }
+    setLoading(true)
+    updateApp({
+      variables: {
+        appId: app.id,
+        name: values.name,
+        title: values.title,
+        description: values.description,
+        vimeoProjectId: values.vimeoProjectId,
+      },
+    })
+      .then(() => {
+        refetchApp()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
       })
-      .catch(() => {})
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
     <AdminCard {...cardProps} loading={loadingApp}>
       <StyledForm
         form={form}
-        hideRequiredMark
-        colon={false}
         labelAlign="left"
         labelCol={{ md: { span: 4 } }}
         wrapperCol={{ md: { span: 12 } }}
+        colon={false}
+        hideRequiredMark
         initialValues={{
           name: app?.name,
           vimeoProjectId: app?.vimeoProjectId,
         }}
+        onFinish={handleSubmit}
       >
         <Form.Item
           label={formatMessage(messages.appName)}
@@ -88,7 +84,7 @@ const AppBasicCard: React.FC<
           <Button className="mr-2" onClick={() => form.resetFields()}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
+          <Button type="primary" htmlType="submit" loading={loading}>
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>

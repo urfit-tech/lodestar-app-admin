@@ -71,49 +71,44 @@ const ProfileBasicCard: React.FC<
     )
   }
 
-  const handleSubmit = () => {
-    form
-      .validateFields()
-      .then(values => {
-        if (!member.id) {
-          return
-        }
-        setLoading(true)
-        updateMemberBasic({
-          variables: {
-            memberId: currentMemberId,
-            email: member.email,
-            username: member.username,
-            name: values.name,
-            pictureUrl: values.picture
-              ? `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${appId}/${memberId}`
-              : member.pictureUrl,
-            title: values.title,
-            abstract: values.abstract,
-            description: values.description ? values.description.toRAW() : null,
-            tags: values.tags
-              ? values.tags.map((tag: string) => ({
-                  app_id: appId,
-                  name: tag,
-                  type: '',
-                }))
-              : [],
-            memberTags: values.tags
-              ? values.tags.map((tag: string) => ({
-                  member_id: currentMemberId,
-                  tag_name: tag,
-                }))
-              : [],
-          },
-        })
-          .then(() => {
-            refetchMember()
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
+  const handleSubmit = (values: any) => {
+    if (!member.id) {
+      return
+    }
+    setLoading(true)
+    updateMemberBasic({
+      variables: {
+        memberId: currentMemberId,
+        email: member.email,
+        username: member.username,
+        name: values.name,
+        pictureUrl: values.picture
+          ? `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${appId}/${memberId}`
+          : member.pictureUrl,
+        title: values.title,
+        abstract: values.abstract,
+        description: values.description ? values.description.toRAW() : null,
+        tags: values.tags
+          ? values.tags.map((tag: string) => ({
+              app_id: appId,
+              name: tag,
+              type: '',
+            }))
+          : [],
+        memberTags: values.tags
+          ? values.tags.map((tag: string) => ({
+              member_id: currentMemberId,
+              tag_name: tag,
+            }))
+          : [],
+      },
+    })
+      .then(() => {
+        refetchMember()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
       })
-      .catch(() => {})
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
@@ -122,11 +117,11 @@ const ProfileBasicCard: React.FC<
 
       <StyledForm
         form={form}
-        hideRequiredMark
-        colon={false}
         labelAlign="left"
         labelCol={{ md: { span: 4 } }}
         wrapperCol={{ md: { span: 12 } }}
+        colon={false}
+        hideRequiredMark
         initialValues={{
           name: member.name,
           title: member.title,
@@ -134,6 +129,7 @@ const ProfileBasicCard: React.FC<
           abstract: member.abstract,
           description: BraftEditor.createEditorState(member.description),
         }}
+        onFinish={handleSubmit}
       >
         <StyledAvatarFormItem label={formatMessage(commonMessages.term.avatar)} name="picture">
           <div className="mr-3">
@@ -214,7 +210,7 @@ const ProfileBasicCard: React.FC<
           <Button className="mr-2" onClick={() => form.resetFields()}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
+          <Button type="primary" htmlType="submit" loading={loading}>
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>

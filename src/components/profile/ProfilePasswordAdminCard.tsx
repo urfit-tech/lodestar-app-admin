@@ -25,33 +25,28 @@ const ProfilePasswordAdminCard: React.FC<
   const { authToken } = useAuth()
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = () => {
-    form
-      .validateFields()
-      .then(values => {
-        setLoading(true)
-        axios
-          .post(
-            `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/change-password`,
-            {
-              password: values.password,
-              newPassword: values.newPassword,
-            },
-            {
-              headers: { authorization: `Bearer ${authToken}` },
-            },
-          )
-          .then(({ data: { code } }) => {
-            if (code === 'SUCCESS') {
-              message.success(formatMessage(messages.successfullyUpdatePassword))
-            } else {
-              message.error(formatMessage(codeMessages[code as keyof typeof codeMessages]))
-            }
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
+  const handleSubmit = (values: any) => {
+    setLoading(true)
+    axios
+      .post(
+        `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/change-password`,
+        {
+          password: values.password,
+          newPassword: values.newPassword,
+        },
+        {
+          headers: { authorization: `Bearer ${authToken}` },
+        },
+      )
+      .then(({ data: { code } }) => {
+        if (code === 'SUCCESS') {
+          message.success(formatMessage(messages.successfullyUpdatePassword))
+        } else {
+          message.error(formatMessage(codeMessages[code as keyof typeof codeMessages]))
+        }
       })
-      .catch(() => {})
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
@@ -61,11 +56,12 @@ const ProfilePasswordAdminCard: React.FC<
       </Typography.Title>
       <StyledForm
         form={form}
-        hideRequiredMark
-        colon={false}
         labelAlign="left"
         labelCol={{ md: { span: 4 } }}
         wrapperCol={{ md: { span: 8 } }}
+        colon={false}
+        hideRequiredMark
+        onFinish={handleSubmit}
       >
         <Form.Item
           label={formatMessage(commonMessages.label.currentPassword)}
@@ -123,7 +119,7 @@ const ProfilePasswordAdminCard: React.FC<
           <Button className="mr-2" onClick={() => form.resetFields()}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
+          <Button type="primary" htmlType="submit" loading={loading}>
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>

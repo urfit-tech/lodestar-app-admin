@@ -21,28 +21,23 @@ const RegisterSection: React.FC<{
   const { register } = useAuth()
   const [loading, setLoading] = useState(false)
 
-  const handleRegister = () => {
-    form
-      .validateFields()
-      .then(values => {
-        if (!appId || !register) {
-          return
-        }
-        setLoading(true)
-        register({
-          appId,
-          username: values.username,
-          email: values.email,
-          password: values.password,
-        })
-          .then(() => {
-            setVisible && setVisible(false)
-            form.resetFields()
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
+  const handleRegister = (values: any) => {
+    if (!appId || !register) {
+      return
+    }
+    setLoading(true)
+    register({
+      appId,
+      username: values.username,
+      email: values.email,
+      password: values.password,
+    })
+      .then(() => {
+        setVisible && setVisible(false)
+        form.resetFields()
       })
-      .catch(() => {})
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
@@ -63,7 +58,7 @@ const RegisterSection: React.FC<{
         <StyledDivider>{formatMessage(commonMessages.ui.or)}</StyledDivider>
       )}
 
-      <Form form={form}>
+      <Form form={form} onFinish={handleRegister}>
         <Form.Item
           name="username"
           rules={[{ required: true, message: formatMessage(errorMessages.form.accountNameOrEmail) }]}
@@ -99,7 +94,7 @@ const RegisterSection: React.FC<{
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" block loading={loading} onClick={() => handleRegister()}>
+          <Button type="primary" htmlType="submit" block loading={loading}>
             {formatMessage(commonMessages.ui.register)}
           </Button>
         </Form.Item>

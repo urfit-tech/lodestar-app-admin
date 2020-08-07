@@ -7,14 +7,14 @@ import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { StyledTips } from '../admin'
-import AdminBraftEditor from '../admin/AdminBraftEditor'
-import { StyledSingleUploader } from '../program/ProgramIntroAdminCard'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { activityMessages, commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ActivityAdminProps } from '../../types/activity'
+import { StyledTips } from '../admin'
+import AdminBraftEditor from '../admin/AdminBraftEditor'
+import { StyledSingleUploader } from '../program/ProgramIntroAdminCard'
 
 const StyledCover = styled.div<{ src: string }>`
   width: 160px;
@@ -65,36 +65,30 @@ const ActivityIntroductionForm: React.FC<{
       .finally(() => setLoading(false))
   }
 
-  const handleSubmit = () => {
-    form
-      .validateFields()
-      .then((values: any) => {
-        setLoading(true)
-
-        updateActivityIntroduction({
-          variables: {
-            activityId: activityAdmin.id,
-            description: values.description.toRAW(),
-          },
-        })
-          .then(() => {
-            refetch && refetch()
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
+  const handleSubmit = (values: any) => {
+    setLoading(true)
+    updateActivityIntroduction({
+      variables: {
+        activityId: activityAdmin.id,
+        description: values.description.toRAW(),
+      },
+    })
+      .then(() => {
+        refetch && refetch()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
       })
-      .catch(() => {})
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
     <Form
       form={form}
-      hideRequiredMark
-      colon={false}
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
+      colon={false}
+      hideRequiredMark
       initialValues={{
         coverImg: activityAdmin && {
           uid: '-1',
@@ -104,6 +98,7 @@ const ActivityIntroductionForm: React.FC<{
         },
         description: BraftEditor.createEditorState(activityAdmin.description),
       }}
+      onFinish={handleSubmit}
     >
       <Form.Item
         label={
@@ -139,7 +134,7 @@ const ActivityIntroductionForm: React.FC<{
         <Button onClick={() => form.resetFields()} className="mr-2">
           {formatMessage(commonMessages.ui.cancel)}
         </Button>
-        <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
+        <Button type="primary" htmlType="submit" loading={loading}>
           {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>

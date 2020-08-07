@@ -47,45 +47,40 @@ const AppSettingCard: React.FC<
   const updateAppSettings = useUpdateAppSettings()
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = () => {
-    form
-      .validateFields()
-      .then(values => {
-        if (!app) {
-          return
-        }
-        setLoading(true)
-        const appSettings = Object.keys(values)
-          .filter(key => values[key])
-          .map(key => ({
-            app_id: app.id,
-            key,
-            value: values[key],
-          }))
-        updateAppSettings({
-          variables: {
-            appSettings,
-          },
-        })
-          .then(() => {
-            refetchApp()
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
+  const handleSubmit = (values: any) => {
+    if (!app) {
+      return
+    }
+    setLoading(true)
+    const appSettings = Object.keys(values)
+      .filter(key => values[key])
+      .map(key => ({
+        app_id: app.id,
+        key,
+        value: values[key],
+      }))
+    updateAppSettings({
+      variables: {
+        appSettings,
+      },
+    })
+      .then(() => {
+        refetchApp()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
       })
-      .catch(() => {})
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
     <AdminCard {...cardProps} loading={loadingApp}>
       <StyledForm
         form={form}
-        hideRequiredMark
-        colon={false}
         labelAlign="left"
         labelCol={{ md: { span: 4 } }}
         wrapperCol={{ md: { span: 12 } }}
+        colon={false}
+        hideRequiredMark
         initialValues={{
           title: app?.settings['title'],
           description: app?.settings['description'],
@@ -109,6 +104,7 @@ const AppSettingCard: React.FC<
           'tappay.app_key': app?.settings['tappay.app_key'],
           'payment.due_days': app?.settings['payment.due_days'],
         }}
+        onFinish={handleSubmit}
       >
         <Form.Item label={formatMessage(messages.appTitle)} name="title">
           <Input />
@@ -188,7 +184,7 @@ const AppSettingCard: React.FC<
           <Button className="mr-2" onClick={() => form.resetFields()}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" htmlType="submit" loading={loading} onClick={() => handleSubmit()}>
+          <Button type="primary" htmlType="submit" loading={loading}>
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>

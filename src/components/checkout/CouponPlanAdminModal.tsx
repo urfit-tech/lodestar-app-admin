@@ -139,8 +139,8 @@ const CouponPlanAdminModal: React.FC<
     >
       <Form
         form={form}
-        hideRequiredMark
         colon={false}
+        hideRequiredMark
         initialValues={{
           title: couponPlan?.title,
           scope: {

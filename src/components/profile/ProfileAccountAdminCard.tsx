@@ -34,29 +34,24 @@ const ProfileAccountAdminCard: React.FC<
     )
   }
 
-  const handleSubmit = () => {
-    form
-      .validateFields()
-      .then(values => {
-        if (!member.id) {
-          return
-        }
-        setLoading(true)
-        updateMemberAccount({
-          variables: {
-            memberId,
-            email: values._email,
-            username: values.username,
-            name: member.name,
-            pictureUrl: member.pictureUrl,
-            description: member.description,
-          },
-        })
-          .then(() => message.success(formatMessage(commonMessages.event.successfullySaved)))
-          .catch(handleError)
-          .finally(() => setLoading(false))
-      })
-      .catch(() => {})
+  const handleSubmit = (values: any) => {
+    if (!member.id) {
+      return
+    }
+    setLoading(true)
+    updateMemberAccount({
+      variables: {
+        memberId,
+        email: values._email,
+        username: values.username,
+        name: member.name,
+        pictureUrl: member.pictureUrl,
+        description: member.description,
+      },
+    })
+      .then(() => message.success(formatMessage(commonMessages.event.successfullySaved)))
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
   return (
     <AdminCard {...cardProps}>
@@ -64,15 +59,16 @@ const ProfileAccountAdminCard: React.FC<
 
       <StyledForm
         form={form}
-        hideRequiredMark
-        colon={false}
         labelAlign="left"
         labelCol={{ md: { span: 4 } }}
         wrapperCol={{ md: { span: 8 } }}
+        colon={false}
+        hideRequiredMark
         initialValues={{
           username: member.username,
           _email: member.email,
         }}
+        onFinish={handleSubmit}
       >
         <Form.Item
           label={formatMessage(commonMessages.term.account)}
@@ -100,7 +96,7 @@ const ProfileAccountAdminCard: React.FC<
           <Button className="mr-2" onClick={() => form.resetFields()}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
+          <Button type="primary" htmlType="submit" loading={loading}>
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>

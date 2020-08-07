@@ -71,8 +71,8 @@ const ActivitySessionAdminModal: React.FC<
       <Form
         form={form}
         layout="vertical"
-        hideRequiredMark
         colon={false}
+        hideRequiredMark
         initialValues={{
           title: activitySession?.title || '',
           startedAt: activitySession ? moment(activitySession.startedAt) : null,

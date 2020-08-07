@@ -5,14 +5,14 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
-import { StyledTips } from '../admin'
-import CategorySelector from '../common/CategorySelector'
-import LanguageSelector from '../common/LanguageSelector'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { activityMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ActivityAdminProps } from '../../types/activity'
+import { StyledTips } from '../admin'
+import CategorySelector from '../common/CategorySelector'
+import LanguageSelector from '../common/LanguageSelector'
 
 const ActivityBasicForm: React.FC<{
   activityAdmin: ActivityAdminProps | null
@@ -30,49 +30,44 @@ const ActivityBasicForm: React.FC<{
     return <Skeleton active />
   }
 
-  const handleSubmit = () => {
-    form
-      .validateFields()
-      .then((values: any) => {
-        setLoading(true)
-
-        updateActivityBasic({
-          variables: {
-            activityId: activityAdmin.id,
-            title: values.title,
-            supportLocales: !values.languages || values.languages.length === 0 ? null : values.languages,
-            activityCategories: values.categoryIds.map((categoryId: string, index: number) => ({
-              activity_id: activityAdmin.id,
-              category_id: categoryId,
-              position: index,
-            })),
-            isParticipantsVisible: values.isParticipantsVisible === 'public',
-          },
-        })
-          .then(() => {
-            refetch && refetch()
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
+  const handleSubmit = (values: any) => {
+    setLoading(true)
+    updateActivityBasic({
+      variables: {
+        activityId: activityAdmin.id,
+        title: values.title,
+        supportLocales: !values.languages || values.languages.length === 0 ? null : values.languages,
+        activityCategories: values.categoryIds.map((categoryId: string, index: number) => ({
+          activity_id: activityAdmin.id,
+          category_id: categoryId,
+          position: index,
+        })),
+        isParticipantsVisible: values.isParticipantsVisible === 'public',
+      },
+    })
+      .then(() => {
+        refetch && refetch()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
       })
-      .catch(() => {})
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
     <Form
       form={form}
-      hideRequiredMark
-      colon={false}
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
+      colon={false}
+      hideRequiredMark
       initialValues={{
         title: activityAdmin.title,
         categoryIds: activityAdmin.categories.map(category => category.id),
         languages: activityAdmin.supportLocales.map(supportLocale => supportLocale),
         isParticipantsVisible: activityAdmin.isParticipantsVisible ? 'public' : 'private',
       }}
+      onFinish={handleSubmit}
     >
       <Form.Item
         label={formatMessage(commonMessages.term.title)}
@@ -116,7 +111,7 @@ const ActivityBasicForm: React.FC<{
         <Button onClick={() => form.resetFields()} className="mr-2">
           {formatMessage(commonMessages.ui.cancel)}
         </Button>
-        <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
+        <Button type="primary" htmlType="submit" loading={loading}>
           {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>

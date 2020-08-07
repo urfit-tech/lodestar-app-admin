@@ -68,8 +68,8 @@ const ProductCreationModal: React.FC<
       <Form
         form={form}
         layout="vertical"
-        hideRequiredMark
         colon={false}
+        hideRequiredMark
         initialValues={{
           memberId: currentMemberId,
           isSubscription: false,
