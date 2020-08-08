@@ -535,6 +535,7 @@ export const podcastMessages = {
     uploadAudioFile: { id: 'podcast.ui.uploadAudioFile', defaultMessage: '上傳音檔' },
     createPodcastPlan: { id: 'podcast.ui.createPodcastPlan', defaultMessage: '建立方案' },
     recordAudio: { id: 'podcast.ui.recordAudio', defaultMessage: '錄製音檔' },
+    editAudio: { id: 'podcast.ui.editAudio', defaultMessage: '編輯音檔' },
     deleteAudio: { id: 'podcast.ui.deleteAudio', defaultMessage: '刪除音檔' },
     bulkUpload: { id: 'podcast.ui.bulkUpload', defaultMessage: '合併上傳' },
     play: { id: 'podcast.ui.play', defaultMessage: '播放' },
@@ -571,11 +572,9 @@ export const podcastMessages = {
     audioFileTips: { id: 'podcast.text.audioFileTips', defaultMessage: '建議格式：MP3\n檔案大小限制：5MB' },
     podcastCoverTips: { id: 'podcast.text.podcastCoverTips', defaultMessage: '建議圖片尺寸：1200*1200px' },
     abstractLimit: { id: 'podcast.text.abstractLimit', defaultMessage: '限 100 字' },
+    generatingVoice: { id: 'podcast.text.generatingVoice', defaultMessage: '音檔生成中，請稍待片刻' },
     uploadingVoice: { id: 'podcast.text.uploadingVoice', defaultMessage: '正在上傳中，請稍待片刻' },
-    bulkUploadMessage: {
-      id: 'podcast.text.bulkUploadMessage',
-      defaultMessage: '將會合併上傳您所勾選的音檔，未選擇的音檔即會刪除，確定要上傳嗎？ ',
-    },
+    bulkUploadMessage: { id: 'podcast.text.bulkUploadMessage', defaultMessage: '將會合併上傳所有音檔，確定要上傳嗎？ ' },
   }),
 }
 
