@@ -2315,6 +2315,7 @@ export interface GET_AVAILABLE_PROGRAM_COLLECTION_program {
   __typename: "program";
   id: any;
   title: string;
+  is_subscription: boolean;
 }
 
 export interface GET_AVAILABLE_PROGRAM_COLLECTION {
