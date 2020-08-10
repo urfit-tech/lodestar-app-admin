@@ -1,10 +1,11 @@
 import { ExclamationCircleFilled } from '@ant-design/icons'
-import { Checkbox, DatePicker, Form, InputNumber } from 'antd'
+import { Checkbox, DatePicker, Form } from 'antd'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
+import CurrencyInput from './CurrencyInput'
 
 const StyledIcon = styled(ExclamationCircleFilled)`
   color: #ff7d62;
@@ -16,9 +17,10 @@ type SaleProps = {
 } | null
 
 const SaleInput: React.FC<{
+  currencyId?: string
   value?: SaleProps
   onChange?: (value: SaleProps) => void
-}> = ({ value, onChange }) => {
+}> = ({ value, onChange, currencyId }) => {
   const { formatMessage } = useIntl()
   const [active, setActive] = useState(!!value?.soldAt)
 
@@ -44,10 +46,8 @@ const SaleInput: React.FC<{
 
       <div className={active ? '' : 'd-none'}>
         <Form.Item className="d-inline-block mb-0 mr-3">
-          <InputNumber
-            min={0}
-            formatter={price => `NT$ ${price}`}
-            parser={price => (price ? price.replace(/\D/g, '') : '')}
+          <CurrencyInput
+            currencyId={currencyId}
             value={value?.price || 0}
             onChange={price =>
               onChange &&

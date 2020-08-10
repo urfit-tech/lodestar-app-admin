@@ -2344,6 +2344,7 @@ export interface UPSERT_PROGRAM_PLANVariables {
   soldAt?: any | null;
   discountDownPrice: any;
   periodType: string;
+  currencyId: string;
 }
 
 /* tslint:disable */
@@ -3257,6 +3258,7 @@ export interface UPDATE_APPOINTMENT_PLAN_SALEVariables {
   appointmentPlanId: any;
   duration?: any | null;
   listPrice?: any | null;
+  currencyId?: string | null;
 }
 
 /* tslint:disable */
@@ -3909,6 +3911,7 @@ export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk {
   price: any;
   published_at: any | null;
   support_locales: any | null;
+  currency_id: string;
   /**
    * An array relationship
    */
@@ -7089,6 +7092,7 @@ export interface GET_PROGRAM_program_by_pk_program_plans {
   list_price: any;
   period_type: string | null;
   sold_at: any | null;
+  currency_id: string;
 }
 
 export interface GET_PROGRAM_program_by_pk_program_categories_category {

@@ -22,6 +22,7 @@ type AppointmentPlanAdminProps = {
   enrollments: number
   isPublished: boolean | null
   supportLocales: string[]
+  currencyId: string
 }
 const AppointmentPlanContext = createContext<{
   loadingAppointmentPlan: boolean
@@ -59,6 +60,7 @@ export const AppointmentPlanProvider: React.FC<{
           enrollments: 0,
           isPublished: null,
           supportLocales: [],
+          currencyId: 'TWD',
         }
       : {
           id: appointmentPlanId,
@@ -91,6 +93,7 @@ export const AppointmentPlanProvider: React.FC<{
             : 0,
           isPublished: !!data.appointment_plan_by_pk.published_at,
           supportLocales: data?.appointment_plan_by_pk.support_locales || [],
+          currencyId: data?.appointment_plan_by_pk.currency_id || 'TWD',
         }
 
   return (
@@ -118,6 +121,7 @@ const GET_APPOINTMENT_PLAN_ADMIN = gql`
       price
       published_at
       support_locales
+      currency_id
       appointment_schedules {
         id
         excludes

@@ -9,6 +9,7 @@ import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { StyledTips } from '../../components/admin'
 import CurrencyInput from '../../components/admin/CurrencyInput'
+import CurrencySelector from '../../components/admin/CurrencySelector'
 import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
@@ -46,6 +47,7 @@ const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
           appointmentPlanId: appointmentPlan.id,
           duration: values.duration,
           listPrice: values.listPrice,
+          currencyId: values.currencyId,
         },
       })
         .then(() => {
@@ -96,7 +98,21 @@ const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
               }),
             },
           ],
-        })(<CurrencyInput />)}
+        })(<CurrencyInput currencyId={form.getFieldValue('currencyId') || appointmentPlan.currencyId} />)}
+      </Form.Item>
+
+      <Form.Item label={formatMessage(commonMessages.term.currency)}>
+        {form.getFieldDecorator('currencyId', {
+          initialValue: appointmentPlan.currencyId,
+          rules: [
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(commonMessages.term.listPrice),
+              }),
+            },
+          ],
+        })(<CurrencySelector />)}
       </Form.Item>
 
       <Form.Item>
@@ -112,10 +128,15 @@ const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
 }
 
 const UPDATE_APPOINTMENT_PLAN_SALE = gql`
-  mutation UPDATE_APPOINTMENT_PLAN_SALE($appointmentPlanId: uuid!, $duration: numeric, $listPrice: numeric) {
+  mutation UPDATE_APPOINTMENT_PLAN_SALE(
+    $appointmentPlanId: uuid!
+    $duration: numeric
+    $listPrice: numeric
+    $currencyId: String
+  ) {
     update_appointment_plan(
       where: { id: { _eq: $appointmentPlanId } }
-      _set: { duration: $duration, price: $listPrice }
+      _set: { duration: $duration, price: $listPrice, currency_id: $currencyId }
     ) {
       affected_rows
     }

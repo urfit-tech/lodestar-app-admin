@@ -177,6 +177,7 @@ export const commonMessages = {
     timeRange: { id: 'common.term.timeRange', defaultMessage: '日期範圍' },
     orderStatus: { id: 'common.term.orderStatus', defaultMessage: '訂單狀態' },
     listPrice: { id: 'common.term.listPrice', defaultMessage: '定價' },
+    currency: { id: 'common.term.currency', defaultMessage: '幣值' },
     email: { id: 'common.term.email', defaultMessage: '信箱' },
     phone: { id: 'common.term.phone', defaultMessage: '手機' },
     username: { id: 'common.term.username', defaultMessage: '使用者名稱或 Email' },
