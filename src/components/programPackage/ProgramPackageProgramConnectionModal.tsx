@@ -90,11 +90,24 @@ const ProgramPackageProgramConnectionModal: React.FC<ProgramPackageProgramConnec
                 {
                   key: 'allPerpetualPrograms',
                   title: '所有單次課程',
-                  children: availablePrograms.map(program => ({
-                    key: program.id,
-                    title: program.title,
-                    value: `${program.id}_${program.title}`,
-                  })),
+                  children: availablePrograms
+                    .filter(program => !program.isSubscription)
+                    .map(program => ({
+                      key: program.id,
+                      title: program.title,
+                      value: `${program.id}_${program.title}`,
+                    })),
+                },
+                {
+                  key: 'allSubscriptionPrograms',
+                  title: '所有訂閱課程',
+                  children: availablePrograms
+                    .filter(program => program.isSubscription)
+                    .map(program => ({
+                      key: program.id,
+                      title: program.title,
+                      value: `${program.id}_${program.title}`,
+                    })),
                 },
               ]}
             />,
@@ -115,6 +128,7 @@ const useGetAvailableProgramCollection = (appId: string) => {
         program(where: { published_at: { _is_null: false }, is_deleted: { _eq: false }, app_id: { _eq: $appId } }) {
           id
           title
+          is_subscription
         }
       }
     `,
@@ -124,12 +138,14 @@ const useGetAvailableProgramCollection = (appId: string) => {
   const availablePrograms: {
     id: string
     title: string | null
+    isSubscription: boolean
   }[] =
     loading || error || !data
       ? []
       : data?.program.map(program => ({
           id: program.id,
           title: program.title,
+          isSubscription: program.is_subscription,
         }))
 
   return {
