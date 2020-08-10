@@ -10,6 +10,11 @@ import { AdminBlock, AdminPageTitle } from '../../../components/admin'
 import { AvatarImage } from '../../../components/common/Image'
 import PointSendingModal from '../../../components/common/PointSendingModal'
 import AdminLayout from '../../../components/layout/AdminLayout'
+import {
+  StyledModal,
+  StyledModalParagraph,
+  StyledModalTitle,
+} from '../../../components/program/ProgramDeletionAdminCard'
 import AppContext from '../../../contexts/AppContext'
 import { handleError } from '../../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../../helpers/translation'
@@ -30,6 +35,11 @@ const messages = defineMessages({
   points: { id: 'promotion.label.points', defaultMessage: '點數' },
   unitOfPoints: { id: 'promotion.label.unitOfPoints', defaultMessage: '點' },
   revokePoint: { id: 'promotion.ui.revokePoint', defaultMessage: '收回點數' },
+  revokePointWarning: {
+    id: 'promotion.text.revokeNotation',
+    defaultMessage: '系統將收回此次發送的點數，學員方並不會留下任何收回紀錄',
+  },
+  successfullyRevoked: { id: 'promotion.event.successfullyRevoked', defaultMessage: '收回成功' },
 })
 
 type PointLogProps = {
@@ -71,6 +81,7 @@ const PointHistoryAdminPage: React.FC = () => {
   const pointUnit = settings['point.unit'] || formatMessage(messages.unitOfPoints)
   const { loadingPointLogs, errorPointLogs, pointLogs, refetchPointLogs, fetchMorePointLogs } = usePointLogCollection()
   const deletePointLog = useDeletePointLog()
+  const [isRevokedModalVisible, setIsRevokedModalVisible] = useState<boolean>(false)
 
   const {
     loadingOrderLogs,
@@ -81,9 +92,12 @@ const PointHistoryAdminPage: React.FC = () => {
   } = useOrderLogWithPointsCollection()
   const [loading, setLoading] = useState(false)
 
-  const handleRevokePoint = async (id: String) => {
-    await deletePointLog(id)
-    refetchPointLogs()
+  const handleRevokePoint = (id: String) => {
+    deletePointLog(id).then(() => {
+      setIsRevokedModalVisible(false)
+      message.success(formatMessage(messages.successfullyRevoked))
+      refetchPointLogs()
+    })
   }
 
   if (loadingApp) {
@@ -182,8 +196,21 @@ const PointHistoryAdminPage: React.FC = () => {
                         <Dropdown
                           trigger={['click']}
                           overlay={
-                            <Menu onClick={() => handleRevokePoint(record.id)}>
+                            <Menu onClick={() => setIsRevokedModalVisible(true)}>
                               <Menu.Item>{formatMessage(messages.revokePoint)}</Menu.Item>
+                              <StyledModal
+                                visible={isRevokedModalVisible}
+                                onOk={() => handleRevokePoint(record.id)}
+                                okText={formatMessage(messages.revokePoint)}
+                                onCancel={() => setIsRevokedModalVisible(false)}
+                              >
+                                <StyledModalTitle className="mb-4">
+                                  {formatMessage(messages.revokePoint)}
+                                </StyledModalTitle>
+                                <StyledModalParagraph>
+                                  {formatMessage(messages.revokePointWarning)}
+                                </StyledModalParagraph>
+                              </StyledModal>
                             </Menu>
                           }
                           placement="bottomRight"
