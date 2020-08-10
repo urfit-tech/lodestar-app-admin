@@ -1,11 +1,14 @@
-import { Button, Form, Input, message } from 'antd'
+import { Form } from '@ant-design/compatible'
+import '@ant-design/compatible/assets/index.css'
+import { FormComponentProps } from '@ant-design/compatible/lib/form'
+import { Button, Input, message } from 'antd'
 import { CardProps } from 'antd/lib/card'
-import { useForm } from 'antd/lib/form/Form'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import { useAppData, useUpdateApp } from '../../hooks/app'
+import { useUpdateApp } from '../../hooks/app'
 import AdminCard from '../admin/AdminCard'
 import { StyledForm } from '../layout'
 
@@ -14,22 +17,18 @@ const messages = defineMessages({
   appVimeoProjectId: { id: 'app.label.vimeoProjectId', defaultMessage: 'Vimeo ID' },
 })
 
-const AppBasicCard: React.FC<
-  CardProps & {
+export type AppCardProps = CardProps &
+  FormComponentProps & {
     appId: string
   }
-> = ({ appId, ...cardProps }) => {
+const AppBasicCard: React.FC<AppCardProps> = ({ form, appId, ...cardProps }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
-  const { app, refetchApp, loadingApp } = useAppData(appId)
+  const { refetch, ...app } = useContext(AppContext)
   const updateApp = useUpdateApp()
-  const [loading, setLoading] = useState(false)
+  const [updating, setUpdating] = useState(false)
 
   const handleSubmit = (values: any) => {
-    if (!app) {
-      return
-    }
-    setLoading(true)
+    setUpdating(true)
     updateApp({
       variables: {
         appId: app.id,
@@ -40,51 +39,45 @@ const AppBasicCard: React.FC<
       },
     })
       .then(() => {
-        refetchApp()
+        setUpdating(false)
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        refetch && refetch()
       })
-      .catch(handleError)
-      .finally(() => setLoading(false))
+      .catch(error => handleError(error))
   }
 
   return (
-    <AdminCard {...cardProps} loading={loadingApp}>
+    <AdminCard {...cardProps} loading={updating}>
       <StyledForm
-        form={form}
-        labelAlign="left"
-        labelCol={{ md: { span: 4 } }}
-        wrapperCol={{ md: { span: 12 } }}
-        colon={false}
-        hideRequiredMark
-        initialValues={{
-          name: app?.name,
-          vimeoProjectId: app?.vimeoProjectId,
-        }}
         onFinish={handleSubmit}
+        labelCol={{ span: 24, md: { span: 4 } }}
+        wrapperCol={{ span: 24, md: { span: 12 } }}
       >
-        <Form.Item
-          label={formatMessage(messages.appName)}
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(messages.appName),
-              }),
-            },
-          ]}
-        >
-          <Input />
+        <Form.Item label={formatMessage(messages.appName)}>
+          {form.getFieldDecorator('name', {
+            initialValue: app && app.name,
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(messages.appName),
+                }),
+              },
+            ],
+          })(<Input />)}
         </Form.Item>
-        <Form.Item label={formatMessage(messages.appVimeoProjectId)} name="vimeoProjectId">
-          <Input />
+
+        <Form.Item label={formatMessage(messages.appVimeoProjectId)}>
+          {form.getFieldDecorator('vimeoProjectId', {
+            initialValue: app && app.vimeoProjectId,
+          })(<Input />)}
         </Form.Item>
 
         <Form.Item wrapperCol={{ md: { offset: 4 } }}>
           <Button className="mr-2" onClick={() => form.resetFields()}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" htmlType="submit" loading={loading}>
+          <Button type="primary" htmlType="submit" loading={updating}>
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>
@@ -93,4 +86,4 @@ const AppBasicCard: React.FC<
   )
 }
 
-export default AppBasicCard
+export default Form.create<AppCardProps>()(AppBasicCard)
