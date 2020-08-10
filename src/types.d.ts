@@ -443,6 +443,37 @@ export interface GET_CREATOR_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_INFO
+// ====================================================
+
+export interface UPDATE_MEMBER_INFO_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_INFO {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_INFO_update_member | null;
+}
+
+export interface UPDATE_MEMBER_INFOVariables {
+  memberId: string;
+  name?: string | null;
+  email?: string | null;
+  role?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_POINT_LOG_COLLECTION
 // ====================================================
 
@@ -2380,7 +2411,9 @@ export interface GET_ORDERS_order_log_order_products_product {
    */
   id: string;
   /**
-   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
+   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket /
+   * Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan /
+   * AppointmentServicePlan
    */
   type: string;
 }
@@ -3430,37 +3463,6 @@ export interface CREATE_APPOINTMENT_SCHEDULEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER_INFO
-// ====================================================
-
-export interface UPDATE_MEMBER_INFO_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_INFO {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: UPDATE_MEMBER_INFO_update_member | null;
-}
-
-export interface UPDATE_MEMBER_INFOVariables {
-  memberId: string;
-  name?: string | null;
-  email?: string | null;
-  role?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_ALLTYPE_PRODUCT_COLLECTION
 // ====================================================
 
@@ -4033,7 +4035,9 @@ export interface GET_APP_app_by_pk_app_modules {
   __typename: "app_module";
   id: any;
   /**
-   * activity | appointment | blog | invoice | learning_statistics | locale | member_card | merchandise | podcast | program_package | qrcode | social_connect | tempo_delivery | voucher
+   * activity | appointment | blog | invoice | learning_statistics | locale |
+   * member_card | merchandise | podcast | program_package | qrcode |
+   * social_connect | tempo_delivery | voucher
    */
   module_id: string;
 }
@@ -4198,7 +4202,9 @@ export interface GET_APP_BY_PK_app_by_pk_app_modules {
   __typename: "app_module";
   id: any;
   /**
-   * activity | appointment | blog | invoice | learning_statistics | locale | member_card | merchandise | podcast | program_package | qrcode | social_connect | tempo_delivery | voucher
+   * activity | appointment | blog | invoice | learning_statistics | locale |
+   * member_card | merchandise | podcast | program_package | qrcode |
+   * social_connect | tempo_delivery | voucher
    */
   module_id: string;
 }
@@ -6432,7 +6438,9 @@ export interface GET_ORDER_PRODUCT_COLLECTION_order_product_product {
    */
   id: string;
   /**
-   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
+   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket /
+   * Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan /
+   * AppointmentServicePlan
    */
   type: string;
 }
@@ -6452,7 +6460,7 @@ export interface GET_ORDER_PRODUCT_COLLECTION_order_product {
   price: any;
   started_at: any | null;
   ended_at: any | null;
-  auto_renewed: boolean | null;
+  auto_renewed: boolean;
 }
 
 export interface GET_ORDER_PRODUCT_COLLECTION {
@@ -7920,6 +7928,34 @@ export interface GET_ORDER_LOG_WITH_POINTS_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: DELETE_POINT_LOG
+// ====================================================
+
+export interface DELETE_POINT_LOG_delete_point_log {
+  __typename: "point_log_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_POINT_LOG {
+  /**
+   * delete data from the table: "point_log"
+   */
+  delete_point_log: DELETE_POINT_LOG_delete_point_log | null;
+}
+
+export interface DELETE_POINT_LOGVariables {
+  pointLogId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_POSITION_COLLECTION
 // ====================================================
 
@@ -8232,6 +8268,7 @@ export enum appointment_plan_constraint {
 export enum appointment_plan_update_column {
   created_at = "created_at",
   creator_id = "creator_id",
+  currency_id = "currency_id",
   description = "description",
   duration = "duration",
   id = "id",
@@ -8834,6 +8871,7 @@ export enum order_discount_update_column {
   description = "description",
   id = "id",
   name = "name",
+  options = "options",
   order_id = "order_id",
   price = "price",
   target = "target",
@@ -8884,6 +8922,7 @@ export enum order_product_update_column {
   accumulated_errors = "accumulated_errors",
   auto_renewed = "auto_renewed",
   created_at = "created_at",
+  currency_id = "currency_id",
   deliverables = "deliverables",
   description = "description",
   ended_at = "ended_at",
@@ -9529,6 +9568,7 @@ export enum program_plan_constraint {
  */
 export enum program_plan_update_column {
   created_at = "created_at",
+  currency_id = "currency_id",
   description = "description",
   discount_down_price = "discount_down_price",
   ended_at = "ended_at",
@@ -10454,6 +10494,7 @@ export interface appointment_plan_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   creator?: member_public_bool_exp | null;
   creator_id?: String_comparison_exp | null;
+  currency_id?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   duration?: numeric_comparison_exp | null;
   id?: uuid_comparison_exp | null;
@@ -10472,6 +10513,7 @@ export interface appointment_plan_insert_input {
   appointment_schedules?: appointment_schedule_arr_rel_insert_input | null;
   created_at?: any | null;
   creator_id?: string | null;
+  currency_id?: string | null;
   description?: string | null;
   duration?: any | null;
   id?: any | null;
@@ -11998,7 +12040,8 @@ export interface merchandise_insert_input {
 }
 
 /**
- * Boolean expression to filter rows from the table "merchandise_inventory_status". All fields are combined with a logical 'AND'.
+ * Boolean expression to filter rows from the table "merchandise_inventory_status".
+ * All fields are combined with a logical 'AND'.
  */
 export interface merchandise_inventory_status_bool_exp {
   _and?: (merchandise_inventory_status_bool_exp | null)[] | null;
@@ -12202,6 +12245,7 @@ export interface order_discount_bool_exp {
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   name?: String_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   order_id?: String_comparison_exp | null;
   order_log?: order_log_bool_exp | null;
   price?: numeric_comparison_exp | null;
@@ -12216,6 +12260,7 @@ export interface order_discount_insert_input {
   description?: string | null;
   id?: any | null;
   name?: string | null;
+  options?: any | null;
   order_id?: string | null;
   order_log?: order_log_obj_rel_insert_input | null;
   price?: any | null;
@@ -12330,6 +12375,7 @@ export interface order_product_bool_exp {
   accumulated_errors?: Int_comparison_exp | null;
   auto_renewed?: Boolean_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  currency_id?: String_comparison_exp | null;
   deliverables?: jsonb_comparison_exp | null;
   description?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
@@ -12351,6 +12397,7 @@ export interface order_product_insert_input {
   accumulated_errors?: number | null;
   auto_renewed?: boolean | null;
   created_at?: any | null;
+  currency_id?: string | null;
   deliverables?: any | null;
   description?: string | null;
   ended_at?: any | null;
@@ -14183,7 +14230,8 @@ export interface program_package_plan_bool_exp {
 }
 
 /**
- * Boolean expression to filter rows from the table "program_package_plan_enrollment". All fields are combined with a logical 'AND'.
+ * Boolean expression to filter rows from the table
+ * "program_package_plan_enrollment". All fields are combined with a logical 'AND'.
  */
 export interface program_package_plan_enrollment_bool_exp {
   _and?: (program_package_plan_enrollment_bool_exp | null)[] | null;
@@ -14297,6 +14345,7 @@ export interface program_plan_bool_exp {
   _not?: program_plan_bool_exp | null;
   _or?: (program_plan_bool_exp | null)[] | null;
   created_at?: timestamptz_comparison_exp | null;
+  currency_id?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   discount_down_price?: numeric_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
@@ -14336,6 +14385,7 @@ export interface program_plan_enrollment_bool_exp {
  */
 export interface program_plan_insert_input {
   created_at?: any | null;
+  currency_id?: string | null;
   description?: string | null;
   discount_down_price?: any | null;
   ended_at?: any | null;

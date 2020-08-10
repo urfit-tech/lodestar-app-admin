@@ -1,6 +1,6 @@
-import Icon from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
-import { Button, message, Popover, Skeleton, Table, Tabs } from 'antd'
+import Icon, { MoreOutlined } from '@ant-design/icons'
+import { useMutation, useQuery } from '@apollo/react-hooks'
+import { Button, Dropdown, Menu, message, Popover, Skeleton, Table, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useContext, useState } from 'react'
@@ -11,6 +11,7 @@ import { AvatarImage } from '../../../components/common/Image'
 import PointSendingModal from '../../../components/common/PointSendingModal'
 import AdminLayout from '../../../components/layout/AdminLayout'
 import AppContext from '../../../contexts/AppContext'
+import { handleError } from '../../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../../helpers/translation'
 import { ReactComponent as PointIcon } from '../../../images/icon/point.svg'
 import { ReactComponent as TextIcon } from '../../../images/icon/text.svg'
@@ -28,6 +29,7 @@ const messages = defineMessages({
   pointAvailableDate: { id: 'promotion.label.pointAvailableDate', defaultMessage: '點數效期' },
   points: { id: 'promotion.label.points', defaultMessage: '點數' },
   unitOfPoints: { id: 'promotion.label.unitOfPoints', defaultMessage: '點' },
+  revokePoint: { id: 'promotion.ui.revokePoint', defaultMessage: '收回點數' },
 })
 
 type PointLogProps = {
@@ -68,6 +70,8 @@ const PointHistoryAdminPage: React.FC = () => {
   const { loading: loadingApp, enabledModules, settings } = useContext(AppContext)
   const pointUnit = settings['point.unit'] || formatMessage(messages.unitOfPoints)
   const { loadingPointLogs, errorPointLogs, pointLogs, refetchPointLogs, fetchMorePointLogs } = usePointLogCollection()
+  const deletePointLog = useDeletePointLog()
+
   const {
     loadingOrderLogs,
     errorOrderLogs,
@@ -76,6 +80,11 @@ const PointHistoryAdminPage: React.FC = () => {
     fetchMoreOrderLogs,
   } = useOrderLogWithPointsCollection()
   const [loading, setLoading] = useState(false)
+
+  const handleRevokePoint = async (id: String) => {
+    await deletePointLog(id)
+    refetchPointLogs()
+  }
 
   if (loadingApp) {
     return <LoadingPage />
@@ -165,10 +174,23 @@ const PointHistoryAdminPage: React.FC = () => {
                     title: formatMessage(messages.points),
                     dataIndex: 'points',
                     render: (text, record, index) => (
-                      <StyledLabel variant="point-log">
-                        {text > 0 && '+'}
-                        {text} {pointUnit}
-                      </StyledLabel>
+                      <div className="d-flex justify-content-between">
+                        <StyledLabel variant="point-log">
+                          {text > 0 && '+'}
+                          {text} {pointUnit}
+                        </StyledLabel>
+                        <Dropdown
+                          trigger={['click']}
+                          overlay={
+                            <Menu onClick={() => handleRevokePoint(record.id)}>
+                              <Menu.Item>{formatMessage(messages.revokePoint)}</Menu.Item>
+                            </Menu>
+                          }
+                          placement="bottomRight"
+                        >
+                          <MoreOutlined className="cursor-pointer" />
+                        </Dropdown>
+                      </div>
                     ),
                   },
                 ]}
@@ -409,6 +431,30 @@ const useOrderLogWithPointsCollection = () => {
             },
           }),
   }
+}
+
+const useDeletePointLog = () => {
+  const [deletePointLogHandler] = useMutation<types.DELETE_POINT_LOG>(gql`
+    mutation DELETE_POINT_LOG($pointLogId: uuid!) {
+      delete_point_log(where: { id: { _eq: $pointLogId } }) {
+        affected_rows
+      }
+    }
+  `)
+
+  const deletePointLog: (pointLogId: String) => Promise<void> = async pointLogId => {
+    try {
+      await deletePointLogHandler({
+        variables: {
+          pointLogId,
+        },
+      })
+    } catch (err) {
+      handleError(err)
+    }
+  }
+
+  return deletePointLog
 }
 
 export default PointHistoryAdminPage
