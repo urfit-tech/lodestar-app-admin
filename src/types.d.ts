@@ -4,6 +4,365 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_ACTIVITY_BASIC
+// ====================================================
+
+export interface UPDATE_ACTIVITY_BASIC_update_activity {
+  __typename: "activity_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ACTIVITY_BASIC_delete_activity_category {
+  __typename: "activity_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ACTIVITY_BASIC_insert_activity_category {
+  __typename: "activity_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ACTIVITY_BASIC {
+  /**
+   * update data of the table: "activity"
+   */
+  update_activity: UPDATE_ACTIVITY_BASIC_update_activity | null;
+  /**
+   * delete data from the table: "activity_category"
+   */
+  delete_activity_category: UPDATE_ACTIVITY_BASIC_delete_activity_category | null;
+  /**
+   * insert data into the table: "activity_category"
+   */
+  insert_activity_category: UPDATE_ACTIVITY_BASIC_insert_activity_category | null;
+}
+
+export interface UPDATE_ACTIVITY_BASICVariables {
+  activityId: any;
+  title: string;
+  isParticipantsVisible: boolean;
+  activityCategories: activity_category_insert_input[];
+  supportLocales?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_ACTIVITY_COVER
+// ====================================================
+
+export interface UPDATE_ACTIVITY_COVER_update_activity {
+  __typename: "activity_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ACTIVITY_COVER {
+  /**
+   * update data of the table: "activity"
+   */
+  update_activity: UPDATE_ACTIVITY_COVER_update_activity | null;
+}
+
+export interface UPDATE_ACTIVITY_COVERVariables {
+  activityId: any;
+  coverUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_ACTIVITY_INTRODUCTION
+// ====================================================
+
+export interface UPDATE_ACTIVITY_INTRODUCTION_update_activity {
+  __typename: "activity_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ACTIVITY_INTRODUCTION {
+  /**
+   * update data of the table: "activity"
+   */
+  update_activity: UPDATE_ACTIVITY_INTRODUCTION_update_activity | null;
+}
+
+export interface UPDATE_ACTIVITY_INTRODUCTIONVariables {
+  activityId: any;
+  description?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ACTIVITY_PARTICIPANTS
+// ====================================================
+
+export interface GET_ACTIVITY_PARTICIPANTS_activity_enrollment_activity_ticket {
+  __typename: "activity_ticket";
+  id: any;
+  title: string;
+}
+
+export interface GET_ACTIVITY_PARTICIPANTS_activity_enrollment {
+  __typename: "activity_enrollment";
+  activity_session_id: any | null;
+  order_log_id: string | null;
+  member_id: string | null;
+  member_name: string | null;
+  member_email: string | null;
+  member_phone: string | null;
+  attended: boolean | null;
+  /**
+   * An object relationship
+   */
+  activity_ticket: GET_ACTIVITY_PARTICIPANTS_activity_enrollment_activity_ticket | null;
+}
+
+export interface GET_ACTIVITY_PARTICIPANTS_activity_session {
+  __typename: "activity_session";
+  id: any;
+  title: string;
+  started_at: any;
+}
+
+export interface GET_ACTIVITY_PARTICIPANTS {
+  /**
+   * fetch data from the table: "activity_enrollment"
+   */
+  activity_enrollment: GET_ACTIVITY_PARTICIPANTS_activity_enrollment[];
+  /**
+   * fetch data from the table: "activity_session"
+   */
+  activity_session: GET_ACTIVITY_PARTICIPANTS_activity_session[];
+}
+
+export interface GET_ACTIVITY_PARTICIPANTSVariables {
+  activityId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_ACTIVITY
+// ====================================================
+
+export interface PUBLISH_ACTIVITY_update_activity {
+  __typename: "activity_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_ACTIVITY {
+  /**
+   * update data of the table: "activity"
+   */
+  update_activity: PUBLISH_ACTIVITY_update_activity | null;
+}
+
+export interface PUBLISH_ACTIVITYVariables {
+  activityId: any;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_ACTIVITY_SESSION
+// ====================================================
+
+export interface INSERT_ACTIVITY_SESSION_insert_activity_session {
+  __typename: "activity_session_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_ACTIVITY_SESSION {
+  /**
+   * insert data into the table: "activity_session"
+   */
+  insert_activity_session: INSERT_ACTIVITY_SESSION_insert_activity_session | null;
+}
+
+export interface INSERT_ACTIVITY_SESSIONVariables {
+  activityId: any;
+  title: string;
+  startedAt?: any | null;
+  endedAt?: any | null;
+  location: string;
+  description?: string | null;
+  threshold?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_ACTIVITY_SESSION
+// ====================================================
+
+export interface UPDATE_ACTIVITY_SESSION_update_activity_session {
+  __typename: "activity_session_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ACTIVITY_SESSION {
+  /**
+   * update data of the table: "activity_session"
+   */
+  update_activity_session: UPDATE_ACTIVITY_SESSION_update_activity_session | null;
+}
+
+export interface UPDATE_ACTIVITY_SESSIONVariables {
+  activitySessionId: any;
+  title: string;
+  startedAt?: any | null;
+  endedAt?: any | null;
+  location: string;
+  description?: string | null;
+  threshold?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_ACTIVITY_TICKET
+// ====================================================
+
+export interface INSERT_ACTIVITY_TICKET_insert_activity_ticket {
+  __typename: "activity_ticket_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_ACTIVITY_TICKET {
+  /**
+   * insert data into the table: "activity_ticket"
+   */
+  insert_activity_ticket: INSERT_ACTIVITY_TICKET_insert_activity_ticket | null;
+}
+
+export interface INSERT_ACTIVITY_TICKETVariables {
+  activityId: any;
+  title: string;
+  activitySessionTickets: activity_session_ticket_insert_input[];
+  isPublished: boolean;
+  startedAt: any;
+  endedAt: any;
+  price: any;
+  count?: number | null;
+  description?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_ACTIVITY_TICKET
+// ====================================================
+
+export interface UPDATE_ACTIVITY_TICKET_update_activity_ticket {
+  __typename: "activity_ticket_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ACTIVITY_TICKET_delete_activity_session_ticket {
+  __typename: "activity_session_ticket_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ACTIVITY_TICKET_insert_activity_session_ticket {
+  __typename: "activity_session_ticket_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ACTIVITY_TICKET {
+  /**
+   * update data of the table: "activity_ticket"
+   */
+  update_activity_ticket: UPDATE_ACTIVITY_TICKET_update_activity_ticket | null;
+  /**
+   * delete data from the table: "activity_session_ticket"
+   */
+  delete_activity_session_ticket: UPDATE_ACTIVITY_TICKET_delete_activity_session_ticket | null;
+  /**
+   * insert data into the table: "activity_session_ticket"
+   */
+  insert_activity_session_ticket: UPDATE_ACTIVITY_TICKET_insert_activity_session_ticket | null;
+}
+
+export interface UPDATE_ACTIVITY_TICKETVariables {
+  activityTicketId: any;
+  title: string;
+  activitySessionTickets: activity_session_ticket_insert_input[];
+  isPublished: boolean;
+  startedAt: any;
+  endedAt: any;
+  price: any;
+  count?: number | null;
+  description?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_POST_ROLE
 // ====================================================
 
@@ -2308,23 +2667,23 @@ export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PERPETUAL_PROGRAM_COLLECTION
+// GraphQL query operation: GET_AVAILABLE_PROGRAM_COLLECTION
 // ====================================================
 
-export interface GET_PERPETUAL_PROGRAM_COLLECTION_program {
+export interface GET_AVAILABLE_PROGRAM_COLLECTION_program {
   __typename: "program";
   id: any;
   title: string;
 }
 
-export interface GET_PERPETUAL_PROGRAM_COLLECTION {
+export interface GET_AVAILABLE_PROGRAM_COLLECTION {
   /**
    * fetch data from the table: "program"
    */
-  program: GET_PERPETUAL_PROGRAM_COLLECTION_program[];
+  program: GET_AVAILABLE_PROGRAM_COLLECTION_program[];
 }
 
-export interface GET_PERPETUAL_PROGRAM_COLLECTIONVariables {
+export interface GET_AVAILABLE_PROGRAM_COLLECTIONVariables {
   appId: string;
 }
 
@@ -2411,9 +2770,7 @@ export interface GET_ORDERS_order_log_order_products_product {
    */
   id: string;
   /**
-   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket /
-   * Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan /
-   * AppointmentServicePlan
+   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
    */
   type: string;
 }
@@ -2684,365 +3041,6 @@ export interface UPDATE_DELIVER_INFOVariables {
   deliverMessage?: string | null;
   deliveredAt?: any | null;
   orderLogId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_ACTIVITY_BASIC
-// ====================================================
-
-export interface UPDATE_ACTIVITY_BASIC_update_activity {
-  __typename: "activity_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_ACTIVITY_BASIC_delete_activity_category {
-  __typename: "activity_category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_ACTIVITY_BASIC_insert_activity_category {
-  __typename: "activity_category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_ACTIVITY_BASIC {
-  /**
-   * update data of the table: "activity"
-   */
-  update_activity: UPDATE_ACTIVITY_BASIC_update_activity | null;
-  /**
-   * delete data from the table: "activity_category"
-   */
-  delete_activity_category: UPDATE_ACTIVITY_BASIC_delete_activity_category | null;
-  /**
-   * insert data into the table: "activity_category"
-   */
-  insert_activity_category: UPDATE_ACTIVITY_BASIC_insert_activity_category | null;
-}
-
-export interface UPDATE_ACTIVITY_BASICVariables {
-  activityId: any;
-  title: string;
-  isParticipantsVisible: boolean;
-  activityCategories: activity_category_insert_input[];
-  supportLocales?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_ACTIVITY_COVER
-// ====================================================
-
-export interface UPDATE_ACTIVITY_COVER_update_activity {
-  __typename: "activity_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_ACTIVITY_COVER {
-  /**
-   * update data of the table: "activity"
-   */
-  update_activity: UPDATE_ACTIVITY_COVER_update_activity | null;
-}
-
-export interface UPDATE_ACTIVITY_COVERVariables {
-  activityId: any;
-  coverUrl?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_ACTIVITY_INTRODUCTION
-// ====================================================
-
-export interface UPDATE_ACTIVITY_INTRODUCTION_update_activity {
-  __typename: "activity_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_ACTIVITY_INTRODUCTION {
-  /**
-   * update data of the table: "activity"
-   */
-  update_activity: UPDATE_ACTIVITY_INTRODUCTION_update_activity | null;
-}
-
-export interface UPDATE_ACTIVITY_INTRODUCTIONVariables {
-  activityId: any;
-  description?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ACTIVITY_PARTICIPANTS
-// ====================================================
-
-export interface GET_ACTIVITY_PARTICIPANTS_activity_enrollment_activity_ticket {
-  __typename: "activity_ticket";
-  id: any;
-  title: string;
-}
-
-export interface GET_ACTIVITY_PARTICIPANTS_activity_enrollment {
-  __typename: "activity_enrollment";
-  activity_session_id: any | null;
-  order_log_id: string | null;
-  member_id: string | null;
-  member_name: string | null;
-  member_email: string | null;
-  member_phone: string | null;
-  attended: boolean | null;
-  /**
-   * An object relationship
-   */
-  activity_ticket: GET_ACTIVITY_PARTICIPANTS_activity_enrollment_activity_ticket | null;
-}
-
-export interface GET_ACTIVITY_PARTICIPANTS_activity_session {
-  __typename: "activity_session";
-  id: any;
-  title: string;
-  started_at: any;
-}
-
-export interface GET_ACTIVITY_PARTICIPANTS {
-  /**
-   * fetch data from the table: "activity_enrollment"
-   */
-  activity_enrollment: GET_ACTIVITY_PARTICIPANTS_activity_enrollment[];
-  /**
-   * fetch data from the table: "activity_session"
-   */
-  activity_session: GET_ACTIVITY_PARTICIPANTS_activity_session[];
-}
-
-export interface GET_ACTIVITY_PARTICIPANTSVariables {
-  activityId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: PUBLISH_ACTIVITY
-// ====================================================
-
-export interface PUBLISH_ACTIVITY_update_activity {
-  __typename: "activity_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface PUBLISH_ACTIVITY {
-  /**
-   * update data of the table: "activity"
-   */
-  update_activity: PUBLISH_ACTIVITY_update_activity | null;
-}
-
-export interface PUBLISH_ACTIVITYVariables {
-  activityId: any;
-  publishedAt?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_ACTIVITY_SESSION
-// ====================================================
-
-export interface INSERT_ACTIVITY_SESSION_insert_activity_session {
-  __typename: "activity_session_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface INSERT_ACTIVITY_SESSION {
-  /**
-   * insert data into the table: "activity_session"
-   */
-  insert_activity_session: INSERT_ACTIVITY_SESSION_insert_activity_session | null;
-}
-
-export interface INSERT_ACTIVITY_SESSIONVariables {
-  activityId: any;
-  title: string;
-  startedAt?: any | null;
-  endedAt?: any | null;
-  location: string;
-  description?: string | null;
-  threshold?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_ACTIVITY_SESSION
-// ====================================================
-
-export interface UPDATE_ACTIVITY_SESSION_update_activity_session {
-  __typename: "activity_session_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_ACTIVITY_SESSION {
-  /**
-   * update data of the table: "activity_session"
-   */
-  update_activity_session: UPDATE_ACTIVITY_SESSION_update_activity_session | null;
-}
-
-export interface UPDATE_ACTIVITY_SESSIONVariables {
-  activitySessionId: any;
-  title: string;
-  startedAt?: any | null;
-  endedAt?: any | null;
-  location: string;
-  description?: string | null;
-  threshold?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_ACTIVITY_TICKET
-// ====================================================
-
-export interface INSERT_ACTIVITY_TICKET_insert_activity_ticket {
-  __typename: "activity_ticket_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface INSERT_ACTIVITY_TICKET {
-  /**
-   * insert data into the table: "activity_ticket"
-   */
-  insert_activity_ticket: INSERT_ACTIVITY_TICKET_insert_activity_ticket | null;
-}
-
-export interface INSERT_ACTIVITY_TICKETVariables {
-  activityId: any;
-  title: string;
-  activitySessionTickets: activity_session_ticket_insert_input[];
-  isPublished: boolean;
-  startedAt: any;
-  endedAt: any;
-  price: any;
-  count?: number | null;
-  description?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_ACTIVITY_TICKET
-// ====================================================
-
-export interface UPDATE_ACTIVITY_TICKET_update_activity_ticket {
-  __typename: "activity_ticket_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_ACTIVITY_TICKET_delete_activity_session_ticket {
-  __typename: "activity_session_ticket_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_ACTIVITY_TICKET_insert_activity_session_ticket {
-  __typename: "activity_session_ticket_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_ACTIVITY_TICKET {
-  /**
-   * update data of the table: "activity_ticket"
-   */
-  update_activity_ticket: UPDATE_ACTIVITY_TICKET_update_activity_ticket | null;
-  /**
-   * delete data from the table: "activity_session_ticket"
-   */
-  delete_activity_session_ticket: UPDATE_ACTIVITY_TICKET_delete_activity_session_ticket | null;
-  /**
-   * insert data into the table: "activity_session_ticket"
-   */
-  insert_activity_session_ticket: UPDATE_ACTIVITY_TICKET_insert_activity_session_ticket | null;
-}
-
-export interface UPDATE_ACTIVITY_TICKETVariables {
-  activityTicketId: any;
-  title: string;
-  activitySessionTickets: activity_session_ticket_insert_input[];
-  isPublished: boolean;
-  startedAt: any;
-  endedAt: any;
-  price: any;
-  count?: number | null;
-  description?: string | null;
 }
 
 /* tslint:disable */
@@ -3743,153 +3741,6 @@ export interface DELETE_PROGRAM_ROLEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ACTIVITY_ADMIN
-// ====================================================
-
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_categories_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_categories {
-  __typename: "activity_category";
-  id: any;
-  /**
-   * An object relationship
-   */
-  category: GET_ACTIVITY_ADMIN_activity_by_pk_activity_categories_category;
-  position: number;
-}
-
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_enrollments_aggregate_aggregate {
-  __typename: "activity_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_enrollments_aggregate {
-  __typename: "activity_enrollment_aggregate";
-  aggregate: GET_ACTIVITY_ADMIN_activity_by_pk_activity_enrollments_aggregate_aggregate | null;
-}
-
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_enrollments_aggregate_aggregate {
-  __typename: "activity_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_enrollments_aggregate {
-  __typename: "activity_enrollment_aggregate";
-  aggregate: GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_enrollments_aggregate_aggregate | null;
-}
-
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions {
-  __typename: "activity_session";
-  id: any;
-  title: string;
-  description: string | null;
-  location: string;
-  threshold: any | null;
-  started_at: any;
-  ended_at: any;
-  /**
-   * An aggregated array relationship
-   */
-  activity_enrollments_aggregate: GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_enrollments_aggregate;
-}
-
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_session_tickets_activity_session {
-  __typename: "activity_session";
-  id: any;
-  title: string;
-}
-
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_session_tickets {
-  __typename: "activity_session_ticket";
-  id: any;
-  /**
-   * An object relationship
-   */
-  activity_session: GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_session_tickets_activity_session;
-}
-
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_ticket_enrollments_aggregate_aggregate {
-  __typename: "activity_ticket_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_ticket_enrollments_aggregate {
-  __typename: "activity_ticket_enrollment_aggregate";
-  aggregate: GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_ticket_enrollments_aggregate_aggregate | null;
-}
-
-export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets {
-  __typename: "activity_ticket";
-  id: any;
-  title: string;
-  description: string | null;
-  price: any;
-  /**
-   * unlimited as 99999999
-   */
-  count: number;
-  started_at: any;
-  ended_at: any;
-  is_published: boolean;
-  /**
-   * An array relationship
-   */
-  activity_session_tickets: GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_session_tickets[];
-  /**
-   * An aggregated array relationship
-   */
-  activity_ticket_enrollments_aggregate: GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_ticket_enrollments_aggregate;
-}
-
-export interface GET_ACTIVITY_ADMIN_activity_by_pk {
-  __typename: "activity";
-  id: any;
-  title: string;
-  description: string | null;
-  cover_url: string | null;
-  is_participants_visible: boolean;
-  organizer_id: string;
-  published_at: any | null;
-  support_locales: any | null;
-  /**
-   * An array relationship
-   */
-  activity_categories: GET_ACTIVITY_ADMIN_activity_by_pk_activity_categories[];
-  /**
-   * An aggregated array relationship
-   */
-  activity_enrollments_aggregate: GET_ACTIVITY_ADMIN_activity_by_pk_activity_enrollments_aggregate;
-  /**
-   * An array relationship
-   */
-  activity_sessions: GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions[];
-  /**
-   * An array relationship
-   */
-  activity_tickets: GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets[];
-}
-
-export interface GET_ACTIVITY_ADMIN {
-  /**
-   * fetch data from the table: "activity" using primary key columns
-   */
-  activity_by_pk: GET_ACTIVITY_ADMIN_activity_by_pk | null;
-}
-
-export interface GET_ACTIVITY_ADMINVariables {
-  activityId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_LOGINED_AT
 // ====================================================
 
@@ -3926,9 +3777,7 @@ export interface GET_APP_app_by_pk_app_modules {
   __typename: "app_module";
   id: any;
   /**
-   * activity | appointment | blog | invoice | learning_statistics | locale |
-   * member_card | merchandise | podcast | program_package | qrcode |
-   * social_connect | tempo_delivery | voucher
+   * activity | appointment | blog | invoice | learning_statistics | locale | member_card | merchandise | podcast | program_package | qrcode | social_connect | tempo_delivery | voucher
    */
   module_id: string;
 }
@@ -4193,6 +4042,138 @@ export interface INSERT_ACTIVITYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_ACTIVITY_ADMIN
+// ====================================================
+
+export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_categories {
+  __typename: "activity_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_ACTIVITY_ADMIN_activity_by_pk_activity_categories_category;
+}
+
+export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_session_tickets_activity_session {
+  __typename: "activity_session";
+  id: any;
+  title: string;
+}
+
+export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_session_tickets {
+  __typename: "activity_session_ticket";
+  id: any;
+  /**
+   * An object relationship
+   */
+  activity_session: GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_session_tickets_activity_session;
+}
+
+export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_ticket_enrollments_aggregate_aggregate {
+  __typename: "activity_ticket_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_ticket_enrollments_aggregate {
+  __typename: "activity_ticket_enrollment_aggregate";
+  aggregate: GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_ticket_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets {
+  __typename: "activity_ticket";
+  id: any;
+  title: string;
+  started_at: any;
+  ended_at: any;
+  price: any;
+  /**
+   * unlimited as 99999999
+   */
+  count: number;
+  description: string | null;
+  is_published: boolean;
+  /**
+   * An array relationship
+   */
+  activity_session_tickets: GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_session_tickets[];
+  /**
+   * An aggregated array relationship
+   */
+  activity_ticket_enrollments_aggregate: GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets_activity_ticket_enrollments_aggregate;
+}
+
+export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_enrollments_aggregate_aggregate {
+  __typename: "activity_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_enrollments_aggregate {
+  __typename: "activity_enrollment_aggregate";
+  aggregate: GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions {
+  __typename: "activity_session";
+  id: any;
+  title: string;
+  started_at: any;
+  ended_at: any;
+  location: string;
+  threshold: any | null;
+  description: string | null;
+  /**
+   * An aggregated array relationship
+   */
+  activity_enrollments_aggregate: GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions_activity_enrollments_aggregate;
+}
+
+export interface GET_ACTIVITY_ADMIN_activity_by_pk {
+  __typename: "activity";
+  id: any;
+  title: string;
+  description: string | null;
+  cover_url: string | null;
+  is_participants_visible: boolean;
+  organizer_id: string;
+  published_at: any | null;
+  support_locales: any | null;
+  /**
+   * An array relationship
+   */
+  activity_categories: GET_ACTIVITY_ADMIN_activity_by_pk_activity_categories[];
+  /**
+   * An array relationship
+   */
+  activity_tickets: GET_ACTIVITY_ADMIN_activity_by_pk_activity_tickets[];
+  /**
+   * An array relationship
+   */
+  activity_sessions: GET_ACTIVITY_ADMIN_activity_by_pk_activity_sessions[];
+}
+
+export interface GET_ACTIVITY_ADMIN {
+  /**
+   * fetch data from the table: "activity" using primary key columns
+   */
+  activity_by_pk: GET_ACTIVITY_ADMIN_activity_by_pk | null;
+}
+
+export interface GET_ACTIVITY_ADMINVariables {
+  activityId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_APP_BY_PK
 // ====================================================
 
@@ -4200,9 +4181,7 @@ export interface GET_APP_BY_PK_app_by_pk_app_modules {
   __typename: "app_module";
   id: any;
   /**
-   * activity | appointment | blog | invoice | learning_statistics | locale |
-   * member_card | merchandise | podcast | program_package | qrcode |
-   * social_connect | tempo_delivery | voucher
+   * activity | appointment | blog | invoice | learning_statistics | locale | member_card | merchandise | podcast | program_package | qrcode | social_connect | tempo_delivery | voucher
    */
   module_id: string;
 }
@@ -6436,9 +6415,7 @@ export interface GET_ORDER_PRODUCT_COLLECTION_order_product_product {
    */
   id: string;
   /**
-   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket /
-   * Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan /
-   * AppointmentServicePlan
+   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
    */
   type: string;
 }
@@ -7488,44 +7465,6 @@ export interface GET_PROGRAM_PROGRESSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: INSERT_PROGRAM
-// ====================================================
-
-export interface INSERT_PROGRAM_insert_program_returning {
-  __typename: "program";
-  id: any;
-}
-
-export interface INSERT_PROGRAM_insert_program {
-  __typename: "program_mutation_response";
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: INSERT_PROGRAM_insert_program_returning[];
-}
-
-export interface INSERT_PROGRAM {
-  /**
-   * insert data into the table: "program"
-   */
-  insert_program: INSERT_PROGRAM_insert_program | null;
-}
-
-export interface INSERT_PROGRAMVariables {
-  ownerId: string;
-  instructorId: string;
-  appId: string;
-  title: string;
-  isSubscription: boolean;
-  programCategories: program_category_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_PROGRAM_PACKAGE_COLLECTION
 // ====================================================
 
@@ -8017,6 +7956,44 @@ export interface DELETE_POINT_LOG {
 
 export interface DELETE_POINT_LOGVariables {
   pointLogId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_PROGRAM
+// ====================================================
+
+export interface INSERT_PROGRAM_insert_program_returning {
+  __typename: "program";
+  id: any;
+}
+
+export interface INSERT_PROGRAM_insert_program {
+  __typename: "program_mutation_response";
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_PROGRAM_insert_program_returning[];
+}
+
+export interface INSERT_PROGRAM {
+  /**
+   * insert data into the table: "program"
+   */
+  insert_program: INSERT_PROGRAM_insert_program | null;
+}
+
+export interface INSERT_PROGRAMVariables {
+  ownerId: string;
+  instructorId: string;
+  appId: string;
+  title: string;
+  isSubscription: boolean;
+  programCategories: program_category_insert_input[];
 }
 
 /* tslint:disable */
@@ -12109,8 +12086,7 @@ export interface merchandise_insert_input {
 }
 
 /**
- * Boolean expression to filter rows from the table "merchandise_inventory_status".
- * All fields are combined with a logical 'AND'.
+ * Boolean expression to filter rows from the table "merchandise_inventory_status". All fields are combined with a logical 'AND'.
  */
 export interface merchandise_inventory_status_bool_exp {
   _and?: (merchandise_inventory_status_bool_exp | null)[] | null;
@@ -14299,8 +14275,7 @@ export interface program_package_plan_bool_exp {
 }
 
 /**
- * Boolean expression to filter rows from the table
- * "program_package_plan_enrollment". All fields are combined with a logical 'AND'.
+ * Boolean expression to filter rows from the table "program_package_plan_enrollment". All fields are combined with a logical 'AND'.
  */
 export interface program_package_plan_enrollment_bool_exp {
   _and?: (program_package_plan_enrollment_bool_exp | null)[] | null;

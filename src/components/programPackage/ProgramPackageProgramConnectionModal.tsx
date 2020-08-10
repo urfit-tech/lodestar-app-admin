@@ -30,7 +30,7 @@ const ProgramPackageProgramConnectionModal: React.FC<ProgramPackageProgramConnec
 }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useContext(AppContext)
-  const { perpetualPrograms } = useGetPerpetualProgramCollection(appId)
+  const { availablePrograms } = useGetAvailableProgramCollection(appId)
   const [isLoading, setLoading] = useState<boolean>(false)
   const insertProgramPackageProgram = useInsertProgramPackageProgram(programPackageId)
 
@@ -90,7 +90,7 @@ const ProgramPackageProgramConnectionModal: React.FC<ProgramPackageProgramConnec
                 {
                   key: 'allPerpetualPrograms',
                   title: '所有單次課程',
-                  children: perpetualPrograms.map(program => ({
+                  children: availablePrograms.map(program => ({
                     key: program.id,
                     title: program.title,
                     value: `${program.id}_${program.title}`,
@@ -105,21 +105,14 @@ const ProgramPackageProgramConnectionModal: React.FC<ProgramPackageProgramConnec
   )
 }
 
-const useGetPerpetualProgramCollection = (appId: string) => {
+const useGetAvailableProgramCollection = (appId: string) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_PERPETUAL_PROGRAM_COLLECTION,
-    types.GET_PERPETUAL_PROGRAM_COLLECTIONVariables
+    types.GET_AVAILABLE_PROGRAM_COLLECTION,
+    types.GET_AVAILABLE_PROGRAM_COLLECTIONVariables
   >(
     gql`
-      query GET_PERPETUAL_PROGRAM_COLLECTION($appId: String!) {
-        program(
-          where: {
-            is_subscription: { _eq: false }
-            published_at: { _is_null: false }
-            is_deleted: { _eq: false }
-            app_id: { _eq: $appId }
-          }
-        ) {
+      query GET_AVAILABLE_PROGRAM_COLLECTION($appId: String!) {
+        program(where: { published_at: { _is_null: false }, is_deleted: { _eq: false }, app_id: { _eq: $appId } }) {
           id
           title
         }
@@ -128,7 +121,7 @@ const useGetPerpetualProgramCollection = (appId: string) => {
     { variables: { appId } },
   )
 
-  const perpetualPrograms: {
+  const availablePrograms: {
     id: string
     title: string | null
   }[] =
@@ -142,7 +135,7 @@ const useGetPerpetualProgramCollection = (appId: string) => {
   return {
     loading,
     error,
-    perpetualPrograms,
+    availablePrograms,
     refetch,
   }
 }
