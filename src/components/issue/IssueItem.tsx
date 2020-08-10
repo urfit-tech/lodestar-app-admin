@@ -1,9 +1,7 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { HeartFilled, HeartOutlined, MessageOutlined, MoreOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Dropdown, Input, Menu, message, Tag, Typography } from 'antd'
+import { Button, Dropdown, Form, Input, Menu, Tag, Typography } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment'
@@ -13,7 +11,7 @@ import styled, { ThemeContext } from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import MemberAvatar from '../../containers/common/MemberAvatar'
 import { useAuth } from '../../contexts/AuthContext'
-import { rgba } from '../../helpers'
+import { handleError, rgba } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramRoleProps } from '../../types/program'
@@ -60,7 +58,7 @@ const messages = defineMessages({
   markIssueAs: { id: 'program.label.markIssueAs', defaultMessage: '標記為 {status}' },
 })
 
-type IssueItemProps = FormComponentProps & {
+const IssueItem: React.FC<{
   programRoles: ProgramRoleProps[]
   issueId: string
   title: string
@@ -73,9 +71,7 @@ type IssueItemProps = FormComponentProps & {
   onRefetch?: () => void
   defaultRepliesVisible?: boolean
   showSolvedCheckbox?: boolean
-}
-const IssueItem: React.FC<IssueItemProps> = ({
-  form,
+}> = ({
   programRoles,
   issueId,
   title,
@@ -92,8 +88,18 @@ const IssueItem: React.FC<IssueItemProps> = ({
   const { formatMessage } = useIntl()
   const [qIssueId] = useQueryParam('issueId', StringParam)
   const [qIssueReplyId] = useQueryParam('issueReplyId', StringParam)
+  const [form] = useForm()
   const { currentMemberId, currentUserRole } = useAuth()
   const theme = useContext(ThemeContext)
+
+  const [updateIssue] = useMutation<types.UPDATE_ISSUE, types.UPDATE_ISSUEVariables>(UPDATE_ISSUE)
+  const [deleteIssue] = useMutation<types.DELETE_ISSUE, types.DELETE_ISSUEVariables>(DELETE_ISSUE)
+  const [insertIssueReaction] = useMutation<types.INSERT_ISSUE_REACTION, types.INSERT_ISSUE_REACTIONVariables>(
+    INSERT_ISSUE_REACTION,
+  )
+  const [deleteIssueReaction] = useMutation<types.DELETE_ISSUE_REACTION, types.DELETE_ISSUE_REACTIONVariables>(
+    DELETE_ISSUE_REACTION,
+  )
 
   const [editing, setEditing] = useState<boolean>(false)
   const [focus, setFocus] = useState(!qIssueReplyId && qIssueId === issueId)
@@ -108,30 +114,36 @@ const IssueItem: React.FC<IssueItemProps> = ({
     }
   }, [currentMemberId, reactedMemberIds])
 
-  const updateIssue = useUpdateIssue(issueId)
-  const deleteIssue = useDeleteIssue(issueId)
-  const insertIssueReaction = useInsertIssueReaction(issueId)
-  const deleteIssueReaction = useDeleteIssueReaction(issueId)
-
   const toggleReaction = async (reacted: boolean) => {
-    reacted ? await deleteIssueReaction(currentMemberId || '') : await insertIssueReaction(currentMemberId || '')
+    reacted
+      ? await deleteIssueReaction({
+          variables: {
+            issueId,
+            memberId: currentMemberId || '',
+          },
+        })
+      : await insertIssueReaction({
+          variables: {
+            issueId,
+            memberId: currentMemberId || '',
+          },
+        })
     onRefetch && onRefetch()
   }
 
-  const handleSubmit = () => {
-    form.validateFieldsAndScroll((error, { title, description }) => {
-      if (!error) {
-        updateIssue({
-          title,
-          description: description.toRAW(),
-        })
-          .then(() => {
-            setEditing(false)
-            onRefetch && onRefetch()
-          })
-          .catch(() => message.error(formatMessage(messages.editIssueFailed)))
-      }
+  const handleSubmit = (values: any) => {
+    updateIssue({
+      variables: {
+        issueId,
+        title: values.title,
+        description: values.description.toRAW(),
+      },
     })
+      .then(() => {
+        setEditing(false)
+        onRefetch && onRefetch()
+      })
+      .catch(handleError)
   }
 
   return (
@@ -195,9 +207,12 @@ const IssueItem: React.FC<IssueItemProps> = ({
                 <Menu.Item
                   onClick={() =>
                     updateIssue({
-                      title,
-                      description,
-                      solvedAt: solvedAt ? undefined : new Date(),
+                      variables: {
+                        issueId,
+                        title,
+                        description,
+                        solvedAt: solvedAt ? undefined : new Date(),
+                      },
                     }).then(() => onRefetch && onRefetch())
                   }
                 >
@@ -219,17 +234,20 @@ const IssueItem: React.FC<IssueItemProps> = ({
       <IssueContentBlock>
         {editing ? (
           <Form
-            onSubmit={e => {
-              e.preventDefault()
-              handleSubmit()
+            form={form}
+            initialValues={{
+              title,
+              description: BraftEditor.createEditorState(description),
             }}
+            onFinish={handleSubmit}
           >
-            <Form.Item>{form.getFieldDecorator('title', { initialValue: title })(<Input />)}</Form.Item>
-            <Form.Item>
-              {form.getFieldDecorator('description', {
-                initialValue: BraftEditor.createEditorState(description),
-              })(<StyledEditor controls={['bold', 'italic', 'underline', 'separator', 'media']} />)}
+            <Form.Item name="title">
+              <Input />
             </Form.Item>
+            <Form.Item name="description">
+              <StyledEditor controls={['bold', 'italic', 'underline', 'separator', 'media']} />
+            </Form.Item>
+
             <Form.Item>
               <Button className="mr-2" onClick={() => setEditing(false)}>
                 {formatMessage(commonMessages.ui.cancel)}
@@ -285,82 +303,45 @@ const IssueItem: React.FC<IssueItemProps> = ({
   )
 }
 
-const useUpdateIssue = (issueId: string) => {
-  const [updateIssue] = useMutation<types.UPDATE_ISSUE, types.UPDATE_ISSUEVariables>(gql`
-    mutation UPDATE_ISSUE($issueId: uuid!, $title: String, $description: String, $solvedAt: timestamptz) {
-      update_issue(
-        where: { id: { _eq: $issueId } }
-        _set: { title: $title, description: $description, solved_at: $solvedAt }
-      ) {
-        affected_rows
-      }
+const UPDATE_ISSUE = gql`
+  mutation UPDATE_ISSUE($issueId: uuid!, $title: String, $description: String, $solvedAt: timestamptz) {
+    update_issue(
+      where: { id: { _eq: $issueId } }
+      _set: { title: $title, description: $description, solved_at: $solvedAt }
+    ) {
+      affected_rows
     }
-  `)
-
-  return ({ title, description, solvedAt }: { title: string; description: string; solvedAt?: Date }) =>
-    updateIssue({
-      variables: {
-        issueId,
-        title,
-        description,
-        solvedAt,
-      },
-    })
-}
-
-const useDeleteIssue = (issueId: string) => {
-  const [deleteIssue] = useMutation<types.DELETE_ISSUE, types.DELETE_ISSUEVariables>(gql`
-    mutation DELETE_ISSUE($issueId: uuid!) {
-      delete_issue_reply_reaction(where: { issue_reply: { issue_id: { _eq: $issueId } } }) {
-        affected_rows
-      }
-      delete_issue_reaction(where: { issue_id: { _eq: $issueId } }) {
-        affected_rows
-      }
-      delete_issue_reply(where: { issue_id: { _eq: $issueId } }) {
-        affected_rows
-      }
-      delete_issue(where: { id: { _eq: $issueId } }) {
-        affected_rows
-      }
+  }
+`
+const DELETE_ISSUE = gql`
+  mutation DELETE_ISSUE($issueId: uuid!) {
+    delete_issue_reply_reaction(where: { issue_reply: { issue_id: { _eq: $issueId } } }) {
+      affected_rows
     }
-  `)
+    delete_issue_reaction(where: { issue_id: { _eq: $issueId } }) {
+      affected_rows
+    }
+    delete_issue_reply(where: { issue_id: { _eq: $issueId } }) {
+      affected_rows
+    }
+    delete_issue(where: { id: { _eq: $issueId } }) {
+      affected_rows
+    }
+  }
+`
+const INSERT_ISSUE_REACTION = gql`
+  mutation INSERT_ISSUE_REACTION($memberId: String!, $issueId: uuid!) {
+    insert_issue_reaction(objects: { member_id: $memberId, issue_id: $issueId }) {
+      affected_rows
+    }
+  }
+`
+const DELETE_ISSUE_REACTION = gql`
+  mutation DELETE_ISSUE_REACTION($memberId: String!, $issueId: uuid!) {
+    delete_issue_reaction(where: { member_id: { _eq: $memberId }, issue_id: { _eq: $issueId } }) {
+      affected_rows
+    }
+  }
+`
 
-  return () => deleteIssue({ variables: { issueId } })
-}
-
-const useInsertIssueReaction = (issueId: string) => {
-  const [insertIssueReaction] = useMutation<types.INSERT_ISSUE_REACTION, types.INSERT_ISSUE_REACTIONVariables>(
-    gql`
-      mutation INSERT_ISSUE_REACTION($memberId: String!, $issueId: uuid!) {
-        insert_issue_reaction(objects: { member_id: $memberId, issue_id: $issueId }) {
-          affected_rows
-        }
-      }
-    `,
-  )
-
-  return (memberId: string) =>
-    insertIssueReaction({
-      variables: {
-        issueId,
-        memberId,
-      },
-    })
-}
-
-const useDeleteIssueReaction = (issueId: string) => {
-  const [deleteIssueReaction] = useMutation<types.DELETE_ISSUE_REACTION, types.DELETE_ISSUE_REACTIONVariables>(
-    gql`
-      mutation DELETE_ISSUE_REACTION($memberId: String!, $issueId: uuid!) {
-        delete_issue_reaction(where: { member_id: { _eq: $memberId }, issue_id: { _eq: $issueId } }) {
-          affected_rows
-        }
-      }
-    `,
-  )
-
-  return (memberId: string) => deleteIssueReaction({ variables: { issueId, memberId } })
-}
-
-export default Form.create<IssueItemProps>()(IssueItem)
+export default IssueItem

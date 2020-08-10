@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { sum, uniqBy } from 'ramda'
 import { useContext } from 'react'
@@ -519,34 +519,3 @@ const GET_PROGRAM_PROGRESS = gql`
     }
   }
 `
-
-export const useCreateProgram = () => {
-  const [createProgram] = useMutation(gql`
-    mutation INSERT_PROGRAM(
-      $ownerId: String!
-      $instructorId: String!
-      $appId: String!
-      $title: String!
-      $isSubscription: Boolean!
-      $programCategories: [program_category_insert_input!]!
-    ) {
-      insert_program(
-        objects: {
-          app_id: $appId
-          title: $title
-          is_subscription: $isSubscription
-          program_roles: {
-            data: [{ member_id: $ownerId, name: "owner" }, { member_id: $instructorId, name: "instructor" }]
-          }
-          program_categories: { data: $programCategories }
-        }
-      ) {
-        returning {
-          id
-        }
-      }
-    }
-  `)
-
-  return createProgram
-}
