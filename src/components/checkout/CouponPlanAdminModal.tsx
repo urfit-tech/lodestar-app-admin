@@ -210,15 +210,15 @@ const CouponPlanAdminModal: React.FC<
           <Input.Group compact>
             <Form.Item name="startedAt">
               <DatePicker
-                showTime={{ format: 'HH:mm' }}
                 format="YYYY-MM-DD HH:mm"
+                showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
                 placeholder={formatMessage(commonMessages.term.startedAt)}
               />
             </Form.Item>
             <Form.Item name="endedAt">
               <DatePicker
-                showTime={{ format: 'HH:mm' }}
                 format="YYYY-MM-DD HH:mm"
+                showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
                 placeholder={formatMessage(commonMessages.term.endedAt)}
               />
             </Form.Item>

@@ -38,7 +38,7 @@ const ActivityCollectionAdminPage: React.FC = () => {
                   memberId: values.creatorId || currentMemberId,
                 }).then(({ data }) => {
                   const activityId = data?.insert_activity?.returning[0]?.id
-                  activityId && history.push(activityId)
+                  activityId && history.push(`/activities/${activityId}`)
                 })
               }
             />

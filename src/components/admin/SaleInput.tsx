@@ -61,7 +61,7 @@ const SaleInput: React.FC<{
         <Form.Item className="d-inline-block mb-0 mr-3">
           <DatePicker
             format="YYYY-MM-DD HH:mm"
-            showTime={{ format: 'HH:mm' }}
+            showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
             showToday={false}
             placeholder={formatMessage(commonMessages.label.salePriceEndTime)}
             value={value?.soldAt ? moment(value.soldAt) : null}

@@ -158,8 +158,8 @@ const ActivityTicketAdminModal: React.FC<
           ]}
         >
           <DatePicker
-            showTime={{ format: 'HH:mm' }}
             format="YYYY-MM-DD HH:mm"
+            showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
             disabledDate={current => !!current && current < moment().startOf('day')}
           />
         </Form.Item>
@@ -174,8 +174,8 @@ const ActivityTicketAdminModal: React.FC<
           ]}
         >
           <DatePicker
-            showTime={{ format: 'HH:mm' }}
             format="YYYY-MM-DD HH:mm"
+            showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
             disabledDate={current => !!current && current < moment().startOf('day')}
           />
         </Form.Item>
