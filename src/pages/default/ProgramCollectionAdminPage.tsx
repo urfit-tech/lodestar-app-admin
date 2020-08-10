@@ -1,6 +1,6 @@
 import Icon, { EditOutlined, FileTextFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Popover, Spin, Tabs } from 'antd'
+import { Button, Popover, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext, useEffect } from 'react'
 import { useIntl } from 'react-intl'
@@ -123,7 +123,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
       <Tabs defaultActiveKey="draft">
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
-            {loadingProgramPreviews && <Spin />}
+            {loadingProgramPreviews && <Skeleton active />}
 
             <div className="row py-3">
               <PositionAdminLayout<ProgramPreviewProps>

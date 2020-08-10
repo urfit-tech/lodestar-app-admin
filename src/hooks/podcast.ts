@@ -1,6 +1,9 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { PodcastProgramColumnProps } from '../components/podcast/PodcastProgramCollectionAdminTable'
+import axios from 'axios'
+import { useEffect, useState } from 'react'
+import { useAuth } from '../contexts/AuthContext'
 import types from '../types'
 import { PeriodType } from '../types/general'
 import { PodcastPlanProps, PodcastProgramProps } from '../types/podcast'
@@ -314,3 +317,106 @@ const UPDATE_PODCAST_PROGRAM_CONTENT = gql`
     }
   }
 `
+
+export type PodcastProgramContent = {
+  id: string
+  title: string
+  abstract: string | null
+  description: string | null
+  coverUrl: string | null
+  publishedAt: Date
+  categories: {
+    id: string
+    name: string
+  }[]
+  url: string
+  instructorIds: string[]
+}
+
+export const usePodcastProgramContent = (podcastProgramId: string) => {
+  const { authToken } = useAuth()
+  const [url, setUrl] = useState('')
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_PODCAST_PROGRAM_WITH_BODY,
+    types.GET_PODCAST_PROGRAM_WITH_BODYVariables
+  >(
+    gql`
+      query GET_PODCAST_PROGRAM_WITH_BODY($podcastProgramId: uuid!) {
+        podcast_program_by_pk(id: $podcastProgramId) {
+          id
+          title
+          cover_url
+          abstract
+          content_type
+          published_at
+          creator_id
+          podcast_program_categories {
+            category {
+              id
+              name
+            }
+          }
+          podcast_program_body {
+            description
+          }
+          podcast_program_roles {
+            name
+            member_id
+          }
+        }
+      }
+    `,
+    { variables: { podcastProgramId } },
+  )
+
+  const contentType = data?.podcast_program_by_pk?.content_type
+  const contentPath =
+    contentType &&
+    `${process.env.REACT_APP_STREAMING_APP}/_definst_/mp3:amazons3/${process.env.REACT_APP_S3_BUCKET}/audios/${process.env.REACT_APP_ID}/${podcastProgramId}.${contentType}`
+
+  useEffect(() => {
+    contentPath &&
+      axios
+        .post<{ result: { url: string } }>(
+          `${process.env.REACT_APP_BACKEND_ENDPOINT}/sys/secure-streaming`,
+          {
+            contentPath,
+            parameters: {},
+          },
+          {
+            headers: { authorization: `Bearer ${authToken}` },
+          },
+        )
+        .then(({ data }) => {
+          setUrl(data.result.url)
+        })
+  }, [contentPath, setUrl, authToken])
+
+  const podcastProgram: PodcastProgramContent | null =
+    loading || error || !data || !data.podcast_program_by_pk
+      ? null
+      : {
+          id: data.podcast_program_by_pk.id || '',
+          title: data.podcast_program_by_pk.title || '',
+          abstract: data.podcast_program_by_pk.abstract || '',
+          description: data.podcast_program_by_pk.podcast_program_body?.description || null,
+          coverUrl: data.podcast_program_by_pk.cover_url || null,
+          publishedAt: data.podcast_program_by_pk.published_at && new Date(data.podcast_program_by_pk.published_at),
+          categories: (data.podcast_program_by_pk.podcast_program_categories || []).map(programCategory => ({
+            id: programCategory.category.id || '',
+            name: programCategory.category.name || '',
+          })),
+          url,
+          instructorIds:
+            data.podcast_program_by_pk.podcast_program_roles
+              .filter(role => role.name === 'instructor')
+              .map(role => role.member_id) || [],
+        }
+
+  return {
+    loadingPodcastProgram: loading,
+    errorPodcastProgram: error,
+    podcastProgram,
+    refetchPodcastProgram: refetch,
+  }
+}

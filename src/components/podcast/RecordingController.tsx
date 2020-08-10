@@ -4,7 +4,7 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import { desktopViewMixin, durationFormatter } from '../../helpers'
-import { commonMessages, podcastMessages } from '../../helpers/translation'
+import { podcastMessages } from '../../helpers/translation'
 import { ReactComponent as Backward5Icon } from '../../images/icon/backward-5.svg'
 import { ReactComponent as Forward5Icon } from '../../images/icon/forward-5.svg'
 import { ReactComponent as PauseCircleIcon } from '../../images/icon/pause-circle.svg'
@@ -74,19 +74,6 @@ const StyledBarIconButton = styled(Button)<{ height?: string; iconSize?: string 
     color: rgba(255, 255, 255, 0.5) !important;
   }
 `
-const StyledButton = styled(Button)`
-  height: 40px;
-  color: white;
-  span {
-    line-height: 1.5;
-  }
-  &:hover,
-  &:focus,
-  &:active {
-    color: var(--gray);
-    border-color: var(--gray);
-  }
-`
 const TooltipText = styled.span`
   font-size: 12px;
 `
@@ -100,8 +87,6 @@ const RecordingController: React.FC<{
   duration: number
   isPlaying?: boolean
   isEditing?: boolean
-  isDeleteDisabled?: boolean
-  isUploadDisabled?: boolean
   onPlay?: () => void
   onPause?: () => void
   onForward?: () => void
@@ -116,8 +101,6 @@ const RecordingController: React.FC<{
   duration,
   isPlaying,
   isEditing,
-  isDeleteDisabled,
-  isUploadDisabled,
   onPlay,
   onPause,
   onForward,
@@ -125,7 +108,6 @@ const RecordingController: React.FC<{
   onTrim,
   onDelete,
   onUpload,
-  onEdit,
 }) => {
   const { formatMessage } = useIntl()
 
@@ -208,34 +190,12 @@ const RecordingController: React.FC<{
                   type="vertical"
                   style={{ top: 0, marginRight: '0', height: '24px', backgroundColor: 'white' }}
                 />
-                {isEditing && (
-                  <>
-                    <Tooltip title={<TooltipText>{formatMessage(commonMessages.ui.delete)}</TooltipText>}>
-                      <StyledBarIconButton
-                        disabled={isDeleteDisabled}
-                        type="link"
-                        className="p-0"
-                        onClick={() => onDelete && onDelete()}
-                      >
-                        <TrashOIcon />
-                      </StyledBarIconButton>
-                    </Tooltip>
-                    <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.upload)}</TooltipText>}>
-                      <StyledBarIconButton
-                        disabled={isUploadDisabled}
-                        type="link"
-                        className="p-0"
-                        onClick={() => onUpload && onUpload()}
-                      >
-                        <UploadIcon />
-                      </StyledBarIconButton>
-                    </Tooltip>
-                  </>
-                )}
+                <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.upload)}</TooltipText>}>
+                  <StyledBarIconButton type="link" className="p-0" onClick={() => onUpload && onUpload()}>
+                    <UploadIcon />
+                  </StyledBarIconButton>
+                </Tooltip>
               </Responsive.Desktop>
-              <StyledButton className="py-2 px-3" size="small" ghost onClick={() => onEdit && onEdit()}>
-                {isEditing ? formatMessage(commonMessages.ui.cancel) : formatMessage(commonMessages.ui.edit)}
-              </StyledButton>
             </StyledAction>
           </div>
         </div>

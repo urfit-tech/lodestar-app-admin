@@ -30,20 +30,9 @@ export const useMember = (memberId: string) => {
     { variables: { memberId } },
   )
 
-  const member: MemberProps =
+  const member: MemberProps | null =
     loading || error || !data
-      ? {
-          id: '',
-          name: '',
-          email: '',
-          username: '',
-          pictureUrl: '',
-          description: '',
-          abstract: '',
-          title: '',
-          memberTags: [],
-          role: '',
-        }
+      ? null
       : {
           id: data?.member_by_pk?.id || '',
           name: data?.member_by_pk?.name || '',

@@ -1,17 +1,14 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { MailOutlined } from '@ant-design/icons'
-import { Button, Input } from 'antd'
+import { Button, Form, Input } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
-import styled from 'styled-components'
-import { BREAK_POINT } from '../../components/common/Responsive'
+import styled, { css } from 'styled-components'
 import DefaultLayout from '../../components/layout/DefaultLayout'
 import AppContext from '../../contexts/AppContext'
-import { handleError } from '../../helpers'
+import { desktopViewMixin, handleError } from '../../helpers'
 import { codeMessages, commonMessages, errorMessages } from '../../helpers/translation'
 
 const messages = defineMessages({
@@ -27,9 +24,11 @@ const StyledContainer = styled.div`
     font-size: 14px;
   }
 
-  @media (min-width: ${BREAK_POINT}px) {
-    padding: 4rem;
-  }
+  ${desktopViewMixin(
+    css`
+      padding: 4rem;
+    `,
+  )}
 `
 const StyledTitle = styled.h1`
   margin-bottom: 2rem;
@@ -41,36 +40,29 @@ const StyledTitle = styled.h1`
   letter-spacing: 0.8px;
 `
 
-const ForgotPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
-  const app = useContext(AppContext)
+const ForgotPasswordPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
+  const [form] = useForm()
+  const app = useContext(AppContext)
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    form.validateFields((error, values) => {
-      if (error) {
-        return
-      }
-
-      axios
-        .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/forgot-password`, {
-          appId: app.id,
-          account: values.email,
-        })
-        .then(({ data: { code, message, result } }) => {
-          if (code === 'SUCCESS') {
-            history.push(`/check-email?email=${values.email}&type=forgot-password`)
-          } else {
-            message.error(formatMessage(codeMessages[code as keyof typeof codeMessages]))
-          }
-        })
-        .catch(handleError)
-        .finally(() => setLoading(false))
-
-      setLoading(true)
-    })
+  const handleSubmit = (values: any) => {
+    setLoading(true)
+    axios
+      .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/forgot-password`, {
+        appId: app.id,
+        account: values.email,
+      })
+      .then(({ data: { code, message, result } }) => {
+        if (code === 'SUCCESS') {
+          history.push(`/check-email?email=${values.email}&type=forgot-password`)
+        } else {
+          message.error(formatMessage(codeMessages[code as keyof typeof codeMessages]))
+        }
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
@@ -78,23 +70,24 @@ const ForgotPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
       <StyledContainer>
         <StyledTitle>{formatMessage(messages.forgotPassword)}</StyledTitle>
 
-        <Form onSubmit={handleSubmit}>
-          <Form.Item>
-            {form.getFieldDecorator('email', {
-              validateTrigger: 'onSubmit',
-              rules: [
-                {
-                  required: true,
-                  message: formatMessage(errorMessages.form.isRequired, {
-                    field: formatMessage(commonMessages.term.email),
-                  }),
-                },
-                { type: 'email', message: formatMessage(errorMessages.form.emailFormat) },
-              ],
-            })(<Input placeholder={formatMessage(messages.enterRegisteredEmail)} suffix={<MailOutlined />} />)}
+        <Form form={form} colon={false} hideRequiredMark onFinish={handleSubmit}>
+          <Form.Item
+            name="email"
+            rules={[
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.term.email),
+                }),
+              },
+              { type: 'email', message: formatMessage(errorMessages.form.emailFormat) },
+            ]}
+          >
+            <Input placeholder={formatMessage(messages.enterRegisteredEmail)} suffix={<MailOutlined />} />
           </Form.Item>
+
           <Form.Item className="m-0">
-            <Button htmlType="submit" type="primary" block loading={loading}>
+            <Button type="primary" htmlType="submit" block loading={loading}>
               {formatMessage(commonMessages.ui.confirm)}
             </Button>
           </Form.Item>
@@ -104,4 +97,4 @@ const ForgotPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
   )
 }
 
-export default Form.create<FormComponentProps>()(ForgotPasswordPage)
+export default ForgotPasswordPage

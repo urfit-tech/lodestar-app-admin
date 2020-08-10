@@ -1,5 +1,4 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
+import { Form } from 'antd'
 import styled from 'styled-components'
 import settings from '../../settings'
 

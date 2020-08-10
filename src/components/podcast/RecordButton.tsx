@@ -33,9 +33,10 @@ const StyledDuration = styled.span`
 const RecordButton: React.FC<
   ButtonProps & {
     onStart?: () => void
-    onStop?: (audioBuffer: AudioBuffer | null) => void
+    onStop?: () => void
+    onGetAudio?: (audioBuffer: AudioBuffer | null) => void
   }
-> = ({ onStart, onStop, ...buttonProps }) => {
+> = ({ onStart, onStop, onGetAudio, ...buttonProps }) => {
   const [isRecording, setIsRecording] = useState(false)
   const [startedAt, setStartedAt] = useState(0)
   const [duration, setDuration] = useState(0)
@@ -48,7 +49,7 @@ const RecordButton: React.FC<
       const _recorder = new AudioRecorder(stream)
       _recorder.addEventListener('dataavailable', async (e: any) => {
         const audioBuffer = await decodeAudio(e.data)
-        onStop && onStop(audioBuffer)
+        onGetAudio && onGetAudio(audioBuffer)
         setRecorder(null)
       })
 
@@ -56,10 +57,11 @@ const RecordButton: React.FC<
     }
 
     !recorder && initRecorder().then(recorder => setRecorder(recorder))
-  }, [recorder, onStop])
+  }, [recorder, onGetAudio])
 
   const handleClickRecordButton = () => {
     if (isRecording) {
+      onStop && onStop()
       recorder?.stop()
       recorder?.stream.getTracks().forEach((track: any) => track.stop())
       setIsRecording(false)

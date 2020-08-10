@@ -1,7 +1,5 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
-import { Button, DatePicker, Input, InputNumber } from 'antd'
+import { Button, DatePicker, Form, Input, InputNumber } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -25,8 +23,9 @@ export type VoucherPlanFields = {
   startedAt?: Date
   endedAt?: Date
 }
-type VoucherPlanAdminModalProps = AdminModalProps &
-  FormComponentProps & {
+
+const VoucherPlanAdminModal: React.FC<
+  AdminModalProps & {
     voucherPlan?: VoucherPlanProps
     onSubmit?: (
       setVisible: React.Dispatch<React.SetStateAction<boolean>>,
@@ -34,20 +33,20 @@ type VoucherPlanAdminModalProps = AdminModalProps &
       values: VoucherPlanFields,
     ) => void
   }
-const VoucherPlanAdminModal: React.FC<VoucherPlanAdminModalProps> = ({ form, voucherPlan, onSubmit, ...props }) => {
+> = ({ voucherPlan, onSubmit, ...props }) => {
   const { formatMessage } = useIntl()
+  const [form] = useForm()
   const [loading, setLoading] = useState(false)
 
   const handleClick = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
-    form.validateFields((error, values) => {
-      if (error) {
-        return
-      }
-
-      if (onSubmit) {
-        onSubmit(setVisible, setLoading, values)
-      }
-    })
+    form
+      .validateFields()
+      .then((values: any) => {
+        if (onSubmit) {
+          onSubmit(setVisible, setLoading, values)
+        }
+      })
+      .catch(() => {})
   }
 
   return (
@@ -67,77 +66,84 @@ const VoucherPlanAdminModal: React.FC<VoucherPlanAdminModalProps> = ({ form, vou
       maskClosable={false}
       {...props}
     >
-      <Form hideRequiredMark colon={false}>
-        <Form.Item label={formatMessage(promotionMessages.term.voucherPlanTitle)}>
-          {form.getFieldDecorator('title', {
-            initialValue: voucherPlan ? voucherPlan.title : '',
-            rules: [
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(promotionMessages.term.voucherPlanTitle),
-                }),
-              },
-            ],
-          })(<Input type="text" />)}
+      <Form
+        form={form}
+        layout="vertical"
+        colon={false}
+        hideRequiredMark
+        initialValues={{
+          title: voucherPlan?.title,
+          voucherPlanProducts: voucherPlan?.productIds || [],
+          productQuantityLimit: voucherPlan?.productQuantityLimit || 1,
+          startedAt: voucherPlan?.startedAt ? moment(voucherPlan.startedAt) : null,
+          endedAt: voucherPlan?.endedAt ? moment(voucherPlan.endedAt) : null,
+          description: voucherPlan?.description,
+        }}
+      >
+        <Form.Item
+          label={formatMessage(promotionMessages.term.voucherPlanTitle)}
+          name="title"
+          rules={[
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(promotionMessages.term.voucherPlanTitle),
+              }),
+            },
+          ]}
+        >
+          <Input />
         </Form.Item>
 
         {!voucherPlan && (
-          <Form.Item label={formatMessage(promotionMessages.term.voucherCodes)}>
-            {form.getFieldDecorator('voucherCodes', {
-              rules: [{ required: true, message: formatMessage(errorMessages.form.voucherCodes) }],
-            })(<PlanCodeSelector planType="voucher" />)}
+          <Form.Item
+            label={formatMessage(promotionMessages.term.voucherCodes)}
+            name="voucherCodes"
+            rules={[{ required: true, message: formatMessage(errorMessages.form.voucherCodes) }]}
+          >
+            <PlanCodeSelector planType="voucher" />
           </Form.Item>
         )}
 
-        <Form.Item label={formatMessage(messages.exchangeItems)}>
-          {form.getFieldDecorator('voucherPlanProducts', {
-            initialValue: voucherPlan ? voucherPlan.productIds : [],
-            rules: [{ required: true, message: formatMessage(errorMessages.form.exchangeItems) }],
-          })(<ProductSelector allowTypes={['Program', 'Card', 'ActivityTicket', 'ProgramPackage']} />)}
+        <Form.Item
+          label={formatMessage(messages.exchangeItems)}
+          name="voucherPlanProducts"
+          rules={[{ required: true, message: formatMessage(errorMessages.form.exchangeItems) }]}
+        >
+          <ProductSelector allowTypes={['Program', 'Card', 'ActivityTicket', 'ProgramPackage']} />
         </Form.Item>
 
-        <Form.Item label={formatMessage(messages.exchangeItemsAmount)}>
-          {form.getFieldDecorator('productQuantityLimit', {
-            initialValue: voucherPlan ? voucherPlan.productQuantityLimit : 1,
-            rules: [{ required: true, message: formatMessage(errorMessages.form.exchangeItemsAmount) }],
-          })(<InputNumber min={1} />)}
+        <Form.Item
+          label={formatMessage(messages.exchangeItemsAmount)}
+          name="productQuantityLimit"
+          rules={[{ required: true, message: formatMessage(errorMessages.form.exchangeItemsAmount) }]}
+        >
+          <InputNumber min={1} />
         </Form.Item>
 
-        <Form.Item label={formatMessage(promotionMessages.label.availableDateRange)}>
+        <Form.Item label={formatMessage(promotionMessages.label.availableDateRange)} name="startedAt">
           <Form.Item className="d-inline-block m-0">
-            {form.getFieldDecorator('startedAt', {
-              initialValue: voucherPlan && voucherPlan.startedAt ? moment(voucherPlan.startedAt) : null,
-            })(
-              <DatePicker
-                placeholder={formatMessage(commonMessages.term.startedAt)}
-                format="YYYY-MM-DD HH:mm"
-                showTime={{ defaultValue: moment('00:00:00', 'HH:mm') }}
-              />,
-            )}
+            <DatePicker
+              format="YYYY-MM-DD HH:mm"
+              showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+              placeholder={formatMessage(commonMessages.term.startedAt)}
+            />
           </Form.Item>
           <span className="d-inline-block px-2">-</span>
-          <Form.Item className="d-inline-block m-0">
-            {form.getFieldDecorator('endedAt', {
-              initialValue: voucherPlan && voucherPlan.endedAt ? moment(voucherPlan.endedAt) : null,
-            })(
-              <DatePicker
-                placeholder={formatMessage(commonMessages.term.endedAt)}
-                format="YYYY-MM-DD HH:mm"
-                showTime={{ defaultValue: moment('23:59:59', 'HH:mm') }}
-              />,
-            )}
+          <Form.Item className="d-inline-block m-0" name="endedAt">
+            <DatePicker
+              format="YYYY-MM-DD HH:mm"
+              showTime={{ defaultValue: moment('23:59:59', 'HH:mm:ss') }}
+              placeholder={formatMessage(commonMessages.term.endedAt)}
+            />
           </Form.Item>
         </Form.Item>
-        <Form.Item label={formatMessage(promotionMessages.term.description)}>
-          {form.getFieldDecorator('description', {
-            initialValue: voucherPlan ? voucherPlan.description : '',
-            rules: [{ required: false }],
-          })(<Input.TextArea rows={4} placeholder={formatMessage(commonMessages.label.optional)} />)}
+        <Form.Item label={formatMessage(promotionMessages.term.description)} name="description">
+          <Input.TextArea rows={4} placeholder={formatMessage(commonMessages.label.optional)} />
         </Form.Item>
       </Form>
     </AdminModal>
   )
 }
 
-export default Form.create<VoucherPlanAdminModalProps>()(VoucherPlanAdminModal)
+export default VoucherPlanAdminModal

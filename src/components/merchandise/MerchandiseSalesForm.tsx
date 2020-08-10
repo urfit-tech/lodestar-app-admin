@@ -93,13 +93,23 @@ const MerchandiseSalesForm: React.FC<MerchandiseSalesFormProps> = ({ form, merch
           <Form.Item label={formatMessage(commonMessages.term.startedAt)} className="mb-0">
             {form.getFieldDecorator('startedAt', {
               initialValue: merchandise.startedAt && moment(merchandise.startedAt),
-            })(<DatePicker format="YYYY-MM-DD HH:mm" showTime={{ format: 'HH:mm' }} />)}
+            })(
+              <DatePicker
+                format="YYYY-MM-DD HH:mm"
+                showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+              />,
+            )}
           </Form.Item>
 
           <Form.Item label={formatMessage(commonMessages.term.endedAt)}>
             {form.getFieldDecorator('endedAt', {
               initialValue: merchandise.endedAt && moment(merchandise.endedAt),
-            })(<DatePicker format="YYYY-MM-DD HH:mm" showTime={{ format: 'HH:mm' }} showToday={false} />)}
+            })(
+              <DatePicker
+                format="YYYY-MM-DD HH:mm"
+                showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
+              />,
+            )}
           </Form.Item>
         </div>
       </div>

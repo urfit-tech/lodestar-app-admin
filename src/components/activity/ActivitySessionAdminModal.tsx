@@ -1,50 +1,54 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
-import { Button, Checkbox, DatePicker, Input, InputNumber } from 'antd'
+import { Button, Checkbox, DatePicker, Form, Input, InputNumber } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { handleError } from '../../helpers'
 import { activityMessages, commonMessages, errorMessages } from '../../helpers/translation'
+import { ActivitySessionProps } from '../../types/activity'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
-import { ActivitySessionProps } from './ActivitySessionsAdminBlock'
 
-type ActivitySessionAdminModalProps = AdminModalProps &
-  FormComponentProps & {
+const ActivitySessionAdminModal: React.FC<
+  AdminModalProps & {
     activitySession?: ActivitySessionProps
-    onSubmit?: (
-      setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-      setVisible: React.Dispatch<React.SetStateAction<boolean>>,
-      values: any,
-    ) => void
+    onSubmit?: (values: {
+      title: string
+      startedAt: Date
+      endedAt: Date
+      location: string
+      threshold: number | null
+    }) => Promise<any>
+    refetch?: () => void
   }
-const ActivitySessionAdminModal: React.FC<ActivitySessionAdminModalProps> = ({
-  form,
-  activitySession,
-  onSubmit,
-  ...props
-}) => {
+> = ({ activitySession, onSubmit, refetch, ...props }) => {
   const { formatMessage } = useIntl()
+  const [form] = useForm()
   const [loading, setLoading] = useState(false)
-  const [withThreshold, setWithThreshold] = useState<boolean>(
-    !!activitySession && typeof activitySession.threshold === 'number',
-  )
+  const [withThreshold, setWithThreshold] = useState(typeof activitySession?.threshold === 'number')
 
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
-    form.validateFields((error, values) => {
-      if (error) {
-        return
-      }
-
-      if (onSubmit) {
-        onSubmit(setLoading, setVisible, {
-          ...values,
-          activitySessionId: activitySession ? activitySession.id : undefined,
-          description: null,
+    form
+      .validateFields()
+      .then((values: any) => {
+        if (!onSubmit) {
+          return
+        }
+        setLoading(true)
+        onSubmit({
+          title: values.title,
+          startedAt: values.startedAt.toDate(),
+          endedAt: values.endedAt.toDate(),
+          location: values.location,
           threshold: withThreshold ? values.threshold : null,
         })
-      }
-    })
+          .then(() => {
+            refetch && refetch()
+            setVisible(false)
+          })
+          .catch(handleError)
+          .finally(() => setLoading(false))
+      })
+      .catch(() => {})
   }
 
   return (
@@ -64,83 +68,93 @@ const ActivitySessionAdminModal: React.FC<ActivitySessionAdminModalProps> = ({
       )}
       {...props}
     >
-      <Form hideRequiredMark>
-        <Form.Item label={formatMessage(activityMessages.term.sessionTitle)} colon={false}>
-          {form.getFieldDecorator('title', {
-            rules: [
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.term.title),
-                }),
-              },
-            ],
-            initialValue: activitySession ? activitySession.title : '',
-          })(<Input />)}
+      <Form
+        form={form}
+        layout="vertical"
+        colon={false}
+        hideRequiredMark
+        initialValues={{
+          title: activitySession?.title || '',
+          startedAt: activitySession ? moment(activitySession.startedAt) : null,
+          endedAt: activitySession ? moment(activitySession.endedAt) : null,
+          location: activitySession?.location || '',
+          threshold: activitySession?.threshold || null,
+        }}
+      >
+        <Form.Item
+          label={formatMessage(activityMessages.term.sessionTitle)}
+          name="title"
+          rules={[
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(commonMessages.term.title),
+              }),
+            },
+          ]}
+        >
+          <Input />
         </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.term.startedAt)} colon={false}>
-          {form.getFieldDecorator('startedAt', {
-            rules: [
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.term.startedAt),
-                }),
-              },
-            ],
-            initialValue: activitySession ? moment(activitySession.startedAt) : null,
-          })(
-            <DatePicker
-              showTime={{ format: 'HH:mm' }}
-              format="YYYY-MM-DD HH:mm"
-              disabledDate={current => !!current && current < moment().startOf('day')}
-            />,
-          )}
+        <Form.Item
+          label={formatMessage(commonMessages.term.startedAt)}
+          name="startedAt"
+          rules={[
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(commonMessages.term.startedAt),
+              }),
+            },
+          ]}
+        >
+          <DatePicker
+            format="YYYY-MM-DD HH:mm"
+            showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+            disabledDate={current => !!current && current < moment().startOf('day')}
+          />
         </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.term.endedAt)} colon={false}>
-          {form.getFieldDecorator('endedAt', {
-            rules: [
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.term.endedAt),
-                }),
-              },
-            ],
-            initialValue: activitySession ? moment(activitySession.endedAt) : null,
-          })(
-            <DatePicker
-              showTime={{ format: 'HH:mm' }}
-              format="YYYY-MM-DD HH:mm"
-              disabledDate={current => !!current && current < moment().startOf('day')}
-            />,
-          )}
+        <Form.Item
+          label={formatMessage(commonMessages.term.endedAt)}
+          name="endedAt"
+          rules={[
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(commonMessages.term.endedAt),
+              }),
+            },
+          ]}
+        >
+          <DatePicker
+            format="YYYY-MM-DD HH:mm"
+            showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
+            disabledDate={current => !!current && current < moment().startOf('day')}
+          />
         </Form.Item>
-        <Form.Item label={formatMessage(activityMessages.term.location)} colon={false}>
-          {form.getFieldDecorator('location', {
-            rules: [
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(activityMessages.term.location),
-                }),
-              },
-            ],
-            initialValue: activitySession ? activitySession.location : '',
-          })(<Input />)}
+        <Form.Item
+          label={formatMessage(activityMessages.term.location)}
+          name="location"
+          rules={[
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(activityMessages.term.location),
+              }),
+            },
+          ]}
+        >
+          <Input />
         </Form.Item>
 
         <Checkbox defaultChecked={withThreshold} onChange={e => setWithThreshold(e.target.checked)}>
           {formatMessage(activityMessages.term.threshold)}
         </Checkbox>
-        <Form.Item className={withThreshold ? 'd-block' : 'd-none'}>
-          {form.getFieldDecorator('threshold', {
-            initialValue: activitySession && activitySession.threshold ? activitySession.threshold : 0,
-          })(<InputNumber min={0} />)}
+        <Form.Item className={withThreshold ? 'd-block' : 'd-none'} name="threshold">
+          <InputNumber min={0} />
         </Form.Item>
       </Form>
     </AdminModal>
   )
 }
 
-export default Form.create<ActivitySessionAdminModalProps>()(ActivitySessionAdminModal)
+export default ActivitySessionAdminModal

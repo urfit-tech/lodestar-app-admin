@@ -2748,115 +2748,6 @@ export interface UPDATE_ACTIVITY_BASICVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ACTIVITY_COLLECTION_ADMIN
-// ====================================================
-
-export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_enrollments_aggregate_aggregate {
-  __typename: "activity_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_enrollments_aggregate {
-  __typename: "activity_enrollment_aggregate";
-  aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_enrollments_aggregate_aggregate | null;
-}
-
-export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate_min {
-  __typename: "activity_session_min_fields";
-  started_at: any | null;
-}
-
-export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate_max {
-  __typename: "activity_session_max_fields";
-  ended_at: any | null;
-}
-
-export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate {
-  __typename: "activity_session_aggregate_fields";
-  min: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate_min | null;
-  max: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate_max | null;
-}
-
-export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate {
-  __typename: "activity_session_aggregate";
-  aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate | null;
-}
-
-export interface GET_ACTIVITY_COLLECTION_ADMIN_activity {
-  __typename: "activity";
-  id: any;
-  title: string;
-  cover_url: string | null;
-  published_at: any | null;
-  is_participants_visible: boolean;
-  /**
-   * An aggregated array relationship
-   */
-  activity_enrollments_aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_enrollments_aggregate;
-  /**
-   * An aggregated array relationship
-   */
-  activity_sessions_aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate;
-}
-
-export interface GET_ACTIVITY_COLLECTION_ADMIN {
-  /**
-   * fetch data from the table: "activity"
-   */
-  activity: GET_ACTIVITY_COLLECTION_ADMIN_activity[];
-}
-
-export interface GET_ACTIVITY_COLLECTION_ADMINVariables {
-  memberId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_ACTIVITY
-// ====================================================
-
-export interface INSERT_ACTIVITY_insert_activity_returning {
-  __typename: "activity";
-  id: any;
-}
-
-export interface INSERT_ACTIVITY_insert_activity {
-  __typename: "activity_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: INSERT_ACTIVITY_insert_activity_returning[];
-}
-
-export interface INSERT_ACTIVITY {
-  /**
-   * insert data into the table: "activity"
-   */
-  insert_activity: INSERT_ACTIVITY_insert_activity | null;
-}
-
-export interface INSERT_ACTIVITYVariables {
-  title: string;
-  description: string;
-  memberId: string;
-  appId: string;
-  activityCategories: activity_category_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_ACTIVITY_COVER
 // ====================================================
 
@@ -4187,6 +4078,113 @@ export interface GET_APPOINTMENT_PLAN_ADMIN {
 export interface GET_APPOINTMENT_PLAN_ADMINVariables {
   appointmentPlanId: any;
   now?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ACTIVITY_COLLECTION_ADMIN
+// ====================================================
+
+export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_enrollments_aggregate_aggregate {
+  __typename: "activity_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_enrollments_aggregate {
+  __typename: "activity_enrollment_aggregate";
+  aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate_min {
+  __typename: "activity_session_min_fields";
+  started_at: any | null;
+}
+
+export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate_max {
+  __typename: "activity_session_max_fields";
+  ended_at: any | null;
+}
+
+export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate {
+  __typename: "activity_session_aggregate_fields";
+  min: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate_min | null;
+  max: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate_max | null;
+}
+
+export interface GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate {
+  __typename: "activity_session_aggregate";
+  aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate_aggregate | null;
+}
+
+export interface GET_ACTIVITY_COLLECTION_ADMIN_activity {
+  __typename: "activity";
+  id: any;
+  cover_url: string | null;
+  title: string;
+  published_at: any | null;
+  /**
+   * An aggregated array relationship
+   */
+  activity_enrollments_aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_enrollments_aggregate;
+  /**
+   * An aggregated array relationship
+   */
+  activity_sessions_aggregate: GET_ACTIVITY_COLLECTION_ADMIN_activity_activity_sessions_aggregate;
+}
+
+export interface GET_ACTIVITY_COLLECTION_ADMIN {
+  /**
+   * fetch data from the table: "activity"
+   */
+  activity: GET_ACTIVITY_COLLECTION_ADMIN_activity[];
+}
+
+export interface GET_ACTIVITY_COLLECTION_ADMINVariables {
+  memberId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_ACTIVITY
+// ====================================================
+
+export interface INSERT_ACTIVITY_insert_activity_returning {
+  __typename: "activity";
+  id: any;
+}
+
+export interface INSERT_ACTIVITY_insert_activity {
+  __typename: "activity_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_ACTIVITY_insert_activity_returning[];
+}
+
+export interface INSERT_ACTIVITY {
+  /**
+   * insert data into the table: "activity"
+   */
+  insert_activity: INSERT_ACTIVITY_insert_activity | null;
+}
+
+export interface INSERT_ACTIVITYVariables {
+  title: string;
+  memberId: string;
+  appId: string;
+  activityCategories: activity_category_insert_input[];
 }
 
 /* tslint:disable */
@@ -6904,6 +6902,77 @@ export interface UPDATE_PODCAST_PROGRAM_CONTENTVariables {
   podcastProgramId: any;
   contentType?: string | null;
   updatedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PODCAST_PROGRAM_WITH_BODY
+// ====================================================
+
+export interface GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk_podcast_program_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk_podcast_program_categories {
+  __typename: "podcast_program_category";
+  /**
+   * An object relationship
+   */
+  category: GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk_podcast_program_categories_category;
+}
+
+export interface GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk_podcast_program_body {
+  __typename: "podcast_program_body";
+  description: string;
+}
+
+export interface GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk_podcast_program_roles {
+  __typename: "podcast_program_role";
+  /**
+   * instructor
+   */
+  name: string;
+  member_id: string;
+}
+
+export interface GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk {
+  __typename: "podcast_program";
+  id: any;
+  title: string;
+  cover_url: string | null;
+  abstract: string | null;
+  content_type: string | null;
+  published_at: any | null;
+  creator_id: string;
+  /**
+   * An array relationship
+   */
+  podcast_program_categories: GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk_podcast_program_categories[];
+  /**
+   * An object relationship
+   */
+  podcast_program_body: GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk_podcast_program_body | null;
+  /**
+   * An array relationship
+   */
+  podcast_program_roles: GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk_podcast_program_roles[];
+}
+
+export interface GET_PODCAST_PROGRAM_WITH_BODY {
+  /**
+   * fetch data from the table: "podcast_program" using primary key columns
+   */
+  podcast_program_by_pk: GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk | null;
+}
+
+export interface GET_PODCAST_PROGRAM_WITH_BODYVariables {
+  podcastProgramId: any;
 }
 
 /* tslint:disable */

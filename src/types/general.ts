@@ -22,10 +22,10 @@ export type ProductProps = {
   children?: ProductProps[]
 }
 
-export type Category = {
+export type CategoryProps = {
   id: string
   name: string
-  position: number
+  position?: number
 }
 
 export type MemberProps = {

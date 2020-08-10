@@ -1,45 +1,35 @@
 import { FileAddOutlined, FileTextOutlined, MoreOutlined } from '@ant-design/icons'
-import { Button, Dropdown, Menu } from 'antd'
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Dropdown, Menu, Skeleton } from 'antd'
+import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import { ActivityAdminProps } from '../../contexts/ActivityContext'
 import { activityMessages, commonMessages } from '../../helpers/translation'
+import types from '../../types'
+import { ActivityAdminProps } from '../../types/activity'
 import ActivityTicket from './ActivityTicket'
 import ActivityTicketAdminModal from './ActivityTicketAdminModal'
 
 const ActivityTicketsAdminBlock: React.FC<{
-  activityAdmin: ActivityAdminProps
-  onInsert?: (
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-    setVisible: React.Dispatch<React.SetStateAction<boolean>>,
-    data: {
-      title: string
-      sessionIds: string[]
-      isPublished: boolean
-      startedAt: Date
-      endedAt: Date
-      price: number
-      count: number
-      description: string | null
-    },
-  ) => void
-  onUpdate?: (
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-    setVisible: React.Dispatch<React.SetStateAction<boolean>>,
-    data: {
-      activityTicketId: string
-      title: string
-      sessionIds: string[]
-      isPublished: boolean
-      startedAt: Date
-      endedAt: Date
-      price: number
-      count: number
-      description: string | null
-    },
-  ) => void
-}> = ({ activityAdmin, onInsert, onUpdate }) => {
+  activityAdmin: ActivityAdminProps | null
+  refetch?: () => void
+}> = ({ activityAdmin, refetch }) => {
   const { formatMessage } = useIntl()
+  const [insertActivityTicket] = useMutation<types.INSERT_ACTIVITY_TICKET, types.INSERT_ACTIVITY_TICKETVariables>(
+    INSERT_ACTIVITY_TICKET,
+  )
+  const [updateActivityTicket] = useMutation<types.UPDATE_ACTIVITY_TICKET, types.UPDATE_ACTIVITY_TICKETVariables>(
+    UPDATE_ACTIVITY_TICKET,
+  )
+
+  if (!activityAdmin) {
+    return <Skeleton active />
+  }
+
+  const activitySessions = activityAdmin.sessions.map(session => ({
+    id: session.id,
+    title: session.title,
+  }))
 
   return (
     <>
@@ -49,19 +39,33 @@ const ActivityTicketsAdminBlock: React.FC<{
             {formatMessage(activityMessages.ui.createTicketPlan)}
           </Button>
         )}
-        activitySessions={activityAdmin.activitySessions.map(session => ({
-          id: session.id,
-          title: session.title,
-        }))}
-        onSubmit={onInsert}
+        icon={<FileAddOutlined />}
+        activitySessions={activitySessions}
+        onSubmit={values =>
+          insertActivityTicket({
+            variables: {
+              activityId: activityAdmin.id,
+              title: values.title,
+              activitySessionTickets: values.sessionIds.map(sessionId => ({
+                activity_session_id: sessionId,
+              })),
+              isPublished: values.isPublished,
+              startedAt: values.startedAt,
+              endedAt: values.endedAt,
+              price: values.price,
+              count: values.count,
+              description: values.description,
+            },
+          })
+        }
+        refetch={refetch}
       />
 
       <div className="row">
-        {activityAdmin.activityTickets.map(ticket => (
+        {activityAdmin.tickets.map(ticket => (
           <div key={ticket.id} className="col-12 col-md-6 mb-4">
             <ActivityTicket
               {...ticket}
-              variant="admin"
               extra={
                 <Dropdown
                   overlay={
@@ -71,13 +75,26 @@ const ActivityTicketsAdminBlock: React.FC<{
                           renderTrigger={({ setVisible }) => (
                             <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</span>
                           )}
-                          icon={() => <FileTextOutlined />}
-                          onSubmit={onUpdate}
+                          icon={<FileTextOutlined />}
                           activityTicket={ticket}
-                          activitySessions={activityAdmin.activitySessions.map(session => ({
-                            id: session.id,
-                            title: session.title,
-                          }))}
+                          activitySessions={activitySessions}
+                          onSubmit={values =>
+                            updateActivityTicket({
+                              variables: {
+                                activityTicketId: ticket.id,
+                                title: values.title,
+                                activitySessionTickets: values.sessionIds.map(sessionId => ({
+                                  activity_session_id: sessionId,
+                                })),
+                                isPublished: values.isPublished,
+                                startedAt: values.startedAt,
+                                endedAt: values.endedAt,
+                                price: values.price,
+                                count: values.count,
+                                description: values.description,
+                              },
+                            })
+                          }
                         />
                       </Menu.Item>
                     </Menu>
@@ -94,5 +111,69 @@ const ActivityTicketsAdminBlock: React.FC<{
     </>
   )
 }
+
+const INSERT_ACTIVITY_TICKET = gql`
+  mutation INSERT_ACTIVITY_TICKET(
+    $activityId: uuid!
+    $title: String!
+    $activitySessionTickets: [activity_session_ticket_insert_input!]!
+    $isPublished: Boolean!
+    $startedAt: timestamptz!
+    $endedAt: timestamptz!
+    $price: numeric!
+    $count: Int
+    $description: String
+  ) {
+    insert_activity_ticket(
+      objects: {
+        activity_id: $activityId
+        title: $title
+        is_published: $isPublished
+        started_at: $startedAt
+        ended_at: $endedAt
+        price: $price
+        count: $count
+        description: $description
+        activity_session_tickets: { data: $activitySessionTickets }
+      }
+    ) {
+      affected_rows
+    }
+  }
+`
+const UPDATE_ACTIVITY_TICKET = gql`
+  mutation UPDATE_ACTIVITY_TICKET(
+    $activityTicketId: uuid!
+    $title: String!
+    $activitySessionTickets: [activity_session_ticket_insert_input!]!
+    $isPublished: Boolean!
+    $startedAt: timestamptz!
+    $endedAt: timestamptz!
+    $price: numeric!
+    $count: Int
+    $description: String
+  ) {
+    update_activity_ticket(
+      where: { id: { _eq: $activityTicketId } }
+      _set: {
+        title: $title
+        is_published: $isPublished
+        started_at: $startedAt
+        ended_at: $endedAt
+        price: $price
+        count: $count
+        description: $description
+      }
+    ) {
+      affected_rows
+    }
+    delete_activity_session_ticket(where: { activity_ticket_id: { _eq: $activityTicketId } }) {
+      affected_rows
+    }
+    insert_activity_session_ticket(objects: $activitySessionTickets) {
+      affected_rows
+    }
+  }
+`
 
 export default ActivityTicketsAdminBlock

@@ -1,22 +1,20 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, message, Skeleton, Tooltip } from 'antd'
+import { Button, Form, message, Skeleton, Tooltip } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { StyledTips } from '../../components/admin'
-import AdminBraftEditor from '../../components/admin/AdminBraftEditor'
-import { StyledSingleUploader } from '../../components/program/ProgramIntroAdminCard'
-import ActivityContext from '../../contexts/ActivityContext'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
-import { activityMessages, commonMessages, errorMessages } from '../../helpers/translation'
+import { activityMessages, commonMessages } from '../../helpers/translation'
 import types from '../../types'
+import { ActivityAdminProps } from '../../types/activity'
+import { StyledTips } from '../admin'
+import AdminBraftEditor from '../admin/AdminBraftEditor'
+import { StyledSingleUploader } from '../program/ProgramIntroAdminCard'
 
 const StyledCover = styled.div<{ src: string }>`
   width: 160px;
@@ -29,10 +27,13 @@ const StyledCover = styled.div<{ src: string }>`
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
 `
 
-const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
+const ActivityIntroductionForm: React.FC<{
+  activityAdmin: ActivityAdminProps | null
+  refetch?: () => void
+}> = ({ activityAdmin, refetch }) => {
   const { formatMessage } = useIntl()
+  const [form] = useForm()
   const app = useContext(AppContext)
-  const { loadingActivity, errorActivity, activity, refetchActivity } = useContext(ActivityContext)
   const [updateActivityCover] = useMutation<types.UPDATE_ACTIVITY_COVER, types.UPDATE_ACTIVITY_COVERVariables>(
     UPDATE_ACTIVITY_COVER,
   )
@@ -42,12 +43,8 @@ const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
   >(UPDATE_ACTIVITY_INTRODUCTION)
   const [loading, setLoading] = useState(false)
 
-  if (loadingActivity) {
+  if (!activityAdmin) {
     return <Skeleton active />
-  }
-
-  if (errorActivity || !activity) {
-    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const handleUpdateCover = () => {
@@ -56,52 +53,52 @@ const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
 
     updateActivityCover({
       variables: {
-        activityId: activity.id,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/activity_covers/${app.id}/${activity.id}?t=${uploadTime}`,
+        activityId: activityAdmin.id,
+        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/activity_covers/${app.id}/${activityAdmin.id}?t=${uploadTime}`,
       },
     })
       .then(() => {
-        refetchActivity && refetchActivity()
+        refetch && refetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
-      .catch(error => handleError(error))
+      .catch(handleError)
       .finally(() => setLoading(false))
   }
 
-  const handleSubmit = () => {
-    form.validateFields((error, values) => {
-      if (error) {
-        return
-      }
-
-      setLoading(true)
-
-      updateActivityIntroduction({
-        variables: {
-          activityId: activity.id,
-          description: values.description.toRAW(),
-        },
-      })
-        .then(() => {
-          refetchActivity && refetchActivity()
-          message.success(formatMessage(commonMessages.event.successfullySaved))
-        })
-        .catch(error => handleError(error))
-        .finally(() => setLoading(false))
+  const handleSubmit = (values: any) => {
+    setLoading(true)
+    updateActivityIntroduction({
+      variables: {
+        activityId: activityAdmin.id,
+        description: values.description.toRAW(),
+      },
     })
+      .then(() => {
+        refetch && refetch()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
     <Form
-      hideRequiredMark
-      colon={false}
+      form={form}
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
-      onSubmit={e => {
-        e.preventDefault()
-        handleSubmit()
+      colon={false}
+      hideRequiredMark
+      initialValues={{
+        coverImg: activityAdmin && {
+          uid: '-1',
+          name: activityAdmin.title,
+          status: 'done',
+          url: activityAdmin.coverUrl,
+        },
+        description: BraftEditor.createEditorState(activityAdmin.description),
       }}
+      onFinish={handleSubmit}
     >
       <Form.Item
         label={
@@ -112,32 +109,26 @@ const ActivityIntroductionForm: React.FC<FormComponentProps> = ({ form }) => {
             </Tooltip>
           </span>
         }
+        name="coverImg"
       >
         <div className="d-flex align-items-center justify-content-between">
-          {activity.coverUrl && <StyledCover className="flex-shrink-0 mr-3" src={activity.coverUrl} />}
-          {form.getFieldDecorator('coverImg', {
-            initialValue: activity.coverUrl && {
-              uid: '-1',
-              name: activity.title,
-              status: 'done',
-              url: activity.coverUrl,
-            },
-          })(
-            <StyledSingleUploader
-              accept="image/*"
-              listType="picture-card"
-              showUploadList={false}
-              path={`activity_covers/${app.id}/${activity.id}`}
-              isPublic
-              onSuccess={() => handleUpdateCover()}
-            />,
-          )}
+          {activityAdmin.coverUrl && <StyledCover className="flex-shrink-0 mr-3" src={activityAdmin.coverUrl} />}
+          <StyledSingleUploader
+            accept="image/*"
+            listType="picture-card"
+            showUploadList={false}
+            path={`activity_covers/${app.id}/${activityAdmin.id}`}
+            isPublic
+            onSuccess={() => handleUpdateCover()}
+          />
         </div>
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.description)} wrapperCol={{ md: { span: 20 } }}>
-        {form.getFieldDecorator('description', {
-          initialValue: BraftEditor.createEditorState(activity.description),
-        })(<AdminBraftEditor />)}
+      <Form.Item
+        label={formatMessage(commonMessages.term.description)}
+        wrapperCol={{ md: { span: 20 } }}
+        name="description"
+      >
+        <AdminBraftEditor />
       </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
@@ -166,4 +157,4 @@ const UPDATE_ACTIVITY_INTRODUCTION = gql`
   }
 `
 
-export default Form.create<FormComponentProps>()(ActivityIntroductionForm)
+export default ActivityIntroductionForm

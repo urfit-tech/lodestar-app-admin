@@ -133,10 +133,11 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
             rules: [{ required: true, message: formatMessage(appointmentMessages.text.selectStartedAt) }],
           })(
             <DatePicker
-              placeholder={formatMessage(appointmentMessages.text.selectStartedAt)}
               format="YYYY-MM-DD HH:mm"
-              showTime={{ format: 'HH:mm' }}
+              showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
               disabledDate={currentTime => (currentTime ? currentTime < moment().startOf('day') : false)}
+              showToday={false}
+              placeholder={formatMessage(appointmentMessages.text.selectStartedAt)}
             />,
           )}
         </Form.Item>

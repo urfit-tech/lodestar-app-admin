@@ -1,10 +1,8 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { DownloadOutlined, DownOutlined, LoadingOutlined } from '@ant-design/icons'
 import { useApolloClient } from '@apollo/react-hooks'
-import { Button, DatePicker, Dropdown, Menu, Select } from 'antd'
-import moment, { Moment } from 'moment'
+import { Button, DatePicker, Dropdown, Form, Menu, Select } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
+import moment from 'moment'
 import React, { useCallback, useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -47,9 +45,11 @@ const messages = defineMessages({
   invoicePending: { id: 'payment.status.invoicePending', defaultMessage: '未開立電子發票' },
 })
 
-const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
+const OrderExportModal: React.FC = () => {
   const { formatMessage } = useIntl()
   const client = useApolloClient()
+  const [form] = useForm()
+
   const { id: appId } = useContext(AppContext)
   const { data: allOrderStatuses } = useOrderStatuses()
 
@@ -298,18 +298,9 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
   )
 
   const handleExport = (exportTarget: 'orderLog' | 'orderProduct' | 'orderDiscount' | 'paymentLog') => {
-    form.validateFields(
-      async (
-        errors,
-        values: {
-          timeRange: Moment[]
-          orderStatuses: string[]
-        },
-      ) => {
-        if (errors) {
-          return
-        }
-
+    form
+      .validateFields()
+      .then(async (values: any) => {
         setLoading(true)
 
         const startedAt = values.timeRange[0].toDate()
@@ -353,8 +344,8 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
           toCSV(content),
         )
         setLoading(false)
-      },
-    )
+      })
+      .catch(() => {})
   }
 
   return (
@@ -395,49 +386,55 @@ const OrderExportModal: React.FC<FormComponentProps> = ({ form }) => {
       )}
       maskClosable={false}
     >
-      <Form colon={false} hideRequiredMark>
-        <Form.Item label={formatMessage(commonMessages.label.dateRange)}>
-          {form.getFieldDecorator('timeRange', {
-            rules: [
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.term.timeRange),
-                }),
-              },
-            ],
-          })(
-            <StyledRangePicker
-              style={{ width: '100%' }}
-              format="YYYY-MM-DD HH:mm:ss"
-              defaultValue={[moment().startOf('day'), moment().endOf('day')]}
-            />,
-          )}
+      <Form
+        form={form}
+        colon={false}
+        hideRequiredMark
+        initialValues={{
+          orderStatuses: [],
+        }}
+      >
+        <Form.Item
+          label={formatMessage(commonMessages.label.dateRange)}
+          name="timeRange"
+          rules={[
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(commonMessages.term.timeRange),
+              }),
+            },
+          ]}
+        >
+          <StyledRangePicker
+            style={{ width: '100%' }}
+            format="YYYY-MM-DD HH:mm:ss"
+            defaultValue={[moment().startOf('day'), moment().endOf('day')]}
+          />
         </Form.Item>
 
-        <Form.Item label={formatMessage(commonMessages.label.orderLogStatus)}>
-          {form.getFieldDecorator('orderStatuses', {
-            initialValue: [],
-            rules: [
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.term.orderStatus),
-                }),
-              },
-            ],
-          })(
-            <Select mode="multiple" placeholder={formatMessage(commonMessages.label.orderLogStatus)}>
-              <Select.Option value="UNPAID">{formatMessage(commonMessages.status.orderUnpaid)}</Select.Option>
-              <Select.Option value="SUCCESS">{formatMessage(commonMessages.status.orderSuccess)}</Select.Option>
-              <Select.Option value="FAILED">{formatMessage(commonMessages.status.orderFailed)}</Select.Option>
-              <Select.Option value="REFUND">{formatMessage(commonMessages.status.orderRefund)}</Select.Option>
-            </Select>,
-          )}
+        <Form.Item
+          label={formatMessage(commonMessages.label.orderLogStatus)}
+          name="orderStatuses"
+          rules={[
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(commonMessages.term.orderStatus),
+              }),
+            },
+          ]}
+        >
+          <Select mode="multiple" placeholder={formatMessage(commonMessages.label.orderLogStatus)}>
+            <Select.Option value="UNPAID">{formatMessage(commonMessages.status.orderUnpaid)}</Select.Option>
+            <Select.Option value="SUCCESS">{formatMessage(commonMessages.status.orderSuccess)}</Select.Option>
+            <Select.Option value="FAILED">{formatMessage(commonMessages.status.orderFailed)}</Select.Option>
+            <Select.Option value="REFUND">{formatMessage(commonMessages.status.orderRefund)}</Select.Option>
+          </Select>
         </Form.Item>
       </Form>
     </AdminModal>
   )
 }
 
-export default Form.create<FormComponentProps>()(OrderExportModal)
+export default OrderExportModal

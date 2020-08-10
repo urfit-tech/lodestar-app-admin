@@ -15,7 +15,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { handleError, uploadFile } from '../../helpers'
 import { convertAudioBufferToMp3, mergeAudioBuffer, sliceAudioBuffer } from '../../helpers/audio'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
-import { usePodcastProgramAdmin, useUpdatePodcastProgramContent } from '../../hooks/podcast'
+import { usePodcastProgramContent, useUpdatePodcastProgramContent } from '../../hooks/podcast'
 
 const StyledLayoutContent = styled.div`
   height: calc(100vh - 64px);
@@ -42,13 +42,12 @@ const RecordingPage: React.FC = () => {
   const { authToken } = useAuth()
   const { formatMessage } = useIntl()
   const { podcastProgramId } = useParams<{ podcastProgramId: string }>()
-  const { podcastProgram, refetchPodcastProgram } = usePodcastProgramAdmin(podcastProgramId)
+  const { podcastProgram, refetchPodcastProgram } = usePodcastProgramContent(podcastProgramId)
 
   const [isRecording, setIsRecording] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
+  const [isGeneratingVoice, setIsGeneratingVoice] = useState(false)
   const [currentPlayingSecond, setCurrentPlayingSecond] = useState(0)
-  const [selectedWaveIds, setSelectedWaveIds] = useState<string[]>([])
   const [selectedAudioTarget, setSelectedAudioTarget] = useState<string | undefined>()
 
   const [waveCollection, setWaveCollection] = useState<WaveCollectionProps[]>([])
@@ -89,7 +88,7 @@ const RecordingPage: React.FC = () => {
     })
   }
 
-  const onRecordStop = useCallback(
+  const onGetRecordAudio = useCallback(
     (audioBuffer: AudioBuffer | null) => {
       if (audioBuffer && audioObjectRef.current?.waveCollection) {
         const waveId = uuid()
@@ -106,7 +105,7 @@ const RecordingPage: React.FC = () => {
           setSelectedAudioTarget(waveId)
         }
       }
-      setIsRecording(false)
+      setIsGeneratingVoice(false)
     },
     [selectedAudioTarget],
   )
@@ -163,14 +162,13 @@ const RecordingPage: React.FC = () => {
 
   const onUploadAudio = () => {
     let dstAudioData = null
-    const selectWaveCollection = waveCollection.filter(wave => selectedWaveIds.includes(wave.id))
-    if (selectWaveCollection.length === 1) {
-      dstAudioData = selectWaveCollection[0].audioBuffer
+    if (waveCollection.length === 1) {
+      dstAudioData = waveCollection[0].audioBuffer
     } else {
-      dstAudioData = mergeAudioBuffer(selectWaveCollection[0].audioBuffer, selectWaveCollection[1].audioBuffer)
-      for (let i = 2; i < selectWaveCollection.length; i++) {
+      dstAudioData = mergeAudioBuffer(waveCollection[0].audioBuffer, waveCollection[1].audioBuffer)
+      for (let i = 2; i < waveCollection.length; i++) {
         if (dstAudioData) {
-          dstAudioData = mergeAudioBuffer(dstAudioData, selectWaveCollection[i].audioBuffer)
+          dstAudioData = mergeAudioBuffer(dstAudioData, waveCollection[i].audioBuffer)
         }
       }
     }
@@ -210,7 +208,14 @@ const RecordingPage: React.FC = () => {
         <StyledContainer className="container">
           <div className="text-center mb-5">
             <StyledPageTitle>{formatMessage(podcastMessages.ui.recordAudio)}</StyledPageTitle>
-            <RecordButton onStart={() => setIsRecording(true)} onStop={onRecordStop} />
+            <RecordButton
+              onStart={() => setIsRecording(true)}
+              onStop={() => {
+                setIsRecording(false)
+                setIsGeneratingVoice(true)
+              }}
+              onGetAudio={onGetRecordAudio}
+            />
           </div>
 
           <ReactSortable
@@ -231,14 +236,11 @@ const RecordingPage: React.FC = () => {
                   }}
                   isActive={wave.id === selectedAudioTarget}
                   isPlaying={wave.id === selectedAudioTarget && isPlaying}
-                  isSelected={isEditing ? selectedWaveIds.includes(wave.id) : undefined}
-                  onSelected={(id, checked) => {
-                    checked
-                      ? setSelectedWaveIds([...selectedWaveIds, id])
-                      : setSelectedWaveIds(selectedWaveIds.filter(waveId => waveId !== id))
-                  }}
                   onAudioPlaying={second => setCurrentPlayingSecond(second)}
                   onFinishPlaying={onFinishPlaying}
+                  onDeleted={id => {
+                    setWaveCollection(waveCollection.filter(wave => wave.id !== id))
+                  }}
                 />
               )
             })}
@@ -253,27 +255,20 @@ const RecordingPage: React.FC = () => {
           .padStart(2, '0')} ${formatMessage(podcastMessages.ui.voiceFile)}`}
         duration={currentPlayingSecond}
         isPlaying={isPlaying}
-        isEditing={isEditing}
-        isDeleteDisabled={selectedWaveIds.length < 1}
-        isUploadDisabled={selectedWaveIds.length < 1}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
-        onEdit={() => {
-          setIsEditing(isEditing => !isEditing)
-          if (isEditing) {
-            setSelectedWaveIds([])
-          }
-        }}
         onTrim={onTrimAudio}
-        onDelete={() => {
-          setWaveCollection(waveCollection.filter(wave => !selectedWaveIds.includes(wave.id)))
-          setIsEditing(false)
-        }}
         onUpload={() => {
           showUploadConfirmationModal()
-          setIsEditing(false)
         }}
       />
+
+      <Modal visible={isGeneratingVoice} closable={false} footer={false}>
+        <div className="text-center">
+          <Spin size="large" className="my-5" />
+          <p className="mb-5">{formatMessage(podcastMessages.text.generatingVoice)}</p>
+        </div>
+      </Modal>
     </div>
   )
 }
