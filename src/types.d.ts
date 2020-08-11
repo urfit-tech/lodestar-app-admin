@@ -777,6 +777,34 @@ export interface UPDATE_COUPON_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_COIN_LOG_COLLECTION
+// ====================================================
+
+export interface INSERT_COIN_LOG_COLLECTION_insert_coin_log {
+  __typename: "coin_log_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_COIN_LOG_COLLECTION {
+  /**
+   * insert data into the table: "coin_log"
+   */
+  insert_coin_log: INSERT_COIN_LOG_COLLECTION_insert_coin_log | null;
+}
+
+export interface INSERT_COIN_LOG_COLLECTIONVariables {
+  data: coin_log_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_CREATOR_COLLECTION
 // ====================================================
 
@@ -3779,8 +3807,9 @@ export interface UPDATE_LOGINED_ATVariables {
 export interface GET_APPLICATION_currency {
   __typename: "currency";
   id: string;
-  label: string | null;
-  unit: string | null;
+  name: string;
+  label: string;
+  unit: string;
 }
 
 export interface GET_APPLICATION_app_admin_by_pk_app_app_modules {
@@ -7772,6 +7801,147 @@ export interface INSERT_PROGRAM_PACKAGEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_COIN_RELEASE_HISTORY
+// ====================================================
+
+export interface GET_COIN_RELEASE_HISTORY_coin_log_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_COIN_RELEASE_HISTORY_coin_log {
+  __typename: "coin_log";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_COIN_RELEASE_HISTORY_coin_log_member;
+  title: string;
+  description: string;
+  note: string;
+  created_at: any;
+  started_at: any | null;
+  ended_at: any | null;
+  amount: any;
+}
+
+export interface GET_COIN_RELEASE_HISTORY {
+  /**
+   * fetch data from the table: "coin_log"
+   */
+  coin_log: GET_COIN_RELEASE_HISTORY_coin_log[];
+}
+
+export interface GET_COIN_RELEASE_HISTORYVariables {
+  offset?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ORDER_LOG_WITH_COINS_COLLECTION
+// ====================================================
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts {
+  __typename: "order_discount";
+  id: any;
+  name: string;
+}
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate_sum {
+  __typename: "order_discount_sum_fields";
+  price: any | null;
+}
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate {
+  __typename: "order_discount_aggregate_fields";
+  sum: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate_sum | null;
+}
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate {
+  __typename: "order_discount_aggregate";
+  aggregate: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate_aggregate | null;
+}
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log {
+  __typename: "order_log";
+  id: string;
+  created_at: any;
+  /**
+   * An object relationship
+   */
+  member: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_member;
+  /**
+   * An array relationship
+   */
+  order_discounts: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts[];
+  /**
+   * An aggregated array relationship
+   */
+  order_discounts_aggregate: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_order_discounts_aggregate;
+}
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION {
+  /**
+   * fetch data from the table: "order_log"
+   */
+  order_log: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log[];
+}
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables {
+  offset?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_COIN_LOG
+// ====================================================
+
+export interface DELETE_COIN_LOG_delete_coin_log {
+  __typename: "coin_log_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_COIN_LOG {
+  /**
+   * delete data from the table: "coin_log"
+   */
+  delete_coin_log: DELETE_COIN_LOG_delete_coin_log | null;
+}
+
+export interface DELETE_COIN_LOGVariables {
+  coinLogId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_POINT_RELEASE_HISTORY
 // ====================================================
 
@@ -8036,6 +8206,24 @@ export interface GET_CREATOR_PROGRAM_ISSUESVariables {
 //==============================================================
 // START Enums and Input Objects
 //==============================================================
+
+/**
+ * unique or primary key constraints on table "activity_attendance"
+ */
+export enum activity_attendance_constraint {
+  activity_attendance_order_product_id_activity_session_id_key = "activity_attendance_order_product_id_activity_session_id_key",
+  activity_attendance_pkey = "activity_attendance_pkey",
+}
+
+/**
+ * update columns of table "activity_attendance"
+ */
+export enum activity_attendance_update_column {
+  activity_session_id = "activity_session_id",
+  created_at = "created_at",
+  id = "id",
+  order_product_id = "order_product_id",
+}
 
 /**
  * unique or primary key constraints on table "activity_category"
@@ -8389,6 +8577,28 @@ export enum category_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "coin_log"
+ */
+export enum coin_log_constraint {
+  coin_log_pkey = "coin_log_pkey",
+}
+
+/**
+ * update columns of table "coin_log"
+ */
+export enum coin_log_update_column {
+  amount = "amount",
+  created_at = "created_at",
+  description = "description",
+  ended_at = "ended_at",
+  id = "id",
+  member_id = "member_id",
+  note = "note",
+  started_at = "started_at",
+  title = "title",
+}
+
+/**
  * unique or primary key constraints on table "comment"
  */
 export enum comment_constraint {
@@ -8538,6 +8748,23 @@ export enum coupon_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "currency"
+ */
+export enum currency_constraint {
+  currency_pkey = "currency_pkey",
+}
+
+/**
+ * update columns of table "currency"
+ */
+export enum currency_update_column {
+  id = "id",
+  label = "label",
+  name = "name",
+  unit = "unit",
+}
+
+/**
  * unique or primary key constraints on table "issue"
  */
 export enum issue_constraint {
@@ -8682,6 +8909,28 @@ export enum member_shop_update_column {
   shipping_methods = "shipping_methods",
   title = "title",
   updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "member_social"
+ */
+export enum member_social_constraint {
+  member_social_pkey = "member_social_pkey",
+  member_social_type_channel_id_key = "member_social_type_channel_id_key",
+}
+
+/**
+ * update columns of table "member_social"
+ */
+export enum member_social_update_column {
+  channel_id = "channel_id",
+  channel_url = "channel_url",
+  description = "description",
+  id = "id",
+  member_id = "member_id",
+  name = "name",
+  profile_url = "profile_url",
+  type = "type",
 }
 
 /**
@@ -9569,6 +9818,7 @@ export enum program_plan_update_column {
   gains = "gains",
   id = "id",
   list_price = "list_price",
+  period_amount = "period_amount",
   period_type = "period_type",
   program_id = "program_id",
   sale_price = "sale_price",
@@ -9657,6 +9907,45 @@ export enum program_update_column {
   support_locales = "support_locales",
   title = "title",
   updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "social_card"
+ */
+export enum social_card_constraint {
+  social_card_pkey = "social_card_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "social_card_subscriber"
+ */
+export enum social_card_subscriber_constraint {
+  social_card_subscriber_pkey = "social_card_subscriber_pkey",
+}
+
+/**
+ * update columns of table "social_card_subscriber"
+ */
+export enum social_card_subscriber_update_column {
+  created_at = "created_at",
+  ended_at = "ended_at",
+  id = "id",
+  member_channel_id = "member_channel_id",
+  member_id = "member_id",
+  social_card_id = "social_card_id",
+  started_at = "started_at",
+}
+
+/**
+ * update columns of table "social_card"
+ */
+export enum social_card_update_column {
+  badge_url = "badge_url",
+  description = "description",
+  id = "id",
+  member_social_id = "member_social_id",
+  membership_id = "membership_id",
+  name = "name",
 }
 
 /**
@@ -9811,6 +10100,50 @@ export interface activity_arr_rel_insert_input {
 }
 
 /**
+ * input type for inserting array relation for remote table "activity_attendance"
+ */
+export interface activity_attendance_arr_rel_insert_input {
+  data: activity_attendance_insert_input[];
+  on_conflict?: activity_attendance_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "activity_attendance". All fields are combined with a logical 'AND'.
+ */
+export interface activity_attendance_bool_exp {
+  _and?: (activity_attendance_bool_exp | null)[] | null;
+  _not?: activity_attendance_bool_exp | null;
+  _or?: (activity_attendance_bool_exp | null)[] | null;
+  activity_session?: activity_session_bool_exp | null;
+  activity_session_id?: uuid_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  order_product?: order_product_bool_exp | null;
+  order_product_id?: uuid_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "activity_attendance"
+ */
+export interface activity_attendance_insert_input {
+  activity_session?: activity_session_obj_rel_insert_input | null;
+  activity_session_id?: any | null;
+  created_at?: any | null;
+  id?: any | null;
+  order_product?: order_product_obj_rel_insert_input | null;
+  order_product_id?: any | null;
+}
+
+/**
+ * on conflict condition type for table "activity_attendance"
+ */
+export interface activity_attendance_on_conflict {
+  constraint: activity_attendance_constraint;
+  update_columns: activity_attendance_update_column[];
+  where?: activity_attendance_bool_exp | null;
+}
+
+/**
  * Boolean expression to filter rows from the table "activity". All fields are combined with a logical 'AND'.
  */
 export interface activity_bool_exp {
@@ -9954,6 +10287,7 @@ export interface activity_session_bool_exp {
   _not?: activity_session_bool_exp | null;
   _or?: (activity_session_bool_exp | null)[] | null;
   activity?: activity_bool_exp | null;
+  activity_attendances?: activity_attendance_bool_exp | null;
   activity_enrollments?: activity_enrollment_bool_exp | null;
   activity_id?: uuid_comparison_exp | null;
   activity_session_tickets?: activity_session_ticket_bool_exp | null;
@@ -9971,6 +10305,7 @@ export interface activity_session_bool_exp {
  */
 export interface activity_session_insert_input {
   activity?: activity_obj_rel_insert_input | null;
+  activity_attendances?: activity_attendance_arr_rel_insert_input | null;
   activity_id?: any | null;
   activity_session_tickets?: activity_session_ticket_arr_rel_insert_input | null;
   description?: string | null;
@@ -10356,6 +10691,7 @@ export interface app_secret_bool_exp {
   _and?: (app_secret_bool_exp | null)[] | null;
   _not?: app_secret_bool_exp | null;
   _or?: (app_secret_bool_exp | null)[] | null;
+  app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   key?: String_comparison_exp | null;
@@ -10366,6 +10702,7 @@ export interface app_secret_bool_exp {
  * input type for inserting data into table "app_secret"
  */
 export interface app_secret_insert_input {
+  app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
   id?: any | null;
   key?: string | null;
@@ -10488,6 +10825,7 @@ export interface appointment_plan_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   creator?: member_public_bool_exp | null;
   creator_id?: String_comparison_exp | null;
+  currency?: currency_bool_exp | null;
   currency_id?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   duration?: numeric_comparison_exp | null;
@@ -10507,6 +10845,7 @@ export interface appointment_plan_insert_input {
   appointment_schedules?: appointment_schedule_arr_rel_insert_input | null;
   created_at?: any | null;
   creator_id?: string | null;
+  currency?: currency_obj_rel_insert_input | null;
   currency_id?: string | null;
   description?: string | null;
   duration?: any | null;
@@ -10857,6 +11196,58 @@ export interface category_on_conflict {
   constraint: category_constraint;
   update_columns: category_update_column[];
   where?: category_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "coin_log"
+ */
+export interface coin_log_arr_rel_insert_input {
+  data: coin_log_insert_input[];
+  on_conflict?: coin_log_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "coin_log". All fields are combined with a logical 'AND'.
+ */
+export interface coin_log_bool_exp {
+  _and?: (coin_log_bool_exp | null)[] | null;
+  _not?: coin_log_bool_exp | null;
+  _or?: (coin_log_bool_exp | null)[] | null;
+  amount?: numeric_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  note?: String_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "coin_log"
+ */
+export interface coin_log_insert_input {
+  amount?: any | null;
+  created_at?: any | null;
+  description?: string | null;
+  ended_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  note?: string | null;
+  started_at?: any | null;
+  title?: string | null;
+}
+
+/**
+ * on conflict condition type for table "coin_log"
+ */
+export interface coin_log_on_conflict {
+  constraint: coin_log_constraint;
+  update_columns: coin_log_update_column[];
+  where?: coin_log_bool_exp | null;
 }
 
 /**
@@ -11286,6 +11677,52 @@ export interface coupon_status_bool_exp {
 }
 
 /**
+ * Boolean expression to filter rows from the table "currency". All fields are combined with a logical 'AND'.
+ */
+export interface currency_bool_exp {
+  _and?: (currency_bool_exp | null)[] | null;
+  _not?: currency_bool_exp | null;
+  _or?: (currency_bool_exp | null)[] | null;
+  appointment_plans?: appointment_plan_bool_exp | null;
+  id?: String_comparison_exp | null;
+  label?: String_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  order_products?: order_product_bool_exp | null;
+  program_plans?: program_plan_bool_exp | null;
+  unit?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "currency"
+ */
+export interface currency_insert_input {
+  appointment_plans?: appointment_plan_arr_rel_insert_input | null;
+  id?: string | null;
+  label?: string | null;
+  name?: string | null;
+  order_products?: order_product_arr_rel_insert_input | null;
+  program_plans?: program_plan_arr_rel_insert_input | null;
+  unit?: string | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "currency"
+ */
+export interface currency_obj_rel_insert_input {
+  data: currency_insert_input;
+  on_conflict?: currency_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "currency"
+ */
+export interface currency_on_conflict {
+  constraint: currency_constraint;
+  update_columns: currency_update_column[];
+  where?: currency_bool_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "issue"
  */
 export interface issue_arr_rel_insert_input {
@@ -11585,6 +12022,7 @@ export interface member_bool_exp {
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
   appointment_plans?: appointment_plan_bool_exp | null;
+  coin_logs?: coin_log_bool_exp | null;
   comment_reactions?: comment_reaction_bool_exp | null;
   comment_replies?: comment_reply_bool_exp | null;
   comment_reply_reactions?: comment_reply_reaction_bool_exp | null;
@@ -11604,6 +12042,7 @@ export interface member_bool_exp {
   media?: media_bool_exp | null;
   member_cards?: member_card_bool_exp | null;
   member_shops?: member_shop_bool_exp | null;
+  member_socials?: member_social_bool_exp | null;
   member_tags?: member_tag_bool_exp | null;
   merchandises?: merchandise_bool_exp | null;
   metadata?: jsonb_comparison_exp | null;
@@ -11613,6 +12052,7 @@ export interface member_bool_exp {
   order_logs?: order_log_bool_exp | null;
   passhash?: String_comparison_exp | null;
   picture_url?: String_comparison_exp | null;
+  playlists?: playlist_bool_exp | null;
   podcast_plans?: podcast_plan_bool_exp | null;
   podcast_program_roles?: podcast_program_role_bool_exp | null;
   podcast_programs?: podcast_program_bool_exp | null;
@@ -11622,6 +12062,7 @@ export interface member_bool_exp {
   program_content_enrollments?: program_content_enrollment_bool_exp | null;
   program_content_progresses?: program_content_progress_bool_exp | null;
   program_roles?: program_role_bool_exp | null;
+  program_tempo_deliveries?: program_tempo_delivery_bool_exp | null;
   refresh_token?: uuid_comparison_exp | null;
   role?: String_comparison_exp | null;
   roles_deprecated?: jsonb_comparison_exp | null;
@@ -11687,6 +12128,7 @@ export interface member_insert_input {
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
   appointment_plans?: appointment_plan_arr_rel_insert_input | null;
+  coin_logs?: coin_log_arr_rel_insert_input | null;
   comment_reactions?: comment_reaction_arr_rel_insert_input | null;
   comment_replies?: comment_reply_arr_rel_insert_input | null;
   comment_reply_reactions?: comment_reply_reaction_arr_rel_insert_input | null;
@@ -11706,6 +12148,7 @@ export interface member_insert_input {
   media?: media_arr_rel_insert_input | null;
   member_cards?: member_card_arr_rel_insert_input | null;
   member_shops?: member_shop_arr_rel_insert_input | null;
+  member_socials?: member_social_arr_rel_insert_input | null;
   member_tags?: member_tag_arr_rel_insert_input | null;
   merchandises?: merchandise_arr_rel_insert_input | null;
   metadata?: any | null;
@@ -11715,6 +12158,7 @@ export interface member_insert_input {
   order_logs?: order_log_arr_rel_insert_input | null;
   passhash?: string | null;
   picture_url?: string | null;
+  playlists?: playlist_arr_rel_insert_input | null;
   podcast_plans?: podcast_plan_arr_rel_insert_input | null;
   podcast_program_roles?: podcast_program_role_arr_rel_insert_input | null;
   podcast_programs?: podcast_program_arr_rel_insert_input | null;
@@ -11722,6 +12166,7 @@ export interface member_insert_input {
   point_logs?: point_log_arr_rel_insert_input | null;
   program_content_progresses?: program_content_progress_arr_rel_insert_input | null;
   program_roles?: program_role_arr_rel_insert_input | null;
+  program_tempo_deliveries?: program_tempo_delivery_arr_rel_insert_input | null;
   refresh_token?: any | null;
   role?: string | null;
   roles_deprecated?: any | null;
@@ -11826,6 +12271,66 @@ export interface member_shop_on_conflict {
   constraint: member_shop_constraint;
   update_columns: member_shop_update_column[];
   where?: member_shop_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "member_social"
+ */
+export interface member_social_arr_rel_insert_input {
+  data: member_social_insert_input[];
+  on_conflict?: member_social_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_social". All fields are combined with a logical 'AND'.
+ */
+export interface member_social_bool_exp {
+  _and?: (member_social_bool_exp | null)[] | null;
+  _not?: member_social_bool_exp | null;
+  _or?: (member_social_bool_exp | null)[] | null;
+  channel_id?: String_comparison_exp | null;
+  channel_url?: String_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  profile_url?: String_comparison_exp | null;
+  social_cards?: social_card_bool_exp | null;
+  type?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_social"
+ */
+export interface member_social_insert_input {
+  channel_id?: string | null;
+  channel_url?: string | null;
+  description?: string | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  name?: string | null;
+  profile_url?: string | null;
+  social_cards?: social_card_arr_rel_insert_input | null;
+  type?: string | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "member_social"
+ */
+export interface member_social_obj_rel_insert_input {
+  data: member_social_insert_input;
+  on_conflict?: member_social_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "member_social"
+ */
+export interface member_social_on_conflict {
+  constraint: member_social_constraint;
+  update_columns: member_social_update_column[];
+  where?: member_social_bool_exp | null;
 }
 
 /**
@@ -12366,8 +12871,10 @@ export interface order_product_bool_exp {
   _not?: order_product_bool_exp | null;
   _or?: (order_product_bool_exp | null)[] | null;
   accumulated_errors?: Int_comparison_exp | null;
+  activity_attendances?: activity_attendance_bool_exp | null;
   auto_renewed?: Boolean_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  currency?: currency_bool_exp | null;
   currency_id?: String_comparison_exp | null;
   deliverables?: jsonb_comparison_exp | null;
   description?: String_comparison_exp | null;
@@ -12388,8 +12895,10 @@ export interface order_product_bool_exp {
  */
 export interface order_product_insert_input {
   accumulated_errors?: number | null;
+  activity_attendances?: activity_attendance_arr_rel_insert_input | null;
   auto_renewed?: boolean | null;
   created_at?: any | null;
+  currency?: currency_obj_rel_insert_input | null;
   currency_id?: string | null;
   deliverables?: any | null;
   description?: string | null;
@@ -12403,6 +12912,14 @@ export interface order_product_insert_input {
   product?: product_obj_rel_insert_input | null;
   product_id?: string | null;
   started_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "order_product"
+ */
+export interface order_product_obj_rel_insert_input {
+  data: order_product_insert_input;
+  on_conflict?: order_product_on_conflict | null;
 }
 
 /**
@@ -12680,6 +13197,14 @@ export interface payment_log_on_conflict {
   constraint: payment_log_constraint;
   update_columns: payment_log_update_column[];
   where?: payment_log_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "playlist"
+ */
+export interface playlist_arr_rel_insert_input {
+  data: playlist_insert_input[];
+  on_conflict?: playlist_on_conflict | null;
 }
 
 /**
@@ -13463,6 +13988,7 @@ export interface product_bool_exp {
   _or?: (product_bool_exp | null)[] | null;
   card_discounts?: card_discount_bool_exp | null;
   cart_products?: cart_product_bool_exp | null;
+  coupon_plan_products?: coupon_plan_product_bool_exp | null;
   id?: String_comparison_exp | null;
   order_products?: order_product_bool_exp | null;
   product_enrollments?: product_enrollment_bool_exp | null;
@@ -13494,6 +14020,7 @@ export interface product_enrollment_bool_exp {
 export interface product_insert_input {
   card_discounts?: card_discount_arr_rel_insert_input | null;
   cart_products?: cart_product_arr_rel_insert_input | null;
+  coupon_plan_products?: coupon_plan_product_arr_rel_insert_input | null;
   id?: string | null;
   order_products?: order_product_arr_rel_insert_input | null;
   product_inventories?: product_inventory_arr_rel_insert_input | null;
@@ -14337,6 +14864,7 @@ export interface program_plan_bool_exp {
   _not?: program_plan_bool_exp | null;
   _or?: (program_plan_bool_exp | null)[] | null;
   created_at?: timestamptz_comparison_exp | null;
+  currency?: currency_bool_exp | null;
   currency_id?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   discount_down_price?: numeric_comparison_exp | null;
@@ -14344,6 +14872,7 @@ export interface program_plan_bool_exp {
   gains?: jsonb_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
+  period_amount?: numeric_comparison_exp | null;
   period_type?: String_comparison_exp | null;
   program?: program_bool_exp | null;
   program_content_permissions?: program_content_plan_bool_exp | null;
@@ -14377,6 +14906,7 @@ export interface program_plan_enrollment_bool_exp {
  */
 export interface program_plan_insert_input {
   created_at?: any | null;
+  currency?: currency_obj_rel_insert_input | null;
   currency_id?: string | null;
   description?: string | null;
   discount_down_price?: any | null;
@@ -14384,6 +14914,7 @@ export interface program_plan_insert_input {
   gains?: any | null;
   id?: any | null;
   list_price?: any | null;
+  period_amount?: any | null;
   period_type?: string | null;
   program?: program_obj_rel_insert_input | null;
   program_content_permissions?: program_content_plan_arr_rel_insert_input | null;
@@ -14540,6 +15071,112 @@ export interface program_tempo_delivery_on_conflict {
   constraint: program_tempo_delivery_constraint;
   update_columns: program_tempo_delivery_update_column[];
   where?: program_tempo_delivery_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "social_card"
+ */
+export interface social_card_arr_rel_insert_input {
+  data: social_card_insert_input[];
+  on_conflict?: social_card_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "social_card". All fields are combined with a logical 'AND'.
+ */
+export interface social_card_bool_exp {
+  _and?: (social_card_bool_exp | null)[] | null;
+  _not?: social_card_bool_exp | null;
+  _or?: (social_card_bool_exp | null)[] | null;
+  badge_url?: String_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member_social?: member_social_bool_exp | null;
+  member_social_id?: uuid_comparison_exp | null;
+  membership_id?: String_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  social_card_subscribers?: social_card_subscriber_bool_exp | null;
+}
+
+/**
+ * input type for inserting data into table "social_card"
+ */
+export interface social_card_insert_input {
+  badge_url?: string | null;
+  description?: string | null;
+  id?: any | null;
+  member_social?: member_social_obj_rel_insert_input | null;
+  member_social_id?: any | null;
+  membership_id?: string | null;
+  name?: string | null;
+  social_card_subscribers?: social_card_subscriber_arr_rel_insert_input | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "social_card"
+ */
+export interface social_card_obj_rel_insert_input {
+  data: social_card_insert_input;
+  on_conflict?: social_card_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "social_card"
+ */
+export interface social_card_on_conflict {
+  constraint: social_card_constraint;
+  update_columns: social_card_update_column[];
+  where?: social_card_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "social_card_subscriber"
+ */
+export interface social_card_subscriber_arr_rel_insert_input {
+  data: social_card_subscriber_insert_input[];
+  on_conflict?: social_card_subscriber_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "social_card_subscriber". All fields are combined with a logical 'AND'.
+ */
+export interface social_card_subscriber_bool_exp {
+  _and?: (social_card_subscriber_bool_exp | null)[] | null;
+  _not?: social_card_subscriber_bool_exp | null;
+  _or?: (social_card_subscriber_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_channel_id?: String_comparison_exp | null;
+  member_id?: String_comparison_exp | null;
+  social_card?: social_card_bool_exp | null;
+  social_card_id?: uuid_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "social_card_subscriber"
+ */
+export interface social_card_subscriber_insert_input {
+  created_at?: any | null;
+  ended_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_channel_id?: string | null;
+  member_id?: string | null;
+  social_card?: social_card_obj_rel_insert_input | null;
+  social_card_id?: any | null;
+  started_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "social_card_subscriber"
+ */
+export interface social_card_subscriber_on_conflict {
+  constraint: social_card_subscriber_constraint;
+  update_columns: social_card_subscriber_update_column[];
+  where?: social_card_subscriber_bool_exp | null;
 }
 
 /**

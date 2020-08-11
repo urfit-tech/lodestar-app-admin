@@ -8,15 +8,18 @@ export type Module =
   | 'locale'
   | 'member_card'
   | 'merchandise'
+  | 'point'
   | 'podcast'
   | 'podcast_recording'
-  | 'point'
   | 'program_package'
   | 'project'
   | 'qrcode'
   | 'social_connect'
   | 'tempo_delivery'
   | 'voucher'
+  | 'coin'
+  | 'currency'
+
 export type Currency = {
   name: string
   label: string

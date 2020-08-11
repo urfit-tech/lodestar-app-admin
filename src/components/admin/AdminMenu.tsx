@@ -196,17 +196,17 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
           )}
         </Menu.SubMenu>
 
-        {enabledModules.point && (
+        {enabledModules.coin && (
           <Menu.SubMenu
-            key="owner_point_admin"
+            key="owner_credit_admin"
             title={
               <span>
                 <Icon component={() => <PointIcon />} />
-                <span>{formatMessage(commonMessages.menu.pointAdmin)}</span>
+                <span>{formatMessage(commonMessages.menu.creditAdmin)}</span>
               </span>
             }
           >
-            <Menu.Item key="owner_point_history">{formatMessage(commonMessages.menu.pointHistory)}</Menu.Item>
+            <Menu.Item key="owner_coin_history">{formatMessage(commonMessages.menu.coinHistory)}</Menu.Item>
           </Menu.SubMenu>
         )}
 
