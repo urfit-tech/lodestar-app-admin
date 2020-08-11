@@ -1,5 +1,4 @@
-import Icon, { DeleteOutlined } from '@ant-design/icons'
-import { Button } from 'antd'
+import Icon from '@ant-design/icons'
 import React, { HTMLAttributes, useContext, useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { ThemeContext } from 'styled-components'
@@ -59,10 +58,8 @@ const AudioTrackCard: React.FC<
     audioBuffer: AudioBuffer
     isActive?: boolean
     isPlaying?: boolean
-    isSelected?: boolean
     onAudioPlaying?: (second: number) => void
     onFinishPlaying?: () => void
-    onDeleted?: (id: string) => void
   }
 > = ({
   id,
@@ -73,7 +70,6 @@ const AudioTrackCard: React.FC<
   isPlaying,
   onAudioPlaying,
   onFinishPlaying,
-  onDeleted,
   children,
   ...divProps
 }) => {
@@ -134,9 +130,6 @@ const AudioTrackCard: React.FC<
         </WaveWrapper>
 
         <div className="d-flex align-items-center justify-content-start">
-          <Button className="mr-2" size="small" danger type="primary">
-            <DeleteOutlined onClick={() => onDeleted && onDeleted(id)} />
-          </Button>
           <StyledText>
             {formatMessage(podcastMessages.label.totalDuration)} {durationFormatter(audioBuffer.duration)}
           </StyledText>

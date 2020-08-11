@@ -1,6 +1,6 @@
 import { message, Modal, Spin } from 'antd'
 import { extname } from 'path'
-import React, { useCallback, useContext, useLayoutEffect, useRef, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
 import { ReactSortable } from 'react-sortablejs'
@@ -12,10 +12,15 @@ import RecordingController from '../../components/podcast/RecordingController'
 import PodcastProgramHeader from '../../containers/podcast/PodcastProgramHeader'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { handleError, uploadFile } from '../../helpers'
-import { convertAudioBufferToMp3, mergeAudioBuffer, sliceAudioBuffer } from '../../helpers/audio'
+import { getFileDownloadableLink, handleError, uploadFile } from '../../helpers'
+import {
+  convertAudioBufferToMp3,
+  decodeAudioArrayBuffer,
+  mergeAudioBuffer,
+  sliceAudioBuffer,
+} from '../../helpers/audio'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
-import { usePodcastProgramContent, useUpdatePodcastProgramContent } from '../../hooks/podcast'
+import { usePodcastProgramAdmin, useUpdatePodcastProgramContent } from '../../hooks/podcast'
 
 const StyledLayoutContent = styled.div`
   height: calc(100vh - 64px);
@@ -42,24 +47,28 @@ const RecordingPage: React.FC = () => {
   const { authToken } = useAuth()
   const { formatMessage } = useIntl()
   const { podcastProgramId } = useParams<{ podcastProgramId: string }>()
-  const { podcastProgram, refetchPodcastProgram } = usePodcastProgramContent(podcastProgramId)
+  const { podcastProgram, refetchPodcastProgram } = usePodcastProgramAdmin(podcastProgramId)
 
   const [isRecording, setIsRecording] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
-  const [isGeneratingVoice, setIsGeneratingVoice] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
+  const [isInitializedAudio, setIsInitializedAudio] = useState(false)
   const [currentPlayingSecond, setCurrentPlayingSecond] = useState(0)
-  const [selectedAudioTarget, setSelectedAudioTarget] = useState<string | undefined>()
+  const [currentAudioId, setCurrentAudioId] = useState<string | undefined>()
 
   const [waveCollection, setWaveCollection] = useState<WaveCollectionProps[]>([])
-  const audioObjectRef = useRef<{ waveCollection: WaveCollectionProps[]; selectedAudioTarget: string | undefined }>()
+  const audioObjectRef = useRef<{ waveCollection: WaveCollectionProps[]; currentAudioId: string | undefined }>()
 
   const updatePodcastProgramContent = useUpdatePodcastProgramContent()
   const history = useHistory()
 
+  const currentAudioIndex = waveCollection.findIndex(wave => wave.id === currentAudioId)
+
   useLayoutEffect(() => {
     audioObjectRef.current = {
       waveCollection,
-      selectedAudioTarget,
+      currentAudioId,
     }
   })
 
@@ -92,7 +101,6 @@ const RecordingPage: React.FC = () => {
     (audioBuffer: AudioBuffer | null) => {
       if (audioBuffer && audioObjectRef.current?.waveCollection) {
         const waveId = uuid()
-
         setWaveCollection([
           ...audioObjectRef.current.waveCollection,
           {
@@ -100,22 +108,41 @@ const RecordingPage: React.FC = () => {
             audioBuffer,
           },
         ])
-
-        if (!selectedAudioTarget) {
-          setSelectedAudioTarget(waveId)
+        if (!currentAudioId) {
+          setCurrentAudioId(waveId)
         }
       }
-      setIsGeneratingVoice(false)
+      setIsGeneratingAudio(false)
     },
-    [selectedAudioTarget],
+    [currentAudioId],
   )
+
+  useEffect(() => {
+    const getAudioLink = async () => {
+      if (podcastProgram?.contentType && waveCollection.length === 0 && !isInitializedAudio) {
+        setIsInitializedAudio(true)
+        setIsGeneratingAudio(true)
+
+        const fileKey = `audios/${appId}/${podcastProgram.id}.${podcastProgram.contentType}`
+        const audioLink = await getFileDownloadableLink(fileKey, authToken)
+        const audioRequest = new Request(audioLink)
+
+        const response = await fetch(audioRequest)
+        const arrayBuffer = await response.arrayBuffer()
+        const audioBuffer = await decodeAudioArrayBuffer(arrayBuffer)
+        onGetRecordAudio(audioBuffer)
+      }
+    }
+    getAudioLink()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(podcastProgram), appId, authToken, onGetRecordAudio, waveCollection.length])
 
   const onFinishPlaying = useCallback(() => {
     if (audioObjectRef.current) {
-      const { waveCollection, selectedAudioTarget } = audioObjectRef.current
-      const selectAudioIndex = waveCollection.findIndex(wave => wave.id === selectedAudioTarget)
-      if (selectAudioIndex + 1 < waveCollection.length) {
-        setSelectedAudioTarget(waveCollection[selectAudioIndex + 1].id)
+      const { waveCollection, currentAudioId } = audioObjectRef.current
+      const nextAudioIndex = waveCollection.findIndex(wave => wave.id === currentAudioId)
+      if (nextAudioIndex + 1 < waveCollection.length) {
+        setCurrentAudioId(waveCollection[nextAudioIndex + 1].id)
       } else {
         setIsPlaying(false)
       }
@@ -123,7 +150,7 @@ const RecordingPage: React.FC = () => {
   }, [])
 
   const onTrimAudio = () => {
-    const wave = waveCollection.find(wave => wave.id === selectedAudioTarget)
+    const wave = waveCollection.find(wave => wave.id === currentAudioId)
     if (wave?.audioBuffer && currentPlayingSecond > 0) {
       const { duration, length } = wave.audioBuffer
 
@@ -139,7 +166,7 @@ const RecordingPage: React.FC = () => {
       )
       setWaveCollection(
         waveCollection.reduce((acc: WaveCollectionProps[], wave: WaveCollectionProps) => {
-          if (wave.id === selectedAudioTarget) {
+          if (wave.id === currentAudioId) {
             const audioSlicedFirstId = uuid()
             acc.push({
               id: audioSlicedFirstId,
@@ -149,7 +176,7 @@ const RecordingPage: React.FC = () => {
               id: uuid(),
               audioBuffer: audioSlicedLast,
             })
-            setSelectedAudioTarget(audioSlicedFirstId)
+            setCurrentAudioId(audioSlicedFirstId)
           } else {
             acc.push(wave)
           }
@@ -212,7 +239,7 @@ const RecordingPage: React.FC = () => {
               onStart={() => setIsRecording(true)}
               onStop={() => {
                 setIsRecording(false)
-                setIsGeneratingVoice(true)
+                setIsGeneratingAudio(true)
               }}
               onGetAudio={onGetRecordAudio}
             />
@@ -232,15 +259,12 @@ const RecordingPage: React.FC = () => {
                   audioBuffer={wave.audioBuffer}
                   onClick={() => {
                     setIsPlaying(false)
-                    setSelectedAudioTarget(wave.id)
+                    setCurrentAudioId(wave.id)
                   }}
-                  isActive={wave.id === selectedAudioTarget}
-                  isPlaying={wave.id === selectedAudioTarget && isPlaying}
+                  isActive={wave.id === currentAudioId}
+                  isPlaying={wave.id === currentAudioId && isPlaying}
                   onAudioPlaying={second => setCurrentPlayingSecond(second)}
                   onFinishPlaying={onFinishPlaying}
-                  onDeleted={id => {
-                    setWaveCollection(waveCollection.filter(wave => wave.id !== id))
-                  }}
                 />
               )
             })}
@@ -250,20 +274,39 @@ const RecordingPage: React.FC = () => {
 
       <RecordingController
         hidden={isRecording}
-        name={`${(waveCollection.findIndex(wave => wave.id === selectedAudioTarget) + 1)
-          .toString()
-          .padStart(2, '0')} ${formatMessage(podcastMessages.ui.voiceFile)}`}
+        name={`${(currentAudioIndex + 1).toString().padStart(2, '0')} ${formatMessage(podcastMessages.ui.voiceFile)}`}
         duration={currentPlayingSecond}
         isPlaying={isPlaying}
+        isEditing={isEditing}
+        isDeleteDisabled={waveCollection.length < 1}
+        isUploadDisabled={waveCollection.length < 1}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
+        onEdit={() => {
+          setIsEditing(isEditing => !isEditing)
+        }}
         onTrim={onTrimAudio}
+        onDelete={() => {
+          setWaveCollection(waveCollection.filter(wave => wave.id !== currentAudioId))
+          setIsEditing(false)
+        }}
         onUpload={() => {
           showUploadConfirmationModal()
+          setIsEditing(false)
+        }}
+        onForward={() => {
+          if (currentAudioIndex + 1 < waveCollection.length) {
+            setCurrentAudioId(waveCollection[currentAudioIndex + 1].id)
+          }
+        }}
+        onBackward={() => {
+          if (currentAudioIndex > 0) {
+            setCurrentAudioId(waveCollection[currentAudioIndex - 1].id)
+          }
         }}
       />
 
-      <Modal visible={isGeneratingVoice} closable={false} footer={false}>
+      <Modal visible={isGeneratingAudio} closable={false} footer={false}>
         <div className="text-center">
           <Spin size="large" className="my-5" />
           <p className="mb-5">{formatMessage(podcastMessages.text.generatingVoice)}</p>

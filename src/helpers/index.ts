@@ -66,6 +66,22 @@ export const uploadFile = async (
   return signedUrl
 }
 
+export const getFileDownloadableLink = async (key: string, authToken: string | null) => {
+  const { data } = await axios.post(
+    `${process.env.REACT_APP_BACKEND_ENDPOINT}/sys/sign-url`,
+    {
+      operation: 'getObject',
+      params: {
+        Key: key,
+      },
+    },
+    {
+      headers: { authorization: `Bearer ${authToken}` },
+    },
+  )
+  return data.result
+}
+
 export const commaFormatter = (value?: number | string | null) =>
   value !== null && value !== undefined && `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 

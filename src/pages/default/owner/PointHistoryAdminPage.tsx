@@ -37,7 +37,7 @@ const messages = defineMessages({
   revokePoint: { id: 'promotion.ui.revokePoint', defaultMessage: '收回點數' },
   revokePointWarning: {
     id: 'promotion.text.revokeNotation',
-    defaultMessage: '系統將收回此次發送的點數，學員方並不會留下任何收回紀錄',
+    defaultMessage: '系統將收回此次發送的點數，學員後台並不會留下任何收回紀錄',
   },
   successfullyRevoked: { id: 'promotion.event.successfullyRevoked', defaultMessage: '收回成功' },
 })
