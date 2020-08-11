@@ -37,7 +37,7 @@ const messages = defineMessages({
   revokeCoin: { id: 'promotion.ui.revokeCoin', defaultMessage: '收回代幣' },
   revokeCoinWarning: {
     id: 'promotion.text.revokeNotation',
-    defaultMessage: '系統將收回此次發送的代幣，學員方並不會留下任何收回紀錄',
+    defaultMessage: '系統將收回此次發送的代幣，學員後台並不會留下任何收回紀錄',
   },
   successfullyRevoked: { id: 'promotion.event.successfullyRevoked', defaultMessage: '收回成功' },
 })
