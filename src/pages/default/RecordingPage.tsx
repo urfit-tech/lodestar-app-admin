@@ -51,8 +51,11 @@ const RecordingPage: React.FC = () => {
 
   const [isRecording, setIsRecording] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
-  const [isGeneratingVoice, setIsGeneratingVoice] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
+  const [isInitializedAudio, setIsInitializedAudio] = useState(false)
   const [currentPlayingSecond, setCurrentPlayingSecond] = useState(0)
+  const [selectedWaveIds, setSelectedWaveIds] = useState<string[]>([])
   const [currentAudioTarget, setCurrentAudioTarget] = useState<string | undefined>()
 
   const [waveCollection, setWaveCollection] = useState<WaveCollectionProps[]>([])
@@ -60,6 +63,8 @@ const RecordingPage: React.FC = () => {
 
   const updatePodcastProgramContent = useUpdatePodcastProgramContent()
   const history = useHistory()
+
+  const currentAudioIndex = waveCollection.findIndex(wave => wave.id === currentAudioTarget)
 
   useLayoutEffect(() => {
     audioObjectRef.current = {
@@ -108,15 +113,16 @@ const RecordingPage: React.FC = () => {
           setCurrentAudioTarget(waveId)
         }
       }
-      setIsGeneratingVoice(false)
+      setIsGeneratingAudio(false)
     },
     [currentAudioTarget],
   )
 
   useEffect(() => {
     const getAudioLink = async () => {
-      if (podcastProgram?.contentType && waveCollection.length === 0) {
-        setIsGeneratingVoice(true)
+      if (podcastProgram?.contentType && waveCollection.length === 0 && !isInitializedAudio) {
+        setIsInitializedAudio(true)
+        setIsGeneratingAudio(true)
 
         const fileKey = `audios/${appId}/${podcastProgram.id}.${podcastProgram.contentType}`
         const audioLink = await getFileDownloadableLink(fileKey, authToken)
@@ -129,14 +135,15 @@ const RecordingPage: React.FC = () => {
       }
     }
     getAudioLink()
-  }, [podcastProgram, appId, authToken, onGetRecordAudio, waveCollection.length])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(podcastProgram), appId, authToken, onGetRecordAudio, waveCollection.length])
 
   const onFinishPlaying = useCallback(() => {
     if (audioObjectRef.current) {
       const { waveCollection, currentAudioTarget } = audioObjectRef.current
-      const selectAudioIndex = waveCollection.findIndex(wave => wave.id === currentAudioTarget)
-      if (selectAudioIndex + 1 < waveCollection.length) {
-        setCurrentAudioTarget(waveCollection[selectAudioIndex + 1].id)
+      const nextAudioIndex = waveCollection.findIndex(wave => wave.id === currentAudioTarget)
+      if (nextAudioIndex + 1 < waveCollection.length) {
+        setCurrentAudioTarget(waveCollection[nextAudioIndex + 1].id)
       } else {
         setIsPlaying(false)
       }
@@ -233,7 +240,7 @@ const RecordingPage: React.FC = () => {
               onStart={() => setIsRecording(true)}
               onStop={() => {
                 setIsRecording(false)
-                setIsGeneratingVoice(true)
+                setIsGeneratingAudio(true)
               }}
               onGetAudio={onGetRecordAudio}
             />
@@ -257,11 +264,14 @@ const RecordingPage: React.FC = () => {
                   }}
                   isActive={wave.id === currentAudioTarget}
                   isPlaying={wave.id === currentAudioTarget && isPlaying}
+                  isSelected={isEditing ? selectedWaveIds.includes(wave.id) : undefined}
+                  onSelected={(id, checked) => {
+                    checked
+                      ? setSelectedWaveIds([...selectedWaveIds, id])
+                      : setSelectedWaveIds(selectedWaveIds.filter(waveId => waveId !== id))
+                  }}
                   onAudioPlaying={second => setCurrentPlayingSecond(second)}
                   onFinishPlaying={onFinishPlaying}
-                  onDeleted={id => {
-                    setWaveCollection(waveCollection.filter(wave => wave.id !== id))
-                  }}
                 />
               )
             })}
@@ -271,20 +281,44 @@ const RecordingPage: React.FC = () => {
 
       <RecordingController
         hidden={isRecording}
-        name={`${(waveCollection.findIndex(wave => wave.id === currentAudioTarget) + 1)
-          .toString()
-          .padStart(2, '0')} ${formatMessage(podcastMessages.ui.voiceFile)}`}
+        name={`${(currentAudioIndex + 1).toString().padStart(2, '0')} ${formatMessage(podcastMessages.ui.voiceFile)}`}
         duration={currentPlayingSecond}
         isPlaying={isPlaying}
+        isEditing={isEditing}
+        isDeleteDisabled={selectedWaveIds.length < 1}
+        isUploadDisabled={waveCollection.length < 1}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
+        onEdit={() => {
+          setIsEditing(isEditing => !isEditing)
+          if (isEditing) {
+            setSelectedWaveIds([])
+          }
+        }}
         onTrim={onTrimAudio}
+        onDelete={() => {
+          setWaveCollection(waveCollection.filter(wave => !selectedWaveIds.includes(wave.id)))
+          setIsEditing(false)
+        }}
         onUpload={() => {
           showUploadConfirmationModal()
+          setIsEditing(false)
+        }}
+        isBackwardDisabled={currentAudioIndex === 0}
+        isForwardDisabled={currentAudioIndex + 1 === waveCollection.length}
+        onForward={() => {
+          if (currentAudioIndex + 1 < waveCollection.length) {
+            setCurrentAudioTarget(waveCollection[currentAudioIndex + 1].id)
+          }
+        }}
+        onBackward={() => {
+          if (currentAudioIndex > 0) {
+            setCurrentAudioTarget(waveCollection[currentAudioIndex - 1].id)
+          }
         }}
       />
 
-      <Modal visible={isGeneratingVoice} closable={false} footer={false}>
+      <Modal visible={isGeneratingAudio} closable={false} footer={false}>
         <div className="text-center">
           <Spin size="large" className="my-5" />
           <p className="mb-5">{formatMessage(podcastMessages.text.generatingVoice)}</p>
