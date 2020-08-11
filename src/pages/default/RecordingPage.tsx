@@ -294,8 +294,6 @@ const RecordingPage: React.FC = () => {
           showUploadConfirmationModal()
           setIsEditing(false)
         }}
-        isBackwardDisabled={currentAudioIndex === 0}
-        isForwardDisabled={currentAudioIndex + 1 === waveCollection.length}
         onForward={() => {
           if (currentAudioIndex + 1 < waveCollection.length) {
             setCurrentAudioId(waveCollection[currentAudioIndex + 1].id)

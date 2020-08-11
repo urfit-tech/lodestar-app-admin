@@ -5,8 +5,8 @@ import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import { desktopViewMixin, durationFormatter } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
-import { ReactComponent as Backward5Icon } from '../../images/icon/backward.svg'
-import { ReactComponent as Forward5Icon } from '../../images/icon/forward.svg'
+import { ReactComponent as BackwardIcon } from '../../images/icon/backward.svg'
+import { ReactComponent as ForwardIcon } from '../../images/icon/forward.svg'
 import { ReactComponent as PauseCircleIcon } from '../../images/icon/pause-circle.svg'
 import { ReactComponent as PlayCircleIcon } from '../../images/icon/play-circle.svg'
 import { ReactComponent as TrashOIcon } from '../../images/icon/trash-o.svg'
@@ -102,8 +102,6 @@ const RecordingController: React.FC<{
   isEditing?: boolean
   isDeleteDisabled?: boolean
   isUploadDisabled?: boolean
-  isForwardDisabled?: boolean
-  isBackwardDisabled?: boolean
   onPlay?: () => void
   onPause?: () => void
   onForward?: () => void
@@ -120,8 +118,6 @@ const RecordingController: React.FC<{
   isEditing,
   isDeleteDisabled,
   isUploadDisabled,
-  isForwardDisabled,
-  isBackwardDisabled,
   onPlay,
   onPause,
   onForward,
@@ -179,13 +175,8 @@ const RecordingController: React.FC<{
 
             <div className="col-6 col-lg-4 d-flex align-items-center justify-content-center">
               <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.backward)}</TooltipText>}>
-                <StyledBarIconButton
-                  type="link"
-                  className="p-0"
-                  onClick={() => onBackward && onBackward()}
-                  disabled={isBackwardDisabled}
-                >
-                  <Backward5Icon />
+                <StyledBarIconButton type="link" className="p-0" onClick={() => onBackward && onBackward()}>
+                  <BackwardIcon />
                 </StyledBarIconButton>
               </Tooltip>
 
@@ -200,13 +191,8 @@ const RecordingController: React.FC<{
               </StyledBarIconButton>
 
               <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.forward)}</TooltipText>}>
-                <StyledBarIconButton
-                  type="link"
-                  className="p-0"
-                  onClick={() => onForward && onForward()}
-                  disabled={isForwardDisabled}
-                >
-                  <Forward5Icon />
+                <StyledBarIconButton type="link" className="p-0" onClick={() => onForward && onForward()}>
+                  <ForwardIcon />
                 </StyledBarIconButton>
               </Tooltip>
             </div>
