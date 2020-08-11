@@ -55,21 +55,20 @@ const RecordingPage: React.FC = () => {
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
   const [isInitializedAudio, setIsInitializedAudio] = useState(false)
   const [currentPlayingSecond, setCurrentPlayingSecond] = useState(0)
-  const [selectedWaveIds, setSelectedWaveIds] = useState<string[]>([])
-  const [currentAudioTarget, setCurrentAudioTarget] = useState<string | undefined>()
+  const [currentAudioId, setCurrentAudioId] = useState<string | undefined>()
 
   const [waveCollection, setWaveCollection] = useState<WaveCollectionProps[]>([])
-  const audioObjectRef = useRef<{ waveCollection: WaveCollectionProps[]; currentAudioTarget: string | undefined }>()
+  const audioObjectRef = useRef<{ waveCollection: WaveCollectionProps[]; currentAudioId: string | undefined }>()
 
   const updatePodcastProgramContent = useUpdatePodcastProgramContent()
   const history = useHistory()
 
-  const currentAudioIndex = waveCollection.findIndex(wave => wave.id === currentAudioTarget)
+  const currentAudioIndex = waveCollection.findIndex(wave => wave.id === currentAudioId)
 
   useLayoutEffect(() => {
     audioObjectRef.current = {
       waveCollection,
-      currentAudioTarget,
+      currentAudioId,
     }
   })
 
@@ -109,13 +108,13 @@ const RecordingPage: React.FC = () => {
             audioBuffer,
           },
         ])
-        if (!currentAudioTarget) {
-          setCurrentAudioTarget(waveId)
+        if (!currentAudioId) {
+          setCurrentAudioId(waveId)
         }
       }
       setIsGeneratingAudio(false)
     },
-    [currentAudioTarget],
+    [currentAudioId],
   )
 
   useEffect(() => {
@@ -140,10 +139,10 @@ const RecordingPage: React.FC = () => {
 
   const onFinishPlaying = useCallback(() => {
     if (audioObjectRef.current) {
-      const { waveCollection, currentAudioTarget } = audioObjectRef.current
-      const nextAudioIndex = waveCollection.findIndex(wave => wave.id === currentAudioTarget)
+      const { waveCollection, currentAudioId } = audioObjectRef.current
+      const nextAudioIndex = waveCollection.findIndex(wave => wave.id === currentAudioId)
       if (nextAudioIndex + 1 < waveCollection.length) {
-        setCurrentAudioTarget(waveCollection[nextAudioIndex + 1].id)
+        setCurrentAudioId(waveCollection[nextAudioIndex + 1].id)
       } else {
         setIsPlaying(false)
       }
@@ -151,7 +150,7 @@ const RecordingPage: React.FC = () => {
   }, [])
 
   const onTrimAudio = () => {
-    const wave = waveCollection.find(wave => wave.id === currentAudioTarget)
+    const wave = waveCollection.find(wave => wave.id === currentAudioId)
     if (wave?.audioBuffer && currentPlayingSecond > 0) {
       const { duration, length } = wave.audioBuffer
 
@@ -167,7 +166,7 @@ const RecordingPage: React.FC = () => {
       )
       setWaveCollection(
         waveCollection.reduce((acc: WaveCollectionProps[], wave: WaveCollectionProps) => {
-          if (wave.id === currentAudioTarget) {
+          if (wave.id === currentAudioId) {
             const audioSlicedFirstId = uuid()
             acc.push({
               id: audioSlicedFirstId,
@@ -177,7 +176,7 @@ const RecordingPage: React.FC = () => {
               id: uuid(),
               audioBuffer: audioSlicedLast,
             })
-            setCurrentAudioTarget(audioSlicedFirstId)
+            setCurrentAudioId(audioSlicedFirstId)
           } else {
             acc.push(wave)
           }
@@ -260,16 +259,10 @@ const RecordingPage: React.FC = () => {
                   audioBuffer={wave.audioBuffer}
                   onClick={() => {
                     setIsPlaying(false)
-                    setCurrentAudioTarget(wave.id)
+                    setCurrentAudioId(wave.id)
                   }}
-                  isActive={wave.id === currentAudioTarget}
-                  isPlaying={wave.id === currentAudioTarget && isPlaying}
-                  isSelected={isEditing ? selectedWaveIds.includes(wave.id) : undefined}
-                  onSelected={(id, checked) => {
-                    checked
-                      ? setSelectedWaveIds([...selectedWaveIds, id])
-                      : setSelectedWaveIds(selectedWaveIds.filter(waveId => waveId !== id))
-                  }}
+                  isActive={wave.id === currentAudioId}
+                  isPlaying={wave.id === currentAudioId && isPlaying}
                   onAudioPlaying={second => setCurrentPlayingSecond(second)}
                   onFinishPlaying={onFinishPlaying}
                 />
@@ -285,19 +278,16 @@ const RecordingPage: React.FC = () => {
         duration={currentPlayingSecond}
         isPlaying={isPlaying}
         isEditing={isEditing}
-        isDeleteDisabled={selectedWaveIds.length < 1}
+        isDeleteDisabled={waveCollection.length < 1}
         isUploadDisabled={waveCollection.length < 1}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onEdit={() => {
           setIsEditing(isEditing => !isEditing)
-          if (isEditing) {
-            setSelectedWaveIds([])
-          }
         }}
         onTrim={onTrimAudio}
         onDelete={() => {
-          setWaveCollection(waveCollection.filter(wave => !selectedWaveIds.includes(wave.id)))
+          setWaveCollection(waveCollection.filter(wave => wave.id !== currentAudioId))
           setIsEditing(false)
         }}
         onUpload={() => {
@@ -308,12 +298,12 @@ const RecordingPage: React.FC = () => {
         isForwardDisabled={currentAudioIndex + 1 === waveCollection.length}
         onForward={() => {
           if (currentAudioIndex + 1 < waveCollection.length) {
-            setCurrentAudioTarget(waveCollection[currentAudioIndex + 1].id)
+            setCurrentAudioId(waveCollection[currentAudioIndex + 1].id)
           }
         }}
         onBackward={() => {
           if (currentAudioIndex > 0) {
-            setCurrentAudioTarget(waveCollection[currentAudioIndex - 1].id)
+            setCurrentAudioId(waveCollection[currentAudioIndex - 1].id)
           }
         }}
       />
