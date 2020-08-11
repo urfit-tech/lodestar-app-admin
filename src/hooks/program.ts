@@ -175,6 +175,7 @@ export const useProgram = (programId: string) => {
             list_price
             period_type
             sold_at
+            currency_id
           }
           program_categories(order_by: { position: asc }) {
             position
@@ -248,6 +249,7 @@ export const useProgram = (programId: string) => {
             discountDownPrice: programPlan.discount_down_price,
             periodType: programPlan.period_type,
             soldAt: programPlan.sold_at,
+            currencyId: programPlan.currency_id,
           })),
           categories: data.program_by_pk.program_categories.map(programCategory => ({
             position: programCategory.position,

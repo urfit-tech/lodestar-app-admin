@@ -146,21 +146,40 @@ export const decodeAudio = async (blob: File) => {
 export const convertAudioBufferToMp3 = (audioBuffer: AudioBuffer, kbps = 128) => {
   const wav = toWav(audioBuffer)
   const wavData = lamejs.WavHeader.readHeader(new DataView(wav))
-  const samples = new Int16Array(wav, wavData.dataOffset, wavData.dataLen / 2)
-  const sampleBlockSize = 1152
   const mp3encoder = new lamejs.Mp3Encoder(wavData.channels, wavData.sampleRate, kbps)
+  const sampleBlockSize = 1152
   const mp3Data = []
-  for (var i = 0; i < samples.length; i += sampleBlockSize) {
-    const sampleChunk = samples.subarray(i, i + sampleBlockSize)
-    const mp3buf = mp3encoder.encodeBuffer(sampleChunk)
-    if (mp3buf.length > 0) {
-      mp3Data.push(Buffer.from(mp3buf))
+  const samples = new Int16Array(wav, wavData.dataOffset, wavData.dataLen / 2)
+
+  if (wavData.channels === 1) {
+    for (let i = 0; i < samples.length; i += sampleBlockSize) {
+      const sampleChunk = samples.subarray(i, i + sampleBlockSize)
+      const mp3buf = mp3encoder.encodeBuffer(sampleChunk)
+      if (mp3buf.length > 0) {
+        mp3Data.push(Buffer.from(mp3buf))
+      }
+    }
+  } else {
+    const leftSampleRaw: number[] = []
+    const rightSampleRaw: number[] = []
+    for (let i = 0; i < samples.length; i += 2) {
+      leftSampleRaw.push(samples[i])
+      rightSampleRaw.push(samples[i + 1])
+    }
+    const leftSample = new Int16Array(leftSampleRaw)
+    const rightSample = new Int16Array(rightSampleRaw)
+    for (let i = 0; i < samples.length; i += sampleBlockSize) {
+      const leftChunk = leftSample.subarray(i, i + sampleBlockSize)
+      const rightChunk = rightSample.subarray(i, i + sampleBlockSize)
+      const mp3buf = mp3encoder.encodeBuffer(leftChunk, rightChunk)
+      if (mp3buf.length > 0) {
+        mp3Data.push(Buffer.from(mp3buf))
+      }
     }
   }
   const mp3buf = mp3encoder.flush()
   if (mp3buf.length > 0) {
     mp3Data.push(Buffer.from(mp3buf))
   }
-
   return Buffer.concat(mp3Data)
 }

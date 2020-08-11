@@ -1,11 +1,12 @@
 import { Button, Form, Input, message } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { useForm } from 'antd/lib/form/Form'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { AppContext } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { useAppData, useUpdateAppSettings } from '../../hooks/app'
+import { useUpdateAppSettings } from '../../hooks/app'
 import AdminCard from '../admin/AdminCard'
 import { StyledForm } from '../layout'
 
@@ -43,7 +44,7 @@ const AppSettingCard: React.FC<
 > = ({ appId, ...cardProps }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
-  const { app, refetchApp, loadingApp } = useAppData(appId)
+  const { refetch: refetchApp, loading: loadingApp, ...app } = useContext(AppContext)
   const updateAppSettings = useUpdateAppSettings()
   const [loading, setLoading] = useState(false)
 
@@ -65,7 +66,7 @@ const AppSettingCard: React.FC<
       },
     })
       .then(() => {
-        refetchApp()
+        refetchApp && refetchApp()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)

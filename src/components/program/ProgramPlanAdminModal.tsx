@@ -3,7 +3,7 @@ import '@ant-design/compatible/assets/index.css'
 import { FormComponentProps } from '@ant-design/compatible/lib/form/Form'
 import { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, Input, InputNumber, Radio } from 'antd'
+import { Button, Checkbox, Input, Radio } from 'antd'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
@@ -16,6 +16,8 @@ import types from '../../types'
 import { ProgramPlanProps } from '../../types/program'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
+import CurrencyInput from '../admin/CurrencyInput'
+import CurrencySelector from '../admin/CurrencySelector'
 import SaleInput from '../admin/SaleInput'
 import ProgramPeriodTypeDropdown from './ProgramPeriodTypeDropdown'
 
@@ -84,6 +86,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
             soldAt: values.sale ? values.sale.soldAt : null,
             discountDownPrice: withDiscountDownPrice ? values.discountDownPrice : 0,
             periodType: values.periodType,
+            currencyId: values.currencyId,
           },
         })
           .then(() => {
@@ -153,16 +156,25 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
             initialValue: (programPlan && programPlan.periodType) || 'M',
           })(<ProgramPeriodTypeDropdown />)}
         </Form.Item>
+
+        <Form.Item label={formatMessage(commonMessages.term.currency)}>
+          {form.getFieldDecorator('currencyId', {
+            initialValue: programPlan?.currencyId,
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.term.listPrice),
+                }),
+              },
+            ],
+          })(<CurrencySelector />)}
+        </Form.Item>
+
         <Form.Item label={formatMessage(commonMessages.term.listPrice)}>
           {form.getFieldDecorator('listPrice', {
             initialValue: (programPlan && programPlan.listPrice) || 0,
-          })(
-            <InputNumber
-              min={0}
-              formatter={value => `NT$ ${value}`}
-              parser={value => (value ? value.replace(/\D/g, '') : '')}
-            />,
-          )}
+          })(<CurrencyInput currencyId={form.getFieldValue('currencyId') || programPlan?.currencyId} />)}
         </Form.Item>
 
         <Form.Item>
@@ -174,7 +186,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
                 }
               : null,
             rules: [{ validator: (rule, value, callback) => callback((value && !value.soldAt) || undefined) }],
-          })(<SaleInput />)}
+          })(<SaleInput currencyId={form.getFieldValue('currencyId') || programPlan?.currencyId} />)}
         </Form.Item>
 
         <div className="mb-4">
@@ -188,13 +200,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
         <Form.Item className={withDiscountDownPrice ? '' : 'd-none'}>
           {form.getFieldDecorator('discountDownPrice', {
             initialValue: (programPlan && programPlan.discountDownPrice) || 0,
-          })(
-            <InputNumber
-              min={0}
-              formatter={value => `NT$ ${value}`}
-              parser={value => (value ? value.replace(/\D/g, '') : '')}
-            />,
-          )}
+          })(<CurrencyInput currencyId={form.getFieldValue('currencyId') || programPlan?.currencyId} />)}
         </Form.Item>
 
         <Form.Item label={formatMessage(messages.planDescription)}>
@@ -219,6 +225,7 @@ const UPSERT_PROGRAM_PLAN = gql`
     $soldAt: timestamptz
     $discountDownPrice: numeric!
     $periodType: String!
+    $currencyId: String!
   ) {
     insert_program_plan(
       objects: {
@@ -232,10 +239,21 @@ const UPSERT_PROGRAM_PLAN = gql`
         discount_down_price: $discountDownPrice
         sold_at: $soldAt
         program_id: $programId
+        currency_id: $currencyId
       }
       on_conflict: {
         constraint: program_plan_pkey
-        update_columns: [type, title, description, list_price, sale_price, discount_down_price, period_type, sold_at]
+        update_columns: [
+          type
+          title
+          description
+          list_price
+          sale_price
+          discount_down_price
+          period_type
+          sold_at
+          currency_id
+        ]
       }
     ) {
       affected_rows

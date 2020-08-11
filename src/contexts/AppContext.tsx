@@ -1,100 +1,91 @@
-import { useApolloClient, useQuery } from '@apollo/react-hooks'
-import { message } from 'antd'
+import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import React, { createContext, useEffect, useState } from 'react'
+import React, { createContext } from 'react'
 import types from '../types'
 import { AppProps, Module } from '../types/app'
 
-type AppContextProps = { loading: boolean } & AppProps
-const defaultAppProps: AppContextProps = {
+type AppContextProps = { loading: boolean; error?: Error; refetch?: () => void } & AppProps
+const defaultContextValue: AppContextProps = {
   loading: true,
-  id: process.env.REACT_APP_ID || '',
+  id: '',
   name: '',
   title: null,
   description: null,
   enabledModules: {},
   settings: {},
+  currencies: {},
 }
-export const AppContext = createContext<AppContextProps>(defaultAppProps)
+export const AppContext = createContext<AppContextProps>(defaultContextValue)
 
 export const AppProvider: React.FC = ({ children }) => {
-  const apolloClient = useApolloClient()
-  const [appId, setAppId] = useState<string | null>(null)
-
-  useEffect(() => {
-    apolloClient
-      .query<types.GET_APPLICATION, types.GET_APPLICATIONVariables>({
-        query: GET_APPLICATION,
-        variables: { host: window.location.host },
-      })
-      .then(({ data }) => {
-        if (data && data.app_admin_by_pk) {
-          const appId = data.app_admin_by_pk.app_id
-          setAppId(appId)
-        } else {
-          message.error('Loading app error.')
-        }
-      })
-  }, [apolloClient, setAppId])
-
-  const { loading, error, data } = useQuery<types.GET_APP, types.GET_APPVariables>(
-    gql`
-      query GET_APP($appId: String!) {
-        app_by_pk(id: $appId) {
-          id
-          name
-          title
-          description
-          app_modules {
-            id
-            module_id
-          }
-          app_settings {
-            key
-            value
-          }
-        }
-      }
-    `,
+  const { loading, error, refetch, data } = useQuery<types.GET_APPLICATION, types.GET_APPLICATIONVariables>(
+    GET_APPLICATION,
     {
-      variables: {
-        appId: appId || '',
-      },
+      variables: { host: window.location.host },
     },
   )
+  const contextValue = {
+    ...defaultContextValue,
+    loading,
+    error,
+    refetch,
+    id: data?.app_admin_by_pk?.app.id || '',
+    name: data?.app_admin_by_pk?.app.name || '',
+    title: data?.app_admin_by_pk?.app.title || '',
+    description: data?.app_admin_by_pk?.app.description || '',
+    vimeoProjectId: data?.app_admin_by_pk?.app.vimeo_project_id,
+    enabledModules:
+      data?.app_admin_by_pk?.app.app_modules.reduce((dict, el, indx) => {
+        dict[el.module_id as Module] = true
+        return dict
+      }, {} as { [key in Module]?: boolean }) || {},
+    settings:
+      data?.app_admin_by_pk?.app.app_settings.reduce((dict, el, index) => {
+        dict[el.key] = el.value
+        return dict
+      }, {} as { [key: string]: string }) || {},
+    secrets:
+      data?.app_admin_by_pk?.app.app_secrets.reduce((dict, el, index) => {
+        dict[el.key] = el.value
+        return dict
+      }, {} as { [key: string]: string }) || {},
+    currencies:
+      data?.currency.reduce((accum, currency) => {
+        accum[currency.id] = currency
+        return accum
+      }, {} as AppProps['currencies']) || {},
+  }
 
-  const app: AppContextProps =
-    loading || error || !data || !data.app_by_pk
-      ? defaultAppProps
-      : (() => {
-          const enabledModules: { [key in Module]?: boolean } = {}
-
-          data.app_by_pk &&
-            data.app_by_pk.app_modules.forEach(appModule => {
-              enabledModules[appModule.module_id as Module] = true
-            })
-
-          return {
-            loading: false,
-            id: data.app_by_pk.id,
-            name: data.app_by_pk.name,
-            title: data.app_by_pk.title,
-            description: data.app_by_pk.description,
-            enabledModules,
-            settings: data.app_by_pk.app_settings.reduce((dict, el, index) => {
-              dict[el.key] = el.value
-              return dict
-            }, {} as { [key: string]: string }),
-          }
-        })()
-
-  return <AppContext.Provider value={app}>{children}</AppContext.Provider>
+  return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>
 }
 
 const GET_APPLICATION = gql`
   query GET_APPLICATION($host: String!) {
+    currency {
+      id
+      label
+      unit
+    }
     app_admin_by_pk(host: $host) {
-      app_id
+      app {
+        id
+        name
+        title
+        description
+        vimeo_project_id
+        app_modules {
+          id
+          module_id
+        }
+        app_settings {
+          key
+          value
+        }
+        app_secrets {
+          key
+          value
+        }
+      }
     }
   }
 `

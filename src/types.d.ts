@@ -2344,6 +2344,7 @@ export interface UPSERT_PROGRAM_PLANVariables {
   soldAt?: any | null;
   discountDownPrice: any;
   periodType: string;
+  currencyId: string;
 }
 
 /* tslint:disable */
@@ -3257,6 +3258,7 @@ export interface UPDATE_APPOINTMENT_PLAN_SALEVariables {
   appointmentPlanId: any;
   duration?: any | null;
   listPrice?: any | null;
+  currencyId?: string | null;
 }
 
 /* tslint:disable */
@@ -3771,10 +3773,17 @@ export interface UPDATE_LOGINED_ATVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_APP
+// GraphQL query operation: GET_APPLICATION
 // ====================================================
 
-export interface GET_APP_app_by_pk_app_modules {
+export interface GET_APPLICATION_currency {
+  __typename: "currency";
+  id: string;
+  label: string | null;
+  unit: string | null;
+}
+
+export interface GET_APPLICATION_app_admin_by_pk_app_app_modules {
   __typename: "app_module";
   id: any;
   /**
@@ -3783,54 +3792,52 @@ export interface GET_APP_app_by_pk_app_modules {
   module_id: string;
 }
 
-export interface GET_APP_app_by_pk_app_settings {
+export interface GET_APPLICATION_app_admin_by_pk_app_app_settings {
   __typename: "app_setting";
   key: string;
   value: string;
 }
 
-export interface GET_APP_app_by_pk {
+export interface GET_APPLICATION_app_admin_by_pk_app_app_secrets {
+  __typename: "app_secret";
+  key: string;
+  value: string;
+}
+
+export interface GET_APPLICATION_app_admin_by_pk_app {
   __typename: "app";
   id: string;
   name: string | null;
   title: string | null;
   description: string | null;
+  vimeo_project_id: string | null;
   /**
    * An array relationship
    */
-  app_modules: GET_APP_app_by_pk_app_modules[];
+  app_modules: GET_APPLICATION_app_admin_by_pk_app_app_modules[];
   /**
    * An array relationship
    */
-  app_settings: GET_APP_app_by_pk_app_settings[];
-}
-
-export interface GET_APP {
+  app_settings: GET_APPLICATION_app_admin_by_pk_app_app_settings[];
   /**
-   * fetch data from the table: "app" using primary key columns
+   * An array relationship
    */
-  app_by_pk: GET_APP_app_by_pk | null;
+  app_secrets: GET_APPLICATION_app_admin_by_pk_app_app_secrets[];
 }
-
-export interface GET_APPVariables {
-  appId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_APPLICATION
-// ====================================================
 
 export interface GET_APPLICATION_app_admin_by_pk {
   __typename: "app_admin";
-  app_id: string;
+  /**
+   * An object relationship
+   */
+  app: GET_APPLICATION_app_admin_by_pk_app;
 }
 
 export interface GET_APPLICATION {
+  /**
+   * fetch data from the table: "currency"
+   */
+  currency: GET_APPLICATION_currency[];
   /**
    * fetch data from the table: "app_admin" using primary key columns
    */
@@ -3904,6 +3911,7 @@ export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk {
   price: any;
   published_at: any | null;
   support_locales: any | null;
+  currency_id: string;
   /**
    * An array relationship
    */
@@ -4167,68 +4175,6 @@ export interface GET_ACTIVITY_ADMIN {
 
 export interface GET_ACTIVITY_ADMINVariables {
   activityId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_APP_BY_PK
-// ====================================================
-
-export interface GET_APP_BY_PK_app_by_pk_app_modules {
-  __typename: "app_module";
-  id: any;
-  /**
-   * activity | appointment | blog | invoice | learning_statistics | locale | member_card | merchandise | podcast | program_package | qrcode | social_connect | tempo_delivery | voucher
-   */
-  module_id: string;
-}
-
-export interface GET_APP_BY_PK_app_by_pk_app_settings {
-  __typename: "app_setting";
-  key: string;
-  value: string;
-}
-
-export interface GET_APP_BY_PK_app_by_pk_app_secrets {
-  __typename: "app_secret";
-  key: string;
-  value: string;
-}
-
-export interface GET_APP_BY_PK_app_by_pk {
-  __typename: "app";
-  id: string;
-  name: string | null;
-  title: string | null;
-  description: string | null;
-  vimeo_project_id: string | null;
-  /**
-   * An array relationship
-   */
-  app_modules: GET_APP_BY_PK_app_by_pk_app_modules[];
-  /**
-   * An array relationship
-   */
-  app_settings: GET_APP_BY_PK_app_by_pk_app_settings[];
-  /**
-   * An array relationship
-   */
-  app_secrets: GET_APP_BY_PK_app_by_pk_app_secrets[];
-}
-
-export interface GET_APP_BY_PK {
-  /**
-   * fetch data from the table: "app" using primary key columns
-   */
-  app_by_pk: GET_APP_BY_PK_app_by_pk | null;
-}
-
-export interface GET_APP_BY_PKVariables {
-  appId: string;
 }
 
 /* tslint:disable */
@@ -7146,6 +7092,7 @@ export interface GET_PROGRAM_program_by_pk_program_plans {
   list_price: any;
   period_type: string | null;
   sold_at: any | null;
+  currency_id: string;
 }
 
 export interface GET_PROGRAM_program_by_pk_program_categories_category {
