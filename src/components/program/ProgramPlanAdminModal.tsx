@@ -174,7 +174,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
         <Form.Item label={formatMessage(commonMessages.term.listPrice)}>
           {form.getFieldDecorator('listPrice', {
             initialValue: (programPlan && programPlan.listPrice) || 0,
-          })(<CurrencyInput currencyId={form.getFieldValue('currencyId') || programPlan?.currencyId} />)}
+          })(<CurrencyInput noLabel currencyId={form.getFieldValue('currencyId') || programPlan?.currencyId} />)}
         </Form.Item>
 
         <Form.Item>
@@ -200,7 +200,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
         <Form.Item className={withDiscountDownPrice ? '' : 'd-none'}>
           {form.getFieldDecorator('discountDownPrice', {
             initialValue: (programPlan && programPlan.discountDownPrice) || 0,
-          })(<CurrencyInput currencyId={form.getFieldValue('currencyId') || programPlan?.currencyId} />)}
+          })(<CurrencyInput noLabel currencyId={form.getFieldValue('currencyId') || programPlan?.currencyId} />)}
         </Form.Item>
 
         <Form.Item label={formatMessage(messages.planDescription)}>

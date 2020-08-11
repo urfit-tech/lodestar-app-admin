@@ -17,6 +17,11 @@ export type Module =
   | 'social_connect'
   | 'tempo_delivery'
   | 'voucher'
+export type Currency = {
+  name: string
+  label: string
+  unit: string
+}
 
 export type AppProps = {
   id: string
@@ -33,5 +38,5 @@ export type AppProps = {
   secrets?: {
     [key: string]: string
   }
-  currencies: { [currencyId: string]: { id: string; label: string | null; unit: string | null } }
+  currencies: { [currencyId: string]: Currency }
 }

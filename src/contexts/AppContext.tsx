@@ -51,7 +51,11 @@ export const AppProvider: React.FC = ({ children }) => {
       }, {} as { [key: string]: string }) || {},
     currencies:
       data?.currency.reduce((accum, currency) => {
-        accum[currency.id] = currency
+        accum[currency.id] = {
+          name: currency.name,
+          label: currency.label,
+          unit: currency.unit,
+        }
         return accum
       }, {} as AppProps['currencies']) || {},
   }
@@ -63,6 +67,7 @@ const GET_APPLICATION = gql`
   query GET_APPLICATION($host: String!) {
     currency {
       id
+      name
       label
       unit
     }

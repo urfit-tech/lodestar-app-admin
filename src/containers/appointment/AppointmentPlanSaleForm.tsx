@@ -98,7 +98,7 @@ const AppointmentPlanSaleForm: React.FC<FormComponentProps> = ({ form }) => {
               }),
             },
           ],
-        })(<CurrencyInput currencyId={form.getFieldValue('currencyId') || appointmentPlan.currencyId} />)}
+        })(<CurrencyInput noLabel currencyId={form.getFieldValue('currencyId') || appointmentPlan.currencyId} />)}
       </Form.Item>
 
       <Form.Item label={formatMessage(commonMessages.term.currency)}>
