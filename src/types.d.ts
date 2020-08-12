@@ -2387,7 +2387,7 @@ export interface UPSERT_PROGRAM_PLANVariables {
 export interface GET_PROGRAM_PLANS_program_plan {
   __typename: "program_plan";
   id: any;
-  title: string | null;
+  title: string;
 }
 
 export interface GET_PROGRAM_PLANS {
@@ -5234,7 +5234,7 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan_program {
 export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan {
   __typename: "program_plan";
   id: any;
-  title: string | null;
+  title: string;
   /**
    * An object relationship
    */
@@ -5446,7 +5446,7 @@ export interface GET_PRODUCT_SIMPLE_program_plan_by_pk_program {
 export interface GET_PRODUCT_SIMPLE_program_plan_by_pk {
   __typename: "program_plan";
   id: any;
-  title: string | null;
+  title: string;
   list_price: any;
   sale_price: any | null;
   sold_at: any | null;
@@ -6863,77 +6863,6 @@ export interface UPDATE_PODCAST_PROGRAM_CONTENTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PODCAST_PROGRAM_WITH_BODY
-// ====================================================
-
-export interface GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk_podcast_program_categories_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk_podcast_program_categories {
-  __typename: "podcast_program_category";
-  /**
-   * An object relationship
-   */
-  category: GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk_podcast_program_categories_category;
-}
-
-export interface GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk_podcast_program_body {
-  __typename: "podcast_program_body";
-  description: string;
-}
-
-export interface GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk_podcast_program_roles {
-  __typename: "podcast_program_role";
-  /**
-   * instructor
-   */
-  name: string;
-  member_id: string;
-}
-
-export interface GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk {
-  __typename: "podcast_program";
-  id: any;
-  title: string;
-  cover_url: string | null;
-  abstract: string | null;
-  content_type: string | null;
-  published_at: any | null;
-  creator_id: string;
-  /**
-   * An array relationship
-   */
-  podcast_program_categories: GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk_podcast_program_categories[];
-  /**
-   * An object relationship
-   */
-  podcast_program_body: GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk_podcast_program_body | null;
-  /**
-   * An array relationship
-   */
-  podcast_program_roles: GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk_podcast_program_roles[];
-}
-
-export interface GET_PODCAST_PROGRAM_WITH_BODY {
-  /**
-   * fetch data from the table: "podcast_program" using primary key columns
-   */
-  podcast_program_by_pk: GET_PODCAST_PROGRAM_WITH_BODY_podcast_program_by_pk | null;
-}
-
-export interface GET_PODCAST_PROGRAM_WITH_BODYVariables {
-  podcastProgramId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_PROGRAM_PREVIEW_COLLECTION
 // ====================================================
 
@@ -7042,7 +6971,7 @@ export interface GET_PROGRAM_program_by_pk_program_content_sections_program_cont
 export interface GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_plans_program_plan {
   __typename: "program_plan";
   id: any;
-  title: string | null;
+  title: string;
 }
 
 export interface GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_plans {
@@ -7113,7 +7042,7 @@ export interface GET_PROGRAM_program_by_pk_program_plans {
    * 1 - subscribe from now / 2 - subscribe all
    */
   type: number;
-  title: string | null;
+  title: string;
   description: string | null;
   gains: any | null;
   sale_price: any | null;
@@ -7200,7 +7129,7 @@ export interface GET_PROGRAMVariables {
 export interface GET_PROGRAM_CONTENT_program_content_by_pk_program_content_plans_program_plan {
   __typename: "program_plan";
   id: any;
-  title: string | null;
+  title: string;
 }
 
 export interface GET_PROGRAM_CONTENT_program_content_by_pk_program_content_plans {
@@ -7822,7 +7751,7 @@ export interface GET_COIN_RELEASE_HISTORY_coin_log {
   member: GET_COIN_RELEASE_HISTORY_coin_log_member;
   title: string;
   description: string;
-  note: string;
+  note: string | null;
   created_at: any;
   started_at: any | null;
   ended_at: any | null;
