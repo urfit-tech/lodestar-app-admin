@@ -76,7 +76,7 @@ const CoinSendingModal: React.FC<{
         </>
       )}
     >
-      <Form form={form} layout="vertical" colon={false} hideRequiredMark initialValues={{ description: '', amount: 0 }}>
+      <Form form={form} layout="vertical" colon={false} hideRequiredMark initialValues={{ description: '', amount: 1 }}>
         <Form.Item
           label={formatMessage(messages.selectMember)}
           name="memberIds"
