@@ -44,11 +44,6 @@ export const AppProvider: React.FC = ({ children }) => {
         dict[el.key] = el.value
         return dict
       }, {} as { [key: string]: string }) || {},
-    secrets:
-      data?.app_admin_by_pk?.app.app_secrets.reduce((dict, el, index) => {
-        dict[el.key] = el.value
-        return dict
-      }, {} as { [key: string]: string }) || {},
     currencies:
       data?.currency.reduce((accum, currency) => {
         accum[currency.id] = {
@@ -83,10 +78,6 @@ const GET_APPLICATION = gql`
           module_id
         }
         app_settings {
-          key
-          value
-        }
-        app_secrets {
           key
           value
         }

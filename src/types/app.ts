@@ -38,8 +38,5 @@ export type AppProps = {
   settings: {
     [key: string]: string
   }
-  secrets?: {
-    [key: string]: string
-  }
   currencies: { [currencyId: string]: Currency }
 }
