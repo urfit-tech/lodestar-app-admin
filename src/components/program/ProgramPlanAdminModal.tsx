@@ -91,7 +91,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
             periodAmount: withPeriod ? values.period.amount : null,
             periodType: withPeriod ? values.period.type : null,
             currencyId: values.currencyId,
-            autoRenewed: withPeriod ? values.autoRenewed : false,
+            autoRenewed: withPeriod ? values.autoRenewed || false : false,
           },
         })
           .then(() => {
