@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
 import { PeriodType } from '../../types/general'
 
-const PodcastPeriodSelector: React.FC<{
+const PeriodSelector: React.FC<{
   value?: { type: PeriodType; amount: number }
   onChange?: (value: { type: PeriodType; amount: number }) => void
 }> = ({ value, onChange }) => {
@@ -36,4 +36,4 @@ const PodcastPeriodSelector: React.FC<{
   )
 }
 
-export default PodcastPeriodSelector
+export default PeriodSelector

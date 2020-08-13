@@ -74,6 +74,8 @@ export const commonMessages = {
     sellingStatus: { id: 'common.label.sellingStatus', defaultMessage: '販售狀態' },
     salePriceEndTime: { id: 'common.label.salePriceEndTime', defaultMessage: '優惠截止日期' },
     outdated: { id: 'common.label.outdated', defaultMessage: '已過期' },
+    autoRenewed: { id: 'common.label.autoRenewed', defaultMessage: '自動續訂' },
+    period: { id: 'common.label.period', defaultMessage: '方案週期' },
     discountDownPrice: { id: 'common.label.discountDownPrice', defaultMessage: '首期折扣' },
     unavailableSelling: { id: 'common.label.unavailableSelling', defaultMessage: '暫不販售' },
     roleAdmin: { id: 'common.label.roleAdmin', defaultMessage: '身份管理' },
@@ -577,7 +579,10 @@ export const podcastMessages = {
     abstractLimit: { id: 'podcast.text.abstractLimit', defaultMessage: '限 100 字' },
     generatingVoice: { id: 'podcast.text.generatingVoice', defaultMessage: '音檔生成中，請稍待片刻' },
     uploadingVoice: { id: 'podcast.text.uploadingVoice', defaultMessage: '正在上傳中，請稍待片刻' },
-    bulkUploadMessage: { id: 'podcast.text.bulkUploadMessage', defaultMessage: '將會合併上傳所有音檔，確定要上傳嗎？ ' },
+    bulkUploadMessage: {
+      id: 'podcast.text.bulkUploadMessage',
+      defaultMessage: '將會合併上傳所有音檔，確定要上傳嗎？ ',
+    },
   }),
 }
 

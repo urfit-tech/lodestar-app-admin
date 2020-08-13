@@ -24,6 +24,11 @@ export const AppProvider: React.FC = ({ children }) => {
       variables: { host: window.location.host },
     },
   )
+  const settings =
+    data?.app_admin_by_pk?.app.app_settings.reduce((dict, el, index) => {
+      dict[el.key] = el.value
+      return dict
+    }, {} as { [key: string]: string }) || {}
   const contextValue = {
     ...defaultContextValue,
     loading,
@@ -39,11 +44,7 @@ export const AppProvider: React.FC = ({ children }) => {
         dict[el.module_id as Module] = true
         return dict
       }, {} as { [key in Module]?: boolean }) || {},
-    settings:
-      data?.app_admin_by_pk?.app.app_settings.reduce((dict, el, index) => {
-        dict[el.key] = el.value
-        return dict
-      }, {} as { [key: string]: string }) || {},
+    settings,
     secrets:
       data?.app_admin_by_pk?.app.app_secrets.reduce((dict, el, index) => {
         dict[el.key] = el.value
@@ -52,9 +53,9 @@ export const AppProvider: React.FC = ({ children }) => {
     currencies:
       data?.currency.reduce((accum, currency) => {
         accum[currency.id] = {
-          name: currency.name,
-          label: currency.label,
-          unit: currency.unit,
+          name: currency.id === 'LSC' && settings['coin.name'] ? settings['coin.name'] : currency.name,
+          label: currency.id === 'LSC' && settings['coin.label'] ? settings['coin.label'] : currency.label,
+          unit: currency.id === 'LSC' && settings['coin.unit'] ? settings['coin.unit'] : currency.unit,
         }
         return accum
       }, {} as AppProps['currencies']) || {},

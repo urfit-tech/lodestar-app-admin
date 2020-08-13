@@ -11,12 +11,7 @@ const CurrencyInput: React.FC<{
   noLabel?: boolean
 }> = ({ currencyId, value, onChange, noLabel, noUnit }) => {
   const { currencies, settings } = useContext(AppContext)
-  const currency: Currency = currencies[currencyId || settings['currency_id'] || 'TWD'] || {
-    id: 'LSC',
-    name: settings['coin.name'] || '極星幣',
-    label: settings['coin.label'] || '',
-    unit: settings['coin.unit'] || 'Coin',
-  }
+  const currency: Currency = currencies[currencyId || settings['currency_id'] || 'TWD']
   return (
     <InputNumber
       value={value}

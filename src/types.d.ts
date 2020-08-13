@@ -2371,8 +2371,10 @@ export interface UPSERT_PROGRAM_PLANVariables {
   salePrice?: any | null;
   soldAt?: any | null;
   discountDownPrice: any;
-  periodType: string;
+  periodAmount?: any | null;
+  periodType?: string | null;
   currencyId: string;
+  autoRenewed: boolean;
 }
 
 /* tslint:disable */
@@ -7048,9 +7050,11 @@ export interface GET_PROGRAM_program_by_pk_program_plans {
   sale_price: any | null;
   discount_down_price: any;
   list_price: any;
+  period_amount: any;
   period_type: string | null;
   sold_at: any | null;
   currency_id: string;
+  auto_renewed: boolean;
 }
 
 export interface GET_PROGRAM_program_by_pk_program_categories_category {
@@ -9739,6 +9743,7 @@ export enum program_plan_constraint {
  * update columns of table "program_plan"
  */
 export enum program_plan_update_column {
+  auto_renewed = "auto_renewed",
   created_at = "created_at",
   currency_id = "currency_id",
   description = "description",
@@ -14792,6 +14797,7 @@ export interface program_plan_bool_exp {
   _and?: (program_plan_bool_exp | null)[] | null;
   _not?: program_plan_bool_exp | null;
   _or?: (program_plan_bool_exp | null)[] | null;
+  auto_renewed?: Boolean_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   currency?: currency_bool_exp | null;
   currency_id?: String_comparison_exp | null;
@@ -14834,6 +14840,7 @@ export interface program_plan_enrollment_bool_exp {
  * input type for inserting data into table "program_plan"
  */
 export interface program_plan_insert_input {
+  auto_renewed?: boolean | null;
   created_at?: any | null;
   currency?: currency_obj_rel_insert_input | null;
   currency_id?: string | null;

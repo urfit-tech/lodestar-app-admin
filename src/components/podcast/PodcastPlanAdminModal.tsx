@@ -13,7 +13,7 @@ import { PodcastPlanProps } from '../../types/podcast'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import SaleInput from '../admin/SaleInput'
 import CreatorSelector from '../common/CreatorSelector'
-import PodcastPeriodSelector from './PodcastPeriodSelector'
+import PeriodSelector from '../common/PeriodSelector'
 
 const messages = defineMessages({
   planPublished: { id: 'podcast.status.planPublished', defaultMessage: '發佈，立刻開賣訂閱方案' },
@@ -145,7 +145,7 @@ const PodcastPlanAdminModal: React.FC<
             },
           ]}
         >
-          <PodcastPeriodSelector />
+          <PeriodSelector />
         </Form.Item>
         <Form.Item
           label={formatMessage(commonMessages.term.listPrice)}
