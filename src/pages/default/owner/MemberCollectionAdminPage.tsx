@@ -299,7 +299,7 @@ const MemberExportModal: React.FC<{
       okText={formatMessage(commonMessages.ui.export)}
       onOk={() => exportMemberList()}
     >
-      <Form form={form} layout="vertical" hideRequiredMark colon={false}>
+      <Form form={form} layout="vertical" colon={false} hideRequiredMark>
         <Form.Item label={formatMessage(commonMessages.label.roleType)}>{children}</Form.Item>
         <Form.Item label={formatMessage(commonMessages.label.exportFields)}>
           <Checkbox.Group

@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { sum, uniqBy } from 'ramda'
 import { useContext } from 'react'
@@ -92,9 +92,9 @@ export const useProgramPreviewCollection = (memberId: string | null) => {
               : null,
             periodAmount: program.is_subscription && plan ? 1 : null,
             periodType: program.is_subscription && plan ? (plan.period_type as ProgramPlanPeriodType) : null,
-            enrollment: sum(
-              program.program_plans.map(plan => plan.program_plan_enrollments_aggregate.aggregate?.count || 0),
-            ),
+            enrollment: program.is_subscription
+              ? sum(program.program_plans.map(plan => plan.program_plan_enrollments_aggregate.aggregate?.count || 0))
+              : program.program_enrollments_aggregate.aggregate?.count || 0,
             isDraft: !program.published_at,
             isPrivate: program.is_private,
           }
@@ -173,8 +173,11 @@ export const useProgram = (programId: string) => {
             sale_price
             discount_down_price
             list_price
+            period_amount
             period_type
             sold_at
+            currency_id
+            auto_renewed
           }
           program_categories(order_by: { position: asc }) {
             position
@@ -246,8 +249,11 @@ export const useProgram = (programId: string) => {
             salePrice: programPlan.sale_price,
             listPrice: programPlan.list_price,
             discountDownPrice: programPlan.discount_down_price,
+            periodAmount: programPlan.period_amount,
             periodType: programPlan.period_type,
             soldAt: programPlan.sold_at,
+            currencyId: programPlan.currency_id,
+            autoRenewed: programPlan.auto_renewed,
           })),
           categories: data.program_by_pk.program_categories.map(programCategory => ({
             position: programCategory.position,
@@ -519,34 +525,3 @@ const GET_PROGRAM_PROGRESS = gql`
     }
   }
 `
-
-export const useCreateProgram = () => {
-  const [createProgram] = useMutation(gql`
-    mutation INSERT_PROGRAM(
-      $ownerId: String!
-      $instructorId: String!
-      $appId: String!
-      $title: String!
-      $isSubscription: Boolean!
-      $programCategories: [program_category_insert_input!]!
-    ) {
-      insert_program(
-        objects: {
-          app_id: $appId
-          title: $title
-          is_subscription: $isSubscription
-          program_roles: {
-            data: [{ member_id: $ownerId, name: "owner" }, { member_id: $instructorId, name: "instructor" }]
-          }
-          program_categories: { data: $programCategories }
-        }
-      ) {
-        returning {
-          id
-        }
-      }
-    }
-  `)
-
-  return createProgram
-}

@@ -12,7 +12,12 @@ export const usePodcastProgramCollection = (memberId?: string) => {
   >(
     gql`
       query GET_PODCAST_PROGRAM_ADMIN_COLLECTION($memberId: String) {
-        podcast_program(where: { creator_id: { _eq: $memberId } }, order_by: { updated_at: desc_nulls_last }) {
+        podcast_program(
+          where: {
+            _or: [{ creator_id: { _eq: $memberId } }, { podcast_program_roles: { member_id: { _eq: $memberId } } }]
+          }
+          order_by: { updated_at: desc_nulls_last }
+        ) {
           id
           title
           cover_url

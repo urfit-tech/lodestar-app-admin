@@ -7,8 +7,8 @@ import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminBlock, AdminPageTitle } from '../../../components/admin'
+import CoinSendingModal from '../../../components/common/CoinSendingModal'
 import { AvatarImage } from '../../../components/common/Image'
-import PointSendingModal from '../../../components/common/PointSendingModal'
 import AdminLayout from '../../../components/layout/AdminLayout'
 import {
   StyledModal,
@@ -18,7 +18,7 @@ import {
 import AppContext from '../../../contexts/AppContext'
 import { handleError } from '../../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../../helpers/translation'
-import { ReactComponent as PointIcon } from '../../../images/icon/point.svg'
+import { ReactComponent as CoinIcon } from '../../../images/icon/coin.svg'
 import { ReactComponent as TextIcon } from '../../../images/icon/text.svg'
 import types from '../../../types'
 import { MemberBriefProps } from '../../../types/general'
@@ -26,23 +26,23 @@ import LoadingPage from '../LoadingPage'
 import NotFoundPage from '../NotFoundPage'
 
 const messages = defineMessages({
-  pointReleaseHistory: { id: 'promotion.label.pointReleaseHistory', defaultMessage: '發送紀錄' },
-  pointConsumptionHistory: { id: 'promotion.label.pointConsumptionHistory', defaultMessage: '消費記錄' },
+  coinReleaseHistory: { id: 'promotion.label.coinReleaseHistory', defaultMessage: '發送紀錄' },
+  coinConsumptionHistory: { id: 'promotion.label.coinConsumptionHistory', defaultMessage: '消費記錄' },
   createdAt: { id: 'promotion.label.createdAt', defaultMessage: '建立日期' },
   nameAndEmail: { id: 'promotion.label.nameAndEmail', defaultMessage: '姓名與 Email' },
-  pointLogTitle: { id: 'promotion.label.pointLogTitle', defaultMessage: '項目' },
-  pointAvailableDate: { id: 'promotion.label.pointAvailableDate', defaultMessage: '點數效期' },
-  points: { id: 'promotion.label.points', defaultMessage: '點數' },
-  unitOfPoints: { id: 'promotion.label.unitOfPoints', defaultMessage: '點' },
-  revokePoint: { id: 'promotion.ui.revokePoint', defaultMessage: '收回點數' },
-  revokePointWarning: {
+  coinLogTitle: { id: 'promotion.label.coinLogTitle', defaultMessage: '項目' },
+  coinAvailableDate: { id: 'promotion.label.coinAvailableDate', defaultMessage: '代幣效期' },
+  coins: { id: 'promotion.label.coins', defaultMessage: '代幣' },
+  unitOfCoins: { id: 'promotion.label.unitOfCoins', defaultMessage: '點' },
+  revokeCoin: { id: 'promotion.ui.revokeCoin', defaultMessage: '收回代幣' },
+  revokeCoinWarning: {
     id: 'promotion.text.revokeNotation',
-    defaultMessage: '系統將收回此次發送的點數，學員後台並不會留下任何收回紀錄',
+    defaultMessage: '系統將收回此次發送的代幣，學員後台並不會留下任何收回紀錄',
   },
   successfullyRevoked: { id: 'promotion.event.successfullyRevoked', defaultMessage: '收回成功' },
 })
 
-type PointLogProps = {
+type CoinLogProps = {
   id: string
   createdAt: Date
   member: MemberBriefProps
@@ -50,37 +50,37 @@ type PointLogProps = {
   note: string | null
   startedAt: Date | null
   endedAt: Date | null
-  points: number
+  amount: number
 }
 type OrderLogProps = {
   id: string
   member: MemberBriefProps
   title: string
-  points: number
+  amount: number
 }
 
 const StyledDescription = styled.div`
   font-size: 12px;
   color: var(--gray-dark);
 `
-const StyledLabel = styled.span<{ variant?: 'point-log' | 'order-log' }>`
+const StyledLabel = styled.span<{ variant?: 'coin-log' | 'order-log' }>`
   padding: 0.125rem 0.5rem;
   color: white;
   font-size: 12px;
   border-radius: 11px;
-  background: ${props => (props.variant === 'point-log' ? 'var(--success)' : 'var(--warning)')};
+  background: ${props => (props.variant === 'coin-log' ? 'var(--success)' : 'var(--warning)')};
   white-space: nowrap;
 `
 const StyledIcon = styled(Icon)`
   color: ${props => props.theme['@primary-color']};
 `
 
-const PointHistoryAdminPage: React.FC = () => {
+const CoinHistoryAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { loading: loadingApp, enabledModules, settings } = useContext(AppContext)
-  const pointUnit = settings['point.unit'] || formatMessage(messages.unitOfPoints)
-  const { loadingPointLogs, errorPointLogs, pointLogs, refetchPointLogs, fetchMorePointLogs } = usePointLogCollection()
-  const deletePointLog = useDeletePointLog()
+  const coinUnit = settings['coin.unit'] || formatMessage(messages.unitOfCoins)
+  const { loadingCoinLogs, errorCoinLogs, coinLogs, refetchCoinLogs, fetchMoreCoinLogs } = useCoinLogCollection()
+  const deleteCoinLog = useDeleteCoinLog()
   const [isRevokedModalVisible, setIsRevokedModalVisible] = useState<boolean>(false)
 
   const {
@@ -89,14 +89,14 @@ const PointHistoryAdminPage: React.FC = () => {
     orderLogs,
     refetchOrderLogs,
     fetchMoreOrderLogs,
-  } = useOrderLogWithPointsCollection()
+  } = useOrderLogWithCoinsCollection()
   const [loading, setLoading] = useState(false)
 
-  const handleRevokePoint = (id: String) => {
-    deletePointLog(id).then(() => {
+  const handleRevokeCoin = (id: String) => {
+    deleteCoinLog(id).then(() => {
       setIsRevokedModalVisible(false)
       message.success(formatMessage(messages.successfullyRevoked))
-      refetchPointLogs()
+      refetchCoinLogs()
     })
   }
 
@@ -104,38 +104,38 @@ const PointHistoryAdminPage: React.FC = () => {
     return <LoadingPage />
   }
 
-  if (errorPointLogs && errorOrderLogs) {
+  if (errorCoinLogs && errorOrderLogs) {
     message.error(errorMessages.data.fetch)
   }
 
-  if (!enabledModules.point) {
+  if (!enabledModules.coin) {
     return <NotFoundPage />
   }
 
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
-        <Icon component={() => <PointIcon />} className="mr-3" />
-        <span>{formatMessage(commonMessages.menu.pointHistory)}</span>
+        <Icon component={() => <CoinIcon />} className="mr-3" />
+        <span>{formatMessage(commonMessages.menu.coinHistory)}</span>
       </AdminPageTitle>
 
       <div className="mb-5">
-        <PointSendingModal onRefetch={refetchPointLogs} />
+        <CoinSendingModal onRefetch={refetchCoinLogs} />
       </div>
 
       <Tabs
-        defaultActiveKey="point-log"
+        defaultActiveKey="coin-log"
         onChange={() => {
-          refetchPointLogs()
+          refetchCoinLogs()
           refetchOrderLogs()
         }}
       >
-        <Tabs.TabPane key="point-log" tab={formatMessage(messages.pointReleaseHistory)} className="pt-3">
+        <Tabs.TabPane key="coin-log" tab={formatMessage(messages.coinReleaseHistory)} className="pt-3">
           <AdminBlock>
-            {loadingPointLogs ? (
+            {loadingCoinLogs ? (
               <Skeleton active />
             ) : (
-              <Table<PointLogProps>
+              <Table<CoinLogProps>
                 columns={[
                   {
                     title: formatMessage(messages.createdAt),
@@ -156,13 +156,13 @@ const PointHistoryAdminPage: React.FC = () => {
                     ),
                   },
                   {
-                    title: formatMessage(messages.pointLogTitle),
+                    title: formatMessage(messages.coinLogTitle),
                     dataIndex: 'title',
                     render: (text, record, index) => (
                       <div>
                         {text}
                         {record.note && (
-                          <Popover title={record.note} className="cursor-pointer">
+                          <Popover title={record.note} className="cursor-coiner">
                             <StyledIcon component={() => <TextIcon />} className="ml-2" />
                           </Popover>
                         )}
@@ -170,7 +170,7 @@ const PointHistoryAdminPage: React.FC = () => {
                     ),
                   },
                   {
-                    title: formatMessage(messages.pointAvailableDate),
+                    title: formatMessage(messages.coinAvailableDate),
                     key: 'date',
                     render: (text, record, index) => (
                       <div>
@@ -185,55 +185,53 @@ const PointHistoryAdminPage: React.FC = () => {
                     ),
                   },
                   {
-                    title: formatMessage(messages.points),
-                    dataIndex: 'points',
+                    title: formatMessage(messages.coins),
+                    dataIndex: 'amount',
                     render: (text, record, index) => (
                       <div className="d-flex justify-content-between">
-                        <StyledLabel variant="point-log">
+                        <StyledLabel variant="coin-log">
                           {text > 0 && '+'}
-                          {text} {pointUnit}
+                          {text} {coinUnit}
                         </StyledLabel>
                         <Dropdown
                           trigger={['click']}
                           overlay={
                             <Menu onClick={() => setIsRevokedModalVisible(true)}>
-                              <Menu.Item>{formatMessage(messages.revokePoint)}</Menu.Item>
+                              <Menu.Item>{formatMessage(messages.revokeCoin)}</Menu.Item>
                               <StyledModal
                                 visible={isRevokedModalVisible}
-                                onOk={() => handleRevokePoint(record.id)}
-                                okText={formatMessage(messages.revokePoint)}
+                                onOk={() => handleRevokeCoin(record.id)}
+                                okText={formatMessage(messages.revokeCoin)}
                                 onCancel={() => setIsRevokedModalVisible(false)}
                               >
                                 <StyledModalTitle className="mb-4">
-                                  {formatMessage(messages.revokePoint)}
+                                  {formatMessage(messages.revokeCoin)}
                                 </StyledModalTitle>
-                                <StyledModalParagraph>
-                                  {formatMessage(messages.revokePointWarning)}
-                                </StyledModalParagraph>
+                                <StyledModalParagraph>{formatMessage(messages.revokeCoinWarning)}</StyledModalParagraph>
                               </StyledModal>
                             </Menu>
                           }
                           placement="bottomRight"
                         >
-                          <MoreOutlined className="cursor-pointer" />
+                          <MoreOutlined className="cursor-coiner" />
                         </Dropdown>
                       </div>
                     ),
                   },
                 ]}
-                dataSource={pointLogs}
+                dataSource={coinLogs}
                 rowKey="id"
                 pagination={false}
               />
             )}
 
-            {pointLogs.length > 0 && fetchMorePointLogs && (
+            {coinLogs.length > 0 && fetchMoreCoinLogs && (
               <div className="text-center mt-4">
                 <Button
                   loading={loading}
                   onClick={() => {
                     setLoading(true)
-                    fetchMorePointLogs().finally(() => setLoading(false))
+                    fetchMoreCoinLogs().finally(() => setLoading(false))
                   }}
                 >
                   {formatMessage(commonMessages.ui.showMore)}
@@ -243,7 +241,7 @@ const PointHistoryAdminPage: React.FC = () => {
           </AdminBlock>
         </Tabs.TabPane>
 
-        <Tabs.TabPane key="order-log" tab={formatMessage(messages.pointConsumptionHistory)} className="pt-3">
+        <Tabs.TabPane key="order-log" tab={formatMessage(messages.coinConsumptionHistory)} className="pt-3">
           <AdminBlock>
             {loadingOrderLogs ? (
               <Skeleton active />
@@ -268,13 +266,13 @@ const PointHistoryAdminPage: React.FC = () => {
                       </div>
                     ),
                   },
-                  { title: formatMessage(messages.pointLogTitle), dataIndex: 'title' },
+                  { title: formatMessage(messages.coinLogTitle), dataIndex: 'title' },
                   {
-                    title: formatMessage(messages.points),
-                    dataIndex: 'points',
+                    title: formatMessage(messages.coins),
+                    dataIndex: 'coins',
                     render: (text, record, index) => (
                       <StyledLabel variant="order-log">
-                        -{text} {pointUnit}
+                        -{text} {coinUnit}
                       </StyledLabel>
                     ),
                   },
@@ -305,13 +303,13 @@ const PointHistoryAdminPage: React.FC = () => {
   )
 }
 
-const usePointLogCollection = () => {
+const useCoinLogCollection = () => {
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_POINT_RELEASE_HISTORY,
-    types.GET_POINT_RELEASE_HISTORYVariables
+    types.GET_COIN_RELEASE_HISTORY,
+    types.GET_COIN_RELEASE_HISTORYVariables
   >(gql`
-    query GET_POINT_RELEASE_HISTORY($offset: Int) {
-      point_log(order_by: { created_at: desc }, limit: 10, offset: $offset) {
+    query GET_COIN_RELEASE_HISTORY($offset: Int) {
+      coin_log(order_by: { created_at: desc }, limit: 10, offset: $offset) {
         id
         member {
           id
@@ -320,73 +318,75 @@ const usePointLogCollection = () => {
           username
           email
         }
+        title
         description
         note
         created_at
         started_at
         ended_at
-        point
+        amount
       }
     }
   `)
   const [isNoMore, setIsNoMore] = useState(false)
 
-  const pointLogs: PointLogProps[] =
+  const coinLogs: CoinLogProps[] =
     loading || error || !data
       ? []
-      : data.point_log.map(pointLog => ({
-          id: pointLog.id,
-          createdAt: new Date(pointLog.created_at),
+      : data.coin_log.map(coinLog => ({
+          id: coinLog.id,
+          createdAt: new Date(coinLog.created_at),
           member: {
-            id: pointLog.member.id,
-            avatarUrl: pointLog.member.picture_url,
-            name: pointLog.member.name || pointLog.member.username,
-            email: pointLog.member.email,
+            id: coinLog.member.id,
+            avatarUrl: coinLog.member.picture_url,
+            name: coinLog.member.name || coinLog.member.username,
+            email: coinLog.member.email,
           },
-          title: pointLog.description,
-          note: pointLog.note,
-          startedAt: pointLog.started_at && new Date(pointLog.started_at),
-          endedAt: pointLog.ended_at && new Date(pointLog.ended_at),
-          points: pointLog.point,
+          title: coinLog.title,
+          description: coinLog.description,
+          note: coinLog.note,
+          startedAt: coinLog.started_at && new Date(coinLog.started_at),
+          endedAt: coinLog.ended_at && new Date(coinLog.ended_at),
+          amount: coinLog.amount,
         }))
 
   return {
-    loadingPointLogs: loading,
-    errorPointLogs: error,
-    pointLogs,
-    refetchPointLogs: () => {
+    loadingCoinLogs: loading,
+    errorCoinLogs: error,
+    coinLogs,
+    refetchCoinLogs: () => {
       setIsNoMore(false)
       return refetch()
     },
-    fetchMorePointLogs: isNoMore
+    fetchMoreCoinLogs: isNoMore
       ? undefined
       : () =>
           fetchMore({
-            variables: { offset: data?.point_log.length || 0 },
+            variables: { offset: data?.coin_log.length || 0 },
             updateQuery: (prev, { fetchMoreResult }) => {
               if (!fetchMoreResult) {
                 return prev
               }
-              if (fetchMoreResult.point_log.length < 10) {
+              if (fetchMoreResult.coin_log.length < 10) {
                 setIsNoMore(true)
               }
               return {
                 ...prev,
-                point_log: [...prev.point_log, ...fetchMoreResult.point_log],
+                coin_log: [...prev.coin_log, ...fetchMoreResult.coin_log],
               }
             },
           }),
   }
 }
 
-const useOrderLogWithPointsCollection = () => {
+const useOrderLogWithCoinsCollection = () => {
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_ORDER_LOG_WITH_POINTS_COLLECTION,
-    types.GET_ORDER_LOG_WITH_POINTS_COLLECTIONVariables
+    types.GET_ORDER_LOG_WITH_COINS_COLLECTION,
+    types.GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables
   >(gql`
-    query GET_ORDER_LOG_WITH_POINTS_COLLECTION($offset: Int) {
+    query GET_ORDER_LOG_WITH_COINS_COLLECTION($offset: Int) {
       order_log(
-        where: { order_discounts: { type: { _eq: "Point" } } }
+        where: { order_discounts: { type: { _eq: "Coin" } } }
         order_by: { created_at: desc }
         limit: 10
         offset: $offset
@@ -400,11 +400,11 @@ const useOrderLogWithPointsCollection = () => {
           username
           email
         }
-        order_discounts(where: { type: { _eq: "Point" } }, limit: 1) {
+        order_discounts(where: { type: { _eq: "Coin" } }, limit: 1) {
           id
           name
         }
-        order_discounts_aggregate(where: { type: { _eq: "Point" } }) {
+        order_discounts_aggregate(where: { type: { _eq: "Coin" } }) {
           aggregate {
             sum {
               price
@@ -428,7 +428,7 @@ const useOrderLogWithPointsCollection = () => {
             email: orderLog.member.email,
           },
           title: orderLog.order_discounts[0]?.name || '',
-          points: orderLog.order_discounts_aggregate.aggregate?.sum?.price || 0,
+          amount: orderLog.order_discounts_aggregate.aggregate?.sum?.price || 0,
         }))
 
   return {
@@ -460,20 +460,20 @@ const useOrderLogWithPointsCollection = () => {
   }
 }
 
-const useDeletePointLog = () => {
-  const [deletePointLogHandler] = useMutation<types.DELETE_POINT_LOG>(gql`
-    mutation DELETE_POINT_LOG($pointLogId: uuid!) {
-      delete_point_log(where: { id: { _eq: $pointLogId } }) {
+const useDeleteCoinLog = () => {
+  const [deleteCoinLogHandler] = useMutation<types.DELETE_COIN_LOG>(gql`
+    mutation DELETE_COIN_LOG($coinLogId: uuid!) {
+      delete_coin_log(where: { id: { _eq: $coinLogId } }) {
         affected_rows
       }
     }
   `)
 
-  const deletePointLog: (pointLogId: String) => Promise<void> = async pointLogId => {
+  const deleteCoinLog: (coinLogId: String) => Promise<void> = async coinLogId => {
     try {
-      await deletePointLogHandler({
+      await deleteCoinLogHandler({
         variables: {
-          pointLogId,
+          coinLogId,
         },
       })
     } catch (err) {
@@ -481,7 +481,7 @@ const useDeletePointLog = () => {
     }
   }
 
-  return deletePointLog
+  return deleteCoinLog
 }
 
-export default PointHistoryAdminPage
+export default CoinHistoryAdminPage

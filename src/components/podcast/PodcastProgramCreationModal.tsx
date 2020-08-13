@@ -24,16 +24,19 @@ const PodcastProgramCreationModal: React.FC<{ memberId: string }> = ({ memberId 
   const [loading, setLoading] = useState(false)
 
   const handleCreate = () => {
-    setLoading(true)
-    form.validateFields().then((values: any) => {
-      createPodcastProgram(values.title, memberId, values.categoryIds)
-        .then(({ data }) => {
-          const podcastProgramId = data?.insert_podcast_program?.returning[0]?.id
-          podcastProgramId && history.push(`/podcast-programs/${podcastProgramId}`)
-        })
-        .catch(handleError)
-        .finally(() => setLoading(false))
-    })
+    form
+      .validateFields()
+      .then((values: any) => {
+        setLoading(true)
+        createPodcastProgram(values.title, memberId, values.categoryIds)
+          .then(({ data }) => {
+            const podcastProgramId = data?.insert_podcast_program?.returning[0]?.id
+            podcastProgramId && history.push(`/podcast-programs/${podcastProgramId}`)
+          })
+          .catch(handleError)
+          .finally(() => setLoading(false))
+      })
+      .catch(() => {})
   }
 
   return (
@@ -49,7 +52,15 @@ const PodcastProgramCreationModal: React.FC<{ memberId: string }> = ({ memberId 
       okButtonProps={{ loading }}
       onOk={handleCreate}
     >
-      <Form form={form} layout="vertical" hideRequiredMark colon={false} initialValues={{ title: 'Untitled' }}>
+      <Form
+        form={form}
+        layout="vertical"
+        colon={false}
+        hideRequiredMark
+        initialValues={{
+          title: 'Untitled',
+        }}
+      >
         <Form.Item
           label={formatMessage(commonMessages.term.title)}
           name="title"

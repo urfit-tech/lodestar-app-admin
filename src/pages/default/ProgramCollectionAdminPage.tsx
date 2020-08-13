@@ -1,6 +1,6 @@
 import Icon, { EditOutlined, FileTextFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Popover, Spin, Tabs } from 'antd'
+import { Button, Popover, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext, useEffect } from 'react'
 import { useIntl } from 'react-intl'
@@ -21,7 +21,7 @@ import ProgramAdminCard from '../../components/program/ProgramAdminCard'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, programMessages } from '../../helpers/translation'
-import { useCreateProgram, useProgramPreviewCollection } from '../../hooks/program'
+import { useProgramPreviewCollection } from '../../hooks/program'
 import { ReactComponent as MoveIcon } from '../../images/icon/move.svg'
 import types from '../../types'
 import { ProgramPreviewProps } from '../../types/program'
@@ -50,7 +50,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
   const { loadingProgramPreviews, programPreviews, refetchProgramPreviews } = useProgramPreviewCollection(
     currentUserRole === 'content-creator' ? currentMemberId : null,
   )
-  const createProgram = useCreateProgram()
+  const [insertProgram] = useMutation<types.INSERT_PROGRAM, types.INSERT_PROGRAMVariables>(INSERT_PROGRAM)
   const [updatePositions] = useMutation<
     types.UPDATE_PROGRAM_POSITION_COLLECTION,
     types.UPDATE_PROGRAM_POSITION_COLLECTIONVariables
@@ -98,7 +98,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
           withCreatorSelector={currentUserRole === 'app-owner'}
           withProgramType
           onCreate={values =>
-            createProgram({
+            insertProgram({
               variables: {
                 ownerId: currentMemberId,
                 instructorId: values.creatorId || currentMemberId,
@@ -123,7 +123,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
       <Tabs defaultActiveKey="draft">
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
-            {loadingProgramPreviews && <Spin />}
+            {loadingProgramPreviews && <Skeleton active />}
 
             <div className="row py-3">
               <PositionAdminLayout<ProgramPreviewProps>
@@ -208,6 +208,32 @@ const ProgramCollectionAdminPage: React.FC = () => {
   )
 }
 
+const INSERT_PROGRAM = gql`
+  mutation INSERT_PROGRAM(
+    $ownerId: String!
+    $instructorId: String!
+    $appId: String!
+    $title: String!
+    $isSubscription: Boolean!
+    $programCategories: [program_category_insert_input!]!
+  ) {
+    insert_program(
+      objects: {
+        app_id: $appId
+        title: $title
+        is_subscription: $isSubscription
+        program_roles: {
+          data: [{ member_id: $ownerId, name: "owner" }, { member_id: $instructorId, name: "instructor" }]
+        }
+        program_categories: { data: $programCategories }
+      }
+    ) {
+      returning {
+        id
+      }
+    }
+  }
+`
 const UPDATE_PROGRAM_POSITION_COLLECTION = gql`
   mutation UPDATE_PROGRAM_POSITION_COLLECTION($data: [program_insert_input!]!) {
     insert_program(objects: $data, on_conflict: { constraint: program_pkey, update_columns: position }) {

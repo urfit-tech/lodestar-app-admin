@@ -1,5 +1,4 @@
 import Icon from '@ant-design/icons'
-import { Checkbox } from 'antd'
 import React, { HTMLAttributes, useContext, useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { ThemeContext } from 'styled-components'
@@ -59,8 +58,6 @@ const AudioTrackCard: React.FC<
     audioBuffer: AudioBuffer
     isActive?: boolean
     isPlaying?: boolean
-    isSelected?: boolean
-    onSelected?: (id: string, checked: boolean) => void
     onAudioPlaying?: (second: number) => void
     onFinishPlaying?: () => void
   }
@@ -71,8 +68,6 @@ const AudioTrackCard: React.FC<
   audioBuffer,
   isActive,
   isPlaying,
-  isSelected,
-  onSelected,
   onAudioPlaying,
   onFinishPlaying,
   children,
@@ -135,13 +130,6 @@ const AudioTrackCard: React.FC<
         </WaveWrapper>
 
         <div className="d-flex align-items-center justify-content-start">
-          {typeof isSelected === 'boolean' && (
-            <Checkbox
-              defaultChecked={isSelected}
-              onChange={e => onSelected && onSelected(id, e.target.checked)}
-              className="mr-2"
-            />
-          )}
           <StyledText>
             {formatMessage(podcastMessages.label.totalDuration)} {durationFormatter(audioBuffer.duration)}
           </StyledText>

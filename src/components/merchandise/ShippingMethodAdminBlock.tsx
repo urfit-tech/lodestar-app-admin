@@ -157,6 +157,7 @@ const ShippingMethodItem: React.FC<{
         <ShippingMethodLabel shippingMethodId={value.id} />
       </Checkbox>
       <CurrencyInput
+        noLabel
         value={value.fee}
         onChange={newValue =>
           typeof newValue === 'number' &&

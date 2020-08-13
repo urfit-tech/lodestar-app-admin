@@ -64,28 +64,22 @@ const MemberAdminModal: React.FC<
     return null
   }
 
-  const handleSubmit = () => {
-    form
-      .validateFields()
-      .then((values: any) => {
-        setLoading(true)
-
-        updateMemberInfo({
-          variables: {
-            memberId: member.id,
-            name: values.name,
-            email: values.email,
-            role: selectedRole,
-          },
-        })
-          .then(() => {
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-            onSuccess && onSuccess()
-          })
-          .catch(error => handleError(error))
-          .finally(() => setLoading(false))
+  const handleSubmit = (values: any) => {
+    setLoading(true)
+    updateMemberInfo({
+      variables: {
+        memberId: member.id,
+        name: values.name,
+        email: values.email,
+        role: selectedRole,
+      },
+    })
+      .then(() => {
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+        onSuccess && onSuccess()
       })
-      .catch(() => {})
+      .catch(error => handleError(error))
+      .finally(() => setLoading(false))
   }
 
   return (
@@ -120,12 +114,13 @@ const MemberAdminModal: React.FC<
           <Form
             form={form}
             layout="vertical"
-            hideRequiredMark
             colon={false}
+            hideRequiredMark
             initialValues={{
               name: member.name,
               email: member.email,
             }}
+            onFinish={handleSubmit}
           >
             <Form.Item
               label={formatMessage(commonMessages.term.memberName)}
@@ -175,7 +170,7 @@ const MemberAdminModal: React.FC<
               >
                 {formatMessage(commonMessages.ui.cancel)}
               </Button>
-              <Button type="primary" loading={loading} onClick={() => handleSubmit()}>
+              <Button type="primary" htmlType="submit" loading={loading}>
                 {formatMessage(commonMessages.ui.save)}
               </Button>
             </div>

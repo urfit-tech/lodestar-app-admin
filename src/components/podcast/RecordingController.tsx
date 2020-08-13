@@ -5,8 +5,8 @@ import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import { desktopViewMixin, durationFormatter } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
-import { ReactComponent as Backward5Icon } from '../../images/icon/backward-5.svg'
-import { ReactComponent as Forward5Icon } from '../../images/icon/forward-5.svg'
+import { ReactComponent as BackwardIcon } from '../../images/icon/backward.svg'
+import { ReactComponent as ForwardIcon } from '../../images/icon/forward.svg'
 import { ReactComponent as PauseCircleIcon } from '../../images/icon/pause-circle.svg'
 import { ReactComponent as PlayCircleIcon } from '../../images/icon/play-circle.svg'
 import { ReactComponent as TrashOIcon } from '../../images/icon/trash-o.svg'
@@ -176,13 +176,13 @@ const RecordingController: React.FC<{
             <div className="col-6 col-lg-4 d-flex align-items-center justify-content-center">
               <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.backward)}</TooltipText>}>
                 <StyledBarIconButton type="link" className="p-0" onClick={() => onBackward && onBackward()}>
-                  <Backward5Icon />
+                  <BackwardIcon />
                 </StyledBarIconButton>
               </Tooltip>
 
               <StyledBarIconButton
                 type="link"
-                className="mx-1"
+                className="mx-0"
                 height="66px"
                 iconSize="44px"
                 onClick={() => (isPlaying ? onPause && onPause() : onPlay && onPlay())}
@@ -192,7 +192,7 @@ const RecordingController: React.FC<{
 
               <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.forward)}</TooltipText>}>
                 <StyledBarIconButton type="link" className="p-0" onClick={() => onForward && onForward()}>
-                  <Forward5Icon />
+                  <ForwardIcon />
                 </StyledBarIconButton>
               </Tooltip>
             </div>

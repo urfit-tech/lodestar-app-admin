@@ -1,26 +1,23 @@
-type CategoryProps = {
-  id: string
-  name: string
-  position: number
-}
+import { CategoryProps } from "./general"
 
-type ActivitySessionProps = {
+export type ActivityBriefProps = {
   id: string
+  coverUrl: string | null
   title: string
+  publishedAt: Date | null
+  participantsCount?: number
+  startedAt?: Date | null
+  endedAt?: Date | null
+}
+
+export type ActivityProps = ActivityBriefProps & {
   description: string | null
-  threshold: number | null
-  startedAt: Date
-  endedAt: Date
-  location: string
-  activityId: string
+  isParticipantsVisible: boolean
+  organizerId: string
+  supportLocales: string[]
 }
 
-type ActivitySessionTicketProps = {
-  id: string
-  session: ActivitySessionProps
-}
-
-type ActivityTicketProps = {
+export type ActivityTicketProps = {
   id: string
   title: string
   startedAt: Date
@@ -29,24 +26,27 @@ type ActivityTicketProps = {
   count: number
   description: string | null
   isPublished: boolean
-
-  sessionTickets: ActivitySessionTicketProps[]
+  enrollmentsCount?: number
 }
 
-export type ActivityProps = {
+export type ActivitySessionProps = {
   id: string
-  coverUrl: string | null
   title: string
-  description: string
-  isParticipantsVisible: boolean
-  publishedAt: Date
-  startedAt: Date | null
-  endedAt: Date | null
-  link: string
-  organizerId: string
-  appId: string
+  startedAt: Date
+  endedAt: Date
+  location: string
+  threshold: number | null
+  description: string | null
+  enrollmentsCount?: number
+}
 
+export type ActivityAdminProps = ActivityProps & {
   categories: CategoryProps[]
+  tickets: (ActivityTicketProps & {
+    sessions: {
+      id: string
+      title: string
+    }[]
+  })[]
   sessions: ActivitySessionProps[]
-  tickets: ActivityTicketProps[]
 }

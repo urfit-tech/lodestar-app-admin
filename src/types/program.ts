@@ -83,8 +83,11 @@ export type ProgramPlanProps = {
   salePrice: number
   listPrice: number
   discountDownPrice: number
+  periodAmount: number | null
   periodType: string | null
   soldAt: Date | null
+  currencyId: string
+  autoRenewed: boolean
 }
 
 export type ProgramRoleProps = {

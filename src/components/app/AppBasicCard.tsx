@@ -3,11 +3,12 @@ import '@ant-design/compatible/assets/index.css'
 import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { Button, Input, message } from 'antd'
 import { CardProps } from 'antd/lib/card'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import { useAppData, useUpdateApp } from '../../hooks/app'
+import { useUpdateApp } from '../../hooks/app'
 import AdminCard from '../admin/AdminCard'
 import { StyledForm } from '../layout'
 
@@ -22,38 +23,33 @@ export type AppCardProps = CardProps &
   }
 const AppBasicCard: React.FC<AppCardProps> = ({ form, appId, ...cardProps }) => {
   const { formatMessage } = useIntl()
-  const { app, refetchApp, loadingApp } = useAppData(appId)
+  const { refetch, ...app } = useContext(AppContext)
   const updateApp = useUpdateApp()
-  const [loading, setLoading] = useState(false)
+  const [updating, setUpdating] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    form.validateFields((error, values) => {
-      if (!error && app) {
-        setLoading(true)
-        updateApp({
-          variables: {
-            appId: app.id,
-            name: values.name,
-            title: values.title,
-            description: values.description,
-            vimeoProjectId: values.vimeoProjectId,
-          },
-        })
-          .then(() => {
-            setLoading(false)
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-            refetchApp()
-          })
-          .catch(error => handleError(error))
-      }
+  const handleSubmit = (values: any) => {
+    setUpdating(true)
+    updateApp({
+      variables: {
+        appId: app.id,
+        name: values.name,
+        title: values.title,
+        description: values.description,
+        vimeoProjectId: values.vimeoProjectId,
+      },
     })
+      .then(() => {
+        setUpdating(false)
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+        refetch && refetch()
+      })
+      .catch(error => handleError(error))
   }
 
   return (
-    <AdminCard {...cardProps} loading={loadingApp}>
+    <AdminCard {...cardProps} loading={updating}>
       <StyledForm
-        onSubmit={handleSubmit}
+        onFinish={handleSubmit}
         labelCol={{ span: 24, md: { span: 4 } }}
         wrapperCol={{ span: 24, md: { span: 12 } }}
       >
@@ -81,7 +77,7 @@ const AppBasicCard: React.FC<AppCardProps> = ({ form, appId, ...cardProps }) => 
           <Button className="mr-2" onClick={() => form.resetFields()}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" htmlType="submit" loading={loading}>
+          <Button type="primary" htmlType="submit" loading={updating}>
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>

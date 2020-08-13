@@ -1,7 +1,5 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
 import Icon, { CaretDownOutlined } from '@ant-design/icons'
-import { Button, Checkbox, Divider, Dropdown, Menu, Select, Spin, Table, Tooltip } from 'antd'
+import { Button, Checkbox, Divider, Dropdown, Form, Menu, Select, Spin, Table, Tooltip } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'

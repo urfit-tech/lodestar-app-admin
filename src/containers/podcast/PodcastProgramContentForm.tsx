@@ -126,7 +126,11 @@ const PodcastProgramContentForm: React.FC<PodcastProgramContentFormProps> = ({ f
           <Link to={`/podcast-programs/${podcastProgram.id}/recording`} className="ml-2">
             <Button>
               <Icon component={() => <MicrophoneIcon />} />
-              <span>{formatMessage(podcastMessages.ui.recordAudio)}</span>
+              <span>
+                {podcastProgram.contentType
+                  ? formatMessage(podcastMessages.ui.editAudio)
+                  : formatMessage(podcastMessages.ui.recordAudio)}
+              </span>
             </Button>
           </Link>
         )}

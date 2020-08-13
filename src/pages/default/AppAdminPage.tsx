@@ -1,4 +1,3 @@
-// import AppSecretCard from '../../components/app/AppSecretCard'
 import { GlobalOutlined } from '@ant-design/icons'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
@@ -22,7 +21,6 @@ const AppAdminPage: React.FC = () => {
 
       <AppBasicCard appId={appId} title="基本資料" className="mb-3" />
       <AppSettingCard appId={appId} title="網站設定" className="mb-3" />
-      {/* <AppSecretCard app={app} refetch={refetchApp} loadingApp={loadingApp} /> */}
     </AdminLayout>
   )
 }

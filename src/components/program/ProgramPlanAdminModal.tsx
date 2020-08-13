@@ -3,7 +3,7 @@ import '@ant-design/compatible/assets/index.css'
 import { FormComponentProps } from '@ant-design/compatible/lib/form/Form'
 import { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, Input, InputNumber, Radio } from 'antd'
+import { Button, Checkbox, Input, Radio } from 'antd'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
@@ -16,8 +16,10 @@ import types from '../../types'
 import { ProgramPlanProps } from '../../types/program'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
+import CurrencyInput from '../admin/CurrencyInput'
+import CurrencySelector from '../admin/CurrencySelector'
 import SaleInput from '../admin/SaleInput'
-import ProgramPeriodTypeDropdown from './ProgramPeriodTypeDropdown'
+import PeriodSelector from '../common/PeriodSelector'
 
 const StyledForm = styled(Form)`
   .ant-form-item-label {
@@ -59,6 +61,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
   programId,
   programPlan,
   onRefetch,
+  ...modalProps
 }) => {
   const { formatMessage } = useIntl()
   const [upsertProgramPlan] = useMutation<types.UPSERT_PROGRAM_PLAN, types.UPSERT_PROGRAM_PLANVariables>(
@@ -66,7 +69,9 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
   )
 
   const [loading, setLoading] = useState(false)
-  const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(programPlan && !!programPlan.discountDownPrice)
+  const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(Boolean(programPlan?.discountDownPrice))
+  const [withPeriod, setWithPeriod] = useState(Boolean(programPlan?.periodAmount && programPlan?.periodType))
+  const [withAutoRenewed, setWithAutoRenewed] = useState(Boolean(programPlan?.autoRenewed))
 
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     form.validateFieldsAndScroll((error, values) => {
@@ -83,7 +88,10 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
             salePrice: values.sale ? values.sale.price : null,
             soldAt: values.sale ? values.sale.soldAt : null,
             discountDownPrice: withDiscountDownPrice ? values.discountDownPrice : 0,
-            periodType: values.periodType,
+            periodAmount: withPeriod ? values.period.amount : null,
+            periodType: withPeriod ? values.period.type : null,
+            currencyId: values.currencyId,
+            autoRenewed: withPeriod ? values.autoRenewed || false : false,
           },
         })
           .then(() => {
@@ -104,8 +112,9 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
 
   return (
     <AdminModal
+      {...modalProps}
       renderTrigger={renderTrigger}
-      title={formatMessage(messages.subscriptionPlan)}
+      title={formatMessage(commonMessages.label.salesPlan)}
       icon={<FileAddOutlined />}
       footer={null}
       renderFooter={({ setVisible }) => (
@@ -133,9 +142,53 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
             ],
           })(<Input />)}
         </Form.Item>
-        <Form.Item label={formatMessage(messages.permissionType)}>
+
+        <Form.Item label={formatMessage(commonMessages.term.currency)}>
+          {form.getFieldDecorator('currencyId', {
+            initialValue: programPlan?.currencyId,
+            rules: [
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.term.listPrice),
+                }),
+              },
+            ],
+          })(<CurrencySelector />)}
+        </Form.Item>
+
+        <Form.Item label={formatMessage(commonMessages.term.listPrice)}>
+          {form.getFieldDecorator('listPrice', {
+            initialValue: (programPlan && programPlan.listPrice) || 0,
+          })(<CurrencyInput noLabel currencyId={form.getFieldValue('currencyId') || programPlan?.currencyId} />)}
+        </Form.Item>
+
+        <Form.Item>
+          {form.getFieldDecorator('sale', {
+            initialValue: programPlan?.soldAt
+              ? {
+                  price: programPlan.salePrice || 0,
+                  soldAt: programPlan.soldAt,
+                }
+              : null,
+            rules: [{ validator: (rule, value, callback) => callback((value && !value.soldAt) || undefined) }],
+          })(<SaleInput currencyId={form.getFieldValue('currencyId') || programPlan?.currencyId} />)}
+        </Form.Item>
+
+        <div className="mb-4">
+          <Checkbox defaultChecked={withPeriod} onChange={e => setWithPeriod(e.target.checked)}>
+            {formatMessage(commonMessages.label.period)}
+          </Checkbox>
+        </div>
+        <Form.Item className={withPeriod ? '' : 'd-none'}>
+          {form.getFieldDecorator('period', {
+            initialValue: { amount: programPlan?.periodAmount || 1, type: programPlan?.periodType || 'M' },
+          })(<PeriodSelector />)}
+        </Form.Item>
+
+        <Form.Item className={withPeriod ? '' : 'd-none'} label={formatMessage(messages.permissionType)}>
           {form.getFieldDecorator('type', {
-            initialValue: (programPlan && programPlan.type) || 2,
+            initialValue: (programPlan && programPlan.type) || 1,
             rules: [{ required: true }],
           })(
             <Radio.Group>
@@ -148,54 +201,30 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
             </Radio.Group>,
           )}
         </Form.Item>
-        <Form.Item label={formatMessage(messages.subscriptionPeriodType)}>
-          {form.getFieldDecorator('periodType', {
-            initialValue: (programPlan && programPlan.periodType) || 'M',
-          })(<ProgramPeriodTypeDropdown />)}
-        </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.term.listPrice)}>
-          {form.getFieldDecorator('listPrice', {
-            initialValue: (programPlan && programPlan.listPrice) || 0,
-          })(
-            <InputNumber
-              min={0}
-              formatter={value => `NT$ ${value}`}
-              parser={value => (value ? value.replace(/\D/g, '') : '')}
-            />,
-          )}
-        </Form.Item>
 
-        <Form.Item>
-          {form.getFieldDecorator('sale', {
-            initialValue: programPlan?.soldAt
-              ? {
-                  price: programPlan.salePrice || 0,
-                  soldAt: programPlan.soldAt,
-                }
-              : null,
-            rules: [{ validator: (rule, value, callback) => callback((value && !value.soldAt) || undefined) }],
-          })(<SaleInput />)}
-        </Form.Item>
-
-        <div className="mb-4">
-          <Checkbox defaultChecked={withDiscountDownPrice} onChange={e => setWithDiscountDownPrice(e.target.checked)}>
-            {formatMessage(commonMessages.label.discountDownPrice)}
+        {withPeriod && (
+          <Checkbox checked={withAutoRenewed} onChange={e => setWithAutoRenewed(e.target.checked)}>
+            {formatMessage(commonMessages.label.autoRenewed)}
           </Checkbox>
-          {withDiscountDownPrice && (
-            <div className="notation">{formatMessage(commonMessages.text.discountDownNotation)}</div>
-          )}
-        </div>
-        <Form.Item className={withDiscountDownPrice ? '' : 'd-none'}>
-          {form.getFieldDecorator('discountDownPrice', {
-            initialValue: (programPlan && programPlan.discountDownPrice) || 0,
-          })(
-            <InputNumber
-              min={0}
-              formatter={value => `NT$ ${value}`}
-              parser={value => (value ? value.replace(/\D/g, '') : '')}
-            />,
-          )}
-        </Form.Item>
+        )}
+
+        {withPeriod && withAutoRenewed && (
+          <div className="mb-4">
+            <Checkbox defaultChecked={withDiscountDownPrice} onChange={e => setWithDiscountDownPrice(e.target.checked)}>
+              {formatMessage(commonMessages.label.discountDownPrice)}
+            </Checkbox>
+            {withDiscountDownPrice && (
+              <div className="notation">{formatMessage(commonMessages.text.discountDownNotation)}</div>
+            )}
+          </div>
+        )}
+        {withPeriod && withAutoRenewed && withDiscountDownPrice && (
+          <Form.Item>
+            {form.getFieldDecorator('discountDownPrice', {
+              initialValue: (programPlan && programPlan.discountDownPrice) || 0,
+            })(<CurrencyInput noLabel currencyId={form.getFieldValue('currencyId') || programPlan?.currencyId} />)}
+          </Form.Item>
+        )}
 
         <Form.Item label={formatMessage(messages.planDescription)}>
           {form.getFieldDecorator('description', {
@@ -218,7 +247,10 @@ const UPSERT_PROGRAM_PLAN = gql`
     $salePrice: numeric
     $soldAt: timestamptz
     $discountDownPrice: numeric!
-    $periodType: String!
+    $periodAmount: numeric
+    $periodType: String
+    $currencyId: String!
+    $autoRenewed: Boolean!
   ) {
     insert_program_plan(
       objects: {
@@ -228,14 +260,29 @@ const UPSERT_PROGRAM_PLAN = gql`
         description: $description
         list_price: $listPrice
         sale_price: $salePrice
+        period_amount: $periodAmount
         period_type: $periodType
         discount_down_price: $discountDownPrice
         sold_at: $soldAt
         program_id: $programId
+        currency_id: $currencyId
+        auto_renewed: $autoRenewed
       }
       on_conflict: {
         constraint: program_plan_pkey
-        update_columns: [type, title, description, list_price, sale_price, discount_down_price, period_type, sold_at]
+        update_columns: [
+          type
+          title
+          description
+          list_price
+          sale_price
+          discount_down_price
+          period_amount
+          period_type
+          sold_at
+          currency_id
+          auto_renewed
+        ]
       }
     ) {
       affected_rows

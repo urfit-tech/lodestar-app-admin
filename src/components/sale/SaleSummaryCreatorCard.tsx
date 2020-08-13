@@ -99,9 +99,9 @@ const SaleSummaryCreatorCard: React.FC<{
   return (
     <AdminCard loading={loading}>
       <SaleSummaryWrapper className="d-flex align-items-center justify-content-start">
-        <SaleSummaryAvatarImage className="flex-shrink-0" src={member.pictureUrl} size={80} />
+        <SaleSummaryAvatarImage className="flex-shrink-0" src={member?.pictureUrl} size={80} />
         <SaleSummaryInfo className="ml-4">
-          <h3>{member.name}</h3>
+          <h3>{member?.name}</h3>
           <p>
             <span className="mr-2">
               {formatMessage(messages.totalActualSales, { dollars: commaFormatter(totalPrice - totalDiscount) })}

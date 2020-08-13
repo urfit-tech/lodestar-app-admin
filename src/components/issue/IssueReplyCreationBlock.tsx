@@ -1,8 +1,6 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { useMutation } from '@apollo/react-hooks'
-import { Button } from 'antd'
+import { Button, Form } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
@@ -21,67 +19,63 @@ export const StyledEditor = styled(BraftEditor)`
     height: initial;
   }
 `
-type IssueReplyCreationBlockProps = FormComponentProps & {
+
+const IssueReplyCreationBlock: React.FC<{
   memberId: string
   issueId: string
   onRefetch?: () => void
-}
-const IssueReplyCreationBlock: React.FC<IssueReplyCreationBlockProps> = ({ memberId, issueId, form, onRefetch }) => {
-  const { id: appId } = useContext(AppContext)
+}> = ({ memberId, issueId, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const [form] = useForm()
+  const { authToken } = useAuth()
+  const { id: appId } = useContext(AppContext)
   const [insertIssueReply] = useMutation<types.INSERT_ISSUE_REPLY, types.INSERT_ISSUE_REPLYVariables>(
     INSERT_ISSUE_REPLY,
   )
+  const [loading, setLoading] = useState(false)
 
-  const { authToken } = useAuth()
-
-  const [replying, setReplying] = useState(false)
-
-  const handleSubmit = () => {
-    form.validateFields((error, values) => {
-      if (!error) {
-        setReplying(true)
-        insertIssueReply({
-          variables: {
-            memberId,
-            issueId,
-            content: values.content.toRAW(),
-          },
-        })
-          .then(() => {
-            form.resetFields()
-            onRefetch && onRefetch()
-          })
-          .catch(handleError)
-          .finally(() => setReplying(false))
-      }
+  const handleSubmit = (values: any) => {
+    setLoading(true)
+    insertIssueReply({
+      variables: {
+        memberId,
+        issueId,
+        content: values.content.toRAW(),
+      },
     })
+      .then(() => {
+        form.resetFields()
+        onRefetch && onRefetch()
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
+
   return (
     <Form
-      onSubmit={e => {
-        e.preventDefault()
-        handleSubmit()
+      form={form}
+      initialValues={{
+        content: BraftEditor.createEditorState(null),
       }}
+      onFinish={handleSubmit}
     >
       <div className="d-flex align-items-center mb-3">
         <MemberAvatar memberId={memberId} withName />
       </div>
-      <Form.Item className="mb-1">
-        {form.getFieldDecorator('content', {
-          initialValue: BraftEditor.createEditorState(null),
-          rules: [{ required: true, message: formatMessage(errorMessages.form.issueContent) }],
-        })(
-          <StyledEditor
-            style={{ border: '1px solid #cdcdcd', borderRadius: '4px' }}
-            language="zh-hant"
-            controls={['bold', 'italic', 'underline', 'separator', 'media']}
-            media={{ uploadFn: createUploadFn(appId, authToken) }}
-          />,
-        )}
+      <Form.Item
+        name="content"
+        rules={[{ required: true, message: formatMessage(errorMessages.form.issueContent) }]}
+        className="mb-1"
+      >
+        <StyledEditor
+          style={{ border: '1px solid #cdcdcd', borderRadius: '4px' }}
+          language="zh-hant"
+          controls={['bold', 'italic', 'underline', 'separator', 'media']}
+          media={{ uploadFn: createUploadFn(appId, authToken) }}
+        />
       </Form.Item>
-      <Form.Item style={{ textAlign: 'right' }}>
-        <Button type="primary" htmlType="submit" loading={replying}>
+      <Form.Item className="text-right">
+        <Button type="primary" htmlType="submit" loading={loading}>
           {formatMessage(commonMessages.ui.reply)}
         </Button>
       </Form.Item>
@@ -97,4 +91,4 @@ const INSERT_ISSUE_REPLY = gql`
   }
 `
 
-export default Form.create<IssueReplyCreationBlockProps>()(IssueReplyCreationBlock)
+export default IssueReplyCreationBlock

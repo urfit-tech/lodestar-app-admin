@@ -66,6 +66,22 @@ export const uploadFile = async (
   return signedUrl
 }
 
+export const getFileDownloadableLink = async (key: string, authToken: string | null) => {
+  const { data } = await axios.post(
+    `${process.env.REACT_APP_BACKEND_ENDPOINT}/sys/sign-url`,
+    {
+      operation: 'getObject',
+      params: {
+        Key: key,
+      },
+    },
+    {
+      headers: { authorization: `Bearer ${authToken}` },
+    },
+  )
+  return data.result
+}
+
 export const commaFormatter = (value?: number | string | null) =>
   value !== null && value !== undefined && `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
@@ -79,16 +95,16 @@ export const dateRangeFormatter: (props: {
   endedAt: Date
   dateFormat?: string
   timeFormat?: string
-}) => string = ({ startedAt, endedAt, dateFormat, timeFormat }) => {
+}) => string = ({ startedAt, endedAt, dateFormat = 'YYYY/MM/DD', timeFormat = 'HH:mm' }) => {
   const startedMoment = moment(startedAt)
   const endedMoment = moment(endedAt)
-  const isInSameDay = startedMoment.format('YYYY/MM/DD') === endedMoment.format('YYYY/MM/DD')
+  const isInSameDay = startedMoment.format('YYYYMMDD') === endedMoment.format('YYYYMMDD')
 
   return 'STARTED_DATE STARTED_TIME ~ ENDED_DATE ENDED_TIME'
-    .replace('STARTED_DATE', startedMoment.format(dateFormat || 'YYYY-MM-DD(dd)'))
-    .replace('STARTED_TIME', startedMoment.format(timeFormat || 'HH:mm'))
-    .replace('ENDED_DATE', isInSameDay ? '' : endedMoment.format(dateFormat || 'YYYY-MM-DD(dd)'))
-    .replace('ENDED_TIME', endedMoment.format(timeFormat || 'HH:mm'))
+    .replace('STARTED_DATE', startedMoment.format(dateFormat))
+    .replace('STARTED_TIME', startedMoment.format(timeFormat))
+    .replace('ENDED_DATE', isInSameDay ? '' : endedMoment.format(dateFormat))
+    .replace('ENDED_TIME', endedMoment.format(timeFormat))
     .replace(/  +/g, ' ')
 }
 

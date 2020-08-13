@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import { currencyFormatter, dateRangeFormatter } from '../../helpers'
 import { activityMessages, commonMessages } from '../../helpers/translation'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
+import { ActivityTicketProps } from '../../types/activity'
 import { BraftContent } from '../common/StyledBraftEditor'
 
 const StyledWrapper = styled.div`
@@ -78,45 +79,21 @@ const messages = defineMessages({
   expired: { id: 'activity.status.expired', defaultMessage: '已截止' },
 })
 
-export type ActivityTicketProps = {
-  id: string
-  title: string
-  description: string | null
-  price: number
-  count: number
-  startedAt: Date
-  endedAt: Date
-  isPublished: boolean
-  activitySessionTickets: {
-    id: string
-    activitySession: {
+const ActivityTicket: React.FC<
+  ActivityTicketProps & {
+    sessions: {
       id: string
       title: string
-    }
-  }[]
-  participants: number
-  variant?: 'admin'
-  extra?: React.ReactNode
-}
-const ActivityTicket: React.FC<ActivityTicketProps> = ({
-  title,
-  description,
-  price,
-  count,
-  startedAt,
-  endedAt,
-  isPublished,
-  activitySessionTickets,
-  participants,
-  variant,
-  extra,
-}) => {
+    }[]
+    extra?: React.ReactNode
+  }
+> = ({ title, description, price, count, startedAt, endedAt, isPublished, sessions, enrollmentsCount, extra }) => {
   const { formatMessage } = useIntl()
 
   const status =
     !isPublished || Date.now() < startedAt.getTime()
       ? formatMessage(commonMessages.status.notPublished)
-      : participants >= count
+      : (enrollmentsCount || 0) >= count
       ? formatMessage(commonMessages.status.soldOut)
       : Date.now() > endedAt.getTime()
       ? formatMessage(messages.expired)
@@ -126,18 +103,16 @@ const ActivityTicket: React.FC<ActivityTicketProps> = ({
     <StyledWrapper>
       <StyledTitle className="d-flex align-items-start justify-content-between mb-3">
         <span>{title}</span>
-        {variant === 'admin' && (
-          <StyledLabel active={status === formatMessage(commonMessages.status.selling)}>{status}</StyledLabel>
-        )}
+        <StyledLabel active={status === formatMessage(commonMessages.status.selling)}>{status}</StyledLabel>
       </StyledTitle>
       <StyledPrice>{currencyFormatter(price)}</StyledPrice>
 
       <Divider />
 
       <StyledSubTitle>{formatMessage(activityMessages.term.includingSessions)}</StyledSubTitle>
-      {activitySessionTickets.map(sessionTicket => (
-        <StyledTag key={sessionTicket.id} color="#585858" className="mb-2">
-          {sessionTicket.activitySession.title}
+      {sessions.map(session => (
+        <StyledTag key={session.id} color="#585858" className="mb-2">
+          {session.title}
         </StyledTag>
       ))}
 
@@ -149,18 +124,17 @@ const ActivityTicket: React.FC<ActivityTicketProps> = ({
       )}
 
       <StyledSubTitle>{formatMessage(activityMessages.term.sellingTime)}</StyledSubTitle>
-      <StyledMeta>{dateRangeFormatter({ startedAt, endedAt })}</StyledMeta>
+      <StyledMeta>{dateRangeFormatter({ startedAt, endedAt, dateFormat: 'YYYY-MM-DD(dd)' })}</StyledMeta>
 
-      {variant === 'admin' && (
-        <StyledExtraAdmin className="d-flex align-items-center justify-content-between">
-          <div>
-            <Icon component={() => <UserOIcon />} className="mr-2" />
-            <span>{`${participants} / ${count}`}</span>
-          </div>
-          {extra}
-        </StyledExtraAdmin>
-      )}
-      {typeof variant === 'undefined' && extra && <div className="mt-3">{extra}</div>}
+      <StyledExtraAdmin className="d-flex align-items-center justify-content-between">
+        <div>
+          <Icon component={() => <UserOIcon />} className="mr-2" />
+          <span>
+            {enrollmentsCount} / {count}
+          </span>
+        </div>
+        {extra}
+      </StyledExtraAdmin>
     </StyledWrapper>
   )
 }

@@ -1,17 +1,14 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { LockOutlined } from '@ant-design/icons'
-import { Button, Input, message } from 'antd'
+import { Button, Form, Input, message } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
-import { BREAK_POINT } from '../../components/common/Responsive'
 import DefaultLayout from '../../components/layout/DefaultLayout'
-import { handleError } from '../../helpers'
+import { desktopViewMixin, handleError } from '../../helpers'
 import { codeMessages, commonMessages, errorMessages } from '../../helpers/translation'
 
 const StyledContainer = styled.div`
@@ -22,9 +19,11 @@ const StyledContainer = styled.div`
     font-size: 14px;
   }
 
-  @media (min-width: ${BREAK_POINT}px) {
-    padding: 4rem;
-  }
+  ${desktopViewMixin(
+    css`
+      padding: 4rem;
+    `,
+  )}
 `
 const StyledTitle = styled.h1`
   margin-bottom: 2rem;
@@ -36,36 +35,32 @@ const StyledTitle = styled.h1`
   letter-spacing: 0.8px;
 `
 
-const ResetPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
+const ResetPasswordPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const [token] = useQueryParam('token', StringParam)
+  const [form] = useForm()
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    form.validateFields((error, values) => {
-      if (!error) {
-        setLoading(true)
-        axios
-          .post(
-            `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/reset-password`,
-            { newPassword: values.password },
-            {
-              headers: { authorization: `Bearer ${token}` },
-            },
-          )
-          .then(({ data: { code } }) => {
-            if (code === 'SUCCESS') {
-              history.push('/reset-password-success')
-            } else {
-              message.error(formatMessage(codeMessages[code as keyof typeof codeMessages]))
-            }
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
-      }
-    })
+  const handleSubmit = (values: any) => {
+    setLoading(true)
+    axios
+      .post(
+        `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/reset-password`,
+        { newPassword: values.password },
+        {
+          headers: { authorization: `Bearer ${token}` },
+        },
+      )
+      .then(({ data: { code } }) => {
+        if (code === 'SUCCESS') {
+          history.push('/reset-password-success')
+        } else {
+          message.error(formatMessage(codeMessages[code as keyof typeof codeMessages]))
+        }
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   // FIXME: set auth token to reset password
@@ -80,55 +75,53 @@ const ResetPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
     <DefaultLayout noFooter centeredBox>
       <StyledContainer>
         <StyledTitle>{formatMessage(commonMessages.label.resetPassword)}</StyledTitle>
-        <Form onSubmit={handleSubmit}>
-          <Form.Item>
-            {form.getFieldDecorator('password', {
-              rules: [
-                {
-                  required: true,
-                  message: formatMessage(errorMessages.form.isRequired, {
-                    field: formatMessage(commonMessages.label.newPassword),
-                  }),
-                },
-              ],
-            })(
-              <Input
-                type="password"
-                placeholder={formatMessage(commonMessages.label.newPassword)}
-                suffix={<LockOutlined />}
-              />,
-            )}
+        <Form form={form} colon={false} hideRequiredMark onFinish={handleSubmit}>
+          <Form.Item
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.label.newPassword),
+                }),
+              },
+            ]}
+          >
+            <Input
+              type="password"
+              placeholder={formatMessage(commonMessages.label.newPassword)}
+              suffix={<LockOutlined />}
+            />
           </Form.Item>
-          <Form.Item>
-            {form.getFieldDecorator('passwordCheck', {
-              validateTrigger: 'onSubmit',
-              rules: [
-                {
-                  required: true,
-                  message: formatMessage(errorMessages.form.isRequired, {
-                    field: formatMessage(commonMessages.label.confirmPassword),
-                  }),
+          <Form.Item
+            name="passwordCheck"
+            rules={[
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.label.confirmPassword),
+                }),
+              },
+              {
+                validator: (rule, value, callback) => {
+                  if (value && value !== form.getFieldValue('password')) {
+                    callback(formatMessage(errorMessages.event.checkSamePassword))
+                  } else {
+                    callback()
+                  }
                 },
-                {
-                  validator: (rule, value, callback) => {
-                    if (value && value !== form.getFieldValue('password')) {
-                      callback(formatMessage(errorMessages.event.checkSamePassword))
-                    } else {
-                      callback()
-                    }
-                  },
-                },
-              ],
-            })(
-              <Input
-                type="password"
-                placeholder={formatMessage(commonMessages.text.newPasswordAgain)}
-                suffix={<LockOutlined />}
-              />,
-            )}
+              },
+            ]}
+          >
+            <Input
+              type="password"
+              placeholder={formatMessage(commonMessages.text.newPasswordAgain)}
+              suffix={<LockOutlined />}
+            />
           </Form.Item>
+
           <Form.Item className="m-0">
-            <Button htmlType="submit" type="primary" block loading={loading}>
+            <Button type="primary" htmlType="submit" block loading={loading}>
               {formatMessage(commonMessages.ui.confirm)}
             </Button>
           </Form.Item>
@@ -138,4 +131,4 @@ const ResetPasswordPage: React.FC<FormComponentProps> = ({ form }) => {
   )
 }
 
-export default Form.create<FormComponentProps>()(ResetPasswordPage)
+export default ResetPasswordPage
