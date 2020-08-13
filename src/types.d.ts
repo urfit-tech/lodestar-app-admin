@@ -3829,12 +3829,6 @@ export interface GET_APPLICATION_app_admin_by_pk_app_app_settings {
   value: string;
 }
 
-export interface GET_APPLICATION_app_admin_by_pk_app_app_secrets {
-  __typename: "app_secret";
-  key: string;
-  value: string;
-}
-
 export interface GET_APPLICATION_app_admin_by_pk_app {
   __typename: "app";
   id: string;
@@ -3850,10 +3844,6 @@ export interface GET_APPLICATION_app_admin_by_pk_app {
    * An array relationship
    */
   app_settings: GET_APPLICATION_app_admin_by_pk_app_app_settings[];
-  /**
-   * An array relationship
-   */
-  app_secrets: GET_APPLICATION_app_admin_by_pk_app_app_secrets[];
 }
 
 export interface GET_APPLICATION_app_admin_by_pk {
