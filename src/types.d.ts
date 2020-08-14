@@ -7770,6 +7770,51 @@ export interface GET_COIN_RELEASE_HISTORYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_COIN_ABOUT_TO_SEND
+// ====================================================
+
+export interface GET_COIN_ABOUT_TO_SEND_coin_log_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_COIN_ABOUT_TO_SEND_coin_log {
+  __typename: "coin_log";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_COIN_ABOUT_TO_SEND_coin_log_member;
+  title: string;
+  description: string;
+  note: string | null;
+  created_at: any;
+  started_at: any | null;
+  ended_at: any | null;
+  amount: any;
+}
+
+export interface GET_COIN_ABOUT_TO_SEND {
+  /**
+   * fetch data from the table: "coin_log"
+   */
+  coin_log: GET_COIN_ABOUT_TO_SEND_coin_log[];
+}
+
+export interface GET_COIN_ABOUT_TO_SENDVariables {
+  offset?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ORDER_LOG_WITH_COINS_COLLECTION
 // ====================================================
 
@@ -8594,6 +8639,26 @@ export enum comment_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "contract"
+ */
+export enum contract_constraint {
+  contract_pkey = "contract_pkey",
+}
+
+/**
+ * update columns of table "contract"
+ */
+export enum contract_update_column {
+  created_at = "created_at",
+  deliverables = "deliverables",
+  description = "description",
+  id = "id",
+  name = "name",
+  template = "template",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "coupon_code"
  */
 export enum coupon_code_constraint {
@@ -8813,6 +8878,28 @@ export enum member_constraint {
   member_app_id_username_key = "member_app_id_username_key",
   member_refresh_token_key = "member_refresh_token_key",
   member_zoom_user_id_key = "member_zoom_user_id_key",
+}
+
+/**
+ * unique or primary key constraints on table "member_contract"
+ */
+export enum member_contract_constraint {
+  member_contract_pkey = "member_contract_pkey",
+}
+
+/**
+ * update columns of table "member_contract"
+ */
+export enum member_contract_update_column {
+  agreed_at = "agreed_at",
+  agreed_ip = "agreed_ip",
+  agreed_options = "agreed_options",
+  contract_id = "contract_id",
+  ended_at = "ended_at",
+  id = "id",
+  member_id = "member_id",
+  started_at = "started_at",
+  values = "values",
 }
 
 /**
@@ -11380,6 +11467,54 @@ export interface comment_reply_reaction_on_conflict {
 }
 
 /**
+ * Boolean expression to filter rows from the table "contract". All fields are combined with a logical 'AND'.
+ */
+export interface contract_bool_exp {
+  _and?: (contract_bool_exp | null)[] | null;
+  _not?: contract_bool_exp | null;
+  _or?: (contract_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  deliverables?: String_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member_contracts?: member_contract_bool_exp | null;
+  name?: String_comparison_exp | null;
+  template?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "contract"
+ */
+export interface contract_insert_input {
+  created_at?: any | null;
+  deliverables?: string | null;
+  description?: string | null;
+  id?: any | null;
+  member_contracts?: member_contract_arr_rel_insert_input | null;
+  name?: string | null;
+  template?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "contract"
+ */
+export interface contract_obj_rel_insert_input {
+  data: contract_insert_input;
+  on_conflict?: contract_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "contract"
+ */
+export interface contract_on_conflict {
+  constraint: contract_constraint;
+  update_columns: contract_update_column[];
+  where?: contract_bool_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "coupon"
  */
 export interface coupon_arr_rel_insert_input {
@@ -11966,6 +12101,7 @@ export interface member_bool_exp {
   logined_at?: timestamptz_comparison_exp | null;
   media?: media_bool_exp | null;
   member_cards?: member_card_bool_exp | null;
+  member_contracts?: member_contract_bool_exp | null;
   member_shops?: member_shop_bool_exp | null;
   member_socials?: member_social_bool_exp | null;
   member_tags?: member_tag_bool_exp | null;
@@ -12045,6 +12181,60 @@ export interface member_card_on_conflict {
 }
 
 /**
+ * input type for inserting array relation for remote table "member_contract"
+ */
+export interface member_contract_arr_rel_insert_input {
+  data: member_contract_insert_input[];
+  on_conflict?: member_contract_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_contract". All fields are combined with a logical 'AND'.
+ */
+export interface member_contract_bool_exp {
+  _and?: (member_contract_bool_exp | null)[] | null;
+  _not?: member_contract_bool_exp | null;
+  _or?: (member_contract_bool_exp | null)[] | null;
+  agreed_at?: timestamptz_comparison_exp | null;
+  agreed_ip?: String_comparison_exp | null;
+  agreed_options?: jsonb_comparison_exp | null;
+  contract?: contract_bool_exp | null;
+  contract_id?: uuid_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
+  values?: jsonb_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_contract"
+ */
+export interface member_contract_insert_input {
+  agreed_at?: any | null;
+  agreed_ip?: string | null;
+  agreed_options?: any | null;
+  contract?: contract_obj_rel_insert_input | null;
+  contract_id?: any | null;
+  ended_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  started_at?: any | null;
+  values?: any | null;
+}
+
+/**
+ * on conflict condition type for table "member_contract"
+ */
+export interface member_contract_on_conflict {
+  constraint: member_contract_constraint;
+  update_columns: member_contract_update_column[];
+  where?: member_contract_bool_exp | null;
+}
+
+/**
  * input type for inserting data into table "member"
  */
 export interface member_insert_input {
@@ -12072,6 +12262,7 @@ export interface member_insert_input {
   logined_at?: any | null;
   media?: media_arr_rel_insert_input | null;
   member_cards?: member_card_arr_rel_insert_input | null;
+  member_contracts?: member_contract_arr_rel_insert_input | null;
   member_shops?: member_shop_arr_rel_insert_input | null;
   member_socials?: member_social_arr_rel_insert_input | null;
   member_tags?: member_tag_arr_rel_insert_input | null;
