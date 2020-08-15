@@ -2375,6 +2375,7 @@ export interface UPSERT_PROGRAM_PLANVariables {
   periodType?: string | null;
   currencyId: string;
   autoRenewed: boolean;
+  publishedAt?: any | null;
 }
 
 /* tslint:disable */
@@ -7046,6 +7047,7 @@ export interface GET_PROGRAM_program_by_pk_program_plans {
   sold_at: any | null;
   currency_id: string;
   auto_renewed: boolean;
+  published_at: any | null;
 }
 
 export interface GET_PROGRAM_program_by_pk_program_categories_category {
@@ -9418,6 +9420,24 @@ export enum podcast_program_role_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "podcast_program_tag"
+ */
+export enum podcast_program_tag_constraint {
+  podcast_program_tag_pkey = "podcast_program_tag_pkey",
+  podcast_program_tag_podcast_program_id_tag_name_key = "podcast_program_tag_podcast_program_id_tag_name_key",
+}
+
+/**
+ * update columns of table "podcast_program_tag"
+ */
+export enum podcast_program_tag_update_column {
+  id = "id",
+  podcast_program_id = "podcast_program_id",
+  position = "position",
+  tag_name = "tag_name",
+}
+
+/**
  * update columns of table "podcast_program"
  */
 export enum podcast_program_update_column {
@@ -9829,10 +9849,12 @@ export enum program_plan_update_column {
   ended_at = "ended_at",
   gains = "gains",
   id = "id",
+  is_participants_visible = "is_participants_visible",
   list_price = "list_price",
   period_amount = "period_amount",
   period_type = "period_type",
   program_id = "program_id",
+  published_at = "published_at",
   sale_price = "sale_price",
   sold_at = "sold_at",
   started_at = "started_at",
@@ -9874,6 +9896,24 @@ export enum program_role_update_column {
   member_id = "member_id",
   name = "name",
   program_id = "program_id",
+}
+
+/**
+ * unique or primary key constraints on table "program_tag"
+ */
+export enum program_tag_constraint {
+  program_tag_pkey = "program_tag_pkey",
+  program_tag_program_id_tag_name_key = "program_tag_program_id_tag_name_key",
+}
+
+/**
+ * update columns of table "program_tag"
+ */
+export enum program_tag_update_column {
+  id = "id",
+  position = "position",
+  program_id = "program_id",
+  tag_name = "tag_name",
 }
 
 /**
@@ -13628,6 +13668,7 @@ export interface podcast_program_bool_exp {
   podcast_program_categories?: podcast_program_category_bool_exp | null;
   podcast_program_enrollments?: podcast_program_enrollment_bool_exp | null;
   podcast_program_roles?: podcast_program_role_bool_exp | null;
+  podcast_program_tags?: podcast_program_tag_bool_exp | null;
   published_at?: timestamptz_comparison_exp | null;
   sale_price?: numeric_comparison_exp | null;
   sold_at?: timestamptz_comparison_exp | null;
@@ -13710,6 +13751,7 @@ export interface podcast_program_insert_input {
   podcast_program_body?: podcast_program_body_obj_rel_insert_input | null;
   podcast_program_categories?: podcast_program_category_arr_rel_insert_input | null;
   podcast_program_roles?: podcast_program_role_arr_rel_insert_input | null;
+  podcast_program_tags?: podcast_program_tag_arr_rel_insert_input | null;
   published_at?: any | null;
   sale_price?: any | null;
   sold_at?: any | null;
@@ -13776,6 +13818,50 @@ export interface podcast_program_role_on_conflict {
   constraint: podcast_program_role_constraint;
   update_columns: podcast_program_role_update_column[];
   where?: podcast_program_role_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "podcast_program_tag"
+ */
+export interface podcast_program_tag_arr_rel_insert_input {
+  data: podcast_program_tag_insert_input[];
+  on_conflict?: podcast_program_tag_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "podcast_program_tag". All fields are combined with a logical 'AND'.
+ */
+export interface podcast_program_tag_bool_exp {
+  _and?: (podcast_program_tag_bool_exp | null)[] | null;
+  _not?: podcast_program_tag_bool_exp | null;
+  _or?: (podcast_program_tag_bool_exp | null)[] | null;
+  id?: uuid_comparison_exp | null;
+  podcast_program?: podcast_program_bool_exp | null;
+  podcast_program_id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  tag?: tag_bool_exp | null;
+  tag_name?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "podcast_program_tag"
+ */
+export interface podcast_program_tag_insert_input {
+  id?: any | null;
+  podcast_program?: podcast_program_obj_rel_insert_input | null;
+  podcast_program_id?: any | null;
+  position?: number | null;
+  tag?: tag_obj_rel_insert_input | null;
+  tag_name?: string | null;
+}
+
+/**
+ * on conflict condition type for table "podcast_program_tag"
+ */
+export interface podcast_program_tag_on_conflict {
+  constraint: podcast_program_tag_constraint;
+  update_columns: podcast_program_tag_update_column[];
+  where?: podcast_program_tag_bool_exp | null;
 }
 
 /**
@@ -14325,6 +14411,7 @@ export interface program_bool_exp {
   program_plans?: program_plan_bool_exp | null;
   program_related_items?: program_related_item_bool_exp | null;
   program_roles?: program_role_bool_exp | null;
+  program_tags?: program_tag_bool_exp | null;
   published_at?: timestamptz_comparison_exp | null;
   sale_price?: numeric_comparison_exp | null;
   sold_at?: timestamptz_comparison_exp | null;
@@ -14742,6 +14829,7 @@ export interface program_insert_input {
   program_plans?: program_plan_arr_rel_insert_input | null;
   program_related_items?: program_related_item_arr_rel_insert_input | null;
   program_roles?: program_role_arr_rel_insert_input | null;
+  program_tags?: program_tag_arr_rel_insert_input | null;
   published_at?: any | null;
   sale_price?: any | null;
   sold_at?: any | null;
@@ -14988,6 +15076,7 @@ export interface program_plan_bool_exp {
   ended_at?: timestamptz_comparison_exp | null;
   gains?: jsonb_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_participants_visible?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
   period_amount?: numeric_comparison_exp | null;
   period_type?: String_comparison_exp | null;
@@ -14995,6 +15084,7 @@ export interface program_plan_bool_exp {
   program_content_permissions?: program_content_plan_bool_exp | null;
   program_id?: uuid_comparison_exp | null;
   program_plan_enrollments?: program_plan_enrollment_bool_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
   sale_price?: numeric_comparison_exp | null;
   sold_at?: timestamptz_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
@@ -15031,12 +15121,14 @@ export interface program_plan_insert_input {
   ended_at?: any | null;
   gains?: any | null;
   id?: any | null;
+  is_participants_visible?: boolean | null;
   list_price?: any | null;
   period_amount?: any | null;
   period_type?: string | null;
   program?: program_obj_rel_insert_input | null;
   program_content_permissions?: program_content_plan_arr_rel_insert_input | null;
   program_id?: any | null;
+  published_at?: any | null;
   sale_price?: any | null;
   sold_at?: any | null;
   started_at?: any | null;
@@ -15146,6 +15238,50 @@ export interface program_role_on_conflict {
   constraint: program_role_constraint;
   update_columns: program_role_update_column[];
   where?: program_role_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "program_tag"
+ */
+export interface program_tag_arr_rel_insert_input {
+  data: program_tag_insert_input[];
+  on_conflict?: program_tag_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_tag". All fields are combined with a logical 'AND'.
+ */
+export interface program_tag_bool_exp {
+  _and?: (program_tag_bool_exp | null)[] | null;
+  _not?: program_tag_bool_exp | null;
+  _or?: (program_tag_bool_exp | null)[] | null;
+  id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_id?: uuid_comparison_exp | null;
+  tag?: tag_bool_exp | null;
+  tag_name?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "program_tag"
+ */
+export interface program_tag_insert_input {
+  id?: any | null;
+  position?: number | null;
+  program?: program_obj_rel_insert_input | null;
+  program_id?: any | null;
+  tag?: tag_obj_rel_insert_input | null;
+  tag_name?: string | null;
+}
+
+/**
+ * on conflict condition type for table "program_tag"
+ */
+export interface program_tag_on_conflict {
+  constraint: program_tag_constraint;
+  update_columns: program_tag_update_column[];
+  where?: program_tag_bool_exp | null;
 }
 
 /**
@@ -15318,7 +15454,9 @@ export interface tag_bool_exp {
   member_tags?: member_tag_bool_exp | null;
   merchandise_tags?: merchandise_tag_bool_exp | null;
   name?: String_comparison_exp | null;
+  podcast_program_tags?: podcast_program_tag_bool_exp | null;
   post_tags?: post_tag_bool_exp | null;
+  program_tags?: program_tag_bool_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -15333,7 +15471,9 @@ export interface tag_insert_input {
   member_tags?: member_tag_arr_rel_insert_input | null;
   merchandise_tags?: merchandise_tag_arr_rel_insert_input | null;
   name?: string | null;
+  podcast_program_tags?: podcast_program_tag_arr_rel_insert_input | null;
   post_tags?: post_tag_arr_rel_insert_input | null;
+  program_tags?: program_tag_arr_rel_insert_input | null;
   type?: string | null;
   updated_at?: any | null;
 }

@@ -178,6 +178,7 @@ export const useProgram = (programId: string) => {
             sold_at
             currency_id
             auto_renewed
+            published_at
           }
           program_categories(order_by: { position: asc }) {
             position
@@ -254,6 +255,7 @@ export const useProgram = (programId: string) => {
             soldAt: programPlan.sold_at,
             currencyId: programPlan.currency_id,
             autoRenewed: programPlan.auto_renewed,
+            publishedAt: programPlan.published_at,
           })),
           categories: data.program_by_pk.program_categories.map(programCategory => ({
             position: programCategory.position,

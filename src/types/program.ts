@@ -88,6 +88,7 @@ export type ProgramPlanProps = {
   soldAt: Date | null
   currencyId: string
   autoRenewed: boolean
+  publishedAt: Date | null
 }
 
 export type ProgramRoleProps = {

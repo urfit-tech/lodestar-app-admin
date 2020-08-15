@@ -41,6 +41,9 @@ const StyledForm = styled(Form)`
 `
 
 const messages = defineMessages({
+  isPublished: { id: 'program.label.isPublished', defaultMessage: '是否顯示方案' },
+  published: { id: 'program.label.published', defaultMessage: '發售，上架後立即開賣' },
+  unpublished: { id: 'program.label.unpublished', defaultMessage: '停售，此方案暫停對外銷售並隱藏' },
   subscriptionPlan: { id: 'program.label.subscriptionPlan', defaultMessage: '訂閱付費方案' },
   permissionType: { id: 'program.label.permissionType', defaultMessage: '選擇內容觀看權限' },
   availableForPastContent: { id: 'program.label.availableForPastContent', defaultMessage: '可看過去內容' },
@@ -73,6 +76,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
   const [withPeriod, setWithPeriod] = useState(Boolean(programPlan?.periodAmount && programPlan?.periodType))
   const [withAutoRenewed, setWithAutoRenewed] = useState(Boolean(programPlan?.autoRenewed))
 
+  const initialType = (programPlan && programPlan.type) || 1
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     form.validateFieldsAndScroll((error, values) => {
       if (!error && upsertProgramPlan) {
@@ -81,7 +85,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
           variables: {
             id: programPlan ? programPlan.id : uuid(),
             programId,
-            type: values.type,
+            type: values.type || initialType,
             title: values.title,
             description: values.description.toRAW(),
             listPrice: values.listPrice,
@@ -92,6 +96,7 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
             periodType: withPeriod ? values.period.type : null,
             currencyId: values.currencyId,
             autoRenewed: withPeriod ? values.autoRenewed || false : false,
+            publishedAt: values.isPublished ? new Date() : null,
           },
         })
           .then(() => {
@@ -143,6 +148,21 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
           })(<Input />)}
         </Form.Item>
 
+        <Form.Item label={formatMessage(messages.isPublished)}>
+          {form.getFieldDecorator('isPublished', {
+            initialValue: Boolean(programPlan?.publishedAt),
+          })(
+            <Radio.Group>
+              <Radio value={true} style={radioStyle}>
+                {formatMessage(messages.published)}
+              </Radio>
+              <Radio value={false} style={radioStyle}>
+                {formatMessage(messages.unpublished)}
+              </Radio>
+            </Radio.Group>,
+          )}
+        </Form.Item>
+
         <Form.Item label={formatMessage(commonMessages.term.currency)}>
           {form.getFieldDecorator('currencyId', {
             initialValue: programPlan?.currencyId,
@@ -180,28 +200,31 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
             {formatMessage(commonMessages.label.period)}
           </Checkbox>
         </div>
-        <Form.Item className={withPeriod ? '' : 'd-none'}>
-          {form.getFieldDecorator('period', {
-            initialValue: { amount: programPlan?.periodAmount || 1, type: programPlan?.periodType || 'M' },
-          })(<PeriodSelector />)}
-        </Form.Item>
+        {withPeriod && (
+          <Form.Item>
+            {form.getFieldDecorator('period', {
+              initialValue: { amount: programPlan?.periodAmount || 1, type: programPlan?.periodType || 'M' },
+            })(<PeriodSelector />)}
+          </Form.Item>
+        )}
 
-        <Form.Item className={withPeriod ? '' : 'd-none'} label={formatMessage(messages.permissionType)}>
-          {form.getFieldDecorator('type', {
-            initialValue: (programPlan && programPlan.type) || 1,
-            rules: [{ required: true }],
-          })(
-            <Radio.Group>
-              <Radio value={1} style={radioStyle}>
-                {formatMessage(messages.availableForPastContent)}
-              </Radio>
-              <Radio value={2} style={radioStyle}>
-                {formatMessage(messages.unavailableForPastContent)}
-              </Radio>
-            </Radio.Group>,
-          )}
-        </Form.Item>
-
+        {withPeriod && (
+          <Form.Item label={formatMessage(messages.permissionType)}>
+            {form.getFieldDecorator('type', {
+              initialValue: initialType,
+              rules: [{ required: true }],
+            })(
+              <Radio.Group>
+                <Radio value={1} style={radioStyle}>
+                  {formatMessage(messages.availableForPastContent)}
+                </Radio>
+                <Radio value={2} style={radioStyle}>
+                  {formatMessage(messages.unavailableForPastContent)}
+                </Radio>
+              </Radio.Group>,
+            )}
+          </Form.Item>
+        )}
         {withPeriod && (
           <Checkbox checked={withAutoRenewed} onChange={e => setWithAutoRenewed(e.target.checked)}>
             {formatMessage(commonMessages.label.autoRenewed)}
@@ -251,6 +274,7 @@ const UPSERT_PROGRAM_PLAN = gql`
     $periodType: String
     $currencyId: String!
     $autoRenewed: Boolean!
+    $publishedAt: timestamptz
   ) {
     insert_program_plan(
       objects: {
@@ -267,6 +291,7 @@ const UPSERT_PROGRAM_PLAN = gql`
         program_id: $programId
         currency_id: $currencyId
         auto_renewed: $autoRenewed
+        published_at: $publishedAt
       }
       on_conflict: {
         constraint: program_plan_pkey
@@ -282,6 +307,7 @@ const UPSERT_PROGRAM_PLAN = gql`
           sold_at
           currency_id
           auto_renewed
+          published_at
         ]
       }
     ) {
