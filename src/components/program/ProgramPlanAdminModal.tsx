@@ -48,6 +48,7 @@ const messages = defineMessages({
   permissionType: { id: 'program.label.permissionType', defaultMessage: '選擇內容觀看權限' },
   availableForPastContent: { id: 'program.label.availableForPastContent', defaultMessage: '可看過去內容' },
   unavailableForPastContent: { id: 'program.label.unavailableForPastContent', defaultMessage: '不可看過去內容' },
+  availableForAllContent: { id: 'program.label.availableForAllContent', defaultMessage: '可看所有內容' },
   subscriptionPeriodType: { id: 'program.label.subscriptionPeriodType', defaultMessage: '訂閱週期' },
   planDescription: { id: 'program.label.planDescription', defaultMessage: '方案描述' },
 })
@@ -220,6 +221,9 @@ const ProgramPlanAdminModal: React.FC<ProgramPlanAdminModalProps> = ({
                 </Radio>
                 <Radio value={2} style={radioStyle}>
                   {formatMessage(messages.unavailableForPastContent)}
+                </Radio>
+                <Radio value={3} style={radioStyle}>
+                  {formatMessage(messages.availableForAllContent)}
                 </Radio>
               </Radio.Group>,
             )}
