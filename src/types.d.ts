@@ -1969,7 +1969,8 @@ export interface UPDATE_PROGRAM_TAGS {
 
 export interface UPDATE_PROGRAM_TAGSVariables {
   programId: any;
-  programCategories: program_category_insert_input[];
+  tags: tag_insert_input[];
+  programTags: program_tag_insert_input[];
 }
 
 /* tslint:disable */

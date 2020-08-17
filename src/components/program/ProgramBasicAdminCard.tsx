@@ -31,7 +31,12 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
     types.UPDATE_PROGRAM_CATEGORIES,
     types.UPDATE_PROGRAM_CATEGORIESVariables
   >(UPDATE_PROGRAM_CATEGORIES)
-  const { enabledModules } = useContext(AppContext)
+
+  const [updateProgramTags] = useMutation<types.UPDATE_PROGRAM_TAGS, types.UPDATE_PROGRAM_TAGSVariables>(
+    UPDATE_PROGRAM_TAGS,
+  )
+
+  const { id: appId, enabledModules } = useContext(AppContext)
 
   const handleSubmit = () => {
     program &&
@@ -53,6 +58,21 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
                   program_id: program.id,
                   category_id: categoryId,
                   position: idx,
+                })),
+              },
+            }),
+            updateProgramTags({
+              variables: {
+                programId: program.id,
+                tags: values.tags.map((programTag: string) => ({
+                  app_id: appId,
+                  name: programTag,
+                  type: '',
+                })),
+                programTags: values.tags.map((programTag: string, index: number) => ({
+                  program_id: program.id,
+                  tag_name: programTag,
+                  position: index,
                 })),
               },
             }),
@@ -150,6 +170,24 @@ const UPDATE_PROGRAM_CATEGORIES = gql`
       affected_rows
     }
     insert_program_category(objects: $programCategories) {
+      affected_rows
+    }
+  }
+`
+
+const UPDATE_PROGRAM_TAGS = gql`
+  mutation UPDATE_PROGRAM_TAGS(
+    $programId: uuid!
+    $tags: [tag_insert_input!]!
+    $programTags: [program_tag_insert_input!]!
+  ) {
+    insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
+      affected_rows
+    }
+    delete_program_tag(where: { program_id: { _eq: $programId } }) {
+      affected_rows
+    }
+    insert_program_tag(objects: $programTags) {
       affected_rows
     }
   }
