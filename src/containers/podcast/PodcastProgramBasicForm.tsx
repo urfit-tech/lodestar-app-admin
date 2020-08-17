@@ -14,11 +14,11 @@ import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
 import types from '../../types'
-import { PodcastProgramUniversalProps } from '../../types/podcast'
+import { PodcastProgramAdminProps } from '../../types/podcast'
 import TagSelector from '../common/TagSelector'
 
 type PodcastProgramBasicFormProps = FormComponentProps & {
-  podcastProgram: PodcastProgramUniversalProps | null
+  podcastProgram: PodcastProgramAdminProps | null
   onRefetch?: () => Promise<any>
 }
 const PodcastProgramBasicForm: React.FC<PodcastProgramBasicFormProps> = ({ form, podcastProgram, onRefetch }) => {
@@ -102,7 +102,7 @@ const PodcastProgramBasicForm: React.FC<PodcastProgramBasicFormProps> = ({ form,
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.term.tag)}>
         {form.getFieldDecorator('tags', {
-          initialValue: podcastProgram.tags.map(podcastProgramTag => podcastProgramTag.tag.name),
+          initialValue: podcastProgram.tags.map(podcastProgramTag => podcastProgramTag),
         })(<TagSelector />)}
       </Form.Item>
       {enabledModules.locale && (

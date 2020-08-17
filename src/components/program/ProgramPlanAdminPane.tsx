@@ -4,7 +4,7 @@ import { CardProps } from 'antd/lib/card'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
-import { ProgramUniversalProps } from '../../types/program'
+import { ProgramAdminProps } from '../../types/program'
 import ProgramPerpetualPlanAdminCard from './ProgramPerpetualPlanAdminCard'
 import ProgramPlanAdminModal from './ProgramPlanAdminModal'
 import ProgramSubscriptionPlanAdminCard from './ProgramSubscriptionPlanAdminCard'
@@ -15,7 +15,7 @@ const messages = defineMessages({
 
 const ProgramPlanAdminPane: React.FC<
   CardProps & {
-    program: ProgramUniversalProps | null
+    program: ProgramAdminProps | null
     onRefetch?: () => void
   }
 > = ({ program, onRefetch }) => {

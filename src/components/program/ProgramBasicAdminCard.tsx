@@ -12,14 +12,14 @@ import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramUniversalProps } from '../../types/program'
+import { ProgramAdminProps } from '../../types/program'
 import { StyledTips } from '../admin'
 import AdminCard from '../admin/AdminCard'
 import CategorySelector from '../common/CategorySelector'
 import LanguageSelector from '../common/LanguageSelector'
 
 type ProgramBasicAdminCardProps = FormComponentProps & {
-  program: ProgramUniversalProps | null
+  program: ProgramAdminProps | null
   onRefetch?: () => void
 }
 const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, form, onRefetch }) => {
@@ -87,12 +87,12 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
           </Form.Item>
           <Form.Item label={formatMessage(commonMessages.term.category)}>
             {form.getFieldDecorator('categoryIds', {
-              initialValue: program.categories.map(programCategories => programCategories.category.id),
+              initialValue: program.categories.map(programCategory => programCategory.id),
             })(<CategorySelector classType="program" />)}
           </Form.Item>
           <Form.Item label={formatMessage(commonMessages.term.tag)}>
             {form.getFieldDecorator('tags', {
-              initialValue: program.tags.map(programTag => programTag.tag.name),
+              initialValue: program.tags.map(programTag => programTag),
             })(<TagSelector />)}
           </Form.Item>
           {enabledModules.locale && (

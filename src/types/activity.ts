@@ -1,4 +1,4 @@
-import { CategoryBriefProps } from './general'
+import { CategoryProps } from './general'
 
 export type ActivityBriefProps = {
   id: string
@@ -41,7 +41,7 @@ export type ActivitySessionProps = {
 }
 
 export type ActivityAdminProps = ActivityProps & {
-  categories: CategoryBriefProps[]
+  categories: CategoryProps[]
   tickets: (ActivityTicketProps & {
     sessions: {
       id: string

@@ -22,16 +22,8 @@ export type ProductProps = {
   children?: ProductProps[]
 }
 
-export type CategoryBriefProps = {
+export type CategoryProps = {
   id: string
-  name: string
-}
-
-export type CategoryProps = CategoryBriefProps & {
-  position: number
-}
-
-export type TagProps = {
   name: string
 }
 

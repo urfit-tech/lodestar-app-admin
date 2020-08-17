@@ -2,13 +2,13 @@ import { Typography } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { programMessages } from '../../helpers/translation'
-import { ProgramUniversalProps } from '../../types/program'
+import { ProgramAdminProps } from '../../types/program'
 import ProgramBasicAdminCard from './ProgramBasicAdminCard'
 import ProgramDeletionAdminCard from './ProgramDeletionAdminCard'
 import ProgramIntroAdminCard from './ProgramIntroAdminCard'
 
 const ProgramSettingAdminPane: React.FC<{
-  program: ProgramUniversalProps | null
+  program: ProgramAdminProps | null
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()

@@ -42,7 +42,9 @@ export const useCategory = (classType: ClassType) => {
     { variables: { appId, classType } },
   )
 
-  const categories: CategoryProps[] =
+  const categories: (CategoryProps & {
+    position: number
+  })[] =
     loading || error || !data
       ? []
       : data.category.map(category => ({

@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 import React from 'react'
 import ProgramRoleAdminPaneComponent from '../../components/program/ProgramRoleAdminPane'
 import types from '../../types'
-import { ProgramUniversalProps } from '../../types/program'
+import { ProgramAdminProps } from '../../types/program'
 
 export type UpdateProgramProps = (props: {
   onSuccess?: () => void
@@ -30,7 +30,7 @@ export type DeleteProgramProps = (props: {
 
 const ProgramRoleAdminPane: React.FC<
   CardProps & {
-    program: ProgramUniversalProps | null
+    program: ProgramAdminProps | null
     onRefetch?: () => void
   }
 > = ({ program, onRefetch }) => {

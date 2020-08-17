@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
-import { ProgramUniversalProps } from '../../types/program'
+import { ProgramAdminProps } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
 
 const messages = defineMessages({
@@ -55,7 +55,7 @@ const StyledText = styled.span`
 `
 
 const ProgramDeletionAdminCard: React.FC<{
-  program: ProgramUniversalProps | null
+  program: ProgramAdminProps | null
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()

@@ -1,4 +1,4 @@
-import { PeriodType, TagProps, CategoryBriefProps } from './general'
+import { CategoryProps, PeriodType } from './general'
 
 export type PodcastProgramAdminProps = {
   id: string
@@ -17,9 +17,9 @@ export type PodcastProgramAdminProps = {
   supportLocales: string[]
 }
 
-export type PodcastProgramUniversalProps = PodcastProgramProps & {
+export type PodcastProgramAdminProps = PodcastProgramProps & {
   categories: PodcastProgramCategoryProps[]
-  tags: PodcastProgramTagProps[]
+  tags: string[]
 }
 
 export type PodcastPlanProps = {
@@ -37,9 +37,5 @@ export type PodcastPlanProps = {
 
 export type PodcastProgramCategoryProps = {
   id: string
-  category: CategoryBriefProps
-}
-
-export type PodcastProgramTagProps = {
-  tag: TagProps
+  category: CategoryProps
 }

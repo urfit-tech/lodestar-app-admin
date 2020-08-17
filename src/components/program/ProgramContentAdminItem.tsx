@@ -8,7 +8,7 @@ import styled from 'styled-components'
 import { dateFormatter, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramContentProps, ProgramUniversalProps } from '../../types/program'
+import { ProgramAdminProps, ProgramContentProps } from '../../types/program'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
 
 const StyledTitle = styled.div`
@@ -29,7 +29,7 @@ const messages = defineMessages({
 
 type ProgramContentAdminItemProps = {
   showPlans?: boolean | null
-  program: ProgramUniversalProps
+  program: ProgramAdminProps
   programContent: ProgramContentProps
   onRefetch?: () => void
 }

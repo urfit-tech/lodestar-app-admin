@@ -13,7 +13,7 @@ import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramUniversalProps } from '../../types/program'
+import { ProgramAdminProps } from '../../types/program'
 import { StyledTips } from '../admin'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminCard from '../admin/AdminCard'
@@ -53,7 +53,7 @@ export const StyledSingleUploader = styled(SingleUploader)`
 `
 
 type ProgramIntroAdminCardProps = FormComponentProps & {
-  program: ProgramUniversalProps | null
+  program: ProgramAdminProps | null
   onRefetch?: () => void
 }
 const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, form, onRefetch }) => {
