@@ -1,7 +1,6 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import types from '../types'
-import { Module, AppProps } from '../types/app'
 
 export const useUpdateApp = () => {
   const [updateApp] = useMutation<types.UPDATE_APP, types.UPDATE_APPVariables>(

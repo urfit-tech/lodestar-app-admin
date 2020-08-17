@@ -55,15 +55,17 @@ const RecordButton: React.FC<
 
       return _recorder
     }
-
     !recorder && initRecorder().then(recorder => setRecorder(recorder))
+
+    return () => {
+      recorder?.stream.getTracks().forEach((track: any) => track.stop())
+    }
   }, [recorder, onGetAudio])
 
   const handleClickRecordButton = () => {
     if (isRecording) {
       onStop && onStop()
       recorder?.stop()
-      recorder?.stream.getTracks().forEach((track: any) => track.stop())
       setIsRecording(false)
       setStartedAt(0)
     } else {
