@@ -67,7 +67,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
 }) => {
   const { formatMessage } = useIntl()
   const { settings } = useContext(AppContext)
-  const { currentMemberId } = useAuth()
+  const { currentMemberId, currentUserRole } = useAuth()
   const { program } = useProgram(programId)
   const [updateIssueStatus] = useMutation<types.UPDATE_ISSUE_STATUS, types.UPDATE_ISSUE_STATUSVariables>(
     UPDATE_ISSUE_STATUS,
@@ -99,6 +99,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
         <div className="mask" onClick={() => setModalVisible(true)} />
 
         {currentMemberId === memberId ||
+        currentUserRole === 'app-owner' ||
         programRoles
           .filter(role => role?.member?.id === currentMemberId)
           .some(role => role.name === 'instructor' || role.name === 'assistant') ? (
