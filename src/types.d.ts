@@ -1925,6 +1925,59 @@ export interface UPDATE_PROGRAM_CATEGORIESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_TAGS
+// ====================================================
+
+export interface UPDATE_PROGRAM_TAGS_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_TAGS_delete_program_tag {
+  __typename: "program_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_TAGS_insert_program_tag {
+  __typename: "program_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_TAGS {
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_PROGRAM_TAGS_insert_tag | null;
+  /**
+   * delete data from the table: "program_tag"
+   */
+  delete_program_tag: UPDATE_PROGRAM_TAGS_delete_program_tag | null;
+  /**
+   * insert data into the table: "program_tag"
+   */
+  insert_program_tag: UPDATE_PROGRAM_TAGS_insert_program_tag | null;
+}
+
+export interface UPDATE_PROGRAM_TAGSVariables {
+  programId: any;
+  programCategories: program_category_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: PUBLISH_PROGRAM_CONTENT
 // ====================================================
 
@@ -3488,6 +3541,30 @@ export interface UPDATE_PODCAST_PROGRAM_BASIC_insert_podcast_program_category {
   affected_rows: number;
 }
 
+export interface UPDATE_PODCAST_PROGRAM_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BASIC_delete_podcast_program_tag {
+  __typename: "podcast_program_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BASIC_insert_podcast_program_tag {
+  __typename: "podcast_program_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_PODCAST_PROGRAM_BASIC {
   /**
    * update data of the table: "podcast_program"
@@ -3501,12 +3578,26 @@ export interface UPDATE_PODCAST_PROGRAM_BASIC {
    * insert data into the table: "podcast_program_category"
    */
   insert_podcast_program_category: UPDATE_PODCAST_PROGRAM_BASIC_insert_podcast_program_category | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_PODCAST_PROGRAM_BASIC_insert_tag | null;
+  /**
+   * delete data from the table: "podcast_program_tag"
+   */
+  delete_podcast_program_tag: UPDATE_PODCAST_PROGRAM_BASIC_delete_podcast_program_tag | null;
+  /**
+   * insert data into the table: "podcast_program_tag"
+   */
+  insert_podcast_program_tag: UPDATE_PODCAST_PROGRAM_BASIC_insert_podcast_program_tag | null;
 }
 
 export interface UPDATE_PODCAST_PROGRAM_BASICVariables {
   podcastProgramId: any;
   title?: string | null;
   podcastCategories: podcast_program_category_insert_input[];
+  tags: tag_insert_input[];
+  podcastProgramTags: podcast_program_tag_insert_input[];
   updatedAt: any;
   supportLocales?: any | null;
 }

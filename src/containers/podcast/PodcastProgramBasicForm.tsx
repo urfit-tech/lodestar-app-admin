@@ -25,6 +25,7 @@ const PodcastProgramBasicForm: React.FC<PodcastProgramBasicFormProps> = ({ form,
   const { formatMessage } = useIntl()
   const { enabledModules } = useContext(AppContext)
   const [loading, setLoading] = useState(false)
+  const { id: appId } = useContext(AppContext)
 
   const [updatePodcastProgramBasic] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_BASIC,
@@ -60,6 +61,16 @@ const PodcastProgramBasicForm: React.FC<PodcastProgramBasicFormProps> = ({ form,
                 category_id: category.id,
                 position,
               })),
+          tags: values.tags.map((podcastProgramTag: string) => ({
+            app_id: appId,
+            name: podcastProgramTag,
+            type: '',
+          })),
+          podcastProgramTags: values.tags.map((podcastProgramTag: string, index: number) => ({
+            podcast_program_id: podcastProgram.id,
+            tag_name: podcastProgramTag,
+            position: index,
+          })),
         },
       })
         .then(() => {
@@ -138,6 +149,8 @@ const UPDATE_PODCAST_PROGRAM_BASIC = gql`
     $podcastProgramId: uuid!
     $title: String
     $podcastCategories: [podcast_program_category_insert_input!]!
+    $tags: [tag_insert_input!]!
+    $podcastProgramTags: [podcast_program_tag_insert_input!]!
     $updatedAt: timestamptz!
     $supportLocales: jsonb
   ) {
@@ -151,6 +164,15 @@ const UPDATE_PODCAST_PROGRAM_BASIC = gql`
       affected_rows
     }
     insert_podcast_program_category(objects: $podcastCategories) {
+      affected_rows
+    }
+    insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
+      affected_rows
+    }
+    delete_podcast_program_tag(where: { podcast_program_id: { _eq: $podcastProgramId } }) {
+      affected_rows
+    }
+    insert_podcast_program_tag(objects: $podcastProgramTags) {
       affected_rows
     }
   }
