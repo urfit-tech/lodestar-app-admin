@@ -6670,6 +6670,20 @@ export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program
   category: GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_categories_category;
 }
 
+export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_tags_tag {
+  __typename: "tag";
+  name: string;
+}
+
+export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_tags {
+  __typename: "podcast_program_tag";
+  id: any;
+  /**
+   * An object relationship
+   */
+  tag: GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_tags_tag;
+}
+
 export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_roles_member {
   __typename: "member_public";
   id: string | null;
@@ -6713,6 +6727,10 @@ export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk {
    * An array relationship
    */
   podcast_program_categories: GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_categories[];
+  /**
+   * An array relationship
+   */
+  podcast_program_tags: GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_tags[];
   /**
    * An array relationship
    */
@@ -7065,6 +7083,21 @@ export interface GET_PROGRAM_program_by_pk_program_categories {
   category: GET_PROGRAM_program_by_pk_program_categories_category;
 }
 
+export interface GET_PROGRAM_program_by_pk_program_tags_tag {
+  __typename: "tag";
+  name: string;
+}
+
+export interface GET_PROGRAM_program_by_pk_program_tags {
+  __typename: "program_tag";
+  id: any;
+  position: number;
+  /**
+   * An object relationship
+   */
+  tag: GET_PROGRAM_program_by_pk_program_tags_tag;
+}
+
 export interface GET_PROGRAM_program_by_pk {
   __typename: "program";
   id: any;
@@ -7101,6 +7134,10 @@ export interface GET_PROGRAM_program_by_pk {
    * An array relationship
    */
   program_categories: GET_PROGRAM_program_by_pk_program_categories[];
+  /**
+   * An array relationship
+   */
+  program_tags: GET_PROGRAM_program_by_pk_program_tags[];
 }
 
 export interface GET_PROGRAM {

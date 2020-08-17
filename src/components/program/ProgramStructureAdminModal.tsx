@@ -8,7 +8,7 @@ import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramContentSectionProps, ProgramProps } from '../../types/program'
+import { ProgramContentSectionProps, ProgramUniversalProps } from '../../types/program'
 import AdminModal from '../admin/AdminModal'
 import DraggableItem from '../common/DraggableItem'
 
@@ -22,7 +22,7 @@ const StyledDraggableSectionLabel = styled.div`
 `
 
 const ProgramStructureAdminModal: React.FC<{
-  program: ProgramProps | null
+  program: ProgramUniversalProps | null
   onStructureChange?: () => void
 }> = ({ program, onStructureChange }) => {
   const { formatMessage } = useIntl()

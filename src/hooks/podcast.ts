@@ -119,6 +119,12 @@ export const usePodcastProgramAdmin = (podcastProgramId: string) => {
               name
             }
           }
+          podcast_program_tags {
+            id
+            tag {
+              name
+            }
+          }
           podcast_program_roles {
             id
             name
@@ -146,10 +152,6 @@ export const usePodcastProgramAdmin = (podcastProgramId: string) => {
           description: data.podcast_program_by_pk.podcast_program_bodies[0]
             ? data.podcast_program_by_pk.podcast_program_bodies[0].description
             : null,
-          categories: data.podcast_program_by_pk.podcast_program_categories.map(podcastProgramCategory => ({
-            id: podcastProgramCategory.category.id,
-            name: podcastProgramCategory.category.name,
-          })),
           coverUrl: data.podcast_program_by_pk.cover_url,
           abstract: data.podcast_program_by_pk.abstract,
           listPrice: data.podcast_program_by_pk.list_price,
@@ -165,6 +167,15 @@ export const usePodcastProgramAdmin = (podcastProgramId: string) => {
             ? new Date(data.podcast_program_by_pk.published_at)
             : null,
           supportLocales: data.podcast_program_by_pk.support_locales || [],
+          categories: data.podcast_program_by_pk.podcast_program_categories.map(podcastProgramCategory => ({
+            id: podcastProgramCategory.id,
+            category: { id: podcastProgramCategory.category.id, name: podcastProgramCategory.category.name },
+          })),
+          tags: data.podcast_program_by_pk.podcast_program_tags.map(podcastProgramTag => ({
+            tag: {
+              name: podcastProgramTag.tag.name,
+            },
+          })),
         }
 
   return {

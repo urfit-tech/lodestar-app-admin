@@ -9,7 +9,7 @@ import styled from 'styled-components'
 import { DeleteProgramProps, UpdateProgramProps } from '../../containers/program/ProgramRoleAdminPane'
 import { notEmpty } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { ProgramProps } from '../../types/program'
+import { ProgramUniversalProps } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
 import CreatorSelector from '../common/CreatorSelector'
@@ -29,7 +29,7 @@ const StyledModalTitle = styled.div`
 
 const ProgramRoleAdminPane: React.FC<
   CardProps & {
-    program: ProgramProps | null
+    program: ProgramUniversalProps | null
     onProgramUpdate: UpdateProgramProps
     onProgramDelete: DeleteProgramProps
   }

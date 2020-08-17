@@ -1,4 +1,4 @@
-import { PeriodType } from './general'
+import { PeriodType, TagProps, CategoryBriefProps } from './general'
 
 export type PodcastProgramAdminProps = {
   id: string
@@ -6,10 +6,6 @@ export type PodcastProgramAdminProps = {
   contentType: string | null
   duration: number
   description: string | null
-  categories: {
-    id: string
-    name: string
-  }[]
   coverUrl: string | null
   abstract: string | null
   listPrice: number
@@ -19,6 +15,11 @@ export type PodcastProgramAdminProps = {
   instructors: { id: string; name: string; pictureUrl: string }[]
   publishedAt: Date | null
   supportLocales: string[]
+}
+
+export type PodcastProgramUniversalProps = PodcastProgramProps & {
+  categories: PodcastProgramCategoryProps[]
+  tags: PodcastProgramTagProps[]
 }
 
 export type PodcastPlanProps = {
@@ -32,4 +33,13 @@ export type PodcastPlanProps = {
   periodAmount: number
   periodType: PeriodType
   creatorId: string
+}
+
+export type PodcastProgramCategoryProps = {
+  id: string
+  category: CategoryBriefProps
+}
+
+export type PodcastProgramTagProps = {
+  tag: TagProps
 }

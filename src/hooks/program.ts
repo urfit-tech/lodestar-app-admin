@@ -8,7 +8,7 @@ import {
   ProgramContentProps,
   ProgramPlanPeriodType,
   ProgramPreviewProps,
-  ProgramProps,
+  ProgramUniversalProps,
   ProgramRoleName,
 } from '../types/program'
 
@@ -187,12 +187,19 @@ export const useProgram = (programId: string) => {
               name
             }
           }
+          program_tags {
+            id
+            position
+            tag {
+              name
+            }
+          }
         }
       }
     `,
     { variables: { programId }, fetchPolicy: 'network-only' },
   )
-  const program: ProgramProps | null =
+  const program: ProgramUniversalProps | null =
     loading || error || !data || !data.program_by_pk
       ? null
       : {
@@ -262,6 +269,12 @@ export const useProgram = (programId: string) => {
             category: {
               id: programCategory.category.id,
               name: programCategory.category.name,
+            },
+          })),
+          tags: data.program_by_pk.program_tags.map(programTag => ({
+            position: programTag.position,
+            tag: {
+              name: programTag.tag.name,
             },
           })),
         }

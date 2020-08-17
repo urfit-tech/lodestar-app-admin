@@ -1,3 +1,5 @@
+import { CategoryBriefProps, TagProps } from './general'
+
 export type ProgramPlanType = 'subscribeFromNow' | 'subscribeAll' | 'unknown'
 export type ProgramPlanPeriodType = 'D' | 'W' | 'M' | 'Y'
 export type ProgramRoleName = 'owner' | 'instructor' | 'assistant'
@@ -38,19 +40,18 @@ export type ProgramProps = {
   inAdvance: boolean
   isSoldOut: boolean | null
   supportLocales: string[]
-  contentSections: ProgramContentSectionProps[]
-  roles: ProgramRoleProps[]
-  plans: ProgramPlanProps[]
+
   isDeleted: boolean
   isPrivate: boolean
   isIssuesOpen: boolean
-  categories: {
-    position: number
-    category: {
-      id: string
-      name: string
-    }
-  }[]
+}
+
+export type ProgramUniversalProps = ProgramProps & {
+  contentSections: ProgramContentSectionProps[]
+  plans: ProgramPlanProps[]
+  roles: ProgramRoleProps[]
+  categories: ProgramCategoryProps[]
+  tags: ProgramTagProps[]
 }
 
 export type ProgramContentSectionProps = {
@@ -99,4 +100,14 @@ export type ProgramRoleProps = {
     name: string | null
     pictureUrl: string | null
   } | null
+}
+
+export type ProgramCategoryProps = {
+  position: number
+  category: CategoryBriefProps
+}
+
+export type ProgramTagProps = {
+  position: number
+  tag: TagProps
 }

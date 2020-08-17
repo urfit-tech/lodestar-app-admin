@@ -7,18 +7,19 @@ import { Button, Input, message, Radio, Tooltip, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
+import TagSelector from '../../containers/common/TagSelector'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramProps } from '../../types/program'
+import { ProgramUniversalProps } from '../../types/program'
 import { StyledTips } from '../admin'
 import AdminCard from '../admin/AdminCard'
 import CategorySelector from '../common/CategorySelector'
 import LanguageSelector from '../common/LanguageSelector'
 
 type ProgramBasicAdminCardProps = FormComponentProps & {
-  program: ProgramProps | null
+  program: ProgramUniversalProps | null
   onRefetch?: () => void
 }
 const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, form, onRefetch }) => {
@@ -88,6 +89,11 @@ const ProgramBasicAdminCard: React.FC<ProgramBasicAdminCardProps> = ({ program, 
             {form.getFieldDecorator('categoryIds', {
               initialValue: program.categories.map(programCategories => programCategories.category.id),
             })(<CategorySelector classType="program" />)}
+          </Form.Item>
+          <Form.Item label={formatMessage(commonMessages.term.tag)}>
+            {form.getFieldDecorator('tags', {
+              initialValue: program.tags.map(programTag => programTag.tag.name),
+            })(<TagSelector />)}
           </Form.Item>
           {enabledModules.locale && (
             <Form.Item

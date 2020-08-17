@@ -8,7 +8,7 @@ import styled from 'styled-components'
 import { dateFormatter, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramContentProps, ProgramProps } from '../../types/program'
+import { ProgramContentProps, ProgramUniversalProps } from '../../types/program'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
 
 const StyledTitle = styled.div`
@@ -27,12 +27,19 @@ const messages = defineMessages({
   programContentPlans: { id: 'program.text.programContentPlans', defaultMessage: '方案：' },
 })
 
-const ProgramContentAdminItem: React.FC<{
+type ProgramContentAdminItemProps = {
   showPlans?: boolean | null
-  program: ProgramProps
+  program: ProgramUniversalProps
   programContent: ProgramContentProps
   onRefetch?: () => void
-}> = ({ showPlans, programContent, program, onRefetch }) => {
+}
+
+const ProgramContentAdminItem: React.FC<ProgramContentAdminItemProps> = ({
+  showPlans,
+  programContent,
+  program,
+  onRefetch,
+}) => {
   const { formatMessage } = useIntl()
   const [updateProgramContent] = useMutation<types.PUBLISH_PROGRAM_CONTENT, types.PUBLISH_PROGRAM_CONTENTVariables>(
     PUBLISH_PROGRAM_CONTENT,

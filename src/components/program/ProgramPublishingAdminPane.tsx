@@ -11,7 +11,7 @@ import { ThemeContext } from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProgramProps } from '../../types/program'
+import { ProgramUniversalProps } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
 import { StyledModal, StyledModalParagraph, StyledModalTitle } from './ProgramDeletionAdminCard'
 
@@ -59,7 +59,7 @@ const messages = defineMessages({
 
 const ProgramPublishingAdminPane: React.FC<
   CardProps & {
-    program: ProgramProps | null
+    program: ProgramUniversalProps | null
     onRefetch?: () => void
   }
 > = ({ program, onRefetch }) => {
