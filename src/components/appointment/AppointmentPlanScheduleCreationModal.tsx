@@ -1,56 +1,47 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, DatePicker, message, Select } from 'antd'
+import { Button, Checkbox, DatePicker, Form, message, Select } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import momentTz from 'moment-timezone'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { StyledSelect } from '../../components/admin'
-import AdminModal from '../../components/admin/AdminModal'
-import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import types from '../../types'
+import { AppointmentPlanAdminProps } from '../../types/appointment'
+import { StyledSelect } from '../admin'
+import AdminModal from '../admin/AdminModal'
 
 const StyledTimeStandardBlock = styled.div`
   border-radius: 4px;
   width: 100%;
-  line-height: 1.57;
-  letter-spacing: 0.18px;
-  font-size: 14px;
-  font-weight: 500;
-  font-family: NotoSansCJKtc;
   color: var(--gray-darker);
+  font-size: 14px;
 `
 const StyledTimeZoneBlock = styled.div`
   border-radius: 4px;
   width: 100%;
-  line-height: 1.57;
-  letter-spacing: 0.18px;
-  font-size: 14px;
-  font-weight: 500;
-  font-family: NotoSansCJKtc;
   color: var(--gray-dark);
+  font-size: 14px;
 `
 
-const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ form }) => {
+const AppointmentPlanScheduleCreationModal: React.FC<{
+  appointmentPlanAdmin: AppointmentPlanAdminProps | null
+  refetch?: () => void
+}> = ({ appointmentPlanAdmin, refetch }) => {
   const { formatMessage } = useIntl()
-  const { loadingAppointmentPlan, errorAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(
-    AppointmentPlanContext,
-  )
+  const [form] = useForm()
   const [createAppointmentSchedule] = useMutation<
     types.CREATE_APPOINTMENT_SCHEDULE,
     types.CREATE_APPOINTMENT_SCHEDULEVariables
   >(CREATE_APPOINTMENT_SCHEDULE)
-  const [loading, setLoading] = useState(false)
   const [withRepeat, setWithRepeat] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  if (loadingAppointmentPlan || errorAppointmentPlan || !appointmentPlan) {
+  if (!appointmentPlanAdmin) {
     return (
       <Button type="primary" icon={<FileAddOutlined />} disabled>
         {formatMessage(appointmentMessages.label.createPeriod)}
@@ -61,29 +52,28 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
   const handleSubmit: (props: { setVisible: React.Dispatch<React.SetStateAction<boolean>> }) => void = ({
     setVisible,
   }) => {
-    form.validateFields((error, values) => {
-      if (error) {
-        return
-      }
+    form
+      .validateFields()
+      .then(values => {
+        setLoading(true)
 
-      setLoading(true)
-
-      createAppointmentSchedule({
-        variables: {
-          appointmentPlanId: appointmentPlan.id,
-          startedAt: values.startedAt.toDate(),
-          intervalAmount: withRepeat ? 1 : null,
-          intervalType: withRepeat ? values.periodType : null,
-        },
-      })
-        .then(() => {
-          refetchAppointmentPlan && refetchAppointmentPlan()
-          message.success(formatMessage(commonMessages.event.successfullyCreated))
-          setVisible(false)
+        createAppointmentSchedule({
+          variables: {
+            appointmentPlanId: appointmentPlanAdmin.id,
+            startedAt: values.startedAt.toDate(),
+            intervalAmount: withRepeat ? 1 : null,
+            intervalType: withRepeat ? values.periodType : null,
+          },
         })
-        .catch(error => handleError(error))
-        .finally(() => setLoading(false))
-    })
+          .then(() => {
+            refetch && refetch()
+            message.success(formatMessage(commonMessages.event.successfullyCreated))
+            setVisible(false)
+          })
+          .catch(error => handleError(error))
+          .finally(() => setLoading(false))
+      })
+      .catch(() => {})
   }
 
   return (
@@ -126,35 +116,40 @@ const AppointmentPlanScheduleCreationModal: React.FC<FormComponentProps> = ({ fo
         </>
       )}
     >
-      <Form hideRequiredMark colon={false}>
-        <Form.Item label={formatMessage(appointmentMessages.term.startedAt)}>
-          {form.getFieldDecorator('startedAt', {
-            initialValue: moment().add(1, 'hour').startOf('hour'),
-            rules: [{ required: true, message: formatMessage(appointmentMessages.text.selectStartedAt) }],
-          })(
-            <DatePicker
-              format="YYYY-MM-DD HH:mm"
-              showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-              disabledDate={currentTime => (currentTime ? currentTime < moment().startOf('day') : false)}
-              showToday={false}
-              placeholder={formatMessage(appointmentMessages.text.selectStartedAt)}
-            />,
-          )}
+      <Form
+        form={form}
+        colon={false}
+        hideRequiredMark
+        initialValues={{
+          startedAt: moment().add(1, 'hour').startOf('hour'),
+          periodType: 'D',
+        }}
+      >
+        <Form.Item
+          label={formatMessage(appointmentMessages.term.startedAt)}
+          name="startedAt"
+          rules={[{ required: true, message: formatMessage(appointmentMessages.text.selectStartedAt) }]}
+        >
+          <DatePicker
+            format="YYYY-MM-DD HH:mm"
+            showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+            disabledDate={currentTime => (currentTime ? currentTime < moment().startOf('day') : false)}
+            showToday={false}
+            placeholder={formatMessage(appointmentMessages.text.selectStartedAt)}
+          />
         </Form.Item>
 
         <Checkbox className="mb-2" defaultChecked={withRepeat} onChange={e => setWithRepeat(e.target.checked)}>
           {formatMessage(appointmentMessages.term.periodType)}
         </Checkbox>
         <div className={withRepeat ? 'd-block mb-4' : 'd-none'}>
-          {form.getFieldDecorator('periodType', {
-            initialValue: 'D',
-          })(
+          <Form.Item name="periodType">
             <StyledSelect className="ml-4">
               <Select.Option value="D">{formatMessage(commonMessages.label.perDay)}</Select.Option>
               <Select.Option value="W">{formatMessage(commonMessages.label.week)}</Select.Option>
               <Select.Option value="M">{formatMessage(commonMessages.label.month)}</Select.Option>
-            </StyledSelect>,
-          )}
+            </StyledSelect>
+          </Form.Item>
         </div>
       </Form>
     </AdminModal>
@@ -181,4 +176,4 @@ const CREATE_APPOINTMENT_SCHEDULE = gql`
   }
 `
 
-export default Form.create<FormComponentProps>()(AppointmentPlanScheduleCreationModal)
+export default AppointmentPlanScheduleCreationModal

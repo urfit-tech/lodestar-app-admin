@@ -13,21 +13,21 @@ import CreatorSelector from './CreatorSelector'
 
 const ProductCreationModal: React.FC<
   AdminModalProps & {
-    classType: ClassType
+    classType?: ClassType
     withCreatorSelector?: boolean
     withCategorySelector?: boolean
     withProgramType?: boolean
     onCreate?: (values: {
       title: string
       categoryIds: string[]
-      creatorId?: string
+      creatorId?: string | null
       isSubscription?: boolean
     }) => Promise<any>
   }
 > = ({ classType, withCreatorSelector, withCategorySelector, withProgramType, onCreate, ...props }) => {
   const { formatMessage } = useIntl()
-  const { currentMemberId } = useAuth()
   const [form] = useForm()
+  const { currentMemberId } = useAuth()
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
@@ -94,7 +94,7 @@ const ProductCreationModal: React.FC<
         >
           <Input />
         </Form.Item>
-        {withCategorySelector && (
+        {withCategorySelector && classType && (
           <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
             <CategorySelector classType={classType} />
           </Form.Item>

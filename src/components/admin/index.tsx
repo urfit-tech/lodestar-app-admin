@@ -19,12 +19,12 @@ export const AdminHeader = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 0.5rem;
+  padding: 0 1.5rem;
   height: 64px;
   background: white;
 
-  a:first-child {
-    margin-left: 0.75rem;
+  > a .ant-btn {
+    line-height: 1;
   }
 
   .anticon {

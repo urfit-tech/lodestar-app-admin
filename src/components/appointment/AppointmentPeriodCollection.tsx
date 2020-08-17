@@ -3,10 +3,10 @@ import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
+import { AppointmentPeriodProps } from '../../types/appointment'
 import AdminModal from '../admin/AdminModal'
-import AppointmentPeriodItem, { AppointmentPeriodProps } from './AppointmentPeriodItem'
+import AppointmentPeriodItem from './AppointmentPeriodItem'
 
 const StyledWrapper = styled.div`
   display: flex;
@@ -53,29 +53,10 @@ const messages = defineMessages({
   close: { id: 'appointment.ui.close', defaultMessage: '關閉' },
 })
 
-export type ScheduleIntervalType = 'Y' | 'M' | 'W' | 'D'
-export type DeleteScheduleEvent = {
-  values: {
-    scheduleId: string
-  }
-  onSuccess?: () => void
-  onError?: (error: Error) => void
-  onFinally?: () => void
-}
-export type ClosePeriodEvent = {
-  values: {
-    scheduleId: string
-    startedAt: Date
-  }
-  onSuccess?: () => void
-  onError?: (error: Error) => void
-  onFinally?: () => void
-}
-
 const AppointmentPeriodCollection: React.FC<{
   periods: AppointmentPeriodProps[]
-  onDelete?: (event: DeleteScheduleEvent) => void
-  onClose?: (event: ClosePeriodEvent) => void
+  onDelete?: (scheduleId: string) => Promise<any>
+  onClose?: (scheduleId: string, startedAt: Date) => Promise<any> | undefined
 }> = ({ periods, onDelete, onClose }) => {
   const { formatMessage } = useIntl()
   const [visible, setVisible] = useState(false)
@@ -115,15 +96,9 @@ const AppointmentPeriodCollection: React.FC<{
                   block
                   onClick={() =>
                     onDelete &&
-                    onDelete({
-                      values: {
-                        scheduleId: selectedPeriod.schedule.id,
-                      },
-                      onSuccess: () => {
-                        setVisible(false)
-                        setSelectedPeriod(null)
-                      },
-                      onError: error => handleError(error),
+                    onDelete(selectedPeriod.schedule.id).then(() => {
+                      setVisible(false)
+                      setSelectedPeriod(null)
                     })
                   }
                 >
@@ -140,16 +115,9 @@ const AppointmentPeriodCollection: React.FC<{
                   block
                   onClick={() =>
                     onClose &&
-                    onClose({
-                      values: {
-                        scheduleId: selectedPeriod.schedule.id,
-                        startedAt: selectedPeriod.startedAt,
-                      },
-                      onSuccess: () => {
-                        setVisible(false)
-                        setSelectedPeriod(null)
-                      },
-                      onError: error => handleError(error),
+                    onClose(selectedPeriod.schedule.id, selectedPeriod.startedAt)?.then(() => {
+                      setVisible(false)
+                      setSelectedPeriod(null)
                     })
                   }
                 >

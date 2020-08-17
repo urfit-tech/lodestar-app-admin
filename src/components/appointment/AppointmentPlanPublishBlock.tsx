@@ -1,16 +1,12 @@
 import { useMutation } from '@apollo/react-hooks'
 import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
-import React, { useContext } from 'react'
+import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import AdminPublishBlock, {
-  ChecklistItemProps,
-  PublishEvent,
-  PublishStatus,
-} from '../../components/admin/AdminPublishBlock'
-import AppointmentPlanContext from '../../contexts/AppointmentPlanContext'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
+import { AppointmentPlanAdminProps } from '../../types/appointment'
+import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } from '../admin/AdminPublishBlock'
 
 const messages = defineMessages({
   noTitle: { id: 'appointment.text.noTitle', defaultMessage: '尚未設定方案名稱' },
@@ -31,38 +27,40 @@ const messages = defineMessages({
   },
 })
 
-const AppointmentPlanPublishBlock: React.FC = () => {
+const AppointmentPlanPublishBlock: React.FC<{
+  appointmentPlanAdmin: AppointmentPlanAdminProps | null
+  refetch?: () => void
+}> = ({ appointmentPlanAdmin, refetch }) => {
   const { formatMessage } = useIntl()
-  const { loadingAppointmentPlan, appointmentPlan, refetchAppointmentPlan } = useContext(AppointmentPlanContext)
   const [publishAppointmentPlan] = useMutation<types.PUBLISH_APPOINTMENT_PLAN, types.PUBLISH_APPOINTMENT_PLANVariables>(
     PUBLISH_APPOINTMENT_PLAN,
   )
 
-  if (loadingAppointmentPlan || !appointmentPlan) {
+  if (!appointmentPlanAdmin) {
     return <Skeleton active />
   }
 
   const checklist: ChecklistItemProps[] = []
 
-  !appointmentPlan.title &&
+  !appointmentPlanAdmin.title &&
     checklist.push({
       id: 'NO_TITLE',
       text: formatMessage(messages.noTitle),
       tab: 'settings',
     })
-  !appointmentPlan.duration &&
+  !appointmentPlanAdmin.duration &&
     checklist.push({
       id: 'NO_DURATION',
       text: formatMessage(messages.noDuration),
       tab: 'sale',
     })
-  !appointmentPlan.listPrice &&
+  !appointmentPlanAdmin.listPrice &&
     checklist.push({
       id: 'NO_LIST_PRICE',
       text: formatMessage(messages.noListPrice),
       tab: 'sale',
     })
-  !appointmentPlan.periods.length &&
+  !appointmentPlanAdmin.periods.length &&
     checklist.push({
       id: 'NO_PERIOD',
       text: formatMessage(messages.noPeriod),
@@ -70,7 +68,7 @@ const AppointmentPlanPublishBlock: React.FC = () => {
     })
 
   const publishStatus: PublishStatus =
-    checklist.length > 0 ? 'alert' : !appointmentPlan.isPublished ? 'ordinary' : 'success'
+    checklist.length > 0 ? 'alert' : !appointmentPlanAdmin.isPublished ? 'ordinary' : 'success'
 
   const [title, description] =
     publishStatus === 'alert'
@@ -84,12 +82,12 @@ const AppointmentPlanPublishBlock: React.FC = () => {
   const handlePublish: (event: PublishEvent) => void = ({ values, onSuccess, onError, onFinally }) => {
     publishAppointmentPlan({
       variables: {
-        appointmentPlanId: appointmentPlan.id,
+        appointmentPlanId: appointmentPlanAdmin.id,
         publishedAt: values.publishedAt,
       },
     })
       .then(() => {
-        refetchAppointmentPlan && refetchAppointmentPlan()
+        refetch && refetch()
         onSuccess && onSuccess()
       })
       .catch(error => onError && onError(error))

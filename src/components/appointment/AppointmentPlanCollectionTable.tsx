@@ -1,11 +1,14 @@
 import { SearchOutlined } from '@ant-design/icons'
+import { useQuery } from '@apollo/react-hooks'
 import { Input, Table } from 'antd'
-import React, { useState } from 'react'
+import gql from 'graphql-tag'
+import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { currencyFormatter } from '../../helpers'
 import { appointmentMessages } from '../../helpers/translation'
+import types from '../../types'
 import { AvatarImage } from '../common/Image'
 
 const StyledCreatorName = styled.span`
@@ -79,11 +82,11 @@ export type AppointmentPlanProps = {
 }
 
 const AppointmentPlanCollectionTable: React.FC<{
-  appointmentPlans: AppointmentPlanProps[]
-  loading?: boolean
-}> = ({ appointmentPlans, loading }) => {
+  creatorId?: string
+}> = ({ creatorId }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
+  const { loadingAppointmentPlans, appointmentPlans, refetchAppointmentPlans } = useAppointmentPlansAdmin(creatorId)
 
   const [searchName, setSearchName] = useState<string | null>(null)
   const [searchTitle, setSearchTitle] = useState<string | null>(null)
@@ -95,11 +98,15 @@ const AppointmentPlanCollectionTable: React.FC<{
       (searchTitle && appointmentPlan.title.includes(searchTitle)),
   )
 
+  useEffect(() => {
+    refetchAppointmentPlans()
+  }, [refetchAppointmentPlans])
+
   return (
     <Table
       rowKey="id"
       rowClassName={() => 'cursor-pointer'}
-      loading={loading}
+      loading={loadingAppointmentPlans}
       onRow={record => ({
         onClick: () => history.push(`/appointment-plans/${record.id}`),
       })}
@@ -193,6 +200,60 @@ const AppointmentPlanCollectionTable: React.FC<{
       dataSource={data}
     />
   )
+}
+
+const useAppointmentPlansAdmin = (creatorId?: string) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_APPOINTMENT_PLAN_COLLECTION_ADMIN,
+    types.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables
+  >(
+    gql`
+      query GET_APPOINTMENT_PLAN_COLLECTION_ADMIN($creatorId: String) {
+        appointment_plan(where: { creator_id: { _eq: $creatorId } }, order_by: { updated_at: desc }) {
+          id
+          creator {
+            id
+            picture_url
+            name
+            username
+          }
+          title
+          duration
+          price
+          published_at
+          appointment_enrollments_aggregate {
+            aggregate {
+              count
+            }
+          }
+        }
+      }
+    `,
+    { variables: { creatorId } },
+  )
+
+  const appointmentPlans: AppointmentPlanProps[] =
+    loading || !!error || !data
+      ? []
+      : data.appointment_plan.map(appointmentPlan => ({
+          id: appointmentPlan.id,
+          avatarUrl: appointmentPlan.creator ? appointmentPlan.creator.picture_url : null,
+          creatorName: appointmentPlan.creator && appointmentPlan.creator.name ? appointmentPlan.creator.name : '',
+          title: appointmentPlan.title,
+          duration: appointmentPlan.duration,
+          listPrice: appointmentPlan.price,
+          enrollments: appointmentPlan.appointment_enrollments_aggregate.aggregate
+            ? appointmentPlan.appointment_enrollments_aggregate.aggregate.count || 0
+            : 0,
+          isPublished: !!appointmentPlan.published_at,
+        }))
+
+  return {
+    loadingAppointmentPlans: loading,
+    errorAppointmentPlans: error,
+    appointmentPlans,
+    refetchAppointmentPlans: refetch,
+  }
 }
 
 export default AppointmentPlanCollectionTable

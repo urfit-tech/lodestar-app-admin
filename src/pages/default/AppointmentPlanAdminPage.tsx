@@ -1,19 +1,26 @@
-import { Tabs } from 'antd'
+import { ArrowLeftOutlined } from '@ant-design/icons'
+import { Button, Tabs } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
-import { AdminBlock, AdminBlockTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../components/admin'
+import {
+  AdminBlock,
+  AdminBlockTitle,
+  AdminHeader,
+  AdminHeaderTitle,
+  AdminPaneTitle,
+  AdminTabBarWrapper,
+} from '../../components/admin'
+import AppointmentPlanBasicForm from '../../components/appointment/AppointmentPlanBasicForm'
+import AppointmentPlanIntroForm from '../../components/appointment/AppointmentPlanIntroForm'
+import AppointmentPlanPublishBlock from '../../components/appointment/AppointmentPlanPublishBlock'
+import AppointmentPlanSaleForm from '../../components/appointment/AppointmentPlanSaleForm'
+import AppointmentPlanScheduleBlock from '../../components/appointment/AppointmentPlanScheduleBlock'
+import AppointmentPlanScheduleCreationModal from '../../components/appointment/AppointmentPlanScheduleCreationModal'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
-import AppointmentPlanBasicForm from '../../containers/appointment/AppointmentPlanBasicForm'
-import AppointmentPlanHeader from '../../containers/appointment/AppointmentPlanHeader'
-import AppointmentPlanIntroForm from '../../containers/appointment/AppointmentPlanIntroForm'
-import AppointmentPlanPublishBlock from '../../containers/appointment/AppointmentPlanPublishBlock'
-import AppointmentPlanSaleForm from '../../containers/appointment/AppointmentPlanSaleForm'
-import AppointmentPlanScheduleBlock from '../../containers/appointment/AppointmentPlanScheduleBlock'
-import AppointmentPlanScheduleCreationModal from '../../containers/appointment/AppointmentPlanScheduleCreationModal'
-import { AppointmentPlanProvider } from '../../contexts/AppointmentPlanContext'
 import { commonMessages } from '../../helpers/translation'
+import { useAppointmentPlanAdmin } from '../../hooks/appointment'
 
 const messages = defineMessages({
   planSettings: { id: 'appointment.label.planSettings', defaultMessage: '方案設定' },
@@ -25,12 +32,20 @@ const messages = defineMessages({
 const AppointmentPlanAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { appointmentPlanId } = useParams<{ appointmentPlanId: string }>()
-
+  const { appointmentPlanAdmin, refetchAppointmentPlanAdmin } = useAppointmentPlanAdmin(appointmentPlanId)
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
 
   return (
-    <AppointmentPlanProvider appointmentPlanId={appointmentPlanId}>
-      <AppointmentPlanHeader appointmentPlanId={appointmentPlanId} />
+    <>
+      <AdminHeader>
+        <Link to="/appointment-plans">
+          <Button type="link" className="mr-3">
+            <ArrowLeftOutlined />
+          </Button>
+        </Link>
+
+        <AdminHeaderTitle>{appointmentPlanAdmin?.title || appointmentPlanId}</AdminHeaderTitle>
+      </AdminHeader>
 
       <StyledLayoutContent variant="gray">
         <Tabs
@@ -48,11 +63,17 @@ const AppointmentPlanAdminPage: React.FC = () => {
               <AdminPaneTitle>{formatMessage(messages.planSettings)}</AdminPaneTitle>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
-                <AppointmentPlanBasicForm />
+                <AppointmentPlanBasicForm
+                  appointmentPlanAdmin={appointmentPlanAdmin}
+                  refetch={refetchAppointmentPlanAdmin}
+                />
               </AdminBlock>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(messages.planDescription)}</AdminBlockTitle>
-                <AppointmentPlanIntroForm />
+                <AppointmentPlanIntroForm
+                  appointmentPlanAdmin={appointmentPlanAdmin}
+                  refetch={refetchAppointmentPlanAdmin}
+                />
               </AdminBlock>
             </div>
           </Tabs.TabPane>
@@ -61,7 +82,10 @@ const AppointmentPlanAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(messages.salesSettings)}</AdminPaneTitle>
               <AdminBlock>
-                <AppointmentPlanSaleForm />
+                <AppointmentPlanSaleForm
+                  appointmentPlanAdmin={appointmentPlanAdmin}
+                  refetch={refetchAppointmentPlanAdmin}
+                />
               </AdminBlock>
             </div>
           </Tabs.TabPane>
@@ -70,10 +94,16 @@ const AppointmentPlanAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(messages.scheduleSettings)}</AdminPaneTitle>
               <div className="mb-4">
-                <AppointmentPlanScheduleCreationModal />
+                <AppointmentPlanScheduleCreationModal
+                  appointmentPlanAdmin={appointmentPlanAdmin}
+                  refetch={refetchAppointmentPlanAdmin}
+                />
               </div>
               <AdminBlock>
-                <AppointmentPlanScheduleBlock />
+                <AppointmentPlanScheduleBlock
+                  appointmentPlanAdmin={appointmentPlanAdmin}
+                  refetch={refetchAppointmentPlanAdmin}
+                />
               </AdminBlock>
             </div>
           </Tabs.TabPane>
@@ -82,13 +112,16 @@ const AppointmentPlanAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
               <AdminBlock>
-                <AppointmentPlanPublishBlock />
+                <AppointmentPlanPublishBlock
+                  appointmentPlanAdmin={appointmentPlanAdmin}
+                  refetch={refetchAppointmentPlanAdmin}
+                />
               </AdminBlock>
             </div>
           </Tabs.TabPane>
         </Tabs>
       </StyledLayoutContent>
-    </AppointmentPlanProvider>
+    </>
   )
 }
 

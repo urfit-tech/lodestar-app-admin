@@ -1,6 +1,7 @@
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
+import { AppointmentPeriodProps } from '../../types/appointment'
 
 const StyledItemWrapper = styled.div<{ variant?: 'default' | 'excluded' | 'disabled' }>`
   position: relative;
@@ -50,17 +51,6 @@ const messages = defineMessages({
   available: { id: 'appointment.status.available', defaultMessage: '可預約' },
 })
 
-export type AppointmentPeriodProps = {
-  id: string
-  schedule: {
-    id: string
-    periodAmount: number | null
-    periodType: 'D' | 'W' | 'M' | 'Y' | null
-  }
-  startedAt: Date
-  isEnrolled?: boolean
-  isExcluded?: boolean
-}
 const AppointmentPeriodItem: React.FC<AppointmentPeriodProps> = ({ id, startedAt, isEnrolled, isExcluded }) => {
   const { formatMessage } = useIntl()
 
