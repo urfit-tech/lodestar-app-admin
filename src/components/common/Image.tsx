@@ -27,10 +27,10 @@ export const AvatarImage = styled.div<AvatarImageProps>`
   border-radius: ${props => (props.shape === 'square' ? '4px' : '50%')};
 `
 
-type CustomRadioImageProps = {
+export type CustomRadioImageProps = {
   width: string
   ratio: number
-  src: string
+  src?: string | null
   shape?: 'default' | 'rounded' | 'circle'
 }
 export const CustomRatioImage = styled.div<CustomRadioImageProps>`
@@ -39,15 +39,5 @@ export const CustomRatioImage = styled.div<CustomRadioImageProps>`
   background-image: url(${props => props.src});
   background-size: cover;
   background-position: center;
-
-  ${props =>
-    props.shape === 'rounded'
-      ? css`
-          border-radius: 4px;
-        `
-      : props.shape === 'circle'
-      ? css`
-          border-radius: 50%;
-        `
-      : ''}
+  border-radius: ${props => (props.shape === 'rounded' ? '4px' : props.shape === 'circle' ? '50%' : '')};
 `

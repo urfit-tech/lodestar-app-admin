@@ -5,26 +5,17 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
-import styled from 'styled-components'
 import { AppContext } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import types from '../../types'
 import { PodcastProgramAdminProps } from '../../types/podcast'
+import ImageInput from '../admin/ImageInput'
 import { StyledTips } from '../admin/index'
-import { CustomRatioImage } from '../common/Image'
-import { StyledSingleUploader } from '../program/ProgramIntroAdminCard'
-
-const StyledCoverBlock = styled.div`
-  overflow: hidden;
-  width: 120px;
-  max-width: 120px;
-  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
-`
 
 const PodcastProgramIntroForm: React.FC<{
   podcastProgramAdmin: PodcastProgramAdminProps | null
-  refetch?: () => Promise<any>
+  refetch?: () => void
 }> = ({ podcastProgramAdmin, refetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
@@ -51,7 +42,8 @@ const PodcastProgramIntroForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch().then(() => message.success(formatMessage(commonMessages.event.successfullyUpload)))
+        refetch && refetch()
+        message.success(formatMessage(commonMessages.event.successfullyUpload))
       })
       .catch(handleError)
   }
@@ -66,7 +58,8 @@ const PodcastProgramIntroForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch().then(() => message.success(formatMessage(commonMessages.event.successfullySaved)))
+        refetch && refetch()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -98,22 +91,15 @@ const PodcastProgramIntroForm: React.FC<{
           </span>
         }
       >
-        <div className="d-flex align-items-center">
-          {!!podcastProgramAdmin.coverUrl && (
-            <StyledCoverBlock className="mr-4">
-              <CustomRatioImage src={podcastProgramAdmin.coverUrl} width="100%" ratio={1} />
-            </StyledCoverBlock>
-          )}
-
-          <StyledSingleUploader
-            accept="image/*"
-            listType="picture-card"
-            showUploadList={false}
-            path={`podcast_program_covers/${appId}/${podcastProgramAdmin.id}`}
-            isPublic
-            onSuccess={() => handleUpload()}
-          />
-        </div>
+        <ImageInput
+          path={`podcast_program_covers/${appId}/${podcastProgramAdmin.id}`}
+          value={podcastProgramAdmin.coverUrl}
+          onChange={() => handleUpload()}
+          image={{
+            width: '120px',
+            ratio: 1,
+          }}
+        />
       </Form.Item>
       <Form.Item label={formatMessage(podcastMessages.term.podcastAbstract)} name="abstract">
         <Input.TextArea rows={4} maxLength={100} placeholder={formatMessage(podcastMessages.text.abstractLimit)} />

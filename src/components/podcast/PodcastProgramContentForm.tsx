@@ -32,7 +32,7 @@ const StyledFileBlock = styled.div`
 
 const PodcastProgramContentForm: React.FC<{
   podcastProgramAdmin: PodcastProgramAdminProps | null
-  refetch?: () => Promise<any>
+  refetch?: () => void
 }> = ({ podcastProgramAdmin, refetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
@@ -59,7 +59,8 @@ const PodcastProgramContentForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch().then(() => message.success(formatMessage(commonMessages.event.successfullySaved)))
+        refetch && refetch()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(error => handleError(error))
   }

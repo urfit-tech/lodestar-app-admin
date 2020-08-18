@@ -1,44 +1,23 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Select, Skeleton } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
+import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import styled from 'styled-components'
 import AppContext from '../../contexts/AppContext'
-import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useTags } from '../../hooks/data'
-import { useMember, useUpdateMemberBasic } from '../../hooks/member'
+import { useMember } from '../../hooks/member'
+import DefaultAvatarImage from '../../images/default/avatar.svg'
+import types from '../../types'
 import { AdminBlockTitle } from '../admin'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminCard from '../admin/AdminCard'
-import { AvatarImage } from '../common/Image'
-import SingleUploader from '../common/SingleUploader'
+import ImageInput from '../admin/ImageInput'
 import { StyledForm } from '../layout'
-
-const StyledAvatarFormItem = styled(Form.Item)`
-  .ant-form-item-children {
-    display: flex;
-    align-items: center;
-  }
-
-  .ant-upload.ant-upload-select-picture-card {
-    border: none;
-    background: none;
-  }
-`
-const StyledFormItem = styled(Form.Item)`
-  && {
-    align-items: flex-start;
-  }
-`
-const StyledTextArea = styled(Input.TextArea)`
-  && {
-    padding: 10px 12px;
-  }
-`
 
 const messages = defineMessages({
   profileBasic: { id: 'common.label.profileBasic', defaultMessage: '基本資料' },
@@ -56,10 +35,14 @@ const ProfileBasicCard: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const { id: appId } = useContext(AppContext)
-  const { currentMemberId } = useAuth()
   const { member, refetchMember } = useMember(memberId)
   const { tags } = useTags()
-  const updateMemberBasic = useUpdateMemberBasic()
+
+  const [updateMemberAvatar] = useMutation(UPDATE_MEMBER_AVATAR)
+  const [updateMemberBasic] = useMutation<types.UPDATE_MEMBER_BASIC, types.UPDATE_MEMBER_BASICVariables>(
+    UPDATE_MEMBER_BASIC,
+  )
+
   const [loading, setLoading] = useState(false)
 
   if (!member) {
@@ -71,6 +54,23 @@ const ProfileBasicCard: React.FC<
     )
   }
 
+  const handleUpdateAvatar = () => {
+    setLoading(true)
+    const uploadTime = Date.now()
+    updateMemberAvatar({
+      variables: {
+        memberId,
+        pictureUrl: `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${appId}/${memberId}?t=${uploadTime}`,
+      },
+    })
+      .then(() => {
+        refetchMember()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
+  }
+
   const handleSubmit = (values: any) => {
     if (!member.id) {
       return
@@ -78,29 +78,27 @@ const ProfileBasicCard: React.FC<
     setLoading(true)
     updateMemberBasic({
       variables: {
-        memberId: currentMemberId,
+        memberId,
         email: member.email,
         username: member.username,
         name: values.name,
-        pictureUrl: values.picture
-          ? `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${appId}/${memberId}`
-          : member.pictureUrl,
+        // pictureUrl: values.picture
+        //   ? `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${appId}/${memberId}`
+        //   : member.pictureUrl,
         title: values.title,
         abstract: values.abstract,
         description: values.description ? values.description.toRAW() : null,
-        tags: values.tags
-          ? values.tags.map((tag: string) => ({
-              app_id: appId,
-              name: tag,
-              type: '',
-            }))
-          : [],
-        memberTags: values.tags
-          ? values.tags.map((tag: string) => ({
-              member_id: currentMemberId,
-              tag_name: tag,
-            }))
-          : [],
+        tags:
+          values.tags?.map((tag: string) => ({
+            app_id: appId,
+            name: tag,
+            type: '',
+          })) || [],
+        memberTags:
+          values.tags?.map((tag: string) => ({
+            member_id: memberId,
+            tag_name: tag,
+          })) || [],
       },
     })
       .then(() => {
@@ -131,20 +129,18 @@ const ProfileBasicCard: React.FC<
         }}
         onFinish={handleSubmit}
       >
-        <StyledAvatarFormItem label={formatMessage(commonMessages.term.avatar)} name="picture">
-          <div className="mr-3">
-            <AvatarImage src={(member && member.pictureUrl) || ''} size={128} />
-          </div>
-          <SingleUploader
-            accept="image/*"
-            listType="picture-card"
-            showUploadList={false}
+        <Form.Item label={formatMessage(commonMessages.term.avatar)}>
+          <ImageInput
             path={`avatars/${appId}/${memberId}`}
-            onSuccess={handleSubmit}
-            isPublic={true}
+            value={member.pictureUrl || DefaultAvatarImage}
+            onChange={() => handleUpdateAvatar()}
+            image={{
+              width: '128px',
+              ratio: 1,
+              shape: 'circle',
+            }}
           />
-          ,
-        </StyledAvatarFormItem>
+        </Form.Item>
         <Form.Item
           label={formatMessage(commonMessages.term.name)}
           name="name"
@@ -177,7 +173,7 @@ const ProfileBasicCard: React.FC<
           </Form.Item>
         )}
         {withAbstract && (
-          <StyledFormItem
+          <Form.Item
             label={formatMessage(commonMessages.term.shortDescription)}
             name="abstract"
             rules={[
@@ -189,21 +185,21 @@ const ProfileBasicCard: React.FC<
               },
             ]}
           >
-            <StyledTextArea
+            <Input.TextArea
               rows={3}
               maxLength={100}
               placeholder={formatMessage(commonMessages.text.shortDescriptionPlaceholder)}
             />
-          </StyledFormItem>
+          </Form.Item>
         )}
         {withDescription && (
-          <StyledFormItem
+          <Form.Item
             label={formatMessage(commonMessages.term.introduction)}
             wrapperCol={{ md: { span: 20 } }}
             name="description"
           >
             <AdminBraftEditor />
-          </StyledFormItem>
+          </Form.Item>
         )}
 
         <Form.Item wrapperCol={{ md: { offset: 4 } }}>
@@ -218,5 +214,51 @@ const ProfileBasicCard: React.FC<
     </AdminCard>
   )
 }
+
+const UPDATE_MEMBER_AVATAR = gql`
+  mutation UPDATE_MEMBER_AVATAR($memberId: String!, $pictureUrl: String!) {
+    update_member(where: { id: { _eq: $memberId } }, _set: { picture_url: $pictureUrl }) {
+      affected_rows
+    }
+  }
+`
+const UPDATE_MEMBER_BASIC = gql`
+  mutation UPDATE_MEMBER_BASIC(
+    $memberId: String!
+    $name: String
+    $description: String
+    $username: String
+    $email: String
+    # $pictureUrl: String
+    $title: String
+    $abstract: String
+    $tags: [tag_insert_input!]!
+    $memberTags: [member_tag_insert_input!]!
+  ) {
+    update_member(
+      where: { id: { _eq: $memberId } }
+      _set: {
+        name: $name
+        description: $description
+        username: $username
+        email: $email
+        # picture_url: $pictureUrl
+        title: $title
+        abstract: $abstract
+      }
+    ) {
+      affected_rows
+    }
+    delete_member_tag(where: { member_id: { _eq: $memberId } }) {
+      affected_rows
+    }
+    insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
+      affected_rows
+    }
+    insert_member_tag(objects: $memberTags) {
+      affected_rows
+    }
+  }
+`
 
 export default ProfileBasicCard

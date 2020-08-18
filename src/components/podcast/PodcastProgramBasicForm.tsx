@@ -16,7 +16,7 @@ import LanguageSelector from '../common/LanguageSelector'
 
 const PodcastProgramBasicForm: React.FC<{
   podcastProgramAdmin: PodcastProgramAdminProps | null
-  refetch?: () => Promise<any>
+  refetch?: () => void
 }> = ({ podcastProgramAdmin, refetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
@@ -55,7 +55,8 @@ const PodcastProgramBasicForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch().then(() => message.success(formatMessage(commonMessages.event.successfullySaved)))
+        refetch && refetch()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
       .finally(() => setLoading(false))

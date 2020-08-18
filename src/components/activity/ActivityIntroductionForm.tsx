@@ -6,7 +6,6 @@ import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
-import styled from 'styled-components'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { activityMessages, commonMessages } from '../../helpers/translation'
@@ -14,18 +13,7 @@ import types from '../../types'
 import { ActivityAdminProps } from '../../types/activity'
 import { StyledTips } from '../admin'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
-import { StyledSingleUploader } from '../program/ProgramIntroAdminCard'
-
-const StyledCover = styled.div<{ src: string }>`
-  width: 160px;
-  height: 90px;
-  overflow: hidden;
-  background-image: url(${props => props.src});
-  background-size: cover;
-  background-position: center;
-  border-radius: 4px;
-  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
-`
+import ImageInput from '../admin/ImageInput'
 
 const ActivityIntroductionForm: React.FC<{
   activityAdmin: ActivityAdminProps | null
@@ -50,7 +38,6 @@ const ActivityIntroductionForm: React.FC<{
   const handleUpdateCover = () => {
     setLoading(true)
     const uploadTime = Date.now()
-
     updateActivityCover({
       variables: {
         activityId: activityAdmin.id,
@@ -90,12 +77,6 @@ const ActivityIntroductionForm: React.FC<{
       colon={false}
       hideRequiredMark
       initialValues={{
-        coverImg: activityAdmin && {
-          uid: '-1',
-          name: activityAdmin.title,
-          status: 'done',
-          url: activityAdmin.coverUrl,
-        },
         description: BraftEditor.createEditorState(activityAdmin.description),
       }}
       onFinish={handleSubmit}
@@ -109,19 +90,17 @@ const ActivityIntroductionForm: React.FC<{
             </Tooltip>
           </span>
         }
-        name="coverImg"
       >
-        <div className="d-flex align-items-center justify-content-between">
-          {activityAdmin.coverUrl && <StyledCover className="flex-shrink-0 mr-3" src={activityAdmin.coverUrl} />}
-          <StyledSingleUploader
-            accept="image/*"
-            listType="picture-card"
-            showUploadList={false}
-            path={`activity_covers/${app.id}/${activityAdmin.id}`}
-            isPublic
-            onSuccess={() => handleUpdateCover()}
-          />
-        </div>
+        <ImageInput
+          path={`activity_covers/${app.id}/${activityAdmin.id}`}
+          value={activityAdmin.coverUrl}
+          onChange={() => handleUpdateCover()}
+          image={{
+            width: '160px',
+            ratio: 9 / 16,
+            shape: 'rounded',
+          }}
+        />
       </Form.Item>
       <Form.Item
         label={formatMessage(commonMessages.term.description)}

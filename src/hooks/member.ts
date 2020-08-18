@@ -333,51 +333,6 @@ export const useMemberSummaryCollection = () => {
   }
 }
 
-export const useUpdateMemberBasic = () => {
-  const [updateMemberBasic] = useMutation<types.UPDATE_MEMBER_BASIC, types.UPDATE_MEMBER_BASICVariables>(
-    gql`
-      mutation UPDATE_MEMBER_BASIC(
-        $memberId: String
-        $name: String
-        $description: String
-        $username: String
-        $email: String
-        $pictureUrl: String
-        $title: String
-        $abstract: String
-        $tags: [tag_insert_input!]!
-        $memberTags: [member_tag_insert_input!]!
-      ) {
-        update_member(
-          where: { id: { _eq: $memberId } }
-          _set: {
-            name: $name
-            description: $description
-            username: $username
-            email: $email
-            picture_url: $pictureUrl
-            title: $title
-            abstract: $abstract
-          }
-        ) {
-          affected_rows
-        }
-        delete_member_tag(where: { member_id: { _eq: $memberId } }) {
-          affected_rows
-        }
-        insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
-          affected_rows
-        }
-        insert_member_tag(objects: $memberTags) {
-          affected_rows
-        }
-      }
-    `,
-  )
-
-  return updateMemberBasic
-}
-
 export const useUpdateMemberAccount = () => {
   const [updateMemberAccount] = useMutation<types.UPDATE_MEMBER_ACCOUNT, types.UPDATE_MEMBER_ACCOUNTVariables>(
     gql`
