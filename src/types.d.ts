@@ -7168,7 +7168,6 @@ export interface GET_PROGRAM_program_by_pk_program_categories_category {
 
 export interface GET_PROGRAM_program_by_pk_program_categories {
   __typename: "program_category";
-  position: number;
   /**
    * An object relationship
    */
@@ -7183,7 +7182,6 @@ export interface GET_PROGRAM_program_by_pk_program_tags_tag {
 export interface GET_PROGRAM_program_by_pk_program_tags {
   __typename: "program_tag";
   id: any;
-  position: number;
   /**
    * An object relationship
    */

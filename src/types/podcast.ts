@@ -18,7 +18,7 @@ export type PodcastProgramAdminProps = {
 }
 
 export type PodcastProgramAdminProps = PodcastProgramProps & {
-  categories: PodcastProgramCategoryProps[]
+  categories: CategoryProps[]
   tags: string[]
 }
 
@@ -33,9 +33,4 @@ export type PodcastPlanProps = {
   periodAmount: number
   periodType: PeriodType
   creatorId: string
-}
-
-export type PodcastProgramCategoryProps = {
-  id: string
-  category: CategoryProps
 }

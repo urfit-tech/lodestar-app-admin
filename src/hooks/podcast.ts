@@ -168,8 +168,8 @@ export const usePodcastProgramAdmin = (podcastProgramId: string) => {
             : null,
           supportLocales: data.podcast_program_by_pk.support_locales || [],
           categories: data.podcast_program_by_pk.podcast_program_categories.map(podcastProgramCategory => ({
-            id: podcastProgramCategory.id,
-            category: { id: podcastProgramCategory.category.id, name: podcastProgramCategory.category.name },
+            id: podcastProgramCategory.category.id,
+            name: podcastProgramCategory.category.name,
           })),
           tags: data.podcast_program_by_pk.podcast_program_tags.map(podcastProgramTag => podcastProgramTag.tag.name),
         }

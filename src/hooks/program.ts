@@ -181,15 +181,13 @@ export const useProgram = (programId: string) => {
             published_at
           }
           program_categories(order_by: { position: asc }) {
-            position
             category {
               id
               name
             }
           }
-          program_tags {
+          program_tags(order_by: { position: asc }) {
             id
-            position
             tag {
               name
             }

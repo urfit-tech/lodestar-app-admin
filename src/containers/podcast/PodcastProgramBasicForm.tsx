@@ -108,7 +108,7 @@ const PodcastProgramBasicForm: React.FC<PodcastProgramBasicFormProps> = ({ form,
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.term.category)}>
         {form.getFieldDecorator('categoryIds', {
-          initialValue: podcastProgram.categories.map(podcastProgramCategory => podcastProgramCategory.category.id),
+          initialValue: podcastProgram.categories.map(podcastProgramCategory => podcastProgramCategory.id),
         })(<CategorySelector classType="podcastProgram" />)}
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.term.tag)}>
