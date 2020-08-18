@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import { sum, uniqBy } from 'ramda'
-import { useContext } from 'react'
+import { sum } from 'ramda'
+import { useContext, useState } from 'react'
 import AppContext from '../contexts/AppContext'
 import types from '../types'
 import {
@@ -442,88 +442,122 @@ const GET_PROGRAM_CONTENT_ENROLLMENT = gql`
 `
 
 export const useProgramProgressCollection = (programId?: string | null) => {
-  const { loading, error, data } = useQuery<types.GET_PROGRAM_PROGRESS, types.GET_PROGRAM_PROGRESSVariables>(
-    GET_PROGRAM_PROGRESS,
-    { variables: { programId } },
-  )
+  const { loading, error, data, refetch, fetchMore } = useQuery<
+    types.GET_PROGRAM_PROGRESS,
+    types.GET_PROGRAM_PROGRESSVariables
+  >(GET_PROGRAM_PROGRESS, { variables: { programId } })
+  const [isNoMore, setIsNoMore] = useState(false)
 
-  const programEnrollments: {
+  const memberProgramProgress: {
     memberId: string
     name: string
     email: string
     pictureUrl: string | null
-    programId: string
-    programContentCount: number
-    programContentDuration: number
-  }[] = uniqBy(
-    enrollment => `${enrollment.memberId}_${enrollment.programId}`,
-    data?.program_content_enrollment.map(enrollment => ({
-      memberId: enrollment.member?.id || '',
-      name: enrollment.member?.name || enrollment.member?.username || '',
-      email: enrollment.member?.email || '',
-      pictureUrl: enrollment.member?.picture_url || '',
-
-      programId: enrollment.program?.id || '',
-      programContentCount: sum(
-        enrollment.program?.program_content_sections.map(
-          section => section.program_contents_aggregate.aggregate?.count || 0,
-        ) || [],
-      ),
-      programContentDuration: sum(
-        enrollment.program?.program_content_sections.map(
-          section => section.program_contents_aggregate.aggregate?.sum?.duration || 0,
-        ) || [],
-      ),
-    })) || [],
-  )
-  const programContentProgress = data?.program_content_progress.map(programContentProgress => ({
-    memberId: programContentProgress.member_id,
-    progress: programContentProgress.progress,
-  }))
+    programEnrollments: {
+      programId: string
+      programContentCount: number
+      programContentDuration: number
+    }[]
+    programContentProgresses: {
+      progress: number
+    }[]
+  }[] =
+    data?.member.map(member => ({
+      memberId: member.id,
+      name: member.name || member.username || '',
+      email: member.email || '',
+      pictureUrl: member.picture_url || '',
+      programEnrollments:
+        member.program_content_enrollments.map(enrollment => ({
+          programId: enrollment.program_id,
+          programContentCount: sum(
+            enrollment.program?.program_content_sections.map(
+              section => section.program_contents_aggregate.aggregate?.count || 0,
+            ) || [],
+          ),
+          programContentDuration: sum(
+            enrollment.program?.program_content_sections.map(
+              section => section.program_contents_aggregate.aggregate?.sum?.duration || 0,
+            ) || [],
+          ),
+        })) || [],
+      programContentProgresses:
+        member.program_content_progresses.map(programContentProgress => ({
+          progress: programContentProgress.progress,
+        })) || [],
+    })) || []
 
   return {
-    loading,
-    error,
-    programEnrollments,
-    programContentProgress,
+    loadingProgramProgress: loading,
+    errorProgramProgress: error,
+    memberProgramProgress,
+    refetchProgramProgress: () => {
+      setIsNoMore(false)
+      refetch()
+    },
+    fetchMoreProgramProgress: isNoMore
+      ? undefined
+      : () =>
+          fetchMore({
+            variables: {
+              programId,
+              offset: data?.member.length || 0,
+            },
+            updateQuery: (prev, { fetchMoreResult }) => {
+              if (!fetchMoreResult) {
+                return prev
+              }
+              if (fetchMoreResult.member.length < 10) {
+                setIsNoMore(true)
+              }
+              return {
+                ...prev,
+                member: [...prev.member, ...fetchMoreResult.member],
+              }
+            },
+          }),
   }
 }
 
 const GET_PROGRAM_PROGRESS = gql`
-  query GET_PROGRAM_PROGRESS($programId: uuid) {
-    program_content_enrollment(where: { program: { id: { _eq: $programId }, published_at: { _is_null: false } } }) {
-      member {
-        id
-        username
-        name
-        email
-        picture_url
-      }
-      program_id
-      program {
-        id
-        program_content_sections {
-          program_contents_aggregate(where: { published_at: { _is_null: false } }) {
-            aggregate {
-              count
-              sum {
-                duration
+  query GET_PROGRAM_PROGRESS($programId: uuid, $offset: Int) {
+    member(where: { program_content_enrollments: { program_id: { _eq: $programId } } }, limit: 10, offset: $offset) {
+      id
+      username
+      name
+      email
+      picture_url
+      program_content_enrollments(
+        where: { program: { id: { _eq: $programId }, published_at: { _is_null: false } } }
+        distinct_on: program_id
+      ) {
+        program_id
+        member_id
+        program {
+          id
+          program_content_sections {
+            program_contents_aggregate(where: { published_at: { _is_null: false } }) {
+              aggregate {
+                count
+                sum {
+                  duration
+                }
               }
             }
           }
         }
       }
-    }
-    program_content_progress(
-      where: {
-        program_content: {
-          program_content_section: { program: { id: { _eq: $programId }, published_at: { _is_null: false } } }
+      program_content_progresses(
+        where: {
+          program_content: {
+            program_content_section: { program: { id: { _eq: $programId }, published_at: { _is_null: false } } }
+          }
         }
+      ) {
+        id
+        member_id
+        progress
       }
-    ) {
-      id
-      member_id
-      progress
     }
   }
 `

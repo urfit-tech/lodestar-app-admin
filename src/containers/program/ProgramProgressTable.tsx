@@ -1,7 +1,7 @@
-import { Progress, Table } from 'antd'
+import { Button, Progress, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import { groupBy, sum } from 'ramda'
-import React, { Dispatch, SetStateAction, useEffect } from 'react'
+import { sum } from 'ramda'
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import MemberAvatar from '../../components/common/MemberAvatar'
@@ -40,7 +40,13 @@ const ProgramProgressTable: React.FC<{
   onMemberListSet: Dispatch<SetStateAction<string[][]>>
 }> = ({ programId, onMemberListSet }) => {
   const { formatMessage } = useIntl()
-  const { loading, error, programEnrollments, programContentProgress } = useProgramProgressCollection(programId)
+  const {
+    loadingProgramProgress,
+    errorProgramProgress,
+    memberProgramProgress,
+    fetchMoreProgramProgress,
+  } = useProgramProgressCollection(programId)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const data: string[][] = [
@@ -57,31 +63,28 @@ const ProgramProgressTable: React.FC<{
 
     onMemberListSet(data)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(programEnrollments)])
+  }, [JSON.stringify(memberProgramProgress)])
 
-  if (error) {
+  if (errorProgramProgress) {
     return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
-  const programEnrollmentsByMember = groupBy(enrollment => enrollment.memberId, programEnrollments)
-
-  const dataSource: MemberProgressProps[] = Object.values(programEnrollmentsByMember).map(memberEnrollments => {
-    const totalCount = sum(memberEnrollments.map(enrollment => enrollment.programContentCount))
-    const totalDuration = sum(memberEnrollments.map(enrollment => enrollment.programContentDuration))
+  const dataSource: MemberProgressProps[] = memberProgramProgress.map(memberEnrollments => {
+    const totalCount = sum(memberEnrollments.programEnrollments.map(enrollment => enrollment.programContentCount))
+    const totalDuration = sum(memberEnrollments.programEnrollments.map(enrollment => enrollment.programContentDuration))
     const progress =
-      totalCount && programContentProgress
+      totalCount && memberEnrollments.programContentProgresses
         ? sum(
-            programContentProgress
-              .filter(programContentProgress => programContentProgress.memberId === memberEnrollments[0].memberId)
-              .map(programContentProgress => programContentProgress.progress) || [],
+            memberEnrollments.programContentProgresses.map(programContentProgress => programContentProgress.progress) ||
+              [],
           ) / totalCount
         : 0
 
     return {
-      memberId: memberEnrollments[0].memberId,
-      name: memberEnrollments[0].name,
-      email: memberEnrollments[0].email,
-      pictureUrl: memberEnrollments[0].pictureUrl,
+      memberId: memberEnrollments.memberId,
+      name: memberEnrollments.name,
+      email: memberEnrollments.email,
+      pictureUrl: memberEnrollments.pictureUrl,
       duration: totalDuration * progress,
       progress,
     }
@@ -111,13 +114,29 @@ const ProgramProgressTable: React.FC<{
   ]
 
   return (
-    <Table
-      rowKey={row => row.memberId}
-      rowClassName={() => 'cursor-pointer'}
-      loading={loading}
-      columns={programProgressTableColumns}
-      dataSource={dataSource}
-    />
+    <>
+      <Table
+        rowKey={row => row.memberId}
+        rowClassName={() => 'cursor-pointer'}
+        loading={loadingProgramProgress}
+        columns={programProgressTableColumns}
+        dataSource={dataSource}
+        pagination={false}
+      />
+      {memberProgramProgress.length > 0 && fetchMoreProgramProgress && (
+        <div className="text-center mt-4">
+          <Button
+            loading={loading}
+            onClick={() => {
+              setLoading(true)
+              fetchMoreProgramProgress().finally(() => setLoading(false))
+            }}
+          >
+            {formatMessage(commonMessages.ui.showMore)}
+          </Button>
+        </div>
+      )}
+    </>
   )
 }
 
