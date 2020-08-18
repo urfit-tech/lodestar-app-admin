@@ -94,7 +94,7 @@ const ProgramProgressTable: React.FC<{
     {
       dataIndex: 'id',
       title: formatMessage(commonMessages.term.memberName),
-      render: (text, record, index) => <MemberAvatar size="64px" memberId={record.memberId} withName />,
+      render: (text, record, index) => <MemberAvatar size="32px" memberId={record.memberId} withName />,
     },
     {
       dataIndex: 'member.email',

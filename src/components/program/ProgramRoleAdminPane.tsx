@@ -80,7 +80,7 @@ const ProgramRoleAdminPane: React.FC<
           {program &&
             program.roles
               .filter(role => role.name === 'owner')
-              .map(role => <MemberAvatar key={role.id} size="64px" memberId={role?.member?.id || ''} withName />)}
+              .map(role => <MemberAvatar key={role.id} size="32px" memberId={role?.member?.id || ''} withName />)}
         </AdminCard>
       </div>
       <div className="mb-3">
@@ -148,7 +148,7 @@ const ProgramRoleAdminPane: React.FC<
           {program &&
             program.roles
               .filter(role => role.name === 'assistant')
-              .map(role => <MemberAvatar key={role.id} size="64px" memberId={role?.member?.id || ''} withName />)}
+              .map(role => <MemberAvatar key={role.id} size="32px" memberId={role?.member?.id || ''} withName />)}
         </AdminCard>
       </div>
     </div>

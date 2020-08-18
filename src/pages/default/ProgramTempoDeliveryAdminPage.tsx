@@ -242,7 +242,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
                   render: (text, record) => {
                     return (
                       <div className="d-flex align-items-center justify-content-start">
-                        <AvatarImage size="64px" src={record.avatarUrl} className="mr-2" />
+                        <AvatarImage size="32px" src={record.avatarUrl} className="mr-2" />
                         <div className="pl-1">
                           <StyledMemberName>{record.name}</StyledMemberName>
                           <StyledMemberEmail>{record.email}</StyledMemberEmail>

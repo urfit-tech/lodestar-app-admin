@@ -47,7 +47,7 @@ const NotificationItem: React.FC<{
     >
       <List.Item.Meta
         className="align-item-start"
-        avatar={<AvatarImage size="64px" src={avatar} />}
+        avatar={<AvatarImage size="32px" src={avatar} />}
         title={description}
         description={
           <div style={{ color: '#9b9b9b' }}>

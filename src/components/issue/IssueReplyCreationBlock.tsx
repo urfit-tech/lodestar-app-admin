@@ -60,7 +60,7 @@ const IssueReplyCreationBlock: React.FC<{
       onFinish={handleSubmit}
     >
       <div className="d-flex align-items-center mb-3">
-        <MemberAvatar size="64px" memberId={memberId} withName />
+        <MemberAvatar size="32px" memberId={memberId} withName />
       </div>
       <Form.Item
         name="content"

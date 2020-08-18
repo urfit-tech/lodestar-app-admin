@@ -119,7 +119,7 @@ const IssueReplyItem: React.FC<{
       <div className="d-flex align-items-center justify-content-between mb-2">
         <div className="d-flex align-items-center">
           <MemberAvatar
-            size="64px"
+            size="32px"
             memberId={memberId}
             renderText={() =>
               programRoles &&

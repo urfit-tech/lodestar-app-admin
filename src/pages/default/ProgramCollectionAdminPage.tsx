@@ -146,7 +146,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
                     <AvatarPlaceHolder className="mb-3">
                       {program.instructors[0] ? (
                         <div className="d-flex align-items-center">
-                          <AvatarImage size="64px" src={program.instructors[0].avatarUrl || ''} />
+                          <AvatarImage size="32px" src={program.instructors[0].avatarUrl || ''} />
                           <span className="pl-2">{program.instructors[0].name}</span>
                         </div>
                       ) : (
