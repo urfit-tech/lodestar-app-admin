@@ -143,11 +143,11 @@ const ShippingProductItem: React.FC<{
 
       <div className="d-flex align-items-center">
         <CustomRatioImage
-          className="mr-3 flex-shrink-0"
           width="64px"
           ratio={1}
           src={target.coverUrl || EmptyCover}
           shape="rounded"
+          className="mr-3 flex-shrink-0"
         />
         <div className="flex-grow-1">{target.title}</div>
         <StyledQuantity className="px-4">x{quantity}</StyledQuantity>

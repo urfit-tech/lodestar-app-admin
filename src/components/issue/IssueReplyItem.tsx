@@ -8,7 +8,6 @@ import React, { useContext, useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled, { ThemeContext } from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
-import MemberAvatar from '../../containers/common/MemberAvatar'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { rgba } from '../../helpers'
@@ -16,6 +15,7 @@ import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramRoleProps } from '../../types/program'
 import { createUploadFn } from '../admin/AdminBraftEditor'
+import MemberAvatar from '../common/MemberAvatar'
 import { BraftContent } from '../common/StyledBraftEditor'
 import { ProgramRoleLabel } from '../common/UserRole'
 import { StyledEditor } from './IssueReplyCreationBlock'
@@ -119,6 +119,7 @@ const IssueReplyItem: React.FC<{
       <div className="d-flex align-items-center justify-content-between mb-2">
         <div className="d-flex align-items-center">
           <MemberAvatar
+            size="64px"
             memberId={memberId}
             renderText={() =>
               programRoles &&

@@ -78,7 +78,7 @@ const ProgramPackageBasicForm: React.FC<ProgramPackageBasicFormProps> = ({
         <div className="d-flex align-items-center">
           {programPackage.coverUrl && (
             <CoverBlock>
-              <CustomRatioImage src={programPackage.coverUrl} width="100%" ratio={9 / 16} />
+              <CustomRatioImage width="100%" ratio={9 / 16} src={programPackage.coverUrl} />
             </CoverBlock>
           )}
           {getFieldDecorator('programPackageCover')(

@@ -84,7 +84,7 @@ const MemberAdminModal: React.FC<
 
   return (
     <Modal title={null} footer={null} onCancel={() => onCancel && onCancel()} {...modalProps}>
-      <AvatarImage src={member.avatarUrl} size={120} className="mx-auto mb-4" />
+      <AvatarImage size="120px" src={member.avatarUrl} className="mx-auto mb-4" />
 
       <div className="row no-gutters align-items-center justify-content-center">
         {member.role === 'content-creator' && (

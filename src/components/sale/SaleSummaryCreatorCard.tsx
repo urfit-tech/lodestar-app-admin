@@ -9,7 +9,7 @@ import { commaFormatter } from '../../helpers'
 import { useMember } from '../../hooks/member'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
-import { AvatarImage as SaleSummaryAvatarImage } from '../common/Image'
+import { AvatarImage } from '../common/Image'
 
 const SaleSummaryWrapper = styled.div`
   display: flex;
@@ -99,7 +99,7 @@ const SaleSummaryCreatorCard: React.FC<{
   return (
     <AdminCard loading={loading}>
       <SaleSummaryWrapper className="d-flex align-items-center justify-content-start">
-        <SaleSummaryAvatarImage className="flex-shrink-0" src={member?.pictureUrl} size={80} />
+        <AvatarImage size="80px" src={member?.pictureUrl} className="flex-shrink-0" />
         <SaleSummaryInfo className="ml-4">
           <h3>{member?.name}</h3>
           <p>

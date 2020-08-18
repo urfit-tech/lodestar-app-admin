@@ -1,25 +1,14 @@
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 import DefaultAvatar from '../../images/default/avatar.svg'
 
 export type AvatarImageProps = {
+  size: string
   src?: string | null
-  size?: string | number
   shape?: 'circle' | 'square'
 }
 export const AvatarImage = styled.div<AvatarImageProps>`
-  ${props => {
-    if (typeof props.size === 'number') {
-      return css`
-        width: ${props.size}px;
-        height: ${props.size}px;
-      `
-    }
-
-    return css`
-      width: ${props.size || '2rem'};
-      height: ${props.size || '2rem'};
-    `
-  }}
+  width: ${props => props.size};
+  height: ${props => props.size};
   background-color: #ccc;
   background-image: url(${props => props.src || DefaultAvatar});
   background-size: cover;

@@ -6,7 +6,6 @@ import { CardProps } from 'antd/lib/card'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import MemberAvatar from '../../containers/common/MemberAvatar'
 import { DeleteProgramProps, UpdateProgramProps } from '../../containers/program/ProgramRoleAdminPane'
 import { notEmpty } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -14,6 +13,7 @@ import { ProgramProps } from '../../types/program'
 import AdminCard from '../admin/AdminCard'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
 import CreatorSelector from '../common/CreatorSelector'
+import MemberAvatar from '../common/MemberAvatar'
 
 const messages = defineMessages({
   programOwner: { id: 'program.label.programOwner', defaultMessage: '課程負責人' },
@@ -80,7 +80,7 @@ const ProgramRoleAdminPane: React.FC<
           {program &&
             program.roles
               .filter(role => role.name === 'owner')
-              .map(role => <MemberAvatar key={role.id} memberId={role?.member?.id || ''} withName />)}
+              .map(role => <MemberAvatar key={role.id} size="64px" memberId={role?.member?.id || ''} withName />)}
         </AdminCard>
       </div>
       <div className="mb-3">
@@ -148,7 +148,7 @@ const ProgramRoleAdminPane: React.FC<
           {program &&
             program.roles
               .filter(role => role.name === 'assistant')
-              .map(role => <MemberAvatar key={role.id} memberId={role?.member?.id || ''} withName />)}
+              .map(role => <MemberAvatar key={role.id} size="64px" memberId={role?.member?.id || ''} withName />)}
         </AdminCard>
       </div>
     </div>

@@ -132,7 +132,7 @@ const MemberCollectionAdminPage: React.FC = () => {
       key: 'id',
       render: (text, record, index) => (
         <div className="d-flex align-items-center">
-          <AvatarImage src={record.avatarUrl} />
+          <AvatarImage size="64px" src={record.avatarUrl} />
           <StyledMemberName className="ml-3 mr-2">{record.name}</StyledMemberName>
           {record.role === 'app-owner' && (
             <StyledTag color="#585858" className="ml-2 mr-0">

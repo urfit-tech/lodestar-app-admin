@@ -140,7 +140,7 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
             <div className="d-flex align-items-center flex-wrap">
               {program.coverUrl && (
                 <CoverBlock>
-                  <CustomRatioImage src={program.coverUrl} width="100%" ratio={9 / 16} />
+                  <CustomRatioImage width="100%" ratio={9 / 16} src={program.coverUrl} />
                 </CoverBlock>
               )}
               {form.getFieldDecorator('coverImg')(

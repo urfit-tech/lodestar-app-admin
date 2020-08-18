@@ -123,7 +123,7 @@ const MerchandiseImagesUploader: React.FC<MerchandiseImagesUploaderProps> = ({
     <div className="d-flex align-items-center justify-content-start flex-wrap">
       {images.map((image, index) => (
         <StyledImageWrapper key={image.url} className="mr-3 mb-3">
-          <CustomRatioImage ratio={1} width="100%" src={image.url} />
+          <CustomRatioImage width="100%" ratio={1} src={image.url} />
           {image.isCover && (
             <StyledMeta className="py-2 text-center">{formatMessage(merchandiseMessages.label.cover)}</StyledMeta>
           )}

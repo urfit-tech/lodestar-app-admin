@@ -6,13 +6,13 @@ import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import MemberAvatar from '../../containers/common/MemberAvatar'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import { createUploadFn } from '../admin/AdminBraftEditor'
+import MemberAvatar from '../common/MemberAvatar'
 
 export const StyledEditor = styled(BraftEditor)`
   .bf-content {
@@ -60,7 +60,7 @@ const IssueReplyCreationBlock: React.FC<{
       onFinish={handleSubmit}
     >
       <div className="d-flex align-items-center mb-3">
-        <MemberAvatar memberId={memberId} withName />
+        <MemberAvatar size="64px" memberId={memberId} withName />
       </div>
       <Form.Item
         name="content"

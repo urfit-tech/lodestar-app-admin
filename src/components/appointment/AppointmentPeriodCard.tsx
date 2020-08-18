@@ -170,7 +170,7 @@ const AppointmentPeriodCard: React.FC<
   return (
     <StyledWrapper className="d-flex align-items-center justify-content-between">
       <StyledInfo className="d-flex align-items-center justify-content-start" withMask={!!canceledAt}>
-        <AvatarImage src={avatarUrl} size={48} className="mr-4" />
+        <AvatarImage size="48px" src={avatarUrl} className="mr-4" />
         <div>
           <StyledTitle>
             {formatMessage(messages.appointmentText, { name: member.name, title: appointmentPlanTitle })}
@@ -232,7 +232,7 @@ const AppointmentPeriodCard: React.FC<
 
       <Modal footer={null} width={312} destroyOnClose centered visible={visible} onCancel={() => setVisible(false)}>
         <div className="text-center mb-4">
-          <AvatarImage src={avatarUrl} size={72} className="mx-auto mb-3" />
+          <AvatarImage size="72px" src={avatarUrl} className="mx-auto mb-3" />
           <StyledTitle>{member.name}</StyledTitle>
           <StyledMeta>
             <Icon component={() => <CalendarAltOIcon />} className="mr-1" />

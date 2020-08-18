@@ -147,7 +147,7 @@ const PointHistoryAdminPage: React.FC = () => {
                     key: 'member',
                     render: (text, record, index) => (
                       <div className="d-flex align-items-center">
-                        <AvatarImage src={record.member.avatarUrl} className="mr-3 flex-shrink-0" />
+                        <AvatarImage size="64px" src={record.member.avatarUrl} className="mr-3 flex-shrink-0" />
                         <div className="flex-grow-1">
                           <div>{record.member.name}</div>
                           <StyledDescription>{record.member.email}</StyledDescription>
@@ -260,7 +260,7 @@ const PointHistoryAdminPage: React.FC = () => {
                     key: 'member',
                     render: (text, record, index) => (
                       <div className="d-flex align-items-center">
-                        <AvatarImage src={record.member.avatarUrl} className="mr-3 flex-shrink-0" />
+                        <AvatarImage size="64px" src={record.member.avatarUrl} className="mr-3 flex-shrink-0" />
                         <div className="flex-grow-1">
                           <div>{record.member.name}</div>
                           <StyledDescription>{record.member.email}</StyledDescription>

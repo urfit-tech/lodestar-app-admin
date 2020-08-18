@@ -112,7 +112,7 @@ const BlogPostSettingForm: React.FC<BlogPostSettingFormProps> = ({
         <div className="d-flex align-items-center justify-content-between">
           {!!post.coverUrl && (
             <CoverBlock>
-              <CustomRatioImage src={post.coverUrl} width="100%" ratio={9 / 16} />
+              <CustomRatioImage width="100%" ratio={9 / 16} src={post.coverUrl} />
             </CoverBlock>
           )}
 

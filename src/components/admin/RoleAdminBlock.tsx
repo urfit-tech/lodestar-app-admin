@@ -25,7 +25,7 @@ const RoleAdminBlock: React.FC<{
 }> = ({ name, pictureUrl, onDelete }) => {
   return (
     <StyledInstructorBlock className="d-flex align-items-center justify-content-center">
-      <AvatarImage src={pictureUrl} size={36} className="mr-3" />
+      <AvatarImage size="36px" src={pictureUrl} className="mr-3" />
       <StyledName className="flex-grow-1">{name}</StyledName>
       {onDelete && <DeleteOutlined onClick={() => onDelete()} />}
     </StyledInstructorBlock>

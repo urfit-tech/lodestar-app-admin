@@ -103,9 +103,8 @@ const PodcastPlanCollectionAdminTable: React.FC<{
       render: (text, record, index) => (
         <div className="d-flex align-items-center justify-content-between">
           <AvatarImage
-            src={record.creator.avatarUrl || DefaultAvatar}
             size="42px"
-            shape="circle"
+            src={record.creator.avatarUrl || DefaultAvatar}
             className="mr-3 pr-2 flex-shrink-0"
           />
           <StyledTitle className="flex-grow-1">{record.creator.name}</StyledTitle>

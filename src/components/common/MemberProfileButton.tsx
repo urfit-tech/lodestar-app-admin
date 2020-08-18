@@ -5,13 +5,13 @@ import React, { useContext } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import MemberAvatar from '../../containers/common/MemberAvatar'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
 import { useMember } from '../../hooks/member'
 import settings from '../../settings'
 import { CreatorAdminMenu, OwnerAdminMenu } from '../admin/AdminMenu'
 import { AuthModalContext } from '../auth/AuthModal'
+import MemberAvatar from './MemberAvatar'
 import Responsive from './Responsive'
 
 const Wrapper = styled.div`
@@ -48,7 +48,7 @@ const messages = defineMessages({
 const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { currentMemberId, isAuthenticated, currentUserRole, logout } = useAuth()
+  const { isAuthenticated, currentUserRole, logout } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
   const { member } = useMember(memberId)
   const navLinks = settings.navLinks
@@ -70,14 +70,14 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
         <BorderedItem className="justify-content-between">
           <div>{member && member.name}</div>
           <Responsive.Default>
-            <MemberAvatar memberId={currentMemberId || ''} size={36} />
+            <MemberAvatar size="36px" memberId={memberId} />
           </Responsive.Default>
         </BorderedItem>
 
         <Responsive.Default>
           {CustomNavLinks}
           {isAuthenticated && (
-            <BorderedItem onClick={() => history.push(`/members/${currentMemberId}`)} style={{ cursor: 'pointer' }}>
+            <BorderedItem onClick={() => history.push(`/members/${memberId}`)} style={{ cursor: 'pointer' }}>
               <BlankIcon className="mr-2" />
               {formatMessage(messages.memberPage)}
             </BorderedItem>
@@ -115,7 +115,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
       <Responsive.Desktop>
         <Popover placement="bottomRight" trigger="click" content={content} className="ml-2">
           <div className="cursor-pointer">
-            <MemberAvatar memberId={currentMemberId || ''} size={36} />
+            <MemberAvatar size="36px" memberId={memberId} />
           </div>
         </Popover>
       </Responsive.Desktop>

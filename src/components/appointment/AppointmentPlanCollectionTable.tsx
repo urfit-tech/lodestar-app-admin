@@ -116,7 +116,7 @@ const AppointmentPlanCollectionTable: React.FC<{
           title: formatMessage(messages.instructor),
           render: (text, record, index) => (
             <div className="d-flex align-items-center justify-content-start">
-              <AvatarImage className="mr-3" src={record.avatarUrl} size={36} />
+              <AvatarImage size="36px" src={record.avatarUrl} className="mr-3" />
               <StyledCreatorName className="pl-1">{record.creatorName}</StyledCreatorName>
             </div>
           ),
