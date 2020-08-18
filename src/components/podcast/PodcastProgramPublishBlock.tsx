@@ -3,14 +3,10 @@ import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import AdminPublishBlock, {
-  ChecklistItemProps,
-  PublishEvent,
-  PublishStatus,
-} from '../../components/admin/AdminPublishBlock'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
-import { PodcastProgramProps } from '../../types/podcast'
+import { PodcastProgramAdminProps } from '../../types/podcast'
+import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } from '../admin/AdminPublishBlock'
 
 const messages = defineMessages({
   noAudio: { id: 'podcast.text.noAudio', defaultMessage: '尚未上傳音頻檔案' },
@@ -33,45 +29,45 @@ const messages = defineMessages({
 })
 
 const PodcastProgramPublishBlock: React.FC<{
-  podcastProgram: PodcastProgramProps | null
-  onRefetch?: () => Promise<any>
-}> = ({ podcastProgram, onRefetch }) => {
+  podcastProgramAdmin: PodcastProgramAdminProps | null
+  refetch?: () => Promise<any>
+}> = ({ podcastProgramAdmin, refetch }) => {
   const { formatMessage } = useIntl()
   const [publishPodcastProgram] = useMutation<types.PUBLISH_PODCAST_PROGRAM, types.PUBLISH_PODCAST_PROGRAMVariables>(
     PUBLISH_PODCAST_PROGRAM,
   )
 
-  if (!podcastProgram) {
+  if (!podcastProgramAdmin) {
     return <Skeleton active />
   }
 
   const checklist: ChecklistItemProps[] = []
 
-  !podcastProgram.contentType &&
+  !podcastProgramAdmin.contentType &&
     checklist.push({
       id: 'NO_AUDIO',
       text: formatMessage(messages.noAudio),
       tab: 'content',
     })
-  !podcastProgram.duration &&
+  !podcastProgramAdmin.duration &&
     checklist.push({
       id: 'NO_DURATION',
       text: formatMessage(messages.noDuration),
       tab: 'content',
     })
-  !podcastProgram.coverUrl &&
+  !podcastProgramAdmin.coverUrl &&
     checklist.push({
       id: 'NO_COVER',
       text: formatMessage(messages.noCover),
       tab: 'settings',
     })
-  podcastProgram.listPrice <= 0 &&
+  podcastProgramAdmin.listPrice <= 0 &&
     checklist.push({
       id: 'NO_PRICE',
       text: formatMessage(messages.noPrice),
       tab: 'plan',
     })
-  podcastProgram.instructors.length === 0 &&
+  podcastProgramAdmin.instructors.length === 0 &&
     checklist.push({
       id: 'NO_INSTRUCTOR',
       text: formatMessage(messages.noInstructor),
@@ -79,7 +75,7 @@ const PodcastProgramPublishBlock: React.FC<{
     })
 
   const publishStatus: PublishStatus =
-    checklist.length > 0 ? 'alert' : !podcastProgram.publishedAt ? 'ordinary' : 'success'
+    checklist.length > 0 ? 'alert' : !podcastProgramAdmin.publishedAt ? 'ordinary' : 'success'
 
   const [title, description] =
     publishStatus === 'alert'
@@ -93,11 +89,11 @@ const PodcastProgramPublishBlock: React.FC<{
   const handlePublish: (event: PublishEvent) => void = ({ values, onSuccess, onError, onFinally }) => {
     publishPodcastProgram({
       variables: {
-        podcastProgramId: podcastProgram.id,
+        podcastProgramId: podcastProgramAdmin.id,
         publishedAt: values.publishedAt,
       },
     })
-      .then(() => onRefetch && onRefetch().then(() => onSuccess && onSuccess()))
+      .then(() => refetch && refetch().then(() => onSuccess && onSuccess()))
       .catch(error => onError && onError(error))
       .finally(() => onFinally && onFinally())
   }

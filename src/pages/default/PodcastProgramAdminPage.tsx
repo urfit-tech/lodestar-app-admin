@@ -5,14 +5,14 @@ import { useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminBlock, AdminBlockTitle, AdminPaneTitle, AdminTabBarWrapper } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
-import PodcastProgramBasicForm from '../../containers/podcast/PodcastProgramBasicForm'
-import PodcastProgramContentForm from '../../containers/podcast/PodcastProgramContentForm'
-import PodcastProgramCreatorBlock from '../../containers/podcast/PodcastProgramCreatorBlock'
-import PodcastProgramHeader from '../../containers/podcast/PodcastProgramHeader'
-import PodcastProgramInstructorCollectionBlock from '../../containers/podcast/PodcastProgramInstructorCollectionBlock'
-import PodcastProgramIntroForm from '../../containers/podcast/PodcastProgramIntroForm'
-import PodcastProgramPlanForm from '../../containers/podcast/PodcastProgramPlanForm'
-import PodcastProgramPublishBlock from '../../containers/podcast/PodcastProgramPublishBlock'
+import PodcastProgramBasicForm from '../../components/podcast/PodcastProgramBasicForm'
+import PodcastProgramContentForm from '../../components/podcast/PodcastProgramContentForm'
+import PodcastProgramCreatorBlock from '../../components/podcast/PodcastProgramCreatorBlock'
+import PodcastProgramHeader from '../../components/podcast/PodcastProgramHeader'
+import PodcastProgramInstructorCollectionBlock from '../../components/podcast/PodcastProgramInstructorCollectionBlock'
+import PodcastProgramIntroForm from '../../components/podcast/PodcastProgramIntroForm'
+import PodcastProgramPlanForm from '../../components/podcast/PodcastProgramPlanForm'
+import PodcastProgramPublishBlock from '../../components/podcast/PodcastProgramPublishBlock'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { usePodcastProgramAdmin } from '../../hooks/podcast'
 
@@ -20,13 +20,13 @@ const PodcastProgramAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { podcastProgramId } = useParams<{ podcastProgramId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const { podcastProgram, refetchPodcastProgram } = usePodcastProgramAdmin(podcastProgramId)
+  const { podcastProgramAdmin, refetchPodcastProgramAdmin } = usePodcastProgramAdmin(podcastProgramId)
 
   return (
     <>
       <PodcastProgramHeader
         podcastProgramId={podcastProgramId}
-        title={podcastProgram?.title}
+        title={podcastProgramAdmin?.title || podcastProgramId}
         goBackLink="/podcast-programs"
       />
 
@@ -45,7 +45,10 @@ const PodcastProgramAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(podcastMessages.label.podcastContent)}</AdminPaneTitle>
               <AdminBlock>
-                <PodcastProgramContentForm podcastProgram={podcastProgram} onRefetch={refetchPodcastProgram} />
+                <PodcastProgramContentForm
+                  podcastProgramAdmin={podcastProgramAdmin}
+                  refetch={refetchPodcastProgramAdmin}
+                />
               </AdminBlock>
             </div>
           </Tabs.TabPane>
@@ -55,11 +58,17 @@ const PodcastProgramAdminPage: React.FC = () => {
               <AdminPaneTitle>{formatMessage(podcastMessages.label.podcastSettings)}</AdminPaneTitle>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
-                <PodcastProgramBasicForm podcastProgram={podcastProgram} onRefetch={refetchPodcastProgram} />
+                <PodcastProgramBasicForm
+                  podcastProgramAdmin={podcastProgramAdmin}
+                  refetch={refetchPodcastProgramAdmin}
+                />
               </AdminBlock>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(podcastMessages.label.podcastIntroduction)}</AdminBlockTitle>
-                <PodcastProgramIntroForm podcastProgram={podcastProgram} onRefetch={refetchPodcastProgram} />
+                <PodcastProgramIntroForm
+                  podcastProgramAdmin={podcastProgramAdmin}
+                  refetch={refetchPodcastProgramAdmin}
+                />
               </AdminBlock>
             </div>
           </Tabs.TabPane>
@@ -68,7 +77,10 @@ const PodcastProgramAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.salesPlan)}</AdminPaneTitle>
               <AdminBlock>
-                <PodcastProgramPlanForm podcastProgram={podcastProgram} onRefetch={refetchPodcastProgram} />
+                <PodcastProgramPlanForm
+                  podcastProgramAdmin={podcastProgramAdmin}
+                  refetch={refetchPodcastProgramAdmin}
+                />
               </AdminBlock>
             </div>
           </Tabs.TabPane>
@@ -78,13 +90,13 @@ const PodcastProgramAdminPage: React.FC = () => {
               <AdminPaneTitle>{formatMessage(commonMessages.label.roleAdmin)}</AdminPaneTitle>
               <AdminBlock>
                 <AdminBlockTitle className="mb-4">{formatMessage(commonMessages.term.owner)}</AdminBlockTitle>
-                <PodcastProgramCreatorBlock podcastProgram={podcastProgram} />
+                <PodcastProgramCreatorBlock podcastProgramAdmin={podcastProgramAdmin} />
               </AdminBlock>
               <AdminBlock>
                 <AdminBlockTitle className="mb-4">{formatMessage(commonMessages.term.instructor)}</AdminBlockTitle>
                 <PodcastProgramInstructorCollectionBlock
-                  podcastProgram={podcastProgram}
-                  onRefetch={refetchPodcastProgram}
+                  podcastProgramAdmin={podcastProgramAdmin}
+                  refetch={refetchPodcastProgramAdmin}
                 />
               </AdminBlock>
             </div>
@@ -93,7 +105,10 @@ const PodcastProgramAdminPage: React.FC = () => {
           <Tabs.TabPane key="publish" tab={formatMessage(commonMessages.label.publishAdmin)}>
             <div className="container py-5">
               <AdminBlock>
-                <PodcastProgramPublishBlock podcastProgram={podcastProgram} onRefetch={refetchPodcastProgram} />
+                <PodcastProgramPublishBlock
+                  podcastProgramAdmin={podcastProgramAdmin}
+                  refetch={refetchPodcastProgramAdmin}
+                />
               </AdminBlock>
             </div>
           </Tabs.TabPane>

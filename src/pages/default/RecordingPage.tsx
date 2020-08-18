@@ -7,9 +7,9 @@ import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import AudioTrackCard from '../../components/podcast/AudioTrackCard'
+import PodcastProgramHeader from '../../components/podcast/PodcastProgramHeader'
 import RecordButton from '../../components/podcast/RecordButton'
 import RecordingController from '../../components/podcast/RecordingController'
-import PodcastProgramHeader from '../../containers/podcast/PodcastProgramHeader'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { getFileDownloadableLink, handleError, uploadFile } from '../../helpers'
@@ -47,7 +47,7 @@ const RecordingPage: React.FC = () => {
   const { authToken } = useAuth()
   const { formatMessage } = useIntl()
   const { podcastProgramId } = useParams<{ podcastProgramId: string }>()
-  const { podcastProgram, refetchPodcastProgram } = usePodcastProgramAdmin(podcastProgramId)
+  const { podcastProgramAdmin, refetchPodcastProgramAdmin } = usePodcastProgramAdmin(podcastProgramId)
 
   const [isRecording, setIsRecording] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -119,11 +119,11 @@ const RecordingPage: React.FC = () => {
 
   useEffect(() => {
     const getAudioLink = async () => {
-      if (podcastProgram?.contentType && waveCollection.length === 0 && !isInitializedAudio) {
+      if (podcastProgramAdmin?.contentType && waveCollection.length === 0 && !isInitializedAudio) {
         setIsInitializedAudio(true)
         setIsGeneratingAudio(true)
 
-        const fileKey = `audios/${appId}/${podcastProgram.id}.${podcastProgram.contentType}`
+        const fileKey = `audios/${appId}/${podcastProgramAdmin.id}.${podcastProgramAdmin.contentType}`
         const audioLink = await getFileDownloadableLink(fileKey, authToken)
         const audioRequest = new Request(audioLink)
 
@@ -135,7 +135,7 @@ const RecordingPage: React.FC = () => {
     }
     getAudioLink()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(podcastProgram), appId, authToken, onGetRecordAudio, waveCollection.length])
+  }, [JSON.stringify(podcastProgramAdmin), appId, authToken, onGetRecordAudio, waveCollection.length])
 
   const onFinishPlaying = useCallback(() => {
     if (audioObjectRef.current) {
@@ -213,7 +213,7 @@ const RecordingPage: React.FC = () => {
             },
           })
             .then(async () => {
-              await refetchPodcastProgram()
+              await refetchPodcastProgramAdmin()
               message.success(formatMessage(commonMessages.event.successfullyUpload))
               history.push(`/podcast-programs/${podcastProgramId}`)
             })
@@ -230,7 +230,7 @@ const RecordingPage: React.FC = () => {
 
   return (
     <div>
-      <PodcastProgramHeader podcastProgramId={podcastProgramId} title={podcastProgram?.title} noPreview />
+      <PodcastProgramHeader podcastProgramId={podcastProgramId} title={podcastProgramAdmin?.title} noPreview />
       <StyledLayoutContent>
         <StyledContainer className="container">
           <div className="text-center mb-5">

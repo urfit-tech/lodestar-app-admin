@@ -3,7 +3,7 @@ import gql from 'graphql-tag'
 import { PodcastProgramColumnProps } from '../components/podcast/PodcastProgramCollectionAdminTable'
 import types from '../types'
 import { PeriodType } from '../types/general'
-import { PodcastPlanProps, PodcastProgramProps } from '../types/podcast'
+import { PodcastPlanProps, PodcastProgramAdminProps } from '../types/podcast'
 
 export const usePodcastProgramCollection = (memberId?: string) => {
   const { loading, error, data, refetch } = useQuery<
@@ -135,7 +135,7 @@ export const usePodcastProgramAdmin = (podcastProgramId: string) => {
     { variables: { podcastProgramId } },
   )
 
-  const podcastProgram: PodcastProgramProps | null =
+  const podcastProgramAdmin: PodcastProgramAdminProps | null =
     loading || error || !data || !data.podcast_program_by_pk
       ? null
       : {
@@ -168,10 +168,10 @@ export const usePodcastProgramAdmin = (podcastProgramId: string) => {
         }
 
   return {
-    loadingPodcastProgram: loading,
-    errorPodcastProgram: error,
-    podcastProgram,
-    refetchPodcastProgram: refetch,
+    loadingPodcastProgramAdmin: loading,
+    errorPodcastProgramAdmin: error,
+    podcastProgramAdmin,
+    refetchPodcastProgramAdmin: refetch,
   }
 }
 

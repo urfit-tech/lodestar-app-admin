@@ -1,12 +1,12 @@
 import React from 'react'
-import RoleAdminBlock from '../../components/admin/RoleAdminBlock'
 import { usePublicMember } from '../../hooks/member'
-import { PodcastProgramProps } from '../../types/podcast'
+import { PodcastProgramAdminProps } from '../../types/podcast'
+import RoleAdminBlock from '../admin/RoleAdminBlock'
 
 const PodcastProgramCreatorBlock: React.FC<{
-  podcastProgram: PodcastProgramProps | null
-}> = ({ podcastProgram }) => {
-  const { member } = usePublicMember(podcastProgram?.creatorId || '')
+  podcastProgramAdmin: PodcastProgramAdminProps | null
+}> = ({ podcastProgramAdmin }) => {
+  const { member } = usePublicMember(podcastProgramAdmin?.creatorId || '')
 
   if (!member) {
     return null

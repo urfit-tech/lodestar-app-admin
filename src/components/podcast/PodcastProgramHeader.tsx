@@ -3,9 +3,9 @@ import { Button } from 'antd'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
-import { AdminHeader, AdminHeaderTitle } from '../../components/admin'
 import AppContext from '../../contexts/AppContext'
 import { commonMessages } from '../../helpers/translation'
+import { AdminHeader, AdminHeaderTitle } from '../admin'
 
 const PodcastProgramHeader: React.FC<{
   podcastProgramId: string

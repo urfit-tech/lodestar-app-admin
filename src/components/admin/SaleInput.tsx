@@ -11,7 +11,7 @@ const StyledIcon = styled(ExclamationCircleFilled)`
   color: #ff7d62;
 `
 
-type SaleProps = {
+export type SaleProps = {
   price: number
   soldAt: Date | null
 } | null

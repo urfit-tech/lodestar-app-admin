@@ -1,9 +1,7 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import Icon, { CloseOutlined, QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, InputNumber, message, Skeleton, Tooltip } from 'antd'
+import { Button, Form, InputNumber, message, Skeleton, Tooltip } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import { extname } from 'path'
@@ -11,16 +9,16 @@ import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { StyledTips } from '../../components/admin'
-import AdminBraftEditor from '../../components/admin/AdminBraftEditor'
-import SingleUploader from '../../components/common/SingleUploader'
 import { AppContext } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { useUpdatePodcastProgramContent } from '../../hooks/podcast'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import types from '../../types'
-import { PodcastProgramProps } from '../../types/podcast'
+import { PodcastProgramAdminProps } from '../../types/podcast'
+import { StyledTips } from '../admin'
+import AdminBraftEditor from '../admin/AdminBraftEditor'
+import SingleUploader from '../common/SingleUploader'
 
 const StyledFileBlock = styled.div`
   padding: 0.25rem 0.5rem;
@@ -32,13 +30,13 @@ const StyledFileBlock = styled.div`
   }
 `
 
-type PodcastProgramContentFormProps = FormComponentProps & {
-  podcastProgram: PodcastProgramProps | null
-  onRefetch?: () => Promise<any>
-}
-const PodcastProgramContentForm: React.FC<PodcastProgramContentFormProps> = ({ form, podcastProgram, onRefetch }) => {
-  const { id: appId, enabledModules } = useContext(AppContext)
+const PodcastProgramContentForm: React.FC<{
+  podcastProgramAdmin: PodcastProgramAdminProps | null
+  refetch?: () => Promise<any>
+}> = ({ podcastProgramAdmin, refetch }) => {
   const { formatMessage } = useIntl()
+  const [form] = useForm()
+  const { id: appId, enabledModules } = useContext(AppContext)
 
   const updatePodcastProgramContent = useUpdatePodcastProgramContent()
   const [updatePodcastProgramBody] = useMutation<
@@ -48,7 +46,7 @@ const PodcastProgramContentForm: React.FC<PodcastProgramContentFormProps> = ({ f
 
   const [loading, setLoading] = useState(false)
 
-  if (!podcastProgram) {
+  if (!podcastProgramAdmin) {
     return <Skeleton active />
   }
 
@@ -56,48 +54,44 @@ const PodcastProgramContentForm: React.FC<PodcastProgramContentFormProps> = ({ f
     updatePodcastProgramContent({
       variables: {
         updatedAt: new Date(),
-        podcastProgramId: podcastProgram.id,
+        podcastProgramId: podcastProgramAdmin.id,
         contentType,
       },
     })
       .then(() => {
-        onRefetch && onRefetch().then(() => message.success(formatMessage(commonMessages.event.successfullySaved)))
+        refetch && refetch().then(() => message.success(formatMessage(commonMessages.event.successfullySaved)))
       })
       .catch(error => handleError(error))
   }
 
-  const handleSubmit = () => {
-    form.validateFields((error, values) => {
-      if (error) {
-        return
-      }
+  const handleSubmit = (values: any) => {
+    setLoading(true)
 
-      setLoading(true)
-
-      updatePodcastProgramBody({
-        variables: {
-          updatedAt: new Date(),
-          podcastProgramId: podcastProgram.id,
-          duration: values.duration,
-          description: values.description.toRAW(),
-        },
-      })
-        .then(() => {
-          onRefetch && onRefetch()
-          message.success(formatMessage(commonMessages.event.successfullySaved))
-        })
-        .catch(error => handleError(error))
-        .finally(() => setLoading(false))
+    updatePodcastProgramBody({
+      variables: {
+        updatedAt: new Date(),
+        podcastProgramId: podcastProgramAdmin.id,
+        duration: values.duration,
+        description: values.description.toRAW(),
+      },
     })
+      .then(() => {
+        refetch && refetch()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
     <Form
-      hideRequiredMark
+      form={form}
       colon={false}
-      onSubmit={e => {
-        e.preventDefault()
-        handleSubmit()
+      hideRequiredMark
+      onFinish={handleSubmit}
+      initialValues={{
+        duration: podcastProgramAdmin.duration,
+        description: BraftEditor.createEditorState(podcastProgramAdmin.description),
       }}
     >
       <Form.Item
@@ -109,50 +103,46 @@ const PodcastProgramContentForm: React.FC<PodcastProgramContentFormProps> = ({ f
             </Tooltip>
           </span>
         }
+        name="audio"
       >
-        {form.getFieldDecorator('audio')(
-          <SingleUploader
-            withExtension
-            accept=".mp3"
-            // accept=".mp3,.m4a,.mp4,.3gp,.m4a,.aac"
-            uploadText={formatMessage(podcastMessages.ui.uploadAudioFile)}
-            showUploadList={false}
-            path={`audios/${appId}/${podcastProgram.id}`}
-            onSuccess={info => handleUploadAudio(extname(info.file.name).replace('.', ''))}
-            className="mr-2"
-          />,
-        )}
+        <SingleUploader
+          withExtension
+          accept=".mp3"
+          // accept=".mp3,.m4a,.mp4,.3gp,.m4a,.aac"
+          uploadText={formatMessage(podcastMessages.ui.uploadAudioFile)}
+          showUploadList={false}
+          path={`audios/${appId}/${podcastProgramAdmin.id}`}
+          onSuccess={info => handleUploadAudio(extname(info.file.name).replace('.', ''))}
+          className="mr-2"
+        />
         {enabledModules.podcast_recording && (
-          <Link to={`/podcast-programs/${podcastProgram.id}/recording`} className="ml-2">
+          <Link to={`/podcast-programs/${podcastProgramAdmin.id}/recording`} className="ml-2">
             <Button>
               <Icon component={() => <MicrophoneIcon />} />
               <span>
-                {podcastProgram.contentType
+                {podcastProgramAdmin.contentType
                   ? formatMessage(podcastMessages.ui.editAudio)
                   : formatMessage(podcastMessages.ui.recordAudio)}
               </span>
             </Button>
           </Link>
         )}
-        {podcastProgram.contentType ? (
+        {podcastProgramAdmin.contentType ? (
           <StyledFileBlock className="d-flex align-items-center justify-content-between">
             <span>
-              {podcastProgram.id}.{podcastProgram.contentType}
+              {podcastProgramAdmin.id}.{podcastProgramAdmin.contentType}
             </span>
             <CloseOutlined className="cursor-pointer" onClick={() => handleUploadAudio(null)} />
           </StyledFileBlock>
         ) : null}
       </Form.Item>
-      <Form.Item label={formatMessage(podcastMessages.label.duration)}>
-        {form.getFieldDecorator('duration', {
-          initialValue: podcastProgram.duration,
-        })(<InputNumber min={0} />)}
+      <Form.Item label={formatMessage(podcastMessages.label.duration)} name="duration">
+        <InputNumber min={0} />
       </Form.Item>
-      <Form.Item label={formatMessage(podcastMessages.label.description)}>
-        {form.getFieldDecorator('description', {
-          initialValue: BraftEditor.createEditorState(podcastProgram.description),
-        })(<AdminBraftEditor />)}
+      <Form.Item label={formatMessage(podcastMessages.label.description)} name="description">
+        <AdminBraftEditor />
       </Form.Item>
+
       <Form.Item>
         <Button onClick={() => form.resetFields()} className="mr-2">
           {formatMessage(commonMessages.ui.cancel)}
@@ -187,4 +177,4 @@ const UPDATE_PODCAST_PROGRAM_BODY = gql`
   }
 `
 
-export default Form.create<PodcastProgramContentFormProps>()(PodcastProgramContentForm)
+export default PodcastProgramContentForm
