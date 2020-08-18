@@ -128,7 +128,10 @@ const ProgramIntroAdminCard: React.FC<ProgramIntroAdminCardProps> = ({ program, 
             label={
               <span>
                 {formatMessage(programMessages.label.programCover)}
-                <Tooltip placement="top" title={<StyledTips>{formatMessage(programMessages.text.imageTips)}</StyledTips>}>
+                <Tooltip
+                  placement="top"
+                  title={<StyledTips>{formatMessage(programMessages.text.imageTips)}</StyledTips>}
+                >
                   <QuestionCircleFilled className="ml-2" />
                 </Tooltip>
               </span>

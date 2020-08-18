@@ -1,8 +1,6 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import Icon from '@ant-design/icons'
-import { Button, Divider, message, Modal } from 'antd'
+import { Button, Divider, Form, message, Modal } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -95,7 +93,7 @@ const StyledModalNotation = styled.div`
   letter-spacing: 0.4px;
 `
 
-export type AppointmentPeriodProps = {
+export type AppointmentPeriodCardProps = {
   id: string
   avatarUrl: string | null
   member: {
@@ -122,11 +120,12 @@ export type AppointmentPeriodProps = {
   appointmentIssue: string | null
   appointmentResult: string | null
 }
-type AppointmentPeriodCardProps = FormComponentProps &
-  AppointmentPeriodProps & {
+
+const AppointmentPeriodCard: React.FC<
+  AppointmentPeriodCardProps & {
     onRefetch?: () => void
   }
-const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
+> = ({
   avatarUrl,
   member,
   appointmentPlanTitle,
@@ -138,9 +137,9 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
   appointmentIssue,
   appointmentResult,
   onRefetch,
-  form,
 }) => {
   const { formatMessage } = useIntl()
+  const [form] = useForm()
   const updateAppointmentResult = useUpdateAppointmentResult(orderProduct.id, orderProduct.options)
 
   const [visible, setVisible] = useState(false)
@@ -152,21 +151,20 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
   const isFinished = endedAt.getTime() < Date.now()
 
   const handleSubmit = () => {
-    form.validateFields((errors, values) => {
-      if (errors) {
-        return
-      }
-
-      setLoading(true)
-      updateAppointmentResult(values.appointmentResult.toRAW())
-        .then(() => {
-          onRefetch && onRefetch()
-          setIssueModalVisible(false)
-          message.success(formatMessage(commonMessages.event.successfullySaved))
-        })
-        .catch(handleError)
-        .finally(() => setLoading(false))
-    })
+    form
+      .validateFields()
+      .then(values => {
+        setLoading(true)
+        updateAppointmentResult(values.appointmentResult.toRAW())
+          .then(() => {
+            onRefetch && onRefetch()
+            setIssueModalVisible(false)
+            message.success(formatMessage(commonMessages.event.successfullySaved))
+          })
+          .catch(handleError)
+          .finally(() => setLoading(false))
+      })
+      .catch(() => {})
   }
 
   return (
@@ -296,11 +294,14 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
             {formatMessage(messages.appointmentResultNotation)}
           </StyledModalNotation>
         </div>
-        <Form>
-          <Form.Item>
-            {form.getFieldDecorator('appointmentResult', {
-              initialValue: BraftEditor.createEditorState(appointmentResult),
-            })(<AdminBraftEditor />)}
+        <Form
+          form={form}
+          initialValues={{
+            appointmentResult: BraftEditor.createEditorState(appointmentResult),
+          }}
+        >
+          <Form.Item name="appointmentResult">
+            <AdminBraftEditor />
           </Form.Item>
         </Form>
       </StyledModal>
@@ -308,4 +309,4 @@ const AppointmentPeriodCard: React.FC<AppointmentPeriodCardProps> = ({
   )
 }
 
-export default Form.create<AppointmentPeriodCardProps>()(AppointmentPeriodCard)
+export default AppointmentPeriodCard

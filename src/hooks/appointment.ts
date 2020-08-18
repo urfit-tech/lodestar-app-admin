@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import { AppointmentPeriodProps } from '../components/appointment/AppointmentPeriodCard'
+import { AppointmentPeriodCardProps } from '../components/appointment/AppointmentPeriodCard'
 import types from '../types'
 import { AppointmentPlanAdminProps, ScheduleIntervalType } from '../types/appointment'
 
@@ -146,7 +146,7 @@ export const useAppointmentEnrollmentCollection = (startedAt: Date | null, ended
     { variables: { startedAt, endedAt } },
   )
 
-  const appointmentEnrollments: AppointmentPeriodProps[] =
+  const appointmentEnrollments: AppointmentPeriodCardProps[] =
     loading || error || !data
       ? []
       : data.appointment_enrollment.map(enrollment => ({

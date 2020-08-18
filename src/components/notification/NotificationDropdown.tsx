@@ -65,7 +65,7 @@ const NotificationDropdown: React.FC<{
   )
 
   useEffect(() => {
-    startPolling(3000)
+    process.env.NODE_ENV === 'production' && startPolling(3000)
   }, [startPolling])
 
   const content = (
