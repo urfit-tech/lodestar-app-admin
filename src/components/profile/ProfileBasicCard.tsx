@@ -132,13 +132,13 @@ const ProfileBasicCard: React.FC<
         <Form.Item label={formatMessage(commonMessages.term.avatar)}>
           <ImageInput
             path={`avatars/${appId}/${memberId}`}
-            value={member.pictureUrl || DefaultAvatarImage}
-            onChange={() => handleUpdateAvatar()}
             image={{
               width: '128px',
               ratio: 1,
               shape: 'circle',
             }}
+            value={member.pictureUrl || DefaultAvatarImage}
+            onChange={() => handleUpdateAvatar()}
           />
         </Form.Item>
         <Form.Item

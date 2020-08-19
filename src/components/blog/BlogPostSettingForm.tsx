@@ -1,99 +1,79 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, message, Tooltip } from 'antd'
+import { Button, Form, message, Skeleton, Tooltip } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
-import styled from 'styled-components'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { blogMessages, commonMessages } from '../../helpers/translation'
-import { BlogPostProps } from '../../types/blog'
+import types from '../../types'
+import { PostProps } from '../../types/blog'
 import { StyledTips } from '../admin'
-import { CustomRatioImage } from '../common/Image'
+import ImageInput from '../admin/ImageInput'
 import MerchandiseSelector from '../common/MerchandiseSelector'
-import SingleUploader from '../common/SingleUploader'
-import { CoverBlock } from '../program/ProgramIntroAdminCard'
 
-type BlogPostSettingFormProps = BlogPostProps & FormComponentProps
-
-const StyledSingleUploader = styled(SingleUploader)`
-  && {
-    width: auto;
-  }
-
-  .ant-upload.ant-upload-select-picture-card {
-    margin: 0;
-    height: auto;
-    width: 120px;
-    border: none;
-    background: none;
-
-    .ant-upload {
-      padding: 0;
-    }
-  }
-`
-
-const BlogPostSettingForm: React.FC<BlogPostSettingFormProps> = ({
-  post,
-  onRefetch,
-  form: { getFieldDecorator, resetFields, validateFields },
-}) => {
+const BlogPostSettingForm: React.FC<{
+  post: PostProps | null
+  refetch?: () => void
+}> = ({ post, refetch }) => {
   const { formatMessage } = useIntl()
-  const [loading, setLoading] = useState(false)
+  const [form] = useForm()
   const { id: appId } = useContext(AppContext)
-  const updatePostSetting = useUpdatePostSetting(post.id)
+  const [updatePostCover] = useMutation<types.UPDATE_POST_COVER, types.UPDATE_POST_COVERVariables>(UPDATE_POST_COVER)
+  const [updatePostMerchandises] = useMutation<
+    types.UPDATE_POST_MERCHANDISE_COLLECTION,
+    types.UPDATE_POST_MERCHANDISE_COLLECTIONVariables
+  >(UPDATE_POST_MERCHANDISE_COLLECTION)
+  const [loading, setLoading] = useState(false)
+
+  if (!post) {
+    return <Skeleton active />
+  }
 
   const handleUpload = () => {
-    validateFields((err, { merchandiseIds }) => {
-      if (!err) {
-        setLoading(true)
-        const uploadTime = Date.now()
+    setLoading(true)
+    const uploadTime = Date.now()
 
-        updatePostSetting({
-          coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/post_covers/${appId}/${post.id}?t=${uploadTime}`,
-          merchandiseIds,
-        })
-          .then(() => {
-            onRefetch && onRefetch()
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-          })
-          .finally(() => setLoading(false))
-      }
+    updatePostCover({
+      variables: {
+        postId: post.id,
+        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/post_covers/${appId}/${post.id}?t=${uploadTime}`,
+      },
     })
+      .then(() => {
+        refetch && refetch()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
-  const handleSubmit = () => {
-    validateFields((err, { merchandiseIds }) => {
-      if (!err) {
-        setLoading(true)
-        const uploadTime = Date.now()
-
-        updatePostSetting({
-          coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/post_covers/${appId}/${post.id}?t=${uploadTime}`,
-          merchandiseIds,
-        })
-          .then(() => {
-            onRefetch && onRefetch()
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-          })
-          .finally(() => setLoading(false))
-      }
+  const handleSubmit = (values: any) => {
+    setLoading(true)
+    updatePostMerchandises({
+      variables: {
+        postId: post.id,
+        merchandises: values.merchandiseIds.map((merchandiseId: string, index: number) => ({
+          post_id: post.id,
+          merchandise_id: merchandiseId,
+          position: index,
+        })),
+      },
     })
   }
   return (
     <Form
+      form={form}
       colon={false}
+      hideRequiredMark
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
-      onSubmit={e => {
-        e.preventDefault()
-        handleSubmit()
+      onFinish={handleSubmit}
+      initialValues={{
+        merchandiseIds: post.merchandiseIds,
       }}
     >
       <Form.Item
@@ -109,33 +89,25 @@ const BlogPostSettingForm: React.FC<BlogPostSettingFormProps> = ({
           </span>
         }
       >
-        <div className="d-flex align-items-center justify-content-between">
-          {!!post.coverUrl && (
-            <CoverBlock>
-              <CustomRatioImage width="100%" ratio={9 / 16} src={post.coverUrl} />
-            </CoverBlock>
-          )}
+        <ImageInput
+          path={`post_covers/${appId}/${post.id}`}
+          image={{
+            width: '160px',
+            ratio: 9 / 16,
+          }}
+          value={post.coverUrl}
+          onChange={() => handleUpload()}
+        />
+      </Form.Item>
+      <Form.Item label={formatMessage(blogMessages.label.merchandises)} name="merchandiseIds">
+        <MerchandiseSelector />
+      </Form.Item>
 
-          {getFieldDecorator('postCover')(
-            <StyledSingleUploader
-              accept="image/*"
-              listType="picture-card"
-              path={`post_covers/${appId}/${post.id}`}
-              showUploadList={false}
-              onSuccess={() => handleUpload()}
-              isPublic
-            />,
-          )}
-        </div>
-      </Form.Item>
-      <Form.Item label={formatMessage(blogMessages.label.merchandises)}>
-        {getFieldDecorator('merchandiseIds', {
-          initialValue: post.merchandiseIds,
-        })(<MerchandiseSelector />)}
-      </Form.Item>
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
-        <Button onClick={() => resetFields()}>{formatMessage(commonMessages.ui.cancel)}</Button>
-        <Button className="ml-2" type="primary" htmlType="submit" loading={loading}>
+        <Button className="mr-2" onClick={() => form.resetFields()}>
+          {formatMessage(commonMessages.ui.cancel)}
+        </Button>
+        <Button type="primary" htmlType="submit" loading={loading}>
           {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>
@@ -143,46 +115,22 @@ const BlogPostSettingForm: React.FC<BlogPostSettingFormProps> = ({
   )
 }
 
-const useUpdatePostSetting = (postId: string) => {
-  const [updateSetting] = useMutation(gql`
-    mutation UPDATE_POST_SETTING($postId: uuid!, $coverUrl: String, $merchandises: [post_merchandise_insert_input!]!) {
-      update_post(_set: { cover_url: $coverUrl }, where: { id: { _eq: $postId } }) {
-        affected_rows
-      }
-
-      # update post merchandises
-      delete_post_merchandise(where: { post_id: { _eq: $postId } }) {
-        affected_rows
-      }
-      insert_post_merchandise(objects: $merchandises) {
-        affected_rows
-      }
-    }
-  `)
-
-  const updatePostSetting: (data: { coverUrl: string; merchandiseIds: string[] }) => Promise<void> = async ({
-    coverUrl,
-    merchandiseIds,
-  }) => {
-    const merchandises = merchandiseIds.map((merchandiseId, i) => ({
-      post_id: postId,
-      merchandise_id: merchandiseId,
-      position: i,
-    }))
-
-    try {
-      await updateSetting({
-        variables: {
-          postId,
-          coverUrl,
-          merchandises,
-        },
-      })
-    } catch (error) {
-      handleError(error)
+const UPDATE_POST_COVER = gql`
+  mutation UPDATE_POST_COVER($postId: uuid!, $coverUrl: String) {
+    update_post(where: { id: { _eq: $postId } }, _set: { cover_url: $coverUrl }) {
+      affected_rows
     }
   }
-  return updatePostSetting
-}
+`
+const UPDATE_POST_MERCHANDISE_COLLECTION = gql`
+  mutation UPDATE_POST_MERCHANDISE_COLLECTION($postId: uuid!, $merchandises: [post_merchandise_insert_input!]!) {
+    delete_post_merchandise(where: { post_id: { _eq: $postId } }) {
+      affected_rows
+    }
+    insert_post_merchandise(objects: $merchandises) {
+      affected_rows
+    }
+  }
+`
 
-export default Form.create<BlogPostSettingFormProps>()(BlogPostSettingForm)
+export default BlogPostSettingForm

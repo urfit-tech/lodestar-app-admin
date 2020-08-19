@@ -93,13 +93,13 @@ const ActivityIntroductionForm: React.FC<{
       >
         <ImageInput
           path={`activity_covers/${app.id}/${activityAdmin.id}`}
-          value={activityAdmin.coverUrl}
-          onChange={() => handleUpdateCover()}
           image={{
             width: '160px',
             ratio: 9 / 16,
             shape: 'rounded',
           }}
+          value={activityAdmin.coverUrl}
+          onChange={() => handleUpdateCover()}
         />
       </Form.Item>
       <Form.Item

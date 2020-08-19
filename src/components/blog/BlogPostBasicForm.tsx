@@ -1,11 +1,9 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Input, message, Tooltip } from 'antd'
+import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import TagSelector from '../../containers/common/TagSelector'
@@ -13,11 +11,9 @@ import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { blogMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
-import { BlogPostProps } from '../../types/blog'
+import { PostProps } from '../../types/blog'
 import { StyledTips } from '../admin'
 import CategorySelector from '../common/CategorySelector'
-
-type BlogPostBasicFormProps = BlogPostProps & FormComponentProps
 
 const StyledText = styled.div`
   color: var(--gray-dark);
@@ -27,138 +23,110 @@ const StyledText = styled.div`
   line-height: 1.2;
 `
 
-const BlogPostBasicForm: React.FC<BlogPostBasicFormProps> = ({
-  post,
-  onRefetch,
-  form: { getFieldDecorator, resetFields, validateFields },
-}) => {
-  const { settings } = useContext(AppContext)
+const BlogPostBasicForm: React.FC<{
+  post: PostProps | null
+  refetch?: () => {}
+}> = ({ post, refetch }) => {
   const { formatMessage } = useIntl()
-  const [codeName, setCodeName] = useState<string>('')
+  const [form] = useForm()
+  const { id: appId, settings } = useContext(AppContext)
+  const [updatePostBasic] = useMutation<types.UPDATE_POST_BASIC, types.UPDATE_POST_BASICVariables>(UPDATE_POST_BASIC)
+  const [codeName, setCodeName] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const updatePostBasic = useUpdatePostBasic(post.id)
-  const canCodeNameUse = !(
-    post &&
-    post.codeNames &&
-    post.codeNames.filter(codeName => codeName !== post.codeName).includes(codeName)
-  )
+  if (!post) {
+    return <Skeleton active />
+  }
 
-  useEffect(() => {
-    setCodeName(post.codeName)
-  }, [post])
+  const canCodeNameUse = !post.codeNames.filter(codeName => codeName !== post.codeName).includes(codeName)
 
-  const handleSubmit = () => {
-    validateFields((error, { title, categoryIds, tags, codeName }) => {
-      if (error) {
-        return
-      }
-      if (!canCodeNameUse) {
-        message.error(formatMessage(errorMessages.event.checkSameCodeName))
-        return
-      }
-      updatePostBasic({
-        title,
-        categoryIds,
-        postTags: tags,
-        codeName: codeName.length ? codeName : null,
-      }).then(() => {
-        onRefetch && onRefetch()
+  const handleSubmit = (values: any) => {
+    if (!canCodeNameUse) {
+      message.error(formatMessage(errorMessages.event.checkSameCodeName))
+      return
+    }
+
+    setLoading(true)
+    updatePostBasic({
+      variables: {
+        postId: post.id,
+        title: values.title,
+        categories: values.categoryIds.map((categoryId: string, index: number) => ({
+          post_id: post.id,
+          category_id: categoryId,
+          position: index,
+        })),
+        tags: values.tags.map((tag: string) => ({
+          app_id: appId,
+          name: tag,
+          type: '',
+        })),
+        postTags: values.tags.map((tag: string, index: number) => ({
+          post_id: post.id,
+          tag_name: tag,
+          position: index,
+        })),
+        codeName: codeName || null,
+      },
+    })
+      .then(() => {
+        refetch && refetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
-    })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
-    post && (
-      <Form
-        colon={false}
-        labelAlign="left"
-        labelCol={{ md: { span: 4 } }}
-        wrapperCol={{ md: { span: 8 } }}
-        onSubmit={e => {
-          e.preventDefault()
-          handleSubmit()
-        }}
+    <Form
+      form={form}
+      labelAlign="left"
+      colon={false}
+      hideRequiredMark
+      labelCol={{ md: { span: 4 } }}
+      wrapperCol={{ md: { span: 8 } }}
+      onFinish={handleSubmit}
+      initialValues={{
+        title: post.title,
+        categoryIds: post.categories.map(category => category.id),
+        tags: post.tagNames,
+      }}
+    >
+      <Form.Item label={formatMessage(commonMessages.term.title)} name="title">
+        <Input />
+      </Form.Item>
+      <Form.Item label={formatMessage(commonMessages.term.category)}>
+        <CategorySelector classType="post" />
+      </Form.Item>
+      <Form.Item label={formatMessage(commonMessages.term.tag)}>
+        <TagSelector />
+      </Form.Item>
+      <Form.Item
+        label={
+          <span>
+            {formatMessage(blogMessages.label.codeName)}
+            <Tooltip placement="top" title={<StyledTips>{formatMessage(blogMessages.text.url)}</StyledTips>}>
+              <QuestionCircleFilled className="ml-2" />
+            </Tooltip>
+          </span>
+        }
+        hasFeedback
+        validateStatus={codeName.length ? (canCodeNameUse ? 'success' : 'error') : ''}
       >
-        <Form.Item label={formatMessage(commonMessages.term.title)}>
-          {getFieldDecorator('title', { initialValue: post.title })(<Input />)}
-        </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.term.category)}>
-          {getFieldDecorator('categoryIds', {
-            initialValue: post.categories.map(category => category.id),
-          })(<CategorySelector classType="post" />)}
-        </Form.Item>
-        <Form.Item label={formatMessage(commonMessages.term.tag)}>
-          {getFieldDecorator('tags', {
-            initialValue: post.tagNames,
-          })(<TagSelector />)}
-        </Form.Item>
-        <Form.Item
-          label={
-            <span>
-              {formatMessage(blogMessages.label.codeName)}
-              <Tooltip placement="top" title={<StyledTips>{formatMessage(blogMessages.text.url)}</StyledTips>}>
-                <QuestionCircleFilled className="ml-2" />
-              </Tooltip>
-            </span>
-          }
-          hasFeedback
-          validateStatus={codeName.length ? (canCodeNameUse ? 'success' : 'error') : ''}
-        >
-          {getFieldDecorator('codeName', {
-            initialValue: post.codeName,
-          })(<Input maxLength={20} onChange={e => setCodeName(e.target.value)} />)}
-          <StyledText>{`https://${settings['host']}/posts/${codeName}`}</StyledText>
-        </Form.Item>
-        <Form.Item wrapperCol={{ md: { offset: 4 } }}>
-          <Button onClick={() => resetFields()}>{formatMessage(commonMessages.ui.cancel)}</Button>
-          <Button className="ml-2" type="primary" htmlType="submit">
-            {formatMessage(commonMessages.ui.save)}
-          </Button>
-        </Form.Item>
-      </Form>
-    )
+        <Input maxLength={20} onChange={e => setCodeName(e.target.value)} />
+        <StyledText>{`https://${settings['host']}/posts/${codeName}`}</StyledText>
+      </Form.Item>
+
+      <Form.Item wrapperCol={{ md: { offset: 4 } }}>
+        <Button className="mr-2" onClick={() => form.resetFields()}>
+          {formatMessage(commonMessages.ui.cancel)}
+        </Button>
+        <Button type="primary" htmlType="submit" loading={loading}>
+          {formatMessage(commonMessages.ui.save)}
+        </Button>
+      </Form.Item>
+    </Form>
   )
-}
-
-const useUpdatePostBasic = (postId: string) => {
-  const { id: appId } = useContext(AppContext)
-  const [updateBasic] = useMutation<types.UPDATE_POST_BASIC, types.UPDATE_POST_BASICVariables>(UPDATE_POST_BASIC)
-
-  const updatePostBasic: (data: {
-    title: string
-    codeName: string
-    categoryIds: string[]
-    postTags: string[]
-  }) => Promise<void> = async ({ title, categoryIds, postTags, codeName }) => {
-    try {
-      await updateBasic({
-        variables: {
-          postId,
-          title,
-          codeName,
-          categories: categoryIds?.map((categoryId, i) => ({
-            post_id: postId,
-            category_id: categoryId,
-            position: i,
-          })),
-          tags: postTags?.map(postTag => ({
-            app_id: appId,
-            name: postTag,
-            type: '',
-          })),
-          postTags: postTags?.map((postTag, i) => ({
-            post_id: postId,
-            tag_name: postTag,
-            position: i,
-          })),
-        },
-      })
-    } catch (error) {
-      handleError(error)
-    }
-  }
-  return updatePostBasic
 }
 
 const UPDATE_POST_BASIC = gql`
@@ -196,4 +164,4 @@ const UPDATE_POST_BASIC = gql`
   }
 `
 
-export default Form.create<BlogPostBasicFormProps>()(BlogPostBasicForm)
+export default BlogPostBasicForm

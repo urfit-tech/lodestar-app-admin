@@ -1,5 +1,7 @@
 import { FileAddOutlined, ShoppingFilled } from '@ant-design/icons'
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Tabs } from 'antd'
+import gql from 'graphql-tag'
 import React, { useContext, useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -10,7 +12,8 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { blogMessages, commonMessages } from '../../helpers/translation'
-import { useInsertPost, usePostCollection } from '../../hooks/blog'
+import { usePostCollection } from '../../hooks/blog'
+import types from '../../types'
 
 const BlogAdminCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -18,7 +21,7 @@ const BlogAdminCollectionPage: React.FC = () => {
   const { id: appId } = useContext(AppContext)
   const { currentMemberId } = useAuth()
   const { posts, refetch } = usePostCollection()
-  const insertPost = useInsertPost()
+  const [insertPost] = useMutation<types.INSERT_POST, types.INSERT_POSTVariables>(INSERT_POST)
 
   useEffect(() => {
     refetch()
@@ -64,8 +67,8 @@ const BlogAdminCollectionPage: React.FC = () => {
                 })),
               },
             }).then(({ data }) => {
-              const id = data?.insert_post?.returning[0].id
-              id && history.push(`/blog/${id}`)
+              const blogId = data?.insert_post?.returning[0].id
+              blogId && history.push(`/blog/${blogId}`)
             })
           }
         />
@@ -114,5 +117,28 @@ const BlogAdminCollectionPage: React.FC = () => {
     </AdminLayout>
   )
 }
+
+const INSERT_POST = gql`
+  mutation INSERT_POST(
+    $appId: String!
+    $title: String!
+    $postCategories: [post_category_insert_input!]!
+    $postRoles: [post_role_insert_input!]!
+  ) {
+    insert_post(
+      objects: {
+        app_id: $appId
+        title: $title
+        post_categories: { data: $postCategories }
+        post_roles: { data: $postRoles }
+      }
+    ) {
+      affected_rows
+      returning {
+        id
+      }
+    }
+  }
+`
 
 export default BlogAdminCollectionPage

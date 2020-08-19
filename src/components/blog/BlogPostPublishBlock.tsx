@@ -1,11 +1,11 @@
 import { useMutation } from '@apollo/react-hooks'
+import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
-import { BlogPostProps } from '../../types/blog'
+import { PostProps } from '../../types/blog'
 import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } from '../admin/AdminPublishBlock'
 
 const messages = defineMessages({
@@ -25,9 +25,16 @@ const messages = defineMessages({
   },
 })
 
-const BlogPostPublishBlock: React.FC<BlogPostProps> = ({ post, onRefetch }) => {
+const BlogPostPublishBlock: React.FC<{
+  post: PostProps | null
+  refetch?: () => void
+}> = ({ post, refetch }) => {
   const { formatMessage } = useIntl()
-  const publishPost = usePostPublish(post.id)
+  const [publishPost] = useMutation<types.PUBLISH_POST, types.PUBLISH_POSTVariables>(PUBLISH_POST)
+
+  if (!post) {
+    return <Skeleton active />
+  }
 
   const checklist: ChecklistItemProps[] = []
 
@@ -56,10 +63,13 @@ const BlogPostPublishBlock: React.FC<BlogPostProps> = ({ post, onRefetch }) => {
 
   const handlePublish: (event: PublishEvent) => void = ({ values, onSuccess, onError, onFinally }) => {
     publishPost({
-      publishedAt: values.publishedAt,
+      variables: {
+        postId: post.id,
+        publishedAt: values.publishedAt,
+      },
     })
       .then(() => {
-        onRefetch && onRefetch()
+        refetch && refetch()
         onSuccess && onSuccess()
       })
       .catch(error => onError && onError(error))
@@ -77,29 +87,12 @@ const BlogPostPublishBlock: React.FC<BlogPostProps> = ({ post, onRefetch }) => {
   )
 }
 
-const usePostPublish = (postId: string) => {
-  const [publishPostHandler] = useMutation<types.PUBLISH_POST, types.PUBLISH_POSTVariables>(gql`
-    mutation PUBLISH_POST($postId: uuid!, $publishedAt: timestamptz) {
-      update_post(_set: { published_at: $publishedAt }, where: { id: { _eq: $postId } }) {
-        affected_rows
-      }
-    }
-  `)
-
-  const publishPost: (data: { publishedAt: Date | null }) => Promise<void> = async ({ publishedAt }) => {
-    try {
-      await publishPostHandler({
-        variables: {
-          postId,
-          publishedAt,
-        },
-      })
-    } catch (error) {
-      handleError(error)
+const PUBLISH_POST = gql`
+  mutation PUBLISH_POST($postId: uuid!, $publishedAt: timestamptz) {
+    update_post(_set: { published_at: $publishedAt }, where: { id: { _eq: $postId } }) {
+      affected_rows
     }
   }
-
-  return publishPost
-}
+`
 
 export default BlogPostPublishBlock

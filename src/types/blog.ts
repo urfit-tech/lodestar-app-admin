@@ -1,4 +1,4 @@
-export type PostType = {
+export type PostProps = {
   id: string
   title: string
   videoUrl: string | null
@@ -9,20 +9,15 @@ export type PostType = {
   }[]
   tagNames: string[]
   isDeleted: boolean
-  codeName: string
-  codeNames?: (string | null)[]
+  codeName: string | null
+  codeNames: (string | null)[]
   coverUrl: string | null
   merchandiseIds?: string[]
   creatorId: string
-  authors?: Array<{
+  authors?: {
     id: string
     name: string
     pictureUrl: string | null
-  }>
+  }[]
   publishedAt: Date | null
-}
-
-export type BlogPostProps = {
-  post: PostType
-  onRefetch?: () => void
 }

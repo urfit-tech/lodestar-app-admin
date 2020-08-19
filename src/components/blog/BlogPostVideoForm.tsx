@@ -1,9 +1,7 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { CloseCircleOutlined, LoadingOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Col, Input, message, Row } from 'antd'
+import { Button, Form, Input, message, Skeleton } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -11,7 +9,8 @@ import ReactPlayer from 'react-player'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { blogMessages, commonMessages } from '../../helpers/translation'
-import { BlogPostProps } from '../../types/blog'
+import types from '../../types'
+import { PostProps } from '../../types/blog'
 
 const StyledStatusBlock = styled.div`
   display: flex;
@@ -29,71 +28,70 @@ const StyledNotation = styled.div`
   color: var(--gray-dark);
 `
 
-type BlogPostVideoFormProps = BlogPostProps & FormComponentProps
-
-const BlogPostVideoForm: React.FC<BlogPostVideoFormProps> = ({
-  post,
-  onRefetch,
-  form: { getFieldDecorator, resetFields, validateFields },
-}) => {
+const BlogPostVideoForm: React.FC<{
+  post: PostProps | null
+  refetch?: () => void
+}> = ({ post, refetch }) => {
   const { formatMessage } = useIntl()
-  const updatePostVideoUrl = useUpdatePostVideoUrl()
-  const [videoUrl, setVideoUrl] = useState<string>('')
+  const [form] = useForm()
+  const [updatePostVideoUrl] = useMutation<types.UPDATE_POST_VIDEO_URL, types.UPDATE_POST_VIDEO_URLVariables>(
+    UPDATE_POST_VIDEO_URL,
+  )
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = () => {
-    validateFields((err, { videoUrl }) => {
-      if (!err) {
-        updatePostVideoUrl({
-          variables: {
-            id: post.id,
-            videoUrl,
-          },
-        })
-          .then(() => {
-            onRefetch && onRefetch()
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-          })
-          .catch(handleError)
-      }
+  if (!post) {
+    return <Skeleton active />
+  }
+
+  const handleSubmit = (values: any) => {
+    setLoading(true)
+    updatePostVideoUrl({
+      variables: {
+        id: post.id,
+        videoUrl: values.videoUrl,
+      },
     })
+      .then(() => {
+        refetch && refetch()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
   return (
-    <Row>
-      <Col span={18}>
+    <div className="row">
+      <div className="col-9">
         <Form
-          onSubmit={e => {
-            e.preventDefault()
-            handleSubmit()
+          form={form}
+          colon={false}
+          hideRequiredMark
+          onFinish={handleSubmit}
+          initialValues={{
+            videoUrl: post.videoUrl,
           }}
         >
-          <Form.Item>
-            <div className="d-flex align-items-center">
-              {getFieldDecorator('videoUrl', {
-                initialValue: post.videoUrl,
-              })(
-                <Input
-                  className="mr-4"
-                  placeholder={formatMessage(blogMessages.term.pasteVideoUrl)}
-                  onChange={e => {
-                    setVideoUrl(e.target.value)
-                    return e.target.value
-                  }}
-                />,
-              )}
-            </div>
+          <Form.Item name="videoUrl">
+            <Input className="mr-4" placeholder={formatMessage(blogMessages.term.pasteVideoUrl)} />
           </Form.Item>
+
           <Form.Item>
-            <Button onClick={() => resetFields()}>{formatMessage(commonMessages.ui.cancel)}</Button>
-            <Button className="ml-2" type="primary" htmlType="submit">
+            <Button className="mr-2" onClick={() => form.resetFields()}>
+              {formatMessage(commonMessages.ui.cancel)}
+            </Button>
+            <Button type="primary" htmlType="submit" loading={loading}>
               {formatMessage(commonMessages.ui.save)}
             </Button>
           </Form.Item>
         </Form>
-      </Col>
-      <Col span={6}>
-        <div>{(videoUrl || post.videoUrl) && <BlogPostPlayer url={videoUrl || post.videoUrl} />}</div>
-      </Col>
-    </Row>
+      </div>
+      <div className="col-3">
+        <div>
+          {(form.getFieldValue('videoUrl') || post.videoUrl) && (
+            <BlogPostPlayer url={form.getFieldValue('videoUrl') || post.videoUrl} />
+          )}
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -134,12 +132,6 @@ const BlogPostPlayer: React.FC<{ url: string | null }> = ({ url }) => {
   )
 }
 
-const useUpdatePostVideoUrl = () => {
-  const [updatePostVideoUrl] = useMutation(UPDATE_POST_VIDEO_URL)
-
-  return updatePostVideoUrl
-}
-
 const UPDATE_POST_VIDEO_URL = gql`
   mutation UPDATE_POST_VIDEO_URL($id: uuid!, $videoUrl: String!) {
     update_post(where: { id: { _eq: $id } }, _set: { video_url: $videoUrl }) {
@@ -148,4 +140,4 @@ const UPDATE_POST_VIDEO_URL = gql`
   }
 `
 
-export default Form.create<BlogPostVideoFormProps>()(BlogPostVideoForm)
+export default BlogPostVideoForm

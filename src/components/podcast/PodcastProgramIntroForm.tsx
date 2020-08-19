@@ -93,12 +93,12 @@ const PodcastProgramIntroForm: React.FC<{
       >
         <ImageInput
           path={`podcast_program_covers/${appId}/${podcastProgramAdmin.id}`}
-          value={podcastProgramAdmin.coverUrl}
-          onChange={() => handleUpload()}
           image={{
             width: '120px',
             ratio: 1,
           }}
+          value={podcastProgramAdmin.coverUrl}
+          onChange={() => handleUpload()}
         />
       </Form.Item>
       <Form.Item label={formatMessage(podcastMessages.term.podcastAbstract)} name="abstract">

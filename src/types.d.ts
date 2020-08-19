@@ -363,6 +363,272 @@ export interface UPDATE_ACTIVITY_TICKETVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_TITLE
+// ====================================================
+
+export interface UPDATE_APPOINTMENT_PLAN_TITLE_update_appointment_plan {
+  __typename: "appointment_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_TITLE {
+  /**
+   * update data of the table: "appointment_plan"
+   */
+  update_appointment_plan: UPDATE_APPOINTMENT_PLAN_TITLE_update_appointment_plan | null;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
+  appointmentPlanId: any;
+  title: string;
+  phone: string;
+  supportLocales?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN
+// ====================================================
+
+export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator {
+  __typename: "member_public";
+  id: string | null;
+  picture_url: string | null;
+  name: string | null;
+  username: string | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate_aggregate {
+  __typename: "appointment_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate {
+  __typename: "appointment_enrollment_aggregate";
+  aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
+  __typename: "appointment_plan";
+  id: any;
+  /**
+   * An object relationship
+   */
+  creator: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator | null;
+  title: string;
+  /**
+   * minutes
+   */
+  duration: any;
+  price: any;
+  published_at: any | null;
+  /**
+   * An aggregated array relationship
+   */
+  appointment_enrollments_aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate;
+}
+
+export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN {
+  /**
+   * fetch data from the table: "appointment_plan"
+   */
+  appointment_plan: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan[];
+}
+
+export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables {
+  creatorId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_DESCRIPTION
+// ====================================================
+
+export interface UPDATE_APPOINTMENT_PLAN_DESCRIPTION_update_appointment_plan {
+  __typename: "appointment_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_DESCRIPTION {
+  /**
+   * update data of the table: "appointment_plan"
+   */
+  update_appointment_plan: UPDATE_APPOINTMENT_PLAN_DESCRIPTION_update_appointment_plan | null;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_DESCRIPTIONVariables {
+  appointmentPlanId: any;
+  description: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_APPOINTMENT_PLAN
+// ====================================================
+
+export interface PUBLISH_APPOINTMENT_PLAN_update_appointment_plan {
+  __typename: "appointment_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_APPOINTMENT_PLAN {
+  /**
+   * update data of the table: "appointment_plan"
+   */
+  update_appointment_plan: PUBLISH_APPOINTMENT_PLAN_update_appointment_plan | null;
+}
+
+export interface PUBLISH_APPOINTMENT_PLANVariables {
+  appointmentPlanId: any;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_SALE
+// ====================================================
+
+export interface UPDATE_APPOINTMENT_PLAN_SALE_update_appointment_plan {
+  __typename: "appointment_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_SALE {
+  /**
+   * update data of the table: "appointment_plan"
+   */
+  update_appointment_plan: UPDATE_APPOINTMENT_PLAN_SALE_update_appointment_plan | null;
+}
+
+export interface UPDATE_APPOINTMENT_PLAN_SALEVariables {
+  appointmentPlanId: any;
+  duration?: any | null;
+  listPrice?: any | null;
+  currencyId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_APPOINTMENT_SCHEDULE
+// ====================================================
+
+export interface DELETE_APPOINTMENT_SCHEDULE_delete_appointment_schedule {
+  __typename: "appointment_schedule_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_APPOINTMENT_SCHEDULE {
+  /**
+   * delete data from the table: "appointment_schedule"
+   */
+  delete_appointment_schedule: DELETE_APPOINTMENT_SCHEDULE_delete_appointment_schedule | null;
+}
+
+export interface DELETE_APPOINTMENT_SCHEDULEVariables {
+  appointmentScheduleId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_APPOINTMENT_SCHEDULE
+// ====================================================
+
+export interface UPDATE_APPOINTMENT_SCHEDULE_update_appointment_schedule {
+  __typename: "appointment_schedule_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APPOINTMENT_SCHEDULE {
+  /**
+   * update data of the table: "appointment_schedule"
+   */
+  update_appointment_schedule: UPDATE_APPOINTMENT_SCHEDULE_update_appointment_schedule | null;
+}
+
+export interface UPDATE_APPOINTMENT_SCHEDULEVariables {
+  appointmentScheduleId: any;
+  excludes?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CREATE_APPOINTMENT_SCHEDULE
+// ====================================================
+
+export interface CREATE_APPOINTMENT_SCHEDULE_insert_appointment_schedule {
+  __typename: "appointment_schedule_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface CREATE_APPOINTMENT_SCHEDULE {
+  /**
+   * insert data into the table: "appointment_schedule"
+   */
+  insert_appointment_schedule: CREATE_APPOINTMENT_SCHEDULE_insert_appointment_schedule | null;
+}
+
+export interface CREATE_APPOINTMENT_SCHEDULEVariables {
+  appointmentPlanId: any;
+  startedAt: any;
+  intervalType?: string | null;
+  intervalAmount?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_POST_ROLE
 // ====================================================
 
@@ -539,10 +805,10 @@ export interface UPDATE_POST_DESCRIPTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_POST_IS_DELETED
+// GraphQL mutation operation: DELETE_POST
 // ====================================================
 
-export interface UPDATE_POST_IS_DELETED_update_post {
+export interface DELETE_POST_update_post {
   __typename: "post_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -550,14 +816,14 @@ export interface UPDATE_POST_IS_DELETED_update_post {
   affected_rows: number;
 }
 
-export interface UPDATE_POST_IS_DELETED {
+export interface DELETE_POST {
   /**
    * update data of the table: "post"
    */
-  update_post: UPDATE_POST_IS_DELETED_update_post | null;
+  update_post: DELETE_POST_update_post | null;
 }
 
-export interface UPDATE_POST_IS_DELETEDVariables {
+export interface DELETE_POSTVariables {
   postId?: any | null;
 }
 
@@ -596,10 +862,10 @@ export interface PUBLISH_POSTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_POST_SETTING
+// GraphQL mutation operation: UPDATE_POST_COVER
 // ====================================================
 
-export interface UPDATE_POST_SETTING_update_post {
+export interface UPDATE_POST_COVER_update_post {
   __typename: "post_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -607,40 +873,56 @@ export interface UPDATE_POST_SETTING_update_post {
   affected_rows: number;
 }
 
-export interface UPDATE_POST_SETTING_delete_post_merchandise {
-  __typename: "post_merchandise_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_POST_SETTING_insert_post_merchandise {
-  __typename: "post_merchandise_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_POST_SETTING {
+export interface UPDATE_POST_COVER {
   /**
    * update data of the table: "post"
    */
-  update_post: UPDATE_POST_SETTING_update_post | null;
+  update_post: UPDATE_POST_COVER_update_post | null;
+}
+
+export interface UPDATE_POST_COVERVariables {
+  postId: any;
+  coverUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_POST_MERCHANDISE_COLLECTION
+// ====================================================
+
+export interface UPDATE_POST_MERCHANDISE_COLLECTION_delete_post_merchandise {
+  __typename: "post_merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_MERCHANDISE_COLLECTION_insert_post_merchandise {
+  __typename: "post_merchandise_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_POST_MERCHANDISE_COLLECTION {
   /**
    * delete data from the table: "post_merchandise"
    */
-  delete_post_merchandise: UPDATE_POST_SETTING_delete_post_merchandise | null;
+  delete_post_merchandise: UPDATE_POST_MERCHANDISE_COLLECTION_delete_post_merchandise | null;
   /**
    * insert data into the table: "post_merchandise"
    */
-  insert_post_merchandise: UPDATE_POST_SETTING_insert_post_merchandise | null;
+  insert_post_merchandise: UPDATE_POST_MERCHANDISE_COLLECTION_insert_post_merchandise | null;
 }
 
-export interface UPDATE_POST_SETTINGVariables {
+export interface UPDATE_POST_MERCHANDISE_COLLECTIONVariables {
   postId: any;
-  coverUrl?: string | null;
   merchandises: post_merchandise_insert_input[];
 }
 
@@ -1814,6 +2096,143 @@ export interface UPDATE_PODCAST_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_BASIC
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_BASIC_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BASIC_delete_podcast_program_category {
+  __typename: "podcast_program_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BASIC_insert_podcast_program_category {
+  __typename: "podcast_program_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BASIC_delete_podcast_program_tag {
+  __typename: "podcast_program_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BASIC_insert_podcast_program_tag {
+  __typename: "podcast_program_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BASIC {
+  /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: UPDATE_PODCAST_PROGRAM_BASIC_update_podcast_program | null;
+  /**
+   * delete data from the table: "podcast_program_category"
+   */
+  delete_podcast_program_category: UPDATE_PODCAST_PROGRAM_BASIC_delete_podcast_program_category | null;
+  /**
+   * insert data into the table: "podcast_program_category"
+   */
+  insert_podcast_program_category: UPDATE_PODCAST_PROGRAM_BASIC_insert_podcast_program_category | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_PODCAST_PROGRAM_BASIC_insert_tag | null;
+  /**
+   * delete data from the table: "podcast_program_tag"
+   */
+  delete_podcast_program_tag: UPDATE_PODCAST_PROGRAM_BASIC_delete_podcast_program_tag | null;
+  /**
+   * insert data into the table: "podcast_program_tag"
+   */
+  insert_podcast_program_tag: UPDATE_PODCAST_PROGRAM_BASIC_insert_podcast_program_tag | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BASICVariables {
+  podcastProgramId: any;
+  title?: string | null;
+  podcastCategories: podcast_program_category_insert_input[];
+  tags: tag_insert_input[];
+  podcastProgramTags: podcast_program_tag_insert_input[];
+  updatedAt: any;
+  supportLocales?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_BODY
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_BODY_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BODY_update_podcast_program_body {
+  __typename: "podcast_program_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BODY {
+  /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: UPDATE_PODCAST_PROGRAM_BODY_update_podcast_program | null;
+  /**
+   * update data of the table: "podcast_program_body"
+   */
+  update_podcast_program_body: UPDATE_PODCAST_PROGRAM_BODY_update_podcast_program_body | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_BODYVariables {
+  podcastProgramId: any;
+  description?: string | null;
+  duration?: any | null;
+  updatedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: CREATE_PODCAST_PROGRAM
 // ====================================================
 
@@ -1845,6 +2264,253 @@ export interface CREATE_PODCAST_PROGRAMVariables {
   title: string;
   creatorId: string;
   podcastCategories: podcast_program_category_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_ROLE
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_ROLE_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_ROLE_delete_podcast_program_role {
+  __typename: "podcast_program_role_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_ROLE_insert_podcast_program_role {
+  __typename: "podcast_program_role_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_ROLE {
+  /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: UPDATE_PODCAST_PROGRAM_ROLE_update_podcast_program | null;
+  /**
+   * delete data from the table: "podcast_program_role"
+   */
+  delete_podcast_program_role: UPDATE_PODCAST_PROGRAM_ROLE_delete_podcast_program_role | null;
+  /**
+   * insert data into the table: "podcast_program_role"
+   */
+  insert_podcast_program_role: UPDATE_PODCAST_PROGRAM_ROLE_insert_podcast_program_role | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_ROLEVariables {
+  podcastProgramId: any;
+  podcastProgramRoles: podcast_program_role_insert_input[];
+  updatedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_INTRO
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_INTRO_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_INTRO {
+  /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: UPDATE_PODCAST_PROGRAM_INTRO_update_podcast_program | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_INTROVariables {
+  podcastProgramId: any;
+  coverUrl?: string | null;
+  abstract?: string | null;
+  updatedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_PLAN
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_PLAN_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_PLAN {
+  /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: UPDATE_PODCAST_PROGRAM_PLAN_update_podcast_program | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_PLANVariables {
+  podcastProgramId: any;
+  listPrice?: any | null;
+  salePrice?: any | null;
+  soldAt?: any | null;
+  updatedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_PODCAST_PROGRAM
+// ====================================================
+
+export interface PUBLISH_PODCAST_PROGRAM_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_PODCAST_PROGRAM {
+  /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: PUBLISH_PODCAST_PROGRAM_update_podcast_program | null;
+}
+
+export interface PUBLISH_PODCAST_PROGRAMVariables {
+  podcastProgramId: any;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_AVATAR
+// ====================================================
+
+export interface UPDATE_MEMBER_AVATAR_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_AVATAR {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_AVATAR_update_member | null;
+}
+
+export interface UPDATE_MEMBER_AVATARVariables {
+  memberId: string;
+  pictureUrl: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_BASIC
+// ====================================================
+
+export interface UPDATE_MEMBER_BASIC_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_BASIC_delete_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_BASIC_insert_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_BASIC {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_BASIC_update_member | null;
+  /**
+   * delete data from the table: "member_tag"
+   */
+  delete_member_tag: UPDATE_MEMBER_BASIC_delete_member_tag | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_MEMBER_BASIC_insert_tag | null;
+  /**
+   * insert data into the table: "member_tag"
+   */
+  insert_member_tag: UPDATE_MEMBER_BASIC_insert_member_tag | null;
+}
+
+export interface UPDATE_MEMBER_BASICVariables {
+  memberId: string;
+  name?: string | null;
+  description?: string | null;
+  username?: string | null;
+  email?: string | null;
+  title?: string | null;
+  abstract?: string | null;
+  tags: tag_insert_input[];
+  memberTags: member_tag_insert_input[];
 }
 
 /* tslint:disable */
@@ -3136,310 +3802,6 @@ export interface UPDATE_DELIVER_INFOVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_TITLE
-// ====================================================
-
-export interface UPDATE_APPOINTMENT_PLAN_TITLE_update_appointment_plan {
-  __typename: "appointment_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_APPOINTMENT_PLAN_TITLE {
-  /**
-   * update data of the table: "appointment_plan"
-   */
-  update_appointment_plan: UPDATE_APPOINTMENT_PLAN_TITLE_update_appointment_plan | null;
-}
-
-export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
-  appointmentPlanId: any;
-  title: string;
-  phone: string;
-  supportLocales?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN
-// ====================================================
-
-export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator {
-  __typename: "member_public";
-  id: string | null;
-  picture_url: string | null;
-  name: string | null;
-  username: string | null;
-}
-
-export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate_aggregate {
-  __typename: "appointment_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate {
-  __typename: "appointment_enrollment_aggregate";
-  aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate_aggregate | null;
-}
-
-export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
-  __typename: "appointment_plan";
-  id: any;
-  /**
-   * An object relationship
-   */
-  creator: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator | null;
-  title: string;
-  /**
-   * minutes
-   */
-  duration: any;
-  price: any;
-  published_at: any | null;
-  /**
-   * An aggregated array relationship
-   */
-  appointment_enrollments_aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate;
-}
-
-export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN {
-  /**
-   * fetch data from the table: "appointment_plan"
-   */
-  appointment_plan: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan[];
-}
-
-export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables {
-  creatorId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: CREATE_APPOINTMENT_PLAN
-// ====================================================
-
-export interface CREATE_APPOINTMENT_PLAN_insert_appointment_plan_returning {
-  __typename: "appointment_plan";
-  id: any;
-}
-
-export interface CREATE_APPOINTMENT_PLAN_insert_appointment_plan {
-  __typename: "appointment_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: CREATE_APPOINTMENT_PLAN_insert_appointment_plan_returning[];
-}
-
-export interface CREATE_APPOINTMENT_PLAN {
-  /**
-   * insert data into the table: "appointment_plan"
-   */
-  insert_appointment_plan: CREATE_APPOINTMENT_PLAN_insert_appointment_plan | null;
-}
-
-export interface CREATE_APPOINTMENT_PLANVariables {
-  title: string;
-  creatorId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_DESCRIPTION
-// ====================================================
-
-export interface UPDATE_APPOINTMENT_PLAN_DESCRIPTION_update_appointment_plan {
-  __typename: "appointment_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_APPOINTMENT_PLAN_DESCRIPTION {
-  /**
-   * update data of the table: "appointment_plan"
-   */
-  update_appointment_plan: UPDATE_APPOINTMENT_PLAN_DESCRIPTION_update_appointment_plan | null;
-}
-
-export interface UPDATE_APPOINTMENT_PLAN_DESCRIPTIONVariables {
-  appointmentPlanId: any;
-  description: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: PUBLISH_APPOINTMENT_PLAN
-// ====================================================
-
-export interface PUBLISH_APPOINTMENT_PLAN_update_appointment_plan {
-  __typename: "appointment_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface PUBLISH_APPOINTMENT_PLAN {
-  /**
-   * update data of the table: "appointment_plan"
-   */
-  update_appointment_plan: PUBLISH_APPOINTMENT_PLAN_update_appointment_plan | null;
-}
-
-export interface PUBLISH_APPOINTMENT_PLANVariables {
-  appointmentPlanId: any;
-  publishedAt?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_SALE
-// ====================================================
-
-export interface UPDATE_APPOINTMENT_PLAN_SALE_update_appointment_plan {
-  __typename: "appointment_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_APPOINTMENT_PLAN_SALE {
-  /**
-   * update data of the table: "appointment_plan"
-   */
-  update_appointment_plan: UPDATE_APPOINTMENT_PLAN_SALE_update_appointment_plan | null;
-}
-
-export interface UPDATE_APPOINTMENT_PLAN_SALEVariables {
-  appointmentPlanId: any;
-  duration?: any | null;
-  listPrice?: any | null;
-  currencyId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_APPOINTMENT_SCHEDULE
-// ====================================================
-
-export interface UPDATE_APPOINTMENT_SCHEDULE_update_appointment_schedule {
-  __typename: "appointment_schedule_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_APPOINTMENT_SCHEDULE {
-  /**
-   * update data of the table: "appointment_schedule"
-   */
-  update_appointment_schedule: UPDATE_APPOINTMENT_SCHEDULE_update_appointment_schedule | null;
-}
-
-export interface UPDATE_APPOINTMENT_SCHEDULEVariables {
-  appointmentScheduleId: any;
-  excludes?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_APPOINTMENT_SCHEDULE
-// ====================================================
-
-export interface DELETE_APPOINTMENT_SCHEDULE_delete_appointment_schedule {
-  __typename: "appointment_schedule_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_APPOINTMENT_SCHEDULE {
-  /**
-   * delete data from the table: "appointment_schedule"
-   */
-  delete_appointment_schedule: DELETE_APPOINTMENT_SCHEDULE_delete_appointment_schedule | null;
-}
-
-export interface DELETE_APPOINTMENT_SCHEDULEVariables {
-  appointmentScheduleId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: CREATE_APPOINTMENT_SCHEDULE
-// ====================================================
-
-export interface CREATE_APPOINTMENT_SCHEDULE_insert_appointment_schedule {
-  __typename: "appointment_schedule_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface CREATE_APPOINTMENT_SCHEDULE {
-  /**
-   * insert data into the table: "appointment_schedule"
-   */
-  insert_appointment_schedule: CREATE_APPOINTMENT_SCHEDULE_insert_appointment_schedule | null;
-}
-
-export interface CREATE_APPOINTMENT_SCHEDULEVariables {
-  appointmentPlanId: any;
-  startedAt: any;
-  intervalType?: string | null;
-  intervalAmount?: number | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_ALLTYPE_PRODUCT_COLLECTION
 // ====================================================
 
@@ -3507,289 +3869,6 @@ export interface GET_ALLTYPE_PRODUCT_COLLECTION {
    * fetch data from the table: "program_package"
    */
   program_package: GET_ALLTYPE_PRODUCT_COLLECTION_program_package[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_BASIC
-// ====================================================
-
-export interface UPDATE_PODCAST_PROGRAM_BASIC_update_podcast_program {
-  __typename: "podcast_program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_BASIC_delete_podcast_program_category {
-  __typename: "podcast_program_category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_BASIC_insert_podcast_program_category {
-  __typename: "podcast_program_category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_BASIC_insert_tag {
-  __typename: "tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_BASIC_delete_podcast_program_tag {
-  __typename: "podcast_program_tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_BASIC_insert_podcast_program_tag {
-  __typename: "podcast_program_tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_BASIC {
-  /**
-   * update data of the table: "podcast_program"
-   */
-  update_podcast_program: UPDATE_PODCAST_PROGRAM_BASIC_update_podcast_program | null;
-  /**
-   * delete data from the table: "podcast_program_category"
-   */
-  delete_podcast_program_category: UPDATE_PODCAST_PROGRAM_BASIC_delete_podcast_program_category | null;
-  /**
-   * insert data into the table: "podcast_program_category"
-   */
-  insert_podcast_program_category: UPDATE_PODCAST_PROGRAM_BASIC_insert_podcast_program_category | null;
-  /**
-   * insert data into the table: "tag"
-   */
-  insert_tag: UPDATE_PODCAST_PROGRAM_BASIC_insert_tag | null;
-  /**
-   * delete data from the table: "podcast_program_tag"
-   */
-  delete_podcast_program_tag: UPDATE_PODCAST_PROGRAM_BASIC_delete_podcast_program_tag | null;
-  /**
-   * insert data into the table: "podcast_program_tag"
-   */
-  insert_podcast_program_tag: UPDATE_PODCAST_PROGRAM_BASIC_insert_podcast_program_tag | null;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_BASICVariables {
-  podcastProgramId: any;
-  title?: string | null;
-  podcastCategories: podcast_program_category_insert_input[];
-  tags: tag_insert_input[];
-  podcastProgramTags: podcast_program_tag_insert_input[];
-  updatedAt: any;
-  supportLocales?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_BODY
-// ====================================================
-
-export interface UPDATE_PODCAST_PROGRAM_BODY_update_podcast_program {
-  __typename: "podcast_program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_BODY_update_podcast_program_body {
-  __typename: "podcast_program_body_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_BODY {
-  /**
-   * update data of the table: "podcast_program"
-   */
-  update_podcast_program: UPDATE_PODCAST_PROGRAM_BODY_update_podcast_program | null;
-  /**
-   * update data of the table: "podcast_program_body"
-   */
-  update_podcast_program_body: UPDATE_PODCAST_PROGRAM_BODY_update_podcast_program_body | null;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_BODYVariables {
-  podcastProgramId: any;
-  description?: string | null;
-  duration?: any | null;
-  updatedAt: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_ROLE
-// ====================================================
-
-export interface UPDATE_PODCAST_PROGRAM_ROLE_update_podcast_program {
-  __typename: "podcast_program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_ROLE_delete_podcast_program_role {
-  __typename: "podcast_program_role_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_ROLE_insert_podcast_program_role {
-  __typename: "podcast_program_role_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_ROLE {
-  /**
-   * update data of the table: "podcast_program"
-   */
-  update_podcast_program: UPDATE_PODCAST_PROGRAM_ROLE_update_podcast_program | null;
-  /**
-   * delete data from the table: "podcast_program_role"
-   */
-  delete_podcast_program_role: UPDATE_PODCAST_PROGRAM_ROLE_delete_podcast_program_role | null;
-  /**
-   * insert data into the table: "podcast_program_role"
-   */
-  insert_podcast_program_role: UPDATE_PODCAST_PROGRAM_ROLE_insert_podcast_program_role | null;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_ROLEVariables {
-  podcastProgramId: any;
-  podcastProgramRoles: podcast_program_role_insert_input[];
-  updatedAt: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_INTRO
-// ====================================================
-
-export interface UPDATE_PODCAST_PROGRAM_INTRO_update_podcast_program {
-  __typename: "podcast_program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_INTRO {
-  /**
-   * update data of the table: "podcast_program"
-   */
-  update_podcast_program: UPDATE_PODCAST_PROGRAM_INTRO_update_podcast_program | null;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_INTROVariables {
-  podcastProgramId: any;
-  coverUrl?: string | null;
-  abstract?: string | null;
-  updatedAt: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_PLAN
-// ====================================================
-
-export interface UPDATE_PODCAST_PROGRAM_PLAN_update_podcast_program {
-  __typename: "podcast_program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_PLAN {
-  /**
-   * update data of the table: "podcast_program"
-   */
-  update_podcast_program: UPDATE_PODCAST_PROGRAM_PLAN_update_podcast_program | null;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_PLANVariables {
-  podcastProgramId: any;
-  listPrice?: any | null;
-  salePrice?: any | null;
-  soldAt?: any | null;
-  updatedAt: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: PUBLISH_PODCAST_PROGRAM
-// ====================================================
-
-export interface PUBLISH_PODCAST_PROGRAM_update_podcast_program {
-  __typename: "podcast_program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface PUBLISH_PODCAST_PROGRAM {
-  /**
-   * update data of the table: "podcast_program"
-   */
-  update_podcast_program: PUBLISH_PODCAST_PROGRAM_update_podcast_program | null;
-}
-
-export interface PUBLISH_PODCAST_PROGRAMVariables {
-  podcastProgramId: any;
-  publishedAt?: any | null;
 }
 
 /* tslint:disable */
@@ -3960,96 +4039,6 @@ export interface GET_APPLICATION {
 
 export interface GET_APPLICATIONVariables {
   host: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_APPOINTMENT_PLAN_ADMIN
-// ====================================================
-
-export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_schedules {
-  __typename: "appointment_schedule";
-  id: any;
-  /**
-   * ISO8601[], ex: ["2019-01-01T12:34:56+0800"]
-   */
-  excludes: any;
-}
-
-export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods_appointment_schedule {
-  __typename: "appointment_schedule";
-  id: any;
-  interval_amount: number | null;
-  /**
-   * Y / M / W / D
-   */
-  interval_type: string | null;
-}
-
-export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods {
-  __typename: "appointment_period";
-  /**
-   * An object relationship
-   */
-  appointment_schedule: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods_appointment_schedule | null;
-  started_at: any | null;
-  ended_at: any | null;
-  booked: boolean | null;
-  available: boolean | null;
-}
-
-export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate_aggregate {
-  __typename: "appointment_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate {
-  __typename: "appointment_enrollment_aggregate";
-  aggregate: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate_aggregate | null;
-}
-
-export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk {
-  __typename: "appointment_plan";
-  id: any;
-  title: string;
-  phone: string | null;
-  description: string | null;
-  /**
-   * minutes
-   */
-  duration: any;
-  price: any;
-  published_at: any | null;
-  support_locales: any | null;
-  currency_id: string;
-  /**
-   * An array relationship
-   */
-  appointment_schedules: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_schedules[];
-  /**
-   * An array relationship
-   */
-  appointment_periods: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods[];
-  /**
-   * An aggregated array relationship
-   */
-  appointment_enrollments_aggregate: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate;
-}
-
-export interface GET_APPOINTMENT_PLAN_ADMIN {
-  /**
-   * fetch data from the table: "appointment_plan" using primary key columns
-   */
-  appointment_plan_by_pk: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk | null;
-}
-
-export interface GET_APPOINTMENT_PLAN_ADMINVariables {
-  appointmentPlanId: any;
-  now?: any | null;
 }
 
 /* tslint:disable */
@@ -4385,6 +4374,96 @@ export interface UPSERT_APP_SECRETSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_APPOINTMENT_PLAN_ADMIN
+// ====================================================
+
+export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_schedules {
+  __typename: "appointment_schedule";
+  id: any;
+  /**
+   * ISO8601[], ex: ["2019-01-01T12:34:56+0800"]
+   */
+  excludes: any;
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods_appointment_schedule {
+  __typename: "appointment_schedule";
+  id: any;
+  interval_amount: number | null;
+  /**
+   * Y / M / W / D
+   */
+  interval_type: string | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods {
+  __typename: "appointment_period";
+  /**
+   * An object relationship
+   */
+  appointment_schedule: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods_appointment_schedule | null;
+  started_at: any | null;
+  ended_at: any | null;
+  booked: boolean | null;
+  available: boolean | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate_aggregate {
+  __typename: "appointment_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate {
+  __typename: "appointment_enrollment_aggregate";
+  aggregate: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk {
+  __typename: "appointment_plan";
+  id: any;
+  title: string;
+  phone: string | null;
+  description: string | null;
+  /**
+   * minutes
+   */
+  duration: any;
+  price: any;
+  published_at: any | null;
+  support_locales: any | null;
+  currency_id: string;
+  /**
+   * An array relationship
+   */
+  appointment_schedules: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_schedules[];
+  /**
+   * An array relationship
+   */
+  appointment_periods: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_periods[];
+  /**
+   * An aggregated array relationship
+   */
+  appointment_enrollments_aggregate: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk_appointment_enrollments_aggregate;
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMIN {
+  /**
+   * fetch data from the table: "appointment_plan" using primary key columns
+   */
+  appointment_plan_by_pk: GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_ADMINVariables {
+  appointmentPlanId: any;
+  now?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_APPOINTMENT_ENROLLMENT_COLLECTION
 // ====================================================
 
@@ -4648,46 +4727,6 @@ export interface GET_POSTS {
    * fetch data from the table: "post"
    */
   post: GET_POSTS_post[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_POST
-// ====================================================
-
-export interface INSERT_POST_insert_post_returning {
-  __typename: "post";
-  id: any;
-}
-
-export interface INSERT_POST_insert_post {
-  __typename: "post_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: INSERT_POST_insert_post_returning[];
-}
-
-export interface INSERT_POST {
-  /**
-   * insert data into the table: "post"
-   */
-  insert_post: INSERT_POST_insert_post | null;
-}
-
-export interface INSERT_POSTVariables {
-  appId: string;
-  title: string;
-  postCategories: post_category_insert_input[];
-  postRoles: post_role_insert_input[];
 }
 
 /* tslint:disable */
@@ -5986,79 +6025,6 @@ export interface GET_MEMBER_SUMMARY_COLLECTION {
    * fetch data from the table: "member"
    */
   member: GET_MEMBER_SUMMARY_COLLECTION_member[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER_BASIC
-// ====================================================
-
-export interface UPDATE_MEMBER_BASIC_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_BASIC_delete_member_tag {
-  __typename: "member_tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_BASIC_insert_tag {
-  __typename: "tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_BASIC_insert_member_tag {
-  __typename: "member_tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_BASIC {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: UPDATE_MEMBER_BASIC_update_member | null;
-  /**
-   * delete data from the table: "member_tag"
-   */
-  delete_member_tag: UPDATE_MEMBER_BASIC_delete_member_tag | null;
-  /**
-   * insert data into the table: "tag"
-   */
-  insert_tag: UPDATE_MEMBER_BASIC_insert_tag | null;
-  /**
-   * insert data into the table: "member_tag"
-   */
-  insert_member_tag: UPDATE_MEMBER_BASIC_insert_member_tag | null;
-}
-
-export interface UPDATE_MEMBER_BASICVariables {
-  memberId?: string | null;
-  name?: string | null;
-  description?: string | null;
-  username?: string | null;
-  email?: string | null;
-  pictureUrl?: string | null;
-  title?: string | null;
-  abstract?: string | null;
-  tags: tag_insert_input[];
-  memberTags: member_tag_insert_input[];
 }
 
 /* tslint:disable */
@@ -7848,6 +7814,84 @@ export interface INSERT_PROGRAM_PACKAGE {
 export interface INSERT_PROGRAM_PACKAGEVariables {
   title: string;
   appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CREATE_APPOINTMENT_PLAN
+// ====================================================
+
+export interface CREATE_APPOINTMENT_PLAN_insert_appointment_plan_returning {
+  __typename: "appointment_plan";
+  id: any;
+}
+
+export interface CREATE_APPOINTMENT_PLAN_insert_appointment_plan {
+  __typename: "appointment_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: CREATE_APPOINTMENT_PLAN_insert_appointment_plan_returning[];
+}
+
+export interface CREATE_APPOINTMENT_PLAN {
+  /**
+   * insert data into the table: "appointment_plan"
+   */
+  insert_appointment_plan: CREATE_APPOINTMENT_PLAN_insert_appointment_plan | null;
+}
+
+export interface CREATE_APPOINTMENT_PLANVariables {
+  title: string;
+  creatorId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_POST
+// ====================================================
+
+export interface INSERT_POST_insert_post_returning {
+  __typename: "post";
+  id: any;
+}
+
+export interface INSERT_POST_insert_post {
+  __typename: "post_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_POST_insert_post_returning[];
+}
+
+export interface INSERT_POST {
+  /**
+   * insert data into the table: "post"
+   */
+  insert_post: INSERT_POST_insert_post | null;
+}
+
+export interface INSERT_POSTVariables {
+  appId: string;
+  title: string;
+  postCategories: post_category_insert_input[];
+  postRoles: post_role_insert_input[];
 }
 
 /* tslint:disable */
