@@ -95,10 +95,10 @@ const BlogPostBasicForm: React.FC<{
       <Form.Item label={formatMessage(commonMessages.term.title)} name="title">
         <Input />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.category)}>
+      <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
         <CategorySelector classType="post" />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.tag)}>
+      <Form.Item label={formatMessage(commonMessages.term.tag)} name="tags">
         <TagSelector />
       </Form.Item>
       <Form.Item
@@ -112,9 +112,13 @@ const BlogPostBasicForm: React.FC<{
         }
         hasFeedback
         validateStatus={codeName.length ? (canCodeNameUse ? 'success' : 'error') : ''}
+        extra={
+          <StyledText className="mt-2">{`https://${settings['host']}/posts/${
+            codeName || post.codeName || ''
+          }`}</StyledText>
+        }
       >
-        <Input maxLength={20} onChange={e => setCodeName(e.target.value)} />
-        <StyledText>{`https://${settings['host']}/posts/${codeName}`}</StyledText>
+        <Input maxLength={20} placeholder={post.codeName || ''} onChange={e => setCodeName(e.target.value)} />
       </Form.Item>
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>

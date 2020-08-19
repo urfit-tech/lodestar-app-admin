@@ -95,10 +95,10 @@ const BlogPostAuthorCollectionBlock: React.FC<{
         </Button>
       )}
 
-      <Modal title={null} footer={null} centered destroyOnClose visible={isVisible} onCancel={() => setVisible(false)}>
-        <StyledModalTitle>{formatMessage(commonMessages.ui.addAuthor)}</StyledModalTitle>
+      <Modal footer={null} centered destroyOnClose visible={isVisible} onCancel={() => setVisible(false)}>
+        <StyledModalTitle className="mb-4">{formatMessage(commonMessages.ui.addAuthor)}</StyledModalTitle>
 
-        <Form form={form} colon={false} hideRequiredMark onFinish={handleSubmit}>
+        <Form form={form} layout="vertical" colon={false} hideRequiredMark onFinish={handleSubmit}>
           <Form.Item label={formatMessage(commonMessages.label.selectAuthor)} name="memberId">
             <CreatorSelector />
           </Form.Item>

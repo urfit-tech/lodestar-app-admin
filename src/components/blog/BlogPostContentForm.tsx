@@ -55,6 +55,7 @@ const BlogPostContentForm: React.FC<{
       <Form.Item name="description">
         <AdminBraftEditor />
       </Form.Item>
+
       <Form.Item>
         <Button className="mr-2" onClick={() => form.resetFields()}>
           {formatMessage(commonMessages.ui.cancel)}

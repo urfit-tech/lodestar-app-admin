@@ -91,7 +91,28 @@ export const usePost = (postId: string) => {
 }
 
 export const usePostCollection = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_POSTS>(GET_POSTS)
+  const { loading, error, data, refetch } = useQuery<types.GET_POSTS>(gql`
+    query GET_POSTS {
+      post(where: { is_deleted: { _eq: false } }, order_by: { updated_at: desc }) {
+        id
+        title
+        cover_url
+        video_url
+        post_roles(where: { name: { _eq: "author" } }) {
+          id
+          name
+          post_id
+          member {
+            id
+            name
+            username
+          }
+        }
+        published_at
+        views
+      }
+    }
+  `)
 
   const posts: {
     id: string
@@ -103,57 +124,21 @@ export const usePostCollection = () => {
     authorName?: string | null
   }[] =
     loading || error || !data
-      ? [
-          {
-            id: '',
-            title: '',
-            coverUrl: '',
-            videoUrl: '',
-            views: null,
-            publishedAt: null,
-            authorName: '',
-          },
-        ]
-      : data?.post.map(post => {
-          const author = post.post_roles.find(postRole => postRole.name === 'author') || { member: { name: '' } }
-
-          return {
-            id: post.id,
-            title: post.title,
-            coverUrl: post.cover_url,
-            videoUrl: post.video_url,
-            views: post.views,
-            publishedAt: post.published_at,
-            authorName: author.member?.name,
-          }
-        })
+      ? []
+      : data.post.map(post => ({
+          id: post.id,
+          title: post.title,
+          coverUrl: post.cover_url,
+          videoUrl: post.video_url,
+          views: post.views,
+          publishedAt: post.published_at,
+          authorName: post.post_roles.find(postRole => postRole.name === 'author')?.member?.name,
+        }))
 
   return {
-    loading,
-    error,
+    loadingPosts: loading,
+    errorPosts: error,
     posts,
-    refetch,
+    refetchPosts: refetch,
   }
 }
-
-const GET_POSTS = gql`
-  query GET_POSTS {
-    post(where: { is_deleted: { _eq: false } }) {
-      id
-      title
-      cover_url
-      video_url
-      post_roles(where: { name: { _eq: "author" } }) {
-        id
-        name
-        post_id
-        member {
-          name
-          username
-        }
-      }
-      published_at
-      views
-    }
-  }
-`

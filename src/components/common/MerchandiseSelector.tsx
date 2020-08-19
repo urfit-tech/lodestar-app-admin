@@ -11,7 +11,9 @@ const MerchandiseSelector: React.FC<{
   return (
     <Select<string> mode="multiple" loading={loadingMerchandises} value={value} onChange={onChange}>
       {merchandises.map(merchandise => (
-        <Select.Option value={merchandise.id}>{merchandise.title}</Select.Option>
+        <Select.Option key={merchandise.id} value={merchandise.id}>
+          {merchandise.title}
+        </Select.Option>
       ))}
     </Select>
   )

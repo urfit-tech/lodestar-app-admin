@@ -20,12 +20,12 @@ const BlogAdminCollectionPage: React.FC = () => {
   const history = useHistory()
   const { id: appId } = useContext(AppContext)
   const { currentMemberId } = useAuth()
-  const { posts, refetch } = usePostCollection()
+  const { posts, refetchPosts } = usePostCollection()
   const [insertPost] = useMutation<types.INSERT_POST, types.INSERT_POSTVariables>(INSERT_POST)
 
   useEffect(() => {
-    refetch()
-  }, [refetch])
+    refetchPosts()
+  }, [refetchPosts])
 
   return (
     <AdminLayout>

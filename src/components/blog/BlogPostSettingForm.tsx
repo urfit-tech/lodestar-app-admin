@@ -62,6 +62,12 @@ const BlogPostSettingForm: React.FC<{
         })),
       },
     })
+      .then(() => {
+        refetch && refetch()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
   return (
     <Form
