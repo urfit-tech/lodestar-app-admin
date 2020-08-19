@@ -2,13 +2,18 @@ import { Select } from 'antd'
 import React from 'react'
 import { useTags } from '../../hooks/data'
 
-const TagSelector: React.FC<{ value?: string; onChange?: (value: string) => void }> = ({ value, onChange }) => {
+const TagSelector: React.FC<{
+  value?: string
+  onChange?: (value: string) => void
+}> = ({ value, onChange }) => {
   const { tags } = useTags()
 
   return (
     <Select mode="tags" value={value} onChange={onChange}>
       {tags.map(tag => (
-        <Select.Option value={tag}>{tag}</Select.Option>
+        <Select.Option key={tag} value={tag}>
+          {tag}
+        </Select.Option>
       ))}
     </Select>
   )

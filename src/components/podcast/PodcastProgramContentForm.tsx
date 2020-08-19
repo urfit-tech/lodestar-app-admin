@@ -87,6 +87,7 @@ const PodcastProgramContentForm: React.FC<{
   return (
     <Form
       form={form}
+      layout="vertical"
       colon={false}
       hideRequiredMark
       onFinish={handleSubmit}

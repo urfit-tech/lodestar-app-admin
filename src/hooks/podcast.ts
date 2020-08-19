@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { PodcastProgramColumnProps } from '../components/podcast/PodcastProgramCollectionAdminTable'
 import types from '../types'
-import { PeriodType } from '../types/general'
+import { PeriodType, CategoryProps } from '../types/general'
 import { PodcastPlanProps, PodcastProgramAdminProps } from '../types/podcast'
 
 export const usePodcastProgramCollection = (memberId?: string) => {
@@ -141,7 +141,12 @@ export const usePodcastProgramAdmin = (podcastProgramId: string) => {
     { variables: { podcastProgramId } },
   )
 
-  const podcastProgramAdmin: PodcastProgramAdminProps | null =
+  const podcastProgramAdmin:
+    | (PodcastProgramAdminProps & {
+        categories: CategoryProps[]
+        tags: string[]
+      })
+    | null =
     loading || error || !data || !data.podcast_program_by_pk
       ? null
       : {

@@ -5,23 +5,31 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
+import TagSelector from '../../containers/common/TagSelector'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
 import types from '../../types'
+import { CategoryProps } from '../../types/general'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import { StyledTips } from '../admin'
 import CategorySelector from '../common/CategorySelector'
 import LanguageSelector from '../common/LanguageSelector'
 
 const PodcastProgramBasicForm: React.FC<{
-  podcastProgramAdmin: PodcastProgramAdminProps | null
+  podcastProgramAdmin:
+    | (PodcastProgramAdminProps & {
+        categories: CategoryProps[]
+        tags: string[]
+      })
+    | null
   refetch?: () => void
 }> = ({ podcastProgramAdmin, refetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const { enabledModules } = useContext(AppContext)
   const [loading, setLoading] = useState(false)
+  const { id: appId } = useContext(AppContext)
 
   const [updatePodcastProgramBasic] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_BASIC,
@@ -52,6 +60,16 @@ const PodcastProgramBasicForm: React.FC<{
               category_id: category.id,
               position,
             })),
+        tags: values.tags.map((podcastProgramTag: string) => ({
+          app_id: appId,
+          name: podcastProgramTag,
+          type: '',
+        })),
+        podcastProgramTags: values.tags.map((podcastProgramTag: string, index: number) => ({
+          podcast_program_id: podcastProgramAdmin.id,
+          tag_name: podcastProgramTag,
+          position: index,
+        })),
       },
     })
       .then(() => {
@@ -74,6 +92,7 @@ const PodcastProgramBasicForm: React.FC<{
       initialValues={{
         title: podcastProgramAdmin.title,
         categoryIds: podcastProgramAdmin.categories.map(category => category.id),
+        tags: podcastProgramAdmin.tags,
         languages: podcastProgramAdmin.supportLocales.map(supportLocale => supportLocale),
       }}
     >
@@ -93,6 +112,9 @@ const PodcastProgramBasicForm: React.FC<{
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
         <CategorySelector classType="podcastProgram" />
+      </Form.Item>
+      <Form.Item label={formatMessage(commonMessages.term.tags)} name="tags">
+        <TagSelector />
       </Form.Item>
       {enabledModules.locale && (
         <Form.Item
@@ -127,6 +149,8 @@ const UPDATE_PODCAST_PROGRAM_BASIC = gql`
     $podcastProgramId: uuid!
     $title: String
     $podcastCategories: [podcast_program_category_insert_input!]!
+    $tags: [tag_insert_input!]!
+    $podcastProgramTags: [podcast_program_tag_insert_input!]!
     $updatedAt: timestamptz!
     $supportLocales: jsonb
   ) {
@@ -140,6 +164,15 @@ const UPDATE_PODCAST_PROGRAM_BASIC = gql`
       affected_rows
     }
     insert_podcast_program_category(objects: $podcastCategories) {
+      affected_rows
+    }
+    insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
+      affected_rows
+    }
+    delete_podcast_program_tag(where: { podcast_program_id: { _eq: $podcastProgramId } }) {
+      affected_rows
+    }
+    insert_podcast_program_tag(objects: $podcastProgramTags) {
       affected_rows
     }
   }
