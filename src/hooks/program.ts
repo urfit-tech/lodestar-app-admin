@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
-import { useContext, useState } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import AppContext from '../contexts/AppContext'
 import types from '../types'
 import {
@@ -447,6 +447,10 @@ export const useProgramProgressCollection = (programId?: string | null) => {
     types.GET_PROGRAM_PROGRESSVariables
   >(GET_PROGRAM_PROGRESS, { variables: { programId } })
   const [isNoMore, setIsNoMore] = useState(false)
+
+  useEffect(() => {
+    setIsNoMore(false)
+  }, [programId])
 
   const memberProgramProgress: {
     memberId: string

@@ -123,7 +123,7 @@ const ProgramProgressTable: React.FC<{
         dataSource={dataSource}
         pagination={false}
       />
-      {memberProgramProgress.length > 0 && fetchMoreProgramProgress && (
+      {memberProgramProgress.length >= 10 && fetchMoreProgramProgress && (
         <div className="text-center mt-4">
           <Button
             loading={loading}
