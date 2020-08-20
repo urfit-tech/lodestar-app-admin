@@ -5,6 +5,10 @@ import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import { desktopViewMixin, durationFormatter } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
+import { ReactComponent as PlayRate05xIcon } from '../../images/default/multiple-0-5.svg'
+import { ReactComponent as PlayRate10xIcon } from '../../images/default/multiple-1-0.svg'
+import { ReactComponent as PlayRate15xIcon } from '../../images/default/multiple-1-5.svg'
+import { ReactComponent as PlayRate20xIcon } from '../../images/default/multiple-2-0.svg'
 import { ReactComponent as BackwardIcon } from '../../images/icon/backward.svg'
 import { ReactComponent as ForwardIcon } from '../../images/icon/forward.svg'
 import { ReactComponent as PauseCircleIcon } from '../../images/icon/pause-circle.svg'
@@ -41,7 +45,7 @@ const StyledBar = styled.div`
 const StyledAction = styled.div`
   ${desktopViewMixin(css`
     > * {
-      margin-left: 2rem;
+      margin-left: 2rem !important;
     }
   `)}
   .ant-btn-link[disabled] {
@@ -57,11 +61,13 @@ const StyledOverlayButton = styled(Button)`
     font-size: 24px;
   }
 `
-const StyledBarIconButton = styled(Button)<{ height?: string; iconsize?: string }>`
+export const StyledBarIconButton = styled(Button)<{ height?: string; iconsize?: string; marginbottom?: string }>`
   height: ${props => (props.height ? props.height : '36px')};
   color: white;
   font-size: ${props => props.iconsize || '24px'};
   line-height: 1;
+  padding: 0;
+  margin-bottom: ${props => props.marginbottom || '0px'};
   span {
     line-height: 1;
   }
@@ -98,6 +104,7 @@ const RecordingController: React.FC<{
   hidden?: boolean
   name: string
   duration: number
+  playRate: number
   isPlaying?: boolean
   isEditing?: boolean
   isDeleteDisabled?: boolean
@@ -110,10 +117,12 @@ const RecordingController: React.FC<{
   onDelete?: () => void
   onUpload?: () => void
   onEdit?: () => void
+  onPlayRateChange?: () => void
 }> = ({
   hidden,
   name,
   duration,
+  playRate,
   isPlaying,
   isEditing,
   isDeleteDisabled,
@@ -126,6 +135,7 @@ const RecordingController: React.FC<{
   onDelete,
   onUpload,
   onEdit,
+  onPlayRateChange,
 }) => {
   const { formatMessage } = useIntl()
 
@@ -199,43 +209,59 @@ const RecordingController: React.FC<{
 
             <StyledAction className="col-3 col-lg-4 d-flex align-items-center justify-content-end">
               <Responsive.Desktop>
+                <Tooltip title={<TooltipText>{formatMessage(podcastMessages.label.playRate)}</TooltipText>}>
+                  <StyledBarIconButton
+                    marginbottom="2px"
+                    type="link"
+                    className="p-0"
+                    onClick={() => onPlayRateChange && onPlayRateChange()}
+                  >
+                    {playRate < 1 ? (
+                      <Icon component={() => <PlayRate05xIcon />} />
+                    ) : playRate < 1.5 ? (
+                      <Icon component={() => <PlayRate10xIcon />} />
+                    ) : playRate < 2 ? (
+                      <Icon component={() => <PlayRate15xIcon />} />
+                    ) : (
+                      <Icon component={() => <PlayRate20xIcon />} />
+                    )}
+                  </StyledBarIconButton>
+                </Tooltip>
                 <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.trim)}</TooltipText>}>
                   <StyledBarIconButton type="link" className="p-0 m-0" onClick={() => onTrim && onTrim()}>
                     <TrimIcon />
+                  </StyledBarIconButton>
+                </Tooltip>
+                <Tooltip title={<TooltipText>{formatMessage(commonMessages.ui.delete)}</TooltipText>}>
+                  <StyledBarIconButton
+                    disabled={isDeleteDisabled}
+                    type="link"
+                    className="p-0"
+                    onClick={() => onDelete && onDelete()}
+                  >
+                    <TrashOIcon />
                   </StyledBarIconButton>
                 </Tooltip>
                 <Divider
                   type="vertical"
                   style={{ top: 0, marginRight: '0', height: '24px', backgroundColor: 'white' }}
                 />
-                {isEditing && (
-                  <>
-                    <Tooltip title={<TooltipText>{formatMessage(commonMessages.ui.delete)}</TooltipText>}>
-                      <StyledBarIconButton
-                        disabled={isDeleteDisabled}
-                        type="link"
-                        className="p-0"
-                        onClick={() => onDelete && onDelete()}
-                      >
-                        <TrashOIcon />
-                      </StyledBarIconButton>
-                    </Tooltip>
-                    <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.upload)}</TooltipText>}>
-                      <StyledBarIconButton
-                        disabled={isUploadDisabled}
-                        type="link"
-                        className="p-0"
-                        onClick={() => onUpload && onUpload()}
-                      >
-                        <UploadIcon />
-                      </StyledBarIconButton>
-                    </Tooltip>
-                  </>
-                )}
+                <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.upload)}</TooltipText>}>
+                  <StyledBarIconButton
+                    disabled={isUploadDisabled}
+                    type="link"
+                    className="p-0"
+                    onClick={() => onUpload && onUpload()}
+                  >
+                    <UploadIcon />
+                  </StyledBarIconButton>
+                </Tooltip>
               </Responsive.Desktop>
-              <StyledButton className="py-2 px-3" size="small" ghost onClick={() => onEdit && onEdit()}>
-                {isEditing ? formatMessage(commonMessages.ui.cancel) : formatMessage(commonMessages.ui.edit)}
-              </StyledButton>
+              <Responsive.Default>
+                <StyledButton className="py-2 px-3" size="small" ghost onClick={() => onEdit && onEdit()}>
+                  {isEditing ? formatMessage(commonMessages.ui.cancel) : formatMessage(commonMessages.ui.edit)}
+                </StyledButton>
+              </Responsive.Default>
             </StyledAction>
           </div>
         </div>

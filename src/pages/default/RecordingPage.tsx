@@ -56,6 +56,7 @@ const RecordingPage: React.FC = () => {
   const [isInitializedAudio, setIsInitializedAudio] = useState(false)
   const [currentPlayingSecond, setCurrentPlayingSecond] = useState(0)
   const [currentAudioId, setCurrentAudioId] = useState<string | undefined>()
+  const [playRate, setPlayRate] = useState(1)
 
   const [waveCollection, setWaveCollection] = useState<WaveCollectionProps[]>([])
   const audioObjectRef = useRef<{ waveCollection: WaveCollectionProps[]; currentAudioId: string | undefined }>()
@@ -276,6 +277,7 @@ const RecordingPage: React.FC = () => {
         hidden={isRecording}
         name={`${(currentAudioIndex + 1).toString().padStart(2, '0')} ${formatMessage(podcastMessages.ui.voiceFile)}`}
         duration={currentPlayingSecond}
+        playRate={playRate}
         isPlaying={isPlaying}
         isEditing={isEditing}
         isDeleteDisabled={waveCollection.length < 1}
@@ -303,6 +305,15 @@ const RecordingPage: React.FC = () => {
           if (currentAudioIndex > 0) {
             setCurrentAudioId(waveCollection[currentAudioIndex - 1].id)
           }
+        }}
+        onPlayRateChange={() => {
+          playRate < 1
+            ? setPlayRate(1)
+            : playRate < 1.5
+            ? setPlayRate(1.5)
+            : playRate < 2
+            ? setPlayRate(2)
+            : setPlayRate(0.5)
         }}
       />
 

@@ -26,7 +26,7 @@ const StyledCard = styled.div<{ isActive?: boolean }>`
   background: white;
   border-radius: 10px;
   box-shadow: ${props =>
-    props.isActive ? '0 6px 10px 1px rgba(76, 91, 143, 0.3)' : '0 6px 12px 2px rgba(221, 221, 221, 0.5)'};
+    props.isActive ? '0 8px 20px 1px rgba(76, 91, 143, 0.6)' : '0 6px 12px 2px rgba(221, 221, 221, 0.5)'};
 `
 const WaveWrapper = styled.div`
   height: 116px;
