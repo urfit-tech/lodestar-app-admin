@@ -500,6 +500,7 @@ export const programMessages = {
     programAbstract: { id: 'program.label.programAbstract', defaultMessage: '課程摘要' },
     programDescription: { id: 'program.label.programDescription', defaultMessage: '課程描述' },
     deleteProgram: { id: 'program.label.deleteProgram', defaultMessage: '刪除課程' },
+    programOwner: { id: 'program.label.programOwner', defaultMessage: '課程負責人' },
   }),
   text: defineMessages({
     enrolledSubscriptionCount: {

@@ -16,11 +16,11 @@ import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import ProgramBasicForm from '../../components/program/ProgramBasicForm'
 import ProgramDeletionAdminCard from '../../components/program/ProgramDeletionAdminCard'
 import ProgramIntroForm from '../../components/program/ProgramIntroForm'
-import ProgramPlanAdminPane from '../../components/program/ProgramPlanAdminPane'
-import ProgramPublishingAdminPane from '../../components/program/ProgramPublishingAdminPane'
+import ProgramPlanAdminBlock from '../../components/program/ProgramPlanAdminBlock'
+import ProgramPublishBlock from '../../components/program/ProgramPublishBlock'
+import ProgramRoleAdminPane from '../../components/program/ProgramRoleAdminPane'
 import ProgramStructureAdminBlock from '../../components/program/ProgramStructureAdminBlock'
 import ProgramStructureAdminModal from '../../components/program/ProgramStructureAdminModal'
-import ProgramRoleAdminPane from '../../containers/program/ProgramRoleAdminPane'
 import AppContext from '../../contexts/AppContext'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useProgram } from '../../hooks/program'
@@ -98,13 +98,24 @@ const ProgramAdminPage: React.FC = () => {
           </Tabs.TabPane>
 
           <Tabs.TabPane key="plan" tab={formatMessage(commonMessages.label.salesPlan)}>
-            <ProgramPlanAdminPane program={program} onRefetch={refetchProgram} />
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(commonMessages.label.salesPlan)}</AdminPaneTitle>
+              <ProgramPlanAdminBlock program={program} onRefetch={refetchProgram} />
+            </div>
           </Tabs.TabPane>
+
           <Tabs.TabPane key="roles" tab={formatMessage(commonMessages.label.roleAdmin)}>
-            <ProgramRoleAdminPane program={program} onRefetch={refetchProgram} />
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(commonMessages.label.roleAdmin)}</AdminPaneTitle>
+              <ProgramRoleAdminPane program={program} onRefetch={refetchProgram} />
+            </div>
           </Tabs.TabPane>
-          <Tabs.TabPane key="publishing" tab={formatMessage(commonMessages.label.publishAdmin)}>
-            <ProgramPublishingAdminPane program={program} onRefetch={refetchProgram} />
+
+          <Tabs.TabPane key="publish" tab={formatMessage(commonMessages.label.publishSettings)}>
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
+              <ProgramPublishBlock program={program} onRefetch={refetchProgram} />
+            </div>
           </Tabs.TabPane>
         </Tabs>
       </StyledLayoutContent>

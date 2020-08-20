@@ -1,158 +1,161 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
 import { PlusOutlined } from '@ant-design/icons'
-import { Button, Modal, Typography } from 'antd'
-import { CardProps } from 'antd/lib/card'
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Form, Skeleton } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
+import gql from 'graphql-tag'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
-import styled from 'styled-components'
-import { DeleteProgramProps, UpdateProgramProps } from '../../containers/program/ProgramRoleAdminPane'
-import { notEmpty } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
+import { useIntl } from 'react-intl'
+import { handleError, notEmpty } from '../../helpers'
+import { commonMessages, programMessages } from '../../helpers/translation'
+import types from '../../types'
 import { ProgramAdminProps } from '../../types/program'
-import AdminCard from '../admin/AdminCard'
+import { AdminBlock, AdminBlockTitle } from '../admin'
+import AdminModal from '../admin/AdminModal'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
 import CreatorSelector from '../common/CreatorSelector'
 import MemberAvatar from '../common/MemberAvatar'
 
-const messages = defineMessages({
-  programOwner: { id: 'program.label.programOwner', defaultMessage: '課程負責人' },
-})
-
-const StyledModalTitle = styled.div`
-  color: var(--gray-darker);
-  font-size: 20px;
-  font-weight: bold;
-  line-height: 1.3;
-  letter-spacing: 0.77px;
-`
-
-const ProgramRoleAdminPane: React.FC<
-  CardProps & {
-    program: ProgramAdminProps | null
-    onProgramUpdate: UpdateProgramProps
-    onProgramDelete: DeleteProgramProps
-  }
-> = ({ program, onProgramUpdate, onProgramDelete }) => {
+const ProgramRoleAdminPane: React.FC<{
+  program: ProgramAdminProps | null
+  onRefetch?: () => void
+}> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [visible, setVisible] = useState(false)
+  const [form] = useForm()
+  const [updateProgramRole] = useMutation<types.UPDATE_PROGRAM_ROLE, types.UPDATE_PROGRAM_ROLEVariables>(
+    UPDATE_PROGRAM_ROLE,
+  )
+  const [deleteProgramRole] = useMutation<types.DELETE_PROGRAM_ROLE, types.DELETE_PROGRAM_ROLEVariables>(
+    DELETE_PROGRAM_ROLE,
+  )
+
   const [loading, setLoading] = useState(false)
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null)
 
-  const handleSubmit = () => {
+  if (!program) {
+    return <Skeleton active />
+  }
+
+  const handleSubmit = (onSuccess?: () => void) => {
     if (!selectedMemberId) {
       return
     }
-
-    if (!program) {
-      return
-    }
-
-    if (!program.roles) {
-      return
-    }
-
-    onProgramUpdate({
-      onSuccess: () => {
-        setSelectedMemberId(null)
-        setLoading(false)
-        setVisible(false)
-      },
-      data: {
-        programId: program ? program.id : '',
-        instructorIds: [
+    setLoading(true)
+    updateProgramRole({
+      variables: {
+        programId: program.id,
+        programRoles: [
           ...program.roles
-            .filter(role => notEmpty(role?.member?.id))
-            .map(role => ({ memberId: role?.member?.id || '', name: role.name || '' })),
+            .filter(role => notEmpty(role.member?.id))
+            .map(role => ({ memberId: role.member?.id || '', name: role.name || '' })),
           { memberId: selectedMemberId, name: 'instructor' },
-        ],
+        ].map(instructorId => ({
+          program_id: program.id,
+          member_id: instructorId.memberId,
+          name: instructorId.name,
+        })),
       },
     })
+      .then(() => {
+        onRefetch && onRefetch()
+        setSelectedMemberId(null)
+        onSuccess && onSuccess()
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
+
   return (
-    <div className="container py-3">
-      <Typography.Title className="pb-3" level={3}>
-        {formatMessage(commonMessages.label.roleAdmin)}
-      </Typography.Title>
-      <div className="mb-3">
-        <AdminCard loading={!program}>
-          <Typography.Title level={4}>{formatMessage(messages.programOwner)}</Typography.Title>
-          {program &&
-            program.roles
-              .filter(role => role.name === 'owner')
-              .map(role => <MemberAvatar key={role.id} size="32px" memberId={role?.member?.id || ''} withName />)}
-        </AdminCard>
-      </div>
-      <div className="mb-3">
-        <AdminCard loading={!program}>
-          <Typography.Title level={4}>{formatMessage(commonMessages.term.instructor)}</Typography.Title>
-          {program &&
-            program.roles
-              .filter(role => role.name === 'instructor')
-              .map(role => (
-                <RoleAdminBlock
-                  key={role.id}
-                  name={role?.member?.name || ''}
-                  pictureUrl={role?.member?.pictureUrl || ''}
-                  onDelete={() => {
-                    onProgramDelete({
-                      data: {
-                        programId: program ? program.id : '',
-                      },
-                    })
-                  }}
-                />
-              ))}
-          {program && !program.roles.find(role => role.name === 'instructor') && (
-            <Button type="link" icon={<PlusOutlined />} size="small" onClick={() => setVisible(true)}>
-              {formatMessage(commonMessages.ui.addInstructor)}
-            </Button>
+    <>
+      <AdminBlock>
+        <AdminBlockTitle>{formatMessage(programMessages.label.programOwner)}</AdminBlockTitle>
+        {program.roles
+          .filter(role => role.name === 'owner')
+          .map(role => (
+            <MemberAvatar key={role.id} size="32px" memberId={role.member?.id || ''} withName />
+          ))}
+      </AdminBlock>
+
+      <AdminBlock>
+        <AdminBlockTitle>{formatMessage(commonMessages.term.instructor)}</AdminBlockTitle>
+        {program.roles
+          .filter(role => role.name === 'instructor')
+          .map(role => (
+            <RoleAdminBlock
+              key={role.id}
+              name={role.member?.name || ''}
+              pictureUrl={role.member?.pictureUrl || ''}
+              onDelete={() =>
+                deleteProgramRole({
+                  variables: {
+                    programId: program.id,
+                  },
+                })
+                  .then(() => {
+                    onRefetch && onRefetch()
+                  })
+                  .catch(handleError)
+              }
+            />
+          ))}
+
+        <AdminModal
+          renderTrigger={({ setVisible }) =>
+            !program.roles.find(role => role.name === 'instructor') ? (
+              <Button type="link" icon={<PlusOutlined />} size="small" onClick={() => setVisible(true)}>
+                {formatMessage(commonMessages.ui.addInstructor)}
+              </Button>
+            ) : null
+          }
+          title={formatMessage(commonMessages.ui.addInstructor)}
+          footer={null}
+          renderFooter={({ setVisible }) => (
+            <>
+              <Button className="mr-2" onClick={() => setVisible(false)}>
+                {formatMessage(commonMessages.ui.cancel)}
+              </Button>
+              <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
+                {formatMessage(commonMessages.ui.add)}
+              </Button>
+            </>
           )}
+        >
+          <Form form={form} layout="vertical" colon={false} hideRequiredMark>
+            <Form.Item label={formatMessage(commonMessages.label.selectInstructor)}>
+              <CreatorSelector value={selectedMemberId || ''} onChange={value => setSelectedMemberId(value)} />
+            </Form.Item>
+          </Form>
+        </AdminModal>
+      </AdminBlock>
 
-          <Modal
-            title={null}
-            footer={null}
-            centered
-            destroyOnClose
-            visible={visible}
-            onCancel={() => setVisible(false)}
-          >
-            <StyledModalTitle>{formatMessage(commonMessages.ui.addInstructor)}</StyledModalTitle>
-
-            <Form
-              hideRequiredMark
-              colon={false}
-              onSubmit={e => {
-                e.preventDefault()
-                handleSubmit()
-              }}
-            >
-              <Form.Item label={formatMessage(commonMessages.label.selectInstructor)}>
-                <CreatorSelector value={selectedMemberId || ''} onChange={value => setSelectedMemberId(value)} />
-              </Form.Item>
-              <Form.Item className="text-right">
-                <Button onClick={() => setVisible(false)} className="mr-2">
-                  {formatMessage(commonMessages.ui.cancel)}
-                </Button>
-                <Button type="primary" htmlType="submit" loading={loading}>
-                  {formatMessage(commonMessages.ui.add)}
-                </Button>
-              </Form.Item>
-            </Form>
-          </Modal>
-        </AdminCard>
-      </div>
-      <div className="mb-3">
-        <AdminCard loading={!program}>
-          <Typography.Title level={4}>{formatMessage(commonMessages.term.teachingAssistant)}</Typography.Title>
-          {program &&
-            program.roles
-              .filter(role => role.name === 'assistant')
-              .map(role => <MemberAvatar key={role.id} size="32px" memberId={role?.member?.id || ''} withName />)}
-        </AdminCard>
-      </div>
-    </div>
+      <AdminBlock>
+        <AdminBlockTitle>{formatMessage(commonMessages.term.teachingAssistant)}</AdminBlockTitle>
+        {program.roles
+          .filter(role => role.name === 'assistant')
+          .map(role => (
+            <MemberAvatar key={role.id} size="32px" memberId={role.member?.id || ''} withName />
+          ))}
+      </AdminBlock>
+    </>
   )
 }
+
+const UPDATE_PROGRAM_ROLE = gql`
+  mutation UPDATE_PROGRAM_ROLE($programId: uuid!, $programRoles: [program_role_insert_input!]!) {
+    delete_program_role(where: { program_id: { _eq: $programId } }) {
+      affected_rows
+    }
+    insert_program_role(objects: $programRoles) {
+      affected_rows
+    }
+  }
+`
+
+const DELETE_PROGRAM_ROLE = gql`
+  mutation DELETE_PROGRAM_ROLE($programId: uuid!) {
+    delete_program_role(where: { program_id: { _eq: $programId }, name: { _eq: "instructor" } }) {
+      affected_rows
+    }
+  }
+`
 
 export default ProgramRoleAdminPane

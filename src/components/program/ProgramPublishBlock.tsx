@@ -12,11 +12,10 @@ import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramAdminProps } from '../../types/program'
-import AdminCard from '../admin/AdminCard'
+import { AdminBlock } from '../admin'
 import { StyledModal, StyledModalParagraph, StyledModalTitle } from './ProgramDeletionAdminCard'
 
 const messages = defineMessages({
-  programPublishingSettings: { id: 'program.label.programPublishingSettings', defaultMessage: '發佈設定' },
   unpublishingTitle: { id: 'program.text.unpublishingTitle', defaultMessage: '確定要取消發佈？' },
   unpublishingWarning: {
     id: 'program.text.unpublishingWarning',
@@ -57,7 +56,7 @@ const messages = defineMessages({
   noPrice: { id: 'program.text.noPrice', defaultMessage: '尚未訂定售價' },
 })
 
-const ProgramPublishingAdminPane: React.FC<
+const ProgramPublishBlock: React.FC<
   CardProps & {
     program: ProgramAdminProps | null
     onRefetch?: () => void
@@ -65,9 +64,9 @@ const ProgramPublishingAdminPane: React.FC<
 > = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
   const theme = useContext(ThemeContext)
-  const publishProgram = usePublishProgram()
+  const [publishProgram] = useMutation<types.PUBLISH_PROGRAM, types.PUBLISH_PROGRAMVariables>(PUBLISH_PROGRAM)
   const [publishState, setPublishState] = useState<string>(formatMessage(commonMessages.ui.publiclyPublished))
-  const [isVisible, setVisible] = useState<boolean>(false)
+  const [isVisible, setVisible] = useState(false)
 
   if (!program) {
     return <Skeleton active />
@@ -163,106 +162,95 @@ const ProgramPublishingAdminPane: React.FC<
   )
 
   return (
-    <div className="py-3">
-      <div className="container">
-        <Typography.Title className="pb-3" level={3}>
-          {formatMessage(messages.programPublishingSettings)}
-        </Typography.Title>
-        <AdminCard loading={!program}>
-          {program && (
-            <div className="d-flex flex-column align-items-center py-3  ">
-              <div className="mb-3">
-                <LegacyIcon
-                  type={isPublished ? 'check-circle' : isValidate ? 'warning' : 'close-circle'}
-                  style={{ fontSize: 64, color: theme['@primary-color'] }}
-                />
-              </div>
-              <div className="mb-2">
-                <Typography.Title level={4}>
-                  {isPublished
-                    ? isPrivate
-                      ? formatMessage(commonMessages.status.privatelyPublished)
-                      : formatMessage(commonMessages.status.publiclyPublished)
-                    : isValidate
-                    ? formatMessage(commonMessages.status.unpublished)
-                    : formatMessage(commonMessages.status.notComplete)}
-                </Typography.Title>
-              </div>
-              <div className="mb-3">
-                <Typography.Paragraph type="secondary">
-                  {isPublished
-                    ? isPrivate
-                      ? formatMessage(messages.isPrivatelyPublishedNotation)
-                      : formatMessage(messages.isPubliclyPublishedNotation)
-                    : isValidate
-                    ? formatMessage(messages.isUnpublishedNotation)
-                    : formatMessage(messages.notCompleteNotation)}
-                </Typography.Paragraph>
-              </div>
-              {!isValidate && (
-                <div className="px-5 py-4 mb-3" style={{ backgroundColor: '#f7f8f8', width: '100%' }}>
-                  {errors.map((error, idx) => {
-                    return (
-                      <div key={idx} className="d-flex align-items-center mb-2">
-                        <ExclamationCircleOutlined className="mr-1" />
-                        <span className="mr-1">{error.message}</span>
-                        <span>
-                          <Link to={error.to}>
-                            {formatMessage(messages.jumpTo)} <RightOutlined />
-                          </Link>
-                        </span>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-              {isPublished ? (
-                <Button onClick={handleUnPublish}>{formatMessage(commonMessages.ui.cancelPublishing)}</Button>
-              ) : (
-                <>
-                  {isValidate ? (
-                    <Dropdown.Button
-                      type="primary"
-                      icon={<DownOutlined />}
-                      overlay={overlay}
-                      onClick={() => {
-                        handlePublish(publishState === formatMessage(commonMessages.ui.privatelyPublished))
-                      }}
-                    >
-                      <div>{publishState}</div>
-                    </Dropdown.Button>
-                  ) : (
-                    <Dropdown.Button disabled icon={<DownOutlined />} overlay={overlay}>
-                      <div>{publishState}</div>
-                    </Dropdown.Button>
-                  )}
-                </>
-              )}
+    <AdminBlock>
+      {program && (
+        <div className="d-flex flex-column align-items-center py-3  ">
+          <div className="mb-3">
+            <LegacyIcon
+              type={isPublished ? 'check-circle' : isValidate ? 'warning' : 'close-circle'}
+              style={{ fontSize: 64, color: theme['@primary-color'] }}
+            />
+          </div>
+          <div className="mb-2">
+            <Typography.Title level={4}>
+              {isPublished
+                ? isPrivate
+                  ? formatMessage(commonMessages.status.privatelyPublished)
+                  : formatMessage(commonMessages.status.publiclyPublished)
+                : isValidate
+                ? formatMessage(commonMessages.status.unpublished)
+                : formatMessage(commonMessages.status.notComplete)}
+            </Typography.Title>
+          </div>
+          <div className="mb-3">
+            <Typography.Paragraph type="secondary">
+              {isPublished
+                ? isPrivate
+                  ? formatMessage(messages.isPrivatelyPublishedNotation)
+                  : formatMessage(messages.isPubliclyPublishedNotation)
+                : isValidate
+                ? formatMessage(messages.isUnpublishedNotation)
+                : formatMessage(messages.notCompleteNotation)}
+            </Typography.Paragraph>
+          </div>
+          {!isValidate && (
+            <div className="px-5 py-4 mb-3" style={{ backgroundColor: '#f7f8f8', width: '100%' }}>
+              {errors.map((error, idx) => {
+                return (
+                  <div key={idx} className="d-flex align-items-center mb-2">
+                    <ExclamationCircleOutlined className="mr-1" />
+                    <span className="mr-1">{error.message}</span>
+                    <span>
+                      <Link to={error.to}>
+                        {formatMessage(messages.jumpTo)} <RightOutlined />
+                      </Link>
+                    </span>
+                  </div>
+                )
+              })}
             </div>
           )}
-        </AdminCard>
-        <StyledModal
-          visible={isVisible}
-          okText={formatMessage(commonMessages.ui.publishConfirmation)}
-          onOk={() => {
-            handlePublish(true)
-            setVisible(false)
-          }}
-          cancelText={formatMessage(commonMessages.ui.back)}
-          onCancel={() => setVisible(false)}
-        >
-          <StyledModalTitle className="mb-4">{formatMessage(messages.confirmPrivatelyPublishedTitle)}</StyledModalTitle>
-          <StyledModalParagraph>{formatMessage(messages.confirmPrivatelyPublishedNotation)}</StyledModalParagraph>
-        </StyledModal>
-      </div>
-    </div>
+          {isPublished ? (
+            <Button onClick={handleUnPublish}>{formatMessage(commonMessages.ui.cancelPublishing)}</Button>
+          ) : (
+            <>
+              {isValidate ? (
+                <Dropdown.Button
+                  type="primary"
+                  icon={<DownOutlined />}
+                  overlay={overlay}
+                  onClick={() => {
+                    handlePublish(publishState === formatMessage(commonMessages.ui.privatelyPublished))
+                  }}
+                >
+                  <div>{publishState}</div>
+                </Dropdown.Button>
+              ) : (
+                <Dropdown.Button disabled icon={<DownOutlined />} overlay={overlay}>
+                  <div>{publishState}</div>
+                </Dropdown.Button>
+              )}
+            </>
+          )}
+        </div>
+      )}
+      <StyledModal
+        visible={isVisible}
+        okText={formatMessage(commonMessages.ui.publishConfirmation)}
+        onOk={() => {
+          handlePublish(true)
+          setVisible(false)
+        }}
+        cancelText={formatMessage(commonMessages.ui.back)}
+        onCancel={() => setVisible(false)}
+      >
+        <StyledModalTitle className="mb-4">{formatMessage(messages.confirmPrivatelyPublishedTitle)}</StyledModalTitle>
+        <StyledModalParagraph>{formatMessage(messages.confirmPrivatelyPublishedNotation)}</StyledModalParagraph>
+      </StyledModal>
+    </AdminBlock>
   )
 }
 
-const usePublishProgram = () => {
-  const [publishProgram] = useMutation<types.PUBLISH_PROGRAM, types.PUBLISH_PROGRAMVariables>(PUBLISH_PROGRAM)
-  return publishProgram
-}
 const PUBLISH_PROGRAM = gql`
   mutation PUBLISH_PROGRAM($programId: uuid!, $publishedAt: timestamptz, $isPrivate: Boolean) {
     update_program(
@@ -274,4 +262,4 @@ const PUBLISH_PROGRAM = gql`
   }
 `
 
-export default ProgramPublishingAdminPane
+export default ProgramPublishBlock

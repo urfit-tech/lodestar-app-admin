@@ -3093,6 +3093,75 @@ export interface PUBLISH_PROGRAMVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_ROLE
+// ====================================================
+
+export interface UPDATE_PROGRAM_ROLE_delete_program_role {
+  __typename: "program_role_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_ROLE_insert_program_role {
+  __typename: "program_role_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_ROLE {
+  /**
+   * delete data from the table: "program_role"
+   */
+  delete_program_role: UPDATE_PROGRAM_ROLE_delete_program_role | null;
+  /**
+   * insert data into the table: "program_role"
+   */
+  insert_program_role: UPDATE_PROGRAM_ROLE_insert_program_role | null;
+}
+
+export interface UPDATE_PROGRAM_ROLEVariables {
+  programId: any;
+  programRoles: program_role_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PROGRAM_ROLE
+// ====================================================
+
+export interface DELETE_PROGRAM_ROLE_delete_program_role {
+  __typename: "program_role_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_ROLE {
+  /**
+   * delete data from the table: "program_role"
+   */
+  delete_program_role: DELETE_PROGRAM_ROLE_delete_program_role | null;
+}
+
+export interface DELETE_PROGRAM_ROLEVariables {
+  programId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_CONTENT_SECTION
 // ====================================================
 
@@ -3837,75 +3906,6 @@ export interface GET_ALLTYPE_PRODUCT_COLLECTION {
    * fetch data from the table: "program_package"
    */
   program_package: GET_ALLTYPE_PRODUCT_COLLECTION_program_package[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_ROLE
-// ====================================================
-
-export interface UPDATE_PROGRAM_ROLE_delete_program_role {
-  __typename: "program_role_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_ROLE_insert_program_role {
-  __typename: "program_role_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_ROLE {
-  /**
-   * delete data from the table: "program_role"
-   */
-  delete_program_role: UPDATE_PROGRAM_ROLE_delete_program_role | null;
-  /**
-   * insert data into the table: "program_role"
-   */
-  insert_program_role: UPDATE_PROGRAM_ROLE_insert_program_role | null;
-}
-
-export interface UPDATE_PROGRAM_ROLEVariables {
-  programId: any;
-  programRoles: program_role_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_PROGRAM_ROLE
-// ====================================================
-
-export interface DELETE_PROGRAM_ROLE_delete_program_role {
-  __typename: "program_role_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PROGRAM_ROLE {
-  /**
-   * delete data from the table: "program_role"
-   */
-  delete_program_role: DELETE_PROGRAM_ROLE_delete_program_role | null;
-}
-
-export interface DELETE_PROGRAM_ROLEVariables {
-  programId: any;
 }
 
 /* tslint:disable */
