@@ -73,8 +73,11 @@ export const formatSeconds = (seconds: number) => [
  * @return {Promise<AudioBuffer>}
  * @deprecated use AudioContext.decodeAudioData directly
  */
-export function decodeAudioArrayBuffer(arrayBuffer: ArrayBuffer) {
-  return new AudioContext().decodeAudioData(arrayBuffer)
+export const decodeAudioArrayBuffer = async (arrayBuffer: ArrayBuffer) => {
+  const audioCtx = new AudioContext()
+  const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer)
+  await audioCtx.close()
+  return audioBuffer
 }
 
 /**
@@ -138,7 +141,9 @@ export function serializeAudioBuffer(audioBuffer: AudioBuffer) {
 
 export const decodeAudio = async (blob: File) => {
   const _arrayBuffer = await readArrayBuffer(blob)
-  const _audioBuffer = _arrayBuffer ? await new AudioContext().decodeAudioData(_arrayBuffer) : null
+  const audioCtx = new AudioContext()
+  const _audioBuffer = _arrayBuffer ? await audioCtx.decodeAudioData(_arrayBuffer) : null
+  await audioCtx.close()
 
   return _audioBuffer
 }

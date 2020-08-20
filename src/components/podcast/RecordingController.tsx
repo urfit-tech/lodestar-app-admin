@@ -57,10 +57,10 @@ const StyledOverlayButton = styled(Button)`
     font-size: 24px;
   }
 `
-const StyledBarIconButton = styled(Button)<{ height?: string; iconSize?: string }>`
+const StyledBarIconButton = styled(Button)<{ height?: string; iconsize?: string }>`
   height: ${props => (props.height ? props.height : '36px')};
   color: white;
-  font-size: ${props => props.iconSize || '24px'};
+  font-size: ${props => props.iconsize || '24px'};
   line-height: 1;
   span {
     line-height: 1;
@@ -184,7 +184,7 @@ const RecordingController: React.FC<{
                 type="link"
                 className="mx-0"
                 height="66px"
-                iconSize="44px"
+                iconsize="44px"
                 onClick={() => (isPlaying ? onPause && onPause() : onPlay && onPlay())}
               >
                 {isPlaying ? <PauseCircleIcon /> : <PlayCircleIcon />}
