@@ -1,100 +1,54 @@
-import { Form } from '@ant-design/compatible'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { MoreOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Button, Divider, Dropdown, InputNumber, Menu, Typography } from 'antd'
-import { FormProps } from 'antd/lib/form'
+import { useQuery } from '@apollo/react-hooks'
+import { Divider, Dropdown, Menu } from 'antd'
 import gql from 'graphql-tag'
-import moment from 'moment-timezone'
-import React, { useState } from 'react'
+import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramPlanPeriodType, ProgramPlanProps } from '../../types/program'
-import AdminCard from '../admin/AdminCard'
+import { AdminBlock, AdminBlockTitle } from '../admin'
 import PriceLabel from '../common/PriceLabel'
 import { BraftContent } from '../common/StyledBraftEditor'
 import ProgramPlanAdminModal from './ProgramPlanAdminModal'
-
-const StyledAdminCard = styled(AdminCard)`
-  && {
-    .current-price {
-      margin-bottom: 8px;
-      line-height: 1;
-      letter-spacing: 0.35px;
-      font-weight: bold;
-      font-size: 28px;
-      &__period {
-        font-size: 16px;
-      }
-    }
-
-    .exact-price {
-      margin-bottom: 16px;
-      display: block;
-      line-height: 1.5;
-      letter-spacing: 0.2px;
-      font-size: 14px;
-      font-weight: 500;
-      color: #585858;
-    }
-
-    .original-price {
-      display: block;
-      color: rgba(0, 0, 0, 0.45);
-      text-decoration: line-through;
-      letter-spacing: 0.18px;
-      font-size: 14px;
-    }
-  }
-`
 
 const messages = defineMessages({
   subscriptionCount: { id: 'program.text.subscriptionCount', defaultMessage: '{count} 人' },
 })
 
-type ProgramSubscriptionPlanAdminCardProps = {
+const ProgramSubscriptionPlanAdminCard: React.FC<{
   programId: string
-  isSubscription: boolean
   programPlan: ProgramPlanProps
   onRefetch?: () => void
-}
-const ProgramSubscriptionPlanAdminCard: React.FC<ProgramSubscriptionPlanAdminCardProps> = ({
-  programId,
-  isSubscription,
-  programPlan,
-  onRefetch,
-}) => {
+}> = ({ programId, programPlan, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const isOnSale = programPlan.soldAt && moment() < moment(programPlan.soldAt)
   const { salePrice, listPrice, discountDownPrice, periodType } = programPlan
-  const { loading, error, data } = useQuery<
-    types.GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT,
-    types.GET_PROGRAM_SUBSCRIPTION_PLAN_COUNTVariables
-  >(GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT, { variables: { programPlanId: programPlan.id } })
-  const programSubscriptionPlanCount =
-    loading || !!error || !data ? '' : data?.program_plan_enrollment_aggregate.aggregate?.count
+  const { loadingEnrollmentCount, enrollmentCount } = useProgramPlanEnrollmentCount(programPlan.id)
 
-  return isSubscription ? (
-    <StyledAdminCard>
-      <Typography.Text>{programPlan.title}</Typography.Text>
+  const isOnSale = (programPlan.soldAt?.getTime() || 0) > Date.now()
+
+  return (
+    <AdminBlock>
+      <AdminBlockTitle className="mb-3">{programPlan.title}</AdminBlockTitle>
       <PriceLabel
         listPrice={listPrice}
-        salePrice={isOnSale && salePrice ? salePrice : undefined}
+        salePrice={isOnSale ? salePrice : undefined}
         downPrice={discountDownPrice || undefined}
         periodAmount={1}
         periodType={periodType as ProgramPlanPeriodType}
       />
       <Divider />
-      <div className="mb-4">
+
+      <div className="mb-3">
         <BraftContent>{programPlan.description}</BraftContent>
       </div>
-      <div className="d-flex justify-content-between align-items-center mt-3">
-        <div className="flex-grow-1 m-0" style={{ lineHeight: '20px' }}>
-          {!loading && formatMessage(messages.subscriptionCount, { count: `${programSubscriptionPlanCount}` })}
+
+      <div className="d-flex align-items-center justify-content-between">
+        <div className="flex-grow-1">
+          {!loadingEnrollmentCount && formatMessage(messages.subscriptionCount, { count: `${enrollmentCount}` })}
         </div>
         <Dropdown
+          trigger={['click']}
           placement="bottomRight"
           overlay={
             <Menu>
@@ -110,94 +64,39 @@ const ProgramSubscriptionPlanAdminCard: React.FC<ProgramSubscriptionPlanAdminCar
               </Menu.Item>
             </Menu>
           }
-          trigger={['click']}
         >
           <MoreOutlined style={{ fontSize: '24px' }} />
         </Dropdown>
       </div>
-    </StyledAdminCard>
-  ) : (
-    <AdminCard>
-      <WrappedPerpetualPlanForm programPlan={programPlan} />
-    </AdminCard>
+    </AdminBlock>
   )
 }
 
-type PerpetualPlanFormProps = FormComponentProps &
-  FormProps & {
-    programPlan: ProgramPlanProps
-  }
-const PerpetualPlanForm: React.FC<PerpetualPlanFormProps> = ({ form, programPlan }) => {
-  const { formatMessage } = useIntl()
-
-  const [updateProgramContent] = useMutation<
-    types.UPDATE_PROGRAM_SUBSCRIPTION_PLAN,
-    types.UPDATE_PROGRAM_SUBSCRIPTION_PLANVariables
-  >(UPDATE_PROGRAM_SUBSCRIPTION_PLAN)
-  const [loading, setLoading] = useState(false)
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    form.validateFields((error, values) => {
-      if (!error) {
-        setLoading(true)
-        updateProgramContent({
-          variables: {
-            programPlanId: programPlan.id,
-            listPrice: values.listPrice,
-            salePrice: values.salePrice,
-          },
-        }).finally(() => setLoading(false))
+const useProgramPlanEnrollmentCount = (programPlanId: string) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT,
+    types.GET_PROGRAM_SUBSCRIPTION_PLAN_COUNTVariables
+  >(
+    gql`
+      query GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT($programPlanId: uuid!) {
+        program_plan_enrollment_aggregate(where: { program_plan_id: { _eq: $programPlanId } }) {
+          aggregate {
+            count
+          }
+        }
       }
-    })
-  }
-
-  return (
-    <Form onSubmit={handleSubmit}>
-      <Form.Item label={formatMessage(commonMessages.term.listPrice)}>
-        {form.getFieldDecorator('listPrice', {
-          initialValue: programPlan.listPrice,
-          rules: [{ required: true }, { type: 'number' }],
-        })(<InputNumber />)}
-      </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.salePrice)}>
-        {form.getFieldDecorator('salePrice', {
-          initialValue: programPlan.salePrice,
-          rules: [{ required: true }, { type: 'number' }],
-        })(<InputNumber />)}
-      </Form.Item>
-      <Form.Item>
-        <Button disabled={loading} onClick={() => form.resetFields()}>
-          {formatMessage(commonMessages.ui.cancel)}
-        </Button>
-        <Button loading={loading} type="primary" htmlType="submit">
-          {formatMessage(commonMessages.ui.save)}
-        </Button>
-      </Form.Item>
-    </Form>
+    `,
+    { variables: { programPlanId } },
   )
+
+  const enrollmentCount = data?.program_plan_enrollment_aggregate.aggregate?.count || 0
+
+  return {
+    loadingEnrollmentCount: loading,
+    errorEnrollmentCount: error,
+    enrollmentCount,
+    refetchEnrollmentCount: refetch,
+  }
 }
-const WrappedPerpetualPlanForm = Form.create<PerpetualPlanFormProps>()(PerpetualPlanForm)
-
-const UPDATE_PROGRAM_SUBSCRIPTION_PLAN = gql`
-  mutation UPDATE_PROGRAM_SUBSCRIPTION_PLAN($programPlanId: uuid!, $listPrice: numeric!, $salePrice: numeric!) {
-    update_program_plan(
-      where: { id: { _eq: $programPlanId } }
-      _set: { list_price: $listPrice, sale_price: $salePrice }
-    ) {
-      affected_rows
-    }
-  }
-`
-
-const GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT = gql`
-  query GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT($programPlanId: uuid!) {
-    program_plan_enrollment_aggregate(where: { program_plan_id: { _eq: $programPlanId } }) {
-      aggregate {
-        count
-      }
-    }
-  }
-`
 
 export default ProgramSubscriptionPlanAdminCard

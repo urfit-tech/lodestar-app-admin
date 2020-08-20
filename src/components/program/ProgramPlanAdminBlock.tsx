@@ -28,7 +28,7 @@ const ProgramPlanAdminBlock: React.FC<{
         <ProgramPlanAdminModal
           programId={program.id}
           renderTrigger={({ setVisible }) => (
-            <Button icon={<PlusOutlined />} type="primary" className="mb-3" onClick={() => setVisible(true)}>
+            <Button icon={<PlusOutlined />} type="primary" className="mb-4" onClick={() => setVisible(true)}>
               {formatMessage(messages.createPlan)}
             </Button>
           )}
@@ -37,12 +37,7 @@ const ProgramPlanAdminBlock: React.FC<{
 
         {program.plans.map(programPlan => (
           <div className="mb-3" key={programPlan.id}>
-            <ProgramSubscriptionPlanAdminCard
-              programId={program.id}
-              programPlan={programPlan}
-              isSubscription={program.isSubscription}
-              onRefetch={onRefetch}
-            />
+            <ProgramSubscriptionPlanAdminCard programId={program.id} programPlan={programPlan} onRefetch={onRefetch} />
           </div>
         ))}
       </>
