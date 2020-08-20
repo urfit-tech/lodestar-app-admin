@@ -2,7 +2,7 @@ import Icon, { EditOutlined, FileTextFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Popover, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useHistory } from 'react-router-dom'
 import styled from 'styled-components'
@@ -20,6 +20,7 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import ProgramAdminCard from '../../components/program/ProgramAdminCard'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useProgramPreviewCollection } from '../../hooks/program'
 import { ReactComponent as MoveIcon } from '../../images/icon/move.svg'
@@ -55,10 +56,6 @@ const ProgramCollectionAdminPage: React.FC = () => {
     types.UPDATE_PROGRAM_POSITION_COLLECTION,
     types.UPDATE_PROGRAM_POSITION_COLLECTIONVariables
   >(UPDATE_PROGRAM_POSITION_COLLECTION)
-
-  useEffect(() => {
-    refetchProgramPreviews()
-  }, [refetchProgramPreviews])
 
   if (!currentMemberId || !currentUserRole || loading) {
     return <LoadingPage />
@@ -110,12 +107,12 @@ const ProgramCollectionAdminPage: React.FC = () => {
                   position: index,
                 })),
               },
-            }).then(res => {
-              refetchProgramPreviews().then(() => {
-                const programId = res.data?.insert_program?.returning[0].id
+            })
+              .then(res => {
+                const programId = res.data?.insert_program?.returning[0]?.id
                 programId && history.push(`/programs/${programId}`)
               })
-            })
+              .catch(handleError)
           }
         />
       </div>
@@ -139,7 +136,9 @@ const ProgramCollectionAdminPage: React.FC = () => {
                         position: index,
                       })),
                     },
-                  }).then(() => refetchProgramPreviews())
+                  })
+                    .then(() => refetchProgramPreviews())
+                    .catch(handleError)
                 }}
                 renderItem={(program, currentIndex, moveTarget) => (
                   <div key={program.id} className="col-12 col-md-6 col-lg-4 mb-5">

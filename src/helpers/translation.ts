@@ -499,6 +499,7 @@ export const programMessages = {
     introductionVideo: { id: 'program.label.introductionVideo', defaultMessage: '介紹影片' },
     programAbstract: { id: 'program.label.programAbstract', defaultMessage: '課程摘要' },
     programDescription: { id: 'program.label.programDescription', defaultMessage: '課程描述' },
+    deleteProgram: { id: 'program.label.deleteProgram', defaultMessage: '刪除課程' },
   }),
   text: defineMessages({
     enrolledSubscriptionCount: {

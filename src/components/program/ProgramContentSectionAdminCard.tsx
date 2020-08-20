@@ -4,9 +4,10 @@ import { Button, Dropdown, Menu, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { handleError } from '../../helpers'
 import types from '../../types'
 import { ProgramAdminProps, ProgramContentSectionProps } from '../../types/program'
-import AdminCard from '../admin/AdminCard'
+import { AdminBlock } from '../admin'
 import ProgramContentAdminItem from './ProgramContentAdminItem'
 
 const messages = defineMessages({
@@ -21,10 +22,8 @@ const messages = defineMessages({
 const ProgramContentSectionAdminCard: React.FC<{
   program: ProgramAdminProps
   programContentSection: ProgramContentSectionProps
-  onDelete?: () => void
-  onUpdate?: () => void
   onRefetch?: () => void
-}> = ({ program, programContentSection, onDelete, onUpdate, onRefetch }) => {
+}> = ({ program, programContentSection, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [createProgramContent] = useMutation<types.INSERT_PROGRAM_CONTENT, types.INSERT_PROGRAM_CONTENTVariables>(
     INSERT_PROGRAM_CONTENT,
@@ -39,7 +38,7 @@ const ProgramContentSectionAdminCard: React.FC<{
   >(DELETE_PROGRAM_CONTENT_SECTION)
 
   return (
-    <AdminCard>
+    <AdminBlock>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <Typography.Title
           className="flex-grow-1 m-0"
@@ -48,7 +47,9 @@ const ProgramContentSectionAdminCard: React.FC<{
             onChange: title => {
               updateProgramContentSection({
                 variables: { id: programContentSection.id, title },
-              }).then(() => onUpdate && onUpdate())
+              })
+                .then(() => onRefetch && onRefetch())
+                .catch(handleError)
             },
           }}
         >
@@ -56,6 +57,7 @@ const ProgramContentSectionAdminCard: React.FC<{
         </Typography.Title>
 
         <Dropdown
+          trigger={['click']}
           placement="bottomRight"
           overlay={
             <Menu>
@@ -64,14 +66,15 @@ const ProgramContentSectionAdminCard: React.FC<{
                   window.confirm(formatMessage(messages.deleteSectionWarning)) &&
                   deleteProgramContentSection({
                     variables: { programContentSectionId: programContentSection.id },
-                  }).then(() => onDelete && onDelete())
+                  })
+                    .then(() => onRefetch && onRefetch())
+                    .catch(handleError)
                 }
               >
                 {formatMessage(messages.deleteSection)}
               </Menu.Item>
             </Menu>
           }
-          trigger={['click']}
         >
           <MoreOutlined />
         </Dropdown>
@@ -89,8 +92,8 @@ const ProgramContentSectionAdminCard: React.FC<{
       ))}
 
       <Button
-        icon={<PlusOutlined />}
         type="link"
+        icon={<PlusOutlined />}
         onClick={() =>
           createProgramContent({
             variables: {
@@ -99,25 +102,16 @@ const ProgramContentSectionAdminCard: React.FC<{
               position: programContentSection.programContents.length,
               publishedAt: program && program.publishedAt ? undefined : new Date(),
             },
-          }).then(() => onRefetch && onRefetch())
+          })
+            .then(() => onRefetch && onRefetch())
+            .catch(handleError)
         }
       >
         {formatMessage(messages.createContent)}
       </Button>
-    </AdminCard>
+    </AdminBlock>
   )
 }
-
-const DELETE_PROGRAM_CONTENT_SECTION = gql`
-  mutation DELETE_PROGRAM_CONTENT_SECTION($programContentSectionId: uuid!) {
-    delete_program_content(where: { content_section_id: { _eq: $programContentSectionId } }) {
-      affected_rows
-    }
-    delete_program_content_section(where: { id: { _eq: $programContentSectionId } }) {
-      affected_rows
-    }
-  }
-`
 
 const INSERT_PROGRAM_CONTENT = gql`
   mutation INSERT_PROGRAM_CONTENT(
@@ -141,7 +135,6 @@ const INSERT_PROGRAM_CONTENT = gql`
     }
   }
 `
-
 const UPDATE_PROGRAM_CONTENT_SECTION = gql`
   mutation UPDATE_PROGRAM_CONTENT_SECTION($id: uuid!, $title: String) {
     update_program_content_section(where: { id: { _eq: $id } }, _set: { title: $title }) {
@@ -149,4 +142,15 @@ const UPDATE_PROGRAM_CONTENT_SECTION = gql`
     }
   }
 `
+const DELETE_PROGRAM_CONTENT_SECTION = gql`
+  mutation DELETE_PROGRAM_CONTENT_SECTION($programContentSectionId: uuid!) {
+    delete_program_content(where: { content_section_id: { _eq: $programContentSectionId } }) {
+      affected_rows
+    }
+    delete_program_content_section(where: { id: { _eq: $programContentSectionId } }) {
+      affected_rows
+    }
+  }
+`
+
 export default ProgramContentSectionAdminCard

@@ -62,7 +62,7 @@ export const useProgramPreviewCollection = (memberId: string | null) => {
         }
       }
     `,
-    { variables: { memberId } },
+    { variables: { memberId }, fetchPolicy: 'no-cache' },
   )
 
   const programPreviews: ProgramPreviewProps[] =
@@ -270,9 +270,10 @@ export const useProgram = (programId: string) => {
         }
 
   return {
+    loadingProgram: loading,
+    errorProgram: error,
     program,
-    refetch,
-    loading,
+    refetchProgram: refetch,
   }
 }
 

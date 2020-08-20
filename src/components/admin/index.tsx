@@ -56,7 +56,7 @@ export const AdminPaneTitle = styled.h1`
 `
 export const AdminBlock = styled.div`
   margin-bottom: 1.25rem;
-  padding: 2.5rem;
+  padding: 2rem;
   background: white;
   border-radius: 4px;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);

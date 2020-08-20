@@ -6,13 +6,46 @@ import { Button, Input, message } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramPackageProps } from '../../types/programPackage'
 import { CustomRatioImage } from '../common/Image'
-import { CoverBlock, StyledSingleUploader } from '../program/ProgramIntroAdminCard'
+import { BREAK_POINT } from '../common/Responsive'
+import SingleUploader from '../common/SingleUploader'
+
+const CoverBlock = styled.div`
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 12rem;
+  overflow: hidden;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
+
+  @media (min-width: ${BREAK_POINT}px) {
+    margin-right: 2rem;
+    margin-bottom: 0;
+  }
+`
+const StyledSingleUploader = styled(SingleUploader)`
+  && {
+    width: auto;
+  }
+
+  .ant-upload.ant-upload-select-picture-card {
+    margin: 0;
+    height: auto;
+    width: 120px;
+    border: none;
+    background: none;
+
+    .ant-upload {
+      padding: 0;
+    }
+  }
+`
 
 type ProgramPackageBasicFormProps = {
   programPackage: ProgramPackageProps

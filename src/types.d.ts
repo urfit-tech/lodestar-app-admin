@@ -2519,10 +2519,10 @@ export interface UPDATE_MEMBER_BASICVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_TITLE
+// GraphQL mutation operation: UPDATE_PROGRAM_BASIC
 // ====================================================
 
-export interface UPDATE_PROGRAM_TITLE_update_program {
+export interface UPDATE_PROGRAM_BASIC_update_program {
   __typename: "program_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -2530,30 +2530,7 @@ export interface UPDATE_PROGRAM_TITLE_update_program {
   affected_rows: number;
 }
 
-export interface UPDATE_PROGRAM_TITLE {
-  /**
-   * update data of the table: "program"
-   */
-  update_program: UPDATE_PROGRAM_TITLE_update_program | null;
-}
-
-export interface UPDATE_PROGRAM_TITLEVariables {
-  programId: any;
-  title?: string | null;
-  supportLocales?: any | null;
-  isIssuesOpen?: boolean | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_CATEGORIES
-// ====================================================
-
-export interface UPDATE_PROGRAM_CATEGORIES_delete_program_category {
+export interface UPDATE_PROGRAM_BASIC_delete_program_category {
   __typename: "program_category_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -2561,7 +2538,7 @@ export interface UPDATE_PROGRAM_CATEGORIES_delete_program_category {
   affected_rows: number;
 }
 
-export interface UPDATE_PROGRAM_CATEGORIES_insert_program_category {
+export interface UPDATE_PROGRAM_BASIC_insert_program_category {
   __typename: "program_category_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -2569,32 +2546,7 @@ export interface UPDATE_PROGRAM_CATEGORIES_insert_program_category {
   affected_rows: number;
 }
 
-export interface UPDATE_PROGRAM_CATEGORIES {
-  /**
-   * delete data from the table: "program_category"
-   */
-  delete_program_category: UPDATE_PROGRAM_CATEGORIES_delete_program_category | null;
-  /**
-   * insert data into the table: "program_category"
-   */
-  insert_program_category: UPDATE_PROGRAM_CATEGORIES_insert_program_category | null;
-}
-
-export interface UPDATE_PROGRAM_CATEGORIESVariables {
-  programId: any;
-  programCategories: program_category_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_TAGS
-// ====================================================
-
-export interface UPDATE_PROGRAM_TAGS_insert_tag {
+export interface UPDATE_PROGRAM_BASIC_insert_tag {
   __typename: "tag_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -2602,7 +2554,7 @@ export interface UPDATE_PROGRAM_TAGS_insert_tag {
   affected_rows: number;
 }
 
-export interface UPDATE_PROGRAM_TAGS_delete_program_tag {
+export interface UPDATE_PROGRAM_BASIC_delete_program_tag {
   __typename: "program_tag_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -2610,7 +2562,7 @@ export interface UPDATE_PROGRAM_TAGS_delete_program_tag {
   affected_rows: number;
 }
 
-export interface UPDATE_PROGRAM_TAGS_insert_program_tag {
+export interface UPDATE_PROGRAM_BASIC_insert_program_tag {
   __typename: "program_tag_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -2618,23 +2570,39 @@ export interface UPDATE_PROGRAM_TAGS_insert_program_tag {
   affected_rows: number;
 }
 
-export interface UPDATE_PROGRAM_TAGS {
+export interface UPDATE_PROGRAM_BASIC {
+  /**
+   * update data of the table: "program"
+   */
+  update_program: UPDATE_PROGRAM_BASIC_update_program | null;
+  /**
+   * delete data from the table: "program_category"
+   */
+  delete_program_category: UPDATE_PROGRAM_BASIC_delete_program_category | null;
+  /**
+   * insert data into the table: "program_category"
+   */
+  insert_program_category: UPDATE_PROGRAM_BASIC_insert_program_category | null;
   /**
    * insert data into the table: "tag"
    */
-  insert_tag: UPDATE_PROGRAM_TAGS_insert_tag | null;
+  insert_tag: UPDATE_PROGRAM_BASIC_insert_tag | null;
   /**
    * delete data from the table: "program_tag"
    */
-  delete_program_tag: UPDATE_PROGRAM_TAGS_delete_program_tag | null;
+  delete_program_tag: UPDATE_PROGRAM_BASIC_delete_program_tag | null;
   /**
    * insert data into the table: "program_tag"
    */
-  insert_program_tag: UPDATE_PROGRAM_TAGS_insert_program_tag | null;
+  insert_program_tag: UPDATE_PROGRAM_BASIC_insert_program_tag | null;
 }
 
-export interface UPDATE_PROGRAM_TAGSVariables {
+export interface UPDATE_PROGRAM_BASICVariables {
   programId: any;
+  title?: string | null;
+  supportLocales?: any | null;
+  isIssuesOpen?: boolean | null;
+  programCategories: program_category_insert_input[];
   tags: tag_insert_input[];
   programTags: program_tag_insert_input[];
 }
@@ -2804,81 +2772,6 @@ export interface DELETE_PROGRAM_CONTENTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: INSERT_PROGRAM_CONTENT_SECTION
-// ====================================================
-
-export interface INSERT_PROGRAM_CONTENT_SECTION_insert_program_content_section_returning {
-  __typename: "program_content_section";
-  id: any;
-}
-
-export interface INSERT_PROGRAM_CONTENT_SECTION_insert_program_content_section {
-  __typename: "program_content_section_mutation_response";
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: INSERT_PROGRAM_CONTENT_SECTION_insert_program_content_section_returning[];
-}
-
-export interface INSERT_PROGRAM_CONTENT_SECTION {
-  /**
-   * insert data into the table: "program_content_section"
-   */
-  insert_program_content_section: INSERT_PROGRAM_CONTENT_SECTION_insert_program_content_section | null;
-}
-
-export interface INSERT_PROGRAM_CONTENT_SECTIONVariables {
-  programId: any;
-  title: string;
-  position: number;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_PROGRAM_CONTENT_SECTION
-// ====================================================
-
-export interface DELETE_PROGRAM_CONTENT_SECTION_delete_program_content {
-  __typename: "program_content_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PROGRAM_CONTENT_SECTION_delete_program_content_section {
-  __typename: "program_content_section_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PROGRAM_CONTENT_SECTION {
-  /**
-   * delete data from the table: "program_content"
-   */
-  delete_program_content: DELETE_PROGRAM_CONTENT_SECTION_delete_program_content | null;
-  /**
-   * delete data from the table: "program_content_section"
-   */
-  delete_program_content_section: DELETE_PROGRAM_CONTENT_SECTION_delete_program_content_section | null;
-}
-
-export interface DELETE_PROGRAM_CONTENT_SECTIONVariables {
-  programContentSectionId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_CONTENT
 // ====================================================
 
@@ -2936,6 +2829,46 @@ export interface UPDATE_PROGRAM_CONTENT_SECTION {
 export interface UPDATE_PROGRAM_CONTENT_SECTIONVariables {
   id: any;
   title?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PROGRAM_CONTENT_SECTION
+// ====================================================
+
+export interface DELETE_PROGRAM_CONTENT_SECTION_delete_program_content {
+  __typename: "program_content_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CONTENT_SECTION_delete_program_content_section {
+  __typename: "program_content_section_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CONTENT_SECTION {
+  /**
+   * delete data from the table: "program_content"
+   */
+  delete_program_content: DELETE_PROGRAM_CONTENT_SECTION_delete_program_content | null;
+  /**
+   * delete data from the table: "program_content_section"
+   */
+  delete_program_content_section: DELETE_PROGRAM_CONTENT_SECTION_delete_program_content_section | null;
+}
+
+export interface DELETE_PROGRAM_CONTENT_SECTIONVariables {
+  programContentSectionId: any;
 }
 
 /* tslint:disable */
@@ -3152,6 +3085,41 @@ export interface PUBLISH_PROGRAMVariables {
   programId: any;
   publishedAt?: any | null;
   isPrivate?: boolean | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_PROGRAM_CONTENT_SECTION
+// ====================================================
+
+export interface INSERT_PROGRAM_CONTENT_SECTION_insert_program_content_section_returning {
+  __typename: "program_content_section";
+  id: any;
+}
+
+export interface INSERT_PROGRAM_CONTENT_SECTION_insert_program_content_section {
+  __typename: "program_content_section_mutation_response";
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_PROGRAM_CONTENT_SECTION_insert_program_content_section_returning[];
+}
+
+export interface INSERT_PROGRAM_CONTENT_SECTION {
+  /**
+   * insert data into the table: "program_content_section"
+   */
+  insert_program_content_section: INSERT_PROGRAM_CONTENT_SECTION_insert_program_content_section | null;
+}
+
+export interface INSERT_PROGRAM_CONTENT_SECTIONVariables {
+  programId: any;
+  title: string;
+  position: number;
 }
 
 /* tslint:disable */
@@ -4690,6 +4658,7 @@ export interface GET_POSTVariables {
 
 export interface GET_POSTS_post_post_roles_member {
   __typename: "member_public";
+  id: string | null;
   name: string | null;
   username: string | null;
 }

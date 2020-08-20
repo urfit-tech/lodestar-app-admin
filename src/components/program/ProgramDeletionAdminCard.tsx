@@ -1,15 +1,16 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Button, message, Modal, Typography } from 'antd'
+import { Button, message, Modal, Skeleton } from 'antd'
 import gql from 'graphql-tag'
-import React, { useState } from 'react'
+import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
+import types from '../../types'
 import { ProgramAdminProps } from '../../types/program'
-import AdminCard from '../admin/AdminCard'
+import AdminModal from '../admin/AdminModal'
 
 const messages = defineMessages({
-  deleteProgram: { id: 'program.label.deleteProgram', defaultMessage: '刪除課程' },
   deleteProgramConfirmation: {
     id: 'program.text.deleteProgramConfirmation',
     defaultMessage: '課程一經刪除即不可恢復，確定要刪除嗎？',
@@ -48,63 +49,61 @@ export const StyledModalParagraph = styled.p`
   letter-spacing: 0.2px;
   line-height: 1.5;
 `
-const StyledText = styled.span`
+const StyledText = styled.div`
   color: ${props => props.theme['@primary-color']};
   font-size: 14px;
-  padding-top: 4px;
 `
 
 const ProgramDeletionAdminCard: React.FC<{
   program: ProgramAdminProps | null
   onRefetch?: () => void
-}> = ({ program, onRefetch }) => {
+}> = ({ program }) => {
   const { formatMessage } = useIntl()
-  const [isVisible, setVisible] = useState(false)
+  const history = useHistory()
+  const [archiveProgram] = useMutation<types.UPDATE_PROGRAM_IS_DELETED, types.UPDATE_PROGRAM_IS_DELETEDVariables>(
+    UPDATE_PROGRAM_IS_DELETED,
+  )
+  if (!program) {
+    return <Skeleton active />
+  }
 
-  const [archiveProgram] = useMutation(UPDATE_PROGRAM_IS_DELETED)
   const handleArchive = (programId: string) => {
     archiveProgram({
       variables: {
         programId,
       },
     }).then(() => {
-      onRefetch && onRefetch()
       message.success(formatMessage(commonMessages.event.successfullyDeleted))
+      history.push('/programs')
     })
   }
 
   return (
-    <AdminCard loading={!program}>
-      <Typography.Title level={4} className="mb-4">
-        {formatMessage(messages.deleteProgram)}
-      </Typography.Title>
-      <StyledModal
-        visible={isVisible}
-        okText={formatMessage(commonMessages.ui.delete)}
-        onOk={() => {
-          handleArchive(program?.id || '')
-          setVisible(false)
-        }}
-        cancelText={formatMessage(commonMessages.ui.back)}
-        onCancel={() => setVisible(false)}
-      >
-        <StyledModalTitle className="mb-4">{formatMessage(commonMessages.ui.deleteProgram)}</StyledModalTitle>
-        <StyledModalParagraph>{formatMessage(messages.deleteProgramConfirmation)}</StyledModalParagraph>
-      </StyledModal>
-      <div className="d-flex justify-content-between align-items-center">
-        <div className="d-flex flex-column">
-          <Typography.Text>{formatMessage(messages.deleteProgramWarning)}</Typography.Text>
-          <StyledText>{formatMessage(messages.deleteProgramDanger)}</StyledText>
-        </div>
-        {program?.isDeleted ? (
-          <Button disabled>{formatMessage(commonMessages.ui.deleted)}</Button>
-        ) : (
-          <Button type="primary" onClick={() => setVisible(true)}>
-            {formatMessage(commonMessages.ui.deleteProgram)}
-          </Button>
-        )}
+    <div className="d-flex align-items-center justify-content-between">
+      <div>
+        <div className="mb-2">{formatMessage(messages.deleteProgramWarning)}</div>
+        <StyledText>{formatMessage(messages.deleteProgramDanger)}</StyledText>
       </div>
-    </AdminCard>
+
+      <AdminModal
+        title={formatMessage(commonMessages.ui.deleteProgram)}
+        renderTrigger={({ setVisible }) =>
+          program.isDeleted ? (
+            <Button disabled>{formatMessage(commonMessages.ui.deleted)}</Button>
+          ) : (
+            <Button type="primary" danger onClick={() => setVisible(true)}>
+              {formatMessage(commonMessages.ui.deleteProgram)}
+            </Button>
+          )
+        }
+        okText={formatMessage(commonMessages.ui.delete)}
+        okButtonProps={{ danger: true }}
+        cancelText={formatMessage(commonMessages.ui.back)}
+        onOk={() => handleArchive(program.id)}
+      >
+        <div>{formatMessage(messages.deleteProgramConfirmation)}</div>
+      </AdminModal>
+    </div>
   )
 }
 

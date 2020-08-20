@@ -1,76 +1,63 @@
-import { Button, Dropdown, Menu, PageHeader, Tabs } from 'antd'
+import { ArrowLeftOutlined } from '@ant-design/icons'
+import { Button, Dropdown, Menu, Tabs } from 'antd'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
-import { useHistory, useParams } from 'react-router-dom'
-import styled from 'styled-components'
+import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
-import { AdminTabBarWrapper } from '../../components/admin'
+import {
+  AdminBlock,
+  AdminBlockTitle,
+  AdminHeader,
+  AdminHeaderTitle,
+  AdminPaneTitle,
+  AdminTabBarWrapper,
+} from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
-import ProgramContentAdminPane from '../../components/program/ProgramContentAdminPane'
+import ProgramBasicForm from '../../components/program/ProgramBasicForm'
+import ProgramDeletionAdminCard from '../../components/program/ProgramDeletionAdminCard'
+import ProgramIntroForm from '../../components/program/ProgramIntroForm'
 import ProgramPlanAdminPane from '../../components/program/ProgramPlanAdminPane'
 import ProgramPublishingAdminPane from '../../components/program/ProgramPublishingAdminPane'
-import ProgramSettingAdminPane from '../../components/program/ProgramSettingAdminPane'
+import ProgramStructureAdminBlock from '../../components/program/ProgramStructureAdminBlock'
+import ProgramStructureAdminModal from '../../components/program/ProgramStructureAdminModal'
 import ProgramRoleAdminPane from '../../containers/program/ProgramRoleAdminPane'
 import AppContext from '../../contexts/AppContext'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useProgram } from '../../hooks/program'
 
-const StyledPageHeader = styled(PageHeader)`
-  && {
-    padding: 10px 24px;
-    height: 64px;
-  }
-
-  .ant-page-header-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .ant-page-header-heading-title {
-    flex-grow: 1;
-    font-size: 16px;
-  }
-
-  .ant-page-header-heading-extra {
-    width: auto;
-    padding: 0;
-  }
-`
-
 const ProgramAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const history = useHistory()
   const { programId } = useParams<{ programId: string }>()
   const { settings } = useContext(AppContext)
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const { program, refetch: refetchProgram } = useProgram(programId)
+  const { program, refetchProgram } = useProgram(programId)
 
   return (
     <>
-      <StyledPageHeader
-        onBack={() => history.push('/programs')}
-        title={program && program.title}
-        extra={
-          program && (
-            <Dropdown
-              placement="bottomRight"
-              overlay={
-                <Menu onClick={({ key }) => window.open(`//${settings['host']}${key}`, '_blank')}>
-                  <Menu.Item className="py-2 px-3" key={`/programs/${program.id}`}>
-                    {formatMessage(commonMessages.ui.previewIntroduction)}
-                  </Menu.Item>
-                  <Menu.Item className="py-2 px-3" key={`/programs/${program.id}/contents`}>
-                    {formatMessage(commonMessages.ui.previewContent)}
-                  </Menu.Item>
-                </Menu>
-              }
-            >
-              <Button>{formatMessage(commonMessages.ui.preview)}</Button>
-            </Dropdown>
-          )
-        }
-      />
+      <AdminHeader>
+        <Link to="/programs">
+          <Button type="link" className="mr-3">
+            <ArrowLeftOutlined />
+          </Button>
+        </Link>
+
+        <AdminHeaderTitle>{program?.title || programId}</AdminHeaderTitle>
+        <Dropdown
+          placement="bottomRight"
+          overlay={
+            <Menu onClick={({ key }) => window.open(`//${settings['host']}${key}`, '_blank')}>
+              <Menu.Item className="py-2 px-3" key={`/programs/${programId}`}>
+                {formatMessage(commonMessages.ui.previewIntroduction)}
+              </Menu.Item>
+              <Menu.Item className="py-2 px-3" key={`/programs/${programId}/contents`}>
+                {formatMessage(commonMessages.ui.previewContent)}
+              </Menu.Item>
+            </Menu>
+          }
+        >
+          <Button>{formatMessage(commonMessages.ui.preview)}</Button>
+        </Dropdown>
+      </AdminHeader>
 
       <StyledLayoutContent variant="gray">
         <Tabs
@@ -82,19 +69,41 @@ const ProgramAdminPage: React.FC = () => {
             </AdminTabBarWrapper>
           )}
         >
-          <Tabs.TabPane tab={formatMessage(programMessages.label.programContent)} key="content">
-            <ProgramContentAdminPane program={program} onRefetch={refetchProgram} />
+          <Tabs.TabPane key="content" tab={formatMessage(programMessages.label.programContent)}>
+            <div className="container py-5">
+              <AdminPaneTitle className="d-flex align-items-center justify-content-between">
+                <span>{formatMessage(programMessages.label.programContent)}</span>
+                <ProgramStructureAdminModal program={program} onStructureChange={refetchProgram} />
+              </AdminPaneTitle>
+              <ProgramStructureAdminBlock program={program} onRefetch={refetchProgram} />
+            </div>
           </Tabs.TabPane>
-          <Tabs.TabPane tab={formatMessage(programMessages.label.programSettings)} key="general">
-            <ProgramSettingAdminPane program={program} onRefetch={refetchProgram} />
+
+          <Tabs.TabPane key="general" tab={formatMessage(programMessages.label.programSettings)}>
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(programMessages.label.programSettings)}</AdminPaneTitle>
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
+                <ProgramBasicForm program={program} onRefetch={refetchProgram} />
+              </AdminBlock>
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(programMessages.label.programIntroduction)}</AdminBlockTitle>
+                <ProgramIntroForm program={program} onRefetch={refetchProgram} />
+              </AdminBlock>
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(programMessages.label.deleteProgram)}</AdminBlockTitle>
+                <ProgramDeletionAdminCard program={program} onRefetch={refetchProgram} />
+              </AdminBlock>
+            </div>
           </Tabs.TabPane>
-          <Tabs.TabPane tab={formatMessage(commonMessages.label.salesPlan)} key="plan">
+
+          <Tabs.TabPane key="plan" tab={formatMessage(commonMessages.label.salesPlan)}>
             <ProgramPlanAdminPane program={program} onRefetch={refetchProgram} />
           </Tabs.TabPane>
-          <Tabs.TabPane tab={formatMessage(commonMessages.label.roleAdmin)} key="roles">
+          <Tabs.TabPane key="roles" tab={formatMessage(commonMessages.label.roleAdmin)}>
             <ProgramRoleAdminPane program={program} onRefetch={refetchProgram} />
           </Tabs.TabPane>
-          <Tabs.TabPane tab={formatMessage(commonMessages.label.publishAdmin)} key="publishing">
+          <Tabs.TabPane key="publishing" tab={formatMessage(commonMessages.label.publishAdmin)}>
             <ProgramPublishingAdminPane program={program} onRefetch={refetchProgram} />
           </Tabs.TabPane>
         </Tabs>
