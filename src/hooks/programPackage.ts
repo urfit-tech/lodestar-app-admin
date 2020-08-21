@@ -281,9 +281,8 @@ export const useGetProgramPackageCollection = (appId: string) => {
       }
     `,
     {
-      variables: {
-        appId,
-      },
+      variables: { appId },
+      fetchPolicy: 'no-cache',
     },
   )
 
@@ -368,17 +367,9 @@ export const useGetProgramPackage = (id: string) => {
     },
   )
 
-  const programPackage: ProgramPackageProps =
+  const programPackage: ProgramPackageProps | null =
     loading || error || !data || !data.program_package_by_pk
-      ? {
-          id: '',
-          title: '',
-          coverUrl: null,
-          publishedAt: null,
-          description: null,
-          programs: [],
-          plans: [],
-        }
+      ? null
       : {
           id,
           title: data.program_package_by_pk.title || null,
@@ -420,31 +411,4 @@ export const useGetProgramPackage = (id: string) => {
     error,
     refetch,
   }
-}
-
-export const useInsertProgramPackage = (appId: string) => {
-  const [createProgramPackageHandler] = useMutation<
-    types.INSERT_PROGRAM_PACKAGE,
-    types.INSERT_PROGRAM_PACKAGEVariables
-  >(gql`
-    mutation INSERT_PROGRAM_PACKAGE($title: String!, $appId: String!) {
-      insert_program_package(objects: { app_id: $appId, title: $title }) {
-        affected_rows
-        returning {
-          id
-        }
-      }
-    }
-  `)
-
-  const createProgramPackage = (title: string) => {
-    return createProgramPackageHandler({
-      variables: {
-        appId,
-        title,
-      },
-    })
-  }
-
-  return createProgramPackage
 }

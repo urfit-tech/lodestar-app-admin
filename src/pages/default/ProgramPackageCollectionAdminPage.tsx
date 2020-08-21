@@ -1,6 +1,8 @@
 import Icon, { FileAddOutlined } from '@ant-design/icons'
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Tabs } from 'antd'
-import React, { useContext, useEffect } from 'react'
+import gql from 'graphql-tag'
+import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import { AdminPageTitle } from '../../components/admin'
@@ -9,15 +11,18 @@ import AdminLayout from '../../components/layout/AdminLayout'
 import ProgramPackageAdminCard from '../../components/programPackage/ProgramPackageAdminCard'
 import AppContext from '../../contexts/AppContext'
 import { commonMessages, programPackageMessages } from '../../helpers/translation'
-import { useGetProgramPackageCollection, useInsertProgramPackage } from '../../hooks/programPackage'
+import { useGetProgramPackageCollection } from '../../hooks/programPackage'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
+import types from '../../types'
 
 const ProgramPackageCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { id: appId } = useContext(AppContext)
-  const { programPackages, refetch } = useGetProgramPackageCollection(appId)
-  const createProgramPackage = useInsertProgramPackage(appId)
+  const { programPackages } = useGetProgramPackageCollection(appId)
+  const [createProgramPackage] = useMutation<types.INSERT_PROGRAM_PACKAGE, types.INSERT_PROGRAM_PACKAGEVariables>(
+    INSERT_PROGRAM_PACKAGE,
+  )
 
   const publishedQuantity = programPackages.filter(programPackage => !!programPackage.publishedAt === true).length
   const tabContents = [
@@ -32,10 +37,6 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
       isPublished: false,
     },
   ]
-
-  useEffect(() => {
-    refetch()
-  }, [refetch])
 
   return (
     <AdminLayout>
@@ -53,9 +54,14 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
             </Button>
           )}
           onCreate={({ title }) =>
-            createProgramPackage(title).then(({ data }) => {
+            createProgramPackage({
+              variables: {
+                appId,
+                title,
+              },
+            }).then(({ data }) => {
               const programPackageId = data?.insert_program_package?.returning[0].id
-              history.push(`/program-packages/${programPackageId}`)
+              programPackageId && history.push(`/program-packages/${programPackageId}`)
             })
           }
         />
@@ -84,5 +90,16 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
     </AdminLayout>
   )
 }
+
+const INSERT_PROGRAM_PACKAGE = gql`
+  mutation INSERT_PROGRAM_PACKAGE($title: String!, $appId: String!) {
+    insert_program_package(objects: { app_id: $appId, title: $title }) {
+      affected_rows
+      returning {
+        id
+      }
+    }
+  }
+`
 
 export default ProgramPackageCollectionAdminPage

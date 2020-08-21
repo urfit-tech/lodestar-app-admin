@@ -41,6 +41,7 @@ export const OverlayListContent = styled.div`
 `
 export const OverlayListItem = styled(List.Item)`
   && {
+    justify-content: start;
     padding: 0.75rem 1rem;
     cursor: pointer;
   }

@@ -1,9 +1,7 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { FileAddOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Button, message, TreeSelect } from 'antd'
+import { Button, Form, message, TreeSelect } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -13,44 +11,49 @@ import { commonMessages, programPackageMessages } from '../../helpers/translatio
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
 
-type ProgramPackageProgramConnectionModalProps = FormComponentProps & {
+const ProgramPackageProgramConnectionModal: React.FC<{
   programPackageId: string
   programs: {
     id: string
     title: string
   }[]
   onRefetch?: () => void
-}
-
-const ProgramPackageProgramConnectionModal: React.FC<ProgramPackageProgramConnectionModalProps> = ({
-  programPackageId,
-  programs,
-  onRefetch,
-  form: { getFieldDecorator, validateFields },
-}) => {
+}> = ({ programPackageId, programs, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const [form] = useForm()
   const { id: appId } = useContext(AppContext)
   const { availablePrograms } = useGetAvailableProgramCollection(appId)
+  const [insertProgramPackageProgram] = useMutation<
+    types.INSERT_PROGRAM_PACKAGE_PROGRAM,
+    types.INSERT_PROGRAM_PACKAGE_PROGRAMVariables
+  >(INSERT_PROGRAM_PACKAGE_PROGRAM)
+
   const [isLoading, setLoading] = useState<boolean>(false)
-  const insertProgramPackageProgram = useInsertProgramPackageProgram(programPackageId)
 
-  const handleSubmit = (onVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
-    validateFields((error, { programValues }) => {
-      if (error) return
-
-      setLoading(true)
-
-      const programIds = programValues.map((value: string) => value.split('_')[0])
-
-      insertProgramPackageProgram(programIds)
-        .then(() => {
-          onRefetch && onRefetch()
-          onVisible(false)
-          message.success(formatMessage(commonMessages.event.successfullySaved))
+  const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
+    form
+      .validateFields()
+      .then((values: any) => {
+        setLoading(true)
+        insertProgramPackageProgram({
+          variables: {
+            programs: values.programValues
+              .map((value: string) => value.split('_')[0])
+              .map((programId: string) => ({
+                program_package_id: programPackageId,
+                program_id: programId,
+              })),
+          },
         })
-        .catch(err => handleError(err))
-        .finally(() => setLoading(false))
-    })
+          .then(() => {
+            onRefetch && onRefetch()
+            setVisible(false)
+            message.success(formatMessage(commonMessages.event.successfullySaved))
+          })
+          .catch(err => handleError(err))
+          .finally(() => setLoading(false))
+      })
+      .catch(() => {})
   }
 
   return (
@@ -76,42 +79,44 @@ const ProgramPackageProgramConnectionModal: React.FC<ProgramPackageProgramConnec
         </div>
       )}
     >
-      <Form>
-        <Form.Item>
-          {getFieldDecorator('programValues', {
-            initialValue: programs.map(program => `${program.id}_${program.title}`),
-          })(
-            <TreeSelect
-              treeCheckable
-              multiple
-              allowClear
-              showSearch
-              treeData={[
-                {
-                  key: 'allPerpetualPrograms',
-                  title: '所有單次課程',
-                  children: availablePrograms
-                    .filter(program => !program.isSubscription)
-                    .map(program => ({
-                      key: program.id,
-                      title: program.title,
-                      value: `${program.id}_${program.title}`,
-                    })),
-                },
-                {
-                  key: 'allSubscriptionPrograms',
-                  title: '所有訂閱課程',
-                  children: availablePrograms
-                    .filter(program => program.isSubscription)
-                    .map(program => ({
-                      key: program.id,
-                      title: program.title,
-                      value: `${program.id}_${program.title}`,
-                    })),
-                },
-              ]}
-            />,
-          )}
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={{
+          programValues: programs.map(program => `${program.id}_${program.title}`),
+        }}
+      >
+        <Form.Item name="programValues">
+          <TreeSelect
+            treeCheckable
+            multiple
+            allowClear
+            showSearch
+            treeData={[
+              {
+                key: 'allPerpetualPrograms',
+                title: '所有單次課程',
+                children: availablePrograms
+                  .filter(program => !program.isSubscription)
+                  .map(program => ({
+                    key: program.id,
+                    title: program.title,
+                    value: `${program.id}_${program.title}`,
+                  })),
+              },
+              {
+                key: 'allSubscriptionPrograms',
+                title: '所有訂閱課程',
+                children: availablePrograms
+                  .filter(program => program.isSubscription)
+                  .map(program => ({
+                    key: program.id,
+                    title: program.title,
+                    value: `${program.id}_${program.title}`,
+                  })),
+              },
+            ]}
+          />
         </Form.Item>
       </Form>
     </AdminModal>
@@ -156,30 +161,18 @@ const useGetAvailableProgramCollection = (appId: string) => {
   }
 }
 
-const useInsertProgramPackageProgram = (programPackageId: string) => {
-  const [insertProgramPackageProgram] = useMutation(gql`
-    mutation INSERT_PROGRAM_PACKAGE_PROGRAM($programs: [program_package_program_insert_input!]!) {
-      insert_program_package_program(
-        objects: $programs
-        on_conflict: {
-          constraint: program_package_program_program_package_id_program_id_key
-          update_columns: program_package_id
-        }
-      ) {
-        affected_rows
+const INSERT_PROGRAM_PACKAGE_PROGRAM = gql`
+  mutation INSERT_PROGRAM_PACKAGE_PROGRAM($programs: [program_package_program_insert_input!]!) {
+    insert_program_package_program(
+      objects: $programs
+      on_conflict: {
+        constraint: program_package_program_program_package_id_program_id_key
+        update_columns: program_package_id
       }
+    ) {
+      affected_rows
     }
-  `)
+  }
+`
 
-  return (programIds: string[]) =>
-    insertProgramPackageProgram({
-      variables: {
-        programs: programIds.map(programId => ({
-          program_package_id: programPackageId,
-          program_id: programId,
-        })),
-      },
-    })
-}
-
-export default Form.create<ProgramPackageProgramConnectionModalProps>()(ProgramPackageProgramConnectionModal)
+export default ProgramPackageProgramConnectionModal

@@ -3481,10 +3481,10 @@ export interface INSERT_PROGRAM_PACKAGE_PROGRAMVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: PROGRAM_PACKAGE_PUBLISH
+// GraphQL mutation operation: PUBLISH_PROGRAM_PACKAGE
 // ====================================================
 
-export interface PROGRAM_PACKAGE_PUBLISH_update_program_package {
+export interface PUBLISH_PROGRAM_PACKAGE_update_program_package {
   __typename: "program_package_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -3492,15 +3492,15 @@ export interface PROGRAM_PACKAGE_PUBLISH_update_program_package {
   affected_rows: number;
 }
 
-export interface PROGRAM_PACKAGE_PUBLISH {
+export interface PUBLISH_PROGRAM_PACKAGE {
   /**
    * update data of the table: "program_package"
    */
-  update_program_package: PROGRAM_PACKAGE_PUBLISH_update_program_package | null;
+  update_program_package: PUBLISH_PROGRAM_PACKAGE_update_program_package | null;
 }
 
-export interface PROGRAM_PACKAGE_PUBLISHVariables {
-  id: any;
+export interface PUBLISH_PROGRAM_PACKAGEVariables {
+  programPackageId: any;
   publishedAt?: any | null;
 }
 
@@ -7760,44 +7760,6 @@ export interface GET_PROGRAM_PACKAGEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: INSERT_PROGRAM_PACKAGE
-// ====================================================
-
-export interface INSERT_PROGRAM_PACKAGE_insert_program_package_returning {
-  __typename: "program_package";
-  id: any;
-}
-
-export interface INSERT_PROGRAM_PACKAGE_insert_program_package {
-  __typename: "program_package_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: INSERT_PROGRAM_PACKAGE_insert_program_package_returning[];
-}
-
-export interface INSERT_PROGRAM_PACKAGE {
-  /**
-   * insert data into the table: "program_package"
-   */
-  insert_program_package: INSERT_PROGRAM_PACKAGE_insert_program_package | null;
-}
-
-export interface INSERT_PROGRAM_PACKAGEVariables {
-  title: string;
-  appId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: CREATE_APPOINTMENT_PLAN
 // ====================================================
 
@@ -8316,6 +8278,44 @@ export interface GET_CREATOR_PROGRAM_ISSUESVariables {
   appId: string;
   threadIdLike?: string | null;
   unsolved?: boolean | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_PROGRAM_PACKAGE
+// ====================================================
+
+export interface INSERT_PROGRAM_PACKAGE_insert_program_package_returning {
+  __typename: "program_package";
+  id: any;
+}
+
+export interface INSERT_PROGRAM_PACKAGE_insert_program_package {
+  __typename: "program_package_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_PROGRAM_PACKAGE_insert_program_package_returning[];
+}
+
+export interface INSERT_PROGRAM_PACKAGE {
+  /**
+   * insert data into the table: "program_package"
+   */
+  insert_program_package: INSERT_PROGRAM_PACKAGE_insert_program_package | null;
+}
+
+export interface INSERT_PROGRAM_PACKAGEVariables {
+  title: string;
+  appId: string;
 }
 
 /* tslint:disable */

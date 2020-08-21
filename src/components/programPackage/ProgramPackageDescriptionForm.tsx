@@ -1,10 +1,9 @@
-import { Form } from '@ant-design/compatible'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, message } from 'antd'
+import { Button, Form, message, Skeleton } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
-import React from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -12,47 +11,57 @@ import types from '../../types'
 import { ProgramPackageProps } from '../../types/programPackage'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
 
-type ProgramPackageDescriptionFromProps = {
-  programPackage: ProgramPackageProps
+const ProgramPackageDescriptionForm: React.FC<{
+  programPackage: ProgramPackageProps | null
   onRefetch?: () => void
-} & FormComponentProps
-
-const ProgramPackageDescriptionForm: React.FC<ProgramPackageDescriptionFromProps> = ({
-  programPackage,
-  onRefetch,
-  form: { getFieldDecorator, resetFields, validateFields },
-}) => {
+}> = ({ programPackage, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const updateProgramPackageDescription = useUpdateProgramPackageDescription(programPackage.id)
-  const handleSubmit = () => {
-    validateFields((err, { description }) => {
-      if (!err) {
-        updateProgramPackageDescription(description.toRAW())
-          .then(() => {
-            onRefetch && onRefetch()
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-          })
-          .catch(handleError)
-      }
+  const [form] = useForm()
+  const [updateProgramPackageDescription] = useMutation<
+    types.UPDATE_PROGRAM_PACKAGE_DESCRIPTION,
+    types.UPDATE_PROGRAM_PACKAGE_DESCRIPTIONVariables
+  >(UPDATE_PROGRAM_PACKAGE_DESCRIPTION)
+  const [loading, setLoading] = useState(false)
+
+  if (!programPackage) {
+    return <Skeleton active />
+  }
+
+  const handleSubmit = (values: any) => {
+    setLoading(true)
+    updateProgramPackageDescription({
+      variables: {
+        programPackageId: programPackage.id,
+        description: values.description.toRAW(),
+      },
     })
+      .then(() => {
+        onRefetch && onRefetch()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
     <>
       <Form
-        onSubmit={e => {
-          e.preventDefault()
-          handleSubmit()
+        form={form}
+        layout="vertical"
+        initialValues={{
+          description: BraftEditor.createEditorState(programPackage.description),
         }}
+        onFinish={handleSubmit}
       >
-        <Form.Item>
-          {getFieldDecorator('description', {
-            initialValue: programPackage.description && BraftEditor.createEditorState(programPackage.description),
-          })(<AdminBraftEditor />)}
+        <Form.Item name="description">
+          <AdminBraftEditor />
         </Form.Item>
+
         <Form.Item>
-          <Button onClick={() => resetFields()}>{formatMessage(commonMessages.ui.cancel)}</Button>
-          <Button className="ml-2" type="primary" htmlType="submit">
+          <Button className="mr-2" onClick={() => form.resetFields()}>
+            {formatMessage(commonMessages.ui.cancel)}
+          </Button>
+          <Button type="primary" htmlType="submit" loading={loading}>
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>
@@ -61,25 +70,12 @@ const ProgramPackageDescriptionForm: React.FC<ProgramPackageDescriptionFromProps
   )
 }
 
-const useUpdateProgramPackageDescription = (programPackageId: string) => {
-  const [updateProgramPackageDescription] = useMutation<
-    types.UPDATE_PROGRAM_PACKAGE_DESCRIPTION,
-    types.UPDATE_PROGRAM_PACKAGE_DESCRIPTIONVariables
-  >(gql`
-    mutation UPDATE_PROGRAM_PACKAGE_DESCRIPTION($description: String, $programPackageId: uuid!) {
-      update_program_package(_set: { description: $description }, where: { id: { _eq: $programPackageId } }) {
-        affected_rows
-      }
+const UPDATE_PROGRAM_PACKAGE_DESCRIPTION = gql`
+  mutation UPDATE_PROGRAM_PACKAGE_DESCRIPTION($description: String, $programPackageId: uuid!) {
+    update_program_package(_set: { description: $description }, where: { id: { _eq: $programPackageId } }) {
+      affected_rows
     }
-  `)
+  }
+`
 
-  return (description: string) =>
-    updateProgramPackageDescription({
-      variables: {
-        programPackageId,
-        description,
-      },
-    })
-}
-
-export default Form.create<ProgramPackageDescriptionFromProps>()(ProgramPackageDescriptionForm)
+export default ProgramPackageDescriptionForm

@@ -40,7 +40,7 @@ const ProgramPackageAdminPage: React.FC = () => {
           </Button>
         </Link>
 
-        <AdminHeaderTitle>{programPackage.title || programPackageId}</AdminHeaderTitle>
+        <AdminHeaderTitle>{programPackage?.title || programPackageId}</AdminHeaderTitle>
 
         <a
           href={`//${settings['host']}/program-packages/${programPackageId}`}
@@ -67,15 +67,17 @@ const ProgramPackageAdminPage: React.FC = () => {
 
               <ProgramPackageProgramConnectionModal
                 programPackageId={programPackageId}
-                programs={programPackage.programs.map(program => ({
-                  id: program.program.id,
-                  title: program.program.title,
-                }))}
+                programs={
+                  programPackage?.programs.map(program => ({
+                    id: program.program.id,
+                    title: program.program.title,
+                  })) || []
+                }
                 onRefetch={refetch}
               />
               <ProgramPackageProgramCollectionBlock
                 programPackageId={programPackageId}
-                programs={programPackage.programs}
+                programs={programPackage?.programs || []}
                 onRefetch={refetch}
               />
             </div>
@@ -94,11 +96,6 @@ const ProgramPackageAdminPage: React.FC = () => {
                 <AdminBlockTitle>{formatMessage(commonMessages.term.description)}</AdminBlockTitle>
                 <ProgramPackageDescriptionForm programPackage={programPackage} onRefetch={refetch} />
               </AdminBlock>
-
-              {/* <AdminBlock>
-              <AdminBlockTitle>{formatMessage(programPackageMessages.label.deleteProgramPackage)}</AdminBlockTitle>
-              <ProgramPackageDeletionBlock />
-            </AdminBlock> */}
             </div>
           </Tabs.TabPane>
 
@@ -119,7 +116,7 @@ const ProgramPackageAdminPage: React.FC = () => {
 
               <ProgramPackagePlanCollectionBlock
                 programPackageId={programPackageId}
-                plans={programPackage.plans}
+                plans={programPackage?.plans || []}
                 onRefetch={refetch}
               />
             </div>

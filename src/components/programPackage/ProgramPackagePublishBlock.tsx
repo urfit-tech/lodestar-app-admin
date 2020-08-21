@@ -1,8 +1,10 @@
 import { useMutation } from '@apollo/react-hooks'
+import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { commonMessages } from '../../helpers/translation'
+import types from '../../types'
 import { ProgramPackageProps } from '../../types/programPackage'
 import AdminPublishBlock, { ChecklistItemProps, PublishStatus } from '../admin/AdminPublishBlock'
 
@@ -25,10 +27,17 @@ const messages = defineMessages({
 })
 
 const ProgramPackagePublishBlock: React.FC<{
-  programPackage: ProgramPackageProps
+  programPackage: ProgramPackageProps | null
   onRefetch?: () => void
 }> = ({ programPackage, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const [publishProgramPackage] = useMutation<types.PUBLISH_PROGRAM_PACKAGE, types.PUBLISH_PROGRAM_PACKAGEVariables>(
+    PUBLISH_PROGRAM_PACKAGE,
+  )
+
+  if (!programPackage) {
+    return <Skeleton active />
+  }
 
   const checklist: ChecklistItemProps[] = []
   !programPackage.title &&
@@ -61,8 +70,6 @@ const ProgramPackagePublishBlock: React.FC<{
       formatMessage(messages.unpublishedNotation),
     ]
 
-  const publishProgramPackage = useProgramPackagePublish(programPackage.id)
-
   return (
     <>
       <AdminPublishBlock
@@ -70,8 +77,10 @@ const ProgramPackagePublishBlock: React.FC<{
         type={publishStatus}
         title={title}
         description={description}
-        onPublish={({ values: { publishedAt: now }, onSuccess, onError, onFinally }) => {
-          publishProgramPackage(now)
+        onPublish={({ values: { publishedAt }, onSuccess, onError, onFinally }) => {
+          publishProgramPackage({
+            variables: { programPackageId: programPackage.id, publishedAt },
+          })
             .then(() => {
               onRefetch && onRefetch()
               onSuccess && onSuccess()
@@ -84,25 +93,12 @@ const ProgramPackagePublishBlock: React.FC<{
   )
 }
 
-const useProgramPackagePublish = (id: string) => {
-  const [publishProgramPackageHandler] = useMutation(gql`
-    mutation PROGRAM_PACKAGE_PUBLISH($id: uuid!, $publishedAt: timestamptz) {
-      update_program_package(_set: { published_at: $publishedAt }, where: { id: { _eq: $id } }) {
-        affected_rows
-      }
+const PUBLISH_PROGRAM_PACKAGE = gql`
+  mutation PUBLISH_PROGRAM_PACKAGE($programPackageId: uuid!, $publishedAt: timestamptz) {
+    update_program_package(where: { id: { _eq: $programPackageId } }, _set: { published_at: $publishedAt }) {
+      affected_rows
     }
-  `)
-
-  const publishProgramPackage = (publishedAt: Date | null) => {
-    return publishProgramPackageHandler({
-      variables: {
-        id,
-        publishedAt,
-      },
-    })
   }
-
-  return publishProgramPackage
-}
+`
 
 export default ProgramPackagePublishBlock

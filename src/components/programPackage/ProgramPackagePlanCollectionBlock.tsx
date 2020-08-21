@@ -1,4 +1,4 @@
-import Icon from '@ant-design/icons'
+import Icon, { EditOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Popover } from 'antd'
 import gql from 'graphql-tag'
@@ -100,7 +100,7 @@ const ProgramPackagePlanCollectionBlock: React.FC<{
                     plan={plan}
                     title={formatMessage(programPackageMessages.ui.editPlan)}
                     renderTrigger={({ setVisible }) => (
-                      <StyledButton block icon="edit" onClick={() => setVisible(true)}>
+                      <StyledButton block icon={<EditOutlined />} onClick={() => setVisible(true)}>
                         {formatMessage(programPackageMessages.ui.editPlan)}
                       </StyledButton>
                     )}

@@ -1,13 +1,11 @@
-import { Form } from '@ant-design/compatible'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, Input, InputNumber, Radio } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Radio } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import styled from 'styled-components'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
@@ -47,46 +45,15 @@ const messages = defineMessages({
   planDescription: { id: 'program.label.planDescription', defaultMessage: '方案描述' },
 })
 
-const StyledForm = styled(Form)`
-  .ant-form-item-label {
-    line-height: 2;
-  }
-
-  .notation {
-    line-height: 1.5;
-    letter-spacing: 0.4px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #9b9b9b;
-    white-space: pre-line;
-
-    span {
-      display: block;
-    }
-  }
-`
-
-const radioStyle = {
-  display: 'block',
-  height: '30px',
-  lineHeight: '30px',
-}
-
-type ProgramPackagePlanAdminModalProps = AdminModalProps &
-  FormComponentProps & {
+const ProgramPackagePlanAdminModal: React.FC<
+  AdminModalProps & {
     programPackageId: string
     plan?: ProgramPackagePlanProps
     onRefetch?: () => void
   }
-
-const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> = ({
-  programPackageId,
-  plan,
-  onRefetch,
-  form: { validateFields, getFieldDecorator, resetFields },
-  ...modalProps
-}) => {
+> = ({ programPackageId, plan, onRefetch, ...modalProps }) => {
   const { formatMessage } = useIntl()
+  const [form] = useForm()
   const { enabledModules } = useContext(AppContext)
   const [insertProgramPackagePlan] = useMutation<
     types.INSERT_PROGRAM_PACKAGE_PLAN,
@@ -94,48 +61,31 @@ const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> 
   >(INSERT_PROGRAM_PACKAGE_PLAN)
 
   const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(typeof plan?.discountDownPrice === 'number')
-  const [isSubscription, setSubscription] = useState(!!plan?.isSubscription)
-  const [isLoading, setLoading] = useState(false)
+  const [isSubscription, setIsSubscription] = useState(!!plan?.isSubscription)
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (onVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
-    validateFields(
-      (
-        errors,
-        {
-          title,
-          isTempoDelivery,
-          isPublish,
-          isSubscription,
-          isParticipantsVisible,
-          periodAmount,
-          periodType,
-          listPrice,
-          sale,
-          discountDownPrice,
-          description,
-        },
-      ) => {
-        if (errors) {
-          return
-        }
-
+  const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
+    console.log(isSubscription)
+    form
+      .validateFields()
+      .then((values: any) => {
         setLoading(true)
         insertProgramPackagePlan({
           variables: {
             data: {
               id: plan?.id,
-              title,
-              is_tempo_delivery: isTempoDelivery,
-              published_at: isPublish ? new Date() : null,
+              title: values.title,
+              is_tempo_delivery: values.isTempoDelivery,
+              published_at: values.isPublished ? new Date() : null,
               is_subscription: isSubscription,
-              is_participants_visible: isParticipantsVisible,
-              period_amount: periodAmount,
-              period_type: periodType,
-              list_price: listPrice,
-              sale_price: sale ? sale.price : null,
-              sold_at: sale ? sale.soldAt : null,
-              discount_down_price: withDiscountDownPrice ? discountDownPrice : null,
-              description: description.toRAW(),
+              is_participants_visible: values.isParticipantsVisible,
+              period_amount: values.periodAmount,
+              period_type: values.periodType,
+              list_price: values.listPrice,
+              sale_price: values.sale ? values.sale.price : null,
+              sold_at: values.sale ? values.sale.soldAt : null,
+              discount_down_price: withDiscountDownPrice ? values.discountDownPrice : null,
+              description: values.description.toRAW(),
               position: plan?.position || -1,
               program_package_id: programPackageId,
             },
@@ -143,143 +93,143 @@ const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> 
         })
           .then(() => {
             onRefetch && onRefetch()
-            onVisible && onVisible(false)
-            resetFields()
+            setVisible && setVisible(false)
           })
           .catch(handleError)
           .finally(() => setLoading(false))
-      },
-    )
+      })
+      .catch(() => {})
   }
 
   return (
     <AdminModal
       icon={<FileAddOutlined />}
       footer={null}
-      destroyOnClose
       renderFooter={({ setVisible }) => (
         <div>
           <Button
+            className="mr-2"
             onClick={() => {
               setVisible(false)
-              resetFields()
+              form.resetFields()
             }}
-            className="mr-2"
           >
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={isLoading} onClick={() => handleSubmit(setVisible)}>
+          <Button type="primary" loading={loading} onClick={() => handleSubmit(setVisible)}>
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </div>
       )}
       {...modalProps}
     >
-      <StyledForm hideRequiredMark colon={false}>
-        <Form.Item label={formatMessage(programMessages.label.planTitle)} className="mb-0">
-          {getFieldDecorator('title', {
-            initialValue: plan?.title ?? '',
-            rules: [
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(programMessages.label.planTitle),
-                }),
-              },
-            ],
-          })(<Input />)}
+      <Form
+        form={form}
+        layout="vertical"
+        colon={false}
+        hideRequiredMark
+        initialValues={{
+          title: plan?.title,
+          isTempoDelivery: !!plan?.isTempoDelivery,
+          isPublished: !!plan?.publishedAt,
+          isParticipantsVisible: !!plan?.isParticipantsVisible,
+          isSubscription: !!plan?.isSubscription,
+          periodAmount: plan?.periodAmount,
+          periodType: plan?.periodType || 'M',
+          listPrice: plan?.listPrice || 0,
+          sale: plan?.soldAt
+            ? {
+                price: plan.salePrice,
+                soldAt: plan.soldAt,
+              }
+            : null,
+
+          discountDownPrice: plan?.discountDownPrice || null,
+          description: BraftEditor.createEditorState(plan?.description),
+        }}
+        onValuesChange={values => {
+          typeof values.isSubscription === 'boolean' && setIsSubscription(values.isSubscription)
+        }}
+      >
+        <Form.Item
+          label={formatMessage(programMessages.label.planTitle)}
+          name="title"
+          rules={[
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(programMessages.label.planTitle),
+              }),
+            },
+          ]}
+        >
+          <Input />
         </Form.Item>
 
         {enabledModules.tempo_delivery && (
-          <Form.Item>
-            {getFieldDecorator('isTempoDelivery', { initialValue: !!plan?.isTempoDelivery, valuePropName: 'checked' })(
-              <Checkbox>{formatMessage(messages.allowTempoDelivery)}</Checkbox>,
-            )}
+          <Form.Item name="isTempoDelivery" valuePropName="checked">
+            <Checkbox>{formatMessage(messages.allowTempoDelivery)}</Checkbox>
           </Form.Item>
         )}
 
-        <Form.Item label={formatMessage(messages.isPublished)}>
-          {getFieldDecorator('isPublish', {
-            initialValue: plan ? !!plan.publishedAt : true,
-          })(
-            <Radio.Group>
-              <Radio value={true} style={radioStyle}>
-                {formatMessage(messages.publish)}
-              </Radio>
-              <Radio value={false} style={radioStyle}>
-                {formatMessage(messages.unpublish)}
-              </Radio>
-            </Radio.Group>,
-          )}
+        <Form.Item label={formatMessage(messages.isPublished)} name="isPublished">
+          <Radio.Group>
+            <Radio value={true} className="d-flex">
+              {formatMessage(messages.publish)}
+            </Radio>
+            <Radio value={false} className="d-flex">
+              {formatMessage(messages.unpublish)}
+            </Radio>
+          </Radio.Group>
         </Form.Item>
 
-        <Form.Item label={formatMessage(messages.isParticipantsVisible)}>
-          {getFieldDecorator('isParticipantsVisible', {
-            initialValue: plan ? !!plan.isParticipantsVisible : true,
-          })(
-            <Radio.Group>
-              <Radio value={true} style={radioStyle}>
-                {formatMessage(messages.visible)}
-              </Radio>
-              <Radio value={false} style={radioStyle}>
-                {formatMessage(messages.invisible)}
-              </Radio>
-            </Radio.Group>,
-          )}
+        <Form.Item label={formatMessage(messages.isParticipantsVisible)} name="isParticipantsVisible">
+          <Radio.Group>
+            <Radio value={true} className="d-block">
+              {formatMessage(messages.visible)}
+            </Radio>
+            <Radio value={false} className="d-block">
+              {formatMessage(messages.invisible)}
+            </Radio>
+          </Radio.Group>
         </Form.Item>
 
-        <Form.Item label={formatMessage(messages.paymentType)}>
-          {getFieldDecorator('isSubscription', {
-            initialValue: !!plan?.isSubscription,
-            rules: [{ required: true }],
-          })(
-            <Radio.Group onChange={e => setSubscription(e.target.value)}>
-              <Radio value={false} style={radioStyle}>
-                {formatMessage(messages.perpetual)}
-              </Radio>
-              <Radio value={true} style={radioStyle}>
-                {formatMessage(messages.subscription)}
-              </Radio>
-            </Radio.Group>,
-          )}
+        <Form.Item label={formatMessage(messages.paymentType)} name="isSubscription">
+          <Radio.Group>
+            <Radio value={false} className="d-block">
+              {formatMessage(messages.perpetual)}
+            </Radio>
+            <Radio value={true} className="d-block">
+              {formatMessage(messages.subscription)}
+            </Radio>
+          </Radio.Group>
         </Form.Item>
 
         <Form.Item
           label={isSubscription ? formatMessage(messages.subscriptionPeriod) : formatMessage(messages.perpetualPeriod)}
           className="mb-0"
         >
-          <Form.Item className="d-inline-block mr-2">
-            {getFieldDecorator('periodAmount', { initialValue: plan?.periodAmount || 1 })(
-              <InputNumber min={0} parser={value => (value ? value.replace(/\D/g, '') : '')} />,
-            )}
+          <Form.Item className="d-inline-block mr-2" name="periodAmount">
+            <InputNumber min={0} parser={value => (value ? value.replace(/\D/g, '') : '')} />
           </Form.Item>
-          <Form.Item className="d-inline-block mr-2">
-            {getFieldDecorator('periodType', { initialValue: plan?.periodType || 'D' })(
-              <ProgramPeriodTypeDropdown isShortenPeriodType />,
-            )}
+          <Form.Item className="d-inline-block mr-2" name="periodType">
+            <ProgramPeriodTypeDropdown isShortenPeriodType />
           </Form.Item>
         </Form.Item>
 
-        <Form.Item label={formatMessage(commonMessages.term.listPrice)}>
-          {getFieldDecorator('listPrice', { initialValue: plan?.listPrice || 0 })(
-            <InputNumber
-              min={0}
-              formatter={value => `NT$ ${value}`}
-              parser={value => (value ? value.replace(/\D/g, '') : '')}
-            />,
-          )}
+        <Form.Item label={formatMessage(commonMessages.term.listPrice)} name="listPrice">
+          <InputNumber
+            min={0}
+            formatter={value => `NT$ ${value}`}
+            parser={value => (value ? value.replace(/\D/g, '') : '')}
+          />
         </Form.Item>
 
-        <Form.Item>
-          {getFieldDecorator('sale', {
-            initialValue: plan?.soldAt
-              ? {
-                  price: plan.salePrice || 0,
-                  soldAt: plan.soldAt,
-                }
-              : null,
-            rules: [{ validator: (rule, value, callback) => callback((value && !value.soldAt) || undefined) }],
-          })(<SaleInput />)}
+        <Form.Item
+          name="sale"
+          rules={[{ validator: (rule, value, callback) => callback(value && !value.soldAt ? '' : undefined) }]}
+        >
+          <SaleInput />
         </Form.Item>
 
         {isSubscription && (
@@ -297,25 +247,21 @@ const ProgramPackagePlanAdminModal: React.FC<ProgramPackagePlanAdminModalProps> 
             </div>
 
             <Form.Item className={withDiscountDownPrice ? 'm-0' : 'd-none'}>
-              <Form.Item className="d-inline-block mr-2">
-                {getFieldDecorator('discountDownPrice', { initialValue: plan?.discountDownPrice || 0 })(
-                  <InputNumber
-                    min={0}
-                    formatter={value => `NT$ ${value}`}
-                    parser={value => (value ? value.replace(/\D/g, '') : '')}
-                  />,
-                )}
+              <Form.Item name="discountDownPrice" className="d-inline-block mr-2">
+                <InputNumber
+                  min={0}
+                  formatter={value => `NT$ ${value}`}
+                  parser={value => (value ? value.replace(/\D/g, '') : '')}
+                />
               </Form.Item>
             </Form.Item>
           </>
         )}
 
-        <Form.Item label={formatMessage(messages.planDescription)}>
-          {getFieldDecorator('description', {
-            initialValue: BraftEditor.createEditorState(plan?.description || ''),
-          })(<AdminBraftEditor variant="short" />)}
+        <Form.Item label={formatMessage(messages.planDescription)} name="description">
+          <AdminBraftEditor variant="short" />
         </Form.Item>
-      </StyledForm>
+      </Form>
     </AdminModal>
   )
 }
@@ -348,4 +294,4 @@ const INSERT_PROGRAM_PACKAGE_PLAN = gql`
   }
 `
 
-export default Form.create<ProgramPackagePlanAdminModalProps>()(ProgramPackagePlanAdminModal)
+export default ProgramPackagePlanAdminModal

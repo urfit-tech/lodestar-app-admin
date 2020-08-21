@@ -1,135 +1,115 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Input, message } from 'antd'
+import { Button, Form, Input, message, Skeleton } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
-import styled from 'styled-components'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramPackageProps } from '../../types/programPackage'
-import { CustomRatioImage } from '../common/Image'
-import { BREAK_POINT } from '../common/Responsive'
-import SingleUploader from '../common/SingleUploader'
+import ImageInput from '../admin/ImageInput'
 
-const CoverBlock = styled.div`
-  margin-bottom: 2rem;
-  width: 100%;
-  max-width: 12rem;
-  overflow: hidden;
-  border-radius: 4px;
-  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
-
-  @media (min-width: ${BREAK_POINT}px) {
-    margin-right: 2rem;
-    margin-bottom: 0;
-  }
-`
-const StyledSingleUploader = styled(SingleUploader)`
-  && {
-    width: auto;
-  }
-
-  .ant-upload.ant-upload-select-picture-card {
-    margin: 0;
-    height: auto;
-    width: 120px;
-    border: none;
-    background: none;
-
-    .ant-upload {
-      padding: 0;
-    }
-  }
-`
-
-type ProgramPackageBasicFormProps = {
-  programPackage: ProgramPackageProps
+const ProgramPackageBasicForm: React.FC<{
+  programPackage: ProgramPackageProps | null
   onRefetch?: () => void
-} & FormComponentProps
-
-const ProgramPackageBasicForm: React.FC<ProgramPackageBasicFormProps> = ({
-  programPackage,
-  onRefetch,
-  form: { getFieldDecorator, resetFields, validateFields },
-}) => {
+}> = ({ programPackage, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const [form] = useForm()
   const { id: appId } = useContext(AppContext)
+  const [updateProgramPackageBasic] = useMutation<
+    types.UPDATE_PROGRAM_PACKAGE_BASIC,
+    types.UPDATE_PROGRAM_PACKAGE_BASICVariables
+  >(UPDATE_PROGRAM_PACKAGE_BASIC)
   const [loading, setLoading] = useState(false)
-  const updateProgramPackageBasic = useUpdateProgramPackageBasic(programPackage.id)
+
+  if (!programPackage) {
+    return <Skeleton active />
+  }
 
   const handleUpload = () => {
-    validateFields((error, { title }) => {
-      if (!error) {
-        setLoading(true)
+    setLoading(true)
+    const uploadTime = Date.now()
+    const coverUrl = `https://${process.env.REACT_APP_S3_BUCKET}/program_package_covers/${appId}/${programPackage.id}?t=${uploadTime}`
+    updateProgramPackageBasic({
+      variables: {
+        programPackageId: programPackage.id,
 
-        const uploadTime = Date.now()
-        const coverUrl = `https://${process.env.REACT_APP_S3_BUCKET}/program_package_covers/${appId}/${programPackage.id}?t=${uploadTime}`
-
-        updateProgramPackageBasic(title, coverUrl)
-          .then(() => {
-            onRefetch && onRefetch()
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-          })
-          .catch(handleError)
-          .finally(() => setLoading(false))
-      }
+        coverUrl,
+      },
     })
+      .then(() => {
+        onRefetch && onRefetch()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
+  }
+
+  const handleSubmit = (values: any) => {
+    setLoading(true)
+
+    updateProgramPackageBasic({
+      variables: {
+        programPackageId: programPackage.id,
+        title: values.title,
+      },
+    })
+      .then(() => {
+        onRefetch && onRefetch()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
     <Form
-      hideRequiredMark
-      colon={false}
+      form={form}
       labelAlign="left"
+      colon={false}
+      hideRequiredMark
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
-      onSubmit={e => {
-        e.preventDefault()
-        handleUpload()
+      initialValues={{
+        title: programPackage.title,
       }}
+      onFinish={handleSubmit}
     >
-      <Form.Item label={formatMessage(commonMessages.term.title)}>
-        {getFieldDecorator('title', {
-          initialValue: programPackage.title,
-          rules: [
-            {
-              required: true,
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.term.title),
-              }),
-            },
-          ],
-        })(<Input />)}
+      <Form.Item
+        label={formatMessage(commonMessages.term.title)}
+        name="title"
+        rules={[
+          {
+            required: true,
+            message: formatMessage(errorMessages.form.isRequired, {
+              field: formatMessage(commonMessages.term.title),
+            }),
+          },
+        ]}
+      >
+        <Input />
       </Form.Item>
 
       <Form.Item label={formatMessage(commonMessages.term.cover)}>
-        <div className="d-flex align-items-center">
-          {programPackage.coverUrl && (
-            <CoverBlock>
-              <CustomRatioImage width="100%" ratio={9 / 16} src={programPackage.coverUrl} />
-            </CoverBlock>
-          )}
-          {getFieldDecorator('programPackageCover')(
-            <StyledSingleUploader
-              accept="image/*"
-              listType="picture-card"
-              path={`program_package_covers/${appId}/${programPackage.id}`}
-              showUploadList={false}
-              onSuccess={() => handleUpload()}
-              isPublic
-            />,
-          )}
-        </div>
+        <ImageInput
+          path={`program_package_covers/${appId}/${programPackage.id}`}
+          image={{
+            width: '160px',
+            ratio: 9 / 16,
+            shape: 'rounded',
+          }}
+          value={programPackage.coverUrl}
+          onChange={() => handleUpload()}
+        />
       </Form.Item>
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
-        <Button onClick={() => resetFields()}>{formatMessage(commonMessages.ui.cancel)}</Button>
-        <Button htmlType="submit" type="primary" className="ml-2" loading={loading}>
+        <Button className="mr-2" onClick={() => form.resetFields()}>
+          {formatMessage(commonMessages.ui.cancel)}
+        </Button>
+        <Button htmlType="submit" type="primary" loading={loading}>
           {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>
@@ -137,26 +117,12 @@ const ProgramPackageBasicForm: React.FC<ProgramPackageBasicFormProps> = ({
   )
 }
 
-const useUpdateProgramPackageBasic = (programPackageId: string) => {
-  const [updateProgramPackageBasic] = useMutation<
-    types.UPDATE_PROGRAM_PACKAGE_BASIC,
-    types.UPDATE_PROGRAM_PACKAGE_BASICVariables
-  >(gql`
-    mutation UPDATE_PROGRAM_PACKAGE_BASIC($programPackageId: uuid!, $title: String, $coverUrl: String) {
-      update_program_package(_set: { title: $title, cover_url: $coverUrl }, where: { id: { _eq: $programPackageId } }) {
-        affected_rows
-      }
+const UPDATE_PROGRAM_PACKAGE_BASIC = gql`
+  mutation UPDATE_PROGRAM_PACKAGE_BASIC($programPackageId: uuid!, $title: String, $coverUrl: String) {
+    update_program_package(_set: { title: $title, cover_url: $coverUrl }, where: { id: { _eq: $programPackageId } }) {
+      affected_rows
     }
-  `)
+  }
+`
 
-  return (title: string, coverUrl: string) =>
-    updateProgramPackageBasic({
-      variables: {
-        programPackageId,
-        title,
-        coverUrl,
-      },
-    })
-}
-
-export default Form.create<ProgramPackageBasicFormProps>()(ProgramPackageBasicForm)
+export default ProgramPackageBasicForm
