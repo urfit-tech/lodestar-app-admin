@@ -1,20 +1,18 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { EditOutlined, MoreOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, Dropdown, Input, InputNumber, Menu, Modal, Spin } from 'antd'
+import { Button, Checkbox, DatePicker, Dropdown, Form, Input, InputNumber, Menu, Modal } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import AppContext from '../../contexts/AppContext'
+import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { useProgram, useProgramContent } from '../../hooks/program'
 import types from '../../types'
+import { ProgramContentBodyType, ProgramContentProps, ProgramProps } from '../../types/program'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
-import DatetimePicker from '../common/DatetimePicker'
 import SingleUploader from '../common/SingleUploader'
 import ProgramPlanSelector from './ProgramPlanSelector'
 
@@ -34,21 +32,15 @@ const messages = defineMessages({
   notifyUpdate: { id: 'program.label.notifyUpdate', defaultMessage: '通知內容更新' },
 })
 
-type ProgramContentAdminModalProps = FormComponentProps & {
-  programId: string
-  programContentId: string
-  onSubmit?: () => void
-}
-const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
-  form,
-  programId,
-  programContentId,
-  onSubmit,
-}) => {
-  const { id: appId } = useContext(AppContext)
+const ProgramContentAdminModal: React.FC<{
+  program: ProgramProps
+  programContent: ProgramContentProps
+  programContentBody: ProgramContentBodyType
+  onRefetch?: () => void
+}> = ({ program, programContent, programContentBody, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { program } = useProgram(programId)
-  const { programContent, refetchProgramContent } = useProgramContent(programContentId)
+  const [form] = useForm()
+  const { id: appId } = useContext(AppContext)
 
   const [updateProgramContent] = useMutation<types.UPDATE_PROGRAM_CONTENT, types.UPDATE_PROGRAM_CONTENTVariables>(
     UPDATE_PROGRAM_CONTENT,
@@ -62,222 +54,175 @@ const ProgramContentAdminModal: React.FC<ProgramContentAdminModalProps> = ({
   )
 
   const [visible, setVisible] = useState(false)
+  const [isTrial, setIsTrial] = useState(programContent.listPrice === 0)
+  const [isPublished, setIsPublished] = useState(!!programContent.publishedAt)
+  const [video, setVideo] = useState<any>(programContentBody.data.value || null)
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
 
-  const handleSubmit = () => {
-    form.validateFields((err, values) => {
-      if (err) {
-        return
-      }
+  const handleSubmit = (values: any) => {
+    setLoading(true)
 
-      setLoading(true)
-
-      program &&
-        Promise.all([
-          updateProgramContent({
+    Promise.all([
+      updateProgramContent({
+        variables: {
+          programContentId: programContent.id,
+          price: values.isTrial ? 0 : null,
+          publishedAt: values.published ? values.publishedAt || new Date() : null,
+          title: values.title,
+          description: values.description.toRAW(),
+          duration: values.duration && values.duration * 60,
+          type: video ? 'video' : null,
+          data: {
+            video: video || null,
+            texttrack: values.texttrack || null,
+          },
+          isNotifyUpdate: values.isNotifyUpdate,
+          notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
+        },
+      }),
+      program.isSubscription
+        ? updateProgramContentPlan({
             variables: {
-              programContentId,
-              price: values.isTrial ? 0 : null,
-              publishedAt: values.published ? values.publishedAt || new Date() : null,
-              title: values.title,
-              description: values.description.toRAW(),
-              duration: values.duration && values.duration * 60,
-              type: values.video ? 'video' : null,
-              data: {
-                video: values.video || null,
-                texttrack: values.texttrack || null,
-              },
-              isNotifyUpdate: values.isNotifyUpdate,
-              notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
+              programContentId: programContent.id,
+              programContentPlans: values.planIds.map((planId: string) => ({
+                program_content_id: programContent.id,
+                program_plan_id: planId,
+              })),
             },
-          }),
-          program.isSubscription
-            ? updateProgramContentPlan({
-                variables: {
-                  programContentId,
-                  programContentPlans: values.planIds.map((planId: string) => ({
-                    program_content_id: programContentId,
-                    program_plan_id: planId,
-                  })),
-                },
-              })
-            : null,
-        ])
-          .then(() => {
-            onSubmit && onSubmit()
-            setVisible(false)
           })
-          .finally(() => {
-            refetchProgramContent()
-            setLoading(false)
-          })
-    })
+        : null,
+    ])
+      .then(() => {
+        onRefetch && onRefetch()
+        setVisible(false)
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
-
-  const videoFieldValue = form.getFieldValue('video')
-  const bodyData = (programContent && programContent.programContentBody && programContent.programContentBody.data) || {}
-
-  // useEffect(() => {
-  //   const videoElement = document.createElement("video");
-  //   videoElement.preload = "metadata";
-  //   videoElement.onloadedmetadata = () => {
-  //     window.URL.revokeObjectURL(videoElement.src);
-  //     const duration = videoElement.duration;
-  //     console.log(duration);
-  //   };
-  //   if (videoFieldValue) {
-  //     console.log(videoFieldValue.originFileObj);
-  //     videoElement.src = URL.createObjectURL(videoFieldValue);
-  //   }
-  // }, [videoFieldValue]);
 
   return (
     <>
-      <EditOutlined
-        onClick={() => {
-          setVisible(true)
-        }}
-      />
+      <EditOutlined onClick={() => setVisible(true)} />
 
       <Modal
+        width="70vw"
+        footer={null}
+        maskStyle={{ background: 'rgba(255, 255, 255, 0.8)' }}
         maskClosable={false}
         closable={false}
         visible={visible}
-        width="70vw"
-        maskStyle={{ background: 'rgba(255, 255, 255, 0.8)' }}
-        footer={null}
       >
-        {programContent ? (
-          <Form
-            onSubmit={e => {
-              e.preventDefault()
-              handleSubmit()
-            }}
-          >
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              {program ? (
-                <div className="d-flex align-items-center">
-                  {form.getFieldDecorator('isTrial', {
-                    initialValue: programContent.listPrice === 0,
-                  })(
-                    <Checkbox checked={form.getFieldValue('isTrial')}>
-                      {formatMessage(commonMessages.ui.trial)}
-                    </Checkbox>,
-                  )}
-                  <Form.Item className="mb-0">
-                    {form.getFieldDecorator('published', {
-                      initialValue: !!programContent.publishedAt,
-                    })(<Checkbox checked={form.getFieldValue('published')}>{formatMessage(messages.show)}</Checkbox>)}
-                  </Form.Item>
-                  {form.getFieldValue('published') &&
-                    program.isSubscription &&
-                    form.getFieldDecorator('publishedAt', {
-                      initialValue: programContent.publishedAt && moment(programContent.publishedAt),
-                    })(<DatetimePicker />)}
-                  <Form.Item className="mb-0">
-                    {form.getFieldDecorator('isNotifyUpdate', {
-                      initialValue: programContent.isNotifyUpdate,
-                    })(<Checkbox>{formatMessage(messages.notifyUpdate)}</Checkbox>)}
-                  </Form.Item>
-                </div>
-              ) : (
-                <div />
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={{
+            publishedAt: moment(programContent.publishedAt),
+            isNotifyUpdate: programContent.isNotifyUpdate,
+            title: programContent.title,
+            planIds: programContent.programPlans?.map(programPlan => programPlan.id) || [],
+            video: programContentBody.data.video,
+            texttrack: programContentBody.data.texttrack,
+            duration: (programContent.duration || 0) / 60,
+            description: BraftEditor.createEditorState(programContentBody.description),
+          }}
+          onValuesChange={values => {
+            setVideo(values.video)
+          }}
+          onFinish={handleSubmit}
+        >
+          <div className="d-flex align-items-center justify-content-between mb-4">
+            <div className="d-flex align-items-center">
+              <Checkbox checked={isTrial} onChange={e => setIsTrial(e.target.checked)}>
+                {formatMessage(commonMessages.ui.trial)}
+              </Checkbox>
+
+              <Checkbox checked={isPublished} onChange={e => setIsPublished(e.target.checked)}>
+                {formatMessage(messages.show)}
+              </Checkbox>
+
+              {program.isSubscription && isPublished && (
+                <Form.Item name="publishedAt" className="mb-0 mr-2">
+                  <DatePicker
+                    format="YYYY-MM-DD HH:mm"
+                    showTime={{ format: 'HH:mm', defaultValue: moment('00:00', 'HH:mm') }}
+                  />
+                </Form.Item>
               )}
-              <div>
-                <Button
-                  disabled={loading || uploading}
-                  onClick={() => {
-                    setVisible(false)
-                  }}
-                  className="mr-2"
-                >
-                  {formatMessage(commonMessages.ui.cancel)}
-                </Button>
-                <Button type="primary" htmlType="submit" disabled={uploading} loading={loading} className="mr-2">
-                  {formatMessage(commonMessages.ui.save)}
-                </Button>
-                <Dropdown
-                  placement="bottomRight"
-                  overlay={
-                    <Menu>
-                      <Menu.Item
-                        onClick={() =>
-                          window.confirm(formatMessage(messages.deleteContentWarning)) &&
-                          deleteProgramContent({
-                            variables: { programContentId },
-                          }).then(() => onSubmit && onSubmit())
-                        }
-                      >
-                        {formatMessage(messages.deleteContent)}
-                      </Menu.Item>
-                    </Menu>
-                  }
-                  trigger={['click']}
-                >
-                  <MoreOutlined />
-                </Dropdown>
-              </div>
+
+              <Form.Item name="isNotifyUpdate" className="mb-0">
+                <Checkbox>{formatMessage(messages.notifyUpdate)}</Checkbox>
+              </Form.Item>
             </div>
-            <Form.Item label={formatMessage(messages.contentTitle)}>
-              {form.getFieldDecorator('title', {
-                initialValue: programContent?.title,
-              })(<Input />)}
+
+            <div>
+              <Button disabled={loading || uploading} onClick={() => setVisible(false)} className="mr-2">
+                {formatMessage(commonMessages.ui.cancel)}
+              </Button>
+              <Button type="primary" htmlType="submit" disabled={uploading} loading={loading} className="mr-2">
+                {formatMessage(commonMessages.ui.save)}
+              </Button>
+              <Dropdown
+                trigger={['click']}
+                placement="bottomRight"
+                overlay={
+                  <Menu>
+                    <Menu.Item
+                      onClick={() =>
+                        window.confirm(formatMessage(messages.deleteContentWarning)) &&
+                        deleteProgramContent({
+                          variables: { programContentId: programContent.id },
+                        }).then(() => onRefetch && onRefetch())
+                      }
+                    >
+                      {formatMessage(messages.deleteContent)}
+                    </Menu.Item>
+                  </Menu>
+                }
+              >
+                <MoreOutlined />
+              </Dropdown>
+            </div>
+          </div>
+
+          <Form.Item label={formatMessage(messages.contentTitle)} name="title">
+            <Input />
+          </Form.Item>
+          {program.isSubscription && (
+            <Form.Item label={formatMessage(messages.contentPlan)} name="planIds">
+              <ProgramPlanSelector programId={program.id} placeholder={formatMessage(messages.contentPlan)} />
             </Form.Item>
-            {program?.isSubscription && (
-              <Form.Item label={formatMessage(messages.contentPlan)}>
-                {form.getFieldDecorator('planIds', {
-                  initialValue: programContent?.programPlans?.map(programPlan => programPlan.id) || [],
-                })(<ProgramPlanSelector programId={programId} placeholder={formatMessage(messages.contentPlan)} />)}
-              </Form.Item>
-            )}
-            <Form.Item label={formatMessage(commonMessages.term.video)}>
-              {programContent.programContentBody &&
-                form.getFieldDecorator('video', { initialValue: bodyData.video })(
-                  <SingleUploader
-                    accept="video/*"
-                    uploadText={formatMessage(messages.uploadVideo)}
-                    path={`videos/${appId}/${programContent.programContentBody.id}`}
-                    onUploading={() => setUploading(true)}
-                    onSuccess={() => setUploading(false)}
-                    onError={() => setUploading(false)}
-                    onCancel={() => setUploading(false)}
-                  />,
-                )}
+          )}
+          <Form.Item label={formatMessage(commonMessages.term.video)} name="video">
+            <SingleUploader
+              accept="video/*"
+              uploadText={formatMessage(messages.uploadVideo)}
+              path={`videos/${appId}/${programContentBody.id}`}
+              onUploading={() => setUploading(true)}
+              onSuccess={() => setUploading(false)}
+              onError={() => setUploading(false)}
+              onCancel={() => setUploading(false)}
+            />
+          </Form.Item>
+          {(video?.status === 'done' || programContentBody.data.video) && (
+            <Form.Item label={formatMessage(commonMessages.term.caption)} name="texttrack">
+              <SingleUploader
+                uploadText={formatMessage(messages.uploadCaption)}
+                path={`texttracks/${appId}/${programContentBody.id}`}
+                onUploading={() => setUploading(true)}
+                onSuccess={() => setUploading(false)}
+                onError={() => setUploading(false)}
+                onCancel={() => setUploading(false)}
+              />
             </Form.Item>
-            {((videoFieldValue && videoFieldValue.status === 'done') || bodyData.video) && (
-              <Form.Item label={formatMessage(commonMessages.term.caption)}>
-                {programContent.programContentBody &&
-                  form.getFieldDecorator('texttrack', {
-                    initialValue: bodyData.texttrack,
-                  })(
-                    <SingleUploader
-                      uploadText={formatMessage(messages.uploadCaption)}
-                      path={`texttracks/${appId}/${programContent.programContentBody.id}`}
-                      onUploading={() => setUploading(true)}
-                      onSuccess={() => setUploading(false)}
-                      onError={() => setUploading(false)}
-                      onCancel={() => setUploading(false)}
-                    />,
-                  )}
-              </Form.Item>
-            )}
-            <Form.Item label={formatMessage(messages.duration)}>
-              {form.getFieldDecorator('duration', {
-                initialValue: programContent.duration && programContent.duration / 60,
-              })(<InputNumber />)}
-            </Form.Item>
-            <Form.Item label={formatMessage(messages.contentContext)}>
-              {programContent.programContentBody &&
-                programContent.programContentBody.id &&
-                form.getFieldDecorator('description', {
-                  initialValue: BraftEditor.createEditorState(programContent.programContentBody.description),
-                })(<AdminBraftEditor />)}
-            </Form.Item>
-          </Form>
-        ) : (
-          <Spin />
-        )}
+          )}
+          <Form.Item label={formatMessage(messages.duration)} name="duration">
+            <InputNumber />
+          </Form.Item>
+          <Form.Item label={formatMessage(messages.contentContext)} name="description">
+            <AdminBraftEditor />
+          </Form.Item>
+        </Form>
       </Modal>
     </>
   )
@@ -319,7 +264,6 @@ const UPDATE_PROGRAM_CONTENT = gql`
     }
   }
 `
-
 const UPDATE_PROGRAM_CONTENT_PLAN = gql`
   mutation UPDATE_PROGRAM_CONTENT_PLAN(
     $programContentId: uuid!
@@ -333,7 +277,6 @@ const UPDATE_PROGRAM_CONTENT_PLAN = gql`
     }
   }
 `
-
 const DELETE_PROGRAM_CONTENT = gql`
   mutation DELETE_PROGRAM_CONTENT($programContentId: uuid!) {
     delete_program_content_progress(where: { program_content_id: { _eq: $programContentId } }) {
@@ -345,4 +288,4 @@ const DELETE_PROGRAM_CONTENT = gql`
   }
 `
 
-export default Form.create<ProgramContentAdminModalProps>()(ProgramContentAdminModal)
+export default ProgramContentAdminModal

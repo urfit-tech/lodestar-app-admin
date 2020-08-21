@@ -5,10 +5,11 @@ import gql from 'graphql-tag'
 import React from 'react'
 import types from '../../types'
 
-type ProgramPlanSelectorProps = SelectProps<string> & {
-  programId: string
-}
-const ProgramPlanSelector: React.FC<ProgramPlanSelectorProps> = ({ programId, ...selectProps }) => {
+const ProgramPlanSelector: React.FC<
+  SelectProps<string> & {
+    programId: string
+  }
+> = ({ programId, ...selectProps }) => {
   const { loading, data } = useQuery<types.GET_PROGRAM_PLANS, types.GET_PROGRAM_PLANSVariables>(GET_PROGRAM_PLANS, {
     variables: { programId },
     fetchPolicy: 'no-cache',
@@ -16,9 +17,11 @@ const ProgramPlanSelector: React.FC<ProgramPlanSelectorProps> = ({ programId, ..
 
   return (
     <Select mode="multiple" loading={loading} style={{ width: '100%' }} {...selectProps}>
-      {data &&
-        data.program_plan &&
-        data.program_plan.map(programPlan => <Select.Option value={programPlan.id}>{programPlan.title}</Select.Option>)}
+      {data?.program_plan?.map(programPlan => (
+        <Select.Option key={programPlan.id} value={programPlan.id}>
+          {programPlan.title}
+        </Select.Option>
+      ))}
     </Select>
   )
 }

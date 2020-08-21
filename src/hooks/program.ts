@@ -1,14 +1,15 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
-import { useContext, useState, useEffect } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import AppContext from '../contexts/AppContext'
 import types from '../types'
 import {
+  ProgramAdminProps,
+  ProgramContentBodyType,
   ProgramContentProps,
   ProgramPlanPeriodType,
   ProgramPreviewProps,
-  ProgramAdminProps,
   ProgramRoleName,
 } from '../types/program'
 
@@ -274,6 +275,46 @@ export const useProgram = (programId: string) => {
     errorProgram: error,
     program,
     refetchProgram: refetch,
+  }
+}
+
+export const useProgramContentBody = (programContentId: string) => {
+  const { loading, error, data, refetch } = useQuery(
+    gql`
+      query GET_PROGRAM_CONTENT_BODY($programContentId: uuid!) {
+        program_content_by_pk(id: $programContentId) {
+          program_content_body {
+            id
+            type
+            description
+            data
+          }
+        }
+      }
+    `,
+    { variables: { programContentId } },
+  )
+
+  const programContentBody: ProgramContentBodyType =
+    loading || error || !data
+      ? {
+          id: '',
+          type: '',
+          description: '',
+          data: {},
+        }
+      : {
+          id: '',
+          type: '',
+          description: '',
+          data: {},
+        }
+
+  return {
+    loadingProgramContentBody: loading,
+    errorProgramContentBody: error,
+    programContentBody,
+    refetchProgramContentBody: refetch,
   }
 }
 

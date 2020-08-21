@@ -7,6 +7,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { dateFormatter, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import { useProgramContentBody } from '../../hooks/program'
 import types from '../../types'
 import { ProgramAdminProps, ProgramContentProps } from '../../types/program'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
@@ -27,23 +28,17 @@ const messages = defineMessages({
   programContentPlans: { id: 'program.text.programContentPlans', defaultMessage: '方案：' },
 })
 
-type ProgramContentAdminItemProps = {
-  showPlans?: boolean | null
+const ProgramContentAdminItem: React.FC<{
   program: ProgramAdminProps
   programContent: ProgramContentProps
+  showPlans?: boolean | null
   onRefetch?: () => void
-}
-
-const ProgramContentAdminItem: React.FC<ProgramContentAdminItemProps> = ({
-  showPlans,
-  programContent,
-  program,
-  onRefetch,
-}) => {
+}> = ({ showPlans, programContent, program, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [updateProgramContent] = useMutation<types.PUBLISH_PROGRAM_CONTENT, types.PUBLISH_PROGRAM_CONTENTVariables>(
     PUBLISH_PROGRAM_CONTENT,
   )
+  const { loadingProgramContentBody, programContentBody } = useProgramContentBody(programContent.id)
 
   return (
     <div className="d-flex align-items-center justify-content-between p-3" style={{ background: '#f7f8f8' }}>
@@ -85,11 +80,14 @@ const ProgramContentAdminItem: React.FC<ProgramContentAdminItemProps> = ({
             }
           />
         )}
-        <ProgramContentAdminModal
-          programId={program ? program.id : ''}
-          programContentId={programContent.id}
-          onSubmit={() => onRefetch && onRefetch()}
-        />
+        {!loadingProgramContentBody && (
+          <ProgramContentAdminModal
+            program={program}
+            programContent={programContent}
+            programContentBody={programContentBody}
+            onRefetch={onRefetch}
+          />
+        )}
       </div>
     </div>
   )

@@ -75,6 +75,13 @@ export type ProgramContentProps = {
   }[]
 }
 
+export type ProgramContentBodyType = {
+  id: string
+  type: string | null
+  description: string | null
+  data: any
+}
+
 export type ProgramPlanProps = {
   id: string
   type: number
