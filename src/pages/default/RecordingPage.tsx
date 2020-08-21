@@ -73,20 +73,6 @@ const RecordingPage: React.FC = () => {
     }
   })
 
-  const showUploadingModal = () => {
-    return Modal.info({
-      icon: null,
-      content: (
-        <div className="text-center">
-          <Spin size="large" className="my-5" />
-          <p>{formatMessage(podcastMessages.text.uploadingVoice)}</p>
-        </div>
-      ),
-      centered: true,
-      okButtonProps: { disabled: true, className: 'modal-footer-hidden-button' },
-    })
-  }
-
   const showUploadConfirmationModal = () => {
     return Modal.confirm({
       icon: null,
@@ -150,7 +136,27 @@ const RecordingPage: React.FC = () => {
     }
   }, [])
 
-  const onTrimAudio = () => {
+  const onForward = useCallback(() => {
+    if (currentAudioIndex + 1 < waveCollection.length) {
+      setCurrentAudioId(waveCollection[currentAudioIndex + 1].id)
+    }
+  }, [currentAudioIndex, waveCollection])
+
+  const onBackward = useCallback(() => {
+    if (currentAudioIndex > 0) {
+      setCurrentAudioId(waveCollection[currentAudioIndex - 1].id)
+    }
+  }, [currentAudioIndex, waveCollection])
+
+  const onDeleteAudioTrack = useCallback(() => {
+    setWaveCollection(waveCollection.filter(wave => wave.id !== currentAudioId))
+  }, [currentAudioId, waveCollection])
+
+  const onPlayRateChange = useCallback(() => {
+    playRate < 1 ? setPlayRate(1) : playRate < 1.5 ? setPlayRate(1.5) : playRate < 2 ? setPlayRate(2) : setPlayRate(0.5)
+  }, [playRate])
+
+  const onTrimAudio = useCallback(() => {
     const wave = waveCollection.find(wave => wave.id === currentAudioId)
     if (wave?.audioBuffer && currentPlayingSecond > 0) {
       const { duration, length } = wave.audioBuffer
@@ -186,9 +192,23 @@ const RecordingPage: React.FC = () => {
       )
       setCurrentPlayingSecond(0)
     }
-  }
+  }, [currentAudioId, currentPlayingSecond, waveCollection])
 
-  const onUploadAudio = () => {
+  const onUploadAudio = useCallback(() => {
+    const showUploadingModal = () => {
+      return Modal.info({
+        icon: null,
+        content: (
+          <div className="text-center">
+            <Spin size="large" className="my-5" />
+            <p>{formatMessage(podcastMessages.text.uploadingVoice)}</p>
+          </div>
+        ),
+        centered: true,
+        okButtonProps: { disabled: true, className: 'modal-footer-hidden-button' },
+      })
+    }
+
     let dstAudioData = null
     if (waveCollection.length === 1) {
       dstAudioData = waveCollection[0].audioBuffer
@@ -227,7 +247,58 @@ const RecordingPage: React.FC = () => {
     } else {
       handleError(new Error(formatMessage(errorMessages.event.failedPodcastRecording)))
     }
-  }
+  }, [
+    appId,
+    authToken,
+    formatMessage,
+    history,
+    podcastProgramId,
+    refetchPodcastProgramAdmin,
+    updatePodcastProgramContent,
+    waveCollection,
+  ])
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const { keyCode } = event
+      if ([32, 39, 37, 68, 67, 83, 85].includes(keyCode)) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+      switch (keyCode) {
+        // Press space key
+        case 32:
+          setIsPlaying(isPlaying => !isPlaying)
+          break
+        // Right key
+        case 39:
+          onForward()
+          break
+        // Left key
+        case 37:
+          onBackward()
+          break
+        // D key for delete
+        case 68:
+          onDeleteAudioTrack()
+          break
+        // C key for cut
+        case 67:
+          onTrimAudio()
+          break
+        // S key for speed
+        case 83:
+          onPlayRateChange()
+          break
+        // U key for upload
+        case 85:
+          onUploadAudio()
+          break
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [onBackward, onForward, onDeleteAudioTrack, onTrimAudio, onPlayRateChange, onUploadAudio])
 
   return (
     <div>
@@ -290,32 +361,16 @@ const RecordingPage: React.FC = () => {
         }}
         onTrim={onTrimAudio}
         onDelete={() => {
-          setWaveCollection(waveCollection.filter(wave => wave.id !== currentAudioId))
+          onDeleteAudioTrack()
           setIsEditing(false)
         }}
         onUpload={() => {
           showUploadConfirmationModal()
           setIsEditing(false)
         }}
-        onForward={() => {
-          if (currentAudioIndex + 1 < waveCollection.length) {
-            setCurrentAudioId(waveCollection[currentAudioIndex + 1].id)
-          }
-        }}
-        onBackward={() => {
-          if (currentAudioIndex > 0) {
-            setCurrentAudioId(waveCollection[currentAudioIndex - 1].id)
-          }
-        }}
-        onPlayRateChange={() => {
-          playRate < 1
-            ? setPlayRate(1)
-            : playRate < 1.5
-            ? setPlayRate(1.5)
-            : playRate < 2
-            ? setPlayRate(2)
-            : setPlayRate(0.5)
-        }}
+        onForward={onForward}
+        onBackward={onBackward}
+        onPlayRateChange={onPlayRateChange}
       />
 
       <Modal visible={isGeneratingAudio} closable={false} footer={false}>

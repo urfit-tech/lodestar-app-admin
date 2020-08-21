@@ -128,7 +128,7 @@ const PodcastProgramContentForm: React.FC<{
           className="mr-2"
         />
         {enabledModules.podcast_recording && (
-          <Button onClick={() => handleRecording()} className="ml-2">
+          <Button onClick={handleRecording} className="ml-2">
             <Icon component={() => <MicrophoneIcon />} />
             <span>
               {podcastProgramAdmin.contentType
