@@ -48,32 +48,22 @@ const ProductSelector: React.FC<{
                 type: 'ActivityTicket',
               }))
             : [],
-          ProgramPackage: allowTypes.includes('ProgramPackage')
-            ? data.program_package.map(programPackage => {
-                return {
-                  id: `ProgramPackage_${programPackage.id}`,
-                  title: programPackage.title,
-                  type: 'ProgramPackage',
-                  children: programPackage.program_package_plans.map(programPackagePlan => {
-                    return {
-                      id: `ProgramPackagePlan_${programPackagePlan.id}`,
-                      title: programPackagePlan.title,
-                      type: 'ProgramPackagePlan',
-                    }
-                  }),
-                }
-              })
+          ProgramPackagePlan: allowTypes.includes('ProgramPackagePlan')
+            ? data.program_package_plan.map(programPackagePlan => ({
+                id: `ProgramPackagePlan_${programPackagePlan.id}`,
+                title: `${programPackagePlan.program_package.title} - ${programPackagePlan.title}`,
+                type: 'ProgramPackagePlan',
+              }))
             : [],
         }
 
   const handleChange = (changedValue: string[]) => {
-    if (onChange) {
+    onChange &&
       onChange(
         changedValue.flatMap(productId =>
           products[productId] ? products[productId].map(product => product.id) : productId,
         ),
       )
-    }
   }
 
   return (
@@ -118,14 +108,12 @@ const GET_ALLTYPE_PRODUCT_COLLECTION = gql`
         title
       }
     }
-    program_package {
+    program_package_plan {
       id
       title
-      published_at
-      program_package_plans {
+      program_package {
         id
         title
-        published_at
       }
     }
   }

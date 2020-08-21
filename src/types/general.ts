@@ -5,7 +5,6 @@ export type ProductType =
   | 'Program'
   | 'ProgramPlan'
   | 'ProgramContent'
-  | 'ProgramPackage'
   | 'ProgramPackagePlan'
   | 'ProjectPlan'
   | 'Card'

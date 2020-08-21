@@ -1059,6 +1059,123 @@ export interface UPDATE_COUPON_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_PROGRAM_CATEGORY
+// ====================================================
+
+export interface INSERT_PROGRAM_CATEGORY_insert_category {
+  __typename: "category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_PROGRAM_CATEGORY {
+  /**
+   * insert data into the table: "category"
+   */
+  insert_category: INSERT_PROGRAM_CATEGORY_insert_category | null;
+}
+
+export interface INSERT_PROGRAM_CATEGORYVariables {
+  appId: string;
+  name?: string | null;
+  classType?: string | null;
+  position?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_CATEGORY
+// ====================================================
+
+export interface UPDATE_CATEGORY_update_category {
+  __typename: "category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_CATEGORY {
+  /**
+   * update data of the table: "category"
+   */
+  update_category: UPDATE_CATEGORY_update_category | null;
+}
+
+export interface UPDATE_CATEGORYVariables {
+  categoryId: string;
+  name?: string | null;
+  position?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_CATEGORY_POSITION
+// ====================================================
+
+export interface UPDATE_CATEGORY_POSITION_insert_category {
+  __typename: "category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_CATEGORY_POSITION {
+  /**
+   * insert data into the table: "category"
+   */
+  insert_category: UPDATE_CATEGORY_POSITION_insert_category | null;
+}
+
+export interface UPDATE_CATEGORY_POSITIONVariables {
+  data: category_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PROGRAM_CATEGORY
+// ====================================================
+
+export interface DELETE_PROGRAM_CATEGORY_delete_category {
+  __typename: "category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CATEGORY {
+  /**
+   * delete data from the table: "category"
+   */
+  delete_category: DELETE_PROGRAM_CATEGORY_delete_category | null;
+}
+
+export interface DELETE_PROGRAM_CATEGORYVariables {
+  categoryId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_COIN_LOG_COLLECTION
 // ====================================================
 
@@ -3841,22 +3958,20 @@ export interface GET_ALLTYPE_PRODUCT_COLLECTION_activity_ticket {
   activity: GET_ALLTYPE_PRODUCT_COLLECTION_activity_ticket_activity;
 }
 
-export interface GET_ALLTYPE_PRODUCT_COLLECTION_program_package_program_package_plans {
-  __typename: "program_package_plan";
-  id: any;
-  title: string;
-  published_at: any | null;
-}
-
-export interface GET_ALLTYPE_PRODUCT_COLLECTION_program_package {
+export interface GET_ALLTYPE_PRODUCT_COLLECTION_program_package_plan_program_package {
   __typename: "program_package";
   id: any;
   title: string;
-  published_at: any | null;
+}
+
+export interface GET_ALLTYPE_PRODUCT_COLLECTION_program_package_plan {
+  __typename: "program_package_plan";
+  id: any;
+  title: string;
   /**
-   * An array relationship
+   * An object relationship
    */
-  program_package_plans: GET_ALLTYPE_PRODUCT_COLLECTION_program_package_program_package_plans[];
+  program_package: GET_ALLTYPE_PRODUCT_COLLECTION_program_package_plan_program_package;
 }
 
 export interface GET_ALLTYPE_PRODUCT_COLLECTION {
@@ -3873,9 +3988,9 @@ export interface GET_ALLTYPE_PRODUCT_COLLECTION {
    */
   activity_ticket: GET_ALLTYPE_PRODUCT_COLLECTION_activity_ticket[];
   /**
-   * fetch data from the table: "program_package"
+   * fetch data from the table: "program_package_plan"
    */
-  program_package: GET_ALLTYPE_PRODUCT_COLLECTION_program_package[];
+  program_package_plan: GET_ALLTYPE_PRODUCT_COLLECTION_program_package_plan[];
 }
 
 /* tslint:disable */
@@ -4044,46 +4159,6 @@ export interface GET_ACTIVITY_COLLECTION_ADMIN {
 
 export interface GET_ACTIVITY_COLLECTION_ADMINVariables {
   memberId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_ACTIVITY
-// ====================================================
-
-export interface INSERT_ACTIVITY_insert_activity_returning {
-  __typename: "activity";
-  id: any;
-}
-
-export interface INSERT_ACTIVITY_insert_activity {
-  __typename: "activity_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: INSERT_ACTIVITY_insert_activity_returning[];
-}
-
-export interface INSERT_ACTIVITY {
-  /**
-   * insert data into the table: "activity"
-   */
-  insert_activity: INSERT_ACTIVITY_insert_activity | null;
-}
-
-export interface INSERT_ACTIVITYVariables {
-  title: string;
-  memberId: string;
-  appId: string;
-  activityCategories: activity_category_insert_input[];
 }
 
 /* tslint:disable */
@@ -5074,123 +5149,6 @@ export interface GET_NOTIFICATIONS {
 export interface GET_NOTIFICATIONSVariables {
   memberId?: string | null;
   limit?: number | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_PROGRAM_CATEGORY
-// ====================================================
-
-export interface INSERT_PROGRAM_CATEGORY_insert_category {
-  __typename: "category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface INSERT_PROGRAM_CATEGORY {
-  /**
-   * insert data into the table: "category"
-   */
-  insert_category: INSERT_PROGRAM_CATEGORY_insert_category | null;
-}
-
-export interface INSERT_PROGRAM_CATEGORYVariables {
-  appId: string;
-  name?: string | null;
-  classType?: string | null;
-  position?: number | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_CATEGORY
-// ====================================================
-
-export interface UPDATE_CATEGORY_update_category {
-  __typename: "category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_CATEGORY {
-  /**
-   * update data of the table: "category"
-   */
-  update_category: UPDATE_CATEGORY_update_category | null;
-}
-
-export interface UPDATE_CATEGORYVariables {
-  categoryId: string;
-  name?: string | null;
-  position?: number | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_CATEGORY_POSITION
-// ====================================================
-
-export interface UPDATE_CATEGORY_POSITION_insert_category {
-  __typename: "category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_CATEGORY_POSITION {
-  /**
-   * insert data into the table: "category"
-   */
-  insert_category: UPDATE_CATEGORY_POSITION_insert_category | null;
-}
-
-export interface UPDATE_CATEGORY_POSITIONVariables {
-  data: category_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_PROGRAM_CATEGORY
-// ====================================================
-
-export interface DELETE_PROGRAM_CATEGORY_delete_category {
-  __typename: "category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PROGRAM_CATEGORY {
-  /**
-   * delete data from the table: "category"
-   */
-  delete_category: DELETE_PROGRAM_CATEGORY_delete_category | null;
-}
-
-export interface DELETE_PROGRAM_CATEGORYVariables {
-  categoryId: string;
 }
 
 /* tslint:disable */
@@ -6751,6 +6709,38 @@ export interface GET_PODCAST_PROGRAM_ADMINVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PODCAST_PLAN
+// ====================================================
+
+export interface GET_PODCAST_PLAN_podcast_plan_by_pk {
+  __typename: "podcast_plan";
+  id: any;
+  creator_id: string;
+  period_type: string;
+  period_amount: any;
+  list_price: any;
+  sale_price: any | null;
+  sold_at: any | null;
+  published_at: any | null;
+}
+
+export interface GET_PODCAST_PLAN {
+  /**
+   * fetch data from the table: "podcast_plan" using primary key columns
+   */
+  podcast_plan_by_pk: GET_PODCAST_PLAN_podcast_plan_by_pk | null;
+}
+
+export interface GET_PODCAST_PLANVariables {
+  podcastPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PODCAST_PLAN_ADMIN_COLLECTION
 // ====================================================
 
@@ -6802,38 +6792,6 @@ export interface GET_PODCAST_PLAN_ADMIN_COLLECTION {
 
 export interface GET_PODCAST_PLAN_ADMIN_COLLECTIONVariables {
   creatorId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PODCAST_PLAN
-// ====================================================
-
-export interface GET_PODCAST_PLAN_podcast_plan_by_pk {
-  __typename: "podcast_plan";
-  id: any;
-  creator_id: string;
-  period_type: string;
-  period_amount: any;
-  list_price: any;
-  sale_price: any | null;
-  sold_at: any | null;
-  published_at: any | null;
-}
-
-export interface GET_PODCAST_PLAN {
-  /**
-   * fetch data from the table: "podcast_plan" using primary key columns
-   */
-  podcast_plan_by_pk: GET_PODCAST_PLAN_podcast_plan_by_pk | null;
-}
-
-export interface GET_PODCAST_PLANVariables {
-  podcastPlanId: any;
 }
 
 /* tslint:disable */
@@ -7752,6 +7710,46 @@ export interface GET_PROGRAM_PACKAGE {
 
 export interface GET_PROGRAM_PACKAGEVariables {
   id: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_ACTIVITY
+// ====================================================
+
+export interface INSERT_ACTIVITY_insert_activity_returning {
+  __typename: "activity";
+  id: any;
+}
+
+export interface INSERT_ACTIVITY_insert_activity {
+  __typename: "activity_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_ACTIVITY_insert_activity_returning[];
+}
+
+export interface INSERT_ACTIVITY {
+  /**
+   * insert data into the table: "activity"
+   */
+  insert_activity: INSERT_ACTIVITY_insert_activity | null;
+}
+
+export interface INSERT_ACTIVITYVariables {
+  title: string;
+  memberId: string;
+  appId: string;
+  activityCategories: activity_category_insert_input[];
 }
 
 /* tslint:disable */
@@ -9302,11 +9300,13 @@ export enum order_log_update_column {
   discount_point = "discount_point",
   discount_price = "discount_price",
   discount_type = "discount_type",
+  expired_at = "expired_at",
   id = "id",
   invoice = "invoice",
   member_id = "member_id",
   message = "message",
   payment_model = "payment_model",
+  retried_at = "retried_at",
   shipping = "shipping",
   status = "status",
   updated_at = "updated_at",
@@ -13103,6 +13103,7 @@ export interface order_log_bool_exp {
   discount_point?: numeric_comparison_exp | null;
   discount_price?: numeric_comparison_exp | null;
   discount_type?: Int_comparison_exp | null;
+  expired_at?: timestamptz_comparison_exp | null;
   id?: String_comparison_exp | null;
   invoice?: jsonb_comparison_exp | null;
   member?: member_bool_exp | null;
@@ -13112,6 +13113,7 @@ export interface order_log_bool_exp {
   order_products?: order_product_bool_exp | null;
   payment_logs?: payment_log_bool_exp | null;
   payment_model?: jsonb_comparison_exp | null;
+  retried_at?: timestamptz_comparison_exp | null;
   shipping?: jsonb_comparison_exp | null;
   status?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -13129,6 +13131,7 @@ export interface order_log_insert_input {
   discount_point?: any | null;
   discount_price?: any | null;
   discount_type?: number | null;
+  expired_at?: any | null;
   id?: string | null;
   invoice?: any | null;
   member?: member_obj_rel_insert_input | null;
@@ -13138,6 +13141,7 @@ export interface order_log_insert_input {
   order_products?: order_product_arr_rel_insert_input | null;
   payment_logs?: payment_log_arr_rel_insert_input | null;
   payment_model?: any | null;
+  retried_at?: any | null;
   shipping?: any | null;
   status?: string | null;
   updated_at?: any | null;
