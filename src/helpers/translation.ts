@@ -586,6 +586,7 @@ export const podcastMessages = {
       id: 'podcast.text.bulkUploadMessage',
       defaultMessage: '將會合併上傳所有音檔，確定要上傳嗎？ ',
     },
+    chromeNotSupported: { id: 'podcast.text.chromeNotSupported', defaultMessage: 'iOS Chrome 尚不支援錄音功能，請改用 Safari 瀏覽器' },
   }),
 }
 

@@ -7,7 +7,7 @@ import gql from 'graphql-tag'
 import { extname } from 'path'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
-import { Link } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { AppContext } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
@@ -37,6 +37,7 @@ const PodcastProgramContentForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const { id: appId, enabledModules } = useContext(AppContext)
+  const history = useHistory()
 
   const updatePodcastProgramContent = useUpdatePodcastProgramContent()
   const [updatePodcastProgramBody] = useMutation<
@@ -84,6 +85,15 @@ const PodcastProgramContentForm: React.FC<{
       .finally(() => setLoading(false))
   }
 
+  const handleRecording = () => {
+    const userAgent = window.navigator.userAgent
+    if (userAgent.match(/iPhone/i) && userAgent.match(/CriOS/i)) {
+      alert(formatMessage(podcastMessages.text.chromeNotSupported))
+    } else {
+      history.push(`/podcast-programs/${podcastProgramAdmin.id}/recording`)
+    }
+  }
+
   return (
     <Form
       form={form}
@@ -118,16 +128,14 @@ const PodcastProgramContentForm: React.FC<{
           className="mr-2"
         />
         {enabledModules.podcast_recording && (
-          <Link to={`/podcast-programs/${podcastProgramAdmin.id}/recording`} className="ml-2">
-            <Button>
-              <Icon component={() => <MicrophoneIcon />} />
-              <span>
-                {podcastProgramAdmin.contentType
-                  ? formatMessage(podcastMessages.ui.editAudio)
-                  : formatMessage(podcastMessages.ui.recordAudio)}
-              </span>
-            </Button>
-          </Link>
+          <Button onClick={() => handleRecording()} className="ml-2">
+            <Icon component={() => <MicrophoneIcon />} />
+            <span>
+              {podcastProgramAdmin.contentType
+                ? formatMessage(podcastMessages.ui.editAudio)
+                : formatMessage(podcastMessages.ui.recordAudio)}
+            </span>
+          </Button>
         )}
         {podcastProgramAdmin.contentType ? (
           <StyledFileBlock className="d-flex align-items-center justify-content-between">

@@ -257,6 +257,7 @@ const RecordingPage: React.FC = () => {
                   key={wave.id}
                   id={wave.id}
                   position={index}
+                  playRate={playRate}
                   audioBuffer={wave.audioBuffer}
                   onClick={() => {
                     setIsPlaying(false)

@@ -55,6 +55,7 @@ const AudioTrackCard: React.FC<
     id: string
     handleClassName?: string
     position: number
+    playRate?: number
     audioBuffer: AudioBuffer
     isActive?: boolean
     isPlaying?: boolean
@@ -65,6 +66,7 @@ const AudioTrackCard: React.FC<
   id,
   handleClassName,
   position,
+  playRate,
   audioBuffer,
   isActive,
   isPlaying,
@@ -115,6 +117,12 @@ const AudioTrackCard: React.FC<
     if (isPlaying === true) wavesurfer?.play()
     if (isPlaying === false) wavesurfer?.pause()
   }, [isPlaying, wavesurfer])
+
+  useEffect(() => {
+    if (wavesurfer && playRate) {
+      wavesurfer.setPlaybackRate(playRate)
+    }
+  }, [playRate, wavesurfer])
 
   return (
     <TrackWrapper {...divProps}>
