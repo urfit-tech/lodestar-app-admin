@@ -21,6 +21,7 @@ export type CustomRadioImageProps = {
   ratio: number
   src?: string | null
   shape?: 'default' | 'rounded' | 'circle'
+  withShadow?: boolean
 }
 export const CustomRatioImage = styled.div<CustomRadioImageProps>`
   padding-top: calc(${props => props.width} * ${props => props.ratio});
@@ -29,4 +30,5 @@ export const CustomRatioImage = styled.div<CustomRadioImageProps>`
   background-size: cover;
   background-position: center;
   border-radius: ${props => (props.shape === 'rounded' ? '4px' : props.shape === 'circle' ? '50%' : '')};
+  ${props => (props.withShadow ? 'box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.15);' : '')}
 `

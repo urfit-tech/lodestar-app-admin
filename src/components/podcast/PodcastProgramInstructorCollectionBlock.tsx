@@ -21,8 +21,8 @@ const StyledModalTitle = styled.div`
 
 const PodcastProgramInstructorCollectionBlock: React.FC<{
   podcastProgramAdmin: PodcastProgramAdminProps | null
-  refetch?: () => Promise<any>
-}> = ({ podcastProgramAdmin, refetch }) => {
+  onRefetch?: () => void
+}> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const [updatePodcastProgramRole] = useMutation<
@@ -60,12 +60,10 @@ const PodcastProgramInstructorCollectionBlock: React.FC<{
       },
     })
       .then(() => {
-        refetch &&
-          refetch().then(() => {
-            setSelectedMemberId(null)
-            setVisible(false)
-            message.success(formatMessage(commonMessages.event.successfullySaved))
-          })
+        onRefetch && onRefetch()
+        setSelectedMemberId(null)
+        setVisible(false)
+        message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -86,7 +84,8 @@ const PodcastProgramInstructorCollectionBlock: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch().then(() => message.success(formatMessage(commonMessages.event.successfullySaved)))
+        onRefetch && onRefetch()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
   }

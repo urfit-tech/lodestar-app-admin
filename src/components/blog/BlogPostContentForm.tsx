@@ -13,8 +13,8 @@ import AdminBraftEditor from '../admin/AdminBraftEditor'
 
 const BlogPostContentForm: React.FC<{
   post: PostProps | null
-  refetch?: () => {}
-}> = ({ post, refetch }) => {
+  onRefetch?: () => {}
+}> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const [updatePostDescription] = useMutation<types.UPDATE_POST_DESCRIPTION, types.UPDATE_POST_DESCRIPTIONVariables>(
@@ -35,7 +35,7 @@ const BlogPostContentForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
@@ -47,10 +47,10 @@ const BlogPostContentForm: React.FC<{
       form={form}
       colon={false}
       hideRequiredMark
-      onFinish={handleSubmit}
       initialValues={{
         description: BraftEditor.createEditorState(post.description),
       }}
+      onFinish={handleSubmit}
     >
       <Form.Item name="description">
         <AdminBraftEditor />

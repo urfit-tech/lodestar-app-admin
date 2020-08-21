@@ -32,7 +32,7 @@ const ImageInput: React.FC<{
 
   return (
     <div className="d-flex align-items-center justify-content-start">
-      {value && <CustomRatioImage {...image} src={value} className="mr-5" />}
+      {value && <CustomRatioImage {...image} src={value} withShadow className="mr-5" />}
 
       <StyledSingleUploader
         value={file}

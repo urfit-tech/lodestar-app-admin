@@ -30,8 +30,8 @@ const StyledNotation = styled.div`
 
 const BlogPostVideoForm: React.FC<{
   post: PostProps | null
-  refetch?: () => void
-}> = ({ post, refetch }) => {
+  onRefetch?: () => void
+}> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const [updatePostVideoUrl] = useMutation<types.UPDATE_POST_VIDEO_URL, types.UPDATE_POST_VIDEO_URLVariables>(
@@ -52,7 +52,7 @@ const BlogPostVideoForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
@@ -65,10 +65,10 @@ const BlogPostVideoForm: React.FC<{
           form={form}
           colon={false}
           hideRequiredMark
-          onFinish={handleSubmit}
           initialValues={{
             videoUrl: post.videoUrl,
           }}
+          onFinish={handleSubmit}
         >
           <Form.Item name="videoUrl">
             <Input className="mr-4" placeholder={formatMessage(blogMessages.term.pasteVideoUrl)} />

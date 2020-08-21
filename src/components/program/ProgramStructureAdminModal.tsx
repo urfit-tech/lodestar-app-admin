@@ -159,7 +159,6 @@ const UPSERT_PROGRAM_CONTENT_SECTIONS = gql`
     }
   }
 `
-
 const UPSERT_PROGRAM_CONTENTS = gql`
   mutation UPSERT_PROGRAM_CONTENTS($programContents: [program_content_insert_input!]!) {
     insert_program_content(

@@ -29,8 +29,8 @@ const messages = defineMessages({
 
 const AppointmentPlanPublishBlock: React.FC<{
   appointmentPlanAdmin: AppointmentPlanAdminProps | null
-  refetch?: () => void
-}> = ({ appointmentPlanAdmin, refetch }) => {
+  onRefetch?: () => void
+}> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [publishAppointmentPlan] = useMutation<types.PUBLISH_APPOINTMENT_PLAN, types.PUBLISH_APPOINTMENT_PLANVariables>(
     PUBLISH_APPOINTMENT_PLAN,
@@ -87,7 +87,7 @@ const AppointmentPlanPublishBlock: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         onSuccess && onSuccess()
       })
       .catch(error => onError && onError(error))

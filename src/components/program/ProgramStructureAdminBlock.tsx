@@ -46,7 +46,7 @@ const ProgramStructureAdminBlock: React.FC<{
   return (
     <>
       {program.contentSections.map(programContentSection => (
-        <div className="mb-3" key={programContentSection.id}>
+        <div key={programContentSection.id} className="mb-3">
           <ProgramContentSectionAdminCard
             program={program}
             programContentSection={programContentSection}

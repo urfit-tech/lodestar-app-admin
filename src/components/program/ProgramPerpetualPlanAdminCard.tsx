@@ -28,8 +28,8 @@ const ProgramPerpetualPlanAdminCard: React.FC<{
       variables: {
         programId: program.id,
         listPrice: values.listPrice || 0,
-        salePrice: values.sale ? values.sale.price : null,
-        soldAt: values.sale ? values.sale.soldAt : null,
+        salePrice: values.sale?.price || null,
+        soldAt: values.sale?.soldAt || null,
       },
     })
       .then(() => {

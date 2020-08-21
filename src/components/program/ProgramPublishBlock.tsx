@@ -2,7 +2,6 @@ import { Icon as LegacyIcon } from '@ant-design/compatible'
 import { DownOutlined, ExclamationCircleOutlined, RightOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Dropdown, Menu, Modal, Skeleton, Typography } from 'antd'
-import { CardProps } from 'antd/lib/card'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -56,12 +55,10 @@ const messages = defineMessages({
   noPrice: { id: 'program.text.noPrice', defaultMessage: '尚未訂定售價' },
 })
 
-const ProgramPublishBlock: React.FC<
-  CardProps & {
-    program: ProgramAdminProps | null
-    onRefetch?: () => void
-  }
-> = ({ program, onRefetch }) => {
+const ProgramPublishBlock: React.FC<{
+  program: ProgramAdminProps | null
+  onRefetch?: () => void
+}> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
   const theme = useContext(ThemeContext)
   const [publishProgram] = useMutation<types.PUBLISH_PROGRAM, types.PUBLISH_PROGRAMVariables>(PUBLISH_PROGRAM)

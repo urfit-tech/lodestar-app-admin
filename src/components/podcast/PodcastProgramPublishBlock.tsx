@@ -30,8 +30,8 @@ const messages = defineMessages({
 
 const PodcastProgramPublishBlock: React.FC<{
   podcastProgramAdmin: PodcastProgramAdminProps | null
-  refetch?: () => void
-}> = ({ podcastProgramAdmin, refetch }) => {
+  onRefetch?: () => void
+}> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [publishPodcastProgram] = useMutation<types.PUBLISH_PODCAST_PROGRAM, types.PUBLISH_PODCAST_PROGRAMVariables>(
     PUBLISH_PODCAST_PROGRAM,
@@ -94,7 +94,7 @@ const PodcastProgramPublishBlock: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         onSuccess && onSuccess()
       })
       .catch(error => onError && onError(error))

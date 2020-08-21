@@ -38,7 +38,7 @@ const PodcastPlanAdminPage: React.FC = () => {
                   {formatMessage(podcastMessages.ui.createPodcastPlan)}
                 </Button>
               )}
-              refetch={refetchPodcastPlans}
+              onRefetch={refetchPodcastPlans}
             />
           </div>
 
@@ -49,7 +49,7 @@ const PodcastPlanAdminPage: React.FC = () => {
               <PodcastPlanCollectionAdminTable
                 memberId={currentMemberId}
                 podcastPlans={podcastPlans}
-                refetch={refetchPodcastPlans}
+                onRefetch={refetchPodcastPlans}
               />
             )}
           </AdminCard>

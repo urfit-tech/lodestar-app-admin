@@ -1,17 +1,14 @@
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Typography } from 'antd'
+import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'
 import AppContext from '../../contexts/AppContext'
 import { commonMessages } from '../../helpers/translation'
-import {
-  useCategory,
-  useDeleteCategory,
-  useInsertCategory,
-  useUpdateCategory,
-  useUpdateCategoryPosition,
-} from '../../hooks/data'
+import { useCategory } from '../../hooks/data'
+import types from '../../types'
 import { ClassType } from '../../types/general'
 import AdminCard from '../admin/AdminCard'
 import DraggableItem from './DraggableItem'
@@ -30,10 +27,16 @@ const CategoryAdminCard: React.FC<{
   const app = useContext(AppContext)
   const { loading: loadingCategory, categories, refetch } = useCategory(classType)
 
-  const insertCategory = useInsertCategory()
-  const updateCategory = useUpdateCategory()
-  const updateCategoryPosition = useUpdateCategoryPosition()
-  const deleteCategory = useDeleteCategory()
+  const [insertCategory] = useMutation<types.INSERT_PROGRAM_CATEGORY, types.INSERT_PROGRAM_CATEGORYVariables>(
+    INSERT_PROGRAM_CATEGORY,
+  )
+  const [updateCategory] = useMutation<types.UPDATE_CATEGORY, types.UPDATE_CATEGORYVariables>(UPDATE_CATEGORY)
+  const [updateCategoryPosition] = useMutation<types.UPDATE_CATEGORY_POSITION, types.UPDATE_CATEGORY_POSITIONVariables>(
+    UPDATE_CATEGORY_POSITION,
+  )
+  const [deleteCategory] = useMutation<types.DELETE_PROGRAM_CATEGORY, types.DELETE_PROGRAM_CATEGORYVariables>(
+    DELETE_PROGRAM_CATEGORY,
+  )
 
   const [loading, setLoading] = useState(false)
 
@@ -116,5 +119,34 @@ const CategoryAdminCard: React.FC<{
     </AdminCard>
   )
 }
+
+const INSERT_PROGRAM_CATEGORY = gql`
+  mutation INSERT_PROGRAM_CATEGORY($appId: String!, $name: String, $classType: String, $position: Int) {
+    insert_category(objects: { app_id: $appId, name: $name, class: $classType, position: $position }) {
+      affected_rows
+    }
+  }
+`
+const UPDATE_CATEGORY = gql`
+  mutation UPDATE_CATEGORY($categoryId: String!, $name: String, $position: Int) {
+    update_category(_set: { name: $name, position: $position }, where: { id: { _eq: $categoryId } }) {
+      affected_rows
+    }
+  }
+`
+const UPDATE_CATEGORY_POSITION = gql`
+  mutation UPDATE_CATEGORY_POSITION($data: [category_insert_input!]!) {
+    insert_category(objects: $data, on_conflict: { constraint: category_pkey, update_columns: position }) {
+      affected_rows
+    }
+  }
+`
+const DELETE_PROGRAM_CATEGORY = gql`
+  mutation DELETE_PROGRAM_CATEGORY($categoryId: String!) {
+    delete_category(where: { id: { _eq: $categoryId } }) {
+      affected_rows
+    }
+  }
+`
 
 export default CategoryAdminCard

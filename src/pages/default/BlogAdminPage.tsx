@@ -67,12 +67,12 @@ const BlogAdminPage: React.FC = () => {
 
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(blogMessages.ui.video)}</AdminBlockTitle>
-                <BlogPostVideoForm post={post} refetch={refetchPost} />
+                <BlogPostVideoForm post={post} onRefetch={refetchPost} />
               </AdminBlock>
 
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(blogMessages.ui.contentDescription)}</AdminBlockTitle>
-                <BlogPostContentForm post={post} refetch={refetchPost} />
+                <BlogPostContentForm post={post} onRefetch={refetchPost} />
               </AdminBlock>
             </div>
           </Tabs.TabPane>
@@ -83,17 +83,17 @@ const BlogAdminPage: React.FC = () => {
 
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
-                <BlogPostBasicForm post={post} refetch={refetchPost} />
+                <BlogPostBasicForm post={post} onRefetch={refetchPost} />
               </AdminBlock>
 
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(blogMessages.ui.postSetting)}</AdminBlockTitle>
-                <BlogPostSettingForm post={post} refetch={refetchPost} />
+                <BlogPostSettingForm post={post} onRefetch={refetchPost} />
               </AdminBlock>
 
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(blogMessages.label.deletePost)}</AdminBlockTitle>
-                <BlogPostDeletionModal post={post} refetch={refetchPost} />
+                <BlogPostDeletionModal post={post} onRefetch={refetchPost} />
               </AdminBlock>
             </div>
           </Tabs.TabPane>
@@ -109,7 +109,7 @@ const BlogAdminPage: React.FC = () => {
 
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(commonMessages.term.author)}</AdminBlockTitle>
-                <BlogPostAuthorCollectionBlock post={post} refetch={refetchPost} />
+                <BlogPostAuthorCollectionBlock post={post} onRefetch={refetchPost} />
               </AdminBlock>
             </div>
           </Tabs.TabPane>
@@ -119,7 +119,7 @@ const BlogAdminPage: React.FC = () => {
               <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
 
               <AdminBlock>
-                <BlogPostPublishBlock post={post} refetch={refetchPost} />
+                <BlogPostPublishBlock post={post} onRefetch={refetchPost} />
               </AdminBlock>
             </div>
           </Tabs.TabPane>

@@ -5,6 +5,7 @@ import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import types from '../../types'
 import { PostProps } from '../../types/blog'
 import { StyledModal, StyledModalParagraph, StyledModalTitle } from '../program/ProgramDeletionAdminCard'
 
@@ -21,10 +22,10 @@ const messages = defineMessages({
 
 const BlogPostDeletionModal: React.FC<{
   post: PostProps | null
-  refetch?: () => void
-}> = ({ post, refetch }) => {
+  onRefetch?: () => void
+}> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [archivePost] = useMutation(DELETE_POST)
+  const [archivePost] = useMutation<types.DELETE_POST, types.DELETE_POSTVariables>(DELETE_POST)
   const [isVisible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -40,7 +41,7 @@ const BlogPostDeletionModal: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullyDeleted))
       })
       .catch(handleError)
@@ -55,7 +56,7 @@ const BlogPostDeletionModal: React.FC<{
       {post.isDeleted ? (
         <Button disabled>{formatMessage(commonMessages.ui.deleted)}</Button>
       ) : (
-        <Button type="primary" onClick={() => setVisible(true)}>
+        <Button type="primary" danger onClick={() => setVisible(true)}>
           {formatMessage(commonMessages.ui.deletePost)}
         </Button>
       )}

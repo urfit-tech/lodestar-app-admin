@@ -91,28 +91,31 @@ export const usePost = (postId: string) => {
 }
 
 export const usePostCollection = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_POSTS>(gql`
-    query GET_POSTS {
-      post(where: { is_deleted: { _eq: false } }, order_by: { updated_at: desc }) {
-        id
-        title
-        cover_url
-        video_url
-        post_roles(where: { name: { _eq: "author" } }) {
+  const { loading, error, data, refetch } = useQuery<types.GET_POSTS>(
+    gql`
+      query GET_POSTS {
+        post(where: { is_deleted: { _eq: false } }, order_by: { updated_at: desc }) {
           id
-          name
-          post_id
-          member {
+          title
+          cover_url
+          video_url
+          post_roles(where: { name: { _eq: "author" } }) {
             id
             name
-            username
+            post_id
+            member {
+              id
+              name
+              username
+            }
           }
+          published_at
+          views
         }
-        published_at
-        views
       }
-    }
-  `)
+    `,
+    { fetchPolicy: 'no-cache' },
+  )
 
   const posts: {
     id: string

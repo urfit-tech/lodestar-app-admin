@@ -16,8 +16,8 @@ import LanguageSelector from '../common/LanguageSelector'
 
 const ActivityBasicForm: React.FC<{
   activityAdmin: ActivityAdminProps | null
-  refetch?: () => void
-}> = ({ activityAdmin, refetch }) => {
+  onRefetch?: () => void
+}> = ({ activityAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const { enabledModules } = useContext(AppContext)
@@ -46,7 +46,7 @@ const ActivityBasicForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)

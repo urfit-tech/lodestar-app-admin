@@ -16,8 +16,8 @@ const messages = defineMessages({
 
 const AppointmentPlanScheduleBlock: React.FC<{
   appointmentPlanAdmin: AppointmentPlanAdminProps | null
-  refetch?: () => void
-}> = ({ appointmentPlanAdmin, refetch }) => {
+  onRefetch?: () => void
+}> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
 
   const [updateAppointmentSchedule] = useMutation<
@@ -43,7 +43,7 @@ const AppointmentPlanScheduleBlock: React.FC<{
         appointmentScheduleId: scheduleId,
       },
     })
-      .then(() => refetch && refetch())
+      .then(() => onRefetch && onRefetch())
       .catch(handleError)
 
   const handleClose = (scheduleId: string, startedAt: Date) => {
@@ -63,7 +63,7 @@ const AppointmentPlanScheduleBlock: React.FC<{
         excludes: excludes.map(exclude => new Date(exclude).toISOString()),
       },
     })
-      .then(() => refetch && refetch())
+      .then(() => onRefetch && onRefetch())
       .catch(handleError)
   }
 

@@ -1,3 +1,4 @@
+import { useMutation } from '@apollo/react-hooks'
 import { message, Modal, Spin } from 'antd'
 import { extname } from 'path'
 import React, { useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
@@ -20,7 +21,8 @@ import {
   sliceAudioBuffer,
 } from '../../helpers/audio'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
-import { usePodcastProgramAdmin, useUpdatePodcastProgramContent } from '../../hooks/podcast'
+import { UPDATE_PODCAST_PROGRAM_CONTENT, usePodcastProgramAdmin } from '../../hooks/podcast'
+import types from '../../types'
 
 const StyledLayoutContent = styled.div`
   height: calc(100vh - 64px);
@@ -61,7 +63,10 @@ const RecordingPage: React.FC = () => {
   const [waveCollection, setWaveCollection] = useState<WaveCollectionProps[]>([])
   const audioObjectRef = useRef<{ waveCollection: WaveCollectionProps[]; currentAudioId: string | undefined }>()
 
-  const updatePodcastProgramContent = useUpdatePodcastProgramContent()
+  const [updatePodcastProgramContent] = useMutation<
+    types.UPDATE_PODCAST_PROGRAM_CONTENT,
+    types.UPDATE_PODCAST_PROGRAM_CONTENTVariables
+  >(UPDATE_PODCAST_PROGRAM_CONTENT)
   const history = useHistory()
 
   const currentAudioIndex = waveCollection.findIndex(wave => wave.id === currentAudioId)

@@ -61,7 +61,7 @@ const ProgramPlanAdminModal: React.FC<
 
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
+  const handleSubmit = (onSuccess: () => void) => {
     form
       .validateFields()
       .then(values => {
@@ -87,7 +87,7 @@ const ProgramPlanAdminModal: React.FC<
           .then(() => {
             onRefetch && onRefetch()
             message.success(formatMessage(commonMessages.event.successfullySaved))
-            setVisible(false)
+            onSuccess()
           })
           .catch(handleError)
           .finally(() => setLoading(false))
@@ -105,7 +105,7 @@ const ProgramPlanAdminModal: React.FC<
           <Button className="mr-2" onClick={() => setVisible(false)}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit(setVisible)}>
+          <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
             {formatMessage(commonMessages.ui.confirm)}
           </Button>
         </>

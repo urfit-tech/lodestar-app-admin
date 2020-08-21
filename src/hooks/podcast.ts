@@ -1,8 +1,8 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { PodcastProgramColumnProps } from '../components/podcast/PodcastProgramCollectionAdminTable'
 import types from '../types'
-import { PeriodType, CategoryProps } from '../types/general'
+import { CategoryProps, PeriodType } from '../types/general'
 import { PodcastPlanProps, PodcastProgramAdminProps } from '../types/podcast'
 
 export const usePodcastProgramCollection = (memberId?: string) => {
@@ -189,12 +189,21 @@ export const usePodcastProgramAdmin = (podcastProgramId: string) => {
 
 export const usePodcastPlan = (podcastPlanId: string) => {
   const { data, loading, error, refetch } = useQuery<types.GET_PODCAST_PLAN, types.GET_PODCAST_PLANVariables>(
-    GET_PODCAST_PLAN,
-    {
-      variables: {
-        podcastPlanId,
-      },
-    },
+    gql`
+      query GET_PODCAST_PLAN($podcastPlanId: uuid!) {
+        podcast_plan_by_pk(id: $podcastPlanId) {
+          id
+          creator_id
+          period_type
+          period_amount
+          list_price
+          sale_price
+          sold_at
+          published_at
+        }
+      }
+    `,
+    { variables: { podcastPlanId } },
   )
   const podcastPlan: {
     id: string
@@ -298,31 +307,13 @@ export const usePodcastPlanAdminCollection = (creatorId?: string) => {
   }
 }
 
-export const useUpdatePodcastProgramContent = () => {
-  const [updatePodcastProgramContent] = useMutation<
-    types.UPDATE_PODCAST_PROGRAM_CONTENT,
-    types.UPDATE_PODCAST_PROGRAM_CONTENTVariables
-  >(UPDATE_PODCAST_PROGRAM_CONTENT)
-
-  return updatePodcastProgramContent
-}
-
-const GET_PODCAST_PLAN = gql`
-  query GET_PODCAST_PLAN($podcastPlanId: uuid!) {
-    podcast_plan_by_pk(id: $podcastPlanId) {
-      id
-      creator_id
-      period_type
-      period_amount
-      list_price
-      sale_price
-      sold_at
-      published_at
-    }
-  }
-`
-const UPDATE_PODCAST_PROGRAM_CONTENT = gql`
-  mutation UPDATE_PODCAST_PROGRAM_CONTENT($podcastProgramId: uuid!, $contentType: String, $updatedAt: timestamptz!, $duration: numeric) {
+export const UPDATE_PODCAST_PROGRAM_CONTENT = gql`
+  mutation UPDATE_PODCAST_PROGRAM_CONTENT(
+    $podcastProgramId: uuid!
+    $contentType: String
+    $updatedAt: timestamptz!
+    $duration: numeric
+  ) {
     update_podcast_program(
       where: { id: { _eq: $podcastProgramId } }
       _set: { content_type: $contentType, updated_at: $updatedAt, duration: $duration }

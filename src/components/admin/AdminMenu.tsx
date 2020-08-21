@@ -62,7 +62,7 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
           'owner_activity_admin',
           'owner_merchandise_admin',
           'owner_blog_admin',
-          'owner_point_admin',
+          'owner_coin_admin',
         ]}
       >
         <Menu.Item key="owner_sales">

@@ -16,8 +16,8 @@ import MerchandiseSelector from '../common/MerchandiseSelector'
 
 const BlogPostSettingForm: React.FC<{
   post: PostProps | null
-  refetch?: () => void
-}> = ({ post, refetch }) => {
+  onRefetch?: () => void
+}> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const { id: appId } = useContext(AppContext)
@@ -43,7 +43,7 @@ const BlogPostSettingForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
@@ -63,7 +63,7 @@ const BlogPostSettingForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
@@ -77,10 +77,10 @@ const BlogPostSettingForm: React.FC<{
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
-      onFinish={handleSubmit}
       initialValues={{
         merchandiseIds: post.merchandiseIds,
       }}
+      onFinish={handleSubmit}
     >
       <Form.Item
         label={

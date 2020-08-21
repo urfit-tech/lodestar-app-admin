@@ -38,7 +38,9 @@ const ProfileBasicCard: React.FC<
   const { member, refetchMember } = useMember(memberId)
   const { tags } = useTags()
 
-  const [updateMemberAvatar] = useMutation(UPDATE_MEMBER_AVATAR)
+  const [updateMemberAvatar] = useMutation<types.UPDATE_MEMBER_AVATAR, types.UPDATE_MEMBER_AVATARVariables>(
+    UPDATE_MEMBER_AVATAR,
+  )
   const [updateMemberBasic] = useMutation<types.UPDATE_MEMBER_BASIC, types.UPDATE_MEMBER_BASICVariables>(
     UPDATE_MEMBER_BASIC,
   )
