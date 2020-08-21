@@ -20,7 +20,9 @@ const PodcastProgramCreationModal: React.FC<{ memberId: string }> = ({ memberId 
   const { formatMessage } = useIntl()
   const history = useHistory()
   const [form] = useForm()
-  const createPodcastProgram = useCreatePodcastProgram()
+  const [createPodcastProgram] = useMutation<types.CREATE_PODCAST_PROGRAM, types.CREATE_PODCAST_PROGRAMVariables>(
+    CREATE_PODCAST_PROGRAM,
+  )
   const [loading, setLoading] = useState(false)
 
   const handleCreate = () => {
@@ -28,7 +30,17 @@ const PodcastProgramCreationModal: React.FC<{ memberId: string }> = ({ memberId 
       .validateFields()
       .then((values: any) => {
         setLoading(true)
-        createPodcastProgram(values.title, memberId, values.categoryIds)
+        createPodcastProgram({
+          variables: {
+            title: values.title,
+            creatorId: memberId,
+            podcastCategories:
+              values.categoryIds?.map((categoryId: string, index: number) => ({
+                category_id: categoryId,
+                position: index,
+              })) || [],
+          },
+        })
           .then(({ data }) => {
             const podcastProgramId = data?.insert_podcast_program?.returning[0]?.id
             podcastProgramId && history.push(`/podcast-programs/${podcastProgramId}`)
@@ -83,44 +95,27 @@ const PodcastProgramCreationModal: React.FC<{ memberId: string }> = ({ memberId 
   )
 }
 
-const useCreatePodcastProgram = () => {
-  const [createPodcastProgram] = useMutation<types.CREATE_PODCAST_PROGRAM, types.CREATE_PODCAST_PROGRAMVariables>(
-    gql`
-      mutation CREATE_PODCAST_PROGRAM(
-        $title: String!
-        $creatorId: String!
-        $podcastCategories: [podcast_program_category_insert_input!]!
-      ) {
-        insert_podcast_program(
-          objects: {
-            title: $title
-            creator_id: $creatorId
-            podcast_program_categories: { data: $podcastCategories }
-            podcast_program_bodies: { data: { description: "" } }
-            podcast_program_roles: { data: { member_id: $creatorId, name: "instructor" } }
-          }
-        ) {
-          affected_rows
-          returning {
-            id
-          }
-        }
+const CREATE_PODCAST_PROGRAM = gql`
+  mutation CREATE_PODCAST_PROGRAM(
+    $title: String!
+    $creatorId: String!
+    $podcastCategories: [podcast_program_category_insert_input!]!
+  ) {
+    insert_podcast_program(
+      objects: {
+        title: $title
+        creator_id: $creatorId
+        podcast_program_categories: { data: $podcastCategories }
+        podcast_program_bodies: { data: { description: "" } }
+        podcast_program_roles: { data: { member_id: $creatorId, name: "instructor" } }
       }
-    `,
-  )
-
-  return (title: string, memberId: string, categoryIds: string[]) =>
-    createPodcastProgram({
-      variables: {
-        title,
-        creatorId: memberId,
-        podcastCategories:
-          categoryIds?.map((categoryId, index) => ({
-            category_id: categoryId,
-            position: index,
-          })) || [],
-      },
-    })
-}
+    ) {
+      affected_rows
+      returning {
+        id
+      }
+    }
+  }
+`
 
 export default PodcastProgramCreationModal

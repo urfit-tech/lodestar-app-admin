@@ -13,8 +13,8 @@ import { AppointmentPlanAdminProps } from '../../types/appointment'
 
 const AppointmentPlanIntroForm: React.FC<{
   appointmentPlanAdmin: AppointmentPlanAdminProps | null
-  refetch?: () => void
-}> = ({ appointmentPlanAdmin, refetch }) => {
+  onRefetch?: () => void
+}> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const [updateAppointmentPlanDescription] = useMutation<
@@ -29,7 +29,6 @@ const AppointmentPlanIntroForm: React.FC<{
 
   const handleSubmit = (values: any) => {
     setLoading(true)
-
     updateAppointmentPlanDescription({
       variables: {
         appointmentPlanId: appointmentPlanAdmin.id,
@@ -37,7 +36,7 @@ const AppointmentPlanIntroForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
@@ -49,10 +48,10 @@ const AppointmentPlanIntroForm: React.FC<{
       form={form}
       colon={false}
       hideRequiredMark
-      onFinish={handleSubmit}
       initialValues={{
         description: BraftEditor.createEditorState(appointmentPlanAdmin.description || ''),
       }}
+      onFinish={handleSubmit}
     >
       <Form.Item
         name="description"

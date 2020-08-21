@@ -150,7 +150,7 @@ const ProgramContentAdminModal: React.FC<{
                 </Form.Item>
               )}
 
-              <Form.Item name="isNotifyUpdate" className="mb-0">
+              <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
                 <Checkbox>{formatMessage(messages.notifyUpdate)}</Checkbox>
               </Form.Item>
             </div>

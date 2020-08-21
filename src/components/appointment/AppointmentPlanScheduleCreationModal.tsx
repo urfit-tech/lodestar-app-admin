@@ -30,8 +30,8 @@ const StyledTimeZoneBlock = styled.div`
 
 const AppointmentPlanScheduleCreationModal: React.FC<{
   appointmentPlanAdmin: AppointmentPlanAdminProps | null
-  refetch?: () => void
-}> = ({ appointmentPlanAdmin, refetch }) => {
+  onRefetch?: () => void
+}> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const [createAppointmentSchedule] = useMutation<
@@ -49,14 +49,11 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
     )
   }
 
-  const handleSubmit: (props: { setVisible: React.Dispatch<React.SetStateAction<boolean>> }) => void = ({
-    setVisible,
-  }) => {
+  const handleSubmit = (onSuccess: () => void) => {
     form
       .validateFields()
       .then(values => {
         setLoading(true)
-
         createAppointmentSchedule({
           variables: {
             appointmentPlanId: appointmentPlanAdmin.id,
@@ -66,11 +63,11 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
           },
         })
           .then(() => {
-            refetch && refetch()
+            onRefetch && onRefetch()
             message.success(formatMessage(commonMessages.event.successfullyCreated))
-            setVisible(false)
+            onSuccess()
           })
-          .catch(error => handleError(error))
+          .catch(handleError)
           .finally(() => setLoading(false))
       })
       .catch(() => {})
@@ -110,7 +107,7 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
           <Button className="mr-2" onClick={() => setVisible(false)}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit({ setVisible })}>
+          <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
             {formatMessage(commonMessages.ui.create)}
           </Button>
         </>

@@ -115,57 +115,6 @@ export const useNotifications = (memberId: string, limit?: number) => {
   }
 }
 
-export const useInsertCategory = () => {
-  const [insertCategory] = useMutation(gql`
-    mutation INSERT_PROGRAM_CATEGORY($appId: String!, $name: String, $classType: String, $position: Int) {
-      insert_category(objects: { app_id: $appId, name: $name, class: $classType, position: $position }) {
-        affected_rows
-      }
-    }
-  `)
-
-  return insertCategory
-}
-
-export const useUpdateCategory = () => {
-  const [updateCategory] = useMutation<types.UPDATE_CATEGORY, types.UPDATE_CATEGORYVariables>(gql`
-    mutation UPDATE_CATEGORY($categoryId: String!, $name: String, $position: Int) {
-      update_category(_set: { name: $name, position: $position }, where: { id: { _eq: $categoryId } }) {
-        affected_rows
-      }
-    }
-  `)
-
-  return updateCategory
-}
-
-export const useUpdateCategoryPosition = () => {
-  const [updateCategoryPosition] = useMutation<
-    types.UPDATE_CATEGORY_POSITION,
-    types.UPDATE_CATEGORY_POSITIONVariables
-  >(gql`
-    mutation UPDATE_CATEGORY_POSITION($data: [category_insert_input!]!) {
-      insert_category(objects: $data, on_conflict: { constraint: category_pkey, update_columns: position }) {
-        affected_rows
-      }
-    }
-  `)
-
-  return updateCategoryPosition
-}
-
-export const useDeleteCategory = () => {
-  const [deleteCategory] = useMutation(gql`
-    mutation DELETE_PROGRAM_CATEGORY($categoryId: String!) {
-      delete_category(where: { id: { _eq: $categoryId } }) {
-        affected_rows
-      }
-    }
-  `)
-
-  return deleteCategory
-}
-
 export const useProductInventoryLog = (productId: string) => {
   const { loading, error, data, refetch } = useQuery<types.GET_PRODUCT_INVENTORY, types.GET_PRODUCT_INVENTORYVariables>(
     gql`

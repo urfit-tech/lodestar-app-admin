@@ -2,7 +2,7 @@ import { FileAddOutlined, ShoppingFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Tabs } from 'antd'
 import gql from 'graphql-tag'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import { AdminPageTitle } from '../../components/admin'
@@ -20,12 +20,21 @@ const BlogAdminCollectionPage: React.FC = () => {
   const history = useHistory()
   const { id: appId } = useContext(AppContext)
   const { currentMemberId } = useAuth()
-  const { posts, refetchPosts } = usePostCollection()
+  const { posts } = usePostCollection()
   const [insertPost] = useMutation<types.INSERT_POST, types.INSERT_POSTVariables>(INSERT_POST)
 
-  useEffect(() => {
-    refetchPosts()
-  }, [refetchPosts])
+  const tabContents = [
+    {
+      key: 'published',
+      tab: formatMessage(commonMessages.status.published),
+      posts: posts.filter(post => post.publishedAt),
+    },
+    {
+      key: 'draft',
+      tab: formatMessage(commonMessages.status.draft),
+      posts: posts.filter(post => !post.publishedAt),
+    },
+  ]
 
   return (
     <AdminLayout>
@@ -61,25 +70,24 @@ const BlogAdminCollectionPage: React.FC = () => {
                     position: -1,
                   },
                 ],
-                postCategories: categoryIds.map((categoryId, i) => ({
+                postCategories: categoryIds.map((categoryId, index) => ({
                   category_id: categoryId,
-                  position: i,
+                  position: index,
                 })),
               },
             }).then(({ data }) => {
-              const blogId = data?.insert_post?.returning[0].id
-              blogId && history.push(`/blog/${blogId}`)
+              const postId = data?.insert_post?.returning[0].id
+              postId && history.push(`/blog/${postId}`)
             })
           }
         />
       </div>
 
       <Tabs defaultActiveKey="published">
-        <Tabs.TabPane key="published" tab={formatMessage(commonMessages.status.published)}>
-          <div className="row py-5">
-            {posts
-              .filter(post => post.publishedAt)
-              .map(post => (
+        {tabContents.map(tabContent => (
+          <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
+            <div className="row py-5">
+              {tabContent.posts.map(post => (
                 <div key={post.id} className="col-12 col-md-6 col-lg-4 mb-5">
                   <BlogPostCard
                     title={post.title}
@@ -92,27 +100,9 @@ const BlogAdminCollectionPage: React.FC = () => {
                   />
                 </div>
               ))}
-          </div>
-        </Tabs.TabPane>
-        <Tabs.TabPane key="draft" tab={formatMessage(commonMessages.status.draft)}>
-          <div className="row py-5">
-            {posts
-              .filter(post => !post.publishedAt)
-              .map(post => (
-                <div key={post.id} className="col-12 col-md-6 col-lg-4 mb-5">
-                  <BlogPostCard
-                    title={post.title}
-                    coverUrl={post.coverUrl}
-                    videoUrl={post.videoUrl}
-                    views={post.views}
-                    memberName={post.authorName}
-                    publishedAt={post.publishedAt}
-                    link={`/blog/${post.id}`}
-                  />
-                </div>
-              ))}
-          </div>
-        </Tabs.TabPane>
+            </div>
+          </Tabs.TabPane>
+        ))}
       </Tabs>
     </AdminLayout>
   )

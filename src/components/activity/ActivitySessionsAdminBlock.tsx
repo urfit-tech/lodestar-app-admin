@@ -45,9 +45,9 @@ const StyledLinkText = styled.span`
 
 const ActivitySessionsAdminBlock: React.FC<{
   activityAdmin: ActivityAdminProps | null
-  refetch?: () => void
+  onRefetch?: () => void
   onChangeTab?: () => void
-}> = ({ activityAdmin, refetch, onChangeTab }) => {
+}> = ({ activityAdmin, onRefetch, onChangeTab }) => {
   const { formatMessage } = useIntl()
   const [insertActivitySession] = useMutation<types.INSERT_ACTIVITY_SESSION, types.INSERT_ACTIVITY_SESSIONVariables>(
     INSERT_ACTIVITY_SESSION,
@@ -81,7 +81,7 @@ const ActivitySessionsAdminBlock: React.FC<{
             },
           })
         }
-        refetch={refetch}
+        onRefetch={onRefetch}
       />
 
       {activityAdmin.sessions.map(session => {
@@ -152,7 +152,7 @@ const ActivitySessionsAdminBlock: React.FC<{
                             },
                           })
                         }
-                        refetch={refetch}
+                        onRefetch={onRefetch}
                       />
                     </Menu.Item>
                   </Menu>

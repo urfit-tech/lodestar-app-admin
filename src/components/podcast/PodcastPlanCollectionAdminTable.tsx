@@ -88,8 +88,8 @@ const getColumnSearchProps: (
 const PodcastPlanCollectionAdminTable: React.FC<{
   memberId: string
   podcastPlans: PodcastPlanRowProps[]
-  refetch: () => Promise<any>
-}> = ({ memberId, podcastPlans, refetch }) => {
+  onRefetch: () => Promise<any>
+}> = ({ memberId, podcastPlans, onRefetch }) => {
   const { formatMessage } = useIntl()
 
   const [creatorSearch, setCreatorSearch] = useState('')
@@ -186,7 +186,7 @@ const PodcastPlanCollectionAdminTable: React.FC<{
         />
       )}
       podcastPlan={podcastPlans.find(podcastPlan => podcastPlan.id === selectedPodcastPlanId)}
-      refetch={refetch}
+      onRefetch={onRefetch}
     />
   )
 }

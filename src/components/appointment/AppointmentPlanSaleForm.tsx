@@ -15,8 +15,8 @@ import CurrencySelector from '../admin/CurrencySelector'
 
 const AppointmentPlanSaleForm: React.FC<{
   appointmentPlanAdmin: AppointmentPlanAdminProps | null
-  refetch?: () => void
-}> = ({ appointmentPlanAdmin, refetch }) => {
+  onRefetch?: () => void
+}> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const [updateAppointmentPlanSale] = useMutation<
@@ -31,7 +31,6 @@ const AppointmentPlanSaleForm: React.FC<{
 
   const handleSubmit = (values: any) => {
     setLoading(true)
-
     updateAppointmentPlanSale({
       variables: {
         appointmentPlanId: appointmentPlanAdmin.id,
@@ -41,7 +40,7 @@ const AppointmentPlanSaleForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
@@ -54,12 +53,12 @@ const AppointmentPlanSaleForm: React.FC<{
       layout="vertical"
       colon={false}
       hideRequiredMark
-      onFinish={handleSubmit}
       initialValues={{
         duration: appointmentPlanAdmin.duration,
         listPrice: appointmentPlanAdmin.listPrice,
         currencyId: appointmentPlanAdmin.currencyId,
       }}
+      onFinish={handleSubmit}
     >
       <Form.Item
         label={

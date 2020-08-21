@@ -18,15 +18,15 @@ const ActivitySessionAdminModal: React.FC<
       location: string
       threshold: number | null
     }) => Promise<any>
-    refetch?: () => void
+    onRefetch?: () => void
   }
-> = ({ activitySession, onSubmit, refetch, ...props }) => {
+> = ({ activitySession, onSubmit, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const [loading, setLoading] = useState(false)
   const [withThreshold, setWithThreshold] = useState(typeof activitySession?.threshold === 'number')
 
-  const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
+  const handleSubmit = (onSuccess: () => void) => {
     form
       .validateFields()
       .then((values: any) => {
@@ -42,8 +42,8 @@ const ActivitySessionAdminModal: React.FC<
           threshold: withThreshold ? values.threshold : null,
         })
           .then(() => {
-            refetch && refetch()
-            setVisible(false)
+            onRefetch && onRefetch()
+            onSuccess()
           })
           .catch(handleError)
           .finally(() => setLoading(false))
@@ -61,7 +61,7 @@ const ActivitySessionAdminModal: React.FC<
           <Button className="mr-2" onClick={() => setVisible(false)}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit(setVisible)}>
+          <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
             {formatMessage(commonMessages.ui.confirm)}
           </Button>
         </>

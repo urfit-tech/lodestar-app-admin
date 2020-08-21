@@ -27,8 +27,8 @@ const messages = defineMessages({
 
 const BlogPostPublishBlock: React.FC<{
   post: PostProps | null
-  refetch?: () => void
-}> = ({ post, refetch }) => {
+  onRefetch?: () => void
+}> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [publishPost] = useMutation<types.PUBLISH_POST, types.PUBLISH_POSTVariables>(PUBLISH_POST)
 
@@ -69,7 +69,7 @@ const BlogPostPublishBlock: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         onSuccess && onSuccess()
       })
       .catch(error => onError && onError(error))

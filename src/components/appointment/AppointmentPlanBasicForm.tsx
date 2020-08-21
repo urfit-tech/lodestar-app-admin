@@ -11,8 +11,8 @@ import { AppointmentPlanAdminProps } from '../../types/appointment'
 
 const AppointmentPlanBasicForm: React.FC<{
   appointmentPlanAdmin: AppointmentPlanAdminProps | null
-  refetch?: () => void
-}> = ({ appointmentPlanAdmin, refetch }) => {
+  onRefetch?: () => void
+}> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
 
@@ -28,7 +28,6 @@ const AppointmentPlanBasicForm: React.FC<{
 
   const handleSubmit = (values: any) => {
     setLoading(true)
-
     updateAppointmentPlanTitle({
       variables: {
         appointmentPlanId: appointmentPlanAdmin.id,
@@ -38,7 +37,7 @@ const AppointmentPlanBasicForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
@@ -53,11 +52,11 @@ const AppointmentPlanBasicForm: React.FC<{
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
-      onFinish={handleSubmit}
       initialValues={{
         title: appointmentPlanAdmin.title,
         phone: appointmentPlanAdmin.phone,
       }}
+      onFinish={handleSubmit}
     >
       <Form.Item
         label={formatMessage(appointmentMessages.term.planTitle)}

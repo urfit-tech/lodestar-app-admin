@@ -17,8 +17,8 @@ import ImageInput from '../admin/ImageInput'
 
 const ActivityIntroductionForm: React.FC<{
   activityAdmin: ActivityAdminProps | null
-  refetch?: () => void
-}> = ({ activityAdmin, refetch }) => {
+  onRefetch?: () => void
+}> = ({ activityAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const app = useContext(AppContext)
@@ -45,7 +45,7 @@ const ActivityIntroductionForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
@@ -61,7 +61,7 @@ const ActivityIntroductionForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
@@ -71,11 +71,11 @@ const ActivityIntroductionForm: React.FC<{
   return (
     <Form
       form={form}
+      colon={false}
+      hideRequiredMark
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
-      colon={false}
-      hideRequiredMark
       initialValues={{
         description: BraftEditor.createEditorState(activityAdmin.description),
       }}
@@ -109,6 +109,7 @@ const ActivityIntroductionForm: React.FC<{
       >
         <AdminBraftEditor />
       </Form.Item>
+
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">
           {formatMessage(commonMessages.ui.cancel)}

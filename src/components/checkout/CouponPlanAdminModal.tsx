@@ -139,6 +139,7 @@ const CouponPlanAdminModal: React.FC<
     >
       <Form
         form={form}
+        layout="vertical"
         colon={false}
         hideRequiredMark
         initialValues={{

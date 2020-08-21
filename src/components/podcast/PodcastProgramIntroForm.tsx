@@ -15,8 +15,8 @@ import { StyledTips } from '../admin/index'
 
 const PodcastProgramIntroForm: React.FC<{
   podcastProgramAdmin: PodcastProgramAdminProps | null
-  refetch?: () => void
-}> = ({ podcastProgramAdmin, refetch }) => {
+  onRefetch?: () => void
+}> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const { id: appId } = useContext(AppContext)
@@ -32,6 +32,7 @@ const PodcastProgramIntroForm: React.FC<{
   }
 
   const handleUpload = () => {
+    setLoading(true)
     updatePodcastProgramIntro({
       variables: {
         updatedAt: new Date(),
@@ -42,10 +43,11 @@ const PodcastProgramIntroForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullyUpload))
       })
       .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   const handleSubmit = (values: any) => {
@@ -58,7 +60,7 @@ const PodcastProgramIntroForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
@@ -73,10 +75,10 @@ const PodcastProgramIntroForm: React.FC<{
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
-      onFinish={handleSubmit}
       initialValues={{
         abstract: podcastProgramAdmin.abstract,
       }}
+      onFinish={handleSubmit}
     >
       <Form.Item
         label={

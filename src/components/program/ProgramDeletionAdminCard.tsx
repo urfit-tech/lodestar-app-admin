@@ -5,6 +5,7 @@ import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
+import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramAdminProps } from '../../types/program'
@@ -69,13 +70,13 @@ const ProgramDeletionAdminCard: React.FC<{
 
   const handleArchive = (programId: string) => {
     archiveProgram({
-      variables: {
-        programId,
-      },
-    }).then(() => {
-      message.success(formatMessage(commonMessages.event.successfullyDeleted))
-      history.push('/programs')
+      variables: { programId },
     })
+      .then(() => {
+        message.success(formatMessage(commonMessages.event.successfullyDeleted))
+        history.push('/programs')
+      })
+      .catch(handleError)
   }
 
   return (

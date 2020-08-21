@@ -23,13 +23,12 @@ const PodcastProgramBasicForm: React.FC<{
         tags: string[]
       })
     | null
-  refetch?: () => void
-}> = ({ podcastProgramAdmin, refetch }) => {
+  onRefetch?: () => void
+}> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
-  const { enabledModules } = useContext(AppContext)
+  const { id: appId, enabledModules } = useContext(AppContext)
   const [loading, setLoading] = useState(false)
-  const { id: appId } = useContext(AppContext)
 
   const [updatePodcastProgramBasic] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_BASIC,
@@ -42,7 +41,6 @@ const PodcastProgramBasicForm: React.FC<{
 
   const handleSubmit = (values: any) => {
     setLoading(true)
-
     updatePodcastProgramBasic({
       variables: {
         updatedAt: new Date(),
@@ -73,7 +71,7 @@ const PodcastProgramBasicForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
@@ -88,13 +86,13 @@ const PodcastProgramBasicForm: React.FC<{
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
-      onFinish={handleSubmit}
       initialValues={{
         title: podcastProgramAdmin.title,
         categoryIds: podcastProgramAdmin.categories.map(category => category.id),
         tags: podcastProgramAdmin.tags,
         languages: podcastProgramAdmin.supportLocales.map(supportLocale => supportLocale),
       }}
+      onFinish={handleSubmit}
     >
       <Form.Item
         label={formatMessage(podcastMessages.label.podcastProgramTitle)}

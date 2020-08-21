@@ -32,8 +32,8 @@ const messages = defineMessages({
 const AppointmentPlanAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { appointmentPlanId } = useParams<{ appointmentPlanId: string }>()
-  const { appointmentPlanAdmin, refetchAppointmentPlanAdmin } = useAppointmentPlanAdmin(appointmentPlanId)
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
+  const { appointmentPlanAdmin, refetchAppointmentPlanAdmin } = useAppointmentPlanAdmin(appointmentPlanId)
 
   return (
     <>
@@ -65,14 +65,14 @@ const AppointmentPlanAdminPage: React.FC = () => {
                 <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
                 <AppointmentPlanBasicForm
                   appointmentPlanAdmin={appointmentPlanAdmin}
-                  refetch={refetchAppointmentPlanAdmin}
+                  onRefetch={refetchAppointmentPlanAdmin}
                 />
               </AdminBlock>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(messages.planDescription)}</AdminBlockTitle>
                 <AppointmentPlanIntroForm
                   appointmentPlanAdmin={appointmentPlanAdmin}
-                  refetch={refetchAppointmentPlanAdmin}
+                  onRefetch={refetchAppointmentPlanAdmin}
                 />
               </AdminBlock>
             </div>
@@ -84,7 +84,7 @@ const AppointmentPlanAdminPage: React.FC = () => {
               <AdminBlock>
                 <AppointmentPlanSaleForm
                   appointmentPlanAdmin={appointmentPlanAdmin}
-                  refetch={refetchAppointmentPlanAdmin}
+                  onRefetch={refetchAppointmentPlanAdmin}
                 />
               </AdminBlock>
             </div>
@@ -96,13 +96,13 @@ const AppointmentPlanAdminPage: React.FC = () => {
               <div className="mb-4">
                 <AppointmentPlanScheduleCreationModal
                   appointmentPlanAdmin={appointmentPlanAdmin}
-                  refetch={refetchAppointmentPlanAdmin}
+                  onRefetch={refetchAppointmentPlanAdmin}
                 />
               </div>
               <AdminBlock>
                 <AppointmentPlanScheduleBlock
                   appointmentPlanAdmin={appointmentPlanAdmin}
-                  refetch={refetchAppointmentPlanAdmin}
+                  onRefetch={refetchAppointmentPlanAdmin}
                 />
               </AdminBlock>
             </div>
@@ -114,7 +114,7 @@ const AppointmentPlanAdminPage: React.FC = () => {
               <AdminBlock>
                 <AppointmentPlanPublishBlock
                   appointmentPlanAdmin={appointmentPlanAdmin}
-                  refetch={refetchAppointmentPlanAdmin}
+                  onRefetch={refetchAppointmentPlanAdmin}
                 />
               </AdminBlock>
             </div>

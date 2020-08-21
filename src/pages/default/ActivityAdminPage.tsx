@@ -32,8 +32,8 @@ const messages = defineMessages({
 const ActivityAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { activityId } = useParams<{ activityId: string }>()
-  const { settings } = useContext(AppContext)
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
+  const { settings } = useContext(AppContext)
   const { loadingActivityAdmin, activityAdmin, refetchActivityAdmin } = useActivityAdmin(activityId)
 
   return (
@@ -69,11 +69,11 @@ const ActivityAdminPage: React.FC = () => {
                 <AdminPaneTitle>{formatMessage(messages.settings)}</AdminPaneTitle>
                 <AdminBlock>
                   <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
-                  <ActivityBasicForm activityAdmin={activityAdmin} refetch={refetchActivityAdmin} />
+                  <ActivityBasicForm activityAdmin={activityAdmin} onRefetch={refetchActivityAdmin} />
                 </AdminBlock>
                 <AdminBlock>
                   <AdminBlockTitle>{formatMessage(messages.activityIntroduction)}</AdminBlockTitle>
-                  <ActivityIntroductionForm activityAdmin={activityAdmin} refetch={refetchActivityAdmin} />
+                  <ActivityIntroductionForm activityAdmin={activityAdmin} onRefetch={refetchActivityAdmin} />
                 </AdminBlock>
               </div>
             </Tabs.TabPane>
@@ -83,7 +83,7 @@ const ActivityAdminPage: React.FC = () => {
                 <AdminPaneTitle>{formatMessage(messages.sessionAdmin)}</AdminPaneTitle>
                 <ActivitySessionsAdminBlock
                   activityAdmin={activityAdmin}
-                  refetch={refetchActivityAdmin}
+                  onRefetch={refetchActivityAdmin}
                   onChangeTab={() => setActiveKey('tickets')}
                 />
               </div>
@@ -92,7 +92,7 @@ const ActivityAdminPage: React.FC = () => {
             <Tabs.TabPane key="tickets" tab={formatMessage(activityMessages.term.ticketPlan)}>
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(activityMessages.term.ticketPlan)}</AdminPaneTitle>
-                <ActivityTicketsAdminBlock activityAdmin={activityAdmin} refetch={refetchActivityAdmin} />
+                <ActivityTicketsAdminBlock activityAdmin={activityAdmin} onRefetch={refetchActivityAdmin} />
               </div>
             </Tabs.TabPane>
 
@@ -100,7 +100,7 @@ const ActivityAdminPage: React.FC = () => {
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(messages.publishSettings)}</AdminPaneTitle>
                 <AdminBlock>
-                  <ActivityPublishAdminBlock activityAdmin={activityAdmin} refetch={refetchActivityAdmin} />
+                  <ActivityPublishAdminBlock activityAdmin={activityAdmin} onRefetch={refetchActivityAdmin} />
                 </AdminBlock>
               </div>
             </Tabs.TabPane>

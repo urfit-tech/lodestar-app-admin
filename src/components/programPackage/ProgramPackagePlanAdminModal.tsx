@@ -134,7 +134,7 @@ const ProgramPackagePlanAdminModal: React.FC<
           isPublished: !!plan?.publishedAt,
           isParticipantsVisible: !!plan?.isParticipantsVisible,
           isSubscription: !!plan?.isSubscription,
-          periodAmount: plan?.periodAmount,
+          periodAmount: plan?.periodAmount || 1,
           periodType: plan?.periodType || 'M',
           listPrice: plan?.listPrice || 0,
           sale: plan?.soldAt

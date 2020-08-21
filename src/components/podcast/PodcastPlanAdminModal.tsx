@@ -26,9 +26,9 @@ const messages = defineMessages({
 const PodcastPlanAdminModal: React.FC<
   AdminModalProps & {
     podcastPlan?: PodcastPlanProps
-    refetch?: () => Promise<any>
+    onRefetch?: () => Promise<any>
   }
-> = ({ podcastPlan, refetch, ...props }) => {
+> = ({ podcastPlan, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId, currentUserRole } = useAuth()
   const [form] = useForm()
@@ -54,7 +54,7 @@ const PodcastPlanAdminModal: React.FC<
             periodType: values.period?.type || 'D',
             creatorId: values.creatorId || currentMemberId,
           })
-            .then(() => refetch && refetch().then(() => setVisible(false)))
+            .then(() => onRefetch && onRefetch().then(() => setVisible(false)))
             .catch(handleError)
             .finally(() => setLoading(false))
         } else {
@@ -67,7 +67,7 @@ const PodcastPlanAdminModal: React.FC<
             periodType: values.period?.type || 'D',
             creatorId: values.creatorId || currentMemberId,
           })
-            .then(() => refetch && refetch().then(() => setVisible(false)))
+            .then(() => onRefetch && onRefetch().then(() => setVisible(false)))
             .catch(handleError)
             .finally(() => setLoading(false))
         }

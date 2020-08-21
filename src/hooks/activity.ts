@@ -1,7 +1,5 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import { useContext } from 'react'
-import AppContext from '../contexts/AppContext'
 import types from '../types'
 import { ActivityAdminProps, ActivityBriefProps } from '../types/activity'
 
@@ -61,45 +59,6 @@ export const useActivityCollection = (memberId: string | null) => {
     activities,
     refetchActivities: refetch,
   }
-}
-
-export const useCreateActivity = () => {
-  const { id: appId } = useContext(AppContext)
-  const [insertActivity] = useMutation<types.INSERT_ACTIVITY, types.INSERT_ACTIVITYVariables>(gql`
-    mutation INSERT_ACTIVITY(
-      $title: String!
-      $memberId: String!
-      $appId: String!
-      $activityCategories: [activity_category_insert_input!]!
-    ) {
-      insert_activity(
-        objects: {
-          title: $title
-          organizer_id: $memberId
-          app_id: $appId
-          activity_categories: { data: $activityCategories }
-        }
-      ) {
-        affected_rows
-        returning {
-          id
-        }
-      }
-    }
-  `)
-
-  return ({ title, memberId, categoryIds }: { title: string; memberId: string; categoryIds: string[] }) =>
-    insertActivity({
-      variables: {
-        title,
-        memberId,
-        appId,
-        activityCategories: categoryIds.map((categoryId, index) => ({
-          category_id: categoryId,
-          position: index,
-        })),
-      },
-    })
 }
 
 export const useActivityAdmin = (activityId: string) => {

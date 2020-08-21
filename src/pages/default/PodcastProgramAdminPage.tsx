@@ -47,7 +47,7 @@ const PodcastProgramAdminPage: React.FC = () => {
               <AdminBlock>
                 <PodcastProgramContentForm
                   podcastProgramAdmin={podcastProgramAdmin}
-                  refetch={refetchPodcastProgramAdmin}
+                  onRefetch={refetchPodcastProgramAdmin}
                 />
               </AdminBlock>
             </div>
@@ -60,14 +60,14 @@ const PodcastProgramAdminPage: React.FC = () => {
                 <AdminBlockTitle>{formatMessage(commonMessages.label.basicSettings)}</AdminBlockTitle>
                 <PodcastProgramBasicForm
                   podcastProgramAdmin={podcastProgramAdmin}
-                  refetch={refetchPodcastProgramAdmin}
+                  onRefetch={refetchPodcastProgramAdmin}
                 />
               </AdminBlock>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(podcastMessages.label.podcastIntroduction)}</AdminBlockTitle>
                 <PodcastProgramIntroForm
                   podcastProgramAdmin={podcastProgramAdmin}
-                  refetch={refetchPodcastProgramAdmin}
+                  onRefetch={refetchPodcastProgramAdmin}
                 />
               </AdminBlock>
             </div>
@@ -79,7 +79,7 @@ const PodcastProgramAdminPage: React.FC = () => {
               <AdminBlock>
                 <PodcastProgramPlanForm
                   podcastProgramAdmin={podcastProgramAdmin}
-                  refetch={refetchPodcastProgramAdmin}
+                  onRefetch={refetchPodcastProgramAdmin}
                 />
               </AdminBlock>
             </div>
@@ -96,7 +96,7 @@ const PodcastProgramAdminPage: React.FC = () => {
                 <AdminBlockTitle className="mb-4">{formatMessage(commonMessages.term.instructor)}</AdminBlockTitle>
                 <PodcastProgramInstructorCollectionBlock
                   podcastProgramAdmin={podcastProgramAdmin}
-                  refetch={refetchPodcastProgramAdmin}
+                  onRefetch={refetchPodcastProgramAdmin}
                 />
               </AdminBlock>
             </div>
@@ -107,7 +107,7 @@ const PodcastProgramAdminPage: React.FC = () => {
               <AdminBlock>
                 <PodcastProgramPublishBlock
                   podcastProgramAdmin={podcastProgramAdmin}
-                  refetch={refetchPodcastProgramAdmin}
+                  onRefetch={refetchPodcastProgramAdmin}
                 />
               </AdminBlock>
             </div>

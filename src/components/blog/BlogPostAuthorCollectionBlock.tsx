@@ -23,8 +23,8 @@ const StyledModalTitle = styled.div`
 
 const BlogPostAuthorCollectionBlock: React.FC<{
   post: PostProps | null
-  refetch?: () => {}
-}> = ({ post, refetch }) => {
+  onRefetch?: () => {}
+}> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const [updatePostRole] = useMutation<types.UPDATE_POST_ROLE, types.UPDATE_POST_ROLEVariables>(UPDATE_POST_ROLE)
@@ -45,7 +45,7 @@ const BlogPostAuthorCollectionBlock: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
@@ -68,7 +68,7 @@ const BlogPostAuthorCollectionBlock: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)

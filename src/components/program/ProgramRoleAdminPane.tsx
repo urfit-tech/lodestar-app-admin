@@ -28,14 +28,14 @@ const ProgramRoleAdminPane: React.FC<{
     DELETE_PROGRAM_ROLE,
   )
 
-  const [loading, setLoading] = useState(false)
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   if (!program) {
     return <Skeleton active />
   }
 
-  const handleSubmit = (onSuccess?: () => void) => {
+  const handleSubmit = (onSuccess: () => void) => {
     if (!selectedMemberId) {
       return
     }
@@ -58,7 +58,7 @@ const ProgramRoleAdminPane: React.FC<{
       .then(() => {
         onRefetch && onRefetch()
         setSelectedMemberId(null)
-        onSuccess && onSuccess()
+        onSuccess()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -90,9 +90,7 @@ const ProgramRoleAdminPane: React.FC<{
                     programId: program.id,
                   },
                 })
-                  .then(() => {
-                    onRefetch && onRefetch()
-                  })
+                  .then(() => onRefetch && onRefetch())
                   .catch(handleError)
               }
             />
@@ -149,7 +147,6 @@ const UPDATE_PROGRAM_ROLE = gql`
     }
   }
 `
-
 const DELETE_PROGRAM_ROLE = gql`
   mutation DELETE_PROGRAM_ROLE($programId: uuid!) {
     delete_program_role(where: { program_id: { _eq: $programId }, name: { _eq: "instructor" } }) {

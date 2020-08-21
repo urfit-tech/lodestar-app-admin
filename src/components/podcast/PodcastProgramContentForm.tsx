@@ -12,7 +12,7 @@ import styled from 'styled-components'
 import { AppContext } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
-import { useUpdatePodcastProgramContent } from '../../hooks/podcast'
+import { UPDATE_PODCAST_PROGRAM_CONTENT } from '../../hooks/podcast'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import types from '../../types'
 import { PodcastProgramAdminProps } from '../../types/podcast'
@@ -32,14 +32,17 @@ const StyledFileBlock = styled.div`
 
 const PodcastProgramContentForm: React.FC<{
   podcastProgramAdmin: PodcastProgramAdminProps | null
-  refetch?: () => void
-}> = ({ podcastProgramAdmin, refetch }) => {
+  onRefetch?: () => void
+}> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const { id: appId, enabledModules } = useContext(AppContext)
   const history = useHistory()
 
-  const updatePodcastProgramContent = useUpdatePodcastProgramContent()
+  const [updatePodcastProgramContent] = useMutation<
+    types.UPDATE_PODCAST_PROGRAM_CONTENT,
+    types.UPDATE_PODCAST_PROGRAM_CONTENTVariables
+  >(UPDATE_PODCAST_PROGRAM_CONTENT)
   const [updatePodcastProgramBody] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_BODY,
     types.UPDATE_PODCAST_PROGRAM_BODYVariables
@@ -52,6 +55,7 @@ const PodcastProgramContentForm: React.FC<{
   }
 
   const handleUploadAudio = (contentType: string | null) => {
+    setLoading(true)
     updatePodcastProgramContent({
       variables: {
         updatedAt: new Date(),
@@ -60,15 +64,15 @@ const PodcastProgramContentForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
-      .catch(error => handleError(error))
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   const handleSubmit = (values: any) => {
     setLoading(true)
-
     updatePodcastProgramBody({
       variables: {
         updatedAt: new Date(),
@@ -78,7 +82,7 @@ const PodcastProgramContentForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
@@ -100,11 +104,11 @@ const PodcastProgramContentForm: React.FC<{
       layout="vertical"
       colon={false}
       hideRequiredMark
-      onFinish={handleSubmit}
       initialValues={{
         duration: podcastProgramAdmin.duration,
         description: BraftEditor.createEditorState(podcastProgramAdmin.description),
       }}
+      onFinish={handleSubmit}
     >
       <Form.Item
         label={

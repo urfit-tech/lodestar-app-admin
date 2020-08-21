@@ -25,8 +25,8 @@ const StyledText = styled.div`
 
 const BlogPostBasicForm: React.FC<{
   post: PostProps | null
-  refetch?: () => {}
-}> = ({ post, refetch }) => {
+  onRefetch?: () => {}
+}> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const { id: appId, settings } = useContext(AppContext)
@@ -70,7 +70,7 @@ const BlogPostBasicForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
@@ -80,17 +80,17 @@ const BlogPostBasicForm: React.FC<{
   return (
     <Form
       form={form}
-      labelAlign="left"
       colon={false}
       hideRequiredMark
+      labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
-      onFinish={handleSubmit}
       initialValues={{
         title: post.title,
         categoryIds: post.categories.map(category => category.id),
         tags: post.tagNames,
       }}
+      onFinish={handleSubmit}
     >
       <Form.Item label={formatMessage(commonMessages.term.title)} name="title">
         <Input />

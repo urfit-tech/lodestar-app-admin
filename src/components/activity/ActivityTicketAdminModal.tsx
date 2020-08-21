@@ -45,37 +45,40 @@ const ActivityTicketAdminModal: React.FC<
       count: number
       description: string | null
     }) => Promise<any>
-    refetch?: () => void
+    onRefetch?: () => void
   }
-> = ({ activityTicket, activitySessions, onSubmit, refetch, ...props }) => {
+> = ({ activityTicket, activitySessions, onSubmit, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
-    form.validateFields().then((values: any) => {
-      if (!onSubmit) {
-        return
-      }
-      setLoading(true)
-      onSubmit({
-        title: values.title,
-        sessionIds: values.sessionIds,
-        isPublished: values.isPublished === 'public',
-        startedAt: values.startedAt.toDate(),
-        endedAt: values.endedAt.toDate(),
-        price: values.price,
-        count: parseInt(values.count),
-        description:
-          values.description && values.description.getCurrentContent().hasText() ? values.description.toRAW() : null,
-      })
-        .then(() => {
-          refetch && refetch()
-          setVisible(false)
+  const handleSubmit = (onSuccess: () => void) => {
+    form
+      .validateFields()
+      .then((values: any) => {
+        if (!onSubmit) {
+          return
+        }
+        setLoading(true)
+        onSubmit({
+          title: values.title,
+          sessionIds: values.sessionIds,
+          isPublished: values.isPublished === 'public',
+          startedAt: values.startedAt.toDate(),
+          endedAt: values.endedAt.toDate(),
+          price: values.price,
+          count: parseInt(values.count),
+          description:
+            values.description && values.description.getCurrentContent().hasText() ? values.description.toRAW() : null,
         })
-        .catch(handleError)
-        .finally(() => setLoading(false))
-    })
+          .then(() => {
+            onRefetch && onRefetch()
+            onSuccess()
+          })
+          .catch(handleError)
+          .finally(() => setLoading(false))
+      })
+      .catch(() => {})
   }
 
   return (
@@ -88,7 +91,7 @@ const ActivityTicketAdminModal: React.FC<
           <Button className="mr-2" onClick={() => setVisible(false)}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit(setVisible)}>
+          <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
             {formatMessage(commonMessages.ui.confirm)}
           </Button>
         </>

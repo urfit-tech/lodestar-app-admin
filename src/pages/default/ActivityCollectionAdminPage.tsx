@@ -1,21 +1,25 @@
 import Icon from '@ant-design/icons'
-import React from 'react'
+import { useMutation } from '@apollo/react-hooks'
+import gql from 'graphql-tag'
+import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import ActivityCollectionTabs from '../../components/activity/ActivityCollectionTabs'
 import { AdminPageTitle } from '../../components/admin'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
+import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
-import { useCreateActivity } from '../../hooks/activity'
 import { ReactComponent as CalendarAltIcon } from '../../images/icon/calendar-alt.svg'
+import types from '../../types'
 
 const ActivityCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { currentMemberId, currentUserRole } = useAuth()
-  const createActivity = useCreateActivity()
+  const { id: appId } = useContext(AppContext)
+  const [createActivity] = useMutation<types.INSERT_ACTIVITY, types.INSERT_ACTIVITYVariables>(INSERT_ACTIVITY)
 
   return (
     <AdminLayout>
@@ -33,9 +37,15 @@ const ActivityCollectionAdminPage: React.FC = () => {
               withCreatorSelector={currentUserRole === 'app-owner'}
               onCreate={values =>
                 createActivity({
-                  title: values.title,
-                  categoryIds: values.categoryIds,
-                  memberId: values.creatorId || currentMemberId,
+                  variables: {
+                    appId,
+                    title: values.title,
+                    memberId: values.creatorId || currentMemberId,
+                    activityCategories: values.categoryIds.map((categoryId: string, index: number) => ({
+                      category_id: categoryId,
+                      position: index,
+                    })),
+                  },
                 }).then(({ data }) => {
                   const activityId = data?.insert_activity?.returning[0]?.id
                   activityId && history.push(`/activities/${activityId}`)
@@ -49,5 +59,28 @@ const ActivityCollectionAdminPage: React.FC = () => {
     </AdminLayout>
   )
 }
+
+const INSERT_ACTIVITY = gql`
+  mutation INSERT_ACTIVITY(
+    $title: String!
+    $memberId: String!
+    $appId: String!
+    $activityCategories: [activity_category_insert_input!]!
+  ) {
+    insert_activity(
+      objects: {
+        title: $title
+        organizer_id: $memberId
+        app_id: $appId
+        activity_categories: { data: $activityCategories }
+      }
+    ) {
+      affected_rows
+      returning {
+        id
+      }
+    }
+  }
+`
 
 export default ActivityCollectionAdminPage

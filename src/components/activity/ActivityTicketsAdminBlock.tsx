@@ -12,8 +12,8 @@ import ActivityTicketAdminModal from './ActivityTicketAdminModal'
 
 const ActivityTicketsAdminBlock: React.FC<{
   activityAdmin: ActivityAdminProps | null
-  refetch?: () => void
-}> = ({ activityAdmin, refetch }) => {
+  onRefetch?: () => void
+}> = ({ activityAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [insertActivityTicket] = useMutation<types.INSERT_ACTIVITY_TICKET, types.INSERT_ACTIVITY_TICKETVariables>(
     INSERT_ACTIVITY_TICKET,
@@ -58,7 +58,7 @@ const ActivityTicketsAdminBlock: React.FC<{
             },
           })
         }
-        refetch={refetch}
+        onRefetch={onRefetch}
       />
 
       <div className="row">

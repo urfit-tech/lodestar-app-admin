@@ -27,8 +27,8 @@ const messages = defineMessages({
 
 const ActivityPublishAdminBlock: React.FC<{
   activityAdmin: ActivityAdminProps | null
-  refetch?: () => void
-}> = ({ activityAdmin, refetch }) => {
+  onRefetch?: () => void
+}> = ({ activityAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [publishActivity] = useMutation<types.PUBLISH_ACTIVITY, types.PUBLISH_ACTIVITYVariables>(PUBLISH_ACTIVITY)
 
@@ -72,7 +72,7 @@ const ActivityPublishAdminBlock: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         onSuccess && onSuccess()
       })
       .catch(error => onError && onError(error))

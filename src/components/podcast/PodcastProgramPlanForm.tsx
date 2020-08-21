@@ -12,15 +12,14 @@ import SaleInput, { SaleProps } from '../admin/SaleInput'
 
 const PodcastProgramPlanForm: React.FC<{
   podcastProgramAdmin: PodcastProgramAdminProps | null
-  refetch?: () => void
-}> = ({ podcastProgramAdmin, refetch }) => {
+  onRefetch?: () => void
+}> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const [updatePodcastProgramPlan] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_PLAN,
     types.UPDATE_PODCAST_PROGRAM_PLANVariables
   >(UPDATE_PODCAST_PROGRAM_PLAN)
-
   const [loading, setLoading] = useState(false)
 
   if (!podcastProgramAdmin) {
@@ -39,7 +38,7 @@ const PodcastProgramPlanForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
@@ -52,7 +51,6 @@ const PodcastProgramPlanForm: React.FC<{
       layout="vertical"
       colon={false}
       hideRequiredMark
-      onFinish={handleSubmit}
       initialValues={{
         listPrice: podcastProgramAdmin.listPrice,
         sale: podcastProgramAdmin.soldAt
@@ -62,6 +60,7 @@ const PodcastProgramPlanForm: React.FC<{
             }
           : null,
       }}
+      onFinish={handleSubmit}
     >
       <Form.Item label={formatMessage(commonMessages.term.listPrice)} name="listPrice">
         <InputNumber
