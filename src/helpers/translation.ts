@@ -119,6 +119,7 @@ export const commonMessages = {
     paymentPrice: { id: 'common.label.paymentPrice', defaultMessage: '交易金額' },
     allProgram: { id: 'common.label.allProgram', defaultMessage: '所有單次課程' },
     allProgramPackage: { id: 'common.label.allProgramPackage', defaultMessage: '所有課程組合' },
+    allProgramPackagePlan: { id: 'common.label.allProgramPackage', defaultMessage: '所有課程組合方案' },
     allProgramPlan: { id: 'common.label.allProgramPlan', defaultMessage: '所有訂閱方案' },
     allProgramContent: { id: 'common.label.allProgramContent', defaultMessage: '所有課程內容' },
     allMembershipCard: { id: 'common.label.allMembershipCard', defaultMessage: '所有會員卡' },
