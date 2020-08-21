@@ -3253,36 +3253,6 @@ export interface UPSERT_PROGRAM_CONTENTSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_SUBSCRIPTION_PLAN
-// ====================================================
-
-export interface UPDATE_PROGRAM_SUBSCRIPTION_PLAN_update_program_plan {
-  __typename: "program_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_SUBSCRIPTION_PLAN {
-  /**
-   * update data of the table: "program_plan"
-   */
-  update_program_plan: UPDATE_PROGRAM_SUBSCRIPTION_PLAN_update_program_plan | null;
-}
-
-export interface UPDATE_PROGRAM_SUBSCRIPTION_PLANVariables {
-  programPlanId: any;
-  listPrice: any;
-  salePrice: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_PROGRAM_SUBSCRIPTION_PLAN_COUNT
 // ====================================================
 
@@ -6894,6 +6864,7 @@ export interface UPDATE_PODCAST_PROGRAM_CONTENTVariables {
   podcastProgramId: any;
   contentType?: string | null;
   updatedAt: any;
+  duration?: any | null;
 }
 
 /* tslint:disable */
@@ -7174,6 +7145,42 @@ export interface GET_PROGRAM {
 
 export interface GET_PROGRAMVariables {
   programId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_CONTENT_BODY
+// ====================================================
+
+export interface GET_PROGRAM_CONTENT_BODY_program_content_by_pk_program_content_body {
+  __typename: "program_content_body";
+  id: any;
+  type: string | null;
+  description: string | null;
+  data: any | null;
+}
+
+export interface GET_PROGRAM_CONTENT_BODY_program_content_by_pk {
+  __typename: "program_content";
+  /**
+   * An object relationship
+   */
+  program_content_body: GET_PROGRAM_CONTENT_BODY_program_content_by_pk_program_content_body;
+}
+
+export interface GET_PROGRAM_CONTENT_BODY {
+  /**
+   * fetch data from the table: "program_content" using primary key columns
+   */
+  program_content_by_pk: GET_PROGRAM_CONTENT_BODY_program_content_by_pk | null;
+}
+
+export interface GET_PROGRAM_CONTENT_BODYVariables {
+  programContentId: any;
 }
 
 /* tslint:disable */

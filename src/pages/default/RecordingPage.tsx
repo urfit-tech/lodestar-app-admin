@@ -217,6 +217,7 @@ const RecordingPage: React.FC = () => {
       const modal = showUploadingModal()
       const mp3Data = convertAudioBufferToMp3(dstAudioData)
       const file = new File([mp3Data], 'record.mp3', { type: 'audio/mp3', lastModified: Date.now() })
+      const durationMinute = Math.ceil(dstAudioData.duration / 60)
       uploadFile(`audios/${appId}/${podcastProgramId}` + extname(file.name), file, authToken, {})
         .then(() => {
           updatePodcastProgramContent({
@@ -224,6 +225,7 @@ const RecordingPage: React.FC = () => {
               updatedAt: new Date(),
               podcastProgramId,
               contentType: 'mp3',
+              duration: durationMinute,
             },
           })
             .then(async () => {

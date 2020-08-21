@@ -322,10 +322,10 @@ const GET_PODCAST_PLAN = gql`
   }
 `
 const UPDATE_PODCAST_PROGRAM_CONTENT = gql`
-  mutation UPDATE_PODCAST_PROGRAM_CONTENT($podcastProgramId: uuid!, $contentType: String, $updatedAt: timestamptz!) {
+  mutation UPDATE_PODCAST_PROGRAM_CONTENT($podcastProgramId: uuid!, $contentType: String, $updatedAt: timestamptz!, $duration: numeric) {
     update_podcast_program(
       where: { id: { _eq: $podcastProgramId } }
-      _set: { content_type: $contentType, updated_at: $updatedAt }
+      _set: { content_type: $contentType, updated_at: $updatedAt, duration: $duration }
     ) {
       affected_rows
     }
