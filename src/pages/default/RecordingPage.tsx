@@ -73,40 +73,24 @@ const RecordingPage: React.FC = () => {
     }
   })
 
-  const showUploadConfirmationModal = () => {
-    return Modal.confirm({
-      icon: null,
-      title: formatMessage(podcastMessages.ui.bulkUpload),
-      content: formatMessage(podcastMessages.text.bulkUploadMessage),
-      okText: formatMessage(podcastMessages.ui.bulkUpload),
-      centered: true,
-      onOk: () => onUploadAudio(),
-    })
-  }
-
-  const onGetRecordAudio = useCallback(
-    (audioBuffer: AudioBuffer | null) => {
-      if (audioBuffer && audioObjectRef.current?.waveCollection) {
-        const waveId = uuid()
-        setWaveCollection([
-          ...audioObjectRef.current.waveCollection,
-          {
-            id: waveId,
-            audioBuffer,
-          },
-        ])
-        if (!currentAudioId) {
-          setCurrentAudioId(waveId)
-        }
-      }
-      setIsGeneratingAudio(false)
-    },
-    [currentAudioId],
-  )
+  const onGetRecordAudio = useCallback((audioBuffer: AudioBuffer | null) => {
+    if (audioBuffer && audioObjectRef.current?.waveCollection) {
+      const waveId = uuid()
+      setWaveCollection([
+        ...audioObjectRef.current.waveCollection,
+        {
+          id: waveId,
+          audioBuffer,
+        },
+      ])
+      setCurrentAudioId(waveId)
+    }
+    setIsGeneratingAudio(false)
+  }, [])
 
   useEffect(() => {
     const getAudioLink = async () => {
-      if (podcastProgramAdmin?.contentType && waveCollection.length === 0 && !isInitializedAudio) {
+      if (podcastProgramAdmin?.contentType && waveCollection.length === 0 && !!appId && !isInitializedAudio) {
         setIsInitializedAudio(true)
         setIsGeneratingAudio(true)
 
@@ -114,10 +98,14 @@ const RecordingPage: React.FC = () => {
         const audioLink = await getFileDownloadableLink(fileKey, authToken)
         const audioRequest = new Request(audioLink)
 
-        const response = await fetch(audioRequest)
-        const arrayBuffer = await response.arrayBuffer()
-        const audioBuffer = await decodeAudioArrayBuffer(arrayBuffer)
-        onGetRecordAudio(audioBuffer)
+        try {
+          const response = await fetch(audioRequest)
+          const arrayBuffer = await response.arrayBuffer()
+          const audioBuffer = await decodeAudioArrayBuffer(arrayBuffer)
+          onGetRecordAudio(audioBuffer)
+        } catch (error) {
+          message.error(error)
+        }
       }
     }
     getAudioLink()
@@ -149,8 +137,13 @@ const RecordingPage: React.FC = () => {
   }, [currentAudioIndex, waveCollection])
 
   const onDeleteAudioTrack = useCallback(() => {
+    if (currentAudioIndex === 0 && waveCollection.length > 1) {
+      setCurrentAudioId(waveCollection[1].id)
+    } else if (currentAudioIndex > 0) {
+      setCurrentAudioId(waveCollection[currentAudioIndex - 1].id)
+    }
     setWaveCollection(waveCollection.filter(wave => wave.id !== currentAudioId))
-  }, [currentAudioId, waveCollection])
+  }, [currentAudioId, waveCollection, currentAudioIndex])
 
   const onPlayRateChange = useCallback(() => {
     playRate < 1 ? setPlayRate(1) : playRate < 1.5 ? setPlayRate(1.5) : playRate < 2 ? setPlayRate(2) : setPlayRate(0.5)
@@ -258,6 +251,17 @@ const RecordingPage: React.FC = () => {
     waveCollection,
   ])
 
+  const showUploadConfirmationModal = useCallback(() => {
+    return Modal.confirm({
+      icon: null,
+      title: formatMessage(podcastMessages.ui.bulkUpload),
+      content: formatMessage(podcastMessages.text.bulkUploadMessage),
+      okText: formatMessage(podcastMessages.ui.bulkUpload),
+      centered: true,
+      onOk: () => onUploadAudio(),
+    })
+  }, [formatMessage, onUploadAudio])
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const { keyCode } = event
@@ -292,13 +296,13 @@ const RecordingPage: React.FC = () => {
           break
         // U key for upload
         case 85:
-          onUploadAudio()
+          showUploadConfirmationModal()
           break
       }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [onBackward, onForward, onDeleteAudioTrack, onTrimAudio, onPlayRateChange, onUploadAudio])
+  }, [onBackward, onForward, onDeleteAudioTrack, onTrimAudio, onPlayRateChange, showUploadConfirmationModal])
 
   return (
     <div>

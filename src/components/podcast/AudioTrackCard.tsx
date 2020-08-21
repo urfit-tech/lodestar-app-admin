@@ -1,4 +1,5 @@
 import Icon from '@ant-design/icons'
+import moment from 'moment'
 import React, { HTMLAttributes, useContext, useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { ThemeContext } from 'styled-components'
@@ -78,6 +79,7 @@ const AudioTrackCard: React.FC<
   const { formatMessage } = useIntl()
   const theme = useContext(ThemeContext)
 
+  const trackWrapperRef = useRef() as React.RefObject<HTMLDivElement>
   const waveformRef = useRef() as React.MutableRefObject<HTMLInputElement>
   const waveformTimelineRef = useRef() as React.MutableRefObject<HTMLInputElement>
   const [wavesurfer, setWaveSurfer] = useState<WaveSurfer | null>(null)
@@ -96,11 +98,10 @@ const AudioTrackCard: React.FC<
             timeInterval: 0.2,
             primaryLabelInterval: 5,
             formatTimeCallback: (recordingSeconds: number) => {
-              const recordingDateObj = new Date(0)
-              recordingDateObj.setSeconds(recordingSeconds)
+              const intSeconds = Math.round(recordingSeconds)
               return recordingSeconds >= 3600
-                ? recordingDateObj.toISOString().substr(11, 11)
-                : recordingDateObj.toISOString().substr(14, 8)
+                ? moment.utc(intSeconds * 1000).format('HH:mm:ss.SS')
+                : moment.utc(intSeconds * 1000).format('mm:ss.SS')
             },
           }),
         ],
@@ -124,8 +125,16 @@ const AudioTrackCard: React.FC<
     }
   }, [playRate, wavesurfer])
 
+  useEffect(() => {
+    if (isActive) {
+      setTimeout(() => {
+        trackWrapperRef.current && trackWrapperRef.current.scrollIntoView()
+      }, 0)
+    }
+  }, [isActive, trackWrapperRef])
+
   return (
-    <TrackWrapper {...divProps}>
+    <TrackWrapper ref={trackWrapperRef} {...divProps}>
       <ActionBlock className="flex-shrink-0 text-center">
         <div>{`${position + 1}`.padStart(2, '0')}</div>
         <StyledIcon component={() => <MoveIcon />} className={`cursor-pointer ${handleClassName || 'handle'}`} />

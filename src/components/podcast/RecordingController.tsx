@@ -144,6 +144,21 @@ const RecordingController: React.FC<{
       <Responsive.Default>
         <StyledOverlay className="d-flex align-items-center justify-content-around" active={isEditing}>
           <div className="flex-grow-1 text-center">
+            <StyledOverlayButton type="link" size="small" onClick={() => onPlayRateChange && onPlayRateChange()}>
+              {playRate < 1 ? (
+                <Icon component={() => <PlayRate05xIcon />} />
+              ) : playRate < 1.5 ? (
+                <Icon component={() => <PlayRate10xIcon />} />
+              ) : playRate < 2 ? (
+                <Icon component={() => <PlayRate15xIcon />} />
+              ) : (
+                <Icon component={() => <PlayRate20xIcon />} />
+              )}
+              <div>{formatMessage(podcastMessages.label.playRate)}</div>
+            </StyledOverlayButton>
+          </div>
+          <Divider type="vertical" style={{ height: '49px' }} />
+          <div className="flex-grow-1 text-center">
             <StyledOverlayButton type="link" size="small" onClick={() => onDelete && onDelete()}>
               <Icon component={() => <TrashOIcon />} className="d-block mb-1" />
               <div>{formatMessage(podcastMessages.ui.deleteAudio)}</div>
