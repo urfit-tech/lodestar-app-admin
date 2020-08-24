@@ -110,10 +110,14 @@ const ProgramIntroForm: React.FC<{
       <Form.Item label={formatMessage(programMessages.label.introductionVideo)} name="coverVideoUrl">
         <VideoInput appId={appId} programId={program.id} />
       </Form.Item>
-      <Form.Item label={formatMessage(programMessages.label.programAbstract)}>
+      <Form.Item label={formatMessage(programMessages.label.programAbstract)} name="abstract">
         <Input.TextArea rows={5} />
       </Form.Item>
-      <Form.Item label={formatMessage(programMessages.label.programDescription)} wrapperCol={{ md: { span: 20 } }}>
+      <Form.Item
+        label={formatMessage(programMessages.label.programDescription)}
+        wrapperCol={{ md: { span: 20 } }}
+        name="description"
+      >
         <AdminBraftEditor />
       </Form.Item>
 
