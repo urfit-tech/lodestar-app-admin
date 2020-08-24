@@ -38,7 +38,9 @@ const ProgramContentAdminItem: React.FC<{
   const [updateProgramContent] = useMutation<types.PUBLISH_PROGRAM_CONTENT, types.PUBLISH_PROGRAM_CONTENTVariables>(
     PUBLISH_PROGRAM_CONTENT,
   )
-  const { loadingProgramContentBody, programContentBody } = useProgramContentBody(programContent.id)
+  const { loadingProgramContentBody, programContentBody, refetchProgramContentBody } = useProgramContentBody(
+    programContent.id,
+  )
 
   return (
     <div className="d-flex align-items-center justify-content-between p-3" style={{ background: '#f7f8f8' }}>
@@ -85,7 +87,10 @@ const ProgramContentAdminItem: React.FC<{
             program={program}
             programContent={programContent}
             programContentBody={programContentBody}
-            onRefetch={onRefetch}
+            onRefetch={() => {
+              onRefetch && onRefetch()
+              refetchProgramContentBody()
+            }}
           />
         )}
       </div>

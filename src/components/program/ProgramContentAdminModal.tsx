@@ -68,7 +68,7 @@ const ProgramContentAdminModal: React.FC<{
         variables: {
           programContentId: programContent.id,
           price: values.isTrial ? 0 : null,
-          publishedAt: values.published ? values.publishedAt || new Date() : null,
+          publishedAt: values.publishedAt ? values.publishedAt || new Date() : null,
           title: values.title,
           description: values.description.toRAW(),
           duration: values.duration && values.duration * 60,
@@ -117,7 +117,7 @@ const ProgramContentAdminModal: React.FC<{
           form={form}
           layout="vertical"
           initialValues={{
-            publishedAt: moment(programContent.publishedAt),
+            publishedAt: programContent.publishedAt ? moment(programContent.publishedAt) : moment().startOf('minute'),
             isNotifyUpdate: programContent.isNotifyUpdate,
             title: programContent.title,
             planIds: programContent.programPlans?.map(programPlan => programPlan.id) || [],
@@ -126,8 +126,8 @@ const ProgramContentAdminModal: React.FC<{
             duration: (programContent.duration || 0) / 60,
             description: BraftEditor.createEditorState(programContentBody.description),
           }}
-          onValuesChange={values => {
-            setVideo(values.video)
+          onValuesChange={(values: any) => {
+            typeof values.video !== 'undefined' && setVideo(values.video)
           }}
           onFinish={handleSubmit}
         >
