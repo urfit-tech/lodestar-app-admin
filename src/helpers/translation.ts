@@ -342,7 +342,7 @@ export const errorMessages = {
     checkSameCodeName: { id: 'error.event.checkSameCodeName', defaultMessage: '網址代碼已被使用' },
     duplicateVoucherCode: { id: 'error.event.duplicateVoucherCode', defaultMessage: '該兌換碼已被使用' },
     duplicateCouponCode: { id: 'error.event.duplicateCouponCode', defaultMessage: '該折扣碼碼已被使用' },
-    failedPodcastRecording: { id: 'error.event.failedPodcastRecording', defaultMessage: '錄音失敗' },
+    failedPodcastRecording: { id: 'error.event.failedPodcastRecording', defaultMessage: '錄音失敗：無法取得錄製音檔' },
   }),
   text: defineMessages({
     forbidden: { id: 'error.text.forbidden', defaultMessage: '你沒有此頁面的讀取權限' },
