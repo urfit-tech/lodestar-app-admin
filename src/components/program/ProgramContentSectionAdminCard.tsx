@@ -84,9 +84,9 @@ const ProgramContentSectionAdminCard: React.FC<{
         <div key={programContent.id} className="mb-2">
           <ProgramContentAdminItem
             program={program}
+            programContent={programContent}
             showPlans={program && program.isSubscription}
             onRefetch={onRefetch}
-            programContent={programContent}
           />
         </div>
       ))}

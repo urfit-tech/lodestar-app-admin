@@ -282,7 +282,10 @@ export const useProgram = (programId: string) => {
 }
 
 export const useProgramContentBody = (programContentId: string) => {
-  const { loading, error, data, refetch } = useQuery(
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_PROGRAM_CONTENT_BODY,
+    types.GET_PROGRAM_CONTENT_BODYVariables
+  >(
     gql`
       query GET_PROGRAM_CONTENT_BODY($programContentId: uuid!) {
         program_content_by_pk(id: $programContentId) {
@@ -299,7 +302,7 @@ export const useProgramContentBody = (programContentId: string) => {
   )
 
   const programContentBody: ProgramContentBodyType =
-    loading || error || !data
+    loading || error || !data || !data.program_content_by_pk
       ? {
           id: '',
           type: '',
@@ -307,10 +310,10 @@ export const useProgramContentBody = (programContentId: string) => {
           data: {},
         }
       : {
-          id: '',
-          type: '',
-          description: '',
-          data: {},
+          id: data.program_content_by_pk.program_content_body.id,
+          type: data.program_content_by_pk.program_content_body.type,
+          description: data.program_content_by_pk.program_content_body.description,
+          data: data.program_content_by_pk.program_content_body.data,
         }
 
   return {
