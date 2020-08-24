@@ -50,6 +50,8 @@ const StyledText = styled.div`
   font-size: 12px;
   letter-spacing: 0.6px;
   line-height: 1.5rem;
+  min-width: 100px;
+  text-align: right;
 `
 const StyledTypographyText = styled(Typography.Text)`
   color: var(--gray-darker);
