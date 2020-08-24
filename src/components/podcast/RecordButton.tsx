@@ -1,18 +1,14 @@
 import Icon from '@ant-design/icons'
 import { Button } from 'antd'
 import { ButtonProps } from 'antd/lib/button'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
+import Recorder from 'recorder-js'
 import styled from 'styled-components'
 import { durationFormatter } from '../../helpers'
 import { decodeAudio } from '../../helpers/audio'
 import { useInterval } from '../../hooks/util'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import { ReactComponent as StopCircleIcon } from '../../images/icon/stop-circle.svg'
-const { default: AudioRecorder } = require('audio-recorder-polyfill')
-const { default: mpegEncoder } = require('audio-recorder-polyfill/mpeg-encoder')
-
-AudioRecorder.encoder = mpegEncoder
-AudioRecorder.prototype.mimeType = 'audio/mpeg'
 
 const StyledButton = styled(Button)`
   && {
@@ -32,40 +28,26 @@ const StyledDuration = styled.span`
 
 const RecordButton: React.FC<
   ButtonProps & {
+    recorder: Recorder | null
     onStart?: () => void
     onStop?: () => void
     onGetAudio?: (audioBuffer: AudioBuffer | null) => void
   }
-> = ({ onStart, onStop, onGetAudio, ...buttonProps }) => {
+> = ({ recorder, onStart, onStop, onGetAudio, ...buttonProps }) => {
   const [isRecording, setIsRecording] = useState(false)
   const [startedAt, setStartedAt] = useState(0)
   const [duration, setDuration] = useState(0)
 
-  const [recorder, setRecorder] = useState<any | null>(null)
-
-  useEffect(() => {
-    const initRecorder = async () => {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      const _recorder = new AudioRecorder(stream)
-      _recorder.addEventListener('dataavailable', async (e: any) => {
-        const audioBuffer = await decodeAudio(e.data)
-        onGetAudio && onGetAudio(audioBuffer)
-        setRecorder(null)
-      })
-
-      return _recorder
-    }
-    !recorder && initRecorder().then(recorder => setRecorder(recorder))
-
-    return () => {
-      recorder?.stream.getTracks().forEach((track: any) => track.stop())
-    }
-  }, [recorder, onGetAudio])
-
   const handleClickRecordButton = () => {
     if (isRecording) {
       onStop && onStop()
-      recorder?.stop()
+      if (recorder) {
+        recorder.stop().then(async ({ blob }) => {
+          const audioFile = new File([blob], 'untitled.wav')
+          const audioBuffer = await decodeAudio(audioFile)
+          onGetAudio && onGetAudio(audioBuffer)
+        })
+      }
       setIsRecording(false)
       setStartedAt(0)
     } else {

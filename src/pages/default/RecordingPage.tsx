@@ -5,6 +5,7 @@ import React, { useCallback, useContext, useEffect, useLayoutEffect, useRef, use
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
 import { ReactSortable } from 'react-sortablejs'
+import Recorder from 'recorder-js'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import AudioTrackCard from '../../components/podcast/AudioTrackCard'
@@ -63,6 +64,27 @@ const RecordingPage: React.FC = () => {
   const [waveCollection, setWaveCollection] = useState<WaveCollectionProps[]>([])
   const audioObjectRef = useRef<{ waveCollection: WaveCollectionProps[]; currentAudioId: string | undefined }>()
 
+  const [recorder, setRecorder] = useState<Recorder | null>(null)
+
+  useEffect(() => {
+    const initRecorder = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const _recorder = new Recorder(audioContext)
+      _recorder.init(stream)
+
+      return _recorder
+    }
+    !recorder && initRecorder().then(recorder => setRecorder(recorder))
+
+    return () => {
+      if (recorder) {
+        ;(recorder as any).stream.getTracks().forEach((track: any) => track.stop())
+        ;(recorder as any).audioContext.close()
+      }
+    }
+  }, [recorder])
+
   const [updatePodcastProgramContent] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_CONTENT,
     types.UPDATE_PODCAST_PROGRAM_CONTENTVariables
@@ -78,20 +100,23 @@ const RecordingPage: React.FC = () => {
     }
   })
 
-  const onGetRecordAudio = useCallback((audioBuffer: AudioBuffer | null) => {
-    if (audioBuffer && audioObjectRef.current?.waveCollection) {
-      const waveId = uuid()
-      setWaveCollection([
-        ...audioObjectRef.current.waveCollection,
-        {
-          id: waveId,
-          audioBuffer,
-        },
-      ])
-      setCurrentAudioId(waveId)
-    }
-    setIsGeneratingAudio(false)
-  }, [])
+  const onGetRecordAudio = useCallback(
+    (audioBuffer: AudioBuffer | null) => {
+      if (audioBuffer && waveCollection) {
+        const waveId = uuid()
+        setWaveCollection([
+          ...waveCollection,
+          {
+            id: waveId,
+            audioBuffer,
+          },
+        ])
+        setCurrentAudioId(waveId)
+      }
+      setIsGeneratingAudio(false)
+    },
+    [waveCollection],
+  )
 
   useEffect(() => {
     const getAudioLink = async () => {
@@ -319,6 +344,7 @@ const RecordingPage: React.FC = () => {
           <div className="text-center mb-5">
             <StyledPageTitle>{formatMessage(podcastMessages.ui.recordAudio)}</StyledPageTitle>
             <RecordButton
+              recorder={recorder}
               onStart={() => setIsRecording(true)}
               onStop={() => {
                 setIsRecording(false)
