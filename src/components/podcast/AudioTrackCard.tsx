@@ -100,9 +100,13 @@ const AudioTrackCard: React.FC<
       const _wavesurfer = WaveSurfer.create({
         container: waveformRef.current,
         waveColor: '#cecece',
-        progressColor: theme['@primary-color'],
+        progressColor: theme['@primary-color'] || '#555',
         skipLength: 5,
         height: 90,
+        autoCenter: true,
+        closeAudioContext: true,
+        scrollParent: true,
+        minPxPerSec: 100,
         plugins: [
           TimelinePlugin.create({
             container: waveformTimelineRef.current,
@@ -154,8 +158,8 @@ const AudioTrackCard: React.FC<
 
       <StyledCard className="p-4 flex-grow-1" isActive={isActive}>
         <WaveWrapper className="mb-3">
-          <WaveTimelineBlock ref={waveformTimelineRef} width={audioBuffer.duration * 75} />
-          <WaveBlock ref={waveformRef} width={audioBuffer.duration * 75} />
+          <WaveTimelineBlock ref={waveformTimelineRef} />
+          <WaveBlock ref={waveformRef} />
         </WaveWrapper>
 
         <div className="d-flex align-items-center justify-content-between">
