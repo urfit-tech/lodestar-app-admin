@@ -406,11 +406,7 @@ const OrderExportModal: React.FC = () => {
             },
           ]}
         >
-          <StyledRangePicker
-            style={{ width: '100%' }}
-            format="YYYY-MM-DD HH:mm:ss"
-            defaultValue={[moment().startOf('day'), moment().endOf('day')]}
-          />
+          <StyledRangePicker style={{ width: '100%' }} format="YYYY-MM-DD HH:mm:ss" />
         </Form.Item>
 
         <Form.Item
