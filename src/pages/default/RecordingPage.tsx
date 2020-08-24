@@ -1,5 +1,6 @@
 import { useMutation } from '@apollo/react-hooks'
 import { message, Modal, Spin } from 'antd'
+import moment from 'moment'
 import { extname } from 'path'
 import React, { useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -43,6 +44,7 @@ const StyledPageTitle = styled.h1`
 interface WaveCollectionProps {
   id: string
   audioBuffer: AudioBuffer
+  filename: string
 }
 
 const RecordingPage: React.FC = () => {
@@ -109,6 +111,7 @@ const RecordingPage: React.FC = () => {
           {
             id: waveId,
             audioBuffer,
+            filename: moment().format('YYYY/MM/DD HH:mm:ss'),
           },
         ])
         setCurrentAudioId(waveId)
@@ -201,10 +204,12 @@ const RecordingPage: React.FC = () => {
             acc.push({
               id: audioSlicedFirstId,
               audioBuffer: audioSlicedFirst,
+              filename: wave.filename,
             })
             acc.push({
               id: uuid(),
               audioBuffer: audioSlicedLast,
+              filename: wave.filename,
             })
             setCurrentAudioId(audioSlicedFirstId)
           } else {
@@ -367,6 +372,7 @@ const RecordingPage: React.FC = () => {
                   position={index}
                   playRate={playRate}
                   audioBuffer={wave.audioBuffer}
+                  filename={wave.filename}
                   onClick={() => {
                     setIsPlaying(false)
                     setCurrentAudioId(wave.id)
@@ -375,6 +381,18 @@ const RecordingPage: React.FC = () => {
                   isPlaying={wave.id === currentAudioId && isPlaying}
                   onAudioPlaying={second => setCurrentPlayingSecond(second)}
                   onFinishPlaying={onFinishPlaying}
+                  onChangeFilename={(id, filename) => {
+                    setWaveCollection(
+                      waveCollection.map(wave =>
+                        wave.id === id
+                          ? {
+                              ...wave,
+                              filename: filename,
+                            }
+                          : wave,
+                      ),
+                    )
+                  }}
                 />
               )
             })}

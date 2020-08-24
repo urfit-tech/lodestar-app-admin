@@ -1,4 +1,5 @@
 import Icon from '@ant-design/icons'
+import { Typography } from 'antd'
 import moment from 'moment'
 import React, { HTMLAttributes, useContext, useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -50,6 +51,13 @@ const StyledText = styled.div`
   letter-spacing: 0.6px;
   line-height: 1.5rem;
 `
+const StyledTypographyText = styled(Typography.Text)`
+  color: var(--gray-darker);
+  font-size: 12px;
+  letter-spacing: 0.6px;
+  line-height: 1.5rem;
+  font-weight: 600;
+`
 
 const AudioTrackCard: React.FC<
   HTMLAttributes<HTMLDivElement> & {
@@ -58,10 +66,12 @@ const AudioTrackCard: React.FC<
     position: number
     playRate?: number
     audioBuffer: AudioBuffer
+    filename: string
     isActive?: boolean
     isPlaying?: boolean
     onAudioPlaying?: (second: number) => void
     onFinishPlaying?: () => void
+    onChangeFilename?: (id: string, filename: string) => void
   }
 > = ({
   id,
@@ -69,10 +79,12 @@ const AudioTrackCard: React.FC<
   position,
   playRate,
   audioBuffer,
+  filename,
   isActive,
   isPlaying,
   onAudioPlaying,
   onFinishPlaying,
+  onChangeFilename,
   children,
   ...divProps
 }) => {
@@ -146,7 +158,10 @@ const AudioTrackCard: React.FC<
           <WaveBlock ref={waveformRef} width={audioBuffer.duration * 75} />
         </WaveWrapper>
 
-        <div className="d-flex align-items-center justify-content-start">
+        <div className="d-flex align-items-center justify-content-between">
+          <StyledTypographyText editable={{ onChange: filename => onChangeFilename && onChangeFilename(id, filename) }}>
+            {filename}
+          </StyledTypographyText>
           <StyledText>
             {formatMessage(podcastMessages.label.totalDuration)} {durationFormatter(audioBuffer.duration)}
           </StyledText>
