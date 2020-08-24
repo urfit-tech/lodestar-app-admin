@@ -23,11 +23,11 @@ const messages = defineMessages({
 const ProgramProgressCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
-  const { enabledModules } = useContext(AppContext)
+  const { enabledModules, loading } = useContext(AppContext)
   const [selectedProgramId, setSelectedProgramId] = useState('all')
   const [memberList, setMemberList] = useState<string[][]>([[]])
 
-  if (!currentMemberId) {
+  if (!currentMemberId || loading) {
     return <LoadingPage />
   }
 
@@ -79,7 +79,9 @@ const ProgramSelector: React.FC<
     <Select disabled={!!error} loading={loading} style={{ width: '100%' }} defaultValue="all" {...selectProps}>
       <Select.Option value="all">{allText || formatMessage(commonMessages.label.allProgram)}</Select.Option>
       {programs.map(program => (
-        <Select.Option value={program.id}>{program.title}</Select.Option>
+        <Select.Option key={program.id} value={program.id}>
+          {program.title}
+        </Select.Option>
       ))}
     </Select>
   )
