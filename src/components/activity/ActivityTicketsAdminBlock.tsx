@@ -84,6 +84,7 @@ const ActivityTicketsAdminBlock: React.FC<{
                                 activityTicketId: ticket.id,
                                 title: values.title,
                                 activitySessionTickets: values.sessionIds.map(sessionId => ({
+                                  activity_ticket_id: ticket.id,
                                   activity_session_id: sessionId,
                                 })),
                                 isPublished: values.isPublished,
@@ -95,6 +96,7 @@ const ActivityTicketsAdminBlock: React.FC<{
                               },
                             })
                           }
+                          onRefetch={onRefetch}
                         />
                       </Menu.Item>
                     </Menu>
