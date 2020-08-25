@@ -75,10 +75,10 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
                   {`${formatMessage(commonMessages.label.orderLogId)} ${orderLog.id}`}
                 </StyledOrderTitle>
 
-                {orderLog.createdAt && (
+                {orderLog.updatedAt && (
                   <StyledDate className="mb-4 d-flex align-items-center">
                     <CalendarOIcon className="mr-2" />
-                    {`${moment(orderLog.createdAt).format('YYYY-MM-DD HH:mm')} ${formatMessage(messages.purchase)}`}
+                    {`${moment(orderLog.updatedAt).format('YYYY-MM-DD HH:mm')} ${formatMessage(messages.purchase)}`}
                   </StyledDate>
                 )}
 
