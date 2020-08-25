@@ -19,7 +19,7 @@ import {
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
 
-const StyledRangePicker = styled(DatePicker.RangePicker)`
+const StyledRangePicker = styled(props => <DatePicker.RangePicker {...props} />)`
   input {
     width: 38%;
     text-align: left;
@@ -406,7 +406,14 @@ const OrderExportModal: React.FC = () => {
             },
           ]}
         >
-          <StyledRangePicker style={{ width: '100%' }} format="YYYY-MM-DD HH:mm:ss" />
+          <StyledRangePicker
+            style={{ width: '100%' }}
+            format="YYYY-MM-DD HH:mm:ss"
+            showTime={{
+              format: 'YYYY-MM-DD HH:mm:ss',
+              defaultValue: [moment().startOf('day'), moment().endOf('day')],
+            }}
+          />
         </Form.Item>
 
         <Form.Item
