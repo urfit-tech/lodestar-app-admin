@@ -11,6 +11,7 @@ import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { AppContext } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
+import { decodeAudio } from '../../helpers/audio'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { UPDATE_PODCAST_PROGRAM_CONTENT } from '../../hooks/podcast'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
@@ -54,17 +55,22 @@ const PodcastProgramContentForm: React.FC<{
     return <Skeleton active />
   }
 
-  const handleUploadAudio = (contentType: string | null) => {
+  const handleUploadAudio = async (file: File | null) => {
+    const contentType: string | null = file ? extname(file.name).replace('.', '') : null
+    const audioBuffer = file ? await decodeAudio(file) : null
+    const duration = audioBuffer ? Math.ceil(audioBuffer.duration / 60) : 0
     setLoading(true)
     updatePodcastProgramContent({
       variables: {
         updatedAt: new Date(),
         podcastProgramId: podcastProgramAdmin.id,
         contentType,
+        duration,
       },
     })
       .then(() => {
         onRefetch && onRefetch()
+        form.setFields([{ name: 'duration', value: duration }])
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
@@ -119,18 +125,20 @@ const PodcastProgramContentForm: React.FC<{
             </Tooltip>
           </span>
         }
-        name="audio"
+        className={podcastProgramAdmin.contentType ? 'mb-1' : ''}
       >
-        <SingleUploader
-          withExtension
-          accept=".mp3"
-          // accept=".mp3,.m4a,.mp4,.3gp,.m4a,.aac"
-          uploadText={formatMessage(podcastMessages.ui.uploadAudioFile)}
-          showUploadList={false}
-          path={`audios/${appId}/${podcastProgramAdmin.id}`}
-          onSuccess={info => handleUploadAudio(extname(info.file.name).replace('.', ''))}
-          className="mr-2"
-        />
+        <Form.Item name="audio" noStyle>
+          <SingleUploader
+            withExtension
+            accept=".mp3"
+            // accept=".mp3,.m4a,.mp4,.3gp,.m4a,.aac"
+            uploadText={formatMessage(podcastMessages.ui.uploadAudioFile)}
+            showUploadList={false}
+            path={`audios/${appId}/${podcastProgramAdmin.id}`}
+            onSuccess={info => handleUploadAudio(info.file.originFileObj as File)}
+            className="mr-2"
+          />
+        </Form.Item>
         {enabledModules.podcast_recording && (
           <Button onClick={handleRecording} className="ml-2">
             <Icon component={() => <MicrophoneIcon />} />
@@ -141,15 +149,15 @@ const PodcastProgramContentForm: React.FC<{
             </span>
           </Button>
         )}
-        {podcastProgramAdmin.contentType ? (
-          <StyledFileBlock className="d-flex align-items-center justify-content-between">
-            <span>
-              {podcastProgramAdmin.id}.{podcastProgramAdmin.contentType}
-            </span>
-            <CloseOutlined className="cursor-pointer" onClick={() => handleUploadAudio(null)} />
-          </StyledFileBlock>
-        ) : null}
       </Form.Item>
+      {podcastProgramAdmin.contentType ? (
+        <StyledFileBlock className="d-flex align-items-center justify-content-between mb-3">
+          <span>
+            {podcastProgramAdmin.id}.{podcastProgramAdmin.contentType}
+          </span>
+          <CloseOutlined className="cursor-pointer" onClick={() => handleUploadAudio(null)} />
+        </StyledFileBlock>
+      ) : null}
       <Form.Item label={formatMessage(podcastMessages.label.duration)} name="duration">
         <InputNumber min={0} />
       </Form.Item>
