@@ -200,7 +200,7 @@ const RecordingController: React.FC<{
 
             <div className="col-6 col-lg-4 d-flex align-items-center justify-content-center">
               <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.backward)}</TooltipText>}>
-                <StyledBarIconButton type="link" className="p-0" onClick={() => onBackward && onBackward()}>
+                <StyledBarIconButton type="link" className="p-0 mx-2" onClick={() => onBackward && onBackward()}>
                   <BackwardIcon />
                 </StyledBarIconButton>
               </Tooltip>
@@ -216,7 +216,7 @@ const RecordingController: React.FC<{
               </StyledBarIconButton>
 
               <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.forward)}</TooltipText>}>
-                <StyledBarIconButton type="link" className="p-0" onClick={() => onForward && onForward()}>
+                <StyledBarIconButton type="link" className="p-0 mx-2" onClick={() => onForward && onForward()}>
                   <ForwardIcon />
                 </StyledBarIconButton>
               </Tooltip>
