@@ -3693,6 +3693,7 @@ export interface GET_ORDERS_order_log {
    * An array relationship
    */
   order_discounts: GET_ORDERS_order_log_order_discounts[];
+  shipping: any | null;
   /**
    * An object relationship
    */
@@ -9048,6 +9049,7 @@ export enum member_contract_update_column {
   id = "id",
   member_id = "member_id",
   started_at = "started_at",
+  terminated_at = "terminated_at",
   values = "values",
 }
 
@@ -9837,6 +9839,23 @@ export enum program_content_constraint {
 }
 
 /**
+ * unique or primary key constraints on table "program_content_material"
+ */
+export enum program_content_material_constraint {
+  program_content_material_pkey = "program_content_material_pkey",
+}
+
+/**
+ * update columns of table "program_content_material"
+ */
+export enum program_content_material_update_column {
+  created_at = "created_at",
+  data = "data",
+  id = "id",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "program_content_plan"
  */
 export enum program_content_plan_constraint {
@@ -9894,6 +9913,7 @@ export enum program_content_section_update_column {
  */
 export enum program_content_update_column {
   abstract = "abstract",
+  content__material_id = "content__material_id",
   content_body_id = "content_body_id",
   content_section_id = "content_section_id",
   content_type = "content_type",
@@ -12394,6 +12414,7 @@ export interface member_contract_bool_exp {
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
+  terminated_at?: timestamptz_comparison_exp | null;
   values?: jsonb_comparison_exp | null;
 }
 
@@ -12411,6 +12432,7 @@ export interface member_contract_insert_input {
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   started_at?: any | null;
+  terminated_at?: any | null;
   values?: any | null;
 }
 
@@ -14675,6 +14697,7 @@ export interface program_content_bool_exp {
   _not?: program_content_bool_exp | null;
   _or?: (program_content_bool_exp | null)[] | null;
   abstract?: String_comparison_exp | null;
+  content__material_id?: uuid_comparison_exp | null;
   content_body_id?: uuid_comparison_exp | null;
   content_section_id?: uuid_comparison_exp | null;
   content_type?: String_comparison_exp | null;
@@ -14688,6 +14711,7 @@ export interface program_content_bool_exp {
   notified_at?: timestamptz_comparison_exp | null;
   position?: Int_comparison_exp | null;
   program_content_body?: program_content_body_bool_exp | null;
+  program_content_material?: program_content_material_bool_exp | null;
   program_content_plans?: program_content_plan_bool_exp | null;
   program_content_progress?: program_content_progress_bool_exp | null;
   program_content_section?: program_content_section_bool_exp | null;
@@ -14718,6 +14742,7 @@ export interface program_content_enrollment_bool_exp {
  */
 export interface program_content_insert_input {
   abstract?: string | null;
+  content__material_id?: any | null;
   content_body_id?: any | null;
   content_section_id?: any | null;
   content_type?: string | null;
@@ -14730,6 +14755,7 @@ export interface program_content_insert_input {
   notified_at?: any | null;
   position?: number | null;
   program_content_body?: program_content_body_obj_rel_insert_input | null;
+  program_content_material?: program_content_material_obj_rel_insert_input | null;
   program_content_plans?: program_content_plan_arr_rel_insert_input | null;
   program_content_progress?: program_content_progress_arr_rel_insert_input | null;
   program_content_section?: program_content_section_obj_rel_insert_input | null;
@@ -14737,6 +14763,48 @@ export interface program_content_insert_input {
   sale_price?: any | null;
   sold_at?: any | null;
   title?: string | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_content_material". All fields are combined with a logical 'AND'.
+ */
+export interface program_content_material_bool_exp {
+  _and?: (program_content_material_bool_exp | null)[] | null;
+  _not?: program_content_material_bool_exp | null;
+  _or?: (program_content_material_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  data?: jsonb_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  program_contents?: program_content_bool_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "program_content_material"
+ */
+export interface program_content_material_insert_input {
+  created_at?: any | null;
+  data?: any | null;
+  id?: any | null;
+  program_contents?: program_content_arr_rel_insert_input | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "program_content_material"
+ */
+export interface program_content_material_obj_rel_insert_input {
+  data: program_content_material_insert_input;
+  on_conflict?: program_content_material_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "program_content_material"
+ */
+export interface program_content_material_on_conflict {
+  constraint: program_content_material_constraint;
+  update_columns: program_content_material_update_column[];
+  where?: program_content_material_bool_exp | null;
 }
 
 /**

@@ -16,6 +16,7 @@ import AdminCard from '../admin/AdminCard'
 import ProductTypeLabel from '../common/ProductTypeLabel'
 import OrderStatusTag from './OrderStatusTag'
 import SubscriptionCancelModal from './SubscriptionCancelModal'
+import ShippingMethodLabel from '../common/ShippingMethodLabel'
 
 const StyledContainer = styled.div`
   overflow: auto;
@@ -75,6 +76,7 @@ type OrderRow = {
   status: string
   orderDiscounts: OrderDiscount[]
   orderProducts: OrderProduct[]
+  shipping: any
   name: string
   email: string
   totalPrice: number
@@ -88,7 +90,7 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
   const [pagination, setPagination] = useState<TablePaginationConfig>({})
 
   const pageSize = pagination.pageSize || DEFAULT_PAGE_SIZE
-  const { loading, dataSource, totalCount, refetchUseDataSource } = useDataSource(
+  const { loadingOrderLog, dataSource, totalCount, refetchUseDataSource } = useDataSource(
     pageSize,
     pagination,
     status,
@@ -192,7 +194,7 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
     return (
       <div>
         {record.orderProducts.map(orderProduct => (
-          <div key={orderProduct.id}>
+          <React.Fragment key={orderProduct.id}>
             <div className="row">
               <div className="col-2">
                 <ProductTypeLabel productType={orderProduct.product.type} />
@@ -222,19 +224,21 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
               <div className="col-2 text-right">{currencyFormatter(orderProduct.price)}</div>
             </div>
             <Divider />
-          </div>
+          </React.Fragment>
         ))}
+        {record.shipping?.shippingMethod && typeof record.shipping?.fee === 'number' && (
+          <div className="row text-right">
+            <div className="col-9">
+              <ShippingMethodLabel shippingMethodId={record.shipping.shippingMethod} />
+            </div>
+            <div className="col-3">{currencyFormatter(record.shipping.fee || 0)}</div>
+          </div>
+        )}
         {record.orderDiscounts.map(orderDiscount => {
           return (
-            <div className="row" style={{ textAlign: 'right' }}>
-              <div className="col-9">
-                <div>
-                  <span>{orderDiscount.name}</span>
-                </div>
-              </div>
-              <div className="col-3">
-                <span>- {currencyFormatter(orderDiscount.price)} </span>
-              </div>
+            <div className="row text-right">
+              <div className="col-9">{orderDiscount.name}</div>
+              <div className="col-3">- {currencyFormatter(orderDiscount.price)}</div>
             </div>
           )
         })}
@@ -285,7 +289,7 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
         </div>
 
         <Table
-          loading={loading}
+          loading={loadingOrderLog}
           rowKey="id"
           dataSource={dataSource}
           columns={columns}
@@ -342,13 +346,8 @@ const useDataSource = (
   status: any,
   orderIdLike: string | null,
   memberNameAndEmailLike: string | null,
-): {
-  loading: boolean
-  dataSource?: OrderRow[]
-  totalCount?: number | null
-  refetchUseDataSource?: () => void
-} => {
-  const { loading, data, refetch } = useQuery<types.GET_ORDERS, types.GET_ORDERSVariables>(GET_ORDERS, {
+) => {
+  const { loading, error, data, refetch } = useQuery<types.GET_ORDERS, types.GET_ORDERSVariables>(GET_ORDERS, {
     variables: {
       limit: pageSize,
       offset: pageSize * ((pagination.current || DEFAULT_PAGE_CURRENT) - 1),
@@ -357,33 +356,45 @@ const useDataSource = (
       memberNameAndEmailLike,
     },
   })
+
+  const dataSource: OrderRow[] =
+    loading || error || !data
+      ? []
+      : data.order_log.map(log => ({
+          id: log.id,
+          createdAt: log.created_at,
+          status: log.status,
+          orderProducts: log.order_products.map(orderProduct => ({
+            id: orderProduct.id,
+            name: orderProduct.name,
+            price: orderProduct.price,
+            startedAt: orderProduct.started_at,
+            endedAt: orderProduct.ended_at,
+            product: orderProduct.product,
+            quantity: orderProduct.options?.quantity,
+            options: orderProduct.options,
+          })),
+          orderDiscounts: log.order_discounts.map(orderDiscount => ({
+            id: orderDiscount.id,
+            name: orderDiscount.name,
+            description: orderDiscount.description,
+            price: orderDiscount.price,
+          })),
+          shipping: log.shipping,
+          name: log.member.name,
+          email: log.member.email,
+          totalPrice:
+            sum(log.order_products.map(prop('price'))) -
+            sum(log.order_discounts.map(prop('price'))) +
+            (log.shipping?.fee || 0),
+        }))
+  const totalCount = data?.order_log_aggregate.aggregate?.count || 0
+
   return {
-    loading,
-    dataSource: data?.order_log.map(log => ({
-      id: log.id,
-      createdAt: log.created_at,
-      status: log.status,
-      orderProducts: log.order_products.map(orderProduct => ({
-        id: orderProduct.id,
-        name: orderProduct.name,
-        price: orderProduct.price,
-        startedAt: orderProduct.started_at,
-        endedAt: orderProduct.ended_at,
-        product: orderProduct.product,
-        quantity: orderProduct.options?.quantity,
-        options: orderProduct.options,
-      })),
-      orderDiscounts: log.order_discounts.map(orderDiscount => ({
-        id: orderDiscount.id,
-        name: orderDiscount.name,
-        description: orderDiscount.description,
-        price: orderDiscount.price,
-      })),
-      name: log.member.name,
-      email: log.member.email,
-      totalPrice: sum(log.order_products.map(prop('price'))) - sum(log.order_discounts.map(prop('price'))),
-    })),
-    totalCount: data ? data?.order_log_aggregate?.aggregate?.count : 0,
+    loadingOrderLog: loading,
+    errorOrderLog: error,
+    dataSource,
+    totalCount,
     refetchUseDataSource: refetch,
   }
 }
@@ -432,6 +443,7 @@ const GET_ORDERS = gql`
         description
         price
       }
+      shipping
       member {
         name
         email
