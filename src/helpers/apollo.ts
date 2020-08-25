@@ -1,10 +1,11 @@
 import { notification } from 'antd'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import ApolloClient from 'apollo-client'
-import { ApolloLink } from 'apollo-link'
+import { ApolloLink, split } from 'apollo-link'
 import { setContext } from 'apollo-link-context'
 import { onError } from 'apollo-link-error'
 import { createHttpLink } from 'apollo-link-http'
+import { BatchHttpLink } from 'apollo-link-batch-http'
 
 // create onError link
 const onErrorLink = onError(({ graphQLErrors, networkError }) => {
@@ -28,12 +29,22 @@ const withAuthTokenLink = (authToken: string | null) =>
       },
   )
 
+// link to use if batching (default)
+// also adds a `batch: true` header to the request to prove it's a different link
+const batchHttpLink = new BatchHttpLink({
+  uri: process.env.REACT_APP_GRAPHQL_ENDPOINT,
+  headers: { batch: 'true' },
+})
 // create http link:
 const httpLink = createHttpLink({ uri: process.env.REACT_APP_GRAPHQL_ENDPOINT })
 
 export const createApolloClient = (options: { authToken: string | null }) => {
   const apolloClient = new ApolloClient({
-    link: ApolloLink.from([onErrorLink, withAuthTokenLink(options.authToken), httpLink]),
+    link: split(
+      operation => operation.getContext().important === true,
+      ApolloLink.from([onErrorLink, withAuthTokenLink(options.authToken), httpLink]),
+      ApolloLink.from([onErrorLink, withAuthTokenLink(options.authToken), batchHttpLink]),
+    ),
     cache: new InMemoryCache(),
   })
   return apolloClient
