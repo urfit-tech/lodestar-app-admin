@@ -56,7 +56,7 @@ const ProgramContentAdminModal: React.FC<{
   const [visible, setVisible] = useState(false)
   const [isTrial, setIsTrial] = useState(programContent.listPrice === 0)
   const [isPublished, setIsPublished] = useState(!!programContent.publishedAt)
-  const [video, setVideo] = useState<any>(programContentBody.data.value || null)
+  const [video, setVideo] = useState<any>(programContentBody.data.video || null)
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
 
@@ -121,9 +121,9 @@ const ProgramContentAdminModal: React.FC<{
             isNotifyUpdate: programContent.isNotifyUpdate,
             title: programContent.title,
             planIds: programContent.programPlans?.map(programPlan => programPlan.id) || [],
+            duration: (programContent.duration || 0) / 60,
             video: programContentBody.data.video,
             texttrack: programContentBody.data.texttrack,
-            duration: (programContent.duration || 0) / 60,
             description: BraftEditor.createEditorState(programContentBody.description),
           }}
           onValuesChange={(values: any) => {
