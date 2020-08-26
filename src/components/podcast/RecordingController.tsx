@@ -100,6 +100,62 @@ const StyledOnTopWrapper = styled(StyledWrapper)`
   z-index: 100;
 `
 
+const StylePlayRateOverlayButton: React.FC<{
+  playRate: number
+  onPlayRateChange?: () => void
+}> = React.memo(
+  ({ playRate, onPlayRateChange }) => {
+    const { formatMessage } = useIntl()
+
+    return (
+      <StyledOverlayButton type="link" size="small" onClick={() => onPlayRateChange && onPlayRateChange()}>
+        {playRate < 1 ? (
+          <Icon component={() => <PlayRate05xIcon />} />
+        ) : playRate < 1.5 ? (
+          <Icon component={() => <PlayRate10xIcon />} />
+        ) : playRate < 2 ? (
+          <Icon component={() => <PlayRate15xIcon />} />
+        ) : (
+          <Icon component={() => <PlayRate20xIcon />} />
+        )}
+        <div>{formatMessage(podcastMessages.label.playRate)}</div>
+      </StyledOverlayButton>
+    )
+  },
+  (prevProps, nextProps) => {
+    return prevProps.playRate === nextProps.playRate && prevProps.onPlayRateChange === nextProps.onPlayRateChange
+  },
+)
+
+const StylePlayRateIconButton: React.FC<{
+  playRate: number
+  onPlayRateChange?: () => void
+}> = React.memo(
+  ({ playRate, onPlayRateChange }) => {
+    return (
+      <StyledBarIconButton
+        marginbottom="2px"
+        type="link"
+        className="p-0"
+        onClick={() => onPlayRateChange && onPlayRateChange()}
+      >
+        {playRate < 1 ? (
+          <Icon component={() => <PlayRate05xIcon />} />
+        ) : playRate < 1.5 ? (
+          <Icon component={() => <PlayRate10xIcon />} />
+        ) : playRate < 2 ? (
+          <Icon component={() => <PlayRate15xIcon />} />
+        ) : (
+          <Icon component={() => <PlayRate20xIcon />} />
+        )}
+      </StyledBarIconButton>
+    )
+  },
+  (prevProps, nextProps) => {
+    return prevProps.playRate === nextProps.playRate && prevProps.onPlayRateChange === nextProps.onPlayRateChange
+  },
+)
+
 const RecordingController: React.FC<{
   hidden?: boolean
   name: string
@@ -144,18 +200,7 @@ const RecordingController: React.FC<{
       <Responsive.Default>
         <StyledOverlay className="d-flex align-items-center justify-content-around" active={isEditing}>
           <div className="flex-grow-1 text-center">
-            <StyledOverlayButton type="link" size="small" onClick={() => onPlayRateChange && onPlayRateChange()}>
-              {playRate < 1 ? (
-                <Icon component={() => <PlayRate05xIcon />} />
-              ) : playRate < 1.5 ? (
-                <Icon component={() => <PlayRate10xIcon />} />
-              ) : playRate < 2 ? (
-                <Icon component={() => <PlayRate15xIcon />} />
-              ) : (
-                <Icon component={() => <PlayRate20xIcon />} />
-              )}
-              <div>{formatMessage(podcastMessages.label.playRate)}</div>
-            </StyledOverlayButton>
+            <StylePlayRateOverlayButton playRate={playRate} onPlayRateChange={onPlayRateChange} />
           </div>
           <Divider type="vertical" style={{ height: '49px' }} />
           <div className="flex-grow-1 text-center">
@@ -225,22 +270,7 @@ const RecordingController: React.FC<{
             <StyledAction className="col-3 col-lg-4 d-flex align-items-center justify-content-end">
               <Responsive.Desktop>
                 <Tooltip title={<TooltipText>{formatMessage(podcastMessages.label.playRate)}</TooltipText>}>
-                  <StyledBarIconButton
-                    marginbottom="2px"
-                    type="link"
-                    className="p-0"
-                    onClick={() => onPlayRateChange && onPlayRateChange()}
-                  >
-                    {playRate < 1 ? (
-                      <Icon component={() => <PlayRate05xIcon />} />
-                    ) : playRate < 1.5 ? (
-                      <Icon component={() => <PlayRate10xIcon />} />
-                    ) : playRate < 2 ? (
-                      <Icon component={() => <PlayRate15xIcon />} />
-                    ) : (
-                      <Icon component={() => <PlayRate20xIcon />} />
-                    )}
-                  </StyledBarIconButton>
+                  <StylePlayRateIconButton playRate={playRate} onPlayRateChange={onPlayRateChange} />
                 </Tooltip>
                 <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.trim)}</TooltipText>}>
                   <StyledBarIconButton type="link" className="p-0 m-0" onClick={() => onTrim && onTrim()}>
