@@ -8,7 +8,6 @@ import WaveSurfer from 'wavesurfer.js'
 import { durationFormatter } from '../../helpers'
 import { podcastMessages } from '../../helpers/translation'
 import { ReactComponent as MoveIcon } from '../../images/icon/move.svg'
-// const { SoundTouch, SimpleFilter, getWebAudioNode } = require('soundtouchjs')
 const TimelinePlugin = require('wavesurfer.js/dist/plugin/wavesurfer.timeline.min.js')
 
 const TrackWrapper = styled.div`
@@ -125,54 +124,6 @@ const AudioTrackCard: React.FC<
           }),
         ],
       })
-      /*
-      _wavesurfer.on('ready', () => {
-        const backend = _wavesurfer.backend as any
-        const soundTouch = new SoundTouch(backend.ac.sampleRate)
-        const buffer = backend.buffer
-        const channels = buffer.numberOfChannels
-        const lChannel = buffer.getChannelData(0)
-        const rChannel = channels > 1 ? buffer.getChannelData(1) : lChannel
-        const bufferLength = buffer.length
-        let seekingPos: number | null = null
-        let seekingDiff = 0
-
-        const source = {
-          extract: (target: any, numFrames: number, position: number) => {
-            if (seekingPos != null) {
-              seekingDiff = seekingPos - position
-              seekingPos = null
-            }
-            position += seekingDiff
-            for (let i = 0; i < numFrames; i++) {
-              target[i * 2] = lChannel[i + position]
-              target[i * 2 + 1] = rChannel[i + position]
-            }
-            return Math.min(numFrames, bufferLength - position)
-          },
-        }
-
-        let soundtouchNode: any
-        _wavesurfer.on('play', function () {
-          seekingPos = ~~(backend.getPlayedPercents() * bufferLength)
-          soundTouch.tempo = _wavesurfer.getPlaybackRate()
-
-          if (soundTouch.tempo === 1) {
-            backend.disconnectFilters()
-          } else {
-            if (!soundtouchNode) {
-              let filter = new SimpleFilter(source, soundTouch)
-              soundtouchNode = getWebAudioNode(backend.ac, filter)
-            }
-            backend.setFilter(soundtouchNode)
-          }
-        })
-        _wavesurfer.on('pause', () => soundtouchNode && soundtouchNode.disconnect())
-        _wavesurfer.on('seek', () => {
-          seekingPos = ~~(backend.getPlayedPercents() * bufferLength)
-        })
-      })
-      */
       _wavesurfer.on('finish', () => onFinishPlaying && onFinishPlaying())
       _wavesurfer.on('seek', (progress: number) => onAudioPlaying && onAudioPlaying(audioBuffer.duration * progress))
       _wavesurfer.on('audioprocess', (second: number) => onAudioPlaying && onAudioPlaying(second))
