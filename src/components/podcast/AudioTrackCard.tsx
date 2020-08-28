@@ -8,7 +8,7 @@ import WaveSurfer from 'wavesurfer.js'
 import { durationFormatter } from '../../helpers'
 import { podcastMessages } from '../../helpers/translation'
 import { ReactComponent as MoveIcon } from '../../images/icon/move.svg'
-const { SoundTouch, SimpleFilter, getWebAudioNode } = require('soundtouchjs')
+// const { SoundTouch, SimpleFilter, getWebAudioNode } = require('soundtouchjs')
 const TimelinePlugin = require('wavesurfer.js/dist/plugin/wavesurfer.timeline.min.js')
 
 const TrackWrapper = styled.div`
@@ -125,6 +125,7 @@ const AudioTrackCard: React.FC<
           }),
         ],
       })
+      /*
       _wavesurfer.on('ready', () => {
         const backend = _wavesurfer.backend as any
         const soundTouch = new SoundTouch(backend.ac.sampleRate)
@@ -171,6 +172,7 @@ const AudioTrackCard: React.FC<
           seekingPos = ~~(backend.getPlayedPercents() * bufferLength)
         })
       })
+      */
       _wavesurfer.on('finish', () => onFinishPlaying && onFinishPlaying())
       _wavesurfer.on('seek', (progress: number) => onAudioPlaying && onAudioPlaying(audioBuffer.duration * progress))
       _wavesurfer.on('audioprocess', (second: number) => onAudioPlaying && onAudioPlaying(second))

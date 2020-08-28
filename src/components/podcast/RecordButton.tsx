@@ -26,6 +26,16 @@ const StyledDuration = styled.span`
   font-size: 18px;
 `
 
+const RecordIcon: React.FC<{ isRecording: boolean }> = React.memo(
+  ({ isRecording }) =>
+    isRecording ? (
+      <StyledIcon component={() => <StopCircleIcon />} />
+    ) : (
+      <StyledIcon component={() => <MicrophoneIcon />} size={36} />
+    ),
+  (prevProps, nextProps) => prevProps.isRecording === nextProps.isRecording,
+)
+
 const RecordButton: React.FC<
   ButtonProps & {
     recorder: Recorder | null
@@ -76,11 +86,7 @@ const RecordButton: React.FC<
       {...buttonProps}
     >
       <div className="d-flex align-items-center justify-content-start">
-        {isRecording ? (
-          <StyledIcon component={() => <StopCircleIcon />} />
-        ) : (
-          <StyledIcon component={() => <MicrophoneIcon />} size={36} />
-        )}
+        <RecordIcon isRecording={isRecording} />
 
         {isRecording && <StyledDuration className="ml-2">{durationFormatter(duration)}</StyledDuration>}
       </div>
