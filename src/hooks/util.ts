@@ -1,11 +1,7 @@
 import { filter } from 'ramda'
 import { useEffect, useRef } from 'react'
-import ReactPixel from 'react-facebook-pixel'
-import ReactGA from 'react-ga'
 import { useLocation } from 'react-router-dom'
-import { TPDirect } from '../helpers'
 import { routesProps } from '../Routes'
-import settings from '../settings'
 
 export const useRouteKeys = () => {
   const location = useLocation()
@@ -31,29 +27,4 @@ export const useInterval = (callback: Function, delay: number | null, immediatel
       return () => clearInterval(id)
     }
   }, [delay, immediately])
-}
-
-export const useTappay = () => {
-  settings.tappayApp.id &&
-    settings.tappayApp.key &&
-    TPDirect &&
-    TPDirect.setupSDK(
-      settings.tappayApp.id,
-      settings.tappayApp.key,
-      process.env.NODE_ENV === 'production' ? 'production' : 'sandbox',
-    )
-}
-
-export const useGA = () => {
-  settings.trackingId.ga && ReactGA.initialize(settings.trackingId.ga)
-}
-
-export const useGAPageView = () => {
-  useEffect(() => {
-    ReactGA.pageview(window.location.pathname + window.location.search)
-  }, [])
-}
-
-export const usePixel = () => {
-  settings.trackingId.fbPixel && ReactPixel.init(settings.trackingId.fbPixel)
 }

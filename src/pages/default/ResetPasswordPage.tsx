@@ -63,14 +63,6 @@ const ResetPasswordPage: React.FC = () => {
       .finally(() => setLoading(false))
   }
 
-  // FIXME: set auth token to reset password
-  // useEffect(() => {
-  //   try {
-  //     localStorage.removeItem(`${appId}.auth.token`)
-  //   } catch (error) {}
-  //   setAuthToken && setAuthToken(null)
-  // }, [setAuthToken])
-
   return (
     <DefaultLayout noFooter centeredBox>
       <StyledContainer>

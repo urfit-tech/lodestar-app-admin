@@ -11,34 +11,29 @@ import { ApiProvider } from './contexts/ApiContext'
 import { AppProvider } from './contexts/AppContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { LanguageProvider } from './contexts/LanguageContext'
-import { useGA, usePixel, useTappay } from './hooks/util'
 import Routes from './Routes'
 import './styles/default/index.scss'
 import theme from './theme/default.json'
 
 const Application: React.FC = () => {
-  useGA()
-  usePixel()
-  useTappay()
-
   return (
-    <AuthProvider>
-      <ApiProvider>
-        <AppProvider>
-          <LanguageProvider>
-            <ThemeProvider theme={theme}>
-              <ConfigProvider locale={zhTW}>
-                <BrowserRouter>
-                  <QueryParamProvider ReactRouterRoute={Route}>
+    <BrowserRouter>
+      <QueryParamProvider ReactRouterRoute={Route}>
+        <AuthProvider>
+          <ApiProvider>
+            <AppProvider>
+              <LanguageProvider>
+                <ThemeProvider theme={theme}>
+                  <ConfigProvider locale={zhTW}>
                     <Routes />
-                  </QueryParamProvider>
-                </BrowserRouter>
-              </ConfigProvider>
-            </ThemeProvider>
-          </LanguageProvider>
-        </AppProvider>
-      </ApiProvider>
-    </AuthProvider>
+                  </ConfigProvider>
+                </ThemeProvider>
+              </LanguageProvider>
+            </AppProvider>
+          </ApiProvider>
+        </AuthProvider>
+      </QueryParamProvider>
+    </BrowserRouter>
   )
 }
 

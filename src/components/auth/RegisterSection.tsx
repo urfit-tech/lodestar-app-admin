@@ -3,7 +3,7 @@ import { Button, Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
-import { AppContext } from '../../contexts/AppContext'
+import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
@@ -14,20 +14,20 @@ import { FacebookLoginButton, GoogleLoginButton } from './SocialLoginButton'
 const RegisterSection: React.FC<{
   onAuthStateChange: React.Dispatch<React.SetStateAction<AuthState>>
 }> = ({ onAuthStateChange }) => {
+  const app = useContext(AppContext)
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const { setVisible } = useContext(AuthModalContext)
-  const { id: appId } = useContext(AppContext)
   const { register } = useAuth()
   const [loading, setLoading] = useState(false)
 
   const handleRegister = (values: any) => {
-    if (!appId || !register) {
+    if (!register) {
       return
     }
     setLoading(true)
     register({
-      appId,
+      appId: app.id,
       username: values.username,
       email: values.email,
       password: values.password,

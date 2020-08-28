@@ -5,7 +5,7 @@ import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { AppContext } from '../../contexts/AppContext'
+import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
@@ -26,10 +26,10 @@ const ForgetPassword = styled.div`
 const LoginSection: React.FC<{
   onAuthStateChange: React.Dispatch<React.SetStateAction<AuthState>>
 }> = ({ onAuthStateChange }) => {
+  const app = useContext(AppContext)
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const { setVisible } = useContext(AuthModalContext)
-  const { id: appId } = useContext(AppContext)
   const { login } = useAuth()
   const [loading, setLoading] = useState(false)
 
@@ -39,7 +39,7 @@ const LoginSection: React.FC<{
     }
     setLoading(true)
     login({
-      appId,
+      appId: app.id,
       account: values.account,
       password: values.password,
     })
