@@ -135,7 +135,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
                 >
                   {programPackages.map(programPackage => (
                     <StyledItem key={programPackage.id}>
-                      {programPackage?.published_at ? '' : '(未發佈)'}
+                      {programPackage?.published_at ? '' : ` (${formatMessage(commonMessages.status.unpublished)}) `}
                       {programPackage?.title}
                     </StyledItem>
                   ))}
@@ -146,7 +146,7 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
                 <div className="mx-2">
                   {programPackages.find(programPackage => programPackage.id === packageId)?.published_at
                     ? ''
-                    : ' ( 未發佈 ) '}
+                    : ` (${formatMessage(commonMessages.status.unpublished)}) `}
                   {programPackages.find(programPackage => programPackage.id === packageId)?.title}
                 </div>
                 <CaretDownOutlined className="ml-1" />
