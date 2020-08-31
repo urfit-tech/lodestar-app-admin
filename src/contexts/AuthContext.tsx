@@ -118,6 +118,7 @@ export const AuthProvider: React.FC = ({ children }) => {
             }
           }),
         logout: async () => {
+          localStorage.clear()
           Axios(`${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/logout`, {
             method: 'POST',
             withCredentials: true,
