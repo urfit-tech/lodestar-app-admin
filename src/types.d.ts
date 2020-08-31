@@ -7405,6 +7405,7 @@ export interface GET_PROGRAM_PACKAGE_COLLECTION_program_package {
   __typename: "program_package";
   id: any;
   title: string;
+  published_at:string;
 }
 
 export interface GET_PROGRAM_PACKAGE_COLLECTION {

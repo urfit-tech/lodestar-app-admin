@@ -134,13 +134,19 @@ const ProgramTempoDeliveryAdminPage: React.FC = () => {
                   }}
                 >
                   {programPackages.map(programPackage => (
-                    <StyledItem key={programPackage.id}>{programPackage.title}</StyledItem>
+                    <StyledItem key={programPackage.id}>
+                      {programPackage?.published_at ? '' : '(未發佈)'}
+                      {programPackage?.title}
+                    </StyledItem>
                   ))}
                 </Menu>
               }
             >
               <StyledProgramPackageTitle className="d-flex align-items-center justify-content-center cursor-pointer">
                 <div className="mx-2">
+                  {programPackages.find(programPackage => programPackage.id === packageId)?.published_at
+                    ? ''
+                    : ' ( 未發佈 ) '}
                   {programPackages.find(programPackage => programPackage.id === packageId)?.title}
                 </div>
                 <CaretDownOutlined className="ml-1" />

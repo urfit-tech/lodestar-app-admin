@@ -8,9 +8,10 @@ import { ProgramPackageProps } from '../types/programPackage'
 export const useProgramPackageCollection = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_PROGRAM_PACKAGE_COLLECTION>(gql`
     query GET_PROGRAM_PACKAGE_COLLECTION {
-      program_package(where: { published_at: { _is_null: false } }, order_by: { published_at: desc }) {
+      program_package(order_by: { published_at: desc_nulls_last }) {
         id
         title
+        published_at
       }
     }
   `)
@@ -18,12 +19,14 @@ export const useProgramPackageCollection = () => {
   const programPackages: {
     id: string
     title: string
+    published_at: string
   }[] =
     loading || error || !data
       ? []
       : data.program_package.map(programPackage => ({
           id: programPackage.id,
           title: programPackage.title,
+          published_at: programPackage.published_at,
         }))
 
   return {
