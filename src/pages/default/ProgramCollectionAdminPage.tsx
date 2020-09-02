@@ -176,7 +176,13 @@ const ProgramCollectionAdminPage: React.FC = () => {
                                     {tabContent.programs.map((program, index) => (
                                       <OverlayListItem
                                         key={program.id}
-                                        className={currentIndex === index ? 'active' : ''}
+                                        className={
+                                          currentIndex === index
+                                            ? 'active'
+                                            : currentIndex > index
+                                            ? 'hoverTop'
+                                            : 'hoverBottom'
+                                        }
                                         onClick={() => moveTarget(currentIndex, index)}
                                       >
                                         <span className="flex-shrink-0">{index + 1}</span>

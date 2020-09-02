@@ -50,8 +50,11 @@ export const OverlayListItem = styled(List.Item)`
     background: var(--gray-lighter);
     color: ${props => props.theme['@primary-color']};
   }
-  &:hover {
+  &.hoverTop:hover {
     border-top: 2px solid ${props => props.theme['@primary-color']};
+  }
+  &.hoverBottom:hover {
+    border-bottom: 2px solid ${props => props.theme['@primary-color']};
   }
   > span:first-child {
     width: 2rem;
