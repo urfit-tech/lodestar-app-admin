@@ -9,7 +9,7 @@ import { ReactSortable } from 'react-sortablejs'
 import Recorder from 'recorder-js'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
-import AudioTrackCard from '../../components/podcast/AudioTrackCard'  
+import AudioTrackCard from '../../components/podcast/AudioTrackCard'
 import PodcastProgramHeader from '../../components/podcast/PodcastProgramHeader'
 import RecordButton from '../../components/podcast/RecordButton'
 import RecordingController from '../../components/podcast/RecordingController'
@@ -237,6 +237,7 @@ const RecordingPage: React.FC = () => {
       })
     }
 
+    const modal = showUploadingModal()
     let dstAudioData = null
     if (waveCollection.length === 1) {
       dstAudioData = waveCollection[0].audioBuffer
@@ -249,7 +250,6 @@ const RecordingPage: React.FC = () => {
       }
     }
     if (dstAudioData) {
-      const modal = showUploadingModal()
       const mp3Data = convertAudioBufferToMp3(dstAudioData)
       const file = new File([mp3Data], 'record.mp3', { type: 'audio/mp3', lastModified: Date.now() })
       const durationMinute = Math.ceil(dstAudioData.duration / 60)
@@ -275,6 +275,7 @@ const RecordingPage: React.FC = () => {
           handleError(error)
         })
     } else {
+      modal.destroy()
       handleError(new Error(formatMessage(errorMessages.event.failedPodcastRecording)))
     }
   }, [
