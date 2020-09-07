@@ -6361,6 +6361,7 @@ export interface GET_ORDER_PRODUCT_COLLECTION_order_product {
   started_at: any | null;
   ended_at: any | null;
   auto_renewed: boolean;
+  amount: any | null;
 }
 
 export interface GET_ORDER_PRODUCT_COLLECTION {
@@ -7405,7 +7406,7 @@ export interface GET_PROGRAM_PACKAGE_COLLECTION_program_package {
   __typename: "program_package";
   id: any;
   title: string;
-  published_at:string;
+  published_at: any | null;
 }
 
 export interface GET_PROGRAM_PACKAGE_COLLECTION {
@@ -8408,6 +8409,23 @@ export enum activity_session_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "activity_tag"
+ */
+export enum activity_tag_constraint {
+  activity_tag_pkey = "activity_tag_pkey",
+}
+
+/**
+ * update columns of table "activity_tag"
+ */
+export enum activity_tag_update_column {
+  activity_id = "activity_id",
+  id = "id",
+  position = "position",
+  tag_name = "tag_name",
+}
+
+/**
  * unique or primary key constraints on table "activity_ticket"
  */
 export enum activity_ticket_constraint {
@@ -8805,6 +8823,7 @@ export enum contract_update_column {
   description = "description",
   id = "id",
   name = "name",
+  revocation = "revocation",
   template = "template",
   updated_at = "updated_at",
 }
@@ -9049,8 +9068,9 @@ export enum member_contract_update_column {
   ended_at = "ended_at",
   id = "id",
   member_id = "member_id",
+  revocation_values = "revocation_values",
+  revoked_at = "revoked_at",
   started_at = "started_at",
-  terminated_at = "terminated_at",
   values = "values",
 }
 
@@ -9792,6 +9812,26 @@ export enum program_announcement_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "program_approval"
+ */
+export enum program_approval_constraint {
+  program_approval_pkey = "program_approval_pkey",
+}
+
+/**
+ * update columns of table "program_approval"
+ */
+export enum program_approval_update_column {
+  created_at = "created_at",
+  description = "description",
+  feedback = "feedback",
+  id = "id",
+  program_id = "program_id",
+  status = "status",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "program_category"
  */
 export enum program_category_constraint {
@@ -9853,6 +9893,7 @@ export enum program_content_material_update_column {
   created_at = "created_at",
   data = "data",
   id = "id",
+  program_content_id = "program_content_id",
   updated_at = "updated_at",
 }
 
@@ -9889,6 +9930,7 @@ export enum program_content_progress_update_column {
   member_id = "member_id",
   program_content_id = "program_content_id",
   progress = "progress",
+  updated_at = "updated_at",
 }
 
 /**
@@ -9914,7 +9956,6 @@ export enum program_content_section_update_column {
  */
 export enum program_content_update_column {
   abstract = "abstract",
-  content__material_id = "content__material_id",
   content_body_id = "content_body_id",
   content_section_id = "content_section_id",
   content_type = "content_type",
@@ -10375,6 +10416,7 @@ export interface activity_bool_exp {
   activity_categories?: activity_category_bool_exp | null;
   activity_enrollments?: activity_enrollment_bool_exp | null;
   activity_sessions?: activity_session_bool_exp | null;
+  activity_tags?: activity_tag_bool_exp | null;
   activity_tickets?: activity_ticket_bool_exp | null;
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
@@ -10461,6 +10503,7 @@ export interface activity_enrollment_bool_exp {
 export interface activity_insert_input {
   activity_categories?: activity_category_arr_rel_insert_input | null;
   activity_sessions?: activity_session_arr_rel_insert_input | null;
+  activity_tags?: activity_tag_arr_rel_insert_input | null;
   activity_tickets?: activity_ticket_arr_rel_insert_input | null;
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
@@ -10596,6 +10639,50 @@ export interface activity_session_ticket_on_conflict {
   constraint: activity_session_ticket_constraint;
   update_columns: activity_session_ticket_update_column[];
   where?: activity_session_ticket_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "activity_tag"
+ */
+export interface activity_tag_arr_rel_insert_input {
+  data: activity_tag_insert_input[];
+  on_conflict?: activity_tag_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "activity_tag". All fields are combined with a logical 'AND'.
+ */
+export interface activity_tag_bool_exp {
+  _and?: (activity_tag_bool_exp | null)[] | null;
+  _not?: activity_tag_bool_exp | null;
+  _or?: (activity_tag_bool_exp | null)[] | null;
+  activity?: activity_bool_exp | null;
+  activity_id?: uuid_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  tag?: tag_bool_exp | null;
+  tag_name?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "activity_tag"
+ */
+export interface activity_tag_insert_input {
+  activity?: activity_obj_rel_insert_input | null;
+  activity_id?: any | null;
+  id?: any | null;
+  position?: number | null;
+  tag?: tag_obj_rel_insert_input | null;
+  tag_name?: string | null;
+}
+
+/**
+ * on conflict condition type for table "activity_tag"
+ */
+export interface activity_tag_on_conflict {
+  constraint: activity_tag_constraint;
+  update_columns: activity_tag_update_column[];
+  where?: activity_tag_bool_exp | null;
 }
 
 /**
@@ -11689,6 +11776,7 @@ export interface contract_bool_exp {
   id?: uuid_comparison_exp | null;
   member_contracts?: member_contract_bool_exp | null;
   name?: String_comparison_exp | null;
+  revocation?: String_comparison_exp | null;
   template?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -11703,6 +11791,7 @@ export interface contract_insert_input {
   id?: any | null;
   member_contracts?: member_contract_arr_rel_insert_input | null;
   name?: string | null;
+  revocation?: string | null;
   template?: string | null;
   updated_at?: any | null;
 }
@@ -12414,8 +12503,9 @@ export interface member_contract_bool_exp {
   id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  revocation_values?: jsonb_comparison_exp | null;
+  revoked_at?: timestamptz_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
-  terminated_at?: timestamptz_comparison_exp | null;
   values?: jsonb_comparison_exp | null;
 }
 
@@ -12432,8 +12522,9 @@ export interface member_contract_insert_input {
   id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
+  revocation_values?: any | null;
+  revoked_at?: any | null;
   started_at?: any | null;
-  terminated_at?: any | null;
   values?: any | null;
 }
 
@@ -14547,6 +14638,54 @@ export interface program_announcement_on_conflict {
 }
 
 /**
+ * input type for inserting array relation for remote table "program_approval"
+ */
+export interface program_approval_arr_rel_insert_input {
+  data: program_approval_insert_input[];
+  on_conflict?: program_approval_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_approval". All fields are combined with a logical 'AND'.
+ */
+export interface program_approval_bool_exp {
+  _and?: (program_approval_bool_exp | null)[] | null;
+  _not?: program_approval_bool_exp | null;
+  _or?: (program_approval_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  feedback?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_id?: uuid_comparison_exp | null;
+  status?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "program_approval"
+ */
+export interface program_approval_insert_input {
+  created_at?: any | null;
+  description?: string | null;
+  feedback?: string | null;
+  id?: any | null;
+  program?: program_obj_rel_insert_input | null;
+  program_id?: any | null;
+  status?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "program_approval"
+ */
+export interface program_approval_on_conflict {
+  constraint: program_approval_constraint;
+  update_columns: program_approval_update_column[];
+  where?: program_approval_bool_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "program"
  */
 export interface program_arr_rel_insert_input {
@@ -14580,6 +14719,7 @@ export interface program_bool_exp {
   package_items?: package_item_bool_exp | null;
   position?: Int_comparison_exp | null;
   program_announcements?: program_announcement_bool_exp | null;
+  program_approvals?: program_approval_bool_exp | null;
   program_categories?: program_category_bool_exp | null;
   program_content_sections?: program_content_section_bool_exp | null;
   program_enrollments?: program_enrollment_bool_exp | null;
@@ -14698,7 +14838,6 @@ export interface program_content_bool_exp {
   _not?: program_content_bool_exp | null;
   _or?: (program_content_bool_exp | null)[] | null;
   abstract?: String_comparison_exp | null;
-  content__material_id?: uuid_comparison_exp | null;
   content_body_id?: uuid_comparison_exp | null;
   content_section_id?: uuid_comparison_exp | null;
   content_type?: String_comparison_exp | null;
@@ -14712,7 +14851,7 @@ export interface program_content_bool_exp {
   notified_at?: timestamptz_comparison_exp | null;
   position?: Int_comparison_exp | null;
   program_content_body?: program_content_body_bool_exp | null;
-  program_content_material?: program_content_material_bool_exp | null;
+  program_content_materials?: program_content_material_bool_exp | null;
   program_content_plans?: program_content_plan_bool_exp | null;
   program_content_progress?: program_content_progress_bool_exp | null;
   program_content_section?: program_content_section_bool_exp | null;
@@ -14743,7 +14882,6 @@ export interface program_content_enrollment_bool_exp {
  */
 export interface program_content_insert_input {
   abstract?: string | null;
-  content__material_id?: any | null;
   content_body_id?: any | null;
   content_section_id?: any | null;
   content_type?: string | null;
@@ -14756,7 +14894,7 @@ export interface program_content_insert_input {
   notified_at?: any | null;
   position?: number | null;
   program_content_body?: program_content_body_obj_rel_insert_input | null;
-  program_content_material?: program_content_material_obj_rel_insert_input | null;
+  program_content_materials?: program_content_material_arr_rel_insert_input | null;
   program_content_plans?: program_content_plan_arr_rel_insert_input | null;
   program_content_progress?: program_content_progress_arr_rel_insert_input | null;
   program_content_section?: program_content_section_obj_rel_insert_input | null;
@@ -14764,6 +14902,14 @@ export interface program_content_insert_input {
   sale_price?: any | null;
   sold_at?: any | null;
   title?: string | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "program_content_material"
+ */
+export interface program_content_material_arr_rel_insert_input {
+  data: program_content_material_insert_input[];
+  on_conflict?: program_content_material_on_conflict | null;
 }
 
 /**
@@ -14776,6 +14922,7 @@ export interface program_content_material_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   data?: jsonb_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  program_content_id?: uuid_comparison_exp | null;
   program_contents?: program_content_bool_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -14787,16 +14934,9 @@ export interface program_content_material_insert_input {
   created_at?: any | null;
   data?: any | null;
   id?: any | null;
-  program_contents?: program_content_arr_rel_insert_input | null;
+  program_content_id?: any | null;
+  program_contents?: program_content_obj_rel_insert_input | null;
   updated_at?: any | null;
-}
-
-/**
- * input type for inserting object relation for remote table "program_content_material"
- */
-export interface program_content_material_obj_rel_insert_input {
-  data: program_content_material_insert_input;
-  on_conflict?: program_content_material_on_conflict | null;
 }
 
 /**
@@ -14889,6 +15029,7 @@ export interface program_content_progress_bool_exp {
   program_content?: program_content_bool_exp | null;
   program_content_id?: uuid_comparison_exp | null;
   progress?: numeric_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**
@@ -14902,6 +15043,7 @@ export interface program_content_progress_insert_input {
   program_content?: program_content_obj_rel_insert_input | null;
   program_content_id?: any | null;
   progress?: any | null;
+  updated_at?: any | null;
 }
 
 /**
@@ -15045,6 +15187,7 @@ export interface program_insert_input {
   package_items?: package_item_arr_rel_insert_input | null;
   position?: number | null;
   program_announcements?: program_announcement_arr_rel_insert_input | null;
+  program_approvals?: program_approval_arr_rel_insert_input | null;
   program_categories?: program_category_arr_rel_insert_input | null;
   program_content_sections?: program_content_section_arr_rel_insert_input | null;
   program_package_programs?: program_package_program_arr_rel_insert_input | null;

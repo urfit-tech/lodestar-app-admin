@@ -108,6 +108,7 @@ export const commonMessages = {
     orderProductId: { id: 'common.label.orderProductId', defaultMessage: '項目編號' },
     orderProductName: { id: 'common.label.orderProductName', defaultMessage: '項目名稱' },
     orderProductType: { id: 'common.label.orderProductType', defaultMessage: '項目種類' },
+    orderProductAmount: { id: 'common.label.orderProductAmount', defaultMessage: '項目數量' },
     orderProductPrice: { id: 'common.label.orderProductPrice', defaultMessage: '項目金額' },
     orderProductAutoRenew: { id: 'common.label.orderProductAutoRenew', defaultMessage: '自動續訂' },
     orderDiscountType: { id: 'common.label.orderDiscountType', defaultMessage: '折扣類別' },
