@@ -11,6 +11,7 @@ import {
   ProgramPlanPeriodType,
   ProgramPreviewProps,
   ProgramRoleName,
+  ProgramApprovalProps,
 } from '../types/program'
 
 export const useProgramPreviewCollection = (memberId: string | null) => {
@@ -41,6 +42,8 @@ export const useProgramPreviewCollection = (memberId: string | null) => {
           list_price
           sale_price
           sold_at
+          published_at
+          is_private
           program_plans {
             id
             list_price
@@ -58,8 +61,10 @@ export const useProgramPreviewCollection = (memberId: string | null) => {
               count
             }
           }
-          published_at
-          is_private
+          program_approvals(order_by: { updated_at: desc }, limit: 1) {
+            id
+            status
+          }
         }
       }
     `,
@@ -101,6 +106,7 @@ export const useProgramPreviewCollection = (memberId: string | null) => {
               : program.program_enrollments_aggregate.aggregate?.count || 0,
             isDraft: !program.published_at,
             isPrivate: program.is_private,
+            approvalStatus: (program.program_approvals[0]?.status as ProgramApprovalProps['status']) || null,
           }
         })
 
@@ -196,6 +202,14 @@ export const useProgram = (programId: string) => {
               name
             }
           }
+          program_approvals(order_by: { updated_at: desc }) {
+            id
+            created_at
+            updated_at
+            status
+            description
+            feedback
+          }
         }
       }
     `,
@@ -271,6 +285,14 @@ export const useProgram = (programId: string) => {
             name: programCategory.category.name,
           })),
           tags: data.program_by_pk.program_tags.map(programTag => programTag.tag.name),
+          approvals: data.program_by_pk.program_approvals.map(programApproval => ({
+            id: programApproval.id,
+            createdAt: new Date(programApproval.created_at),
+            updatedAt: new Date(programApproval.updated_at),
+            status: programApproval.status as ProgramApprovalProps['status'],
+            description: programApproval.description,
+            feedback: programApproval.feedback,
+          })),
         }
 
   return {

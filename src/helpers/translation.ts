@@ -51,6 +51,7 @@ export const commonMessages = {
     downloadMemberList: { id: 'common.ui.downloadMemberList', defaultMessage: '下載名單' },
     export: { id: 'common.ui.export', defaultMessage: '匯出' },
     showMore: { id: 'common.ui.showMore', defaultMessage: '顯示更多' },
+    send: { id: 'common.ui.send', defaultMessage: '送出' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -484,6 +485,8 @@ export const programMessages = {
     issueSolved: { id: 'program.status.issueSolved', defaultMessage: '已解決' },
     active: { id: 'program.status.active', defaultMessage: '開啟' },
     closed: { id: 'program.status.closed', defaultMessage: '關閉' },
+    pending: { id: 'program.status.pending', defaultMessage: '審核中' },
+    approved: { id: 'program.status.approved', defaultMessage: '已審核' },
   }),
   label: defineMessages({
     programTitle: { id: 'program.label.programTitle', defaultMessage: '課程名稱' },
@@ -507,6 +510,7 @@ export const programMessages = {
     programDescription: { id: 'program.label.programDescription', defaultMessage: '課程描述' },
     deleteProgram: { id: 'program.label.deleteProgram', defaultMessage: '刪除課程' },
     programOwner: { id: 'program.label.programOwner', defaultMessage: '課程負責人' },
+    approvalHistory: { id: 'program.label.approvalHistory', defaultMessage: '審核紀錄' },
   }),
   text: defineMessages({
     enrolledSubscriptionCount: {

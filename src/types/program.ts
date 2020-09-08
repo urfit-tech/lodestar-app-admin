@@ -22,6 +22,7 @@ export type ProgramPreviewProps = {
   enrollment: number
   isDraft: boolean
   isPrivate: boolean
+  approvalStatus: ProgramApprovalProps['status'] | null
 }
 
 export type ProgramProps = {
@@ -52,6 +53,7 @@ export type ProgramAdminProps = ProgramProps & {
   roles: ProgramRoleProps[]
   categories: CategoryProps[]
   tags: string[]
+  approvals: ProgramApprovalProps[]
 }
 
 export type ProgramContentSectionProps = {
@@ -107,4 +109,13 @@ export type ProgramRoleProps = {
     name: string | null
     pictureUrl: string | null
   } | null
+}
+
+export type ProgramApprovalProps = {
+  id: string
+  createdAt: Date
+  updatedAt: Date
+  status: 'pending' | 'canceled' | 'rejected' | 'approved'
+  description: string | null
+  feedback: string | null
 }

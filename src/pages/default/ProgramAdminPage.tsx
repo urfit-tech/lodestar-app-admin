@@ -13,6 +13,7 @@ import {
   AdminTabBarWrapper,
 } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
+import ProgramApprovalHistoryBlock from '../../components/program/ProgramApprovalHistoryBlock'
 import ProgramBasicForm from '../../components/program/ProgramBasicForm'
 import ProgramDeletionAdminCard from '../../components/program/ProgramDeletionAdminCard'
 import ProgramIntroForm from '../../components/program/ProgramIntroForm'
@@ -115,6 +116,10 @@ const ProgramAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
               <ProgramPublishBlock program={program} onRefetch={refetchProgram} />
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(programMessages.label.approvalHistory)}</AdminBlockTitle>
+                <ProgramApprovalHistoryBlock program={program} />
+              </AdminBlock>
             </div>
           </Tabs.TabPane>
         </Tabs>

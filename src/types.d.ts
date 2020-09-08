@@ -3210,6 +3210,93 @@ export interface PUBLISH_PROGRAMVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: SEND_PROGRAM_APPROVAL
+// ====================================================
+
+export interface SEND_PROGRAM_APPROVAL_insert_program_approval {
+  __typename: "program_approval_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface SEND_PROGRAM_APPROVAL {
+  /**
+   * insert data into the table: "program_approval"
+   */
+  insert_program_approval: SEND_PROGRAM_APPROVAL_insert_program_approval | null;
+}
+
+export interface SEND_PROGRAM_APPROVALVariables {
+  programId: any;
+  description?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CANCEL_PROGRAM_APPROVAL
+// ====================================================
+
+export interface CANCEL_PROGRAM_APPROVAL_update_program_approval {
+  __typename: "program_approval_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface CANCEL_PROGRAM_APPROVAL {
+  /**
+   * update data of the table: "program_approval"
+   */
+  update_program_approval: CANCEL_PROGRAM_APPROVAL_update_program_approval | null;
+}
+
+export interface CANCEL_PROGRAM_APPROVALVariables {
+  programApprovalId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_APPROVAL
+// ====================================================
+
+export interface UPDATE_PROGRAM_APPROVAL_update_program_approval {
+  __typename: "program_approval_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_APPROVAL {
+  /**
+   * update data of the table: "program_approval"
+   */
+  update_program_approval: UPDATE_PROGRAM_APPROVAL_update_program_approval | null;
+}
+
+export interface UPDATE_PROGRAM_APPROVALVariables {
+  programApprovalId: any;
+  status?: string | null;
+  feedback?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_ROLE
 // ====================================================
 
@@ -6911,6 +6998,15 @@ export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggr
   aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate_aggregate | null;
 }
 
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_approvals {
+  __typename: "program_approval";
+  id: any;
+  /**
+   * pending / canceled / rejected / approved
+   */
+  status: string;
+}
+
 export interface GET_PROGRAM_PREVIEW_COLLECTION_program {
   __typename: "program";
   id: any;
@@ -6925,6 +7021,8 @@ export interface GET_PROGRAM_PREVIEW_COLLECTION_program {
   list_price: any | null;
   sale_price: any | null;
   sold_at: any | null;
+  published_at: any | null;
+  is_private: boolean;
   /**
    * An array relationship
    */
@@ -6933,8 +7031,10 @@ export interface GET_PROGRAM_PREVIEW_COLLECTION_program {
    * An aggregated array relationship
    */
   program_enrollments_aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate;
-  published_at: any | null;
-  is_private: boolean;
+  /**
+   * An array relationship
+   */
+  program_approvals: GET_PROGRAM_PREVIEW_COLLECTION_program_program_approvals[];
 }
 
 export interface GET_PROGRAM_PREVIEW_COLLECTION {
@@ -7079,6 +7179,19 @@ export interface GET_PROGRAM_program_by_pk_program_tags {
   tag: GET_PROGRAM_program_by_pk_program_tags_tag;
 }
 
+export interface GET_PROGRAM_program_by_pk_program_approvals {
+  __typename: "program_approval";
+  id: any;
+  created_at: any;
+  updated_at: any;
+  /**
+   * pending / canceled / rejected / approved
+   */
+  status: string;
+  description: string | null;
+  feedback: string | null;
+}
+
 export interface GET_PROGRAM_program_by_pk {
   __typename: "program";
   id: any;
@@ -7119,6 +7232,10 @@ export interface GET_PROGRAM_program_by_pk {
    * An array relationship
    */
   program_tags: GET_PROGRAM_program_by_pk_program_tags[];
+  /**
+   * An array relationship
+   */
+  program_approvals: GET_PROGRAM_program_by_pk_program_approvals[];
 }
 
 export interface GET_PROGRAM {
