@@ -463,6 +463,10 @@ export const promotionMessages = {
     },
     enterVoucherCode: { id: 'promotion.text.enterVoucherCode', defaultMessage: '輸入兌換碼' },
     exchangedCount: { id: 'promotion.text.exchangedCount', defaultMessage: '{exchanged}/{total} 張' },
+    sentUsedCount: {
+      id: 'promotion.text.sentUsedCount',
+      defaultMessage: '總量{total} / 發送{exchanged} / 使用{used}',
+    },
     constraints: { id: 'promotion.text.constraints', defaultMessage: '消費滿 {total} 折抵 {discount}' },
     directly: { id: 'promotion.text.directly', defaultMessage: '直接折抵 {discount}' },
   }),
@@ -588,7 +592,10 @@ export const podcastMessages = {
       id: 'podcast.text.bulkUploadMessage',
       defaultMessage: '將會合併上傳所有音檔，確定要上傳嗎？ ',
     },
-    chromeNotSupported: { id: 'podcast.text.chromeNotSupported', defaultMessage: 'iOS Chrome 尚不支援錄音功能，請改用 Safari 瀏覽器' },
+    chromeNotSupported: {
+      id: 'podcast.text.chromeNotSupported',
+      defaultMessage: 'iOS Chrome 尚不支援錄音功能，請改用 Safari 瀏覽器',
+    },
   }),
 }
 

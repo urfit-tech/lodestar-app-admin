@@ -42,6 +42,13 @@ export const useCouponPlanCollection = () => {
               }
             }
           }
+          coupon_codes(where: { coupons: { status: { used: { _eq: true } } } }) {
+            coupons {
+              status {
+                used
+              }
+            }
+          }
           coupon_plan_products {
             id
             product_id
@@ -75,6 +82,7 @@ export const useCouponPlanCollection = () => {
             count: couponPlan.coupon_codes_aggregate.aggregate?.sum?.count || 0,
             remaining,
             available,
+            used: couponPlan.coupon_codes.length || 0,
             productIds: couponPlan.coupon_plan_products.map(couponPlanProduct => couponPlanProduct.product_id),
           }
         })

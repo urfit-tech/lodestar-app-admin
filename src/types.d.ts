@@ -4769,6 +4769,27 @@ export interface GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate {
   aggregate: GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate_aggregate | null;
 }
 
+export interface GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_coupons_status {
+  __typename: "coupon_status";
+  used: boolean | null;
+}
+
+export interface GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_coupons {
+  __typename: "coupon";
+  /**
+   * An object relationship
+   */
+  status: GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_coupons_status | null;
+}
+
+export interface GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes {
+  __typename: "coupon_code";
+  /**
+   * An array relationship
+   */
+  coupons: GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_coupons[];
+}
+
 export interface GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_plan_products {
   __typename: "coupon_plan_product";
   id: any;
@@ -4793,6 +4814,10 @@ export interface GET_COUPON_PLAN_COLLECTION_coupon_plan {
    * An aggregated array relationship
    */
   coupon_codes_aggregate: GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes_aggregate;
+  /**
+   * An array relationship
+   */
+  coupon_codes: GET_COUPON_PLAN_COLLECTION_coupon_plan_coupon_codes[];
   /**
    * An array relationship
    */

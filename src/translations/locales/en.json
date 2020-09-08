@@ -790,6 +790,7 @@
   "promotion.text.exchangeItemsNumber": "可兌換 {number} 個項目",
   "promotion.text.exchangeNotation": "兌換券為一次使用後失效，請一次兌換完畢",
   "promotion.text.exchangedCount": "{exchanged}/{total} 張",
+  "promotion.text.sentUsedCount": "Total {total} / Sent {exchanged} / Used {used}",
   "promotion.text.selectProducts": "選擇指定項目",
   "promotion.ui.addVoucher": "Add Voucher",
   "promotion.ui.createCouponPlan": "Create",

@@ -79,6 +79,13 @@ const StyledText = styled.span<{ active?: boolean }>`
   line-height: 1.57;
   letter-spacing: 0.4px;
 `
+const StyledCount = styled.span`
+  color: var(--gray-dark);
+  padding: 2px 6px;
+  font-size: 14px;
+  line-height: 1.57;
+  letter-spacing: 0.4px;
+`
 
 const CouponPlanAdminCard: React.FC<{
   couponPlan: CouponPlanProps
@@ -140,7 +147,15 @@ const CouponPlanAdminCard: React.FC<{
         >
           {formatMessage(commonMessages.ui.detail)}
         </Button>
-
+        <div className="flex-grow-1">
+          <StyledCount>
+            {formatMessage(promotionMessages.text.sentUsedCount, {
+              total: couponPlan.count,
+              exchanged: couponPlan.count - couponPlan.remaining,
+              used: couponPlan.used,
+            })}
+          </StyledCount>
+        </div>
         <Dropdown
           placement="bottomRight"
           trigger={['click']}
