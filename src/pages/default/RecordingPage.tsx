@@ -1,6 +1,5 @@
 import { useMutation } from '@apollo/react-hooks'
 import { message, Modal, Spin } from 'antd'
-import moment from 'moment'
 import { extname } from 'path'
 import React, { useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -111,7 +110,7 @@ const RecordingPage: React.FC = () => {
           {
             id: waveId,
             audioBuffer,
-            filename: moment().format('YYYY/MM/DD HH:mm:ss'),
+            filename: `未命名${`${waveCollection.length}`.padStart(2, '0')}`,
           },
         ])
         setCurrentAudioId(waveId)
@@ -209,7 +208,9 @@ const RecordingPage: React.FC = () => {
             acc.push({
               id: uuid(),
               audioBuffer: audioSlicedLast,
-              filename: wave.filename,
+              filename: `${wave.filename}(${
+                waveCollection.filter(currentWave => currentWave.filename.includes(wave.filename)).length
+              })`,
             })
             setCurrentAudioId(audioSlicedFirstId)
           } else {
