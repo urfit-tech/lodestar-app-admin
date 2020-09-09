@@ -576,6 +576,8 @@ export const programMessages = {
     noProgramDescription: { id: 'program.text.noProgramDescription', defaultMessage: '尚未填寫課程敘述' },
     noProgramContent: { id: 'program.text.noProgramContent', defaultMessage: '尚未新增任何內容' },
     noPrice: { id: 'program.text.noPrice', defaultMessage: '尚未訂定售價' },
+    noCreatedProgram: { id: 'program.text.noCreatedProgram', defaultMessage: '尚無建立課程' },
+    noProgram: { id: 'program.text.noProgram', defaultMessage: '尚無任何課程' },
   }),
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },

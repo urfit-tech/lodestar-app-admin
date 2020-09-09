@@ -6,7 +6,7 @@ import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import { AdminPageTitle } from '../../components/admin'
+import { AdminPageTitle, EmptyBlock } from '../../components/admin'
 import { AvatarImage } from '../../components/common/Image'
 import PositionAdminLayout, {
   OverlayBlock,
@@ -144,7 +144,15 @@ const ProgramCollectionAdminPage: React.FC = () => {
           .filter(tabContent => !tabContent.hidden)
           .map(tabContent => (
             <Tabs.TabPane key={tabContent.key} tab={`${tabContent.tab} (${tabContent.programs.length})`}>
-              {loadingProgramPreviews && <Skeleton active />}
+              {loadingProgramPreviews ? (
+                <Skeleton active />
+              ) : tabContent.programs.length === 0 ? (
+                <EmptyBlock>
+                  {tabContent.key === 'draft'
+                    ? formatMessage(programMessages.text.noCreatedProgram)
+                    : formatMessage(programMessages.text.noProgram)}
+                </EmptyBlock>
+              ) : null}
 
               <div className="row py-3">
                 <PositionAdminLayout<ProgramPreviewProps>

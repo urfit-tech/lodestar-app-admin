@@ -31,13 +31,6 @@ const StyledModalMeta = styled.div`
   color: var(--gray-dark);
   letter-spacing: 0.4px;
 `
-export const EmptyBlock = styled.div`
-  padding: 2.5rem 0;
-  color: var(--gray-dark);
-  font-size: 14px;
-  text-align: center;
-  letter-spacing: 0.4px;
-`
 
 const messages = defineMessages({
   editPeriod: { id: 'appointment.ui.editPeriod', defaultMessage: '編輯時段' },
