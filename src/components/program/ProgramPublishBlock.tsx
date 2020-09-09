@@ -1,16 +1,17 @@
 import { DownOutlined, ExclamationCircleOutlined, RightOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Dropdown, Menu, Modal, Skeleton, Typography } from 'antd'
+import { Button, Dropdown, Form, Menu, Modal, Skeleton, Typography } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import TextArea from 'antd/lib/input/TextArea'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
-import React, { useContext, useRef, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import React, { useContext, useState } from 'react'
+import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, programMessages } from '../../helpers/translation'
 import { ReactComponent as StatusAlertIcon } from '../../images/default/status-alert.svg'
 import { ReactComponent as StatusOrdinaryIcon } from '../../images/default/status-ordinary.svg'
 import { ReactComponent as StatusSearchIcon } from '../../images/default/status-search.svg'
@@ -20,73 +21,12 @@ import { ProgramAdminProps, ProgramApprovalProps } from '../../types/program'
 import { AdminBlock } from '../admin'
 import { StyledModal, StyledModalParagraph, StyledModalTitle } from './ProgramDeletionAdminCard'
 
-const messages = defineMessages({
-  notYetApply: { id: 'program.label.notYetApply', defaultMessage: '尚未審核' },
-  pending: { id: 'program.label.pending', defaultMessage: '審核中' },
-  rejected: { id: 'program.label.rejected', defaultMessage: '審核失敗' },
-  approved: { id: 'program.label.approved', defaultMessage: '審核通過，未發佈' },
-  unpublishingTitle: { id: 'program.text.unpublishingTitle', defaultMessage: '確定要取消發佈？' },
-  unpublishingWarning: {
-    id: 'program.text.unpublishingWarning',
-    defaultMessage: '課程將下架且不會出現在課程列表，已購買的學生仍然可以看到課程內容。',
-  },
-  isPublishedNotation: {
-    id: 'program.text.isPublishedNotation',
-    defaultMessage: '現在你的課程已經發佈，此課程並會出現在頁面上，學生將能購買此課程。',
-  },
-  isPubliclyPublishedNotation: {
-    id: 'program.text.isPubliclyPublishedNotation',
-    defaultMessage: '現在你的課程已公開發佈，此課程會出現在頁面上。',
-  },
-  isPrivatelyPublishedNotation: {
-    id: 'program.text.isPrivatelyPublishedNotation',
-    defaultMessage: '你的課程已經私密發佈，此課程不會出現在頁面上，學生僅能透過連結進入瀏覽。',
-  },
-  confirmPrivatelyPublishedTitle: {
-    id: 'program.text.confirmPrivatelyPublishedTitle',
-    defaultMessage: '確定要設為私密發佈？',
-  },
-  confirmPrivatelyPublishedNotation: {
-    id: 'program.text.confirmPrivatelyPublishedNotation',
-    defaultMessage: '課程將不會出現在列表，僅以私下提供連結的方式販售課程。',
-  },
-  isUnpublishedNotation: {
-    id: 'program.text.isUnpublishedNotation',
-    defaultMessage: '因你的課程未發佈，此課程並不會顯示在頁面上，學生也不能購買此課程。',
-  },
-  notCompleteNotation: {
-    id: 'program.text.notCompleteNotation',
-    defaultMessage: '請填寫以下必填資料，填寫完畢即可由此發佈',
-  },
-  notApprovedNotation: {
-    id: 'program.text.notYetApplyNotation',
-    defaultMessage: '因課程未審核通過，並不會顯示在頁面上',
-  },
-  checkNotation: {
-    id: 'program.text.checkNotation',
-    defaultMessage: '請檢查課程資訊與內容是否符合平台規範。',
-  },
-  jumpTo: { id: 'program.ui.jumpTo', defaultMessage: '前往填寫' },
-  noProgramAbstract: { id: 'program.text.noProgramAbstract', defaultMessage: '尚未填寫課程摘要' },
-  noProgramDescription: { id: 'program.text.noProgramDescription', defaultMessage: '尚未填寫課程敘述' },
-  noProgramContent: { id: 'program.text.noProgramContent', defaultMessage: '尚未新增任何內容' },
-  noPrice: { id: 'program.text.noPrice', defaultMessage: '尚未訂定售價' },
-  apply: { id: 'program.ui.apply', defaultMessage: '立即送審' },
-  cancel: { id: 'program.ui.cancel', defaultMessage: '取消送審' },
-  reApply: { id: 'program.ui.reApply', defaultMessage: '重新送審' },
-  reject: { id: 'program.ui.reject', defaultMessage: '退回案件' },
-  approve: { id: 'program.ui.approve', defaultMessage: '審核通過' },
-  applyModalTitle: { id: 'program.label.applyModalTitle', defaultMessage: '送審備註' },
-  applyDescription: { id: 'program.applyDescription', defaultMessage: '備註(非必填)' },
-  rejectModalTitle: { id: 'program.label.rejectModalTitle', defaultMessage: '退回案件' },
-  rejectDescription: { id: 'program.label.rejectDescription', defaultMessage: '退件原因' },
-})
-
 const ProgramPublishBlock: React.FC<{
   program: ProgramAdminProps | null
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const [form] = useForm()
   const { enabledModules } = useContext(AppContext)
   const { currentUserRole } = useAuth()
   const [publishProgram] = useMutation<types.PUBLISH_PROGRAM, types.PUBLISH_PROGRAMVariables>(PUBLISH_PROGRAM)
@@ -104,7 +44,6 @@ const ProgramPublishBlock: React.FC<{
   const [isVisible, setVisible] = useState(false)
   const [isApprovalVisible, setIsApprovalVisible] = useState(false)
   const [loading, setLoading] = useState(false)
-  const descriptionRef = useRef<TextArea | null>(null)
 
   if (!program) {
     return <Skeleton active />
@@ -114,31 +53,31 @@ const ProgramPublishBlock: React.FC<{
 
   !program.abstract &&
     errors.push({
-      message: formatMessage(messages.noProgramAbstract),
+      message: formatMessage(programMessages.text.noProgramAbstract),
       to: `/programs/${program.id}?tab=general`,
     })
   !program.description &&
     errors.push({
-      message: formatMessage(messages.noProgramDescription),
+      message: formatMessage(programMessages.text.noProgramDescription),
       to: `/programs/${program.id}?tab=general`,
     })
   sum(program.contentSections.map(section => section.programContents.length)) === 0 &&
     errors.push({
-      message: formatMessage(messages.noProgramContent),
+      message: formatMessage(programMessages.text.noProgramContent),
       to: `/programs/${program.id}?tab=content`,
     })
 
   program.isSubscription &&
     program.plans.length === 0 &&
     errors.push({
-      message: formatMessage(messages.noPrice),
+      message: formatMessage(programMessages.text.noPrice),
       to: `/programs/${program.id}?tab=plan`,
     })
 
   !program.isSubscription &&
     program.listPrice === null &&
     errors.push({
-      message: formatMessage(messages.noPrice),
+      message: formatMessage(programMessages.text.noPrice),
       to: `/programs/${program.id}?tab=plan`,
     })
 
@@ -165,38 +104,38 @@ const ProgramPublishBlock: React.FC<{
   } = {
     published: {
       title: formatMessage(commonMessages.status.publiclyPublished),
-      description: formatMessage(messages.isPubliclyPublishedNotation),
+      description: formatMessage(programMessages.text.isPubliclyPublishedNotation),
     },
     publishedInPrivate: {
       title: formatMessage(commonMessages.status.privatelyPublished),
-      description: formatMessage(messages.isPrivatelyPublishedNotation),
+      description: formatMessage(programMessages.text.isPrivatelyPublishedNotation),
     },
     unpublished: {
       title: formatMessage(commonMessages.status.unpublished),
-      description: formatMessage(messages.isUnpublishedNotation),
+      description: formatMessage(programMessages.text.isUnpublishedNotation),
     },
     notValidated: {
       title: formatMessage(commonMessages.status.notComplete),
-      description: formatMessage(messages.notCompleteNotation),
+      description: formatMessage(programMessages.text.notCompleteNotation),
     },
     notYetApply: {
-      title: formatMessage(messages.notYetApply),
-      description: formatMessage(messages.notApprovedNotation),
+      title: formatMessage(programMessages.label.notYetApply),
+      description: formatMessage(programMessages.text.notApprovedNotation),
     },
     pending: {
-      title: formatMessage(messages.pending),
+      title: formatMessage(programMessages.label.pending),
       description:
         currentUserRole === 'app-owner'
-          ? formatMessage(messages.checkNotation)
-          : formatMessage(messages.notApprovedNotation),
+          ? formatMessage(programMessages.text.checkNotation)
+          : formatMessage(programMessages.text.notApprovedNotation),
     },
     rejected: {
-      title: formatMessage(messages.rejected),
-      description: formatMessage(messages.notApprovedNotation),
+      title: formatMessage(programMessages.label.rejected),
+      description: formatMessage(programMessages.text.notApprovedNotation),
     },
     approved: {
-      title: formatMessage(messages.approved),
-      description: formatMessage(messages.isUnpublishedNotation),
+      title: formatMessage(programMessages.label.approved),
+      description: formatMessage(programMessages.text.isUnpublishedNotation),
     },
   }
 
@@ -218,8 +157,8 @@ const ProgramPublishBlock: React.FC<{
   }
   const handleUnPublish = () => {
     Modal.confirm({
-      title: formatMessage(messages.unpublishingTitle),
-      content: formatMessage(messages.unpublishingWarning),
+      title: formatMessage(programMessages.text.unpublishingTitle),
+      content: formatMessage(programMessages.text.unpublishingWarning),
       onOk: () => {
         publishProgram({
           variables: {
@@ -328,7 +267,7 @@ const ProgramPublishBlock: React.FC<{
                 <span className="mr-1">{error.message}</span>
                 <span>
                   <Link to={error.to}>
-                    {formatMessage(messages.jumpTo)} <RightOutlined />
+                    {formatMessage(programMessages.ui.jumpTo)} <RightOutlined />
                   </Link>
                 </span>
               </div>
@@ -353,25 +292,25 @@ const ProgramPublishBlock: React.FC<{
           </Dropdown.Button>
         ) : programStatus === 'notYetApply' ? (
           <Button type="primary" onClick={() => setIsApprovalVisible(true)}>
-            {formatMessage(messages.apply)}
+            {formatMessage(programMessages.ui.apply)}
           </Button>
         ) : programStatus === 'pending' ? (
           currentUserRole === 'app-owner' ? (
             <div>
               <Button className="mr-2" onClick={() => setIsApprovalVisible(true)}>
-                {formatMessage(messages.reject)}
+                {formatMessage(programMessages.ui.reject)}
               </Button>
               <Button type="primary" loading={loading} onClick={() => handleUpdateProgramApproval('approved')}>
-                {formatMessage(messages.approve)}
+                {formatMessage(programMessages.ui.approve)}
               </Button>
             </div>
           ) : (
             <Button loading={loading} onClick={() => handleCancelProgramApproval()}>
-              {formatMessage(messages.cancel)}
+              {formatMessage(programMessages.ui.cancel)}
             </Button>
           )
         ) : programStatus === 'rejected' ? (
-          <Button onClick={() => setIsApprovalVisible(true)}>{formatMessage(messages.reApply)}</Button>
+          <Button onClick={() => setIsApprovalVisible(true)}>{formatMessage(programMessages.ui.reApply)}</Button>
         ) : null}
       </div>
 
@@ -385,8 +324,12 @@ const ProgramPublishBlock: React.FC<{
         }}
         onCancel={() => setVisible(false)}
       >
-        <StyledModalTitle className="mb-4">{formatMessage(messages.confirmPrivatelyPublishedTitle)}</StyledModalTitle>
-        <StyledModalParagraph>{formatMessage(messages.confirmPrivatelyPublishedNotation)}</StyledModalParagraph>
+        <StyledModalTitle className="mb-4">
+          {formatMessage(programMessages.text.confirmPrivatelyPublishedTitle)}
+        </StyledModalTitle>
+        <StyledModalParagraph>
+          {formatMessage(programMessages.text.confirmPrivatelyPublishedNotation)}
+        </StyledModalParagraph>
       </StyledModal>
 
       {(programStatus === 'notYetApply' || programStatus === 'pending' || programStatus === 'rejected') && (
@@ -396,24 +339,36 @@ const ProgramPublishBlock: React.FC<{
           okButtonProps={{ loading }}
           cancelText={formatMessage(commonMessages.ui.back)}
           onOk={() =>
-            programStatus === 'pending'
-              ? handleUpdateProgramApproval('rejected', descriptionRef.current?.state.value)
-              : handleSendApproval(descriptionRef.current?.state.value)
+            form
+              .validateFields()
+              .then((values: any) => {
+                programStatus === 'pending'
+                  ? handleUpdateProgramApproval('rejected', values.description)
+                  : handleSendApproval(values.description)
+              })
+              .catch(() => {})
           }
           onCancel={() => setIsApprovalVisible(false)}
         >
-          {programStatus === 'pending' ? (
-            <>
-              <StyledModalTitle className="mb-4">{formatMessage(messages.rejectModalTitle)}</StyledModalTitle>
-              <StyledModalParagraph>{formatMessage(messages.rejectDescription)}</StyledModalParagraph>
-            </>
-          ) : (
-            <>
-              <StyledModalTitle className="mb-4">{formatMessage(messages.applyModalTitle)}</StyledModalTitle>
-              <StyledModalParagraph>{formatMessage(messages.applyDescription)}</StyledModalParagraph>
-            </>
-          )}
-          <TextArea ref={descriptionRef} />
+          <StyledModalTitle className="mb-4">
+            {programStatus === 'pending'
+              ? formatMessage(programMessages.label.rejectModalTitle)
+              : formatMessage(programMessages.label.applyModalTitle)}
+          </StyledModalTitle>
+
+          <Form form={form} layout="vertical" colon={false} hideRequiredMark>
+            <Form.Item
+              label={
+                programStatus === 'pending'
+                  ? formatMessage(programMessages.label.rejectDescription)
+                  : formatMessage(programMessages.label.applyDescription)
+              }
+              name="description"
+              rules={[{ required: programStatus === 'pending', message: '' }]}
+            >
+              <TextArea />
+            </Form.Item>
+          </Form>
         </StyledModal>
       )}
     </AdminBlock>

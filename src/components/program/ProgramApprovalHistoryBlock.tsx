@@ -10,6 +10,7 @@ import { ProgramAdminProps, ProgramApprovalProps } from '../../types/program'
 const messages = defineMessages({
   sentApproval: { id: 'program.label.sentApproval', defaultMessage: '{date} 送審' },
   advisement: { id: 'program.label.advisement', defaultMessage: '官方建議' },
+  pendingApproval: { id: 'program.status.pendingApproval', defaultMessage: '審核中' },
   canceledApproval: { id: 'program.status.canceledApproval', defaultMessage: '取消送審' },
   rejectedApproval: { id: 'program.status.rejectedApproval', defaultMessage: '審核失敗' },
   approvedApproval: { id: 'program.status.approvedApproval', defaultMessage: '審核通過' },
@@ -23,6 +24,7 @@ const StyledTitle = styled.div`
 const StyledDescription = styled.div`
   margin-bottom: 1.25rem;
   color: var(--gray-darker);
+  white-space: pre-line;
 `
 const StyledFeedback = styled.div`
   margin-bottom: 1.25rem;
@@ -31,15 +33,17 @@ const StyledFeedback = styled.div`
   background-color: var(--gray-lighter);
   color: var(--gray-darker);
   font-size: 14px;
+  white-space: pre-line;
 `
 const StyledFeedbackTitle = styled.div`
-  margin-bottom: 1.25rem;
   font-size: 16px;
 `
 const StyledTag = styled.span<{ variant?: ProgramApprovalProps['status'] }>`
   padding: 2px 0.5rem;
   background: ${props =>
-    props.variant === 'canceled'
+    props.variant === 'pending'
+      ? 'var(--warning)'
+      : props.variant === 'canceled'
       ? 'var(--gray);'
       : props.variant === 'rejected'
       ? 'var(--error);'
@@ -49,6 +53,10 @@ const StyledTag = styled.span<{ variant?: ProgramApprovalProps['status'] }>`
   color: white;
   font-size: 12px;
   border-radius: 12px;
+`
+const StyledDate = styled.div`
+  color: var(--gray-dark);
+  font-size: 14px;
 `
 
 const ProgramApprovalHistoryBlock: React.FC<{
@@ -64,14 +72,16 @@ const ProgramApprovalHistoryBlock: React.FC<{
     <Timeline>
       {program.approvals.map(approval => (
         <Timeline.Item key={approval.id} color="#cdcdcd">
-          <StyledTitle className="d-flex align-items-center mr-2">
+          <StyledTitle className="d-flex align-items-center">
             <span className="mr-2">
               {formatMessage(messages.sentApproval, {
                 date: moment(approval.createdAt).format('YYYY-MM-DD HH:mm'),
               })}
             </span>
             <StyledTag variant={approval.status}>
-              {approval.status === 'canceled'
+              {approval.status === 'pending'
+                ? formatMessage(messages.pendingApproval)
+                : approval.status === 'canceled'
                 ? formatMessage(messages.canceledApproval)
                 : approval.status === 'rejected'
                 ? formatMessage(messages.rejectedApproval)
@@ -84,10 +94,13 @@ const ProgramApprovalHistoryBlock: React.FC<{
           {approval.description && <StyledDescription>{approval.description}</StyledDescription>}
           {approval.feedback && (
             <StyledFeedback>
-              <StyledFeedbackTitle>
-                <Icon component={() => <ExclamationCircle />} className="mr-2" />
-                <span>{formatMessage(messages.advisement)}</span>
-              </StyledFeedbackTitle>
+              <div className="d-flex align-items-center justify-content-between mb-3">
+                <StyledFeedbackTitle>
+                  <Icon component={() => <ExclamationCircle />} className="mr-2" />
+                  <span>{formatMessage(messages.advisement)}</span>
+                </StyledFeedbackTitle>
+                <StyledDate>{moment(approval.updatedAt).format('YYYY-MM-DD HH:mm')}</StyledDate>
+              </div>
               <div>{approval.feedback}</div>
             </StyledFeedback>
           )}
