@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import { useAppointmentEnrollmentCollection } from '../../hooks/appointment'
 import AppointmentPeriodCard from './AppointmentPeriodCard'
+import { EmptyBlock } from '../admin'
 
 const StyledTabs = styled(Tabs)`
   && {
@@ -15,13 +16,6 @@ const StyledTabs = styled(Tabs)`
 `
 const StyledFilterBlock = styled.div`
   margin-bottom: 2rem;
-`
-const EmptyBlock = styled.div`
-  padding: 13rem 0;
-  color: var(--gray-dark);
-  font-size: 14px;
-  letter-spacing: 0.4px;
-  text-align: center;
 `
 
 const messages = defineMessages({

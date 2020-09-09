@@ -790,6 +790,7 @@
   "promotion.text.exchangeItemsNumber": "Được đổi danh mục {number}",
   "promotion.text.exchangeNotation": "Voucher mất hiệu lực sau 1 lần sử dụng, xin vui lòng chỉ sử dụng 1 lần",
   "promotion.text.exchangedCount": "{exchanged}/{total} Thẻ",
+  "promotion.text.sentUsedCount": "Toàn bộ {total} / Gởi {exchanged} / đã sử dụng {used}",
   "promotion.text.selectProducts": "選擇指定項目",
   "promotion.ui.addVoucher": "Thêm voucher",
   "promotion.ui.createCouponPlan": "Lập kế hoạch giảm giá",

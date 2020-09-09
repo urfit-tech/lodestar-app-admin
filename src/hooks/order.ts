@@ -99,6 +99,7 @@ export const GET_ORDER_PRODUCT_COLLECTION = gql`
       started_at
       ended_at
       auto_renewed
+      amount: options(path: "$.quantity")
     }
   }
 `

@@ -73,12 +73,19 @@ export const AdminBlockSubTitle = styled.div`
   font-size: 14px;
   letter-spacing: 0.4px;
 `
+
+export const EmptyBlock = styled.div`
+  padding: 12.5rem 0;
+  color: var(--gray-dark);
+  font-size: 14px;
+  text-align: center;
+`
+
 export const StyledTips = styled.div`
   font-size: 12px;
   letter-spacing: 0.58px;
   white-space: pre-line;
 `
-
 export const StyledSelect = styled(Select)`
   && {
     width: auto;

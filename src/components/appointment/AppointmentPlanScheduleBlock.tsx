@@ -8,7 +8,8 @@ import { defineMessages, useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
 import types from '../../types'
 import { AppointmentPlanAdminProps } from '../../types/appointment'
-import AppointmentPeriodCollection, { EmptyBlock } from './AppointmentPeriodCollection'
+import { EmptyBlock } from '../admin'
+import AppointmentPeriodCollection from './AppointmentPeriodCollection'
 
 const messages = defineMessages({
   noPeriodCreated: { id: 'appointment.text.noPeriodCreated', defaultMessage: '目前還沒有建立任何時段' },

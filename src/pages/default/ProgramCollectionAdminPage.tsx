@@ -6,7 +6,7 @@ import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import { AdminPageTitle } from '../../components/admin'
+import { AdminPageTitle, EmptyBlock } from '../../components/admin'
 import { AvatarImage } from '../../components/common/Image'
 import PositionAdminLayout, {
   OverlayBlock,
@@ -46,7 +46,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { currentMemberId, currentUserRole } = useAuth()
-  const { loading, id: appId } = useContext(AppContext)
+  const { loading, id: appId, enabledModules } = useContext(AppContext)
 
   const { loadingProgramPreviews, programPreviews, refetchProgramPreviews } = useProgramPreviewCollection(
     currentUserRole === 'content-creator' ? currentMemberId : null,
@@ -66,7 +66,29 @@ const ProgramCollectionAdminPage: React.FC = () => {
       key: 'draft',
       status: 'unpublished',
       tab: formatMessage(commonMessages.status.draft),
-      programs: programPreviews.filter(program => program.isDraft),
+      programs: enabledModules.approval
+        ? programPreviews.filter(
+            program => program.isDraft && program.approvalStatus !== 'pending' && program.approvalStatus !== 'approved',
+          )
+        : programPreviews.filter(program => program.isDraft),
+    },
+    {
+      key: 'pending',
+      status: 'pending',
+      tab: formatMessage(programMessages.status.pending),
+      programs: enabledModules.approval
+        ? programPreviews.filter(program => program.isDraft && program.approvalStatus === 'pending')
+        : [],
+      hidden: !enabledModules.approval,
+    },
+    {
+      key: 'approved',
+      status: 'approved',
+      tab: formatMessage(programMessages.status.approved),
+      programs: enabledModules.approval
+        ? programPreviews.filter(program => program.isDraft && program.approvalStatus === 'approved')
+        : [],
+      hidden: !enabledModules.approval,
     },
     {
       key: 'publiclyPublish',
@@ -118,96 +140,106 @@ const ProgramCollectionAdminPage: React.FC = () => {
       </div>
 
       <Tabs defaultActiveKey="draft">
-        {tabContents.map(tabContent => (
-          <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
-            {loadingProgramPreviews && <Skeleton active />}
+        {tabContents
+          .filter(tabContent => !tabContent.hidden)
+          .map(tabContent => (
+            <Tabs.TabPane key={tabContent.key} tab={`${tabContent.tab} (${tabContent.programs.length})`}>
+              {loadingProgramPreviews ? (
+                <Skeleton active />
+              ) : tabContent.programs.length === 0 ? (
+                <EmptyBlock>
+                  {tabContent.key === 'draft'
+                    ? formatMessage(programMessages.text.noCreatedProgram)
+                    : formatMessage(programMessages.text.noProgram)}
+                </EmptyBlock>
+              ) : null}
 
-            <div className="row py-3">
-              <PositionAdminLayout<ProgramPreviewProps>
-                value={tabContent.programs}
-                onChange={value => {
-                  updatePositions({
-                    variables: {
-                      data: value.map((program, index) => ({
-                        app_id: appId,
-                        id: program.id,
-                        title: program.title,
-                        is_subscription: program.isSubscription,
-                        position: index,
-                      })),
-                    },
-                  })
-                    .then(() => refetchProgramPreviews())
-                    .catch(handleError)
-                }}
-                renderItem={(program, currentIndex, moveTarget) => (
-                  <div key={program.id} className="col-12 col-md-6 col-lg-4 mb-5">
-                    <AvatarPlaceHolder className="mb-3">
-                      {program.instructors[0] ? (
-                        <div className="d-flex align-items-center">
-                          <AvatarImage size="32px" src={program.instructors[0].avatarUrl || ''} />
-                          <span className="pl-2">{program.instructors[0].name}</span>
-                        </div>
-                      ) : (
-                        formatMessage(programMessages.text.noAssignedInstructor)
-                      )}
-                    </AvatarPlaceHolder>
+              <div className="row py-3">
+                <PositionAdminLayout<ProgramPreviewProps>
+                  value={tabContent.programs}
+                  onChange={value => {
+                    updatePositions({
+                      variables: {
+                        data: value.map((program, index) => ({
+                          app_id: appId,
+                          id: program.id,
+                          title: program.title,
+                          is_subscription: program.isSubscription,
+                          position: index,
+                        })),
+                      },
+                    })
+                      .then(() => refetchProgramPreviews())
+                      .catch(handleError)
+                  }}
+                  renderItem={(program, currentIndex, moveTarget) => (
+                    <div key={program.id} className="col-12 col-md-6 col-lg-4 mb-5">
+                      <AvatarPlaceHolder className="mb-3">
+                        {program.instructors[0] ? (
+                          <div className="d-flex align-items-center">
+                            <AvatarImage size="32px" src={program.instructors[0].avatarUrl || ''} />
+                            <span className="pl-2">{program.instructors[0].name}</span>
+                          </div>
+                        ) : (
+                          formatMessage(programMessages.text.noAssignedInstructor)
+                        )}
+                      </AvatarPlaceHolder>
 
-                    <OverlayWrapper>
-                      <ProgramAdminCard {...program} />
-                      <OverlayBlock>
-                        <div>
-                          <Link to={`/programs/${program.id}`}>
-                            <StyledButton block icon={<EditOutlined />}>
-                              {formatMessage(programMessages.ui.editProgram)}
-                            </StyledButton>
-                          </Link>
-
-                          {currentUserRole === 'app-owner' && tabContent.status === 'published' && (
-                            <Popover
-                              placement="bottomLeft"
-                              content={
-                                <OverlayList
-                                  header={formatMessage(commonMessages.label.currentPosition, {
-                                    position: currentIndex + 1,
-                                  })}
-                                >
-                                  <OverlayListContent>
-                                    {tabContent.programs.map((program, index) => (
-                                      <OverlayListItem
-                                        key={program.id}
-                                        className={
-                                          currentIndex === index
-                                            ? 'active'
-                                            : currentIndex > index
-                                            ? 'hoverTop'
-                                            : 'hoverBottom'
-                                        }
-                                        onClick={() => moveTarget(currentIndex, index)}
-                                      >
-                                        <span className="flex-shrink-0">{index + 1}</span>
-                                        <span>{program.title}</span>
-                                      </OverlayListItem>
-                                    ))}
-                                  </OverlayListContent>
-                                </OverlayList>
-                              }
-                            >
-                              <StyledButton block className="mt-4">
-                                <Icon component={() => <MoveIcon />} />
-                                {formatMessage(commonMessages.ui.changePosition)}
+                      <OverlayWrapper>
+                        <ProgramAdminCard {...program} />
+                        <OverlayBlock>
+                          <div>
+                            <Link to={`/programs/${program.id}`}>
+                              <StyledButton block icon={<EditOutlined />}>
+                                {formatMessage(programMessages.ui.editProgram)}
                               </StyledButton>
-                            </Popover>
-                          )}
-                        </div>
-                      </OverlayBlock>
-                    </OverlayWrapper>
-                  </div>
-                )}
-              />
-            </div>
-          </Tabs.TabPane>
-        ))}
+                            </Link>
+
+                            {currentUserRole === 'app-owner' && tabContent.status === 'published' && (
+                              <Popover
+                                placement="bottomLeft"
+                                content={
+                                  <OverlayList
+                                    header={formatMessage(commonMessages.label.currentPosition, {
+                                      position: currentIndex + 1,
+                                    })}
+                                  >
+                                    <OverlayListContent>
+                                      {tabContent.programs.map((program, index) => (
+                                        <OverlayListItem
+                                          key={program.id}
+                                          className={
+                                            currentIndex === index
+                                              ? 'active'
+                                              : currentIndex > index
+                                              ? 'hoverTop'
+                                              : 'hoverBottom'
+                                          }
+                                          onClick={() => moveTarget(currentIndex, index)}
+                                        >
+                                          <span className="flex-shrink-0">{index + 1}</span>
+                                          <span>{program.title}</span>
+                                        </OverlayListItem>
+                                      ))}
+                                    </OverlayListContent>
+                                  </OverlayList>
+                                }
+                              >
+                                <StyledButton block className="mt-4">
+                                  <Icon component={() => <MoveIcon />} />
+                                  {formatMessage(commonMessages.ui.changePosition)}
+                                </StyledButton>
+                              </Popover>
+                            )}
+                          </div>
+                        </OverlayBlock>
+                      </OverlayWrapper>
+                    </div>
+                  )}
+                />
+              </div>
+            </Tabs.TabPane>
+          ))}
       </Tabs>
     </AdminLayout>
   )

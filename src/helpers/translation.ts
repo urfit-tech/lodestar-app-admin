@@ -51,6 +51,7 @@ export const commonMessages = {
     downloadMemberList: { id: 'common.ui.downloadMemberList', defaultMessage: '下載名單' },
     export: { id: 'common.ui.export', defaultMessage: '匯出' },
     showMore: { id: 'common.ui.showMore', defaultMessage: '顯示更多' },
+    send: { id: 'common.ui.send', defaultMessage: '送出' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -108,6 +109,7 @@ export const commonMessages = {
     orderProductId: { id: 'common.label.orderProductId', defaultMessage: '項目編號' },
     orderProductName: { id: 'common.label.orderProductName', defaultMessage: '項目名稱' },
     orderProductType: { id: 'common.label.orderProductType', defaultMessage: '項目種類' },
+    orderProductAmount: { id: 'common.label.orderProductAmount', defaultMessage: '項目數量' },
     orderProductPrice: { id: 'common.label.orderProductPrice', defaultMessage: '項目金額' },
     orderProductAutoRenew: { id: 'common.label.orderProductAutoRenew', defaultMessage: '自動續訂' },
     orderDiscountType: { id: 'common.label.orderDiscountType', defaultMessage: '折扣類別' },
@@ -462,6 +464,10 @@ export const promotionMessages = {
     },
     enterVoucherCode: { id: 'promotion.text.enterVoucherCode', defaultMessage: '輸入兌換碼' },
     exchangedCount: { id: 'promotion.text.exchangedCount', defaultMessage: '{exchanged}/{total} 張' },
+    sentUsedCount: {
+      id: 'promotion.text.sentUsedCount',
+      defaultMessage: '總量{total} / 發送{exchanged} / 使用{used}',
+    },
     constraints: { id: 'promotion.text.constraints', defaultMessage: '消費滿 {total} 折抵 {discount}' },
     directly: { id: 'promotion.text.directly', defaultMessage: '直接折抵 {discount}' },
   }),
@@ -479,6 +485,8 @@ export const programMessages = {
     issueSolved: { id: 'program.status.issueSolved', defaultMessage: '已解決' },
     active: { id: 'program.status.active', defaultMessage: '開啟' },
     closed: { id: 'program.status.closed', defaultMessage: '關閉' },
+    pending: { id: 'program.status.pending', defaultMessage: '審核中' },
+    approved: { id: 'program.status.approved', defaultMessage: '審核通過' },
   }),
   label: defineMessages({
     programTitle: { id: 'program.label.programTitle', defaultMessage: '課程名稱' },
@@ -502,6 +510,15 @@ export const programMessages = {
     programDescription: { id: 'program.label.programDescription', defaultMessage: '課程描述' },
     deleteProgram: { id: 'program.label.deleteProgram', defaultMessage: '刪除課程' },
     programOwner: { id: 'program.label.programOwner', defaultMessage: '課程負責人' },
+    approvalHistory: { id: 'program.label.approvalHistory', defaultMessage: '審核紀錄' },
+    notYetApply: { id: 'program.label.notYetApply', defaultMessage: '尚未審核' },
+    pending: { id: 'program.label.pending', defaultMessage: '審核中' },
+    rejected: { id: 'program.label.rejected', defaultMessage: '審核失敗' },
+    approved: { id: 'program.label.approved', defaultMessage: '審核通過，未發佈' },
+    applyModalTitle: { id: 'program.label.applyModalTitle', defaultMessage: '送審備註' },
+    applyDescription: { id: 'program.label.applyDescription', defaultMessage: '備註(非必填)' },
+    rejectModalTitle: { id: 'program.label.rejectModalTitle', defaultMessage: '退回案件' },
+    rejectDescription: { id: 'program.label.rejectDescription', defaultMessage: '退件原因' },
   }),
   text: defineMessages({
     enrolledSubscriptionCount: {
@@ -514,12 +531,65 @@ export const programMessages = {
     videoPlaceholder: { id: 'program.text.videoPlaceholder', defaultMessage: '貼上影片網址' },
     uploadVideo: { id: 'program.text.uploadVideo', defaultMessage: '上傳影片' },
     imageTips: { id: 'program.text.programImgTips', defaultMessage: '建議圖片尺寸：1200*675px' },
+    unpublishingTitle: { id: 'program.text.unpublishingTitle', defaultMessage: '確定要取消發佈？' },
+    unpublishingWarning: {
+      id: 'program.text.unpublishingWarning',
+      defaultMessage: '課程將下架且不會出現在課程列表，已購買的學生仍然可以看到課程內容。',
+    },
+    isPublishedNotation: {
+      id: 'program.text.isPublishedNotation',
+      defaultMessage: '現在你的課程已經發佈，此課程並會出現在頁面上，學生將能購買此課程。',
+    },
+    isPubliclyPublishedNotation: {
+      id: 'program.text.isPubliclyPublishedNotation',
+      defaultMessage: '現在你的課程已公開發佈，此課程會出現在頁面上。',
+    },
+    isPrivatelyPublishedNotation: {
+      id: 'program.text.isPrivatelyPublishedNotation',
+      defaultMessage: '你的課程已經私密發佈，此課程不會出現在頁面上，學生僅能透過連結進入瀏覽。',
+    },
+    confirmPrivatelyPublishedTitle: {
+      id: 'program.text.confirmPrivatelyPublishedTitle',
+      defaultMessage: '確定要設為私密發佈？',
+    },
+    confirmPrivatelyPublishedNotation: {
+      id: 'program.text.confirmPrivatelyPublishedNotation',
+      defaultMessage: '課程將不會出現在列表，僅以私下提供連結的方式販售課程。',
+    },
+    isUnpublishedNotation: {
+      id: 'program.text.isUnpublishedNotation',
+      defaultMessage: '因你的課程未發佈，此課程並不會顯示在頁面上，學生也不能購買此課程。',
+    },
+    notCompleteNotation: {
+      id: 'program.text.notCompleteNotation',
+      defaultMessage: '請填寫以下必填資料，填寫完畢即可由此發佈',
+    },
+    notApprovedNotation: {
+      id: 'program.text.notYetApplyNotation',
+      defaultMessage: '因課程未審核通過，並不會顯示在頁面上',
+    },
+    checkNotation: {
+      id: 'program.text.checkNotation',
+      defaultMessage: '請檢查課程資訊與內容是否符合平台規範。',
+    },
+    noProgramAbstract: { id: 'program.text.noProgramAbstract', defaultMessage: '尚未填寫課程摘要' },
+    noProgramDescription: { id: 'program.text.noProgramDescription', defaultMessage: '尚未填寫課程敘述' },
+    noProgramContent: { id: 'program.text.noProgramContent', defaultMessage: '尚未新增任何內容' },
+    noPrice: { id: 'program.text.noPrice', defaultMessage: '尚未訂定售價' },
+    noCreatedProgram: { id: 'program.text.noCreatedProgram', defaultMessage: '尚無建立課程' },
+    noProgram: { id: 'program.text.noProgram', defaultMessage: '尚無任何課程' },
   }),
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
     editProgram: { id: 'program.ui.editProgram', defaultMessage: '編輯課程' },
     delivery: { id: 'program.ui.delivery', defaultMessage: '交付課程' },
     deliver: { id: 'program.ui.deliver', defaultMessage: '啟用' },
+    jumpTo: { id: 'program.ui.jumpTo', defaultMessage: '前往填寫' },
+    apply: { id: 'program.ui.apply', defaultMessage: '立即送審' },
+    cancel: { id: 'program.ui.cancel', defaultMessage: '取消送審' },
+    reApply: { id: 'program.ui.reApply', defaultMessage: '重新送審' },
+    reject: { id: 'program.ui.reject', defaultMessage: '退回案件' },
+    approve: { id: 'program.ui.approve', defaultMessage: '審核通過' },
   }),
 }
 
@@ -587,7 +657,10 @@ export const podcastMessages = {
       id: 'podcast.text.bulkUploadMessage',
       defaultMessage: '將會合併上傳所有音檔，確定要上傳嗎？ ',
     },
-    chromeNotSupported: { id: 'podcast.text.chromeNotSupported', defaultMessage: 'iOS Chrome 尚不支援錄音功能，請改用 Safari 瀏覽器' },
+    chromeNotSupported: {
+      id: 'podcast.text.chromeNotSupported',
+      defaultMessage: 'iOS Chrome 尚不支援錄音功能，請改用 Safari 瀏覽器',
+    },
   }),
 }
 

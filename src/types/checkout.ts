@@ -15,6 +15,7 @@ export type CouponPlanProps = {
   count: number
   remaining: number
   available?: boolean
+  used: number
   productIds?: string[]
 }
 
