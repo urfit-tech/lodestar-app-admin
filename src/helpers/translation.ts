@@ -137,6 +137,7 @@ export const commonMessages = {
     resetPassword: { id: 'common.label.resetPassword', defaultMessage: '重設密碼' },
     categoryItem: { id: 'common.label.categoryItem', defaultMessage: '分類項目' },
     lastLogin: { id: 'common.label.lastLogin', defaultMessage: '上次登入' },
+    createdDate: { id: 'common.label.createdDate', defaultMessage: '建立日期' },
     holdingPoints: { id: 'common.label.holdingPoints', defaultMessage: '持有點數' },
     points: { id: 'common.label.points', defaultMessage: '{points} 點' },
     consumption: { id: 'common.label.consumption', defaultMessage: '消費金額' },

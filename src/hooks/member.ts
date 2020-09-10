@@ -1,10 +1,9 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
-import { MemberInfoProps } from '../components/common/MemberAdminModal'
 import { commonMessages } from '../helpers/translation'
 import types from '../types'
-import { MemberOptionProps, MemberProps, MemberPublicProps, UserRole } from '../types/general'
+import { MemberInfoProps, MemberOptionProps, MemberProps, MemberPublicProps, UserRole } from '../types/general'
 
 export const useMember = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<types.GET_MEMBER, types.GET_MEMBERVariables>(
@@ -245,10 +244,12 @@ export const useMemberCollection = ({
           name
           username
           email
+          created_at
           logined_at
           role
-          point_status {
-            points
+          member_phones {
+            id
+            phone
           }
           order_logs(where: { status: { _eq: "SUCCESS" } }) {
             order_products_aggregate {
@@ -276,20 +277,19 @@ export const useMemberCollection = ({
   const dataSource: MemberInfoProps[] =
     loading || error || !data
       ? []
-      : data.member
-          .map(member => ({
-            id: member.id,
-            avatarUrl: member.picture_url,
-            name: member.name || member.username,
-            email: member.email,
-            loginedAt: member.logined_at ? new Date(member.logined_at) : null,
-            role: member.role as UserRole,
-            points: member.point_status ? member.point_status.points : 0,
-            consumption: sum(
-              member.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
-            ),
-          }))
-          .sort((a, b) => (b.loginedAt ? b.loginedAt.getTime() : 0) - (a.loginedAt ? a.loginedAt.getTime() : 0))
+      : data.member.map(v => ({
+          id: v.id,
+          avatarUrl: v.picture_url,
+          name: v.name || v.username,
+          email: v.email,
+          role: v.role as UserRole,
+          createdAt: v.created_at ? new Date(v.created_at) : null,
+          loginedAt: v.logined_at,
+          phones: v.member_phones.map(v => v.phone),
+          consumption: sum(
+            v.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
+          ),
+        }))
 
   return {
     loading,

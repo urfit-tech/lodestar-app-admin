@@ -42,6 +42,18 @@ export type MemberProps = {
   role: string
 }
 
+export type MemberInfoProps = {
+  id: string
+  avatarUrl: string | null
+  name: string
+  email: string
+  role: UserRole
+  createdAt: Date | null
+  loginedAt: Date | null
+  phones: string[]
+  consumption: number
+}
+
 export type MemberPublicProps = {
   id: string
   name: string
