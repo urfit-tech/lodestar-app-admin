@@ -206,13 +206,13 @@ const RecordingPage: React.FC = () => {
               filename: wave.filename,
             })
 
-            const [, originalFileName] = /^([^.()]+)(.+)?$/.exec(wave.filename) || []
+            const [, originalFileName] = /^([^()]+)(.+)?$/.exec(wave.filename) || []
             const serialNumber =
               Math.max(
                 ...waveCollection
                   .filter(wave => wave.filename.includes(originalFileName))
-                  .map(wave => (/^([^.()]+)(.+)?$/.exec(wave.filename) || [])[2] || '(0)')
-                  .map(serialNumberInParentheses => Number(serialNumberInParentheses.match(/\d/g)?.join())),
+                  .map(wave => (/^([^.()]+)([(]+)([1-9])([)]+)?$/.exec(wave.filename) || [])[3] || '0')
+                  .map(Number),
               ) + 1
 
             acc.push({
