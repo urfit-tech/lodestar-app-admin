@@ -67,8 +67,14 @@ const ProgramContentAdminModal: React.FC<{
       updateProgramContent({
         variables: {
           programContentId: programContent.id,
-          price: values.isTrial ? 0 : null,
-          publishedAt: values.publishedAt ? values.publishedAt || new Date() : null,
+          price: isTrial ? 0 : null,
+          publishedAt: program.isSubscription
+            ? values.publishedAt
+              ? values.publishedAt || new Date()
+              : null
+            : isPublished
+            ? new Date()
+            : null,
           title: values.title,
           description: values.description.toRAW(),
           duration: values.duration && values.duration * 60,
