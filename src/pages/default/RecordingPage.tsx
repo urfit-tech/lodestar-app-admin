@@ -206,19 +206,19 @@ const RecordingPage: React.FC = () => {
               filename: wave.filename,
             })
 
-            const [, originalName] = /^([^.()]+)(.+)?$/.exec(wave.filename) || []
-            const number =
+            const [, originalFileName] = /^([^.()]+)(.+)?$/.exec(wave.filename) || []
+            const serialNumber =
               Math.max(
                 ...waveCollection
-                  .filter(currentWave => currentWave.filename.includes(originalName))
-                  .map(currentWave => (/^([^.()]+)(.+)?$/.exec(currentWave.filename) || [])[2] || '(0)')
-                  .map(val => Number(val.match(/\d/g)?.join())),
+                  .filter(wave => wave.filename.includes(originalFileName))
+                  .map(wave => (/^([^.()]+)(.+)?$/.exec(wave.filename) || [])[2] || '(0)')
+                  .map(serialNumberInParentheses => Number(serialNumberInParentheses.match(/\d/g)?.join())),
               ) + 1
 
             acc.push({
               id: uuid(),
               audioBuffer: audioSlicedLast,
-              filename: `${originalName}(${number})`,
+              filename: `${originalFileName}(${serialNumber})`,
             })
             setCurrentAudioId(audioSlicedFirstId)
           } else {
