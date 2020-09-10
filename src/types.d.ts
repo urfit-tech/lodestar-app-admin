@@ -3508,6 +3508,34 @@ export interface UPDATE_PROGRAM_PACKAGE_BASIC {
 export interface UPDATE_PROGRAM_PACKAGE_BASICVariables {
   programPackageId: any;
   title?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_COVER
+// ====================================================
+
+export interface UPDATE_PROGRAM_PACKAGE_COVER_update_program_package {
+  __typename: "program_package_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_COVER {
+  /**
+   * update data of the table: "program_package"
+   */
+  update_program_package: UPDATE_PROGRAM_PACKAGE_COVER_update_program_package | null;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_COVERVariables {
+  programPackageId: any;
   coverUrl?: string | null;
 }
 

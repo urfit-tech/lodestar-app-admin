@@ -22,6 +22,10 @@ const ProgramPackageBasicForm: React.FC<{
     types.UPDATE_PROGRAM_PACKAGE_BASIC,
     types.UPDATE_PROGRAM_PACKAGE_BASICVariables
   >(UPDATE_PROGRAM_PACKAGE_BASIC)
+  const [updateProgramPackageCover] = useMutation<
+    types.UPDATE_PROGRAM_PACKAGE_COVER,
+    types.UPDATE_PROGRAM_PACKAGE_COVERVariables
+  >(UPDATE_PROGRAM_PACKAGE_COVER)
   const [loading, setLoading] = useState(false)
 
   if (!programPackage) {
@@ -31,12 +35,10 @@ const ProgramPackageBasicForm: React.FC<{
   const handleUpload = () => {
     setLoading(true)
     const uploadTime = Date.now()
-    const coverUrl = `https://${process.env.REACT_APP_S3_BUCKET}/program_package_covers/${appId}/${programPackage.id}?t=${uploadTime}`
-    updateProgramPackageBasic({
+    updateProgramPackageCover({
       variables: {
         programPackageId: programPackage.id,
-
-        coverUrl,
+        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/program_package_covers/${appId}/${programPackage.id}?t=${uploadTime}`,
       },
     })
       .then(() => {
@@ -49,7 +51,6 @@ const ProgramPackageBasicForm: React.FC<{
 
   const handleSubmit = (values: any) => {
     setLoading(true)
-
     updateProgramPackageBasic({
       variables: {
         programPackageId: programPackage.id,
@@ -118,8 +119,15 @@ const ProgramPackageBasicForm: React.FC<{
 }
 
 const UPDATE_PROGRAM_PACKAGE_BASIC = gql`
-  mutation UPDATE_PROGRAM_PACKAGE_BASIC($programPackageId: uuid!, $title: String, $coverUrl: String) {
-    update_program_package(_set: { title: $title, cover_url: $coverUrl }, where: { id: { _eq: $programPackageId } }) {
+  mutation UPDATE_PROGRAM_PACKAGE_BASIC($programPackageId: uuid!, $title: String) {
+    update_program_package(where: { id: { _eq: $programPackageId } }, _set: { title: $title }) {
+      affected_rows
+    }
+  }
+`
+const UPDATE_PROGRAM_PACKAGE_COVER = gql`
+  mutation UPDATE_PROGRAM_PACKAGE_COVER($programPackageId: uuid!, $coverUrl: String) {
+    update_program_package(where: { id: { _eq: $programPackageId } }, _set: { cover_url: $coverUrl }) {
       affected_rows
     }
   }
