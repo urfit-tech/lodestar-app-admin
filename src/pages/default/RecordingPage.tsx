@@ -205,12 +205,20 @@ const RecordingPage: React.FC = () => {
               audioBuffer: audioSlicedFirst,
               filename: wave.filename,
             })
+
+            const [, originalName] = /^([^.()]+)(.+)?$/.exec(wave.filename) || []
+            const number =
+              Math.max(
+                ...waveCollection
+                  .filter(currentWave => currentWave.filename.includes(originalName))
+                  .map(currentWave => (/^([^.()]+)(.+)?$/.exec(currentWave.filename) || [])[2] || '(0)')
+                  .map(val => Number(val.match(/\d/g)?.join())),
+              ) + 1
+
             acc.push({
               id: uuid(),
               audioBuffer: audioSlicedLast,
-              filename: `${wave.filename}(${
-                waveCollection.filter(currentWave => currentWave.filename.includes(wave.filename)).length
-              })`,
+              filename: `${originalName}(${number})`,
             })
             setCurrentAudioId(audioSlicedFirstId)
           } else {
