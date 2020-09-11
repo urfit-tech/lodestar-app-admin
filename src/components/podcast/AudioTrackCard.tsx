@@ -105,10 +105,9 @@ const AudioTrackCard: React.FC<
         progressColor: theme['@primary-color'] || '#555',
         skipLength: 5,
         height: 90,
-        autoCenter: true,
-        closeAudioContext: true,
         scrollParent: true,
-        minPxPerSec: 100,
+        minPxPerSec: 80,
+        maxCanvasWidth: 5000,
         plugins: [
           TimelinePlugin.create({
             container: waveformTimelineRef.current,
@@ -125,8 +124,8 @@ const AudioTrackCard: React.FC<
         ],
       })
       _wavesurfer.on('finish', () => onFinishPlaying && onFinishPlaying())
-      _wavesurfer.on('seek', (progress: number) => onAudioPlaying && onAudioPlaying(audioBuffer.duration * progress))
-      _wavesurfer.on('audioprocess', (second: number) => onAudioPlaying && onAudioPlaying(second))
+      // _wavesurfer.on('seek', (progress: number) => onAudioPlaying && onAudioPlaying(audioBuffer.duration * progress))
+      // _wavesurfer.on('audioprocess', (second: number) => onAudioPlaying && onAudioPlaying(second))
       _wavesurfer.loadDecodedBuffer(audioBuffer)
       setWaveSurfer(_wavesurfer)
     }

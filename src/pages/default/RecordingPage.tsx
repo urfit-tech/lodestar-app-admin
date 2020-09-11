@@ -77,7 +77,7 @@ const RecordingPage: React.FC = () => {
 
       return _recorder
     }
-    !recorder && initRecorder().then(recorder => setRecorder(recorder))
+    navigator?.mediaDevices && !recorder && initRecorder().then(recorder => setRecorder(recorder))
 
     return () => {
       if (recorder) {
