@@ -17,4 +17,5 @@ export type MemberAdminProps = {
     value: string
   }[]
   consumption?: number
+  coins?: number
 }

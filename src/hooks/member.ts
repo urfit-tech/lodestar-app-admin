@@ -89,6 +89,13 @@ export const useMemberAdmin = (memberId: string) => {
             }
             value
           }
+          coin_logs_aggregate {
+            aggregate {
+              sum {
+                amount
+              }
+            }
+          }
           order_logs(where: { status: { _eq: "SUCCESS" } }) {
             order_products_aggregate {
               aggregate {
@@ -126,6 +133,7 @@ export const useMemberAdmin = (memberId: string) => {
           consumption: sum(
             data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
           ),
+          coins: data.member_by_pk.coin_logs_aggregate.aggregate?.sum?.amount || 0,
         }
 
   return {

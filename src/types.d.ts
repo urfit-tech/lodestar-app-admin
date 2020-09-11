@@ -6002,6 +6002,21 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_properties {
   value: string;
 }
 
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate_sum {
+  __typename: "coin_log_sum_fields";
+  amount: any | null;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate {
+  __typename: "coin_log_aggregate_fields";
+  sum: GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate {
+  __typename: "coin_log_aggregate";
+  aggregate: GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate | null;
+}
+
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate_aggregate_sum {
   __typename: "order_product_sum_fields";
   price: any | null;
@@ -6050,6 +6065,10 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk {
    * An array relationship
    */
   member_properties: GET_MEMBER_DESCRIPTION_member_by_pk_member_properties[];
+  /**
+   * An aggregated array relationship
+   */
+  coin_logs_aggregate: GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate;
   /**
    * An array relationship
    */

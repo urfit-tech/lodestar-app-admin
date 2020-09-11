@@ -140,6 +140,7 @@ export const commonMessages = {
     lastLogin: { id: 'common.label.lastLogin', defaultMessage: '上次登入' },
     createdDate: { id: 'common.label.createdDate', defaultMessage: '建立日期' },
     holdingPoints: { id: 'common.label.holdingPoints', defaultMessage: '持有點數' },
+    ownedCoins: { id: 'common.label.ownedCoins', defaultMessage: '持有代幣' },
     points: { id: 'common.label.points', defaultMessage: '{points} 點' },
     consumption: { id: 'common.label.consumption', defaultMessage: '消費金額' },
     allMembers: { id: 'common.label.allMembers', defaultMessage: '全部會員' },
