@@ -2504,6 +2504,99 @@ export interface PUBLISH_PODCAST_PROGRAMVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_PROFILE_BASIC
+// ====================================================
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_delete_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_insert_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_delete_member_phone {
+  __typename: "member_phone_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_insert_member_phone {
+  __typename: "member_phone_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_PROFILE_BASIC_update_member | null;
+  /**
+   * delete data from the table: "member_tag"
+   */
+  delete_member_tag: UPDATE_MEMBER_PROFILE_BASIC_delete_member_tag | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_MEMBER_PROFILE_BASIC_insert_tag | null;
+  /**
+   * insert data into the table: "member_tag"
+   */
+  insert_member_tag: UPDATE_MEMBER_PROFILE_BASIC_insert_member_tag | null;
+  /**
+   * delete data from the table: "member_phone"
+   */
+  delete_member_phone: UPDATE_MEMBER_PROFILE_BASIC_delete_member_phone | null;
+  /**
+   * insert data into the table: "member_phone"
+   */
+  insert_member_phone: UPDATE_MEMBER_PROFILE_BASIC_insert_member_phone | null;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASICVariables {
+  memberId: string;
+  name: string;
+  email: string;
+  tags: tag_insert_input[];
+  memberTags: member_tag_insert_input[];
+  phones: member_phone_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_AVATAR
 // ====================================================
 
@@ -5828,6 +5921,107 @@ export interface GET_MEMBER {
 }
 
 export interface GET_MEMBERVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MEMBER_DESCRIPTION
+// ====================================================
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_tags {
+  __typename: "member_tag";
+  id: any;
+  tag_name: string;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_phones {
+  __typename: "member_phone";
+  id: any;
+  phone: string;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_properties_property {
+  __typename: "property";
+  id: any;
+  name: string;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_properties {
+  __typename: "member_property";
+  id: any;
+  /**
+   * An object relationship
+   */
+  property: GET_MEMBER_DESCRIPTION_member_by_pk_member_properties_property;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate_aggregate_sum {
+  __typename: "order_product_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate_aggregate {
+  __typename: "order_product_aggregate_fields";
+  sum: GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate {
+  __typename: "order_product_aggregate";
+  aggregate: GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs {
+  __typename: "order_log";
+  /**
+   * An aggregated array relationship
+   */
+  order_products_aggregate: GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  username: string;
+  name: string;
+  email: string;
+  /**
+   * app-owner / content-creator
+   */
+  role: string;
+  created_at: any | null;
+  logined_at: any | null;
+  /**
+   * An array relationship
+   */
+  member_tags: GET_MEMBER_DESCRIPTION_member_by_pk_member_tags[];
+  /**
+   * An array relationship
+   */
+  member_phones: GET_MEMBER_DESCRIPTION_member_by_pk_member_phones[];
+  /**
+   * An array relationship
+   */
+  member_properties: GET_MEMBER_DESCRIPTION_member_by_pk_member_properties[];
+  /**
+   * An array relationship
+   */
+  order_logs: GET_MEMBER_DESCRIPTION_member_by_pk_order_logs[];
+}
+
+export interface GET_MEMBER_DESCRIPTION {
+  /**
+   * fetch data from the table: "member" using primary key columns
+   */
+  member_by_pk: GET_MEMBER_DESCRIPTION_member_by_pk | null;
+}
+
+export interface GET_MEMBER_DESCRIPTIONVariables {
   memberId: string;
 }
 

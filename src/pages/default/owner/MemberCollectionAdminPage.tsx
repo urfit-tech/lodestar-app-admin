@@ -1,10 +1,11 @@
-import { CaretDownOutlined, DownloadOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
+import { CaretDownOutlined, ExportOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Dropdown, Form, Input, Menu, Pagination, Table, Tag } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { ColumnProps } from 'antd/lib/table'
 import moment from 'moment'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
+import { useHistory } from 'react-router-dom'
 import styled, { ThemeContext } from 'styled-components'
 import { AdminPageTitle } from '../../../components/admin'
 import AdminCard from '../../../components/admin/AdminCard'
@@ -67,6 +68,7 @@ const getColumnSearchProps = ({
 
 const MemberCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
+  const history = useHistory()
   const theme = useContext(ThemeContext)
 
   // pagination
@@ -214,6 +216,9 @@ const MemberCollectionAdminPage: React.FC = () => {
             dataSource={dataSource}
             pagination={false}
             rowClassName={() => 'cursor-pointer'}
+            onRow={record => ({
+              onClick: () => history.push(`/admin/members/${record.id}`),
+            })}
           />
           <div className="mt-4 d-flex justify-content-end">
             <Pagination
@@ -269,8 +274,8 @@ const MemberExportModal: React.FC<{
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button type="primary" icon={<DownloadOutlined />} onClick={() => setVisible(true)}>
-          {formatMessage(commonMessages.ui.downloadMemberList)}
+        <Button icon={<ExportOutlined />} onClick={() => setVisible(true)}>
+          {formatMessage(commonMessages.ui.export)}
         </Button>
       )}
       confirmLoading={loading}

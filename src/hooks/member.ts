@@ -4,6 +4,7 @@ import { sum } from 'ramda'
 import { commonMessages } from '../helpers/translation'
 import types from '../types'
 import { MemberInfoProps, MemberOptionProps, MemberProps, MemberPublicProps, UserRole } from '../types/general'
+import { MemberAdminProps } from '../types/member'
 
 export const useMember = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<types.GET_MEMBER, types.GET_MEMBERVariables>(
@@ -33,26 +34,103 @@ export const useMember = (memberId: string) => {
     loading || error || !data
       ? null
       : {
-          id: data?.member_by_pk?.id || '',
-          name: data?.member_by_pk?.name || '',
-          email: data?.member_by_pk?.email || '',
-          username: data?.member_by_pk?.username || '',
-          pictureUrl: data?.member_by_pk?.picture_url || '',
-          description: data?.member_by_pk?.description || '',
-          abstract: data?.member_by_pk?.abstract || '',
-          title: data?.member_by_pk?.title || '',
-          memberTags: data?.member_by_pk?.member_tags.map(tag => ({
+          id: data.member_by_pk?.id || '',
+          name: data.member_by_pk?.name || '',
+          email: data.member_by_pk?.email || '',
+          username: data.member_by_pk?.username || '',
+          pictureUrl: data.member_by_pk?.picture_url || '',
+          description: data.member_by_pk?.description || '',
+          abstract: data.member_by_pk?.abstract || '',
+          title: data.member_by_pk?.title || '',
+          memberTags: data.member_by_pk?.member_tags.map(tag => ({
             id: tag.id || '',
             tagName: tag.tag_name || '',
           })),
-          role: data?.member_by_pk?.role || '',
+          role: data.member_by_pk?.role || '',
         }
 
   return {
-    member,
-    errorMember: error,
     loadingMember: loading,
+    errorMember: error,
+    member,
     refetchMember: refetch,
+  }
+}
+
+export const useMemberAdmin = (memberId: string) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_MEMBER_DESCRIPTION,
+    types.GET_MEMBER_DESCRIPTIONVariables
+  >(
+    gql`
+      query GET_MEMBER_DESCRIPTION($memberId: String!) {
+        member_by_pk(id: $memberId) {
+          id
+          picture_url
+          username
+          name
+          email
+          role
+          created_at
+          logined_at
+          member_tags {
+            id
+            tag_name
+          }
+          member_phones {
+            id
+            phone
+          }
+          member_properties {
+            id
+            property {
+              id
+              name
+            }
+          }
+          order_logs(where: { status: { _eq: "SUCCESS" } }) {
+            order_products_aggregate {
+              aggregate {
+                sum {
+                  price
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    { variables: { memberId } },
+  )
+
+  const memberAdmin: MemberAdminProps | null =
+    loading || error || !data || !data.member_by_pk
+      ? null
+      : {
+          id: data.member_by_pk.id,
+          avatarUrl: data.member_by_pk?.picture_url,
+          username: data.member_by_pk.username,
+          name: data.member_by_pk.name,
+          email: data.member_by_pk.email,
+          role: data.member_by_pk.role as UserRole,
+          createdAt: new Date(data.member_by_pk.created_at),
+          loginedAt: data.member_by_pk.logined_at && new Date(data.member_by_pk.logined_at),
+          tags: data.member_by_pk.member_tags.map(v => v.tag_name),
+          phones: data.member_by_pk.member_phones.map(v => v.phone),
+          properties: data.member_by_pk.member_properties.map(v => ({
+            id: v.property.id,
+            name: v.property.name,
+          })),
+          consumption: sum(
+            data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
+          ),
+        }
+
+  return {
+    loadingMemberAdmin: loading,
+    errorMemberAdmin: error,
+    memberAdmin,
+    refetchMemberAdmin: refetch,
   }
 }
 

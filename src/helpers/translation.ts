@@ -773,5 +773,3 @@ export const codeMessages = defineMessages({
     defaultMessage: '寄送信件失敗',
   },
 })
-
-// { id: '', defaultMessage: '' },

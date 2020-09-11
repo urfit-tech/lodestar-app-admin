@@ -238,6 +238,12 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
+  owner_member: {
+    path: '/admin/members/:memberId',
+    pageName: 'owner/MemberAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
   owner_member_properties: {
     path: '/admin/member-properties',
     pageName: 'owner/MemberPropertyAdminPage',
