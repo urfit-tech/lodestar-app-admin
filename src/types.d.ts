@@ -1229,37 +1229,6 @@ export interface GET_CREATOR_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER_INFO
-// ====================================================
-
-export interface UPDATE_MEMBER_INFO_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_INFO {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: UPDATE_MEMBER_INFO_update_member | null;
-}
-
-export interface UPDATE_MEMBER_INFOVariables {
-  memberId: string;
-  name?: string | null;
-  email?: string | null;
-  role?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: INSERT_POINT_LOG_COLLECTION
 // ====================================================
 
@@ -8197,6 +8166,145 @@ export interface DELETE_COIN_LOGVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROPERTY
+// ====================================================
+
+export interface GET_PROPERTY_property {
+  __typename: "property";
+  id: any;
+  name: string;
+}
+
+export interface GET_PROPERTY {
+  /**
+   * fetch data from the table: "property"
+   */
+  property: GET_PROPERTY_property[];
+}
+
+export interface GET_PROPERTYVariables {
+  type: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_PROPERTY
+// ====================================================
+
+export interface INSERT_PROPERTY_insert_property {
+  __typename: "property_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_PROPERTY {
+  /**
+   * insert data into the table: "property"
+   */
+  insert_property: INSERT_PROPERTY_insert_property | null;
+}
+
+export interface INSERT_PROPERTYVariables {
+  data: property_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROPERTY
+// ====================================================
+
+export interface UPDATE_PROPERTY_update_property {
+  __typename: "property_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROPERTY {
+  /**
+   * update data of the table: "property"
+   */
+  update_property: UPDATE_PROPERTY_update_property | null;
+}
+
+export interface UPDATE_PROPERTYVariables {
+  propertyId: any;
+  name: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROPERTY_POSITION
+// ====================================================
+
+export interface UPDATE_PROPERTY_POSITION_insert_property {
+  __typename: "property_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROPERTY_POSITION {
+  /**
+   * insert data into the table: "property"
+   */
+  insert_property: UPDATE_PROPERTY_POSITION_insert_property | null;
+}
+
+export interface UPDATE_PROPERTY_POSITIONVariables {
+  data: property_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PROPERTY
+// ====================================================
+
+export interface DELETE_PROPERTY_delete_property {
+  __typename: "property_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROPERTY {
+  /**
+   * delete data from the table: "property"
+   */
+  delete_property: DELETE_PROPERTY_delete_property | null;
+}
+
+export interface DELETE_PROPERTYVariables {
+  propertyId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_POINT_RELEASE_HISTORY
 // ====================================================
 
@@ -10396,6 +10504,7 @@ export enum property_update_column {
   created_at = "created_at",
   id = "id",
   name = "name",
+  position = "position",
   type = "type",
   updated_at = "updated_at",
 }
@@ -16039,6 +16148,7 @@ export interface property_bool_exp {
   id?: uuid_comparison_exp | null;
   member_properties?: member_property_bool_exp | null;
   name?: String_comparison_exp | null;
+  position?: Int_comparison_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -16053,6 +16163,7 @@ export interface property_insert_input {
   id?: any | null;
   member_properties?: member_property_arr_rel_insert_input | null;
   name?: string | null;
+  position?: number | null;
   type?: string | null;
   updated_at?: any | null;
 }

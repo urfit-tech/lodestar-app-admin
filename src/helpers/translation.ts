@@ -47,6 +47,7 @@ export const commonMessages = {
     preview: { id: 'common.ui.preview', defaultMessage: '預覽' },
     backToHomepage: { id: 'common.ui.backToHomepage', defaultMessage: '回首頁' },
     addCategory: { id: 'common.ui.addCategory', defaultMessage: '新增分類' },
+    addProperty: { id: 'common.ui.addProperty', defaultMessage: '新增欄位' },
     changePosition: { id: 'common.ui.changePosition', defaultMessage: '調整排序' },
     downloadMemberList: { id: 'common.ui.downloadMemberList', defaultMessage: '下載名單' },
     export: { id: 'common.ui.export', defaultMessage: '匯出' },
@@ -157,6 +158,7 @@ export const commonMessages = {
     exportFields: { id: 'common.label.exportFields', defaultMessage: '匯出欄位' },
     date: { id: 'common.label.date', defaultMessage: '日期' },
     podcastSubscription: { id: 'common.label.podcastSubscription', defaultMessage: '訂閱廣播頻道' },
+    propertyItem: { id: 'common.label.propertyItem', defaultMessage: '欄位項目' },
   }),
   term: defineMessages({
     instructor: { id: 'common.term.instructor', defaultMessage: '老師' },
