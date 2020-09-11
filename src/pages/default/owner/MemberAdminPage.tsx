@@ -12,6 +12,7 @@ import {
 } from '../../../components/admin'
 import { StyledLayoutContent } from '../../../components/layout/DefaultLayout'
 import MemberProfileBasicForm from '../../../components/profile/MemberProfileBasicForm'
+import MemberPropertyAdminForm from '../../../components/profile/MemberPropertyAdminForm'
 import { useMemberAdmin } from '../../../hooks/member'
 
 const messages = defineMessages({
@@ -56,6 +57,7 @@ const MemberAdminPage: React.FC = () => {
                 </AdminBlock>
                 <AdminBlock>
                   <AdminBlockTitle>{formatMessage(messages.property)}</AdminBlockTitle>
+                  <MemberPropertyAdminForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
                 </AdminBlock>
               </div>
             </Tabs.TabPane>

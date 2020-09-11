@@ -2597,6 +2597,47 @@ export interface UPDATE_MEMBER_PROFILE_BASICVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_PROPERTY
+// ====================================================
+
+export interface UPDATE_MEMBER_PROPERTY_delete_member_property {
+  __typename: "member_property_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROPERTY_insert_member_property {
+  __typename: "member_property_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROPERTY {
+  /**
+   * delete data from the table: "member_property"
+   */
+  delete_member_property: UPDATE_MEMBER_PROPERTY_delete_member_property | null;
+  /**
+   * insert data into the table: "member_property"
+   */
+  insert_member_property: UPDATE_MEMBER_PROPERTY_insert_member_property | null;
+}
+
+export interface UPDATE_MEMBER_PROPERTYVariables {
+  memberId: string;
+  memberProperties: member_property_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_AVATAR
 // ====================================================
 
@@ -5958,6 +5999,7 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_properties {
    * An object relationship
    */
   property: GET_MEMBER_DESCRIPTION_member_by_pk_member_properties_property;
+  value: string;
 }
 
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate_aggregate_sum {
@@ -6261,6 +6303,32 @@ export interface UPDATE_MEMBER_ACCOUNTVariables {
   username?: string | null;
   email?: string | null;
   pictureUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROPERTY
+// ====================================================
+
+export interface GET_PROPERTY_property {
+  __typename: "property";
+  id: any;
+  name: string;
+}
+
+export interface GET_PROPERTY {
+  /**
+   * fetch data from the table: "property"
+   */
+  property: GET_PROPERTY_property[];
+}
+
+export interface GET_PROPERTYVariables {
+  type: string;
 }
 
 /* tslint:disable */
@@ -8352,32 +8420,6 @@ export interface DELETE_COIN_LOG {
 
 export interface DELETE_COIN_LOGVariables {
   coinLogId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PROPERTY
-// ====================================================
-
-export interface GET_PROPERTY_property {
-  __typename: "property";
-  id: any;
-  name: string;
-}
-
-export interface GET_PROPERTY {
-  /**
-   * fetch data from the table: "property"
-   */
-  property: GET_PROPERTY_property[];
-}
-
-export interface GET_PROPERTYVariables {
-  type: string;
 }
 
 /* tslint:disable */

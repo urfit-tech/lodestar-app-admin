@@ -1,5 +1,5 @@
 import { DeleteOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
@@ -12,6 +12,7 @@ import AdminLayout from '../../../components/layout/AdminLayout'
 import AppContext from '../../../contexts/AppContext'
 import { handleError } from '../../../helpers'
 import { commonMessages } from '../../../helpers/translation'
+import { useProperty } from '../../../hooks/member'
 import types from '../../../types'
 
 const MemberPropertyAdminPage: React.FC = () => {
@@ -112,35 +113,6 @@ const MemberPropertyAdminPage: React.FC = () => {
       </AdminCard>
     </AdminLayout>
   )
-}
-
-const useProperty = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_PROPERTY, types.GET_PROPERTYVariables>(
-    gql`
-      query GET_PROPERTY($type: String!) {
-        property(where: { type: { _eq: $type } }, order_by: { position: asc }) {
-          id
-          name
-        }
-      }
-    `,
-    { variables: { type: 'member' } },
-  )
-
-  const properties =
-    loading || error || !data
-      ? []
-      : data.property.map(v => ({
-          id: v.id,
-          name: v.name,
-        }))
-
-  return {
-    loadingProperties: loading,
-    errorProperties: error,
-    properties,
-    refetchProperties: refetch,
-  }
 }
 
 const INSERT_PROPERTY = gql`

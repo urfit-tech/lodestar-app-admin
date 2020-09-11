@@ -14,6 +14,7 @@ export type MemberAdminProps = {
   properties: {
     id: string
     name: string
+    value: string
   }[]
   consumption?: number
 }

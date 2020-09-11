@@ -87,6 +87,7 @@ export const useMemberAdmin = (memberId: string) => {
               id
               name
             }
+            value
           }
           order_logs(where: { status: { _eq: "SUCCESS" } }) {
             order_products_aggregate {
@@ -120,6 +121,7 @@ export const useMemberAdmin = (memberId: string) => {
           properties: data.member_by_pk.member_properties.map(v => ({
             id: v.property.id,
             name: v.property.name,
+            value: v.value,
           })),
           consumption: sum(
             data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
@@ -433,4 +435,33 @@ export const useUpdateMemberAccount = () => {
   )
 
   return updateMemberAccount
+}
+
+export const useProperty = () => {
+  const { loading, error, data, refetch } = useQuery<types.GET_PROPERTY, types.GET_PROPERTYVariables>(
+    gql`
+      query GET_PROPERTY($type: String!) {
+        property(where: { type: { _eq: $type } }, order_by: { position: asc }) {
+          id
+          name
+        }
+      }
+    `,
+    { variables: { type: 'member' } },
+  )
+
+  const properties =
+    loading || error || !data
+      ? []
+      : data.property.map(v => ({
+          id: v.id,
+          name: v.name,
+        }))
+
+  return {
+    loadingProperties: loading,
+    errorProperties: error,
+    properties,
+    refetchProperties: refetch,
+  }
 }
