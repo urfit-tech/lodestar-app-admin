@@ -136,7 +136,6 @@ const AudioTrackCard: React.FC<
     return () => {
       if (wavesurfer) {
         wavesurfer.pause()
-        wavesurfer.destroy()
       }
     }
   }, [wavesurfer])
