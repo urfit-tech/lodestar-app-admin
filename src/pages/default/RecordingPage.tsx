@@ -211,7 +211,7 @@ const RecordingPage: React.FC = () => {
               Math.max(
                 ...waveCollection
                   .filter(wave => wave.filename.includes(originalFileName))
-                  .map(wave => (/^([^.()]+)([(]+)([1-9])([)]+)?$/.exec(wave.filename) || [])[3] || '0')
+                  .map(wave => (/^([^.()]+)([(]+)(\d+)([)]+)?$/.exec(wave.filename) || [])[3] || '0')
                   .map(Number),
               ) + 1
 
