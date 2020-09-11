@@ -44,19 +44,19 @@ const StyledDescription = styled.div`
 `
 const StyledDescriptionLabel = styled.span`
   color: var(--gray-dark);
-  font-color: 14px;
+  font-size: 14px;
 `
 
 const MemberAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { memberId } = useParams<{ memberId: string }>()
-  const { settings } = useContext(AppContext)
+  const { enabledModules, settings } = useContext(AppContext)
   const { memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
 
   return (
     <>
       <AdminHeader>
-        <Link to="/programs">
+        <Link to="/members">
           <Button type="link" className="mr-3">
             <CloseOutlined />
           </Button>
@@ -135,10 +135,12 @@ const MemberAdminPage: React.FC = () => {
                   <AdminBlockTitle>{formatMessage(messages.basic)}</AdminBlockTitle>
                   <MemberProfileBasicForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
                 </AdminBlock>
-                <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(messages.property)}</AdminBlockTitle>
-                  <MemberPropertyAdminForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
-                </AdminBlock>
+                {enabledModules.member_property && (
+                  <AdminBlock>
+                    <AdminBlockTitle>{formatMessage(messages.property)}</AdminBlockTitle>
+                    <MemberPropertyAdminForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
+                  </AdminBlock>
+                )}
               </div>
             </Tabs.TabPane>
           </Tabs>

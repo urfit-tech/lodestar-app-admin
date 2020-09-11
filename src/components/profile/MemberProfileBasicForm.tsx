@@ -29,7 +29,6 @@ const MemberProfileBasicForm: React.FC<{
   }
 
   const handleSubmit = (values: any) => {
-    // console.log(values)
     setLoading(true)
     updateMemberProfileBasic({
       variables: {

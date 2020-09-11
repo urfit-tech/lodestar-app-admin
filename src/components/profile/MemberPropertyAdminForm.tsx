@@ -66,7 +66,7 @@ const MemberPropertyAdminForm: React.FC<{
       onFinish={handleSubmit}
     >
       {properties.map(property => (
-        <Form.Item label={property.name} name={property.id}>
+        <Form.Item key={property.id} label={property.name} name={property.id}>
           <Input />
         </Form.Item>
       ))}

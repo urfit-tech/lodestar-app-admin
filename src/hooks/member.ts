@@ -31,22 +31,22 @@ export const useMember = (memberId: string) => {
   )
 
   const member: MemberProps | null =
-    loading || error || !data
+    loading || error || !data || !data.member_by_pk
       ? null
       : {
-          id: data.member_by_pk?.id || '',
-          name: data.member_by_pk?.name || '',
-          email: data.member_by_pk?.email || '',
-          username: data.member_by_pk?.username || '',
-          pictureUrl: data.member_by_pk?.picture_url || '',
-          description: data.member_by_pk?.description || '',
-          abstract: data.member_by_pk?.abstract || '',
-          title: data.member_by_pk?.title || '',
-          memberTags: data.member_by_pk?.member_tags.map(tag => ({
+          id: data.member_by_pk.id || '',
+          name: data.member_by_pk.name || '',
+          email: data.member_by_pk.email || '',
+          username: data.member_by_pk.username || '',
+          pictureUrl: data.member_by_pk.picture_url || '',
+          description: data.member_by_pk.description || '',
+          abstract: data.member_by_pk.abstract || '',
+          title: data.member_by_pk.title || '',
+          memberTags: data.member_by_pk.member_tags.map(tag => ({
             id: tag.id || '',
             tagName: tag.tag_name || '',
           })),
-          role: data.member_by_pk?.role || '',
+          role: data.member_by_pk.role || '',
         }
 
   return {
