@@ -1,5 +1,6 @@
 import Icon from '@ant-design/icons'
 import { Typography } from 'antd'
+import { throttle } from 'lodash'
 import moment from 'moment'
 import React, { HTMLAttributes, useContext, useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -124,8 +125,18 @@ const AudioTrackCard: React.FC<
         ],
       })
       _wavesurfer.on('finish', () => onFinishPlaying && onFinishPlaying())
-      // _wavesurfer.on('seek', (progress: number) => onAudioPlaying && onAudioPlaying(audioBuffer.duration * progress))
-      // _wavesurfer.on('audioprocess', (second: number) => onAudioPlaying && onAudioPlaying(second))
+      _wavesurfer.on(
+        'seek',
+        throttle((progress: number) => {
+          onAudioPlaying && onAudioPlaying(audioBuffer.duration * progress)
+        }, 100),
+      )
+      _wavesurfer.on(
+        'audioprocess',
+        throttle((second: number) => {
+          onAudioPlaying && onAudioPlaying(second)
+        }, 100),
+      )
       _wavesurfer.loadDecodedBuffer(audioBuffer)
       setWaveSurfer(_wavesurfer)
     }
