@@ -169,6 +169,12 @@ const AudioTrackCard: React.FC<
     }
   }, [isActive, trackWrapperRef])
 
+  useEffect(() => {
+    if (!isActive && wavesurfer) {
+      wavesurfer.getCurrentTime() > 0 && wavesurfer.seekTo(0)
+    }
+  }, [isActive, wavesurfer])
+
   return (
     <TrackWrapper ref={trackWrapperRef} {...divProps}>
       <ActionBlock className="flex-shrink-0 text-center">
