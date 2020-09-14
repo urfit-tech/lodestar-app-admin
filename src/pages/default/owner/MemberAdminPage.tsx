@@ -1,5 +1,5 @@
 import Icon, { CloseOutlined } from '@ant-design/icons'
-import { Button, Divider, Layout, Tabs } from 'antd'
+import { Button, Divider, Layout, Skeleton, Tabs } from 'antd'
 import moment from 'moment'
 import React, { useContext } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -16,6 +16,7 @@ import {
 import { CustomRatioImage } from '../../../components/common/Image'
 import { StyledLayoutContent } from '../../../components/layout/DefaultLayout'
 import MemberPermissionForm from '../../../components/profile/MemberPermissionForm'
+import MemberNoteAdminModal from '../../../components/profile/MemberNoteAdminModal'
 import MemberProfileBasicForm from '../../../components/profile/MemberProfileBasicForm'
 import MemberPropertyAdminForm from '../../../components/profile/MemberPropertyAdminForm'
 import AppContext from '../../../contexts/AppContext'
@@ -24,14 +25,18 @@ import { commonMessages } from '../../../helpers/translation'
 import { useMemberAdmin } from '../../../hooks/member'
 import DefaultAvatar from '../../../images/default/avatar.svg'
 import { ReactComponent as EmailIcon } from '../../../images/icon/email.svg'
+import { ReactComponent as FilePlusIcon } from '../../../images/icon/file-plus.svg'
 import { ReactComponent as PhoneIcon } from '../../../images/icon/phone.svg'
 
 const messages = defineMessages({
   profile: { id: 'profile.label.profile', defaultMessage: '個人' },
+  note: { id: 'profile.label.note', defaultMessage: '備註' },
   basic: { id: 'profile.label.basic', defaultMessage: '基本資料' },
   property: { id: 'profile.label.property', defaultMessage: '自訂欄位' },
   permission: { id: 'profile.label.property', defaultMessage: '權限' },
   memberPage: { id: 'profile.ui.memberPage', defaultMessage: '學員主頁' },
+  // translation naming convention
+  createNote: { id: 'commonMessages.ui.createNote', defaultMessage: '新增備註' },
 })
 
 const StyledSider = styled(Layout.Sider)`
@@ -56,7 +61,11 @@ const MemberAdminPage: React.FC = () => {
   const { memberId } = useParams<{ memberId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { enabledModules, settings } = useContext(AppContext)
-  const { memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
+  const { loadingMemberAdmin, errorMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
+
+  if (loadingMemberAdmin || errorMemberAdmin || !memberAdmin) {
+    return <Skeleton active />
+  }
 
   return (
     <>
@@ -155,6 +164,24 @@ const MemberAdminPage: React.FC = () => {
                 )}
               </div>
             </Tabs.TabPane>
+            {enabledModules.member_note && (
+              <Tabs.TabPane key="note" tab={formatMessage(messages.note)}>
+                <div className="p-5">
+                  <MemberNoteAdminModal
+                    member={memberAdmin}
+                    title={formatMessage(messages.createNote)}
+                    renderTrigger={({ setVisible }) => (
+                      <Button type="primary" onClick={() => setVisible(true)}>
+                        <Icon component={() => <FilePlusIcon />} className="mr-1" />
+                        <span>{formatMessage(messages.createNote)}</span>
+                      </Button>
+                    )}
+                    onSubmit={() => alert('submit')}
+                  />
+                  <AdminBlock className="mt-4"></AdminBlock>
+                </div>
+              </Tabs.TabPane>
+            )}
             <Tabs.TabPane key="permission" tab={formatMessage(messages.permission)}>
               <div className="p-5">
                 <AdminBlock>
@@ -162,6 +189,7 @@ const MemberAdminPage: React.FC = () => {
                 </AdminBlock>
               </div>
             </Tabs.TabPane>
+            
           </Tabs>
         </StyledLayoutContent>
       </Layout>
