@@ -14,7 +14,7 @@ const TimelinePlugin = require('wavesurfer.js/dist/plugin/wavesurfer.timeline.mi
 const TrackWrapper = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.25rem;
 `
 const ActionBlock = styled.div`
   margin-right: 0.75rem;
@@ -50,7 +50,7 @@ const StyledText = styled.div`
   color: var(--gray-dark);
   font-size: 12px;
   letter-spacing: 0.6px;
-  line-height: 1.5rem;
+  line-height: 1;
   min-width: 100px;
   text-align: right;
 `
@@ -58,7 +58,7 @@ const StyledTypographyText = styled(Typography.Text)`
   color: var(--gray-darker);
   font-size: 12px;
   letter-spacing: 0.6px;
-  line-height: 1.5rem;
+  line-height: 1;
   font-weight: 600;
 `
 
@@ -178,11 +178,10 @@ const AudioTrackCard: React.FC<
   return (
     <TrackWrapper ref={trackWrapperRef} {...divProps}>
       <ActionBlock className="flex-shrink-0 text-center">
-        <div>{`${position + 1}`.padStart(2, '0')}</div>
         <StyledIcon component={() => <MoveIcon />} className={`cursor-pointer ${handleClassName || 'handle'}`} />
       </ActionBlock>
 
-      <StyledCard className="p-4 flex-grow-1" isActive={isActive}>
+      <StyledCard className="p-3 flex-grow-1" isActive={isActive}>
         <WaveWrapper className="mb-3">
           <WaveTimelineBlock ref={waveformTimelineRef} />
           <WaveBlock ref={waveformRef} />
