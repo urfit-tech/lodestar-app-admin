@@ -8419,6 +8419,20 @@ export interface GET_CREATOR_PROGRAM_ISSUES_issue_issue_replies_aggregate {
   aggregate: GET_CREATOR_PROGRAM_ISSUES_issue_issue_replies_aggregate_aggregate | null;
 }
 
+export interface GET_CREATOR_PROGRAM_ISSUES_issue_issue_enrollment_program_roles {
+  __typename: "program_role";
+  id: any;
+  member_id: string;
+}
+
+export interface GET_CREATOR_PROGRAM_ISSUES_issue_issue_enrollment {
+  __typename: "issue_enrollment";
+  /**
+   * An array relationship
+   */
+  program_roles: GET_CREATOR_PROGRAM_ISSUES_issue_issue_enrollment_program_roles[];
+}
+
 export interface GET_CREATOR_PROGRAM_ISSUES_issue {
   __typename: "issue";
   id: any;
@@ -8436,6 +8450,10 @@ export interface GET_CREATOR_PROGRAM_ISSUES_issue {
    * An aggregated array relationship
    */
   issue_replies_aggregate: GET_CREATOR_PROGRAM_ISSUES_issue_issue_replies_aggregate;
+  /**
+   * An object relationship
+   */
+  issue_enrollment: GET_CREATOR_PROGRAM_ISSUES_issue_issue_enrollment | null;
 }
 
 export interface GET_CREATOR_PROGRAM_ISSUES {
@@ -9242,6 +9260,43 @@ export enum member_contract_update_column {
   revoked_at = "revoked_at",
   started_at = "started_at",
   values = "values",
+}
+
+/**
+ * unique or primary key constraints on table "member_phone"
+ */
+export enum member_phone_constraint {
+  member_phone_pkey = "member_phone_pkey",
+}
+
+/**
+ * update columns of table "member_phone"
+ */
+export enum member_phone_update_column {
+  created_at = "created_at",
+  id = "id",
+  member_id = "member_id",
+  phone = "phone",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "member_property"
+ */
+export enum member_property_constraint {
+  member_property_pkey = "member_property_pkey",
+}
+
+/**
+ * update columns of table "member_property"
+ */
+export enum member_property_update_column {
+  created_at = "created_at",
+  id = "id",
+  member_id = "member_id",
+  property_id = "property_id",
+  updated_at = "updated_at",
+  value = "value",
 }
 
 /**
@@ -10343,6 +10398,26 @@ export enum program_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "property"
+ */
+export enum property_constraint {
+  property_pkey = "property_pkey",
+}
+
+/**
+ * update columns of table "property"
+ */
+export enum property_update_column {
+  app_id = "app_id",
+  created_at = "created_at",
+  id = "id",
+  name = "name",
+  position = "position",
+  type = "type",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "social_card"
  */
 export enum social_card_constraint {
@@ -11001,6 +11076,7 @@ export interface app_bool_exp {
   posts?: post_bool_exp | null;
   program_packages?: program_package_bool_exp | null;
   programs?: program_bool_exp | null;
+  properties?: property_bool_exp | null;
   tags?: tag_bool_exp | null;
   title?: String_comparison_exp | null;
   vimeo_project_id?: String_comparison_exp | null;
@@ -11034,6 +11110,7 @@ export interface app_insert_input {
   posts?: post_arr_rel_insert_input | null;
   program_packages?: program_package_arr_rel_insert_input | null;
   programs?: program_arr_rel_insert_input | null;
+  properties?: property_arr_rel_insert_input | null;
   tags?: tag_arr_rel_insert_input | null;
   title?: string | null;
   vimeo_project_id?: string | null;
@@ -12271,6 +12348,7 @@ export interface issue_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  issue_enrollment?: issue_enrollment_bool_exp | null;
   issue_reactions?: issue_reaction_bool_exp | null;
   issue_replies?: issue_reply_bool_exp | null;
   member?: member_bool_exp | null;
@@ -12278,6 +12356,21 @@ export interface issue_bool_exp {
   solved_at?: timestamptz_comparison_exp | null;
   thread_id?: String_comparison_exp | null;
   title?: String_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "issue_enrollment". All fields are combined with a logical 'AND'.
+ */
+export interface issue_enrollment_bool_exp {
+  _and?: (issue_enrollment_bool_exp | null)[] | null;
+  _not?: issue_enrollment_bool_exp | null;
+  _or?: (issue_enrollment_bool_exp | null)[] | null;
+  issue_id?: uuid_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_content_id?: uuid_comparison_exp | null;
+  program_content_section_id?: uuid_comparison_exp | null;
+  program_id?: uuid_comparison_exp | null;
+  program_roles?: program_role_bool_exp | null;
 }
 
 /**
@@ -12571,6 +12664,8 @@ export interface member_bool_exp {
   media?: media_bool_exp | null;
   member_cards?: member_card_bool_exp | null;
   member_contracts?: member_contract_bool_exp | null;
+  member_phones?: member_phone_bool_exp | null;
+  member_properties?: member_property_bool_exp | null;
   member_shops?: member_shop_bool_exp | null;
   member_socials?: member_social_bool_exp | null;
   member_tags?: member_tag_bool_exp | null;
@@ -12736,6 +12831,8 @@ export interface member_insert_input {
   media?: media_arr_rel_insert_input | null;
   member_cards?: member_card_arr_rel_insert_input | null;
   member_contracts?: member_contract_arr_rel_insert_input | null;
+  member_phones?: member_phone_arr_rel_insert_input | null;
+  member_properties?: member_property_arr_rel_insert_input | null;
   member_shops?: member_shop_arr_rel_insert_input | null;
   member_socials?: member_social_arr_rel_insert_input | null;
   member_tags?: member_tag_arr_rel_insert_input | null;
@@ -12781,6 +12878,98 @@ export interface member_on_conflict {
   constraint: member_constraint;
   update_columns: member_update_column[];
   where?: member_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "member_phone"
+ */
+export interface member_phone_arr_rel_insert_input {
+  data: member_phone_insert_input[];
+  on_conflict?: member_phone_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_phone". All fields are combined with a logical 'AND'.
+ */
+export interface member_phone_bool_exp {
+  _and?: (member_phone_bool_exp | null)[] | null;
+  _not?: member_phone_bool_exp | null;
+  _or?: (member_phone_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  phone?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_phone"
+ */
+export interface member_phone_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  phone?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "member_phone"
+ */
+export interface member_phone_on_conflict {
+  constraint: member_phone_constraint;
+  update_columns: member_phone_update_column[];
+  where?: member_phone_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "member_property"
+ */
+export interface member_property_arr_rel_insert_input {
+  data: member_property_insert_input[];
+  on_conflict?: member_property_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_property". All fields are combined with a logical 'AND'.
+ */
+export interface member_property_bool_exp {
+  _and?: (member_property_bool_exp | null)[] | null;
+  _not?: member_property_bool_exp | null;
+  _or?: (member_property_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  property?: property_bool_exp | null;
+  property_id?: uuid_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+  value?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_property"
+ */
+export interface member_property_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  property?: property_obj_rel_insert_input | null;
+  property_id?: any | null;
+  updated_at?: any | null;
+  value?: string | null;
+}
+
+/**
+ * on conflict condition type for table "member_property"
+ */
+export interface member_property_on_conflict {
+  constraint: member_property_constraint;
+  update_columns: member_property_update_column[];
+  where?: member_property_bool_exp | null;
 }
 
 /**
@@ -15860,6 +16049,64 @@ export interface program_tempo_delivery_on_conflict {
   constraint: program_tempo_delivery_constraint;
   update_columns: program_tempo_delivery_update_column[];
   where?: program_tempo_delivery_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "property"
+ */
+export interface property_arr_rel_insert_input {
+  data: property_insert_input[];
+  on_conflict?: property_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "property". All fields are combined with a logical 'AND'.
+ */
+export interface property_bool_exp {
+  _and?: (property_bool_exp | null)[] | null;
+  _not?: property_bool_exp | null;
+  _or?: (property_bool_exp | null)[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member_properties?: member_property_bool_exp | null;
+  name?: String_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  type?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "property"
+ */
+export interface property_insert_input {
+  app?: app_obj_rel_insert_input | null;
+  app_id?: string | null;
+  created_at?: any | null;
+  id?: any | null;
+  member_properties?: member_property_arr_rel_insert_input | null;
+  name?: string | null;
+  position?: number | null;
+  type?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "property"
+ */
+export interface property_obj_rel_insert_input {
+  data: property_insert_input;
+  on_conflict?: property_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "property"
+ */
+export interface property_on_conflict {
+  constraint: property_constraint;
+  update_columns: property_update_column[];
+  where?: property_bool_exp | null;
 }
 
 /**

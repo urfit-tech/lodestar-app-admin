@@ -2,7 +2,7 @@ import { BookFilled } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Select, Skeleton } from 'antd'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../components/admin'
 import IssueAdminCard from '../../components/issue/IssueAdminCard'
@@ -48,8 +48,14 @@ const ProgramIssueCollectionAdminPage = () => {
           )}
         </div>
       </div>
-
-      <AllProgramIssueCollectionBlock selectedProgramId={selectedProgramId} selectedStatus={selectedStatus} />
+      {currentMemberId && (
+        <AllProgramIssueCollectionBlock
+          selectedProgramId={selectedProgramId}
+          selectedStatus={selectedStatus}
+          memberId={currentMemberId}
+          currentUserRole={currentUserRole}
+        />
+      )}
     </AdminLayout>
   )
 }
@@ -57,7 +63,9 @@ const ProgramIssueCollectionAdminPage = () => {
 const AllProgramIssueCollectionBlock: React.FC<{
   selectedProgramId: string
   selectedStatus: string
-}> = ({ selectedProgramId, selectedStatus }) => {
+  memberId: string
+  currentUserRole: string
+}> = ({ selectedProgramId, selectedStatus, memberId, currentUserRole }) => {
   const { formatMessage } = useIntl()
 
   let unsolved: boolean | undefined
@@ -70,7 +78,11 @@ const AllProgramIssueCollectionBlock: React.FC<{
       break
   }
 
-  const { loading, error, issues, refetch: refetchIssues } = useGetCreatorProgramIssue(selectedProgramId, unsolved)
+  const { loading, error, issues, refetch } = useGetCreatorProgramIssue(selectedProgramId, unsolved)
+
+  useEffect(() => {
+    refetch && refetch()
+  })
 
   return (
     <div>
@@ -78,22 +90,28 @@ const AllProgramIssueCollectionBlock: React.FC<{
       {!loading && error && formatMessage(errorMessages.data.fetch)}
       {!loading && issues.length === 0 && formatMessage(programMessages.text.emptyProgramIssue)}
 
-      {issues.map(issue => (
-        <IssueAdminCard
-          key={issue.id}
-          issueId={issue.id}
-          threadId={issue.threadId}
-          programId={issue.threadId.split('/')[2]}
-          title={issue.title}
-          description={issue.description}
-          reactedMemberIds={issue.reactedMemberIds}
-          numReplies={issue.issueRepliesCount}
-          createdAt={issue.createdAt}
-          solvedAt={issue.solvedAt}
-          memberId={issue.memberId}
-          onRefetch={refetchIssues}
-        />
-      ))}
+      {issues
+        .filter(issue =>
+          memberId && currentUserRole === 'content-creator' && issue.issueInstructorIds
+            ? issue.issueInstructorIds.find(issueInstructorId => issueInstructorId === memberId)
+            : true,
+        )
+        .map(issue => (
+          <IssueAdminCard
+            key={issue.id}
+            issueId={issue.id}
+            threadId={issue.threadId}
+            programId={issue.threadId.split('/')[2]}
+            title={issue.title}
+            description={issue.description}
+            reactedMemberIds={issue.reactedMemberIds}
+            numReplies={issue.issueRepliesCount}
+            createdAt={issue.createdAt}
+            solvedAt={issue.solvedAt}
+            memberId={issue.memberId}
+            onRefetch={refetch}
+          />
+        ))}
     </div>
   )
 }
@@ -124,6 +142,7 @@ const useGetCreatorProgramIssue = (selectedProgramId: string, unsolved?: boolean
           threadId: issue.thread_id,
           reactedMemberIds: issue.issue_reactions.map(reaction => reaction.member_id),
           issueRepliesCount: issue?.issue_replies_aggregate?.aggregate?.count || 0,
+          issueInstructorIds: issue?.issue_enrollment?.program_roles.map(program_role => program_role.member_id) || [],
         }))
 
   return {
@@ -153,6 +172,12 @@ const GET_CREATOR_PROGRAM_ISSUES = gql`
       issue_replies_aggregate {
         aggregate {
           count
+        }
+      }
+      issue_enrollment {
+        program_roles(where: { name: { _eq: "instructor" } }) {
+          id
+          member_id
         }
       }
     }

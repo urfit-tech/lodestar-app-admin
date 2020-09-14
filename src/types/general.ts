@@ -77,6 +77,7 @@ export type IssueProps = {
   threadId: string
   reactedMemberIds: Array<string>
   issueRepliesCount: number
+  issueInstructorIds: Array<string> | undefined
 }
 
 export type PeriodType = 'D' | 'W' | 'M' | 'Y'

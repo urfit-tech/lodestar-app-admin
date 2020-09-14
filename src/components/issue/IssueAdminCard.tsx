@@ -112,7 +112,10 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
                   issueId,
                   solvedAt: updatedSolved ? new Date() : null,
                 },
-              }).then(() => setSolved(updatedSolved))
+              }).then(() => {
+                setSolved(updatedSolved)
+                onRefetch && onRefetch()
+              })
             }}
           >
             {solvedAt
