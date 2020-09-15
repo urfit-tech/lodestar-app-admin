@@ -3,7 +3,7 @@ import { Redirect, Route, Switch } from 'react-router-dom'
 import LoadingPage from './pages/default/LoadingPage'
 import NotFoundPage from './pages/default/NotFoundPage'
 import LoadablePage from './pages/LoadablePage'
-import { UserRole } from './types/general'
+import { UserRole } from './types/member'
 
 type RouteProps = {
   path: string

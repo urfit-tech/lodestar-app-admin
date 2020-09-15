@@ -56,7 +56,7 @@ const MemberAdminPage: React.FC = () => {
   return (
     <>
       <AdminHeader>
-        <Link to="/members">
+        <Link to="/admin/members">
           <Button type="link" className="mr-3">
             <CloseOutlined />
           </Button>

@@ -1,4 +1,57 @@
-import { UserRole } from './general'
+export type UserRole = 'app-owner' | 'content-creator' | 'general-member' | 'anonymous'
+
+export type MemberProps = {
+  id: string
+  name: string
+  email: string
+  username: string
+  pictureUrl: string | null
+  description: string | null
+  abstract: string | null
+  title: string | null
+  memberTags?: {
+    id: string
+    tagName: string
+  }[]
+  role: string
+}
+
+export type MemberInfoProps = {
+  id: string
+  avatarUrl: string | null
+  name: string
+  email: string
+  role: UserRole
+  createdAt: Date | null
+  loginedAt: Date | null
+  phones: string[]
+  consumption: number
+}
+
+export type MemberPublicProps = {
+  id: string
+  name: string
+  username: string
+  pictureUrl: string
+  description: string
+  role: string
+}
+
+export type MemberOptionProps = {
+  id: string
+  avatarUrl?: string | null
+  name?: string
+  username: string
+  email?: string
+  disabled?: boolean
+}
+
+export type MemberBriefProps = {
+  id: string
+  avatarUrl: string | null
+  name: string
+  email: string
+}
 
 export type MemberAdminProps = {
   id: string

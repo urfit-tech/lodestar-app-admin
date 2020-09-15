@@ -21,7 +21,7 @@ import { commonMessages, errorMessages, promotionMessages } from '../../../helpe
 import { ReactComponent as PointIcon } from '../../../images/icon/point.svg'
 import { ReactComponent as TextIcon } from '../../../images/icon/text.svg'
 import types from '../../../types'
-import { MemberBriefProps } from '../../../types/general'
+import { MemberBriefProps } from '../../../types/member'
 import LoadingPage from '../LoadingPage'
 import NotFoundPage from '../NotFoundPage'
 

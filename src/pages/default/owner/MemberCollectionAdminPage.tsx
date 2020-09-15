@@ -17,7 +17,7 @@ import AppContext from '../../../contexts/AppContext'
 import { currencyFormatter, downloadCSV, toCSV } from '../../../helpers'
 import { commonMessages } from '../../../helpers/translation'
 import { useMemberCollection, useMemberRoleCount } from '../../../hooks/member'
-import { MemberInfoProps, UserRole } from '../../../types/general'
+import { MemberInfoProps, UserRole } from '../../../types/member'
 
 const StyledDropdown = styled(Dropdown)`
   width: 240px;

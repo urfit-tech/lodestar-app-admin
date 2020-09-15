@@ -3,8 +3,14 @@ import gql from 'graphql-tag'
 import { sum } from 'ramda'
 import { commonMessages } from '../helpers/translation'
 import types from '../types'
-import { MemberInfoProps, MemberOptionProps, MemberProps, MemberPublicProps, UserRole } from '../types/general'
-import { MemberAdminProps } from '../types/member'
+import {
+  MemberAdminProps,
+  MemberInfoProps,
+  MemberOptionProps,
+  MemberProps,
+  MemberPublicProps,
+  UserRole,
+} from '../types/member'
 
 export const useMember = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<types.GET_MEMBER, types.GET_MEMBERVariables>(
