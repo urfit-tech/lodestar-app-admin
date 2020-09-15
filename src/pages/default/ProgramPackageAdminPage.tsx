@@ -71,6 +71,7 @@ const ProgramPackageAdminPage: React.FC = () => {
                   programPackage?.programs.map(program => ({
                     id: program.program.id,
                     title: program.program.title,
+                    programPackageProgramId: program.id,
                   })) || []
                 }
                 onRefetch={refetch}

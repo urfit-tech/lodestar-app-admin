@@ -3696,15 +3696,41 @@ export interface INSERT_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program {
   affected_rows: number;
 }
 
+export interface INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program {
+  __typename: "program_package_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_tempo_delivery {
+  __typename: "program_tempo_delivery_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface INSERT_PROGRAM_PACKAGE_PROGRAM {
   /**
    * insert data into the table: "program_package_program"
    */
   insert_program_package_program: INSERT_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program | null;
+  /**
+   * delete data from the table: "program_package_program"
+   */
+  delete_program_package_program: INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program | null;
+  /**
+   * delete data from the table: "program_tempo_delivery"
+   */
+  delete_program_tempo_delivery: INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_tempo_delivery | null;
 }
 
 export interface INSERT_PROGRAM_PACKAGE_PROGRAMVariables {
   programs: program_package_program_insert_input[];
+  program_package_id: any;
+  delete_programs_id: any[];
 }
 
 /* tslint:disable */
