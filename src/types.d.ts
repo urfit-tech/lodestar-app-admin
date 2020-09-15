@@ -8467,6 +8467,7 @@ export interface GET_CREATOR_PROGRAM_ISSUESVariables {
   appId: string;
   threadIdLike?: string | null;
   unsolved?: boolean | null;
+  memberId?: string | null;
 }
 
 /* tslint:disable */
@@ -9260,6 +9261,28 @@ export enum member_contract_update_column {
   revoked_at = "revoked_at",
   started_at = "started_at",
   values = "values",
+}
+
+/**
+ * unique or primary key constraints on table "member_note"
+ */
+export enum member_note_constraint {
+  member_note_pkey = "member_note_pkey",
+}
+
+/**
+ * update columns of table "member_note"
+ */
+export enum member_note_update_column {
+  author_id = "author_id",
+  created_at = "created_at",
+  description = "description",
+  duration = "duration",
+  id = "id",
+  member_id = "member_id",
+  status = "status",
+  type = "type",
+  updated_at = "updated_at",
 }
 
 /**
@@ -12365,6 +12388,7 @@ export interface issue_enrollment_bool_exp {
   _and?: (issue_enrollment_bool_exp | null)[] | null;
   _not?: issue_enrollment_bool_exp | null;
   _or?: (issue_enrollment_bool_exp | null)[] | null;
+  issue?: issue_bool_exp | null;
   issue_id?: uuid_comparison_exp | null;
   program?: program_bool_exp | null;
   program_content_id?: uuid_comparison_exp | null;
@@ -12662,8 +12686,10 @@ export interface member_bool_exp {
   issues?: issue_bool_exp | null;
   logined_at?: timestamptz_comparison_exp | null;
   media?: media_bool_exp | null;
+  memberNotesByAuthorId?: member_note_bool_exp | null;
   member_cards?: member_card_bool_exp | null;
   member_contracts?: member_contract_bool_exp | null;
+  member_notes?: member_note_bool_exp | null;
   member_phones?: member_phone_bool_exp | null;
   member_properties?: member_property_bool_exp | null;
   member_shops?: member_shop_bool_exp | null;
@@ -12829,8 +12855,10 @@ export interface member_insert_input {
   issues?: issue_arr_rel_insert_input | null;
   logined_at?: any | null;
   media?: media_arr_rel_insert_input | null;
+  memberNotesByAuthorId?: member_note_arr_rel_insert_input | null;
   member_cards?: member_card_arr_rel_insert_input | null;
   member_contracts?: member_contract_arr_rel_insert_input | null;
+  member_notes?: member_note_arr_rel_insert_input | null;
   member_phones?: member_phone_arr_rel_insert_input | null;
   member_properties?: member_property_arr_rel_insert_input | null;
   member_shops?: member_shop_arr_rel_insert_input | null;
@@ -12861,6 +12889,60 @@ export interface member_insert_input {
   vouchers?: voucher_arr_rel_insert_input | null;
   youtube_channel_ids?: any | null;
   zoom_user_id_deprecate?: string | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "member_note"
+ */
+export interface member_note_arr_rel_insert_input {
+  data: member_note_insert_input[];
+  on_conflict?: member_note_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_note". All fields are combined with a logical 'AND'.
+ */
+export interface member_note_bool_exp {
+  _and?: (member_note_bool_exp | null)[] | null;
+  _not?: member_note_bool_exp | null;
+  _or?: (member_note_bool_exp | null)[] | null;
+  author?: member_bool_exp | null;
+  author_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  duration?: Int_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  status?: String_comparison_exp | null;
+  type?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_note"
+ */
+export interface member_note_insert_input {
+  author?: member_obj_rel_insert_input | null;
+  author_id?: string | null;
+  created_at?: any | null;
+  description?: string | null;
+  duration?: number | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  status?: string | null;
+  type?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "member_note"
+ */
+export interface member_note_on_conflict {
+  constraint: member_note_constraint;
+  update_columns: member_note_update_column[];
+  where?: member_note_bool_exp | null;
 }
 
 /**

@@ -73,11 +73,11 @@ export type IssueProps = {
   description: string
   solvedAt: Date | null
   createdAt: Date
-  memberId: string
+  issueMemberId: string
   threadId: string
-  reactedMemberIds: Array<string>
+  reactedMemberIds: string[]
   issueRepliesCount: number
-  issueInstructorIds: Array<string> | undefined
+  issueInstructorIds?: string[]
 }
 
 export type PeriodType = 'D' | 'W' | 'M' | 'Y'
