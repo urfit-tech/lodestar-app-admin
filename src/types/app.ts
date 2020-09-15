@@ -24,6 +24,7 @@ export type Module =
   | 'voucher'
   | 'member_property'
   | 'member_note'
+  | 'member_task'
 
 export type Currency = {
   name: string

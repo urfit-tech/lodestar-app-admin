@@ -336,6 +336,7 @@ export const profileMessages = {
     note: { id: 'profile.label.note', defaultMessage: '備註' },
     basic: { id: 'profile.label.basic', defaultMessage: '基本資料' },
     property: { id: 'profile.label.property', defaultMessage: '自訂欄位' },
+    task: { id: 'profile.label.task', defaultMessage: '任務' },
     permission: { id: 'profile.label.property', defaultMessage: '權限' },
     callType: { id: 'profile.label.callType', defaultMessage: '通話類型' },
     description: { id: 'profile.label.description', defaultMessage: '內容' },
@@ -793,6 +794,26 @@ export const blogMessages = {
     uploading: { id: 'blog.text.uploading', defaultMessage: '上傳中' },
     noVideoFound: { id: 'blog.text.noVideoFound', defaultMessage: '找不到影片' },
   }),
+}
+
+export const memberMessages = {
+  status: {
+    priorityHigh: { id: 'member.status.priorityHigh', defaultMessage: 'High' },
+    priorityMedium: { id: 'member.status.priorityMedium', defaultMessage: 'Medium' },
+    priorityLow: { id: 'member.status.priorityLow', defaultMessage: 'Low' },
+    statusPending: { id: 'member.status.statusPending', defaultMessage: '待處理' },
+    statusInProgress: { id: 'member.status.statusInProgress', defaultMessage: '處理中' },
+    statusDone: { id: 'member.status.statusDone', defaultMessage: '已解決' },
+  },
+  label: defineMessages({
+    taskTitle: { id: 'member.label.taskTitle', defaultMessage: '標題' },
+    priority: { id: 'member.label.priority', defaultMessage: '優先權' },
+    status: { id: 'member.label.status', defaultMessage: '狀態' },
+    classification: { id: 'member.label.classification', defaultMessage: '分類' },
+    dueDate: { id: 'member.label.dueDate', defaultMessage: '到期日' },
+    assign: { id: 'member.label.assign', defaultMessage: '指派' },
+  }),
+  text: {},
 }
 
 export const codeMessages = defineMessages({

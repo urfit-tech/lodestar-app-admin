@@ -2667,6 +2667,69 @@ export interface UPDATE_MEMBER_PROPERTYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_MEMBER_TASK_COLLECTION
+// ====================================================
+
+export interface GET_MEMBER_TASK_COLLECTION_member_task_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+}
+
+export interface GET_MEMBER_TASK_COLLECTION_member_task_executor {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+  picture_url: string | null;
+}
+
+export interface GET_MEMBER_TASK_COLLECTION_member_task {
+  __typename: "member_task";
+  id: any;
+  title: string;
+  description: string | null;
+  /**
+   * high / medium / low
+   */
+  priority: string;
+  /**
+   * pending / in-progress / done
+   */
+  status: string;
+  classification: string | null;
+  due_at: any | null;
+  /**
+   * An object relationship
+   */
+  member: GET_MEMBER_TASK_COLLECTION_member_task_member;
+  /**
+   * An object relationship
+   */
+  executor: GET_MEMBER_TASK_COLLECTION_member_task_executor | null;
+}
+
+export interface GET_MEMBER_TASK_COLLECTION {
+  /**
+   * fetch data from the table: "member_task"
+   */
+  member_task: GET_MEMBER_TASK_COLLECTION_member_task[];
+}
+
+export interface GET_MEMBER_TASK_COLLECTIONVariables {
+  memberId: string;
+  titleSearch?: string | null;
+  classificationSearch?: string | null;
+  executorSearch?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_AVATAR
 // ====================================================
 

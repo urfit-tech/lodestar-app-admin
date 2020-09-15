@@ -86,3 +86,22 @@ export type MemberNoteAdminProps = {
     pictureUrl: string | null
   }
 }
+
+export type MemberTaskProps = {
+  id: string
+  title: string
+  priority: 'high' | 'medium' | 'low'
+  status: 'pending' | 'in-progress' | 'done'
+  classification: string | null
+  dueAt: Date | null
+  description: string | null
+  member: {
+    id: string
+    name: string
+  }
+  executor: {
+    id: string
+    name: string
+    avatarUrl: string | null
+  } | null
+}
