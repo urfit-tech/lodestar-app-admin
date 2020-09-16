@@ -136,7 +136,8 @@ const RecordingPage: React.FC = () => {
           const audioBuffer = await decodeAudioArrayBuffer(arrayBuffer)
           onGetRecordAudio(audioBuffer)
         } catch (error) {
-          message.error(error)
+          message.error(error.message)
+          setIsGeneratingAudio(false)
         }
       }
     }

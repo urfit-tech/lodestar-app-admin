@@ -5,10 +5,6 @@ import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import { desktopViewMixin, durationFormatter } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
-import { ReactComponent as PlayRate05xIcon } from '../../images/default/multiple-0-5.svg'
-import { ReactComponent as PlayRate10xIcon } from '../../images/default/multiple-1-0.svg'
-import { ReactComponent as PlayRate15xIcon } from '../../images/default/multiple-1-5.svg'
-import { ReactComponent as PlayRate20xIcon } from '../../images/default/multiple-2-0.svg'
 import { ReactComponent as BackwardIcon } from '../../images/icon/backward.svg'
 import { ReactComponent as ForwardIcon } from '../../images/icon/forward.svg'
 import { ReactComponent as PauseCircleIcon } from '../../images/icon/pause-circle.svg'
@@ -159,7 +155,7 @@ const RecordingController: React.FC<{
     <StyledOnTopWrapper hidden={hidden}>
       <Responsive.Default>
         <StyledOverlay className="d-flex align-items-center justify-content-around" active={isEditing}>
-          <div className="flex-grow-1 text-center">
+          {/* <div className="flex-grow-1 text-center">
             <PlayRateButton
               playRate={playRate}
               onPlayRateChange={onPlayRateChange}
@@ -181,7 +177,7 @@ const RecordingController: React.FC<{
               }}
             />
           </div>
-          <Divider type="vertical" style={{ height: '49px' }} />
+          <Divider type="vertical" style={{ height: '49px' }} /> */}
           <div className="flex-grow-1 text-center">
             <StyledOverlayButton type="link" size="small" onClick={() => onDelete && onDelete()}>
               <Icon component={() => <TrashOIcon />} className="d-block mb-1" />
@@ -248,7 +244,7 @@ const RecordingController: React.FC<{
 
             <StyledAction className="col-3 col-lg-4 d-flex align-items-center justify-content-end">
               <Responsive.Desktop>
-                <Tooltip title={<TooltipText>{formatMessage(podcastMessages.label.playRate)}</TooltipText>}>
+                {/* <Tooltip title={<TooltipText>{formatMessage(podcastMessages.label.playRate)}</TooltipText>}>
                   <PlayRateButton
                     playRate={playRate}
                     onPlayRateChange={onPlayRateChange}
@@ -273,7 +269,7 @@ const RecordingController: React.FC<{
                       )
                     }}
                   />
-                </Tooltip>
+                </Tooltip> */}
                 <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.trim)}</TooltipText>}>
                   <StyledBarIconButton type="link" className="p-0 m-0" onClick={() => onTrim && onTrim()}>
                     <TrimIcon />
