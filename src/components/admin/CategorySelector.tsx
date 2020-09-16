@@ -30,30 +30,35 @@ const StyledSelect = styled(Select)<{ value?: any; onChange?: any }>`
 
 const CategorySelector: React.FC<{
   classType: ClassType
+  flatten?: boolean
+  single?: boolean
   value?: string
   onChange?: (value: string) => void
-  flatten?: boolean
-}> = ({ flatten, value, onChange, classType }) => {
+}> = ({ classType, flatten, single, value, onChange }) => {
   const { loading, categories } = useCategory(classType)
 
-  return flatten ? (
-    <>
-      {categories.map(category => {
-        return (
-          <StyledButton
-            className="mr-2 mb-2"
-            key={category.id}
-            type={category.id === value ? 'primary' : 'default'}
-            shape="round"
-            onClick={() => onChange && onChange(category.id)}
-          >
-            {category.name}
-          </StyledButton>
-        )
-      })}
-    </>
-  ) : (
-    <StyledSelect mode="multiple" loading={loading} value={value} onChange={onChange}>
+  if (flatten) {
+    return (
+      <>
+        {categories.map(category => {
+          return (
+            <StyledButton
+              className="mr-2 mb-2"
+              key={category.id}
+              type={category.id === value ? 'primary' : 'default'}
+              shape="round"
+              onClick={() => onChange && onChange(category.id)}
+            >
+              {category.name}
+            </StyledButton>
+          )
+        })}
+      </>
+    )
+  }
+
+  return (
+    <StyledSelect mode={single ? undefined : 'multiple'} loading={loading} value={value} onChange={onChange}>
       {categories.map(category => (
         <Select.Option key={category.id} value={category.id} style={{ borderRadius: '4px' }}>
           {category.name}

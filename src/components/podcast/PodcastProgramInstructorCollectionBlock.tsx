@@ -10,8 +10,8 @@ import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { PodcastProgramAdminProps } from '../../types/podcast'
+import CreatorSelector from '../admin/ContentCreatorSelector'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
-import CreatorSelector from '../common/CreatorSelector'
 
 const StyledModalTitle = styled.div`
   color: var(--gray-darker);

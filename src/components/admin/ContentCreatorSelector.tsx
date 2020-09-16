@@ -8,12 +8,12 @@ import types from '../../types'
 import { MemberOptionProps } from '../../types/member'
 import MemberSelector from './MemberSelector'
 
-const CreatorSelector: React.FC<{
+const ContentCreatorSelector: React.FC<{
   value?: string
   onChange?: (value: string | null) => void
 }> = ({ value, onChange }) => {
   const { formatMessage } = useIntl()
-  const { loading, error, members } = useGetCreatorCollection()
+  const { loading, error, members } = useContentCreatorCollection()
 
   if (loading) {
     return <Spin />
@@ -32,10 +32,10 @@ const CreatorSelector: React.FC<{
   )
 }
 
-const useGetCreatorCollection = () => {
-  const { data, loading, error } = useQuery<types.GET_CREATOR_COLLECTION>(
+const useContentCreatorCollection = () => {
+  const { data, loading, error } = useQuery<types.GET_CONTENT_CREATOR_COLLECTION>(
     gql`
-      query GET_CREATOR_COLLECTION {
+      query GET_CONTENT_CREATOR_COLLECTION {
         member(where: { role: { _in: ["content-creator", "app-owner"] } }) {
           id
           picture_url
@@ -65,4 +65,4 @@ const useGetCreatorCollection = () => {
   }
 }
 
-export default CreatorSelector
+export default ContentCreatorSelector

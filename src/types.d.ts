@@ -363,6 +363,56 @@ export interface UPDATE_ACTIVITY_TICKETVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_ALL_MEMBER_COLLECTION
+// ====================================================
+
+export interface GET_ALL_MEMBER_COLLECTION_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_ALL_MEMBER_COLLECTION {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_ALL_MEMBER_COLLECTION_member[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CONTENT_CREATOR_COLLECTION
+// ====================================================
+
+export interface GET_CONTENT_CREATOR_COLLECTION_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_CONTENT_CREATOR_COLLECTION {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_CONTENT_CREATOR_COLLECTION_member[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_TITLE
 // ====================================================
 
@@ -1196,31 +1246,6 @@ export interface INSERT_COIN_LOG_COLLECTION {
 
 export interface INSERT_COIN_LOG_COLLECTIONVariables {
   data: coin_log_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_CREATOR_COLLECTION
-// ====================================================
-
-export interface GET_CREATOR_COLLECTION_member {
-  __typename: "member";
-  id: string;
-  picture_url: string | null;
-  name: string;
-  username: string;
-  email: string;
-}
-
-export interface GET_CREATOR_COLLECTION {
-  /**
-   * fetch data from the table: "member"
-   */
-  member: GET_CREATOR_COLLECTION_member[];
 }
 
 /* tslint:disable */
@@ -2670,6 +2695,12 @@ export interface UPDATE_MEMBER_PROPERTYVariables {
 // GraphQL query operation: GET_MEMBER_TASK_COLLECTION
 // ====================================================
 
+export interface GET_MEMBER_TASK_COLLECTION_member_task_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
 export interface GET_MEMBER_TASK_COLLECTION_member_task_member {
   __typename: "member";
   id: string;
@@ -2698,8 +2729,11 @@ export interface GET_MEMBER_TASK_COLLECTION_member_task {
    * pending / in-progress / done
    */
   status: string;
-  classification: string | null;
   due_at: any | null;
+  /**
+   * An object relationship
+   */
+  category: GET_MEMBER_TASK_COLLECTION_member_task_category | null;
   /**
    * An object relationship
    */
@@ -2718,9 +2752,9 @@ export interface GET_MEMBER_TASK_COLLECTION {
 }
 
 export interface GET_MEMBER_TASK_COLLECTIONVariables {
-  memberId: string;
+  memberId?: string | null;
   titleSearch?: string | null;
-  classificationSearch?: string | null;
+  categorySearch?: string | null;
   executorSearch?: string | null;
 }
 

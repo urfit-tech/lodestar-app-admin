@@ -12,8 +12,8 @@ import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { ReactComponent as MoreIcon } from '../../images/icon/more.svg'
 import { ReactComponent as PlusIcon } from '../../images/icon/plus.svg'
 import { MerchandiseProps } from '../../types/merchandise'
+import SingleUploader from '../admin/SingleUploader'
 import { CustomRatioImage } from '../common/Image'
-import SingleUploader from '../common/SingleUploader'
 
 const StyledOverlayBlock = styled.div`
   position: absolute;

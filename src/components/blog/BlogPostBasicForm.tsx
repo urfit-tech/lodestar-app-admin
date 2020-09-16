@@ -13,7 +13,7 @@ import { blogMessages, commonMessages, errorMessages } from '../../helpers/trans
 import types from '../../types'
 import { PostProps } from '../../types/blog'
 import { StyledTips } from '../admin'
-import CategorySelector from '../common/CategorySelector'
+import CategorySelector from '../admin/CategorySelector'
 
 const StyledText = styled.div`
   color: var(--gray-dark);

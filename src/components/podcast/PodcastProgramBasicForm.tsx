@@ -13,8 +13,8 @@ import types from '../../types'
 import { CategoryProps } from '../../types/general'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import { StyledTips } from '../admin'
-import CategorySelector from '../common/CategorySelector'
-import LanguageSelector from '../common/LanguageSelector'
+import CategorySelector from '../admin/CategorySelector'
+import LanguageSelector from '../admin/LanguageSelector'
 
 const PodcastProgramBasicForm: React.FC<{
   podcastProgramAdmin:

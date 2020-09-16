@@ -8,8 +8,8 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import { ClassType } from '../../types/general'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
-import CategorySelector from '../common/CategorySelector'
-import CreatorSelector from './CreatorSelector'
+import CategorySelector from '../admin/CategorySelector'
+import CreatorSelector from '../admin/ContentCreatorSelector'
 
 const ProductCreationModal: React.FC<
   AdminModalProps & {

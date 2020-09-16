@@ -11,7 +11,7 @@ import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useMemberSummaryCollection } from '../../hooks/member'
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
-import MemberSelector from './MemberSelector'
+import MemberSelector from '../admin/MemberSelector'
 
 const messages = defineMessages({
   sendingCoin: { id: 'promotion.label.sendingCoin', defaultMessage: '發送代幣' },
