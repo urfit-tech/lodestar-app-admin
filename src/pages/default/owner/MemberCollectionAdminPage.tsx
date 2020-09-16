@@ -1,23 +1,23 @@
-import { CaretDownOutlined, DownloadOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
+import { CaretDownOutlined, ExportOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Dropdown, Form, Input, Menu, Pagination, Table, Tag } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { ColumnProps } from 'antd/lib/table'
 import moment from 'moment'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
+import { useHistory } from 'react-router-dom'
 import styled, { ThemeContext } from 'styled-components'
 import { AdminPageTitle } from '../../../components/admin'
 import AdminCard from '../../../components/admin/AdminCard'
 import AdminModal from '../../../components/admin/AdminModal'
 import { AvatarImage } from '../../../components/common/Image'
-import MemberAdminModal, { MemberInfoProps } from '../../../components/common/MemberAdminModal'
 import { UserRoleName } from '../../../components/common/UserRole'
 import AdminLayout from '../../../components/layout/AdminLayout'
 import AppContext from '../../../contexts/AppContext'
 import { currencyFormatter, downloadCSV, toCSV } from '../../../helpers'
 import { commonMessages } from '../../../helpers/translation'
 import { useMemberCollection, useMemberRoleCount } from '../../../hooks/member'
-import { UserRole } from '../../../types/general'
+import { MemberInfoProps, UserRole } from '../../../types/member'
 
 const StyledDropdown = styled(Dropdown)`
   width: 240px;
@@ -68,6 +68,7 @@ const getColumnSearchProps = ({
 
 const MemberCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
+  const history = useHistory()
   const theme = useContext(ThemeContext)
 
   // pagination
@@ -78,7 +79,7 @@ const MemberCollectionAdminPage: React.FC = () => {
   const [offset, setOffset] = useState(0)
   const [nameSearch, setNameSearch] = useState<string | null>(null)
   const [emailSearch, setEmailSearch] = useState<string | null>(null)
-  const { loading, dataSource, refetch } = useMemberCollection({
+  const { loading, dataSource } = useMemberCollection({
     role: roleFilter,
     offset,
     limit: 10,
@@ -171,11 +172,15 @@ const MemberCollectionAdminPage: React.FC = () => {
       }),
     },
     {
-      title: formatMessage(commonMessages.label.lastLogin),
-      dataIndex: 'loginedAt',
-      key: 'logined-at',
-      render: (text, record, index) => (record.loginedAt ? moment(record.loginedAt).fromNow() : ''),
-      sorter: (a, b) => (b.loginedAt ? b.loginedAt.getTime() : 0) - (a.loginedAt ? a.loginedAt.getTime() : 0),
+      title: formatMessage(commonMessages.label.phone),
+      dataIndex: 'phone',
+      render: (text, record, index) => record.phones.join(','),
+    },
+    {
+      title: formatMessage(commonMessages.label.createdDate),
+      dataIndex: 'createdAt',
+      render: (text, record, index) => (record.createdAt ? moment(record.createdAt).format('YYYY-MM-DD') : ''),
+      sorter: (a, b) => (b.createdAt ? b.createdAt.getTime() : 0) - (a.createdAt ? a.createdAt.getTime() : 0),
     },
     {
       title: formatMessage(commonMessages.label.consumption),
@@ -186,10 +191,6 @@ const MemberCollectionAdminPage: React.FC = () => {
       sorter: (a, b) => b.consumption - a.consumption,
     },
   ]
-
-  // MemberAdminModal
-  const [isMemberAdminModalVisible, setMemberAdminModalVisible] = useState(false)
-  const [selectedMember, setSelectedMember] = useState<MemberInfoProps | null>(null)
 
   return (
     <AdminLayout>
@@ -216,10 +217,7 @@ const MemberCollectionAdminPage: React.FC = () => {
             pagination={false}
             rowClassName={() => 'cursor-pointer'}
             onRow={record => ({
-              onClick: () => {
-                setSelectedMember(record)
-                setMemberAdminModalVisible(true)
-              },
+              onClick: () => history.push(`/admin/members/${record.id}`),
             })}
           />
           <div className="mt-4 d-flex justify-content-end">
@@ -235,19 +233,6 @@ const MemberCollectionAdminPage: React.FC = () => {
           </div>
         </StyledWrapper>
       </AdminCard>
-
-      {isMemberAdminModalVisible && (
-        <MemberAdminModal
-          visible
-          width="24rem"
-          member={selectedMember}
-          onCancel={() => setMemberAdminModalVisible(false)}
-          onSuccess={() => {
-            refetch()
-            setMemberAdminModalVisible(false)
-          }}
-        />
-      )}
     </AdminLayout>
   )
 }
@@ -289,8 +274,8 @@ const MemberExportModal: React.FC<{
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button type="primary" icon={<DownloadOutlined />} onClick={() => setVisible(true)}>
-          {formatMessage(commonMessages.ui.downloadMemberList)}
+        <Button icon={<ExportOutlined />} onClick={() => setVisible(true)}>
+          {formatMessage(commonMessages.ui.export)}
         </Button>
       )}
       confirmLoading={loading}

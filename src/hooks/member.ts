@@ -1,10 +1,16 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
-import { MemberInfoProps } from '../components/common/MemberAdminModal'
 import { commonMessages } from '../helpers/translation'
 import types from '../types'
-import { MemberOptionProps, MemberProps, MemberPublicProps, UserRole } from '../types/general'
+import {
+  MemberAdminProps,
+  MemberInfoProps,
+  MemberOptionProps,
+  MemberProps,
+  MemberPublicProps,
+  UserRole,
+} from '../types/member'
 
 export const useMember = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<types.GET_MEMBER, types.GET_MEMBERVariables>(
@@ -31,29 +37,116 @@ export const useMember = (memberId: string) => {
   )
 
   const member: MemberProps | null =
-    loading || error || !data
+    loading || error || !data || !data.member_by_pk
       ? null
       : {
-          id: data?.member_by_pk?.id || '',
-          name: data?.member_by_pk?.name || '',
-          email: data?.member_by_pk?.email || '',
-          username: data?.member_by_pk?.username || '',
-          pictureUrl: data?.member_by_pk?.picture_url || '',
-          description: data?.member_by_pk?.description || '',
-          abstract: data?.member_by_pk?.abstract || '',
-          title: data?.member_by_pk?.title || '',
-          memberTags: data?.member_by_pk?.member_tags.map(tag => ({
+          id: data.member_by_pk.id || '',
+          name: data.member_by_pk.name || '',
+          email: data.member_by_pk.email || '',
+          username: data.member_by_pk.username || '',
+          pictureUrl: data.member_by_pk.picture_url || '',
+          description: data.member_by_pk.description || '',
+          abstract: data.member_by_pk.abstract || '',
+          title: data.member_by_pk.title || '',
+          memberTags: data.member_by_pk.member_tags.map(tag => ({
             id: tag.id || '',
             tagName: tag.tag_name || '',
           })),
-          role: data?.member_by_pk?.role || '',
+          role: data.member_by_pk.role || '',
         }
 
   return {
-    member,
-    errorMember: error,
     loadingMember: loading,
+    errorMember: error,
+    member,
     refetchMember: refetch,
+  }
+}
+
+export const useMemberAdmin = (memberId: string) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_MEMBER_DESCRIPTION,
+    types.GET_MEMBER_DESCRIPTIONVariables
+  >(
+    gql`
+      query GET_MEMBER_DESCRIPTION($memberId: String!) {
+        member_by_pk(id: $memberId) {
+          id
+          picture_url
+          username
+          name
+          email
+          role
+          created_at
+          logined_at
+          member_tags {
+            id
+            tag_name
+          }
+          member_phones {
+            id
+            phone
+          }
+          member_properties {
+            id
+            property {
+              id
+              name
+            }
+            value
+          }
+          coin_logs_aggregate {
+            aggregate {
+              sum {
+                amount
+              }
+            }
+          }
+          order_logs(where: { status: { _eq: "SUCCESS" } }) {
+            order_products_aggregate {
+              aggregate {
+                sum {
+                  price
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    { variables: { memberId } },
+  )
+
+  const memberAdmin: MemberAdminProps | null =
+    loading || error || !data || !data.member_by_pk
+      ? null
+      : {
+          id: data.member_by_pk.id,
+          avatarUrl: data.member_by_pk?.picture_url,
+          username: data.member_by_pk.username,
+          name: data.member_by_pk.name,
+          email: data.member_by_pk.email,
+          role: data.member_by_pk.role as UserRole,
+          createdAt: new Date(data.member_by_pk.created_at),
+          loginedAt: data.member_by_pk.logined_at && new Date(data.member_by_pk.logined_at),
+          tags: data.member_by_pk.member_tags.map(v => v.tag_name),
+          phones: data.member_by_pk.member_phones.map(v => v.phone),
+          properties: data.member_by_pk.member_properties.map(v => ({
+            id: v.property.id,
+            name: v.property.name,
+            value: v.value,
+          })),
+          consumption: sum(
+            data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
+          ),
+          coins: data.member_by_pk.coin_logs_aggregate.aggregate?.sum?.amount || 0,
+        }
+
+  return {
+    loadingMemberAdmin: loading,
+    errorMemberAdmin: error,
+    memberAdmin,
+    refetchMemberAdmin: refetch,
   }
 }
 
@@ -245,10 +338,12 @@ export const useMemberCollection = ({
           name
           username
           email
+          created_at
           logined_at
           role
-          point_status {
-            points
+          member_phones {
+            id
+            phone
           }
           order_logs(where: { status: { _eq: "SUCCESS" } }) {
             order_products_aggregate {
@@ -276,20 +371,19 @@ export const useMemberCollection = ({
   const dataSource: MemberInfoProps[] =
     loading || error || !data
       ? []
-      : data.member
-          .map(member => ({
-            id: member.id,
-            avatarUrl: member.picture_url,
-            name: member.name || member.username,
-            email: member.email,
-            loginedAt: member.logined_at ? new Date(member.logined_at) : null,
-            role: member.role as UserRole,
-            points: member.point_status ? member.point_status.points : 0,
-            consumption: sum(
-              member.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
-            ),
-          }))
-          .sort((a, b) => (b.loginedAt ? b.loginedAt.getTime() : 0) - (a.loginedAt ? a.loginedAt.getTime() : 0))
+      : data.member.map(v => ({
+          id: v.id,
+          avatarUrl: v.picture_url,
+          name: v.name || v.username,
+          email: v.email,
+          role: v.role as UserRole,
+          createdAt: v.created_at ? new Date(v.created_at) : null,
+          loginedAt: v.logined_at,
+          phones: v.member_phones.map(v => v.phone),
+          consumption: sum(
+            v.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
+          ),
+        }))
 
   return {
     loading,
@@ -355,4 +449,33 @@ export const useUpdateMemberAccount = () => {
   )
 
   return updateMemberAccount
+}
+
+export const useProperty = () => {
+  const { loading, error, data, refetch } = useQuery<types.GET_PROPERTY, types.GET_PROPERTYVariables>(
+    gql`
+      query GET_PROPERTY($type: String!) {
+        property(where: { type: { _eq: $type } }, order_by: { position: asc }) {
+          id
+          name
+        }
+      }
+    `,
+    { variables: { type: 'member' } },
+  )
+
+  const properties =
+    loading || error || !data
+      ? []
+      : data.property.map(v => ({
+          id: v.id,
+          name: v.name,
+        }))
+
+  return {
+    loadingProperties: loading,
+    errorProperties: error,
+    properties,
+    refetchProperties: refetch,
+  }
 }

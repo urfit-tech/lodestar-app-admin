@@ -22,7 +22,7 @@ import {
 } from '../../hooks/programPackage'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
 import { ReactComponent as FileCheckIcon } from '../../images/icon/file-check.svg'
-import { MemberBriefProps } from '../../types/general'
+import { MemberBriefProps } from '../../types/member'
 
 const StyledProgramPackageTitle = styled.div`
   margin: 0 auto;

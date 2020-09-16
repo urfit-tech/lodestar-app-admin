@@ -2,7 +2,8 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { flatten, sum } from 'ramda'
 import types from '../types'
-import { MemberBriefProps, PeriodType } from '../types/general'
+import {  PeriodType } from '../types/general'
+import { MemberBriefProps } from '../types/member'
 import { ProgramPackageProps } from '../types/programPackage'
 
 export const useProgramPackageCollection = () => {

@@ -1,7 +1,7 @@
 import Axios from 'axios'
 import jwt from 'jsonwebtoken'
 import React, { useContext, useState } from 'react'
-import { UserRole } from '../types/general'
+import { UserRole } from '../types/member'
 
 type AuthContext = {
   isAuthenticating: boolean

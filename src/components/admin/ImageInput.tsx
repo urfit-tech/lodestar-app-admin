@@ -1,7 +1,7 @@
 import { UploadFile } from 'antd/lib/upload/interface'
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { CustomRadioImageProps, CustomRatioImage } from '../common/Image'
+import { CustomRatioImage, CustomRatioImageProps } from '../common/Image'
 import SingleUploader from '../common/SingleUploader'
 
 const StyledSingleUploader = styled(SingleUploader)`
@@ -26,7 +26,7 @@ const ImageInput: React.FC<{
   path: string
   value?: string | null
   onChange?: (value: string | null) => void
-  image: CustomRadioImageProps
+  image: CustomRatioImageProps
 }> = ({ path, value, onChange, image }) => {
   const [file, setFile] = useState<UploadFile | undefined>(undefined)
 

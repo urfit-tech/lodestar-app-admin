@@ -3,7 +3,7 @@ import { Redirect, Route, Switch } from 'react-router-dom'
 import LoadingPage from './pages/default/LoadingPage'
 import NotFoundPage from './pages/default/NotFoundPage'
 import LoadablePage from './pages/LoadablePage'
-import { UserRole } from './types/general'
+import { UserRole } from './types/member'
 
 type RouteProps = {
   path: string
@@ -235,6 +235,18 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   owner_members: {
     path: '/admin/members',
     pageName: 'owner/MemberCollectionAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_member: {
+    path: '/admin/members/:memberId',
+    pageName: 'owner/MemberAdminPage',
+    authenticated: true,
+    allowedUserRole: 'app-owner',
+  },
+  owner_member_properties: {
+    path: '/admin/member-properties',
+    pageName: 'owner/MemberPropertyAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
