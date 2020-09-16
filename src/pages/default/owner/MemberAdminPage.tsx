@@ -5,6 +5,7 @@ import React, { useContext } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import styled from 'styled-components'
+import { StringParam, useQueryParam } from 'use-query-params'
 import {
   AdminBlock,
   AdminBlockTitle,
@@ -14,6 +15,7 @@ import {
 } from '../../../components/admin'
 import { CustomRatioImage } from '../../../components/common/Image'
 import { StyledLayoutContent } from '../../../components/layout/DefaultLayout'
+import MemberPermissionForm from '../../../components/profile/MemberPermissionForm'
 import MemberProfileBasicForm from '../../../components/profile/MemberProfileBasicForm'
 import MemberPropertyAdminForm from '../../../components/profile/MemberPropertyAdminForm'
 import AppContext from '../../../contexts/AppContext'
@@ -28,6 +30,7 @@ const messages = defineMessages({
   profile: { id: 'profile.label.profile', defaultMessage: '個人' },
   basic: { id: 'profile.label.basic', defaultMessage: '基本資料' },
   property: { id: 'profile.label.property', defaultMessage: '自訂欄位' },
+  permission: { id: 'profile.label.property', defaultMessage: '權限' },
 })
 
 const StyledSider = styled(Layout.Sider)`
@@ -50,6 +53,7 @@ const StyledDescriptionLabel = styled.span`
 const MemberAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { memberId } = useParams<{ memberId: string }>()
+  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { enabledModules, settings } = useContext(AppContext)
   const { memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
 
@@ -122,7 +126,8 @@ const MemberAdminPage: React.FC = () => {
 
         <StyledLayoutContent variant="gray">
           <Tabs
-            defaultActiveKey="profile"
+            activeKey={activeKey || 'profile'}
+            onChange={key => setActiveKey(key)}
             renderTabBar={(props, DefaultTabBar) => (
               <AdminTabBarWrapper>
                 <DefaultTabBar {...props} className="mb-0" />
@@ -141,6 +146,13 @@ const MemberAdminPage: React.FC = () => {
                     <MemberPropertyAdminForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
                   </AdminBlock>
                 )}
+              </div>
+            </Tabs.TabPane>
+            <Tabs.TabPane key="permission" tab={formatMessage(messages.permission)}>
+              <div className="p-5">
+                <AdminBlock>
+                  <MemberPermissionForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
+                </AdminBlock>
               </div>
             </Tabs.TabPane>
           </Tabs>
