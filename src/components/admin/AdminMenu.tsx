@@ -31,8 +31,6 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
 
   const handleClick: MenuClickEventHandler = ({ key, item }) => {
     if (typeof key === 'string' && key.startsWith('_blank')) {
-      console.log(key, item)
-      // window.open(item['data-href'])
     } else {
       const route = routesProps[key]
       route ? history.push(route.path) : alert(formatMessage(errorMessages.route.notFound))

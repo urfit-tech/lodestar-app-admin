@@ -110,10 +110,7 @@ const PhoneCollectionInput: React.FC<{
           key={index}
           className="mb-4"
           value={phone}
-          onChange={e => {
-            console.log(value, e.target.value, value.splice(index, 1, e.target.value))
-            onChange && onChange(value.splice(index, 1, e.target.value))
-          }}
+          onChange={e => onChange && onChange(value.splice(index, 1, e.target.value))}
         />
       ))}
     </>
