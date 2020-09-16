@@ -176,7 +176,7 @@ export const usePodcastProgramAdmin = (podcastProgramId: string) => {
             id: podcastProgramCategory.category.id,
             name: podcastProgramCategory.category.name,
           })),
-          tags: data.podcast_program_by_pk.podcast_program_tags.map(podcastProgramTag => podcastProgramTag.tag.name),
+          tags: data.podcast_program_by_pk.podcast_program_tags.map(podcastProgramTag => podcastProgramTag.tag?.name || ''),
         }
 
   return {
