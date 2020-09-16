@@ -130,7 +130,7 @@ export const useMemberAdmin = (memberId: string) => {
           createdAt: new Date(data.member_by_pk.created_at),
           loginedAt: data.member_by_pk.logined_at && new Date(data.member_by_pk.logined_at),
           tags: data.member_by_pk.member_tags.map(v => v.tag_name),
-          phones: data.member_by_pk.member_phones.map(v => v.phone),
+          phones: data.member_by_pk.member_phones.map(v => v.phone).filter(v => v),
           properties: data.member_by_pk.member_properties.map(v => ({
             id: v.property.id,
             name: v.property.name,

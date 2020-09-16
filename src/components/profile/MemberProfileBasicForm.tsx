@@ -6,7 +6,7 @@ import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import TagSelector from '../../containers/common/TagSelector'
 import AppContext from '../../contexts/AppContext'
-import { handleError, notEmpty } from '../../helpers'
+import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MemberAdminProps } from '../../types/member'
@@ -44,10 +44,12 @@ const MemberProfileBasicForm: React.FC<{
           member_id: memberAdmin.id,
           tag_name: tag,
         })),
-        phones: values.phones.filter(notEmpty).map((phone: string) => ({
-          member_id: memberAdmin.id,
-          phone,
-        })),
+        phones: values.phones
+          .filter((phone: string) => !!phone)
+          .map((phone: string) => ({
+            member_id: memberAdmin.id,
+            phone,
+          })),
       },
     })
       .then(() => {
@@ -110,7 +112,11 @@ const PhoneCollectionInput: React.FC<{
           key={index}
           className="mb-4"
           value={phone}
-          onChange={e => onChange && onChange(value.splice(index, 1, e.target.value))}
+          onChange={e => {
+            const newValue = [...value]
+            newValue.splice(index, 1, e.target.value)
+            onChange && onChange(newValue)
+          }}
         />
       ))}
     </>
