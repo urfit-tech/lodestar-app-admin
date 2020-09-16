@@ -46,7 +46,7 @@ export const createUploadFn = (appId: string, authToken: string | null) => {
           alt: '',
           loop: false,
           autoPlay: false,
-          controls: false,
+          controls: true,
           poster: '',
         },
       })

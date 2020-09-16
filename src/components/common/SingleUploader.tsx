@@ -98,7 +98,6 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
       })
         .then(onSuccess)
         .catch(error => {
-          console.log(error)
           onError(error)
         })
     },

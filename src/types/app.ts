@@ -22,6 +22,7 @@ export type Module =
   | 'social_connect'
   | 'tempo_delivery'
   | 'voucher'
+  | 'member_property'
 
 export type Currency = {
   name: string

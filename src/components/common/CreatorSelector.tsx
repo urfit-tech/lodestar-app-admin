@@ -5,7 +5,7 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { errorMessages } from '../../helpers/translation'
 import types from '../../types'
-import { MemberOptionProps } from '../../types/general'
+import { MemberOptionProps } from '../../types/member'
 import MemberSelector from './MemberSelector'
 
 const CreatorSelector: React.FC<{

@@ -9,12 +9,14 @@ const StyledDraggableItem = styled.div`
   justify-content: space-between;
   align-items: center;
 `
-type DraggableItemProps = HTMLAttributes<HTMLDivElement> & {
-  dataId: string
-  handlerClassName?: string
-  actions?: React.ReactNode[]
-}
-const DraggableItem: React.FC<DraggableItemProps> = ({ dataId, handlerClassName, children, actions, ...divProps }) => {
+
+const DraggableItem: React.FC<
+  HTMLAttributes<HTMLDivElement> & {
+    dataId: string
+    handlerClassName?: string
+    actions?: React.ReactNode[]
+  }
+> = ({ dataId, handlerClassName, children, actions, ...divProps }) => {
   return (
     <StyledDraggableItem {...divProps} data-id={dataId}>
       <div className="d-flex align-items-center">

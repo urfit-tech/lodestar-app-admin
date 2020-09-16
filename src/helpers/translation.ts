@@ -47,6 +47,7 @@ export const commonMessages = {
     preview: { id: 'common.ui.preview', defaultMessage: '預覽' },
     backToHomepage: { id: 'common.ui.backToHomepage', defaultMessage: '回首頁' },
     addCategory: { id: 'common.ui.addCategory', defaultMessage: '新增分類' },
+    addProperty: { id: 'common.ui.addProperty', defaultMessage: '新增欄位' },
     changePosition: { id: 'common.ui.changePosition', defaultMessage: '調整排序' },
     downloadMemberList: { id: 'common.ui.downloadMemberList', defaultMessage: '下載名單' },
     export: { id: 'common.ui.export', defaultMessage: '匯出' },
@@ -137,7 +138,9 @@ export const commonMessages = {
     resetPassword: { id: 'common.label.resetPassword', defaultMessage: '重設密碼' },
     categoryItem: { id: 'common.label.categoryItem', defaultMessage: '分類項目' },
     lastLogin: { id: 'common.label.lastLogin', defaultMessage: '上次登入' },
+    createdDate: { id: 'common.label.createdDate', defaultMessage: '建立日期' },
     holdingPoints: { id: 'common.label.holdingPoints', defaultMessage: '持有點數' },
+    ownedCoins: { id: 'common.label.ownedCoins', defaultMessage: '持有代幣' },
     points: { id: 'common.label.points', defaultMessage: '{points} 點' },
     consumption: { id: 'common.label.consumption', defaultMessage: '消費金額' },
     allMembers: { id: 'common.label.allMembers', defaultMessage: '全部會員' },
@@ -156,6 +159,7 @@ export const commonMessages = {
     exportFields: { id: 'common.label.exportFields', defaultMessage: '匯出欄位' },
     date: { id: 'common.label.date', defaultMessage: '日期' },
     podcastSubscription: { id: 'common.label.podcastSubscription', defaultMessage: '訂閱廣播頻道' },
+    propertyItem: { id: 'common.label.propertyItem', defaultMessage: '欄位項目' },
   }),
   term: defineMessages({
     instructor: { id: 'common.term.instructor', defaultMessage: '老師' },
@@ -294,7 +298,9 @@ export const commonMessages = {
     coupons: { id: 'common.menu.couponPlans', defaultMessage: '折價方案' },
     vouchers: { id: 'common.menu.voucherPlans', defaultMessage: '兌換方案' },
     categories: { id: 'common.menu.categories', defaultMessage: '分類設定' },
-    members: { id: 'common.menu.members', defaultMessage: '會員管理' },
+    memberAdmin: { id: 'common.menu.memberAdmin', defaultMessage: '會員管理' },
+    members: { id: 'common.menu.members', defaultMessage: '會員列表' },
+    memberProperties: { id: 'common.menu.memberProperties', defaultMessage: '自訂欄位' },
     ownerSettings: { id: 'common.menu.ownerSettings', defaultMessage: '管理員設定' },
     creatorSettings: { id: 'common.menu.creatorSettings', defaultMessage: '創作者設定' },
     appAdmin: { id: 'common.menu.appAdmin', defaultMessage: '網站管理' },
@@ -768,5 +774,3 @@ export const codeMessages = defineMessages({
     defaultMessage: '寄送信件失敗',
   },
 })
-
-// { id: '', defaultMessage: '' },

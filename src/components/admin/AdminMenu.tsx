@@ -31,8 +31,6 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
 
   const handleClick: MenuClickEventHandler = ({ key, item }) => {
     if (typeof key === 'string' && key.startsWith('_blank')) {
-      console.log(key, item)
-      // window.open(item['data-href'])
     } else {
       const route = routesProps[key]
       route ? history.push(route.path) : alert(formatMessage(errorMessages.route.notFound))
@@ -62,7 +60,8 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
           'owner_activity_admin',
           'owner_merchandise_admin',
           'owner_blog_admin',
-          'owner_coin_admin',
+          'owner_credit_admin',
+          'owner_member_admin',
         ]}
       >
         <Menu.Item key="owner_sales">
@@ -210,10 +209,21 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
           </Menu.SubMenu>
         )}
 
-        <Menu.Item key="owner_members">
-          <Icon component={() => <UsersIcon />} />
-          <span>{formatMessage(commonMessages.menu.members)}</span>
-        </Menu.Item>
+        <Menu.SubMenu
+          key="owner_member_admin"
+          title={
+            <span>
+              <Icon component={() => <UsersIcon />} />
+              <span>{formatMessage(commonMessages.menu.memberAdmin)}</span>
+            </span>
+          }
+        >
+          <Menu.Item key="owner_members">{formatMessage(commonMessages.menu.members)}</Menu.Item>
+          {enabledModules.member_property && (
+            <Menu.Item key="owner_member_properties">{formatMessage(commonMessages.menu.memberProperties)}</Menu.Item>
+          )}
+        </Menu.SubMenu>
+
         <Menu.Item key="settings">
           <Icon component={() => <UserIcon />} />
           <span>{formatMessage(commonMessages.menu.ownerSettings)}</span>

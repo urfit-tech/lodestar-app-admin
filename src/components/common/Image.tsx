@@ -16,14 +16,14 @@ export const AvatarImage = styled.div<AvatarImageProps>`
   border-radius: ${props => (props.shape === 'square' ? '4px' : '50%')};
 `
 
-export type CustomRadioImageProps = {
+export type CustomRatioImageProps = {
   width: string
   ratio: number
   src?: string | null
   shape?: 'default' | 'rounded' | 'circle'
   withShadow?: boolean
 }
-export const CustomRatioImage = styled.div<CustomRadioImageProps>`
+export const CustomRatioImage = styled.div<CustomRatioImageProps>`
   padding-top: calc(${props => props.width} * ${props => props.ratio});
   width: ${props => props.width};
   background-image: url(${props => props.src});

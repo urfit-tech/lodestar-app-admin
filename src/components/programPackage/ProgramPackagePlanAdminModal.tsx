@@ -65,7 +65,6 @@ const ProgramPackagePlanAdminModal: React.FC<
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
-    console.log(isSubscription)
     form
       .validateFields()
       .then((values: any) => {

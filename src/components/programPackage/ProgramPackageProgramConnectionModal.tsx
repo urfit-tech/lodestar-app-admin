@@ -16,6 +16,7 @@ const ProgramPackageProgramConnectionModal: React.FC<{
   programs: {
     id: string
     title: string
+    programPackageProgramId: string
   }[]
   onRefetch?: () => void
 }> = ({ programPackageId, programs, onRefetch }) => {
@@ -35,14 +36,17 @@ const ProgramPackageProgramConnectionModal: React.FC<{
       .validateFields()
       .then((values: any) => {
         setLoading(true)
+        const programsId = values.programValues.map((value: string) => value.split('_')[0])
         insertProgramPackageProgram({
           variables: {
-            programs: values.programValues
-              .map((value: string) => value.split('_')[0])
-              .map((programId: string) => ({
-                program_package_id: programPackageId,
-                program_id: programId,
-              })),
+            programs: programsId.map((programId: string) => ({
+              program_package_id: programPackageId,
+              program_id: programId,
+            })),
+            program_package_id: programPackageId,
+            delete_programs_id: programs
+              .filter(program => !programsId.includes(program.id))
+              .map(program => program.programPackageProgramId),
           },
         })
           .then(() => {
@@ -162,7 +166,11 @@ const useGetAvailableProgramCollection = (appId: string) => {
 }
 
 const INSERT_PROGRAM_PACKAGE_PROGRAM = gql`
-  mutation INSERT_PROGRAM_PACKAGE_PROGRAM($programs: [program_package_program_insert_input!]!) {
+  mutation INSERT_PROGRAM_PACKAGE_PROGRAM(
+    $programs: [program_package_program_insert_input!]!
+    $program_package_id: uuid!
+    $delete_programs_id: [uuid!]!
+  ) {
     insert_program_package_program(
       objects: $programs
       on_conflict: {
@@ -170,6 +178,14 @@ const INSERT_PROGRAM_PACKAGE_PROGRAM = gql`
         update_columns: program_package_id
       }
     ) {
+      affected_rows
+    }
+    delete_program_package_program(
+      where: { _and: [{ program_package_id: { _eq: $program_package_id } }, { id: { _in: $delete_programs_id } }] }
+    ) {
+      affected_rows
+    }
+    delete_program_tempo_delivery(where: { program_package_program_id: { _in: $delete_programs_id } }) {
       affected_rows
     }
   }

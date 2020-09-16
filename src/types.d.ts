@@ -1229,37 +1229,6 @@ export interface GET_CREATOR_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER_INFO
-// ====================================================
-
-export interface UPDATE_MEMBER_INFO_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_INFO {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: UPDATE_MEMBER_INFO_update_member | null;
-}
-
-export interface UPDATE_MEMBER_INFOVariables {
-  memberId: string;
-  name?: string | null;
-  email?: string | null;
-  role?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: INSERT_POINT_LOG_COLLECTION
 // ====================================================
 
@@ -2535,6 +2504,169 @@ export interface PUBLISH_PODCAST_PROGRAMVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_ROLE
+// ====================================================
+
+export interface UPDATE_MEMBER_ROLE_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_ROLE {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_ROLE_update_member | null;
+}
+
+export interface UPDATE_MEMBER_ROLEVariables {
+  memberId: string;
+  role?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_PROFILE_BASIC
+// ====================================================
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_delete_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_insert_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_delete_member_phone {
+  __typename: "member_phone_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_insert_member_phone {
+  __typename: "member_phone_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_PROFILE_BASIC_update_member | null;
+  /**
+   * delete data from the table: "member_tag"
+   */
+  delete_member_tag: UPDATE_MEMBER_PROFILE_BASIC_delete_member_tag | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_MEMBER_PROFILE_BASIC_insert_tag | null;
+  /**
+   * insert data into the table: "member_tag"
+   */
+  insert_member_tag: UPDATE_MEMBER_PROFILE_BASIC_insert_member_tag | null;
+  /**
+   * delete data from the table: "member_phone"
+   */
+  delete_member_phone: UPDATE_MEMBER_PROFILE_BASIC_delete_member_phone | null;
+  /**
+   * insert data into the table: "member_phone"
+   */
+  insert_member_phone: UPDATE_MEMBER_PROFILE_BASIC_insert_member_phone | null;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASICVariables {
+  memberId: string;
+  name: string;
+  email: string;
+  tags: tag_insert_input[];
+  memberTags: member_tag_insert_input[];
+  phones: member_phone_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_PROPERTY
+// ====================================================
+
+export interface UPDATE_MEMBER_PROPERTY_delete_member_property {
+  __typename: "member_property_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROPERTY_insert_member_property {
+  __typename: "member_property_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROPERTY {
+  /**
+   * delete data from the table: "member_property"
+   */
+  delete_member_property: UPDATE_MEMBER_PROPERTY_delete_member_property | null;
+  /**
+   * insert data into the table: "member_property"
+   */
+  insert_member_property: UPDATE_MEMBER_PROPERTY_insert_member_property | null;
+}
+
+export interface UPDATE_MEMBER_PROPERTYVariables {
+  memberId: string;
+  memberProperties: member_property_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_AVATAR
 // ====================================================
 
@@ -3508,6 +3640,34 @@ export interface UPDATE_PROGRAM_PACKAGE_BASIC {
 export interface UPDATE_PROGRAM_PACKAGE_BASICVariables {
   programPackageId: any;
   title?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_COVER
+// ====================================================
+
+export interface UPDATE_PROGRAM_PACKAGE_COVER_update_program_package {
+  __typename: "program_package_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_COVER {
+  /**
+   * update data of the table: "program_package"
+   */
+  update_program_package: UPDATE_PROGRAM_PACKAGE_COVER_update_program_package | null;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_COVERVariables {
+  programPackageId: any;
   coverUrl?: string | null;
 }
 
@@ -3668,15 +3828,41 @@ export interface INSERT_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program {
   affected_rows: number;
 }
 
+export interface INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program {
+  __typename: "program_package_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_tempo_delivery {
+  __typename: "program_tempo_delivery_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface INSERT_PROGRAM_PACKAGE_PROGRAM {
   /**
    * insert data into the table: "program_package_program"
    */
   insert_program_package_program: INSERT_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program | null;
+  /**
+   * delete data from the table: "program_package_program"
+   */
+  delete_program_package_program: INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program | null;
+  /**
+   * delete data from the table: "program_tempo_delivery"
+   */
+  delete_program_tempo_delivery: INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_tempo_delivery | null;
 }
 
 export interface INSERT_PROGRAM_PACKAGE_PROGRAMVariables {
   programs: program_package_program_insert_input[];
+  program_package_id: any;
+  delete_programs_id: any[];
 }
 
 /* tslint:disable */
@@ -5840,6 +6026,127 @@ export interface GET_MEMBERVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_MEMBER_DESCRIPTION
+// ====================================================
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_tags {
+  __typename: "member_tag";
+  id: any;
+  tag_name: string;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_phones {
+  __typename: "member_phone";
+  id: any;
+  phone: string;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_properties_property {
+  __typename: "property";
+  id: any;
+  name: string;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_properties {
+  __typename: "member_property";
+  id: any;
+  /**
+   * An object relationship
+   */
+  property: GET_MEMBER_DESCRIPTION_member_by_pk_member_properties_property;
+  value: string;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate_sum {
+  __typename: "coin_log_sum_fields";
+  amount: any | null;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate {
+  __typename: "coin_log_aggregate_fields";
+  sum: GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate {
+  __typename: "coin_log_aggregate";
+  aggregate: GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate_aggregate_sum {
+  __typename: "order_product_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate_aggregate {
+  __typename: "order_product_aggregate_fields";
+  sum: GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate {
+  __typename: "order_product_aggregate";
+  aggregate: GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs {
+  __typename: "order_log";
+  /**
+   * An aggregated array relationship
+   */
+  order_products_aggregate: GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  username: string;
+  name: string;
+  email: string;
+  /**
+   * app-owner / content-creator
+   */
+  role: string;
+  created_at: any | null;
+  logined_at: any | null;
+  /**
+   * An array relationship
+   */
+  member_tags: GET_MEMBER_DESCRIPTION_member_by_pk_member_tags[];
+  /**
+   * An array relationship
+   */
+  member_phones: GET_MEMBER_DESCRIPTION_member_by_pk_member_phones[];
+  /**
+   * An array relationship
+   */
+  member_properties: GET_MEMBER_DESCRIPTION_member_by_pk_member_properties[];
+  /**
+   * An aggregated array relationship
+   */
+  coin_logs_aggregate: GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate;
+  /**
+   * An array relationship
+   */
+  order_logs: GET_MEMBER_DESCRIPTION_member_by_pk_order_logs[];
+}
+
+export interface GET_MEMBER_DESCRIPTION {
+  /**
+   * fetch data from the table: "member" using primary key columns
+   */
+  member_by_pk: GET_MEMBER_DESCRIPTION_member_by_pk | null;
+}
+
+export interface GET_MEMBER_DESCRIPTIONVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_PUBLIC_MEMBER
 // ====================================================
 
@@ -5947,9 +6254,10 @@ export interface GET_MEMBER_ROLE_COUNTVariables {
 // GraphQL query operation: GET_PAGE_MEMBER_COLLECTION
 // ====================================================
 
-export interface GET_PAGE_MEMBER_COLLECTION_member_point_status {
-  __typename: "point_status";
-  points: any | null;
+export interface GET_PAGE_MEMBER_COLLECTION_member_member_phones {
+  __typename: "member_phone";
+  id: any;
+  phone: string;
 }
 
 export interface GET_PAGE_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate_sum {
@@ -5982,15 +6290,16 @@ export interface GET_PAGE_MEMBER_COLLECTION_member {
   name: string;
   username: string;
   email: string;
+  created_at: any | null;
   logined_at: any | null;
   /**
    * app-owner / content-creator
    */
   role: string;
   /**
-   * An object relationship
+   * An array relationship
    */
-  point_status: GET_PAGE_MEMBER_COLLECTION_member_point_status | null;
+  member_phones: GET_PAGE_MEMBER_COLLECTION_member_member_phones[];
   /**
    * An array relationship
    */
@@ -6068,6 +6377,32 @@ export interface UPDATE_MEMBER_ACCOUNTVariables {
   username?: string | null;
   email?: string | null;
   pictureUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROPERTY
+// ====================================================
+
+export interface GET_PROPERTY_property {
+  __typename: "property";
+  id: any;
+  name: string;
+}
+
+export interface GET_PROPERTY {
+  /**
+   * fetch data from the table: "property"
+   */
+  property: GET_PROPERTY_property[];
+}
+
+export interface GET_PROPERTYVariables {
+  type: string;
 }
 
 /* tslint:disable */
@@ -8167,6 +8502,119 @@ export interface DELETE_COIN_LOGVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_PROPERTY
+// ====================================================
+
+export interface INSERT_PROPERTY_insert_property {
+  __typename: "property_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_PROPERTY {
+  /**
+   * insert data into the table: "property"
+   */
+  insert_property: INSERT_PROPERTY_insert_property | null;
+}
+
+export interface INSERT_PROPERTYVariables {
+  data: property_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROPERTY
+// ====================================================
+
+export interface UPDATE_PROPERTY_update_property {
+  __typename: "property_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROPERTY {
+  /**
+   * update data of the table: "property"
+   */
+  update_property: UPDATE_PROPERTY_update_property | null;
+}
+
+export interface UPDATE_PROPERTYVariables {
+  propertyId: any;
+  name: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROPERTY_POSITION
+// ====================================================
+
+export interface UPDATE_PROPERTY_POSITION_insert_property {
+  __typename: "property_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROPERTY_POSITION {
+  /**
+   * insert data into the table: "property"
+   */
+  insert_property: UPDATE_PROPERTY_POSITION_insert_property | null;
+}
+
+export interface UPDATE_PROPERTY_POSITIONVariables {
+  data: property_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PROPERTY
+// ====================================================
+
+export interface DELETE_PROPERTY_delete_property {
+  __typename: "property_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROPERTY {
+  /**
+   * delete data from the table: "property"
+   */
+  delete_property: DELETE_PROPERTY_delete_property | null;
+}
+
+export interface DELETE_PROPERTYVariables {
+  propertyId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_POINT_RELEASE_HISTORY
 // ====================================================
 
@@ -9214,6 +9662,65 @@ export enum member_contract_update_column {
   revoked_at = "revoked_at",
   started_at = "started_at",
   values = "values",
+}
+
+/**
+ * unique or primary key constraints on table "member_note"
+ */
+export enum member_note_constraint {
+  member_note_pkey = "member_note_pkey",
+}
+
+/**
+ * update columns of table "member_note"
+ */
+export enum member_note_update_column {
+  author_id = "author_id",
+  created_at = "created_at",
+  description = "description",
+  duration = "duration",
+  id = "id",
+  member_id = "member_id",
+  status = "status",
+  type = "type",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "member_phone"
+ */
+export enum member_phone_constraint {
+  member_phone_pkey = "member_phone_pkey",
+}
+
+/**
+ * update columns of table "member_phone"
+ */
+export enum member_phone_update_column {
+  created_at = "created_at",
+  id = "id",
+  member_id = "member_id",
+  phone = "phone",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "member_property"
+ */
+export enum member_property_constraint {
+  member_property_pkey = "member_property_pkey",
+}
+
+/**
+ * update columns of table "member_property"
+ */
+export enum member_property_update_column {
+  created_at = "created_at",
+  id = "id",
+  member_id = "member_id",
+  property_id = "property_id",
+  updated_at = "updated_at",
+  value = "value",
 }
 
 /**
@@ -10315,6 +10822,26 @@ export enum program_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "property"
+ */
+export enum property_constraint {
+  property_pkey = "property_pkey",
+}
+
+/**
+ * update columns of table "property"
+ */
+export enum property_update_column {
+  app_id = "app_id",
+  created_at = "created_at",
+  id = "id",
+  name = "name",
+  position = "position",
+  type = "type",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "social_card"
  */
 export enum social_card_constraint {
@@ -10973,6 +11500,7 @@ export interface app_bool_exp {
   posts?: post_bool_exp | null;
   program_packages?: program_package_bool_exp | null;
   programs?: program_bool_exp | null;
+  properties?: property_bool_exp | null;
   tags?: tag_bool_exp | null;
   title?: String_comparison_exp | null;
   vimeo_project_id?: String_comparison_exp | null;
@@ -11006,6 +11534,7 @@ export interface app_insert_input {
   posts?: post_arr_rel_insert_input | null;
   program_packages?: program_package_arr_rel_insert_input | null;
   programs?: program_arr_rel_insert_input | null;
+  properties?: property_arr_rel_insert_input | null;
   tags?: tag_arr_rel_insert_input | null;
   title?: string | null;
   vimeo_project_id?: string | null;
@@ -12243,6 +12772,7 @@ export interface issue_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  issue_enrollment?: issue_enrollment_bool_exp | null;
   issue_reactions?: issue_reaction_bool_exp | null;
   issue_replies?: issue_reply_bool_exp | null;
   member?: member_bool_exp | null;
@@ -12250,6 +12780,22 @@ export interface issue_bool_exp {
   solved_at?: timestamptz_comparison_exp | null;
   thread_id?: String_comparison_exp | null;
   title?: String_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "issue_enrollment". All fields are combined with a logical 'AND'.
+ */
+export interface issue_enrollment_bool_exp {
+  _and?: (issue_enrollment_bool_exp | null)[] | null;
+  _not?: issue_enrollment_bool_exp | null;
+  _or?: (issue_enrollment_bool_exp | null)[] | null;
+  issue?: issue_bool_exp | null;
+  issue_id?: uuid_comparison_exp | null;
+  program?: program_bool_exp | null;
+  program_content_id?: uuid_comparison_exp | null;
+  program_content_section_id?: uuid_comparison_exp | null;
+  program_id?: uuid_comparison_exp | null;
+  program_roles?: program_role_bool_exp | null;
 }
 
 /**
@@ -12541,8 +13087,12 @@ export interface member_bool_exp {
   issues?: issue_bool_exp | null;
   logined_at?: timestamptz_comparison_exp | null;
   media?: media_bool_exp | null;
+  memberNotesByAuthorId?: member_note_bool_exp | null;
   member_cards?: member_card_bool_exp | null;
   member_contracts?: member_contract_bool_exp | null;
+  member_notes?: member_note_bool_exp | null;
+  member_phones?: member_phone_bool_exp | null;
+  member_properties?: member_property_bool_exp | null;
   member_shops?: member_shop_bool_exp | null;
   member_socials?: member_social_bool_exp | null;
   member_tags?: member_tag_bool_exp | null;
@@ -12706,8 +13256,12 @@ export interface member_insert_input {
   issues?: issue_arr_rel_insert_input | null;
   logined_at?: any | null;
   media?: media_arr_rel_insert_input | null;
+  memberNotesByAuthorId?: member_note_arr_rel_insert_input | null;
   member_cards?: member_card_arr_rel_insert_input | null;
   member_contracts?: member_contract_arr_rel_insert_input | null;
+  member_notes?: member_note_arr_rel_insert_input | null;
+  member_phones?: member_phone_arr_rel_insert_input | null;
+  member_properties?: member_property_arr_rel_insert_input | null;
   member_shops?: member_shop_arr_rel_insert_input | null;
   member_socials?: member_social_arr_rel_insert_input | null;
   member_tags?: member_tag_arr_rel_insert_input | null;
@@ -12739,6 +13293,60 @@ export interface member_insert_input {
 }
 
 /**
+ * input type for inserting array relation for remote table "member_note"
+ */
+export interface member_note_arr_rel_insert_input {
+  data: member_note_insert_input[];
+  on_conflict?: member_note_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_note". All fields are combined with a logical 'AND'.
+ */
+export interface member_note_bool_exp {
+  _and?: (member_note_bool_exp | null)[] | null;
+  _not?: member_note_bool_exp | null;
+  _or?: (member_note_bool_exp | null)[] | null;
+  author?: member_bool_exp | null;
+  author_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  duration?: Int_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  status?: String_comparison_exp | null;
+  type?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_note"
+ */
+export interface member_note_insert_input {
+  author?: member_obj_rel_insert_input | null;
+  author_id?: string | null;
+  created_at?: any | null;
+  description?: string | null;
+  duration?: number | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  status?: string | null;
+  type?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "member_note"
+ */
+export interface member_note_on_conflict {
+  constraint: member_note_constraint;
+  update_columns: member_note_update_column[];
+  where?: member_note_bool_exp | null;
+}
+
+/**
  * input type for inserting object relation for remote table "member"
  */
 export interface member_obj_rel_insert_input {
@@ -12753,6 +13361,98 @@ export interface member_on_conflict {
   constraint: member_constraint;
   update_columns: member_update_column[];
   where?: member_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "member_phone"
+ */
+export interface member_phone_arr_rel_insert_input {
+  data: member_phone_insert_input[];
+  on_conflict?: member_phone_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_phone". All fields are combined with a logical 'AND'.
+ */
+export interface member_phone_bool_exp {
+  _and?: (member_phone_bool_exp | null)[] | null;
+  _not?: member_phone_bool_exp | null;
+  _or?: (member_phone_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  phone?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_phone"
+ */
+export interface member_phone_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  phone?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "member_phone"
+ */
+export interface member_phone_on_conflict {
+  constraint: member_phone_constraint;
+  update_columns: member_phone_update_column[];
+  where?: member_phone_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "member_property"
+ */
+export interface member_property_arr_rel_insert_input {
+  data: member_property_insert_input[];
+  on_conflict?: member_property_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_property". All fields are combined with a logical 'AND'.
+ */
+export interface member_property_bool_exp {
+  _and?: (member_property_bool_exp | null)[] | null;
+  _not?: member_property_bool_exp | null;
+  _or?: (member_property_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  property?: property_bool_exp | null;
+  property_id?: uuid_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+  value?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_property"
+ */
+export interface member_property_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  property?: property_obj_rel_insert_input | null;
+  property_id?: any | null;
+  updated_at?: any | null;
+  value?: string | null;
+}
+
+/**
+ * on conflict condition type for table "member_property"
+ */
+export interface member_property_on_conflict {
+  constraint: member_property_constraint;
+  update_columns: member_property_update_column[];
+  where?: member_property_bool_exp | null;
 }
 
 /**
@@ -15832,6 +16532,64 @@ export interface program_tempo_delivery_on_conflict {
   constraint: program_tempo_delivery_constraint;
   update_columns: program_tempo_delivery_update_column[];
   where?: program_tempo_delivery_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "property"
+ */
+export interface property_arr_rel_insert_input {
+  data: property_insert_input[];
+  on_conflict?: property_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "property". All fields are combined with a logical 'AND'.
+ */
+export interface property_bool_exp {
+  _and?: (property_bool_exp | null)[] | null;
+  _not?: property_bool_exp | null;
+  _or?: (property_bool_exp | null)[] | null;
+  app?: app_bool_exp | null;
+  app_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member_properties?: member_property_bool_exp | null;
+  name?: String_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  type?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "property"
+ */
+export interface property_insert_input {
+  app?: app_obj_rel_insert_input | null;
+  app_id?: string | null;
+  created_at?: any | null;
+  id?: any | null;
+  member_properties?: member_property_arr_rel_insert_input | null;
+  name?: string | null;
+  position?: number | null;
+  type?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "property"
+ */
+export interface property_obj_rel_insert_input {
+  data: property_insert_input;
+  on_conflict?: property_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "property"
+ */
+export interface property_on_conflict {
+  constraint: property_constraint;
+  update_columns: property_update_column[];
+  where?: property_bool_exp | null;
 }
 
 /**

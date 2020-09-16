@@ -1,5 +1,6 @@
 import Icon from '@ant-design/icons'
 import { Typography } from 'antd'
+import { throttle } from 'lodash'
 import moment from 'moment'
 import React, { HTMLAttributes, useContext, useEffect, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -13,7 +14,7 @@ const TimelinePlugin = require('wavesurfer.js/dist/plugin/wavesurfer.timeline.mi
 const TrackWrapper = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.25rem;
 `
 const ActionBlock = styled.div`
   margin-right: 0.75rem;
@@ -49,7 +50,7 @@ const StyledText = styled.div`
   color: var(--gray-dark);
   font-size: 12px;
   letter-spacing: 0.6px;
-  line-height: 1.5rem;
+  line-height: 1;
   min-width: 100px;
   text-align: right;
 `
@@ -57,7 +58,7 @@ const StyledTypographyText = styled(Typography.Text)`
   color: var(--gray-darker);
   font-size: 12px;
   letter-spacing: 0.6px;
-  line-height: 1.5rem;
+  line-height: 1;
   font-weight: 600;
 `
 
@@ -105,10 +106,9 @@ const AudioTrackCard: React.FC<
         progressColor: theme['@primary-color'] || '#555',
         skipLength: 5,
         height: 90,
-        autoCenter: true,
-        closeAudioContext: true,
         scrollParent: true,
-        minPxPerSec: 100,
+        minPxPerSec: 80,
+        maxCanvasWidth: 5000,
         plugins: [
           TimelinePlugin.create({
             container: waveformTimelineRef.current,
@@ -125,8 +125,18 @@ const AudioTrackCard: React.FC<
         ],
       })
       _wavesurfer.on('finish', () => onFinishPlaying && onFinishPlaying())
-      _wavesurfer.on('seek', (progress: number) => onAudioPlaying && onAudioPlaying(audioBuffer.duration * progress))
-      _wavesurfer.on('audioprocess', (second: number) => onAudioPlaying && onAudioPlaying(second))
+      _wavesurfer.on(
+        'seek',
+        throttle((progress: number) => {
+          onAudioPlaying && onAudioPlaying(audioBuffer.duration * progress)
+        }, 100),
+      )
+      _wavesurfer.on(
+        'audioprocess',
+        throttle((second: number) => {
+          onAudioPlaying && onAudioPlaying(second)
+        }, 100),
+      )
       _wavesurfer.loadDecodedBuffer(audioBuffer)
       setWaveSurfer(_wavesurfer)
     }
@@ -136,7 +146,6 @@ const AudioTrackCard: React.FC<
     return () => {
       if (wavesurfer) {
         wavesurfer.pause()
-        wavesurfer.destroy()
       }
     }
   }, [wavesurfer])
@@ -160,14 +169,19 @@ const AudioTrackCard: React.FC<
     }
   }, [isActive, trackWrapperRef])
 
+  useEffect(() => {
+    if (!isActive && wavesurfer) {
+      wavesurfer.getCurrentTime() > 0 && wavesurfer.seekTo(0)
+    }
+  }, [isActive, wavesurfer])
+
   return (
     <TrackWrapper ref={trackWrapperRef} {...divProps}>
       <ActionBlock className="flex-shrink-0 text-center">
-        <div>{`${position + 1}`.padStart(2, '0')}</div>
         <StyledIcon component={() => <MoveIcon />} className={`cursor-pointer ${handleClassName || 'handle'}`} />
       </ActionBlock>
 
-      <StyledCard className="p-4 flex-grow-1" isActive={isActive}>
+      <StyledCard className="p-3 flex-grow-1" isActive={isActive}>
         <WaveWrapper className="mb-3">
           <WaveTimelineBlock ref={waveformTimelineRef} />
           <WaveBlock ref={waveformRef} />

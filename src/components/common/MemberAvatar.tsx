@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { usePublicMember } from '../../hooks/member'
-import { MemberPublicProps } from '../../types/general'
+import { MemberPublicProps } from '../../types/member'
 import { AvatarImage, AvatarImageProps } from './Image'
 
 const MemberName = styled.span`
