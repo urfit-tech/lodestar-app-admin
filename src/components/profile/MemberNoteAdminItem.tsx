@@ -26,6 +26,11 @@ const StyledIcon = styled(Icon)<{ variant?: string | null }>`
   ${props => props.variant === 'missed' && `color: var(--error);`}
 `
 
+const MenuItem = styled(Menu.Item)`
+  width: 100px;
+  height: 36px;
+`
+
 const StyledParagraph = styled.p`
   white-space: break-spaces;
 `
@@ -80,7 +85,7 @@ const MemberNoteAdminItem: React.FC<{
           placement="bottomRight"
           overlay={
             <Menu>
-              <Menu.Item>
+              <MenuItem>
                 <MemberNoteAdminModal
                   title={formatMessage(profileMessages.label.editMemberNote)}
                   member={memberAdmin}
@@ -105,8 +110,8 @@ const MemberNoteAdminItem: React.FC<{
                       .catch(handleError)
                   }
                 />
-              </Menu.Item>
-              <Menu.Item>
+              </MenuItem>
+              <MenuItem>
                 <AdminModal
                   title={formatMessage(profileMessages.label.deleteMemberNote)}
                   renderTrigger={({ setVisible }) => (
@@ -127,7 +132,7 @@ const MemberNoteAdminItem: React.FC<{
                     {formatMessage(profileMessages.text.deleteMemberNoteConfirmation)}
                   </StyledModalParagraph>
                 </AdminModal>
-              </Menu.Item>
+              </MenuItem>
             </Menu>
           }
           trigger={['click']}
