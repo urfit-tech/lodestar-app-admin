@@ -88,7 +88,7 @@ const MemberNoteAdminItem: React.FC<{
                   renderTrigger={({ setVisible }) => (
                     <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</span>
                   )}
-                  renderSubmit={({ type, status, duration, description, setVisible }) => {
+                  renderSubmit={({ type, status, duration, description }) =>
                     updateMemberNote({
                       variables: {
                         memberNoteId: note.id,
@@ -103,8 +103,7 @@ const MemberNoteAdminItem: React.FC<{
                         message.success(formatMessage(commonMessages.event.successfullyEdited))
                       })
                       .catch(handleError)
-                      .finally(() => setVisible(false))
-                  }}
+                  }
                 />
               </Menu.Item>
               <Menu.Item>

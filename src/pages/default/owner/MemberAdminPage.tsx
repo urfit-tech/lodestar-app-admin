@@ -169,7 +169,7 @@ const MemberAdminPage: React.FC = () => {
                         <span>{formatMessage(profileMessages.label.createMemberNote)}</span>
                       </Button>
                     )}
-                    renderSubmit={({ type, status, duration, description, setVisible }) =>
+                    renderSubmit={({ type, status, duration, description, resetForm }) =>
                       insertMemberNote({
                         variables: {
                           memberId: memberAdmin.id,
@@ -182,10 +182,10 @@ const MemberAdminPage: React.FC = () => {
                       })
                         .then(() => {
                           refetchMemberAdmin()
+                          resetForm()
                           message.success(formatMessage(commonMessages.event.successfullyCreated))
                         })
                         .catch(handleError)
-                        .finally(() => setVisible(false))
                     }
                   />
                   <AdminBlock className="mt-4">

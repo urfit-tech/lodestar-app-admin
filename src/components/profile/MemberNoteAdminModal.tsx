@@ -36,7 +36,7 @@ const MemberNoteAdminModal: React.FC<{
     status: string | null
     duration: number | null
     description: string | null
-    setVisible: React.Dispatch<React.SetStateAction<boolean>>
+    resetForm: () => void
   }) => void
   renderTrigger: React.FC<{ setVisible: React.Dispatch<React.SetStateAction<boolean>> }>
   note?: {
@@ -76,10 +76,15 @@ const MemberNoteAdminModal: React.FC<{
                       status,
                       duration: duration && moment(duration).diff(moment().startOf('day'), 'seconds'),
                       description,
-                      setVisible,
+                      resetForm: () => {
+                        setType(null)
+                        setStatus('answered')
+                        form.resetFields()
+                      },
                     }),
                   )
                   .then(() => setIsSubmitting(false))
+                  .finally(() => setVisible(false))
               }
             }}
           >
@@ -87,6 +92,7 @@ const MemberNoteAdminModal: React.FC<{
           </Button>
         </>
       )}
+      maskClosable={false}
     >
       <StyledMemberInfo className="d-flex align-items-center mb-4">
         <CustomRatioImage
