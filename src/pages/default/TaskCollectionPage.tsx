@@ -13,7 +13,7 @@ const TaskCollectionPage: React.FC = () => {
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <UserOutlined className="mr-3" />
-        <span>{formatMessage(commonMessages.menu.members)}</span>
+        <span>{formatMessage(commonMessages.menu.tasks)}</span>
       </AdminPageTitle>
 
       <MemberTaskTable />

@@ -1,4 +1,4 @@
-import { SearchOutlined } from '@ant-design/icons'
+import { FileAddOutlined, SearchOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Button, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
@@ -10,7 +10,9 @@ import styled from 'styled-components'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MemberTaskProps } from '../../types/member'
+import { MemberTaskTag } from '../admin'
 import { AvatarImage } from '../common/Image'
+import MemberTaskAdminModal from './MemberTaskAdminModal'
 
 const StyledTitle = styled.span`
   color: var(--gray-darker);
@@ -19,27 +21,6 @@ const StyledTitle = styled.span`
 const StyledSubTitle = styled.span`
   color: var(--gray-dark);
   font-size: 14px;
-`
-const StyledTag = styled.span<{ variant: MemberTaskProps['priority'] | MemberTaskProps['status'] }>`
-  padding: 2px 6px;
-  color: var(--gray-darker);
-  font-size: 14px;
-  background: ${props =>
-    props.variant === 'high'
-      ? '#ffcfd4'
-      : props.variant === 'medium'
-      ? '#fedfd1'
-      : props.variant === 'low'
-      ? 'rgba(255, 190, 30, 0.2)'
-      : props.variant === 'pending'
-      ? '#e6e6e4'
-      : props.variant === 'in-progress'
-      ? '#e1d5f9'
-      : props.variant === 'done'
-      ? '#cee7e1'
-      : ''};
-  border-radius: 2px;
-  line-height: 2rem;
 `
 const StyledName = styled.span`
   color: var(--gray-darker);
@@ -57,15 +38,19 @@ const statusLevel: { [key in MemberTaskProps['status']]: number } = {
   done: 3,
 }
 
-const MemberTaskTable: React.FC<{ memberId: string }> = ({ memberId }) => {
+const MemberTaskTable: React.FC<{
+  memberId?: string
+}> = ({ memberId }) => {
   const { formatMessage } = useIntl()
   const searchInputRef = useRef<Input | null>(null)
   const [filter, setFilter] = useState<{
     title?: string
-    classification?: string
+    category?: string
     executor?: string
   }>({})
-  const { loadingMemberTasks, memberTasks } = useMemberTaskCollection(memberId, filter)
+  const { loadingMemberTasks, memberTasks, refetchMemberTasks } = useMemberTaskCollection({ ...filter, memberId })
+  const [selectedMemberTask, setSelectedMemberTask] = useState<MemberTaskProps | null>(null)
+  const [visible, setVisible] = useState(false)
 
   const getColumnSearchProps: (dataIndex: keyof MemberTaskProps) => ColumnProps<MemberTaskProps> = dataIndex => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -132,11 +117,11 @@ const MemberTaskTable: React.FC<{ memberId: string }> = ({ memberId }) => {
       title: formatMessage(memberMessages.label.priority),
       render: (text, record, index) =>
         record.priority === 'high' ? (
-          <StyledTag variant="high">{formatMessage(memberMessages.status.priorityHigh)}</StyledTag>
+          <MemberTaskTag variant="high">{formatMessage(memberMessages.status.priorityHigh)}</MemberTaskTag>
         ) : record.priority === 'medium' ? (
-          <StyledTag variant="medium">{formatMessage(memberMessages.status.priorityMedium)}</StyledTag>
+          <MemberTaskTag variant="medium">{formatMessage(memberMessages.status.priorityMedium)}</MemberTaskTag>
         ) : (
-          <StyledTag variant="low">{formatMessage(memberMessages.status.priorityLow)}</StyledTag>
+          <MemberTaskTag variant="low">{formatMessage(memberMessages.status.priorityLow)}</MemberTaskTag>
         ),
       sorter: (a, b) => priorityLevel[a.priority] - priorityLevel[b.priority],
     },
@@ -145,23 +130,24 @@ const MemberTaskTable: React.FC<{ memberId: string }> = ({ memberId }) => {
       title: formatMessage(memberMessages.label.status),
       render: (text, record, index) =>
         record.status === 'pending' ? (
-          <StyledTag variant="pending">{formatMessage(memberMessages.status.statusPending)}</StyledTag>
+          <MemberTaskTag variant="pending">{formatMessage(memberMessages.status.statusPending)}</MemberTaskTag>
         ) : record.status === 'in-progress' ? (
-          <StyledTag variant="in-progress">{formatMessage(memberMessages.status.statusInProgress)}</StyledTag>
+          <MemberTaskTag variant="in-progress">{formatMessage(memberMessages.status.statusInProgress)}</MemberTaskTag>
         ) : (
-          <StyledTag variant="done">{formatMessage(memberMessages.status.statusDone)}</StyledTag>
+          <MemberTaskTag variant="done">{formatMessage(memberMessages.status.statusDone)}</MemberTaskTag>
         ),
       sorter: (a, b) => statusLevel[a.status] - statusLevel[b.status],
     },
     {
-      dataIndex: 'classification',
-      title: formatMessage(memberMessages.label.classification),
-      ...getColumnSearchProps('classification'),
+      dataIndex: 'category',
+      title: formatMessage(memberMessages.label.category),
+      ...getColumnSearchProps('category'),
+      render: (text, record, index) => record.category?.name,
     },
     {
       dataIndex: 'dueAt',
       title: formatMessage(memberMessages.label.dueDate),
-      render: (text, record, index) => moment(record.dueAt).format('YYYY-MM-DD HH:mm'),
+      render: (text, record, index) => (record.dueAt ? moment(record.dueAt).format('YYYY-MM-DD HH:mm') : ''),
       sorter: (a, b) => (a.dueAt?.getTime() || 0) - (b.dueAt?.getTime() || 0),
     },
     {
@@ -179,54 +165,94 @@ const MemberTaskTable: React.FC<{ memberId: string }> = ({ memberId }) => {
   ]
 
   return (
-    <Table
-      columns={columns}
-      dataSource={memberTasks}
-      rowKey="id"
-      loading={loadingMemberTasks}
-      showSorterTooltip={false}
-    />
+    <>
+      <div className="d-flex align-item-center justify-content-between mb-4">
+        <MemberTaskAdminModal
+          renderTrigger={({ setVisible }) => (
+            <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
+              {formatMessage(memberMessages.ui.newTask)}
+            </Button>
+          )}
+          title={formatMessage(memberMessages.ui.newTask)}
+          onRefetch={refetchMemberTasks}
+        />
+      </div>
+
+      <Table
+        columns={columns}
+        dataSource={memberTasks}
+        rowKey="id"
+        loading={loadingMemberTasks}
+        showSorterTooltip={false}
+        rowClassName="cursor-pointer"
+        onRow={record => ({
+          onClick: () => {
+            setSelectedMemberTask(record)
+            setVisible(true)
+          },
+        })}
+      />
+
+      {selectedMemberTask && (
+        <MemberTaskAdminModal
+          visible={visible}
+          memberTask={selectedMemberTask || undefined}
+          title={formatMessage(memberMessages.ui.editTask)}
+          onRefetch={() => {
+            refetchMemberTasks()
+            setSelectedMemberTask(null)
+          }}
+          onCancel={() => setSelectedMemberTask(null)}
+        />
+      )}
+    </>
   )
 }
 
-const useMemberTaskCollection = (
-  memberId: string,
-  filter?: {
-    title?: string
-    classification?: string
-    executor?: string
-  },
-) => {
+const useMemberTaskCollection = (filter?: {
+  memberId?: string
+  title?: string
+  category?: string
+  executor?: string
+}) => {
   const { loading, error, data, refetch } = useQuery<
     types.GET_MEMBER_TASK_COLLECTION,
     types.GET_MEMBER_TASK_COLLECTIONVariables
   >(
     gql`
       query GET_MEMBER_TASK_COLLECTION(
-        $memberId: String!
+        $memberId: String
         $titleSearch: String
-        $classificationSearch: String
+        $categorySearch: String
         $executorSearch: String
       ) {
         member_task(
           where: {
             member_id: { _eq: $memberId }
             title: { _like: $titleSearch }
-            classification: { _like: $classificationSearch }
-            _or: [
-              { executor_id: { _is_null: true } }
-              { executor: { name: { _like: $executorSearch } } }
-              { executor: { username: { _like: $executorSearch } } }
+            _and: [
+              { _or: [{ category_id: { _is_null: true } }, { category: { name: { _like: $categorySearch } } }] }
+              {
+                _or: [
+                  { executor_id: { _is_null: true } }
+                  { executor: { name: { _like: $executorSearch } } }
+                  { executor: { username: { _like: $executorSearch } } }
+                ]
+              }
             ]
           }
+          order_by: { due_at: desc_nulls_last }
         ) {
           id
           title
           description
           priority
           status
-          classification
           due_at
+          category {
+            id
+            name
+          }
           member {
             id
             name
@@ -243,9 +269,9 @@ const useMemberTaskCollection = (
     `,
     {
       variables: {
-        memberId,
+        memberId: filter?.memberId,
         titleSearch: filter?.title ? `%${filter.title}%` : undefined,
-        classificationSearch: filter?.classification ? `%${filter.classification}%` : undefined,
+        categorySearch: filter?.category ? `%${filter.category}%` : undefined,
         executorSearch: filter?.executor ? `%${filter.executor}%` : undefined,
       },
     },
@@ -259,7 +285,12 @@ const useMemberTaskCollection = (
           title: v.title,
           priority: v.priority as MemberTaskProps['priority'],
           status: v.status as MemberTaskProps['status'],
-          classification: v.classification,
+          category: v.category
+            ? {
+                id: v.category.id,
+                name: v.category.name,
+              }
+            : null,
           dueAt: v.due_at && new Date(v.due_at),
           description: v.description,
           member: {

@@ -2764,6 +2764,34 @@ export interface GET_MEMBER_TASK_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_TASK
+// ====================================================
+
+export interface INSERT_TASK_insert_member_task {
+  __typename: "member_task_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_TASK {
+  /**
+   * insert data into the table: "member_task"
+   */
+  insert_member_task: INSERT_TASK_insert_member_task | null;
+}
+
+export interface INSERT_TASKVariables {
+  data: member_task_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_AVATAR
 // ====================================================
 
@@ -9911,6 +9939,7 @@ export enum member_note_update_column {
   duration = "duration",
   id = "id",
   member_id = "member_id",
+  metadata = "metadata",
   status = "status",
   type = "type",
   updated_at = "updated_at",
@@ -9920,6 +9949,7 @@ export enum member_note_update_column {
  * unique or primary key constraints on table "member_phone"
  */
 export enum member_phone_constraint {
+  member_phone_member_id_phone_key = "member_phone_member_id_phone_key",
   member_phone_pkey = "member_phone_pkey",
 }
 
@@ -9938,6 +9968,7 @@ export enum member_phone_update_column {
  * unique or primary key constraints on table "member_property"
  */
 export enum member_property_constraint {
+  member_property_member_id_property_id_key = "member_property_member_id_property_id_key",
   member_property_pkey = "member_property_pkey",
 }
 
@@ -13545,6 +13576,7 @@ export interface member_note_bool_exp {
   id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  metadata?: jsonb_comparison_exp | null;
   status?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -13562,6 +13594,7 @@ export interface member_note_insert_input {
   id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
+  metadata?: any | null;
   status?: string | null;
   type?: string | null;
   updated_at?: any | null;
@@ -13864,6 +13897,26 @@ export interface member_tag_on_conflict {
   constraint: member_tag_constraint;
   update_columns: member_tag_update_column[];
   where?: member_tag_bool_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_task"
+ */
+export interface member_task_insert_input {
+  category?: category_obj_rel_insert_input | null;
+  category_id?: string | null;
+  created_at?: any | null;
+  description?: string | null;
+  due_at?: any | null;
+  executor?: member_obj_rel_insert_input | null;
+  executor_id?: string | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  priority?: string | null;
+  status?: string | null;
+  title?: string | null;
+  updated_at?: any | null;
 }
 
 /**

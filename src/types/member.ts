@@ -92,7 +92,10 @@ export type MemberTaskProps = {
   title: string
   priority: 'high' | 'medium' | 'low'
   status: 'pending' | 'in-progress' | 'done'
-  classification: string | null
+  category: {
+    id: string
+    name: string
+  } | null
   dueAt: Date | null
   description: string | null
   member: {

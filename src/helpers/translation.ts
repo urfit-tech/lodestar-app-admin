@@ -310,6 +310,9 @@ export const commonMessages = {
     memberAdmin: { id: 'common.menu.memberAdmin', defaultMessage: '會員管理' },
     members: { id: 'common.menu.members', defaultMessage: '會員列表' },
     memberProperties: { id: 'common.menu.memberProperties', defaultMessage: '自訂欄位' },
+    taskAdmin: { id: 'common.menu.taskAdmin', defaultMessage: '任務管理' },
+    tasks: { id: 'common.menu.tasks', defaultMessage: '任務列表' },
+    taskCategory: { id: 'common.menu.taskCategory', defaultMessage: '任務分類' },
     ownerSettings: { id: 'common.menu.ownerSettings', defaultMessage: '管理員設定' },
     creatorSettings: { id: 'common.menu.creatorSettings', defaultMessage: '創作者設定' },
     appAdmin: { id: 'common.menu.appAdmin', defaultMessage: '網站管理' },
@@ -797,6 +800,10 @@ export const blogMessages = {
 }
 
 export const memberMessages = {
+  ui: {
+    newTask: { id: 'member.ui.newTask', defaultMessage: '新增任務' },
+    editTask: { id: 'member.ui.editTask', defaultMessage: '編輯任務' },
+  },
   status: {
     priorityHigh: { id: 'member.status.priorityHigh', defaultMessage: 'High' },
     priorityMedium: { id: 'member.status.priorityMedium', defaultMessage: 'Medium' },
@@ -809,9 +816,11 @@ export const memberMessages = {
     taskTitle: { id: 'member.label.taskTitle', defaultMessage: '標題' },
     priority: { id: 'member.label.priority', defaultMessage: '優先權' },
     status: { id: 'member.label.status', defaultMessage: '狀態' },
-    classification: { id: 'member.label.classification', defaultMessage: '分類' },
+    category: { id: 'member.label.category', defaultMessage: '分類' },
     dueDate: { id: 'member.label.dueDate', defaultMessage: '到期日' },
     assign: { id: 'member.label.assign', defaultMessage: '指派' },
+    target: { id: 'member.label.target', defaultMessage: '學員' },
+    taskDescription: { id: 'member.label.taskDescription', defaultMessage: '內容' },
   }),
   text: {},
 }
