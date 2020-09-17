@@ -31,6 +31,7 @@ const messages = defineMessages({
   basic: { id: 'profile.label.basic', defaultMessage: '基本資料' },
   property: { id: 'profile.label.property', defaultMessage: '自訂欄位' },
   permission: { id: 'profile.label.property', defaultMessage: '權限' },
+  memberPage: { id: 'profile.ui.memberPage', defaultMessage: '學員主頁' },
 })
 
 const StyledSider = styled(Layout.Sider)`
@@ -67,6 +68,10 @@ const MemberAdminPage: React.FC = () => {
         </Link>
 
         <AdminHeaderTitle>{memberAdmin?.name || memberAdmin?.username || memberId}</AdminHeaderTitle>
+
+        <a href={`//${settings['host']}/members/${memberId}`} target="_blank" rel="noopener noreferrer">
+          <Button>{formatMessage(messages.memberPage)}</Button>
+        </a>
       </AdminHeader>
 
       <Layout>
