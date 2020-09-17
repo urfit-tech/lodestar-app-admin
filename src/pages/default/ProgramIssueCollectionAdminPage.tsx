@@ -79,7 +79,7 @@ const AllProgramIssueCollectionBlock: React.FC<{
   }
 
   const { loading, error, issues, refetch } = useGetCreatorProgramIssue(
-    currentUserRole === 'content-creator' ? currentMemberId : undefined,
+    currentUserRole === 'content-creator' ? currentMemberId : null,
     selectedProgramId,
     unsolved,
   )
@@ -110,7 +110,7 @@ const AllProgramIssueCollectionBlock: React.FC<{
   )
 }
 
-const useGetCreatorProgramIssue = (memberId: string | undefined, selectedProgramId: string, unsolved?: boolean) => {
+const useGetCreatorProgramIssue = (memberId: string | null, selectedProgramId: string, unsolved?: boolean) => {
   const { id: appId } = useContext(AppContext)
   const { loading, error, data, refetch } = useQuery<
     types.GET_CREATOR_PROGRAM_ISSUES,
