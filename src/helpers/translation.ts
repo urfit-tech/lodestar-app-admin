@@ -330,6 +330,39 @@ export const commonMessages = {
   }),
 }
 
+export const profileMessages = {
+  label: defineMessages({
+    profile: { id: 'profile.label.profile', defaultMessage: '個人' },
+    note: { id: 'profile.label.note', defaultMessage: '備註' },
+    basic: { id: 'profile.label.basic', defaultMessage: '基本資料' },
+    property: { id: 'profile.label.property', defaultMessage: '自訂欄位' },
+    permission: { id: 'profile.label.property', defaultMessage: '權限' },
+    callType: { id: 'profile.label.callType', defaultMessage: '通話類型' },
+    description: { id: 'profile.label.description', defaultMessage: '內容' },
+    status: { id: 'profile.label.status', defaultMessage: '狀態' },
+    duration: { id: 'profile.label.duration', defaultMessage: '通時' },
+    createMemberNote: { id: 'profile.label.createNote', defaultMessage: '新增備註' },
+    editMemberNote: { id: 'profile.label.editNote', defaultMessage: '編輯備註' },
+    deleteMemberNote: { id: 'profile.label.deleteProgram', defaultMessage: '刪除備註' },
+  }),
+  status: defineMessages({
+    null: { id: 'profile.status.null', defaultMessage: '無' },
+    inbound: { id: 'profile.status.inbound', defaultMessage: '外撥' },
+    outbound: { id: 'profile.status.outbound', defaultMessage: '進線' },
+    answered: { id: 'profile.status.answered', defaultMessage: '已接聽' },
+    missed: { id: 'profile.status.missed', defaultMessage: '未接聽' },
+  }),
+  text: defineMessages({
+    deleteMemberNoteConfirmation: {
+      id: 'profile.text.deleteMemberNoteConfirmation',
+      defaultMessage: '備註一經刪除即不可恢復，確定要刪除嗎？',
+    },
+  }),
+  ui: defineMessages({
+    memberPage: { id: 'profile.ui.memberPage', defaultMessage: '學員主頁' },
+  }),
+}
+
 export const errorMessages = {
   data: defineMessages({
     fetch: { id: 'error.data.fetch', defaultMessage: '讀取錯誤' },

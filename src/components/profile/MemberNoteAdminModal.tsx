@@ -2,24 +2,12 @@ import { Button, Form, Input, Radio, Select, TimePicker } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import moment from 'moment'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, profileMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
 import AdminModal from '../admin/AdminModal'
 import { CustomRatioImage } from '../common/Image'
-
-const messages = defineMessages({
-  callType: { id: 'commonMessages.label.callType', defaultMessage: '通話類型' },
-  description: { id: 'commonMessages.label.description', defaultMessage: '內容' },
-  status: { id: 'commonMessages.label.status', defaultMessage: '狀態' },
-  duration: { id: 'commonMessages.label.duration', defaultMessage: '通時' },
-  null: { id: 'commonMessages.type.null', defaultMessage: '無' },
-  inbound: { id: 'commonMessages.type.inbound', defaultMessage: '外撥' },
-  outbound: { id: 'commonMessages.type.outbound', defaultMessage: '進線' },
-  missed: { id: 'commonMessages.status.missed', defaultMessage: '未接聽' },
-  answered: { id: 'commonMessages.status.answered', defaultMessage: '已接聽' },
-})
 
 const StyledFormLabel = styled.h3`
   font-size: 14px;
@@ -119,28 +107,28 @@ const MemberNoteAdminModal: React.FC<{
           description: note?.description,
         }}
       >
-        <StyledFormLabel>{formatMessage(messages.callType)}</StyledFormLabel>
+        <StyledFormLabel>{formatMessage(profileMessages.label.callType)}</StyledFormLabel>
         <Form.Item name="type">
           <Radio.Group onChange={e => setType(e.target.value)}>
-            <Radio value={null}>{formatMessage(messages.null)}</Radio>
-            <Radio value="inbound">{formatMessage(messages.inbound)}</Radio>
-            <Radio value="outbound">{formatMessage(messages.outbound)}</Radio>
+            <Radio value={null}>{formatMessage(profileMessages.status.null)}</Radio>
+            <Radio value="inbound">{formatMessage(profileMessages.status.inbound)}</Radio>
+            <Radio value="outbound">{formatMessage(profileMessages.status.outbound)}</Radio>
           </Radio.Group>
         </Form.Item>
         {type === 'inbound' && (
           <div className="row">
             <div className="col-5">
-              <StyledFormLabel>{formatMessage(messages.status)}</StyledFormLabel>
+              <StyledFormLabel>{formatMessage(profileMessages.label.status)}</StyledFormLabel>
               <Form.Item name="status">
                 <Select onSelect={val => setStatus(val as string)}>
-                  <Select.Option value="answered">{formatMessage(messages.answered)}</Select.Option>
-                  <Select.Option value="missed">{formatMessage(messages.missed)}</Select.Option>
+                  <Select.Option value="answered">{formatMessage(profileMessages.status.answered)}</Select.Option>
+                  <Select.Option value="missed">{formatMessage(profileMessages.status.missed)}</Select.Option>
                 </Select>
               </Form.Item>
             </div>
             {status === 'answered' && (
               <div className="col-7">
-                <StyledFormLabel>{formatMessage(messages.duration)}</StyledFormLabel>
+                <StyledFormLabel>{formatMessage(profileMessages.label.duration)}</StyledFormLabel>
                 <Form.Item name="duration">
                   <TimePicker style={{ width: '100%' }} showNow={false} />
                 </Form.Item>
@@ -148,7 +136,7 @@ const MemberNoteAdminModal: React.FC<{
             )}
           </div>
         )}
-        <StyledFormLabel>{formatMessage(messages.description)}</StyledFormLabel>
+        <StyledFormLabel>{formatMessage(profileMessages.label.description)}</StyledFormLabel>
         <Form.Item name="description">
           <Input.TextArea />
         </Form.Item>

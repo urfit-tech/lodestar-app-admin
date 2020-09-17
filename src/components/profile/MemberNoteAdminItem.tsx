@@ -2,22 +2,18 @@ import Icon, { MoreOutlined } from '@ant-design/icons'
 import { Dropdown, Menu, message } from 'antd'
 import moment from 'moment'
 import React from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, profileMessages } from '../../helpers/translation'
 import { useMutateMemberNote } from '../../hooks/member'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as CallOutIcon } from '../../images/icon/call-out.svg'
 import { MemberAdminProps, MemberNoteAdminProps } from '../../types/member'
 import AdminModal from '../admin/AdminModal'
 import { CustomRatioImage } from '../common/Image'
+import { StyledModalParagraph } from '../program/ProgramDeletionAdminCard'
 import MemberNoteAdminModal from './MemberNoteAdminModal'
-
-const messages = defineMessages({
-  editNote: { id: 'commonMessages.ui.editNote', defaultMessage: '編輯備註' },
-  missed: { id: 'commonMessages.status.missed', defaultMessage: '未接聽' },
-})
 
 const StyledStatus = styled.span`
   margin-left: 12px;
@@ -49,6 +45,7 @@ const MemberNoteAdminItem: React.FC<{
 }> = ({ note, memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { updateMemberNote, deleteMemberNote } = useMutateMemberNote()
+
   return (
     <>
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -69,7 +66,9 @@ const MemberNoteAdminItem: React.FC<{
                   {note.status === 'answered' && (
                     <span className="ml-2">{moment.utc((note?.duration ?? 0) * 1000).format('HH:mm:ss')}</span>
                   )}
-                  {note.status === 'missed' && <span className="ml-2">{formatMessage(messages.missed)}</span>}
+                  {note.status === 'missed' && (
+                    <span className="ml-2">{formatMessage(profileMessages.status.missed)}</span>
+                  )}
                 </StyledStatus>
               )}
             </span>
@@ -83,7 +82,7 @@ const MemberNoteAdminItem: React.FC<{
             <Menu>
               <Menu.Item>
                 <MemberNoteAdminModal
-                  title={formatMessage(messages.editNote)}
+                  title={formatMessage(profileMessages.label.editMemberNote)}
                   member={memberAdmin}
                   note={note}
                   renderTrigger={({ setVisible }) => (
@@ -110,7 +109,7 @@ const MemberNoteAdminItem: React.FC<{
               </Menu.Item>
               <Menu.Item>
                 <AdminModal
-                  title={formatMessage(commonMessages.ui.deleteProgram)}
+                  title={formatMessage(profileMessages.label.deleteMemberNote)}
                   renderTrigger={({ setVisible }) => (
                     <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.delete)}</span>
                   )}
@@ -124,7 +123,11 @@ const MemberNoteAdminItem: React.FC<{
                       })
                       .catch(handleError)
                   }
-                ></AdminModal>
+                >
+                  <StyledModalParagraph>
+                    {formatMessage(profileMessages.text.deleteMemberNoteConfirmation)}
+                  </StyledModalParagraph>
+                </AdminModal>
               </Menu.Item>
             </Menu>
           }
