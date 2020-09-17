@@ -10,6 +10,7 @@
         "fingerprintjs",
         "hant",
         "hasura",
+        "ilike",
         "imgs",
         "inmemory",
         "jsonb",

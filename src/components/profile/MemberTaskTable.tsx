@@ -7,10 +7,11 @@ import moment from 'moment'
 import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MemberTaskProps } from '../../types/member'
-import { MemberTaskTag } from '../admin'
+import { AdminBlock, MemberTaskTag } from '../admin'
 import { AvatarImage } from '../common/Image'
 import MemberTaskAdminModal from './MemberTaskAdminModal'
 
@@ -42,6 +43,7 @@ const MemberTaskTable: React.FC<{
   memberId?: string
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
+  const { currentMemberId } = useAuth()
   const searchInputRef = useRef<Input | null>(null)
   const [filter, setFilter] = useState<{
     title?: string
@@ -59,25 +61,29 @@ const MemberTaskTable: React.FC<{
           ref={searchInputRef}
           value={selectedKeys[0]}
           onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() =>
+          onPressEnter={() => {
+            confirm()
             setFilter(filter => ({
               ...filter,
               [dataIndex]: selectedKeys[0],
             }))
-          }
+          }}
           style={{ width: 188, marginBottom: 8, display: 'block' }}
         />
-        <div className="d-flex align-items-center justify-content-between">
+        <div>
           <Button
             type="primary"
-            onClick={() =>
+            onClick={() => {
+              confirm()
               setFilter(filter => ({
                 ...filter,
                 [dataIndex]: selectedKeys[0],
               }))
-            }
+            }}
             icon={<SearchOutlined />}
             size="small"
+            className="mr-2"
+            style={{ width: 90 }}
           >
             {formatMessage(commonMessages.ui.search)}
           </Button>
@@ -90,6 +96,7 @@ const MemberTaskTable: React.FC<{
               }))
             }}
             size="small"
+            style={{ width: 90 }}
           >
             {formatMessage(commonMessages.ui.reset)}
           </Button>
@@ -141,14 +148,14 @@ const MemberTaskTable: React.FC<{
     {
       dataIndex: 'category',
       title: formatMessage(memberMessages.label.category),
-      ...getColumnSearchProps('category'),
       render: (text, record, index) => record.category?.name,
+      ...getColumnSearchProps('category'),
     },
     {
       dataIndex: 'dueAt',
       title: formatMessage(memberMessages.label.dueDate),
       render: (text, record, index) => (record.dueAt ? moment(record.dueAt).format('YYYY-MM-DD HH:mm') : ''),
-      sorter: (a, b) => (a.dueAt?.getTime() || 0) - (b.dueAt?.getTime() || 0),
+      sorter: (a, b) => (b.dueAt?.getTime() || 0) - (a.dueAt?.getTime() || 0),
     },
     {
       dataIndex: 'executor',
@@ -174,24 +181,29 @@ const MemberTaskTable: React.FC<{
             </Button>
           )}
           title={formatMessage(memberMessages.ui.newTask)}
+          initialMemberId={memberId}
+          initialExecutorId={memberId && currentMemberId ? currentMemberId : undefined}
           onRefetch={refetchMemberTasks}
         />
       </div>
 
-      <Table
-        columns={columns}
-        dataSource={memberTasks}
-        rowKey="id"
-        loading={loadingMemberTasks}
-        showSorterTooltip={false}
-        rowClassName="cursor-pointer"
-        onRow={record => ({
-          onClick: () => {
-            setSelectedMemberTask(record)
-            setVisible(true)
-          },
-        })}
-      />
+      <AdminBlock>
+        <Table
+          columns={columns}
+          dataSource={memberTasks}
+          rowKey="id"
+          loading={loadingMemberTasks}
+          showSorterTooltip={false}
+          rowClassName="cursor-pointer"
+          pagination={false}
+          onRow={record => ({
+            onClick: () => {
+              setSelectedMemberTask(record)
+              setVisible(true)
+            },
+          })}
+        />
+      </AdminBlock>
 
       {selectedMemberTask && (
         <MemberTaskAdminModal
@@ -229,14 +241,14 @@ const useMemberTaskCollection = (filter?: {
         member_task(
           where: {
             member_id: { _eq: $memberId }
-            title: { _like: $titleSearch }
+            title: { _ilike: $titleSearch }
             _and: [
-              { _or: [{ category_id: { _is_null: true } }, { category: { name: { _like: $categorySearch } } }] }
+              { _or: [{ category_id: { _is_null: true } }, { category: { name: { _ilike: $categorySearch } } }] }
               {
                 _or: [
                   { executor_id: { _is_null: true } }
-                  { executor: { name: { _like: $executorSearch } } }
-                  { executor: { username: { _like: $executorSearch } } }
+                  { executor: { name: { _ilike: $executorSearch } } }
+                  { executor: { username: { _ilike: $executorSearch } } }
                 ]
               }
             ]
@@ -280,31 +292,37 @@ const useMemberTaskCollection = (filter?: {
   const memberTasks: MemberTaskProps[] =
     loading || error || !data
       ? []
-      : data.member_task.map(v => ({
-          id: v.id,
-          title: v.title,
-          priority: v.priority as MemberTaskProps['priority'],
-          status: v.status as MemberTaskProps['status'],
-          category: v.category
-            ? {
-                id: v.category.id,
-                name: v.category.name,
-              }
-            : null,
-          dueAt: v.due_at && new Date(v.due_at),
-          description: v.description,
-          member: {
-            id: v.member.id,
-            name: v.member.name || v.member.username,
-          },
-          executor: v.executor
-            ? {
-                id: v.executor.id,
-                name: v.executor.name || v.executor.username,
-                avatarUrl: v.executor.picture_url,
-              }
-            : null,
-        }))
+      : data.member_task
+          .map(v => ({
+            id: v.id,
+            title: v.title,
+            priority: v.priority as MemberTaskProps['priority'],
+            status: v.status as MemberTaskProps['status'],
+            category: v.category
+              ? {
+                  id: v.category.id,
+                  name: v.category.name,
+                }
+              : null,
+            dueAt: v.due_at && new Date(v.due_at),
+            description: v.description,
+            member: {
+              id: v.member.id,
+              name: v.member.name || v.member.username,
+            },
+            executor: v.executor
+              ? {
+                  id: v.executor.id,
+                  name: v.executor.name || v.executor.username,
+                  avatarUrl: v.executor.picture_url,
+                }
+              : null,
+          }))
+          .filter(
+            memberTask =>
+              (!filter?.category || memberTask.category?.name.toLowerCase().includes(filter.category)) &&
+              (!filter?.executor || memberTask.executor?.name.toLowerCase().includes(filter.executor)),
+          )
 
   return {
     loadingMemberTasks: loading,

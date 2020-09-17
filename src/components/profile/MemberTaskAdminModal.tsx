@@ -68,7 +68,7 @@ const MemberTaskAdminModal: React.FC<
                   executor_id: values.executorId,
                   priority: values.priority,
                   status: values.status,
-                  due_at: values.dueAt.toDate(),
+                  due_at: values.dueAt?.toDate(),
                   description: values.description,
                 },
               ],
