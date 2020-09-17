@@ -28,7 +28,7 @@ const StyledIcon = styled(Icon)<{ variant?: string | null }>`
 
 const MenuItem = styled(Menu.Item)`
   width: 100px;
-  height: 36px;
+  line-height: 36px;
 `
 
 const StyledParagraph = styled.p`
@@ -52,95 +52,93 @@ const MemberNoteAdminItem: React.FC<{
   const { updateMemberNote, deleteMemberNote } = useMutateMemberNote()
 
   return (
-    <>
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <div className="d-flex align-items-start">
-          <CustomRatioImage
-            ratio={1}
-            width="56px"
-            src={note.author.pictureUrl || DefaultAvatar}
-            shape="circle"
-            className="mr-5 flex-shrink-0"
-          />
-          <div>
-            <span>
-              <span>{moment(note.updatedAt).format('YYYY-MM-DD HH:mm')}</span>
-              {note.type === 'inbound' && (
-                <StyledStatus>
-                  <StyledIcon variant={note.status} component={() => <CallOutIcon />} />
-                  {note.status === 'answered' && (
-                    <span className="ml-2">{moment.utc((note?.duration ?? 0) * 1000).format('HH:mm:ss')}</span>
-                  )}
-                  {note.status === 'missed' && (
-                    <span className="ml-2">{formatMessage(profileMessages.status.missed)}</span>
-                  )}
-                </StyledStatus>
-              )}
-            </span>
-            <StyledParagraph>{note.description}</StyledParagraph>
-            <StyledAuthorName>By. {note.author.name}</StyledAuthorName>
-          </div>
+    <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex align-items-start">
+        <CustomRatioImage
+          ratio={1}
+          width="56px"
+          src={note.author.pictureUrl || DefaultAvatar}
+          shape="circle"
+          className="mr-5 flex-shrink-0"
+        />
+        <div>
+          <span>
+            <span>{moment(note.updatedAt).format('YYYY-MM-DD HH:mm')}</span>
+            {note.type === 'inbound' && (
+              <StyledStatus>
+                <StyledIcon variant={note.status} component={() => <CallOutIcon />} />
+                {note.status === 'answered' && (
+                  <span className="ml-2">{moment.utc((note?.duration ?? 0) * 1000).format('HH:mm:ss')}</span>
+                )}
+                {note.status === 'missed' && (
+                  <span className="ml-2">{formatMessage(profileMessages.status.missed)}</span>
+                )}
+              </StyledStatus>
+            )}
+          </span>
+          <StyledParagraph>{note.description}</StyledParagraph>
+          <StyledAuthorName>By. {note.author.name}</StyledAuthorName>
         </div>
-        <Dropdown
-          placement="bottomRight"
-          overlay={
-            <Menu>
-              <MenuItem>
-                <MemberNoteAdminModal
-                  title={formatMessage(profileMessages.label.editMemberNote)}
-                  member={memberAdmin}
-                  note={note}
-                  renderTrigger={({ setVisible }) => (
-                    <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</span>
-                  )}
-                  renderSubmit={({ type, status, duration, description }) =>
-                    updateMemberNote({
-                      variables: {
-                        memberNoteId: note.id,
-                        type,
-                        status,
-                        duration,
-                        description,
-                      },
-                    })
-                      .then(() => {
-                        onRefetch()
-                        message.success(formatMessage(commonMessages.event.successfullyEdited))
-                      })
-                      .catch(handleError)
-                  }
-                />
-              </MenuItem>
-              <MenuItem>
-                <AdminModal
-                  title={formatMessage(profileMessages.label.deleteMemberNote)}
-                  renderTrigger={({ setVisible }) => (
-                    <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.delete)}</span>
-                  )}
-                  cancelText={formatMessage(commonMessages.ui.back)}
-                  okText={formatMessage(commonMessages.ui.delete)}
-                  onOk={() =>
-                    deleteMemberNote({ variables: { memberNoteId: note.id } })
-                      .then(() => {
-                        onRefetch()
-                        message.success(formatMessage(commonMessages.event.successfullyDeleted))
-                      })
-                      .catch(handleError)
-                  }
-                >
-                  <StyledModalParagraph>
-                    {formatMessage(profileMessages.text.deleteMemberNoteConfirmation)}
-                  </StyledModalParagraph>
-                </AdminModal>
-              </MenuItem>
-            </Menu>
-          }
-          trigger={['click']}
-        >
-          <div>{<MoreOutlined />}</div>
-        </Dropdown>
       </div>
-    </>
+      <Dropdown
+        placement="bottomRight"
+        overlay={
+          <Menu>
+            <MenuItem>
+              <MemberNoteAdminModal
+                title={formatMessage(profileMessages.label.editMemberNote)}
+                member={memberAdmin}
+                note={note}
+                renderTrigger={({ setVisible }) => (
+                  <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</span>
+                )}
+                renderSubmit={({ type, status, duration, description }) =>
+                  updateMemberNote({
+                    variables: {
+                      memberNoteId: note.id,
+                      type,
+                      status,
+                      duration,
+                      description,
+                    },
+                  })
+                    .then(() => {
+                      onRefetch()
+                      message.success(formatMessage(commonMessages.event.successfullyEdited))
+                    })
+                    .catch(handleError)
+                }
+              />
+            </MenuItem>
+            <MenuItem>
+              <AdminModal
+                title={formatMessage(profileMessages.label.deleteMemberNote)}
+                renderTrigger={({ setVisible }) => (
+                  <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.delete)}</span>
+                )}
+                cancelText={formatMessage(commonMessages.ui.back)}
+                okText={formatMessage(commonMessages.ui.delete)}
+                onOk={() =>
+                  deleteMemberNote({ variables: { memberNoteId: note.id } })
+                    .then(() => {
+                      onRefetch()
+                      message.success(formatMessage(commonMessages.event.successfullyDeleted))
+                    })
+                    .catch(handleError)
+                }
+              >
+                <StyledModalParagraph>
+                  {formatMessage(profileMessages.text.deleteMemberNoteConfirmation)}
+                </StyledModalParagraph>
+              </AdminModal>
+            </MenuItem>
+          </Menu>
+        }
+        trigger={['click']}
+      >
+        <MoreOutlined />
+      </Dropdown>
+    </div>
   )
 }
 
