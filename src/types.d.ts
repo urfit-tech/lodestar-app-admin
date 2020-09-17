@@ -6057,6 +6057,32 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_properties {
   value: string;
 }
 
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author {
+  __typename: "member";
+  name: string;
+  picture_url: string | null;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
+  __typename: "member_note";
+  id: any;
+  /**
+   * NULL | inbound | outbound
+   */
+  type: string | null;
+  /**
+   * NULL | answered | missed
+   */
+  status: string | null;
+  duration: number | null;
+  description: string | null;
+  updated_at: any;
+  /**
+   * An object relationship
+   */
+  author: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author;
+}
+
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate_sum {
   __typename: "coin_log_sum_fields";
   amount: any | null;
@@ -6121,6 +6147,10 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk {
    */
   member_properties: GET_MEMBER_DESCRIPTION_member_by_pk_member_properties[];
   /**
+   * An array relationship
+   */
+  member_notes: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes[];
+  /**
    * An aggregated array relationship
    */
   coin_logs_aggregate: GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate;
@@ -6139,6 +6169,90 @@ export interface GET_MEMBER_DESCRIPTION {
 
 export interface GET_MEMBER_DESCRIPTIONVariables {
   memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_MEMBER_NOTE
+// ====================================================
+
+export interface INSERT_MEMBER_NOTE_insert_member_note_one {
+  __typename: "member_note";
+  id: any;
+}
+
+export interface INSERT_MEMBER_NOTE {
+  /**
+   * insert a single row into the table: "member_note"
+   */
+  insert_member_note_one: INSERT_MEMBER_NOTE_insert_member_note_one | null;
+}
+
+export interface INSERT_MEMBER_NOTEVariables {
+  memberId: string;
+  authorId: string;
+  type?: string | null;
+  status?: string | null;
+  duration?: number | null;
+  description?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_NOTE
+// ====================================================
+
+export interface UPDATE_MEMBER_NOTE_update_member_note_by_pk {
+  __typename: "member_note";
+  id: any;
+}
+
+export interface UPDATE_MEMBER_NOTE {
+  /**
+   * update single row of the table: "member_note"
+   */
+  update_member_note_by_pk: UPDATE_MEMBER_NOTE_update_member_note_by_pk | null;
+}
+
+export interface UPDATE_MEMBER_NOTEVariables {
+  memberNoteId: any;
+  type?: string | null;
+  status?: string | null;
+  duration?: number | null;
+  description?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_MEMBER_NOTE
+// ====================================================
+
+export interface DELETE_MEMBER_NOTE_delete_member_note_by_pk {
+  __typename: "member_note";
+  id: any;
+}
+
+export interface DELETE_MEMBER_NOTE {
+  /**
+   * delete single row from the table: "member_note"
+   */
+  delete_member_note_by_pk: DELETE_MEMBER_NOTE_delete_member_note_by_pk | null;
+}
+
+export interface DELETE_MEMBER_NOTEVariables {
+  memberNoteId: any;
 }
 
 /* tslint:disable */

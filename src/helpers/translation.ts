@@ -248,6 +248,7 @@ export const commonMessages = {
     successfullyUpload: { id: 'common.event.successfullyUpload', defaultMessage: '上傳成功' },
     loading: { id: 'common.event.loading', defaultMessage: '載入中' },
     successfullyCreated: { id: 'common.event.successfullyCreated', defaultMessage: '建立成功' },
+    successfullyEdited: { id: 'common.event.successfullyEdited', defaultMessage: '編輯成功' },
     successfullyDeleted: { id: 'common.event.successfullyDeleted', defaultMessage: '刪除成功' },
   }),
   status: defineMessages({

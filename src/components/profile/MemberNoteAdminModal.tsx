@@ -43,19 +43,26 @@ const MemberNoteAdminModal: React.FC<{
     avatarUrl: string | null
     name: string
   }
+  renderSubmit: (values: {
+    type: 'inbound' | 'outbound' | null
+    status: string | null
+    duration: number | null
+    description: string | null
+    setVisible: React.Dispatch<React.SetStateAction<boolean>>
+  }) => void
   renderTrigger: React.FC<{ setVisible: React.Dispatch<React.SetStateAction<boolean>> }>
-  onSubmit: () => void
   note?: {
     type: 'inbound' | 'outbound' | null
     status: string | null
     duration: number | null
-    description: number | null
+    description: string | null
   }
-}> = ({ title, member, renderTrigger, onSubmit, note }) => {
+}> = ({ title, member, renderSubmit, renderTrigger, note }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const [type, setType] = useState<'inbound' | 'outbound' | null>(note?.type || null)
   const [status, setStatus] = useState<string | null>(note?.status || 'answered')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   return (
     <AdminModal
@@ -67,7 +74,27 @@ const MemberNoteAdminModal: React.FC<{
           <Button className="mr-2" onClick={() => setVisible(false)}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" onClick={() => onSubmit()}>
+          <Button
+            loading={isSubmitting}
+            type="primary"
+            onClick={() => {
+              if (!isSubmitting) {
+                setIsSubmitting(true)
+                form
+                  .validateFields()
+                  .then(({ type, status, duration, description }) =>
+                    renderSubmit({
+                      type,
+                      status,
+                      duration: duration && moment(duration).diff(moment().startOf('day'), 'seconds'),
+                      description,
+                      setVisible,
+                    }),
+                  )
+                  .then(() => setIsSubmitting(false))
+              }
+            }}
+          >
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </>
@@ -88,7 +115,7 @@ const MemberNoteAdminModal: React.FC<{
         initialValues={{
           type,
           status,
-          duration: note?.duration || moment('00:00:00', 'HH:mm:ss'),
+          duration: note?.duration && moment(moment().startOf('day').seconds(note.duration), 'HH:mm:ss'),
           description: note?.description,
         }}
       >
@@ -115,7 +142,7 @@ const MemberNoteAdminModal: React.FC<{
               <div className="col-7">
                 <StyledFormLabel>{formatMessage(messages.duration)}</StyledFormLabel>
                 <Form.Item name="duration">
-                  <TimePicker style={{ width: '100%' }} />
+                  <TimePicker style={{ width: '100%' }} showNow={false} />
                 </Form.Item>
               </div>
             )}

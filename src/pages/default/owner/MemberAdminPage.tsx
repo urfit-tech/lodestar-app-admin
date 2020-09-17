@@ -1,5 +1,5 @@
 import Icon, { CloseOutlined } from '@ant-design/icons'
-import { Button, Divider, Layout, Skeleton, Tabs } from 'antd'
+import { Button, Divider, Layout, message, Skeleton, Tabs } from 'antd'
 import moment from 'moment'
 import React, { useContext } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -11,18 +11,20 @@ import {
   AdminBlockTitle,
   AdminHeader,
   AdminHeaderTitle,
-  AdminTabBarWrapper,
+  AdminTabBarWrapper
 } from '../../../components/admin'
 import { CustomRatioImage } from '../../../components/common/Image'
 import { StyledLayoutContent } from '../../../components/layout/DefaultLayout'
-import MemberPermissionForm from '../../../components/profile/MemberPermissionForm'
+import MemberNoteAdminItem from '../../../components/profile/MemberNoteAdminItem'
 import MemberNoteAdminModal from '../../../components/profile/MemberNoteAdminModal'
+import MemberPermissionForm from '../../../components/profile/MemberPermissionForm'
 import MemberProfileBasicForm from '../../../components/profile/MemberProfileBasicForm'
 import MemberPropertyAdminForm from '../../../components/profile/MemberPropertyAdminForm'
 import AppContext from '../../../contexts/AppContext'
-import { currencyFormatter } from '../../../helpers'
+import { useAuth } from '../../../contexts/AuthContext'
+import { currencyFormatter, handleError } from '../../../helpers'
 import { commonMessages } from '../../../helpers/translation'
-import { useMemberAdmin } from '../../../hooks/member'
+import { useMemberAdmin, useMutateMemberNote } from '../../../hooks/member'
 import DefaultAvatar from '../../../images/default/avatar.svg'
 import { ReactComponent as EmailIcon } from '../../../images/icon/email.svg'
 import { ReactComponent as FilePlusIcon } from '../../../images/icon/file-plus.svg'
@@ -37,6 +39,7 @@ const messages = defineMessages({
   memberPage: { id: 'profile.ui.memberPage', defaultMessage: '學員主頁' },
   // translation naming convention
   createNote: { id: 'commonMessages.ui.createNote', defaultMessage: '新增備註' },
+  editNote: { id: 'commonMessages.ui.editNote', defaultMessage: '編輯備註' },
 })
 
 const StyledSider = styled(Layout.Sider)`
@@ -62,6 +65,8 @@ const MemberAdminPage: React.FC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { enabledModules, settings } = useContext(AppContext)
   const { loadingMemberAdmin, errorMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
+  const { insertMemberNote } = useMutateMemberNote()
+  const { currentMemberId } = useAuth()
 
   if (loadingMemberAdmin || errorMemberAdmin || !memberAdmin) {
     return <Skeleton active />
@@ -176,9 +181,35 @@ const MemberAdminPage: React.FC = () => {
                         <span>{formatMessage(messages.createNote)}</span>
                       </Button>
                     )}
-                    onSubmit={() => alert('submit')}
+                    renderSubmit={({ type, status, duration, description, setVisible }) =>
+                      insertMemberNote({
+                        variables: {
+                          memberId: memberAdmin.id,
+                          authorId: currentMemberId,
+                          type,
+                          status,
+                          duration,
+                          description,
+                        },
+                      })
+                        .then(() => {
+                          refetchMemberAdmin()
+                          message.success(formatMessage(commonMessages.event.successfullyCreated))
+                        })
+                        .catch(handleError)
+                        .finally(() => setVisible(false))
+                    }
                   />
-                  <AdminBlock className="mt-4"></AdminBlock>
+                  <AdminBlock className="mt-4">
+                    {memberAdmin.notes.map(note => (
+                      <MemberNoteAdminItem
+                        key={note.id}
+                        note={note}
+                        memberAdmin={memberAdmin}
+                        onRefetch={refetchMemberAdmin}
+                      />
+                    ))}
+                  </AdminBlock>
                 </div>
               </Tabs.TabPane>
             )}
@@ -189,7 +220,6 @@ const MemberAdminPage: React.FC = () => {
                 </AdminBlock>
               </div>
             </Tabs.TabPane>
-            
           </Tabs>
         </StyledLayoutContent>
       </Layout>
