@@ -8839,6 +8839,20 @@ export interface GET_CREATOR_PROGRAM_ISSUES_issue_issue_replies_aggregate {
   aggregate: GET_CREATOR_PROGRAM_ISSUES_issue_issue_replies_aggregate_aggregate | null;
 }
 
+export interface GET_CREATOR_PROGRAM_ISSUES_issue_issue_enrollment_program_roles {
+  __typename: "program_role";
+  id: any;
+  member_id: string;
+}
+
+export interface GET_CREATOR_PROGRAM_ISSUES_issue_issue_enrollment {
+  __typename: "issue_enrollment";
+  /**
+   * An array relationship
+   */
+  program_roles: GET_CREATOR_PROGRAM_ISSUES_issue_issue_enrollment_program_roles[];
+}
+
 export interface GET_CREATOR_PROGRAM_ISSUES_issue {
   __typename: "issue";
   id: any;
@@ -8856,6 +8870,10 @@ export interface GET_CREATOR_PROGRAM_ISSUES_issue {
    * An aggregated array relationship
    */
   issue_replies_aggregate: GET_CREATOR_PROGRAM_ISSUES_issue_issue_replies_aggregate;
+  /**
+   * An object relationship
+   */
+  issue_enrollment: GET_CREATOR_PROGRAM_ISSUES_issue_issue_enrollment | null;
 }
 
 export interface GET_CREATOR_PROGRAM_ISSUES {
@@ -8869,6 +8887,7 @@ export interface GET_CREATOR_PROGRAM_ISSUESVariables {
   appId: string;
   threadIdLike?: string | null;
   unsolved?: boolean | null;
+  memberId?: string | null;
 }
 
 /* tslint:disable */

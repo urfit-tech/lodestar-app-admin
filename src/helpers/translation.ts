@@ -495,6 +495,7 @@ export const programMessages = {
     approved: { id: 'program.status.approved', defaultMessage: '審核通過' },
   }),
   label: defineMessages({
+    wholeProgram: { id: 'program.label.wholeProgram', defaultMessage: '全部課程' },
     programTitle: { id: 'program.label.programTitle', defaultMessage: '課程名稱' },
     planTitle: { id: 'program.label.planTitle', defaultMessage: '方案名稱' },
     allProgram: { id: 'program.label.allProgram', defaultMessage: '全部課程' },

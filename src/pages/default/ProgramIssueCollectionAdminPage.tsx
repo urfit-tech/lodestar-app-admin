@@ -48,8 +48,14 @@ const ProgramIssueCollectionAdminPage = () => {
           )}
         </div>
       </div>
-
-      <AllProgramIssueCollectionBlock selectedProgramId={selectedProgramId} selectedStatus={selectedStatus} />
+      {currentMemberId && (
+        <AllProgramIssueCollectionBlock
+          selectedProgramId={selectedProgramId}
+          selectedStatus={selectedStatus}
+          currentMemberId={currentMemberId}
+          currentUserRole={currentUserRole}
+        />
+      )}
     </AdminLayout>
   )
 }
@@ -57,7 +63,9 @@ const ProgramIssueCollectionAdminPage = () => {
 const AllProgramIssueCollectionBlock: React.FC<{
   selectedProgramId: string
   selectedStatus: string
-}> = ({ selectedProgramId, selectedStatus }) => {
+  currentMemberId: string
+  currentUserRole: string
+}> = ({ selectedProgramId, selectedStatus, currentMemberId, currentUserRole }) => {
   const { formatMessage } = useIntl()
 
   let unsolved: boolean | undefined
@@ -70,7 +78,11 @@ const AllProgramIssueCollectionBlock: React.FC<{
       break
   }
 
-  const { loading, error, issues, refetch: refetchIssues } = useGetCreatorProgramIssue(selectedProgramId, unsolved)
+  const { loading, error, issues, refetch } = useGetCreatorProgramIssue(
+    currentUserRole === 'content-creator' ? currentMemberId : null,
+    selectedProgramId,
+    unsolved,
+  )
 
   return (
     <div>
@@ -90,15 +102,15 @@ const AllProgramIssueCollectionBlock: React.FC<{
           numReplies={issue.issueRepliesCount}
           createdAt={issue.createdAt}
           solvedAt={issue.solvedAt}
-          memberId={issue.memberId}
-          onRefetch={refetchIssues}
+          memberId={issue.issueMemberId}
+          onRefetch={refetch}
         />
       ))}
     </div>
   )
 }
 
-const useGetCreatorProgramIssue = (selectedProgramId: string, unsolved?: boolean) => {
+const useGetCreatorProgramIssue = (memberId: string | null, selectedProgramId: string, unsolved?: boolean) => {
   const { id: appId } = useContext(AppContext)
   const { loading, error, data, refetch } = useQuery<
     types.GET_CREATOR_PROGRAM_ISSUES,
@@ -108,7 +120,9 @@ const useGetCreatorProgramIssue = (selectedProgramId: string, unsolved?: boolean
       appId,
       threadIdLike: selectedProgramId === 'all' ? undefined : `/programs/${selectedProgramId}/contents/%`,
       unsolved,
+      memberId,
     },
+    fetchPolicy: 'no-cache',
   })
 
   const issues: IssueProps[] =
@@ -120,10 +134,11 @@ const useGetCreatorProgramIssue = (selectedProgramId: string, unsolved?: boolean
           description: issue.description,
           solvedAt: issue.solved_at ? new Date(issue.solved_at) : null,
           createdAt: new Date(issue.created_at),
-          memberId: issue.member_id,
+          issueMemberId: issue.member_id,
           threadId: issue.thread_id,
           reactedMemberIds: issue.issue_reactions.map(reaction => reaction.member_id),
           issueRepliesCount: issue?.issue_replies_aggregate?.aggregate?.count || 0,
+          issueInstructorIds: issue?.issue_enrollment?.program_roles.map(program_role => program_role.member_id) || [],
         }))
 
   return {
@@ -135,9 +150,14 @@ const useGetCreatorProgramIssue = (selectedProgramId: string, unsolved?: boolean
 }
 
 const GET_CREATOR_PROGRAM_ISSUES = gql`
-  query GET_CREATOR_PROGRAM_ISSUES($appId: String!, $threadIdLike: String, $unsolved: Boolean) {
+  query GET_CREATOR_PROGRAM_ISSUES($appId: String!, $threadIdLike: String, $unsolved: Boolean, $memberId: String) {
     issue(
-      where: { app_id: { _eq: $appId }, thread_id: { _like: $threadIdLike }, solved_at: { _is_null: $unsolved } }
+      where: {
+        app_id: { _eq: $appId }
+        thread_id: { _like: $threadIdLike }
+        solved_at: { _is_null: $unsolved }
+        issue_enrollment: { program_roles: { member_id: { _eq: $memberId } } }
+      }
       order_by: { created_at: desc }
     ) {
       id
@@ -153,6 +173,12 @@ const GET_CREATOR_PROGRAM_ISSUES = gql`
       issue_replies_aggregate {
         aggregate {
           count
+        }
+      }
+      issue_enrollment {
+        program_roles(where: { name: { _eq: "instructor" } }) {
+          id
+          member_id
         }
       }
     }

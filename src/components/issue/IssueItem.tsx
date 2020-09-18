@@ -111,6 +111,8 @@ const IssueItem: React.FC<{
   useEffect(() => {
     if (currentMemberId && reactedMemberIds.includes(currentMemberId)) {
       setReacted(true)
+    } else {
+      setReacted(false)
     }
   }, [currentMemberId, reactedMemberIds])
 
