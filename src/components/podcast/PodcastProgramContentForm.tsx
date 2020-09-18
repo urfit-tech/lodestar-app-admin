@@ -19,7 +19,7 @@ import types from '../../types'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import { StyledTips } from '../admin'
 import AdminBraftEditor from '../admin/AdminBraftEditor'
-import SingleUploader from '../admin/SingleUploader'
+import SingleUploader from '../common/SingleUploader'
 
 const StyledFileBlock = styled.div`
   padding: 0.25rem 0.5rem;

@@ -4,7 +4,7 @@ import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { MemberOptionProps } from '../../types/member'
-import { AvatarImage } from '../common/Image'
+import { AvatarImage } from './Image'
 
 const StyledText = styled.span`
   color: var(--gray-darker);

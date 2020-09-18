@@ -12,8 +12,8 @@ import { commonMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramAdminProps } from '../../types/program'
 import { StyledTips } from '../admin'
-import CategorySelector from '../admin/CategorySelector'
-import LanguageSelector from '../admin/LanguageSelector'
+import CategorySelector from '../common/CategorySelector'
+import LanguageSelector from '../common/LanguageSelector'
 
 const ProgramBasicForm: React.FC<{
   program: ProgramAdminProps | null

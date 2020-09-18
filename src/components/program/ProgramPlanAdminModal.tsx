@@ -16,8 +16,8 @@ import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import CurrencyInput from '../admin/CurrencyInput'
 import CurrencySelector from '../admin/CurrencySelector'
-import PeriodSelector from '../admin/PeriodSelector'
 import SaleInput from '../admin/SaleInput'
+import PeriodSelector from '../common/PeriodSelector'
 
 const StyledNotation = styled.div`
   line-height: 1.5;

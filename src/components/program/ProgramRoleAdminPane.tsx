@@ -11,8 +11,8 @@ import types from '../../types'
 import { ProgramAdminProps } from '../../types/program'
 import { AdminBlock, AdminBlockTitle } from '../admin'
 import AdminModal from '../admin/AdminModal'
-import CreatorSelector from '../admin/ContentCreatorSelector'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
+import CreatorSelector from '../common/CreatorSelector'
 import MemberAvatar from '../common/MemberAvatar'
 
 const ProgramRoleAdminPane: React.FC<{

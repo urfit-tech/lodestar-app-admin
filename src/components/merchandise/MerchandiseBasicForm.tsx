@@ -12,7 +12,7 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
-import CategorySelector from '../admin/CategorySelector'
+import CategorySelector from '../common/CategorySelector'
 
 type MerchandiseBasicFormProps = FormComponentProps & {
   merchandise: MerchandiseProps

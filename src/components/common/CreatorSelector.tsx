@@ -8,7 +8,7 @@ import types from '../../types'
 import { MemberOptionProps } from '../../types/member'
 import MemberSelector from './MemberSelector'
 
-const ContentCreatorSelector: React.FC<{
+const CreatorSelector: React.FC<{
   value?: string
   onChange?: (value: string | null) => void
 }> = ({ value, onChange }) => {
@@ -65,4 +65,4 @@ const useContentCreatorCollection = () => {
   }
 }
 
-export default ContentCreatorSelector
+export default CreatorSelector

@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { programMessages } from '../../helpers/translation'
-import SingleUploader from './SingleUploader'
+import SingleUploader from '../common/SingleUploader'
 
 const StyleInputGroup = styled(Input.Group)`
   display: flex !important;

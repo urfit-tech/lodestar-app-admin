@@ -12,7 +12,7 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
-import CreatorSelector from '../admin/ContentCreatorSelector'
+import CreatorSelector from '../common/CreatorSelector'
 
 const MemberShopCreationModal: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
