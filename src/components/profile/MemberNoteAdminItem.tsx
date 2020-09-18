@@ -62,26 +62,21 @@ const MemberNoteAdminItem: React.FC<{
           className="mr-5 flex-shrink-0"
         />
         <div>
-          <span>
-            <span>{moment(note.updatedAt).format('YYYY-MM-DD HH:mm')}</span>
-            {note.type === 'inbound' && (
-              <StyledStatus>
-                <StyledIcon variant={note.status} component={() => <CallOutIcon />} />
-                {note.status === 'answered' && (
-                  <span className="ml-2">{moment.utc((note?.duration ?? 0) * 1000).format('HH:mm:ss')}</span>
-                )}
-                {note.status === 'missed' && (
-                  <span className="ml-2">{formatMessage(profileMessages.status.missed)}</span>
-                )}
-              </StyledStatus>
-            )}
-          </span>
+          <span>{moment(note.updatedAt).format('YYYY-MM-DD HH:mm')}</span>
+          {note.type === 'inbound' && (
+            <StyledStatus>
+              <StyledIcon variant={note.status} component={() => <CallOutIcon />} />
+              {note.status === 'answered' && (
+                <span className="ml-2">{moment.utc((note?.duration ?? 0) * 1000).format('HH:mm:ss')}</span>
+              )}
+              {note.status === 'missed' && <span className="ml-2">{formatMessage(profileMessages.status.missed)}</span>}
+            </StyledStatus>
+          )}
           <StyledParagraph>{note.description}</StyledParagraph>
           <StyledAuthorName>By. {note.author.name}</StyledAuthorName>
         </div>
       </div>
       <Dropdown
-        placement="bottomRight"
         overlay={
           <Menu>
             <MenuItem>
