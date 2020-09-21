@@ -5,7 +5,8 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages, profileMessages } from '../../helpers/translation'
-import EmptyCover from '../../images/default/empty-cover.png'
+import DefaultAvatar from '../../images/default/avatar.svg'
+import { MemberNoteAdminProps } from '../../types/member'
 import AdminModal from '../admin/AdminModal'
 import { CustomRatioImage } from '../common/Image'
 
@@ -32,7 +33,7 @@ const MemberNoteAdminModal: React.FC<{
     name: string
   }
   renderSubmit: (values: {
-    type: 'inbound' | 'outbound' | null
+    type: MemberNoteAdminProps['type']
     status: string | null
     duration: number | null
     description: string | null
@@ -40,7 +41,7 @@ const MemberNoteAdminModal: React.FC<{
   }) => void
   renderTrigger: React.FC<{ setVisible: React.Dispatch<React.SetStateAction<boolean>> }>
   note?: {
-    type: 'inbound' | 'outbound' | null
+    type: MemberNoteAdminProps['type']
     status: string | null
     duration: number | null
     description: string | null
@@ -48,7 +49,7 @@ const MemberNoteAdminModal: React.FC<{
 }> = ({ title, member, renderSubmit, renderTrigger, note }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
-  const [type, setType] = useState<'inbound' | 'outbound' | null>(note?.type || null)
+  const [type, setType] = useState<MemberNoteAdminProps['type']>(note?.type || null)
   const [status, setStatus] = useState<string | null>(note?.status || 'answered')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -96,7 +97,7 @@ const MemberNoteAdminModal: React.FC<{
     >
       <StyledMemberInfo className="d-flex align-items-center mb-4">
         <CustomRatioImage
-          src={member?.avatarUrl || EmptyCover}
+          src={member?.avatarUrl || DefaultAvatar}
           shape="circle"
           width="36px"
           ratio={1}

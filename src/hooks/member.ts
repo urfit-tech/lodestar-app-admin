@@ -6,6 +6,7 @@ import types from '../types'
 import {
   MemberAdminProps,
   MemberInfoProps,
+  MemberNoteAdminProps,
   MemberOptionProps,
   MemberProps,
   MemberPublicProps,
@@ -103,6 +104,7 @@ export const useMemberAdmin = (memberId: string) => {
             description
             updated_at
             author {
+              id
               name
               picture_url
             }
@@ -150,7 +152,7 @@ export const useMemberAdmin = (memberId: string) => {
           })),
           notes: data.member_by_pk.member_notes.map(v => ({
             id: v.id,
-            type: v.type as 'inbound' | 'outbound' | null,
+            type: v.type as MemberNoteAdminProps['type'],
             status: v.status,
             duration: v.duration,
             description: v.description,

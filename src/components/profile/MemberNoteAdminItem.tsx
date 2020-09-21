@@ -26,7 +26,7 @@ const StyledIcon = styled(Icon)<{ variant?: string | null }>`
   ${props => props.variant === 'missed' && `color: var(--error);`}
 `
 
-const MenuItem = styled(Menu.Item)`
+const StyledMenuItem = styled(Menu.Item)`
   width: 100px;
   line-height: 36px;
 `
@@ -35,7 +35,7 @@ const StyledParagraph = styled.p`
   white-space: break-spaces;
 `
 
-const StyledAuthorName = styled.span`
+const StyledAuthorName = styled.div`
   font-size: 12px;
   height: 18px;
   font-weight: 500;
@@ -62,16 +62,20 @@ const MemberNoteAdminItem: React.FC<{
           className="mr-5 flex-shrink-0"
         />
         <div>
-          <span>{moment(note.updatedAt).format('YYYY-MM-DD HH:mm')}</span>
-          {note.type === 'inbound' && (
-            <StyledStatus>
-              <StyledIcon variant={note.status} component={() => <CallOutIcon />} />
-              {note.status === 'answered' && (
-                <span className="ml-2">{moment.utc((note?.duration ?? 0) * 1000).format('HH:mm:ss')}</span>
-              )}
-              {note.status === 'missed' && <span className="ml-2">{formatMessage(profileMessages.status.missed)}</span>}
-            </StyledStatus>
-          )}
+          <div>
+            <span>{moment(note.updatedAt).format('YYYY-MM-DD HH:mm')}</span>
+            {note.type === 'inbound' && (
+              <StyledStatus>
+                <StyledIcon variant={note.status} component={() => <CallOutIcon />} />
+                {note.status === 'answered' && (
+                  <span className="ml-2">{moment.utc((note?.duration ?? 0) * 1000).format('HH:mm:ss')}</span>
+                )}
+                {note.status === 'missed' && (
+                  <span className="ml-2">{formatMessage(profileMessages.status.missed)}</span>
+                )}
+              </StyledStatus>
+            )}
+          </div>
           <StyledParagraph>{note.description}</StyledParagraph>
           <StyledAuthorName>By. {note.author.name}</StyledAuthorName>
         </div>
@@ -79,7 +83,7 @@ const MemberNoteAdminItem: React.FC<{
       <Dropdown
         overlay={
           <Menu>
-            <MenuItem>
+            <StyledMenuItem>
               <MemberNoteAdminModal
                 title={formatMessage(profileMessages.label.editMemberNote)}
                 member={memberAdmin}
@@ -104,8 +108,8 @@ const MemberNoteAdminItem: React.FC<{
                     .catch(handleError)
                 }
               />
-            </MenuItem>
-            <MenuItem>
+            </StyledMenuItem>
+            <StyledMenuItem>
               <AdminModal
                 title={formatMessage(profileMessages.label.deleteMemberNote)}
                 renderTrigger={({ setVisible }) => (
@@ -126,7 +130,7 @@ const MemberNoteAdminItem: React.FC<{
                   {formatMessage(profileMessages.text.deleteMemberNoteConfirmation)}
                 </StyledModalParagraph>
               </AdminModal>
-            </MenuItem>
+            </StyledMenuItem>
           </Menu>
         }
         trigger={['click']}
