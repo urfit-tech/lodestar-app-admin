@@ -213,6 +213,18 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
   },
 
+  // task
+  task_collection: {
+    path: '/tasks',
+    pageName: 'TaskCollectionPage',
+    authenticated: true,
+  },
+  task_category_collection: {
+    path: '/task-category',
+    pageName: 'TaskCategoryCollectionPage',
+    authenticated: true,
+  },
+
   // app owner admin
   owner_sales: {
     path: '/admin/sales',

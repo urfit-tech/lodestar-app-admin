@@ -20,6 +20,7 @@ import MemberNoteAdminModal from '../../../components/profile/MemberNoteAdminMod
 import MemberPermissionForm from '../../../components/profile/MemberPermissionForm'
 import MemberProfileBasicForm from '../../../components/profile/MemberProfileBasicForm'
 import MemberPropertyAdminForm from '../../../components/profile/MemberPropertyAdminForm'
+import MemberTaskTable from '../../../components/profile/MemberTaskTable'
 import AppContext from '../../../contexts/AppContext'
 import { useAuth } from '../../../contexts/AuthContext'
 import { currencyFormatter, handleError } from '../../../helpers'
@@ -198,6 +199,13 @@ const MemberAdminPage: React.FC = () => {
                       />
                     ))}
                   </AdminBlock>
+                </div>
+              </Tabs.TabPane>
+            )}
+            {enabledModules.member_task && (
+              <Tabs.TabPane key="task" tab={formatMessage(profileMessages.label.task)}>
+                <div className="p-5">
+                  <MemberTaskTable memberId={memberId} />
                 </div>
               </Tabs.TabPane>
             )}

@@ -62,6 +62,7 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
           'owner_blog_admin',
           'owner_credit_admin',
           'owner_member_admin',
+          'owner_task_admin',
         ]}
       >
         <Menu.Item key="owner_sales">
@@ -223,6 +224,21 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
             <Menu.Item key="owner_member_properties">{formatMessage(commonMessages.menu.memberProperties)}</Menu.Item>
           )}
         </Menu.SubMenu>
+
+        {enabledModules.member_task && (
+          <Menu.SubMenu
+            key="owner_task_admin"
+            title={
+              <span>
+                <Icon component={() => <UsersIcon />} />
+                <span>{formatMessage(commonMessages.menu.taskAdmin)}</span>
+              </span>
+            }
+          >
+            <Menu.Item key="task_collection">{formatMessage(commonMessages.menu.tasks)}</Menu.Item>
+            <Menu.Item key="task_category_collection">{formatMessage(commonMessages.menu.taskCategory)}</Menu.Item>
+          </Menu.SubMenu>
+        )}
 
         <Menu.Item key="settings">
           <Icon component={() => <UserIcon />} />

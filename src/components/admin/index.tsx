@@ -1,5 +1,6 @@
 import { Select } from 'antd'
 import styled from 'styled-components'
+import { MemberTaskProps } from '../../types/member'
 
 export const AdminPageTitle = styled.h1`
   color: var(--gray-darker);
@@ -94,4 +95,25 @@ export const StyledSelect = styled(Select)`
   .ant-select-selection-selected-value {
     margin-right: 0.5rem;
   }
+`
+export const MemberTaskTag = styled.span<{ variant: MemberTaskProps['priority'] | MemberTaskProps['status'] }>`
+  padding: 2px 6px;
+  color: var(--gray-darker);
+  font-size: 14px;
+  background: ${props =>
+    props.variant === 'high'
+      ? '#ffcfd4'
+      : props.variant === 'medium'
+      ? '#fedfd1'
+      : props.variant === 'low'
+      ? 'rgba(255, 190, 30, 0.2)'
+      : props.variant === 'pending'
+      ? '#e6e6e4'
+      : props.variant === 'in-progress'
+      ? '#e1d5f9'
+      : props.variant === 'done'
+      ? '#cee7e1'
+      : ''};
+  border-radius: 2px;
+  line-height: 2rem;
 `

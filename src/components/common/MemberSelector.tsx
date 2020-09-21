@@ -50,7 +50,7 @@ const MemberSelector: React.FC<{
           disabled={member.disabled}
         >
           <div className="d-flex align-items-center justify-content-start">
-            <AvatarImage size="28px" src={member.avatarUrl} className="mr-2" />
+            <AvatarImage size="28px" src={member.avatarUrl} className="mr-2 flex-shrink-0" />
             <StyledText className="mr-2">{member.name}</StyledText>
             <StyledTextSecondary>{member.email}</StyledTextSecondary>
           </div>
