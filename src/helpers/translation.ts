@@ -234,6 +234,14 @@ export const commonMessages = {
       defaultMessage: '可觀看 {amount} {unit}',
     },
     cancelSubscriptionDate: { id: 'common.text.cancelSubscriptionDate', defaultMessage: '已於 {date} 取消訂閱' },
+    deleteCategoryNotation: {
+      id: 'common.text.deleteCategoryNotation',
+      defaultMessage: '確定要刪除此類別？此動作無法復原',
+    },
+    deletePropertyNotation: {
+      id: 'common.text.deletePropertyNotation',
+      defaultMessage: '確定要刪除此欄位？此動作無法復原',
+    },
   }),
   event: defineMessages({
     successfullySaved: { id: 'common.event.successfullySaved', defaultMessage: '儲存成功' },

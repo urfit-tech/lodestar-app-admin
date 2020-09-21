@@ -3,22 +3,16 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'
 import AppContext from '../../contexts/AppContext'
+import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useCategory } from '../../hooks/data'
 import types from '../../types'
 import { ClassType } from '../../types/general'
 import AdminCard from '../admin/AdminCard'
 import DraggableItem from './DraggableItem'
-
-const messages = defineMessages({
-  deleteCategoryNotation: {
-    id: 'common.text.deleteCategoryNotation',
-    defaultMessage: '確定要刪除此類別？此動作無法復原',
-  },
-})
 
 const CategoryAdminCard: React.FC<{
   classType: ClassType
@@ -72,11 +66,10 @@ const CategoryAdminCard: React.FC<{
               <DeleteOutlined
                 key="delete"
                 onClick={() => {
-                  if (window.confirm(formatMessage(messages.deleteCategoryNotation))) {
-                    deleteCategory({
-                      variables: { categoryId: category.id },
-                    }).then(() => refetch())
-                  }
+                  window.confirm(formatMessage(commonMessages.text.deleteCategoryNotation)) &&
+                    deleteCategory({ variables: { categoryId: category.id } })
+                      .then(() => refetch())
+                      .catch(handleError)
                 }}
               />,
             ]}

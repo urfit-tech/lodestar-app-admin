@@ -68,9 +68,10 @@ const MemberPropertyAdminPage: React.FC = () => {
                 <DeleteOutlined
                   key="delete"
                   onClick={() => {
-                    deleteProperty({ variables: { propertyId: property.id } })
-                      .then(() => refetchProperties())
-                      .catch(handleError)
+                    window.confirm(formatMessage(commonMessages.text.deletePropertyNotation)) &&
+                      deleteProperty({ variables: { propertyId: property.id } })
+                        .then(() => refetchProperties())
+                        .catch(handleError)
                   }}
                 />,
               ]}
@@ -108,7 +109,7 @@ const MemberPropertyAdminPage: React.FC = () => {
             }).then(() => refetchProperties())
           }}
         >
-          {formatMessage(commonMessages.ui.addCategory)}
+          {formatMessage(commonMessages.ui.addProperty)}
         </Button>
       </AdminCard>
     </AdminLayout>
@@ -138,6 +139,9 @@ const UPDATE_PROPERTY_POSITION = gql`
 `
 const DELETE_PROPERTY = gql`
   mutation DELETE_PROPERTY($propertyId: uuid!) {
+    delete_member_property(where: { property_id: { _eq: $propertyId } }) {
+      affected_rows
+    }
     delete_property(where: { id: { _eq: $propertyId } }) {
       affected_rows
     }
