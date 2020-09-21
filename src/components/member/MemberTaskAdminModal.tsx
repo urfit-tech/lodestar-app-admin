@@ -77,6 +77,7 @@ const MemberTaskAdminModal: React.FC<
             .then(() => {
               onRefetch && onRefetch()
               onSuccess && onSuccess()
+              form.resetFields()
             })
             .catch(handleError)
             .finally(() => setLoading(false))
