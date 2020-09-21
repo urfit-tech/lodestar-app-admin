@@ -11,8 +11,8 @@ import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
-import { createUploadFn } from '../admin/AdminBraftEditor'
 import MemberAvatar from '../common/MemberAvatar'
+import { createUploadFn } from '../form/AdminBraftEditor'
 
 export const StyledEditor = styled(BraftEditor)`
   .bf-content {

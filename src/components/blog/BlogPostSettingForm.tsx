@@ -11,8 +11,8 @@ import { blogMessages, commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { PostProps } from '../../types/blog'
 import { StyledTips } from '../admin'
-import ImageInput from '../admin/ImageInput'
-import MerchandiseSelector from '../common/MerchandiseSelector'
+import ImageInput from '../form/ImageInput'
+import MerchandiseSelector from '../form/MerchandiseSelector'
 
 const BlogPostSettingForm: React.FC<{
   post: PostProps | null

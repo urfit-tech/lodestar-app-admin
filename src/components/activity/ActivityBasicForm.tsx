@@ -11,8 +11,8 @@ import { activityMessages, commonMessages, errorMessages } from '../../helpers/t
 import types from '../../types'
 import { ActivityAdminProps } from '../../types/activity'
 import { StyledTips } from '../admin'
-import CategorySelector from '../common/CategorySelector'
-import LanguageSelector from '../common/LanguageSelector'
+import CategorySelector from '../form/CategorySelector'
+import LanguageSelector from '../form/LanguageSelector'
 
 const ActivityBasicForm: React.FC<{
   activityAdmin: ActivityAdminProps | null

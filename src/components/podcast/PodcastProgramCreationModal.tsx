@@ -10,7 +10,7 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
-import CategorySelector from '../common/CategorySelector'
+import CategorySelector from '../form/CategorySelector'
 
 const messages = defineMessages({
   createPodcastProgram: { id: 'podcast.ui.createPodcastProgram', defaultMessage: '建立廣播' },

@@ -14,9 +14,9 @@ import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
 import ProductTypeLabel from '../common/ProductTypeLabel'
+import ShippingMethodLabel from '../common/ShippingMethodLabel'
 import OrderStatusTag from './OrderStatusTag'
 import SubscriptionCancelModal from './SubscriptionCancelModal'
-import ShippingMethodLabel from '../common/ShippingMethodLabel'
 
 const StyledContainer = styled.div`
   overflow: auto;

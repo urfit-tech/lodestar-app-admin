@@ -12,8 +12,8 @@ import types from '../../types'
 import { MemberTaskProps } from '../../types/member'
 import { MemberTaskTag } from '../admin'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
-import AllMemberSelector from '../common/AllMemberSelector'
-import CategorySelector from '../common/CategorySelector'
+import AllMemberSelector from '../form/AllMemberSelector'
+import CategorySelector from '../form/CategorySelector'
 
 const MemberTaskAdminModal: React.FC<
   {

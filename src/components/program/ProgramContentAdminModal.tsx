@@ -12,8 +12,8 @@ import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramContentBodyType, ProgramContentProps, ProgramProps } from '../../types/program'
-import AdminBraftEditor from '../admin/AdminBraftEditor'
-import SingleUploader from '../common/SingleUploader'
+import AdminBraftEditor from '../form/AdminBraftEditor'
+import SingleUploader from '../form/SingleUploader'
 import ProgramPlanSelector from './ProgramPlanSelector'
 
 const messages = defineMessages({

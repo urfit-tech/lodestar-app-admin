@@ -6,7 +6,7 @@ import { useIntl } from 'react-intl'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MemberShopProps, ShippingMethodProps, ShippingMethodType } from '../../types/merchandise'
-import CurrencyInput from '../admin/CurrencyInput'
+import CurrencyInput from '../form/CurrencyInput'
 
 const ShippingMethodIds: ShippingMethodType[] = [
   'seven-eleven',

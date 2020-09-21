@@ -11,8 +11,8 @@ import { commonMessages } from '../../helpers/translation'
 import { useCategory } from '../../hooks/data'
 import types from '../../types'
 import { ClassType } from '../../types/general'
-import AdminCard from '../admin/AdminCard'
-import DraggableItem from './DraggableItem'
+import DraggableItem from '../common/DraggableItem'
+import AdminCard from './AdminCard'
 
 const CategoryAdminCard: React.FC<{
   classType: ClassType

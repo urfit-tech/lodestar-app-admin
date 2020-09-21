@@ -11,9 +11,9 @@ import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import { useUpdateAppointmentResult } from '../../hooks/appointment'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
-import AdminBraftEditor from '../admin/AdminBraftEditor'
 import { AvatarImage } from '../common/Image'
 import { BraftContent } from '../common/StyledBraftEditor'
+import AdminBraftEditor from '../form/AdminBraftEditor'
 
 const messages = defineMessages({
   appointmentText: { id: 'appointment.ui.appointmentText', defaultMessage: '{name} 已預約你的「{title}」' },

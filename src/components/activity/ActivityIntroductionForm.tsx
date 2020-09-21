@@ -12,8 +12,8 @@ import { activityMessages, commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ActivityAdminProps } from '../../types/activity'
 import { StyledTips } from '../admin'
-import AdminBraftEditor from '../admin/AdminBraftEditor'
-import ImageInput from '../admin/ImageInput'
+import AdminBraftEditor from '../form/AdminBraftEditor'
+import ImageInput from '../form/ImageInput'
 
 const ActivityIntroductionForm: React.FC<{
   activityAdmin: ActivityAdminProps | null

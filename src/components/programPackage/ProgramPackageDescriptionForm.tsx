@@ -9,7 +9,7 @@ import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramPackageProps } from '../../types/programPackage'
-import AdminBraftEditor from '../admin/AdminBraftEditor'
+import AdminBraftEditor from '../form/AdminBraftEditor'
 
 const ProgramPackageDescriptionForm: React.FC<{
   programPackage: ProgramPackageProps | null

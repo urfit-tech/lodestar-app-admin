@@ -5,15 +5,15 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
-import TagSelector from '../../containers/common/TagSelector'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramAdminProps } from '../../types/program'
 import { StyledTips } from '../admin'
-import CategorySelector from '../common/CategorySelector'
-import LanguageSelector from '../common/LanguageSelector'
+import CategorySelector from '../form/CategorySelector'
+import LanguageSelector from '../form/LanguageSelector'
+import TagSelector from '../form/TagSelector'
 
 const ProgramBasicForm: React.FC<{
   program: ProgramAdminProps | null

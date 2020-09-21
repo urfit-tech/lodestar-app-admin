@@ -11,9 +11,9 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramPackagePlanProps } from '../../types/programPackage'
-import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
-import SaleInput from '../admin/SaleInput'
+import AdminBraftEditor from '../form/AdminBraftEditor'
+import SaleInput from '../form/SaleInput'
 import ProgramPeriodTypeDropdown from '../program/ProgramPeriodTypeDropdown'
 
 const messages = defineMessages({

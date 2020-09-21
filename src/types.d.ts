@@ -363,23 +363,29 @@ export interface UPDATE_ACTIVITY_TICKETVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ALL_MEMBER_COLLECTION
+// GraphQL mutation operation: INSERT_PROGRAM_CATEGORY
 // ====================================================
 
-export interface GET_ALL_MEMBER_COLLECTION_member {
-  __typename: "member";
-  id: string;
-  picture_url: string | null;
-  name: string;
-  username: string;
-  email: string;
+export interface INSERT_PROGRAM_CATEGORY_insert_category {
+  __typename: "category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
 }
 
-export interface GET_ALL_MEMBER_COLLECTION {
+export interface INSERT_PROGRAM_CATEGORY {
   /**
-   * fetch data from the table: "member"
+   * insert data into the table: "category"
    */
-  member: GET_ALL_MEMBER_COLLECTION_member[];
+  insert_category: INSERT_PROGRAM_CATEGORY_insert_category | null;
+}
+
+export interface INSERT_PROGRAM_CATEGORYVariables {
+  appId: string;
+  name?: string | null;
+  classType?: string | null;
+  position?: number | null;
 }
 
 /* tslint:disable */
@@ -388,23 +394,84 @@ export interface GET_ALL_MEMBER_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_CONTENT_CREATOR_COLLECTION
+// GraphQL mutation operation: UPDATE_CATEGORY
 // ====================================================
 
-export interface GET_CONTENT_CREATOR_COLLECTION_member {
-  __typename: "member";
-  id: string;
-  picture_url: string | null;
-  name: string;
-  username: string;
-  email: string;
+export interface UPDATE_CATEGORY_update_category {
+  __typename: "category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
 }
 
-export interface GET_CONTENT_CREATOR_COLLECTION {
+export interface UPDATE_CATEGORY {
   /**
-   * fetch data from the table: "member"
+   * update data of the table: "category"
    */
-  member: GET_CONTENT_CREATOR_COLLECTION_member[];
+  update_category: UPDATE_CATEGORY_update_category | null;
+}
+
+export interface UPDATE_CATEGORYVariables {
+  categoryId: string;
+  name?: string | null;
+  position?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_CATEGORY_POSITION
+// ====================================================
+
+export interface UPDATE_CATEGORY_POSITION_insert_category {
+  __typename: "category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_CATEGORY_POSITION {
+  /**
+   * insert data into the table: "category"
+   */
+  insert_category: UPDATE_CATEGORY_POSITION_insert_category | null;
+}
+
+export interface UPDATE_CATEGORY_POSITIONVariables {
+  data: category_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PROGRAM_CATEGORY
+// ====================================================
+
+export interface DELETE_PROGRAM_CATEGORY_delete_category {
+  __typename: "category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CATEGORY {
+  /**
+   * delete data from the table: "category"
+   */
+  delete_category: DELETE_PROGRAM_CATEGORY_delete_category | null;
+}
+
+export interface DELETE_PROGRAM_CATEGORYVariables {
+  categoryId: string;
 }
 
 /* tslint:disable */
@@ -1109,123 +1176,6 @@ export interface UPDATE_COUPON_PLANVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: INSERT_PROGRAM_CATEGORY
-// ====================================================
-
-export interface INSERT_PROGRAM_CATEGORY_insert_category {
-  __typename: "category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface INSERT_PROGRAM_CATEGORY {
-  /**
-   * insert data into the table: "category"
-   */
-  insert_category: INSERT_PROGRAM_CATEGORY_insert_category | null;
-}
-
-export interface INSERT_PROGRAM_CATEGORYVariables {
-  appId: string;
-  name?: string | null;
-  classType?: string | null;
-  position?: number | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_CATEGORY
-// ====================================================
-
-export interface UPDATE_CATEGORY_update_category {
-  __typename: "category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_CATEGORY {
-  /**
-   * update data of the table: "category"
-   */
-  update_category: UPDATE_CATEGORY_update_category | null;
-}
-
-export interface UPDATE_CATEGORYVariables {
-  categoryId: string;
-  name?: string | null;
-  position?: number | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_CATEGORY_POSITION
-// ====================================================
-
-export interface UPDATE_CATEGORY_POSITION_insert_category {
-  __typename: "category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_CATEGORY_POSITION {
-  /**
-   * insert data into the table: "category"
-   */
-  insert_category: UPDATE_CATEGORY_POSITION_insert_category | null;
-}
-
-export interface UPDATE_CATEGORY_POSITIONVariables {
-  data: category_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_PROGRAM_CATEGORY
-// ====================================================
-
-export interface DELETE_PROGRAM_CATEGORY_delete_category {
-  __typename: "category_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PROGRAM_CATEGORY {
-  /**
-   * delete data from the table: "category"
-   */
-  delete_category: DELETE_PROGRAM_CATEGORY_delete_category | null;
-}
-
-export interface DELETE_PROGRAM_CATEGORYVariables {
-  categoryId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: INSERT_COIN_LOG_COLLECTION
 // ====================================================
 
@@ -1274,6 +1224,56 @@ export interface INSERT_POINT_LOG_COLLECTION {
 
 export interface INSERT_POINT_LOG_COLLECTIONVariables {
   data: point_log_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ALL_MEMBER_COLLECTION
+// ====================================================
+
+export interface GET_ALL_MEMBER_COLLECTION_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_ALL_MEMBER_COLLECTION {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_ALL_MEMBER_COLLECTION_member[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CONTENT_CREATOR_COLLECTION
+// ====================================================
+
+export interface GET_CONTENT_CREATOR_COLLECTION_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_CONTENT_CREATOR_COLLECTION {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_CONTENT_CREATOR_COLLECTION_member[];
 }
 
 /* tslint:disable */
@@ -1647,6 +1647,370 @@ export interface UPDATE_ISSUE_REPLY {
 export interface UPDATE_ISSUE_REPLYVariables {
   issueReplyId: any;
   content?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_ROLE
+// ====================================================
+
+export interface UPDATE_MEMBER_ROLE_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_ROLE {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_ROLE_update_member | null;
+}
+
+export interface UPDATE_MEMBER_ROLEVariables {
+  memberId: string;
+  role?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_PROFILE_BASIC
+// ====================================================
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_delete_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_insert_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_delete_member_phone {
+  __typename: "member_phone_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_insert_member_phone {
+  __typename: "member_phone_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_PROFILE_BASIC_update_member | null;
+  /**
+   * delete data from the table: "member_tag"
+   */
+  delete_member_tag: UPDATE_MEMBER_PROFILE_BASIC_delete_member_tag | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_MEMBER_PROFILE_BASIC_insert_tag | null;
+  /**
+   * insert data into the table: "member_tag"
+   */
+  insert_member_tag: UPDATE_MEMBER_PROFILE_BASIC_insert_member_tag | null;
+  /**
+   * delete data from the table: "member_phone"
+   */
+  delete_member_phone: UPDATE_MEMBER_PROFILE_BASIC_delete_member_phone | null;
+  /**
+   * insert data into the table: "member_phone"
+   */
+  insert_member_phone: UPDATE_MEMBER_PROFILE_BASIC_insert_member_phone | null;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASICVariables {
+  memberId: string;
+  name: string;
+  email: string;
+  tags: tag_insert_input[];
+  memberTags: member_tag_insert_input[];
+  phones: member_phone_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_PROPERTY
+// ====================================================
+
+export interface UPDATE_MEMBER_PROPERTY_delete_member_property {
+  __typename: "member_property_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROPERTY_insert_member_property {
+  __typename: "member_property_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROPERTY {
+  /**
+   * delete data from the table: "member_property"
+   */
+  delete_member_property: UPDATE_MEMBER_PROPERTY_delete_member_property | null;
+  /**
+   * insert data into the table: "member_property"
+   */
+  insert_member_property: UPDATE_MEMBER_PROPERTY_insert_member_property | null;
+}
+
+export interface UPDATE_MEMBER_PROPERTYVariables {
+  memberId: string;
+  memberProperties: member_property_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_TASK
+// ====================================================
+
+export interface INSERT_TASK_insert_member_task {
+  __typename: "member_task_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_TASK {
+  /**
+   * insert data into the table: "member_task"
+   */
+  insert_member_task: INSERT_TASK_insert_member_task | null;
+}
+
+export interface INSERT_TASKVariables {
+  data: member_task_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MEMBER_TASK_COLLECTION
+// ====================================================
+
+export interface GET_MEMBER_TASK_COLLECTION_member_task_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_TASK_COLLECTION_member_task_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+}
+
+export interface GET_MEMBER_TASK_COLLECTION_member_task_executor {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+  picture_url: string | null;
+}
+
+export interface GET_MEMBER_TASK_COLLECTION_member_task {
+  __typename: "member_task";
+  id: any;
+  title: string;
+  description: string | null;
+  /**
+   * high / medium / low
+   */
+  priority: string;
+  /**
+   * pending / in-progress / done
+   */
+  status: string;
+  due_at: any | null;
+  /**
+   * An object relationship
+   */
+  category: GET_MEMBER_TASK_COLLECTION_member_task_category | null;
+  /**
+   * An object relationship
+   */
+  member: GET_MEMBER_TASK_COLLECTION_member_task_member;
+  /**
+   * An object relationship
+   */
+  executor: GET_MEMBER_TASK_COLLECTION_member_task_executor | null;
+}
+
+export interface GET_MEMBER_TASK_COLLECTION {
+  /**
+   * fetch data from the table: "member_task"
+   */
+  member_task: GET_MEMBER_TASK_COLLECTION_member_task[];
+}
+
+export interface GET_MEMBER_TASK_COLLECTIONVariables {
+  memberId?: string | null;
+  titleSearch?: string | null;
+  categorySearch?: string | null;
+  executorSearch?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_AVATAR
+// ====================================================
+
+export interface UPDATE_MEMBER_AVATAR_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_AVATAR {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_AVATAR_update_member | null;
+}
+
+export interface UPDATE_MEMBER_AVATARVariables {
+  memberId: string;
+  pictureUrl: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_BASIC
+// ====================================================
+
+export interface UPDATE_MEMBER_BASIC_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_BASIC_delete_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_BASIC_insert_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_BASIC {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_BASIC_update_member | null;
+  /**
+   * delete data from the table: "member_tag"
+   */
+  delete_member_tag: UPDATE_MEMBER_BASIC_delete_member_tag | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_MEMBER_BASIC_insert_tag | null;
+  /**
+   * insert data into the table: "member_tag"
+   */
+  insert_member_tag: UPDATE_MEMBER_BASIC_insert_member_tag | null;
+}
+
+export interface UPDATE_MEMBER_BASICVariables {
+  memberId: string;
+  name?: string | null;
+  description?: string | null;
+  username?: string | null;
+  email?: string | null;
+  title?: string | null;
+  abstract?: string | null;
+  tags: tag_insert_input[];
+  memberTags: member_tag_insert_input[];
 }
 
 /* tslint:disable */
@@ -2521,370 +2885,6 @@ export interface PUBLISH_PODCAST_PROGRAM {
 export interface PUBLISH_PODCAST_PROGRAMVariables {
   podcastProgramId: any;
   publishedAt?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER_ROLE
-// ====================================================
-
-export interface UPDATE_MEMBER_ROLE_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_ROLE {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: UPDATE_MEMBER_ROLE_update_member | null;
-}
-
-export interface UPDATE_MEMBER_ROLEVariables {
-  memberId: string;
-  role?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER_PROFILE_BASIC
-// ====================================================
-
-export interface UPDATE_MEMBER_PROFILE_BASIC_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_PROFILE_BASIC_delete_member_tag {
-  __typename: "member_tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_PROFILE_BASIC_insert_tag {
-  __typename: "tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_PROFILE_BASIC_insert_member_tag {
-  __typename: "member_tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_PROFILE_BASIC_delete_member_phone {
-  __typename: "member_phone_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_PROFILE_BASIC_insert_member_phone {
-  __typename: "member_phone_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_PROFILE_BASIC {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: UPDATE_MEMBER_PROFILE_BASIC_update_member | null;
-  /**
-   * delete data from the table: "member_tag"
-   */
-  delete_member_tag: UPDATE_MEMBER_PROFILE_BASIC_delete_member_tag | null;
-  /**
-   * insert data into the table: "tag"
-   */
-  insert_tag: UPDATE_MEMBER_PROFILE_BASIC_insert_tag | null;
-  /**
-   * insert data into the table: "member_tag"
-   */
-  insert_member_tag: UPDATE_MEMBER_PROFILE_BASIC_insert_member_tag | null;
-  /**
-   * delete data from the table: "member_phone"
-   */
-  delete_member_phone: UPDATE_MEMBER_PROFILE_BASIC_delete_member_phone | null;
-  /**
-   * insert data into the table: "member_phone"
-   */
-  insert_member_phone: UPDATE_MEMBER_PROFILE_BASIC_insert_member_phone | null;
-}
-
-export interface UPDATE_MEMBER_PROFILE_BASICVariables {
-  memberId: string;
-  name: string;
-  email: string;
-  tags: tag_insert_input[];
-  memberTags: member_tag_insert_input[];
-  phones: member_phone_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER_PROPERTY
-// ====================================================
-
-export interface UPDATE_MEMBER_PROPERTY_delete_member_property {
-  __typename: "member_property_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_PROPERTY_insert_member_property {
-  __typename: "member_property_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_PROPERTY {
-  /**
-   * delete data from the table: "member_property"
-   */
-  delete_member_property: UPDATE_MEMBER_PROPERTY_delete_member_property | null;
-  /**
-   * insert data into the table: "member_property"
-   */
-  insert_member_property: UPDATE_MEMBER_PROPERTY_insert_member_property | null;
-}
-
-export interface UPDATE_MEMBER_PROPERTYVariables {
-  memberId: string;
-  memberProperties: member_property_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_MEMBER_TASK_COLLECTION
-// ====================================================
-
-export interface GET_MEMBER_TASK_COLLECTION_member_task_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_MEMBER_TASK_COLLECTION_member_task_member {
-  __typename: "member";
-  id: string;
-  name: string;
-  username: string;
-}
-
-export interface GET_MEMBER_TASK_COLLECTION_member_task_executor {
-  __typename: "member";
-  id: string;
-  name: string;
-  username: string;
-  picture_url: string | null;
-}
-
-export interface GET_MEMBER_TASK_COLLECTION_member_task {
-  __typename: "member_task";
-  id: any;
-  title: string;
-  description: string | null;
-  /**
-   * high / medium / low
-   */
-  priority: string;
-  /**
-   * pending / in-progress / done
-   */
-  status: string;
-  due_at: any | null;
-  /**
-   * An object relationship
-   */
-  category: GET_MEMBER_TASK_COLLECTION_member_task_category | null;
-  /**
-   * An object relationship
-   */
-  member: GET_MEMBER_TASK_COLLECTION_member_task_member;
-  /**
-   * An object relationship
-   */
-  executor: GET_MEMBER_TASK_COLLECTION_member_task_executor | null;
-}
-
-export interface GET_MEMBER_TASK_COLLECTION {
-  /**
-   * fetch data from the table: "member_task"
-   */
-  member_task: GET_MEMBER_TASK_COLLECTION_member_task[];
-}
-
-export interface GET_MEMBER_TASK_COLLECTIONVariables {
-  memberId?: string | null;
-  titleSearch?: string | null;
-  categorySearch?: string | null;
-  executorSearch?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_TASK
-// ====================================================
-
-export interface INSERT_TASK_insert_member_task {
-  __typename: "member_task_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface INSERT_TASK {
-  /**
-   * insert data into the table: "member_task"
-   */
-  insert_member_task: INSERT_TASK_insert_member_task | null;
-}
-
-export interface INSERT_TASKVariables {
-  data: member_task_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER_AVATAR
-// ====================================================
-
-export interface UPDATE_MEMBER_AVATAR_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_AVATAR {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: UPDATE_MEMBER_AVATAR_update_member | null;
-}
-
-export interface UPDATE_MEMBER_AVATARVariables {
-  memberId: string;
-  pictureUrl: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER_BASIC
-// ====================================================
-
-export interface UPDATE_MEMBER_BASIC_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_BASIC_delete_member_tag {
-  __typename: "member_tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_BASIC_insert_tag {
-  __typename: "tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_BASIC_insert_member_tag {
-  __typename: "member_tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_BASIC {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: UPDATE_MEMBER_BASIC_update_member | null;
-  /**
-   * delete data from the table: "member_tag"
-   */
-  delete_member_tag: UPDATE_MEMBER_BASIC_delete_member_tag | null;
-  /**
-   * insert data into the table: "tag"
-   */
-  insert_tag: UPDATE_MEMBER_BASIC_insert_tag | null;
-  /**
-   * insert data into the table: "member_tag"
-   */
-  insert_member_tag: UPDATE_MEMBER_BASIC_insert_member_tag | null;
-}
-
-export interface UPDATE_MEMBER_BASICVariables {
-  memberId: string;
-  name?: string | null;
-  description?: string | null;
-  username?: string | null;
-  email?: string | null;
-  title?: string | null;
-  abstract?: string | null;
-  tags: tag_insert_input[];
-  memberTags: member_tag_insert_input[];
 }
 
 /* tslint:disable */
@@ -6184,6 +6184,7 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_properties {
 
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author {
   __typename: "member";
+  id: string;
   name: string;
   picture_url: string | null;
 }
@@ -8829,6 +8830,14 @@ export interface UPDATE_PROPERTY_POSITIONVariables {
 // GraphQL mutation operation: DELETE_PROPERTY
 // ====================================================
 
+export interface DELETE_PROPERTY_delete_member_property {
+  __typename: "member_property_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface DELETE_PROPERTY_delete_property {
   __typename: "property_mutation_response";
   /**
@@ -8838,6 +8847,10 @@ export interface DELETE_PROPERTY_delete_property {
 }
 
 export interface DELETE_PROPERTY {
+  /**
+   * delete data from the table: "member_property"
+   */
+  delete_member_property: DELETE_PROPERTY_delete_member_property | null;
   /**
    * delete data from the table: "property"
    */
@@ -9324,6 +9337,7 @@ export enum app_admin_constraint {
 export enum app_admin_update_column {
   app_id = "app_id",
   host = "host",
+  position = "position",
 }
 
 /**
@@ -10139,6 +10153,7 @@ export enum merchandise_update_column {
   ended_at = "ended_at",
   id = "id",
   is_deleted = "is_deleted",
+  is_physical = "is_physical",
   link = "link",
   list_price = "list_price",
   member_id = "member_id",
@@ -10835,6 +10850,7 @@ export enum program_content_progress_constraint {
  * update columns of table "program_content_progress"
  */
 export enum program_content_progress_update_column {
+  created_at = "created_at",
   id = "id",
   last_progress = "last_progress",
   member_id = "member_id",
@@ -11711,6 +11727,7 @@ export interface app_admin_bool_exp {
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
   host?: String_comparison_exp | null;
+  position?: Int_comparison_exp | null;
 }
 
 /**
@@ -11720,6 +11737,7 @@ export interface app_admin_insert_input {
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
   host?: string | null;
+  position?: number | null;
 }
 
 /**
@@ -13942,6 +13960,7 @@ export interface merchandise_bool_exp {
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
+  is_physical?: Boolean_comparison_exp | null;
   link?: String_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
   member?: member_public_bool_exp | null;
@@ -14063,6 +14082,7 @@ export interface merchandise_insert_input {
   ended_at?: any | null;
   id?: any | null;
   is_deleted?: boolean | null;
+  is_physical?: boolean | null;
   link?: string | null;
   list_price?: any | null;
   member_id?: string | null;
@@ -16147,6 +16167,7 @@ export interface program_content_progress_bool_exp {
   _and?: (program_content_progress_bool_exp | null)[] | null;
   _not?: program_content_progress_bool_exp | null;
   _or?: (program_content_progress_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   last_progress?: numeric_comparison_exp | null;
   member?: member_bool_exp | null;
@@ -16161,6 +16182,7 @@ export interface program_content_progress_bool_exp {
  * input type for inserting data into table "program_content_progress"
  */
 export interface program_content_progress_insert_input {
+  created_at?: any | null;
   id?: any | null;
   last_progress?: any | null;
   member?: member_obj_rel_insert_input | null;

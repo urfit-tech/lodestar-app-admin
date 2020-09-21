@@ -12,9 +12,9 @@ import { commonMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramAdminProps } from '../../types/program'
 import { StyledTips } from '../admin'
-import AdminBraftEditor from '../admin/AdminBraftEditor'
-import ImageInput from '../admin/ImageInput'
-import VideoInput from '../admin/VideoInput'
+import AdminBraftEditor from '../form/AdminBraftEditor'
+import ImageInput from '../form/ImageInput'
+import VideoInput from '../form/VideoInput'
 
 const ProgramIntroForm: React.FC<{
   program: ProgramAdminProps | null

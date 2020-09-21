@@ -4,12 +4,12 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
-import TagSelector from '../../containers/common/TagSelector'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MemberAdminProps } from '../../types/member'
+import TagSelector from '../form/TagSelector'
 
 const MemberProfileBasicForm: React.FC<{
   memberAdmin: MemberAdminProps | null

@@ -8,7 +8,7 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramAdminProps } from '../../types/program'
-import SaleInput from '../admin/SaleInput'
+import SaleInput from '../form/SaleInput'
 
 const ProgramPerpetualPlanAdminCard: React.FC<{
   program: ProgramAdminProps

@@ -10,8 +10,8 @@ import { handleError } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import types from '../../types'
 import { PodcastProgramAdminProps } from '../../types/podcast'
-import ImageInput from '../admin/ImageInput'
 import { StyledTips } from '../admin/index'
+import ImageInput from '../form/ImageInput'
 
 const PodcastProgramIntroForm: React.FC<{
   podcastProgramAdmin: PodcastProgramAdminProps | null

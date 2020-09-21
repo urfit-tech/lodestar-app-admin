@@ -7,7 +7,7 @@ import { handleError } from '../../helpers'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { useArrangeProductInventory } from '../../hooks/data'
 import AdminModal from '../admin/AdminModal'
-import QuantityInput from '../admin/QuantityInput'
+import QuantityInput from '../form/QuantityInput'
 
 const MerchandiseSpecification = styled.div`
   color: var(--gray-darker);

@@ -12,7 +12,7 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
-import CreatorSelector from '../common/CreatorSelector'
+import ContentCreatorSelector from '../form/ContentCreatorSelector'
 
 const MemberShopCreationModal: React.FC<FormComponentProps> = ({ form }) => {
   const { formatMessage } = useIntl()
@@ -66,7 +66,7 @@ const MemberShopCreationModal: React.FC<FormComponentProps> = ({ form }) => {
                 }),
               },
             ],
-          })(<CreatorSelector />)}
+          })(<ContentCreatorSelector />)}
         </Form.Item>
         <Form.Item label={formatMessage(merchandiseMessages.label.memberShopTitle)}>
           {form.getFieldDecorator('title', {

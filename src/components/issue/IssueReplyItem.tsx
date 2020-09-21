@@ -14,10 +14,10 @@ import { rgba } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramRoleProps } from '../../types/program'
-import { createUploadFn } from '../admin/AdminBraftEditor'
 import MemberAvatar from '../common/MemberAvatar'
 import { BraftContent } from '../common/StyledBraftEditor'
 import { ProgramRoleLabel } from '../common/UserRole'
+import { createUploadFn } from '../form/AdminBraftEditor'
 import { StyledEditor } from './IssueReplyCreationBlock'
 
 const messages = defineMessages({

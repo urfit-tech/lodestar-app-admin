@@ -5,11 +5,11 @@ import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AdminBraftEditor from '../../components/admin/AdminBraftEditor'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import { AppointmentPlanAdminProps } from '../../types/appointment'
+import AdminBraftEditor from '../form/AdminBraftEditor'
 
 const AppointmentPlanIntroForm: React.FC<{
   appointmentPlanAdmin: AppointmentPlanAdminProps | null

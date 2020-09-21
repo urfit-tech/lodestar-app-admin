@@ -9,7 +9,7 @@ import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { PostProps } from '../../types/blog'
-import AdminBraftEditor from '../admin/AdminBraftEditor'
+import AdminBraftEditor from '../form/AdminBraftEditor'
 
 const BlogPostContentForm: React.FC<{
   post: PostProps | null

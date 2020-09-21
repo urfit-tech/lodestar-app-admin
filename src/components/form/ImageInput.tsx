@@ -2,7 +2,7 @@ import { UploadFile } from 'antd/lib/upload/interface'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { CustomRatioImage, CustomRatioImageProps } from '../common/Image'
-import SingleUploader from '../common/SingleUploader'
+import SingleUploader from './SingleUploader'
 
 const StyledSingleUploader = styled(SingleUploader)`
   && {

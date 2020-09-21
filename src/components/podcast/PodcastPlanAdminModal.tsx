@@ -11,9 +11,9 @@ import { commonMessages, errorMessages, podcastMessages } from '../../helpers/tr
 import types from '../../types'
 import { PodcastPlanProps } from '../../types/podcast'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
-import SaleInput from '../admin/SaleInput'
-import CreatorSelector from '../common/CreatorSelector'
-import PeriodSelector from '../common/PeriodSelector'
+import ContentCreatorSelector from '../form/ContentCreatorSelector'
+import PeriodSelector from '../form/PeriodSelector'
+import SaleInput from '../form/SaleInput'
 
 const messages = defineMessages({
   planPublished: { id: 'podcast.status.planPublished', defaultMessage: '發佈，立刻開賣訂閱方案' },
@@ -119,7 +119,7 @@ const PodcastPlanAdminModal: React.FC<
             name="creatorId"
             rules={[{ required: true, message: formatMessage(errorMessages.form.selectInstructor) }]}
           >
-            <CreatorSelector />
+            <ContentCreatorSelector />
           </Form.Item>
         )}
 

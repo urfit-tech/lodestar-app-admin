@@ -6,13 +6,13 @@ import { Button, Input, message } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
-import TagSelector from '../../containers/common/TagSelector'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
-import CategorySelector from '../common/CategorySelector'
+import CategorySelector from '../form/CategorySelector'
+import TagSelector from '../form/TagSelector'
 
 type MerchandiseBasicFormProps = FormComponentProps & {
   merchandise: MerchandiseProps

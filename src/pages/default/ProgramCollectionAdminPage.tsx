@@ -7,14 +7,14 @@ import { useIntl } from 'react-intl'
 import { Link, useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { AdminPageTitle, EmptyBlock } from '../../components/admin'
-import { AvatarImage } from '../../components/common/Image'
 import PositionAdminLayout, {
   OverlayBlock,
   OverlayList,
   OverlayListContent,
   OverlayListItem,
   OverlayWrapper,
-} from '../../components/common/PositionAdminLayout'
+} from '../../components/admin/PositionAdminLayout'
+import { AvatarImage } from '../../components/common/Image'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ProgramAdminCard from '../../components/program/ProgramAdminCard'

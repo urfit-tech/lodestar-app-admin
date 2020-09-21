@@ -12,12 +12,12 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramPlanProps } from '../../types/program'
-import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
-import CurrencyInput from '../admin/CurrencyInput'
-import CurrencySelector from '../admin/CurrencySelector'
-import SaleInput from '../admin/SaleInput'
-import PeriodSelector from '../common/PeriodSelector'
+import AdminBraftEditor from '../form/AdminBraftEditor'
+import CurrencyInput from '../form/CurrencyInput'
+import CurrencySelector from '../form/CurrencySelector'
+import PeriodSelector from '../form/PeriodSelector'
+import SaleInput from '../form/SaleInput'
 
 const StyledNotation = styled.div`
   line-height: 1.5;
