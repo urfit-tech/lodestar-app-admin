@@ -99,6 +99,7 @@ export const useMerchandise = (id: string) => {
           link
           published_at
           member_shop_id
+          is_physical
           merchandise_categories(order_by: { position: asc }) {
             id
             category {
@@ -114,6 +115,10 @@ export const useMerchandise = (id: string) => {
             id
             type
             url
+          }
+          merchandise_files(order_by: { updated_at: asc }) {
+            id
+            data
           }
           merchandise_inventory_status {
             buyable_quantity
@@ -144,6 +149,9 @@ export const useMerchandise = (id: string) => {
             url: img.url,
             isCover: img.type === 'cover',
           })),
+          files: data.merchandise_by_pk.merchandise_files.map(v => ({
+            data: v.data,
+          })),
           abstract: data.merchandise_by_pk.abstract,
           meta: data.merchandise_by_pk.meta,
           link: data.merchandise_by_pk.link,
@@ -155,6 +163,7 @@ export const useMerchandise = (id: string) => {
           endedAt: data.merchandise_by_pk.ended_at,
           publishedAt: data.merchandise_by_pk.published_at ? new Date(data.merchandise_by_pk.published_at) : null,
           memberShopId: data.merchandise_by_pk.member_shop_id,
+          isPhysical: data.merchandise_by_pk.is_physical,
           merchandiseInventoryStatus: {
             buyableQuantity: data.merchandise_by_pk.merchandise_inventory_status?.buyable_quantity || 0,
             undeliveredQuantity: data.merchandise_by_pk.merchandise_inventory_status?.undelivered_quantity || 0,

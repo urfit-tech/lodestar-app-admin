@@ -53,6 +53,7 @@ export const commonMessages = {
     export: { id: 'common.ui.export', defaultMessage: '匯出' },
     showMore: { id: 'common.ui.showMore', defaultMessage: '顯示更多' },
     send: { id: 'common.ui.send', defaultMessage: '送出' },
+    uploadFile: { id: 'common.ui.uploadFile', defaultMessage: '上傳檔案' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -726,6 +727,10 @@ export const merchandiseMessages = {
     comment: { id: 'merchandise.label.comment', defaultMessage: '備註' },
     selectContentCreator: { id: 'merchandise.label.selectContentCreator', defaultMessage: '選擇創作者' },
     memberShopTitle: { id: 'merchandise.label.memberShopTitle', defaultMessage: '商店名稱' },
+    merchandiseType: { id: 'merchandise.label.merchandiseType', defaultMessage: '選擇商品類型' },
+    generalPhysicalMerchandise: { id: 'merchandise.label.generalPhysicalMerchandise', defaultMessage: '一般實體商品' },
+    generalVirtualMerchandise: { id: 'merchandise.label.generalVirtualMerchandise', defaultMessage: '一般虛擬商品' },
+    deliveryItem: { id: 'merchandise.label.deliveryItem', defaultMessage: '交付項目' },
   }),
   text: defineMessages({
     searchMerchandise: { id: 'merchandise.text.searchMerchandise', defaultMessage: '搜尋商品名稱' },

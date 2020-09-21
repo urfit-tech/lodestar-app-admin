@@ -1,27 +1,48 @@
-import { Form } from '@ant-design/compatible'
 import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
-import { QuestionCircleFilled } from '@ant-design/icons'
+import { CloseOutlined, QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Input, message, Tooltip } from 'antd'
+import { Button, Form, Input, message, Tooltip } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
+import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
 import { StyledTips } from '../admin'
+import MultipleUploader from '../common/MultipleUploader'
 import MemberShopSelector from './MemberShopSelector'
 import MerchandiseImagesUploader from './MerchandiseImagesUploader'
 
-type MerchandiseIntroductionFormProps = FormComponentProps & {
+const StyledCloseOutlines = styled(CloseOutlined)`
+  color: 'gray-darker';
+
+  &:hover {
+    color: ${props => props.theme['@primary-color']};
+  }
+  &:active {
+    color: 'gray-darker';
+  }
+`
+
+const StyledFileBlock = styled.div`
+  padding: 0.5rem;
+  transition: background 0.2s ease-in-out;
+
+  :hover {
+    background: var(--gray-lighter);
+  }
+`
+
+type MerchandiseIntroductionFormProps = {
   merchandise: MerchandiseProps
   merchandiseId: string
   refetch?: () => void
 }
 const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = ({
-  form,
   merchandise,
   merchandiseId,
   refetch,
@@ -30,18 +51,23 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
   const updateMerchandiseImages = useUpdateMerchandiseImages(merchandiseId)
   const updateMerchandiseIntroduction = useUpdateMerchandiseIntroduction(merchandiseId)
   const [loading, setLoading] = useState(false)
+  const { id: appId } = useContext(AppContext)
+  const [uploading, setUploading] = useState(false)
+  const [files, setFiles] = useState<any[]>(merchandise.files || [])
+  const [form] = useForm()
 
   const handleSubmit = () => {
-    form.validateFields((errors, values) => {
-      if (errors) {
-        return
-      }
-
+    form.validateFields().then(values => {
+      const { abstract, meta, memberShopId } = values
       setLoading(true)
       updateMerchandiseIntroduction({
-        abstract: values.abstract,
-        meta: values.meta,
-        memberShopId: values.memberShopId,
+        abstract,
+        meta,
+        memberShopId,
+        merchandiseFiles: files.map((v: any) => ({
+          merchandise_id: merchandise.id,
+          data: v.data,
+        })),
       })
         .then(() => {
           refetch && refetch()
@@ -57,14 +83,17 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
 
   return (
     <Form
+      form={form}
       colon={false}
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 8 } }}
-      onSubmit={e => {
-        e.preventDefault()
-        handleSubmit()
+      initialValues={{
+        abstract: merchandise.abstract,
+        meta: merchandise.meta,
+        memberShopId: merchandise.memberShopId,
       }}
+      onFinish={() => handleSubmit()}
     >
       <Form.Item
         label={
@@ -82,49 +111,72 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
       >
         <MerchandiseImagesUploader merchandiseId={merchandiseId} images={merchandise.images} onChange={handleUpload} />
       </Form.Item>
-      <Form.Item label={formatMessage(merchandiseMessages.label.abstract)}>
-        {form.getFieldDecorator('abstract', {
-          initialValue: merchandise.abstract,
-        })(
-          <Input.TextArea
-            rows={5}
-            maxLength={200}
-            placeholder={formatMessage(merchandiseMessages.text.abstractLimit)}
-          />,
-        )}
+      <Form.Item label={formatMessage(merchandiseMessages.label.abstract)} name="abstract">
+        <Input.TextArea rows={5} maxLength={200} placeholder={formatMessage(merchandiseMessages.text.abstractLimit)} />,
       </Form.Item>
-      <Form.Item label={formatMessage(merchandiseMessages.label.meta)}>
-        {form.getFieldDecorator('meta', {
-          initialValue: merchandise.meta,
-          rules: [
-            {
-              required: true,
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(merchandiseMessages.label.meta),
-              }),
-            },
-          ],
-        })(<Input />)}
+      <Form.Item
+        label={formatMessage(merchandiseMessages.label.meta)}
+        name="meta"
+        rules={[
+          {
+            required: true,
+            message: formatMessage(errorMessages.form.isRequired, {
+              field: formatMessage(merchandiseMessages.label.meta),
+            }),
+          },
+        ]}
+      >
+        <Input />
       </Form.Item>
-      <Form.Item label={formatMessage(merchandiseMessages.label.memberShop)}>
-        {form.getFieldDecorator('memberShopId', {
-          initialValue: merchandise.memberShopId,
-          rules: [
-            {
-              required: true,
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(merchandiseMessages.label.memberShop),
-              }),
-            },
-          ],
-        })(<MemberShopSelector />)}
+      <Form.Item
+        label={formatMessage(merchandiseMessages.label.memberShop)}
+        name="memberShopId"
+        rules={[
+          {
+            required: true,
+            message: formatMessage(errorMessages.form.isRequired, {
+              field: formatMessage(merchandiseMessages.label.memberShop),
+            }),
+          },
+        ]}
+      >
+        <MemberShopSelector />
       </Form.Item>
+      {!merchandise.isPhysical && (
+        <Form.Item label={formatMessage(merchandiseMessages.label.deliveryItem)} wrapperCol={{ span: 24 }}>
+          <MultipleUploader
+            uploadText={formatMessage(commonMessages.ui.uploadFile)}
+            path={`merchandise_files/${appId}/${merchandise.id}`}
+            onUploading={() => setUploading(true)}
+            onSuccess={() => setUploading(false)}
+            onError={() => setUploading(false)}
+            onCancel={() => setUploading(false)}
+            showUploadList={false}
+            fileList={files}
+            setDataList={setFiles}
+          />
+          {files?.map((file: any) => (
+            <StyledFileBlock key={file.data.uid} className="d-flex align-items-center justify-content-between mt-4">
+              <div>
+                <span className="mr-2">{file.data.name}</span>
+              </div>
+              <StyledCloseOutlines
+                className="cursor-pointer"
+                onClick={() => {
+                  setFiles(files.filter((oldMaterial: any) => oldMaterial.data.uid !== file.data.uid))
+                  message.success(formatMessage(commonMessages.ui.deleted))
+                }}
+              />
+            </StyledFileBlock>
+          ))}
+        </Form.Item>
+      )}
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
-        <Button onClick={() => form.resetFields()} className="mr-2">
+        <Button onClick={() => form.resetFields()} className="mr-2" disabled={uploading}>
           {formatMessage(commonMessages.ui.cancel)}
         </Button>
-        <Button type="primary" htmlType="submit" loading={loading}>
+        <Button type="primary" htmlType="submit" loading={loading} disabled={uploading}>
           {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>
@@ -180,11 +232,18 @@ const useUpdateMerchandiseIntroduction = (merchandiseId: string) => {
       $abstract: String
       $meta: String
       $memberShopId: uuid
+      $merchandiseFiles: [merchandise_file_insert_input!]!
     ) {
       update_merchandise(
         where: { id: { _eq: $merchandiseId } }
         _set: { abstract: $abstract, meta: $meta, member_shop_id: $memberShopId }
       ) {
+        affected_rows
+      }
+      delete_merchandise_file(where: { merchandise_id: { _eq: $merchandiseId } }) {
+        affected_rows
+      }
+      insert_merchandise_file(objects: $merchandiseFiles) {
         affected_rows
       }
     }
@@ -194,7 +253,8 @@ const useUpdateMerchandiseIntroduction = (merchandiseId: string) => {
     abstract: string
     meta: string
     memberShopId: string
-  }) => Promise<void> = async ({ abstract, meta, memberShopId }) => {
+    merchandiseFiles: any
+  }) => Promise<void> = async ({ abstract, meta, memberShopId, merchandiseFiles }) => {
     try {
       await updateIntroduction({
         variables: {
@@ -202,6 +262,7 @@ const useUpdateMerchandiseIntroduction = (merchandiseId: string) => {
           abstract,
           meta,
           memberShopId,
+          merchandiseFiles,
         },
       })
     } catch (error) {
@@ -212,4 +273,4 @@ const useUpdateMerchandiseIntroduction = (merchandiseId: string) => {
   return updateMerchandiseIntroduction
 }
 
-export default Form.create<MerchandiseIntroductionFormProps>()(MerchandiseIntroductionForm)
+export default MerchandiseIntroductionForm

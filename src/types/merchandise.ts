@@ -20,6 +20,9 @@ export type MerchandiseProps = {
     url: string
     isCover: boolean
   }[]
+  files: {
+    data: any
+  }[]
   abstract: string | null
   meta: string | null
   link: string | null
@@ -31,6 +34,7 @@ export type MerchandiseProps = {
   endedAt: Date | null
   publishedAt: Date | null
   memberShopId: string | null
+  isPhysical: boolean
 }
 
 export type MemberShopPreviewProps = {

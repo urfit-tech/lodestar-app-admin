@@ -2362,11 +2362,35 @@ export interface UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise {
   affected_rows: number;
 }
 
+export interface UPDATE_MERCHANDISE_INTRODUCTION_delete_merchandise_file {
+  __typename: "merchandise_file_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MERCHANDISE_INTRODUCTION_insert_merchandise_file {
+  __typename: "merchandise_file_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_MERCHANDISE_INTRODUCTION {
   /**
    * update data of the table: "merchandise"
    */
   update_merchandise: UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise | null;
+  /**
+   * delete data from the table: "merchandise_file"
+   */
+  delete_merchandise_file: UPDATE_MERCHANDISE_INTRODUCTION_delete_merchandise_file | null;
+  /**
+   * insert data into the table: "merchandise_file"
+   */
+  insert_merchandise_file: UPDATE_MERCHANDISE_INTRODUCTION_insert_merchandise_file | null;
 }
 
 export interface UPDATE_MERCHANDISE_INTRODUCTIONVariables {
@@ -2374,6 +2398,7 @@ export interface UPDATE_MERCHANDISE_INTRODUCTIONVariables {
   abstract?: string | null;
   meta?: string | null;
   memberShopId?: any | null;
+  merchandiseFiles: merchandise_file_insert_input[];
 }
 
 /* tslint:disable */
@@ -6793,6 +6818,12 @@ export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_imgs {
   url: string;
 }
 
+export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_files {
+  __typename: "merchandise_file";
+  id: any;
+  data: any;
+}
+
 export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_inventory_status {
   __typename: "merchandise_inventory_status";
   buyable_quantity: any | null;
@@ -6815,6 +6846,7 @@ export interface GET_MERCHANDISE_merchandise_by_pk {
   link: string | null;
   published_at: any | null;
   member_shop_id: any | null;
+  is_physical: boolean;
   /**
    * An array relationship
    */
@@ -6827,6 +6859,10 @@ export interface GET_MERCHANDISE_merchandise_by_pk {
    * An array relationship
    */
   merchandise_imgs: GET_MERCHANDISE_merchandise_by_pk_merchandise_imgs[];
+  /**
+   * An array relationship
+   */
+  merchandise_files: GET_MERCHANDISE_merchandise_by_pk_merchandise_files[];
   /**
    * An object relationship
    */
@@ -11032,6 +11068,7 @@ export enum program_plan_update_column {
   ended_at = "ended_at",
   gains = "gains",
   id = "id",
+  is_countdown_timer_visible = "is_countdown_timer_visible",
   is_participants_visible = "is_participants_visible",
   list_price = "list_price",
   period_amount = "period_amount",
@@ -11129,6 +11166,7 @@ export enum program_update_column {
   description = "description",
   id = "id",
   in_advance = "in_advance",
+  is_countdown_timer_visible = "is_countdown_timer_visible",
   is_deleted = "is_deleted",
   is_issues_open = "is_issues_open",
   is_private = "is_private",
@@ -16050,6 +16088,7 @@ export interface program_bool_exp {
   editors?: program_editor_bool_exp | null;
   id?: uuid_comparison_exp | null;
   in_advance?: Boolean_comparison_exp | null;
+  is_countdown_timer_visible?: Boolean_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
   is_issues_open?: Boolean_comparison_exp | null;
   is_private?: Boolean_comparison_exp | null;
@@ -16521,6 +16560,7 @@ export interface program_insert_input {
   editors?: program_editor_arr_rel_insert_input | null;
   id?: any | null;
   in_advance?: boolean | null;
+  is_countdown_timer_visible?: boolean | null;
   is_deleted?: boolean | null;
   is_issues_open?: boolean | null;
   is_private?: boolean | null;
@@ -16784,6 +16824,7 @@ export interface program_plan_bool_exp {
   ended_at?: timestamptz_comparison_exp | null;
   gains?: jsonb_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_countdown_timer_visible?: Boolean_comparison_exp | null;
   is_participants_visible?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
   period_amount?: numeric_comparison_exp | null;
@@ -16829,6 +16870,7 @@ export interface program_plan_insert_input {
   ended_at?: any | null;
   gains?: any | null;
   id?: any | null;
+  is_countdown_timer_visible?: boolean | null;
   is_participants_visible?: boolean | null;
   list_price?: any | null;
   period_amount?: any | null;
