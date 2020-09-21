@@ -23,6 +23,7 @@ export type Module =
   | 'tempo_delivery'
   | 'voucher'
   | 'member_property'
+  | 'member_note'
 
 export type Currency = {
   name: string

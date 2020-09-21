@@ -6,6 +6,7 @@ import types from '../types'
 import {
   MemberAdminProps,
   MemberInfoProps,
+  MemberNoteAdminProps,
   MemberOptionProps,
   MemberProps,
   MemberPublicProps,
@@ -95,6 +96,19 @@ export const useMemberAdmin = (memberId: string) => {
             }
             value
           }
+          member_notes(order_by: { updated_at: desc }) {
+            id
+            type
+            status
+            duration
+            description
+            updated_at
+            author {
+              id
+              name
+              picture_url
+            }
+          }
           coin_logs_aggregate {
             aggregate {
               sum {
@@ -136,6 +150,18 @@ export const useMemberAdmin = (memberId: string) => {
             name: v.property.name,
             value: v.value,
           })),
+          notes: data.member_by_pk.member_notes.map(v => ({
+            id: v.id,
+            type: v.type as MemberNoteAdminProps['type'],
+            status: v.status,
+            duration: v.duration,
+            description: v.description,
+            updatedAt: new Date(v.updated_at),
+            author: {
+              name: v.author.name,
+              pictureUrl: v.author.picture_url,
+            },
+          })),
           consumption: sum(
             data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
           ),
@@ -147,6 +173,63 @@ export const useMemberAdmin = (memberId: string) => {
     errorMemberAdmin: error,
     memberAdmin,
     refetchMemberAdmin: refetch,
+  }
+}
+
+export const useMutateMemberNote = () => {
+  const [insertMemberNote] = useMutation(gql`
+    mutation INSERT_MEMBER_NOTE(
+      $memberId: String!
+      $authorId: String!
+      $type: String
+      $status: String
+      $duration: Int
+      $description: String
+    ) {
+      insert_member_note_one(
+        object: {
+          member_id: $memberId
+          author_id: $authorId
+          type: $type
+          status: $status
+          duration: $duration
+          description: $description
+        }
+      ) {
+        id
+      }
+    }
+  `)
+
+  const [updateMemberNote] = useMutation(gql`
+    mutation UPDATE_MEMBER_NOTE(
+      $memberNoteId: uuid!
+      $type: String
+      $status: String
+      $duration: Int
+      $description: String
+    ) {
+      update_member_note_by_pk(
+        pk_columns: { id: $memberNoteId }
+        _set: { type: $type, status: $status, duration: $duration, description: $description }
+      ) {
+        id
+      }
+    }
+  `)
+
+  const [deleteMemberNote] = useMutation(gql`
+    mutation DELETE_MEMBER_NOTE($memberNoteId: uuid!) {
+      delete_member_note_by_pk(id: $memberNoteId) {
+        id
+      }
+    }
+  `)
+
+  return {
+    insertMemberNote,
+    updateMemberNote,
+    deleteMemberNote,
   }
 }
 

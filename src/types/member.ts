@@ -69,6 +69,20 @@ export type MemberAdminProps = {
     name: string
     value: string
   }[]
+  notes: MemberNoteAdminProps[]
   consumption?: number
   coins?: number
+}
+
+export type MemberNoteAdminProps = {
+  id: string
+  type: 'inbound' | 'outbound' | null
+  status: string | null
+  duration: number | null
+  description: string | null
+  updatedAt: Date
+  author: {
+    name: string
+    pictureUrl: string | null
+  }
 }

@@ -1,8 +1,8 @@
 import Icon, { CloseOutlined } from '@ant-design/icons'
-import { Button, Divider, Layout, Tabs } from 'antd'
+import { Button, Divider, Layout, message, Skeleton, Tabs } from 'antd'
 import moment from 'moment'
 import React, { useContext } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -15,24 +15,20 @@ import {
 } from '../../../components/admin'
 import { CustomRatioImage } from '../../../components/common/Image'
 import { StyledLayoutContent } from '../../../components/layout/DefaultLayout'
+import MemberNoteAdminItem from '../../../components/profile/MemberNoteAdminItem'
+import MemberNoteAdminModal from '../../../components/profile/MemberNoteAdminModal'
 import MemberPermissionForm from '../../../components/profile/MemberPermissionForm'
 import MemberProfileBasicForm from '../../../components/profile/MemberProfileBasicForm'
 import MemberPropertyAdminForm from '../../../components/profile/MemberPropertyAdminForm'
 import AppContext from '../../../contexts/AppContext'
-import { currencyFormatter } from '../../../helpers'
-import { commonMessages } from '../../../helpers/translation'
-import { useMemberAdmin } from '../../../hooks/member'
+import { useAuth } from '../../../contexts/AuthContext'
+import { currencyFormatter, handleError } from '../../../helpers'
+import { commonMessages, profileMessages } from '../../../helpers/translation'
+import { useMemberAdmin, useMutateMemberNote } from '../../../hooks/member'
 import DefaultAvatar from '../../../images/default/avatar.svg'
 import { ReactComponent as EmailIcon } from '../../../images/icon/email.svg'
+import { ReactComponent as FilePlusIcon } from '../../../images/icon/file-plus.svg'
 import { ReactComponent as PhoneIcon } from '../../../images/icon/phone.svg'
-
-const messages = defineMessages({
-  profile: { id: 'profile.label.profile', defaultMessage: '個人' },
-  basic: { id: 'profile.label.basic', defaultMessage: '基本資料' },
-  property: { id: 'profile.label.property', defaultMessage: '自訂欄位' },
-  permission: { id: 'profile.label.property', defaultMessage: '權限' },
-  memberPage: { id: 'profile.ui.memberPage', defaultMessage: '學員主頁' },
-})
 
 const StyledSider = styled(Layout.Sider)`
   padding: 2.5rem 2rem;
@@ -56,7 +52,13 @@ const MemberAdminPage: React.FC = () => {
   const { memberId } = useParams<{ memberId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { enabledModules, settings } = useContext(AppContext)
-  const { memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
+  const { loadingMemberAdmin, errorMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
+  const { insertMemberNote } = useMutateMemberNote()
+  const { currentMemberId } = useAuth()
+
+  if (loadingMemberAdmin || errorMemberAdmin || !memberAdmin) {
+    return <Skeleton active />
+  }
 
   return (
     <>
@@ -70,7 +72,7 @@ const MemberAdminPage: React.FC = () => {
         <AdminHeaderTitle>{memberAdmin?.name || memberAdmin?.username || memberId}</AdminHeaderTitle>
 
         <a href={`//${settings['host']}/members/${memberId}`} target="_blank" rel="noopener noreferrer">
-          <Button>{formatMessage(messages.memberPage)}</Button>
+          <Button>{formatMessage(profileMessages.ui.memberPage)}</Button>
         </a>
       </AdminHeader>
 
@@ -141,21 +143,65 @@ const MemberAdminPage: React.FC = () => {
               </AdminTabBarWrapper>
             )}
           >
-            <Tabs.TabPane key="profile" tab={formatMessage(messages.profile)}>
+            <Tabs.TabPane key="profile" tab={formatMessage(profileMessages.label.profile)}>
               <div className="p-5">
                 <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(messages.basic)}</AdminBlockTitle>
+                  <AdminBlockTitle>{formatMessage(profileMessages.label.basic)}</AdminBlockTitle>
                   <MemberProfileBasicForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
                 </AdminBlock>
                 {enabledModules.member_property && (
                   <AdminBlock>
-                    <AdminBlockTitle>{formatMessage(messages.property)}</AdminBlockTitle>
+                    <AdminBlockTitle>{formatMessage(profileMessages.label.property)}</AdminBlockTitle>
                     <MemberPropertyAdminForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
                   </AdminBlock>
                 )}
               </div>
             </Tabs.TabPane>
-            <Tabs.TabPane key="permission" tab={formatMessage(messages.permission)}>
+            {enabledModules.member_note && (
+              <Tabs.TabPane key="note" tab={formatMessage(profileMessages.label.note)}>
+                <div className="p-5">
+                  <MemberNoteAdminModal
+                    member={memberAdmin}
+                    title={formatMessage(profileMessages.label.createMemberNote)}
+                    renderTrigger={({ setVisible }) => (
+                      <Button type="primary" onClick={() => setVisible(true)}>
+                        <Icon component={() => <FilePlusIcon />} className="mr-1" />
+                        <span>{formatMessage(profileMessages.label.createMemberNote)}</span>
+                      </Button>
+                    )}
+                    renderSubmit={({ type, status, duration, description, resetForm }) =>
+                      insertMemberNote({
+                        variables: {
+                          memberId: memberAdmin.id,
+                          authorId: currentMemberId,
+                          type,
+                          status,
+                          duration,
+                          description,
+                        },
+                      })
+                        .then(() => {
+                          refetchMemberAdmin()
+                          resetForm()
+                          message.success(formatMessage(commonMessages.event.successfullyCreated))
+                        })
+                        .catch(handleError)
+                    }
+                  />
+                  <AdminBlock className="mt-4">
+                    {memberAdmin.notes.map(note => (
+                      <MemberNoteAdminItem
+                        key={note.id}
+                        note={note}
+                        memberAdmin={memberAdmin}
+                        onRefetch={refetchMemberAdmin}
+                      />
+                    ))}
+                  </AdminBlock>
+                </div>
+              </Tabs.TabPane>
+            )}
+            <Tabs.TabPane key="permission" tab={formatMessage(profileMessages.label.permission)}>
               <div className="p-5">
                 <AdminBlock>
                   <MemberPermissionForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
