@@ -1,5 +1,6 @@
+import { MoreOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, DatePicker, Form, Input, Select } from 'antd'
+import { Button, DatePicker, Dropdown, Form, Input, Menu, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import TextArea from 'antd/lib/input/TextArea'
 import gql from 'graphql-tag'
@@ -26,6 +27,7 @@ const MemberTaskAdminModal: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const [insertTask] = useMutation<types.INSERT_TASK, types.INSERT_TASKVariables>(INSERT_TASK)
+  const [deleteTask] = useMutation<types.DELETE_TASK, types.DELETE_TASKVariables>(DELETE_TASK)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = (onSuccess?: () => void) => {
@@ -103,6 +105,27 @@ const MemberTaskAdminModal: React.FC<
           <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
             {formatMessage(commonMessages.ui.confirm)}
           </Button>
+          {memberTask && (
+            <Dropdown
+              trigger={['click']}
+              overlay={
+                <Menu>
+                  <Menu.Item
+                    className="cursor-pointer"
+                    onClick={() =>
+                      deleteTask({ variables: { taskId: memberTask.id } })
+                        .then(() => onRefetch && onRefetch())
+                        .catch(handleError)
+                    }
+                  >
+                    {formatMessage(commonMessages.ui.delete)}
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <Button type="link" icon={<MoreOutlined />} />
+            </Dropdown>
+          )}
         </>
       )}
       onCancel={onCancel}
@@ -225,6 +248,13 @@ const INSERT_TASK = gql`
         update_columns: [title, category_id, member_id, executor_id, priority, status, due_at, description]
       }
     ) {
+      affected_rows
+    }
+  }
+`
+const DELETE_TASK = gql`
+  mutation DELETE_TASK($taskId: uuid!) {
+    delete_member_task(where: { id: { _eq: $taskId } }) {
       affected_rows
     }
   }

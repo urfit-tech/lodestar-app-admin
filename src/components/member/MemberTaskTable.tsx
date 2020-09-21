@@ -253,7 +253,7 @@ const useMemberTaskCollection = (filter?: {
               }
             ]
           }
-          order_by: { due_at: desc_nulls_last }
+          order_by: { created_at: desc }
         ) {
           id
           title

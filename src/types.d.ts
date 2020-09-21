@@ -1846,6 +1846,34 @@ export interface INSERT_TASKVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: DELETE_TASK
+// ====================================================
+
+export interface DELETE_TASK_delete_member_task {
+  __typename: "member_task_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_TASK {
+  /**
+   * delete data from the table: "member_task"
+   */
+  delete_member_task: DELETE_TASK_delete_member_task | null;
+}
+
+export interface DELETE_TASKVariables {
+  taskId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER_TASK_COLLECTION
 // ====================================================
 
@@ -10108,6 +10136,24 @@ export enum merchandise_constraint {
 }
 
 /**
+ * unique or primary key constraints on table "merchandise_file"
+ */
+export enum merchandise_file_constraint {
+  merchandise_file_pkey = "merchandise_file_pkey",
+}
+
+/**
+ * update columns of table "merchandise_file"
+ */
+export enum merchandise_file_update_column {
+  created_at = "created_at",
+  data = "data",
+  id = "id",
+  merchandise_id = "merchandise_id",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "merchandise_img"
  */
 export enum merchandise_img_constraint {
@@ -11096,6 +11142,107 @@ export enum program_update_column {
   support_locales = "support_locales",
   title = "title",
   updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "project_category"
+ */
+export enum project_category_constraint {
+  project_category_pkey = "project_category_pkey",
+}
+
+/**
+ * update columns of table "project_category"
+ */
+export enum project_category_update_column {
+  category_id = "category_id",
+  id = "id",
+  position = "position",
+  project_id = "project_id",
+}
+
+/**
+ * unique or primary key constraints on table "project"
+ */
+export enum project_constraint {
+  project_pkey = "project_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "project_plan"
+ */
+export enum project_plan_constraint {
+  project_plan_pkey = "project_plan_pkey",
+}
+
+/**
+ * update columns of table "project_plan"
+ */
+export enum project_plan_update_column {
+  cover_url = "cover_url",
+  created_at = "created_at",
+  deliverables = "deliverables",
+  description = "description",
+  discount_down_price = "discount_down_price",
+  id = "id",
+  is_limited = "is_limited",
+  is_participants_visible = "is_participants_visible",
+  is_physical = "is_physical",
+  is_subscription = "is_subscription",
+  list_price = "list_price",
+  period_amount = "period_amount",
+  period_type = "period_type",
+  position = "position",
+  project_id = "project_id",
+  sale_price = "sale_price",
+  sold_at = "sold_at",
+  title = "title",
+}
+
+/**
+ * unique or primary key constraints on table "project_section"
+ */
+export enum project_section_constraint {
+  project_section_pkey = "project_section_pkey",
+}
+
+/**
+ * update columns of table "project_section"
+ */
+export enum project_section_update_column {
+  id = "id",
+  options = "options",
+  position = "position",
+  project_id = "project_id",
+  type = "type",
+}
+
+/**
+ * update columns of table "project"
+ */
+export enum project_update_column {
+  abstract = "abstract",
+  app_id = "app_id",
+  comments = "comments",
+  contents = "contents",
+  cover_type = "cover_type",
+  cover_url = "cover_url",
+  created_at = "created_at",
+  creator_id = "creator_id",
+  description = "description",
+  expired_at = "expired_at",
+  id = "id",
+  introduction = "introduction",
+  is_countdown_timer_visible = "is_countdown_timer_visible",
+  is_participants_visible = "is_participants_visible",
+  position = "position",
+  preview_url = "preview_url",
+  published_at = "published_at",
+  target_amount = "target_amount",
+  template = "template",
+  title = "title",
+  type = "type",
+  updates = "updates",
 }
 
 /**
@@ -12422,6 +12569,7 @@ export interface category_bool_exp {
   position?: Int_comparison_exp | null;
   post_categories?: post_category_bool_exp | null;
   program_categories?: program_category_bool_exp | null;
+  project_categories?: project_category_bool_exp | null;
 }
 
 /**
@@ -12438,6 +12586,7 @@ export interface category_insert_input {
   position?: number | null;
   post_categories?: post_category_arr_rel_insert_input | null;
   program_categories?: program_category_arr_rel_insert_input | null;
+  project_categories?: project_category_arr_rel_insert_input | null;
 }
 
 /**
@@ -13968,6 +14117,7 @@ export interface merchandise_bool_exp {
   member_shop?: member_shop_bool_exp | null;
   member_shop_id?: uuid_comparison_exp | null;
   merchandise_categories?: merchandise_category_bool_exp | null;
+  merchandise_files?: merchandise_file_bool_exp | null;
   merchandise_imgs?: merchandise_img_bool_exp | null;
   merchandise_inventory_status?: merchandise_inventory_status_bool_exp | null;
   merchandise_tags?: merchandise_tag_bool_exp | null;
@@ -14024,6 +14174,50 @@ export interface merchandise_category_on_conflict {
   constraint: merchandise_category_constraint;
   update_columns: merchandise_category_update_column[];
   where?: merchandise_category_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "merchandise_file"
+ */
+export interface merchandise_file_arr_rel_insert_input {
+  data: merchandise_file_insert_input[];
+  on_conflict?: merchandise_file_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "merchandise_file". All fields are combined with a logical 'AND'.
+ */
+export interface merchandise_file_bool_exp {
+  _and?: (merchandise_file_bool_exp | null)[] | null;
+  _not?: merchandise_file_bool_exp | null;
+  _or?: (merchandise_file_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  data?: jsonb_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  merchandise?: merchandise_bool_exp | null;
+  merchandise_id?: uuid_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "merchandise_file"
+ */
+export interface merchandise_file_insert_input {
+  created_at?: any | null;
+  data?: any | null;
+  id?: any | null;
+  merchandise?: merchandise_obj_rel_insert_input | null;
+  merchandise_id?: any | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "merchandise_file"
+ */
+export interface merchandise_file_on_conflict {
+  constraint: merchandise_file_constraint;
+  update_columns: merchandise_file_update_column[];
+  where?: merchandise_file_bool_exp | null;
 }
 
 /**
@@ -14089,6 +14283,7 @@ export interface merchandise_insert_input {
   member_shop?: member_shop_obj_rel_insert_input | null;
   member_shop_id?: any | null;
   merchandise_categories?: merchandise_category_arr_rel_insert_input | null;
+  merchandise_files?: merchandise_file_arr_rel_insert_input | null;
   merchandise_imgs?: merchandise_img_arr_rel_insert_input | null;
   merchandise_tags?: merchandise_tag_arr_rel_insert_input | null;
   meta?: string | null;
@@ -16837,6 +17032,289 @@ export interface program_tempo_delivery_on_conflict {
   constraint: program_tempo_delivery_constraint;
   update_columns: program_tempo_delivery_update_column[];
   where?: program_tempo_delivery_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "project". All fields are combined with a logical 'AND'.
+ */
+export interface project_bool_exp {
+  _and?: (project_bool_exp | null)[] | null;
+  _not?: project_bool_exp | null;
+  _or?: (project_bool_exp | null)[] | null;
+  abstract?: String_comparison_exp | null;
+  app_id?: String_comparison_exp | null;
+  comments?: jsonb_comparison_exp | null;
+  contents?: jsonb_comparison_exp | null;
+  cover_type?: String_comparison_exp | null;
+  cover_url?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  creator?: member_public_bool_exp | null;
+  creator_id?: String_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  expired_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  introduction?: String_comparison_exp | null;
+  is_countdown_timer_visible?: Boolean_comparison_exp | null;
+  is_participants_visible?: Boolean_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  preview_url?: String_comparison_exp | null;
+  project_categories?: project_category_bool_exp | null;
+  project_plans?: project_plan_bool_exp | null;
+  project_sales?: project_sales_bool_exp | null;
+  project_sections?: project_section_bool_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+  target_amount?: numeric_comparison_exp | null;
+  template?: String_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  type?: String_comparison_exp | null;
+  updates?: jsonb_comparison_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "project_category"
+ */
+export interface project_category_arr_rel_insert_input {
+  data: project_category_insert_input[];
+  on_conflict?: project_category_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "project_category". All fields are combined with a logical 'AND'.
+ */
+export interface project_category_bool_exp {
+  _and?: (project_category_bool_exp | null)[] | null;
+  _not?: project_category_bool_exp | null;
+  _or?: (project_category_bool_exp | null)[] | null;
+  category?: category_bool_exp | null;
+  category_id?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  project?: project_bool_exp | null;
+  project_id?: uuid_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "project_category"
+ */
+export interface project_category_insert_input {
+  category?: category_obj_rel_insert_input | null;
+  category_id?: string | null;
+  id?: any | null;
+  position?: number | null;
+  project?: project_obj_rel_insert_input | null;
+  project_id?: any | null;
+}
+
+/**
+ * on conflict condition type for table "project_category"
+ */
+export interface project_category_on_conflict {
+  constraint: project_category_constraint;
+  update_columns: project_category_update_column[];
+  where?: project_category_bool_exp | null;
+}
+
+/**
+ * input type for inserting data into table "project"
+ */
+export interface project_insert_input {
+  abstract?: string | null;
+  app_id?: string | null;
+  comments?: any | null;
+  contents?: any | null;
+  cover_type?: string | null;
+  cover_url?: string | null;
+  created_at?: any | null;
+  creator_id?: string | null;
+  description?: string | null;
+  expired_at?: any | null;
+  id?: any | null;
+  introduction?: string | null;
+  is_countdown_timer_visible?: boolean | null;
+  is_participants_visible?: boolean | null;
+  position?: number | null;
+  preview_url?: string | null;
+  project_categories?: project_category_arr_rel_insert_input | null;
+  project_plans?: project_plan_arr_rel_insert_input | null;
+  project_sections?: project_section_arr_rel_insert_input | null;
+  published_at?: any | null;
+  target_amount?: any | null;
+  template?: string | null;
+  title?: string | null;
+  type?: string | null;
+  updates?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "project"
+ */
+export interface project_obj_rel_insert_input {
+  data: project_insert_input;
+  on_conflict?: project_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "project"
+ */
+export interface project_on_conflict {
+  constraint: project_constraint;
+  update_columns: project_update_column[];
+  where?: project_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "project_plan"
+ */
+export interface project_plan_arr_rel_insert_input {
+  data: project_plan_insert_input[];
+  on_conflict?: project_plan_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "project_plan". All fields are combined with a logical 'AND'.
+ */
+export interface project_plan_bool_exp {
+  _and?: (project_plan_bool_exp | null)[] | null;
+  _not?: project_plan_bool_exp | null;
+  _or?: (project_plan_bool_exp | null)[] | null;
+  cover_url?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  deliverables?: String_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  discount_down_price?: numeric_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  is_limited?: Boolean_comparison_exp | null;
+  is_participants_visible?: Boolean_comparison_exp | null;
+  is_physical?: Boolean_comparison_exp | null;
+  is_subscription?: Boolean_comparison_exp | null;
+  list_price?: numeric_comparison_exp | null;
+  period_amount?: numeric_comparison_exp | null;
+  period_type?: String_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  project?: project_bool_exp | null;
+  project_id?: uuid_comparison_exp | null;
+  project_plan_enrollments?: project_plan_enrollment_bool_exp | null;
+  project_plan_inventory_status?: project_plan_inventory_status_bool_exp | null;
+  sale_price?: numeric_comparison_exp | null;
+  sold_at?: timestamptz_comparison_exp | null;
+  title?: String_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "project_plan_enrollment". All fields are combined with a logical 'AND'.
+ */
+export interface project_plan_enrollment_bool_exp {
+  _and?: (project_plan_enrollment_bool_exp | null)[] | null;
+  _not?: project_plan_enrollment_bool_exp | null;
+  _or?: (project_plan_enrollment_bool_exp | null)[] | null;
+  member_id?: String_comparison_exp | null;
+  project_plan?: project_plan_bool_exp | null;
+  project_plan_id?: uuid_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "project_plan"
+ */
+export interface project_plan_insert_input {
+  cover_url?: string | null;
+  created_at?: any | null;
+  deliverables?: string | null;
+  description?: string | null;
+  discount_down_price?: any | null;
+  id?: any | null;
+  is_limited?: boolean | null;
+  is_participants_visible?: boolean | null;
+  is_physical?: boolean | null;
+  is_subscription?: boolean | null;
+  list_price?: any | null;
+  period_amount?: any | null;
+  period_type?: string | null;
+  position?: number | null;
+  project?: project_obj_rel_insert_input | null;
+  project_id?: any | null;
+  sale_price?: any | null;
+  sold_at?: any | null;
+  title?: string | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "project_plan_inventory_status". All fields are combined with a logical 'AND'.
+ */
+export interface project_plan_inventory_status_bool_exp {
+  _and?: (project_plan_inventory_status_bool_exp | null)[] | null;
+  _not?: project_plan_inventory_status_bool_exp | null;
+  _or?: (project_plan_inventory_status_bool_exp | null)[] | null;
+  buyable_quantity?: bigint_comparison_exp | null;
+  delivered_quantity?: bigint_comparison_exp | null;
+  project_plan?: project_plan_bool_exp | null;
+  project_plan_id?: uuid_comparison_exp | null;
+  total_quantity?: bigint_comparison_exp | null;
+  undelivered_quantity?: bigint_comparison_exp | null;
+}
+
+/**
+ * on conflict condition type for table "project_plan"
+ */
+export interface project_plan_on_conflict {
+  constraint: project_plan_constraint;
+  update_columns: project_plan_update_column[];
+  where?: project_plan_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "project_sales". All fields are combined with a logical 'AND'.
+ */
+export interface project_sales_bool_exp {
+  _and?: (project_sales_bool_exp | null)[] | null;
+  _not?: project_sales_bool_exp | null;
+  _or?: (project_sales_bool_exp | null)[] | null;
+  project?: project_bool_exp | null;
+  project_id?: uuid_comparison_exp | null;
+  total_sales?: numeric_comparison_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "project_section"
+ */
+export interface project_section_arr_rel_insert_input {
+  data: project_section_insert_input[];
+  on_conflict?: project_section_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "project_section". All fields are combined with a logical 'AND'.
+ */
+export interface project_section_bool_exp {
+  _and?: (project_section_bool_exp | null)[] | null;
+  _not?: project_section_bool_exp | null;
+  _or?: (project_section_bool_exp | null)[] | null;
+  id?: uuid_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  project?: project_bool_exp | null;
+  project_id?: uuid_comparison_exp | null;
+  type?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "project_section"
+ */
+export interface project_section_insert_input {
+  id?: any | null;
+  options?: any | null;
+  position?: number | null;
+  project?: project_obj_rel_insert_input | null;
+  project_id?: any | null;
+  type?: string | null;
+}
+
+/**
+ * on conflict condition type for table "project_section"
+ */
+export interface project_section_on_conflict {
+  constraint: project_section_constraint;
+  update_columns: project_section_update_column[];
+  where?: project_section_bool_exp | null;
 }
 
 /**
