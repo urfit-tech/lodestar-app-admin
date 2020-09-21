@@ -105,14 +105,16 @@ const MemberAdminPage: React.FC = () => {
             </StyledDescriptionLabel>
             <span>{currencyFormatter(memberAdmin?.consumption || 0)}</span>
           </StyledDescription>
-          <StyledDescription>
-            <StyledDescriptionLabel className="mr-3">
-              {formatMessage(commonMessages.label.ownedCoins)}
-            </StyledDescriptionLabel>
-            <span>
-              {memberAdmin?.coins || 0} {settings['coin.unit']}
-            </span>
-          </StyledDescription>
+          {enabledModules.coin && (
+            <StyledDescription>
+              <StyledDescriptionLabel className="mr-3">
+                {formatMessage(commonMessages.label.ownedCoins)}
+              </StyledDescriptionLabel>
+              <span>
+                {memberAdmin?.coins || 0} {settings['coin.unit']}
+              </span>
+            </StyledDescription>
+          )}
           <StyledDescription>
             <StyledDescriptionLabel className="mr-3">
               {formatMessage(commonMessages.label.lastLogin)}

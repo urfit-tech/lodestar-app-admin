@@ -71,7 +71,7 @@ const MemberProfileBasicForm: React.FC<{
       initialValues={{
         name: memberAdmin.name,
         email: memberAdmin.email,
-        phones: [...memberAdmin.phones, ''],
+        phones: memberAdmin.phones.length ? memberAdmin.phones : [''],
         tags: memberAdmin.tags,
       }}
       onFinish={handleSubmit}
@@ -110,7 +110,7 @@ const PhoneCollectionInput: React.FC<{
       {value?.map((phone, index) => (
         <Input
           key={index}
-          className="mb-4"
+          className={index !== value.length - 1 ? 'mb-4' : 'mb-0'}
           value={phone}
           onChange={e => {
             const newValue = [...value]
