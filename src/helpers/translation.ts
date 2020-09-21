@@ -333,40 +333,6 @@ export const commonMessages = {
   }),
 }
 
-export const profileMessages = {
-  label: defineMessages({
-    profile: { id: 'profile.label.profile', defaultMessage: '個人' },
-    note: { id: 'profile.label.note', defaultMessage: '備註' },
-    basic: { id: 'profile.label.basic', defaultMessage: '基本資料' },
-    property: { id: 'profile.label.property', defaultMessage: '自訂欄位' },
-    task: { id: 'profile.label.task', defaultMessage: '任務' },
-    permission: { id: 'profile.label.property', defaultMessage: '權限' },
-    callType: { id: 'profile.label.callType', defaultMessage: '通話類型' },
-    description: { id: 'profile.label.description', defaultMessage: '內容' },
-    status: { id: 'profile.label.status', defaultMessage: '狀態' },
-    duration: { id: 'profile.label.duration', defaultMessage: '通時' },
-    createMemberNote: { id: 'profile.label.createNote', defaultMessage: '新增備註' },
-    editMemberNote: { id: 'profile.label.editNote', defaultMessage: '編輯備註' },
-    deleteMemberNote: { id: 'profile.label.deleteProgram', defaultMessage: '刪除備註' },
-  }),
-  status: defineMessages({
-    null: { id: 'profile.status.null', defaultMessage: '無' },
-    inbound: { id: 'profile.status.inbound', defaultMessage: '外撥' },
-    outbound: { id: 'profile.status.outbound', defaultMessage: '進線' },
-    answered: { id: 'profile.status.answered', defaultMessage: '已接聽' },
-    missed: { id: 'profile.status.missed', defaultMessage: '未接聽' },
-  }),
-  text: defineMessages({
-    deleteMemberNoteConfirmation: {
-      id: 'profile.text.deleteMemberNoteConfirmation',
-      defaultMessage: '備註一經刪除即不可恢復，確定要刪除嗎？',
-    },
-  }),
-  ui: defineMessages({
-    memberPage: { id: 'profile.ui.memberPage', defaultMessage: '學員主頁' },
-  }),
-}
-
 export const errorMessages = {
   data: defineMessages({
     fetch: { id: 'error.data.fetch', defaultMessage: '讀取錯誤' },
@@ -801,6 +767,7 @@ export const blogMessages = {
 
 export const memberMessages = {
   ui: {
+    memberPage: { id: 'profile.ui.memberPage', defaultMessage: '學員主頁' },
     newTask: { id: 'member.ui.newTask', defaultMessage: '新增任務' },
     editTask: { id: 'member.ui.editTask', defaultMessage: '編輯任務' },
   },
@@ -811,18 +778,40 @@ export const memberMessages = {
     statusPending: { id: 'member.status.statusPending', defaultMessage: '待處理' },
     statusInProgress: { id: 'member.status.statusInProgress', defaultMessage: '處理中' },
     statusDone: { id: 'member.status.statusDone', defaultMessage: '已解決' },
+    null: { id: 'profile.status.null', defaultMessage: '無' },
+    inbound: { id: 'profile.status.inbound', defaultMessage: '外撥' },
+    outbound: { id: 'profile.status.outbound', defaultMessage: '進線' },
+    answered: { id: 'profile.status.answered', defaultMessage: '已接聽' },
+    missed: { id: 'profile.status.missed', defaultMessage: '未接聽' },
   },
   label: defineMessages({
+    profile: { id: 'profile.label.profile', defaultMessage: '個人' },
+    note: { id: 'profile.label.note', defaultMessage: '備註' },
+    basic: { id: 'profile.label.basic', defaultMessage: '基本資料' },
+    property: { id: 'profile.label.property', defaultMessage: '自訂欄位' },
+    task: { id: 'profile.label.task', defaultMessage: '任務' },
+    permission: { id: 'profile.label.property', defaultMessage: '權限' },
+    callType: { id: 'profile.label.callType', defaultMessage: '通話類型' },
+    description: { id: 'profile.label.description', defaultMessage: '內容' },
+    status: { id: 'profile.label.status', defaultMessage: '狀態' },
+    duration: { id: 'profile.label.duration', defaultMessage: '通時' },
+    createMemberNote: { id: 'profile.label.createNote', defaultMessage: '新增備註' },
+    editMemberNote: { id: 'profile.label.editNote', defaultMessage: '編輯備註' },
+    deleteMemberNote: { id: 'profile.label.deleteProgram', defaultMessage: '刪除備註' },
     taskTitle: { id: 'member.label.taskTitle', defaultMessage: '標題' },
     priority: { id: 'member.label.priority', defaultMessage: '優先權' },
-    status: { id: 'member.label.status', defaultMessage: '狀態' },
     category: { id: 'member.label.category', defaultMessage: '分類' },
     dueDate: { id: 'member.label.dueDate', defaultMessage: '到期日' },
     assign: { id: 'member.label.assign', defaultMessage: '指派' },
     target: { id: 'member.label.target', defaultMessage: '學員' },
     taskDescription: { id: 'member.label.taskDescription', defaultMessage: '內容' },
   }),
-  text: {},
+  text: {
+    deleteMemberNoteConfirmation: {
+      id: 'profile.text.deleteMemberNoteConfirmation',
+      defaultMessage: '備註一經刪除即不可恢復，確定要刪除嗎？',
+    },
+  },
 }
 
 export const codeMessages = defineMessages({

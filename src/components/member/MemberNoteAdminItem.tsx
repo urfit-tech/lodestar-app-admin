@@ -5,7 +5,7 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
-import { commonMessages, profileMessages } from '../../helpers/translation'
+import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useMutateMemberNote } from '../../hooks/member'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as CallOutIcon } from '../../images/icon/call-out.svg'
@@ -71,7 +71,7 @@ const MemberNoteAdminItem: React.FC<{
                   <span className="ml-2">{moment.utc((note?.duration ?? 0) * 1000).format('HH:mm:ss')}</span>
                 )}
                 {note.status === 'missed' && (
-                  <span className="ml-2">{formatMessage(profileMessages.status.missed)}</span>
+                  <span className="ml-2">{formatMessage(memberMessages.status.missed)}</span>
                 )}
               </StyledStatus>
             )}
@@ -85,7 +85,7 @@ const MemberNoteAdminItem: React.FC<{
           <Menu>
             <StyledMenuItem>
               <MemberNoteAdminModal
-                title={formatMessage(profileMessages.label.editMemberNote)}
+                title={formatMessage(memberMessages.label.editMemberNote)}
                 member={memberAdmin}
                 note={note}
                 renderTrigger={({ setVisible }) => (
@@ -111,7 +111,7 @@ const MemberNoteAdminItem: React.FC<{
             </StyledMenuItem>
             <StyledMenuItem>
               <AdminModal
-                title={formatMessage(profileMessages.label.deleteMemberNote)}
+                title={formatMessage(memberMessages.label.deleteMemberNote)}
                 renderTrigger={({ setVisible }) => (
                   <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.delete)}</span>
                 )}
@@ -127,7 +127,7 @@ const MemberNoteAdminItem: React.FC<{
                 }
               >
                 <StyledModalParagraph>
-                  {formatMessage(profileMessages.text.deleteMemberNoteConfirmation)}
+                  {formatMessage(memberMessages.text.deleteMemberNoteConfirmation)}
                 </StyledModalParagraph>
               </AdminModal>
             </StyledMenuItem>

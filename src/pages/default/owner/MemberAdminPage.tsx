@@ -15,16 +15,16 @@ import {
 } from '../../../components/admin'
 import { CustomRatioImage } from '../../../components/common/Image'
 import { StyledLayoutContent } from '../../../components/layout/DefaultLayout'
-import MemberNoteAdminItem from '../../../components/profile/MemberNoteAdminItem'
-import MemberNoteAdminModal from '../../../components/profile/MemberNoteAdminModal'
-import MemberPermissionForm from '../../../components/profile/MemberPermissionForm'
-import MemberProfileBasicForm from '../../../components/profile/MemberProfileBasicForm'
-import MemberPropertyAdminForm from '../../../components/profile/MemberPropertyAdminForm'
-import MemberTaskTable from '../../../components/profile/MemberTaskTable'
+import MemberNoteAdminItem from '../../../components/member/MemberNoteAdminItem'
+import MemberNoteAdminModal from '../../../components/member/MemberNoteAdminModal'
+import MemberPermissionForm from '../../../components/member/MemberPermissionForm'
+import MemberProfileBasicForm from '../../../components/member/MemberProfileBasicForm'
+import MemberPropertyAdminForm from '../../../components/member/MemberPropertyAdminForm'
+import MemberTaskTable from '../../../components/member/MemberTaskTable'
 import AppContext from '../../../contexts/AppContext'
 import { useAuth } from '../../../contexts/AuthContext'
 import { currencyFormatter, handleError } from '../../../helpers'
-import { commonMessages, profileMessages } from '../../../helpers/translation'
+import { commonMessages, memberMessages } from '../../../helpers/translation'
 import { useMemberAdmin, useMutateMemberNote } from '../../../hooks/member'
 import DefaultAvatar from '../../../images/default/avatar.svg'
 import { ReactComponent as EmailIcon } from '../../../images/icon/email.svg'
@@ -73,7 +73,7 @@ const MemberAdminPage: React.FC = () => {
         <AdminHeaderTitle>{memberAdmin?.name || memberAdmin?.username || memberId}</AdminHeaderTitle>
 
         <a href={`//${settings['host']}/members/${memberId}`} target="_blank" rel="noopener noreferrer">
-          <Button>{formatMessage(profileMessages.ui.memberPage)}</Button>
+          <Button>{formatMessage(memberMessages.ui.memberPage)}</Button>
         </a>
       </AdminHeader>
 
@@ -144,30 +144,30 @@ const MemberAdminPage: React.FC = () => {
               </AdminTabBarWrapper>
             )}
           >
-            <Tabs.TabPane key="profile" tab={formatMessage(profileMessages.label.profile)}>
+            <Tabs.TabPane key="profile" tab={formatMessage(memberMessages.label.profile)}>
               <div className="p-5">
                 <AdminBlock>
-                  <AdminBlockTitle>{formatMessage(profileMessages.label.basic)}</AdminBlockTitle>
+                  <AdminBlockTitle>{formatMessage(memberMessages.label.basic)}</AdminBlockTitle>
                   <MemberProfileBasicForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
                 </AdminBlock>
                 {enabledModules.member_property && (
                   <AdminBlock>
-                    <AdminBlockTitle>{formatMessage(profileMessages.label.property)}</AdminBlockTitle>
+                    <AdminBlockTitle>{formatMessage(memberMessages.label.property)}</AdminBlockTitle>
                     <MemberPropertyAdminForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
                   </AdminBlock>
                 )}
               </div>
             </Tabs.TabPane>
             {enabledModules.member_note && (
-              <Tabs.TabPane key="note" tab={formatMessage(profileMessages.label.note)}>
+              <Tabs.TabPane key="note" tab={formatMessage(memberMessages.label.note)}>
                 <div className="p-5">
                   <MemberNoteAdminModal
                     member={memberAdmin}
-                    title={formatMessage(profileMessages.label.createMemberNote)}
+                    title={formatMessage(memberMessages.label.createMemberNote)}
                     renderTrigger={({ setVisible }) => (
                       <Button type="primary" onClick={() => setVisible(true)}>
                         <Icon component={() => <FilePlusIcon />} className="mr-1" />
-                        <span>{formatMessage(profileMessages.label.createMemberNote)}</span>
+                        <span>{formatMessage(memberMessages.label.createMemberNote)}</span>
                       </Button>
                     )}
                     renderSubmit={({ type, status, duration, description, resetForm }) =>
@@ -203,13 +203,13 @@ const MemberAdminPage: React.FC = () => {
               </Tabs.TabPane>
             )}
             {enabledModules.member_task && (
-              <Tabs.TabPane key="task" tab={formatMessage(profileMessages.label.task)}>
+              <Tabs.TabPane key="task" tab={formatMessage(memberMessages.label.task)}>
                 <div className="p-5">
                   <MemberTaskTable memberId={memberId} />
                 </div>
               </Tabs.TabPane>
             )}
-            <Tabs.TabPane key="permission" tab={formatMessage(profileMessages.label.permission)}>
+            <Tabs.TabPane key="permission" tab={formatMessage(memberMessages.label.permission)}>
               <div className="p-5">
                 <AdminBlock>
                   <MemberPermissionForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />

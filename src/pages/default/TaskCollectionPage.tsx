@@ -3,7 +3,7 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
-import MemberTaskTable from '../../components/profile/MemberTaskTable'
+import MemberTaskTable from '../../components/member/MemberTaskTable'
 import { commonMessages } from '../../helpers/translation'
 
 const TaskCollectionPage: React.FC = () => {

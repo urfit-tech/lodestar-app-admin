@@ -4,7 +4,7 @@ import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { commonMessages, profileMessages } from '../../helpers/translation'
+import { commonMessages, memberMessages } from '../../helpers/translation'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { MemberNoteAdminProps } from '../../types/member'
 import AdminModal from '../admin/AdminModal'
@@ -114,28 +114,28 @@ const MemberNoteAdminModal: React.FC<{
           description: note?.description,
         }}
       >
-        <StyledFormLabel>{formatMessage(profileMessages.label.callType)}</StyledFormLabel>
+        <StyledFormLabel>{formatMessage(memberMessages.label.callType)}</StyledFormLabel>
         <Form.Item name="type">
           <Radio.Group onChange={e => setType(e.target.value)}>
-            <Radio value={null}>{formatMessage(profileMessages.status.null)}</Radio>
-            <Radio value="inbound">{formatMessage(profileMessages.status.inbound)}</Radio>
-            <Radio value="outbound">{formatMessage(profileMessages.status.outbound)}</Radio>
+            <Radio value={null}>{formatMessage(memberMessages.status.null)}</Radio>
+            <Radio value="inbound">{formatMessage(memberMessages.status.inbound)}</Radio>
+            <Radio value="outbound">{formatMessage(memberMessages.status.outbound)}</Radio>
           </Radio.Group>
         </Form.Item>
         {type === 'inbound' && (
           <div className="row">
             <div className="col-5">
-              <StyledFormLabel>{formatMessage(profileMessages.label.status)}</StyledFormLabel>
+              <StyledFormLabel>{formatMessage(memberMessages.label.status)}</StyledFormLabel>
               <Form.Item name="status">
                 <Select onSelect={val => setStatus(val as string)}>
-                  <Select.Option value="answered">{formatMessage(profileMessages.status.answered)}</Select.Option>
-                  <Select.Option value="missed">{formatMessage(profileMessages.status.missed)}</Select.Option>
+                  <Select.Option value="answered">{formatMessage(memberMessages.status.answered)}</Select.Option>
+                  <Select.Option value="missed">{formatMessage(memberMessages.status.missed)}</Select.Option>
                 </Select>
               </Form.Item>
             </div>
             {status === 'answered' && (
               <div className="col-7">
-                <StyledFormLabel>{formatMessage(profileMessages.label.duration)}</StyledFormLabel>
+                <StyledFormLabel>{formatMessage(memberMessages.label.duration)}</StyledFormLabel>
                 <Form.Item name="duration">
                   <TimePicker style={{ width: '100%' }} showNow={false} />
                 </Form.Item>
@@ -143,7 +143,7 @@ const MemberNoteAdminModal: React.FC<{
             )}
           </div>
         )}
-        <StyledFormLabel>{formatMessage(profileMessages.label.description)}</StyledFormLabel>
+        <StyledFormLabel>{formatMessage(memberMessages.label.description)}</StyledFormLabel>
         <Form.Item name="description">
           <Input.TextArea />
         </Form.Item>
