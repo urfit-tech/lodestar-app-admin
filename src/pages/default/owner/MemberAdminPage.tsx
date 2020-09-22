@@ -1,6 +1,7 @@
 import Icon, { CloseOutlined } from '@ant-design/icons'
 import { Button, Divider, Layout, message, Skeleton, Tabs } from 'antd'
 import moment from 'moment'
+import { isEmpty } from 'ramda'
 import React, { useContext } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
@@ -46,6 +47,15 @@ const StyledDescription = styled.div`
 const StyledDescriptionLabel = styled.span`
   color: var(--gray-dark);
   font-size: 14px;
+`
+const StyledEmptyBlock = styled.div`
+  display: grid;
+  place-items: center;
+  min-height: 560px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  color: var(--gray-dark);
 `
 
 const MemberAdminPage: React.FC = () => {
@@ -190,14 +200,20 @@ const MemberAdminPage: React.FC = () => {
                     }
                   />
                   <AdminBlock className="mt-4">
-                    {memberAdmin.notes.map(note => (
-                      <MemberNoteAdminItem
-                        key={note.id}
-                        note={note}
-                        memberAdmin={memberAdmin}
-                        onRefetch={refetchMemberAdmin}
-                      />
-                    ))}
+                    {isEmpty(memberAdmin.notes) ? (
+                      <StyledEmptyBlock>
+                        <span>{formatMessage(memberMessages.text.noMemberNote)}</span>
+                      </StyledEmptyBlock>
+                    ) : (
+                      memberAdmin.notes.map(note => (
+                        <MemberNoteAdminItem
+                          key={note.id}
+                          note={note}
+                          memberAdmin={memberAdmin}
+                          onRefetch={refetchMemberAdmin}
+                        />
+                      ))
+                    )}
                   </AdminBlock>
                 </div>
               </Tabs.TabPane>

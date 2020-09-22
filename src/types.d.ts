@@ -16061,6 +16061,7 @@ export interface program_bool_exp {
   program_announcements?: program_announcement_bool_exp | null;
   program_approvals?: program_approval_bool_exp | null;
   program_categories?: program_category_bool_exp | null;
+  program_content_enrollments?: program_content_enrollment_bool_exp | null;
   program_content_sections?: program_content_section_bool_exp | null;
   program_enrollments?: program_enrollment_bool_exp | null;
   program_package_programs?: program_package_program_bool_exp | null;

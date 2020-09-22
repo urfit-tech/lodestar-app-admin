@@ -811,6 +811,10 @@ export const memberMessages = {
       id: 'profile.text.deleteMemberNoteConfirmation',
       defaultMessage: '備註一經刪除即不可恢復，確定要刪除嗎？',
     },
+    noMemberNote: {
+      id: 'profile.text.noMemberNote',
+      defaultMessage: '尚未新增任何備註'
+    }
   },
 }
 
