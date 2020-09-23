@@ -6,8 +6,8 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import { useAppointmentEnrollmentCollection } from '../../hooks/appointment'
-import AppointmentPeriodCard from './AppointmentPeriodCard'
 import { EmptyBlock } from '../admin'
+import AppointmentPeriodCard from './AppointmentPeriodCard'
 
 const StyledTabs = styled(Tabs)`
   && {

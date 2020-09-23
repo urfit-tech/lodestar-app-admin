@@ -1,5 +1,5 @@
 export type AuthState = 'login' | 'register' | 'forgotPassword' | 'confirm'
-export type ClassType = 'program' | 'podcastProgram' | 'activity' | 'post' | 'merchandise' | 'programPackage'
+export type ClassType = 'program' | 'podcastProgram' | 'activity' | 'post' | 'merchandise' | 'programPackage' | 'task'
 export type ProductType =
   | 'Program'
   | 'ProgramPlan'
@@ -31,10 +31,11 @@ export type IssueProps = {
   description: string
   solvedAt: Date | null
   createdAt: Date
-  memberId: string
+  issueMemberId: string
   threadId: string
-  reactedMemberIds: Array<string>
+  reactedMemberIds: string[]
   issueRepliesCount: number
+  issueInstructorIds?: string[]
 }
 
 export type PeriodType = 'D' | 'W' | 'M' | 'Y'

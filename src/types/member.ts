@@ -69,6 +69,42 @@ export type MemberAdminProps = {
     name: string
     value: string
   }[]
+  notes: MemberNoteAdminProps[]
   consumption?: number
   coins?: number
+}
+
+export type MemberNoteAdminProps = {
+  id: string
+  type: 'inbound' | 'outbound' | null
+  status: string | null
+  duration: number | null
+  description: string | null
+  updatedAt: Date
+  author: {
+    name: string
+    pictureUrl: string | null
+  }
+}
+
+export type MemberTaskProps = {
+  id: string
+  title: string
+  priority: 'high' | 'medium' | 'low'
+  status: 'pending' | 'in-progress' | 'done'
+  category: {
+    id: string
+    name: string
+  } | null
+  dueAt: Date | null
+  description: string | null
+  member: {
+    id: string
+    name: string
+  }
+  executor: {
+    id: string
+    name: string
+    avatarUrl: string | null
+  } | null
 }

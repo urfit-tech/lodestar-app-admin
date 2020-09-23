@@ -10,8 +10,8 @@ import { appointmentMessages, commonMessages, errorMessages } from '../../helper
 import types from '../../types'
 import { AppointmentPlanAdminProps } from '../../types/appointment'
 import { StyledTips } from '../admin'
-import CurrencyInput from '../admin/CurrencyInput'
-import CurrencySelector from '../admin/CurrencySelector'
+import CurrencyInput from '../form/CurrencyInput'
+import CurrencySelector from '../form/CurrencySelector'
 
 const AppointmentPlanSaleForm: React.FC<{
   appointmentPlanAdmin: AppointmentPlanAdminProps | null

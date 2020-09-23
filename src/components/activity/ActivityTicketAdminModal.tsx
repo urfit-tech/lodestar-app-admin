@@ -7,8 +7,8 @@ import { defineMessages, useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
 import { activityMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import { ActivityTicketProps } from '../../types/activity'
-import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
+import AdminBraftEditor from '../form/AdminBraftEditor'
 
 const messages = defineMessages({
   published: { id: 'activity.label.published', defaultMessage: '是否開賣' },

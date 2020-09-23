@@ -11,7 +11,7 @@ import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { PostProps } from '../../types/blog'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
-import CreatorSelector from '../common/CreatorSelector'
+import ContentCreatorSelector from '../form/ContentCreatorSelector'
 
 const StyledModalTitle = styled.div`
   color: var(--gray-darker);
@@ -100,7 +100,7 @@ const BlogPostAuthorCollectionBlock: React.FC<{
 
         <Form form={form} layout="vertical" colon={false} hideRequiredMark onFinish={handleSubmit}>
           <Form.Item label={formatMessage(commonMessages.label.selectAuthor)} name="memberId">
-            <CreatorSelector />
+            <ContentCreatorSelector />
           </Form.Item>
 
           <Form.Item className="text-right">

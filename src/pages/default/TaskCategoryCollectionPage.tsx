@@ -6,19 +6,19 @@ import CategoryAdminCard from '../../components/admin/CategoryAdminCard'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { commonMessages } from '../../helpers/translation'
 
-const MerchandiseCategoryPage: React.FC = () => {
+const TaskCategoryCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
 
   return (
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <BookOutlined className="mr-3" />
-        <span>{formatMessage(commonMessages.menu.merchandiseCategory)}</span>
+        <span>{formatMessage(commonMessages.menu.taskCategory)}</span>
       </AdminPageTitle>
 
-      <CategoryAdminCard classType="merchandise" />
+      <CategoryAdminCard classType="task" />
     </AdminLayout>
   )
 }
 
-export default MerchandiseCategoryPage
+export default TaskCategoryCollectionPage

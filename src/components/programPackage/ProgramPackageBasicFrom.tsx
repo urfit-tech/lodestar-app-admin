@@ -9,7 +9,7 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramPackageProps } from '../../types/programPackage'
-import ImageInput from '../admin/ImageInput'
+import ImageInput from '../form/ImageInput'
 
 const ProgramPackageBasicForm: React.FC<{
   programPackage: ProgramPackageProps | null

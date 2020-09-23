@@ -13,7 +13,7 @@ import { ReactComponent as MoreIcon } from '../../images/icon/more.svg'
 import { ReactComponent as PlusIcon } from '../../images/icon/plus.svg'
 import { MerchandiseProps } from '../../types/merchandise'
 import { CustomRatioImage } from '../common/Image'
-import SingleUploader from '../common/SingleUploader'
+import SingleUploader from '../form/SingleUploader'
 
 const StyledOverlayBlock = styled.div`
   position: absolute;

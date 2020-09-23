@@ -11,7 +11,7 @@ import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
-import SaleInput from '../admin/SaleInput'
+import SaleInput from '../form/SaleInput'
 
 const messages = defineMessages({
   setSalePrice: { id: 'merchandise.label.setSalePrice', defaultMessage: '設定優惠價' },

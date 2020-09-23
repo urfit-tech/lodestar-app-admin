@@ -2,7 +2,7 @@ import { BookOutlined } from '@ant-design/icons'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../components/admin'
-import CategoryAdminCard from '../../components/common/CategoryAdminCard'
+import CategoryAdminCard from '../../components/admin/CategoryAdminCard'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { commonMessages } from '../../helpers/translation'
 

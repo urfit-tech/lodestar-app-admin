@@ -4,12 +4,12 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
-import TagSelector from '../../containers/common/TagSelector'
 import AppContext from '../../contexts/AppContext'
-import { handleError, notEmpty } from '../../helpers'
+import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MemberAdminProps } from '../../types/member'
+import TagSelector from '../form/TagSelector'
 
 const MemberProfileBasicForm: React.FC<{
   memberAdmin: MemberAdminProps | null
@@ -44,10 +44,12 @@ const MemberProfileBasicForm: React.FC<{
           member_id: memberAdmin.id,
           tag_name: tag,
         })),
-        phones: values.phones.filter(notEmpty).map((phone: string) => ({
-          member_id: memberAdmin.id,
-          phone,
-        })),
+        phones: values.phones
+          .filter((phone: string) => !!phone)
+          .map((phone: string) => ({
+            member_id: memberAdmin.id,
+            phone,
+          })),
       },
     })
       .then(() => {
@@ -69,7 +71,7 @@ const MemberProfileBasicForm: React.FC<{
       initialValues={{
         name: memberAdmin.name,
         email: memberAdmin.email,
-        phones: [...memberAdmin.phones, ''],
+        phones: memberAdmin.phones.length ? memberAdmin.phones : [''],
         tags: memberAdmin.tags,
       }}
       onFinish={handleSubmit}
@@ -108,9 +110,13 @@ const PhoneCollectionInput: React.FC<{
       {value?.map((phone, index) => (
         <Input
           key={index}
-          className="mb-4"
+          className={index !== value.length - 1 ? 'mb-4' : 'mb-0'}
           value={phone}
-          onChange={e => onChange && onChange(value.splice(index, 1, e.target.value))}
+          onChange={e => {
+            const newValue = [...value]
+            newValue.splice(index, 1, e.target.value)
+            onChange && onChange(newValue)
+          }}
         />
       ))}
     </>

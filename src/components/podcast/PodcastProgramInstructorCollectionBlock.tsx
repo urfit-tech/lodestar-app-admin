@@ -11,7 +11,7 @@ import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
-import CreatorSelector from '../common/CreatorSelector'
+import ContentCreatorSelector from '../form/ContentCreatorSelector'
 
 const StyledModalTitle = styled.div`
   color: var(--gray-darker);
@@ -112,7 +112,7 @@ const PodcastProgramInstructorCollectionBlock: React.FC<{
 
         <Form form={form} layout="vertical" colon={false} hideRequiredMark onFinish={handleSubmit}>
           <Form.Item label={formatMessage(commonMessages.label.selectInstructor)}>
-            <CreatorSelector value={selectedMemberId || ''} onChange={value => setSelectedMemberId(value)} />
+            <ContentCreatorSelector value={selectedMemberId || ''} onChange={value => setSelectedMemberId(value)} />
           </Form.Item>
 
           <Form.Item className="text-right">

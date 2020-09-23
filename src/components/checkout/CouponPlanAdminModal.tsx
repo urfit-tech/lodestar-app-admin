@@ -13,7 +13,7 @@ import { commonMessages, errorMessages, promotionMessages } from '../../helpers/
 import types from '../../types'
 import { CouponPlanProps } from '../../types/checkout'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
-import ScopeSelector from '../admin/ScopeSelector'
+import ScopeSelector from '../form/ScopeSelector'
 import CouponPlanDiscountSelector from './CouponPlanDiscountSelector'
 import PlanCodeSelector, { PlanCodeProps } from './PlanCodeSelector'
 

@@ -15,7 +15,7 @@ import PositionAdminLayout, {
   OverlayListContent,
   OverlayListItem,
   OverlayWrapper,
-} from '../common/PositionAdminLayout'
+} from '../admin/PositionAdminLayout'
 import PriceLabel from '../common/PriceLabel'
 import { BraftContent } from '../common/StyledBraftEditor'
 import ProgramPackagePlanAdminModal from './ProgramPackagePlanAdminModal'

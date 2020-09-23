@@ -16,7 +16,7 @@ import PositionAdminLayout, {
   OverlayListContent,
   OverlayListItem,
   OverlayWrapper,
-} from '../common/PositionAdminLayout'
+} from '../admin/PositionAdminLayout'
 
 const StyledButton = styled(Button)`
   && {

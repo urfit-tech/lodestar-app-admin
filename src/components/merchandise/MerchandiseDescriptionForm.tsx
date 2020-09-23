@@ -10,7 +10,7 @@ import { useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { MerchandiseProps } from '../../types/merchandise'
-import AdminBraftEditor from '../admin/AdminBraftEditor'
+import AdminBraftEditor from '../form/AdminBraftEditor'
 
 type MerchandiseDescriptionFormProps = FormComponentProps & {
   merchandise: MerchandiseProps

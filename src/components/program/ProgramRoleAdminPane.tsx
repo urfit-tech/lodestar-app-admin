@@ -12,8 +12,8 @@ import { ProgramAdminProps } from '../../types/program'
 import { AdminBlock, AdminBlockTitle } from '../admin'
 import AdminModal from '../admin/AdminModal'
 import RoleAdminBlock from '../admin/RoleAdminBlock'
-import CreatorSelector from '../common/CreatorSelector'
 import MemberAvatar from '../common/MemberAvatar'
+import ContentCreatorSelector from '../form/ContentCreatorSelector'
 
 const ProgramRoleAdminPane: React.FC<{
   program: ProgramAdminProps | null
@@ -119,7 +119,7 @@ const ProgramRoleAdminPane: React.FC<{
         >
           <Form form={form} layout="vertical" colon={false} hideRequiredMark>
             <Form.Item label={formatMessage(commonMessages.label.selectInstructor)}>
-              <CreatorSelector value={selectedMemberId || ''} onChange={value => setSelectedMemberId(value)} />
+              <ContentCreatorSelector value={selectedMemberId || ''} onChange={value => setSelectedMemberId(value)} />
             </Form.Item>
           </Form>
         </AdminModal>

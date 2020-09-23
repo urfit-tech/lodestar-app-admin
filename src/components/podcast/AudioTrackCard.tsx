@@ -107,8 +107,8 @@ const AudioTrackCard: React.FC<
         skipLength: 5,
         height: 90,
         scrollParent: true,
-        minPxPerSec: 80,
-        maxCanvasWidth: 5000,
+        minPxPerSec: 70,
+        pixelRatio: 1,
         plugins: [
           TimelinePlugin.create({
             container: waveformTimelineRef.current,

@@ -4,7 +4,7 @@ import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { MemberOptionProps } from '../../types/member'
-import { AvatarImage } from './Image'
+import { AvatarImage } from '../common/Image'
 
 const StyledText = styled.span`
   color: var(--gray-darker);
@@ -50,7 +50,7 @@ const MemberSelector: React.FC<{
           disabled={member.disabled}
         >
           <div className="d-flex align-items-center justify-content-start">
-            <AvatarImage size="28px" src={member.avatarUrl} className="mr-2" />
+            <AvatarImage size="28px" src={member.avatarUrl} className="mr-2 flex-shrink-0" />
             <StyledText className="mr-2">{member.name}</StyledText>
             <StyledTextSecondary>{member.email}</StyledTextSecondary>
           </div>

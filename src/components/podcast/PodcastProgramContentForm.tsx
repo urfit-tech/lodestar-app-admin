@@ -18,8 +18,8 @@ import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.s
 import types from '../../types'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import { StyledTips } from '../admin'
-import AdminBraftEditor from '../admin/AdminBraftEditor'
-import SingleUploader from '../common/SingleUploader'
+import AdminBraftEditor from '../form/AdminBraftEditor'
+import SingleUploader from '../form/SingleUploader'
 
 const StyledFileBlock = styled.div`
   padding: 0.25rem 0.5rem;

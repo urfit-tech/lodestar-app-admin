@@ -8,8 +8,8 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import { ClassType } from '../../types/general'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
-import CategorySelector from '../common/CategorySelector'
-import CreatorSelector from './CreatorSelector'
+import CategorySelector from '../form/CategorySelector'
+import ContentCreatorSelector from '../form/ContentCreatorSelector'
 
 const ProductCreationModal: React.FC<
   AdminModalProps & {
@@ -77,7 +77,7 @@ const ProductCreationModal: React.FC<
       >
         {withCreatorSelector && (
           <Form.Item label={formatMessage(commonMessages.label.selectInstructor)} name="creatorId">
-            <CreatorSelector />
+            <ContentCreatorSelector />
           </Form.Item>
         )}
         <Form.Item

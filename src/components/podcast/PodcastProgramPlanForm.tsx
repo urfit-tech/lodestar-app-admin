@@ -8,7 +8,7 @@ import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { PodcastProgramAdminProps } from '../../types/podcast'
-import SaleInput, { SaleProps } from '../admin/SaleInput'
+import SaleInput, { SaleProps } from '../form/SaleInput'
 
 const PodcastProgramPlanForm: React.FC<{
   podcastProgramAdmin: PodcastProgramAdminProps | null

@@ -14,9 +14,9 @@ import { useMember } from '../../hooks/member'
 import DefaultAvatarImage from '../../images/default/avatar.svg'
 import types from '../../types'
 import { AdminBlockTitle } from '../admin'
-import AdminBraftEditor from '../admin/AdminBraftEditor'
 import AdminCard from '../admin/AdminCard'
-import ImageInput from '../admin/ImageInput'
+import AdminBraftEditor from '../form/AdminBraftEditor'
+import ImageInput from '../form/ImageInput'
 import { StyledForm } from '../layout'
 
 const messages = defineMessages({
