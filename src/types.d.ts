@@ -1282,6 +1282,28 @@ export interface GET_CONTENT_CREATOR_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PERMISSION
+// ====================================================
+
+export interface GET_PERMISSION_permission {
+  __typename: "permission";
+  id: string;
+  group: string;
+}
+
+export interface GET_PERMISSION {
+  /**
+   * fetch data from the table: "permission"
+   */
+  permission: GET_PERMISSION_permission[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_ISSUE_STATUS
 // ====================================================
 
@@ -1666,16 +1688,64 @@ export interface UPDATE_MEMBER_ROLE_update_member {
   affected_rows: number;
 }
 
+export interface UPDATE_MEMBER_ROLE_delete_member_permission_extra {
+  __typename: "member_permission_extra_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_ROLE_insert_member_permission_extra {
+  __typename: "member_permission_extra_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_MEMBER_ROLE {
   /**
    * update data of the table: "member"
    */
   update_member: UPDATE_MEMBER_ROLE_update_member | null;
+  /**
+   * delete data from the table: "member_permission_extra"
+   */
+  delete_member_permission_extra: UPDATE_MEMBER_ROLE_delete_member_permission_extra | null;
+  /**
+   * insert data into the table: "member_permission_extra"
+   */
+  insert_member_permission_extra: UPDATE_MEMBER_ROLE_insert_member_permission_extra | null;
 }
 
 export interface UPDATE_MEMBER_ROLEVariables {
   memberId: string;
   role?: string | null;
+  permissions: member_permission_extra_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ROLE_PERMISSION
+// ====================================================
+
+export interface GET_ROLE_PERMISSION_role_permission {
+  __typename: "role_permission";
+  id: any;
+  role_id: string;
+  permission_id: string;
+}
+
+export interface GET_ROLE_PERMISSION {
+  /**
+   * fetch data from the table: "role_permission"
+   */
+  role_permission: GET_ROLE_PERMISSION_role_permission[];
 }
 
 /* tslint:disable */
@@ -6237,6 +6307,20 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
   author: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author;
 }
 
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_permission_extras_permission {
+  __typename: "permission";
+  id: string;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_permission_extras {
+  __typename: "member_permission_extra";
+  id: any;
+  /**
+   * An object relationship
+   */
+  permission: GET_MEMBER_DESCRIPTION_member_by_pk_member_permission_extras_permission;
+}
+
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate_sum {
   __typename: "coin_log_sum_fields";
   amount: any | null;
@@ -6304,6 +6388,10 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk {
    * An array relationship
    */
   member_notes: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes[];
+  /**
+   * An array relationship
+   */
+  member_permission_extras: GET_MEMBER_DESCRIPTION_member_by_pk_member_permission_extras[];
   /**
    * An aggregated array relationship
    */
@@ -9988,6 +10076,24 @@ export enum member_note_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "member_permission_extra"
+ */
+export enum member_permission_extra_constraint {
+  member_permission_pkey = "member_permission_pkey",
+}
+
+/**
+ * update columns of table "member_permission_extra"
+ */
+export enum member_permission_extra_update_column {
+  created_at = "created_at",
+  id = "id",
+  member_id = "member_id",
+  permission_id = "permission_id",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "member_phone"
  */
 export enum member_phone_constraint {
@@ -10429,6 +10535,24 @@ export enum payment_log_update_column {
   payment_due_at = "payment_due_at",
   price = "price",
   status = "status",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "permission"
+ */
+export enum permission_constraint {
+  permission_pkey = "permission_pkey",
+}
+
+/**
+ * update columns of table "permission"
+ */
+export enum permission_update_column {
+  created_at = "created_at",
+  description = "description",
+  group = "group",
+  id = "id",
   updated_at = "updated_at",
 }
 
@@ -11032,6 +11156,7 @@ export enum program_plan_update_column {
   ended_at = "ended_at",
   gains = "gains",
   id = "id",
+  is_countdown_timer_visible = "is_countdown_timer_visible",
   is_participants_visible = "is_participants_visible",
   list_price = "list_price",
   period_amount = "period_amount",
@@ -11129,6 +11254,7 @@ export enum program_update_column {
   description = "description",
   id = "id",
   in_advance = "in_advance",
+  is_countdown_timer_visible = "is_countdown_timer_visible",
   is_deleted = "is_deleted",
   is_issues_open = "is_issues_open",
   is_private = "is_private",
@@ -13519,6 +13645,7 @@ export interface member_bool_exp {
   member_cards?: member_card_bool_exp | null;
   member_contracts?: member_contract_bool_exp | null;
   member_notes?: member_note_bool_exp | null;
+  member_permission_extras?: member_permission_extra_bool_exp | null;
   member_phones?: member_phone_bool_exp | null;
   member_properties?: member_property_bool_exp | null;
   member_shops?: member_shop_bool_exp | null;
@@ -13688,6 +13815,7 @@ export interface member_insert_input {
   member_cards?: member_card_arr_rel_insert_input | null;
   member_contracts?: member_contract_arr_rel_insert_input | null;
   member_notes?: member_note_arr_rel_insert_input | null;
+  member_permission_extras?: member_permission_extra_arr_rel_insert_input | null;
   member_phones?: member_phone_arr_rel_insert_input | null;
   member_properties?: member_property_arr_rel_insert_input | null;
   member_shops?: member_shop_arr_rel_insert_input | null;
@@ -13791,6 +13919,52 @@ export interface member_on_conflict {
   constraint: member_constraint;
   update_columns: member_update_column[];
   where?: member_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "member_permission_extra"
+ */
+export interface member_permission_extra_arr_rel_insert_input {
+  data: member_permission_extra_insert_input[];
+  on_conflict?: member_permission_extra_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_permission_extra". All fields are combined with a logical 'AND'.
+ */
+export interface member_permission_extra_bool_exp {
+  _and?: (member_permission_extra_bool_exp | null)[] | null;
+  _not?: member_permission_extra_bool_exp | null;
+  _or?: (member_permission_extra_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  permission?: permission_bool_exp | null;
+  permission_id?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_permission_extra"
+ */
+export interface member_permission_extra_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  permission?: permission_obj_rel_insert_input | null;
+  permission_id?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "member_permission_extra"
+ */
+export interface member_permission_extra_on_conflict {
+  constraint: member_permission_extra_constraint;
+  update_columns: member_permission_extra_update_column[];
+  where?: member_permission_extra_bool_exp | null;
 }
 
 /**
@@ -14963,6 +15137,48 @@ export interface payment_log_on_conflict {
 }
 
 /**
+ * Boolean expression to filter rows from the table "permission". All fields are combined with a logical 'AND'.
+ */
+export interface permission_bool_exp {
+  _and?: (permission_bool_exp | null)[] | null;
+  _not?: permission_bool_exp | null;
+  _or?: (permission_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  group?: String_comparison_exp | null;
+  id?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "permission"
+ */
+export interface permission_insert_input {
+  created_at?: any | null;
+  description?: string | null;
+  group?: string | null;
+  id?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "permission"
+ */
+export interface permission_obj_rel_insert_input {
+  data: permission_insert_input;
+  on_conflict?: permission_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "permission"
+ */
+export interface permission_on_conflict {
+  constraint: permission_constraint;
+  update_columns: permission_update_column[];
+  where?: permission_bool_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "playlist"
  */
 export interface playlist_arr_rel_insert_input {
@@ -16050,6 +16266,7 @@ export interface program_bool_exp {
   editors?: program_editor_bool_exp | null;
   id?: uuid_comparison_exp | null;
   in_advance?: Boolean_comparison_exp | null;
+  is_countdown_timer_visible?: Boolean_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
   is_issues_open?: Boolean_comparison_exp | null;
   is_private?: Boolean_comparison_exp | null;
@@ -16521,6 +16738,7 @@ export interface program_insert_input {
   editors?: program_editor_arr_rel_insert_input | null;
   id?: any | null;
   in_advance?: boolean | null;
+  is_countdown_timer_visible?: boolean | null;
   is_deleted?: boolean | null;
   is_issues_open?: boolean | null;
   is_private?: boolean | null;
@@ -16784,6 +17002,7 @@ export interface program_plan_bool_exp {
   ended_at?: timestamptz_comparison_exp | null;
   gains?: jsonb_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_countdown_timer_visible?: Boolean_comparison_exp | null;
   is_participants_visible?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
   period_amount?: numeric_comparison_exp | null;
@@ -16829,6 +17048,7 @@ export interface program_plan_insert_input {
   ended_at?: any | null;
   gains?: any | null;
   id?: any | null;
+  is_countdown_timer_visible?: boolean | null;
   is_participants_visible?: boolean | null;
   list_price?: any | null;
   period_amount?: any | null;

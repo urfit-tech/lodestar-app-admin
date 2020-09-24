@@ -11,7 +11,11 @@ export type Module =
   | 'learning_statistics'
   | 'locale'
   | 'member_card'
+  | 'member_note'
+  | 'member_property'
+  | 'member_task'
   | 'merchandise'
+  | 'permission'
   | 'podcast'
   | 'podcast_recording'
   | 'point'
@@ -22,9 +26,6 @@ export type Module =
   | 'social_connect'
   | 'tempo_delivery'
   | 'voucher'
-  | 'member_property'
-  | 'member_note'
-  | 'member_task'
 
 export type Currency = {
   name: string

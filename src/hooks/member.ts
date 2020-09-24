@@ -109,6 +109,12 @@ export const useMemberAdmin = (memberId: string) => {
               picture_url
             }
           }
+          member_permission_extras {
+            id
+            permission {
+              id
+            }
+          }
           coin_logs_aggregate {
             aggregate {
               sum {
@@ -162,6 +168,7 @@ export const useMemberAdmin = (memberId: string) => {
               pictureUrl: v.author.picture_url,
             },
           })),
+          permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission.id),
           consumption: sum(
             data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
           ),
