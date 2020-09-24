@@ -1,12 +1,12 @@
 import '@ant-design/compatible/assets/index.css'
-import { CloseOutlined, QuestionCircleFilled } from '@ant-design/icons'
+import { QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import { UploadFile } from 'antd/lib/upload/interface'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
-import styled from 'styled-components'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
@@ -16,26 +16,6 @@ import { StyledTips } from '../admin'
 import MultipleUploader from '../common/MultipleUploader'
 import MemberShopSelector from './MemberShopSelector'
 import MerchandiseImagesUploader from './MerchandiseImagesUploader'
-
-const StyledCloseOutlines = styled(CloseOutlined)`
-  color: 'gray-darker';
-
-  &:hover {
-    color: ${props => props.theme['@primary-color']};
-  }
-  &:active {
-    color: 'gray-darker';
-  }
-`
-
-const StyledFileBlock = styled.div`
-  padding: 0.5rem;
-  transition: background 0.2s ease-in-out;
-
-  :hover {
-    background: var(--gray-lighter);
-  }
-`
 
 type MerchandiseIntroductionFormProps = {
   merchandise: MerchandiseProps
@@ -53,7 +33,7 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
   const [loading, setLoading] = useState(false)
   const { id: appId } = useContext(AppContext)
   const [uploading, setUploading] = useState(false)
-  const [files, setFiles] = useState<any[]>(merchandise.files || [])
+  const [files, setFiles] = useState<UploadFile[]>(merchandise.files || [])
   const [form] = useForm()
 
   const handleSubmit = () => {
@@ -64,9 +44,9 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
         abstract,
         meta,
         memberShopId,
-        merchandiseFiles: files.map((v: any) => ({
+        merchandiseFiles: files.map(v => ({
           merchandise_id: merchandise.id,
-          data: v.data,
+          data: v,
         })),
       })
         .then(() => {
@@ -145,30 +125,14 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
       {!merchandise.isPhysical && (
         <Form.Item label={formatMessage(merchandiseMessages.label.deliveryItem)} wrapperCol={{ span: 24 }}>
           <MultipleUploader
-            uploadText={formatMessage(commonMessages.ui.uploadFile)}
             path={`merchandise_files/${appId}/${merchandise.id}`}
+            fileList={files}
+            onSetFileList={setFiles}
+            uploadText={formatMessage(commonMessages.ui.uploadFile)}
             onUploading={() => setUploading(true)}
             onSuccess={() => setUploading(false)}
             onError={() => setUploading(false)}
-            onCancel={() => setUploading(false)}
-            showUploadList={false}
-            fileList={files}
-            setDataList={setFiles}
           />
-          {files?.map((file: any) => (
-            <StyledFileBlock key={file.data.uid} className="d-flex align-items-center justify-content-between mt-4">
-              <div>
-                <span className="mr-2">{file.data.name}</span>
-              </div>
-              <StyledCloseOutlines
-                className="cursor-pointer"
-                onClick={() => {
-                  setFiles(files.filter((oldMaterial: any) => oldMaterial.data.uid !== file.data.uid))
-                  message.success(formatMessage(commonMessages.ui.deleted))
-                }}
-              />
-            </StyledFileBlock>
-          ))}
         </Form.Item>
       )}
 

@@ -27,44 +27,32 @@ export const validateImage = (file: RcFile, fileSize?: number) => {
   return isImage && inSize
 }
 
-export const uploadFile = async (
-  key: string,
-  file: File | null,
-  authToken: string | null,
-  config?: AxiosRequestConfig,
-) => {
-  let signedUrl = ''
-  file &&
-    (await axios
-      .post(
-        `${process.env.REACT_APP_BACKEND_ENDPOINT}/sys/sign-url`,
-        {
-          operation: 'putObject',
-          params: {
-            Key: key,
-            ContentType: file.type,
-          },
+export const uploadFile = async (key: string, file: File, authToken: string | null, config?: AxiosRequestConfig) =>
+  await axios
+    .post(
+      `${process.env.REACT_APP_BACKEND_ENDPOINT}/sys/sign-url`,
+      {
+        operation: 'putObject',
+        params: {
+          Key: key,
+          ContentType: file.type,
         },
-        {
-          headers: { authorization: `Bearer ${authToken}` },
+      },
+      {
+        headers: { authorization: `Bearer ${authToken}` },
+      },
+    )
+    .then(res => res.data.result)
+    .then(url => {
+      const { query } = queryString.parseUrl(url)
+      return axios.put<{ status: number; data: string }>(url, file, {
+        ...config,
+        headers: {
+          ...query,
+          'Content-Type': file.type,
         },
-      )
-      .then(res => {
-        signedUrl = res.data.result
-        return res.data.result
       })
-      .then(url => {
-        const { query } = queryString.parseUrl(url)
-        return axios.put<{ status: number; data: string }>(url, file, {
-          ...config,
-          headers: {
-            ...query,
-            'Content-Type': file.type,
-          },
-        })
-      }))
-  return signedUrl
-}
+    })
 
 export const getFileDownloadableLink = async (key: string, authToken: string | null) => {
   const { data } = await axios.post(

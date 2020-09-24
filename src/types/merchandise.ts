@@ -1,3 +1,5 @@
+import { UploadFile } from 'antd/lib/upload/interface'
+
 export type MerchandisePreviewProps = {
   id: string
   coverUrl: string | null
@@ -20,9 +22,7 @@ export type MerchandiseProps = {
     url: string
     isCover: boolean
   }[]
-  files: {
-    data: any
-  }[]
+  files: UploadFile[]
   abstract: string | null
   meta: string | null
   link: string | null

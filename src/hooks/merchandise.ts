@@ -149,9 +149,7 @@ export const useMerchandise = (id: string) => {
             url: img.url,
             isCover: img.type === 'cover',
           })),
-          files: data.merchandise_by_pk.merchandise_files.map(v => ({
-            data: v.data,
-          })),
+          files: data.merchandise_by_pk.merchandise_files.map(v => v.data),
           abstract: data.merchandise_by_pk.abstract,
           meta: data.merchandise_by_pk.meta,
           link: data.merchandise_by_pk.link,
