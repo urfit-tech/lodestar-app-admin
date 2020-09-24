@@ -16,6 +16,7 @@ export const useInsertMerchandise = () => {
       $memberId: String!
       $title: String!
       $merchandiseCategories: [merchandise_category_insert_input!]!
+      $isPhysical: Boolean
     ) {
       insert_merchandise(
         objects: {
@@ -23,6 +24,7 @@ export const useInsertMerchandise = () => {
           title: $title
           member_id: $memberId
           merchandise_categories: { data: $merchandiseCategories }
+          is_physical: $isPhysical
         }
       ) {
         affected_rows

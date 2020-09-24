@@ -76,6 +76,7 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
           <div className="col-8">
             <ProductCreationModal
               withCategorySelector
+              withMerchandiseType
               classType="merchandise"
               renderTrigger={({ setVisible }) => (
                 <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
@@ -83,7 +84,7 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
                 </Button>
               )}
               title={formatMessage(merchandiseMessages.ui.createMerchandise)}
-              onCreate={({ title, categoryIds }) =>
+              onCreate={({ title, categoryIds, isPhysical }) =>
                 insertMerchandise({
                   variables: {
                     appId,
@@ -93,6 +94,7 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
                       category_id: categoryId,
                       position: index,
                     })),
+                    isPhysical,
                   },
                 }).then(({ data }) => {
                   refetchMerchandises().then(() => {

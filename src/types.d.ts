@@ -6823,6 +6823,7 @@ export interface INSERT_MERCHANDISEVariables {
   memberId: string;
   title: string;
   merchandiseCategories: merchandise_category_insert_input[];
+  isPhysical?: boolean | null;
 }
 
 /* tslint:disable */
@@ -10419,6 +10420,22 @@ export enum order_discount_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "order_executor"
+ */
+export enum order_executor_constraint {
+  order_executor_pkey = "order_executor_pkey",
+}
+
+/**
+ * update columns of table "order_executor"
+ */
+export enum order_executor_update_column {
+  id = "id",
+  member_id = "member_id",
+  order_id = "order_id",
+}
+
+/**
  * unique or primary key constraints on table "order_log"
  */
 export enum order_log_constraint {
@@ -13693,6 +13710,7 @@ export interface member_bool_exp {
   name?: String_comparison_exp | null;
   notifications?: notification_bool_exp | null;
   notificationsByTargetMembereId?: notification_bool_exp | null;
+  order_executors?: order_executor_bool_exp | null;
   order_logs?: order_log_bool_exp | null;
   passhash?: String_comparison_exp | null;
   picture_url?: String_comparison_exp | null;
@@ -13863,6 +13881,7 @@ export interface member_insert_input {
   name?: string | null;
   notifications?: notification_arr_rel_insert_input | null;
   notificationsByTargetMembereId?: notification_arr_rel_insert_input | null;
+  order_executors?: order_executor_arr_rel_insert_input | null;
   order_logs?: order_log_arr_rel_insert_input | null;
   passhash?: string | null;
   picture_url?: string | null;
@@ -14746,6 +14765,48 @@ export interface order_discount_on_conflict {
 }
 
 /**
+ * input type for inserting array relation for remote table "order_executor"
+ */
+export interface order_executor_arr_rel_insert_input {
+  data: order_executor_insert_input[];
+  on_conflict?: order_executor_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "order_executor". All fields are combined with a logical 'AND'.
+ */
+export interface order_executor_bool_exp {
+  _and?: (order_executor_bool_exp | null)[] | null;
+  _not?: order_executor_bool_exp | null;
+  _or?: (order_executor_bool_exp | null)[] | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  order_id?: String_comparison_exp | null;
+  order_log?: order_log_bool_exp | null;
+}
+
+/**
+ * input type for inserting data into table "order_executor"
+ */
+export interface order_executor_insert_input {
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  order_id?: string | null;
+  order_log?: order_log_obj_rel_insert_input | null;
+}
+
+/**
+ * on conflict condition type for table "order_executor"
+ */
+export interface order_executor_on_conflict {
+  constraint: order_executor_constraint;
+  update_columns: order_executor_update_column[];
+  where?: order_executor_bool_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "order_log"
  */
 export interface order_log_arr_rel_insert_input {
@@ -14775,6 +14836,7 @@ export interface order_log_bool_exp {
   member_id?: String_comparison_exp | null;
   message?: String_comparison_exp | null;
   order_discounts?: order_discount_bool_exp | null;
+  order_executors?: order_executor_bool_exp | null;
   order_products?: order_product_bool_exp | null;
   payment_logs?: payment_log_bool_exp | null;
   payment_model?: jsonb_comparison_exp | null;
@@ -14803,6 +14865,7 @@ export interface order_log_insert_input {
   member_id?: string | null;
   message?: string | null;
   order_discounts?: order_discount_arr_rel_insert_input | null;
+  order_executors?: order_executor_arr_rel_insert_input | null;
   order_products?: order_product_arr_rel_insert_input | null;
   payment_logs?: payment_log_arr_rel_insert_input | null;
   payment_model?: any | null;
