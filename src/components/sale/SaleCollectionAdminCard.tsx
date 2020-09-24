@@ -44,8 +44,6 @@ const StyledCell = styled.div`
   `)}
 `
 
-const productPlan = ['ProgramPlan', 'ProjectPlan', 'PodcastPlan', 'ProgramPackagePlan']
-
 const DEFAULT_PAGE_SIZE = 20
 const DEFAULT_PAGE_CURRENT = 1
 
@@ -242,33 +240,34 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
             </div>
           )
         })}
-        <div className="row">
-          <div className="col-6" style={{ display: 'flex', alignItems: 'center' }}>
-            {productPlan.find(plan => plan === record.orderProducts[0].product.type) &&
-              record.orderProducts[0].endedAt &&
-              new Date(record.orderProducts[0].endedAt) > new Date() &&
-              (record.orderProducts[0]?.options?.unsubscribedAt ? (
+        <div className="row align-items-center">
+          <div className="col-6">
+            {record.orderProducts.some(
+              orderProduct =>
+                (orderProduct.endedAt?.getTime() || 0) > Date.now() &&
+                ['ProgramPlan', 'ProjectPlan', 'PodcastPlan', 'ProgramPackagePlan'].includes(orderProduct.product.type),
+            ) &&
+              (record.orderProducts.some(orderProduct => orderProduct.options?.unsubscribedAt) ? (
                 <span style={{ color: '#9b9b9b', fontSize: '14px' }}>
                   {formatMessage(commonMessages.text.cancelSubscriptionDate, {
-                    date: dateFormatter(record.orderProducts[0]?.options?.unsubscribedAt),
+                    date: dateFormatter(
+                      record.orderProducts.find(orderProduct => orderProduct.options?.unsubscribedAt)?.options
+                        ?.unsubscribedAt,
+                    ),
                   })}
                 </span>
               ) : (
-                <>
-                  <SubscriptionCancelModal
-                    orderProductId={record.orderProducts[0].id}
-                    orderProductOptions={record.orderProducts[0].options}
-                    onRefetch={refetchUseDataSource}
-                  />
-                </>
+                <SubscriptionCancelModal
+                  orderProducts={record.orderProducts.map(orderProduct => ({
+                    id: orderProduct.id,
+                    options: orderProduct.options,
+                  }))}
+                  onRefetch={refetchUseDataSource}
+                />
               ))}
           </div>
-          <div className="col-3" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-            <span>{formatMessage(commonMessages.label.totalPrice)}</span>
-          </div>
-          <div className="col-3" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-            <span>{currencyFormatter(record.totalPrice)} </span>
-          </div>
+          <div className="col-3 text-right">{formatMessage(commonMessages.label.totalPrice)}</div>
+          <div className="col-3 text-right">{currencyFormatter(record.totalPrice)}</div>
         </div>
       </div>
     )
@@ -368,8 +367,8 @@ const useDataSource = (
             id: orderProduct.id,
             name: orderProduct.name,
             price: orderProduct.price,
-            startedAt: orderProduct.started_at,
-            endedAt: orderProduct.ended_at,
+            startedAt: orderProduct.started_at && new Date(orderProduct.started_at),
+            endedAt: orderProduct.ended_at && new Date(orderProduct.ended_at),
             product: orderProduct.product,
             quantity: orderProduct.options?.quantity,
             options: orderProduct.options,

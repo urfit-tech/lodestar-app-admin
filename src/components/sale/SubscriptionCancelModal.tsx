@@ -4,13 +4,14 @@ import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessage, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
 
 const messages = defineMessage({
   cancelSubscription: {
-    id: 'common.ui.cancelSbuscription',
+    id: 'common.ui.cancelSubscription',
     defaultMessage: '取消訂閱',
   },
   cancelSubscriptionTitle: {
@@ -39,7 +40,6 @@ const StyledSaleAdminModal = styled(AdminModal)`
     }
   }
 `
-
 const StyledSaleAdminButton = styled(Button)`
   font-size: 14px;
   border-radius: 4px;
@@ -48,10 +48,12 @@ const StyledSaleAdminButton = styled(Button)`
 `
 
 const SubscriptionCancelModal: React.FC<{
-  orderProductId: string
-  orderProductOptions: any
+  orderProducts: {
+    id: string
+    options: any
+  }[]
   onRefetch?: () => void
-}> = ({ orderProductId, orderProductOptions, onRefetch }) => {
+}> = ({ orderProducts, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [updateSubscriptionPlan] = useMutation<
     types.UPDATE_SUBSCRIPTION_CANCELED,
@@ -64,16 +66,21 @@ const SubscriptionCancelModal: React.FC<{
     }
   `)
 
-  const handleSubscriptionCancel = () => {
-    updateSubscriptionPlan({
-      variables: {
-        orderProductId: orderProductId,
-        options: { ...orderProductOptions, unsubscribedAt: new Date() },
-      },
-    }).then(() => {
+  const handleSubscriptionCancel = async () => {
+    try {
+      for (const orderProduct of orderProducts) {
+        await updateSubscriptionPlan({
+          variables: {
+            orderProductId: orderProduct.id,
+            options: { ...orderProduct.options, unsubscribedAt: new Date() },
+          },
+        })
+      }
       message.success(formatMessage(messages.cancelSubscriptionSuccess))
       onRefetch && onRefetch()
-    })
+    } catch (error) {
+      handleError(error)
+    }
   }
 
   return (
@@ -95,8 +102,8 @@ const SubscriptionCancelModal: React.FC<{
           <StyledSaleAdminButton
             danger
             type="primary"
-            onClick={() => {
-              handleSubscriptionCancel()
+            onClick={async () => {
+              await handleSubscriptionCancel()
               setVisible(false)
             }}
           >
