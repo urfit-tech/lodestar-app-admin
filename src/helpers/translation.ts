@@ -1,6 +1,10 @@
 import { defineMessages } from 'react-intl'
 
 export const commonMessages = {
+  defaults: defineMessages({
+    countdown: { id: 'common.countdown', defaultMessage: '優惠倒數' },
+  }),
+
   ui: defineMessages({
     comma: { id: 'common.ui.comma', defaultMessage: '、' },
     print: { id: 'common.ui.print', defaultMessage: '列印' },
@@ -330,6 +334,12 @@ export const commonMessages = {
     podcastPlan: { id: 'common.product.podcastPlan', defaultMessage: '廣播頻道' },
     appointmentPlan: { id: 'common.product.appointmentPlan', defaultMessage: '預約' },
     unknownType: { id: 'common.product.unknownType', defaultMessage: '未知' },
+  }),
+  unit: defineMessages({
+    min: { id: 'common.unit.min', defaultMessage: '分鐘' },
+    sec: { id: 'common.periodType.sec', defaultMessage: '秒' },
+    hour: { id: 'common.periodType.hour', defaultMessage: '時' },
+    day: { id: 'common.periodType.day', defaultMessage: '天' },
   }),
 }
 
@@ -813,8 +823,8 @@ export const memberMessages = {
     },
     noMemberNote: {
       id: 'profile.text.noMemberNote',
-      defaultMessage: '尚未新增任何備註'
-    }
+      defaultMessage: '尚未新增任何備註',
+    },
   },
 }
 

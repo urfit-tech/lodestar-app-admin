@@ -45,6 +45,7 @@ export type ProgramProps = {
   isDeleted: boolean
   isPrivate: boolean
   isIssuesOpen: boolean
+  isCountdownTimerVisible?: boolean
 }
 
 export type ProgramAdminProps = ProgramProps & {
@@ -99,6 +100,7 @@ export type ProgramPlanProps = {
   currencyId: string
   autoRenewed: boolean
   publishedAt: Date | null
+  isCountdownTimerVisible?: boolean
 }
 
 export type ProgramRoleProps = {

@@ -3460,6 +3460,7 @@ export interface UPDATE_PROGRAM_PERPETUAL_PLANVariables {
   listPrice?: any | null;
   salePrice?: any | null;
   soldAt?: any | null;
+  isCountdownTimerVisible: boolean;
 }
 
 /* tslint:disable */
@@ -3501,6 +3502,7 @@ export interface UPSERT_PROGRAM_PLANVariables {
   currencyId: string;
   autoRenewed: boolean;
   publishedAt?: any | null;
+  isCountdownTimerVisible: boolean;
 }
 
 /* tslint:disable */
@@ -7839,6 +7841,7 @@ export interface GET_PROGRAM_program_by_pk_program_plans {
   sold_at: any | null;
   currency_id: string;
   auto_renewed: boolean;
+  is_countdown_timer_visible: boolean;
   published_at: any | null;
 }
 
@@ -7903,6 +7906,7 @@ export interface GET_PROGRAM_program_by_pk {
   is_deleted: boolean;
   is_private: boolean;
   is_issues_open: boolean;
+  is_countdown_timer_visible: boolean;
   /**
    * An array relationship
    */

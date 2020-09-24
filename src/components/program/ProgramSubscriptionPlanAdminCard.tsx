@@ -4,10 +4,12 @@ import { Divider, Dropdown, Menu } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramPlanPeriodType, ProgramPlanProps } from '../../types/program'
 import { AdminBlock, AdminBlockTitle } from '../admin'
+import CountDownTimeBlock from '../common/CountDownTimeBlock'
 import PriceLabel from '../common/PriceLabel'
 import { BraftContent } from '../common/StyledBraftEditor'
 import ProgramPlanAdminModal from './ProgramPlanAdminModal'
@@ -15,7 +17,9 @@ import ProgramPlanAdminModal from './ProgramPlanAdminModal'
 const messages = defineMessages({
   subscriptionCount: { id: 'program.text.subscriptionCount', defaultMessage: '{count} 人' },
 })
-
+const StyledCountDownBlock = styled.div`
+  margin-top: 20px;
+`
 const ProgramSubscriptionPlanAdminCard: React.FC<{
   programId: string
   programPlan: ProgramPlanProps
@@ -26,7 +30,6 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
   const { loadingEnrollmentCount, enrollmentCount } = useProgramPlanEnrollmentCount(programPlan.id)
 
   const isOnSale = (programPlan.soldAt?.getTime() || 0) > Date.now()
-
   return (
     <AdminBlock>
       <AdminBlockTitle className="mb-3">{programPlan.title}</AdminBlockTitle>
@@ -37,6 +40,11 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
         periodAmount={1}
         periodType={periodType as ProgramPlanPeriodType}
       />
+      {programPlan?.soldAt && isOnSale && (
+        <StyledCountDownBlock>
+          <CountDownTimeBlock expiredAt={programPlan?.soldAt} icon />
+        </StyledCountDownBlock>
+      )}
       <Divider />
 
       <div className="mb-3">

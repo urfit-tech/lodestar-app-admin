@@ -30,6 +30,7 @@ const ProgramPerpetualPlanAdminCard: React.FC<{
         listPrice: values.listPrice || 0,
         salePrice: values.sale?.price || null,
         soldAt: values.sale?.soldAt || null,
+        isCountdownTimerVisible: values.sale?.timerVisible || false,
       },
     })
       .then(() => {
@@ -52,6 +53,7 @@ const ProgramPerpetualPlanAdminCard: React.FC<{
           ? {
               price: program.salePrice,
               soldAt: program.soldAt,
+              timerVisible: program?.isCountdownTimerVisible || false,
             }
           : null,
       }}
@@ -80,7 +82,7 @@ const ProgramPerpetualPlanAdminCard: React.FC<{
         name="sale"
         rules={[{ validator: (rule, value, callback) => callback(value && !value.soldAt ? '' : undefined) }]}
       >
-        <SaleInput />
+        <SaleInput timer />
       </Form.Item>
 
       <Form.Item>
@@ -101,10 +103,16 @@ const UPDATE_PROGRAM_PERPETUAL_PLAN = gql`
     $listPrice: numeric
     $salePrice: numeric
     $soldAt: timestamptz
+    $isCountdownTimerVisible: Boolean!
   ) {
     update_program(
       where: { id: { _eq: $programId } }
-      _set: { list_price: $listPrice, sale_price: $salePrice, sold_at: $soldAt }
+      _set: {
+        list_price: $listPrice
+        sale_price: $salePrice
+        sold_at: $soldAt
+        is_countdown_timer_visible: $isCountdownTimerVisible
+      }
     ) {
       affected_rows
     }
