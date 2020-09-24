@@ -66,7 +66,7 @@ const MultipleUploader: React.FC<MultipleUploaderProps> = ({
   const { authToken } = useAuth()
 
   const duplicateName = (file: UploadFile) => {
-    const getFileName = (filename: string) => (/^([^.()]+)(.+)?$/.exec(filename) || [])[1]
+    const getFileName = (fileName: string) => (/^([^.()]+)(.+)?$/.exec(fileName) || [])[1]
     const getFileFormat = (fileName: string) => fileName.substring(fileName.indexOf('.', 0))
 
     if (fileList.some(oldFile => oldFile.name === file.name)) {

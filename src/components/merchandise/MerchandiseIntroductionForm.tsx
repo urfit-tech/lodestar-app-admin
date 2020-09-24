@@ -137,7 +137,14 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
       )}
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
-        <Button onClick={() => form.resetFields()} className="mr-2" disabled={uploading}>
+        <Button
+          onClick={() => {
+            form.resetFields()
+            setFiles(merchandise.files)
+          }}
+          disabled={uploading}
+          className="mr-2"
+        >
           {formatMessage(commonMessages.ui.cancel)}
         </Button>
         <Button type="primary" htmlType="submit" loading={loading} disabled={uploading}>
@@ -217,7 +224,10 @@ const useUpdateMerchandiseIntroduction = (merchandiseId: string) => {
     abstract: string
     meta: string
     memberShopId: string
-    merchandiseFiles: any
+    merchandiseFiles: {
+      merchandise_id: string
+      data: UploadFile
+    }[]
   }) => Promise<void> = async ({ abstract, meta, memberShopId, merchandiseFiles }) => {
     try {
       await updateIntroduction({
