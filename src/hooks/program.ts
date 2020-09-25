@@ -141,6 +141,7 @@ export const useProgram = (programId: string) => {
           is_deleted
           is_private
           is_issues_open
+          is_countdown_timer_visible
           program_content_sections(order_by: { position: asc }) {
             id
             title
@@ -188,6 +189,7 @@ export const useProgram = (programId: string) => {
             sold_at
             currency_id
             auto_renewed
+            is_countdown_timer_visible
             published_at
           }
           program_categories(order_by: { position: asc }) {
@@ -237,6 +239,7 @@ export const useProgram = (programId: string) => {
           isDeleted: data.program_by_pk.is_deleted,
           isPrivate: data.program_by_pk.is_private,
           isIssuesOpen: data.program_by_pk.is_issues_open,
+          isCountdownTimerVisible: data.program_by_pk.is_countdown_timer_visible,
           contentSections: data.program_by_pk.program_content_sections.map(programContentSection => ({
             id: programContentSection.id,
             title: programContentSection.title,
@@ -279,6 +282,7 @@ export const useProgram = (programId: string) => {
             currencyId: programPlan.currency_id,
             autoRenewed: programPlan.auto_renewed,
             publishedAt: programPlan.published_at && new Date(programPlan.published_at),
+            isCountdownTimerVisible: programPlan.is_countdown_timer_visible,
           })),
           categories: data.program_by_pk.program_categories.map(programCategory => ({
             id: programCategory.category.id,

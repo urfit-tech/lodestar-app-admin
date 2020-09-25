@@ -82,6 +82,7 @@ const ProgramPlanAdminModal: React.FC<
             currencyId: values.currencyId,
             autoRenewed: withPeriod ? values.autoRenewed || false : false,
             publishedAt: values.isPublished ? new Date() : null,
+            isCountdownTimerVisible: !!values.sale?.timerVisible,
           },
         })
           .then(() => {
@@ -94,7 +95,6 @@ const ProgramPlanAdminModal: React.FC<
       })
       .catch(() => {})
   }
-
   return (
     <AdminModal
       title={formatMessage(commonMessages.label.salesPlan)}
@@ -126,6 +126,7 @@ const ProgramPlanAdminModal: React.FC<
             ? {
                 price: programPlan.salePrice,
                 soldAt: programPlan.soldAt,
+                timerVisible: !!programPlan?.isCountdownTimerVisible,
               }
             : null,
           period: { amount: programPlan?.periodAmount || 1, type: programPlan?.periodType || 'M' },
@@ -163,6 +164,24 @@ const ProgramPlanAdminModal: React.FC<
           </Radio.Group>
         </Form.Item>
 
+        <div className="mb-4">
+          <Checkbox defaultChecked={withPeriod} onChange={e => setWithPeriod(e.target.checked)}>
+            {formatMessage(commonMessages.label.period)}
+          </Checkbox>
+        </div>
+
+        {withPeriod && (
+          <Form.Item name="period">
+            <PeriodSelector />
+          </Form.Item>
+        )}
+        {withPeriod && (
+          <div className="mb-4">
+            <Checkbox checked={withAutoRenewed} onChange={e => setWithAutoRenewed(e.target.checked)}>
+              {formatMessage(commonMessages.label.autoRenewed)}
+            </Checkbox>
+          </div>
+        )}
         <Form.Item
           label={formatMessage(commonMessages.term.currency)}
           name="currencyId"
@@ -186,17 +205,22 @@ const ProgramPlanAdminModal: React.FC<
           name="sale"
           rules={[{ validator: (rule, value, callback) => callback(value && !value.soldAt ? '' : undefined) }]}
         >
-          <SaleInput currencyId={currencyId} />
+          <SaleInput currencyId={currencyId} timer />
         </Form.Item>
 
-        <div className="mb-4">
-          <Checkbox defaultChecked={withPeriod} onChange={e => setWithPeriod(e.target.checked)}>
-            {formatMessage(commonMessages.label.period)}
-          </Checkbox>
-        </div>
-        {withPeriod && (
-          <Form.Item name="period">
-            <PeriodSelector />
+        {withPeriod && withAutoRenewed && (
+          <div className="mb-4">
+            <Checkbox defaultChecked={withDiscountDownPrice} onChange={e => setWithDiscountDownPrice(e.target.checked)}>
+              {formatMessage(commonMessages.label.discountDownPrice)}
+            </Checkbox>
+            {withDiscountDownPrice && (
+              <StyledNotation>{formatMessage(commonMessages.text.discountDownNotation)}</StyledNotation>
+            )}
+          </div>
+        )}
+        {withPeriod && withAutoRenewed && withDiscountDownPrice && (
+          <Form.Item name="discountDownPrice">
+            <CurrencyInput noLabel currencyId={currencyId} />
           </Form.Item>
         )}
         {withPeriod && (
@@ -214,29 +238,6 @@ const ProgramPlanAdminModal: React.FC<
             </Radio.Group>
           </Form.Item>
         )}
-        {withPeriod && (
-          <div className="mb-4">
-            <Checkbox checked={withAutoRenewed} onChange={e => setWithAutoRenewed(e.target.checked)}>
-              {formatMessage(commonMessages.label.autoRenewed)}
-            </Checkbox>
-          </div>
-        )}
-        {withPeriod && withAutoRenewed && (
-          <div className="mb-4">
-            <Checkbox defaultChecked={withDiscountDownPrice} onChange={e => setWithDiscountDownPrice(e.target.checked)}>
-              {formatMessage(commonMessages.label.discountDownPrice)}
-            </Checkbox>
-            {withDiscountDownPrice && (
-              <StyledNotation>{formatMessage(commonMessages.text.discountDownNotation)}</StyledNotation>
-            )}
-          </div>
-        )}
-        {withPeriod && withAutoRenewed && withDiscountDownPrice && (
-          <Form.Item name="discountDownPrice">
-            <CurrencyInput noLabel currencyId={currencyId} />
-          </Form.Item>
-        )}
-
         <Form.Item label={formatMessage(messages.planDescription)} name="description">
           <AdminBraftEditor variant="short" />
         </Form.Item>
@@ -261,6 +262,7 @@ const UPSERT_PROGRAM_PLAN = gql`
     $currencyId: String!
     $autoRenewed: Boolean!
     $publishedAt: timestamptz
+    $isCountdownTimerVisible: Boolean!
   ) {
     insert_program_plan(
       objects: {
@@ -278,6 +280,7 @@ const UPSERT_PROGRAM_PLAN = gql`
         currency_id: $currencyId
         auto_renewed: $autoRenewed
         published_at: $publishedAt
+        is_countdown_timer_visible: $isCountdownTimerVisible
       }
       on_conflict: {
         constraint: program_plan_pkey
@@ -294,6 +297,7 @@ const UPSERT_PROGRAM_PLAN = gql`
           currency_id
           auto_renewed
           published_at
+          is_countdown_timer_visible
         ]
       }
     ) {

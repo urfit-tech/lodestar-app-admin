@@ -42,10 +42,10 @@ export const useCouponPlanCollection = () => {
               }
             }
           }
-          coupon_codes(where: { coupons: { status: { used: { _eq: true } } } }) {
-            coupons(where: { status: { used: { _eq: true } } }) {
-              status {
-                used
+          coupon_codes {
+            coupons_aggregate(where: { status: { used: { _eq: true } } }) {
+              aggregate {
+                count
               }
             }
           }
@@ -69,7 +69,11 @@ export const useCouponPlanCollection = () => {
             (!couponPlan.started_at || new Date(couponPlan.started_at).getTime() < Date.now()) &&
             (!couponPlan.ended_at || new Date(couponPlan.ended_at).getTime() > Date.now())
 
-          const used = couponPlan.coupon_codes?.reduce((count, coupon) => count + (coupon?.coupons.length || 0), 0) || 0
+          const used =
+            couponPlan.coupon_codes?.reduce(
+              (count, coupon) => count + (coupon.coupons_aggregate.aggregate?.count || 0),
+              0,
+            ) || 0
           return {
             id: couponPlan.id,
             title: couponPlan.title,
@@ -83,7 +87,7 @@ export const useCouponPlanCollection = () => {
             count: couponPlan.coupon_codes_aggregate.aggregate?.sum?.count || 0,
             remaining,
             available,
-            used: used,
+            used,
             productIds: couponPlan.coupon_plan_products.map(couponPlanProduct => couponPlanProduct.product_id),
           }
         })

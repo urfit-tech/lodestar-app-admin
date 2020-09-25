@@ -70,6 +70,7 @@ export type MemberAdminProps = {
     value: string
   }[]
   notes: MemberNoteAdminProps[]
+  permissionIds: string[]
   consumption?: number
   coins?: number
 }

@@ -1,6 +1,10 @@
 import { defineMessages } from 'react-intl'
 
 export const commonMessages = {
+  defaults: defineMessages({
+    countdown: { id: 'common.countdown', defaultMessage: '優惠倒數' },
+  }),
+
   ui: defineMessages({
     comma: { id: 'common.ui.comma', defaultMessage: '、' },
     print: { id: 'common.ui.print', defaultMessage: '列印' },
@@ -53,6 +57,7 @@ export const commonMessages = {
     export: { id: 'common.ui.export', defaultMessage: '匯出' },
     showMore: { id: 'common.ui.showMore', defaultMessage: '顯示更多' },
     send: { id: 'common.ui.send', defaultMessage: '送出' },
+    uploadFile: { id: 'common.ui.uploadFile', defaultMessage: '上傳檔案' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -330,6 +335,12 @@ export const commonMessages = {
     podcastPlan: { id: 'common.product.podcastPlan', defaultMessage: '廣播頻道' },
     appointmentPlan: { id: 'common.product.appointmentPlan', defaultMessage: '預約' },
     unknownType: { id: 'common.product.unknownType', defaultMessage: '未知' },
+  }),
+  unit: defineMessages({
+    min: { id: 'common.unit.min', defaultMessage: '分鐘' },
+    sec: { id: 'common.periodType.sec', defaultMessage: '秒' },
+    hour: { id: 'common.periodType.hour', defaultMessage: '時' },
+    day: { id: 'common.periodType.day', defaultMessage: '天' },
   }),
 }
 
@@ -726,6 +737,10 @@ export const merchandiseMessages = {
     comment: { id: 'merchandise.label.comment', defaultMessage: '備註' },
     selectContentCreator: { id: 'merchandise.label.selectContentCreator', defaultMessage: '選擇創作者' },
     memberShopTitle: { id: 'merchandise.label.memberShopTitle', defaultMessage: '商店名稱' },
+    merchandiseType: { id: 'merchandise.label.merchandiseType', defaultMessage: '選擇商品類型' },
+    generalPhysicalMerchandise: { id: 'merchandise.label.generalPhysicalMerchandise', defaultMessage: '一般實體商品' },
+    generalVirtualMerchandise: { id: 'merchandise.label.generalVirtualMerchandise', defaultMessage: '一般虛擬商品' },
+    deliveryItem: { id: 'merchandise.label.deliveryItem', defaultMessage: '交付項目' },
   }),
   text: defineMessages({
     searchMerchandise: { id: 'merchandise.text.searchMerchandise', defaultMessage: '搜尋商品名稱' },
@@ -813,10 +828,25 @@ export const memberMessages = {
     },
     noMemberNote: {
       id: 'profile.text.noMemberNote',
-      defaultMessage: '尚未新增任何備註'
-    }
+      defaultMessage: '尚未新增任何備註',
+    },
   },
 }
+
+export const permissionMessages = defineMessages({
+  SALES_READ: { id: 'permission.SALES_READ', defaultMessage: '查看所有訂單' },
+  PROGRAM_WRITE: { id: 'permission.PROGRAM_WRITE', defaultMessage: '編輯課程' },
+  PROGRAM_DELETE: { id: 'permission.PROGRAM_DELETE', defaultMessage: '刪除課程' },
+  PROGRAM_PUBLISH: { id: 'permission.PROGRAM_PUBLISH', defaultMessage: '發布/下架課程' },
+  PROGRAM_PACKAGE_READ: { id: 'permission.PROGRAM_PACKAGE_READ', defaultMessage: '查看課程組合' },
+  PROGRAM_PACKAGE_WRITE: { id: 'permission.PROGRAM_PACKAGE_WRITE', defaultMessage: '編輯課程組合' },
+  TEMPO_DELIVERY_WRITE: { id: 'permission.TEMPO_DELIVERY_WRITE', defaultMessage: '節奏交付' },
+  PROGRAM_PROGRESS_READ: { id: 'permission.PROGRAM_PROGRESS_READ', defaultMessage: '課程進度' },
+  PROGRAM_CATEGORY_WRITE: { id: 'permission.PROGRAM_CATEGORY_WRITE', defaultMessage: '編輯課程分類' },
+  ACTIVITY_WRITE: { id: 'permission.ACTIVITY_WRITE', defaultMessage: '編輯活動' },
+  ACTIVITY_ENROLLMENT_READ: { id: 'permission.ACTIVITY_ENROLLMENT_READ', defaultMessage: '查看活動報名名單' },
+  ACTIVITY_CATEGORY_WRITE: { id: 'permission.ACTIVITY_CATEGORY_WRITE', defaultMessage: '編輯活動分類' },
+})
 
 export const codeMessages = defineMessages({
   SUCCESS: {
