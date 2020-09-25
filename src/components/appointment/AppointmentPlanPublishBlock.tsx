@@ -54,12 +54,6 @@ const AppointmentPlanPublishBlock: React.FC<{
       text: formatMessage(messages.noDuration),
       tab: 'sale',
     })
-  !appointmentPlanAdmin.listPrice &&
-    checklist.push({
-      id: 'NO_LIST_PRICE',
-      text: formatMessage(messages.noListPrice),
-      tab: 'sale',
-    })
   !appointmentPlanAdmin.periods.length &&
     checklist.push({
       id: 'NO_PERIOD',
