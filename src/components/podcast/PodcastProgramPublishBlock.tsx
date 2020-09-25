@@ -61,12 +61,6 @@ const PodcastProgramPublishBlock: React.FC<{
       text: formatMessage(messages.noCover),
       tab: 'settings',
     })
-  podcastProgramAdmin.listPrice <= 0 &&
-    checklist.push({
-      id: 'NO_PRICE',
-      text: formatMessage(messages.noPrice),
-      tab: 'plan',
-    })
   podcastProgramAdmin.instructors.length === 0 &&
     checklist.push({
       id: 'NO_INSTRUCTOR',

@@ -92,7 +92,7 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
         <MerchandiseImagesUploader merchandiseId={merchandiseId} images={merchandise.images} onChange={handleUpload} />
       </Form.Item>
       <Form.Item label={formatMessage(merchandiseMessages.label.abstract)} name="abstract">
-        <Input.TextArea rows={5} maxLength={200} placeholder={formatMessage(merchandiseMessages.text.abstractLimit)} />,
+        <Input.TextArea rows={5} maxLength={200} placeholder={formatMessage(merchandiseMessages.text.abstractLimit)} />
       </Form.Item>
       <Form.Item
         label={formatMessage(merchandiseMessages.label.meta)}

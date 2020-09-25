@@ -752,6 +752,8 @@ export const merchandiseMessages = {
       defaultMessage: '請選擇販售於哪個商城',
     },
     abstractLimit: { id: 'merchandise.text.abstractLimit', defaultMessage: '限 200 字' },
+    generalPhysicalMerchandise: { id: 'merchandise.label.generalPhysicalMerchandise', defaultMessage: 'ex.衣服、帽子...等實體商品。' },
+    generalVirtualMerchandise: { id: 'merchandise.label.generalVirtualMerchandise', defaultMessage: 'ex.素材、圖庫...等虛擬商品。' },
   }),
 }
 

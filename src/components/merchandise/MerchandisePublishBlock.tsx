@@ -58,12 +58,6 @@ const MerchandisePublishBlock: React.FC<{
       text: formatMessage(messages.noMemberShop),
       tab: 'settings',
     })
-  !merchandise.listPrice &&
-    checklist.push({
-      id: 'NO_PRICE',
-      text: formatMessage(messages.noPrice),
-      tab: 'sales',
-    })
 
   const publishStatus: PublishStatus =
     checklist.length > 0 ? 'alert' : !merchandise.publishedAt ? 'ordinary' : 'success'
