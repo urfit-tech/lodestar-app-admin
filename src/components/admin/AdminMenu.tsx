@@ -91,6 +91,9 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
             <Menu.Item key="program_tempo_delivery">{formatMessage(commonMessages.menu.tempoDelivery)}</Menu.Item>
           )}
           <Menu.Item key="program_category">{formatMessage(commonMessages.menu.programCategory)}</Menu.Item>
+          <Menu.Item key="program_package_category">
+            {formatMessage(commonMessages.menu.programPackageCategory)}
+          </Menu.Item>
         </Menu.SubMenu>
 
         {enabledModules.podcast && (

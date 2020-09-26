@@ -107,6 +107,11 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'ProgramCategoryPage',
     authenticated: true,
   },
+  program_package_category: {
+    path: '/program-package-category',
+    pageName: 'ProgramPackageCategoryPage',
+    authenticated: true,
+  },
 
   // podcast program
   podcast_program_collection: {
