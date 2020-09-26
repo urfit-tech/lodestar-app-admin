@@ -1,19 +1,19 @@
 import Icon, { FileAddOutlined } from '@ant-design/icons'
 import { Button, Input, Tabs } from 'antd'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
-import { AdminPageTitle } from '../../components/admin'
+import { AdminPaneTitle } from '../../components/admin'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
-import AdminLayout from '../../components/layout/AdminLayout'
 import MerchandiseAdminItem from '../../components/merchandise/MerchandiseAdminItem'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
-import { useInsertMerchandise, useMerchandiseCollection } from '../../hooks/merchandise'
+import { useInsertMerchandise } from '../../hooks/merchandise'
 import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
+import { MerchandisePreviewProps } from '../../types/merchandise'
 import LoadingPage from './LoadingPage'
 
 const StyledHeader = styled.div<{ width?: string }>`
@@ -23,7 +23,11 @@ const StyledHeader = styled.div<{ width?: string }>`
   letter-spacing: 0.2px;
 `
 
-const MerchandiseCollectionAdminPage: React.FC = () => {
+const MerchandiseCollectionAdminPane: React.FC<{
+  shopId: string
+  merchandises: MerchandisePreviewProps[]
+  onRefetchMemberShop: () => void
+}> = ({ shopId, merchandises, onRefetchMemberShop }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
@@ -31,12 +35,7 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
   const { id: appId } = useContext(AppContext)
 
   const insertMerchandise = useInsertMerchandise()
-  const { merchandises, refetchMerchandises } = useMerchandiseCollection()
   const [searchText, setSearchText] = useState('')
-
-  useEffect(() => {
-    refetchMerchandises()
-  }, [refetchMerchandises])
 
   const tabContents = [
     {
@@ -65,11 +64,11 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
   }
 
   return (
-    <AdminLayout>
-      <AdminPageTitle className="mb-4">
+    <>
+      <AdminPaneTitle className="mb-4">
         <Icon component={() => <ShopIcon />} className="mr-3" />
         <span>{formatMessage(commonMessages.menu.merchandiseAdmin)}</span>
-      </AdminPageTitle>
+      </AdminPaneTitle>
 
       <div className="mb-4">
         <div className="row">
@@ -89,6 +88,7 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
                   variables: {
                     appId,
                     memberId: currentMemberId,
+                    memberShopId: shopId,
                     title,
                     merchandiseCategories: categoryIds.map((categoryId, index) => ({
                       category_id: categoryId,
@@ -97,10 +97,9 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
                     isPhysical,
                   },
                 }).then(({ data }) => {
-                  refetchMerchandises().then(() => {
-                    const merchandiseId = data?.insert_merchandise?.returning[0].id
-                    merchandiseId && history.push(`/merchandises/${merchandiseId}`)
-                  })
+                  onRefetchMemberShop()
+                  const merchandiseId = data?.insert_merchandise_one?.id
+                  merchandiseId && history.push(`/merchandises/${merchandiseId}`)
                 })
               }
             />
@@ -132,8 +131,8 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
           </Tabs.TabPane>
         ))}
       </Tabs>
-    </AdminLayout>
+    </>
   )
 }
 
-export default MerchandiseCollectionAdminPage
+export default MerchandiseCollectionAdminPane

@@ -6853,33 +6853,22 @@ export interface GET_PROPERTYVariables {
 // GraphQL mutation operation: INSERT_MERCHANDISE
 // ====================================================
 
-export interface INSERT_MERCHANDISE_insert_merchandise_returning {
+export interface INSERT_MERCHANDISE_insert_merchandise_one {
   __typename: "merchandise";
   id: any;
 }
 
-export interface INSERT_MERCHANDISE_insert_merchandise {
-  __typename: "merchandise_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: INSERT_MERCHANDISE_insert_merchandise_returning[];
-}
-
 export interface INSERT_MERCHANDISE {
   /**
-   * insert data into the table: "merchandise"
+   * insert a single row into the table: "merchandise"
    */
-  insert_merchandise: INSERT_MERCHANDISE_insert_merchandise | null;
+  insert_merchandise_one: INSERT_MERCHANDISE_insert_merchandise_one | null;
 }
 
 export interface INSERT_MERCHANDISEVariables {
   appId: string;
   memberId: string;
+  memberShopId: any;
   title: string;
   merchandiseCategories: merchandise_category_insert_input[];
   isPhysical?: boolean | null;
@@ -7085,12 +7074,36 @@ export interface GET_MEMBER_SHOP_COLLECTION {
 // GraphQL query operation: GET_MEMBER_SHOP
 // ====================================================
 
+export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_imgs {
+  __typename: "merchandise_img";
+  id: any;
+  url: string;
+}
+
+export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises {
+  __typename: "merchandise";
+  id: any;
+  title: string;
+  list_price: any;
+  sale_price: any | null;
+  sold_at: any | null;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  merchandise_imgs: GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_imgs[];
+}
+
 export interface GET_MEMBER_SHOP_member_shop_by_pk {
   __typename: "member_shop";
   id: any;
   title: string;
   shipping_methods: any | null;
   published_at: any | null;
+  /**
+   * An array relationship
+   */
+  merchandises: GET_MEMBER_SHOP_member_shop_by_pk_merchandises[];
 }
 
 export interface GET_MEMBER_SHOP {

@@ -14,23 +14,22 @@ export const useInsertMerchandise = () => {
     mutation INSERT_MERCHANDISE(
       $appId: String!
       $memberId: String!
+      $memberShopId: uuid!
       $title: String!
       $merchandiseCategories: [merchandise_category_insert_input!]!
       $isPhysical: Boolean
     ) {
-      insert_merchandise(
-        objects: {
+      insert_merchandise_one(
+        object: {
           app_id: $appId
           title: $title
           member_id: $memberId
+          member_shop_id: $memberShopId
           merchandise_categories: { data: $merchandiseCategories }
           is_physical: $isPhysical
         }
       ) {
-        affected_rows
-        returning {
-          id
-        }
+        id
       }
     }
   `)
@@ -233,13 +232,33 @@ export const useMemberShop = (shopId: string) => {
           title
           shipping_methods
           published_at
+          merchandises(
+            where: { is_deleted: { _eq: false } }
+            order_by: { position: asc, published_at: desc, updated_at: desc }
+          ) {
+            id
+            title
+            list_price
+            sale_price
+            sold_at
+            published_at
+            merchandise_imgs(where: { type: { _eq: "cover" } }) {
+              id
+              url
+            }
+          }
         }
       }
     `,
-    { variables: { shopId } },
+    {
+      variables: {
+        shopId,
+      },
+      fetchPolicy: 'no-cache',
+    },
   )
 
-  const memberShop: MemberShopProps | null =
+  const memberShop: (MemberShopProps & { merchandises: MerchandisePreviewProps[] }) | null =
     loading || error || !data || !data.member_shop_by_pk
       ? null
       : {
@@ -247,6 +266,15 @@ export const useMemberShop = (shopId: string) => {
           title: data.member_shop_by_pk.title,
           shippingMethods: data.member_shop_by_pk.shipping_methods || [],
           publishedAt: data.member_shop_by_pk.published_at,
+          merchandises: data.member_shop_by_pk.merchandises.map(v => ({
+            id: v.id,
+            title: v.title,
+            listPrice: v.list_price,
+            salePrice: v.sale_price,
+            soldAt: v.sold_at ? new Date(v.sold_at) : null,
+            publishedAt: v.published_at ? new Date(v.published_at) : null,
+            coverUrl: v.merchandise_imgs[0]?.url || null,
+          })),
         }
 
   return {

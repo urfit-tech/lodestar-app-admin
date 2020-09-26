@@ -298,6 +298,7 @@ export const commonMessages = {
     blogAdmin: { id: 'common.menu.blogAdmin', defaultMessage: '媒體文章' },
     blogPosts: { id: 'common.menu.blogPosts', defaultMessage: '文章管理' },
     blogCategory: { id: 'common.menu.blogCategory', defaultMessage: '文章分類' },
+    eCommerce: { id: 'common.menu.eCommerce', defaultMessage: '電子商務' },
     merchandiseAdmin: { id: 'common.menu.merchandise', defaultMessage: '商品' },
     merchandises: { id: 'common.menu.merchandises', defaultMessage: '商品管理' },
     merchandiseIssues: { id: 'common.menu.merchandiseIssues', defaultMessage: '問答管理' },
@@ -713,6 +714,10 @@ export const merchandiseMessages = {
     arrange: { id: 'merchandise.status.arrange', defaultMessage: '調整庫存' },
     inOperation: { id: 'merchandise.status.inOperation', defaultMessage: '經營中' },
     inactivated: { id: 'merchandise.status.inactivated', defaultMessage: '未啟用' },
+  }),
+  menu: defineMessages({
+    memberShopSetting: { id: 'merchandise.menu.memberShopSetting', defaultMessage: '商店設定' },
+    memberShopInfo: { id: 'merchandise.menu.memberShopInfo', defaultMessage: '商店資訊' },
   }),
   label: defineMessages({
     images: { id: 'merchandise.label.images', defaultMessage: '商品圖片' },

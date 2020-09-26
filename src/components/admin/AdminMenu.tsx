@@ -19,7 +19,7 @@ import { ReactComponent as UserIcon } from '../../images/icon/user.svg'
 import { ReactComponent as UsersIcon } from '../../images/icon/users.svg'
 import { routesProps } from '../../Routes'
 
-const StyledMenu = styled(Menu)`
+export const StyledMenu = styled(Menu)`
   && {
     border-right: none;
   }
@@ -165,11 +165,10 @@ export const OwnerAdminMenu: React.FC<MenuProps> = props => {
             title={
               <span>
                 <Icon component={() => <ShopIcon />} />
-                <span>{formatMessage(commonMessages.menu.merchandiseAdmin)}</span>
+                <span>{formatMessage(commonMessages.menu.eCommerce)}</span>
               </span>
             }
           >
-            <Menu.Item key="merchandise_collection">{formatMessage(commonMessages.menu.merchandises)}</Menu.Item>
             <Menu.Item key="merchandise_shop_collection">
               {formatMessage(commonMessages.menu.merchandiseShop)}
             </Menu.Item>
