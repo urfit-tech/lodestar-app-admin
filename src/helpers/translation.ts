@@ -808,6 +808,7 @@ export const memberMessages = {
     property: { id: 'profile.label.property', defaultMessage: '自訂欄位' },
     task: { id: 'profile.label.task', defaultMessage: '任務' },
     permission: { id: 'profile.label.property', defaultMessage: '權限' },
+    order: { id: 'profile.label.order', defaultMessage: '訂單' },
     callType: { id: 'profile.label.callType', defaultMessage: '通話類型' },
     description: { id: 'profile.label.description', defaultMessage: '內容' },
     status: { id: 'profile.label.status', defaultMessage: '狀態' },

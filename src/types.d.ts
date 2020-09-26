@@ -4203,6 +4203,27 @@ export interface GET_ORDERS_order_log_member {
   email: string;
 }
 
+export interface GET_ORDERS_order_log_payment_logs {
+  __typename: "payment_log";
+  /**
+   * spgateway, tappay, ezfund
+   */
+  gateway: string | null;
+}
+
+export interface GET_ORDERS_order_log_order_executors_member {
+  __typename: "member";
+  name: string;
+}
+
+export interface GET_ORDERS_order_log_order_executors {
+  __typename: "order_executor";
+  /**
+   * An object relationship
+   */
+  member: GET_ORDERS_order_log_order_executors_member;
+}
+
 export interface GET_ORDERS_order_log {
   __typename: "order_log";
   id: string;
@@ -4221,6 +4242,18 @@ export interface GET_ORDERS_order_log {
    * An object relationship
    */
   member: GET_ORDERS_order_log_member;
+  /**
+   * expired order cannot be paid
+   */
+  expired_at: any | null;
+  /**
+   * An array relationship
+   */
+  payment_logs: GET_ORDERS_order_log_payment_logs[];
+  /**
+   * An array relationship
+   */
+  order_executors: GET_ORDERS_order_log_order_executors[];
 }
 
 export interface GET_ORDERS {
@@ -4240,6 +4273,7 @@ export interface GET_ORDERSVariables {
   status?: string | null;
   orderIdLike?: string | null;
   memberNameAndEmailLike?: string | null;
+  currentMemberId?: string | null;
 }
 
 /* tslint:disable */
@@ -11124,6 +11158,23 @@ export enum program_content_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "program_package_category"
+ */
+export enum program_package_category_constraint {
+  program_package_category_pkey = "program_package_category_pkey",
+}
+
+/**
+ * update columns of table "program_package_category"
+ */
+export enum program_package_category_update_column {
+  category_id = "category_id",
+  id = "id",
+  position = "position",
+  program_package_id = "program_package_id",
+}
+
+/**
  * unique or primary key constraints on table "program_package"
  */
 export enum program_package_constraint {
@@ -11419,6 +11470,7 @@ export enum project_update_column {
   preview_url = "preview_url",
   published_at = "published_at",
   target_amount = "target_amount",
+  target_unit = "target_unit",
   template = "template",
   title = "title",
   type = "type",
@@ -12749,6 +12801,7 @@ export interface category_bool_exp {
   position?: Int_comparison_exp | null;
   post_categories?: post_category_bool_exp | null;
   program_categories?: program_category_bool_exp | null;
+  program_package_categories?: program_package_category_bool_exp | null;
   project_categories?: project_category_bool_exp | null;
 }
 
@@ -12766,6 +12819,7 @@ export interface category_insert_input {
   position?: number | null;
   post_categories?: post_category_arr_rel_insert_input | null;
   program_categories?: program_category_arr_rel_insert_input | null;
+  program_package_categories?: program_package_category_arr_rel_insert_input | null;
   project_categories?: project_category_arr_rel_insert_input | null;
 }
 
@@ -16904,10 +16958,55 @@ export interface program_package_bool_exp {
   creator_id?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  program_package_categories?: program_package_category_bool_exp | null;
   program_package_plans?: program_package_plan_bool_exp | null;
   program_package_programs?: program_package_program_bool_exp | null;
   published_at?: timestamptz_comparison_exp | null;
   title?: String_comparison_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "program_package_category"
+ */
+export interface program_package_category_arr_rel_insert_input {
+  data: program_package_category_insert_input[];
+  on_conflict?: program_package_category_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_package_category". All fields are combined with a logical 'AND'.
+ */
+export interface program_package_category_bool_exp {
+  _and?: (program_package_category_bool_exp | null)[] | null;
+  _not?: program_package_category_bool_exp | null;
+  _or?: (program_package_category_bool_exp | null)[] | null;
+  category?: category_bool_exp | null;
+  category_id?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  program_package?: program_package_bool_exp | null;
+  program_package_id?: uuid_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "program_package_category"
+ */
+export interface program_package_category_insert_input {
+  category?: category_obj_rel_insert_input | null;
+  category_id?: string | null;
+  id?: any | null;
+  position?: number | null;
+  program_package?: program_package_obj_rel_insert_input | null;
+  program_package_id?: any | null;
+}
+
+/**
+ * on conflict condition type for table "program_package_category"
+ */
+export interface program_package_category_on_conflict {
+  constraint: program_package_category_constraint;
+  update_columns: program_package_category_update_column[];
+  where?: program_package_category_bool_exp | null;
 }
 
 /**
@@ -16921,6 +17020,7 @@ export interface program_package_insert_input {
   creator_id?: string | null;
   description?: string | null;
   id?: any | null;
+  program_package_categories?: program_package_category_arr_rel_insert_input | null;
   program_package_plans?: program_package_plan_arr_rel_insert_input | null;
   program_package_programs?: program_package_program_arr_rel_insert_input | null;
   published_at?: any | null;
@@ -17385,6 +17485,7 @@ export interface project_bool_exp {
   project_sections?: project_section_bool_exp | null;
   published_at?: timestamptz_comparison_exp | null;
   target_amount?: numeric_comparison_exp | null;
+  target_unit?: String_comparison_exp | null;
   template?: String_comparison_exp | null;
   title?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
@@ -17460,6 +17561,7 @@ export interface project_insert_input {
   project_sections?: project_section_arr_rel_insert_input | null;
   published_at?: any | null;
   target_amount?: any | null;
+  target_unit?: string | null;
   template?: string | null;
   title?: string | null;
   type?: string | null;
