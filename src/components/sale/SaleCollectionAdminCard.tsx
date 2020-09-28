@@ -1,7 +1,6 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Button, Divider, Input, Table, Tooltip, Typography } from 'antd'
-import { CardProps } from 'antd/lib/card'
 import { ColumnProps, TablePaginationConfig } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import moment from 'moment'
@@ -82,7 +81,7 @@ type OrderRow = {
   paymentMethod: string | null
   orderExecutors: string[]
 }
-const SaleCollectionAdminCard: React.FC<CardProps & { currentMemberId?: string }> = ({ currentMemberId }) => {
+const SaleCollectionAdminCard: React.FC<{ memberId?: string }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
 
   const [status, setStatus] = useState()
@@ -97,7 +96,7 @@ const SaleCollectionAdminCard: React.FC<CardProps & { currentMemberId?: string }
     status,
     orderIdLike,
     memberNameAndEmailLike,
-    currentMemberId,
+    { memberId },
   )
 
   const columns: ColumnProps<any>[] = [
@@ -361,7 +360,7 @@ const useDataSource = (
   status: any,
   orderIdLike: string | null,
   memberNameAndEmailLike: string | null,
-  currentMemberId?: string,
+  options?: { memberId?: string },
 ) => {
   const { loading, error, data, refetch } = useQuery<types.GET_ORDERS, types.GET_ORDERSVariables>(GET_ORDERS, {
     variables: {
@@ -370,7 +369,7 @@ const useDataSource = (
       status,
       orderIdLike,
       memberNameAndEmailLike,
-      currentMemberId,
+      memberId: options?.memberId,
     },
   })
 
@@ -426,13 +425,16 @@ const GET_ORDERS = gql`
     $status: String
     $orderIdLike: String
     $memberNameAndEmailLike: String
-    $currentMemberId: String
+    $memberId: String
   ) {
     order_log_aggregate(
       where: {
         id: { _like: $orderIdLike }
         status: { _eq: $status }
-        member: { _or: [{ name: { _like: $memberNameAndEmailLike } }, { email: { _like: $memberNameAndEmailLike } }] }
+        member: {
+          _or: [{ name: { _like: $memberNameAndEmailLike } }, { email: { _like: $memberNameAndEmailLike } }]
+          id: { _eq: $memberId }
+        }
       }
     ) {
       aggregate {
@@ -447,7 +449,7 @@ const GET_ORDERS = gql`
         status: { _eq: $status }
         member: {
           _or: [{ name: { _like: $memberNameAndEmailLike } }, { email: { _like: $memberNameAndEmailLike } }]
-          id: { _eq: $currentMemberId }
+          id: { _eq: $memberId }
         }
       }
       order_by: { created_at: desc }

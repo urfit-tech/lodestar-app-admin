@@ -4273,7 +4273,7 @@ export interface GET_ORDERSVariables {
   status?: string | null;
   orderIdLike?: string | null;
   memberNameAndEmailLike?: string | null;
-  currentMemberId?: string | null;
+  memberId?: string | null;
 }
 
 /* tslint:disable */
@@ -12159,7 +12159,6 @@ export interface app_bool_exp {
   program_packages?: program_package_bool_exp | null;
   programs?: program_bool_exp | null;
   properties?: property_bool_exp | null;
-  tags?: tag_bool_exp | null;
   title?: String_comparison_exp | null;
   vimeo_project_id?: String_comparison_exp | null;
   voucher_plans?: voucher_plan_bool_exp | null;
@@ -12193,7 +12192,6 @@ export interface app_insert_input {
   program_packages?: program_package_arr_rel_insert_input | null;
   programs?: program_arr_rel_insert_input | null;
   properties?: property_arr_rel_insert_input | null;
-  tags?: tag_arr_rel_insert_input | null;
   title?: string | null;
   vimeo_project_id?: string | null;
   voucher_plans?: voucher_plan_arr_rel_insert_input | null;
@@ -16433,6 +16431,7 @@ export interface program_bool_exp {
   program_approvals?: program_approval_bool_exp | null;
   program_categories?: program_category_bool_exp | null;
   program_content_enrollments?: program_content_enrollment_bool_exp | null;
+  program_content_progress_enrollments?: program_content_progress_enrollment_bool_exp | null;
   program_content_sections?: program_content_section_bool_exp | null;
   program_enrollments?: program_enrollment_bool_exp | null;
   program_package_programs?: program_package_program_bool_exp | null;
@@ -16741,6 +16740,24 @@ export interface program_content_progress_bool_exp {
   member_id?: String_comparison_exp | null;
   program_content?: program_content_bool_exp | null;
   program_content_id?: uuid_comparison_exp | null;
+  progress?: numeric_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "program_content_progress_enrollment". All fields are combined with a logical 'AND'.
+ */
+export interface program_content_progress_enrollment_bool_exp {
+  _and?: (program_content_progress_enrollment_bool_exp | null)[] | null;
+  _not?: program_content_progress_enrollment_bool_exp | null;
+  _or?: (program_content_progress_enrollment_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  last_progress?: numeric_comparison_exp | null;
+  member_id?: String_comparison_exp | null;
+  program_content_id?: uuid_comparison_exp | null;
+  program_content_section_id?: uuid_comparison_exp | null;
+  program_id?: uuid_comparison_exp | null;
   progress?: numeric_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -17905,21 +17922,12 @@ export interface social_card_subscriber_on_conflict {
 }
 
 /**
- * input type for inserting array relation for remote table "tag"
- */
-export interface tag_arr_rel_insert_input {
-  data: tag_insert_input[];
-  on_conflict?: tag_on_conflict | null;
-}
-
-/**
  * Boolean expression to filter rows from the table "tag". All fields are combined with a logical 'AND'.
  */
 export interface tag_bool_exp {
   _and?: (tag_bool_exp | null)[] | null;
   _not?: tag_bool_exp | null;
   _or?: (tag_bool_exp | null)[] | null;
-  app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   member_tags?: member_tag_bool_exp | null;
@@ -17936,7 +17944,6 @@ export interface tag_bool_exp {
  * input type for inserting data into table "tag"
  */
 export interface tag_insert_input {
-  app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
   created_at?: any | null;
   member_tags?: member_tag_arr_rel_insert_input | null;

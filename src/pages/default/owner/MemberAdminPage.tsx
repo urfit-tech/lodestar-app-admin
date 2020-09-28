@@ -228,7 +228,7 @@ const MemberAdminPage: React.FC = () => {
             )}
             <Tabs.TabPane key="order" tab={formatMessage(memberMessages.label.order)}>
               <div className="p-5">
-                <SaleCollectionAdminCard currentMemberId={memberId} />
+                <SaleCollectionAdminCard memberId={memberId} />
               </div>
             </Tabs.TabPane>
             <Tabs.TabPane key="permission" tab={formatMessage(memberMessages.label.permission)}>
