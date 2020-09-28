@@ -2,9 +2,8 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -16,7 +15,6 @@ const MemberProfileBasicForm: React.FC<{
   onRefetch?: () => void
 }> = ({ memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const app = useContext(AppContext)
   const [form] = useForm()
   const [updateMemberProfileBasic] = useMutation<
     types.UPDATE_MEMBER_PROFILE_BASIC,
@@ -36,7 +34,6 @@ const MemberProfileBasicForm: React.FC<{
         name: values.name,
         email: values.email,
         tags: values.tags.map((tag: string) => ({
-          app_id: app.id,
           name: tag,
           type: '',
         })),
@@ -135,6 +132,8 @@ const UPDATE_MEMBER_PROFILE_BASIC = gql`
     update_member(where: { id: { _eq: $memberId } }, _set: { name: $name, email: $email }) {
       affected_rows
     }
+
+    # update tags
     delete_member_tag(where: { member_id: { _eq: $memberId } }) {
       affected_rows
     }
@@ -144,6 +143,8 @@ const UPDATE_MEMBER_PROFILE_BASIC = gql`
     insert_member_tag(objects: $memberTags) {
       affected_rows
     }
+
+    # update phones
     delete_member_phone(where: { member_id: { _eq: $memberId } }) {
       affected_rows
     }

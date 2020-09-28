@@ -21,7 +21,7 @@ const ProgramBasicForm: React.FC<{
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
-  const { id: appId, enabledModules } = useContext(AppContext)
+  const { enabledModules } = useContext(AppContext)
   const [updateProgramBasic] = useMutation<types.UPDATE_PROGRAM_BASIC, types.UPDATE_PROGRAM_BASICVariables>(
     UPDATE_PROGRAM_BASIC,
   )
@@ -45,7 +45,6 @@ const ProgramBasicForm: React.FC<{
           position: index,
         })),
         tags: values.tags.map((programTag: string) => ({
-          app_id: appId,
           name: programTag,
           type: '',
         })),
@@ -141,6 +140,7 @@ const UPDATE_PROGRAM_BASIC = gql`
       affected_rows
     }
 
+    # update categories
     delete_program_category(where: { program_id: { _eq: $programId } }) {
       affected_rows
     }
@@ -148,6 +148,7 @@ const UPDATE_PROGRAM_BASIC = gql`
       affected_rows
     }
 
+    # update tags
     insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
       affected_rows
     }

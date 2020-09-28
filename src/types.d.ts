@@ -5649,16 +5649,16 @@ export interface UPDATE_VOUCHER_PLANVariables {
 // GraphQL query operation: GET_TAGS
 // ====================================================
 
-export interface GET_TAGS_tag {
-  __typename: "tag";
-  name: string;
+export interface GET_TAGS_app_tag {
+  __typename: "app_tag";
+  tag_name: string | null;
 }
 
 export interface GET_TAGS {
   /**
-   * fetch data from the table: "tag"
+   * fetch data from the table: "app_tag"
    */
-  tag: GET_TAGS_tag[];
+  app_tag: GET_TAGS_app_tag[];
 }
 
 /* tslint:disable */
@@ -11557,7 +11557,6 @@ export enum tag_constraint {
  * update columns of table "tag"
  */
 export enum tag_update_column {
-  app_id = "app_id",
   created_at = "created_at",
   name = "name",
   type = "type",
@@ -12168,7 +12167,6 @@ export interface app_bool_exp {
   program_packages?: program_package_bool_exp | null;
   programs?: program_bool_exp | null;
   properties?: property_bool_exp | null;
-  tags?: tag_bool_exp | null;
   title?: String_comparison_exp | null;
   vimeo_project_id?: String_comparison_exp | null;
   voucher_plans?: voucher_plan_bool_exp | null;
@@ -12202,7 +12200,6 @@ export interface app_insert_input {
   program_packages?: program_package_arr_rel_insert_input | null;
   programs?: program_arr_rel_insert_input | null;
   properties?: property_arr_rel_insert_input | null;
-  tags?: tag_arr_rel_insert_input | null;
   title?: string | null;
   vimeo_project_id?: string | null;
   voucher_plans?: voucher_plan_arr_rel_insert_input | null;
@@ -17933,22 +17930,12 @@ export interface social_card_subscriber_on_conflict {
 }
 
 /**
- * input type for inserting array relation for remote table "tag"
- */
-export interface tag_arr_rel_insert_input {
-  data: tag_insert_input[];
-  on_conflict?: tag_on_conflict | null;
-}
-
-/**
  * Boolean expression to filter rows from the table "tag". All fields are combined with a logical 'AND'.
  */
 export interface tag_bool_exp {
   _and?: (tag_bool_exp | null)[] | null;
   _not?: tag_bool_exp | null;
   _or?: (tag_bool_exp | null)[] | null;
-  app?: app_bool_exp | null;
-  app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   member_tags?: member_tag_bool_exp | null;
   merchandise_tags?: merchandise_tag_bool_exp | null;
@@ -17964,8 +17951,6 @@ export interface tag_bool_exp {
  * input type for inserting data into table "tag"
  */
 export interface tag_insert_input {
-  app?: app_obj_rel_insert_input | null;
-  app_id?: string | null;
   created_at?: any | null;
   member_tags?: member_tag_arr_rel_insert_input | null;
   merchandise_tags?: merchandise_tag_arr_rel_insert_input | null;

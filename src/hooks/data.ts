@@ -13,16 +13,19 @@ export const useTags = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_TAGS>(
     gql`
       query GET_TAGS {
-        tag {
-          name
+        app_tag {
+          tag_name
         }
       }
     `,
   )
+
+  const tags: string[] = data?.app_tag.map(v => v.tag_name || '').filter(v => v) || []
+
   return {
-    tags: data ? data.tag.map(tag => tag.name) : [],
-    errorTags: error,
     loadingTags: loading,
+    errorTags: error,
+    tags,
     refetchTags: refetch,
   }
 }
