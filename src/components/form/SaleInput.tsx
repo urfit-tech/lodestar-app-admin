@@ -52,7 +52,7 @@ const SaleInput: React.FC<{
       </Checkbox>
 
       <div className={active ? '' : 'd-none'}>
-        <Form.Item className="d-inline-block mb-0 mr-3">
+        <Form.Item className="d-inline-block mb-0 mr-3 mt-2">
           <CurrencyInput
             noLabel
             currencyId={currencyId}
@@ -66,7 +66,7 @@ const SaleInput: React.FC<{
             }
           />
         </Form.Item>
-        <Form.Item className="d-inline-block mb-0 mr-3">
+        <Form.Item className="d-inline-block mb-0 mr-3 mt-2">
           <DatePicker
             format="YYYY-MM-DD HH:mm"
             showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}

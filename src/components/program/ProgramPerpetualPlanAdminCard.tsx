@@ -30,7 +30,7 @@ const ProgramPerpetualPlanAdminCard: React.FC<{
         listPrice: values.listPrice || 0,
         salePrice: values.sale?.price || null,
         soldAt: values.sale?.soldAt || null,
-        isCountdownTimerVisible: values.sale?.timerVisible || false,
+        isCountdownTimerVisible: !!values.sale?.timerVisible,
       },
     })
       .then(() => {
