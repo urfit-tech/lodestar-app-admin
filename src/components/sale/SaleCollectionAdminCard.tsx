@@ -353,7 +353,7 @@ const useDataSource = (options?: {
   pagination?: TablePaginationConfig
   status?: any
   orderIdLike?: string | null
-  memberNameAndEmailLike: string | null
+  memberNameAndEmailLike?: string | null
   memberId?: string
 }) => {
   const { loading, error, data, refetch } = useQuery<types.GET_ORDERS, types.GET_ORDERSVariables>(GET_ORDERS, {
