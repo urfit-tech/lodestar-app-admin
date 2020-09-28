@@ -90,14 +90,14 @@ const SaleCollectionAdminCard: React.FC<{ memberId?: string }> = ({ memberId }) 
   const [pagination, setPagination] = useState<TablePaginationConfig>({})
 
   const pageSize = pagination.pageSize || DEFAULT_PAGE_SIZE
-  const { loadingOrderLog, dataSource, totalCount, refetchUseDataSource } = useDataSource(
+  const { loadingOrderLog, dataSource, totalCount, refetchUseDataSource } = useDataSource({
     pageSize,
     pagination,
     status,
     orderIdLike,
     memberNameAndEmailLike,
-    { memberId },
-  )
+    memberId,
+  })
 
   const columns: ColumnProps<any>[] = [
     {
@@ -337,13 +337,7 @@ const getColumnSearchProps = ({
         onPressEnter={() => onSearch(selectedKeys, confirm)}
         style={{ width: 188, marginBottom: 8, display: 'block' }}
       />
-      <StyledFilterButton
-        type="primary"
-        icon="search"
-        size="small"
-        onClick={() => onSearch(selectedKeys, confirm)}
-        className="mr-2"
-      >
+      <StyledFilterButton type="primary" size="small" onClick={() => onSearch(selectedKeys, confirm)} className="mr-2">
         Search
       </StyledFilterButton>
       <StyledFilterButton size="small" onClick={() => onReset(clearFilters)}>
@@ -354,21 +348,24 @@ const getColumnSearchProps = ({
   filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
 })
 
-const useDataSource = (
-  pageSize: number,
-  pagination: TablePaginationConfig,
-  status: any,
-  orderIdLike: string | null,
-  memberNameAndEmailLike: string | null,
-  options?: { memberId?: string },
-) => {
+const useDataSource = (options?: {
+  pageSize?: number
+  pagination?: TablePaginationConfig
+  status?: any
+  orderIdLike?: string | null
+  memberNameAndEmailLike: string | null
+  memberId?: string
+}) => {
   const { loading, error, data, refetch } = useQuery<types.GET_ORDERS, types.GET_ORDERSVariables>(GET_ORDERS, {
     variables: {
-      limit: pageSize,
-      offset: pageSize * ((pagination.current || DEFAULT_PAGE_CURRENT) - 1),
-      status,
-      orderIdLike,
-      memberNameAndEmailLike,
+      limit: options?.pageSize,
+      offset:
+        options?.pageSize &&
+        options?.pagination &&
+        options?.pageSize * ((options?.pagination.current || DEFAULT_PAGE_CURRENT) - 1),
+      status: options?.status,
+      orderIdLike: options?.orderIdLike,
+      memberNameAndEmailLike: options?.memberNameAndEmailLike,
       memberId: options?.memberId,
     },
   })
