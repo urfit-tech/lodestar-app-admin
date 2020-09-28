@@ -338,7 +338,7 @@ export const commonMessages = {
     unknownType: { id: 'common.product.unknownType', defaultMessage: '未知' },
   }),
   unit: defineMessages({
-    min: { id: 'common.unit.min', defaultMessage: '分鐘' },
+    min: { id: 'common.unit.min', defaultMessage: '分' },
     sec: { id: 'common.periodType.sec', defaultMessage: '秒' },
     hour: { id: 'common.periodType.hour', defaultMessage: '時' },
     day: { id: 'common.periodType.day', defaultMessage: '天' },
