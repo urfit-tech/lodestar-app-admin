@@ -1,18 +1,15 @@
 import Icon, { ArrowLeftOutlined } from '@ant-design/icons'
-import { Button, Layout, Menu } from 'antd'
-import { MenuProps } from 'antd/lib/menu'
-import { MenuClickEventHandler } from 'rc-menu/lib/interface'
+import { Button, Layout, Menu, Skeleton } from 'antd'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { Link, useHistory, useParams } from 'react-router-dom'
-import { AdminHeader, AdminHeaderTitle } from '../../components/admin'
-import { StyledMenu } from '../../components/admin/AdminMenu'
+import { Link, useParams } from 'react-router-dom'
+import { AdminBlock, AdminBlockTitle, AdminHeader, AdminHeaderTitle, AdminPaneTitle } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
-import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
+import ShippingMethodAdminBlock from '../../components/merchandise/ShippingMethodAdminBlock'
+import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { useMemberShop } from '../../hooks/merchandise'
 import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
-import { routesProps } from '../../Routes'
-import MerchandiseCollectionAdminPane from './MerchandiseCollectionAdminPane'
+import { MemberShopAdminMenu } from './MemberShopAdminPage'
 
 const messages = defineMessages({
   settingsAdmin: { id: 'merchandise.label.settingsAdmin', defaultMessage: '商店資訊' },
@@ -22,26 +19,6 @@ const messages = defineMessages({
   basicSettings: { id: 'merchandise.label.basicSettings', defaultMessage: '基本設定' },
   shippingMethod: { id: 'merchandise.label.shippingMethod', defaultMessage: '寄送方式' },
 })
-
-export const MemberShopAdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
-  const { formatMessage } = useIntl()
-  const history = useHistory()
-  const { shopId } = useParams<{ shopId: string }>()
-
-  const handleClick: MenuClickEventHandler = ({ key }) => {
-    if (typeof key === 'string' && key.startsWith('_blank')) {
-    } else {
-      const route = routesProps[key]
-      route ? history.push(route.path.replace(':shopId', shopId)) : alert(formatMessage(errorMessages.route.notFound))
-    }
-  }
-
-  return (
-    <StyledMenu {...menuProps} mode="inline" onClick={handleClick}>
-      {children}
-    </StyledMenu>
-  )
-}
 
 const MemberShopAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -97,11 +74,15 @@ const MemberShopAdminPage: React.FC = () => {
 
         <StyledLayoutContent variant="gray">
           <div className="container p-5">
-            <MerchandiseCollectionAdminPane
-              shopId={shopId}
-              merchandises={memberShop?.merchandises || []}
-              onRefetchMemberShop={refetchMemberShop}
-            />
+            <AdminPaneTitle>{formatMessage(messages.shippingMethodsAdmin)}</AdminPaneTitle>
+            <AdminBlock>
+              <AdminBlockTitle>{formatMessage(messages.shippingMethod)}</AdminBlockTitle>
+              {memberShop ? (
+                <ShippingMethodAdminBlock memberShop={memberShop} refetch={refetchMemberShop} />
+              ) : (
+                <Skeleton active />
+              )}
+            </AdminBlock>
           </div>
         </StyledLayoutContent>
       </Layout>

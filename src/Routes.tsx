@@ -202,6 +202,21 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'MemberShopAdminPage',
     authenticated: true,
   },
+  merchandise_shop_info: {
+    path: '/member-shops/:shopId/info',
+    pageName: 'MemberShopInfoAdminPage',
+    authenticated: true,
+  },
+  merchandise_shop_shipping_methods: {
+    path: '/member-shops/:shopId/shipping-methods',
+    pageName: 'MemberShopShippingAdminPage',
+    authenticated: true,
+  },
+  merchandise_shop_publish: {
+    path: '/member-shops/:shopId/publish',
+    pageName: 'MemberShopPublishAdminPage',
+    authenticated: true,
+  },
   merchandise: {
     path: '/merchandises/:merchandiseId',
     pageName: 'MerchandiseAdminPage',
