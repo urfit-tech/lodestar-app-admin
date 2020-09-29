@@ -272,12 +272,7 @@ export const useMemberShop = (shopId: string) => {
         }
       }
     `,
-    {
-      variables: {
-        shopId,
-      },
-      fetchPolicy: 'no-cache',
-    },
+    { variables: { shopId }, fetchPolicy: 'no-cache' },
   )
 
   const memberShop:

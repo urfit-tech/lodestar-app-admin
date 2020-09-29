@@ -9,6 +9,7 @@ import ProductCreationModal from '../../components/common/ProductCreationModal'
 import MerchandiseAdminItem from '../../components/merchandise/MerchandiseAdminItem'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { handleError } from '../../helpers'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { useInsertMerchandise } from '../../hooks/merchandise'
 import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
@@ -95,15 +96,14 @@ const MerchandiseCollectionAdminBlock: React.FC<{
         <div className="row">
           <div className="col-4">
             <ProductCreationModal
-              withCategorySelector
-              withMerchandiseType
-              classType="merchandise"
               renderTrigger={({ setVisible }) => (
                 <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
                   {formatMessage(merchandiseMessages.ui.createMerchandise)}
                 </Button>
               )}
               title={formatMessage(merchandiseMessages.ui.createMerchandise)}
+              categoryClassType="merchandise"
+              withMerchandiseType
               onCreate={({ title, categoryIds, isPhysical }) =>
                 insertMerchandise({
                   variables: {
@@ -111,16 +111,19 @@ const MerchandiseCollectionAdminBlock: React.FC<{
                     memberId: currentMemberId,
                     memberShopId: shopId,
                     title,
-                    merchandiseCategories: categoryIds.map((categoryId, index) => ({
-                      category_id: categoryId,
-                      position: index,
-                    })),
+                    merchandiseCategories:
+                      categoryIds?.map((categoryId, index) => ({
+                        category_id: categoryId,
+                        position: index,
+                      })) || [],
                     isPhysical,
                   },
-                }).then(({ data }) => {
-                  const merchandiseId = data?.insert_merchandise_one?.id
-                  merchandiseId && history.push(`/merchandises/${merchandiseId}`)
                 })
+                  .then(({ data }) => {
+                    const merchandiseId = data?.insert_merchandise_one?.id
+                    merchandiseId && history.push(`/merchandises/${merchandiseId}`)
+                  })
+                  .catch(handleError)
               }
             />
           </div>

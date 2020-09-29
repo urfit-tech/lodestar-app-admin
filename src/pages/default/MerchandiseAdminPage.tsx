@@ -1,6 +1,6 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, Skeleton, Tabs } from 'antd'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -59,10 +59,6 @@ const MerchandiseAdminPage: React.FC = () => {
   const { settings } = useContext(AppContext)
   const { loadingMerchandise, errorMerchandise, merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
   const { inventoryLogs, refetchInventoryLogs } = useProductInventoryLog(`Merchandise_${merchandiseId}`)
-
-  useEffect(() => {
-    refetchInventoryLogs && refetchInventoryLogs()
-  }, [refetchInventoryLogs])
 
   if (loadingMerchandise || errorMerchandise || !merchandise) {
     return <Skeleton active />

@@ -10,6 +10,7 @@ import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as CalendarAltIcon } from '../../images/icon/calendar-alt.svg'
 import types from '../../types'
@@ -32,24 +33,26 @@ const ActivityCollectionAdminPage: React.FC = () => {
         <>
           <div className="mb-5">
             <ProductCreationModal
-              classType="activity"
-              withCategorySelector
+              categoryClassType="activity"
               withCreatorSelector={currentUserRole === 'app-owner'}
-              onCreate={values =>
+              onCreate={({ title, creatorId, categoryIds }) =>
                 createActivity({
                   variables: {
                     appId,
-                    title: values.title,
-                    memberId: values.creatorId || currentMemberId,
-                    activityCategories: values.categoryIds.map((categoryId: string, index: number) => ({
-                      category_id: categoryId,
-                      position: index,
-                    })),
+                    title,
+                    memberId: creatorId || currentMemberId,
+                    activityCategories:
+                      categoryIds?.map((categoryId: string, index: number) => ({
+                        category_id: categoryId,
+                        position: index,
+                      })) || [],
                   },
-                }).then(({ data }) => {
-                  const activityId = data?.insert_activity?.returning[0]?.id
-                  activityId && history.push(`/activities/${activityId}`)
                 })
+                  .then(({ data }) => {
+                    const activityId = data?.insert_activity?.returning[0]?.id
+                    activityId && history.push(`/activities/${activityId}`)
+                  })
+                  .catch(handleError)
               }
             />
           </div>

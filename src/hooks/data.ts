@@ -148,7 +148,7 @@ export const useProductInventoryLog = (productId: string) => {
         }
       }
     `,
-    { variables: { productId } },
+    { variables: { productId }, fetchPolicy: 'no-cache' },
   )
 
   const inventoryLogs: ProductInventoryLogProps[] =

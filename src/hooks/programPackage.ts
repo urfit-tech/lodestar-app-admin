@@ -284,10 +284,7 @@ export const useGetProgramPackageCollection = (appId: string) => {
         }
       }
     `,
-    {
-      variables: { appId },
-      fetchPolicy: 'no-cache',
-    },
+    { variables: { appId } },
   )
 
   const programPackages: {

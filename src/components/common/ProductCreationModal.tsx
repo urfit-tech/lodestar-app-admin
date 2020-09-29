@@ -5,7 +5,6 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAuth } from '../../contexts/AuthContext'
-import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages, programMessages } from '../../helpers/translation'
 import { ClassType } from '../../types/general'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
@@ -19,7 +18,6 @@ const StyledLabel = styled.span`
   letter-spacing: 0.2px;
   color: var(--gray-darker);
 `
-
 const StyledExample = styled.div`
   font-size: 14px;
   font-weight: 500;
@@ -29,28 +27,20 @@ const StyledExample = styled.div`
 
 const ProductCreationModal: React.FC<
   AdminModalProps & {
-    classType?: ClassType
+    categoryClassType?: ClassType
     withCreatorSelector?: boolean
-    withCategorySelector?: boolean
     withProgramType?: boolean
     withMerchandiseType?: boolean
     onCreate?: (values: {
       title: string
-      categoryIds: string[]
+      categoryIds?: string[]
       creatorId?: string | null
       isSubscription?: boolean
       isPhysical?: boolean
+      isCustomized?: boolean
     }) => Promise<any>
   }
-> = ({
-  classType,
-  withCreatorSelector,
-  withCategorySelector,
-  withProgramType,
-  withMerchandiseType,
-  onCreate,
-  ...props
-}) => {
+> = ({ categoryClassType, withCreatorSelector, withProgramType, withMerchandiseType, onCreate, ...props }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const { currentMemberId } = useAuth()
@@ -66,13 +56,11 @@ const ProductCreationModal: React.FC<
         setLoading(true)
         onCreate({
           title: values.title,
-          categoryIds: values.categoryIds || [],
+          categoryIds: categoryClassType ? values.categoryIds || [] : [],
           creatorId: values.creatorId || currentMemberId,
           isSubscription: withProgramType ? values.isSubscription : undefined,
-          isPhysical: withMerchandiseType && values.isPhysical,
-        })
-          .catch(handleError)
-          .finally(() => setLoading(false))
+          isPhysical: withMerchandiseType ? values.isPhysical : false,
+        }).finally(() => setLoading(false))
       })
       .catch(() => {})
   }
@@ -122,9 +110,9 @@ const ProductCreationModal: React.FC<
         >
           <Input />
         </Form.Item>
-        {withCategorySelector && classType && (
+        {categoryClassType && (
           <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
-            <CategorySelector classType={classType} />
+            <CategorySelector classType={categoryClassType} />
           </Form.Item>
         )}
         {withProgramType && (
