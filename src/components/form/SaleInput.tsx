@@ -85,10 +85,10 @@ const SaleInput: React.FC<{
           />
         </Form.Item>
         {value?.soldAt && moment(value.soldAt).isBefore(moment()) ? (
-          <div className="d-inline-block">
+          <Form.Item className="d-inline-block mb-0">
             <StyledIcon className="mr-1" />
             <span>{formatMessage(commonMessages.label.outdated)}</span>
-          </div>
+          </Form.Item>
         ) : null}
         {timer && (
           <Form.Item className="mb-0">
