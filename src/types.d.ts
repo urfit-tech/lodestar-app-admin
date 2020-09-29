@@ -7074,6 +7074,14 @@ export interface GET_MEMBER_SHOP_COLLECTION {
 // GraphQL query operation: GET_MEMBER_SHOP
 // ====================================================
 
+export interface GET_MEMBER_SHOP_member_shop_by_pk_member {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+  picture_url: string | null;
+}
+
 export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_imgs {
   __typename: "merchandise_img";
   id: any;
@@ -7100,6 +7108,10 @@ export interface GET_MEMBER_SHOP_member_shop_by_pk {
   title: string;
   shipping_methods: any | null;
   published_at: any | null;
+  /**
+   * An object relationship
+   */
+  member: GET_MEMBER_SHOP_member_shop_by_pk_member | null;
   /**
    * An array relationship
    */

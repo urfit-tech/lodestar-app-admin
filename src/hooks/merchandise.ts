@@ -232,6 +232,12 @@ export const useMemberShop = (shopId: string) => {
           title
           shipping_methods
           published_at
+          member {
+            id
+            name
+            username
+            picture_url
+          }
           merchandises(
             where: { is_deleted: { _eq: false } }
             order_by: { position: asc, published_at: desc, updated_at: desc }
@@ -258,7 +264,12 @@ export const useMemberShop = (shopId: string) => {
     },
   )
 
-  const memberShop: (MemberShopProps & { merchandises: MerchandisePreviewProps[] }) | null =
+  const memberShop:
+    | (MemberShopProps & {
+        member: { id: string; name: string; pictureUrl: string | null }
+        merchandises: MerchandisePreviewProps[]
+      })
+    | null =
     loading || error || !data || !data.member_shop_by_pk
       ? null
       : {
@@ -266,6 +277,11 @@ export const useMemberShop = (shopId: string) => {
           title: data.member_shop_by_pk.title,
           shippingMethods: data.member_shop_by_pk.shipping_methods || [],
           publishedAt: data.member_shop_by_pk.published_at,
+          member: {
+            id: data.member_shop_by_pk.member?.id || '',
+            name: data.member_shop_by_pk.member?.name || data.member_shop_by_pk.member?.username || '',
+            pictureUrl: data.member_shop_by_pk.member?.picture_url || '',
+          },
           merchandises: data.member_shop_by_pk.merchandises.map(v => ({
             id: v.id,
             title: v.title,
