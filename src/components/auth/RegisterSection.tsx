@@ -28,8 +28,8 @@ const RegisterSection: React.FC<{
     setLoading(true)
     register({
       appId: app.id,
-      username: values.username,
-      email: values.email,
+      username: values.username.trim().toLowerCase(),
+      email: values.email.trim().toLowerCase(),
       password: values.password,
     })
       .then(() => {
