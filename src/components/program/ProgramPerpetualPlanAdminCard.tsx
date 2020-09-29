@@ -53,7 +53,7 @@ const ProgramPerpetualPlanAdminCard: React.FC<{
           ? {
               price: program.salePrice,
               soldAt: program.soldAt,
-              timerVisible: program?.isCountdownTimerVisible || false,
+              timerVisible: !!program?.isCountdownTimerVisible,
             }
           : null,
       }}
