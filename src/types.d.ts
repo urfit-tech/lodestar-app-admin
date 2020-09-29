@@ -7096,36 +7096,6 @@ export interface GET_PROPERTYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: INSERT_MERCHANDISE
-// ====================================================
-
-export interface INSERT_MERCHANDISE_insert_merchandise_one {
-  __typename: "merchandise";
-  id: any;
-}
-
-export interface INSERT_MERCHANDISE {
-  /**
-   * insert a single row into the table: "merchandise"
-   */
-  insert_merchandise_one: INSERT_MERCHANDISE_insert_merchandise_one | null;
-}
-
-export interface INSERT_MERCHANDISEVariables {
-  appId: string;
-  memberId: string;
-  memberShopId: any;
-  title: string;
-  merchandiseCategories: merchandise_category_insert_input[];
-  isPhysical?: boolean | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_MERCHANDISE_COLLECTION
 // ====================================================
 
@@ -9094,6 +9064,37 @@ export interface INSERT_POSTVariables {
   title: string;
   postCategories: post_category_insert_input[];
   postRoles: post_role_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_MERCHANDISE
+// ====================================================
+
+export interface INSERT_MERCHANDISE_insert_merchandise_one {
+  __typename: "merchandise";
+  id: any;
+}
+
+export interface INSERT_MERCHANDISE {
+  /**
+   * insert a single row into the table: "merchandise"
+   */
+  insert_merchandise_one: INSERT_MERCHANDISE_insert_merchandise_one | null;
+}
+
+export interface INSERT_MERCHANDISEVariables {
+  appId: string;
+  memberId: string;
+  memberShopId: any;
+  title: string;
+  merchandiseCategories: merchandise_category_insert_input[];
+  isPhysical?: boolean | null;
+  isCustomized?: boolean | null;
 }
 
 /* tslint:disable */

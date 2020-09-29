@@ -786,6 +786,14 @@ export const merchandiseMessages = {
       id: 'merchandise.text.generalVirtualMerchandise',
       defaultMessage: 'ex.素材、圖庫...等虛擬商品。',
     },
+    customizedPhysicalMerchandise: {
+      id: 'merchandise.label.customizedPhysicalMerchandise',
+      defaultMessage: 'ex.姓名貼、客製T-shirt...等客製實體商品。',
+    },
+    customizedVirtualMerchandise: {
+      id: 'merchandise.label.customizedVirtualMerchandise',
+      defaultMessage: 'ex.似顏繪、設計簽名...等客製虛擬商品。',
+    },
   }),
 }
 

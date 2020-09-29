@@ -67,7 +67,7 @@ const MerchandiseAdminPage: React.FC = () => {
   return (
     <>
       <AdminHeader>
-        <Link to="/merchandises">
+        <Link to={`/member-shops/${merchandise.memberShopId}`}>
           <Button type="link" className="mr-3">
             <ArrowLeftOutlined />
           </Button>
