@@ -40,7 +40,7 @@ const ProgramSubscriptionPlanAdminCard: React.FC<{
         periodAmount={1}
         periodType={periodType as ProgramPlanPeriodType}
       />
-      {programPlan?.soldAt && isOnSale && (
+      {programPlan.isCountdownTimerVisible && programPlan?.soldAt && isOnSale && (
         <StyledCountDownBlock>
           <CountDownTimeBlock expiredAt={programPlan?.soldAt} icon />
         </StyledCountDownBlock>
