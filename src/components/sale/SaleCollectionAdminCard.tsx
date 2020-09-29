@@ -1,7 +1,6 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Button, Divider, Input, Table, Tooltip, Typography } from 'antd'
-import { CardProps } from 'antd/lib/card'
 import { ColumnProps, TablePaginationConfig } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import moment from 'moment'
@@ -78,8 +77,11 @@ type OrderRow = {
   name: string
   email: string
   totalPrice: number
+  expiredAt: Date
+  paymentMethod: string | null
+  orderExecutors: string[]
 }
-const SaleCollectionAdminCard: React.FC<CardProps> = () => {
+const SaleCollectionAdminCard: React.FC<{ memberId?: string }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
 
   const [status, setStatus] = useState()
@@ -88,13 +90,14 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
   const [pagination, setPagination] = useState<TablePaginationConfig>({})
 
   const pageSize = pagination.pageSize || DEFAULT_PAGE_SIZE
-  const { loadingOrderLog, dataSource, totalCount, refetchUseDataSource } = useDataSource(
+  const { loadingOrderLog, dataSource, totalCount, refetchUseDataSource } = useDataSource({
     pageSize,
     pagination,
     status,
     orderIdLike,
     memberNameAndEmailLike,
-  )
+    memberId,
+  })
 
   const columns: ColumnProps<any>[] = [
     {
@@ -224,51 +227,63 @@ const SaleCollectionAdminCard: React.FC<CardProps> = () => {
             <Divider />
           </React.Fragment>
         ))}
-        {record.shipping?.shippingMethod && typeof record.shipping?.fee === 'number' && (
-          <div className="row text-right">
-            <div className="col-9">
-              <ShippingMethodLabel shippingMethodId={record.shipping.shippingMethod} />
-            </div>
-            <div className="col-3">{currencyFormatter(record.shipping.fee || 0)}</div>
+        <div className="row">
+          <div className="col-3" style={{ fontSize: '14px' }}>
+            {record.orderExecutors.length !== 0 && <div>承辦人：{record.orderExecutors.join('、')}</div>}
+            {record.paymentMethod && <div>付款方式：{record.paymentMethod}</div>}
+            {record.expiredAt && <div>付款期限：{moment(record.expiredAt).format('YYYY-MM-DD')}</div>}
           </div>
-        )}
-        {record.orderDiscounts.map(orderDiscount => {
-          return (
-            <div className="row text-right">
-              <div className="col-9">{orderDiscount.name}</div>
-              <div className="col-3">- {currencyFormatter(orderDiscount.price)}</div>
+          <div className="col-9">
+            {record.shipping?.shippingMethod && typeof record.shipping?.fee === 'number' && (
+              <div className="row text-right">
+                <div className="col-9">
+                  <ShippingMethodLabel shippingMethodId={record.shipping.shippingMethod} />
+                </div>
+                <div className="col-3">{currencyFormatter(record.shipping.fee || 0)}</div>
+              </div>
+            )}
+            {record.orderDiscounts.map(orderDiscount => {
+              return (
+                <div className="row text-right">
+                  <div className="col-9">{orderDiscount.name}</div>
+                  <div className="col-3">- {currencyFormatter(orderDiscount.price)}</div>
+                </div>
+              )
+            })}
+            <div className="row align-items-center">
+              <div className="col-9 text-right">{formatMessage(commonMessages.label.totalPrice)}</div>
+              <div className="col-3 text-right">{currencyFormatter(record.totalPrice)}</div>
             </div>
-          )
-        })}
-        <div className="row align-items-center">
-          <div className="col-6">
-            {record.orderProducts.some(
-              orderProduct =>
-                (orderProduct.endedAt?.getTime() || 0) > Date.now() &&
-                ['ProgramPlan', 'ProjectPlan', 'PodcastPlan', 'ProgramPackagePlan'].includes(orderProduct.product.type),
-            ) &&
-              (record.orderProducts.some(orderProduct => orderProduct.options?.unsubscribedAt) ? (
-                <span style={{ color: '#9b9b9b', fontSize: '14px' }}>
-                  {formatMessage(commonMessages.text.cancelSubscriptionDate, {
-                    date: dateFormatter(
-                      record.orderProducts.find(orderProduct => orderProduct.options?.unsubscribedAt)?.options
-                        ?.unsubscribedAt,
-                    ),
-                  })}
-                </span>
-              ) : (
-                <SubscriptionCancelModal
-                  orderProducts={record.orderProducts.map(orderProduct => ({
-                    id: orderProduct.id,
-                    options: orderProduct.options,
-                  }))}
-                  onRefetch={refetchUseDataSource}
-                />
-              ))}
           </div>
-          <div className="col-3 text-right">{formatMessage(commonMessages.label.totalPrice)}</div>
-          <div className="col-3 text-right">{currencyFormatter(record.totalPrice)}</div>
         </div>
+
+        {record.orderProducts.some(
+          orderProduct =>
+            (orderProduct.endedAt?.getTime() || 0) > Date.now() &&
+            ['ProgramPlan', 'ProjectPlan', 'PodcastPlan', 'ProgramPackagePlan'].includes(orderProduct.product.type),
+        ) &&
+          (record.orderProducts.some(orderProduct => orderProduct.options?.unsubscribedAt) ? (
+            <div className="row col-12 align-items-center pt-3">
+              <span style={{ color: '#9b9b9b', fontSize: '14px' }}>
+                {formatMessage(commonMessages.text.cancelSubscriptionDate, {
+                  date: dateFormatter(
+                    record.orderProducts.find(orderProduct => orderProduct.options?.unsubscribedAt)?.options
+                      ?.unsubscribedAt,
+                  ),
+                })}
+              </span>
+            </div>
+          ) : (
+            <div className="row col-12 align-items-center pt-3">
+              <SubscriptionCancelModal
+                orderProducts={record.orderProducts.map(orderProduct => ({
+                  id: orderProduct.id,
+                  options: orderProduct.options,
+                }))}
+                onRefetch={refetchUseDataSource}
+              />
+            </div>
+          ))}
       </div>
     )
   }
@@ -322,13 +337,7 @@ const getColumnSearchProps = ({
         onPressEnter={() => onSearch(selectedKeys, confirm)}
         style={{ width: 188, marginBottom: 8, display: 'block' }}
       />
-      <StyledFilterButton
-        type="primary"
-        icon="search"
-        size="small"
-        onClick={() => onSearch(selectedKeys, confirm)}
-        className="mr-2"
-      >
+      <StyledFilterButton type="primary" size="small" onClick={() => onSearch(selectedKeys, confirm)} className="mr-2">
         Search
       </StyledFilterButton>
       <StyledFilterButton size="small" onClick={() => onReset(clearFilters)}>
@@ -339,20 +348,25 @@ const getColumnSearchProps = ({
   filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
 })
 
-const useDataSource = (
-  pageSize: number,
-  pagination: TablePaginationConfig,
-  status: any,
-  orderIdLike: string | null,
-  memberNameAndEmailLike: string | null,
-) => {
+const useDataSource = (options?: {
+  pageSize?: number
+  pagination?: TablePaginationConfig
+  status?: any
+  orderIdLike?: string | null
+  memberNameAndEmailLike?: string | null
+  memberId?: string
+}) => {
   const { loading, error, data, refetch } = useQuery<types.GET_ORDERS, types.GET_ORDERSVariables>(GET_ORDERS, {
     variables: {
-      limit: pageSize,
-      offset: pageSize * ((pagination.current || DEFAULT_PAGE_CURRENT) - 1),
-      status,
-      orderIdLike,
-      memberNameAndEmailLike,
+      limit: options?.pageSize,
+      offset:
+        options?.pageSize &&
+        options?.pagination &&
+        options?.pageSize * ((options?.pagination.current || DEFAULT_PAGE_CURRENT) - 1),
+      status: options?.status,
+      orderIdLike: options?.orderIdLike,
+      memberNameAndEmailLike: options?.memberNameAndEmailLike,
+      memberId: options?.memberId,
     },
   })
 
@@ -386,6 +400,9 @@ const useDataSource = (
             sum(log.order_products.map(prop('price'))) -
             sum(log.order_discounts.map(prop('price'))) +
             (log.shipping?.fee || 0),
+          expiredAt: log.expired_at,
+          paymentMethod: log.payment_logs[0]?.gateway,
+          orderExecutors: log.order_executors.map(orderExecutor => orderExecutor.member.name),
         }))
   const totalCount = data?.order_log_aggregate.aggregate?.count || 0
 
@@ -399,12 +416,22 @@ const useDataSource = (
 }
 
 const GET_ORDERS = gql`
-  query GET_ORDERS($offset: Int, $limit: Int, $status: String, $orderIdLike: String, $memberNameAndEmailLike: String) {
+  query GET_ORDERS(
+    $offset: Int
+    $limit: Int
+    $status: String
+    $orderIdLike: String
+    $memberNameAndEmailLike: String
+    $memberId: String
+  ) {
     order_log_aggregate(
       where: {
         id: { _like: $orderIdLike }
         status: { _eq: $status }
-        member: { _or: [{ name: { _like: $memberNameAndEmailLike } }, { email: { _like: $memberNameAndEmailLike } }] }
+        member: {
+          _or: [{ name: { _like: $memberNameAndEmailLike } }, { email: { _like: $memberNameAndEmailLike } }]
+          id: { _eq: $memberId }
+        }
       }
     ) {
       aggregate {
@@ -417,7 +444,10 @@ const GET_ORDERS = gql`
       where: {
         id: { _like: $orderIdLike }
         status: { _eq: $status }
-        member: { _or: [{ name: { _like: $memberNameAndEmailLike } }, { email: { _like: $memberNameAndEmailLike } }] }
+        member: {
+          _or: [{ name: { _like: $memberNameAndEmailLike } }, { email: { _like: $memberNameAndEmailLike } }]
+          id: { _eq: $memberId }
+        }
       }
       order_by: { created_at: desc }
     ) {
@@ -446,6 +476,15 @@ const GET_ORDERS = gql`
       member {
         name
         email
+      }
+      expired_at
+      payment_logs(order_by: { created_at: desc }, limit: 1) {
+        gateway
+      }
+      order_executors {
+        member {
+          name
+        }
       }
     }
   }

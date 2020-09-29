@@ -4228,6 +4228,27 @@ export interface GET_ORDERS_order_log_member {
   email: string;
 }
 
+export interface GET_ORDERS_order_log_payment_logs {
+  __typename: "payment_log";
+  /**
+   * spgateway, tappay, ezfund
+   */
+  gateway: string | null;
+}
+
+export interface GET_ORDERS_order_log_order_executors_member {
+  __typename: "member";
+  name: string;
+}
+
+export interface GET_ORDERS_order_log_order_executors {
+  __typename: "order_executor";
+  /**
+   * An object relationship
+   */
+  member: GET_ORDERS_order_log_order_executors_member;
+}
+
 export interface GET_ORDERS_order_log {
   __typename: "order_log";
   id: string;
@@ -4246,6 +4267,18 @@ export interface GET_ORDERS_order_log {
    * An object relationship
    */
   member: GET_ORDERS_order_log_member;
+  /**
+   * expired order cannot be paid
+   */
+  expired_at: any | null;
+  /**
+   * An array relationship
+   */
+  payment_logs: GET_ORDERS_order_log_payment_logs[];
+  /**
+   * An array relationship
+   */
+  order_executors: GET_ORDERS_order_log_order_executors[];
 }
 
 export interface GET_ORDERS {
@@ -4265,6 +4298,7 @@ export interface GET_ORDERSVariables {
   status?: string | null;
   orderIdLike?: string | null;
   memberNameAndEmailLike?: string | null;
+  memberId?: string | null;
 }
 
 /* tslint:disable */
