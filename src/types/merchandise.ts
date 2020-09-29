@@ -69,6 +69,7 @@ export type MemberShopProps = {
   title: string
   shippingMethods: ShippingMethodProps[]
   publishedAt: Date | null
+  coverUrl: string | null
 }
 
 export type ShippingProps = {

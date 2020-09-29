@@ -232,6 +232,7 @@ export const useMemberShop = (shopId: string) => {
           title
           shipping_methods
           published_at
+          cover_url
           member {
             id
             name
@@ -277,6 +278,7 @@ export const useMemberShop = (shopId: string) => {
           title: data.member_shop_by_pk.title,
           shippingMethods: data.member_shop_by_pk.shipping_methods || [],
           publishedAt: data.member_shop_by_pk.published_at,
+          coverUrl: data.member_shop_by_pk.cover_url,
           member: {
             id: data.member_shop_by_pk.member?.id || '',
             name: data.member_shop_by_pk.member?.name || data.member_shop_by_pk.member?.username || '',

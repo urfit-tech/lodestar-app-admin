@@ -2117,10 +2117,10 @@ export interface UPDATE_MEMBER_BASICVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER_SHOP_TITLE
+// GraphQL mutation operation: UPDATE_MEMBER_SHOP
 // ====================================================
 
-export interface UPDATE_MEMBER_SHOP_TITLE_update_member_shop {
+export interface UPDATE_MEMBER_SHOP_update_member_shop {
   __typename: "member_shop_mutation_response";
   /**
    * number of affected rows by the mutation
@@ -2128,16 +2128,17 @@ export interface UPDATE_MEMBER_SHOP_TITLE_update_member_shop {
   affected_rows: number;
 }
 
-export interface UPDATE_MEMBER_SHOP_TITLE {
+export interface UPDATE_MEMBER_SHOP {
   /**
    * update data of the table: "member_shop"
    */
-  update_member_shop: UPDATE_MEMBER_SHOP_TITLE_update_member_shop | null;
+  update_member_shop: UPDATE_MEMBER_SHOP_update_member_shop | null;
 }
 
-export interface UPDATE_MEMBER_SHOP_TITLEVariables {
+export interface UPDATE_MEMBER_SHOPVariables {
   memberShopId: any;
-  title: string;
+  title?: string | null;
+  coverUrl?: string | null;
 }
 
 /* tslint:disable */
@@ -7108,6 +7109,7 @@ export interface GET_MEMBER_SHOP_member_shop_by_pk {
   title: string;
   shipping_methods: any | null;
   published_at: any | null;
+  cover_url: string | null;
   /**
    * An object relationship
    */

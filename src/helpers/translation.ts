@@ -759,11 +759,11 @@ export const merchandiseMessages = {
     },
     abstractLimit: { id: 'merchandise.text.abstractLimit', defaultMessage: '限 200 字' },
     generalPhysicalMerchandise: {
-      id: 'merchandise.label.generalPhysicalMerchandise',
+      id: 'merchandise.text.generalPhysicalMerchandise',
       defaultMessage: 'ex.衣服、帽子...等實體商品。',
     },
     generalVirtualMerchandise: {
-      id: 'merchandise.label.generalVirtualMerchandise',
+      id: 'merchandise.text.generalVirtualMerchandise',
       defaultMessage: 'ex.素材、圖庫...等虛擬商品。',
     },
   }),
