@@ -11548,7 +11548,6 @@ export enum tag_constraint {
  * update columns of table "tag"
  */
 export enum tag_update_column {
-  app_id = "app_id",
   created_at = "created_at",
   name = "name",
   type = "type",
@@ -17928,7 +17927,6 @@ export interface tag_bool_exp {
   _and?: (tag_bool_exp | null)[] | null;
   _not?: tag_bool_exp | null;
   _or?: (tag_bool_exp | null)[] | null;
-  app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   member_tags?: member_tag_bool_exp | null;
   merchandise_tags?: merchandise_tag_bool_exp | null;
@@ -17944,7 +17942,6 @@ export interface tag_bool_exp {
  * input type for inserting data into table "tag"
  */
 export interface tag_insert_input {
-  app_id?: string | null;
   created_at?: any | null;
   member_tags?: member_tag_arr_rel_insert_input | null;
   merchandise_tags?: merchandise_tag_arr_rel_insert_input | null;
