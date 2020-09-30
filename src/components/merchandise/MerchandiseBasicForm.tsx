@@ -4,9 +4,8 @@ import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Input, message } from 'antd'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -91,7 +90,6 @@ const MerchandiseBasicForm: React.FC<MerchandiseBasicFormProps> = ({ form, merch
 }
 
 const useUpdateMerchandiseBasic = (merchandiseId: string) => {
-  const app = useContext(AppContext)
   const [updateBasic] = useMutation<types.UPDATE_MERCHANDISE_BASIC, types.UPDATE_MERCHANDISE_BASICVariables>(
     gql`
       mutation UPDATE_MERCHANDISE_BASIC(
@@ -104,12 +102,16 @@ const useUpdateMerchandiseBasic = (merchandiseId: string) => {
         update_merchandise(where: { id: { _eq: $merchandiseId } }, _set: { title: $title }) {
           affected_rows
         }
+
+        # update categories
         delete_merchandise_category(where: { merchandise_id: { _eq: $merchandiseId } }) {
           affected_rows
         }
         insert_merchandise_category(objects: $categories) {
           affected_rows
         }
+
+        # update tags
         insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
           affected_rows
         }
@@ -139,7 +141,6 @@ const useUpdateMerchandiseBasic = (merchandiseId: string) => {
             position: index,
           })),
           tags: merchandiseTags?.map(merchandiseTag => ({
-            app_id: app.id,
             name: merchandiseTag,
             type: '',
           })),

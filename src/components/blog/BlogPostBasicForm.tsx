@@ -29,7 +29,7 @@ const BlogPostBasicForm: React.FC<{
 }> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
-  const { id: appId, settings } = useContext(AppContext)
+  const { settings } = useContext(AppContext)
   const [updatePostBasic] = useMutation<types.UPDATE_POST_BASIC, types.UPDATE_POST_BASICVariables>(UPDATE_POST_BASIC)
   const [codeName, setCodeName] = useState('')
   const [loading, setLoading] = useState(false)
@@ -57,7 +57,6 @@ const BlogPostBasicForm: React.FC<{
           position: index,
         })),
         tags: values.tags.map((tag: string) => ({
-          app_id: appId,
           name: tag,
           type: '',
         })),
@@ -147,7 +146,7 @@ const UPDATE_POST_BASIC = gql`
       affected_rows
     }
 
-    # update post category
+    # update categories
     delete_post_category(where: { post_id: { _eq: $postId } }) {
       affected_rows
     }
@@ -155,7 +154,7 @@ const UPDATE_POST_BASIC = gql`
       affected_rows
     }
 
-    # update post tag
+    # update tags
     insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
       affected_rows
     }

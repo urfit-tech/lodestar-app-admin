@@ -4,10 +4,11 @@ import { Button, Checkbox, Form, Input, message, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
+import { AppContext } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -48,6 +49,7 @@ const ProgramPlanAdminModal: React.FC<
     onRefetch?: () => void
   }
 > = ({ programId, programPlan, onRefetch, ...modalProps }) => {
+  const { enabledModules } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const [upsertProgramPlan] = useMutation<types.UPSERT_PROGRAM_PLAN, types.UPSERT_PROGRAM_PLANVariables>(
@@ -79,7 +81,7 @@ const ProgramPlanAdminModal: React.FC<
             discountDownPrice: withDiscountDownPrice ? values.discountDownPrice : 0,
             periodAmount: withPeriod ? values.period.amount : null,
             periodType: withPeriod ? values.period.type : null,
-            currencyId: values.currencyId,
+            currencyId: values.currencyId || programPlan?.currencyId || 'TWD',
             autoRenewed: withPeriod ? values.autoRenewed || false : false,
             publishedAt: values.isPublished ? new Date() : null,
             isCountdownTimerVisible: !!values.sale?.timerVisible,
@@ -182,20 +184,22 @@ const ProgramPlanAdminModal: React.FC<
             </Checkbox>
           </div>
         )}
-        <Form.Item
-          label={formatMessage(commonMessages.term.currency)}
-          name="currencyId"
-          rules={[
-            {
-              required: true,
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(commonMessages.term.listPrice),
-              }),
-            },
-          ]}
-        >
-          <CurrencySelector />
-        </Form.Item>
+        {enabledModules?.currency && (
+          <Form.Item
+            label={formatMessage(commonMessages.term.currency)}
+            name="currencyId"
+            rules={[
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.term.listPrice),
+                }),
+              },
+            ]}
+          >
+            <CurrencySelector />
+          </Form.Item>
+        )}
 
         <Form.Item label={formatMessage(commonMessages.term.listPrice)} name="listPrice">
           <CurrencyInput noLabel currencyId={currencyId} />

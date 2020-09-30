@@ -35,6 +35,7 @@ const SaleInput: React.FC<{
     <div>
       <Checkbox
         checked={active}
+        className={'mb-2'}
         onChange={e => {
           setActive(e.target.checked)
           onChange &&
@@ -43,6 +44,7 @@ const SaleInput: React.FC<{
                 ? {
                     price: 0,
                     soldAt: moment().add(1, 'hour').startOf('hour').toDate(),
+                    timerVisible,
                   }
                 : null,
             )
@@ -60,6 +62,7 @@ const SaleInput: React.FC<{
             onChange={price =>
               onChange &&
               onChange({
+                ...value,
                 price: typeof price === 'number' ? price : 0,
                 soldAt: value?.soldAt || null,
               })
@@ -76,18 +79,18 @@ const SaleInput: React.FC<{
             onChange={date =>
               onChange &&
               onChange({
+                ...value,
                 price: value?.price || 0,
                 soldAt: date?.startOf('minute').toDate() || null,
-                timerVisible: !!value?.timerVisible,
               })
             }
           />
         </Form.Item>
         {value?.soldAt && moment(value.soldAt).isBefore(moment()) ? (
-          <div className="d-inline-block">
+          <Form.Item className="d-inline-block mb-0">
             <StyledIcon className="mr-1" />
             <span>{formatMessage(commonMessages.label.outdated)}</span>
-          </div>
+          </Form.Item>
         ) : null}
         {timer && (
           <Form.Item className="mb-0">

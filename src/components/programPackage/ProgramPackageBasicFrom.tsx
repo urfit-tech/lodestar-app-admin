@@ -9,6 +9,7 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramPackageProps } from '../../types/programPackage'
+import CategorySelector from '../form/CategorySelector'
 import ImageInput from '../form/ImageInput'
 
 const ProgramPackageBasicForm: React.FC<{
@@ -55,6 +56,11 @@ const ProgramPackageBasicForm: React.FC<{
       variables: {
         programPackageId: programPackage.id,
         title: values.title,
+        programPackageCategories: values.categoryIds.map((categoryId: string, index: number) => ({
+          program_package_id: programPackage.id,
+          category_id: categoryId,
+          position: index,
+        })),
       },
     })
       .then(() => {
@@ -75,6 +81,7 @@ const ProgramPackageBasicForm: React.FC<{
       wrapperCol={{ md: { span: 8 } }}
       initialValues={{
         title: programPackage.title,
+        categoryIds: programPackage.categories.map(category => category.id),
       }}
       onFinish={handleSubmit}
     >
@@ -91,6 +98,10 @@ const ProgramPackageBasicForm: React.FC<{
         ]}
       >
         <Input />
+      </Form.Item>
+
+      <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
+        <CategorySelector classType="programPackage" />
       </Form.Item>
 
       <Form.Item label={formatMessage(commonMessages.term.cover)}>
@@ -119,8 +130,18 @@ const ProgramPackageBasicForm: React.FC<{
 }
 
 const UPDATE_PROGRAM_PACKAGE_BASIC = gql`
-  mutation UPDATE_PROGRAM_PACKAGE_BASIC($programPackageId: uuid!, $title: String) {
+  mutation UPDATE_PROGRAM_PACKAGE_BASIC(
+    $programPackageId: uuid!
+    $title: String
+    $programPackageCategories: [program_package_category_insert_input!]!
+  ) {
     update_program_package(where: { id: { _eq: $programPackageId } }, _set: { title: $title }) {
+      affected_rows
+    }
+    delete_program_package_category(where: { program_package_id: { _eq: $programPackageId } }) {
+      affected_rows
+    }
+    insert_program_package_category(objects: $programPackageCategories) {
       affected_rows
     }
   }

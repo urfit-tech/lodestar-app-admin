@@ -1,4 +1,4 @@
-import { PeriodType } from './general'
+import { PeriodType, CategoryProps } from './general'
 
 export type ProgramPackageProps = {
   id: string
@@ -8,6 +8,7 @@ export type ProgramPackageProps = {
   description: string | null
   programs: ProgramPackageProgramProps[]
   plans: ProgramPackagePlanProps[]
+  categories: CategoryProps[]
 }
 
 export type ProgramPackageProgramProps = {

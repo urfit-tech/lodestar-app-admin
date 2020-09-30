@@ -22,6 +22,7 @@ import MemberPermissionForm from '../../../components/member/MemberPermissionFor
 import MemberProfileBasicForm from '../../../components/member/MemberProfileBasicForm'
 import MemberPropertyAdminForm from '../../../components/member/MemberPropertyAdminForm'
 import MemberTaskTable from '../../../components/member/MemberTaskTable'
+import SaleCollectionAdminCard from '../../../components/sale/SaleCollectionAdminCard'
 import AppContext from '../../../contexts/AppContext'
 import { useAuth } from '../../../contexts/AuthContext'
 import { currencyFormatter, handleError } from '../../../helpers'
@@ -225,6 +226,11 @@ const MemberAdminPage: React.FC = () => {
                 </div>
               </Tabs.TabPane>
             )}
+            <Tabs.TabPane key="order" tab={formatMessage(memberMessages.label.order)}>
+              <div className="p-5">
+                <SaleCollectionAdminCard memberId={memberId} />
+              </div>
+            </Tabs.TabPane>
             <Tabs.TabPane key="permission" tab={formatMessage(memberMessages.label.permission)}>
               <div className="p-5">
                 <AdminBlock>

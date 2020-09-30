@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { flatten, sum } from 'ramda'
 import types from '../types'
-import {  PeriodType } from '../types/general'
+import { PeriodType } from '../types/general'
 import { MemberBriefProps } from '../types/member'
 import { ProgramPackageProps } from '../types/programPackage'
 
@@ -361,6 +361,12 @@ export const useGetProgramPackage = (id: string) => {
               }
             }
           }
+          program_package_categories(order_by: { position: asc }) {
+            category {
+              id
+              name
+            }
+          }
         }
       }
     `,
@@ -407,6 +413,10 @@ export const useGetProgramPackage = (id: string) => {
               position: plan.position,
               soldQuantity: plan.program_package_plan_enrollments_aggregate.aggregate?.count ?? 0,
             })) ?? [],
+          categories: data.program_package_by_pk.program_package_categories.map(v => ({
+            id: v.category.id,
+            name: v.category.name,
+          })),
         }
 
   return {

@@ -184,7 +184,7 @@ export const commonMessages = {
     video: { id: 'common.label.video', defaultMessage: '影片' },
     caption: { id: 'common.label.caption', defaultMessage: '字幕' },
     title: { id: 'common.term.title', defaultMessage: '名稱' },
-    category: { id: 'common.term.category', defaultMessage: '類別' },
+    category: { id: 'common.term.category', defaultMessage: '分類' },
     tag: { id: 'common.term.tag', defaultMessage: '標籤' },
     startedAt: { id: 'common.term.startedAt', defaultMessage: '開始時間' },
     endedAt: { id: 'common.term.endedAt', defaultMessage: '結束時間' },
@@ -284,6 +284,7 @@ export const commonMessages = {
     programProgress: { id: 'common.menu.programProgress', defaultMessage: '學習進度' },
     tempoDelivery: { id: 'common.menu.tempoDelivery', defaultMessage: '節奏交付' },
     programCategory: { id: 'common.menu.programCategory', defaultMessage: '課程分類' },
+    programPackageCategory: { id: 'common.menu.programCategory', defaultMessage: '課程組合分類' },
     podcastAdmin: { id: 'common.menu.podcastAdmin', defaultMessage: '音頻廣播' },
     podcastPrograms: { id: 'common.menu.podcastPrograms', defaultMessage: '廣播管理' },
     podcastPlans: { id: 'common.menu.podcastPlans', defaultMessage: '訂閱方案' },
@@ -337,7 +338,7 @@ export const commonMessages = {
     unknownType: { id: 'common.product.unknownType', defaultMessage: '未知' },
   }),
   unit: defineMessages({
-    min: { id: 'common.unit.min', defaultMessage: '分鐘' },
+    min: { id: 'common.unit.min', defaultMessage: '分' },
     sec: { id: 'common.periodType.sec', defaultMessage: '秒' },
     hour: { id: 'common.periodType.hour', defaultMessage: '時' },
     day: { id: 'common.periodType.day', defaultMessage: '天' },
@@ -752,8 +753,14 @@ export const merchandiseMessages = {
       defaultMessage: '請選擇販售於哪個商城',
     },
     abstractLimit: { id: 'merchandise.text.abstractLimit', defaultMessage: '限 200 字' },
-    generalPhysicalMerchandise: { id: 'merchandise.label.generalPhysicalMerchandise', defaultMessage: 'ex.衣服、帽子...等實體商品。' },
-    generalVirtualMerchandise: { id: 'merchandise.label.generalVirtualMerchandise', defaultMessage: 'ex.素材、圖庫...等虛擬商品。' },
+    generalPhysicalMerchandise: {
+      id: 'merchandise.label.generalPhysicalMerchandise',
+      defaultMessage: 'ex.衣服、帽子...等實體商品。',
+    },
+    generalVirtualMerchandise: {
+      id: 'merchandise.label.generalVirtualMerchandise',
+      defaultMessage: 'ex.素材、圖庫...等虛擬商品。',
+    },
   }),
 }
 
@@ -808,6 +815,7 @@ export const memberMessages = {
     property: { id: 'profile.label.property', defaultMessage: '自訂欄位' },
     task: { id: 'profile.label.task', defaultMessage: '任務' },
     permission: { id: 'profile.label.property', defaultMessage: '權限' },
+    order: { id: 'profile.label.order', defaultMessage: '訂單' },
     callType: { id: 'profile.label.callType', defaultMessage: '通話類型' },
     description: { id: 'profile.label.description', defaultMessage: '內容' },
     status: { id: 'profile.label.status', defaultMessage: '狀態' },

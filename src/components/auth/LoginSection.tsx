@@ -40,7 +40,7 @@ const LoginSection: React.FC<{
     setLoading(true)
     login({
       appId: app.id,
-      account: values.account,
+      account: values.account.trim().toLowerCase(),
       password: values.password,
     })
       .then(() => {

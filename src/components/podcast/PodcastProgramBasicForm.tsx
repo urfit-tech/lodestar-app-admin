@@ -27,7 +27,7 @@ const PodcastProgramBasicForm: React.FC<{
 }> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
-  const { id: appId, enabledModules } = useContext(AppContext)
+  const { enabledModules } = useContext(AppContext)
   const [loading, setLoading] = useState(false)
 
   const [updatePodcastProgramBasic] = useMutation<
@@ -59,7 +59,6 @@ const PodcastProgramBasicForm: React.FC<{
               position,
             })),
         tags: values.tags.map((podcastProgramTag: string) => ({
-          app_id: appId,
           name: podcastProgramTag,
           type: '',
         })),
@@ -158,12 +157,16 @@ const UPDATE_PODCAST_PROGRAM_BASIC = gql`
     ) {
       affected_rows
     }
+
+    # update categories
     delete_podcast_program_category(where: { podcast_program_id: { _eq: $podcastProgramId } }) {
       affected_rows
     }
     insert_podcast_program_category(objects: $podcastCategories) {
       affected_rows
     }
+
+    # update tags
     insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
       affected_rows
     }
