@@ -18,7 +18,6 @@ import MerchandiseBasicForm from '../../components/merchandise/MerchandiseBasicF
 import MerchandiseDeleteBlock from '../../components/merchandise/MerchandiseDeleteBlock'
 import MerchandiseDescriptionForm from '../../components/merchandise/MerchandiseDescriptionForm'
 import MerchandiseIntroductionForm from '../../components/merchandise/MerchandiseIntroductionForm'
-import MerchandiseInventoryAdminModal from '../../components/merchandise/MerchandiseInventoryAdminModal'
 import MerchandiseInventoryTable from '../../components/merchandise/MerchandiseInventoryTable'
 import MerchandisePublishBlock from '../../components/merchandise/MerchandisePublishBlock'
 import MerchandiseSalesForm from '../../components/merchandise/MerchandiseSalesForm'
@@ -58,7 +57,7 @@ const MerchandiseAdminPage: React.FC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { settings } = useContext(AppContext)
   const { loadingMerchandise, errorMerchandise, merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
-  const { inventoryLogs, refetchInventoryLogs } = useProductInventoryLog(`Merchandise_${merchandiseId}`)
+  const { inventoryLogs } = useProductInventoryLog(`Merchandise_${merchandiseId}`)
 
   if (loadingMerchandise || errorMerchandise || !merchandise) {
     return <Skeleton active />
@@ -128,23 +127,6 @@ const MerchandiseAdminPage: React.FC = () => {
           <Tabs.TabPane key="inventory" tab={formatMessage(messages.inventoryAdmin)}>
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(messages.inventoryAdmin)}</AdminPaneTitle>
-              <div className="mb-4">
-                {!!merchandise && (
-                  <MerchandiseInventoryAdminModal
-                    merchandiseId={merchandiseId}
-                    inventories={[
-                      {
-                        specification: merchandise.meta || '',
-                        buyableQuantity: merchandise.merchandiseInventoryStatus.buyableQuantity,
-                      },
-                    ]}
-                    refetch={() => {
-                      refetchMerchandise()
-                      refetchInventoryLogs()
-                    }}
-                  />
-                )}
-              </div>
               <div className="row mb-1">
                 <div className="col-12 col-lg-4">
                   <AdminBlock className="p-4">

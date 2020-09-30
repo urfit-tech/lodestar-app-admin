@@ -2576,43 +2576,16 @@ export interface UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise {
   affected_rows: number;
 }
 
-export interface UPDATE_MERCHANDISE_INTRODUCTION_delete_merchandise_file {
-  __typename: "merchandise_file_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MERCHANDISE_INTRODUCTION_insert_merchandise_file {
-  __typename: "merchandise_file_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
 export interface UPDATE_MERCHANDISE_INTRODUCTION {
   /**
    * update data of the table: "merchandise"
    */
   update_merchandise: UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise | null;
-  /**
-   * delete data from the table: "merchandise_file"
-   */
-  delete_merchandise_file: UPDATE_MERCHANDISE_INTRODUCTION_delete_merchandise_file | null;
-  /**
-   * insert data into the table: "merchandise_file"
-   */
-  insert_merchandise_file: UPDATE_MERCHANDISE_INTRODUCTION_insert_merchandise_file | null;
 }
 
 export interface UPDATE_MERCHANDISE_INTRODUCTIONVariables {
   merchandiseId: any;
   abstract?: string | null;
-  meta?: string | null;
-  memberShopId?: any | null;
-  merchandiseFiles: merchandise_file_insert_input[];
 }
 
 /* tslint:disable */
@@ -7172,12 +7145,6 @@ export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_imgs {
   url: string;
 }
 
-export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_files {
-  __typename: "merchandise_file";
-  id: any;
-  data: any;
-}
-
 export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_inventory_status {
   __typename: "merchandise_inventory_status";
   buyable_quantity: any | null;
@@ -7189,7 +7156,6 @@ export interface GET_MERCHANDISE_merchandise_by_pk {
   __typename: "merchandise";
   id: any;
   title: string;
-  meta: string | null;
   abstract: string | null;
   description: string | null;
   list_price: any;
@@ -7201,6 +7167,8 @@ export interface GET_MERCHANDISE_merchandise_by_pk {
   published_at: any | null;
   member_shop_id: any | null;
   is_physical: boolean;
+  is_customized: boolean;
+  is_limited: boolean;
   /**
    * An array relationship
    */
@@ -7213,10 +7181,6 @@ export interface GET_MERCHANDISE_merchandise_by_pk {
    * An array relationship
    */
   merchandise_imgs: GET_MERCHANDISE_merchandise_by_pk_merchandise_imgs[];
-  /**
-   * An array relationship
-   */
-  merchandise_files: GET_MERCHANDISE_merchandise_by_pk_merchandise_files[];
   /**
    * An object relationship
    */

@@ -46,18 +46,6 @@ const MerchandisePublishBlock: React.FC<{
       text: formatMessage(messages.noTitle),
       tab: 'settings',
     })
-  !merchandise.meta &&
-    checklist.push({
-      id: 'NO_META',
-      text: formatMessage(messages.noMeta),
-      tab: 'settings',
-    })
-  !merchandise.memberShopId &&
-    checklist.push({
-      id: 'NO_MEMBER_SHOP',
-      text: formatMessage(messages.noMemberShop),
-      tab: 'settings',
-    })
 
   const publishStatus: PublishStatus =
     checklist.length > 0 ? 'alert' : !merchandise.publishedAt ? 'ordinary' : 'success'

@@ -1,64 +1,64 @@
-import '@ant-design/compatible/assets/index.css'
 import { QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import { UploadFile } from 'antd/lib/upload/interface'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
-import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
+import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
 import { StyledTips } from '../admin'
-import MultipleUploader from '../common/MultipleUploader'
-import MemberShopSelector from './MemberShopSelector'
 import MerchandiseImagesUploader from './MerchandiseImagesUploader'
 
-type MerchandiseIntroductionFormProps = {
+const MerchandiseIntroductionForm: React.FC<{
   merchandise: MerchandiseProps
   merchandiseId: string
   refetch?: () => void
-}
-const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = ({
-  merchandise,
-  merchandiseId,
-  refetch,
-}) => {
+}> = ({ merchandise, merchandiseId, refetch }) => {
   const { formatMessage } = useIntl()
-  const updateMerchandiseImages = useUpdateMerchandiseImages(merchandiseId)
-  const updateMerchandiseIntroduction = useUpdateMerchandiseIntroduction(merchandiseId)
-  const [loading, setLoading] = useState(false)
-  const { id: appId } = useContext(AppContext)
-  const [uploading, setUploading] = useState(false)
-  const [files, setFiles] = useState<UploadFile[]>(merchandise.files || [])
   const [form] = useForm()
+  const [updateMerchandiseImages] = useMutation<
+    types.UPDATE_MERCHANDISE_IMAGES,
+    types.UPDATE_MERCHANDISE_IMAGESVariables
+  >(UPDATE_MERCHANDISE_IMAGES)
+  const [updateMerchandiseIntroduction] = useMutation<
+    types.UPDATE_MERCHANDISE_INTRODUCTION,
+    types.UPDATE_MERCHANDISE_INTRODUCTIONVariables
+  >(UPDATE_MERCHANDISE_INTRODUCTION)
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = () => {
-    form.validateFields().then(values => {
-      const { abstract, meta, memberShopId } = values
-      setLoading(true)
-      updateMerchandiseIntroduction({
-        abstract,
-        meta,
-        memberShopId,
-        merchandiseFiles: files.map(v => ({
-          merchandise_id: merchandise.id,
-          data: v,
-        })),
-      })
-        .then(() => {
-          refetch && refetch()
-          message.success(formatMessage(commonMessages.event.successfullySaved))
-        })
-        .finally(() => setLoading(false))
+  const handleSubmit = (values: any) => {
+    setLoading(true)
+    updateMerchandiseIntroduction({
+      variables: {
+        merchandiseId,
+        abstract: values.abstract,
+      },
     })
+      .then(() => {
+        refetch && refetch()
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   const handleUpload = (images: MerchandiseProps['images']) => {
-    updateMerchandiseImages({ images }).then(() => refetch && refetch())
+    updateMerchandiseImages({
+      variables: {
+        merchandiseId,
+        merchandiseImages: images.map((image, index) => ({
+          merchandise_id: merchandiseId,
+          url: image.url,
+          type: image.isCover ? 'cover' : 'common',
+          position: index,
+        })),
+      },
+    })
+      .then(() => refetch && refetch())
+      .catch(handleError)
   }
 
   return (
@@ -70,10 +70,9 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
       wrapperCol={{ md: { span: 8 } }}
       initialValues={{
         abstract: merchandise.abstract,
-        meta: merchandise.meta,
         memberShopId: merchandise.memberShopId,
       }}
-      onFinish={() => handleSubmit()}
+      onFinish={handleSubmit}
     >
       <Form.Item
         label={
@@ -94,35 +93,7 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
       <Form.Item label={formatMessage(merchandiseMessages.label.abstract)} name="abstract">
         <Input.TextArea rows={5} maxLength={200} placeholder={formatMessage(merchandiseMessages.text.abstractLimit)} />
       </Form.Item>
-      <Form.Item
-        label={formatMessage(merchandiseMessages.label.meta)}
-        name="meta"
-        rules={[
-          {
-            required: true,
-            message: formatMessage(errorMessages.form.isRequired, {
-              field: formatMessage(merchandiseMessages.label.meta),
-            }),
-          },
-        ]}
-      >
-        <Input />
-      </Form.Item>
-      <Form.Item
-        label={formatMessage(merchandiseMessages.label.memberShop)}
-        name="memberShopId"
-        rules={[
-          {
-            required: true,
-            message: formatMessage(errorMessages.form.isRequired, {
-              field: formatMessage(merchandiseMessages.label.memberShop),
-            }),
-          },
-        ]}
-      >
-        <MemberShopSelector />
-      </Form.Item>
-      {!merchandise.isPhysical && (
+      {/* {!merchandise.isPhysical && (
         <Form.Item label={formatMessage(merchandiseMessages.label.deliveryItem)} wrapperCol={{ span: 24 }}>
           <MultipleUploader
             path={`merchandise_files/${appId}/${merchandise.id}`}
@@ -134,20 +105,13 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
             onError={() => setUploading(false)}
           />
         </Form.Item>
-      )}
+      )} */}
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
-        <Button
-          onClick={() => {
-            form.resetFields()
-            setFiles(merchandise.files)
-          }}
-          disabled={uploading}
-          className="mr-2"
-        >
+        <Button onClick={() => form.resetFields()} className="mr-2">
           {formatMessage(commonMessages.ui.cancel)}
         </Button>
-        <Button type="primary" htmlType="submit" loading={loading} disabled={uploading}>
+        <Button type="primary" htmlType="submit" loading={loading}>
           {formatMessage(commonMessages.ui.save)}
         </Button>
       </Form.Item>
@@ -155,96 +119,22 @@ const MerchandiseIntroductionForm: React.FC<MerchandiseIntroductionFormProps> = 
   )
 }
 
-const useUpdateMerchandiseImages = (merchandiseId: string) => {
-  const [updateImages] = useMutation<types.UPDATE_MERCHANDISE_IMAGES, types.UPDATE_MERCHANDISE_IMAGESVariables>(gql`
-    mutation UPDATE_MERCHANDISE_IMAGES($merchandiseId: uuid!, $merchandiseImages: [merchandise_img_insert_input!]!) {
-      delete_merchandise_img(where: { merchandise_id: { _eq: $merchandiseId } }) {
-        affected_rows
-      }
-      insert_merchandise_img(objects: $merchandiseImages) {
-        affected_rows
-      }
+const UPDATE_MERCHANDISE_IMAGES = gql`
+  mutation UPDATE_MERCHANDISE_IMAGES($merchandiseId: uuid!, $merchandiseImages: [merchandise_img_insert_input!]!) {
+    delete_merchandise_img(where: { merchandise_id: { _eq: $merchandiseId } }) {
+      affected_rows
     }
-  `)
-
-  const updateMerchandiseImages: (data: {
-    images: {
-      url: string
-      isCover: boolean
-    }[]
-  }) => Promise<void> = async ({ images }) => {
-    try {
-      await updateImages({
-        variables: {
-          merchandiseId,
-          merchandiseImages: images.map((image, index) => ({
-            merchandise_id: merchandiseId,
-            url: image.url,
-            type: image.isCover ? 'cover' : 'common',
-            position: index,
-          })),
-        },
-      })
-    } catch (error) {
-      handleError(error)
+    insert_merchandise_img(objects: $merchandiseImages) {
+      affected_rows
     }
   }
-
-  return updateMerchandiseImages
-}
-
-const useUpdateMerchandiseIntroduction = (merchandiseId: string) => {
-  const [updateIntroduction] = useMutation<
-    types.UPDATE_MERCHANDISE_INTRODUCTION,
-    types.UPDATE_MERCHANDISE_INTRODUCTIONVariables
-  >(gql`
-    mutation UPDATE_MERCHANDISE_INTRODUCTION(
-      $merchandiseId: uuid!
-      $abstract: String
-      $meta: String
-      $memberShopId: uuid
-      $merchandiseFiles: [merchandise_file_insert_input!]!
-    ) {
-      update_merchandise(
-        where: { id: { _eq: $merchandiseId } }
-        _set: { abstract: $abstract, meta: $meta, member_shop_id: $memberShopId }
-      ) {
-        affected_rows
-      }
-      delete_merchandise_file(where: { merchandise_id: { _eq: $merchandiseId } }) {
-        affected_rows
-      }
-      insert_merchandise_file(objects: $merchandiseFiles) {
-        affected_rows
-      }
-    }
-  `)
-
-  const updateMerchandiseIntroduction: (data: {
-    abstract: string
-    meta: string
-    memberShopId: string
-    merchandiseFiles: {
-      merchandise_id: string
-      data: UploadFile
-    }[]
-  }) => Promise<void> = async ({ abstract, meta, memberShopId, merchandiseFiles }) => {
-    try {
-      await updateIntroduction({
-        variables: {
-          merchandiseId,
-          abstract,
-          meta,
-          memberShopId,
-          merchandiseFiles,
-        },
-      })
-    } catch (error) {
-      handleError(error)
+`
+const UPDATE_MERCHANDISE_INTRODUCTION = gql`
+  mutation UPDATE_MERCHANDISE_INTRODUCTION($merchandiseId: uuid!, $abstract: String) {
+    update_merchandise(where: { id: { _eq: $merchandiseId } }, _set: { abstract: $abstract }) {
+      affected_rows
     }
   }
-
-  return updateMerchandiseIntroduction
-}
+`
 
 export default MerchandiseIntroductionForm
