@@ -40,10 +40,11 @@ const MemberPermissionForm: React.FC<{
       variables: {
         memberId: memberAdmin.id,
         role: values.roleId,
-        permissions: values.permissionIds.map((permissionId: string) => ({
-          member_id: memberAdmin.id,
-          permission_id: permissionId,
-        })),
+        permissions:
+          values.permissionIds?.map((permissionId: string) => ({
+            member_id: memberAdmin.id,
+            permission_id: permissionId,
+          })) || [],
       },
     })
       .then(() => {
