@@ -65,27 +65,6 @@ const RecordingPage: React.FC = () => {
   const [waveCollection, setWaveCollection] = useState<WaveCollectionProps[]>([])
   const audioObjectRef = useRef<{ waveCollection: WaveCollectionProps[]; currentAudioId: string | undefined }>()
 
-  const [recorder, setRecorder] = useState<Recorder | null>(null)
-
-  useEffect(() => {
-    const initRecorder = async () => {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-      const _recorder = new Recorder(audioContext)
-      _recorder.init(stream)
-
-      return _recorder
-    }
-    navigator?.mediaDevices && !recorder && initRecorder().then(recorder => setRecorder(recorder))
-
-    return () => {
-      if (recorder) {
-        ;(recorder as any).stream.getTracks().forEach((track: any) => track.stop())
-        ;(recorder as any).audioContext.close()
-      }
-    }
-  }, [recorder])
-
   const [updatePodcastProgramContent] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_CONTENT,
     types.UPDATE_PODCAST_PROGRAM_CONTENTVariables
@@ -102,8 +81,8 @@ const RecordingPage: React.FC = () => {
   })
 
   const onGetRecordAudio = useCallback(
-    (audioBuffer: AudioBuffer | null) => {
-      if (audioBuffer && waveCollection) {
+    (audioBuffer: AudioBuffer) => {
+      if (waveCollection) {
         const waveId = uuid()
         setWaveCollection([
           ...waveCollection,
@@ -285,6 +264,7 @@ const RecordingPage: React.FC = () => {
           handleError(error)
         })
     } else {
+      debugger
       modal.destroy()
       handleError(new Error(formatMessage(errorMessages.event.failedPodcastRecording)))
     }
@@ -360,7 +340,7 @@ const RecordingPage: React.FC = () => {
           <div className="text-center mb-5">
             <StyledPageTitle>{formatMessage(podcastMessages.ui.recordAudio)}</StyledPageTitle>
             <RecordButton
-              recorder={recorder}
+              // recorder={recorder}
               onStart={() => setIsRecording(true)}
               onStop={() => {
                 setIsRecording(false)

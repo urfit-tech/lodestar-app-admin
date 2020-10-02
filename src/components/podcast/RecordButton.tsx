@@ -1,6 +1,8 @@
 import Icon from '@ant-design/icons'
 import { Button } from 'antd'
 import { ButtonProps } from 'antd/lib/button'
+import AudioRecorder from 'audio-recorder-polyfill'
+import mpegEncoder from 'audio-recorder-polyfill/mpeg-encoder'
 import React, { useState } from 'react'
 import Recorder from 'recorder-js'
 import styled from 'styled-components'
@@ -9,6 +11,10 @@ import { decodeAudio } from '../../helpers/audio'
 import { useInterval } from '../../hooks/util'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import { ReactComponent as StopCircleIcon } from '../../images/icon/stop-circle.svg'
+
+// Use mp3 encoding
+AudioRecorder.encoder = mpegEncoder
+AudioRecorder.prototype.mimeType = 'audio/mpeg'
 
 const StyledButton = styled(Button)`
   && {
@@ -38,33 +44,70 @@ const RecordIcon: React.FC<{ isRecording: boolean }> = React.memo(
 
 const RecordButton: React.FC<
   ButtonProps & {
-    recorder: Recorder | null
     onStart?: () => void
     onStop?: () => void
-    onGetAudio?: (audioBuffer: AudioBuffer | null) => void
+    onGetAudio?: (buffer: AudioBuffer) => void
   }
-> = ({ recorder, onStart, onStop, onGetAudio, ...buttonProps }) => {
+> = ({ onStart, onStop, onGetAudio, ...buttonProps }) => {
+  const [recorder, setRecorder] = useState<any | undefined>(undefined)
   const [isRecording, setIsRecording] = useState(false)
   const [startedAt, setStartedAt] = useState(0)
   const [duration, setDuration] = useState(0)
 
-  const handleClickRecordButton = () => {
-    if (isRecording) {
-      onStop && onStop()
-      if (recorder) {
-        recorder.stop().then(async ({ blob }) => {
-          const audioFile = new File([blob], 'untitled.wav')
-          const audioBuffer = await decodeAudio(audioFile)
+  const handleAudioDataAvailable = (e: any) => {
+    onStop && onStop()
+    setIsRecording(false)
+    setStartedAt(0)
+
+    decodeAudio(e.data)
+      .then(audioBuffer => {
+        if (audioBuffer == null) {
+          throw new Error(`Got null / undefined decoded audio buffer`)
+        }
+
+        return audioBuffer
+      })
+      .then(
+        audioBuffer => {
           onGetAudio && onGetAudio(audioBuffer)
-        })
-      }
-      setIsRecording(false)
-      setStartedAt(0)
-    } else {
+        },
+        (error: any) => {
+          console.error('Failed to get audio data', error)
+        },
+      )
+  }
+
+  const handleStopRecording = () => {
+    // rely on the `dataavailable` callback of AudioRecorder for
+    // onGetAudio callback
+    recorder.stop()
+    for (const track of recorder.stream.getTracks()) {
+      track.stop()
+    }
+  }
+
+  const handleStartRecording = () => {
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+      const recorder_ = new AudioRecorder(stream)
+
+      recorder_.addEventListener('dataavailable', handleAudioDataAvailable)
+
+      // Start recording
+      recorder_.start()
+
       onStart && onStart()
-      recorder?.start()
       setIsRecording(true)
       setStartedAt(Date.now())
+
+      setRecorder(recorder_)
+    })
+  }
+
+  const handleClickRecordButton = () => {
+    if (isRecording) {
+      handleStopRecording()
+    } else {
+      handleStartRecording()
     }
   }
 
