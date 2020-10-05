@@ -51,6 +51,8 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
           sale_price
           sold_at
           published_at
+          is_physical
+          is_customized
           merchandise_imgs(where: { type: { _eq: "cover" } }) {
             id
             url
@@ -71,6 +73,8 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
           salePrice: merchandise.sale_price,
           soldAt: merchandise.sold_at ? new Date(merchandise.sold_at) : null,
           publishedAt: merchandise.published_at ? new Date(merchandise.published_at) : null,
+          isPhysical: merchandise.is_physical,
+          isCustomized: merchandise.is_customized,
           coverUrl: merchandise.merchandise_imgs[0]?.url || null,
         }))
 
@@ -249,6 +253,8 @@ export const useMemberShop = (shopId: string) => {
             sale_price
             sold_at
             published_at
+            is_physical
+            is_customized
             merchandise_imgs(where: { type: { _eq: "cover" } }) {
               id
               url
@@ -290,6 +296,8 @@ export const useMemberShop = (shopId: string) => {
             listPrice: v.list_price,
             salePrice: v.sale_price,
             soldAt: v.sold_at ? new Date(v.sold_at) : null,
+            isPhysical: v.is_physical,
+            isCustomized: v.is_customized,
             publishedAt: v.published_at ? new Date(v.published_at) : null,
             coverUrl: v.merchandise_imgs[0]?.url || null,
           })),

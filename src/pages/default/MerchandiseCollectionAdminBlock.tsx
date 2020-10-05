@@ -1,7 +1,7 @@
 import Icon, { FileAddOutlined } from '@ant-design/icons'
-import { Button, Input, Tabs } from 'antd'
+import { Button, Input, Select, Tabs } from 'antd'
 import React, { useContext, useState } from 'react'
-import { useIntl } from 'react-intl'
+import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -23,7 +23,19 @@ const StyledHeader = styled.div<{ width?: string }>`
   letter-spacing: 0.2px;
 `
 
-const MerchandiseCollectionAdminPane: React.FC<{
+const messages = defineMessages({
+  allMerchandiseType: { id: 'merchandise.label.allMerchandiseType', defaultMessage: '所有商品類型' },
+})
+
+const merchandiseTypes = {
+  allMerchandiseType: null,
+  generalPhysicalMerchandise: { isCustomized: false, isPhysical: true },
+  generalVirtualMerchandise: { isCustomized: false, isPhysical: false },
+  customizedPhysicalMerchandise: { isCustomized: true, isPhysical: true },
+  customizedVirtualMerchandise: { isCustomized: true, isPhysical: false },
+}
+
+const MerchandiseCollectionAdminBlock: React.FC<{
   shopId: string
   merchandises: MerchandisePreviewProps[]
   onRefetchMemberShop: () => void
@@ -32,16 +44,36 @@ const MerchandiseCollectionAdminPane: React.FC<{
   const history = useHistory()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { currentMemberId } = useAuth()
-  const { id: appId } = useContext(AppContext)
+  const { id: appId, enabledModules } = useContext(AppContext)
 
   const insertMerchandise = useInsertMerchandise()
   const [searchText, setSearchText] = useState('')
+  const [currentMerchandiseType, setCurrentMerchandiseType] = useState<{
+    isPhysical: boolean
+    isCustomized: boolean
+  } | null>(null)
+
+  const onSelect = (
+    type:
+      | 'allMerchandiseType'
+      | 'generalPhysicalMerchandise'
+      | 'generalVirtualMerchandise'
+      | 'customizedPhysicalMerchandise'
+      | 'customizedVirtualMerchandise',
+  ) => setCurrentMerchandiseType(merchandiseTypes[type])
+
+  let filteredMerchandises = merchandises
+  if (!!currentMerchandiseType) {
+    filteredMerchandises = merchandises
+      .filter(v => v.isCustomized === currentMerchandiseType.isCustomized)
+      .filter(v => v.isPhysical === currentMerchandiseType.isPhysical)
+  }
 
   const tabContents = [
     {
       key: 'selling',
       name: formatMessage(merchandiseMessages.status.selling),
-      merchandises: merchandises.filter(
+      merchandises: filteredMerchandises.filter(
         merchandise => merchandise.publishedAt && merchandise.publishedAt.getTime() < Date.now(),
       ),
     },
@@ -53,7 +85,7 @@ const MerchandiseCollectionAdminPane: React.FC<{
     {
       key: 'unpublished',
       name: formatMessage(merchandiseMessages.status.unpublished),
-      merchandises: merchandises.filter(
+      merchandises: filteredMerchandises.filter(
         merchandise => !merchandise.publishedAt || merchandise.publishedAt.getTime() > Date.now(),
       ),
     },
@@ -72,7 +104,7 @@ const MerchandiseCollectionAdminPane: React.FC<{
 
       <div className="mb-4">
         <div className="row">
-          <div className="col-8">
+          <div className="col-4">
             <ProductCreationModal
               withCategorySelector
               withMerchandiseType
@@ -104,7 +136,32 @@ const MerchandiseCollectionAdminPane: React.FC<{
               }
             />
           </div>
-          <div className="col-4">
+          <div className="col-8 d-flex">
+            <Select
+              showSearch
+              className="mr-3"
+              style={{ minWidth: 200 }}
+              defaultValue={'allMerchandiseType'}
+              onChange={val => onSelect(val)}
+            >
+              <Select.Option value="allMerchandiseType">{formatMessage(messages.allMerchandiseType)}</Select.Option>
+              <Select.Option value="generalPhysicalMerchandise">
+                {formatMessage(merchandiseMessages.label.generalPhysicalMerchandise)}
+              </Select.Option>
+              <Select.Option value="generalVirtualMerchandise">
+                {formatMessage(merchandiseMessages.label.generalVirtualMerchandise)}
+              </Select.Option>
+              {enabledModules.merchandise_customization && (
+                <>
+                  <Select.Option value="customizedPhysicalMerchandise">
+                    {formatMessage(merchandiseMessages.label.customizedPhysicalMerchandise)}
+                  </Select.Option>
+                  <Select.Option value="customizedVirtualMerchandise">
+                    {formatMessage(merchandiseMessages.label.customizedVirtualMerchandise)}
+                  </Select.Option>
+                </>
+              )}
+            </Select>
             <Input.Search
               placeholder={formatMessage(merchandiseMessages.text.searchMerchandise)}
               onChange={e => setSearchText(e.target.value.toLowerCase())}
@@ -126,7 +183,15 @@ const MerchandiseCollectionAdminPane: React.FC<{
             {tabContent.merchandises
               .filter(merchandise => !searchText || merchandise.title.toLowerCase().includes(searchText))
               .map(merchandise => (
-                <MerchandiseAdminItem key={merchandise.id} {...merchandise} />
+                <MerchandiseAdminItem
+                  key={merchandise.id}
+                  id={merchandise.id}
+                  coverUrl={merchandise.coverUrl}
+                  title={merchandise.title}
+                  listPrice={merchandise.listPrice}
+                  salePrice={merchandise.salePrice}
+                  soldAt={merchandise.soldAt}
+                />
               ))}
           </Tabs.TabPane>
         ))}
@@ -135,4 +200,4 @@ const MerchandiseCollectionAdminPane: React.FC<{
   )
 }
 
-export default MerchandiseCollectionAdminPane
+export default MerchandiseCollectionAdminBlock

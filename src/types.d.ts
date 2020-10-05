@@ -6898,6 +6898,8 @@ export interface GET_MERCHANDISE_COLLECTION_merchandise {
   sale_price: any | null;
   sold_at: any | null;
   published_at: any | null;
+  is_physical: boolean;
+  is_customized: boolean;
   /**
    * An array relationship
    */
@@ -7097,6 +7099,8 @@ export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises {
   sale_price: any | null;
   sold_at: any | null;
   published_at: any | null;
+  is_physical: boolean;
+  is_customized: boolean;
   /**
    * An array relationship
    */
@@ -10457,6 +10461,7 @@ export enum merchandise_update_column {
   description = "description",
   ended_at = "ended_at",
   id = "id",
+  is_countdown_timer_visible = "is_countdown_timer_visible",
   is_customized = "is_customized",
   is_deleted = "is_deleted",
   is_limited = "is_limited",
@@ -14476,6 +14481,7 @@ export interface merchandise_bool_exp {
   description?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_countdown_timer_visible?: Boolean_comparison_exp | null;
   is_customized?: Boolean_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
   is_limited?: Boolean_comparison_exp | null;
@@ -14645,6 +14651,7 @@ export interface merchandise_insert_input {
   description?: string | null;
   ended_at?: any | null;
   id?: any | null;
+  is_countdown_timer_visible?: boolean | null;
   is_customized?: boolean | null;
   is_deleted?: boolean | null;
   is_limited?: boolean | null;

@@ -2,7 +2,7 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import MemberShopLayout from '../../components/layout/MemberShopLayout'
 import { useMemberShop } from '../../hooks/merchandise'
-import MerchandiseCollectionAdminPane from './MerchandiseCollectionAdminPane'
+import MerchandiseCollectionAdminBlock from './MerchandiseCollectionAdminBlock'
 
 const MemberShopAdminPage: React.FC = () => {
   const { shopId } = useParams<{ shopId: string }>()
@@ -14,7 +14,7 @@ const MemberShopAdminPage: React.FC = () => {
 
   return (
     <MemberShopLayout memberShopTitle={memberShop.title} member={memberShop.member}>
-      <MerchandiseCollectionAdminPane
+      <MerchandiseCollectionAdminBlock
         shopId={shopId}
         merchandises={memberShop?.merchandises || []}
         onRefetchMemberShop={refetchMemberShop}

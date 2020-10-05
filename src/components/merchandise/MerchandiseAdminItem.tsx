@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { currencyFormatter } from '../../helpers'
 import EmptyCover from '../../images/default/empty-cover.png'
-import { MerchandisePreviewProps } from '../../types/merchandise'
 import { CustomRatioImage } from '../common/Image'
 
 const StyledWrapper = styled.div`
@@ -31,14 +30,14 @@ const StyledPriceLabel = styled.div`
   }
 `
 
-const MerchandiseAdminItem: React.FC<MerchandisePreviewProps> = ({
-  id,
-  coverUrl,
-  title,
-  listPrice,
-  salePrice,
-  soldAt,
-}) => {
+const MerchandiseAdminItem: React.FC<{
+  id: string
+  coverUrl: string | null
+  title: string
+  listPrice: number
+  salePrice: number | null
+  soldAt: Date | null
+}> = ({ id, coverUrl, title, listPrice, salePrice, soldAt }) => {
   return (
     <Link to={`/merchandises/${id}`}>
       <StyledWrapper className="d-flex align-items-center justify-content-between p-3">

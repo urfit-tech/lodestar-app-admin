@@ -8,6 +8,8 @@ export type MerchandisePreviewProps = {
   salePrice: number | null
   soldAt: Date | null
   publishedAt: Date | null
+  isPhysical: boolean
+  isCustomized: boolean
 }
 
 export type MerchandiseProps = {

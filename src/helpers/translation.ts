@@ -746,6 +746,8 @@ export const merchandiseMessages = {
     merchandiseType: { id: 'merchandise.label.merchandiseType', defaultMessage: '選擇商品類型' },
     generalPhysicalMerchandise: { id: 'merchandise.label.generalPhysicalMerchandise', defaultMessage: '一般實體商品' },
     generalVirtualMerchandise: { id: 'merchandise.label.generalVirtualMerchandise', defaultMessage: '一般虛擬商品' },
+    customizedPhysicalMerchandise: { id: 'merchandise.label.customizedPhysicalMerchandise', defaultMessage: '客製實體商品' },
+    customizedVirtualMerchandise: { id: 'merchandise.label.customizedVirtualMerchandise', defaultMessage: '客製虛擬商品' },
     deliveryItem: { id: 'merchandise.label.deliveryItem', defaultMessage: '交付項目' },
   }),
   text: defineMessages({
