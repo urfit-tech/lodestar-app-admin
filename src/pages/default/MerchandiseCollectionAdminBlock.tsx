@@ -25,6 +25,7 @@ const StyledHeader = styled.div<{ width?: string }>`
 
 const messages = defineMessages({
   allMerchandiseType: { id: 'merchandise.label.allMerchandiseType', defaultMessage: '所有商品類型' },
+  soldQuantity: { id: 'merchandise.label.soldQuantity', defaultMessage: '已售' },
 })
 
 const merchandiseTypes = {
@@ -177,6 +178,9 @@ const MerchandiseCollectionAdminBlock: React.FC<{
               <StyledHeader className="flex-grow-1">{formatMessage(commonMessages.term.merchandise)}</StyledHeader>
               <StyledHeader className="flex-shrink-0" width="7rem">
                 {formatMessage(commonMessages.label.price)}
+              </StyledHeader>
+              <StyledHeader className="flex-shrink-0" width="7rem">
+                {formatMessage(messages.soldQuantity)}
               </StyledHeader>
             </div>
 
