@@ -7218,6 +7218,12 @@ export interface GET_ORDER_LOG_COLLECTIONVariables {
 // GraphQL query operation: GET_ORDER_PRODUCT_COLLECTION
 // ====================================================
 
+export interface GET_ORDER_PRODUCT_COLLECTION_order_product_order_log_member {
+  __typename: "member";
+  username: string;
+  email: string;
+}
+
 export interface GET_ORDER_PRODUCT_COLLECTION_order_product_order_log {
   __typename: "order_log";
   id: string;
@@ -7229,6 +7235,10 @@ export interface GET_ORDER_PRODUCT_COLLECTION_order_product_order_log {
    * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
    */
   phone: any;
+  /**
+   * An object relationship
+   */
+  member: GET_ORDER_PRODUCT_COLLECTION_order_product_order_log_member;
 }
 
 export interface GET_ORDER_PRODUCT_COLLECTION_order_product_product {
@@ -10258,6 +10268,7 @@ export enum member_shop_constraint {
  * update columns of table "member_shop"
  */
 export enum member_shop_update_column {
+  cover_url = "cover_url",
   created_at = "created_at",
   id = "id",
   member_id = "member_id",
@@ -10419,7 +10430,9 @@ export enum merchandise_update_column {
   description = "description",
   ended_at = "ended_at",
   id = "id",
+  is_customized = "is_customized",
   is_deleted = "is_deleted",
+  is_limited = "is_limited",
   is_physical = "is_physical",
   link = "link",
   list_price = "list_price",
@@ -10764,16 +10777,18 @@ export enum podcast_plan_update_column {
  */
 export enum podcast_program_body_constraint {
   podcast_program_body_pkey = "podcast_program_body_pkey",
-  podcast_program_body_podcast_program_id_key = "podcast_program_body_podcast_program_id_key",
 }
 
 /**
  * update columns of table "podcast_program_body"
  */
 export enum podcast_program_body_update_column {
+  data = "data",
+  deleted_at = "deleted_at",
   description = "description",
   id = "id",
   podcast_program_id = "podcast_program_id",
+  position = "position",
 }
 
 /**
@@ -14246,6 +14261,7 @@ export interface member_shop_bool_exp {
   _and?: (member_shop_bool_exp | null)[] | null;
   _not?: member_shop_bool_exp | null;
   _or?: (member_shop_bool_exp | null)[] | null;
+  cover_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   member?: member_public_bool_exp | null;
@@ -14261,6 +14277,7 @@ export interface member_shop_bool_exp {
  * input type for inserting data into table "member_shop"
  */
 export interface member_shop_insert_input {
+  cover_url?: string | null;
   created_at?: any | null;
   id?: any | null;
   member_id?: string | null;
@@ -14432,7 +14449,9 @@ export interface merchandise_bool_exp {
   description?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_customized?: Boolean_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
+  is_limited?: Boolean_comparison_exp | null;
   is_physical?: Boolean_comparison_exp | null;
   link?: String_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
@@ -14599,7 +14618,9 @@ export interface merchandise_insert_input {
   description?: string | null;
   ended_at?: any | null;
   id?: any | null;
+  is_customized?: boolean | null;
   is_deleted?: boolean | null;
+  is_limited?: boolean | null;
   is_physical?: boolean | null;
   link?: string | null;
   list_price?: any | null;
@@ -15629,20 +15650,26 @@ export interface podcast_program_body_bool_exp {
   _and?: (podcast_program_body_bool_exp | null)[] | null;
   _not?: podcast_program_body_bool_exp | null;
   _or?: (podcast_program_body_bool_exp | null)[] | null;
+  data?: jsonb_comparison_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   podcast_program?: podcast_program_bool_exp | null;
   podcast_program_id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
 }
 
 /**
  * input type for inserting data into table "podcast_program_body"
  */
 export interface podcast_program_body_insert_input {
+  data?: any | null;
+  deleted_at?: any | null;
   description?: string | null;
   id?: any | null;
   podcast_program?: podcast_program_obj_rel_insert_input | null;
   podcast_program_id?: any | null;
+  position?: number | null;
 }
 
 /**

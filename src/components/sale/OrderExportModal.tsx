@@ -180,6 +180,7 @@ const OrderExportModal: React.FC = () => {
         [
           formatMessage(commonMessages.label.orderLogId),
           formatMessage(commonMessages.label.orderLogMemberName),
+          formatMessage(commonMessages.label.orderLogMemberEmail),
           formatMessage(commonMessages.label.invoicePhone),
           formatMessage(commonMessages.label.orderProductType),
           formatMessage(commonMessages.label.orderProductName),
@@ -192,6 +193,7 @@ const OrderExportModal: React.FC = () => {
         ...orderProducts.map(orderProduct => [
           orderProduct.order_log.id,
           orderProduct.order_log.name,
+          orderProduct.order_log.member.email,
           orderProduct.order_log.phone,
           productTypeLabel[orderProduct.product.type] || formatMessage(commonMessages.product.unknownType),
           orderProduct.name,
