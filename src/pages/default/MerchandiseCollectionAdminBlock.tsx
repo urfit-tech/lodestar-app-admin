@@ -29,10 +29,10 @@ const messages = defineMessages({
 
 const merchandiseTypes = {
   allMerchandiseType: null,
-  generalPhysicalMerchandise: { isCustomized: false, isPhysical: true },
-  generalVirtualMerchandise: { isCustomized: false, isPhysical: false },
-  customizedPhysicalMerchandise: { isCustomized: true, isPhysical: true },
-  customizedVirtualMerchandise: { isCustomized: true, isPhysical: false },
+  generalPhysical: { isCustomized: false, isPhysical: true },
+  generalVirtual: { isCustomized: false, isPhysical: false },
+  customizedPhysical: { isCustomized: true, isPhysical: true },
+  customizedVirtual: { isCustomized: true, isPhysical: false },
 }
 
 const MerchandiseCollectionAdminBlock: React.FC<{
@@ -53,20 +53,14 @@ const MerchandiseCollectionAdminBlock: React.FC<{
   } | null>(null)
 
   const onSelect = (
-    type:
-      | 'allMerchandiseType'
-      | 'generalPhysicalMerchandise'
-      | 'generalVirtualMerchandise'
-      | 'customizedPhysicalMerchandise'
-      | 'customizedVirtualMerchandise',
+    type: 'allMerchandiseType' | 'generalPhysical' | 'generalVirtual' | 'customizedPhysical' | 'customizedVirtual',
   ) => setCurrentMerchandiseType(merchandiseTypes[type])
 
-  let filteredMerchandises = merchandises
-  if (!!currentMerchandiseType) {
-    filteredMerchandises = merchandises
-      .filter(v => v.isCustomized === currentMerchandiseType.isCustomized)
-      .filter(v => v.isPhysical === currentMerchandiseType.isPhysical)
-  }
+  const filteredMerchandises = !currentMerchandiseType
+    ? merchandises
+    : merchandises
+        .filter(v => v.isCustomized === currentMerchandiseType.isCustomized)
+        .filter(v => v.isPhysical === currentMerchandiseType.isPhysical)
 
   const tabContents = [
     {
@@ -144,19 +138,19 @@ const MerchandiseCollectionAdminBlock: React.FC<{
               onChange={val => onSelect(val)}
             >
               <Select.Option value="allMerchandiseType">{formatMessage(messages.allMerchandiseType)}</Select.Option>
-              <Select.Option value="generalPhysicalMerchandise">
-                {formatMessage(merchandiseMessages.label.generalPhysicalMerchandise)}
+              <Select.Option value="generalPhysical">
+                {formatMessage(merchandiseMessages.label.generalPhysical)}
               </Select.Option>
-              <Select.Option value="generalVirtualMerchandise">
-                {formatMessage(merchandiseMessages.label.generalVirtualMerchandise)}
+              <Select.Option value="generalVirtual">
+                {formatMessage(merchandiseMessages.label.generalVirtual)}
               </Select.Option>
               {enabledModules.merchandise_customization && (
                 <>
-                  <Select.Option value="customizedPhysicalMerchandise">
-                    {formatMessage(merchandiseMessages.label.customizedPhysicalMerchandise)}
+                  <Select.Option value="customizedPhysical">
+                    {formatMessage(merchandiseMessages.label.customizedPhysical)}
                   </Select.Option>
-                  <Select.Option value="customizedVirtualMerchandise">
-                    {formatMessage(merchandiseMessages.label.customizedVirtualMerchandise)}
+                  <Select.Option value="customizedVirtual">
+                    {formatMessage(merchandiseMessages.label.customizedVirtual)}
                   </Select.Option>
                 </>
               )}
