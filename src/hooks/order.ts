@@ -89,6 +89,10 @@ export const GET_ORDER_PRODUCT_COLLECTION = gql`
         id
         name: invoice(path: "$.name")
         phone: invoice(path: "$.phone")
+        member {
+          username
+          email
+        }
       }
       product {
         id
