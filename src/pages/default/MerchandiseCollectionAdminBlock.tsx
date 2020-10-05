@@ -15,6 +15,8 @@ import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
 import { MerchandisePreviewProps } from '../../types/merchandise'
 import LoadingPage from './LoadingPage'
 
+type MerchandiseType = 'all' | 'generalPhysical' | 'generalVirtual' | 'customizedPhysical' | 'customizedVirtual'
+
 const StyledHeader = styled.div<{ width?: string }>`
   ${props => (props.width ? `width: ${props.width};` : '')}
   color: var(--gray-darker);
@@ -27,8 +29,8 @@ const messages = defineMessages({
   soldQuantity: { id: 'merchandise.label.soldQuantity', defaultMessage: '已售' },
 })
 
-const merchandiseTypes = {
-  allMerchandiseType: null,
+const filteredCondition = {
+  all: null,
   generalPhysical: { isCustomized: false, isPhysical: true },
   generalVirtual: { isCustomized: false, isPhysical: false },
   customizedPhysical: { isCustomized: true, isPhysical: true },
@@ -47,20 +49,18 @@ const MerchandiseCollectionAdminBlock: React.FC<{
 
   const insertMerchandise = useInsertMerchandise()
   const [searchText, setSearchText] = useState('')
-  const [currentMerchandiseType, setCurrentMerchandiseType] = useState<{
+  const [currentFilteredCondition, setCurrentFilteredCondition] = useState<{
     isPhysical: boolean
     isCustomized: boolean
   } | null>(null)
 
-  const onSelect = (
-    type: 'allMerchandiseType' | 'generalPhysical' | 'generalVirtual' | 'customizedPhysical' | 'customizedVirtual',
-  ) => setCurrentMerchandiseType(merchandiseTypes[type])
+  const onSelect = (type: MerchandiseType) => setCurrentFilteredCondition(filteredCondition[type])
 
-  const filteredMerchandises = !currentMerchandiseType
+  const filteredMerchandises = !currentFilteredCondition
     ? merchandises
     : merchandises
-        .filter(v => v.isCustomized === currentMerchandiseType.isCustomized)
-        .filter(v => v.isPhysical === currentMerchandiseType.isPhysical)
+        .filter(v => v.isCustomized === currentFilteredCondition.isCustomized)
+        .filter(v => v.isPhysical === currentFilteredCondition.isPhysical)
 
   const tabContents = [
     {
@@ -134,10 +134,10 @@ const MerchandiseCollectionAdminBlock: React.FC<{
               showSearch
               className="mr-3"
               style={{ minWidth: 200 }}
-              defaultValue={'allMerchandiseType'}
+              defaultValue={'all'}
               onChange={val => onSelect(val)}
             >
-              <Select.Option value="allMerchandiseType">{formatMessage(messages.allMerchandiseType)}</Select.Option>
+              <Select.Option value="all">{formatMessage(messages.allMerchandiseType)}</Select.Option>
               <Select.Option value="generalPhysical">
                 {formatMessage(merchandiseMessages.label.generalPhysical)}
               </Select.Option>
