@@ -4,7 +4,6 @@ import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import { StringParam, useQueryParam } from 'use-query-params'
 import { AdminPaneTitle } from '../../components/admin'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import MerchandiseAdminItem from '../../components/merchandise/MerchandiseAdminItem'
@@ -43,7 +42,6 @@ const MerchandiseCollectionAdminBlock: React.FC<{
 }> = ({ shopId, merchandises, onRefetchMemberShop }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { currentMemberId } = useAuth()
   const { id: appId, enabledModules } = useContext(AppContext)
 
@@ -171,7 +169,7 @@ const MerchandiseCollectionAdminBlock: React.FC<{
         </div>
       </div>
 
-      <Tabs activeKey={activeKey || 'selling'} onChange={key => setActiveKey(key)}>
+      <Tabs>
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={`${tabContent.name} (${tabContent.merchandises.length})`}>
             <div className="d-flex align-items-center justify-content-between p-3">
