@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import {
   AdminBlock,
+  AdminBlockSubTitle,
   AdminBlockTitle,
   AdminHeader,
   AdminHeaderTitle,
@@ -21,6 +22,7 @@ import MerchandiseIntroductionForm from '../../components/merchandise/Merchandis
 import MerchandiseInventoryTable from '../../components/merchandise/MerchandiseInventoryTable'
 import MerchandisePublishBlock from '../../components/merchandise/MerchandisePublishBlock'
 import MerchandiseSalesForm from '../../components/merchandise/MerchandiseSalesForm'
+import MerchandiseSpecForm from '../../components/merchandise/MerchandiseSpecForm'
 import AppContext from '../../contexts/AppContext'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { useProductInventoryLog } from '../../hooks/data'
@@ -28,8 +30,10 @@ import { useMerchandise } from '../../hooks/merchandise'
 
 const messages = defineMessages({
   settings: { id: 'merchandise.label.settings', defaultMessage: '商品資訊' },
+  specAdmin: { id: 'merchandise.label.specAdmin', defaultMessage: '規格售價' },
+  salesAdmin: { id: 'merchandise.label.salesAdmin', defaultMessage: '販售設定' },
+  specDetail: { id: 'merchandise.label.specDetail', defaultMessage: '規格與售價' },
   inventoryAdmin: { id: 'merchandise.label.inventoryAdmin', defaultMessage: '庫存管理' },
-  salesAdmin: { id: 'merchandise.label.salesAdmin', defaultMessage: '銷售設定' },
   publishAdmin: { id: 'merchandise.label.publishAdmin', defaultMessage: '上架設定' },
   basicSettings: { id: 'merchandise.label.basicSettings', defaultMessage: '基本設定' },
   introduction: { id: 'merchandise.label.introduction', defaultMessage: '商品介紹' },
@@ -92,7 +96,16 @@ const MerchandiseAdminPage: React.FC = () => {
         >
           <Tabs.TabPane key="settings" tab={formatMessage(messages.settings)}>
             <div className="container py-5">
-              <AdminPaneTitle>{formatMessage(messages.settings)}</AdminPaneTitle>
+              <AdminPaneTitle className="mb-2">{formatMessage(messages.settings)}</AdminPaneTitle>
+              <AdminBlockSubTitle className="mb-4">
+                {merchandise.isCustomized
+                  ? merchandise.isPhysical
+                    ? formatMessage(merchandiseMessages.text.customizedPhysicalDescription)
+                    : formatMessage(merchandiseMessages.text.customizedVirtualDescription)
+                  : merchandise.isPhysical
+                  ? formatMessage(merchandiseMessages.text.generalPhysicalDescription)
+                  : formatMessage(merchandiseMessages.text.generalVirtualDescription)}
+              </AdminBlockSubTitle>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(messages.basicSettings)}</AdminBlockTitle>
                 <MerchandiseBasicForm
@@ -124,6 +137,28 @@ const MerchandiseAdminPage: React.FC = () => {
             </div>
           </Tabs.TabPane>
 
+          <Tabs.TabPane key="spec" tab={formatMessage(messages.specAdmin)}>
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(messages.specAdmin)}</AdminPaneTitle>
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(messages.salesAdmin)}</AdminBlockTitle>
+                <MerchandiseSalesForm
+                  merchandise={merchandise}
+                  merchandiseId={merchandiseId}
+                  refetch={refetchMerchandise}
+                />
+              </AdminBlock>
+              <AdminBlock>
+                <AdminBlockTitle>{formatMessage(messages.specDetail)}</AdminBlockTitle>
+                <MerchandiseSpecForm
+                  merchandise={merchandise}
+                  merchandiseId={merchandiseId}
+                  onRefetch={refetchMerchandise}
+                />
+              </AdminBlock>
+            </div>
+          </Tabs.TabPane>
+
           <Tabs.TabPane key="inventory" tab={formatMessage(messages.inventoryAdmin)}>
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(messages.inventoryAdmin)}</AdminPaneTitle>
@@ -149,20 +184,6 @@ const MerchandiseAdminPage: React.FC = () => {
               </div>
               <AdminBlock>
                 <MerchandiseInventoryTable inventoryLogs={inventoryLogs} />
-              </AdminBlock>
-            </div>
-          </Tabs.TabPane>
-
-          <Tabs.TabPane key="sales" tab={formatMessage(messages.salesAdmin)}>
-            <div className="container py-5">
-              <AdminPaneTitle>{formatMessage(messages.salesAdmin)}</AdminPaneTitle>
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(messages.price)}</AdminBlockTitle>
-                <MerchandiseSalesForm
-                  merchandise={merchandise}
-                  merchandiseId={merchandiseId}
-                  refetch={refetchMerchandise}
-                />
               </AdminBlock>
             </div>
           </Tabs.TabPane>

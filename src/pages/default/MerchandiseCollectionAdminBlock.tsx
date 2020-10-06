@@ -46,7 +46,7 @@ const MerchandiseCollectionAdminBlock: React.FC<{
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { currentMemberId } = useAuth()
-  const { id: appId, enabledModules } = useContext(AppContext)
+  const { loading, id: appId, enabledModules } = useContext(AppContext)
 
   const [insertMerchandise] = useMutation<types.INSERT_MERCHANDISE, types.INSERT_MERCHANDISEVariables>(
     INSERT_MERCHANDISE,
@@ -71,11 +71,6 @@ const MerchandiseCollectionAdminBlock: React.FC<{
         merchandise => merchandise.publishedAt && merchandise.publishedAt.getTime() < Date.now(),
       ),
     },
-    // {
-    //   key: 'soldOut',
-    //   name: formatMessage(commonMessages.status.soldOut),
-    //   merchandises: [],
-    // },
     {
       key: 'unpublished',
       name: formatMessage(merchandiseMessages.status.unpublished),
@@ -85,7 +80,7 @@ const MerchandiseCollectionAdminBlock: React.FC<{
     },
   ]
 
-  if (!currentMemberId || !appId) {
+  if (!currentMemberId || loading) {
     return <LoadingPage />
   }
 

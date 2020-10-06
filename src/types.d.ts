@@ -2643,11 +2643,38 @@ export interface UPDATE_MERCHANDISE_SALES {
 
 export interface UPDATE_MERCHANDISE_SALESVariables {
   merchandiseId: any;
-  listPrice?: any | null;
-  salePrice?: any | null;
   soldAt?: any | null;
   startedAt?: any | null;
   endedAt?: any | null;
+  isCountdownTimerVisible?: boolean | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_MERCHANDISE_SPEC_COLLECTION
+// ====================================================
+
+export interface INSERT_MERCHANDISE_SPEC_COLLECTION_insert_merchandise_spec {
+  __typename: "merchandise_spec_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_MERCHANDISE_SPEC_COLLECTION {
+  /**
+   * insert data into the table: "merchandise_spec"
+   */
+  insert_merchandise_spec: INSERT_MERCHANDISE_SPEC_COLLECTION_insert_merchandise_spec | null;
+}
+
+export interface INSERT_MERCHANDISE_SPEC_COLLECTIONVariables {
+  data: merchandise_spec_insert_input[];
 }
 
 /* tslint:disable */
@@ -7152,14 +7179,21 @@ export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_inventory_status 
   delivered_quantity: any | null;
 }
 
+export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_specs {
+  __typename: "merchandise_spec";
+  id: any;
+  title: string;
+  list_price: any;
+  sale_price: any | null;
+  quota: number;
+}
+
 export interface GET_MERCHANDISE_merchandise_by_pk {
   __typename: "merchandise";
   id: any;
   title: string;
   abstract: string | null;
   description: string | null;
-  list_price: any;
-  sale_price: any | null;
   sold_at: any | null;
   started_at: any | null;
   ended_at: any | null;
@@ -7169,6 +7203,7 @@ export interface GET_MERCHANDISE_merchandise_by_pk {
   is_physical: boolean;
   is_customized: boolean;
   is_limited: boolean;
+  is_countdown_timer_visible: boolean;
   /**
    * An array relationship
    */
@@ -7185,6 +7220,10 @@ export interface GET_MERCHANDISE_merchandise_by_pk {
    * An object relationship
    */
   merchandise_inventory_status: GET_MERCHANDISE_merchandise_by_pk_merchandise_inventory_status | null;
+  /**
+   * An array relationship
+   */
+  merchandise_specs: GET_MERCHANDISE_merchandise_by_pk_merchandise_specs[];
 }
 
 export interface GET_MERCHANDISE {

@@ -69,8 +69,6 @@ export const useMerchandise = (id: string) => {
           title
           abstract
           description
-          list_price
-          sale_price
           sold_at
           started_at
           ended_at
@@ -80,6 +78,7 @@ export const useMerchandise = (id: string) => {
           is_physical
           is_customized
           is_limited
+          is_countdown_timer_visible
           merchandise_categories(order_by: { position: asc }) {
             id
             category {
@@ -100,6 +99,13 @@ export const useMerchandise = (id: string) => {
             buyable_quantity
             undelivered_quantity
             delivered_quantity
+          }
+          merchandise_specs {
+            id
+            title
+            list_price
+            sale_price
+            quota
           }
         }
       }
@@ -128,8 +134,6 @@ export const useMerchandise = (id: string) => {
           abstract: data.merchandise_by_pk.abstract,
           link: data.merchandise_by_pk.link,
           description: data.merchandise_by_pk.description,
-          listPrice: data.merchandise_by_pk.list_price,
-          salePrice: data.merchandise_by_pk.sale_price,
           soldAt: data.merchandise_by_pk.sold_at,
           startedAt: data.merchandise_by_pk.started_at,
           endedAt: data.merchandise_by_pk.ended_at,
@@ -138,11 +142,19 @@ export const useMerchandise = (id: string) => {
           isPhysical: data.merchandise_by_pk.is_physical,
           isCustomized: data.merchandise_by_pk.is_customized,
           isLimited: data.merchandise_by_pk.is_limited,
+          isCountdownTimerVisible: data.merchandise_by_pk.is_countdown_timer_visible,
           merchandiseInventoryStatus: {
             buyableQuantity: data.merchandise_by_pk.merchandise_inventory_status?.buyable_quantity || 0,
             undeliveredQuantity: data.merchandise_by_pk.merchandise_inventory_status?.undelivered_quantity || 0,
             deliveredQuantity: data.merchandise_by_pk.merchandise_inventory_status?.delivered_quantity || 0,
           },
+          specs: data.merchandise_by_pk.merchandise_specs.map(v => ({
+            id: v.id,
+            title: v.title,
+            listPrice: v.list_price,
+            salePrice: v.sale_price,
+            quota: v.quota,
+          })),
         }
 
   return {

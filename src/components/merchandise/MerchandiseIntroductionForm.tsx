@@ -76,21 +76,36 @@ const MerchandiseIntroductionForm: React.FC<{
     >
       <Form.Item
         label={
-          <span>
-            {formatMessage(merchandiseMessages.label.images)}
+          <>
+            <span>{formatMessage(merchandiseMessages.label.images)}</span>
             <Tooltip
               placement="top"
               title={<StyledTips>{formatMessage(merchandiseMessages.text.imageTips)}</StyledTips>}
+              className="ml-1"
             >
               <QuestionCircleFilled />
             </Tooltip>
-          </span>
+          </>
         }
         wrapperCol={{ span: 24, md: { span: 16 } }}
       >
         <MerchandiseImagesUploader merchandiseId={merchandiseId} images={merchandise.images} onChange={handleUpload} />
       </Form.Item>
-      <Form.Item label={formatMessage(merchandiseMessages.label.abstract)} name="abstract">
+      <Form.Item
+        label={
+          <>
+            <span>{formatMessage(merchandiseMessages.label.abstract)}</span>
+            <Tooltip
+              placement="top"
+              title={<StyledTips>{formatMessage(merchandiseMessages.text.abstractTips)}</StyledTips>}
+              className="ml-1"
+            >
+              <QuestionCircleFilled />
+            </Tooltip>
+          </>
+        }
+        name="abstract"
+      >
         <Input.TextArea rows={5} maxLength={200} placeholder={formatMessage(merchandiseMessages.text.abstractLimit)} />
       </Form.Item>
       {/* {!merchandise.isPhysical && (

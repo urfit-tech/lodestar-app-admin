@@ -706,6 +706,7 @@ export const merchandiseMessages = {
     deleteImage: { id: 'merchandise.ui.deleteImage', defaultMessage: '刪除圖片' },
     modifyInventory: { id: 'merchandise.ui.modifyInventory', defaultMessage: '調整庫存' },
     createMemberShop: { id: 'merchandise.ui.createMemberShop', defaultMessage: '建立商店' },
+    addSpec: { id: 'merchandise.ui.addSpec', defaultMessage: '新增規格' },
   }),
   status: defineMessages({
     selling: { id: 'merchandise.status.selling', defaultMessage: '販賣中' },
@@ -767,11 +768,14 @@ export const merchandiseMessages = {
     shippingPhone: { id: 'merchandise.label.shippingPhone', defaultMessage: '收件人電話' },
     shippingAddress: { id: 'merchandise.label.shippingAddress', defaultMessage: '收件地址' },
     shippingMail: { id: 'merchandise.label.shippingMail', defaultMessage: '收件人信箱' },
+    specTitle: { id: 'merchandise.label.specTitle', defaultMessage: '規格名稱' },
+    specSalePrice: { id: 'merchandise.label.specSalePrice', defaultMessage: '優惠價 (若無請留空)' },
   }),
   text: defineMessages({
     searchMerchandise: { id: 'merchandise.text.searchMerchandise', defaultMessage: '搜尋商品名稱' },
     searchMerchandiseOrder: { id: 'merchandise.text.searchMerchandiseOrder', defaultMessage: '搜尋訂單編號、商品名稱' },
-    imageTips: { id: 'merchandise.text.imageTips', defaultMessage: '建議圖片尺寸：600*600px 以上' },
+    imageTips: { id: 'merchandise.text.imageTips', defaultMessage: '建議圖片尺寸：600*600px' },
+    abstractTips: { id: 'merchandise.text.abstractTips', defaultMessage: '僅會顯示於部落格「查看商品」內的描述' },
     estimatedShippingDays: { id: 'merchandise.text.estimatedShippingDays', defaultMessage: '預估寄送天數' },
     selectMemberShopPlaceholder: {
       id: 'merchandise.text.selectMemberShopPlaceholder',
@@ -787,12 +791,28 @@ export const merchandiseMessages = {
       defaultMessage: 'ex.素材、圖庫...等虛擬商品。',
     },
     customizedPhysicalMerchandise: {
-      id: 'merchandise.label.customizedPhysicalMerchandise',
+      id: 'merchandise.text.customizedPhysicalMerchandise',
       defaultMessage: 'ex.姓名貼、客製T-shirt...等客製實體商品。',
     },
     customizedVirtualMerchandise: {
-      id: 'merchandise.label.customizedVirtualMerchandise',
+      id: 'merchandise.text.customizedVirtualMerchandise',
       defaultMessage: 'ex.似顏繪、設計簽名...等客製虛擬商品。',
+    },
+    generalPhysicalDescription: {
+      id: 'merchandise.text.generalPhysicalDescription',
+      defaultMessage: '此為實體需寄送的商品，可於請設定庫存，出貨後請記得於出貨管理通知買家',
+    },
+    generalVirtualDescription: {
+      id: 'merchandise.text.generalVirtualDescription',
+      defaultMessage: '此為虛擬商品，請預先於「銷售規格」內上傳交付給買家的檔案',
+    },
+    customizedPhysicalDescription: {
+      id: 'merchandise.text.customizedPhysicalDescription',
+      defaultMessage: '此為實體客製化且需寄送的商品，出貨後請記得於出貨管理通知買家',
+    },
+    customizedVirtualDescription: {
+      id: 'merchandise.text.customizedVirtualDescription',
+      defaultMessage: '此為虛擬客製化商品，若有人購買，請記得於「出貨管理」上傳交付檔案，並通知出貨讓買家可下載',
     },
   }),
 }

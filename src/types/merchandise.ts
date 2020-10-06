@@ -27,8 +27,6 @@ export type MerchandiseProps = {
   abstract: string | null
   link: string | null
   description: string | null
-  listPrice: number
-  salePrice: number | null
   soldAt: Date | null
   startedAt: Date | null
   endedAt: Date | null
@@ -37,6 +35,16 @@ export type MerchandiseProps = {
   isPhysical: boolean
   isCustomized: boolean
   isLimited: boolean
+  isCountdownTimerVisible: boolean
+  specs: MerchandiseSpecProps[]
+}
+
+export type MerchandiseSpecProps = {
+  id: string
+  title: string
+  listPrice: number
+  salePrice: number | null
+  quota: number
 }
 
 export type MemberShopPreviewProps = {
