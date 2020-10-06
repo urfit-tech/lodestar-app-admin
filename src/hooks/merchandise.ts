@@ -1,5 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
+import { sum } from 'ramda'
+import { notEmpty } from '../helpers'
 import types from '../types'
 import { ProductInventoryStatusProps } from '../types/general'
 import {
@@ -255,6 +257,13 @@ export const useMemberShop = (shopId: string) => {
             published_at
             is_physical
             is_customized
+            merchandise_specs {
+              id
+              merchandise_spec_inventory_status {
+                total_quantity
+                buyable_quantity
+              }
+            }
             merchandise_imgs(where: { type: { _eq: "cover" } }) {
               id
               url
@@ -271,10 +280,14 @@ export const useMemberShop = (shopId: string) => {
     },
   )
 
+  console.log(data)
+
   const memberShop:
     | (MemberShopProps & {
         member: { id: string; name: string; pictureUrl: string | null }
-        merchandises: MerchandisePreviewProps[]
+        merchandises: (MerchandisePreviewProps & {
+          soldQuantity: number
+        })[]
       })
     | null =
     loading || error || !data || !data.member_shop_by_pk
@@ -299,6 +312,15 @@ export const useMemberShop = (shopId: string) => {
             isPhysical: v.is_physical,
             isCustomized: v.is_customized,
             publishedAt: v.published_at ? new Date(v.published_at) : null,
+            soldQuantity: sum(
+              v.merchandise_specs
+                .filter(notEmpty)
+                .map(
+                  w =>
+                    w.merchandise_spec_inventory_status?.total_quantity -
+                    w.merchandise_spec_inventory_status?.buyable_quantity,
+                ),
+            ),
             coverUrl: v.merchandise_imgs[0]?.url || null,
           })),
         }

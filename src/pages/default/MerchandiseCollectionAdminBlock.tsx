@@ -39,7 +39,7 @@ const filteredCondition = {
 
 const MerchandiseCollectionAdminBlock: React.FC<{
   shopId: string
-  merchandises: MerchandisePreviewProps[]
+  merchandises: (MerchandisePreviewProps & { soldQuantity: number })[]
   onRefetchMemberShop: () => void
 }> = ({ shopId, merchandises, onRefetchMemberShop }) => {
   const { formatMessage } = useIntl()
@@ -171,9 +171,9 @@ const MerchandiseCollectionAdminBlock: React.FC<{
               <StyledHeader className="flex-shrink-0" width="7rem">
                 {formatMessage(commonMessages.label.price)}
               </StyledHeader>
-              {/* <StyledHeader className="flex-shrink-0" width="7rem">
+              <StyledHeader className="flex-shrink-0" width="7rem">
                 {formatMessage(messages.soldQuantity)}
-              </StyledHeader> */}
+              </StyledHeader>
             </div>
 
             {tabContent.merchandises
@@ -187,6 +187,7 @@ const MerchandiseCollectionAdminBlock: React.FC<{
                   listPrice={merchandise.listPrice}
                   salePrice={merchandise.salePrice}
                   soldAt={merchandise.soldAt}
+                  soldQuantity={merchandise.soldQuantity}
                 />
               ))}
           </Tabs.TabPane>

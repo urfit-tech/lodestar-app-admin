@@ -7085,6 +7085,21 @@ export interface GET_MEMBER_SHOP_member_shop_by_pk_member {
   picture_url: string | null;
 }
 
+export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs_merchandise_spec_inventory_status {
+  __typename: "merchandise_spec_inventory_status";
+  total_quantity: any | null;
+  buyable_quantity: any | null;
+}
+
+export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs {
+  __typename: "merchandise_spec";
+  id: any;
+  /**
+   * An object relationship
+   */
+  merchandise_spec_inventory_status: GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs_merchandise_spec_inventory_status | null;
+}
+
 export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_imgs {
   __typename: "merchandise_img";
   id: any;
@@ -7101,6 +7116,10 @@ export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises {
   published_at: any | null;
   is_physical: boolean;
   is_customized: boolean;
+  /**
+   * An array relationship
+   */
+  merchandise_specs: GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs[];
   /**
    * An array relationship
    */
@@ -10432,6 +10451,46 @@ export enum merchandise_img_update_column {
   position = "position",
   type = "type",
   url = "url",
+}
+
+/**
+ * unique or primary key constraints on table "merchandise_spec"
+ */
+export enum merchandise_spec_constraint {
+  merchandise_spec_pkey = "merchandise_spec_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "merchandise_spec_file"
+ */
+export enum merchandise_spec_file_constraint {
+  merchandise_spec_file_pkey = "merchandise_spec_file_pkey",
+}
+
+/**
+ * update columns of table "merchandise_spec_file"
+ */
+export enum merchandise_spec_file_update_column {
+  created_at = "created_at",
+  data = "data",
+  id = "id",
+  merchandise_spec_id = "merchandise_spec_id",
+  updated_at = "updated_at",
+}
+
+/**
+ * update columns of table "merchandise_spec"
+ */
+export enum merchandise_spec_update_column {
+  created_at = "created_at",
+  id = "id",
+  is_deleted = "is_deleted",
+  list_price = "list_price",
+  merchandise_id = "merchandise_id",
+  quota = "quota",
+  sale_price = "sale_price",
+  title = "title",
+  updated_at = "updated_at",
 }
 
 /**
@@ -14496,6 +14555,7 @@ export interface merchandise_bool_exp {
   merchandise_files?: merchandise_file_bool_exp | null;
   merchandise_imgs?: merchandise_img_bool_exp | null;
   merchandise_inventory_status?: merchandise_inventory_status_bool_exp | null;
+  merchandise_specs?: merchandise_spec_bool_exp | null;
   merchandise_tags?: merchandise_tag_bool_exp | null;
   meta?: String_comparison_exp | null;
   position?: Int_comparison_exp | null;
@@ -14664,6 +14724,7 @@ export interface merchandise_insert_input {
   merchandise_categories?: merchandise_category_arr_rel_insert_input | null;
   merchandise_files?: merchandise_file_arr_rel_insert_input | null;
   merchandise_imgs?: merchandise_img_arr_rel_insert_input | null;
+  merchandise_specs?: merchandise_spec_arr_rel_insert_input | null;
   merchandise_tags?: merchandise_tag_arr_rel_insert_input | null;
   meta?: string | null;
   position?: number | null;
@@ -14706,6 +14767,128 @@ export interface merchandise_on_conflict {
   constraint: merchandise_constraint;
   update_columns: merchandise_update_column[];
   where?: merchandise_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "merchandise_spec"
+ */
+export interface merchandise_spec_arr_rel_insert_input {
+  data: merchandise_spec_insert_input[];
+  on_conflict?: merchandise_spec_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "merchandise_spec". All fields are combined with a logical 'AND'.
+ */
+export interface merchandise_spec_bool_exp {
+  _and?: (merchandise_spec_bool_exp | null)[] | null;
+  _not?: merchandise_spec_bool_exp | null;
+  _or?: (merchandise_spec_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
+  list_price?: numeric_comparison_exp | null;
+  merchandise?: merchandise_bool_exp | null;
+  merchandise_id?: uuid_comparison_exp | null;
+  merchandise_spec_files?: merchandise_spec_file_bool_exp | null;
+  merchandise_spec_inventory_status?: merchandise_spec_inventory_status_bool_exp | null;
+  quota?: Int_comparison_exp | null;
+  sale_price?: numeric_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "merchandise_spec_file"
+ */
+export interface merchandise_spec_file_arr_rel_insert_input {
+  data: merchandise_spec_file_insert_input[];
+  on_conflict?: merchandise_spec_file_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "merchandise_spec_file". All fields are combined with a logical 'AND'.
+ */
+export interface merchandise_spec_file_bool_exp {
+  _and?: (merchandise_spec_file_bool_exp | null)[] | null;
+  _not?: merchandise_spec_file_bool_exp | null;
+  _or?: (merchandise_spec_file_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  data?: jsonb_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  merchandise_spec?: merchandise_spec_bool_exp | null;
+  merchandise_spec_id?: uuid_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "merchandise_spec_file"
+ */
+export interface merchandise_spec_file_insert_input {
+  created_at?: any | null;
+  data?: any | null;
+  id?: any | null;
+  merchandise_spec?: merchandise_spec_obj_rel_insert_input | null;
+  merchandise_spec_id?: any | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "merchandise_spec_file"
+ */
+export interface merchandise_spec_file_on_conflict {
+  constraint: merchandise_spec_file_constraint;
+  update_columns: merchandise_spec_file_update_column[];
+  where?: merchandise_spec_file_bool_exp | null;
+}
+
+/**
+ * input type for inserting data into table "merchandise_spec"
+ */
+export interface merchandise_spec_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  is_deleted?: boolean | null;
+  list_price?: any | null;
+  merchandise?: merchandise_obj_rel_insert_input | null;
+  merchandise_id?: any | null;
+  merchandise_spec_files?: merchandise_spec_file_arr_rel_insert_input | null;
+  quota?: number | null;
+  sale_price?: any | null;
+  title?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "merchandise_spec_inventory_status". All fields are combined with a logical 'AND'.
+ */
+export interface merchandise_spec_inventory_status_bool_exp {
+  _and?: (merchandise_spec_inventory_status_bool_exp | null)[] | null;
+  _not?: merchandise_spec_inventory_status_bool_exp | null;
+  _or?: (merchandise_spec_inventory_status_bool_exp | null)[] | null;
+  buyable_quantity?: bigint_comparison_exp | null;
+  delivered_quantity?: bigint_comparison_exp | null;
+  merchandise_spec?: merchandise_spec_bool_exp | null;
+  merchandise_spec_id?: uuid_comparison_exp | null;
+  total_quantity?: bigint_comparison_exp | null;
+  undelivered_quantity?: bigint_comparison_exp | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "merchandise_spec"
+ */
+export interface merchandise_spec_obj_rel_insert_input {
+  data: merchandise_spec_insert_input;
+  on_conflict?: merchandise_spec_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "merchandise_spec"
+ */
+export interface merchandise_spec_on_conflict {
+  constraint: merchandise_spec_constraint;
+  update_columns: merchandise_spec_update_column[];
+  where?: merchandise_spec_bool_exp | null;
 }
 
 /**
@@ -16400,6 +16583,8 @@ export interface product_owner_bool_exp {
   member_id?: String_comparison_exp | null;
   product?: product_bool_exp | null;
   product_id?: String_comparison_exp | null;
+  target?: String_comparison_exp | null;
+  type?: String_comparison_exp | null;
 }
 
 /**
