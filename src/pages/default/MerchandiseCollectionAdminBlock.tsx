@@ -171,9 +171,9 @@ const MerchandiseCollectionAdminBlock: React.FC<{
               <StyledHeader className="flex-shrink-0" width="7rem">
                 {formatMessage(commonMessages.label.price)}
               </StyledHeader>
-              <StyledHeader className="flex-shrink-0" width="7rem">
+              {/* <StyledHeader className="flex-shrink-0" width="7rem">
                 {formatMessage(messages.soldQuantity)}
-              </StyledHeader>
+              </StyledHeader> */}
             </div>
 
             {tabContent.merchandises

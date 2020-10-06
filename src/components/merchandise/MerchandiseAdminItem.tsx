@@ -51,7 +51,7 @@ const MerchandiseAdminItem: React.FC<{
             <StyledPriceLabel className="flex-shrink-0">{currencyFormatter(salePrice)}</StyledPriceLabel>
           )}
         </div>
-        <StyledPriceLabel className="flex-shrink-0"></StyledPriceLabel>
+        {/* <StyledPriceLabel className="flex-shrink-0"></StyledPriceLabel> */}
       </StyledWrapper>
     </Link>
   )
