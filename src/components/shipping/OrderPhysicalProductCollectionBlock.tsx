@@ -53,16 +53,18 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
       quantity: number
     }[]
   }[]
-  searchText: string
+  searchText?: string
   onRefetch?: () => void
 }> = ({ orderPhysicalProductLogs, searchText, onRefetch }) => {
   const { formatMessage } = useIntl()
 
-  orderPhysicalProductLogs = orderPhysicalProductLogs.filter(orderPhysicalProductLog =>
-    orderPhysicalProductLog.orderPhysicalProducts
-      .map(orderPhysicalProduct => !searchText || orderPhysicalProduct.key.toLowerCase().includes(searchText))
-      .includes(true),
-  )
+  if (searchText) {
+    orderPhysicalProductLogs = orderPhysicalProductLogs.filter(orderPhysicalProductLog =>
+      orderPhysicalProductLog.orderPhysicalProducts.some(
+        orderPhysicalProduct => !searchText || orderPhysicalProduct.key.toLowerCase().includes(searchText),
+      ),
+    )
+  }
 
   return (
     <div className="pt-4">

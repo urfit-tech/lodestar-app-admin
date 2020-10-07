@@ -377,7 +377,17 @@ export const useOrderPhysicalProductLog = () => {
             id
             name
             product_id
+            description
             options
+            product {
+              product_owner {
+                type
+                target
+              }
+            }
+          }
+          member {
+            name
           }
         }
       }
@@ -386,6 +396,7 @@ export const useOrderPhysicalProductLog = () => {
 
   const orderPhysicalProductLogs: {
     id: string
+    member: string
     createdAt: Date
     updatedAt: Date
     deliveredAt: Date
@@ -397,7 +408,9 @@ export const useOrderPhysicalProductLog = () => {
       id: string
       name: string
       productId: string
+      description: string | null
       quantity: number
+      memberShopId?: string | null
     }[]
   }[] =
     error || loading || !data
@@ -406,6 +419,7 @@ export const useOrderPhysicalProductLog = () => {
           .filter(orderLog => orderLog.order_products.length && orderLog.shipping.address)
           .map(orderLog => ({
             id: orderLog.id,
+            member: orderLog.member.name,
             createdAt: orderLog.created_at,
             updatedAt: orderLog.updated_at,
             deliveredAt: orderLog.delivered_at,
@@ -418,6 +432,8 @@ export const useOrderPhysicalProductLog = () => {
               name: orderPhysicalProduct.name,
               productId: orderPhysicalProduct.product_id.split('_')[1],
               quantity: orderPhysicalProduct.options?.quantity || 1,
+              description: orderPhysicalProduct.description,
+              memberShopId: orderPhysicalProduct.product.product_owner?.target || undefined,
             })),
           }))
 

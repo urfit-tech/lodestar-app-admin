@@ -703,6 +703,12 @@ export const merchandiseMessages = {
     deleteImage: { id: 'merchandise.ui.deleteImage', defaultMessage: '刪除圖片' },
     modifyInventory: { id: 'merchandise.ui.modifyInventory', defaultMessage: '調整庫存' },
     createMemberShop: { id: 'merchandise.ui.createMemberShop', defaultMessage: '建立商店' },
+    shippingInfo: { id: 'merchandise.ui.shippingInfo', defaultMessage: '收件資訊' },
+    shippingName: { id: 'merchandise.ui.shippingName', defaultMessage: '收件姓名' },
+    shippingMethod: { id: 'merchandise.ui.shippingMethod', defaultMessage: '收件方式' },
+    shippingPhone: { id: 'merchandise.ui.shippingPhone', defaultMessage: '收件人電話' },
+    shippingAddress: { id: 'merchandise.ui.shippingAddress', defaultMessage: '收件地址' },
+    shippingMail: { id: 'merchandise.ui.shippingMail', defaultMessage: '收件人信箱' },
   }),
   status: defineMessages({
     selling: { id: 'merchandise.status.selling', defaultMessage: '販賣中' },
