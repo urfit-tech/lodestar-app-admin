@@ -117,6 +117,7 @@ const MerchandiseCollectionAdminBlock: React.FC<{
                       })) || [],
                     isPhysical,
                     isCustomized,
+                    isLimited: isPhysical && !isCustomized,
                   },
                 })
                   .then(({ data }) => {
@@ -161,7 +162,7 @@ const MerchandiseCollectionAdminBlock: React.FC<{
         </div>
       </div>
 
-      <Tabs>
+      <Tabs defaultActiveKey="selling">
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={`${tabContent.name} (${tabContent.merchandises.length})`}>
             <div className="d-flex align-items-center justify-content-between p-3">
@@ -204,6 +205,7 @@ const INSERT_MERCHANDISE = gql`
     $merchandiseCategories: [merchandise_category_insert_input!]!
     $isPhysical: Boolean
     $isCustomized: Boolean
+    $isLimited: Boolean
   ) {
     insert_merchandise_one(
       object: {
@@ -214,6 +216,7 @@ const INSERT_MERCHANDISE = gql`
         merchandise_categories: { data: $merchandiseCategories }
         is_physical: $isPhysical
         is_customized: $isCustomized
+        is_limited: $isLimited
       }
     ) {
       id

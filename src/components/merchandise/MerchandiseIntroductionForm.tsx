@@ -108,19 +108,6 @@ const MerchandiseIntroductionForm: React.FC<{
       >
         <Input.TextArea rows={5} maxLength={200} placeholder={formatMessage(merchandiseMessages.text.abstractLimit)} />
       </Form.Item>
-      {/* {!merchandise.isPhysical && (
-        <Form.Item label={formatMessage(merchandiseMessages.label.deliveryItem)} wrapperCol={{ span: 24 }}>
-          <MultipleUploader
-            path={`merchandise_files/${appId}/${merchandise.id}`}
-            fileList={files}
-            onSetFileList={setFiles}
-            uploadText={formatMessage(commonMessages.ui.uploadFile)}
-            onUploading={() => setUploading(true)}
-            onSuccess={() => setUploading(false)}
-            onError={() => setUploading(false)}
-          />
-        </Form.Item>
-      )} */}
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button onClick={() => form.resetFields()} className="mr-2">

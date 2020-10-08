@@ -106,6 +106,10 @@ export const useMerchandise = (id: string) => {
             list_price
             sale_price
             quota
+            merchandise_spec_files {
+              id
+              data
+            }
           }
         }
       }
@@ -154,6 +158,10 @@ export const useMerchandise = (id: string) => {
             listPrice: v.list_price,
             salePrice: v.sale_price,
             quota: v.quota,
+            files: v.merchandise_spec_files.map(u => ({
+              id: u.id,
+              data: u.data,
+            })),
           })),
         }
 

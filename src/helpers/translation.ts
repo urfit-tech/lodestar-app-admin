@@ -814,6 +814,7 @@ export const merchandiseMessages = {
       id: 'merchandise.text.customizedVirtualDescription',
       defaultMessage: '此為虛擬客製化商品，若有人購買，請記得於「出貨管理」上傳交付檔案，並通知出貨讓買家可下載',
     },
+    specTitleHint: {id: 'merchandise.text.specTitleHint', defaultMessage: 'ex. 紅色 S 號'}
   }),
 }
 

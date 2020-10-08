@@ -45,6 +45,7 @@ export type MerchandiseSpecProps = {
   listPrice: number
   salePrice: number | null
   quota: number
+  files: { id: string; data: any }[]
 }
 
 export type MemberShopPreviewProps = {
