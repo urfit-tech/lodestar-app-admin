@@ -1,5 +1,5 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import { Button, Skeleton, Tabs } from 'antd'
+import { Button, Skeleton, Tabs, Tag } from 'antd'
 import React, { useContext } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
@@ -41,6 +41,9 @@ const messages = defineMessages({
   price: { id: 'merchandise.label.price', defaultMessage: '商品售價' },
 })
 
+const StyledTag = styled(Tag)`
+  color: var(--gray-dark);
+`
 const StatusCardTitle = styled.div`
   margin-bottom: 0.75rem;
   color: var(--gray-darker);
@@ -71,10 +74,22 @@ const MerchandiseAdminPage: React.FC = () => {
     <>
       <AdminHeader>
         <Link to={`/member-shops/${merchandise.memberShopId}`}>
-          <Button type="link" className="mr-3">
+          <Button type="link" className="mr-2">
             <ArrowLeftOutlined />
           </Button>
         </Link>
+
+        {merchandise.isCustomized ? (
+          merchandise.isPhysical ? (
+            <StyledTag>{formatMessage(merchandiseMessages.label.customizedPhysicalTag)}</StyledTag>
+          ) : (
+            <StyledTag>{formatMessage(merchandiseMessages.label.customizedVirtualTag)}</StyledTag>
+          )
+        ) : merchandise.isPhysical ? (
+          <StyledTag>{formatMessage(merchandiseMessages.label.generalPhysicalTag)}</StyledTag>
+        ) : (
+          <StyledTag>{formatMessage(merchandiseMessages.label.generalVirtualTag)}</StyledTag>
+        )}
 
         <AdminHeaderTitle>{merchandise?.title || merchandiseId}</AdminHeaderTitle>
 

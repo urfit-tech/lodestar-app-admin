@@ -760,6 +760,10 @@ export const merchandiseMessages = {
     generalVirtual: { id: 'merchandise.label.generalVirtual', defaultMessage: '一般虛擬' },
     customizedPhysical: { id: 'merchandise.label.customizedPhysical', defaultMessage: '客製實體' },
     customizedVirtual: { id: 'merchandise.label.customizedVirtual', defaultMessage: '客製虛擬' },
+    generalPhysicalTag: { id: 'merchandise.label.generalPhysicalTag', defaultMessage: '一般實體' },
+    generalVirtualTag: { id: 'merchandise.label.generalVirtualTag', defaultMessage: '一般虛擬' },
+    customizedPhysicalTag: { id: 'merchandise.label.customizedPhysicalTag', defaultMessage: '客製實體' },
+    customizedVirtualTag: { id: 'merchandise.label.customizedVirtualTag', defaultMessage: '客製虛擬' },
     deliveryItem: { id: 'merchandise.label.deliveryItem', defaultMessage: '交付項目' },
     shippingFee: { id: 'merchandise.label.shippingFee', defaultMessage: '運費' },
     shippingInfo: { id: 'merchandise.label.shippingInfo', defaultMessage: '收件資訊' },
@@ -814,7 +818,7 @@ export const merchandiseMessages = {
       id: 'merchandise.text.customizedVirtualDescription',
       defaultMessage: '此為虛擬客製化商品，若有人購買，請記得於「出貨管理」上傳交付檔案，並通知出貨讓買家可下載',
     },
-    specTitleHint: {id: 'merchandise.text.specTitleHint', defaultMessage: 'ex. 紅色 S 號'}
+    specTitleHint: { id: 'merchandise.text.specTitleHint', defaultMessage: 'ex. 紅色 S 號' },
   }),
 }
 
