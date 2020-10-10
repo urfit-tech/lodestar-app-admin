@@ -7,6 +7,7 @@ import React, { useState } from 'react'
 import Recorder from 'recorder-js'
 import styled from 'styled-components'
 import { durationFormatter } from '../../helpers'
+import { getAudioDuration } from '../../helpers/audio'
 import { useInterval } from '../../hooks/util'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import { ReactComponent as StopCircleIcon } from '../../images/icon/stop-circle.svg'
@@ -124,31 +125,6 @@ const RecordButton: React.FC<
       </div>
     </StyledButton>
   )
-}
-
-function getAudioDuration(blob: Blob): Promise<number> {
-  return new Promise((resolve, reject) => {
-    const aud = document.createElement('audio')
-    aud.src = URL.createObjectURL(blob)
-
-    aud.onloadedmetadata = function () {
-      // handle chrome's bug
-      if (aud.duration === Infinity) {
-        // set it to bigger than the actual duration
-        aud.currentTime = 1e101
-        aud.ontimeupdate = function () {
-          this.ontimeupdate = () => {
-            return
-          }
-          aud.currentTime = 0
-
-          resolve(aud.duration)
-        }
-      } else {
-        resolve(aud.duration)
-      }
-    }
-  })
 }
 
 export default RecordButton

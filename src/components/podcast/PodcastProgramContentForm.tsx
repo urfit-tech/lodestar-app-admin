@@ -2,21 +2,24 @@ import Icon, { CloseOutlined, QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, InputNumber, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import { UploadChangeParam } from 'antd/lib/upload'
+import { UploadFile } from 'antd/lib/upload/interface'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
-import { extname } from 'path'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
+import { v4 as uuid } from 'uuid'
 import { AppContext } from '../../contexts/AppContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
-import { decodeAudio } from '../../helpers/audio'
+import { getAudioDuration } from '../../helpers/audio'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
-import { UPDATE_PODCAST_PROGRAM_CONTENT } from '../../hooks/podcast'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
+import { appendPodcastProgramAduio, deletePodcastProgramAduio } from '../../pages/default/RecordingPageHelpers'
 import types from '../../types'
-import { PodcastProgramAdminProps } from '../../types/podcast'
+import { PodcastProgramAdminProps, PodcastProgramAudio } from '../../types/podcast'
 import { StyledTips } from '../admin'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import SingleUploader from '../form/SingleUploader'
@@ -32,42 +35,43 @@ const StyledFileBlock = styled.div`
 `
 
 const PodcastProgramContentForm: React.FC<{
-  podcastProgramAdmin: PodcastProgramAdminProps | null
+  podcastProgramAdmin: (PodcastProgramAdminProps & { audios: PodcastProgramAudio[] }) | null
   onRefetch?: () => void
 }> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const { id: appId, enabledModules } = useContext(AppContext)
+  const { authToken } = useAuth()
   const history = useHistory()
 
-  const [updatePodcastProgramContent] = useMutation<
-    types.UPDATE_PODCAST_PROGRAM_CONTENT,
-    types.UPDATE_PODCAST_PROGRAM_CONTENTVariables
-  >(UPDATE_PODCAST_PROGRAM_CONTENT)
   const [updatePodcastProgramBody] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_BODY,
     types.UPDATE_PODCAST_PROGRAM_BODYVariables
   >(UPDATE_PODCAST_PROGRAM_BODY)
 
   const [loading, setLoading] = useState(false)
+  const [uploadAudioBase, setUploadAudioBase] = useState<string>(uuid())
 
   if (!podcastProgramAdmin) {
     return <Skeleton active />
   }
 
-  const handleUploadAudio = async (file: File | null) => {
-    const contentType: string | null = file ? extname(file.name).replace('.', '') : null
-    const audioBuffer = file ? await decodeAudio(file) : null
-    const duration = audioBuffer ? Math.ceil(audioBuffer.duration / 60) : 0
+  const handleUploadAudio = async (info: UploadChangeParam<UploadFile>) => {
+    const file = info.file.originFileObj as File
+
+    if (file == null) {
+      console.warn('File is null / undefined')
+
+      return
+    }
+
+    const key = `audios/${appId}/${podcastProgramAdmin.id}/${uploadAudioBase}.mp3`
+    setUploadAudioBase(uuid())
+
+    const duration = await getAudioDuration(file)
+
     setLoading(true)
-    updatePodcastProgramContent({
-      variables: {
-        updatedAt: new Date(),
-        podcastProgramId: podcastProgramAdmin.id,
-        contentType,
-        duration,
-      },
-    })
+    appendPodcastProgramAduio(authToken, appId, podcastProgramAdmin.id, key, file.name, duration)
       .then(() => {
         onRefetch && onRefetch()
         form.setFields([{ name: 'duration', value: duration }])
@@ -125,17 +129,17 @@ const PodcastProgramContentForm: React.FC<{
             </Tooltip>
           </span>
         }
-        className={podcastProgramAdmin.contentType ? 'mb-1' : ''}
+        className={podcastProgramAdmin.audios.length > 0 ? 'mb-1' : ''}
       >
         <Form.Item name="audio" noStyle>
           <SingleUploader
-            withExtension
+            withExtension={false}
             accept=".mp3"
             // accept=".mp3,.m4a,.mp4,.3gp,.m4a,.aac"
             uploadText={formatMessage(podcastMessages.ui.uploadAudioFile)}
             showUploadList={false}
-            path={`audios/${appId}/${podcastProgramAdmin.id}`}
-            onSuccess={info => handleUploadAudio(info.file.originFileObj as File)}
+            path={`audios/${appId}/${podcastProgramAdmin.id}/${uploadAudioBase}.mp3`}
+            onSuccess={handleUploadAudio}
             className="mr-2"
           />
         </Form.Item>
@@ -143,21 +147,35 @@ const PodcastProgramContentForm: React.FC<{
           <Button onClick={handleRecording} className="ml-2">
             <Icon component={() => <MicrophoneIcon />} />
             <span>
-              {podcastProgramAdmin.contentType
+              {podcastProgramAdmin.duration
                 ? formatMessage(podcastMessages.ui.editAudio)
                 : formatMessage(podcastMessages.ui.recordAudio)}
             </span>
           </Button>
         )}
       </Form.Item>
-      {podcastProgramAdmin.contentType ? (
-        <StyledFileBlock className="d-flex align-items-center justify-content-between mb-3">
-          <span>
-            {podcastProgramAdmin.id}.{podcastProgramAdmin.contentType}
-          </span>
-          <CloseOutlined className="cursor-pointer" onClick={() => handleUploadAudio(null)} />
-        </StyledFileBlock>
-      ) : null}
+      <>
+        {podcastProgramAdmin.audios.map(audio => {
+          return (
+            <StyledFileBlock className="d-flex align-items-center justify-content-between mb-3">
+              <span>{audio.filename}</span>
+              <CloseOutlined
+                className="cursor-pointer"
+                onClick={() => {
+                  setLoading(true)
+                  deletePodcastProgramAduio(authToken, appId, audio.id)
+                    .then(() => {
+                      onRefetch && onRefetch()
+                      message.success(formatMessage(commonMessages.event.successfullySaved))
+                    })
+                    .catch(handleError)
+                    .finally(() => setLoading(false))
+                }}
+              />
+            </StyledFileBlock>
+          )
+        })}
+      </>
       <Form.Item label={formatMessage(podcastMessages.label.duration)} name="duration">
         <InputNumber min={0} />
       </Form.Item>
