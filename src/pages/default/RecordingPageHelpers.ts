@@ -23,6 +23,27 @@ export async function appendPodcastProgramAduio(
   )
 }
 
+export async function splitPodcastProgramAduio(
+  authToken: string | null,
+  appId: string,
+  podcastProgramAudioId: string,
+  atSec: number,
+): Promise<string[]> {
+  const resp = await axios.post(
+    `${process.env.REACT_APP_BACKEND_ENDPOINT}/podcast/split`,
+    {
+      appId,
+      podcastProgramAudioId,
+      atSec,
+    },
+    {
+      headers: { authorization: `Bearer ${authToken}` },
+    },
+  )
+
+  return resp.data.result.ids
+}
+
 export async function movePodcastProgramAduio(
   authToken: string | null,
   appId: string,

@@ -19,7 +19,12 @@ import { podcastMessages } from '../../helpers/translation'
 import { UPDATE_PODCAST_PROGRAM_CONTENT, usePodcastProgramAdmin } from '../../hooks/podcast'
 import types from '../../types'
 import { PodcastProgramAudio } from '../../types/podcast'
-import { appendPodcastProgramAduio, deletePodcastProgramAduio, movePodcastProgramAduio } from './RecordingPageHelpers'
+import {
+  appendPodcastProgramAduio,
+  deletePodcastProgramAduio,
+  movePodcastProgramAduio,
+  splitPodcastProgramAduio,
+} from './RecordingPageHelpers'
 
 const StyledLayoutContent = styled.div`
   height: calc(100vh - 64px);
@@ -211,56 +216,34 @@ const RecordingPage: React.FC = () => {
     playRate < 1 ? setPlayRate(1) : playRate < 1.5 ? setPlayRate(1.5) : playRate < 2 ? setPlayRate(2) : setPlayRate(0.5)
   }, [playRate])
 
-  const onTrimAudio = useCallback(() => {
-    console.log('onTrimAudio')
-    // const wave = signedPodCastProgramBodies.find(wave => wave.id === currentAudioId)
-    // if (wave?.audioBuffer && currentPlayingSecond > 0) {
-    //   const { duration, length } = wave.audioBuffer
+  const onTrimAudio = useCallback(async () => {
+    const audio = signedPodCastProgramAudios.find(audio => audio.id === currentAudioId)
+    if (audio == null) {
+      console.warn('Cannot find audio with id', currentAudioId)
 
-    //   const audioSlicedFirst = sliceAudioBuffer(
-    //     wave.audioBuffer,
-    //     ~~((length * 0) / duration),
-    //     ~~((length * currentPlayingSecond) / duration),
-    //   )
-    //   const audioSlicedLast = sliceAudioBuffer(
-    //     wave.audioBuffer,
-    //     ~~((length * currentPlayingSecond) / duration),
-    //     ~~(length * 1),
-    //   )
-    //   setWaveCollection(
-    //     signedPodCastProgramBodies.reduce((acc: WaveCollectionProps[], wave: WaveCollectionProps) => {
-    //       if (wave.id === currentAudioId) {
-    //         const audioSlicedFirstId = uuid()
-    //         acc.push({
-    //           id: audioSlicedFirstId,
-    //           audioBuffer: audioSlicedFirst,
-    //           filename: wave.filename,
-    //         })
+      return
+    }
 
-    //         const [, originalFileName] = /^([^()]+)(.+)?$/.exec(wave.filename) || []
-    //         const serialNumber =
-    //           Math.max(
-    //             ...signedPodCastProgramBodies
-    //               .filter(wave => wave.filename.includes(originalFileName))
-    //               .map(wave => (/^([^.()]+)([(]+)(\d+)([)]+)?$/.exec(wave.filename) || [])[3] || '0')
-    //               .map(Number),
-    //           ) + 1
+    if (currentPlayingSecond <= 0) {
+      return
+    }
 
-    //         acc.push({
-    //           id: uuid(),
-    //           audioBuffer: audioSlicedLast,
-    //           filename: `${originalFileName}(${serialNumber})`,
-    //         })
-    //         setCurrentAudioId(audioSlicedFirstId)
-    //       } else {
-    //         acc.push(wave)
-    //       }
-    //       return acc
-    //     }, []),
-    //   )
-    //   setCurrentPlayingSecond(0)
-    // }
-  }, [])
+    setIsGeneratingAudio(true)
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const [audioId1, _] = await splitPodcastProgramAduio(authToken, appId, audio.id, currentPlayingSecond)
+
+      setCurrentPlayingSecond(0)
+      setCurrentAudioId(audioId1)
+
+      await refetchPodcastProgramAdmin()
+    } catch (error) {
+      message.error(error.message)
+    }
+
+    setIsGeneratingAudio(false)
+  }, [appId, authToken, currentAudioId, currentPlayingSecond, refetchPodcastProgramAdmin, signedPodCastProgramAudios])
 
   const onUploadAudio = useCallback(() => {
     console.log('onUploadAudio')
