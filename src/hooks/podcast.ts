@@ -1,9 +1,15 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
+import { useMemo } from 'react'
 import { PodcastProgramColumnProps } from '../components/podcast/PodcastProgramCollectionAdminTable'
 import types from '../types'
 import { CategoryProps, PeriodType } from '../types/general'
-import { PodcastPlanProps, PodcastProgramAdminProps } from '../types/podcast'
+import {
+  PodcastPlanProps,
+  PodcastProgramAdminProps,
+  PodcastProgramAudio,
+  podcastProgramAudiosFromRawAudios,
+} from '../types/podcast'
 
 export const usePodcastProgramCollection = (memberId?: string) => {
   const { loading, error, data, refetch } = useQuery<
@@ -88,7 +94,7 @@ export const usePodcastProgramCollection = (memberId?: string) => {
   }
 }
 
-export const usePodcastProgramAdmin = (podcastProgramId: string) => {
+export const usePodcastProgramAdmin = (appId: string, podcastProgramId: string) => {
   const { loading, error, data, refetch } = useQuery<
     types.GET_PODCAST_PROGRAM_ADMIN,
     types.GET_PODCAST_PROGRAM_ADMINVariables
@@ -108,6 +114,10 @@ export const usePodcastProgramAdmin = (podcastProgramId: string) => {
           published_at
           creator_id
           support_locales
+          podcast_program_audios(where: { deleted_at: { _is_null: true } }, order_by: { position: asc }) {
+            id
+            data
+          }
           podcast_program_bodies {
             id
             description
@@ -141,43 +151,50 @@ export const usePodcastProgramAdmin = (podcastProgramId: string) => {
     { variables: { podcastProgramId } },
   )
 
-  const podcastProgramAdmin:
+  const podcastProgramAdmin = useMemo<
     | (PodcastProgramAdminProps & {
+        audios: PodcastProgramAudio[]
         categories: CategoryProps[]
         tags: string[]
       })
-    | null =
-    loading || error || !data || !data.podcast_program_by_pk
-      ? null
-      : {
-          id: data.podcast_program_by_pk.id,
-          title: data.podcast_program_by_pk.title,
-          contentType: data.podcast_program_by_pk.content_type,
-          duration: data.podcast_program_by_pk.duration,
-          description: data.podcast_program_by_pk.podcast_program_bodies[0]
-            ? data.podcast_program_by_pk.podcast_program_bodies[0].description
-            : null,
-          coverUrl: data.podcast_program_by_pk.cover_url,
-          abstract: data.podcast_program_by_pk.abstract,
-          listPrice: data.podcast_program_by_pk.list_price,
-          salePrice: data.podcast_program_by_pk.sale_price,
-          soldAt: data.podcast_program_by_pk.sold_at,
-          creatorId: data.podcast_program_by_pk.creator_id,
-          instructors: data.podcast_program_by_pk.podcast_program_roles.map(podcastProgramRole => ({
-            id: podcastProgramRole.member?.id || '',
-            name: podcastProgramRole.member?.name || '',
-            pictureUrl: podcastProgramRole.member?.picture_url || '',
-          })),
-          publishedAt: data.podcast_program_by_pk.published_at
-            ? new Date(data.podcast_program_by_pk.published_at)
-            : null,
-          supportLocales: data.podcast_program_by_pk.support_locales || [],
-          categories: data.podcast_program_by_pk.podcast_program_categories.map(podcastProgramCategory => ({
-            id: podcastProgramCategory.category.id,
-            name: podcastProgramCategory.category.name,
-          })),
-          tags: data.podcast_program_by_pk.podcast_program_tags.map(podcastProgramTag => podcastProgramTag.tag?.name || ''),
-        }
+    | null
+  >(() => {
+    if (loading || error || !data || !data.podcast_program_by_pk) {
+      return null
+    }
+
+    return {
+      id: data.podcast_program_by_pk.id,
+      title: data.podcast_program_by_pk.title,
+      contentType: data.podcast_program_by_pk.content_type,
+      duration: data.podcast_program_by_pk.duration,
+      description: data.podcast_program_by_pk.podcast_program_bodies[0]
+        ? data.podcast_program_by_pk.podcast_program_bodies[0].description
+        : null,
+      coverUrl: data.podcast_program_by_pk.cover_url,
+      abstract: data.podcast_program_by_pk.abstract,
+      listPrice: data.podcast_program_by_pk.list_price,
+      salePrice: data.podcast_program_by_pk.sale_price,
+      soldAt: data.podcast_program_by_pk.sold_at,
+      creatorId: data.podcast_program_by_pk.creator_id,
+      instructors: data.podcast_program_by_pk.podcast_program_roles.map(podcastProgramRole => ({
+        id: podcastProgramRole.member?.id || '',
+        name: podcastProgramRole.member?.name || '',
+        pictureUrl: podcastProgramRole.member?.picture_url || '',
+      })),
+      publishedAt: data.podcast_program_by_pk.published_at ? new Date(data.podcast_program_by_pk.published_at) : null,
+      supportLocales: data.podcast_program_by_pk.support_locales || [],
+      categories: data.podcast_program_by_pk.podcast_program_categories.map(podcastProgramCategory => ({
+        id: podcastProgramCategory.category.id,
+        name: podcastProgramCategory.category.name,
+      })),
+      tags: data.podcast_program_by_pk.podcast_program_tags.map(podcastProgramTag => podcastProgramTag.tag?.name || ''),
+      audios:
+        data.podcast_program_by_pk.content_type != null
+          ? podcastProgramAudiosFromRawAudios(data.podcast_program_by_pk.podcast_program_audios)
+          : [],
+    }
+  }, [loading, error, data])
 
   return {
     loadingPodcastProgramAdmin: loading,

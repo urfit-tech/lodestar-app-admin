@@ -7514,6 +7514,12 @@ export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTIONVariables {
 // GraphQL query operation: GET_PODCAST_PROGRAM_ADMIN
 // ====================================================
 
+export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_audios {
+  __typename: "podcast_program_audio";
+  id: any;
+  data: any;
+}
+
 export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_bodies {
   __typename: "podcast_program_body";
   id: any;
@@ -7584,6 +7590,10 @@ export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk {
   published_at: any | null;
   creator_id: string;
   support_locales: any | null;
+  /**
+   * An array relationship
+   */
+  podcast_program_audios: GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_audios[];
   /**
    * An array relationship
    */
@@ -10769,6 +10779,26 @@ export enum podcast_plan_update_column {
   sale_price = "sale_price",
   sold_at = "sold_at",
   title = "title",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "podcast_program_audio"
+ */
+export enum podcast_program_audio_constraint {
+  podcast_program_audio_pkey = "podcast_program_audio_pkey",
+}
+
+/**
+ * update columns of table "podcast_program_audio"
+ */
+export enum podcast_program_audio_update_column {
+  created_at = "created_at",
+  data = "data",
+  deleted_at = "deleted_at",
+  id = "id",
+  podcast_program_id = "podcast_program_id",
+  position = "position",
   updated_at = "updated_at",
 }
 
@@ -15636,6 +15666,54 @@ export interface podcast_program_arr_rel_insert_input {
 }
 
 /**
+ * input type for inserting array relation for remote table "podcast_program_audio"
+ */
+export interface podcast_program_audio_arr_rel_insert_input {
+  data: podcast_program_audio_insert_input[];
+  on_conflict?: podcast_program_audio_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "podcast_program_audio". All fields are combined with a logical 'AND'.
+ */
+export interface podcast_program_audio_bool_exp {
+  _and?: (podcast_program_audio_bool_exp | null)[] | null;
+  _not?: podcast_program_audio_bool_exp | null;
+  _or?: (podcast_program_audio_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  data?: jsonb_comparison_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  podcast_program?: podcast_program_bool_exp | null;
+  podcast_program_id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "podcast_program_audio"
+ */
+export interface podcast_program_audio_insert_input {
+  created_at?: any | null;
+  data?: any | null;
+  deleted_at?: any | null;
+  id?: any | null;
+  podcast_program?: podcast_program_obj_rel_insert_input | null;
+  podcast_program_id?: any | null;
+  position?: number | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "podcast_program_audio"
+ */
+export interface podcast_program_audio_on_conflict {
+  constraint: podcast_program_audio_constraint;
+  update_columns: podcast_program_audio_update_column[];
+  where?: podcast_program_audio_bool_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "podcast_program_body"
  */
 export interface podcast_program_body_arr_rel_insert_input {
@@ -15707,6 +15785,7 @@ export interface podcast_program_bool_exp {
   playlist_podcast_programs?: playlist_podcast_program_bool_exp | null;
   podcast?: podcast_bool_exp | null;
   podcast_id?: uuid_comparison_exp | null;
+  podcast_program_audios?: podcast_program_audio_bool_exp | null;
   podcast_program_bodies?: podcast_program_body_bool_exp | null;
   podcast_program_body?: podcast_program_body_bool_exp | null;
   podcast_program_categories?: podcast_program_category_bool_exp | null;
@@ -15791,6 +15870,7 @@ export interface podcast_program_insert_input {
   playlist_podcast_programs?: playlist_podcast_program_arr_rel_insert_input | null;
   podcast?: podcast_obj_rel_insert_input | null;
   podcast_id?: any | null;
+  podcast_program_audios?: podcast_program_audio_arr_rel_insert_input | null;
   podcast_program_bodies?: podcast_program_body_arr_rel_insert_input | null;
   podcast_program_body?: podcast_program_body_obj_rel_insert_input | null;
   podcast_program_categories?: podcast_program_category_arr_rel_insert_input | null;

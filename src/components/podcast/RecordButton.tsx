@@ -7,7 +7,6 @@ import React, { useState } from 'react'
 import Recorder from 'recorder-js'
 import styled from 'styled-components'
 import { durationFormatter } from '../../helpers'
-import { decodeAudio } from '../../helpers/audio'
 import { useInterval } from '../../hooks/util'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import { ReactComponent as StopCircleIcon } from '../../images/icon/stop-circle.svg'
@@ -46,7 +45,7 @@ const RecordButton: React.FC<
   ButtonProps & {
     onStart?: () => void
     onStop?: () => void
-    onGetAudio?: (buffer: AudioBuffer) => void
+    onGetAudio?: (data: Blob, duration: number) => void
   }
 > = ({ onStart, onStop, onGetAudio, ...buttonProps }) => {
   const [recorder, setRecorder] = useState<any | undefined>(undefined)
@@ -59,22 +58,12 @@ const RecordButton: React.FC<
     setIsRecording(false)
     setStartedAt(0)
 
-    decodeAudio(e.data)
-      .then(audioBuffer => {
-        if (audioBuffer == null) {
-          throw new Error(`Got null / undefined decoded audio buffer`)
-        }
-
-        return audioBuffer
+    const blob: Blob = e.data
+    if (onGetAudio) {
+      getAudioDuration(blob).then(duration => {
+        onGetAudio(blob, duration)
       })
-      .then(
-        audioBuffer => {
-          onGetAudio && onGetAudio(audioBuffer)
-        },
-        (error: any) => {
-          console.error('Failed to get audio data', error)
-        },
-      )
+    }
   }
 
   const handleStopRecording = () => {
@@ -135,6 +124,31 @@ const RecordButton: React.FC<
       </div>
     </StyledButton>
   )
+}
+
+function getAudioDuration(blob: Blob): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const aud = document.createElement('audio')
+    aud.src = URL.createObjectURL(blob)
+
+    aud.onloadedmetadata = function () {
+      // handle chrome's bug
+      if (aud.duration === Infinity) {
+        // set it to bigger than the actual duration
+        aud.currentTime = 1e101
+        aud.ontimeupdate = function () {
+          this.ontimeupdate = () => {
+            return
+          }
+          aud.currentTime = 0
+
+          resolve(aud.duration)
+        }
+      } else {
+        resolve(aud.duration)
+      }
+    }
+  })
 }
 
 export default RecordButton

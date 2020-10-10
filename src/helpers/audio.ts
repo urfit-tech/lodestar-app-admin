@@ -105,13 +105,16 @@ export function sliceAudioBuffer(audioBuffer: AudioBuffer, start = 0, end = audi
  * @param {AudioBuffer} audioBuffer2
  * @return {AudioBuffer}
  */
-export function mergeAudioBuffer(audioBuffer1: AudioBuffer, audioBuffer2: AudioBuffer) {
-  if (
-    audioBuffer1.numberOfChannels !== audioBuffer2.numberOfChannels ||
-    audioBuffer1.sampleRate !== audioBuffer2.sampleRate
-  ) {
-    return null
+export function mergeAudioBuffer(audioBuffer1: AudioBuffer, audioBuffer2: AudioBuffer): AudioBuffer {
+  if (audioBuffer1.numberOfChannels !== audioBuffer2.numberOfChannels) {
+    throw new Error(
+      `Got different numberOfChannels: ${audioBuffer1.numberOfChannels} vs ${audioBuffer2.numberOfChannels}`,
+    )
   }
+  if (audioBuffer1.sampleRate !== audioBuffer2.sampleRate) {
+    throw new Error(`Got different sampleRate: ${audioBuffer1.sampleRate} vs ${audioBuffer2.sampleRate}`)
+  }
+
   const newBuffer = new OfflineAudioContext(
     audioBuffer1.numberOfChannels,
     audioBuffer1.length + audioBuffer2.length,
