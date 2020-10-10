@@ -18,7 +18,7 @@ import { podcastMessages } from '../../helpers/translation'
 import { UPDATE_PODCAST_PROGRAM_CONTENT, usePodcastProgramAdmin } from '../../hooks/podcast'
 import types from '../../types'
 import { PodcastProgramAudio } from '../../types/podcast'
-import { appendPodcastProgramAduio } from './RecordingPageHelpers'
+import { appendPodcastProgramAduio, deletePodcastProgramAduio } from './RecordingPageHelpers'
 
 const StyledLayoutContent = styled.div`
   height: calc(100vh - 64px);
@@ -123,7 +123,7 @@ const RecordingPage: React.FC = () => {
       setIsGeneratingAudio(true)
       uploadFile(audioKey, blob, authToken, {})
         .then(async () => {
-          await appendPodcastProgramAduio(appId, podcastProgramId, audioKey, filename, duration, authToken)
+          await appendPodcastProgramAduio(authToken, appId, podcastProgramId, audioKey, filename, duration)
           await refetchPodcastProgramAdmin()
         })
         .catch(error => {
@@ -185,14 +185,26 @@ const RecordingPage: React.FC = () => {
   }, [currentAudioIndex, signedPodCastProgramAudios])
 
   const onDeleteAudioTrack = useCallback(() => {
-    console.log('onDeleteAudioTrack')
-    // if (currentAudioIndex === 0 && signedPodCastProgramBodies.length > 1) {
-    //   setCurrentAudioId(signedPodCastProgramBodies[1].id)
-    // } else if (currentAudioIndex > 0) {
-    //   setCurrentAudioId(signedPodCastProgramBodies[currentAudioIndex - 1].id)
-    // }
-    // setWaveCollection(signedPodCastProgramBodies.filter(wave => wave.id !== currentAudioId))
-  }, [])
+    if (currentAudioIndex === 0 && signedPodCastProgramAudios.length > 1) {
+      setCurrentAudioId(signedPodCastProgramAudios[1].id)
+    } else if (currentAudioIndex > 0) {
+      setCurrentAudioId(signedPodCastProgramAudios[currentAudioIndex - 1].id)
+    }
+
+    const audio = signedPodCastProgramAudios[currentAudioIndex]
+
+    setIsGeneratingAudio(true)
+    deletePodcastProgramAduio(authToken, appId, audio.id)
+      .then(async () => {
+        await refetchPodcastProgramAdmin()
+      })
+      .catch(error => {
+        handleError(error)
+      })
+      .finally(() => {
+        setIsGeneratingAudio(false)
+      })
+  }, [appId, authToken, currentAudioIndex, refetchPodcastProgramAdmin, signedPodCastProgramAudios])
 
   const onPlayRateChange = useCallback(() => {
     playRate < 1 ? setPlayRate(1) : playRate < 1.5 ? setPlayRate(1.5) : playRate < 2 ? setPlayRate(2) : setPlayRate(0.5)
