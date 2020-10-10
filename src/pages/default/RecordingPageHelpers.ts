@@ -1,5 +1,22 @@
 import axios from 'axios'
 
+export async function exportPodcastProgram(
+  authToken: string | null,
+  appId: string,
+  podcastProgramId: string,
+): Promise<void> {
+  await axios.post(
+    `${process.env.REACT_APP_BACKEND_ENDPOINT}/podcast/export`,
+    {
+      appId,
+      podcastProgramId,
+    },
+    {
+      headers: { authorization: `Bearer ${authToken}` },
+    },
+  )
+}
+
 export async function appendPodcastProgramAduio(
   authToken: string | null,
   appId: string,

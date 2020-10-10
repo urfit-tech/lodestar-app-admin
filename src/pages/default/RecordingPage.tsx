@@ -1,4 +1,3 @@
-import { useMutation } from '@apollo/react-hooks'
 import { message, Modal, Spin } from 'antd'
 import { isEqual } from 'lodash'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
@@ -15,13 +14,13 @@ import RecordingController from '../../components/podcast/RecordingController'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { getFileDownloadableLink, handleError, uploadFile } from '../../helpers'
-import { podcastMessages } from '../../helpers/translation'
-import { UPDATE_PODCAST_PROGRAM_CONTENT, usePodcastProgramAdmin } from '../../hooks/podcast'
-import types from '../../types'
+import { commonMessages, podcastMessages } from '../../helpers/translation'
+import { usePodcastProgramAdmin } from '../../hooks/podcast'
 import { PodcastProgramAudio } from '../../types/podcast'
 import {
   appendPodcastProgramAduio,
   deletePodcastProgramAduio,
+  exportPodcastProgram,
   movePodcastProgramAduio,
   splitPodcastProgramAduio,
 } from './RecordingPageHelpers'
@@ -70,27 +69,6 @@ async function signPodCastProgramAudios(
   return signedAudios
 }
 
-async function signPodCastProgramBody(
-  authToken: string,
-  audio: PodcastProgramAudio,
-): Promise<SignedPodCastProgramAudio> {
-  const url = await getFileDownloadableLink(audio.key, authToken)
-  const { id, filename, duration } = audio
-
-  return {
-    id,
-    url,
-    filename,
-    duration,
-  }
-}
-
-interface WaveCollectionProps {
-  id: string
-  audioBuffer: AudioBuffer
-  filename: string
-}
-
 const RecordingPage: React.FC = () => {
   const { id: appId } = useContext(AppContext)
   const { authToken } = useAuth()
@@ -113,10 +91,6 @@ const RecordingPage: React.FC = () => {
   const [currentAudioId, setCurrentAudioId] = useState<string | undefined>()
   const [playRate, setPlayRate] = useState(1)
 
-  const [updatePodcastProgramContent] = useMutation<
-    types.UPDATE_PODCAST_PROGRAM_CONTENT,
-    types.UPDATE_PODCAST_PROGRAM_CONTENTVariables
-  >(UPDATE_PODCAST_PROGRAM_CONTENT)
   const history = useHistory()
 
   const currentAudioIndex = signedPodCastProgramAudios.findIndex(body => body.id === currentAudioId)
@@ -246,66 +220,34 @@ const RecordingPage: React.FC = () => {
   }, [appId, authToken, currentAudioId, currentPlayingSecond, refetchPodcastProgramAdmin, signedPodCastProgramAudios])
 
   const onUploadAudio = useCallback(() => {
-    console.log('onUploadAudio')
-    // const showUploadingModal = () => {
-    //   return Modal.info({
-    //     icon: null,
-    //     content: (
-    //       <div className="text-center">
-    //         <Spin size="large" className="my-5" />
-    //         <p>{formatMessage(podcastMessages.text.uploadingVoice)}</p>
-    //       </div>
-    //     ),
-    //     centered: true,
-    //     okButtonProps: { disabled: true, className: 'modal-footer-hidden-button' },
-    //   })
-    // }
+    const showUploadingModal = () => {
+      return Modal.info({
+        icon: null,
+        content: (
+          <div className="text-center">
+            <Spin size="large" className="my-5" />
+            <p>{formatMessage(podcastMessages.text.uploadingVoice)}</p>
+          </div>
+        ),
+        centered: true,
+        okButtonProps: { disabled: true, className: 'modal-footer-hidden-button' },
+      })
+    }
 
-    // const modal = showUploadingModal()
-    // let dstAudioData = null
-    // if (signedPodCastProgramBodies.length === 1) {
-    //   dstAudioData = signedPodCastProgramBodies[0].audioBuffer
-    // } else {
-    //   dstAudioData = mergeAudioBuffer(
-    //     signedPodCastProgramBodies[0].audioBuffer,
-    //     signedPodCastProgramBodies[1].audioBuffer,
-    //   )
-    //   for (let i = 2; i < signedPodCastProgramBodies.length; i++) {
-    //     if (dstAudioData) {
-    //       dstAudioData = mergeAudioBuffer(dstAudioData, signedPodCastProgramBodies[i].audioBuffer)
-    //     }
-    //   }
-    // }
-    // if (dstAudioData) {
-    //   const mp3Data = convertAudioBufferToMp3(dstAudioData)
-    //   const file = new File([mp3Data], 'record.mp3', { type: 'audio/mp3', lastModified: Date.now() })
-    //   const durationMinute = Math.ceil(dstAudioData.duration / 60)
-    //   uploadFile(`audios/${appId}/${podcastProgramId}` + extname(file.name), file, authToken, {})
-    //     .then(() => {
-    //       updatePodcastProgramContent({
-    //         variables: {
-    //           updatedAt: new Date(),
-    //           podcastProgramId,
-    //           contentType: 'mp3',
-    //           duration: durationMinute,
-    //         },
-    //       })
-    //         .then(async () => {
-    //           await refetchPodcastProgramAdmin()
-    //           message.success(formatMessage(commonMessages.event.successfullyUpload))
-    //           history.push(`/podcast-programs/${podcastProgramId}`)
-    //         })
-    //         .catch(error => handleError(error))
-    //         .finally(() => modal.destroy())
-    //     })
-    //     .catch(error => {
-    //       handleError(error)
-    //     })
-    // } else {
-    //   modal.destroy()
-    //   handleError(new Error(formatMessage(errorMessages.event.failedPodcastRecording)))
-    // }
-  }, [])
+    const modal = showUploadingModal()
+    exportPodcastProgram(authToken, appId, podcastProgramId)
+      .then(() => {
+        return refetchPodcastProgramAdmin()
+      })
+      .then(
+        async () => {
+          message.success(formatMessage(commonMessages.event.successfullyUpload))
+          history.push(`/podcast-programs/${podcastProgramId}`)
+        },
+        error => handleError(error),
+      )
+      .finally(() => modal.destroy())
+  }, [appId, authToken, formatMessage, history, podcastProgramId, refetchPodcastProgramAdmin])
 
   const showUploadConfirmationModal = useCallback(() => {
     return Modal.confirm({
