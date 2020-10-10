@@ -23,6 +23,25 @@ export async function appendPodcastProgramAduio(
   )
 }
 
+export async function movePodcastProgramAduio(
+  authToken: string | null,
+  appId: string,
+  podcastProgramAudioId: string,
+  toPosition: number,
+): Promise<void> {
+  await axios.post(
+    `${process.env.REACT_APP_BACKEND_ENDPOINT}/podcast/move`,
+    {
+      appId,
+      podcastProgramAudioId,
+      toPosition,
+    },
+    {
+      headers: { authorization: `Bearer ${authToken}` },
+    },
+  )
+}
+
 export async function deletePodcastProgramAduio(
   authToken: string | null,
   appId: string,

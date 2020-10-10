@@ -1,5 +1,6 @@
 import { useMutation } from '@apollo/react-hooks'
 import { message, Modal, Spin } from 'antd'
+import { isEqual } from 'lodash'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
@@ -18,7 +19,7 @@ import { podcastMessages } from '../../helpers/translation'
 import { UPDATE_PODCAST_PROGRAM_CONTENT, usePodcastProgramAdmin } from '../../hooks/podcast'
 import types from '../../types'
 import { PodcastProgramAudio } from '../../types/podcast'
-import { appendPodcastProgramAduio, deletePodcastProgramAduio } from './RecordingPageHelpers'
+import { appendPodcastProgramAduio, deletePodcastProgramAduio, movePodcastProgramAduio } from './RecordingPageHelpers'
 
 const StyledLayoutContent = styled.div`
   height: calc(100vh - 64px);
@@ -395,19 +396,42 @@ const RecordingPage: React.FC = () => {
           <ReactSortable
             handle=".handle"
             list={signedPodCastProgramAudios}
-            // setList={newWaveCollection => setWaveCollection(newWaveCollection)}
-            setList={() => {}}
+            setList={newAudios => {
+              if (isEqual(newAudios, signedPodCastProgramAudios)) {
+                // ReactSortable seems to be calling this callback when user
+                // drag the first time, and setting signedPodCastProgramAudios
+                // would invalidate the drag
+
+                return
+              }
+
+              console.log('setSignedPodCastProgramAudios')
+              setSignedPodCastProgramAudios(newAudios)
+            }}
+            onEnd={e => {
+              const oldIndex = e.oldIndex
+              const newIndex = e.newIndex
+
+              if (oldIndex == null || newIndex == null) {
+                console.warn('Either oldIndex or newIndex are zero in ReactSortable.onEnd')
+
+                return
+              }
+
+              if (oldIndex === newIndex) {
+                return
+              }
+
+              const audioId = e.item.dataset['id']
+              if (!audioId) {
+                console.warn('Got empty audioId')
+
+                return
+              }
+
+              movePodcastProgramAduio(authToken, appId, audioId, newIndex)
+            }}
           >
-            {/* {signedPodCastProgramBodies.map(body => {
-              return <div>{JSON.stringify(body)}</div>
-            })} */}
-
-            {/* {signedPodCastProgramBodies.map((body, index) => {
-              return (
-                <AudioTrackCard key={body.id} id={body.id} position={index} filename="DLLM" audioUrl={body.audioUrl} />
-              )
-            })} */}
-
             {signedPodCastProgramAudios.map((audio, index) => {
               return (
                 <AudioTrackCard
