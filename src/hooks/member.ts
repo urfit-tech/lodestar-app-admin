@@ -12,6 +12,7 @@ import {
   MemberPublicProps,
   UserRole,
 } from '../types/member'
+import { useState } from 'react'
 
 export const useMember = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<types.GET_MEMBER, types.GET_MEMBERVariables>(
@@ -401,27 +402,25 @@ export const useMemberRoleCount = ({
 
 export const useMemberCollection = ({
   role,
-  offset = 0,
-  limit = null,
   nameSearch = null,
   emailSearch = null,
 }: {
   role: UserRole | null
-  offset?: number
-  limit?: number | null
   nameSearch?: string | null
   emailSearch?: string | null
 }) => {
-  const { loading, error, data, refetch } = useQuery<
+  const [isNoMore, setIsNoMore] = useState(false)
+  const { loading, error, data, refetch, fetchMore } = useQuery<
     types.GET_PAGE_MEMBER_COLLECTION,
     types.GET_PAGE_MEMBER_COLLECTIONVariables
   >(
     gql`
-      query GET_PAGE_MEMBER_COLLECTION($offset: Int!, $limit: Int, $role: String, $email: String, $name: String) {
+      query GET_PAGE_MEMBER_COLLECTION($role: String, $name: String, $email: String, $offset: Int!, $limit: Int!) {
         member(
-          limit: $limit
+          where: { _and: [{ role: { _eq: $role } }, { name: { _ilike: $name } }, { email: { _ilike: $email } }] }
+          order_by: { created_at: desc, id: asc }
           offset: $offset
-          where: { _and: [{ role: { _eq: $role } }, { name: { _like: $name } }, { email: { _like: $email } }] }
+          limit: $limit
         ) {
           id
           picture_url
@@ -450,15 +449,15 @@ export const useMemberCollection = ({
     {
       variables: {
         role,
-        offset,
-        limit,
         name: nameSearch && `%${nameSearch}%`,
         email: emailSearch && `%${emailSearch}%`,
+        offset: 0,
+        limit: 10,
       },
     },
   )
 
-  const dataSource: MemberInfoProps[] =
+  const members: MemberInfoProps[] =
     loading || error || !data
       ? []
       : data.member.map(v => ({
@@ -475,11 +474,34 @@ export const useMemberCollection = ({
           ),
         }))
 
+  const loadMoreMembers = () =>
+    fetchMore({
+      variables: {
+        role,
+        name: nameSearch && `%${nameSearch}%`,
+        email: emailSearch && `%${emailSearch}%`,
+        offset: data?.member.length || 0,
+        limit: 10,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) {
+          return prev
+        }
+        if (fetchMoreResult.member.length < 10) {
+          setIsNoMore(true)
+        }
+        return Object.assign({}, prev, {
+          member: [...prev.member, ...fetchMoreResult.member],
+        })
+      },
+    })
+
   return {
     loading,
     error,
-    dataSource,
+    members,
     refetch,
+    loadMoreMembers: isNoMore ? undefined : loadMoreMembers,
   }
 }
 

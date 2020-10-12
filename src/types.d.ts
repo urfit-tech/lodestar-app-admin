@@ -1836,62 +1836,6 @@ export interface UPDATE_MEMBER_PROPERTYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: INSERT_TASK
-// ====================================================
-
-export interface INSERT_TASK_insert_member_task {
-  __typename: "member_task_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface INSERT_TASK {
-  /**
-   * insert data into the table: "member_task"
-   */
-  insert_member_task: INSERT_TASK_insert_member_task | null;
-}
-
-export interface INSERT_TASKVariables {
-  data: member_task_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_TASK
-// ====================================================
-
-export interface DELETE_TASK_delete_member_task {
-  __typename: "member_task_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_TASK {
-  /**
-   * delete data from the table: "member_task"
-   */
-  delete_member_task: DELETE_TASK_delete_member_task | null;
-}
-
-export interface DELETE_TASKVariables {
-  taskId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_MEMBER_TASK_COLLECTION
 // ====================================================
 
@@ -1956,6 +1900,62 @@ export interface GET_MEMBER_TASK_COLLECTIONVariables {
   titleSearch?: string | null;
   categorySearch?: string | null;
   executorSearch?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_TASK
+// ====================================================
+
+export interface INSERT_TASK_insert_member_task {
+  __typename: "member_task_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_TASK {
+  /**
+   * insert data into the table: "member_task"
+   */
+  insert_member_task: INSERT_TASK_insert_member_task | null;
+}
+
+export interface INSERT_TASKVariables {
+  data: member_task_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_TASK
+// ====================================================
+
+export interface DELETE_TASK_delete_member_task {
+  __typename: "member_task_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_TASK {
+  /**
+   * delete data from the table: "member_task"
+   */
+  delete_member_task: DELETE_TASK_delete_member_task | null;
+}
+
+export interface DELETE_TASKVariables {
+  taskId: any;
 }
 
 /* tslint:disable */
@@ -6701,11 +6701,11 @@ export interface GET_PAGE_MEMBER_COLLECTION {
 }
 
 export interface GET_PAGE_MEMBER_COLLECTIONVariables {
-  offset: number;
-  limit?: number | null;
   role?: string | null;
-  email?: string | null;
   name?: string | null;
+  email?: string | null;
+  offset: number;
+  limit: number;
 }
 
 /* tslint:disable */
