@@ -4,7 +4,6 @@ import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
 import { ReactSortable } from 'react-sortablejs'
-import Recorder from 'recorder-js'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import AudioTrackCard from '../../components/podcast/AudioTrackCard'
@@ -74,19 +73,14 @@ const RecordingPage: React.FC = () => {
   const { authToken } = useAuth()
   const { formatMessage } = useIntl()
   const { podcastProgramId } = useParams<{ podcastProgramId: string }>()
-  const { podcastProgramAdmin, loadingPodcastProgramAdmin, refetchPodcastProgramAdmin } = usePodcastProgramAdmin(
-    appId,
-    podcastProgramId,
-  )
-
-  console.log('loadingPodcastProgramAdmin', loadingPodcastProgramAdmin)
+  const { podcastProgramAdmin, refetchPodcastProgramAdmin } = usePodcastProgramAdmin(appId, podcastProgramId)
 
   const [signedPodCastProgramAudios, setSignedPodCastProgramAudios] = useState<SignedPodCastProgramAudio[]>([])
 
   const [isRecording, setIsRecording] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
-  const [isGeneratingAudio, setIsGeneratingAudio] = useState(true)
+  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
   const [currentPlayingSecond, setCurrentPlayingSecond] = useState(0)
   const [currentAudioId, setCurrentAudioId] = useState<string | undefined>()
   const [playRate, setPlayRate] = useState(1)
@@ -122,10 +116,6 @@ const RecordingPage: React.FC = () => {
         return
       }
       if (podcastProgramAdmin == null) {
-        return
-      }
-
-      if (podcastProgramAdmin.contentType == null) {
         return
       }
 
@@ -330,7 +320,6 @@ const RecordingPage: React.FC = () => {
                 return
               }
 
-              console.log('setSignedPodCastProgramAudios')
               setSignedPodCastProgramAudios(newAudios)
             }}
             onEnd={e => {
