@@ -4465,6 +4465,47 @@ export interface UPDATE_SUBSCRIPTION_CANCELEDVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_ORDER_PRODUCT_FILES
+// ====================================================
+
+export interface UPDATE_ORDER_PRODUCT_FILES_delete_order_product_file {
+  __typename: "order_product_file_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ORDER_PRODUCT_FILES_insert_order_product_file {
+  __typename: "order_product_file_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ORDER_PRODUCT_FILES {
+  /**
+   * delete data from the table: "order_product_file"
+   */
+  delete_order_product_file: UPDATE_ORDER_PRODUCT_FILES_delete_order_product_file | null;
+  /**
+   * insert data into the table: "order_product_file"
+   */
+  insert_order_product_file: UPDATE_ORDER_PRODUCT_FILES_insert_order_product_file | null;
+}
+
+export interface UPDATE_ORDER_PRODUCT_FILESVariables {
+  orderProductId: any;
+  orderProductFiles: order_product_file_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_DELIVER_INFO
 // ====================================================
 
@@ -5995,12 +6036,46 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
 // GraphQL query operation: GET_PHYSICAL_PRODUCT_ORDER_LOG
 // ====================================================
 
+export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products_order_product_files {
+  __typename: "order_product_file";
+  id: any;
+  data: any | null;
+}
+
+export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products_product_product_owner {
+  __typename: "product_owner";
+  type: string | null;
+  target: string | null;
+}
+
+export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products_product {
+  __typename: "product";
+  /**
+   * An object relationship
+   */
+  product_owner: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products_product_product_owner | null;
+}
+
 export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products {
   __typename: "order_product";
   id: any;
   name: string;
   product_id: string;
+  description: string | null;
   options: any | null;
+  /**
+   * An array relationship
+   */
+  order_product_files: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products_order_product_files[];
+  /**
+   * An object relationship
+   */
+  product: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products_product;
+}
+
+export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_member {
+  __typename: "member";
+  name: string;
 }
 
 export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log {
@@ -6019,6 +6094,10 @@ export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log {
    * An array relationship
    */
   order_products: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products[];
+  /**
+   * An object relationship
+   */
+  member: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_member;
 }
 
 export interface GET_PHYSICAL_PRODUCT_ORDER_LOG {
@@ -6212,6 +6291,8 @@ export interface GET_PRODUCT_SIMPLE_merchandise_by_pk {
   id: any;
   title: string;
   list_price: any;
+  is_physical: boolean;
+  is_customized: boolean;
   /**
    * An array relationship
    */
