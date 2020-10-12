@@ -316,9 +316,9 @@ export const commonMessages = {
     memberAdmin: { id: 'common.menu.memberAdmin', defaultMessage: '會員管理' },
     members: { id: 'common.menu.members', defaultMessage: '會員列表' },
     memberProperties: { id: 'common.menu.memberProperties', defaultMessage: '自訂欄位' },
-    taskAdmin: { id: 'common.menu.taskAdmin', defaultMessage: '任務管理' },
-    tasks: { id: 'common.menu.tasks', defaultMessage: '任務列表' },
-    taskCategory: { id: 'common.menu.taskCategory', defaultMessage: '任務分類' },
+    taskAdmin: { id: 'common.menu.taskAdmin', defaultMessage: '待辦管理' },
+    tasks: { id: 'common.menu.tasks', defaultMessage: '待辦清單' },
+    taskCategory: { id: 'common.menu.taskCategory', defaultMessage: '待辦分類' },
     ownerSettings: { id: 'common.menu.ownerSettings', defaultMessage: '管理員設定' },
     creatorSettings: { id: 'common.menu.creatorSettings', defaultMessage: '創作者設定' },
     appAdmin: { id: 'common.menu.appAdmin', defaultMessage: '網站管理' },
@@ -792,8 +792,8 @@ export const blogMessages = {
 export const memberMessages = {
   ui: {
     memberPage: { id: 'profile.ui.memberPage', defaultMessage: '學員主頁' },
-    newTask: { id: 'member.ui.newTask', defaultMessage: '新增任務' },
-    editTask: { id: 'member.ui.editTask', defaultMessage: '編輯任務' },
+    newTask: { id: 'member.ui.newTask', defaultMessage: '新增待辦' },
+    editTask: { id: 'member.ui.editTask', defaultMessage: '編輯待辦' },
   },
   status: {
     priorityHigh: { id: 'member.status.priorityHigh', defaultMessage: 'High' },
