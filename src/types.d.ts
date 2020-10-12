@@ -7520,6 +7520,12 @@ export interface GET_PODCAST_PROGRAM_ADMIN_COLLECTIONVariables {
 // GraphQL query operation: GET_PODCAST_PROGRAM_ADMIN
 // ====================================================
 
+export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_audios {
+  __typename: "podcast_program_audio";
+  id: any;
+  data: any;
+}
+
 export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_bodies {
   __typename: "podcast_program_body";
   id: any;
@@ -7590,6 +7596,10 @@ export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk {
   published_at: any | null;
   creator_id: string;
   support_locales: any | null;
+  /**
+   * An array relationship
+   */
+  podcast_program_audios: GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_audios[];
   /**
    * An array relationship
    */

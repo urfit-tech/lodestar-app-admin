@@ -17,6 +17,48 @@ export type PodcastProgramAdminProps = {
   supportLocales: string[]
 }
 
+export type PodcastProgramAudio = {
+  id: string
+  key: string
+  filename: string
+  duration: number
+}
+
+export type RawPodcastProgramAudio = {
+  id: string
+  data: RawPodcastProgramAudioData
+}
+
+export type RawPodcastProgramAudioData = {
+  key: string
+  filename: string
+  duration: number
+}
+
+export function podcastProgramAudiosFromRawAudios(rawAudios: RawPodcastProgramAudio[]): PodcastProgramAudio[] {
+  const bodies: PodcastProgramAudio[] = []
+  for (const rawBody of rawAudios) {
+    const maybeBody = podcastProgramBodyFromRawBody(rawBody)
+    if (maybeBody != null) {
+      bodies.push(maybeBody)
+    }
+  }
+
+  return bodies
+}
+
+// Might return undefined because a RawPodcastProgramBody might have no audio
+export function podcastProgramBodyFromRawBody(raw: RawPodcastProgramAudio): PodcastProgramAudio {
+  const data = raw.data
+
+  return {
+    id: raw.id,
+    key: data.key,
+    filename: data.filename,
+    duration: data.duration,
+  }
+}
+
 export type PodcastPlanProps = {
   id: string
   isSubscription: boolean

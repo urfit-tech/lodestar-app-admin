@@ -68,7 +68,7 @@ const AudioTrackCard: React.FC<
     handleClassName?: string
     position: number
     playRate?: number
-    audioBuffer: AudioBuffer
+    audioUrl: string
     filename: string
     isActive?: boolean
     isPlaying?: boolean
@@ -81,7 +81,7 @@ const AudioTrackCard: React.FC<
   handleClassName,
   position,
   playRate,
-  audioBuffer,
+  audioUrl,
   filename,
   isActive,
   isPlaying,
@@ -97,10 +97,22 @@ const AudioTrackCard: React.FC<
   const trackWrapperRef = useRef() as React.RefObject<HTMLDivElement>
   const waveformRef = useRef() as React.MutableRefObject<HTMLInputElement>
   const waveformTimelineRef = useRef() as React.MutableRefObject<HTMLInputElement>
+
   const [wavesurfer, setWaveSurfer] = useState<WaveSurfer | null>(null)
+  const [duration, setDuration] = useState<number | undefined>()
+
+  // ref to variable used in wavesurfer initialization
+  const onAudioPlayingRef = useRef(onAudioPlaying)
+  const onFinishPlayingRef = useRef(onFinishPlaying)
+  const durationRef = useRef(duration)
+
+  onAudioPlayingRef.current = onAudioPlaying
+  onFinishPlayingRef.current = onFinishPlaying
+
   useEffect(() => {
-    if (!wavesurfer && waveformRef.current && audioBuffer) {
+    if (!wavesurfer && waveformRef.current && waveformTimelineRef.current) {
       const _wavesurfer = WaveSurfer.create({
+        backend: 'MediaElement',
         container: waveformRef.current,
         waveColor: '#cecece',
         progressColor: theme['@primary-color'] || '#555',
@@ -124,23 +136,42 @@ const AudioTrackCard: React.FC<
           }),
         ],
       })
-      _wavesurfer.on('finish', () => onFinishPlaying && onFinishPlaying())
+      _wavesurfer.on('finish', () => {
+        if (onFinishPlayingRef.current == null) {
+          return
+        }
+
+        onFinishPlayingRef.current()
+      })
       _wavesurfer.on(
         'seek',
         throttle((progress: number) => {
-          onAudioPlaying && onAudioPlaying(audioBuffer.duration * progress)
+          if (durationRef.current == null) {
+            return
+          }
+
+          onAudioPlayingRef.current && onAudioPlayingRef.current(durationRef.current * progress)
         }, 100),
       )
       _wavesurfer.on(
         'audioprocess',
         throttle((second: number) => {
-          onAudioPlaying && onAudioPlaying(second)
+          onAudioPlayingRef.current && onAudioPlayingRef.current(second)
         }, 100),
       )
-      _wavesurfer.loadDecodedBuffer(audioBuffer)
+      _wavesurfer.on('ready', () => {
+        const duration = _wavesurfer.getDuration()
+
+        durationRef.current = duration
+        setDuration(duration)
+      })
+      _wavesurfer.load(audioUrl, [], 'none')
+
       setWaveSurfer(_wavesurfer)
     }
-  }, [wavesurfer, waveformRef, waveformTimelineRef, audioBuffer, theme, onAudioPlaying, onFinishPlaying])
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wavesurfer, waveformRef, waveformTimelineRef])
 
   useEffect(() => {
     return () => {
@@ -192,7 +223,7 @@ const AudioTrackCard: React.FC<
             {filename}
           </StyledTypographyText>
           <StyledText>
-            {formatMessage(podcastMessages.label.totalDuration)} {durationFormatter(audioBuffer.duration)}
+            {formatMessage(podcastMessages.label.totalDuration)} {duration ? durationFormatter(duration) : '--:--'}
           </StyledText>
         </div>
       </StyledCard>

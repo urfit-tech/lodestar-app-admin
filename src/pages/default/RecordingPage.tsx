@@ -1,11 +1,9 @@
-import { useMutation } from '@apollo/react-hooks'
 import { message, Modal, Spin } from 'antd'
-import { extname } from 'path'
-import React, { useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { isEqual } from 'lodash'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
 import { ReactSortable } from 'react-sortablejs'
-import Recorder from 'recorder-js'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import AudioTrackCard from '../../components/podcast/AudioTrackCard'
@@ -15,15 +13,16 @@ import RecordingController from '../../components/podcast/RecordingController'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { getFileDownloadableLink, handleError, uploadFile } from '../../helpers'
+import { commonMessages, podcastMessages } from '../../helpers/translation'
+import { usePodcastProgramAdmin } from '../../hooks/podcast'
+import { PodcastProgramAudio } from '../../types/podcast'
 import {
-  convertAudioBufferToMp3,
-  decodeAudioArrayBuffer,
-  mergeAudioBuffer,
-  sliceAudioBuffer,
-} from '../../helpers/audio'
-import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
-import { UPDATE_PODCAST_PROGRAM_CONTENT, usePodcastProgramAdmin } from '../../hooks/podcast'
-import types from '../../types'
+  appendPodcastProgramAduio,
+  deletePodcastProgramAduio,
+  exportPodcastProgram,
+  movePodcastProgramAduio,
+  splitPodcastProgramAduio,
+} from './RecordingPageHelpers'
 
 const StyledLayoutContent = styled.div`
   height: calc(100vh - 64px);
@@ -40,10 +39,33 @@ const StyledPageTitle = styled.h1`
   font-weight: bold;
 `
 
-interface WaveCollectionProps {
+interface SignedPodCastProgramAudio {
   id: string
-  audioBuffer: AudioBuffer
+  url: string
   filename: string
+  duration: number
+}
+
+async function signPodCastProgramAudios(
+  authToken: string,
+  audios: PodcastProgramAudio[],
+): Promise<SignedPodCastProgramAudio[]> {
+  const audioKeys = audios.map(audio => audio.key)
+  const audioUrls = await Promise.all(audioKeys.map(key => getFileDownloadableLink(key, authToken)))
+
+  const signedAudios: SignedPodCastProgramAudio[] = []
+  for (let i = 0; i < audios.length; i++) {
+    const audio = audios[i]
+    const { id, filename, duration } = audio
+
+    signedAudios.push({
+      id,
+      filename,
+      duration,
+      url: audioUrls[i],
+    })
+  }
+  return signedAudios
 }
 
 const RecordingPage: React.FC = () => {
@@ -51,186 +73,141 @@ const RecordingPage: React.FC = () => {
   const { authToken } = useAuth()
   const { formatMessage } = useIntl()
   const { podcastProgramId } = useParams<{ podcastProgramId: string }>()
-  const { podcastProgramAdmin, refetchPodcastProgramAdmin } = usePodcastProgramAdmin(podcastProgramId)
+  const { podcastProgramAdmin, refetchPodcastProgramAdmin } = usePodcastProgramAdmin(appId, podcastProgramId)
+
+  const [signedPodCastProgramAudios, setSignedPodCastProgramAudios] = useState<SignedPodCastProgramAudio[]>([])
 
   const [isRecording, setIsRecording] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
-  const [isInitializedAudio, setIsInitializedAudio] = useState(false)
   const [currentPlayingSecond, setCurrentPlayingSecond] = useState(0)
   const [currentAudioId, setCurrentAudioId] = useState<string | undefined>()
   const [playRate, setPlayRate] = useState(1)
 
-  const [waveCollection, setWaveCollection] = useState<WaveCollectionProps[]>([])
-  const audioObjectRef = useRef<{ waveCollection: WaveCollectionProps[]; currentAudioId: string | undefined }>()
-
-  const [recorder, setRecorder] = useState<Recorder | null>(null)
-
-  useEffect(() => {
-    const initRecorder = async () => {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-      const _recorder = new Recorder(audioContext)
-      _recorder.init(stream)
-
-      return _recorder
-    }
-    navigator?.mediaDevices && !recorder && initRecorder().then(recorder => setRecorder(recorder))
-
-    return () => {
-      if (recorder) {
-        ;(recorder as any).stream.getTracks().forEach((track: any) => track.stop())
-        ;(recorder as any).audioContext.close()
-      }
-    }
-  }, [recorder])
-
-  const [updatePodcastProgramContent] = useMutation<
-    types.UPDATE_PODCAST_PROGRAM_CONTENT,
-    types.UPDATE_PODCAST_PROGRAM_CONTENTVariables
-  >(UPDATE_PODCAST_PROGRAM_CONTENT)
   const history = useHistory()
 
-  const currentAudioIndex = waveCollection.findIndex(wave => wave.id === currentAudioId)
-
-  useLayoutEffect(() => {
-    audioObjectRef.current = {
-      waveCollection,
-      currentAudioId,
-    }
-  })
+  const currentAudioIndex = signedPodCastProgramAudios.findIndex(body => body.id === currentAudioId)
 
   const onGetRecordAudio = useCallback(
-    (audioBuffer: AudioBuffer | null) => {
-      if (audioBuffer && waveCollection) {
-        const waveId = uuid()
-        setWaveCollection([
-          ...waveCollection,
-          {
-            id: waveId,
-            audioBuffer,
-            filename: `未命名${`${waveCollection.length}`.padStart(2, '0')}`,
-          },
-        ])
-        setCurrentAudioId(waveId)
-      }
-      setIsGeneratingAudio(false)
+    (blob: Blob, duration: number) => {
+      const filename = `${uuid()}.mp3`
+      const audioKey = `audios/${appId}/${podcastProgramId}/${filename}`
+
+      setIsGeneratingAudio(true)
+      uploadFile(audioKey, blob, authToken, {})
+        .then(async () => {
+          await appendPodcastProgramAduio(authToken, appId, podcastProgramId, audioKey, filename, duration)
+          await refetchPodcastProgramAdmin()
+        })
+        .catch(error => {
+          handleError(error)
+        })
+        .finally(() => {
+          setIsGeneratingAudio(false)
+        })
     },
-    [waveCollection],
+    [appId, authToken, podcastProgramId, refetchPodcastProgramAdmin],
   )
 
   useEffect(() => {
-    const getAudioLink = async () => {
-      if (podcastProgramAdmin?.contentType && waveCollection.length === 0 && !!appId && !isInitializedAudio) {
-        setIsInitializedAudio(true)
-        setIsGeneratingAudio(true)
-
-        const fileKey = `audios/${appId}/${podcastProgramAdmin.id}.${podcastProgramAdmin.contentType}`
-        const audioLink = await getFileDownloadableLink(fileKey, authToken)
-        const audioRequest = new Request(audioLink)
-
-        try {
-          const response = await fetch(audioRequest)
-          const arrayBuffer = await response.arrayBuffer()
-          const audioBuffer = await decodeAudioArrayBuffer(arrayBuffer)
-          onGetRecordAudio(audioBuffer)
-        } catch (error) {
-          message.error(error.message)
-          setIsGeneratingAudio(false)
-        }
+    async function signAudios() {
+      if (authToken == null) {
+        return
       }
+      if (podcastProgramAdmin == null) {
+        return
+      }
+
+      setIsGeneratingAudio(true)
+
+      try {
+        const signedPodCastProgramAudios = await signPodCastProgramAudios(authToken, podcastProgramAdmin.audios)
+        setSignedPodCastProgramAudios(signedPodCastProgramAudios)
+      } catch (error) {
+        message.error(error.message)
+      }
+
+      setIsGeneratingAudio(false)
     }
-    getAudioLink()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(podcastProgramAdmin), appId, authToken, onGetRecordAudio, waveCollection.length])
+
+    signAudios()
+  }, [authToken, podcastProgramAdmin])
 
   const onFinishPlaying = useCallback(() => {
-    if (audioObjectRef.current) {
-      const { waveCollection, currentAudioId } = audioObjectRef.current
-      const nextAudioIndex = waveCollection.findIndex(wave => wave.id === currentAudioId)
-      if (nextAudioIndex + 1 < waveCollection.length) {
-        setCurrentAudioId(waveCollection[nextAudioIndex + 1].id)
-      } else {
-        setIsPlaying(false)
-      }
+    if (currentAudioIndex + 1 < signedPodCastProgramAudios.length) {
+      setCurrentAudioId(signedPodCastProgramAudios[currentAudioIndex + 1].id)
+    } else {
+      setIsPlaying(false)
     }
-  }, [])
+  }, [currentAudioIndex, signedPodCastProgramAudios])
 
   const onForward = useCallback(() => {
-    if (currentAudioIndex + 1 < waveCollection.length) {
-      setCurrentAudioId(waveCollection[currentAudioIndex + 1].id)
+    if (currentAudioIndex + 1 < signedPodCastProgramAudios.length) {
+      setCurrentAudioId(signedPodCastProgramAudios[currentAudioIndex + 1].id)
     }
-  }, [currentAudioIndex, waveCollection])
+  }, [currentAudioIndex, signedPodCastProgramAudios])
 
   const onBackward = useCallback(() => {
     if (currentAudioIndex > 0) {
-      setCurrentAudioId(waveCollection[currentAudioIndex - 1].id)
+      setCurrentAudioId(signedPodCastProgramAudios[currentAudioIndex - 1].id)
     }
-  }, [currentAudioIndex, waveCollection])
+  }, [currentAudioIndex, signedPodCastProgramAudios])
 
   const onDeleteAudioTrack = useCallback(() => {
-    if (currentAudioIndex === 0 && waveCollection.length > 1) {
-      setCurrentAudioId(waveCollection[1].id)
+    if (currentAudioIndex === 0 && signedPodCastProgramAudios.length > 1) {
+      setCurrentAudioId(signedPodCastProgramAudios[1].id)
     } else if (currentAudioIndex > 0) {
-      setCurrentAudioId(waveCollection[currentAudioIndex - 1].id)
+      setCurrentAudioId(signedPodCastProgramAudios[currentAudioIndex - 1].id)
     }
-    setWaveCollection(waveCollection.filter(wave => wave.id !== currentAudioId))
-  }, [currentAudioId, waveCollection, currentAudioIndex])
+
+    const audio = signedPodCastProgramAudios[currentAudioIndex]
+
+    setIsGeneratingAudio(true)
+    deletePodcastProgramAduio(authToken, appId, audio.id)
+      .then(async () => {
+        await refetchPodcastProgramAdmin()
+      })
+      .catch(error => {
+        handleError(error)
+      })
+      .finally(() => {
+        setIsGeneratingAudio(false)
+      })
+  }, [appId, authToken, currentAudioIndex, refetchPodcastProgramAdmin, signedPodCastProgramAudios])
 
   const onPlayRateChange = useCallback(() => {
     playRate < 1 ? setPlayRate(1) : playRate < 1.5 ? setPlayRate(1.5) : playRate < 2 ? setPlayRate(2) : setPlayRate(0.5)
   }, [playRate])
 
-  const onTrimAudio = useCallback(() => {
-    const wave = waveCollection.find(wave => wave.id === currentAudioId)
-    if (wave?.audioBuffer && currentPlayingSecond > 0) {
-      const { duration, length } = wave.audioBuffer
+  const onTrimAudio = useCallback(async () => {
+    const audio = signedPodCastProgramAudios.find(audio => audio.id === currentAudioId)
+    if (audio == null) {
+      console.warn('Cannot find audio with id', currentAudioId)
 
-      const audioSlicedFirst = sliceAudioBuffer(
-        wave.audioBuffer,
-        ~~((length * 0) / duration),
-        ~~((length * currentPlayingSecond) / duration),
-      )
-      const audioSlicedLast = sliceAudioBuffer(
-        wave.audioBuffer,
-        ~~((length * currentPlayingSecond) / duration),
-        ~~(length * 1),
-      )
-      setWaveCollection(
-        waveCollection.reduce((acc: WaveCollectionProps[], wave: WaveCollectionProps) => {
-          if (wave.id === currentAudioId) {
-            const audioSlicedFirstId = uuid()
-            acc.push({
-              id: audioSlicedFirstId,
-              audioBuffer: audioSlicedFirst,
-              filename: wave.filename,
-            })
-
-            const [, originalFileName] = /^([^()]+)(.+)?$/.exec(wave.filename) || []
-            const serialNumber =
-              Math.max(
-                ...waveCollection
-                  .filter(wave => wave.filename.includes(originalFileName))
-                  .map(wave => (/^([^.()]+)([(]+)(\d+)([)]+)?$/.exec(wave.filename) || [])[3] || '0')
-                  .map(Number),
-              ) + 1
-
-            acc.push({
-              id: uuid(),
-              audioBuffer: audioSlicedLast,
-              filename: `${originalFileName}(${serialNumber})`,
-            })
-            setCurrentAudioId(audioSlicedFirstId)
-          } else {
-            acc.push(wave)
-          }
-          return acc
-        }, []),
-      )
-      setCurrentPlayingSecond(0)
+      return
     }
-  }, [currentAudioId, currentPlayingSecond, waveCollection])
+
+    if (currentPlayingSecond <= 0) {
+      return
+    }
+
+    setIsGeneratingAudio(true)
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const [audioId1, _] = await splitPodcastProgramAduio(authToken, appId, audio.id, currentPlayingSecond)
+
+      setCurrentPlayingSecond(0)
+      setCurrentAudioId(audioId1)
+
+      await refetchPodcastProgramAdmin()
+    } catch (error) {
+      message.error(error.message)
+    }
+
+    setIsGeneratingAudio(false)
+  }, [appId, authToken, currentAudioId, currentPlayingSecond, refetchPodcastProgramAdmin, signedPodCastProgramAudios])
 
   const onUploadAudio = useCallback(() => {
     const showUploadingModal = () => {
@@ -248,56 +225,19 @@ const RecordingPage: React.FC = () => {
     }
 
     const modal = showUploadingModal()
-    let dstAudioData = null
-    if (waveCollection.length === 1) {
-      dstAudioData = waveCollection[0].audioBuffer
-    } else {
-      dstAudioData = mergeAudioBuffer(waveCollection[0].audioBuffer, waveCollection[1].audioBuffer)
-      for (let i = 2; i < waveCollection.length; i++) {
-        if (dstAudioData) {
-          dstAudioData = mergeAudioBuffer(dstAudioData, waveCollection[i].audioBuffer)
-        }
-      }
-    }
-    if (dstAudioData) {
-      const mp3Data = convertAudioBufferToMp3(dstAudioData)
-      const file = new File([mp3Data], 'record.mp3', { type: 'audio/mp3', lastModified: Date.now() })
-      const durationMinute = Math.ceil(dstAudioData.duration / 60)
-      uploadFile(`audios/${appId}/${podcastProgramId}` + extname(file.name), file, authToken, {})
-        .then(() => {
-          updatePodcastProgramContent({
-            variables: {
-              updatedAt: new Date(),
-              podcastProgramId,
-              contentType: 'mp3',
-              duration: durationMinute,
-            },
-          })
-            .then(async () => {
-              await refetchPodcastProgramAdmin()
-              message.success(formatMessage(commonMessages.event.successfullyUpload))
-              history.push(`/podcast-programs/${podcastProgramId}`)
-            })
-            .catch(error => handleError(error))
-            .finally(() => modal.destroy())
-        })
-        .catch(error => {
-          handleError(error)
-        })
-    } else {
-      modal.destroy()
-      handleError(new Error(formatMessage(errorMessages.event.failedPodcastRecording)))
-    }
-  }, [
-    appId,
-    authToken,
-    formatMessage,
-    history,
-    podcastProgramId,
-    refetchPodcastProgramAdmin,
-    updatePodcastProgramContent,
-    waveCollection,
-  ])
+    exportPodcastProgram(authToken, appId, podcastProgramId)
+      .then(() => {
+        return refetchPodcastProgramAdmin()
+      })
+      .then(
+        async () => {
+          message.success(formatMessage(commonMessages.event.successfullyUpload))
+          history.push(`/podcast-programs/${podcastProgramId}`)
+        },
+        error => handleError(error),
+      )
+      .finally(() => modal.destroy())
+  }, [appId, authToken, formatMessage, history, podcastProgramId, refetchPodcastProgramAdmin])
 
   const showUploadConfirmationModal = useCallback(() => {
     return Modal.confirm({
@@ -360,11 +300,9 @@ const RecordingPage: React.FC = () => {
           <div className="text-center mb-5">
             <StyledPageTitle>{formatMessage(podcastMessages.ui.recordAudio)}</StyledPageTitle>
             <RecordButton
-              recorder={recorder}
               onStart={() => setIsRecording(true)}
               onStop={() => {
                 setIsRecording(false)
-                setIsGeneratingAudio(true)
               }}
               onGetAudio={onGetRecordAudio}
             />
@@ -372,37 +310,72 @@ const RecordingPage: React.FC = () => {
 
           <ReactSortable
             handle=".handle"
-            list={waveCollection}
-            setList={newWaveCollection => setWaveCollection(newWaveCollection)}
+            list={signedPodCastProgramAudios}
+            setList={newAudios => {
+              if (isEqual(newAudios, signedPodCastProgramAudios)) {
+                // ReactSortable seems to be calling this callback when user
+                // drag the first time, and setting signedPodCastProgramAudios
+                // would invalidate the drag
+
+                return
+              }
+
+              setSignedPodCastProgramAudios(newAudios)
+            }}
+            onEnd={e => {
+              const oldIndex = e.oldIndex
+              const newIndex = e.newIndex
+
+              if (oldIndex == null || newIndex == null) {
+                console.warn('Either oldIndex or newIndex are zero in ReactSortable.onEnd')
+
+                return
+              }
+
+              if (oldIndex === newIndex) {
+                return
+              }
+
+              const audioId = e.item.dataset['id']
+              if (!audioId) {
+                console.warn('Got empty audioId')
+
+                return
+              }
+
+              movePodcastProgramAduio(authToken, appId, audioId, newIndex)
+            }}
           >
-            {waveCollection.map((wave, index) => {
+            {signedPodCastProgramAudios.map((audio, index) => {
               return (
                 <AudioTrackCard
-                  key={wave.id}
-                  id={wave.id}
+                  key={audio.id}
+                  id={audio.id}
                   position={index}
                   playRate={playRate}
-                  audioBuffer={wave.audioBuffer}
-                  filename={wave.filename}
+                  filename={audio.filename}
+                  audioUrl={audio.url}
                   onClick={() => {
                     setIsPlaying(false)
-                    setCurrentAudioId(wave.id)
+                    setCurrentAudioId(audio.id)
                   }}
-                  isActive={wave.id === currentAudioId}
-                  isPlaying={wave.id === currentAudioId && isPlaying}
+                  isActive={audio.id === currentAudioId}
+                  isPlaying={audio.id === currentAudioId && isPlaying}
                   onAudioPlaying={second => setCurrentPlayingSecond(second)}
                   onFinishPlaying={onFinishPlaying}
                   onChangeFilename={(id, filename) => {
-                    setWaveCollection(
-                      waveCollection.map(wave =>
-                        wave.id === id
-                          ? {
-                              ...wave,
-                              filename: filename,
-                            }
-                          : wave,
-                      ),
-                    )
+                    const audios = signedPodCastProgramAudios.map(audio => {
+                      if (audio.id !== id) {
+                        return audio
+                      }
+
+                      return {
+                        ...audio,
+                        filename,
+                      }
+                    })
+
+                    setSignedPodCastProgramAudios(audios)
                   }}
                 />
               )
@@ -418,8 +391,8 @@ const RecordingPage: React.FC = () => {
         playRate={playRate}
         isPlaying={isPlaying}
         isEditing={isEditing}
-        isDeleteDisabled={waveCollection.length < 1}
-        isUploadDisabled={waveCollection.length < 1}
+        isDeleteDisabled={signedPodCastProgramAudios.length < 1}
+        isUploadDisabled={signedPodCastProgramAudios.length < 1}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onEdit={() => {
