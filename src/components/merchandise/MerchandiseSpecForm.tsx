@@ -23,11 +23,18 @@ const StyledLabel = styled.div`
 const StyledDeleteButton = styled(Button)`
   margin-top: 33px;
 `
+const StyledCloseIcon = styled(CloseOutlined)`
+  color: transparent;
+`
 const StyledFileItem = styled.div`
   color: var(--gray-darker);
   font-size: 14px;
+
   :hover {
     background-color: var(--gray-lighter);
+    ${StyledCloseIcon} {
+      color: var(--gray-darker);
+    }
   }
 `
 
@@ -40,18 +47,19 @@ const MerchandiseSpecForm: React.FC<{
   const [form] = useForm()
   const { authToken } = useAuth()
   const { id: appId } = useContext(AppContext)
-  const uploadCanceler = useRef<Canceler>()
   const [insertMerchandiseSpecCollection] = useMutation<
     types.INSERT_MERCHANDISE_SPEC_COLLECTION,
     types.INSERT_MERCHANDISE_SPEC_COLLECTIONVariables
   >(INSERT_MERCHANDISE_SPEC_COLLECTION)
-  const [loading, setLoading] = useState(false)
+
+  const uploadCanceler = useRef<Canceler>()
   const [specFiles, setSpecFiles] = useState<File[][]>(merchandise.specs.map(spec => spec.files.map(file => file.data)))
+  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({})
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = (values: any) => {
     setLoading(true)
-    const oldSpecIds: string[] = values.specs.map((spec: MerchandiseSpecProps) => spec.id).filter(notEmpty)
-    console.log(specFiles)
+    const newSpecIds: string[] = values.specs.map((spec: MerchandiseSpecProps) => spec.id).filter(notEmpty)
     insertMerchandiseSpecCollection({
       variables: {
         merchandiseId,
@@ -74,11 +82,12 @@ const MerchandiseSpecForm: React.FC<{
           },
         })),
         archivedMerchandiseSpecIds: merchandise.specs
-          .filter(spec => !oldSpecIds.includes(spec.id))
+          .filter(spec => !newSpecIds.includes(spec.id))
           .map(spec => spec.id),
       },
     })
       .then(async ({ data }) => {
+        // upload files
         try {
           const existedFiles: File[] = merchandise.specs.map(spec => spec.files.map(file => file.data)).flat()
           for (const specFile of specFiles) {
@@ -94,14 +103,22 @@ const MerchandiseSpecForm: React.FC<{
                 cancelToken: new axios.CancelToken(canceler => {
                   uploadCanceler.current = canceler
                 }),
+                onUploadProgress: progressEvent => {
+                  const percent = Math.floor((progressEvent.loaded / progressEvent.total) * 100)
+                  setUploadProgress(prev => ({
+                    ...prev,
+                    [file.name]: percent,
+                  }))
+                },
               })
             }
           }
+          onRefetch && onRefetch()
+          message.success(formatMessage(commonMessages.event.successfullySaved))
         } catch (error) {
+          process.env.NODE_ENV === 'development' && console.error(error)
           return error
         }
-        onRefetch && onRefetch()
-        message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -118,12 +135,6 @@ const MerchandiseSpecForm: React.FC<{
           ...spec,
           files: spec.files.map(file => file.data),
         })),
-      }}
-      onValuesChange={(values: any) => {
-        const newFiles = values.specs.map((spec: any) => spec.files)
-        if (typeof newFiles !== undefined) {
-          setSpecFiles(specFiles.map((specFile, index) => newFiles[index] || specFile))
-        }
       }}
       onFinish={handleSubmit}
     >
@@ -175,12 +186,13 @@ const MerchandiseSpecForm: React.FC<{
                   </Form.Item>
 
                   <Form.Item
-                    name={[field.name, 'files']}
-                    fieldKey={[field.fieldKey, 'files']}
                     label={<StyledLabel>{formatMessage(merchandiseMessages.label.deliveryItem)}</StyledLabel>}
                     className={!merchandise.isPhysical && !merchandise.isCustomized ? undefined : 'd-none'}
                   >
-                    <MerchandiseSpecFileUpload />
+                    <MerchandiseSpecFileUpload
+                      value={specFiles[index]}
+                      onChange={value => setSpecFiles(specFiles.map((specFile, i) => (index === i ? value : specFile)))}
+                    />
                   </Form.Item>
 
                   {fields.length > 1 && (
@@ -202,9 +214,12 @@ const MerchandiseSpecForm: React.FC<{
                       key={`${index}_${file.name}`}
                       className="d-flex align-items-center justify-content-between py-1 px-2"
                     >
-                      <div>{file.name}</div>
-                      <CloseOutlined
-                        className="pointer-cursor"
+                      <div className="flex-grow-1">{file.name}</div>
+                      {typeof uploadProgress[file.name] === 'number' && (
+                        <div className="flex-shrink-0">{uploadProgress[file.name]} %</div>
+                      )}
+                      <StyledCloseIcon
+                        className="flex-shrink-0 ml-2 pointer-cursor"
                         onClick={() => {
                           setSpecFiles([
                             ...specFiles.slice(0, index),
@@ -235,7 +250,13 @@ const MerchandiseSpecForm: React.FC<{
       </Form.List>
 
       <div>
-        <Button onClick={() => form.resetFields()} className="mr-2">
+        <Button
+          onClick={() => {
+            form.resetFields()
+            setSpecFiles(merchandise.specs.map(spec => spec.files.map(file => file.data)))
+          }}
+          className="mr-2"
+        >
           {formatMessage(commonMessages.ui.cancel)}
         </Button>
         <Button type="primary" htmlType="submit" loading={loading}>
@@ -265,13 +286,16 @@ const MerchandiseSpecFileUpload: React.FC<{
             return
           }
 
-          const files: File[] = []
+          // append new file into input value
+          const files: File[] = value?.slice() || []
           for (let i = 0; i < e.target.files.length; i++) {
             const file = e.target.files.item(i)
-            file && files.push(file)
+            file && !files.some(v => v.name === file.name) && files.push(file)
           }
 
           onChange(files)
+          e.target.value = ''
+          e.target.files = null
         }}
       />
 
