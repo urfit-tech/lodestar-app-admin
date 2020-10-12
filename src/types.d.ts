@@ -1993,7 +1993,7 @@ export interface DELETE_TASK {
 }
 
 export interface DELETE_TASKVariables {
-  taskId: any;
+  taskId: string;
 }
 
 /* tslint:disable */
@@ -6554,7 +6554,7 @@ export interface UPDATE_MEMBER_NOTE {
 }
 
 export interface UPDATE_MEMBER_NOTEVariables {
-  memberNoteId: any;
+  memberNoteId: string;
   type?: string | null;
   status?: string | null;
   duration?: number | null;
@@ -6583,7 +6583,7 @@ export interface DELETE_MEMBER_NOTE {
 }
 
 export interface DELETE_MEMBER_NOTEVariables {
-  memberNoteId: any;
+  memberNoteId: string;
 }
 
 /* tslint:disable */

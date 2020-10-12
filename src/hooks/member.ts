@@ -221,7 +221,7 @@ export const useMutateMemberNote = () => {
 
   const [updateMemberNote] = useMutation(gql`
     mutation UPDATE_MEMBER_NOTE(
-      $memberNoteId: uuid!
+      $memberNoteId: String!
       $type: String
       $status: String
       $duration: Int
@@ -237,7 +237,7 @@ export const useMutateMemberNote = () => {
   `)
 
   const [deleteMemberNote] = useMutation(gql`
-    mutation DELETE_MEMBER_NOTE($memberNoteId: uuid!) {
+    mutation DELETE_MEMBER_NOTE($memberNoteId: String!) {
       delete_member_note_by_pk(id: $memberNoteId) {
         id
       }

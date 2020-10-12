@@ -253,7 +253,7 @@ const INSERT_TASK = gql`
   }
 `
 const DELETE_TASK = gql`
-  mutation DELETE_TASK($taskId: uuid!) {
+  mutation DELETE_TASK($taskId: String!) {
     delete_member_task(where: { id: { _eq: $taskId } }) {
       affected_rows
     }
