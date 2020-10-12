@@ -3,7 +3,7 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
-import MemberTaskTable from '../../components/member/MemberTaskTable'
+import MemberTaskAdminBlock from '../../components/member/MemberTaskAdminBlock'
 import { commonMessages } from '../../helpers/translation'
 
 const TaskCollectionPage: React.FC = () => {
@@ -16,7 +16,7 @@ const TaskCollectionPage: React.FC = () => {
         <span>{formatMessage(commonMessages.menu.tasks)}</span>
       </AdminPageTitle>
 
-      <MemberTaskTable />
+      <MemberTaskAdminBlock />
     </AdminLayout>
   )
 }

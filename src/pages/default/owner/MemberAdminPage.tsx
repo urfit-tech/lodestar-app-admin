@@ -21,7 +21,7 @@ import MemberNoteAdminModal from '../../../components/member/MemberNoteAdminModa
 import MemberPermissionForm from '../../../components/member/MemberPermissionForm'
 import MemberProfileBasicForm from '../../../components/member/MemberProfileBasicForm'
 import MemberPropertyAdminForm from '../../../components/member/MemberPropertyAdminForm'
-import MemberTaskTable from '../../../components/member/MemberTaskTable'
+import MemberTaskAdminBlock from '../../../components/member/MemberTaskAdminBlock'
 import SaleCollectionAdminCard from '../../../components/sale/SaleCollectionAdminCard'
 import AppContext from '../../../contexts/AppContext'
 import { useAuth } from '../../../contexts/AuthContext'
@@ -176,9 +176,8 @@ const MemberAdminPage: React.FC = () => {
                     member={memberAdmin}
                     title={formatMessage(memberMessages.label.createMemberNote)}
                     renderTrigger={({ setVisible }) => (
-                      <Button type="primary" onClick={() => setVisible(true)}>
-                        <Icon component={() => <FilePlusIcon />} className="mr-1" />
-                        <span>{formatMessage(memberMessages.label.createMemberNote)}</span>
+                      <Button type="primary" icon={<FilePlusIcon />} onClick={() => setVisible(true)}>
+                        {formatMessage(memberMessages.label.createMemberNote)}
                       </Button>
                     )}
                     renderSubmit={({ type, status, duration, description, resetForm }) =>
@@ -222,7 +221,7 @@ const MemberAdminPage: React.FC = () => {
             {enabledModules.member_task && (
               <Tabs.TabPane key="task" tab={formatMessage(memberMessages.label.task)}>
                 <div className="p-5">
-                  <MemberTaskTable memberId={memberId} />
+                  <MemberTaskAdminBlock memberId={memberId} />
                 </div>
               </Tabs.TabPane>
             )}
