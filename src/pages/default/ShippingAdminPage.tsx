@@ -15,6 +15,8 @@ const messages = defineMessages({
   allShop: { id: 'common.label.allShop', defaultMessage: '全部商店' },
   noMerchandiseOrder: { id: 'merchandise.ui.noMerchandiseOrder', defaultMessage: '沒有任何商品紀錄' },
   exportShippingList: { id: 'merchandise.ui.exportShippingList', defaultMessage: '匯出總表' },
+  shippingStoreName: { id: 'merchandise.ui.shippingStoreName', defaultMessage: '收件門市' },
+  shippingSpecification: { id: 'merchandise.ui.shippingSpecification', defaultMessage: '商品規格與備註' },
 })
 
 const ShippingAdminPage: React.FC = () => {
@@ -51,27 +53,27 @@ const ShippingAdminPage: React.FC = () => {
   const exportShippingList = () => {
     const data: string[][] = [
       [
-        '訂單編號',
-        '會員姓名',
-        '項目名稱',
-        '數量',
+        formatMessage(commonMessages.label.orderLogId),
+        formatMessage(commonMessages.label.orderLogMemberName),
+        formatMessage(commonMessages.label.orderProductName),
+        formatMessage(merchandiseMessages.label.quantity),
         formatMessage(merchandiseMessages.ui.shippingMethod),
-        '收件門市',
+        formatMessage(messages.shippingStoreName),
         formatMessage(merchandiseMessages.ui.shippingName),
         formatMessage(merchandiseMessages.ui.shippingPhone),
         formatMessage(merchandiseMessages.ui.shippingAddress),
-        '商品規格與備註',
-        '發票姓名',
-        '發票信箱',
-        '發票電話',
-        '發票對象',
-        '發票捐贈碼',
-        '發票載具',
-        '發票統編',
-        '發票抬頭',
-        '發票地址',
-        '發票編號',
-        '發票狀態',
+        formatMessage(messages.shippingSpecification),
+        formatMessage(commonMessages.label.invoiceName),
+        formatMessage(commonMessages.label.invoiceEmail),
+        formatMessage(commonMessages.label.invoicePhone),
+        formatMessage(commonMessages.label.invoiceTarget),
+        formatMessage(commonMessages.label.invoiceDonationCode),
+        formatMessage(commonMessages.label.invoiceCarrier),
+        formatMessage(commonMessages.label.invoiceUniformNumber),
+        formatMessage(commonMessages.label.invoiceUniformTitle),
+        formatMessage(commonMessages.label.invoiceAddress),
+        formatMessage(commonMessages.label.invoiceId),
+        formatMessage(commonMessages.label.invoiceStatus),
       ],
     ]
 
@@ -89,7 +91,7 @@ const ShippingAdminPage: React.FC = () => {
             shipping.name,
             shipping.phone,
             shipping.address,
-            orderPhysicalProduct.description || '',
+            shipping.specification,
             invoice.name,
             invoice.email,
             invoice.phone,
@@ -100,7 +102,7 @@ const ShippingAdminPage: React.FC = () => {
             '',
             invoice?.address || '',
             '',
-            '發票狀態',
+            invoice?.status || '',
           ])
         })
       })

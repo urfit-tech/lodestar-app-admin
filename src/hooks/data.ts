@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { useContext } from 'react'
 import { useIntl } from 'react-intl'
+import { UploadFile } from 'antd/lib/upload/interface'
 import AppContext from '../contexts/AppContext'
 import { commonMessages } from '../helpers/translation'
 import types from '../types'
@@ -379,6 +380,10 @@ export const useOrderPhysicalProductLog = () => {
             product_id
             description
             options
+            order_product_files(order_by: { updated_at: asc }) {
+              id
+              data
+            }
             product {
               product_owner {
                 type
@@ -410,6 +415,7 @@ export const useOrderPhysicalProductLog = () => {
       productId: string
       description: string | null
       quantity: number
+      files: UploadFile[]
       memberShopId?: string | null
     }[]
   }[] =
@@ -433,6 +439,7 @@ export const useOrderPhysicalProductLog = () => {
               productId: orderPhysicalProduct.product_id.split('_')[1],
               quantity: orderPhysicalProduct.options?.quantity || 1,
               description: orderPhysicalProduct.description,
+              files: orderPhysicalProduct.order_product_files.map(v => v.data),
               memberShopId: orderPhysicalProduct.product.product_owner?.target || undefined,
             })),
           }))
@@ -563,6 +570,8 @@ export const useSimpleProduct = (
           id
           title
           list_price
+          is_physical
+          is_customized
           merchandise_imgs(where: { type: { _eq: "cover" } }) {
             url
           }
@@ -591,6 +600,8 @@ export const useSimpleProduct = (
     endedAt?: Date
     quantity?: number
     isSubscription?: boolean
+    is_physical?: boolean
+    is_customized?: boolean
   } | null =
     loading || error || !data
       ? null
@@ -697,6 +708,8 @@ export const useSimpleProduct = (
           listPrice: data.merchandise_by_pk.list_price,
           coverUrl: data.merchandise_by_pk.merchandise_imgs[0]?.url,
           quantity: options.quantity,
+          is_physical: data.merchandise_by_pk.is_physical,
+          is_customized: data.merchandise_by_pk.is_customized,
         }
       : {
           id: targetId,
