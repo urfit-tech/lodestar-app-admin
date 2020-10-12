@@ -189,10 +189,7 @@ export const usePodcastProgramAdmin = (appId: string, podcastProgramId: string) 
         name: podcastProgramCategory.category.name,
       })),
       tags: data.podcast_program_by_pk.podcast_program_tags.map(podcastProgramTag => podcastProgramTag.tag?.name || ''),
-      audios:
-        data.podcast_program_by_pk.content_type != null
-          ? podcastProgramAudiosFromRawAudios(data.podcast_program_by_pk.podcast_program_audios)
-          : [],
+      audios: podcastProgramAudiosFromRawAudios(data.podcast_program_by_pk.podcast_program_audios),
     }
   }, [loading, error, data])
 
