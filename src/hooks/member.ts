@@ -27,6 +27,10 @@ export const useMember = (memberId: string) => {
           description
           abstract
           title
+          member_specialities {
+            id
+            tag_name
+          }
           member_tags {
             id
             tag_name
@@ -50,6 +54,7 @@ export const useMember = (memberId: string) => {
           description: data.member_by_pk.description || '',
           abstract: data.member_by_pk.abstract || '',
           title: data.member_by_pk.title || '',
+          specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
           memberTags: data.member_by_pk.member_tags.map(tag => ({
             id: tag.id || '',
             tagName: tag.tag_name || '',
@@ -82,6 +87,10 @@ export const useMemberAdmin = (memberId: string) => {
           created_at
           logined_at
           member_tags {
+            id
+            tag_name
+          }
+          member_specialities {
             id
             tag_name
           }
@@ -151,6 +160,7 @@ export const useMemberAdmin = (memberId: string) => {
           createdAt: new Date(data.member_by_pk.created_at),
           loginedAt: data.member_by_pk.logined_at && new Date(data.member_by_pk.logined_at),
           tags: data.member_by_pk.member_tags.map(v => v.tag_name),
+          specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
           phones: data.member_by_pk.member_phones.map(v => v.phone).filter(v => v),
           properties: data.member_by_pk.member_properties.map(v => ({
             id: v.property.id,

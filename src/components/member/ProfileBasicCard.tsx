@@ -84,20 +84,16 @@ const ProfileBasicCard: React.FC<
         email: member.email,
         username: member.username,
         name: values.name,
-        // pictureUrl: values.picture
-        //   ? `https://${process.env.REACT_APP_S3_BUCKET}/avatars/${appId}/${memberId}`
-        //   : member.pictureUrl,
         title: values.title,
         abstract: values.abstract,
         description: values.description ? values.description.toRAW() : null,
         tags:
-          values.tags?.map((tag: string) => ({
-            app_id: appId,
+          values.specialities?.map((tag: string) => ({
             name: tag,
             type: '',
           })) || [],
-        memberTags:
-          values.tags?.map((tag: string) => ({
+        memberSpecialities:
+          values.specialities?.map((tag: string) => ({
             member_id: memberId,
             tag_name: tag,
           })) || [],
@@ -125,7 +121,7 @@ const ProfileBasicCard: React.FC<
         initialValues={{
           name: member.name,
           title: member.title,
-          tags: member.memberTags?.map(memberTag => memberTag.tagName) || [],
+          specialities: member.specialities || [],
           abstract: member.abstract,
           description: BraftEditor.createEditorState(member.description),
         }}
@@ -157,23 +153,26 @@ const ProfileBasicCard: React.FC<
         >
           <Input />
         </Form.Item>
-        {withTitle && (
-          <Form.Item label={formatMessage(commonMessages.term.creatorTitle)} name="title">
-            <Input />
-          </Form.Item>
-        )}
-        {withTags && (
-          <Form.Item label={formatMessage(commonMessages.term.speciality)} name="tags">
-            <Select mode="tags">
-              {tags.map(tag => (
-                <Select.Option key={tag} value={tag}>
-                  {tag}
-                </Select.Option>
-              ))}
-            </Select>
-            ,
-          </Form.Item>
-        )}
+        <Form.Item
+          label={formatMessage(commonMessages.term.creatorTitle)}
+          name="title"
+          className={withTitle ? '' : 'd-none'}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label={formatMessage(commonMessages.term.speciality)}
+          name="specialities"
+          className={withTags ? '' : 'd-none'}
+        >
+          <Select mode="tags">
+            {tags.map(tag => (
+              <Select.Option key={tag} value={tag}>
+                {tag}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
         {withAbstract && (
           <Form.Item
             label={formatMessage(commonMessages.term.shortDescription)}
@@ -231,11 +230,10 @@ const UPDATE_MEMBER_BASIC = gql`
     $description: String
     $username: String
     $email: String
-    # $pictureUrl: String
     $title: String
     $abstract: String
     $tags: [tag_insert_input!]!
-    $memberTags: [member_tag_insert_input!]!
+    $memberSpecialities: [member_speciality_insert_input!]!
   ) {
     update_member(
       where: { id: { _eq: $memberId } }
@@ -244,20 +242,19 @@ const UPDATE_MEMBER_BASIC = gql`
         description: $description
         username: $username
         email: $email
-        # picture_url: $pictureUrl
         title: $title
         abstract: $abstract
       }
     ) {
       affected_rows
     }
-    delete_member_tag(where: { member_id: { _eq: $memberId } }) {
+    delete_member_speciality(where: { member_id: { _eq: $memberId } }) {
       affected_rows
     }
     insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
       affected_rows
     }
-    insert_member_tag(objects: $memberTags) {
+    insert_member_speciality(objects: $memberSpecialities) {
       affected_rows
     }
   }

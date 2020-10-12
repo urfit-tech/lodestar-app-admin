@@ -1757,6 +1757,30 @@ export interface GET_ROLE_PERMISSION {
 // GraphQL mutation operation: UPDATE_MEMBER_PROFILE_BASIC
 // ====================================================
 
+export interface UPDATE_MEMBER_PROFILE_BASIC_delete_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_insert_tag {
+  __typename: "tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_insert_member_tag {
+  __typename: "member_tag_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_MEMBER_PROFILE_BASIC_delete_member_phone {
   __typename: "member_phone_mutation_response";
   /**
@@ -1775,6 +1799,18 @@ export interface UPDATE_MEMBER_PROFILE_BASIC_insert_member_phone {
 
 export interface UPDATE_MEMBER_PROFILE_BASIC {
   /**
+   * delete data from the table: "member_tag"
+   */
+  delete_member_tag: UPDATE_MEMBER_PROFILE_BASIC_delete_member_tag | null;
+  /**
+   * insert data into the table: "tag"
+   */
+  insert_tag: UPDATE_MEMBER_PROFILE_BASIC_insert_tag | null;
+  /**
+   * insert data into the table: "member_tag"
+   */
+  insert_member_tag: UPDATE_MEMBER_PROFILE_BASIC_insert_member_tag | null;
+  /**
    * delete data from the table: "member_phone"
    */
   delete_member_phone: UPDATE_MEMBER_PROFILE_BASIC_delete_member_phone | null;
@@ -1786,6 +1822,8 @@ export interface UPDATE_MEMBER_PROFILE_BASIC {
 
 export interface UPDATE_MEMBER_PROFILE_BASICVariables {
   memberId: string;
+  tags: tag_insert_input[];
+  memberTags: member_tag_insert_input[];
   phones: member_phone_insert_input[];
 }
 
@@ -2004,8 +2042,8 @@ export interface UPDATE_MEMBER_BASIC_update_member {
   affected_rows: number;
 }
 
-export interface UPDATE_MEMBER_BASIC_delete_member_tag {
-  __typename: "member_tag_mutation_response";
+export interface UPDATE_MEMBER_BASIC_delete_member_speciality {
+  __typename: "member_speciality_mutation_response";
   /**
    * number of affected rows by the mutation
    */
@@ -2020,8 +2058,8 @@ export interface UPDATE_MEMBER_BASIC_insert_tag {
   affected_rows: number;
 }
 
-export interface UPDATE_MEMBER_BASIC_insert_member_tag {
-  __typename: "member_tag_mutation_response";
+export interface UPDATE_MEMBER_BASIC_insert_member_speciality {
+  __typename: "member_speciality_mutation_response";
   /**
    * number of affected rows by the mutation
    */
@@ -2034,17 +2072,17 @@ export interface UPDATE_MEMBER_BASIC {
    */
   update_member: UPDATE_MEMBER_BASIC_update_member | null;
   /**
-   * delete data from the table: "member_tag"
+   * delete data from the table: "member_speciality"
    */
-  delete_member_tag: UPDATE_MEMBER_BASIC_delete_member_tag | null;
+  delete_member_speciality: UPDATE_MEMBER_BASIC_delete_member_speciality | null;
   /**
    * insert data into the table: "tag"
    */
   insert_tag: UPDATE_MEMBER_BASIC_insert_tag | null;
   /**
-   * insert data into the table: "member_tag"
+   * insert data into the table: "member_speciality"
    */
-  insert_member_tag: UPDATE_MEMBER_BASIC_insert_member_tag | null;
+  insert_member_speciality: UPDATE_MEMBER_BASIC_insert_member_speciality | null;
 }
 
 export interface UPDATE_MEMBER_BASICVariables {
@@ -2056,7 +2094,7 @@ export interface UPDATE_MEMBER_BASICVariables {
   title?: string | null;
   abstract?: string | null;
   tags: tag_insert_input[];
-  memberTags: member_tag_insert_input[];
+  memberSpecialities: member_speciality_insert_input[];
 }
 
 /* tslint:disable */
@@ -6237,6 +6275,12 @@ export interface GET_PRODUCT_SIMPLEVariables {
 // GraphQL query operation: GET_MEMBER
 // ====================================================
 
+export interface GET_MEMBER_member_by_pk_member_specialities {
+  __typename: "member_speciality";
+  id: any;
+  tag_name: string;
+}
+
 export interface GET_MEMBER_member_by_pk_member_tags {
   __typename: "member_tag";
   id: any;
@@ -6253,6 +6297,10 @@ export interface GET_MEMBER_member_by_pk {
   description: string | null;
   abstract: string | null;
   title: string | null;
+  /**
+   * An array relationship
+   */
+  member_specialities: GET_MEMBER_member_by_pk_member_specialities[];
   /**
    * An array relationship
    */
@@ -6285,6 +6333,12 @@ export interface GET_MEMBERVariables {
 
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_tags {
   __typename: "member_tag";
+  id: any;
+  tag_name: string;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_specialities {
+  __typename: "member_speciality";
   id: any;
   tag_name: string;
 }
@@ -6407,6 +6461,10 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk {
    * An array relationship
    */
   member_tags: GET_MEMBER_DESCRIPTION_member_by_pk_member_tags[];
+  /**
+   * An array relationship
+   */
+  member_specialities: GET_MEMBER_DESCRIPTION_member_by_pk_member_specialities[];
   /**
    * An array relationship
    */
@@ -10249,6 +10307,24 @@ export enum member_social_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "member_speciality"
+ */
+export enum member_speciality_constraint {
+  member_speciality_pkey = "member_speciality_pkey",
+}
+
+/**
+ * update columns of table "member_speciality"
+ */
+export enum member_speciality_update_column {
+  created_at = "created_at",
+  id = "id",
+  member_id = "member_id",
+  tag_name = "tag_name",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "member_tag"
  */
 export enum member_tag_constraint {
@@ -13841,6 +13917,7 @@ export interface member_bool_exp {
   member_properties?: member_property_bool_exp | null;
   member_shops?: member_shop_bool_exp | null;
   member_socials?: member_social_bool_exp | null;
+  member_specialities?: member_speciality_bool_exp | null;
   member_tags?: member_tag_bool_exp | null;
   merchandises?: merchandise_bool_exp | null;
   metadata?: jsonb_comparison_exp | null;
@@ -14012,6 +14089,7 @@ export interface member_insert_input {
   member_properties?: member_property_arr_rel_insert_input | null;
   member_shops?: member_shop_arr_rel_insert_input | null;
   member_socials?: member_social_arr_rel_insert_input | null;
+  member_specialities?: member_speciality_arr_rel_insert_input | null;
   member_tags?: member_tag_arr_rel_insert_input | null;
   merchandises?: merchandise_arr_rel_insert_input | null;
   metadata?: any | null;
@@ -14391,6 +14469,52 @@ export interface member_social_on_conflict {
   constraint: member_social_constraint;
   update_columns: member_social_update_column[];
   where?: member_social_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "member_speciality"
+ */
+export interface member_speciality_arr_rel_insert_input {
+  data: member_speciality_insert_input[];
+  on_conflict?: member_speciality_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_speciality". All fields are combined with a logical 'AND'.
+ */
+export interface member_speciality_bool_exp {
+  _and?: (member_speciality_bool_exp | null)[] | null;
+  _not?: member_speciality_bool_exp | null;
+  _or?: (member_speciality_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  tag?: tag_bool_exp | null;
+  tag_name?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_speciality"
+ */
+export interface member_speciality_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  tag?: tag_obj_rel_insert_input | null;
+  tag_name?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "member_speciality"
+ */
+export interface member_speciality_on_conflict {
+  constraint: member_speciality_constraint;
+  update_columns: member_speciality_update_column[];
+  where?: member_speciality_bool_exp | null;
 }
 
 /**

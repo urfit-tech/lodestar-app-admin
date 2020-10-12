@@ -37,6 +37,14 @@ const MemberProfileBasicForm: React.FC<{
             member_id: memberAdmin.id,
             phone,
           })),
+        tags: values.tags.map((tag: string) => ({
+          name: tag,
+          type: '',
+        })),
+        memberTags: values.tags.map((tag: string) => ({
+          member_id: memberAdmin.id,
+          tag_name: tag,
+        })),
       },
     })
       .then(() => {
@@ -60,6 +68,7 @@ const MemberProfileBasicForm: React.FC<{
         username: memberAdmin.username,
         email: memberAdmin.email,
         phones: memberAdmin.phones.length ? memberAdmin.phones : [''],
+        specialities: memberAdmin.specialities,
         tags: memberAdmin.tags,
       }}
       onFinish={handleSubmit}
@@ -76,8 +85,11 @@ const MemberProfileBasicForm: React.FC<{
       <Form.Item label={formatMessage(commonMessages.term.phone)} name="phones">
         <PhoneCollectionInput />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.tags)} name="tags">
+      <Form.Item label={formatMessage(commonMessages.term.speciality)} name="specialities">
         <TagSelector disabled />
+      </Form.Item>
+      <Form.Item label={formatMessage(commonMessages.term.tags)} name="tags">
+        <TagSelector />
       </Form.Item>
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
@@ -115,7 +127,24 @@ const PhoneCollectionInput: React.FC<{
 }
 
 const UPDATE_MEMBER_PROFILE_BASIC = gql`
-  mutation UPDATE_MEMBER_PROFILE_BASIC($memberId: String!, $phones: [member_phone_insert_input!]!) {
+  mutation UPDATE_MEMBER_PROFILE_BASIC(
+    $memberId: String!
+    $tags: [tag_insert_input!]!
+    $memberTags: [member_tag_insert_input!]!
+    $phones: [member_phone_insert_input!]!
+  ) {
+    # update tags
+    delete_member_tag(where: { member_id: { _eq: $memberId } }) {
+      affected_rows
+    }
+    insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {
+      affected_rows
+    }
+    insert_member_tag(objects: $memberTags) {
+      affected_rows
+    }
+
+    # update phones
     delete_member_phone(where: { member_id: { _eq: $memberId } }) {
       affected_rows
     }
