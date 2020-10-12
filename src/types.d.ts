@@ -1757,38 +1757,6 @@ export interface GET_ROLE_PERMISSION {
 // GraphQL mutation operation: UPDATE_MEMBER_PROFILE_BASIC
 // ====================================================
 
-export interface UPDATE_MEMBER_PROFILE_BASIC_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_PROFILE_BASIC_delete_member_tag {
-  __typename: "member_tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_PROFILE_BASIC_insert_tag {
-  __typename: "tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_PROFILE_BASIC_insert_member_tag {
-  __typename: "member_tag_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
 export interface UPDATE_MEMBER_PROFILE_BASIC_delete_member_phone {
   __typename: "member_phone_mutation_response";
   /**
@@ -1807,22 +1775,6 @@ export interface UPDATE_MEMBER_PROFILE_BASIC_insert_member_phone {
 
 export interface UPDATE_MEMBER_PROFILE_BASIC {
   /**
-   * update data of the table: "member"
-   */
-  update_member: UPDATE_MEMBER_PROFILE_BASIC_update_member | null;
-  /**
-   * delete data from the table: "member_tag"
-   */
-  delete_member_tag: UPDATE_MEMBER_PROFILE_BASIC_delete_member_tag | null;
-  /**
-   * insert data into the table: "tag"
-   */
-  insert_tag: UPDATE_MEMBER_PROFILE_BASIC_insert_tag | null;
-  /**
-   * insert data into the table: "member_tag"
-   */
-  insert_member_tag: UPDATE_MEMBER_PROFILE_BASIC_insert_member_tag | null;
-  /**
    * delete data from the table: "member_phone"
    */
   delete_member_phone: UPDATE_MEMBER_PROFILE_BASIC_delete_member_phone | null;
@@ -1834,10 +1786,6 @@ export interface UPDATE_MEMBER_PROFILE_BASIC {
 
 export interface UPDATE_MEMBER_PROFILE_BASICVariables {
   memberId: string;
-  name: string;
-  email: string;
-  tags: tag_insert_input[];
-  memberTags: member_tag_insert_input[];
   phones: member_phone_insert_input[];
 }
 
@@ -1970,7 +1918,7 @@ export interface GET_MEMBER_TASK_COLLECTION_member_task_executor {
 
 export interface GET_MEMBER_TASK_COLLECTION_member_task {
   __typename: "member_task";
-  id: any;
+  id: string;
   title: string;
   description: string | null;
   /**
@@ -6372,7 +6320,7 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author {
 
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
   __typename: "member_note";
-  id: any;
+  id: string;
   /**
    * NULL | inbound | outbound
    */
@@ -6507,7 +6455,7 @@ export interface GET_MEMBER_DESCRIPTIONVariables {
 
 export interface INSERT_MEMBER_NOTE_insert_member_note_one {
   __typename: "member_note";
-  id: any;
+  id: string;
 }
 
 export interface INSERT_MEMBER_NOTE {
@@ -6537,7 +6485,7 @@ export interface INSERT_MEMBER_NOTEVariables {
 
 export interface UPDATE_MEMBER_NOTE_update_member_note_by_pk {
   __typename: "member_note";
-  id: any;
+  id: string;
 }
 
 export interface UPDATE_MEMBER_NOTE {
@@ -6566,7 +6514,7 @@ export interface UPDATE_MEMBER_NOTEVariables {
 
 export interface DELETE_MEMBER_NOTE_delete_member_note_by_pk {
   __typename: "member_note";
-  id: any;
+  id: string;
 }
 
 export interface DELETE_MEMBER_NOTE {
@@ -10404,6 +10352,46 @@ export enum merchandise_img_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "merchandise_spec"
+ */
+export enum merchandise_spec_constraint {
+  merchandise_spec_pkey = "merchandise_spec_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "merchandise_spec_file"
+ */
+export enum merchandise_spec_file_constraint {
+  merchandise_spec_file_pkey = "merchandise_spec_file_pkey",
+}
+
+/**
+ * update columns of table "merchandise_spec_file"
+ */
+export enum merchandise_spec_file_update_column {
+  created_at = "created_at",
+  data = "data",
+  id = "id",
+  merchandise_spec_id = "merchandise_spec_id",
+  updated_at = "updated_at",
+}
+
+/**
+ * update columns of table "merchandise_spec"
+ */
+export enum merchandise_spec_update_column {
+  created_at = "created_at",
+  id = "id",
+  is_deleted = "is_deleted",
+  list_price = "list_price",
+  merchandise_id = "merchandise_id",
+  quota = "quota",
+  sale_price = "sale_price",
+  title = "title",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "merchandise_tag"
  */
 export enum merchandise_tag_constraint {
@@ -10430,6 +10418,7 @@ export enum merchandise_update_column {
   description = "description",
   ended_at = "ended_at",
   id = "id",
+  is_countdown_timer_visible = "is_countdown_timer_visible",
   is_customized = "is_customized",
   is_deleted = "is_deleted",
   is_limited = "is_limited",
@@ -10523,6 +10512,7 @@ export enum order_executor_update_column {
   id = "id",
   member_id = "member_id",
   order_id = "order_id",
+  ratio = "ratio",
 }
 
 /**
@@ -10562,6 +10552,24 @@ export enum order_log_update_column {
 export enum order_product_constraint {
   order_product_order_id_product_id_key = "order_product_order_id_product_id_key",
   order_product_pkey = "order_product_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "order_product_file"
+ */
+export enum order_product_file_constraint {
+  order_product_file_pkey = "order_product_file_pkey",
+}
+
+/**
+ * update columns of table "order_product_file"
+ */
+export enum order_product_file_update_column {
+  created_at = "created_at",
+  data = "data",
+  id = "id",
+  order_product_id = "order_product_id",
+  updated_at = "updated_at",
 }
 
 /**
@@ -10769,6 +10777,26 @@ export enum podcast_plan_update_column {
   sale_price = "sale_price",
   sold_at = "sold_at",
   title = "title",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "podcast_program_audio"
+ */
+export enum podcast_program_audio_constraint {
+  podcast_program_audio_pkey = "podcast_program_audio_pkey",
+}
+
+/**
+ * update columns of table "podcast_program_audio"
+ */
+export enum podcast_program_audio_update_column {
+  created_at = "created_at",
+  data = "data",
+  deleted_at = "deleted_at",
+  id = "id",
+  podcast_program_id = "podcast_program_id",
+  position = "position",
   updated_at = "updated_at",
 }
 
@@ -14033,7 +14061,7 @@ export interface member_note_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   duration?: Int_comparison_exp | null;
-  id?: uuid_comparison_exp | null;
+  id?: String_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   metadata?: jsonb_comparison_exp | null;
@@ -14051,7 +14079,7 @@ export interface member_note_insert_input {
   created_at?: any | null;
   description?: string | null;
   duration?: number | null;
-  id?: any | null;
+  id?: string | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   metadata?: any | null;
@@ -14418,7 +14446,7 @@ export interface member_task_insert_input {
   due_at?: any | null;
   executor?: member_obj_rel_insert_input | null;
   executor_id?: string | null;
-  id?: any | null;
+  id?: string | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   priority?: string | null;
@@ -14449,6 +14477,7 @@ export interface merchandise_bool_exp {
   description?: String_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_countdown_timer_visible?: Boolean_comparison_exp | null;
   is_customized?: Boolean_comparison_exp | null;
   is_deleted?: Boolean_comparison_exp | null;
   is_limited?: Boolean_comparison_exp | null;
@@ -14463,6 +14492,7 @@ export interface merchandise_bool_exp {
   merchandise_files?: merchandise_file_bool_exp | null;
   merchandise_imgs?: merchandise_img_bool_exp | null;
   merchandise_inventory_status?: merchandise_inventory_status_bool_exp | null;
+  merchandise_specs?: merchandise_spec_bool_exp | null;
   merchandise_tags?: merchandise_tag_bool_exp | null;
   meta?: String_comparison_exp | null;
   position?: Int_comparison_exp | null;
@@ -14618,6 +14648,7 @@ export interface merchandise_insert_input {
   description?: string | null;
   ended_at?: any | null;
   id?: any | null;
+  is_countdown_timer_visible?: boolean | null;
   is_customized?: boolean | null;
   is_deleted?: boolean | null;
   is_limited?: boolean | null;
@@ -14630,6 +14661,7 @@ export interface merchandise_insert_input {
   merchandise_categories?: merchandise_category_arr_rel_insert_input | null;
   merchandise_files?: merchandise_file_arr_rel_insert_input | null;
   merchandise_imgs?: merchandise_img_arr_rel_insert_input | null;
+  merchandise_specs?: merchandise_spec_arr_rel_insert_input | null;
   merchandise_tags?: merchandise_tag_arr_rel_insert_input | null;
   meta?: string | null;
   position?: number | null;
@@ -14672,6 +14704,128 @@ export interface merchandise_on_conflict {
   constraint: merchandise_constraint;
   update_columns: merchandise_update_column[];
   where?: merchandise_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "merchandise_spec"
+ */
+export interface merchandise_spec_arr_rel_insert_input {
+  data: merchandise_spec_insert_input[];
+  on_conflict?: merchandise_spec_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "merchandise_spec". All fields are combined with a logical 'AND'.
+ */
+export interface merchandise_spec_bool_exp {
+  _and?: (merchandise_spec_bool_exp | null)[] | null;
+  _not?: merchandise_spec_bool_exp | null;
+  _or?: (merchandise_spec_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
+  list_price?: numeric_comparison_exp | null;
+  merchandise?: merchandise_bool_exp | null;
+  merchandise_id?: uuid_comparison_exp | null;
+  merchandise_spec_files?: merchandise_spec_file_bool_exp | null;
+  merchandise_spec_inventory_status?: merchandise_spec_inventory_status_bool_exp | null;
+  quota?: Int_comparison_exp | null;
+  sale_price?: numeric_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "merchandise_spec_file"
+ */
+export interface merchandise_spec_file_arr_rel_insert_input {
+  data: merchandise_spec_file_insert_input[];
+  on_conflict?: merchandise_spec_file_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "merchandise_spec_file". All fields are combined with a logical 'AND'.
+ */
+export interface merchandise_spec_file_bool_exp {
+  _and?: (merchandise_spec_file_bool_exp | null)[] | null;
+  _not?: merchandise_spec_file_bool_exp | null;
+  _or?: (merchandise_spec_file_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  data?: jsonb_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  merchandise_spec?: merchandise_spec_bool_exp | null;
+  merchandise_spec_id?: uuid_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "merchandise_spec_file"
+ */
+export interface merchandise_spec_file_insert_input {
+  created_at?: any | null;
+  data?: any | null;
+  id?: any | null;
+  merchandise_spec?: merchandise_spec_obj_rel_insert_input | null;
+  merchandise_spec_id?: any | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "merchandise_spec_file"
+ */
+export interface merchandise_spec_file_on_conflict {
+  constraint: merchandise_spec_file_constraint;
+  update_columns: merchandise_spec_file_update_column[];
+  where?: merchandise_spec_file_bool_exp | null;
+}
+
+/**
+ * input type for inserting data into table "merchandise_spec"
+ */
+export interface merchandise_spec_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  is_deleted?: boolean | null;
+  list_price?: any | null;
+  merchandise?: merchandise_obj_rel_insert_input | null;
+  merchandise_id?: any | null;
+  merchandise_spec_files?: merchandise_spec_file_arr_rel_insert_input | null;
+  quota?: number | null;
+  sale_price?: any | null;
+  title?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "merchandise_spec_inventory_status". All fields are combined with a logical 'AND'.
+ */
+export interface merchandise_spec_inventory_status_bool_exp {
+  _and?: (merchandise_spec_inventory_status_bool_exp | null)[] | null;
+  _not?: merchandise_spec_inventory_status_bool_exp | null;
+  _or?: (merchandise_spec_inventory_status_bool_exp | null)[] | null;
+  buyable_quantity?: bigint_comparison_exp | null;
+  delivered_quantity?: bigint_comparison_exp | null;
+  merchandise_spec?: merchandise_spec_bool_exp | null;
+  merchandise_spec_id?: uuid_comparison_exp | null;
+  total_quantity?: bigint_comparison_exp | null;
+  undelivered_quantity?: bigint_comparison_exp | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "merchandise_spec"
+ */
+export interface merchandise_spec_obj_rel_insert_input {
+  data: merchandise_spec_insert_input;
+  on_conflict?: merchandise_spec_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "merchandise_spec"
+ */
+export interface merchandise_spec_on_conflict {
+  constraint: merchandise_spec_constraint;
+  update_columns: merchandise_spec_update_column[];
+  where?: merchandise_spec_bool_exp | null;
 }
 
 /**
@@ -14899,6 +15053,7 @@ export interface order_executor_bool_exp {
   member_id?: String_comparison_exp | null;
   order_id?: String_comparison_exp | null;
   order_log?: order_log_bool_exp | null;
+  ratio?: numeric_comparison_exp | null;
 }
 
 /**
@@ -14910,6 +15065,7 @@ export interface order_executor_insert_input {
   member_id?: string | null;
   order_id?: string | null;
   order_log?: order_log_obj_rel_insert_input | null;
+  ratio?: any | null;
 }
 
 /**
@@ -15036,10 +15192,55 @@ export interface order_product_bool_exp {
   options?: jsonb_comparison_exp | null;
   order_id?: String_comparison_exp | null;
   order_log?: order_log_bool_exp | null;
+  order_product_files?: order_product_file_bool_exp | null;
   price?: numeric_comparison_exp | null;
   product?: product_bool_exp | null;
   product_id?: String_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "order_product_file"
+ */
+export interface order_product_file_arr_rel_insert_input {
+  data: order_product_file_insert_input[];
+  on_conflict?: order_product_file_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "order_product_file". All fields are combined with a logical 'AND'.
+ */
+export interface order_product_file_bool_exp {
+  _and?: (order_product_file_bool_exp | null)[] | null;
+  _not?: order_product_file_bool_exp | null;
+  _or?: (order_product_file_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  data?: jsonb_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  order_product?: order_product_bool_exp | null;
+  order_product_id?: uuid_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "order_product_file"
+ */
+export interface order_product_file_insert_input {
+  created_at?: any | null;
+  data?: any | null;
+  id?: any | null;
+  order_product?: order_product_obj_rel_insert_input | null;
+  order_product_id?: any | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "order_product_file"
+ */
+export interface order_product_file_on_conflict {
+  constraint: order_product_file_constraint;
+  update_columns: order_product_file_update_column[];
+  where?: order_product_file_bool_exp | null;
 }
 
 /**
@@ -15060,6 +15261,7 @@ export interface order_product_insert_input {
   options?: any | null;
   order_id?: string | null;
   order_log?: order_log_obj_rel_insert_input | null;
+  order_product_files?: order_product_file_arr_rel_insert_input | null;
   price?: any | null;
   product?: product_obj_rel_insert_input | null;
   product_id?: string | null;
@@ -15636,6 +15838,54 @@ export interface podcast_program_arr_rel_insert_input {
 }
 
 /**
+ * input type for inserting array relation for remote table "podcast_program_audio"
+ */
+export interface podcast_program_audio_arr_rel_insert_input {
+  data: podcast_program_audio_insert_input[];
+  on_conflict?: podcast_program_audio_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "podcast_program_audio". All fields are combined with a logical 'AND'.
+ */
+export interface podcast_program_audio_bool_exp {
+  _and?: (podcast_program_audio_bool_exp | null)[] | null;
+  _not?: podcast_program_audio_bool_exp | null;
+  _or?: (podcast_program_audio_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  data?: jsonb_comparison_exp | null;
+  deleted_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  podcast_program?: podcast_program_bool_exp | null;
+  podcast_program_id?: uuid_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "podcast_program_audio"
+ */
+export interface podcast_program_audio_insert_input {
+  created_at?: any | null;
+  data?: any | null;
+  deleted_at?: any | null;
+  id?: any | null;
+  podcast_program?: podcast_program_obj_rel_insert_input | null;
+  podcast_program_id?: any | null;
+  position?: number | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "podcast_program_audio"
+ */
+export interface podcast_program_audio_on_conflict {
+  constraint: podcast_program_audio_constraint;
+  update_columns: podcast_program_audio_update_column[];
+  where?: podcast_program_audio_bool_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "podcast_program_body"
  */
 export interface podcast_program_body_arr_rel_insert_input {
@@ -15707,6 +15957,7 @@ export interface podcast_program_bool_exp {
   playlist_podcast_programs?: playlist_podcast_program_bool_exp | null;
   podcast?: podcast_bool_exp | null;
   podcast_id?: uuid_comparison_exp | null;
+  podcast_program_audios?: podcast_program_audio_bool_exp | null;
   podcast_program_bodies?: podcast_program_body_bool_exp | null;
   podcast_program_body?: podcast_program_body_bool_exp | null;
   podcast_program_categories?: podcast_program_category_bool_exp | null;
@@ -15791,6 +16042,7 @@ export interface podcast_program_insert_input {
   playlist_podcast_programs?: playlist_podcast_program_arr_rel_insert_input | null;
   podcast?: podcast_obj_rel_insert_input | null;
   podcast_id?: any | null;
+  podcast_program_audios?: podcast_program_audio_arr_rel_insert_input | null;
   podcast_program_bodies?: podcast_program_body_arr_rel_insert_input | null;
   podcast_program_body?: podcast_program_body_obj_rel_insert_input | null;
   podcast_program_categories?: podcast_program_category_arr_rel_insert_input | null;
@@ -16366,6 +16618,8 @@ export interface product_owner_bool_exp {
   member_id?: String_comparison_exp | null;
   product?: product_bool_exp | null;
   product_id?: String_comparison_exp | null;
+  target?: String_comparison_exp | null;
+  type?: String_comparison_exp | null;
 }
 
 /**

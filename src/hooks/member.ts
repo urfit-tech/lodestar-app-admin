@@ -142,7 +142,7 @@ export const useMemberAdmin = (memberId: string) => {
       ? null
       : {
           id: data.member_by_pk.id,
-          avatarUrl: data.member_by_pk?.picture_url,
+          avatarUrl: data.member_by_pk.picture_url,
           username: data.member_by_pk.username,
           name: data.member_by_pk.name,
           email: data.member_by_pk.email,
