@@ -6385,7 +6385,7 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
   status: string | null;
   duration: number | null;
   description: string | null;
-  updated_at: any;
+  created_at: any;
   /**
    * An object relationship
    */

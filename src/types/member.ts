@@ -83,7 +83,7 @@ export type MemberNoteAdminProps = {
   status: string | null
   duration: number | null
   description: string | null
-  updatedAt: Date
+  createdAt: Date
   author: {
     name: string
     pictureUrl: string | null

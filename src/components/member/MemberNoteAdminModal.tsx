@@ -118,11 +118,11 @@ const MemberNoteAdminModal: React.FC<{
         <Form.Item name="type">
           <Radio.Group onChange={e => setType(e.target.value)}>
             <Radio value={null}>{formatMessage(memberMessages.status.null)}</Radio>
-            <Radio value="inbound">{formatMessage(memberMessages.status.inbound)}</Radio>
             <Radio value="outbound">{formatMessage(memberMessages.status.outbound)}</Radio>
+            <Radio value="inbound">{formatMessage(memberMessages.status.inbound)}</Radio>
           </Radio.Group>
         </Form.Item>
-        {type === 'inbound' && (
+        {type === 'outbound' && (
           <div className="row">
             <div className="col-5">
               <StyledFormLabel>{formatMessage(memberMessages.label.status)}</StyledFormLabel>

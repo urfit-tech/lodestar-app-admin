@@ -112,7 +112,7 @@ export const useMemberAdmin = (memberId: string) => {
             status
             duration
             description
-            updated_at
+            created_at
             author {
               id
               name
@@ -173,7 +173,7 @@ export const useMemberAdmin = (memberId: string) => {
             status: v.status,
             duration: v.duration,
             description: v.description,
-            updatedAt: new Date(v.updated_at),
+            createdAt: new Date(v.created_at),
             author: {
               name: v.author.name,
               pictureUrl: v.author.picture_url,

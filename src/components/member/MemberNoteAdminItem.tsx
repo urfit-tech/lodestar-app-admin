@@ -63,8 +63,8 @@ const MemberNoteAdminItem: React.FC<{
         />
         <div>
           <div>
-            <span>{moment(note.updatedAt).format('YYYY-MM-DD HH:mm')}</span>
-            {note.type === 'inbound' && (
+            <span>{moment(note.createdAt).format('YYYY-MM-DD HH:mm')}</span>
+            {note.type === 'outbound' && (
               <StyledStatus>
                 <StyledIcon variant={note.status} component={() => <CallOutIcon />} />
                 {note.status === 'answered' && (
