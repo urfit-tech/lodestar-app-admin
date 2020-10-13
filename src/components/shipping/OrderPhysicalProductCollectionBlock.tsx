@@ -1,12 +1,12 @@
 import { useMutation } from '@apollo/react-hooks'
-import { Divider, message, Spin } from 'antd'
+import { Button, Divider, message, Spin } from 'antd'
 import { UploadFile } from 'antd/lib/upload/interface'
 import gql from 'graphql-tag'
 import moment from 'moment-timezone'
 import { default as React, useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import MultipleUploader, { StyledCloseOutlines, StyledFileBlock } from '../../components/common/MultipleUploader'
+import MultipleUploader from '../../components/common/MultipleUploader'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -67,14 +67,6 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ orderPhysicalProductLogs, searchText, onRefetch }) => {
   const { formatMessage } = useIntl()
-
-  if (searchText) {
-    orderPhysicalProductLogs = orderPhysicalProductLogs.filter(orderPhysicalProductLog =>
-      orderPhysicalProductLog.orderPhysicalProducts.some(
-        orderPhysicalProduct => !searchText || orderPhysicalProduct.key.toLowerCase().includes(searchText),
-      ),
-    )
-  }
 
   return (
     <div className="pt-4">
@@ -143,9 +135,18 @@ const StyledQuantity = styled.div`
 const StyledProductItem = styled.div<{ isPhysicalCustomized: boolean | undefined }>`
   align-items: ${props => (props.isPhysicalCustomized ? 'flex-start' : 'center')} !important;
 `
-const StyledFilesWrapper = styled.div`
-  @media (min-width: 576px) {
-    display: flex !important;
+const StyledButtonWrapper = styled.div`
+  position: absolute;
+  top: 20px;
+  right: -100px;
+  @media (max-width: 768px) {
+    top: 10px;
+    right: 0px;
+  }
+`
+const StyledSpace = styled.div`
+  @media (min-width: 768px) {
+    width: 100px;
   }
 `
 
@@ -158,30 +159,13 @@ const ShippingProductItem: React.FC<{
   const { formatMessage } = useIntl()
   const { loading, target } = useSimpleProduct(productId, {})
   const updateOrderProductFiles = useUpdateOrderProductFiles(orderProductId)
-  const [uploading, setUploading] = useState(false)
   const { id: appId } = useContext(AppContext)
   const [files, setFiles] = useState<UploadFile[]>(productFiles || [])
+  const filesRef = React.useRef<UploadFile[]>([])
   if (loading || !target) {
     return <Spin />
   }
-  const duplicateName = (file: UploadFile) => {
-    const getFileName = (fileName: string) => (/^([^.()]+)(.+)?$/.exec(fileName) || [])[1]
-    const getFileFormat = (fileName: string) => fileName.substring(fileName.indexOf('.', 0))
-
-    if (files.some(oldFile => oldFile.name === file.name)) {
-      return `${getFileName(file.name)}(${
-        Math.max(
-          ...files
-            .filter(oldFile => getFileFormat(oldFile.name) === getFileFormat(file.name))
-            .filter(oldFile => getFileName(oldFile.name) === getFileName(file.name))
-            .map(oldFile => (/\((\d*)\)/.exec(oldFile.name) || [])[1])
-            .map(oldFileIndex => parseInt(oldFileIndex || '0')),
-        ) + 1
-      })${getFileFormat(file.name)}`
-    }
-
-    return file.name
-  }
+  filesRef.current = files
   return (
     <div>
       <Divider />
@@ -197,79 +181,48 @@ const ShippingProductItem: React.FC<{
         <div className="flex-grow-1">
           {target.title}
           {!target?.is_physical && target?.is_customized && (
-            <StyledFilesWrapper className="mt-2">
-              <span className="pt-2 mt-2">{formatMessage(messages.deliver)}：</span>
-              <div className="flex-grow-1 mr-md-4">
-                {files?.map(file => (
-                  <StyledFileBlock key={file.uid} className="d-flex align-items-center justify-content-between mt-2">
-                    <div>
-                      <span className="mr-2">{file.name}</span>
-                    </div>
-                    <StyledCloseOutlines
-                      className={uploading ? 'd-none' : ''}
-                      onClick={() => {
-                        setUploading(true)
-                        updateOrderProductFiles({
-                          orderProductFiles: files
-                            .filter(oldFile => oldFile.uid !== file.uid)
-                            .map(v => ({
-                              order_product_id: orderProductId,
-                              data: v,
-                            })),
-                        })
-                          .then(() => {
-                            setFiles(files.filter(oldFile => oldFile.uid !== file.uid))
-                            message.success(formatMessage(commonMessages.ui.deleted))
-                          })
-                          .finally(() => setUploading(false))
-                      }}
-                    />
-                  </StyledFileBlock>
-                ))}
+            <div className="d-flex">
+              <div className="mt-3">{formatMessage(messages.deliver)}：</div>
+              <div className="flex-grow-1 mt-n5 pt-2" style={{ position: 'relative' }}>
+                <MultipleUploader
+                  renderTrigger={({ loading, value }) => (
+                    <StyledButtonWrapper>
+                      <Button loading={loading} disabled={loading}>
+                        {formatMessage(messages.uploadFile)}
+                      </Button>
+                    </StyledButtonWrapper>
+                  )}
+                  path={`merchandise_customized_files/${appId}/${target.id}`}
+                  fileList={files}
+                  onSetFileList={setFiles}
+                  onSuccess={() => {
+                    updateOrderProductFiles({
+                      orderProductFiles: filesRef.current.map(v => ({
+                        order_product_id: orderProductId,
+                        data: v,
+                      })),
+                    }).then(() => {
+                      message.success(formatMessage(commonMessages.event.successfullyUpload))
+                    })
+                  }}
+                  onDelete={value => {
+                    value &&
+                      updateOrderProductFiles({
+                        orderProductFiles: files
+                          .filter(file => file.uid !== value.uid)
+                          .map(v => ({
+                            order_product_id: orderProductId,
+                            data: v,
+                          })),
+                      })
+                  }}
+                />
               </div>
-            </StyledFilesWrapper>
+              <StyledSpace />
+            </div>
           )}
         </div>
-        {!target?.is_physical && target?.is_customized ? (
-          <MultipleUploader
-            path={`merchandise_customized_files/${appId}/${target.id}`}
-            fileList={[]}
-            onSetFileList={() => {}}
-            uploadText={formatMessage(messages.uploadFile)}
-            onUploading={() => setUploading(true)}
-            onSuccess={info => {
-              setFiles([
-                ...files,
-                {
-                  ...info.file,
-                  name: duplicateName(info.file),
-                },
-              ])
-              updateOrderProductFiles({
-                orderProductFiles: [
-                  ...files.map(v => ({
-                    order_product_id: orderProductId,
-                    data: v,
-                  })),
-                  {
-                    order_product_id: orderProductId,
-                    data: {
-                      ...info.file,
-                      name: duplicateName(info.file),
-                    },
-                  },
-                ],
-              })
-                .then(() => {
-                  message.success(formatMessage(commonMessages.event.successfullyUpload))
-                })
-                .finally(() => setUploading(false))
-            }}
-            onError={() => setUploading(false)}
-          />
-        ) : (
-          <StyledQuantity className="px-4">x{quantity}</StyledQuantity>
-        )}
+        {target?.is_physical && !target?.is_customized && <StyledQuantity className="px-4">x{quantity}</StyledQuantity>}
       </StyledProductItem>
     </div>
   )
