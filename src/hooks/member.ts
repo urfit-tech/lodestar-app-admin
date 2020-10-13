@@ -106,7 +106,7 @@ export const useMemberAdmin = (memberId: string) => {
             }
             value
           }
-          member_notes(order_by: { updated_at: desc }) {
+          member_notes(order_by: { created_at: desc }) {
             id
             type
             status
