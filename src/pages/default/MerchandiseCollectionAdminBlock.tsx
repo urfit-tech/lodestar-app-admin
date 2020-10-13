@@ -38,7 +38,7 @@ const filteredCondition = {
 
 const MerchandiseCollectionAdminBlock: React.FC<{
   shopId: string
-  merchandises: (MerchandisePreviewProps & { soldQuantity: number })[]
+  merchandises: MerchandisePreviewProps[]
 }> = ({ shopId, merchandises }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()

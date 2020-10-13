@@ -282,10 +282,7 @@ export const useMemberShop = (shopId: string) => {
 
   const memberShop:
     | (MemberShopProps & {
-        member: { id: string; name: string; pictureUrl: string | null }
-        merchandises: (MerchandisePreviewProps & {
-          soldQuantity: number
-        })[]
+        merchandises: MerchandisePreviewProps[]
       })
     | null =
     loading || error || !data || !data.member_shop_by_pk

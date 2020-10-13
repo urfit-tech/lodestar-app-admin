@@ -46,7 +46,7 @@ const MerchandiseAdminItem: React.FC<{
   listPrice: number
   salePrice: number | null
   soldAt: Date | null
-  soldQuantity: number
+  soldQuantity?: number
 }> = ({ id, coverUrl, title, listPrice, salePrice, soldAt, soldQuantity }) => {
   return (
     <Link to={`/merchandises/${id}`}>
