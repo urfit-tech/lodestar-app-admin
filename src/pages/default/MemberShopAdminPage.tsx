@@ -6,7 +6,7 @@ import MerchandiseCollectionAdminBlock from './MerchandiseCollectionAdminBlock'
 
 const MemberShopAdminPage: React.FC = () => {
   const { shopId } = useParams<{ shopId: string }>()
-  const { loadingMemberShop, errorMemberShop, memberShop, refetchMemberShop } = useMemberShop(shopId)
+  const { loadingMemberShop, errorMemberShop, memberShop } = useMemberShop(shopId)
 
   if (loadingMemberShop || errorMemberShop || !memberShop) {
     return null
@@ -14,11 +14,7 @@ const MemberShopAdminPage: React.FC = () => {
 
   return (
     <MemberShopLayout memberShopTitle={memberShop.title} member={memberShop.member}>
-      <MerchandiseCollectionAdminBlock
-        shopId={shopId}
-        merchandises={memberShop?.merchandises || []}
-        onRefetchMemberShop={refetchMemberShop}
-      />
+      <MerchandiseCollectionAdminBlock shopId={shopId} merchandises={memberShop?.merchandises || []} />
     </MemberShopLayout>
   )
 }

@@ -39,8 +39,7 @@ const filteredCondition = {
 const MerchandiseCollectionAdminBlock: React.FC<{
   shopId: string
   merchandises: (MerchandisePreviewProps & { soldQuantity: number })[]
-  onRefetchMemberShop: () => void
-}> = ({ shopId, merchandises, onRefetchMemberShop }) => {
+}> = ({ shopId, merchandises }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { currentMemberId } = useAuth()
@@ -119,7 +118,6 @@ const MerchandiseCollectionAdminBlock: React.FC<{
                     isPhysical,
                   },
                 }).then(({ data }) => {
-                  onRefetchMemberShop()
                   const merchandiseId = data?.insert_merchandise_one?.id
                   merchandiseId && history.push(`/merchandises/${merchandiseId}`)
                 })
