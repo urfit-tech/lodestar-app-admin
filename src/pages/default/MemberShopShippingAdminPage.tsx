@@ -18,7 +18,7 @@ const MemberShopAdminPage: React.FC = () => {
   const { loadingMemberShop, errorMemberShop, memberShop, refetchMemberShop } = useMemberShop(shopId)
 
   if (loadingMemberShop || errorMemberShop || !memberShop) {
-    return null
+    return <Skeleton active />
   }
 
   return (
@@ -26,11 +26,7 @@ const MemberShopAdminPage: React.FC = () => {
       <AdminPageTitle>{formatMessage(messages.shippingMethodsAdmin)}</AdminPageTitle>
       <AdminBlock>
         <AdminBlockTitle>{formatMessage(messages.shippingMethod)}</AdminBlockTitle>
-        {memberShop ? (
-          <ShippingMethodAdminBlock memberShop={memberShop} refetch={refetchMemberShop} />
-        ) : (
-          <Skeleton active />
-        )}
+        <ShippingMethodAdminBlock memberShop={memberShop} refetch={refetchMemberShop} />
       </AdminBlock>
     </MemberShopLayout>
   )
