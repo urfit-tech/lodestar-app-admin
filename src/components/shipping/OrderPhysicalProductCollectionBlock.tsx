@@ -139,7 +139,7 @@ const StyledButtonWrapper = styled.div`
   position: absolute;
   top: 20px;
   right: -100px;
-  @media (max-width: 768px) {
+  @media (max-width: 767px) {
     top: 10px;
     right: 0px;
   }
@@ -182,8 +182,10 @@ const ShippingProductItem: React.FC<{
           {target.title}
           {!target?.is_physical && target?.is_customized && (
             <div className="d-flex">
-              <div className="mt-3">{formatMessage(messages.deliver)}：</div>
-              <div className="flex-grow-1 mt-n5 pt-2" style={{ position: 'relative' }}>
+              <div className="mt-3">
+                <span>{formatMessage(messages.deliver)}</span>：
+              </div>
+              <div className="flex-grow-1 mt-sm-n5 pt-2" style={{ position: 'relative' }}>
                 <MultipleUploader
                   renderTrigger={({ loading, value }) => (
                     <StyledButtonWrapper>
