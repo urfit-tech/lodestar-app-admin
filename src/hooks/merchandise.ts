@@ -280,8 +280,6 @@ export const useMemberShop = (shopId: string) => {
     },
   )
 
-  console.log(data)
-
   const memberShop:
     | (MemberShopProps & {
         member: { id: string; name: string; pictureUrl: string | null }
