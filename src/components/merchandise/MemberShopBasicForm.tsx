@@ -24,20 +24,21 @@ const MemberShopBasicForm: React.FC<MemberShopBasicFormProps> = ({ memberShop, r
   const [form] = useForm()
   const { id: appId } = useContext(AppContext)
 
-  const [updateMemberShop] = useMutation<types.UPDATE_MEMBER_SHOP, types.UPDATE_MEMBER_SHOPVariables>(
-    UPDATE_MEMBER_SHOP,
+  const [updateMemberShopTitle] = useMutation<types.UPDATE_MEMBER_SHOP_TITLE, types.UPDATE_MEMBER_SHOP_TITLEVariables>(
+    UPDATE_MEMBER_SHOP_TITLE,
   )
+  const [updateMembersShopCover] = useMutation<types.UPDATE_MEMBER_SHOP_COVER, types.UPDATE_MEMBER_SHOP_COVERVariables>(
+    UPDATE_MEMBER_SHOP_COVER,
+  )
+
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = (values: any) => {
     setLoading(true)
-    updateMemberShop({
+    updateMemberShopTitle({
       variables: {
         memberShopId: memberShop.id,
         title: values.title,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/member_shop_covers/${appId}/${
-          memberShop.id
-        }?t=${Date.now()}`,
       },
     })
       .then(() => {
@@ -48,10 +49,9 @@ const MemberShopBasicForm: React.FC<MemberShopBasicFormProps> = ({ memberShop, r
   }
 
   const handleUpload = () => {
-    updateMemberShop({
+    updateMembersShopCover({
       variables: {
         memberShopId: memberShop.id,
-        title: memberShop.title,
         coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/member_shop_covers/${appId}/${
           memberShop.id
         }?t=${Date.now()}`,
@@ -112,9 +112,17 @@ const MemberShopBasicForm: React.FC<MemberShopBasicFormProps> = ({ memberShop, r
   )
 }
 
-const UPDATE_MEMBER_SHOP = gql`
-  mutation UPDATE_MEMBER_SHOP($memberShopId: uuid!, $title: String, $coverUrl: String) {
-    update_member_shop(where: { id: { _eq: $memberShopId } }, _set: { title: $title, cover_url: $coverUrl }) {
+const UPDATE_MEMBER_SHOP_TITLE = gql`
+  mutation UPDATE_MEMBER_SHOP_TITLE($memberShopId: uuid!, $title: String) {
+    update_member_shop(where: { id: { _eq: $memberShopId } }, _set: { title: $title }) {
+      affected_rows
+    }
+  }
+`
+
+const UPDATE_MEMBER_SHOP_COVER = gql`
+  mutation UPDATE_MEMBER_SHOP_COVER($memberShopId: uuid!, $coverUrl: String) {
+    update_member_shop(where: { id: { _eq: $memberShopId } }, _set: { cover_url: $coverUrl }) {
       affected_rows
     }
   }
