@@ -15,7 +15,7 @@ import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
 import { MerchandisePreviewProps } from '../../types/merchandise'
 import LoadingPage from './LoadingPage'
 
-type MerchandiseType = 'all' | 'generalPhysical' | 'generalVirtual' | 'customizedPhysical' | 'customizedVirtual'
+type MerchandiseClass = 'generalPhysical' | 'generalVirtual' | 'customizedPhysical' | 'customizedVirtual'
 
 const StyledHeader = styled.div<{ width?: string }>`
   ${props => (props.width ? `width: ${props.width};` : '')}
@@ -30,7 +30,6 @@ const messages = defineMessages({
 })
 
 const filteredCondition = {
-  all: null,
   generalPhysical: { isCustomized: false, isPhysical: true },
   generalVirtual: { isCustomized: false, isPhysical: false },
   customizedPhysical: { isCustomized: true, isPhysical: true },
@@ -49,18 +48,16 @@ const MerchandiseCollectionAdminBlock: React.FC<{
 
   const insertMerchandise = useInsertMerchandise()
   const [searchText, setSearchText] = useState('')
-  const [currentFilteredCondition, setCurrentFilteredCondition] = useState<{
-    isPhysical: boolean
-    isCustomized: boolean
-  } | null>(null)
+  const [merchandiseClass, setMerchandiseClass] = useState<MerchandiseClass | ''>('')
 
-  const onSelect = (type: MerchandiseType) => setCurrentFilteredCondition(filteredCondition[type])
+  const onSelect = (selectedClass: MerchandiseClass | '') => setMerchandiseClass(selectedClass)
 
-  const filteredMerchandises = !currentFilteredCondition
-    ? merchandises
-    : merchandises
-        .filter(v => v.isCustomized === currentFilteredCondition.isCustomized)
-        .filter(v => v.isPhysical === currentFilteredCondition.isPhysical)
+  const filteredMerchandises = merchandises.filter(
+    v =>
+      !merchandiseClass ||
+      (v.isCustomized === filteredCondition[merchandiseClass].isCustomized &&
+        v.isPhysical === filteredCondition[merchandiseClass].isPhysical),
+  )
 
   const tabContents = [
     {
@@ -134,10 +131,10 @@ const MerchandiseCollectionAdminBlock: React.FC<{
               showSearch
               className="mr-3"
               style={{ minWidth: 200 }}
-              defaultValue={'all'}
+              defaultValue={''}
               onChange={val => onSelect(val)}
             >
-              <Select.Option value="all">{formatMessage(messages.allMerchandiseType)}</Select.Option>
+              <Select.Option value="">{formatMessage(messages.allMerchandiseType)}</Select.Option>
               <Select.Option value="generalPhysical">
                 {formatMessage(merchandiseMessages.label.generalPhysical)}
               </Select.Option>
