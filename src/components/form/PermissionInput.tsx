@@ -10,10 +10,20 @@ import types from '../../types'
 
 const messages = defineMessages({
   all: { id: 'permission.label.all', defaultMessage: '所有權限' },
-  sales: { id: 'permission.label.sales', defaultMessage: '銷售相關' },
-  program: { id: 'permission.label.program', defaultMessage: '課程相關' },
-  activity: { id: 'permission.label.activity', defaultMessage: '活動相關' },
-  other: { id: 'permission.label.other', defaultMessage: '其他' },
+  backstage: { id: 'permission.label.backstage', defaultMessage: '後台權限' },
+  sales: { id: 'permission.label.sales', defaultMessage: '銷售管理' },
+  program: { id: 'permission.label.program', defaultMessage: '線上課程' },
+  programPackage: { id: 'permission.label.programPackage', defaultMessage: '課程組合' },
+  programProgress: { id: 'permission.label.programProgress', defaultMessage: '學習進度' },
+  appointment: { id: 'permission.label.appointment', defaultMessage: '預約服務' },
+  activity: { id: 'permission.label.activity', defaultMessage: '線下實體' },
+  post: { id: 'permission.label.post', defaultMessage: '媒體文章' },
+  coupon: { id: 'permission.label.coupon', defaultMessage: '折價方案' },
+  voucher: { id: 'permission.label.voucher', defaultMessage: '兌換方案' },
+  bonus: { id: 'permission.label.bonus', defaultMessage: '紅利折抵' },
+  memberAdmin: { id: 'permission.label.memberManagement', defaultMessage: '會員管理' },
+  memberTask: { id: 'permission.label.memberTask', defaultMessage: '任務管理' },
+  appAdmin: { id: 'permission.label.appAdmin', defaultMessage: '網站管理' },
 })
 
 const StyledBlock = styled.div`
