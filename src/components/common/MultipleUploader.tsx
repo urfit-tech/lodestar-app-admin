@@ -15,7 +15,7 @@ const messages = defineMessages({
   uploadFailed: { id: 'upload.event.failed', defaultMessage: '上傳失敗' },
 })
 
-export const StyledCloseOutlines = styled(CloseOutlined)`
+const StyledCloseOutlines = styled(CloseOutlined)`
   cursor: pointer;
   color: 'gray-darker';
 
@@ -26,7 +26,7 @@ export const StyledCloseOutlines = styled(CloseOutlined)`
     color: 'gray-darker';
   }
 `
-export const StyledFileBlock = styled.div`
+const StyledFileBlock = styled.div`
   padding: 0.5rem;
   transition: background 0.2s ease-in-out;
 
