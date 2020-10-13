@@ -30,6 +30,7 @@ const messages = defineMessages({
 
 const StyledMemberInfo = styled.div`
   border-bottom: 1px solid var(--gray-light);
+  padding: 0.5rem 1.5rem 1.5rem;
 `
 
 const StyledMemberName = styled.div`
@@ -99,21 +100,21 @@ const MemberShopLayout: React.FC<{
       <Layout>
         <Layout.Sider width="320">
           <Link to="/member-shops">
-            <StyledButton type="link" className="mr-3 mb-2">
+            <StyledButton type="link">
               <Icon component={() => <ArrowLeftOutlined />} />
               <span className="mr-2">{formatMessage(commonMessages.ui.back)}</span>
             </StyledButton>
           </Link>
 
-          <StyledMemberInfo className="pb-4 d-flex flex-row">
+          <StyledMemberInfo className="d-flex align-items-start">
             <CustomRatioImage
-              className="ml-4"
+              className="flex-shrink-0"
               width="3rem"
               ratio={1}
               src={member.pictureUrl || DefaultAvatar}
               shape="circle"
             />
-            <div className="ml-3">
+            <div className="ml-3 flex-grow-1">
               <StyledMemberName>{member.name}</StyledMemberName>
               <StyledMemberShopTitle>{memberShopTitle}</StyledMemberShopTitle>
             </div>
