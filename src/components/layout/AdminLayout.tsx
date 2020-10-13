@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { StyledContent } from '.'
 import { useAuth } from '../../contexts/AuthContext'
 import { useRouteKeys } from '../../hooks/util'
-import { CreatorAdminMenu, OwnerAdminMenu } from '../admin/AdminMenu'
+import AdminMenu from '../admin/AdminMenu'
 import Responsive from '../common/Responsive'
 import DefaultLayout from './DefaultLayout'
 
@@ -37,11 +37,7 @@ const AdminLayout: React.FC = ({ children }) => {
       <div className="d-flex">
         <Responsive.Desktop>
           <StyledContent noFooter white>
-            {currentUserRole === 'app-owner' ? (
-              <OwnerAdminMenu defaultSelectedKeys={defaultSelectedKeys} />
-            ) : currentUserRole === 'content-creator' ? (
-              <CreatorAdminMenu defaultSelectedKeys={defaultSelectedKeys} />
-            ) : null}
+            <AdminMenu defaultSelectedKeys={defaultSelectedKeys} />
           </StyledContent>
         </Responsive.Desktop>
 

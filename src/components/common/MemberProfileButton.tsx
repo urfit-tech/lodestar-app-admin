@@ -9,7 +9,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
 import { useMember } from '../../hooks/member'
 import settings from '../../settings'
-import { CreatorAdminMenu, OwnerAdminMenu } from '../admin/AdminMenu'
+import AdminMenu from '../admin/AdminMenu'
 import { AuthModalContext } from '../auth/AuthModal'
 import MemberAvatar from './MemberAvatar'
 import Responsive from './Responsive'
@@ -48,7 +48,7 @@ const messages = defineMessages({
 const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { isAuthenticated, currentUserRole, logout } = useAuth()
+  const { isAuthenticated, logout } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
   const { member } = useMember(memberId)
   const navLinks = settings.navLinks
@@ -83,11 +83,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
             </BorderedItem>
           )}
           <BorderedItem className="shift-left">
-            {currentUserRole === 'app-owner' ? (
-              <OwnerAdminMenu style={{ border: 'none' }} />
-            ) : currentUserRole === 'content-creator' ? (
-              <CreatorAdminMenu style={{ border: 'none' }} />
-            ) : null}
+            <AdminMenu />
           </BorderedItem>
         </Responsive.Default>
 
