@@ -17,12 +17,12 @@ const messages = defineMessages({
   programProgress: { id: 'permission.label.programProgress', defaultMessage: '學習進度' },
   appointment: { id: 'permission.label.appointment', defaultMessage: '預約服務' },
   activity: { id: 'permission.label.activity', defaultMessage: '線下實體' },
-  post: { id: 'permission.label.post', defaultMessage: '媒體文章' },
+  blog: { id: 'permission.label.post', defaultMessage: '媒體文章' },
   coupon: { id: 'permission.label.coupon', defaultMessage: '折價方案' },
   voucher: { id: 'permission.label.voucher', defaultMessage: '兌換方案' },
   bonus: { id: 'permission.label.bonus', defaultMessage: '紅利折抵' },
-  memberAdmin: { id: 'permission.label.memberManagement', defaultMessage: '會員管理' },
-  memberTask: { id: 'permission.label.memberTask', defaultMessage: '任務管理' },
+  memberAdmin: { id: 'permission.label.memberAdmin', defaultMessage: '會員管理' },
+  task: { id: 'permission.label.task', defaultMessage: '任務管理' },
   appAdmin: { id: 'permission.label.appAdmin', defaultMessage: '網站管理' },
 })
 
@@ -64,7 +64,7 @@ const PermissionInput: React.FC<{
         </Checkbox>
       </div>
       {Object.keys(permissionGroups).map(groupId => (
-        <div key={groupId} className="col-4">
+        <div key={groupId} className="col-4 mb-3">
           <PermissionGroup
             label={
               messages[groupId as keyof typeof messages]
