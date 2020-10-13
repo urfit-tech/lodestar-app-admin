@@ -280,6 +280,8 @@ export const useMemberShop = (shopId: string) => {
     },
   )
 
+  console.log(data?.member_shop_by_pk?.merchandises)
+
   const memberShop:
     | (MemberShopProps & {
         merchandises: MerchandisePreviewProps[]
@@ -312,8 +314,8 @@ export const useMemberShop = (shopId: string) => {
                 .filter(notEmpty)
                 .map(
                   w =>
-                    w.merchandise_spec_inventory_status?.total_quantity -
-                    w.merchandise_spec_inventory_status?.buyable_quantity,
+                    (w.merchandise_spec_inventory_status?.total_quantity || 0) -
+                    (w.merchandise_spec_inventory_status?.buyable_quantity || 0),
                 ),
             ),
             coverUrl: v.merchandise_imgs[0]?.url || null,
