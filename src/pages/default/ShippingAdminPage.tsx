@@ -1,4 +1,4 @@
-import Icon, { DownloadOutlined } from '@ant-design/icons'
+import Icon, { CaretDownOutlined, CaretUpOutlined, DownloadOutlined } from '@ant-design/icons'
 import { Button, Input, Skeleton, Tabs } from 'antd'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -17,6 +17,7 @@ const messages = defineMessages({
   exportShippingList: { id: 'merchandise.ui.exportShippingList', defaultMessage: '匯出總表' },
   shippingStoreName: { id: 'merchandise.ui.shippingStoreName', defaultMessage: '收件門市' },
   shippingSpecification: { id: 'merchandise.ui.shippingSpecification', defaultMessage: '商品規格與備註' },
+  orderLogsTimeSort: { id: 'common.ui.orderLogsTimeSort', defaultMessage: '下單時間排序' },
 })
 
 const ShippingAdminPage: React.FC = () => {
@@ -25,14 +26,19 @@ const ShippingAdminPage: React.FC = () => {
   const [searchText, setSearchText] = useState('')
   const [selectedShopId, setSelectedShopId] = useState<string>('')
   const [tapActiveKey, setTapActiveKey] = useState<string>('shipping')
+  const [sortCreatedAtDesc, setSortCreatedAtDesc] = useState<boolean>(false)
 
-  const filteredProductLogs = orderPhysicalProductLogs.filter(orderPhysicalProductLog =>
+  const filteredProductLogs = (sortCreatedAtDesc
+    ? orderPhysicalProductLogs.reverse()
+    : orderPhysicalProductLogs
+  ).filter(orderPhysicalProductLog =>
     orderPhysicalProductLog.orderPhysicalProducts.some(
       orderPhysicalProduct =>
         orderPhysicalProduct.key.toLowerCase().includes(searchText) &&
         (selectedShopId ? orderPhysicalProduct.memberShopId === selectedShopId : true),
     ),
   )
+
   const tabContents = [
     {
       key: 'shipping',
@@ -136,7 +142,13 @@ const ShippingAdminPage: React.FC = () => {
           {formatMessage(messages.exportShippingList)}
         </Button>
       </div>
-
+      <div className="row mx-0 justify-content-between mb-4">
+        <div></div>
+        <div className="cursor-pointer" onClick={() => setSortCreatedAtDesc(!sortCreatedAtDesc)}>
+          {formatMessage(messages.orderLogsTimeSort) + ' '}
+          {sortCreatedAtDesc ? <CaretDownOutlined /> : <CaretUpOutlined />}
+        </div>
+      </div>
       <Tabs
         onChange={activeKey => {
           setTapActiveKey(activeKey)
