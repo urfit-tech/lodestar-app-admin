@@ -280,8 +280,6 @@ export const useMemberShop = (shopId: string) => {
     },
   )
 
-  console.log(data?.member_shop_by_pk?.merchandises)
-
   const memberShop:
     | (MemberShopProps & {
         merchandises: MerchandisePreviewProps[]
