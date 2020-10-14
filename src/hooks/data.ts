@@ -600,8 +600,8 @@ export const useSimpleProduct = (
     endedAt?: Date
     quantity?: number
     isSubscription?: boolean
-    is_physical?: boolean
-    is_customized?: boolean
+    isPhysical?: boolean
+    isCustomized?: boolean
   } | null =
     loading || error || !data
       ? null
@@ -708,8 +708,8 @@ export const useSimpleProduct = (
           listPrice: data.merchandise_by_pk.list_price,
           coverUrl: data.merchandise_by_pk.merchandise_imgs[0]?.url,
           quantity: options.quantity,
-          is_physical: data.merchandise_by_pk.is_physical,
-          is_customized: data.merchandise_by_pk.is_customized,
+          isPhysical: data.merchandise_by_pk.is_physical,
+          isCustomized: data.merchandise_by_pk.is_customized,
         }
       : {
           id: targetId,

@@ -145,7 +145,7 @@ const MultipleUploader: React.FC<MultipleUploaderProps> = ({
           </div>
           <StyledCloseOutlines
             onClick={() => {
-              onDelete && onDelete(fileList.find(oldFile => oldFile.uid === file.uid))
+              onDelete?.(fileList.find(oldFile => oldFile.uid === file.uid))
               onSetFileList(fileList.filter(oldFile => oldFile.uid !== file.uid))
               message.success(formatMessage(commonMessages.ui.deleted))
             }}

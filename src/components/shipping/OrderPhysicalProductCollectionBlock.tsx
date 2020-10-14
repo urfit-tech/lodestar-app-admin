@@ -63,9 +63,8 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
       files: UploadFile[]
     }[]
   }[]
-  searchText?: string
   onRefetch?: () => void
-}> = ({ orderPhysicalProductLogs, searchText, onRefetch }) => {
+}> = ({ orderPhysicalProductLogs, onRefetch }) => {
   const { formatMessage } = useIntl()
 
   return (
@@ -170,7 +169,7 @@ const ShippingProductItem: React.FC<{
     <div>
       <Divider />
 
-      <StyledProductItem className="d-flex" isPhysicalCustomized={!target?.is_physical && target?.is_customized}>
+      <StyledProductItem className="d-flex" isPhysicalCustomized={!target?.isPhysical && target?.isCustomized}>
         <CustomRatioImage
           width="64px"
           ratio={1}
@@ -180,14 +179,14 @@ const ShippingProductItem: React.FC<{
         />
         <div className="flex-grow-1">
           {target.title}
-          {!target?.is_physical && target?.is_customized && (
+          {!target?.isPhysical && target?.isCustomized && (
             <div className="d-flex">
               <div className="mt-3">
                 <span>{formatMessage(messages.deliver)}</span>：
               </div>
               <div className="flex-grow-1 mt-sm-n5 pt-2" style={{ position: 'relative' }}>
                 <MultipleUploader
-                  renderTrigger={({ loading, value }) => (
+                  renderTrigger={({ loading }) => (
                     <StyledButtonWrapper>
                       <Button loading={loading} disabled={loading}>
                         {formatMessage(messages.uploadFile)}
@@ -224,7 +223,9 @@ const ShippingProductItem: React.FC<{
             </div>
           )}
         </div>
-        {target?.is_physical && !target?.is_customized && <StyledQuantity className="px-4">x{quantity}</StyledQuantity>}
+        {!(!target?.isPhysical && target?.isCustomized) && (
+          <StyledQuantity className="px-4">x{quantity}</StyledQuantity>
+        )}
       </StyledProductItem>
     </div>
   )

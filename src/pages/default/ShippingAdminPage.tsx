@@ -26,18 +26,17 @@ const ShippingAdminPage: React.FC = () => {
   const [searchText, setSearchText] = useState('')
   const [selectedShopId, setSelectedShopId] = useState<string>('')
   const [tapActiveKey, setTapActiveKey] = useState<string>('shipping')
-  const [sortCreatedAtDesc, setSortCreatedAtDesc] = useState<boolean>(false)
+  const [isCreatedAtDesc, setIsCreatedAtDesc] = useState<boolean>(false)
 
-  const filteredProductLogs = (sortCreatedAtDesc
-    ? orderPhysicalProductLogs.reverse()
-    : orderPhysicalProductLogs
-  ).filter(orderPhysicalProductLog =>
-    orderPhysicalProductLog.orderPhysicalProducts.some(
-      orderPhysicalProduct =>
-        orderPhysicalProduct.key.toLowerCase().includes(searchText) &&
-        (selectedShopId ? orderPhysicalProduct.memberShopId === selectedShopId : true),
-    ),
-  )
+  const filteredProductLogs = orderPhysicalProductLogs
+    .filter(orderPhysicalProductLog =>
+      orderPhysicalProductLog.orderPhysicalProducts.some(
+        orderPhysicalProduct =>
+          orderPhysicalProduct.key.toLowerCase().includes(searchText) &&
+          (selectedShopId ? orderPhysicalProduct.memberShopId === selectedShopId : true),
+      ),
+    )
+    .sort(() => (isCreatedAtDesc ? 1 : -1))
 
   const tabContents = [
     {
@@ -144,9 +143,9 @@ const ShippingAdminPage: React.FC = () => {
       </div>
       <div className="row mx-0 justify-content-between mb-4">
         <div></div>
-        <div className="cursor-pointer" onClick={() => setSortCreatedAtDesc(!sortCreatedAtDesc)}>
+        <div className="cursor-pointer" onClick={() => setIsCreatedAtDesc(!isCreatedAtDesc)}>
           {formatMessage(messages.orderLogsTimeSort) + ' '}
-          {sortCreatedAtDesc ? <CaretDownOutlined /> : <CaretUpOutlined />}
+          {isCreatedAtDesc ? <CaretDownOutlined /> : <CaretUpOutlined />}
         </div>
       </div>
       <Tabs
