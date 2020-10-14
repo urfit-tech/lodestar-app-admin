@@ -298,6 +298,7 @@ export const commonMessages = {
     blogAdmin: { id: 'common.menu.blogAdmin', defaultMessage: '媒體文章' },
     blogPosts: { id: 'common.menu.blogPosts', defaultMessage: '文章管理' },
     blogCategory: { id: 'common.menu.blogCategory', defaultMessage: '文章分類' },
+    eCommerce: { id: 'common.menu.eCommerce', defaultMessage: '電子商務' },
     merchandiseAdmin: { id: 'common.menu.merchandise', defaultMessage: '商品' },
     merchandises: { id: 'common.menu.merchandises', defaultMessage: '商品管理' },
     merchandiseIssues: { id: 'common.menu.merchandiseIssues', defaultMessage: '問答管理' },
@@ -714,6 +715,10 @@ export const merchandiseMessages = {
     inOperation: { id: 'merchandise.status.inOperation', defaultMessage: '經營中' },
     inactivated: { id: 'merchandise.status.inactivated', defaultMessage: '未啟用' },
   }),
+  menu: defineMessages({
+    memberShopSetting: { id: 'merchandise.menu.memberShopSetting', defaultMessage: '商店設定' },
+    memberShopInfo: { id: 'merchandise.menu.memberShopInfo', defaultMessage: '商店資訊' },
+  }),
   label: defineMessages({
     images: { id: 'merchandise.label.images', defaultMessage: '商品圖片' },
     meta: { id: 'merchandise.label.meta', defaultMessage: '規格說明' },
@@ -741,6 +746,18 @@ export const merchandiseMessages = {
     merchandiseType: { id: 'merchandise.label.merchandiseType', defaultMessage: '選擇商品類型' },
     generalPhysicalMerchandise: { id: 'merchandise.label.generalPhysicalMerchandise', defaultMessage: '一般實體商品' },
     generalVirtualMerchandise: { id: 'merchandise.label.generalVirtualMerchandise', defaultMessage: '一般虛擬商品' },
+    customizedPhysicalMerchandise: {
+      id: 'merchandise.label.customizedPhysicalMerchandise',
+      defaultMessage: '客製實體商品',
+    },
+    customizedVirtualMerchandise: {
+      id: 'merchandise.label.customizedVirtualMerchandise',
+      defaultMessage: '客製虛擬商品',
+    },
+    generalPhysical: { id: 'merchandise.label.generalPhysical', defaultMessage: '一般實體' },
+    generalVirtual: { id: 'merchandise.label.generalVirtual', defaultMessage: '一般虛擬' },
+    customizedPhysical: { id: 'merchandise.label.customizedPhysical', defaultMessage: '客製實體' },
+    customizedVirtual: { id: 'merchandise.label.customizedVirtual', defaultMessage: '客製虛擬' },
     deliveryItem: { id: 'merchandise.label.deliveryItem', defaultMessage: '交付項目' },
   }),
   text: defineMessages({
@@ -754,11 +771,11 @@ export const merchandiseMessages = {
     },
     abstractLimit: { id: 'merchandise.text.abstractLimit', defaultMessage: '限 200 字' },
     generalPhysicalMerchandise: {
-      id: 'merchandise.label.generalPhysicalMerchandise',
+      id: 'merchandise.text.generalPhysicalMerchandise',
       defaultMessage: 'ex.衣服、帽子...等實體商品。',
     },
     generalVirtualMerchandise: {
-      id: 'merchandise.label.generalVirtualMerchandise',
+      id: 'merchandise.text.generalVirtualMerchandise',
       defaultMessage: 'ex.素材、圖庫...等虛擬商品。',
     },
   }),

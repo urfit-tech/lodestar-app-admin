@@ -1,20 +1,21 @@
 import Icon, { FileAddOutlined } from '@ant-design/icons'
-import { Button, Input, Tabs } from 'antd'
-import React, { useContext, useEffect, useState } from 'react'
-import { useIntl } from 'react-intl'
+import { Button, Input, Select, Tabs } from 'antd'
+import React, { useContext, useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import { StringParam, useQueryParam } from 'use-query-params'
-import { AdminPageTitle } from '../../components/admin'
+import { AdminPaneTitle } from '../../components/admin'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
-import AdminLayout from '../../components/layout/AdminLayout'
 import MerchandiseAdminItem from '../../components/merchandise/MerchandiseAdminItem'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
-import { useInsertMerchandise, useMerchandiseCollection } from '../../hooks/merchandise'
+import { useInsertMerchandise } from '../../hooks/merchandise'
 import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
+import { MerchandisePreviewProps } from '../../types/merchandise'
 import LoadingPage from './LoadingPage'
+
+type MerchandiseClass = 'generalPhysical' | 'generalVirtual' | 'customizedPhysical' | 'customizedVirtual'
 
 const StyledHeader = styled.div<{ width?: string }>`
   ${props => (props.width ? `width: ${props.width};` : '')}
@@ -23,26 +24,45 @@ const StyledHeader = styled.div<{ width?: string }>`
   letter-spacing: 0.2px;
 `
 
-const MerchandiseCollectionAdminPage: React.FC = () => {
+const messages = defineMessages({
+  allMerchandiseType: { id: 'merchandise.label.allMerchandiseType', defaultMessage: '所有商品類型' },
+  soldQuantity: { id: 'merchandise.label.soldQuantity', defaultMessage: '已售' },
+})
+
+const filteredCondition = {
+  generalPhysical: { isCustomized: false, isPhysical: true },
+  generalVirtual: { isCustomized: false, isPhysical: false },
+  customizedPhysical: { isCustomized: true, isPhysical: true },
+  customizedVirtual: { isCustomized: true, isPhysical: false },
+}
+
+const MerchandiseCollectionAdminBlock: React.FC<{
+  shopId: string
+  merchandises: MerchandisePreviewProps[]
+}> = ({ shopId, merchandises }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { currentMemberId } = useAuth()
-  const { id: appId } = useContext(AppContext)
+  const { id: appId, enabledModules } = useContext(AppContext)
 
   const insertMerchandise = useInsertMerchandise()
-  const { merchandises, refetchMerchandises } = useMerchandiseCollection()
   const [searchText, setSearchText] = useState('')
+  const [merchandiseClass, setMerchandiseClass] = useState<MerchandiseClass | ''>('')
 
-  useEffect(() => {
-    refetchMerchandises()
-  }, [refetchMerchandises])
+  const onSelect = (selectedClass: MerchandiseClass | '') => setMerchandiseClass(selectedClass)
+
+  const filteredMerchandises = merchandises.filter(
+    v =>
+      !merchandiseClass ||
+      (v.isCustomized === filteredCondition[merchandiseClass].isCustomized &&
+        v.isPhysical === filteredCondition[merchandiseClass].isPhysical),
+  )
 
   const tabContents = [
     {
       key: 'selling',
       name: formatMessage(merchandiseMessages.status.selling),
-      merchandises: merchandises.filter(
+      merchandises: filteredMerchandises.filter(
         merchandise => merchandise.publishedAt && merchandise.publishedAt.getTime() < Date.now(),
       ),
     },
@@ -54,7 +74,7 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
     {
       key: 'unpublished',
       name: formatMessage(merchandiseMessages.status.unpublished),
-      merchandises: merchandises.filter(
+      merchandises: filteredMerchandises.filter(
         merchandise => !merchandise.publishedAt || merchandise.publishedAt.getTime() > Date.now(),
       ),
     },
@@ -65,15 +85,15 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
   }
 
   return (
-    <AdminLayout>
-      <AdminPageTitle className="mb-4">
+    <>
+      <AdminPaneTitle className="mb-4">
         <Icon component={() => <ShopIcon />} className="mr-3" />
         <span>{formatMessage(commonMessages.menu.merchandiseAdmin)}</span>
-      </AdminPageTitle>
+      </AdminPaneTitle>
 
       <div className="mb-4">
         <div className="row">
-          <div className="col-8">
+          <div className="col-4">
             <ProductCreationModal
               withCategorySelector
               withMerchandiseType
@@ -89,6 +109,7 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
                   variables: {
                     appId,
                     memberId: currentMemberId,
+                    memberShopId: shopId,
                     title,
                     merchandiseCategories: categoryIds.map((categoryId, index) => ({
                       category_id: categoryId,
@@ -97,15 +118,38 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
                     isPhysical,
                   },
                 }).then(({ data }) => {
-                  refetchMerchandises().then(() => {
-                    const merchandiseId = data?.insert_merchandise?.returning[0].id
-                    merchandiseId && history.push(`/merchandises/${merchandiseId}`)
-                  })
+                  const merchandiseId = data?.insert_merchandise_one?.id
+                  merchandiseId && history.push(`/merchandises/${merchandiseId}`)
                 })
               }
             />
           </div>
-          <div className="col-4">
+          <div className="col-8 d-flex">
+            <Select
+              showSearch
+              className="mr-3"
+              style={{ minWidth: 200 }}
+              defaultValue={''}
+              onChange={val => onSelect(val)}
+            >
+              <Select.Option value="">{formatMessage(messages.allMerchandiseType)}</Select.Option>
+              <Select.Option value="generalPhysical">
+                {formatMessage(merchandiseMessages.label.generalPhysical)}
+              </Select.Option>
+              <Select.Option value="generalVirtual">
+                {formatMessage(merchandiseMessages.label.generalVirtual)}
+              </Select.Option>
+              {enabledModules.merchandise_customization && (
+                <>
+                  <Select.Option value="customizedPhysical">
+                    {formatMessage(merchandiseMessages.label.customizedPhysical)}
+                  </Select.Option>
+                  <Select.Option value="customizedVirtual">
+                    {formatMessage(merchandiseMessages.label.customizedVirtual)}
+                  </Select.Option>
+                </>
+              )}
+            </Select>
             <Input.Search
               placeholder={formatMessage(merchandiseMessages.text.searchMerchandise)}
               onChange={e => setSearchText(e.target.value.toLowerCase())}
@@ -114,7 +158,7 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
         </div>
       </div>
 
-      <Tabs activeKey={activeKey || 'selling'} onChange={key => setActiveKey(key)}>
+      <Tabs>
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={`${tabContent.name} (${tabContent.merchandises.length})`}>
             <div className="d-flex align-items-center justify-content-between p-3">
@@ -122,18 +166,30 @@ const MerchandiseCollectionAdminPage: React.FC = () => {
               <StyledHeader className="flex-shrink-0" width="7rem">
                 {formatMessage(commonMessages.label.price)}
               </StyledHeader>
+              <StyledHeader className="flex-shrink-0" width="7rem">
+                {formatMessage(messages.soldQuantity)}
+              </StyledHeader>
             </div>
 
             {tabContent.merchandises
               .filter(merchandise => !searchText || merchandise.title.toLowerCase().includes(searchText))
               .map(merchandise => (
-                <MerchandiseAdminItem key={merchandise.id} {...merchandise} />
+                <MerchandiseAdminItem
+                  key={merchandise.id}
+                  id={merchandise.id}
+                  coverUrl={merchandise.coverUrl}
+                  title={merchandise.title}
+                  listPrice={merchandise.listPrice}
+                  salePrice={merchandise.salePrice}
+                  soldAt={merchandise.soldAt}
+                  soldQuantity={merchandise.soldQuantity}
+                />
               ))}
           </Tabs.TabPane>
         ))}
       </Tabs>
-    </AdminLayout>
+    </>
   )
 }
 
-export default MerchandiseCollectionAdminPage
+export default MerchandiseCollectionAdminBlock

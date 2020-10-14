@@ -64,11 +64,29 @@ type DefaultLayoutProps = {
   renderTitle?: () => React.ReactNode
 }
 const DefaultLayout: React.FC<DefaultLayoutProps> = ({ white, noFooter, centeredBox, renderTitle, children }) => {
+  const [visible, setVisible] = useState(false)
+
+  return (
+    <AuthModalContext.Provider value={{ visible, setVisible }}>
+      <AuthModal />
+      <DefaultLayoutHeader renderTitle={renderTitle} />
+      <StyledLayout className={white ? 'bg-white' : ''}>
+        <StyledLayoutContent id="layout-content">
+          <StyledContainer noFooter={noFooter} centeredBox={centeredBox}>
+            {centeredBox ? <CenteredBox>{children}</CenteredBox> : children}
+          </StyledContainer>
+
+          {!noFooter && <Footer />}
+        </StyledLayoutContent>
+      </StyledLayout>
+    </AuthModalContext.Provider>
+  )
+}
+
+export const DefaultLayoutHeader: React.FC<{ renderTitle?: () => React.ReactNode }> = ({ renderTitle }) => {
   const { currentMemberId } = useAuth()
   const { enabledModules, id: appId } = useContext(AppContext)
   const { currentLanguage, setCurrentLanguage } = useContext(LanguageContext)
-
-  const [visible, setVisible] = useState(false)
 
   let Logo: string | undefined
   try {
@@ -86,78 +104,64 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ white, noFooter, centered
   }
 
   return (
-    <AuthModalContext.Provider value={{ visible, setVisible }}>
-      <AuthModal />
+    <StyledLayoutHeader className="d-flex align-items-center justify-content-between">
+      {renderTitle ? (
+        renderTitle()
+      ) : (
+        <Link to={`/`} className="d-flex align-items-center">
+          {Logo ? <img src={Logo} alt="logo" className="header-logo" /> : settings.seo.name || 'Home'}
+        </Link>
+      )}
 
-      <StyledLayout className={white ? 'bg-white' : ''}>
-        <StyledLayoutHeader className="d-flex align-items-center justify-content-between">
-          {renderTitle ? (
-            renderTitle()
-          ) : (
-            <Link to={`/`} className="d-flex align-items-center">
-              {Logo ? <img src={Logo} alt="logo" className="header-logo" /> : settings.seo.name || 'Home'}
-            </Link>
-          )}
-
-          <div className="d-flex align-items-center">
-            {enabledModules.locale && (
-              <>
-                <Dropdown
-                  trigger={['click']}
-                  overlay={
-                    <Menu>
-                      <Menu.Item key="zh">
-                        <StyledButton
-                          type="link"
-                          size="small"
-                          onClick={() => setCurrentLanguage && setCurrentLanguage('zh')}
-                        >
-                          繁體中文
-                        </StyledButton>
-                      </Menu.Item>
-                      <Menu.Item key="en">
-                        <StyledButton
-                          type="link"
-                          size="small"
-                          onClick={() => setCurrentLanguage && setCurrentLanguage('en')}
-                        >
-                          English
-                        </StyledButton>
-                      </Menu.Item>
-                      <Menu.Item key="vi">
-                        <StyledButton
-                          type="link"
-                          size="small"
-                          onClick={() => setCurrentLanguage && setCurrentLanguage('vi')}
-                        >
-                          Tiếng việt
-                        </StyledButton>
-                      </Menu.Item>
-                    </Menu>
-                  }
-                >
-                  <StyledButton type="link" size="small">
-                    {currentLanguage === 'en' ? 'EN' : currentLanguage === 'vi' ? 'Tiếng việt' : '繁中'}
-                    <DownOutlined />
-                  </StyledButton>
-                </Dropdown>
-                <Divider type="vertical" />
-              </>
-            )}
-            {currentMemberId && <NotificationDropdown memberId={currentMemberId} />}
-            {currentMemberId && <MemberProfileButton memberId={currentMemberId} />}
-          </div>
-        </StyledLayoutHeader>
-
-        <StyledLayoutContent id="layout-content">
-          <StyledContainer noFooter={noFooter} centeredBox={centeredBox}>
-            {centeredBox ? <CenteredBox>{children}</CenteredBox> : children}
-          </StyledContainer>
-
-          {!noFooter && <Footer />}
-        </StyledLayoutContent>
-      </StyledLayout>
-    </AuthModalContext.Provider>
+      <div className="d-flex align-items-center">
+        {enabledModules.locale && (
+          <>
+            <Dropdown
+              trigger={['click']}
+              overlay={
+                <Menu>
+                  <Menu.Item key="zh">
+                    <StyledButton
+                      type="link"
+                      size="small"
+                      onClick={() => setCurrentLanguage && setCurrentLanguage('zh')}
+                    >
+                      繁體中文
+                    </StyledButton>
+                  </Menu.Item>
+                  <Menu.Item key="en">
+                    <StyledButton
+                      type="link"
+                      size="small"
+                      onClick={() => setCurrentLanguage && setCurrentLanguage('en')}
+                    >
+                      English
+                    </StyledButton>
+                  </Menu.Item>
+                  <Menu.Item key="vi">
+                    <StyledButton
+                      type="link"
+                      size="small"
+                      onClick={() => setCurrentLanguage && setCurrentLanguage('vi')}
+                    >
+                      Tiếng việt
+                    </StyledButton>
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <StyledButton type="link" size="small">
+                {currentLanguage === 'en' ? 'EN' : currentLanguage === 'vi' ? 'Tiếng việt' : '繁中'}
+                <DownOutlined />
+              </StyledButton>
+            </Dropdown>
+            <Divider type="vertical" />
+          </>
+        )}
+        {currentMemberId && <NotificationDropdown memberId={currentMemberId} />}
+        {currentMemberId && <MemberProfileButton memberId={currentMemberId} />}
+      </div>
+    </StyledLayoutHeader>
   )
 }
 

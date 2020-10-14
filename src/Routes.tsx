@@ -192,9 +192,29 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   },
 
   // merchandise
-  merchandise_collection: {
-    path: '/merchandises',
-    pageName: 'MerchandiseCollectionAdminPage',
+  merchandise_shop_collection: {
+    path: '/member-shops',
+    pageName: 'MemberShopCollectionAdminPage',
+    authenticated: true,
+  },
+  merchandise_shop: {
+    path: '/member-shops/:shopId',
+    pageName: 'MemberShopAdminPage',
+    authenticated: true,
+  },
+  merchandise_shop_info: {
+    path: '/member-shops/:shopId/info',
+    pageName: 'MemberShopInfoAdminPage',
+    authenticated: true,
+  },
+  merchandise_shop_shipping_methods: {
+    path: '/member-shops/:shopId/shipping-methods',
+    pageName: 'MemberShopShippingAdminPage',
+    authenticated: true,
+  },
+  merchandise_shop_publish: {
+    path: '/member-shops/:shopId/publish',
+    pageName: 'MemberShopPublishAdminPage',
     authenticated: true,
   },
   merchandise: {
@@ -205,16 +225,6 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   merchandise_category: {
     path: '/merchandise-category',
     pageName: 'MerchandiseCategoryPage',
-    authenticated: true,
-  },
-  merchandise_shop_collection: {
-    path: '/member-shops',
-    pageName: 'MemberShopCollectionAdminPage',
-    authenticated: true,
-  },
-  merchandise_shop: {
-    path: '/member-shops/:shopId',
-    pageName: 'MemberShopAdminPage',
     authenticated: true,
   },
 

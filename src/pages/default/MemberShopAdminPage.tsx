@@ -1,101 +1,21 @@
-import { ArrowLeftOutlined } from '@ant-design/icons'
-import { Button, Skeleton, Tabs } from 'antd'
 import React from 'react'
-import { defineMessages, useIntl } from 'react-intl'
-import { Link, useParams } from 'react-router-dom'
-import { StringParam, useQueryParam } from 'use-query-params'
-import {
-  AdminBlock,
-  AdminBlockTitle,
-  AdminHeader,
-  AdminHeaderTitle,
-  AdminPaneTitle,
-  AdminTabBarWrapper,
-} from '../../components/admin'
-import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
-import MemberShopBasicForm from '../../components/merchandise/MemberShopBasicForm'
-import MemberShopPublishBlock from '../../components/merchandise/MemberShopPublishBlock'
-import ShippingMethodAdminBlock from '../../components/merchandise/ShippingMethodAdminBlock'
+import { useParams } from 'react-router-dom'
+import MemberShopLayout from '../../components/layout/MemberShopLayout'
 import { useMemberShop } from '../../hooks/merchandise'
-
-const messages = defineMessages({
-  settingsAdmin: { id: 'merchandise.label.settingsAdmin', defaultMessage: '賣場資訊' },
-  shippingMethodsAdmin: { id: 'merchandise.label.shippingMethodsAdmin', defaultMessage: '物流設定' },
-  publishAdmin: { id: 'merchandise.label.publishAdmin', defaultMessage: '啟用設定' },
-
-  basicSettings: { id: 'merchandise.label.basicSettings', defaultMessage: '基本設定' },
-  shippingMethod: { id: 'merchandise.label.shippingMethod', defaultMessage: '寄送方式' },
-})
+import MerchandiseCollectionAdminBlock from './MerchandiseCollectionAdminBlock'
 
 const MemberShopAdminPage: React.FC = () => {
-  const { formatMessage } = useIntl()
   const { shopId } = useParams<{ shopId: string }>()
-  const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const { memberShop, refetchMemberShop } = useMemberShop(shopId)
+  const { loadingMemberShop, errorMemberShop, memberShop } = useMemberShop(shopId)
+
+  if (loadingMemberShop || errorMemberShop || !memberShop) {
+    return null
+  }
 
   return (
-    <>
-      <AdminHeader>
-        <Link to="/member-shops">
-          <Button type="link" className="mr-3">
-            <ArrowLeftOutlined />
-          </Button>
-        </Link>
-
-        <AdminHeaderTitle>{memberShop?.title || shopId}</AdminHeaderTitle>
-      </AdminHeader>
-
-      <StyledLayoutContent variant="gray">
-        <Tabs
-          activeKey={activeKey || 'settings'}
-          onChange={key => setActiveKey(key)}
-          renderTabBar={(props, DefaultTabBar) => (
-            <AdminTabBarWrapper>
-              <DefaultTabBar {...props} className="mb-0" />
-            </AdminTabBarWrapper>
-          )}
-        >
-          <Tabs.TabPane key="settings" tab={formatMessage(messages.settingsAdmin)}>
-            <div className="container py-5">
-              <AdminPaneTitle>{formatMessage(messages.settingsAdmin)}</AdminPaneTitle>
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(messages.basicSettings)}</AdminBlockTitle>
-                {memberShop ? (
-                  <MemberShopBasicForm memberShop={memberShop} refetch={refetchMemberShop} />
-                ) : (
-                  <Skeleton active />
-                )}
-              </AdminBlock>
-            </div>
-          </Tabs.TabPane>
-          <Tabs.TabPane key="shipping-methods" tab={formatMessage(messages.shippingMethodsAdmin)}>
-            <div className="container py-5">
-              <AdminPaneTitle>{formatMessage(messages.shippingMethodsAdmin)}</AdminPaneTitle>
-              <AdminBlock>
-                <AdminBlockTitle>{formatMessage(messages.shippingMethod)}</AdminBlockTitle>
-                {memberShop ? (
-                  <ShippingMethodAdminBlock memberShop={memberShop} refetch={refetchMemberShop} />
-                ) : (
-                  <Skeleton active />
-                )}
-              </AdminBlock>
-            </div>
-          </Tabs.TabPane>
-          <Tabs.TabPane key="publish" tab={formatMessage(messages.publishAdmin)}>
-            <div className="container py-5">
-              <AdminPaneTitle>{formatMessage(messages.publishAdmin)}</AdminPaneTitle>
-              <AdminBlock>
-                {memberShop ? (
-                  <MemberShopPublishBlock memberShop={memberShop} refetch={refetchMemberShop} />
-                ) : (
-                  <Skeleton active />
-                )}
-              </AdminBlock>
-            </div>
-          </Tabs.TabPane>
-        </Tabs>
-      </StyledLayoutContent>
-    </>
+    <MemberShopLayout memberShopTitle={memberShop.title} member={memberShop.member}>
+      <MerchandiseCollectionAdminBlock shopId={shopId} merchandises={memberShop?.merchandises || []} />
+    </MemberShopLayout>
   )
 }
 
