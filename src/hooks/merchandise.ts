@@ -1,5 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
+import { sum } from 'ramda'
+import { notEmpty } from '../helpers'
 import types from '../types'
 import { ProductInventoryStatusProps } from '../types/general'
 import {
@@ -14,23 +16,22 @@ export const useInsertMerchandise = () => {
     mutation INSERT_MERCHANDISE(
       $appId: String!
       $memberId: String!
+      $memberShopId: uuid!
       $title: String!
       $merchandiseCategories: [merchandise_category_insert_input!]!
       $isPhysical: Boolean
     ) {
-      insert_merchandise(
-        objects: {
+      insert_merchandise_one(
+        object: {
           app_id: $appId
           title: $title
           member_id: $memberId
+          member_shop_id: $memberShopId
           merchandise_categories: { data: $merchandiseCategories }
           is_physical: $isPhysical
         }
       ) {
-        affected_rows
-        returning {
-          id
-        }
+        id
       }
     }
   `)
@@ -52,6 +53,8 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
           sale_price
           sold_at
           published_at
+          is_physical
+          is_customized
           merchandise_imgs(where: { type: { _eq: "cover" } }) {
             id
             url
@@ -72,6 +75,8 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
           salePrice: merchandise.sale_price,
           soldAt: merchandise.sold_at ? new Date(merchandise.sold_at) : null,
           publishedAt: merchandise.published_at ? new Date(merchandise.published_at) : null,
+          isPhysical: merchandise.is_physical,
+          isCustomized: merchandise.is_customized,
           coverUrl: merchandise.merchandise_imgs[0]?.url || null,
         }))
 
@@ -233,13 +238,53 @@ export const useMemberShop = (shopId: string) => {
           title
           shipping_methods
           published_at
+          cover_url
+          member {
+            id
+            name
+            username
+            picture_url
+          }
+          merchandises(
+            where: { is_deleted: { _eq: false } }
+            order_by: { position: asc, published_at: desc, updated_at: desc }
+          ) {
+            id
+            title
+            list_price
+            sale_price
+            sold_at
+            published_at
+            is_physical
+            is_customized
+            merchandise_specs {
+              id
+              merchandise_spec_inventory_status {
+                total_quantity
+                buyable_quantity
+              }
+            }
+            merchandise_imgs(where: { type: { _eq: "cover" } }) {
+              id
+              url
+            }
+          }
         }
       }
     `,
-    { variables: { shopId } },
+    {
+      variables: {
+        shopId,
+      },
+      fetchPolicy: 'no-cache',
+    },
   )
 
-  const memberShop: MemberShopProps | null =
+  const memberShop:
+    | (MemberShopProps & {
+        merchandises: MerchandisePreviewProps[]
+      })
+    | null =
     loading || error || !data || !data.member_shop_by_pk
       ? null
       : {
@@ -247,6 +292,32 @@ export const useMemberShop = (shopId: string) => {
           title: data.member_shop_by_pk.title,
           shippingMethods: data.member_shop_by_pk.shipping_methods || [],
           publishedAt: data.member_shop_by_pk.published_at,
+          coverUrl: data.member_shop_by_pk.cover_url,
+          member: {
+            id: data.member_shop_by_pk.member?.id || '',
+            name: data.member_shop_by_pk.member?.name || data.member_shop_by_pk.member?.username || '',
+            pictureUrl: data.member_shop_by_pk.member?.picture_url || '',
+          },
+          merchandises: data.member_shop_by_pk.merchandises.map(v => ({
+            id: v.id,
+            title: v.title,
+            listPrice: v.list_price,
+            salePrice: v.sale_price,
+            soldAt: v.sold_at ? new Date(v.sold_at) : null,
+            isPhysical: v.is_physical,
+            isCustomized: v.is_customized,
+            publishedAt: v.published_at ? new Date(v.published_at) : null,
+            soldQuantity: sum(
+              v.merchandise_specs
+                .filter(notEmpty)
+                .map(
+                  w =>
+                    (w.merchandise_spec_inventory_status?.total_quantity || 0) -
+                    (w.merchandise_spec_inventory_status?.buyable_quantity || 0),
+                ),
+            ),
+            coverUrl: v.merchandise_imgs[0]?.url || null,
+          })),
         }
 
   return {

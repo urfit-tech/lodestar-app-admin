@@ -1,11 +1,11 @@
 import { filter } from 'ramda'
 import { useEffect, useRef } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useRouteMatch } from 'react-router-dom'
 import { routesProps } from '../Routes'
 
 export const useRouteKeys = () => {
-  const location = useLocation()
-  return Object.keys(filter(routeProps => routeProps.path === location.pathname, routesProps))
+  let match = useRouteMatch()
+  return Object.keys(filter(routeProps => routeProps.path === match.path, routesProps))
 }
 
 export const useInterval = (callback: Function, delay: number | null, immediately?: boolean) => {

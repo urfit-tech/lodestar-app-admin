@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { currencyFormatter } from '../../helpers'
 import EmptyCover from '../../images/default/empty-cover.png'
-import { MerchandisePreviewProps } from '../../types/merchandise'
 import { CustomRatioImage } from '../common/Image'
 
 const StyledWrapper = styled.div`
@@ -31,14 +30,24 @@ const StyledPriceLabel = styled.div`
   }
 `
 
-const MerchandiseAdminItem: React.FC<MerchandisePreviewProps> = ({
-  id,
-  coverUrl,
-  title,
-  listPrice,
-  salePrice,
-  soldAt,
-}) => {
+const StyledQuantityLabel = styled.div`
+  width: 7rem;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.2px;
+  color: var(--gray-darker);
+`
+
+const MerchandiseAdminItem: React.FC<{
+  id: string
+  coverUrl: string | null
+  title: string
+  listPrice: number
+  salePrice: number | null
+  soldAt: Date | null
+  soldQuantity?: number
+}> = ({ id, coverUrl, title, listPrice, salePrice, soldAt, soldQuantity }) => {
   return (
     <Link to={`/merchandises/${id}`}>
       <StyledWrapper className="d-flex align-items-center justify-content-between p-3">
@@ -52,6 +61,7 @@ const MerchandiseAdminItem: React.FC<MerchandisePreviewProps> = ({
             <StyledPriceLabel className="flex-shrink-0">{currencyFormatter(salePrice)}</StyledPriceLabel>
           )}
         </div>
+        {<StyledQuantityLabel className="flex-shrink-0">{soldQuantity}</StyledQuantityLabel>}
       </StyledWrapper>
     </Link>
   )

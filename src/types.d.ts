@@ -2123,7 +2123,36 @@ export interface UPDATE_MEMBER_SHOP_TITLE {
 
 export interface UPDATE_MEMBER_SHOP_TITLEVariables {
   memberShopId: any;
-  title: string;
+  title?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_SHOP_COVER
+// ====================================================
+
+export interface UPDATE_MEMBER_SHOP_COVER_update_member_shop {
+  __typename: "member_shop_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_SHOP_COVER {
+  /**
+   * update data of the table: "member_shop"
+   */
+  update_member_shop: UPDATE_MEMBER_SHOP_COVER_update_member_shop | null;
+}
+
+export interface UPDATE_MEMBER_SHOP_COVERVariables {
+  memberShopId: any;
+  coverUrl?: string | null;
 }
 
 /* tslint:disable */
@@ -6859,33 +6888,22 @@ export interface GET_PROPERTYVariables {
 // GraphQL mutation operation: INSERT_MERCHANDISE
 // ====================================================
 
-export interface INSERT_MERCHANDISE_insert_merchandise_returning {
+export interface INSERT_MERCHANDISE_insert_merchandise_one {
   __typename: "merchandise";
   id: any;
 }
 
-export interface INSERT_MERCHANDISE_insert_merchandise {
-  __typename: "merchandise_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: INSERT_MERCHANDISE_insert_merchandise_returning[];
-}
-
 export interface INSERT_MERCHANDISE {
   /**
-   * insert data into the table: "merchandise"
+   * insert a single row into the table: "merchandise"
    */
-  insert_merchandise: INSERT_MERCHANDISE_insert_merchandise | null;
+  insert_merchandise_one: INSERT_MERCHANDISE_insert_merchandise_one | null;
 }
 
 export interface INSERT_MERCHANDISEVariables {
   appId: string;
   memberId: string;
+  memberShopId: any;
   title: string;
   merchandiseCategories: merchandise_category_insert_input[];
   isPhysical?: boolean | null;
@@ -6914,6 +6932,8 @@ export interface GET_MERCHANDISE_COLLECTION_merchandise {
   sale_price: any | null;
   sold_at: any | null;
   published_at: any | null;
+  is_physical: boolean;
+  is_customized: boolean;
   /**
    * An array relationship
    */
@@ -7091,12 +7111,70 @@ export interface GET_MEMBER_SHOP_COLLECTION {
 // GraphQL query operation: GET_MEMBER_SHOP
 // ====================================================
 
+export interface GET_MEMBER_SHOP_member_shop_by_pk_member {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+  picture_url: string | null;
+}
+
+export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs_merchandise_spec_inventory_status {
+  __typename: "merchandise_spec_inventory_status";
+  total_quantity: any | null;
+  buyable_quantity: any | null;
+}
+
+export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs {
+  __typename: "merchandise_spec";
+  id: any;
+  /**
+   * An object relationship
+   */
+  merchandise_spec_inventory_status: GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs_merchandise_spec_inventory_status | null;
+}
+
+export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_imgs {
+  __typename: "merchandise_img";
+  id: any;
+  url: string;
+}
+
+export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises {
+  __typename: "merchandise";
+  id: any;
+  title: string;
+  list_price: any;
+  sale_price: any | null;
+  sold_at: any | null;
+  published_at: any | null;
+  is_physical: boolean;
+  is_customized: boolean;
+  /**
+   * An array relationship
+   */
+  merchandise_specs: GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs[];
+  /**
+   * An array relationship
+   */
+  merchandise_imgs: GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_imgs[];
+}
+
 export interface GET_MEMBER_SHOP_member_shop_by_pk {
   __typename: "member_shop";
   id: any;
   title: string;
   shipping_methods: any | null;
   published_at: any | null;
+  cover_url: string | null;
+  /**
+   * An object relationship
+   */
+  member: GET_MEMBER_SHOP_member_shop_by_pk_member | null;
+  /**
+   * An array relationship
+   */
+  merchandises: GET_MEMBER_SHOP_member_shop_by_pk_merchandises[];
 }
 
 export interface GET_MEMBER_SHOP {

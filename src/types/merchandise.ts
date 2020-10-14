@@ -8,6 +8,10 @@ export type MerchandisePreviewProps = {
   salePrice: number | null
   soldAt: Date | null
   publishedAt: Date | null
+  isPhysical: boolean
+  isCustomized: boolean
+
+  soldQuantity?: number
 }
 
 export type MerchandiseProps = {
@@ -69,6 +73,12 @@ export type MemberShopProps = {
   title: string
   shippingMethods: ShippingMethodProps[]
   publishedAt: Date | null
+  coverUrl: string | null
+  member: {
+    id: string
+    name: string
+    pictureUrl: string | null
+  }
 }
 
 export type ShippingProps = {
