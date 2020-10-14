@@ -251,7 +251,6 @@ const useUpdateOrderProductFiles = (orderProductId: string) => {
       data: UploadFile
     }[]
   }) => Promise<void> = async ({ orderProductFiles }) => {
-    console.log(orderProductFiles)
     try {
       await updateFiles({
         variables: {
