@@ -1,4 +1,3 @@
-import { message } from 'antd'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -73,7 +72,7 @@ const messages = defineMessages({
 const HomePage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { isAuthenticated, currentUserRole, logout } = useAuth()
+  const { isAuthenticated, currentUserRole, permissions, logout } = useAuth()
   const app = useContext(AppContext)
   const [visible, setVisible] = useState(false)
 
@@ -83,10 +82,13 @@ const HomePage: React.FC = () => {
     } else if (currentUserRole === 'content-creator') {
       history.push('/studio')
     } else if (isAuthenticated) {
-      message.error(formatMessage(messages.deniedRolePermission))
-      logout && logout()
+      if (!permissions.BACKSTAGE_ENTER) {
+        logout && logout()
+      } else {
+        history.push('/settings')
+      }
     }
-  }, [isAuthenticated, currentUserRole, history, logout, formatMessage])
+  }, [isAuthenticated, currentUserRole, history, logout, formatMessage, permissions.BACKSTAGE_ENTER])
 
   return (
     <AuthModalContext.Provider value={{ visible, setVisible }}>

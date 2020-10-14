@@ -322,6 +322,7 @@ export const commonMessages = {
     taskCategory: { id: 'common.menu.taskCategory', defaultMessage: '待辦分類' },
     ownerSettings: { id: 'common.menu.ownerSettings', defaultMessage: '管理員設定' },
     creatorSettings: { id: 'common.menu.creatorSettings', defaultMessage: '創作者設定' },
+    memberSettings: { id: 'common.menu.creatorSettings', defaultMessage: '個人設定' },
     appAdmin: { id: 'common.menu.appAdmin', defaultMessage: '網站管理' },
   }),
   product: defineMessages({

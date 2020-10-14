@@ -98,15 +98,7 @@ export const useMemberAdmin = (memberId: string) => {
             id
             phone
           }
-          member_properties {
-            id
-            property {
-              id
-              name
-            }
-            value
-          }
-          member_notes(order_by: { created_at: desc }) {
+          member_notes(order_by: { updated_at: desc }) {
             id
             type
             status
@@ -121,9 +113,7 @@ export const useMemberAdmin = (memberId: string) => {
           }
           member_permission_extras {
             id
-            permission {
-              id
-            }
+            permission_id
           }
           coin_logs_aggregate {
             aggregate {
@@ -162,11 +152,6 @@ export const useMemberAdmin = (memberId: string) => {
           tags: data.member_by_pk.member_tags.map(v => v.tag_name),
           specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
           phones: data.member_by_pk.member_phones.map(v => v.phone).filter(v => v),
-          properties: data.member_by_pk.member_properties.map(v => ({
-            id: v.property.id,
-            name: v.property.name,
-            value: v.value,
-          })),
           notes: data.member_by_pk.member_notes.map(v => ({
             id: v.id,
             type: v.type as MemberNoteAdminProps['type'],
@@ -179,7 +164,7 @@ export const useMemberAdmin = (memberId: string) => {
               pictureUrl: v.author.picture_url,
             },
           })),
-          permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission.id),
+          permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission_id),
           consumption: sum(
             data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
           ),

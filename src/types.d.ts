@@ -1833,6 +1833,42 @@ export interface UPDATE_MEMBER_PROFILE_BASICVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_MEMBER_PROPERTY_COLLECTION
+// ====================================================
+
+export interface GET_MEMBER_PROPERTY_COLLECTION_member_property_property {
+  __typename: "property";
+  id: any;
+  name: string;
+}
+
+export interface GET_MEMBER_PROPERTY_COLLECTION_member_property {
+  __typename: "member_property";
+  id: any;
+  /**
+   * An object relationship
+   */
+  property: GET_MEMBER_PROPERTY_COLLECTION_member_property_property;
+  value: string;
+}
+
+export interface GET_MEMBER_PROPERTY_COLLECTION {
+  /**
+   * fetch data from the table: "member_property"
+   */
+  member_property: GET_MEMBER_PROPERTY_COLLECTION_member_property[];
+}
+
+export interface GET_MEMBER_PROPERTY_COLLECTIONVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_PROPERTY
 // ====================================================
 
@@ -6378,22 +6414,6 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_phones {
   phone: string;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_properties_property {
-  __typename: "property";
-  id: any;
-  name: string;
-}
-
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_properties {
-  __typename: "member_property";
-  id: any;
-  /**
-   * An object relationship
-   */
-  property: GET_MEMBER_DESCRIPTION_member_by_pk_member_properties_property;
-  value: string;
-}
-
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author {
   __typename: "member";
   id: string;
@@ -6421,18 +6441,10 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
   author: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_permission_extras_permission {
-  __typename: "permission";
-  id: string;
-}
-
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_permission_extras {
   __typename: "member_permission_extra";
   id: any;
-  /**
-   * An object relationship
-   */
-  permission: GET_MEMBER_DESCRIPTION_member_by_pk_member_permission_extras_permission;
+  permission_id: string;
 }
 
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate_sum {
@@ -6498,10 +6510,6 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk {
    * An array relationship
    */
   member_phones: GET_MEMBER_DESCRIPTION_member_by_pk_member_phones[];
-  /**
-   * An array relationship
-   */
-  member_properties: GET_MEMBER_DESCRIPTION_member_by_pk_member_properties[];
   /**
    * An array relationship
    */
@@ -14001,6 +14009,7 @@ export interface member_bool_exp {
   member_contracts?: member_contract_bool_exp | null;
   member_notes?: member_note_bool_exp | null;
   member_permission_extras?: member_permission_extra_bool_exp | null;
+  member_permissions?: member_permission_bool_exp | null;
   member_phones?: member_phone_bool_exp | null;
   member_properties?: member_property_bool_exp | null;
   member_shops?: member_shop_bool_exp | null;
@@ -14278,6 +14287,18 @@ export interface member_on_conflict {
   constraint: member_constraint;
   update_columns: member_update_column[];
   where?: member_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_permission". All fields are combined with a logical 'AND'.
+ */
+export interface member_permission_bool_exp {
+  _and?: (member_permission_bool_exp | null)[] | null;
+  _not?: member_permission_bool_exp | null;
+  _or?: (member_permission_bool_exp | null)[] | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  permission_id?: String_comparison_exp | null;
 }
 
 /**

@@ -64,12 +64,12 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
             <Icon component={() => <MoneyCircleIcon />} />
             <span>{formatMessage(commonMessages.menu.salesAdmin)}</span>
           </Menu.Item>
-        ) : (
+        ) : currentUserRole === 'content-creator' ? (
           <Menu.Item key="creator_sales">
             <Icon component={() => <MoneyCircleIcon />} />
             <span>{formatMessage(commonMessages.menu.salesAdmin)}</span>
           </Menu.Item>
-        ))}
+        ) : null)}
 
       {(permissions.PROGRAM_ADMIN ||
         permissions.PROGRAM_ISSUE_ADMIN ||
@@ -113,7 +113,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         </Menu.SubMenu>
       )}
 
-      {enabledModules.podcast && (
+      {enabledModules.podcast && (currentUserRole === 'app-owner' || currentUserRole === 'content-creator') && (
         <Menu.SubMenu
           key="owner_podcast_admin"
           title={
@@ -281,18 +281,16 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         </Menu.SubMenu>
       )}
 
-      {currentUserRole === 'app-owner' && (
-        <Menu.Item key="settings">
-          <Icon component={() => <UserIcon />} />
+      <Menu.Item key="settings">
+        <Icon component={() => <UserIcon />} />
+        {currentUserRole === 'app-owner' ? (
           <span>{formatMessage(commonMessages.menu.ownerSettings)}</span>
-        </Menu.Item>
-      )}
-      {currentUserRole === 'content-creator' && (
-        <Menu.Item key="settings">
-          <Icon component={() => <UserIcon />} />
+        ) : currentUserRole === 'content-creator' ? (
           <span>{formatMessage(commonMessages.menu.creatorSettings)}</span>
-        </Menu.Item>
-      )}
+        ) : (
+          <span>{formatMessage(commonMessages.menu.memberSettings)}</span>
+        )}
+      </Menu.Item>
 
       {permissions.APP_SETTING_ADMIN && (
         <Menu.Item key="app_admin">
