@@ -62,7 +62,12 @@ const StyledTypographyText = styled(Typography.Text)`
   font-weight: 600;
 `
 
-const AudioTrackCard: React.FC<
+export interface AudioTrackCardRef {
+  play: () => void
+}
+
+const AudioTrackCard: React.ForwardRefRenderFunction<
+  AudioTrackCardRef,
   HTMLAttributes<HTMLDivElement> & {
     id: string
     handleClassName?: string
@@ -73,24 +78,29 @@ const AudioTrackCard: React.FC<
     isActive?: boolean
     isPlaying?: boolean
     onAudioPlaying?: (second: number) => void
+    onIsPlayingChanged?: (isPlaying: boolean) => void
     onFinishPlaying?: () => void
     onChangeFilename?: (id: string, filename: string) => void
   }
-> = ({
-  id,
-  handleClassName,
-  position,
-  playRate,
-  audioUrl,
-  filename,
-  isActive,
-  isPlaying,
-  onAudioPlaying,
-  onFinishPlaying,
-  onChangeFilename,
-  children,
-  ...divProps
-}) => {
+> = (
+  {
+    id,
+    handleClassName,
+    position,
+    playRate,
+    audioUrl,
+    filename,
+    isActive,
+    isPlaying,
+    onAudioPlaying,
+    onIsPlayingChanged,
+    onFinishPlaying,
+    onChangeFilename,
+    children,
+    ...divProps
+  },
+  ref,
+) => {
   const { formatMessage } = useIntl()
   const theme = useContext(ThemeContext)
 
@@ -206,6 +216,21 @@ const AudioTrackCard: React.FC<
     }
   }, [isActive, wavesurfer])
 
+  React.useImperativeHandle(ref, () => ({
+    play: () => {
+      if (wavesurfer == null) {
+        console.warn('wavesurfer has not been initialized')
+        return
+      }
+
+      wavesurfer.play()
+
+      if (onIsPlayingChanged) {
+        onIsPlayingChanged(true)
+      }
+    },
+  }))
+
   return (
     <TrackWrapper ref={trackWrapperRef} {...divProps}>
       <ActionBlock className="flex-shrink-0 text-center">
@@ -231,4 +256,4 @@ const AudioTrackCard: React.FC<
   )
 }
 
-export default AudioTrackCard
+export default React.forwardRef(AudioTrackCard)
