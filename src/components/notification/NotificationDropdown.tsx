@@ -28,7 +28,7 @@ const StyledAction = styled.div`
     color: #9b9b9b;
   }
 `
-const StyledBadge = styled(Badge)`
+const StyledBadgeWrapper = styled.div`
   .ant-badge-count {
     top: 8px;
     right: 4px;
@@ -118,9 +118,11 @@ const NotificationDropdown: React.FC<{
       }
       content={content}
     >
-      <StyledBadge count={notifications.filter(notification => notification.readAt === null).length} className="mr-2">
-        <StyledButton type="link" icon={<BellOutlined />} />
-      </StyledBadge>
+      <StyledBadgeWrapper className="mr-2">
+        <Badge count={notifications.filter(notification => notification.readAt === null).length}>
+          <StyledButton type="link" icon={<BellOutlined />} />
+        </Badge>
+      </StyledBadgeWrapper>
     </Popover>
   )
 }

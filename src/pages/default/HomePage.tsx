@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
@@ -126,16 +126,13 @@ const RoleButton: React.FC<{
   icon: React.ReactNode
   onAuthenticated?: () => void
 }> = ({ title, icon, onAuthenticated }) => {
-  const { isAuthenticated } = useAuth()
   const { setVisible: setAuthModalVisible } = useContext(AuthModalContext)
 
-  const handleClick = useCallback(() => {
-    setAuthModalVisible && setAuthModalVisible(!isAuthenticated)
-    isAuthenticated && onAuthenticated && onAuthenticated()
-  }, [isAuthenticated, setAuthModalVisible, onAuthenticated])
-
   return (
-    <StyledRoleBlock className="d-flex flex-column align-items-center justify-content-between" onClick={handleClick}>
+    <StyledRoleBlock
+      className="d-flex flex-column align-items-center justify-content-between"
+      onClick={() => setAuthModalVisible?.(true)}
+    >
       <div>{icon}</div>
       <div>{title}</div>
     </StyledRoleBlock>
