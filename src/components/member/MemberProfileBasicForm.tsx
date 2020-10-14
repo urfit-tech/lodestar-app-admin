@@ -31,8 +31,12 @@ const MemberProfileBasicForm: React.FC<{
     updateMemberProfileBasic({
       variables: {
         memberId: memberAdmin.id,
-        name: values.name,
-        email: values.email,
+        phones: values.phones
+          .filter((phone: string) => !!phone)
+          .map((phone: string) => ({
+            member_id: memberAdmin.id,
+            phone,
+          })),
         tags: values.tags.map((tag: string) => ({
           name: tag,
           type: '',
@@ -41,12 +45,6 @@ const MemberProfileBasicForm: React.FC<{
           member_id: memberAdmin.id,
           tag_name: tag,
         })),
-        phones: values.phones
-          .filter((phone: string) => !!phone)
-          .map((phone: string) => ({
-            member_id: memberAdmin.id,
-            phone,
-          })),
       },
     })
       .then(() => {
@@ -67,20 +65,28 @@ const MemberProfileBasicForm: React.FC<{
       wrapperCol={{ md: { span: 12 } }}
       initialValues={{
         name: memberAdmin.name,
+        username: memberAdmin.username,
         email: memberAdmin.email,
         phones: memberAdmin.phones.length ? memberAdmin.phones : [''],
+        specialities: memberAdmin.specialities,
         tags: memberAdmin.tags,
       }}
       onFinish={handleSubmit}
     >
-      <Form.Item label={formatMessage(commonMessages.term.account)} name="name">
-        <Input />
+      <Form.Item label={formatMessage(commonMessages.term.name)} name="name">
+        <Input disabled />
+      </Form.Item>
+      <Form.Item label={formatMessage(commonMessages.term.account)} name="username">
+        <Input disabled />
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.term.email)} name="email">
-        <Input />
+        <Input disabled />
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.term.phone)} name="phones">
         <PhoneCollectionInput />
+      </Form.Item>
+      <Form.Item label={formatMessage(commonMessages.term.speciality)} name="specialities">
+        <TagSelector disabled />
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.term.tags)} name="tags">
         <TagSelector />
@@ -123,16 +129,10 @@ const PhoneCollectionInput: React.FC<{
 const UPDATE_MEMBER_PROFILE_BASIC = gql`
   mutation UPDATE_MEMBER_PROFILE_BASIC(
     $memberId: String!
-    $name: String!
-    $email: String!
     $tags: [tag_insert_input!]!
     $memberTags: [member_tag_insert_input!]!
     $phones: [member_phone_insert_input!]!
   ) {
-    update_member(where: { id: { _eq: $memberId } }, _set: { name: $name, email: $email }) {
-      affected_rows
-    }
-
     # update tags
     delete_member_tag(where: { member_id: { _eq: $memberId } }) {
       affected_rows

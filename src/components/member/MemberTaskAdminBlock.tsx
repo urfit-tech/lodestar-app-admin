@@ -39,7 +39,7 @@ const statusLevel: { [key in MemberTaskProps['status']]: number } = {
   done: 3,
 }
 
-const MemberTaskTable: React.FC<{
+const MemberTaskAdminBlock: React.FC<{
   memberId?: string
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
@@ -332,4 +332,4 @@ const useMemberTaskCollection = (filter?: {
   }
 }
 
-export default MemberTaskTable
+export default MemberTaskAdminBlock

@@ -1,5 +1,5 @@
 import { CaretDownOutlined, ExportOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
-import { Button, Checkbox, Dropdown, Form, Input, Menu, Pagination, Table, Tag } from 'antd'
+import { Button, Checkbox, Dropdown, Form, Input, Menu, Table, Tag } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { ColumnProps } from 'antd/lib/table'
 import moment from 'moment'
@@ -71,21 +71,16 @@ const MemberCollectionAdminPage: React.FC = () => {
   const history = useHistory()
   const theme = useContext(ThemeContext)
 
-  // pagination
-  const [currentPage, setCurrentPage] = useState(1)
-
   // get member info
   const [roleFilter, setRoleFilter] = useState<UserRole | null>(null)
-  const [offset, setOffset] = useState(0)
   const [nameSearch, setNameSearch] = useState<string | null>(null)
   const [emailSearch, setEmailSearch] = useState<string | null>(null)
-  const { loading, dataSource } = useMemberCollection({
+  const { loading: loadingMembers, members, loadMoreMembers } = useMemberCollection({
     role: roleFilter,
-    offset,
-    limit: 10,
     nameSearch,
     emailSearch,
   })
+  const [loading, setLoading] = useState(false)
 
   // dropdown
   const { id: appId } = useContext(AppContext)
@@ -105,8 +100,6 @@ const MemberCollectionAdminPage: React.FC = () => {
               key={item.text}
               onClick={() => {
                 setRoleFilter(item.role as UserRole)
-                setOffset(0)
-                setCurrentPage(1)
               }}
             >
               {item.text} ({item.count})
@@ -151,9 +144,6 @@ const MemberCollectionAdminPage: React.FC = () => {
         theme,
         onSearch: (selectedKeys, confirm) => {
           selectedKeys && setNameSearch(selectedKeys[0].length ? selectedKeys[0] : null)
-          setOffset(0)
-          setCurrentPage(1)
-          setEmailSearch(null)
         },
       }),
     },
@@ -165,9 +155,6 @@ const MemberCollectionAdminPage: React.FC = () => {
         theme,
         onSearch: (selectedKeys, confirm) => {
           selectedKeys && setEmailSearch(selectedKeys[0].length ? selectedKeys[0] : null)
-          setOffset(0)
-          setCurrentPage(1)
-          setNameSearch(null)
         },
       }),
     },
@@ -212,25 +199,27 @@ const MemberCollectionAdminPage: React.FC = () => {
           <Table
             columns={columns}
             rowKey="id"
-            loading={loading}
-            dataSource={dataSource}
+            loading={loadingMembers}
+            dataSource={members}
             pagination={false}
             rowClassName={() => 'cursor-pointer'}
             onRow={record => ({
               onClick: () => history.push(`/admin/members/${record.id}`),
             })}
           />
-          <div className="mt-4 d-flex justify-content-end">
-            <Pagination
-              defaultCurrent={1}
-              current={currentPage}
-              total={menu.filter(item => item.role === roleFilter)[0].count}
-              onChange={page => {
-                setOffset((page - 1) * 10)
-                setCurrentPage(page)
-              }}
-            />
-          </div>
+          {!loadingMembers && loadMoreMembers && (
+            <div className="text-center mt-4">
+              <Button
+                loading={loading}
+                onClick={() => {
+                  setLoading(true)
+                  loadMoreMembers().finally(() => setLoading(false))
+                }}
+              >
+                {formatMessage(commonMessages.ui.showMore)}
+              </Button>
+            </div>
+          )}
         </StyledWrapper>
       </AdminCard>
     </AdminLayout>
@@ -244,7 +233,7 @@ const MemberExportModal: React.FC<{
 }> = ({ role, nameSearch, emailSearch, children }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
-  const { loading, dataSource } = useMemberCollection({ role, nameSearch, emailSearch })
+  const { loading, members } = useMemberCollection({ role, nameSearch, emailSearch })
   const [selectedExportFields, setSelectedExportFields] = useState<string[]>(['name', 'email'])
 
   const options = [
@@ -257,7 +246,7 @@ const MemberExportModal: React.FC<{
   const exportMemberList = () => {
     const data: string[][] = [
       options.filter(option => selectedExportFields.some(field => field === option.value)).map(option => option.label),
-      ...dataSource.map(member => {
+      ...members.map(member => {
         const row: string[] = []
         selectedExportFields.some(field => field === 'name') && row.push(member.name)
         selectedExportFields.some(field => field === 'email') && row.push(member.email)

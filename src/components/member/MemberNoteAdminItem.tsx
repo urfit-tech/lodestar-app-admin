@@ -1,6 +1,7 @@
 import Icon, { MoreOutlined } from '@ant-design/icons'
 import { Dropdown, Menu, message } from 'antd'
 import moment from 'moment'
+import { contains } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -8,6 +9,7 @@ import { handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useMutateMemberNote } from '../../hooks/member'
 import DefaultAvatar from '../../images/default/avatar.svg'
+import { ReactComponent as CallInIcon } from '../../images/icon/call-in.svg'
 import { ReactComponent as CallOutIcon } from '../../images/icon/call-out.svg'
 import { MemberAdminProps, MemberNoteAdminProps } from '../../types/member'
 import AdminModal from '../admin/AdminModal'
@@ -63,10 +65,15 @@ const MemberNoteAdminItem: React.FC<{
         />
         <div>
           <div>
-            <span>{moment(note.updatedAt).format('YYYY-MM-DD HH:mm')}</span>
-            {note.type === 'inbound' && (
+            <span>{moment(note.createdAt).format('YYYY-MM-DD HH:mm')}</span>
+            {contains(note.type, ['outbound', 'inbound']) && (
               <StyledStatus>
-                <StyledIcon variant={note.status} component={() => <CallOutIcon />} />
+                <StyledIcon
+                  variant={note.status}
+                  component={() =>
+                    (note.type === 'outbound' && <CallOutIcon />) || (note.type === 'inbound' && <CallInIcon />) || null
+                  }
+                />
                 {note.status === 'answered' && (
                   <span className="ml-2">{moment.utc((note?.duration ?? 0) * 1000).format('HH:mm:ss')}</span>
                 )}
@@ -89,7 +96,7 @@ const MemberNoteAdminItem: React.FC<{
                 member={memberAdmin}
                 note={note}
                 renderTrigger={({ setVisible }) => (
-                  <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</span>
+                  <div onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</div>
                 )}
                 renderSubmit={({ type, status, duration, description }) =>
                   updateMemberNote({
@@ -113,7 +120,7 @@ const MemberNoteAdminItem: React.FC<{
               <AdminModal
                 title={formatMessage(memberMessages.label.deleteMemberNote)}
                 renderTrigger={({ setVisible }) => (
-                  <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.delete)}</span>
+                  <div onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.delete)}</div>
                 )}
                 cancelText={formatMessage(commonMessages.ui.back)}
                 okText={formatMessage(commonMessages.ui.delete)}

@@ -2,6 +2,31 @@ import { AudioContext, OfflineAudioContext } from 'standardized-audio-context'
 import toWav from 'audiobuffer-to-wav'
 const lamejs = require('lamejs')
 
+export function getAudioDuration(blob: Blob): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const aud = document.createElement('audio')
+    aud.src = URL.createObjectURL(blob)
+
+    aud.onloadedmetadata = function () {
+      // handle chrome's bug
+      if (aud.duration === Infinity) {
+        // set it to bigger than the actual duration
+        aud.currentTime = 1e101
+        aud.ontimeupdate = function () {
+          this.ontimeupdate = () => {
+            return
+          }
+          aud.currentTime = 0
+
+          resolve(aud.duration)
+        }
+      } else {
+        resolve(aud.duration)
+      }
+    }
+  })
+}
+
 /**
  * detect if a file is an audio.
  * @param {File} file
@@ -105,13 +130,16 @@ export function sliceAudioBuffer(audioBuffer: AudioBuffer, start = 0, end = audi
  * @param {AudioBuffer} audioBuffer2
  * @return {AudioBuffer}
  */
-export function mergeAudioBuffer(audioBuffer1: AudioBuffer, audioBuffer2: AudioBuffer) {
-  if (
-    audioBuffer1.numberOfChannels !== audioBuffer2.numberOfChannels ||
-    audioBuffer1.sampleRate !== audioBuffer2.sampleRate
-  ) {
-    return null
+export function mergeAudioBuffer(audioBuffer1: AudioBuffer, audioBuffer2: AudioBuffer): AudioBuffer {
+  if (audioBuffer1.numberOfChannels !== audioBuffer2.numberOfChannels) {
+    throw new Error(
+      `Got different numberOfChannels: ${audioBuffer1.numberOfChannels} vs ${audioBuffer2.numberOfChannels}`,
+    )
   }
+  if (audioBuffer1.sampleRate !== audioBuffer2.sampleRate) {
+    throw new Error(`Got different sampleRate: ${audioBuffer1.sampleRate} vs ${audioBuffer2.sampleRate}`)
+  }
+
   const newBuffer = new OfflineAudioContext(
     audioBuffer1.numberOfChannels,
     audioBuffer1.length + audioBuffer2.length,

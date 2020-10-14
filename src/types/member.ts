@@ -9,6 +9,7 @@ export type MemberProps = {
   description: string | null
   abstract: string | null
   title: string | null
+  specialities?: string[]
   memberTags?: {
     id: string
     tagName: string
@@ -63,6 +64,7 @@ export type MemberAdminProps = {
   createdAt: Date | null
   loginedAt: Date | null
   tags: string[]
+  specialities: string[]
   phones: string[]
   properties: {
     id: string
@@ -81,7 +83,7 @@ export type MemberNoteAdminProps = {
   status: string | null
   duration: number | null
   description: string | null
-  updatedAt: Date
+  createdAt: Date
   author: {
     name: string
     pictureUrl: string | null
