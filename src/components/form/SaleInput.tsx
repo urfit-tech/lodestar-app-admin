@@ -18,7 +18,7 @@ const StyledIcon = styled(ExclamationCircleFilled)`
 export type SaleProps = {
   price: number
   soldAt: Date | null
-  timerVisible?: boolean
+  isTimerVisible?: boolean
 } | null
 
 const SaleInput: React.FC<{
@@ -29,7 +29,7 @@ const SaleInput: React.FC<{
 }> = ({ value, onChange, currencyId, timer = false }) => {
   const { formatMessage } = useIntl()
   const [active, setActive] = useState(!!value?.soldAt)
-  const [timerVisible, setTimerVisible] = useState(!!value?.timerVisible)
+  const [isTimerVisible, setIsTimerVisible] = useState(!!value?.isTimerVisible)
 
   return (
     <div>
@@ -38,16 +38,15 @@ const SaleInput: React.FC<{
         className={'mb-2'}
         onChange={e => {
           setActive(e.target.checked)
-          onChange &&
-            onChange(
-              e.target.checked
-                ? {
-                    price: 0,
-                    soldAt: moment().add(1, 'hour').startOf('hour').toDate(),
-                    timerVisible,
-                  }
-                : null,
-            )
+          onChange?.(
+            e.target.checked
+              ? {
+                  price: 0,
+                  soldAt: moment().add(1, 'hour').startOf('hour').toDate(),
+                  isTimerVisible,
+                }
+              : null,
+          )
         }}
       >
         {formatMessage(commonMessages.term.salePrice)}
@@ -95,15 +94,14 @@ const SaleInput: React.FC<{
         {timer && (
           <Form.Item className="mb-0">
             <Checkbox
-              checked={timerVisible}
+              checked={isTimerVisible}
               onChange={e => {
-                setTimerVisible(e.target.checked)
-                onChange &&
-                  onChange({
-                    price: value?.price || 0,
-                    soldAt: value?.soldAt || new Date(),
-                    timerVisible: e.target.checked,
-                  })
+                setIsTimerVisible(e.target.checked)
+                onChange?.({
+                  price: value?.price || 0,
+                  soldAt: value?.soldAt || new Date(),
+                  isTimerVisible: e.target.checked,
+                })
               }}
             >
               {formatMessage(messages.label)}
