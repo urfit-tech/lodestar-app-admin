@@ -1,3 +1,4 @@
+import { message } from 'antd'
 import React, { useContext, useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -63,7 +64,7 @@ const StyledRoleBlock = styled.div`
 `
 
 const messages = defineMessages({
-  deniedRolePermission: { id: 'error.text.deniedRolePermission', defaultMessage: '請使用管理帳號登入' },
+  deniedRolePermission: { id: 'error.text.deniedRolePermission', defaultMessage: '此帳號沒有權限' },
   adminBackstage: { id: 'common.label.adminBackstage', defaultMessage: '管理後台' },
   isAppOwner: { id: 'common.label.isAppOwner', defaultMessage: '我是管理者' },
   isContentCreator: { id: 'common.isContentCreator', defaultMessage: '我是創作者' },
@@ -83,6 +84,7 @@ const HomePage: React.FC = () => {
       history.push('/studio')
     } else if (isAuthenticated) {
       if (!permissions.BACKSTAGE_ENTER) {
+        message.error(formatMessage(messages.deniedRolePermission))
         logout && logout()
       } else {
         history.push('/settings')

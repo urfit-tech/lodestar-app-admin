@@ -161,7 +161,7 @@ const MemberAdminPage: React.FC = () => {
                   <AdminBlockTitle>{formatMessage(memberMessages.label.basic)}</AdminBlockTitle>
                   <MemberProfileBasicForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
                 </AdminBlock>
-                {enabledModules.member_property && permissions.MEMBER_PROPERTY_ADMIN && (
+                {enabledModules.member_property && (
                   <AdminBlock>
                     <AdminBlockTitle>{formatMessage(memberMessages.label.property)}</AdminBlockTitle>
                     <MemberPropertyAdminForm memberId={memberId} />

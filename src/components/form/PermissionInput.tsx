@@ -22,7 +22,7 @@ const messages = defineMessages({
   voucher: { id: 'permission.label.voucher', defaultMessage: '兌換方案' },
   bonus: { id: 'permission.label.bonus', defaultMessage: '紅利折抵' },
   memberAdmin: { id: 'permission.label.memberAdmin', defaultMessage: '會員管理' },
-  task: { id: 'permission.label.task', defaultMessage: '任務管理' },
+  task: { id: 'permission.label.task', defaultMessage: '待辦管理' },
   appAdmin: { id: 'permission.label.appAdmin', defaultMessage: '網站管理' },
 })
 

@@ -10762,6 +10762,7 @@ export enum order_product_update_column {
   price = "price",
   product_id = "product_id",
   started_at = "started_at",
+  updated_at = "updated_at",
 }
 
 /**
@@ -15430,6 +15431,7 @@ export interface order_product_bool_exp {
   product?: product_bool_exp | null;
   product_id?: String_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**
@@ -15499,6 +15501,7 @@ export interface order_product_insert_input {
   product?: product_obj_rel_insert_input | null;
   product_id?: string | null;
   started_at?: any | null;
+  updated_at?: any | null;
 }
 
 /**

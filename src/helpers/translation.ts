@@ -964,8 +964,8 @@ export const permissionMessages = defineMessages({
   MEMBER_PROPERTY_ADMIN: { id: 'permission.MEMBER_PROPERTY_ADMIN', defaultMessage: '所有自訂欄位功能' },
 
   // task
-  TASK_ADMIN: { id: 'permission.TASK_ADMIN', defaultMessage: '所有任務列表功能' },
-  TASK_CATEGORY_ADMIN: { id: 'permission.TASK_CATEGORY_ADMIN', defaultMessage: '所有任務分類功能' },
+  TASK_ADMIN: { id: 'permission.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },
+  TASK_CATEGORY_ADMIN: { id: 'permission.TASK_CATEGORY_ADMIN', defaultMessage: '所有待辦分類功能' },
 
   // app_setting
   APP_SETTING_ADMIN: { id: 'permission.APP_SETTING_ADMIN', defaultMessage: '所有網站管理功能' },
