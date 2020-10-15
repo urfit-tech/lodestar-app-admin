@@ -73,136 +73,133 @@ const ScopeSelector: React.FC<{
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>(value?.productIds || [])
 
   return (
-    <div>
-      <Radio.Group
-        value={scopeType}
-        onChange={value => {
-          setScopeType(value.target.value)
-          onChange &&
-            onChange(
-              value.target.value === 'all'
-                ? {
-                    productTypes: null,
-                    productIds: [],
-                  }
-                : {
-                    productTypes: selectedProductTypes,
-                    productIds: selectedProductIds,
-                  },
-            )
-        }}
-      >
-        <Radio value="all" className="d-block mb-4">
-          {allText || formatMessage(messages.allItem)}
-        </Radio>
-        <Radio value="specific" className="d-block">
-          {specificTypeText || formatMessage(messages.specificItem)}
-        </Radio>
+    <Radio.Group
+      value={scopeType}
+      onChange={value => {
+        setScopeType(value.target.value)
+        onChange?.(
+          value.target.value === 'all'
+            ? {
+                productTypes: null,
+                productIds: [],
+              }
+            : {
+                productTypes: selectedProductTypes,
+                productIds: selectedProductIds,
+              },
+        )
+      }}
+    >
+      <Radio value="all" className="d-block mb-4">
+        {allText || formatMessage(messages.allItem)}
+      </Radio>
+      <Radio value="specific" className="d-block">
+        {specificTypeText || formatMessage(messages.specificItem)}
+      </Radio>
 
-        <div className={`mt-3 pl-3 ${scopeType === 'all' ? 'd-none' : ''}`}>
-          <Checkbox.Group
-            className="mb-3"
-            value={selectedProductTypes}
-            onChange={value => {
-              setSelectedProductTypes(value as ProductType[])
-              onChange &&
-                onChange({
-                  productTypes: value as ProductType[],
-                  productIds: selectedProductIds,
-                })
-            }}
-            style={{ width: '100%' }}
-          >
-            <StyledColumns>
+      <div className={`mt-3 pl-3 ${scopeType === 'all' ? 'd-none' : ''}`}>
+        <Checkbox.Group
+          className="mb-3"
+          value={selectedProductTypes}
+          onChange={value => {
+            setSelectedProductTypes(value as ProductType[])
+            onChange &&
+              onChange({
+                productTypes: value as ProductType[],
+                productIds: selectedProductIds,
+              })
+          }}
+          style={{ width: '100%' }}
+        >
+          <StyledColumns>
+            <div className="mb-3">
+              <Checkbox value="Program">{formatMessage(messages.allProgram)}</Checkbox>
+            </div>
+            <div className="mb-3">
+              <Checkbox value="ProgramPlan">{formatMessage(messages.allProgramPlan)}</Checkbox>
+            </div>
+            {enabledModules.activity && (
               <div className="mb-3">
-                <Checkbox value="Program">{formatMessage(messages.allProgram)}</Checkbox>
+                <Checkbox value="ActivityTicket">{formatMessage(messages.allActivityTicket)}</Checkbox>
               </div>
-              <div className="mb-3">
-                <Checkbox value="ProgramPlan">{formatMessage(messages.allProgramPlan)}</Checkbox>
-              </div>
-              {enabledModules.activity && (
-                <div className="mb-3">
-                  <Checkbox value="ActivityTicket">{formatMessage(messages.allActivityTicket)}</Checkbox>
-                </div>
-              )}
-              {enabledModules.podcast && (
-                <div className="mb-3">
-                  <Checkbox value="PodcastProgram">{formatMessage(messages.allPodcastProgram)}</Checkbox>
-                </div>
-              )}
-              {enabledModules.podcast && (
-                <div className="mb-3">
-                  <Checkbox value="PodcastPlan">{formatMessage(messages.allPodcastPlan)}</Checkbox>
-                </div>
-              )}
-              {enabledModules.appointment && (
-                <div className="mb-3">
-                  <Checkbox value="AppointmentPlan">{formatMessage(messages.allAppointmentPlan)}</Checkbox>
-                </div>
-              )}
-              {enabledModules.merchandise && (
-                <div className="mb-3">
-                  <Checkbox value="Merchandise">{formatMessage(messages.allMerchandise)}</Checkbox>
-                </div>
-              )}
-              <div className="mb-3">
-                <Checkbox value="ProjectPlan">{formatMessage(messages.allProjectPlan)}</Checkbox>
-              </div>
-              {enabledModules.program_package && (
-                <div className="mb-3">
-                  <Checkbox value="ProgramPackagePlan">{formatMessage(messages.allProgramPackagePlan)}</Checkbox>
-                </div>
-              )}
-            </StyledColumns>
-          </Checkbox.Group>
-
-          <StyledLabel>{otherProductText || formatMessage(messages.otherItem)}</StyledLabel>
-          <TreeSelect
-            showSearch
-            multiple
-            allowClear
-            treeCheckable
-            placeholder={formatMessage(messages.selectProducts)}
-            style={{ width: '100%' }}
-            dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-            value={selectedProductIds}
-            onChange={value => {
-              setSelectedProductIds(value)
-              onChange &&
-                onChange({
-                  productTypes: selectedProductTypes,
-                  productIds: value,
-                })
-            }}
-          >
-            {Object.keys(briefProducts).map(
-              productType =>
-                briefProducts[productType as ProductType]?.length && (
-                  <TreeSelect.TreeNode
-                    key={productType}
-                    value={productType}
-                    title={<ProductTypeLabel productType={productType} />}
-                    checkable={false}
-                  >
-                    {briefProducts[productType as ProductType]?.map(product => (
-                      <TreeSelect.TreeNode
-                        key={product.productId}
-                        value={product.productId}
-                        title={
-                          <div className="d-flex">
-                            {product.parent && <StyledProductParent>{product.parent}</StyledProductParent>}
-                            <StyledProductTitle>{product.title}</StyledProductTitle>
-                          </div>
-                        }
-                      />
-                    ))}
-                  </TreeSelect.TreeNode>
-                ),
             )}
-          </TreeSelect>
-        </div>
-      </Radio.Group>
-    </div>
+            {enabledModules.podcast && (
+              <div className="mb-3">
+                <Checkbox value="PodcastProgram">{formatMessage(messages.allPodcastProgram)}</Checkbox>
+              </div>
+            )}
+            {enabledModules.podcast && (
+              <div className="mb-3">
+                <Checkbox value="PodcastPlan">{formatMessage(messages.allPodcastPlan)}</Checkbox>
+              </div>
+            )}
+            {enabledModules.appointment && (
+              <div className="mb-3">
+                <Checkbox value="AppointmentPlan">{formatMessage(messages.allAppointmentPlan)}</Checkbox>
+              </div>
+            )}
+            {enabledModules.merchandise && (
+              <div className="mb-3">
+                <Checkbox value="Merchandise">{formatMessage(messages.allMerchandise)}</Checkbox>
+              </div>
+            )}
+            <div className="mb-3">
+              <Checkbox value="ProjectPlan">{formatMessage(messages.allProjectPlan)}</Checkbox>
+            </div>
+            {enabledModules.program_package && (
+              <div className="mb-3">
+                <Checkbox value="ProgramPackagePlan">{formatMessage(messages.allProgramPackagePlan)}</Checkbox>
+              </div>
+            )}
+          </StyledColumns>
+        </Checkbox.Group>
+
+        <StyledLabel>{otherProductText || formatMessage(messages.otherItem)}</StyledLabel>
+        <TreeSelect
+          showSearch
+          multiple
+          allowClear
+          treeCheckable
+          placeholder={formatMessage(messages.selectProducts)}
+          style={{ width: '100%' }}
+          dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+          value={selectedProductIds}
+          onChange={value => {
+            setSelectedProductIds(value)
+            onChange &&
+              onChange({
+                productTypes: selectedProductTypes,
+                productIds: value,
+              })
+          }}
+        >
+          {Object.keys(briefProducts).map(
+            productType =>
+              briefProducts[productType as ProductType]?.length && (
+                <TreeSelect.TreeNode
+                  key={productType}
+                  value={productType}
+                  title={<ProductTypeLabel productType={productType} />}
+                  checkable={false}
+                >
+                  {briefProducts[productType as ProductType]?.map(product => (
+                    <TreeSelect.TreeNode
+                      key={product.productId}
+                      value={product.productId}
+                      title={
+                        <div className="d-flex">
+                          {product.parent && <StyledProductParent>{product.parent}</StyledProductParent>}
+                          <StyledProductTitle>{product.title}</StyledProductTitle>
+                        </div>
+                      }
+                    />
+                  ))}
+                </TreeSelect.TreeNode>
+              ),
+          )}
+        </TreeSelect>
+      </div>
+    </Radio.Group>
   )
 }
 
