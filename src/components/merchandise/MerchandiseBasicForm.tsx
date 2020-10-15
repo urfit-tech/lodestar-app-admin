@@ -14,8 +14,8 @@ import TagSelector from '../form/TagSelector'
 const MerchandiseBasicForm: React.FC<{
   merchandise: MerchandiseProps
   merchandiseId: string
-  refetch?: () => void
-}> = ({ merchandise, merchandiseId, refetch }) => {
+  onRefetch?: () => void
+}> = ({ merchandise, merchandiseId, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const [updateMerchandiseBasic] = useMutation<types.UPDATE_MERCHANDISE_BASIC, types.UPDATE_MERCHANDISE_BASICVariables>(
@@ -46,7 +46,7 @@ const MerchandiseBasicForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)

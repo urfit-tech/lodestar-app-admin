@@ -126,7 +126,7 @@ const MerchandiseAdminPage: React.FC = () => {
                 <MerchandiseBasicForm
                   merchandise={merchandise}
                   merchandiseId={merchandiseId}
-                  refetch={refetchMerchandise}
+                  onRefetch={refetchMerchandise}
                 />
               </AdminBlock>
               <AdminBlock>
@@ -134,7 +134,7 @@ const MerchandiseAdminPage: React.FC = () => {
                 <MerchandiseIntroductionForm
                   merchandise={merchandise}
                   merchandiseId={merchandiseId}
-                  refetch={refetchMerchandise}
+                  onRefetch={refetchMerchandise}
                 />
               </AdminBlock>
               <AdminBlock>
@@ -142,12 +142,12 @@ const MerchandiseAdminPage: React.FC = () => {
                 <MerchandiseDescriptionForm
                   merchandise={merchandise}
                   merchandiseId={merchandiseId}
-                  refetch={refetchMerchandise}
+                  onRefetch={refetchMerchandise}
                 />
               </AdminBlock>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(merchandiseMessages.label.delete)}</AdminBlockTitle>
-                <MerchandiseDeleteBlock merchandiseId={merchandiseId} refetch={refetchMerchandise} />
+                <MerchandiseDeleteBlock merchandiseId={merchandiseId} onRefetch={refetchMerchandise} />
               </AdminBlock>
             </div>
           </Tabs.TabPane>
@@ -160,7 +160,7 @@ const MerchandiseAdminPage: React.FC = () => {
                 <MerchandiseSalesForm
                   merchandise={merchandise}
                   merchandiseId={merchandiseId}
-                  refetch={refetchMerchandise}
+                  onRefetch={refetchMerchandise}
                 />
               </AdminBlock>
               <AdminBlock>
@@ -210,7 +210,7 @@ const MerchandiseAdminPage: React.FC = () => {
                 <MerchandisePublishBlock
                   merchandise={merchandise}
                   merchandiseId={merchandiseId}
-                  refetch={refetchMerchandise}
+                  onRefetch={refetchMerchandise}
                 />
               </AdminBlock>
             </div>

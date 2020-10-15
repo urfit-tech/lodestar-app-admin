@@ -31,8 +31,8 @@ const messages = defineMessages({
 const MerchandisePublishBlock: React.FC<{
   merchandise: MerchandiseProps
   merchandiseId: string
-  refetch?: () => void
-}> = ({ merchandise, merchandiseId, refetch }) => {
+  onRefetch?: () => void
+}> = ({ merchandise, merchandiseId, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [publishMerchandise] = useMutation<types.PUBLISH_MERCHANDISE, types.PUBLISH_MERCHANDISEVariables>(
     PUBLISH_MERCHANDISE,
@@ -74,7 +74,7 @@ const MerchandisePublishBlock: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         onSuccess && onSuccess()
       })
       .catch(error => onError && onError(error))

@@ -43,8 +43,8 @@ const messages = defineMessages({
 
 const MerchandiseDeleteBlock: React.FC<{
   merchandiseId: string
-  refetch?: () => Promise<any>
-}> = ({ merchandiseId, refetch }) => {
+  onRefetch?: () => Promise<any>
+}> = ({ merchandiseId, onRefetch }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const [deleteMerchandise] = useMutation<types.DELETE_MERCHANDISE, types.DELETE_MERCHANDISEVariables>(
@@ -59,7 +59,7 @@ const MerchandiseDeleteBlock: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch().then(() => history.push('/merchandises'))
+        onRefetch && onRefetch().then(() => history.push('/merchandises'))
       })
       .catch(handleError)
   }

@@ -14,8 +14,8 @@ import AdminBraftEditor from '../form/AdminBraftEditor'
 const MerchandiseDescriptionForm: React.FC<{
   merchandise: MerchandiseProps
   merchandiseId: string
-  refetch?: () => void
-}> = ({ merchandise, merchandiseId, refetch }) => {
+  onRefetch?: () => void
+}> = ({ merchandise, merchandiseId, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const [updateMerchandiseDescription] = useMutation<
@@ -33,7 +33,7 @@ const MerchandiseDescriptionForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)

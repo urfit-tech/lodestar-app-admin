@@ -15,8 +15,8 @@ import MerchandiseImagesUploader from './MerchandiseImagesUploader'
 const MerchandiseIntroductionForm: React.FC<{
   merchandise: MerchandiseProps
   merchandiseId: string
-  refetch?: () => void
-}> = ({ merchandise, merchandiseId, refetch }) => {
+  onRefetch?: () => void
+}> = ({ merchandise, merchandiseId, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const [updateMerchandiseImages] = useMutation<
@@ -38,7 +38,7 @@ const MerchandiseIntroductionForm: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
+        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)
@@ -57,7 +57,7 @@ const MerchandiseIntroductionForm: React.FC<{
         })),
       },
     })
-      .then(() => refetch && refetch())
+      .then(() => onRefetch && onRefetch())
       .catch(handleError)
   }
 
