@@ -1304,6 +1304,99 @@ export interface GET_PERMISSION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PRODUCT_SELECTION_COLLECTION
+// ====================================================
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_program {
+  __typename: "program";
+  id: any;
+  title: string;
+  published_at: any | null;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_card {
+  __typename: "card";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket_activity {
+  __typename: "activity";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket {
+  __typename: "activity_ticket";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  activity: GET_PRODUCT_SELECTION_COLLECTION_activity_ticket_activity;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_program_package_plan_program_package {
+  __typename: "program_package";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_program_package_plan {
+  __typename: "program_package_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  program_package: GET_PRODUCT_SELECTION_COLLECTION_program_package_plan_program_package;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_podcast_program_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_podcast_program {
+  __typename: "podcast_program";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  creator: GET_PRODUCT_SELECTION_COLLECTION_podcast_program_creator | null;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_PRODUCT_SELECTION_COLLECTION_program[];
+  /**
+   * fetch data from the table: "card"
+   */
+  card: GET_PRODUCT_SELECTION_COLLECTION_card[];
+  /**
+   * fetch data from the table: "activity_ticket"
+   */
+  activity_ticket: GET_PRODUCT_SELECTION_COLLECTION_activity_ticket[];
+  /**
+   * fetch data from the table: "program_package_plan"
+   */
+  program_package_plan: GET_PRODUCT_SELECTION_COLLECTION_program_package_plan[];
+  /**
+   * fetch data from the table: "podcast_program"
+   */
+  podcast_program: GET_PRODUCT_SELECTION_COLLECTION_podcast_program[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_ISSUE_STATUS
 // ====================================================
 

@@ -133,6 +133,7 @@ export const commonMessages = {
     allMembershipCard: { id: 'common.label.allMembershipCard', defaultMessage: '所有會員卡' },
     allActivityTicket: { id: 'common.label.allActivityTicket', defaultMessage: '所有實體活動' },
     allMerchandise: { id: 'common.label.allMerchandise', defaultMessage: '所有商品' },
+    allPodcastProgram: { id: 'common.label.allPodcastProgram', defaultMessage: '所有廣播' },
     publishAdmin: { id: 'common.label.publishAdmin', defaultMessage: '發佈' },
     publishSettings: { id: 'common.label.publishSettings', defaultMessage: '發佈設定' },
     all: { id: 'common.label.all', defaultMessage: '全部' },
