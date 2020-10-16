@@ -15,7 +15,7 @@ type AuthContext = {
   register?: (data: { appId: string; username: string; email: string; password: string }) => Promise<void>
   login?: (data: { appId: string; account: string; password: string }) => Promise<void>
   socialLogin?: (data: { appId: string; provider: string; providerToken: any }) => Promise<void>
-  logout?: () => void
+  logout?: () => Promise<void>
 }
 
 const defaultAuthContext: AuthContext = {
@@ -125,9 +125,9 @@ export const AuthProvider: React.FC = ({ children }) => {
               throw new Error(code)
             }
           }),
-        logout: async () => {
+        logout: () => {
           localStorage.clear()
-          Axios(`${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/logout`, {
+          return Axios(`${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/logout`, {
             method: 'POST',
             withCredentials: true,
           }).then(({ data: { code, message, result } }) => {

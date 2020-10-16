@@ -204,7 +204,7 @@ const MemberCollectionAdminPage: React.FC = () => {
             pagination={false}
             rowClassName={() => 'cursor-pointer'}
             onRow={record => ({
-              onClick: () => history.push(`/admin/members/${record.id}`),
+              onClick: () => window.open(`/admin/members/${record.id}`, '_blank'),
             })}
           />
           {!loadingMembers && loadMoreMembers && (

@@ -75,25 +75,12 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
         </BorderedItem>
 
         <Responsive.Default>
-          {CustomNavLinks}
-          {isAuthenticated && (
-            <BorderedItem onClick={() => history.push(`/members/${memberId}`)} style={{ cursor: 'pointer' }}>
-              <BlankIcon className="mr-2" />
-              {formatMessage(messages.memberPage)}
-            </BorderedItem>
-          )}
           <BorderedItem className="shift-left">
             <AdminMenu />
           </BorderedItem>
         </Responsive.Default>
 
-        <List.Item
-          style={{ cursor: 'pointer' }}
-          onClick={() => {
-            logout && logout()
-            history.push('/')
-          }}
-        >
+        <List.Item className="cursor-pointer" onClick={() => logout && logout().then(() => history.push('/'))}>
           <LogoutOutlined className="mr-2" />
           {formatMessage(commonMessages.ui.logout)}
         </List.Item>
