@@ -133,6 +133,7 @@ export const commonMessages = {
     allMembershipCard: { id: 'common.label.allMembershipCard', defaultMessage: '所有會員卡' },
     allActivityTicket: { id: 'common.label.allActivityTicket', defaultMessage: '所有實體活動' },
     allMerchandise: { id: 'common.label.allMerchandise', defaultMessage: '所有商品' },
+    allPodcastProgram: { id: 'common.label.allPodcastProgram', defaultMessage: '所有廣播' },
     publishAdmin: { id: 'common.label.publishAdmin', defaultMessage: '發佈' },
     publishSettings: { id: 'common.label.publishSettings', defaultMessage: '發佈設定' },
     all: { id: 'common.label.all', defaultMessage: '全部' },
@@ -322,6 +323,7 @@ export const commonMessages = {
     taskCategory: { id: 'common.menu.taskCategory', defaultMessage: '待辦分類' },
     ownerSettings: { id: 'common.menu.ownerSettings', defaultMessage: '管理員設定' },
     creatorSettings: { id: 'common.menu.creatorSettings', defaultMessage: '創作者設定' },
+    memberSettings: { id: 'common.menu.creatorSettings', defaultMessage: '個人設定' },
     appAdmin: { id: 'common.menu.appAdmin', defaultMessage: '網站管理' },
   }),
   product: defineMessages({
@@ -861,18 +863,113 @@ export const memberMessages = {
 }
 
 export const permissionMessages = defineMessages({
+  // backstage
+  BACKSTAGE_ENTER: { id: 'permission.BACKSTAGE_ENTER', defaultMessage: '可進入後台' },
+
+  // sales
+  SALES_ADMIN: { id: 'permission.SALES_ADMIN', defaultMessage: '所有銷售管理功能' },
   SALES_READ: { id: 'permission.SALES_READ', defaultMessage: '查看所有訂單' },
-  PROGRAM_WRITE: { id: 'permission.PROGRAM_WRITE', defaultMessage: '編輯課程' },
+  SALES_EXPORT: { id: 'permission.SALES_EXPORT', defaultMessage: '匯出所有訂單' },
+
+  // program
+  PROGRAM_ADMIN: { id: 'permission.PROGRAM_ADMIN', defaultMessage: '所有課程管理功能' },
+  PROGRAM_READ: { id: 'permission.PROGRAM_READ', defaultMessage: '查看課程' },
+  PROGRAM_WRITE: { id: 'permission.PROGRAM_WRITE', defaultMessage: '編寫課程' },
   PROGRAM_DELETE: { id: 'permission.PROGRAM_DELETE', defaultMessage: '刪除課程' },
+  PROGRAM_APPROVE: { id: 'permission.PROGRAM_APPROVE', defaultMessage: '審核/退回課程' },
   PROGRAM_PUBLISH: { id: 'permission.PROGRAM_PUBLISH', defaultMessage: '發布/下架課程' },
+  PROGRAM_ISSUE_ADMIN: { id: 'permission.PROGRAM_ISSUE_ADMIN', defaultMessage: '所有課程課程問題功能' },
+  PROGRAM_ISSUE_READ: { id: 'permission.PROGRAM_ISSUE_READ', defaultMessage: '查看課程問題' },
+  PROGRAM_ISSUE_WRITE: { id: 'permission.PROGRAM_ISSUE_WRITE', defaultMessage: '編寫課程問題' },
+  PROGRAM_ISSUE_DELETE: { id: 'permission.PROGRAM_ISSUE_DELETE', defaultMessage: '刪除課程問題' },
+  PROGRAM_CATEGORY_ADMIN: { id: 'permission.PROGRAM_CATEGORY_ADMIN', defaultMessage: '所有課程分類功能' },
+  PROGRAM_CATEGORY_READ: { id: 'permission.PROGRAM_CATEGORY_READ', defaultMessage: '查看課程分類' },
+  PROGRAM_CATEGORY_WRITE: { id: 'permission.PROGRAM_CATEGORY_WRITE', defaultMessage: '編寫課程分類' },
+  PROGRAM_CATEGORY_DELETE: { id: 'permission.PROGRAM_CATEGORY_DELETE', defaultMessage: '刪除課程分類' },
+
+  // program_package
+  PROGRAM_PACKAGE_ADMIN: { id: 'permission.PROGRAM_PACKAGE_ADMIN', defaultMessage: '所有課程組合功能' },
   PROGRAM_PACKAGE_READ: { id: 'permission.PROGRAM_PACKAGE_READ', defaultMessage: '查看課程組合' },
-  PROGRAM_PACKAGE_WRITE: { id: 'permission.PROGRAM_PACKAGE_WRITE', defaultMessage: '編輯課程組合' },
-  TEMPO_DELIVERY_WRITE: { id: 'permission.TEMPO_DELIVERY_WRITE', defaultMessage: '節奏交付' },
-  PROGRAM_PROGRESS_READ: { id: 'permission.PROGRAM_PROGRESS_READ', defaultMessage: '課程進度' },
-  PROGRAM_CATEGORY_WRITE: { id: 'permission.PROGRAM_CATEGORY_WRITE', defaultMessage: '編輯課程分類' },
-  ACTIVITY_WRITE: { id: 'permission.ACTIVITY_WRITE', defaultMessage: '編輯活動' },
+  PROGRAM_PACKAGE_WRITE: { id: 'permission.PROGRAM_PACKAGE_WRITE', defaultMessage: '編寫課程組合' },
+  PROGRAM_PACKAGE_PUBLISH: { id: 'permission.PROGRAM_PACKAGE_PUBLISH', defaultMessage: '發布/下架課程組合' },
+  PROGRAM_PACKAGE_TEMPO_DELIVERY_ADMIN: {
+    id: 'permission.PROGRAM_PACKAGE_TEMPO_DELIVERY_ADMIN',
+    defaultMessage: '所有節奏交付功能',
+  },
+  PROGRAM_PACKAGE_CATEGORY_ADMIN: {
+    id: 'permission.PROGRAM_PACKAGE_CATEGORY_ADMIN',
+    defaultMessage: '所有課程組合分類功能',
+  },
+  PROGRAM_PACKAGE_CATEGORY_READ: { id: 'permission.PROGRAM_CATEGORY_READ', defaultMessage: '查看課程分類' },
+  PROGRAM_PACKAGE_CATEGORY_WRITE: { id: 'permission.PROGRAM_CATEGORY_WRITE', defaultMessage: '編寫課程分類' },
+  PROGRAM_PACKAGE_CATEGORY_DELETE: { id: 'permission.PROGRAM_CATEGORY_DELETE', defaultMessage: '刪除課程分類' },
+
+  // program_progress
+  PROGRAM_PROGRESS_READ: { id: 'permission.PROGRAM_PROGRESS_READ', defaultMessage: '所有學習進度功能' },
+  PROGRAM_PROGRESS_EXPORT: { id: 'permission.PROGRAM_PROGRESS_EXPORT', defaultMessage: '匯出課程進度' },
+
+  // appointment
+  APPOINTMENT_PLAN_ADMIN: { id: 'permission.APPOINTMENT_PLAN_ADMIN', defaultMessage: '所有預約方案功能' },
+  APPOINTMENT_READ: { id: 'permission.APPOINTMENT_READ', defaultMessage: '查看預約方案' },
+  APPOINTMENT_WRITE: { id: 'permission.APPOINTMENT_WRITE', defaultMessage: '編寫預約方案' },
+  APPOINTMENT_DELETE: { id: 'permission.APPOINTMENT_DELETE', defaultMessage: '刪除預約方案' },
+  APPOINTMENT_PUBLISH: { id: 'permission.APPOINTMENT_PUBLISH', defaultMessage: '發布預約方案' },
+  APPOINTMENT_PERIOD_ADMIN: { id: 'permission.APPOINTMENT_PERIOD_ADMIN', defaultMessage: '所有預約記錄功能' },
+  APPOINTMENT_PERIOD_WRITE: { id: 'permission.APPOINTMENT_PERIOD_WRITE', defaultMessage: '編寫預約時段' },
+  APPOINTMENT_PERIOD_DELETE: { id: 'permission.APPOINTMENT_PERIOD_DELETE', defaultMessage: '刪除預約時段' },
+  APPOINTMENT_HISTORY_READ: { id: 'permission.APPOINTMENT_HISTORY', defaultMessage: '查看預約紀錄' },
+
+  // activity
+  ACTIVITY_ADMIN: { id: 'permission.ACTIVITY_ADMIN', defaultMessage: '所有線下實體功能' },
+  ACTIVITY_READ: { id: 'permission.ACTIVITY_READ', defaultMessage: '查看實體活動' },
   ACTIVITY_ENROLLMENT_READ: { id: 'permission.ACTIVITY_ENROLLMENT_READ', defaultMessage: '查看活動報名名單' },
-  ACTIVITY_CATEGORY_WRITE: { id: 'permission.ACTIVITY_CATEGORY_WRITE', defaultMessage: '編輯活動分類' },
+  ACTIVITY_WRITE: { id: 'permission.ACTIVITY_WRITE', defaultMessage: '編寫活動' },
+  ACTIVITY_SESSION_WRITE: { id: 'permission.ACTIVITY_SESSION_WRITE', defaultMessage: '編寫活動場次' },
+  ACTIVITY_TICKET_WRITE: { id: 'permission.ACTIVITY_TICKET_WRITE', defaultMessage: '編寫活動票卷' },
+  ACTIVITY_PUBLISHED: { id: 'permission.ACTIVITY_PUBLISHED', defaultMessage: '發布實體活動' },
+  ACTIVITY_CATEGORY_ADMIN: { id: 'permission.ACTIVITY_CATEGORY_ADMIN', defaultMessage: '所有線下實體分類功能' },
+  ACTIVITY_CATEGORY_READ: { id: 'permission.PROGRAM_CATEGORY_READ', defaultMessage: '查看活動分類' },
+  ACTIVITY_CATEGORY_WRITE: { id: 'permission.ACTIVITY_CATEGORY_WRITE', defaultMessage: '編寫活動分類' },
+  ACTIVITY_CATEGORY_DELETE: { id: 'permission.PROGRAM_CATEGORY_DELETE', defaultMessage: '刪除活動分類' },
+
+  // blog
+  POST_ADMIN: { id: 'permission.POST_ADMIN', defaultMessage: '所有文章管理功能' },
+  POST_READ: { id: 'permission.POST_READ', defaultMessage: '查看文章' },
+  POST_VIEWS_READ: { id: 'permission.POST_VIEWS_READ', defaultMessage: '查看文章瀏覽數' },
+  POST_WRITE: { id: 'permission.POST_WRITE', defaultMessage: '編寫文章' },
+  POST_AUTHOR_WRITE: { id: 'permission.POST_AUTHOR_WRITE', defaultMessage: '更改文章作者' },
+  POST_DELETE: { id: 'permission.POST_DELETE', defaultMessage: '刪除文章' },
+  POST_PUBLISH: { id: 'permission.POST_PUBLISH', defaultMessage: '發布文章' },
+  POST_CATEGORY_ADMIN: { id: 'permission.POST_CATEGORY_ADMIN', defaultMessage: '所有文章分類功能' },
+  POST_CATEGORY_READ: { id: 'permission.PROGRAM_CATEGORY_READ', defaultMessage: '查看文章分類' },
+  POST_CATEGORY_WRITE: { id: 'permission.ACTIVITY_CATEGORY_WRITE', defaultMessage: '編寫文章分類' },
+  POST_CATEGORY_DELETE: { id: 'permission.PROGRAM_CATEGORY_DELETE', defaultMessage: '刪除文章分類' },
+
+  // coupon
+  COUPON_PLAN_ADMIN: { id: 'permission.COUPON_PLAN_ADMIN', defaultMessage: '所有折價方案功能' },
+  COUPON_PLAN_READ: { id: 'permission.COUPON_PLAN_READ', defaultMessage: '查看折價方案' },
+  COUPON_PLAN_WRITE: { id: 'permission.COUPON_PLAN_WRITE', defaultMessage: '編寫折價方案' },
+  COUPON_CODE_EXPORT: { id: 'permission.COUPON_CODE_EXPORT', defaultMessage: '匯出折扣碼' },
+
+  // voucher
+  VOUCHER_PLAN_ADMIN: { id: 'permission.VOUCHER_PLAN_ADMIN', defaultMessage: '所有兌換方案功能' },
+  VOUCHER_PLAN_READ: { id: 'permission.VOUCHER_PLAN_READ', defaultMessage: '查看兌換方案' },
+  VOUCHER_PLAN_WRITE: { id: 'permission.VOUCHER_PLAN_WRITE', defaultMessage: '編寫兌換方案' },
+  VOUCHER_CODE_EXPORT: { id: 'permission.VOUCHER_CODE_EXPORT', defaultMessage: '匯出兌換碼' },
+
+  // coin
+  COIN_ADMIN: { id: 'permission.COIN_ADMIN', defaultMessage: '所有代幣紀錄功能' },
+
+  // member
+  MEMBER_ADMIN: { id: 'permission.MEMBER_ADMIN', defaultMessage: '所有會員列表功能' },
+  MEMBER_PROPERTY_ADMIN: { id: 'permission.MEMBER_PROPERTY_ADMIN', defaultMessage: '所有自訂欄位功能' },
+
+  // task
+  TASK_ADMIN: { id: 'permission.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },
+  TASK_CATEGORY_ADMIN: { id: 'permission.TASK_CATEGORY_ADMIN', defaultMessage: '所有待辦分類功能' },
+
+  // app_setting
+  APP_SETTING_ADMIN: { id: 'permission.APP_SETTING_ADMIN', defaultMessage: '所有網站管理功能' },
 })
 
 export const codeMessages = defineMessages({

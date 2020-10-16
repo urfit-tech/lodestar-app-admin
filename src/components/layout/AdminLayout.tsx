@@ -3,45 +3,32 @@ import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import { StyledContent } from '.'
-import { useAuth } from '../../contexts/AuthContext'
 import { useRouteKeys } from '../../hooks/util'
-import { CreatorAdminMenu, OwnerAdminMenu } from '../admin/AdminMenu'
+import AdminMenu from '../admin/AdminMenu'
 import Responsive from '../common/Responsive'
 import DefaultLayout from './DefaultLayout'
 
 const messages = defineMessages({
-  ownerBackstage: { id: 'layout.label.ownerBackstage', defaultMessage: '平台管理者專區' },
-  creatorStudio: { id: 'layout.label.creatorStudio', defaultMessage: '創作者工作室' },
+  backstage: { id: 'layout.label.backstage', defaultMessage: '管理後台' },
 })
 
 const AdminLayout: React.FC = ({ children }) => {
   const { formatMessage } = useIntl()
   const defaultSelectedKeys = useRouteKeys()
-  const { currentUserRole } = useAuth()
 
   return (
     <DefaultLayout
       noFooter
       renderTitle={() => (
         <Link to={`/`} className="d-flex">
-          <Button type="link">
-            {currentUserRole === 'app-owner'
-              ? formatMessage(messages.ownerBackstage)
-              : currentUserRole === 'content-creator'
-              ? formatMessage(messages.creatorStudio)
-              : null}
-          </Button>
+          <Button type="link">{formatMessage(messages.backstage)}</Button>
         </Link>
       )}
     >
       <div className="d-flex">
         <Responsive.Desktop>
           <StyledContent noFooter white>
-            {currentUserRole === 'app-owner' ? (
-              <OwnerAdminMenu defaultSelectedKeys={defaultSelectedKeys} />
-            ) : currentUserRole === 'content-creator' ? (
-              <CreatorAdminMenu defaultSelectedKeys={defaultSelectedKeys} />
-            ) : null}
+            <AdminMenu defaultSelectedKeys={defaultSelectedKeys} />
           </StyledContent>
         </Responsive.Desktop>
 

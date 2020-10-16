@@ -10,11 +10,12 @@ type AuthContext = {
   currentMemberId: string | null
   authToken: string | null
   currentMember: { name: string; username: string; email: string; pictureUrl: string } | null
+  permissions: { [key: string]: boolean }
   refreshToken?: (data: { appId: string }) => Promise<void>
   register?: (data: { appId: string; username: string; email: string; password: string }) => Promise<void>
   login?: (data: { appId: string; account: string; password: string }) => Promise<void>
   socialLogin?: (data: { appId: string; provider: string; providerToken: any }) => Promise<void>
-  logout?: () => void
+  logout?: () => Promise<void>
 }
 
 const defaultAuthContext: AuthContext = {
@@ -24,6 +25,7 @@ const defaultAuthContext: AuthContext = {
   currentMemberId: null,
   authToken: null,
   currentMember: null,
+  permissions: {},
 }
 
 const AuthContext = React.createContext<AuthContext>(defaultAuthContext)
@@ -49,6 +51,12 @@ export const AuthProvider: React.FC = ({ children }) => {
           email: payload.email,
           pictureUrl: payload.pictureUrl,
         },
+        permissions: payload?.permissions
+          ? payload.permissions.reduce((accumulator: { [key: string]: boolean }, currentValue: string) => {
+              accumulator[currentValue] = true
+              return accumulator
+            }, {})
+          : {},
         refreshToken: async ({ appId }) =>
           Axios.post(
             `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/refresh-token`,
@@ -117,9 +125,9 @@ export const AuthProvider: React.FC = ({ children }) => {
               throw new Error(code)
             }
           }),
-        logout: async () => {
+        logout: () => {
           localStorage.clear()
-          Axios(`${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/logout`, {
+          return Axios(`${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/logout`, {
             method: 'POST',
             withCredentials: true,
           }).then(({ data: { code, message, result } }) => {

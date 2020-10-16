@@ -258,7 +258,33 @@ export const useMutateVoucherPlan = () => {
   const { id: appId } = useContext(AppContext)
 
   const [insertVoucherPlanHandler] = useMutation<types.INSERT_VOUCHER_PLAN, types.INSERT_VOUCHER_PLANVariables>(
-    INSERT_VOUCHER_PLAN,
+    gql`
+      mutation INSERT_VOUCHER_PLAN(
+        $title: String!
+        $description: String
+        $appId: String!
+        $startedAt: timestamptz
+        $endedAt: timestamptz
+        $productQuantityLimit: Int!
+        $voucherCodes: [voucher_code_insert_input!]!
+        $voucherPlanProducts: [voucher_plan_product_insert_input!]!
+      ) {
+        insert_voucher_plan(
+          objects: {
+            title: $title
+            description: $description
+            app_id: $appId
+            started_at: $startedAt
+            ended_at: $endedAt
+            product_quantity_limit: $productQuantityLimit
+            voucher_codes: { data: $voucherCodes }
+            voucher_plan_products: { data: $voucherPlanProducts }
+          }
+        ) {
+          affected_rows
+        }
+      }
+    `,
   )
   const insertVoucherPlan = (values: VoucherPlanFields) => {
     return insertVoucherPlanHandler({
@@ -289,7 +315,38 @@ export const useMutateVoucherPlan = () => {
   }
 
   const [updateVoucherPlanHandler] = useMutation<types.UPDATE_VOUCHER_PLAN, types.UPDATE_VOUCHER_PLANVariables>(
-    UPDATE_VOUCHER_PLAN,
+    gql`
+      mutation UPDATE_VOUCHER_PLAN(
+        $voucherPlanId: uuid!
+        $title: String!
+        $description: String
+        $appId: String!
+        $startedAt: timestamptz
+        $endedAt: timestamptz
+        $productQuantityLimit: Int!
+        $voucherPlanProducts: [voucher_plan_product_insert_input!]!
+      ) {
+        update_voucher_plan(
+          where: { id: { _eq: $voucherPlanId } }
+          _set: {
+            title: $title
+            description: $description
+            app_id: $appId
+            started_at: $startedAt
+            ended_at: $endedAt
+            product_quantity_limit: $productQuantityLimit
+          }
+        ) {
+          affected_rows
+        }
+        delete_voucher_plan_product(where: { voucher_plan_id: { _eq: $voucherPlanId } }) {
+          affected_rows
+        }
+        insert_voucher_plan_product(objects: $voucherPlanProducts) {
+          affected_rows
+        }
+      }
+    `,
   )
   const updateVoucherPlan = (values: VoucherPlanFields, voucherPlanId: string) => {
     return updateVoucherPlanHandler({
@@ -311,63 +368,3 @@ export const useMutateVoucherPlan = () => {
     updateVoucherPlan,
   }
 }
-
-const INSERT_VOUCHER_PLAN = gql`
-  mutation INSERT_VOUCHER_PLAN(
-    $title: String!
-    $description: String
-    $appId: String!
-    $startedAt: timestamptz
-    $endedAt: timestamptz
-    $productQuantityLimit: Int!
-    $voucherCodes: [voucher_code_insert_input!]!
-    $voucherPlanProducts: [voucher_plan_product_insert_input!]!
-  ) {
-    insert_voucher_plan(
-      objects: {
-        title: $title
-        description: $description
-        app_id: $appId
-        started_at: $startedAt
-        ended_at: $endedAt
-        product_quantity_limit: $productQuantityLimit
-        voucher_codes: { data: $voucherCodes }
-        voucher_plan_products: { data: $voucherPlanProducts }
-      }
-    ) {
-      affected_rows
-    }
-  }
-`
-const UPDATE_VOUCHER_PLAN = gql`
-  mutation UPDATE_VOUCHER_PLAN(
-    $voucherPlanId: uuid!
-    $title: String!
-    $description: String
-    $appId: String!
-    $startedAt: timestamptz
-    $endedAt: timestamptz
-    $productQuantityLimit: Int!
-    $voucherPlanProducts: [voucher_plan_product_insert_input!]!
-  ) {
-    update_voucher_plan(
-      where: { id: { _eq: $voucherPlanId } }
-      _set: {
-        title: $title
-        description: $description
-        app_id: $appId
-        started_at: $startedAt
-        ended_at: $endedAt
-        product_quantity_limit: $productQuantityLimit
-      }
-    ) {
-      affected_rows
-    }
-    delete_voucher_plan_product(where: { voucher_plan_id: { _eq: $voucherPlanId } }) {
-      affected_rows
-    }
-    insert_voucher_plan_product(objects: $voucherPlanProducts) {
-      affected_rows
-    }
-  }
-`

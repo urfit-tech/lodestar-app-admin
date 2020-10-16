@@ -66,15 +66,18 @@ export type MemberAdminProps = {
   tags: string[]
   specialities: string[]
   phones: string[]
-  properties: {
-    id: string
-    name: string
-    value: string
-  }[]
+
   notes: MemberNoteAdminProps[]
   permissionIds: string[]
+
   consumption?: number
   coins?: number
+}
+
+export type MemberPropertyProps = {
+  id: string
+  name: string
+  value: string
 }
 
 export type MemberNoteAdminProps = {

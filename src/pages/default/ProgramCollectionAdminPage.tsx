@@ -49,7 +49,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
   const { loading, id: appId, enabledModules } = useContext(AppContext)
 
   const { loadingProgramPreviews, programPreviews, refetchProgramPreviews } = useProgramPreviewCollection(
-    currentUserRole === 'content-creator' ? currentMemberId : null,
+    currentUserRole === 'app-owner' ? null : currentMemberId,
   )
   const [insertProgram] = useMutation<types.INSERT_PROGRAM, types.INSERT_PROGRAMVariables>(INSERT_PROGRAM)
   const [updatePositions] = useMutation<

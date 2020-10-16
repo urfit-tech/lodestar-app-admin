@@ -1,12 +1,12 @@
 import { message, Modal, Spin } from 'antd'
 import { isEqual } from 'lodash'
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
 import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
-import AudioTrackCard from '../../components/podcast/AudioTrackCard'
+import AudioTrackCard, { AudioTrackCardRef } from '../../components/podcast/AudioTrackCard'
 import PodcastProgramHeader from '../../components/podcast/PodcastProgramHeader'
 import RecordButton from '../../components/podcast/RecordButton'
 import RecordingController from '../../components/podcast/RecordingController'
@@ -76,6 +76,7 @@ const RecordingPage: React.FC = () => {
   const { podcastProgramAdmin, refetchPodcastProgramAdmin } = usePodcastProgramAdmin(appId, podcastProgramId)
 
   const [signedPodCastProgramAudios, setSignedPodCastProgramAudios] = useState<SignedPodCastProgramAudio[]>([])
+  const podcastAudios = podcastProgramAdmin?.audios
 
   const [isRecording, setIsRecording] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -133,6 +134,36 @@ const RecordingPage: React.FC = () => {
 
     signAudios()
   }, [authToken, podcastProgramAdmin])
+
+  const audioTrackRefMap: Map<string, React.RefObject<AudioTrackCardRef>> = useMemo(() => {
+    if (podcastAudios == null) {
+      return new Map()
+    }
+
+    const m = new Map<string, React.RefObject<AudioTrackCardRef>>()
+    for (const audio of podcastAudios) {
+      m.set(audio.id, React.createRef())
+    }
+    return m
+  }, [podcastAudios])
+
+  // Use this method to actively play a track inside user interaction callback
+  const onPlay = React.useCallback(() => {
+    if (currentAudioId == null) {
+      console.log('No audio is selected')
+
+      return
+    }
+
+    const audioTrack = audioTrackRefMap.get(currentAudioId)?.current
+    if (audioTrack == null) {
+      console.warn('audioTrack is null or undefined')
+
+      return
+    }
+
+    audioTrack.play()
+  }, [audioTrackRefMap, currentAudioId])
 
   const onFinishPlaying = useCallback(() => {
     if (currentAudioIndex + 1 < signedPodCastProgramAudios.length) {
@@ -260,7 +291,11 @@ const RecordingPage: React.FC = () => {
       switch (keyCode) {
         // Press space key
         case 32:
-          setIsPlaying(isPlaying => !isPlaying)
+          if (isPlaying) {
+            setIsPlaying(false)
+          } else {
+            onPlay()
+          }
           break
         // Right key
         case 39:
@@ -290,7 +325,16 @@ const RecordingPage: React.FC = () => {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [onBackward, onForward, onDeleteAudioTrack, onTrimAudio, onPlayRateChange, showUploadConfirmationModal])
+  }, [
+    onBackward,
+    onForward,
+    onDeleteAudioTrack,
+    onTrimAudio,
+    onPlayRateChange,
+    showUploadConfirmationModal,
+    isPlaying,
+    onPlay,
+  ])
 
   return (
     <div>
@@ -349,6 +393,7 @@ const RecordingPage: React.FC = () => {
             {signedPodCastProgramAudios.map((audio, index) => {
               return (
                 <AudioTrackCard
+                  ref={audioTrackRefMap.get(audio.id)}
                   key={audio.id}
                   id={audio.id}
                   position={index}
@@ -362,6 +407,7 @@ const RecordingPage: React.FC = () => {
                   isActive={audio.id === currentAudioId}
                   isPlaying={audio.id === currentAudioId && isPlaying}
                   onAudioPlaying={second => setCurrentPlayingSecond(second)}
+                  onIsPlayingChanged={isPlaying => setIsPlaying(isPlaying)}
                   onFinishPlaying={onFinishPlaying}
                   onChangeFilename={(id, filename) => {
                     const audios = signedPodCastProgramAudios.map(audio => {
@@ -393,7 +439,7 @@ const RecordingPage: React.FC = () => {
         isEditing={isEditing}
         isDeleteDisabled={signedPodCastProgramAudios.length < 1}
         isUploadDisabled={signedPodCastProgramAudios.length < 1}
-        onPlay={() => setIsPlaying(true)}
+        onPlay={onPlay}
         onPause={() => setIsPlaying(false)}
         onEdit={() => {
           setIsEditing(isEditing => !isEditing)

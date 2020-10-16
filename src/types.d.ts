@@ -1304,6 +1304,99 @@ export interface GET_PERMISSION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PRODUCT_SELECTION_COLLECTION
+// ====================================================
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_program {
+  __typename: "program";
+  id: any;
+  title: string;
+  published_at: any | null;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_card {
+  __typename: "card";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket_activity {
+  __typename: "activity";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket {
+  __typename: "activity_ticket";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  activity: GET_PRODUCT_SELECTION_COLLECTION_activity_ticket_activity;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_program_package_plan_program_package {
+  __typename: "program_package";
+  id: any;
+  title: string;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_program_package_plan {
+  __typename: "program_package_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  program_package: GET_PRODUCT_SELECTION_COLLECTION_program_package_plan_program_package;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_podcast_program_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_podcast_program {
+  __typename: "podcast_program";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  creator: GET_PRODUCT_SELECTION_COLLECTION_podcast_program_creator | null;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_PRODUCT_SELECTION_COLLECTION_program[];
+  /**
+   * fetch data from the table: "card"
+   */
+  card: GET_PRODUCT_SELECTION_COLLECTION_card[];
+  /**
+   * fetch data from the table: "activity_ticket"
+   */
+  activity_ticket: GET_PRODUCT_SELECTION_COLLECTION_activity_ticket[];
+  /**
+   * fetch data from the table: "program_package_plan"
+   */
+  program_package_plan: GET_PRODUCT_SELECTION_COLLECTION_program_package_plan[];
+  /**
+   * fetch data from the table: "podcast_program"
+   */
+  podcast_program: GET_PRODUCT_SELECTION_COLLECTION_podcast_program[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_ISSUE_STATUS
 // ====================================================
 
@@ -1825,6 +1918,42 @@ export interface UPDATE_MEMBER_PROFILE_BASICVariables {
   tags: tag_insert_input[];
   memberTags: member_tag_insert_input[];
   phones: member_phone_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MEMBER_PROPERTY_COLLECTION
+// ====================================================
+
+export interface GET_MEMBER_PROPERTY_COLLECTION_member_property_property {
+  __typename: "property";
+  id: any;
+  name: string;
+}
+
+export interface GET_MEMBER_PROPERTY_COLLECTION_member_property {
+  __typename: "member_property";
+  id: any;
+  /**
+   * An object relationship
+   */
+  property: GET_MEMBER_PROPERTY_COLLECTION_member_property_property;
+  value: string;
+}
+
+export interface GET_MEMBER_PROPERTY_COLLECTION {
+  /**
+   * fetch data from the table: "member_property"
+   */
+  member_property: GET_MEMBER_PROPERTY_COLLECTION_member_property[];
+}
+
+export interface GET_MEMBER_PROPERTY_COLLECTIONVariables {
+  memberId: string;
 }
 
 /* tslint:disable */
@@ -6378,22 +6507,6 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_phones {
   phone: string;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_properties_property {
-  __typename: "property";
-  id: any;
-  name: string;
-}
-
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_properties {
-  __typename: "member_property";
-  id: any;
-  /**
-   * An object relationship
-   */
-  property: GET_MEMBER_DESCRIPTION_member_by_pk_member_properties_property;
-  value: string;
-}
-
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author {
   __typename: "member";
   id: string;
@@ -6421,18 +6534,10 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
   author: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_permission_extras_permission {
-  __typename: "permission";
-  id: string;
-}
-
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_permission_extras {
   __typename: "member_permission_extra";
   id: any;
-  /**
-   * An object relationship
-   */
-  permission: GET_MEMBER_DESCRIPTION_member_by_pk_member_permission_extras_permission;
+  permission_id: string;
 }
 
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate_sum {
@@ -6498,10 +6603,6 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk {
    * An array relationship
    */
   member_phones: GET_MEMBER_DESCRIPTION_member_by_pk_member_phones[];
-  /**
-   * An array relationship
-   */
-  member_properties: GET_MEMBER_DESCRIPTION_member_by_pk_member_properties[];
   /**
    * An array relationship
    */
@@ -10754,6 +10855,7 @@ export enum order_product_update_column {
   price = "price",
   product_id = "product_id",
   started_at = "started_at",
+  updated_at = "updated_at",
 }
 
 /**
@@ -14001,6 +14103,7 @@ export interface member_bool_exp {
   member_contracts?: member_contract_bool_exp | null;
   member_notes?: member_note_bool_exp | null;
   member_permission_extras?: member_permission_extra_bool_exp | null;
+  member_permissions?: member_permission_bool_exp | null;
   member_phones?: member_phone_bool_exp | null;
   member_properties?: member_property_bool_exp | null;
   member_shops?: member_shop_bool_exp | null;
@@ -14278,6 +14381,18 @@ export interface member_on_conflict {
   constraint: member_constraint;
   update_columns: member_update_column[];
   where?: member_bool_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_permission". All fields are combined with a logical 'AND'.
+ */
+export interface member_permission_bool_exp {
+  _and?: (member_permission_bool_exp | null)[] | null;
+  _not?: member_permission_bool_exp | null;
+  _or?: (member_permission_bool_exp | null)[] | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  permission_id?: String_comparison_exp | null;
 }
 
 /**
@@ -15409,6 +15524,7 @@ export interface order_product_bool_exp {
   product?: product_bool_exp | null;
   product_id?: String_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**
@@ -15478,6 +15594,7 @@ export interface order_product_insert_input {
   product?: product_obj_rel_insert_input | null;
   product_id?: string | null;
   started_at?: any | null;
+  updated_at?: any | null;
 }
 
 /**

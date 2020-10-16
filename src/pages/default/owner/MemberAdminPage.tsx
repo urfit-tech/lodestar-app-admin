@@ -66,7 +66,7 @@ const MemberAdminPage: React.FC = () => {
   const { enabledModules, settings } = useContext(AppContext)
   const { loadingMemberAdmin, errorMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
   const { insertMemberNote } = useMutateMemberNote()
-  const { currentMemberId } = useAuth()
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
 
   if (loadingMemberAdmin || errorMemberAdmin || !memberAdmin) {
     return <Skeleton active />
@@ -164,7 +164,7 @@ const MemberAdminPage: React.FC = () => {
                 {enabledModules.member_property && (
                   <AdminBlock>
                     <AdminBlockTitle>{formatMessage(memberMessages.label.property)}</AdminBlockTitle>
-                    <MemberPropertyAdminForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
+                    <MemberPropertyAdminForm memberId={memberId} />
                   </AdminBlock>
                 )}
               </div>
@@ -218,25 +218,29 @@ const MemberAdminPage: React.FC = () => {
                 </div>
               </Tabs.TabPane>
             )}
-            {enabledModules.member_task && (
+            {enabledModules.member_task && permissions.TASK_ADMIN && (
               <Tabs.TabPane key="task" tab={formatMessage(memberMessages.label.task)}>
                 <div className="p-5">
                   <MemberTaskAdminBlock memberId={memberId} />
                 </div>
               </Tabs.TabPane>
             )}
-            <Tabs.TabPane key="order" tab={formatMessage(memberMessages.label.order)}>
-              <div className="p-5">
-                <SaleCollectionAdminCard memberId={memberId} />
-              </div>
-            </Tabs.TabPane>
-            <Tabs.TabPane key="permission" tab={formatMessage(memberMessages.label.permission)}>
-              <div className="p-5">
-                <AdminBlock>
-                  <MemberPermissionForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
-                </AdminBlock>
-              </div>
-            </Tabs.TabPane>
+            {currentUserRole === 'app-owner' && (
+              <Tabs.TabPane key="order" tab={formatMessage(memberMessages.label.order)}>
+                <div className="p-5">
+                  <SaleCollectionAdminCard memberId={memberId} />
+                </div>
+              </Tabs.TabPane>
+            )}
+            {currentUserRole === 'app-owner' && (
+              <Tabs.TabPane key="permission" tab={formatMessage(memberMessages.label.permission)}>
+                <div className="p-5">
+                  <AdminBlock>
+                    <MemberPermissionForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
+                  </AdminBlock>
+                </div>
+              </Tabs.TabPane>
+            )}
           </Tabs>
         </StyledLayoutContent>
       </Layout>

@@ -9,7 +9,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
 import { useMember } from '../../hooks/member'
 import settings from '../../settings'
-import { CreatorAdminMenu, OwnerAdminMenu } from '../admin/AdminMenu'
+import AdminMenu from '../admin/AdminMenu'
 import { AuthModalContext } from '../auth/AuthModal'
 import MemberAvatar from './MemberAvatar'
 import Responsive from './Responsive'
@@ -48,7 +48,7 @@ const messages = defineMessages({
 const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { isAuthenticated, currentUserRole, logout } = useAuth()
+  const { isAuthenticated, logout } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
   const { member } = useMember(memberId)
   const navLinks = settings.navLinks
@@ -75,29 +75,12 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
         </BorderedItem>
 
         <Responsive.Default>
-          {CustomNavLinks}
-          {isAuthenticated && (
-            <BorderedItem onClick={() => history.push(`/members/${memberId}`)} style={{ cursor: 'pointer' }}>
-              <BlankIcon className="mr-2" />
-              {formatMessage(messages.memberPage)}
-            </BorderedItem>
-          )}
           <BorderedItem className="shift-left">
-            {currentUserRole === 'app-owner' ? (
-              <OwnerAdminMenu style={{ border: 'none' }} />
-            ) : currentUserRole === 'content-creator' ? (
-              <CreatorAdminMenu style={{ border: 'none' }} />
-            ) : null}
+            <AdminMenu />
           </BorderedItem>
         </Responsive.Default>
 
-        <List.Item
-          style={{ cursor: 'pointer' }}
-          onClick={() => {
-            logout && logout()
-            history.push('/')
-          }}
-        >
+        <List.Item className="cursor-pointer" onClick={() => logout && logout().then(() => history.push('/'))}>
           <LogoutOutlined className="mr-2" />
           {formatMessage(commonMessages.ui.logout)}
         </List.Item>

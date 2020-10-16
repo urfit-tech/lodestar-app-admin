@@ -96,22 +96,6 @@ const StyledOnTopWrapper = styled(StyledWrapper)`
   z-index: 100;
 `
 
-const PlayRateButton: React.FC<{
-  playRate: number
-  onPlayRateChange?: () => void
-  render: React.FC<{
-    playRate: number
-    onPlayRateChange?: () => void
-  }>
-}> = React.memo(
-  ({ playRate, onPlayRateChange, render }) => {
-    return render({ playRate, onPlayRateChange })
-  },
-  (prevProps, nextProps) => {
-    return prevProps.playRate === nextProps.playRate && prevProps.onPlayRateChange === nextProps.onPlayRateChange
-  },
-)
-
 const RecordingController: React.FC<{
   hidden?: boolean
   name: string

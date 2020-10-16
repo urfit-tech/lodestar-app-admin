@@ -69,7 +69,6 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     path: '/programs',
     pageName: 'ProgramCollectionAdminPage',
     authenticated: true,
-    allowedUserRole: 'content-creator',
   },
   program: {
     path: '/programs/:programId',
@@ -95,7 +94,6 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     path: '/program-progress',
     pageName: 'ProgramProgressCollectionAdminPage',
     authenticated: true,
-    allowedUserRole: 'content-creator',
   },
   program_tempo_delivery: {
     path: '/program-tempo-delivery',
@@ -251,37 +249,31 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     path: '/admin/coupon_plans',
     pageName: 'owner/CouponPlanCollectionAdminPage',
     authenticated: true,
-    allowedUserRole: 'app-owner',
   },
   owner_voucher_plans: {
     path: '/admin/voucher_plans',
     pageName: 'owner/VoucherPlanCollectionAdminPage',
     authenticated: true,
-    allowedUserRole: 'app-owner',
   },
   owner_members: {
     path: '/admin/members',
     pageName: 'owner/MemberCollectionAdminPage',
     authenticated: true,
-    allowedUserRole: 'app-owner',
   },
   owner_member: {
     path: '/admin/members/:memberId',
     pageName: 'owner/MemberAdminPage',
     authenticated: true,
-    allowedUserRole: 'app-owner',
   },
   owner_member_properties: {
     path: '/admin/member-properties',
     pageName: 'owner/MemberPropertyAdminPage',
     authenticated: true,
-    allowedUserRole: 'app-owner',
   },
   owner_coin_history: {
     path: '/admin/coins',
     pageName: 'owner/CoinHistoryAdminPage',
     authenticated: true,
-    allowedUserRole: 'app-owner',
   },
   owner_point_history: {
     path: '/admin/points',

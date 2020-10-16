@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
@@ -8,21 +8,21 @@ import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useProperty } from '../../hooks/member'
 import types from '../../types'
-import { MemberAdminProps } from '../../types/member'
+import { MemberPropertyProps } from '../../types/member'
 
 const MemberPropertyAdminForm: React.FC<{
-  memberAdmin: MemberAdminProps | null
-  onRefetch?: () => void
-}> = ({ memberAdmin, onRefetch }) => {
+  memberId: string
+}> = ({ memberId }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const { loadingProperties, properties } = useProperty()
+  const { loadingMemberProperties, memberProperties, refetchMemberProperties } = useMemberPropertyCollection(memberId)
   const [updateMemberProperty] = useMutation<types.UPDATE_MEMBER_PROPERTY, types.UPDATE_MEMBER_PROPERTYVariables>(
     UPDATE_MEMBER_PROPERTY,
   )
   const [loading, setLoading] = useState(false)
 
-  if (!memberAdmin || loadingProperties) {
+  if (loadingProperties || loadingMemberProperties) {
     return <Skeleton active />
   }
 
@@ -30,11 +30,11 @@ const MemberPropertyAdminForm: React.FC<{
     setLoading(true)
     updateMemberProperty({
       variables: {
-        memberId: memberAdmin.id,
+        memberId,
         memberProperties: Object.keys(values)
           .filter(propertyId => values[propertyId])
           .map(propertyId => ({
-            member_id: memberAdmin.id,
+            member_id: memberId,
             property_id: propertyId,
             value: values[propertyId],
           })),
@@ -42,7 +42,7 @@ const MemberPropertyAdminForm: React.FC<{
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
-        onRefetch && onRefetch()
+        refetchMemberProperties()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -56,7 +56,7 @@ const MemberPropertyAdminForm: React.FC<{
       labelAlign="left"
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 12 } }}
-      initialValues={memberAdmin.properties.reduce(
+      initialValues={memberProperties.reduce(
         (accumulator, currentValue) => ({
           ...accumulator,
           [currentValue.id]: currentValue.value,
@@ -81,6 +81,41 @@ const MemberPropertyAdminForm: React.FC<{
       </Form.Item>
     </Form>
   )
+}
+
+const useMemberPropertyCollection = (memberId: string) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_MEMBER_PROPERTY_COLLECTION,
+    types.GET_MEMBER_PROPERTY_COLLECTIONVariables
+  >(
+    gql`
+      query GET_MEMBER_PROPERTY_COLLECTION($memberId: String!) {
+        member_property(where: { member: { id: { _eq: $memberId } } }) {
+          id
+          property {
+            id
+            name
+          }
+          value
+        }
+      }
+    `,
+    { variables: { memberId } },
+  )
+
+  const memberProperties: MemberPropertyProps[] =
+    data?.member_property.map(v => ({
+      id: v.property.id,
+      name: v.property.name,
+      value: v.value,
+    })) || []
+
+  return {
+    loadingMemberProperties: loading,
+    errorMemberProperties: error,
+    memberProperties,
+    refetchMemberProperties: refetch,
+  }
 }
 
 const UPDATE_MEMBER_PROPERTY = gql`

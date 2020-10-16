@@ -19,7 +19,13 @@ const SettingAdminPage: React.FC = () => {
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <Icon component={() => <UserIcon />} className="mr-3" />
-        <span>{formatMessage(commonMessages.menu.ownerSettings)}</span>
+        {currentUserRole === 'app-owner' ? (
+          <span>{formatMessage(commonMessages.menu.ownerSettings)}</span>
+        ) : currentUserRole === 'content-creator' ? (
+          <span>{formatMessage(commonMessages.menu.creatorSettings)}</span>
+        ) : (
+          <span>{formatMessage(commonMessages.menu.memberSettings)}</span>
+        )}
       </AdminPageTitle>
 
       {!currentMemberId ? (

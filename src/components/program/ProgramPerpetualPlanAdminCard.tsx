@@ -28,9 +28,9 @@ const ProgramPerpetualPlanAdminCard: React.FC<{
       variables: {
         programId: program.id,
         listPrice: values.listPrice || 0,
-        salePrice: values.sale?.price || null,
+        salePrice: values.sale?.price,
         soldAt: values.sale?.soldAt || null,
-        isCountdownTimerVisible: !!values.sale?.timerVisible,
+        isCountdownTimerVisible: !!values.sale?.isTimerVisible,
       },
     })
       .then(() => {

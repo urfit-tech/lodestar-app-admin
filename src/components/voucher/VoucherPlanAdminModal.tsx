@@ -3,7 +3,7 @@ import { useForm } from 'antd/lib/form/Form'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import ProductSelector from '../../containers/common/ProductSelector'
+import ProductSelector from '../../components/form/ProductSelector'
 import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
 import { VoucherPlanProps } from '../../types/checkout'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
@@ -110,7 +110,7 @@ const VoucherPlanAdminModal: React.FC<
           name="voucherPlanProducts"
           rules={[{ required: true, message: formatMessage(errorMessages.form.exchangeItems) }]}
         >
-          <ProductSelector allowTypes={['Program', 'Card', 'ActivityTicket', 'ProgramPackagePlan']} />
+          <ProductSelector allowTypes={['Program', 'ProgramPackagePlan', 'ActivityTicket', 'PodcastProgram', 'Card']} />
         </Form.Item>
 
         <Form.Item

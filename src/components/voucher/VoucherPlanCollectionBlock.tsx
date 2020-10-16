@@ -53,10 +53,7 @@ const VoucherPlanCollectionBlock: React.FC = () => {
         setVisible(false)
         refetch()
       })
-      .catch(error => {
-        handleError(error)
-        setLoading(false)
-      })
+      .catch(handleError)
       .finally(() => setLoading(false))
   }
 
@@ -75,12 +72,10 @@ const VoucherPlanCollectionBlock: React.FC = () => {
         <>
           <VoucherPlanDetailModal
             title={voucherPlan.title}
-            voucherCodes={voucherPlan.voucherCodes.map(voucherCode => {
-              return {
-                ...voucherCode,
-                used: voucherCode.count - voucherCode.remaining,
-              }
-            })}
+            voucherCodes={voucherPlan.voucherCodes.map(voucherCode => ({
+              ...voucherCode,
+              used: voucherCode.count - voucherCode.remaining,
+            }))}
           />
 
           <div className="flex-grow-1">

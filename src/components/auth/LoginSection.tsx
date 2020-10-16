@@ -24,8 +24,9 @@ const ForgetPassword = styled.div`
 `
 
 const LoginSection: React.FC<{
-  onAuthStateChange: React.Dispatch<React.SetStateAction<AuthState>>
-}> = ({ onAuthStateChange }) => {
+  noTitle?: boolean
+  onAuthStateChange?: React.Dispatch<React.SetStateAction<AuthState>>
+}> = ({ noTitle, onAuthStateChange }) => {
   const app = useContext(AppContext)
   const { formatMessage } = useIntl()
   const [form] = useForm()
@@ -53,7 +54,7 @@ const LoginSection: React.FC<{
 
   return (
     <>
-      <StyledTitle>{formatMessage(commonMessages.ui.login)}</StyledTitle>
+      {!noTitle && <StyledTitle>{formatMessage(commonMessages.ui.login)}</StyledTitle>}
 
       {!!process.env.REACT_APP_FACEBOOK_APP_ID && (
         <div className="mb-3">
@@ -100,12 +101,14 @@ const LoginSection: React.FC<{
           </Button>
         </Form.Item>
 
-        <StyledAction>
-          <span>{formatMessage(commonMessages.label.notMember)}</span>
-          <Button type="link" size="small" onClick={() => onAuthStateChange('register')}>
-            {formatMessage(commonMessages.ui.registerNow)}
-          </Button>
-        </StyledAction>
+        {onAuthStateChange && (
+          <StyledAction>
+            <span>{formatMessage(commonMessages.label.notMember)}</span>
+            <Button type="link" size="small" onClick={() => onAuthStateChange('register')}>
+              {formatMessage(commonMessages.ui.registerNow)}
+            </Button>
+          </StyledAction>
+        )}
       </Form>
     </>
   )
