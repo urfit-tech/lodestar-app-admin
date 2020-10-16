@@ -11,8 +11,6 @@ import types from '../../types'
 import { MemberPropertyProps } from '../../types/member'
 
 const MemberPropertyAdminForm: React.FC<{
-  // memberAdmin: MemberAdminProps | null
-  // onRefetch?: () => void
   memberId: string
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
@@ -107,7 +105,7 @@ const useMemberPropertyCollection = (memberId: string) => {
 
   const memberProperties: MemberPropertyProps[] =
     data?.member_property.map(v => ({
-      id: v.id,
+      id: v.property.id,
       name: v.property.name,
       value: v.value,
     })) || []
