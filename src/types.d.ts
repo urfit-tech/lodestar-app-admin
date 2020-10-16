@@ -6062,23 +6062,20 @@ export interface GET_PRODUCT_INVENTORYVariables {
 // GraphQL mutation operation: ARRANGE_PRODUCT_INVENTORY
 // ====================================================
 
-export interface ARRANGE_PRODUCT_INVENTORY_insert_product_inventory {
-  __typename: "product_inventory_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
+export interface ARRANGE_PRODUCT_INVENTORY_insert_product_inventory_one {
+  __typename: "product_inventory";
+  id: any;
 }
 
 export interface ARRANGE_PRODUCT_INVENTORY {
   /**
-   * insert data into the table: "product_inventory"
+   * insert a single row into the table: "product_inventory"
    */
-  insert_product_inventory: ARRANGE_PRODUCT_INVENTORY_insert_product_inventory | null;
+  insert_product_inventory_one: ARRANGE_PRODUCT_INVENTORY_insert_product_inventory_one | null;
 }
 
 export interface ARRANGE_PRODUCT_INVENTORYVariables {
-  data: product_inventory_insert_input[];
+  data: product_inventory_insert_input;
 }
 
 /* tslint:disable */
@@ -7411,6 +7408,74 @@ export interface GET_MEMBER_SHOP {
 
 export interface GET_MEMBER_SHOPVariables {
   shopId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MERCHANDISE_SPEC_COLLECTION
+// ====================================================
+
+export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_merchandise_imgs {
+  __typename: "merchandise_img";
+  url: string;
+}
+
+export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_member_shop {
+  __typename: "member_shop";
+  id: any;
+  title: string;
+}
+
+export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise {
+  __typename: "merchandise";
+  title: string;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  merchandise_imgs: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_merchandise_imgs[];
+  /**
+   * An object relationship
+   */
+  member_shop: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_member_shop | null;
+}
+
+export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_spec_inventory_status {
+  __typename: "merchandise_spec_inventory_status";
+  buyable_quantity: any | null;
+  delivered_quantity: any | null;
+  undelivered_quantity: any | null;
+}
+
+export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec {
+  __typename: "merchandise_spec";
+  id: any;
+  /**
+   * An object relationship
+   */
+  merchandise: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise;
+  title: string;
+  /**
+   * An object relationship
+   */
+  merchandise_spec_inventory_status: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_spec_inventory_status | null;
+}
+
+export interface GET_MERCHANDISE_SPEC_COLLECTION {
+  /**
+   * fetch data from the table: "merchandise_spec"
+   */
+  merchandise_spec: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec[];
+}
+
+export interface GET_MERCHANDISE_SPEC_COLLECTIONVariables {
+  merchandiseSearchLike?: string | null;
+  isCustomized?: boolean | null;
+  isLimited?: boolean | null;
 }
 
 /* tslint:disable */

@@ -302,6 +302,7 @@ export const commonMessages = {
     eCommerce: { id: 'common.menu.eCommerce', defaultMessage: '電子商務' },
     merchandiseAdmin: { id: 'common.menu.merchandise', defaultMessage: '商品' },
     merchandises: { id: 'common.menu.merchandises', defaultMessage: '商品管理' },
+    merchandiseInventory: { id: 'common.menu.merchandiseInventory', defaultMessage: '庫存管理' },
     merchandiseIssues: { id: 'common.menu.merchandiseIssues', defaultMessage: '問答管理' },
     merchandiseShop: { id: 'common.menu.merchandiseShop', defaultMessage: '商店管理' },
     merchandiseCategory: { id: 'common.menu.merchandiseCategory', defaultMessage: '商品分類' },
@@ -710,6 +711,7 @@ export const merchandiseMessages = {
   }),
   status: defineMessages({
     selling: { id: 'merchandise.status.selling', defaultMessage: '販賣中' },
+    soldOut: { id: 'common.status.soldOut', defaultMessage: '已售完' },
     unpublished: { id: 'merchandise.status.unpublished', defaultMessage: '未上架' },
     currentInventory: { id: 'merchandise.status.currentInventory', defaultMessage: '現有庫存' },
     shipping: { id: 'merchandise.status.shipping', defaultMessage: '待出貨' },
@@ -819,6 +821,7 @@ export const merchandiseMessages = {
       defaultMessage: '此為虛擬客製化商品，若有人購買，請記得於「出貨管理」上傳交付檔案，並通知出貨讓買家可下載',
     },
     specTitleHint: { id: 'merchandise.text.specTitleHint', defaultMessage: 'ex. 紅色 S 號' },
+    noMatchingItems: { id: 'merchandise.text.noMatchingItems', defaultMessage: '沒有任何符合項目' },
   }),
 }
 

@@ -9,7 +9,7 @@ import styled from 'styled-components'
 import MultipleUploader from '../../components/common/MultipleUploader'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages,merchandiseMessages } from '../../helpers/translation'
 import { useSimpleProduct } from '../../hooks/data'
 import { ReactComponent as CalendarOIcon } from '../../images/default/calendar-alt-o.svg'
 import EmptyCover from '../../images/default/empty-cover.png'
@@ -23,8 +23,7 @@ import ShippingNoticeModal from './ShippingNoticeModal'
 const messages = defineMessages({
   purchase: { id: 'merchandise.text.purchase', defaultMessage: '購買' },
   seller: { id: 'merchandise.ui.seller', defaultMessage: '賣家通知' },
-  deliver: { id: 'merchandise.label.deliveryItem', defaultMessage: '交付' },
-  noMatchingItems: { id: 'merchandise.text.noMatchingItems', defaultMessage: '沒有任何符合項目' },
+  deliveryItem: { id: 'merchandise.label.deliveryItem', defaultMessage: '交付' },
   uploadFile: { id: 'common.ui.uploadFile', defaultMessage: '上傳' },
 })
 
@@ -118,7 +117,7 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
         ))
       ) : (
         <div className="container d-flex align-items-center">
-          <div>{formatMessage(messages.noMatchingItems)}</div>
+          <div>{formatMessage(merchandiseMessages.text.noMatchingItems)}</div>
         </div>
       )}
     </div>
@@ -181,7 +180,7 @@ const ShippingProductItem: React.FC<{
             {target.title}
             <div className="d-flex">
               <div className="mt-3">
-                <span>{formatMessage(messages.deliver)}</span>：
+                <span>{formatMessage(messages.deliveryItem)}</span>：
               </div>
               <div className="flex-grow-1 mt-sm-n5 pt-2" style={{ position: 'relative' }}>
                 <MultipleUploader

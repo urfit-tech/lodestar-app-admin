@@ -187,26 +187,24 @@ export const useArrangeProductInventory = (productId: string) => {
     types.ARRANGE_PRODUCT_INVENTORYVariables
   >(
     gql`
-      mutation ARRANGE_PRODUCT_INVENTORY($data: [product_inventory_insert_input!]!) {
-        insert_product_inventory(objects: $data) {
-          affected_rows
+      mutation ARRANGE_PRODUCT_INVENTORY($data: product_inventory_insert_input!) {
+        insert_product_inventory_one(object: $data) {
+          id
         }
       }
     `,
   )
 
-  return (data: { specification: string; quantity: number; comment: string | null }[]) =>
+  return (data: { specification: string; quantity: number; comment: string | null }) =>
     arrangeMerchandiseInventory({
       variables: {
-        data: data
-          .filter(data => data.quantity)
-          .map(data => ({
-            product_id: productId,
-            status: 'arrange',
-            specification: data.specification,
-            quantity: data.quantity,
-            comment: data.comment,
-          })),
+        data: {
+          product_id: productId,
+          status: 'arrange',
+          specification: data.specification,
+          quantity: data.quantity,
+          comment: data.comment,
+        },
       },
     })
 }

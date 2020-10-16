@@ -311,3 +311,88 @@ export const useMemberShop = (shopId: string) => {
     refetchMemberShop: refetch,
   }
 }
+
+export const useMerchandiseSpecCollection = (
+  merchandiseSearchLike: string | null,
+  isLimited?: boolean,
+  isCustomized?: boolean,
+) => {
+  const { loading, error, data, refetch } = useQuery<types.GET_MERCHANDISE_SPEC_COLLECTION>(
+    gql`
+      query GET_MERCHANDISE_SPEC_COLLECTION(
+        $merchandiseSearchLike: String
+        $isCustomized: Boolean
+        $isLimited: Boolean
+      ) {
+        merchandise_spec(
+          where: {
+            merchandise: {
+              is_limited: { _eq: $isLimited }
+              is_customized: { _eq: $isCustomized }
+              is_deleted: { _eq: false }
+              title: { _like: $merchandiseSearchLike }
+            }
+          }
+        ) {
+          id
+          merchandise {
+            title
+            published_at
+            merchandise_imgs {
+              url
+            }
+            member_shop {
+              id
+              title
+            }
+          }
+          title
+          merchandise_spec_inventory_status {
+            buyable_quantity
+            delivered_quantity
+            undelivered_quantity
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        merchandiseSearchLike,
+        isLimited,
+        isCustomized,
+      },
+    },
+  )
+  const merchandiseSpecs: {
+    merchandiseSpecId: string
+    merchandiseTitle: string
+    published_at: Date | null
+    merchandiseMemberShopId?: string
+    merchandiseMemberShop?: string
+    coverUrl: string | null
+    merchandiseSpecTitle: string
+    merchandiseSpecInventoryStatus: ProductInventoryStatusProps
+  }[] =
+    loading || error || !data
+      ? []
+      : data.merchandise_spec.map(v => ({
+          merchandiseSpecId: v.id,
+          merchandiseTitle: v.merchandise.title,
+          published_at: v.merchandise.published_at,
+          merchandiseMemberShopId: v.merchandise?.member_shop?.id,
+          merchandiseMemberShop: v.merchandise?.member_shop?.title,
+          coverUrl: v.merchandise.merchandise_imgs[0]?.url || null,
+          merchandiseSpecTitle: v.title,
+          merchandiseSpecInventoryStatus: {
+            buyableQuantity: v.merchandise_spec_inventory_status?.buyable_quantity | 0,
+            deliveredQuantity: v.merchandise_spec_inventory_status?.delivered_quantity | 0,
+            undeliveredQuantity: v.merchandise_spec_inventory_status?.undelivered_quantity | 0,
+          },
+        }))
+  return {
+    loadingMerchandiseSpecs: loading,
+    errorMerchandiseSpecs: error,
+    merchandiseSpecs,
+    refetchMerchandiseSpecs: refetch,
+  }
+}
