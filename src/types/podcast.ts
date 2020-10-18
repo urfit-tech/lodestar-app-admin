@@ -25,12 +25,12 @@ export type PodcastProgramAudio = {
   duration: number
 }
 
-export type RawPodcastProgramAudio = {
+type RawPodcastProgramAudio = {
   id: string
   data: RawPodcastProgramAudioData
 }
 
-export type RawPodcastProgramAudioData = {
+type RawPodcastProgramAudioData = {
   key: string
   filename: string
   duration: number
@@ -49,7 +49,7 @@ export function podcastProgramAudiosFromRawAudios(rawAudios: RawPodcastProgramAu
 }
 
 // Might return undefined because a RawPodcastProgramBody might have no audio
-export function podcastProgramBodyFromRawBody(raw: RawPodcastProgramAudio): PodcastProgramAudio {
+function podcastProgramBodyFromRawBody(raw: RawPodcastProgramAudio): PodcastProgramAudio {
   const data = raw.data
 
   return {

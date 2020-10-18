@@ -36,12 +36,12 @@ const WaveWrapper = styled.div`
   width: 100%;
   overflow-x: auto;
 `
-export const WaveBlock = styled.div<{ width?: number }>`
+const WaveBlock = styled.div<{ width?: number }>`
   width: ${props => props.width}px;
   min-width: 100%;
   height: 90px;
 `
-export const WaveTimelineBlock = styled.div<{ width?: number }>`
+const WaveTimelineBlock = styled.div<{ width?: number }>`
   width: ${props => props.width}px;
   min-width: 100%;
   height: 25px;

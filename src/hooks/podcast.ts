@@ -201,55 +201,6 @@ export const usePodcastProgramAdmin = (appId: string, podcastProgramId: string) 
   }
 }
 
-export const usePodcastPlan = (podcastPlanId: string) => {
-  const { data, loading, error, refetch } = useQuery<types.GET_PODCAST_PLAN, types.GET_PODCAST_PLANVariables>(
-    gql`
-      query GET_PODCAST_PLAN($podcastPlanId: uuid!) {
-        podcast_plan_by_pk(id: $podcastPlanId) {
-          id
-          creator_id
-          period_type
-          period_amount
-          list_price
-          sale_price
-          sold_at
-          published_at
-        }
-      }
-    `,
-    { variables: { podcastPlanId } },
-  )
-  const podcastPlan: {
-    id: string
-    listPrice: number
-    salePrice?: number | null
-    soldAt?: Date | null
-    periodAmount: number
-    periodType: 'Y' | 'M' | 'W'
-    isPublished: boolean
-    creatorId: string
-  } | null =
-    loading || error || !data || !data.podcast_plan_by_pk
-      ? null
-      : {
-          id: data.podcast_plan_by_pk.id,
-          listPrice: data.podcast_plan_by_pk.list_price,
-          salePrice: data.podcast_plan_by_pk.sale_price,
-          soldAt: data.podcast_plan_by_pk.sold_at,
-          periodAmount: data.podcast_plan_by_pk.period_amount,
-          periodType: data.podcast_plan_by_pk.period_type as 'Y' | 'M' | 'W',
-          isPublished: new Date(data.podcast_plan_by_pk.published_at).getTime() < Date.now(),
-          creatorId: data.podcast_plan_by_pk.creator_id,
-        }
-
-  return {
-    loadingPodcastPlan: loading,
-    errorPodcastPlan: error,
-    podcastPlan,
-    refetchPodcastPlan: refetch,
-  }
-}
-
 export const usePodcastPlanAdminCollection = (creatorId?: string) => {
   const { data, loading, error, refetch } = useQuery<
     types.GET_PODCAST_PLAN_ADMIN_COLLECTION,
@@ -320,19 +271,3 @@ export const usePodcastPlanAdminCollection = (creatorId?: string) => {
     refetchPodcastPlans: refetch,
   }
 }
-
-export const UPDATE_PODCAST_PROGRAM_CONTENT = gql`
-  mutation UPDATE_PODCAST_PROGRAM_CONTENT(
-    $podcastProgramId: uuid!
-    $contentType: String
-    $updatedAt: timestamptz!
-    $duration: numeric
-  ) {
-    update_podcast_program(
-      where: { id: { _eq: $podcastProgramId } }
-      _set: { content_type: $contentType, updated_at: $updatedAt, duration: $duration }
-    ) {
-      affected_rows
-    }
-  }
-`

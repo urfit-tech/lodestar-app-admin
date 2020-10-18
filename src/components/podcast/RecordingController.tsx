@@ -57,7 +57,7 @@ const StyledOverlayButton = styled(Button)`
     font-size: 24px;
   }
 `
-export const StyledBarIconButton = styled(Button)<{ height?: string; iconsize?: string; marginbottom?: string }>`
+const StyledBarIconButton = styled(Button)<{ height?: string; iconsize?: string; marginbottom?: string }>`
   height: ${props => (props.height ? props.height : '36px')};
   color: white;
   font-size: ${props => props.iconsize || '24px'};

@@ -5,7 +5,6 @@ import { ColumnProps } from 'antd/lib/table'
 import moment from 'moment'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
-import { useHistory } from 'react-router-dom'
 import styled, { ThemeContext } from 'styled-components'
 import { AdminPageTitle } from '../../../components/admin'
 import AdminCard from '../../../components/admin/AdminCard'
@@ -68,7 +67,6 @@ const getColumnSearchProps = ({
 
 const MemberCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const history = useHistory()
   const theme = useContext(ThemeContext)
 
   // get member info

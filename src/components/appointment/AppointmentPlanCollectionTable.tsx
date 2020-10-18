@@ -70,7 +70,7 @@ const messages = defineMessages({
 
 const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filtered ? 'var(--primary)' : undefined }} />
 
-export type AppointmentPlanProps = {
+type AppointmentPlanProps = {
   id: string
   avatarUrl?: string | null
   creatorName: string

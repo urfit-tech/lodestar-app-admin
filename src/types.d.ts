@@ -1314,10 +1314,20 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_program {
   published_at: any | null;
 }
 
-export interface GET_PRODUCT_SELECTION_COLLECTION_card {
-  __typename: "card";
+export interface GET_PRODUCT_SELECTION_COLLECTION_program_package_plan_program_package {
+  __typename: "program_package";
   id: any;
   title: string;
+}
+
+export interface GET_PRODUCT_SELECTION_COLLECTION_program_package_plan {
+  __typename: "program_package_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  program_package: GET_PRODUCT_SELECTION_COLLECTION_program_package_plan_program_package;
 }
 
 export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket_activity {
@@ -1336,22 +1346,6 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_activity_ticket {
   activity: GET_PRODUCT_SELECTION_COLLECTION_activity_ticket_activity;
 }
 
-export interface GET_PRODUCT_SELECTION_COLLECTION_program_package_plan_program_package {
-  __typename: "program_package";
-  id: any;
-  title: string;
-}
-
-export interface GET_PRODUCT_SELECTION_COLLECTION_program_package_plan {
-  __typename: "program_package_plan";
-  id: any;
-  title: string;
-  /**
-   * An object relationship
-   */
-  program_package: GET_PRODUCT_SELECTION_COLLECTION_program_package_plan_program_package;
-}
-
 export interface GET_PRODUCT_SELECTION_COLLECTION_podcast_program_creator {
   __typename: "member_public";
   id: string | null;
@@ -1368,27 +1362,33 @@ export interface GET_PRODUCT_SELECTION_COLLECTION_podcast_program {
   creator: GET_PRODUCT_SELECTION_COLLECTION_podcast_program_creator | null;
 }
 
+export interface GET_PRODUCT_SELECTION_COLLECTION_card {
+  __typename: "card";
+  id: any;
+  title: string;
+}
+
 export interface GET_PRODUCT_SELECTION_COLLECTION {
   /**
    * fetch data from the table: "program"
    */
   program: GET_PRODUCT_SELECTION_COLLECTION_program[];
   /**
-   * fetch data from the table: "card"
+   * fetch data from the table: "program_package_plan"
    */
-  card: GET_PRODUCT_SELECTION_COLLECTION_card[];
+  program_package_plan: GET_PRODUCT_SELECTION_COLLECTION_program_package_plan[];
   /**
    * fetch data from the table: "activity_ticket"
    */
   activity_ticket: GET_PRODUCT_SELECTION_COLLECTION_activity_ticket[];
   /**
-   * fetch data from the table: "program_package_plan"
-   */
-  program_package_plan: GET_PRODUCT_SELECTION_COLLECTION_program_package_plan[];
-  /**
    * fetch data from the table: "podcast_program"
    */
   podcast_program: GET_PRODUCT_SELECTION_COLLECTION_podcast_program[];
+  /**
+   * fetch data from the table: "card"
+   */
+  card: GET_PRODUCT_SELECTION_COLLECTION_card[];
 }
 
 /* tslint:disable */
@@ -4645,79 +4645,6 @@ export interface UPDATE_DELIVER_INFOVariables {
   deliverMessage?: string | null;
   deliveredAt?: any | null;
   orderLogId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ALLTYPE_PRODUCT_COLLECTION
-// ====================================================
-
-export interface GET_ALLTYPE_PRODUCT_COLLECTION_program {
-  __typename: "program";
-  id: any;
-  title: string;
-  published_at: any | null;
-}
-
-export interface GET_ALLTYPE_PRODUCT_COLLECTION_card {
-  __typename: "card";
-  id: any;
-  title: string;
-}
-
-export interface GET_ALLTYPE_PRODUCT_COLLECTION_activity_ticket_activity {
-  __typename: "activity";
-  id: any;
-  title: string;
-}
-
-export interface GET_ALLTYPE_PRODUCT_COLLECTION_activity_ticket {
-  __typename: "activity_ticket";
-  id: any;
-  title: string;
-  /**
-   * An object relationship
-   */
-  activity: GET_ALLTYPE_PRODUCT_COLLECTION_activity_ticket_activity;
-}
-
-export interface GET_ALLTYPE_PRODUCT_COLLECTION_program_package_plan_program_package {
-  __typename: "program_package";
-  id: any;
-  title: string;
-}
-
-export interface GET_ALLTYPE_PRODUCT_COLLECTION_program_package_plan {
-  __typename: "program_package_plan";
-  id: any;
-  title: string;
-  /**
-   * An object relationship
-   */
-  program_package: GET_ALLTYPE_PRODUCT_COLLECTION_program_package_plan_program_package;
-}
-
-export interface GET_ALLTYPE_PRODUCT_COLLECTION {
-  /**
-   * fetch data from the table: "program"
-   */
-  program: GET_ALLTYPE_PRODUCT_COLLECTION_program[];
-  /**
-   * fetch data from the table: "card"
-   */
-  card: GET_ALLTYPE_PRODUCT_COLLECTION_card[];
-  /**
-   * fetch data from the table: "activity_ticket"
-   */
-  activity_ticket: GET_ALLTYPE_PRODUCT_COLLECTION_activity_ticket[];
-  /**
-   * fetch data from the table: "program_package_plan"
-   */
-  program_package_plan: GET_ALLTYPE_PRODUCT_COLLECTION_program_package_plan[];
 }
 
 /* tslint:disable */

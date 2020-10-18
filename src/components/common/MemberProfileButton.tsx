@@ -2,7 +2,7 @@ import { Icon as LegacyIcon } from '@ant-design/compatible'
 import { LogoutOutlined, MenuOutlined } from '@ant-design/icons'
 import { Button, List, Popover } from 'antd'
 import React, { useContext } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { useAuth } from '../../contexts/AuthContext'
@@ -40,10 +40,6 @@ const BorderedItem = styled(List.Item)`
     margin-right: -12px;
   }
 `
-
-const messages = defineMessages({
-  memberPage: { id: 'common.label.memberPage', defaultMessage: '我的主頁' },
-})
 
 const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
