@@ -6,12 +6,11 @@ import AppContext from '../contexts/AppContext'
 import types from '../types'
 import {
   ProgramAdminProps,
+  ProgramApprovalProps,
   ProgramContentBodyType,
-  ProgramContentProps,
   ProgramPlanPeriodType,
   ProgramPreviewProps,
   ProgramRoleName,
-  ProgramApprovalProps,
 } from '../types/program'
 
 export const useProgramPreviewCollection = (memberId: string | null) => {
@@ -72,8 +71,8 @@ export const useProgramPreviewCollection = (memberId: string | null) => {
       variables: { memberId },
       fetchPolicy: 'no-cache',
       context: {
-        important: true
-      }
+        important: true,
+      },
     },
   )
 
@@ -350,82 +349,6 @@ export const useProgramContentBody = (programContentId: string) => {
     errorProgramContentBody: error,
     programContentBody,
     refetchProgramContentBody: refetch,
-  }
-}
-
-export const useProgramContent = (programContentId: string) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_PROGRAM_CONTENT, types.GET_PROGRAM_CONTENTVariables>(
-    gql`
-      query GET_PROGRAM_CONTENT($programContentId: uuid!) {
-        program_content_by_pk(id: $programContentId) {
-          id
-          title
-          abstract
-          created_at
-          list_price
-          sale_price
-          sold_at
-          metadata
-          duration
-          published_at
-          is_notify_update
-          notified_at
-          program_content_plans {
-            id
-            program_plan {
-              id
-              title
-            }
-          }
-          program_content_body {
-            id
-            description
-            data
-            type
-          }
-          program_content_progress {
-            id
-            progress
-          }
-        }
-      }
-    `,
-    { variables: { programContentId } },
-  )
-
-  const programContent:
-    | (ProgramContentProps & {
-        programContentBody: {
-          id: string
-          type: string | null
-          description: string | null
-          data: any
-        }
-      })
-    | null =
-    loading || error || !data || !data.program_content_by_pk
-      ? null
-      : {
-          id: data.program_content_by_pk.id,
-          title: data.program_content_by_pk.title,
-          publishedAt: data.program_content_by_pk.published_at && new Date(data.program_content_by_pk.published_at),
-          listPrice: data.program_content_by_pk.list_price,
-          duration: data.program_content_by_pk.duration,
-          programContentType: data.program_content_by_pk.program_content_body.type,
-          isNotifyUpdate: data.program_content_by_pk.is_notify_update,
-          notifiedAt: data.program_content_by_pk.notified_at && new Date(data.program_content_by_pk.notified_at),
-          programContentBody: {
-            id: data.program_content_by_pk.program_content_body.id,
-            type: data.program_content_by_pk.program_content_body.type,
-            description: data.program_content_by_pk.program_content_body.description,
-            data: data.program_content_by_pk.program_content_body.data,
-          },
-        }
-
-  return {
-    loadingProgramContent: loading,
-    programContent,
-    refetchProgramContent: refetch,
   }
 }
 

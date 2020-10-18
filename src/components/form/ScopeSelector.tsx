@@ -50,7 +50,7 @@ const StyledColumns = styled.div`
   columns: 2;
 `
 
-export type ScopeProps = {
+type ScopeProps = {
   productTypes: ProductType[] | null
   productIds: string[]
 }

@@ -10,7 +10,7 @@ export type ActivityBriefProps = {
   endedAt?: Date | null
 }
 
-export type ActivityProps = ActivityBriefProps & {
+type ActivityProps = ActivityBriefProps & {
   description: string | null
   isParticipantsVisible: boolean
   organizerId: string
