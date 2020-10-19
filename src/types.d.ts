@@ -7476,6 +7476,7 @@ export interface GET_MERCHANDISE_SPEC_COLLECTIONVariables {
   merchandiseSearchLike?: string | null;
   isCustomized?: boolean | null;
   isLimited?: boolean | null;
+  merchandiseId?: any | null;
 }
 
 /* tslint:disable */

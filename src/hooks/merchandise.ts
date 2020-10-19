@@ -316,6 +316,7 @@ export const useMerchandiseSpecCollection = (
   merchandiseSearchLike: string | null,
   isLimited?: boolean,
   isCustomized?: boolean,
+  merchandiseId?: string,
 ) => {
   const { loading, error, data, refetch } = useQuery<types.GET_MERCHANDISE_SPEC_COLLECTION>(
     gql`
@@ -323,6 +324,7 @@ export const useMerchandiseSpecCollection = (
         $merchandiseSearchLike: String
         $isCustomized: Boolean
         $isLimited: Boolean
+        $merchandiseId: uuid
       ) {
         merchandise_spec(
           where: {
@@ -331,6 +333,7 @@ export const useMerchandiseSpecCollection = (
               is_customized: { _eq: $isCustomized }
               is_deleted: { _eq: false }
               title: { _like: $merchandiseSearchLike }
+              id: { _eq: $merchandiseId }
             }
           }
         ) {
@@ -360,6 +363,7 @@ export const useMerchandiseSpecCollection = (
         merchandiseSearchLike,
         isLimited,
         isCustomized,
+        merchandiseId,
       },
     },
   )
