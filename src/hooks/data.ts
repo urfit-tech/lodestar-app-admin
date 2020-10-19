@@ -364,7 +364,7 @@ export const useOrderPhysicalProductLog = () => {
     gql`
       query GET_PHYSICAL_PRODUCT_ORDER_LOG {
         order_log(
-          where: { status: { _eq: "SUCCESS" }, shipping: { _has_key: "address" } }
+          where: { status: { _eq: "SUCCESS" }}
           order_by: [{ updated_at: desc_nulls_last }, { created_at: desc }]
         ) {
           id
@@ -406,7 +406,7 @@ export const useOrderPhysicalProductLog = () => {
     updatedAt: Date
     deliveredAt: Date
     deliverMessage: string | null
-    shipping: ShippingProps
+    shipping: ShippingProps | null
     invoice: InvoiceProps
     orderPhysicalProducts: {
       key: string
@@ -422,7 +422,7 @@ export const useOrderPhysicalProductLog = () => {
     error || loading || !data
       ? []
       : data.order_log
-          .filter(orderLog => orderLog.order_products.length && orderLog.shipping.address)
+          .filter(orderLog => orderLog.order_products.length && orderLog.shipping?.address)
           .map(orderLog => ({
             id: orderLog.id,
             member: orderLog.member.name,

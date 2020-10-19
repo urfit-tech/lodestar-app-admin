@@ -25,7 +25,7 @@ const ShippingAdminPage: React.FC = () => {
   const { loading, orderPhysicalProductLogs, refetch } = useOrderPhysicalProductLog()
   const [searchText, setSearchText] = useState('')
   const [selectedShopId, setSelectedShopId] = useState<string>('')
-  const [tapActiveKey, setTapActiveKey] = useState<string>('shipping')
+  const [activeKey, setActiveKey] = useState<string>('shipping')
   const [isCreatedAtDesc, setIsCreatedAtDesc] = useState<boolean>(false)
 
   const filteredProductLogs = orderPhysicalProductLogs
@@ -62,11 +62,11 @@ const ShippingAdminPage: React.FC = () => {
         formatMessage(commonMessages.label.orderLogMemberName),
         formatMessage(commonMessages.label.orderProductName),
         formatMessage(merchandiseMessages.label.quantity),
-        formatMessage(merchandiseMessages.ui.shippingMethod),
+        formatMessage(merchandiseMessages.label.shippingMethod),
         formatMessage(messages.shippingStoreName),
-        formatMessage(merchandiseMessages.ui.shippingName),
-        formatMessage(merchandiseMessages.ui.shippingPhone),
-        formatMessage(merchandiseMessages.ui.shippingAddress),
+        formatMessage(merchandiseMessages.label.shippingName),
+        formatMessage(merchandiseMessages.label.shippingPhone),
+        formatMessage(merchandiseMessages.label.shippingAddress),
         formatMessage(messages.shippingSpecification),
         formatMessage(commonMessages.label.invoiceName),
         formatMessage(commonMessages.label.invoiceEmail),
@@ -83,7 +83,7 @@ const ShippingAdminPage: React.FC = () => {
     ]
 
     tabContents
-      .filter(tabContent => tabContent.key === tapActiveKey)[0]
+      .filter(tabContent => tabContent.key === activeKey)[0]
       .orderPhysicalProductLogs.forEach(({ id, member, orderPhysicalProducts, invoice, shipping }) => {
         orderPhysicalProducts.forEach(orderPhysicalProduct => {
           data.push([
@@ -91,12 +91,12 @@ const ShippingAdminPage: React.FC = () => {
             member,
             orderPhysicalProduct.name,
             `${orderPhysicalProduct.quantity}`,
-            shipping.shippingMethod,
-            shipping.storeName || '',
-            shipping.name,
-            shipping.phone,
-            shipping.address,
-            shipping.specification,
+            shipping?.shippingMethod || '',
+            shipping?.storeName || '',
+            shipping?.name || '',
+            shipping?.phone || '',
+            shipping?.address || '',
+            shipping?.specification || '',
             invoice.name,
             invoice.email,
             invoice.phone,
@@ -111,7 +111,7 @@ const ShippingAdminPage: React.FC = () => {
           ])
         })
       })
-    downloadCSV(`${tapActiveKey}_.csv`, toCSV(data))
+    downloadCSV(`${activeKey}_.csv`, toCSV(data))
   }
   return (
     <AdminLayout>
@@ -120,13 +120,13 @@ const ShippingAdminPage: React.FC = () => {
         <span>{formatMessage(commonMessages.menu.shipping)}</span>
       </AdminPageTitle>
 
-      <div className="row mx-0 justify-content-between mb-4">
-        <div className="row mx-0 px-0 col-12 col-md-8 mb-2 mb-md-0">
+      <div className="d-flex flex-wrap justify-content-between mb-4">
+        <div className="d-flex flex-wrap px-0 col-12 col-md-8 mb-2 mb-md-0">
           <div className="col-12 col-sm-4 mb-2 mb-sm-0 px-0 pr-sm-3">
             <MemberShopSelector
               value={selectedShopId}
               allText={formatMessage(messages.allShop)}
-              onChange={shopId => setSelectedShopId(`${shopId}`)}
+              onChange={shopId => setSelectedShopId(shopId)}
             />
           </div>
           <div className="col-12 col-sm-8 px-0">
@@ -141,16 +141,16 @@ const ShippingAdminPage: React.FC = () => {
           {formatMessage(messages.exportShippingList)}
         </Button>
       </div>
-      <div className="row mx-0 justify-content-between mb-4">
-        <div></div>
+      <div className="d-flex flex-row-reverse mb-4">
         <div className="cursor-pointer" onClick={() => setIsCreatedAtDesc(!isCreatedAtDesc)}>
-          {formatMessage(messages.orderLogsTimeSort) + ' '}
+          {formatMessage(messages.orderLogsTimeSort)}
+          <span className="mr-2"></span>
           {isCreatedAtDesc ? <CaretDownOutlined /> : <CaretUpOutlined />}
         </div>
       </div>
       <Tabs
-        onChange={activeKey => {
-          setTapActiveKey(activeKey)
+        onChange={tapActiveKey => {
+          setActiveKey(tapActiveKey)
         }}
       >
         {tabContents.map(tabContent => (

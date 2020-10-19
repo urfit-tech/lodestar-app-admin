@@ -52,7 +52,7 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
     updatedAt: Date
     deliveredAt: Date
     deliverMessage: string | null
-    shipping: ShippingProps
+    shipping: ShippingProps | null
     invoice: InvoiceProps
     orderPhysicalProducts: {
       key: string
@@ -85,8 +85,8 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
                   </StyledDate>
                 )}
 
-                {orderLog?.shipping?.specification ? (
-                  <StyledSpecification className="mb-2">{orderLog.shipping.specification}</StyledSpecification>
+                {orderLog.shipping?.specification ? (
+                  <StyledSpecification className="mb-2">{orderLog.shipping?.specification}</StyledSpecification>
                 ) : null}
               </div>
 
@@ -131,9 +131,6 @@ const StyledQuantity = styled.div`
   line-height: 1.71;
   letter-spacing: 0.4px;
 `
-const StyledProductItem = styled.div<{ isPhysicalCustomized: boolean | undefined }>`
-  align-items: ${props => (props.isPhysicalCustomized ? 'flex-start' : 'center')} !important;
-`
 const StyledButtonWrapper = styled.div`
   position: absolute;
   top: 20px;
@@ -169,7 +166,9 @@ const ShippingProductItem: React.FC<{
     <div>
       <Divider />
 
-      <StyledProductItem className="d-flex" isPhysicalCustomized={!target?.isPhysical && target?.isCustomized}>
+      <div
+        className={'d-flex ' + (!target.isPhysical && target.isCustomized ? 'align-items-start' : 'align-items-center')}
+      >
         <CustomRatioImage
           width="64px"
           ratio={1}
@@ -177,9 +176,9 @@ const ShippingProductItem: React.FC<{
           shape="rounded"
           className="mr-3 flex-shrink-0"
         />
-        <div className="flex-grow-1">
-          {target.title}
-          {!target?.isPhysical && target?.isCustomized && (
+        {!target.isPhysical && target.isCustomized ? (
+          <div className="flex-grow-1">
+            {target.title}
             <div className="d-flex">
               <div className="mt-3">
                 <span>{formatMessage(messages.deliver)}</span>：
@@ -202,9 +201,11 @@ const ShippingProductItem: React.FC<{
                         order_product_id: orderProductId,
                         data: v,
                       })),
-                    }).then(() => {
-                      message.success(formatMessage(commonMessages.event.successfullyUpload))
                     })
+                      .then(() => {
+                        message.success(formatMessage(commonMessages.event.successfullyUpload))
+                      })
+                      .catch(handleError)
                   }}
                   onDelete={value => {
                     value &&
@@ -221,12 +222,14 @@ const ShippingProductItem: React.FC<{
               </div>
               <StyledSpace />
             </div>
-          )}
-        </div>
-        {!(!target?.isPhysical && target?.isCustomized) && (
-          <StyledQuantity className="px-4">x{quantity}</StyledQuantity>
+          </div>
+        ) : (
+          <>
+            <div className="flex-grow-1">{target.title}</div>
+            <StyledQuantity className="px-4">x{quantity}</StyledQuantity>
+          </>
         )}
-      </StyledProductItem>
+      </div>
     </div>
   )
 }
