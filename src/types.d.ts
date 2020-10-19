@@ -3098,6 +3098,36 @@ export interface UPDATE_PODCAST_PROGRAM_ROLEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_COVER
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_COVER_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_COVER {
+  /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: UPDATE_PODCAST_PROGRAM_COVER_update_podcast_program | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_COVERVariables {
+  podcastProgramId: any;
+  coverUrl: string;
+  updatedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_INTRO
 // ====================================================
 
@@ -3118,7 +3148,6 @@ export interface UPDATE_PODCAST_PROGRAM_INTRO {
 
 export interface UPDATE_PODCAST_PROGRAM_INTROVariables {
   podcastProgramId: any;
-  coverUrl?: string | null;
   abstract?: string | null;
   updatedAt: any;
 }

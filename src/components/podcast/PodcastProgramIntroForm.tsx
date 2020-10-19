@@ -22,6 +22,11 @@ const PodcastProgramIntroForm: React.FC<{
   const { id: appId } = useContext(AppContext)
   const [loading, setLoading] = useState(false)
 
+  const [updatePodcastProgramCover] = useMutation<
+    types.UPDATE_PODCAST_PROGRAM_COVER,
+    types.UPDATE_PODCAST_PROGRAM_COVERVariables
+  >(UPDATE_PODCAST_PROGRAM_COVER)
+
   const [updatePodcastProgramIntro] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_INTRO,
     types.UPDATE_PODCAST_PROGRAM_INTROVariables
@@ -33,7 +38,7 @@ const PodcastProgramIntroForm: React.FC<{
 
   const handleUpload = () => {
     setLoading(true)
-    updatePodcastProgramIntro({
+    updatePodcastProgramCover({
       variables: {
         updatedAt: new Date(),
         podcastProgramId: podcastProgramAdmin.id,
@@ -118,17 +123,21 @@ const PodcastProgramIntroForm: React.FC<{
     </Form>
   )
 }
-
-const UPDATE_PODCAST_PROGRAM_INTRO = gql`
-  mutation UPDATE_PODCAST_PROGRAM_INTRO(
-    $podcastProgramId: uuid!
-    $coverUrl: String
-    $abstract: String
-    $updatedAt: timestamptz!
-  ) {
+const UPDATE_PODCAST_PROGRAM_COVER = gql`
+  mutation UPDATE_PODCAST_PROGRAM_COVER($podcastProgramId: uuid!, $coverUrl: String, $updatedAt: timestamptz!) {
     update_podcast_program(
       where: { id: { _eq: $podcastProgramId } }
-      _set: { cover_url: $coverUrl, abstract: $abstract, updated_at: $updatedAt }
+      _set: { cover_url: $coverUrl, updated_at: $updatedAt }
+    ) {
+      affected_rows
+    }
+  }
+`
+const UPDATE_PODCAST_PROGRAM_INTRO = gql`
+  mutation UPDATE_PODCAST_PROGRAM_INTRO($podcastProgramId: uuid!, $abstract: String, $updatedAt: timestamptz!) {
+    update_podcast_program(
+      where: { id: { _eq: $podcastProgramId } }
+      _set: { abstract: $abstract, updated_at: $updatedAt }
     ) {
       affected_rows
     }
