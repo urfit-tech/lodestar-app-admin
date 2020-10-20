@@ -28,7 +28,6 @@ const MerchandiseInventoryPage: React.FC<{}> = () => {
   const { loadingMerchandiseSpecs, merchandiseSpecs, refetchMerchandiseSpecs } = useMerchandiseSpecCollection({
     merchandiseSearch,
     isLimited: true,
-    isCustomized: false,
   })
 
   const tabContents = [

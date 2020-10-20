@@ -1,6 +1,6 @@
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Input } from 'antd'
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 
 const StyledInputGroup = styled(Input.Group)`
@@ -14,12 +14,13 @@ const StyledInputGroup = styled(Input.Group)`
 `
 
 const QuantityInput: React.FC<{
+  setInputValue: React.Dispatch<React.SetStateAction<string>>
   value?: number
   min?: number
   max?: number
   onChange?: (value: number | undefined) => void
-}> = ({ value = 0, min, max, onChange }) => {
-  const [inputValue, setInputValue] = useState(`${value}`)
+}> = ({ setInputValue, value = 0, min, max, onChange }) => {
+  // const [inputValue, setInputValue] = useState(`${value}`)
 
   return (
     <StyledInputGroup compact>
@@ -35,7 +36,7 @@ const QuantityInput: React.FC<{
         }}
       />
       <Input
-        value={inputValue}
+        value={value}
         onChange={e => setInputValue(e.target.value)}
         onBlur={e => {
           const newValue = Number.isSafeInteger(parseInt(e.target.value)) ? parseInt(e.target.value) : value

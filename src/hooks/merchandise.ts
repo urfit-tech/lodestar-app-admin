@@ -365,6 +365,7 @@ export const useMerchandiseSpecCollection = (options?: {
         isCustomized: options?.isCustomized,
         merchandiseId: options?.merchandiseId,
       },
+      fetchPolicy: 'no-cache',
     },
   )
   const merchandiseSpecs: {

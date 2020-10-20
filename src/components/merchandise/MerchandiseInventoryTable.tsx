@@ -57,11 +57,11 @@ const MerchandiseInventoryTable: React.FC<{
         </>
       ),
     },
-    {
-      dataIndex: 'comment',
-      title: formatMessage(merchandiseMessages.label.comment),
-      ellipsis: true,
-    },
+    // {
+    //   dataIndex: 'comment',
+    //   title: formatMessage(merchandiseMessages.label.comment),
+    //   ellipsis: true,
+    // },
     {
       dataIndex: 'quantity',
       title: formatMessage(merchandiseMessages.label.quantity),
@@ -75,11 +75,14 @@ const MerchandiseInventoryTable: React.FC<{
   ]
 
   return (
-    <Table<ProductInventoryLogProps>
-      columns={columns}
-      rowKey={inventoryLog => inventoryLog.id}
-      dataSource={inventoryLogs}
-    />
+    <>
+      <Table<ProductInventoryLogProps>
+        columns={columns}
+        rowKey={inventoryLog => inventoryLog.id}
+        dataSource={inventoryLogs}
+        // pagination={false}
+      />
+    </>
   )
 }
 

@@ -52,7 +52,6 @@ const MerchandiseAdminPage: React.FC = () => {
   const { loadingMerchandise, errorMerchandise, merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
   const { loadingMerchandiseSpecs, merchandiseSpecs, refetchMerchandiseSpecs } = useMerchandiseSpecCollection({
     isLimited: true,
-    isCustomized: false,
     merchandiseId,
   })
 
@@ -163,7 +162,7 @@ const MerchandiseAdminPage: React.FC = () => {
               </AdminBlock>
             </div>
           </Tabs.TabPane>
-          {merchandise.isPhysical && !merchandise.isCustomized && (
+          {merchandise.isLimited && (
             <Tabs.TabPane key="inventory" tab={formatMessage(messages.inventoryAdmin)}>
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(messages.inventoryAdmin)}</AdminPaneTitle>
