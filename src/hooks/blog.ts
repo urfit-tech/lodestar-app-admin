@@ -114,7 +114,6 @@ export const usePostCollection = () => {
         }
       }
     `,
-    { fetchPolicy: 'no-cache' },
   )
 
   const posts: {

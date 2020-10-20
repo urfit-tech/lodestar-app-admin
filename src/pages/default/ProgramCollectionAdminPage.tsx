@@ -113,26 +113,29 @@ const ProgramCollectionAdminPage: React.FC = () => {
 
       <div className="mb-5">
         <ProductCreationModal
-          classType="program"
+          categoryClassType="program"
           withCreatorSelector={currentUserRole === 'app-owner'}
           withProgramType
-          onCreate={values =>
+          onCreate={({ title, categoryIds, creatorId, isSubscription }) =>
             insertProgram({
               variables: {
                 ownerId: currentMemberId,
-                instructorId: values.creatorId || currentMemberId,
-                appId: appId,
-                title: values.title,
-                isSubscription: values.isSubscription || false,
-                programCategories: values.categoryIds.map((categoryId, index) => ({
-                  category_id: categoryId,
-                  position: index,
-                })),
+                instructorId: creatorId || currentMemberId,
+                appId,
+                title,
+                isSubscription: isSubscription || false,
+                programCategories:
+                  categoryIds?.map((categoryId, index) => ({
+                    category_id: categoryId,
+                    position: index,
+                  })) || [],
               },
             })
-              .then(res => {
-                const programId = res.data?.insert_program?.returning[0]?.id
-                programId && history.push(`/programs/${programId}`)
+              .then(({ data }) => {
+                refetchProgramPreviews().then(() => {
+                  const programId = data?.insert_program?.returning[0]?.id
+                  programId && history.push(`/programs/${programId}`)
+                })
               })
               .catch(handleError)
           }

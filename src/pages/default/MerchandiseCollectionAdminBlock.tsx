@@ -1,5 +1,7 @@
 import Icon, { FileAddOutlined } from '@ant-design/icons'
-import { Button, Input, Select, Tabs } from 'antd'
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Input, Tabs, Select } from 'antd'
+import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -9,9 +11,10 @@ import ProductCreationModal from '../../components/common/ProductCreationModal'
 import MerchandiseAdminItem from '../../components/merchandise/MerchandiseAdminItem'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { handleError } from '../../helpers'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
-import { useInsertMerchandise } from '../../hooks/merchandise'
 import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
+import types from '../../types'
 import { MerchandisePreviewProps } from '../../types/merchandise'
 import LoadingPage from './LoadingPage'
 
@@ -43,9 +46,11 @@ const MerchandiseCollectionAdminBlock: React.FC<{
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { currentMemberId } = useAuth()
-  const { id: appId, enabledModules } = useContext(AppContext)
+  const { loading, id: appId, enabledModules } = useContext(AppContext)
 
-  const insertMerchandise = useInsertMerchandise()
+  const [insertMerchandise] = useMutation<types.INSERT_MERCHANDISE, types.INSERT_MERCHANDISEVariables>(
+    INSERT_MERCHANDISE,
+  )
   const [searchText, setSearchText] = useState('')
   const [merchandiseClass, setMerchandiseClass] = useState<MerchandiseClass | ''>('')
 
@@ -66,11 +71,6 @@ const MerchandiseCollectionAdminBlock: React.FC<{
         merchandise => merchandise.publishedAt && merchandise.publishedAt.getTime() < Date.now(),
       ),
     },
-    // {
-    //   key: 'soldOut',
-    //   name: formatMessage(commonMessages.status.soldOut),
-    //   merchandises: [],
-    // },
     {
       key: 'unpublished',
       name: formatMessage(merchandiseMessages.status.unpublished),
@@ -80,7 +80,7 @@ const MerchandiseCollectionAdminBlock: React.FC<{
     },
   ]
 
-  if (!currentMemberId || !appId) {
+  if (!currentMemberId || loading) {
     return <LoadingPage />
   }
 
@@ -95,32 +95,36 @@ const MerchandiseCollectionAdminBlock: React.FC<{
         <div className="row">
           <div className="col-4">
             <ProductCreationModal
-              withCategorySelector
-              withMerchandiseType
-              classType="merchandise"
               renderTrigger={({ setVisible }) => (
                 <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
                   {formatMessage(merchandiseMessages.ui.createMerchandise)}
                 </Button>
               )}
               title={formatMessage(merchandiseMessages.ui.createMerchandise)}
-              onCreate={({ title, categoryIds, isPhysical }) =>
+              categoryClassType="merchandise"
+              withMerchandiseType
+              onCreate={({ title, categoryIds, isPhysical, isCustomized }) =>
                 insertMerchandise({
                   variables: {
                     appId,
                     memberId: currentMemberId,
                     memberShopId: shopId,
                     title,
-                    merchandiseCategories: categoryIds.map((categoryId, index) => ({
-                      category_id: categoryId,
-                      position: index,
-                    })),
+                    merchandiseCategories:
+                      categoryIds?.map((categoryId, index) => ({
+                        category_id: categoryId,
+                        position: index,
+                      })) || [],
                     isPhysical,
+                    isCustomized,
+                    isLimited: isPhysical && !isCustomized,
                   },
-                }).then(({ data }) => {
-                  const merchandiseId = data?.insert_merchandise_one?.id
-                  merchandiseId && history.push(`/merchandises/${merchandiseId}`)
                 })
+                  .then(({ data }) => {
+                    const merchandiseId = data?.insert_merchandise_one?.id
+                    merchandiseId && history.push(`/merchandises/${merchandiseId}`)
+                  })
+                  .catch(handleError)
               }
             />
           </div>
@@ -158,7 +162,7 @@ const MerchandiseCollectionAdminBlock: React.FC<{
         </div>
       </div>
 
-      <Tabs>
+      <Tabs defaultActiveKey="selling">
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={`${tabContent.name} (${tabContent.merchandises.length})`}>
             <div className="d-flex align-items-center justify-content-between p-3">
@@ -191,5 +195,33 @@ const MerchandiseCollectionAdminBlock: React.FC<{
     </>
   )
 }
+
+const INSERT_MERCHANDISE = gql`
+  mutation INSERT_MERCHANDISE(
+    $appId: String!
+    $memberId: String!
+    $memberShopId: uuid!
+    $title: String!
+    $merchandiseCategories: [merchandise_category_insert_input!]!
+    $isPhysical: Boolean
+    $isCustomized: Boolean
+    $isLimited: Boolean
+  ) {
+    insert_merchandise_one(
+      object: {
+        app_id: $appId
+        title: $title
+        member_id: $memberId
+        member_shop_id: $memberShopId
+        merchandise_categories: { data: $merchandiseCategories }
+        is_physical: $isPhysical
+        is_customized: $isCustomized
+        is_limited: $isLimited
+      }
+    ) {
+      id
+    }
+  }
+`
 
 export default MerchandiseCollectionAdminBlock

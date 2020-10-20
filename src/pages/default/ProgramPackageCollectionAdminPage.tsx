@@ -10,6 +10,7 @@ import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ProgramPackageAdminCard from '../../components/programPackage/ProgramPackageAdminCard'
 import AppContext from '../../contexts/AppContext'
+import { handleError } from '../../helpers'
 import { commonMessages, programPackageMessages } from '../../helpers/translation'
 import { useGetProgramPackageCollection } from '../../hooks/programPackage'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
@@ -19,7 +20,7 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { id: appId } = useContext(AppContext)
-  const { programPackages } = useGetProgramPackageCollection(appId)
+  const { programPackages, refetch } = useGetProgramPackageCollection(appId)
   const [createProgramPackage] = useMutation<types.INSERT_PROGRAM_PACKAGE, types.INSERT_PROGRAM_PACKAGEVariables>(
     INSERT_PROGRAM_PACKAGE,
   )
@@ -47,7 +48,7 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
 
       <div className="mb-5">
         <ProductCreationModal
-          classType="programPackage"
+          categoryClassType="programPackage"
           renderTrigger={({ setVisible }) => (
             <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
               {formatMessage(programPackageMessages.ui.createProgramPackage)}
@@ -59,10 +60,14 @@ const ProgramPackageCollectionAdminPage: React.FC = () => {
                 appId,
                 title,
               },
-            }).then(({ data }) => {
-              const programPackageId = data?.insert_program_package?.returning[0].id
-              programPackageId && history.push(`/program-packages/${programPackageId}`)
             })
+              .then(({ data }) => {
+                refetch().then(() => {
+                  const programPackageId = data?.insert_program_package?.returning[0].id
+                  programPackageId && history.push(`/program-packages/${programPackageId}`)
+                })
+              })
+              .catch(handleError)
           }
         />
       </div>

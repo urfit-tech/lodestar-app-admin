@@ -1,5 +1,3 @@
-import { UploadFile } from 'antd/lib/upload/interface'
-
 export type MerchandisePreviewProps = {
   id: string
   coverUrl: string | null
@@ -26,19 +24,28 @@ export type MerchandiseProps = {
     url: string
     isCover: boolean
   }[]
-  files: UploadFile[]
   abstract: string | null
-  meta: string | null
   link: string | null
   description: string | null
-  listPrice: number
-  salePrice: number | null
   soldAt: Date | null
   startedAt: Date | null
   endedAt: Date | null
   publishedAt: Date | null
   memberShopId: string | null
   isPhysical: boolean
+  isCustomized: boolean
+  isLimited: boolean
+  isCountdownTimerVisible: boolean
+  specs: MerchandiseSpecProps[]
+}
+
+export type MerchandiseSpecProps = {
+  id: string
+  title: string
+  listPrice: number
+  salePrice: number | null
+  quota: number
+  files: { id: string; data: any }[]
 }
 
 export type MemberShopPreviewProps = {

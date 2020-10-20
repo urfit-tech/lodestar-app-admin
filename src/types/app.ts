@@ -15,6 +15,7 @@ export type Module =
   | 'member_property'
   | 'member_task'
   | 'merchandise'
+  | 'merchandise_customization'
   | 'permission'
   | 'podcast'
   | 'podcast_recording'

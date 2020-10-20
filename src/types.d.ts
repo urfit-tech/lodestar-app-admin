@@ -2576,43 +2576,16 @@ export interface UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise {
   affected_rows: number;
 }
 
-export interface UPDATE_MERCHANDISE_INTRODUCTION_delete_merchandise_file {
-  __typename: "merchandise_file_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MERCHANDISE_INTRODUCTION_insert_merchandise_file {
-  __typename: "merchandise_file_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
 export interface UPDATE_MERCHANDISE_INTRODUCTION {
   /**
    * update data of the table: "merchandise"
    */
   update_merchandise: UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise | null;
-  /**
-   * delete data from the table: "merchandise_file"
-   */
-  delete_merchandise_file: UPDATE_MERCHANDISE_INTRODUCTION_delete_merchandise_file | null;
-  /**
-   * insert data into the table: "merchandise_file"
-   */
-  insert_merchandise_file: UPDATE_MERCHANDISE_INTRODUCTION_insert_merchandise_file | null;
 }
 
 export interface UPDATE_MERCHANDISE_INTRODUCTIONVariables {
   merchandiseId: any;
   abstract?: string | null;
-  meta?: string | null;
-  memberShopId?: any | null;
-  merchandiseFiles: merchandise_file_insert_input[];
 }
 
 /* tslint:disable */
@@ -2670,11 +2643,69 @@ export interface UPDATE_MERCHANDISE_SALES {
 
 export interface UPDATE_MERCHANDISE_SALESVariables {
   merchandiseId: any;
-  listPrice?: any | null;
-  salePrice?: any | null;
   soldAt?: any | null;
   startedAt?: any | null;
   endedAt?: any | null;
+  isCountdownTimerVisible?: boolean | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_MERCHANDISE_SPEC_COLLECTION
+// ====================================================
+
+export interface INSERT_MERCHANDISE_SPEC_COLLECTION_delete_merchandise_spec_file {
+  __typename: "merchandise_spec_file_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_MERCHANDISE_SPEC_COLLECTION_insert_merchandise_spec_returning {
+  __typename: "merchandise_spec";
+  id: any;
+}
+
+export interface INSERT_MERCHANDISE_SPEC_COLLECTION_insert_merchandise_spec {
+  __typename: "merchandise_spec_mutation_response";
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_MERCHANDISE_SPEC_COLLECTION_insert_merchandise_spec_returning[];
+}
+
+export interface INSERT_MERCHANDISE_SPEC_COLLECTION_update_merchandise_spec {
+  __typename: "merchandise_spec_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_MERCHANDISE_SPEC_COLLECTION {
+  /**
+   * delete data from the table: "merchandise_spec_file"
+   */
+  delete_merchandise_spec_file: INSERT_MERCHANDISE_SPEC_COLLECTION_delete_merchandise_spec_file | null;
+  /**
+   * insert data into the table: "merchandise_spec"
+   */
+  insert_merchandise_spec: INSERT_MERCHANDISE_SPEC_COLLECTION_insert_merchandise_spec | null;
+  /**
+   * update data of the table: "merchandise_spec"
+   */
+  update_merchandise_spec: INSERT_MERCHANDISE_SPEC_COLLECTION_update_merchandise_spec | null;
+}
+
+export interface INSERT_MERCHANDISE_SPEC_COLLECTIONVariables {
+  merchandiseId: any;
+  data: merchandise_spec_insert_input[];
+  archivedMerchandiseSpecIds: any[];
 }
 
 /* tslint:disable */
@@ -6031,23 +6062,20 @@ export interface GET_PRODUCT_INVENTORYVariables {
 // GraphQL mutation operation: ARRANGE_PRODUCT_INVENTORY
 // ====================================================
 
-export interface ARRANGE_PRODUCT_INVENTORY_insert_product_inventory {
-  __typename: "product_inventory_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
+export interface ARRANGE_PRODUCT_INVENTORY_insert_product_inventory_one {
+  __typename: "product_inventory";
+  id: any;
 }
 
 export interface ARRANGE_PRODUCT_INVENTORY {
   /**
-   * insert data into the table: "product_inventory"
+   * insert a single row into the table: "product_inventory"
    */
-  insert_product_inventory: ARRANGE_PRODUCT_INVENTORY_insert_product_inventory | null;
+  insert_product_inventory_one: ARRANGE_PRODUCT_INVENTORY_insert_product_inventory_one | null;
 }
 
 export interface ARRANGE_PRODUCT_INVENTORYVariables {
-  data: product_inventory_insert_input[];
+  data: product_inventory_insert_input;
 }
 
 /* tslint:disable */
@@ -7096,36 +7124,6 @@ export interface GET_PROPERTYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: INSERT_MERCHANDISE
-// ====================================================
-
-export interface INSERT_MERCHANDISE_insert_merchandise_one {
-  __typename: "merchandise";
-  id: any;
-}
-
-export interface INSERT_MERCHANDISE {
-  /**
-   * insert a single row into the table: "merchandise"
-   */
-  insert_merchandise_one: INSERT_MERCHANDISE_insert_merchandise_one | null;
-}
-
-export interface INSERT_MERCHANDISEVariables {
-  appId: string;
-  memberId: string;
-  memberShopId: any;
-  title: string;
-  merchandiseCategories: merchandise_category_insert_input[];
-  isPhysical?: boolean | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_MERCHANDISE_COLLECTION
 // ====================================================
 
@@ -7202,12 +7200,6 @@ export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_imgs {
   url: string;
 }
 
-export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_files {
-  __typename: "merchandise_file";
-  id: any;
-  data: any;
-}
-
 export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_inventory_status {
   __typename: "merchandise_inventory_status";
   buyable_quantity: any | null;
@@ -7215,15 +7207,31 @@ export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_inventory_status 
   delivered_quantity: any | null;
 }
 
+export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_specs_merchandise_spec_files {
+  __typename: "merchandise_spec_file";
+  id: any;
+  data: any | null;
+}
+
+export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_specs {
+  __typename: "merchandise_spec";
+  id: any;
+  title: string;
+  list_price: any;
+  sale_price: any | null;
+  quota: number;
+  /**
+   * An array relationship
+   */
+  merchandise_spec_files: GET_MERCHANDISE_merchandise_by_pk_merchandise_specs_merchandise_spec_files[];
+}
+
 export interface GET_MERCHANDISE_merchandise_by_pk {
   __typename: "merchandise";
   id: any;
   title: string;
-  meta: string | null;
   abstract: string | null;
   description: string | null;
-  list_price: any;
-  sale_price: any | null;
   sold_at: any | null;
   started_at: any | null;
   ended_at: any | null;
@@ -7231,6 +7239,9 @@ export interface GET_MERCHANDISE_merchandise_by_pk {
   published_at: any | null;
   member_shop_id: any | null;
   is_physical: boolean;
+  is_customized: boolean;
+  is_limited: boolean;
+  is_countdown_timer_visible: boolean;
   /**
    * An array relationship
    */
@@ -7244,13 +7255,13 @@ export interface GET_MERCHANDISE_merchandise_by_pk {
    */
   merchandise_imgs: GET_MERCHANDISE_merchandise_by_pk_merchandise_imgs[];
   /**
-   * An array relationship
-   */
-  merchandise_files: GET_MERCHANDISE_merchandise_by_pk_merchandise_files[];
-  /**
    * An object relationship
    */
   merchandise_inventory_status: GET_MERCHANDISE_merchandise_by_pk_merchandise_inventory_status | null;
+  /**
+   * An array relationship
+   */
+  merchandise_specs: GET_MERCHANDISE_merchandise_by_pk_merchandise_specs[];
 }
 
 export interface GET_MERCHANDISE {
@@ -7397,6 +7408,75 @@ export interface GET_MEMBER_SHOP {
 
 export interface GET_MEMBER_SHOPVariables {
   shopId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MERCHANDISE_SPEC_COLLECTION
+// ====================================================
+
+export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_merchandise_imgs {
+  __typename: "merchandise_img";
+  url: string;
+}
+
+export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_member_shop {
+  __typename: "member_shop";
+  id: any;
+  title: string;
+}
+
+export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise {
+  __typename: "merchandise";
+  title: string;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  merchandise_imgs: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_merchandise_imgs[];
+  /**
+   * An object relationship
+   */
+  member_shop: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_member_shop | null;
+}
+
+export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_spec_inventory_status {
+  __typename: "merchandise_spec_inventory_status";
+  buyable_quantity: any | null;
+  delivered_quantity: any | null;
+  undelivered_quantity: any | null;
+}
+
+export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec {
+  __typename: "merchandise_spec";
+  id: any;
+  /**
+   * An object relationship
+   */
+  merchandise: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise;
+  title: string;
+  /**
+   * An object relationship
+   */
+  merchandise_spec_inventory_status: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_spec_inventory_status | null;
+}
+
+export interface GET_MERCHANDISE_SPEC_COLLECTION {
+  /**
+   * fetch data from the table: "merchandise_spec"
+   */
+  merchandise_spec: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec[];
+}
+
+export interface GET_MERCHANDISE_SPEC_COLLECTIONVariables {
+  merchandiseSearchLike?: string | null;
+  isCustomized?: boolean | null;
+  isLimited?: boolean | null;
+  merchandiseId?: any | null;
 }
 
 /* tslint:disable */
@@ -9094,6 +9174,38 @@ export interface INSERT_POSTVariables {
   title: string;
   postCategories: post_category_insert_input[];
   postRoles: post_role_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_MERCHANDISE
+// ====================================================
+
+export interface INSERT_MERCHANDISE_insert_merchandise_one {
+  __typename: "merchandise";
+  id: any;
+}
+
+export interface INSERT_MERCHANDISE {
+  /**
+   * insert a single row into the table: "merchandise"
+   */
+  insert_merchandise_one: INSERT_MERCHANDISE_insert_merchandise_one | null;
+}
+
+export interface INSERT_MERCHANDISEVariables {
+  appId: string;
+  memberId: string;
+  memberShopId: any;
+  title: string;
+  merchandiseCategories: merchandise_category_insert_input[];
+  isPhysical?: boolean | null;
+  isCustomized?: boolean | null;
+  isLimited?: boolean | null;
 }
 
 /* tslint:disable */

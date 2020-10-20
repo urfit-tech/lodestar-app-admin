@@ -1,11 +1,11 @@
 import { FileAddOutlined } from '@ant-design/icons'
 import { Button, Form, Input, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages, programMessages } from '../../helpers/translation'
 import { ClassType } from '../../types/general'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
@@ -19,7 +19,6 @@ const StyledLabel = styled.span`
   letter-spacing: 0.2px;
   color: var(--gray-darker);
 `
-
 const StyledExample = styled.div`
   font-size: 14px;
   font-weight: 500;
@@ -29,31 +28,24 @@ const StyledExample = styled.div`
 
 const ProductCreationModal: React.FC<
   AdminModalProps & {
-    classType?: ClassType
+    categoryClassType?: ClassType
     withCreatorSelector?: boolean
-    withCategorySelector?: boolean
     withProgramType?: boolean
     withMerchandiseType?: boolean
     onCreate?: (values: {
       title: string
-      categoryIds: string[]
+      categoryIds?: string[]
       creatorId?: string | null
       isSubscription?: boolean
       isPhysical?: boolean
+      isCustomized?: boolean
     }) => Promise<any>
   }
-> = ({
-  classType,
-  withCreatorSelector,
-  withCategorySelector,
-  withProgramType,
-  withMerchandiseType,
-  onCreate,
-  ...props
-}) => {
+> = ({ categoryClassType, withCreatorSelector, withProgramType, withMerchandiseType, onCreate, ...props }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm()
   const { currentMemberId } = useAuth()
+  const { enabledModules } = useContext(AppContext)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
@@ -66,13 +58,12 @@ const ProductCreationModal: React.FC<
         setLoading(true)
         onCreate({
           title: values.title,
-          categoryIds: values.categoryIds || [],
+          categoryIds: categoryClassType ? values.categoryIds || [] : [],
           creatorId: values.creatorId || currentMemberId,
           isSubscription: withProgramType ? values.isSubscription : undefined,
-          isPhysical: withMerchandiseType && values.isPhysical,
-        })
-          .catch(handleError)
-          .finally(() => setLoading(false))
+          isPhysical: withMerchandiseType ? values.merchandiseType.includes('physical') : undefined,
+          isCustomized: withMerchandiseType ? values.merchandiseType.includes('customized') : undefined,
+        }).finally(() => setLoading(false))
       })
       .catch(() => {})
   }
@@ -100,7 +91,7 @@ const ProductCreationModal: React.FC<
         initialValues={{
           memberId: currentMemberId,
           isSubscription: false,
-          isPhysical: true,
+          merchandiseType: 'general-physical',
         }}
       >
         {withCreatorSelector && (
@@ -122,9 +113,9 @@ const ProductCreationModal: React.FC<
         >
           <Input />
         </Form.Item>
-        {withCategorySelector && classType && (
+        {categoryClassType && (
           <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
-            <CategorySelector classType={classType} />
+            <CategorySelector classType={categoryClassType} />
           </Form.Item>
         )}
         {withProgramType && (
@@ -138,20 +129,37 @@ const ProductCreationModal: React.FC<
           </Form.Item>
         )}
         {withMerchandiseType && (
-          <Form.Item label={formatMessage(merchandiseMessages.label.merchandiseType)} name="isPhysical">
+          <Form.Item label={formatMessage(merchandiseMessages.label.merchandiseType)} name="merchandiseType">
             <Radio.Group>
-              <Radio value={true}>
+              <Radio value="general-physical">
                 <StyledLabel>{formatMessage(merchandiseMessages.label.generalPhysicalMerchandise)}</StyledLabel>
               </Radio>
               <StyledExample className="ml-4 mb-4">
                 {formatMessage(merchandiseMessages.text.generalPhysicalMerchandise)}
               </StyledExample>
-              <Radio value={false}>
+              <Radio value="general-virtual">
                 <StyledLabel>{formatMessage(merchandiseMessages.label.generalVirtualMerchandise)}</StyledLabel>
               </Radio>
-              <StyledExample className="ml-4">
+              <StyledExample className="ml-4 mb-4">
                 {formatMessage(merchandiseMessages.text.generalVirtualMerchandise)}
               </StyledExample>
+
+              {enabledModules.merchandise_customization && (
+                <>
+                  <Radio value="customized-physical">
+                    <StyledLabel>{formatMessage(merchandiseMessages.label.customizedPhysicalMerchandise)}</StyledLabel>
+                  </Radio>
+                  <StyledExample className="ml-4 mb-4">
+                    {formatMessage(merchandiseMessages.text.customizedPhysicalMerchandise)}
+                  </StyledExample>
+                  <Radio value="customized-virtual">
+                    <StyledLabel>{formatMessage(merchandiseMessages.label.customizedVirtualMerchandise)}</StyledLabel>
+                  </Radio>
+                  <StyledExample className="ml-4">
+                    {formatMessage(merchandiseMessages.text.customizedVirtualMerchandise)}
+                  </StyledExample>
+                </>
+              )}
             </Radio.Group>
           </Form.Item>
         )}

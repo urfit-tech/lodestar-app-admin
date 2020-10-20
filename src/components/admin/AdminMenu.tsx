@@ -199,6 +199,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           }
         >
           <Menu.Item key="merchandise_shop_collection">{formatMessage(commonMessages.menu.merchandiseShop)}</Menu.Item>
+          <Menu.Item key="merchandise_inventory">{formatMessage(commonMessages.menu.merchandiseInventory)}</Menu.Item>
           <Menu.Item key="merchandise_category">{formatMessage(commonMessages.menu.merchandiseCategory)}</Menu.Item>
         </Menu.SubMenu>
       )}
