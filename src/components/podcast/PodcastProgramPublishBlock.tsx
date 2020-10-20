@@ -43,7 +43,7 @@ const PodcastProgramPublishBlock: React.FC<{
 
   const checklist: ChecklistItemProps[] = []
 
-  !podcastProgramAdmin.contentType &&
+  podcastProgramAdmin.audios.length === 0 &&
     checklist.push({
       id: 'NO_AUDIO',
       text: formatMessage(messages.noAudio),
