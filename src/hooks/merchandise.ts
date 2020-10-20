@@ -312,12 +312,12 @@ export const useMemberShop = (shopId: string) => {
   }
 }
 
-export const useMerchandiseSpecCollection = (
-  merchandiseSearch?: string,
-  isLimited?: boolean,
-  isCustomized?: boolean,
-  merchandiseId?: string,
-) => {
+export const useMerchandiseSpecCollection = (options?: {
+  merchandiseSearch?: string
+  isLimited?: boolean
+  isCustomized?: boolean
+  merchandiseId?: string
+}) => {
   const { loading, error, data, refetch } = useQuery<types.GET_MERCHANDISE_SPEC_COLLECTION>(
     gql`
       query GET_MERCHANDISE_SPEC_COLLECTION(
@@ -360,10 +360,10 @@ export const useMerchandiseSpecCollection = (
     `,
     {
       variables: {
-        merchandiseSearchLike: merchandiseSearch && `%${merchandiseSearch}%`,
-        isLimited,
-        isCustomized,
-        merchandiseId,
+        merchandiseSearchLike: options?.merchandiseSearch && `%${options.merchandiseSearch}%`,
+        isLimited: options?.isLimited,
+        isCustomized: options?.isCustomized,
+        merchandiseId: options?.merchandiseId,
       },
     },
   )

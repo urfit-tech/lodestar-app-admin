@@ -47,21 +47,16 @@ const StatusCardQuantity = styled.div`
   line-height: 24px;
   color: var(--gray-darker);
 `
-const MerchandiseInventoryAdminModal: React.FC<
-  MerchandiseInventoryCardProps &
-    ModalProps & {
-      setVisible: React.Dispatch<React.SetStateAction<boolean>>
-    }
-> = ({
+const MerchandiseInventoryAdminModal: React.FC<MerchandiseInventoryCardProps & ModalProps> = ({
   merchandiseSpecId,
   coverUrl,
   merchandiseTitle,
   merchandiseSpecTitle,
   merchandiseSpecInventoryStatus,
   merchandiseMemberShop,
-  visible,
-  setVisible,
+  onCancel,
   onRefetch,
+  ...props
 }) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
@@ -70,27 +65,27 @@ const MerchandiseInventoryAdminModal: React.FC<
   const arrangeProductInventory = useArrangeProductInventory(`MerchandiseSpec_${merchandiseSpecId}`)
   const { inventoryLogs, refetchInventoryLogs } = useProductInventoryLog(`MerchandiseSpec_${merchandiseSpecId}`)
 
-  const handleSubmit = (closeModal: () => void) => {
+  const handleSubmit = (closeModal?: () => void) => {
+    if (merchandiseSpecInventoryStatus.buyableQuantity + quantity < 0) {
+      return
+    }
     setLoading(true)
-    if (merchandiseSpecInventoryStatus.buyableQuantity + quantity < 0) setLoading(false)
     arrangeProductInventory({
       specification: merchandiseSpecTitle,
       quantity: quantity,
       comment: comment || null,
     })
       .then(() => {
-        onRefetch && onRefetch()
-        closeModal()
+        onRefetch?.()
+        closeModal?.()
+        refetchInventoryLogs?.()
       })
       .catch(handleError)
-      .finally(() => {
-        setLoading(false)
-        refetchInventoryLogs && refetchInventoryLogs()
-      })
+      .finally(() => setLoading(false))
   }
 
   return (
-    <Modal width="70vw" footer={null} visible={visible} onCancel={() => setVisible(false)}>
+    <Modal width="70vw" footer={null} onCancel={onCancel} {...props}>
       <div className="container py-2">
         <MerchandiseModalTitle>{formatMessage(merchandiseMessages.status.arrange)}</MerchandiseModalTitle>
         <div className="d-flex align-items-center my-sm-4">
@@ -144,14 +139,14 @@ const MerchandiseInventoryAdminModal: React.FC<
           <div className="d-flex align-items-end flex-sm-end">
             <Button
               className="mr-2"
-              onClick={() => {
-                setVisible(false)
+              onClick={e => {
+                onCancel?.(e)
                 setQuantity(0)
               }}
             >
               {formatMessage(commonMessages.ui.cancel)}
             </Button>
-            <Button loading={loading} type="primary" onClick={() => handleSubmit(() => setVisible(false))}>
+            <Button loading={loading} type="primary" onClick={e => handleSubmit(() => onCancel?.(e))}>
               {formatMessage(commonMessages.ui.save)}
             </Button>
           </div>

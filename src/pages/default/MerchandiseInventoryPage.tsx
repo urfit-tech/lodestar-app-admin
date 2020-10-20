@@ -25,11 +25,11 @@ const MerchandiseInventoryPage: React.FC<{}> = () => {
   const { memberShops } = useMemberShopCollection()
   const [selectedMemberShop, setSelectedMemberShop] = useState<string>('all')
   const [merchandiseSearch, setMerchandiseSearch] = useState<string | undefined>(undefined)
-  const { loadingMerchandiseSpecs, merchandiseSpecs, refetchMerchandiseSpecs } = useMerchandiseSpecCollection(
+  const { loadingMerchandiseSpecs, merchandiseSpecs, refetchMerchandiseSpecs } = useMerchandiseSpecCollection({
     merchandiseSearch,
-    true,
-    false,
-  )
+    isLimited: true,
+    isCustomized: false,
+  })
 
   const tabContents = [
     {

@@ -14,17 +14,6 @@ const messages = defineMessages({
 
 const StyledMerchandiseInventoryCard = styled(AdminCard)`
   position: relative;
-
-  .mask {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    cursor: pointer;
-    content: '';
-    z-index: 998;
-  }
 `
 export const MerchandiseCover = styled.div<{ src?: string | null }>`
   width: 56px;
@@ -116,7 +105,7 @@ const MerchandiseInventoryCard: React.FC<MerchandiseInventoryCardProps> = ({
         merchandiseSpecInventoryStatus={merchandiseSpecInventoryStatus}
         merchandiseMemberShop={merchandiseMemberShop}
         visible={visible}
-        setVisible={setVisible}
+        onCancel={() => setVisible(false)}
         onRefetch={onRefetch}
       />
     </>

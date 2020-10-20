@@ -50,12 +50,11 @@ const MerchandiseAdminPage: React.FC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { settings } = useContext(AppContext)
   const { loadingMerchandise, errorMerchandise, merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
-  const { loadingMerchandiseSpecs, merchandiseSpecs, refetchMerchandiseSpecs } = useMerchandiseSpecCollection(
-    undefined,
-    true,
-    false,
+  const { loadingMerchandiseSpecs, merchandiseSpecs, refetchMerchandiseSpecs } = useMerchandiseSpecCollection({
+    isLimited: true,
+    isCustomized: false,
     merchandiseId,
-  )
+  })
 
   if (loadingMerchandise || errorMerchandise || !merchandise) {
     return <Skeleton active />
