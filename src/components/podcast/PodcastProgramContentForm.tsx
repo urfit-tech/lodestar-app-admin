@@ -19,7 +19,7 @@ import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import { appendPodcastProgramAduio, deletePodcastProgramAduio } from '../../pages/default/RecordingPageHelpers'
 import types from '../../types'
-import { PodcastProgramAdminProps, PodcastProgramAudio } from '../../types/podcast'
+import { PodcastProgramAdminProps } from '../../types/podcast'
 import { StyledTips } from '../admin'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import SingleUploader from '../form/SingleUploader'
@@ -35,7 +35,7 @@ const StyledFileBlock = styled.div`
 `
 
 const PodcastProgramContentForm: React.FC<{
-  podcastProgramAdmin: (PodcastProgramAdminProps & { audios: PodcastProgramAudio[] }) | null
+  podcastProgramAdmin: PodcastProgramAdminProps | null
   onRefetch?: () => void
 }> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()

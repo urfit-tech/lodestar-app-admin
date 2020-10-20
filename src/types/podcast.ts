@@ -15,6 +15,7 @@ export type PodcastProgramAdminProps = {
   instructors: { id: string; name: string; pictureUrl: string }[]
   publishedAt: Date | null
   supportLocales: string[]
+  audios: PodcastProgramAudio[]
 }
 
 export type PodcastProgramAudio = {
