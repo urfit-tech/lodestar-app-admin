@@ -8,34 +8,39 @@ import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramAdminProps } from '../../types/program'
-import SaleInput from '../form/SaleInput'
+import SaleInput, { SaleProps } from '../form/SaleInput'
+
+type FieldProps = {
+  listPrice: number
+  sale: SaleProps
+}
 
 const ProgramPerpetualPlanAdminCard: React.FC<{
   program: ProgramAdminProps
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [updateProgram] = useMutation<
     types.UPDATE_PROGRAM_PERPETUAL_PLAN,
     types.UPDATE_PROGRAM_PERPETUAL_PLANVariables
   >(UPDATE_PROGRAM_PERPETUAL_PLAN)
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateProgram({
       variables: {
         programId: program.id,
         listPrice: values.listPrice || 0,
-        salePrice: values.sale?.price,
+        salePrice: values.sale ? values.sale.price : null,
         soldAt: values.sale?.soldAt || null,
         isCountdownTimerVisible: !!values.sale?.isTimerVisible,
       },
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
-        onRefetch && onRefetch()
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

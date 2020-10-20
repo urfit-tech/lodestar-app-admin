@@ -2,7 +2,7 @@ import { QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import BraftEditor from 'braft-editor'
+import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -16,12 +16,18 @@ import AdminBraftEditor from '../form/AdminBraftEditor'
 import ImageInput from '../form/ImageInput'
 import VideoInput from '../form/VideoInput'
 
+type FieldProps = {
+  coverVideoUrl: string
+  abstract: string
+  description: EditorState
+}
+
 const ProgramIntroForm: React.FC<{
   program: ProgramAdminProps | null
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { id: appId } = useContext(AppContext)
   const [updateProgramCover] = useMutation<types.UPDATE_PROGRAM_COVER, types.UPDATE_PROGRAM_COVERVariables>(
     UPDATE_PROGRAM_COVER,
@@ -45,28 +51,26 @@ const ProgramIntroForm: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateProgramIntro({
       variables: {
         programId: program.id,
         abstract: values.abstract,
-        description: values.description.toRAW(),
-        coverVideoUrl: values.video
-          ? `https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${program.id}_video`
-          : values.coverVideoUrl,
+        description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
+        coverVideoUrl: values.coverVideoUrl,
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

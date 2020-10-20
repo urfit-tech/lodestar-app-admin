@@ -11,6 +11,10 @@ import { commonMessages, programPackageMessages } from '../../helpers/translatio
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
 
+type FieldProps = {
+  programValues: string[]
+}
+
 const ProgramPackageProgramConnectionModal: React.FC<{
   programPackageId: string
   programs: {
@@ -21,7 +25,7 @@ const ProgramPackageProgramConnectionModal: React.FC<{
   onRefetch?: () => void
 }> = ({ programPackageId, programs, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { id: appId } = useContext(AppContext)
   const { availablePrograms } = useGetAvailableProgramCollection(appId)
   const [insertProgramPackageProgram] = useMutation<
@@ -34,8 +38,9 @@ const ProgramPackageProgramConnectionModal: React.FC<{
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     form
       .validateFields()
-      .then((values: any) => {
+      .then(() => {
         setLoading(true)
+        const values = form.getFieldsValue()
         const programsId = values.programValues.map((value: string) => value.split('_')[0])
         insertProgramPackageProgram({
           variables: {
@@ -50,11 +55,11 @@ const ProgramPackageProgramConnectionModal: React.FC<{
           },
         })
           .then(() => {
-            onRefetch && onRefetch()
-            setVisible(false)
             message.success(formatMessage(commonMessages.event.successfullySaved))
+            setVisible(false)
+            onRefetch?.()
           })
-          .catch(err => handleError(err))
+          .catch(handleError)
           .finally(() => setLoading(false))
       })
       .catch(() => {})

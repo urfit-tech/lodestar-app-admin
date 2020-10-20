@@ -1,12 +1,20 @@
 import { Button, Checkbox, DatePicker, Form, Input, InputNumber } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
 import { activityMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import { ActivitySessionProps } from '../../types/activity'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
+
+type FieldProps = {
+  title: string
+  startedAt: Moment
+  endedAt: Moment
+  location: string
+  threshold: number
+}
 
 const ActivitySessionAdminModal: React.FC<
   AdminModalProps & {
@@ -22,18 +30,19 @@ const ActivitySessionAdminModal: React.FC<
   }
 > = ({ activitySession, onSubmit, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
   const [withThreshold, setWithThreshold] = useState(typeof activitySession?.threshold === 'number')
 
   const handleSubmit = (onSuccess: () => void) => {
     form
       .validateFields()
-      .then((values: any) => {
+      .then(() => {
         if (!onSubmit) {
           return
         }
         setLoading(true)
+        const values = form.getFieldsValue()
         onSubmit({
           title: values.title,
           startedAt: values.startedAt.toDate(),
@@ -42,8 +51,8 @@ const ActivitySessionAdminModal: React.FC<
           threshold: withThreshold ? values.threshold : null,
         })
           .then(() => {
-            onRefetch && onRefetch()
             onSuccess()
+            onRefetch?.()
           })
           .catch(handleError)
           .finally(() => setLoading(false))

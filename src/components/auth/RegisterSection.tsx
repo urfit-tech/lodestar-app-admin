@@ -11,17 +11,23 @@ import { AuthState } from '../../types/general'
 import { AuthModalContext, StyledAction, StyledDivider, StyledTitle } from './AuthModal'
 import { FacebookLoginButton, GoogleLoginButton } from './SocialLoginButton'
 
+type FieldProps = {
+  username: string
+  email: string
+  password: string
+}
+
 const RegisterSection: React.FC<{
   onAuthStateChange: React.Dispatch<React.SetStateAction<AuthState>>
 }> = ({ onAuthStateChange }) => {
   const app = useContext(AppContext)
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { setVisible } = useContext(AuthModalContext)
   const { register } = useAuth()
   const [loading, setLoading] = useState(false)
 
-  const handleRegister = (values: any) => {
+  const handleRegister = (values: FieldProps) => {
     if (!register) {
       return
     }

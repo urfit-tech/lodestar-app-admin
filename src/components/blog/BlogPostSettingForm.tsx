@@ -14,12 +14,16 @@ import { StyledTips } from '../admin'
 import ImageInput from '../form/ImageInput'
 import MerchandiseSelector from '../form/MerchandiseSelector'
 
+type FieldProps = {
+  merchandiseIds: string[]
+}
+
 const BlogPostSettingForm: React.FC<{
   post: PostProps | null
   onRefetch?: () => void
 }> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { id: appId } = useContext(AppContext)
   const [updatePostCover] = useMutation<types.UPDATE_POST_COVER, types.UPDATE_POST_COVERVariables>(UPDATE_POST_COVER)
   const [updatePostMerchandises] = useMutation<
@@ -35,7 +39,6 @@ const BlogPostSettingForm: React.FC<{
   const handleUpload = () => {
     setLoading(true)
     const uploadTime = Date.now()
-
     updatePostCover({
       variables: {
         postId: post.id,
@@ -43,14 +46,14 @@ const BlogPostSettingForm: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updatePostMerchandises({
       variables: {
@@ -63,8 +66,8 @@ const BlogPostSettingForm: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

@@ -4,7 +4,7 @@ import { Button, DatePicker, Dropdown, Form, Input, Menu, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import TextArea from 'antd/lib/input/TextArea'
 import gql from 'graphql-tag'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -35,6 +35,17 @@ const StyledFormItemWrapper = styled.div`
   }
 `
 
+type FieldProps = {
+  title: string
+  categoryId: string | null
+  memberId: string | null
+  executorId: string | null
+  priority: MemberTaskProps['priority']
+  status: MemberTaskProps['status']
+  dueAt: Moment | null
+  description: string | null
+}
+
 const MemberTaskAdminModal: React.FC<
   {
     memberTask?: MemberTaskProps
@@ -44,7 +55,7 @@ const MemberTaskAdminModal: React.FC<
   } & AdminModalProps
 > = ({ memberTask, initialMemberId, initialExecutorId, onRefetch, onCancel, ...props }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [insertTask] = useMutation<types.INSERT_TASK, types.INSERT_TASKVariables>(INSERT_TASK)
   const [deleteTask] = useMutation<types.DELETE_TASK, types.DELETE_TASKVariables>(DELETE_TASK)
   const [loading, setLoading] = useState(false)
@@ -52,8 +63,9 @@ const MemberTaskAdminModal: React.FC<
   const handleSubmit = (onSuccess?: () => void) => {
     form
       .validateFields()
-      .then((values: any) => {
+      .then(() => {
         setLoading(true)
+        const values = form.getFieldsValue()
         if (memberTask) {
           insertTask({
             variables: {
@@ -73,8 +85,8 @@ const MemberTaskAdminModal: React.FC<
             },
           })
             .then(() => {
-              onRefetch && onRefetch()
-              onSuccess && onSuccess()
+              onRefetch?.()
+              onSuccess?.()
             })
             .catch(handleError)
             .finally(() => setLoading(false))
@@ -96,8 +108,8 @@ const MemberTaskAdminModal: React.FC<
             },
           })
             .then(() => {
-              onRefetch && onRefetch()
-              onSuccess && onSuccess()
+              onRefetch?.()
+              onSuccess?.()
               form.resetFields()
             })
             .catch(handleError)
@@ -115,7 +127,7 @@ const MemberTaskAdminModal: React.FC<
           <Button
             className="mr-2"
             onClick={e => {
-              onCancel && onCancel(e)
+              onCancel?.(e)
               setVisible(false)
             }}
           >
@@ -133,7 +145,7 @@ const MemberTaskAdminModal: React.FC<
                     className="cursor-pointer"
                     onClick={() =>
                       deleteTask({ variables: { taskId: memberTask.id } })
-                        .then(() => onRefetch && onRefetch())
+                        .then(() => onRefetch?.())
                         .catch(handleError)
                     }
                   >

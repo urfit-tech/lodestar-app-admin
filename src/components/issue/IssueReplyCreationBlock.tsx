@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Form } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import BraftEditor from 'braft-editor'
+import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -20,13 +20,17 @@ export const StyledEditor = styled(BraftEditor)`
   }
 `
 
+type FieldProps = {
+  content: EditorState
+}
+
 const IssueReplyCreationBlock: React.FC<{
   memberId: string
   issueId: string
   onRefetch?: () => void
 }> = ({ memberId, issueId, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { authToken } = useAuth()
   const { id: appId } = useContext(AppContext)
   const [insertIssueReply] = useMutation<types.INSERT_ISSUE_REPLY, types.INSERT_ISSUE_REPLYVariables>(
@@ -34,18 +38,18 @@ const IssueReplyCreationBlock: React.FC<{
   )
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     insertIssueReply({
       variables: {
         memberId,
         issueId,
-        content: values.content.toRAW(),
+        content: values.content?.getCurrentContent().hasText() ? values.content.toRAW() : null,
       },
     })
       .then(() => {
         form.resetFields()
-        onRefetch && onRefetch()
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

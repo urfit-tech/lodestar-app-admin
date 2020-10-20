@@ -21,12 +21,16 @@ import { ProgramAdminProps, ProgramApprovalProps } from '../../types/program'
 import { AdminBlock } from '../admin'
 import { StyledModal, StyledModalParagraph, StyledModalTitle } from './ProgramDeletionAdminCard'
 
+type FieldProps = {
+  description: string
+}
+
 const ProgramPublishBlock: React.FC<{
   program: ProgramAdminProps | null
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { enabledModules } = useContext(AppContext)
   const { currentUserRole } = useAuth()
   const [publishProgram] = useMutation<types.PUBLISH_PROGRAM, types.PUBLISH_PROGRAMVariables>(PUBLISH_PROGRAM)
@@ -152,7 +156,7 @@ const ProgramPublishBlock: React.FC<{
         isPrivate,
       },
     })
-      .then(() => onRefetch && onRefetch())
+      .then(() => onRefetch?.())
       .catch(handleError)
   }
   const handleUnPublish = () => {
@@ -167,7 +171,7 @@ const ProgramPublishBlock: React.FC<{
             isPrivate: false,
           },
         })
-          .then(() => onRefetch && onRefetch())
+          .then(() => onRefetch?.())
           .catch(handleError)
       },
       onCancel: () => {},
@@ -181,7 +185,7 @@ const ProgramPublishBlock: React.FC<{
         description,
       },
     })
-      .then(() => onRefetch && onRefetch())
+      .then(() => onRefetch?.())
       .catch(handleError)
       .finally(() => {
         setLoading(false)
@@ -195,7 +199,7 @@ const ProgramPublishBlock: React.FC<{
         programApprovalId: program.approvals[0].id,
       },
     })
-      .then(() => onRefetch && onRefetch())
+      .then(() => onRefetch?.())
       .catch(handleError)
       .finally(() => setLoading(false))
   }
@@ -208,7 +212,7 @@ const ProgramPublishBlock: React.FC<{
         feedback,
       },
     })
-      .then(() => onRefetch && onRefetch())
+      .then(() => onRefetch?.())
       .catch(handleError)
       .finally(() => {
         setLoading(false)
@@ -341,7 +345,8 @@ const ProgramPublishBlock: React.FC<{
           onOk={() =>
             form
               .validateFields()
-              .then((values: any) => {
+              .then(() => {
+                const values = form.getFieldsValue()
                 programStatus === 'pending'
                   ? handleUpdateProgramApproval('rejected', values.description)
                   : handleSendApproval(values.description)

@@ -1,6 +1,5 @@
 import { CaretDownOutlined, ExportOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Dropdown, Form, Input, Menu, Table, Tag } from 'antd'
-import { useForm } from 'antd/lib/form/Form'
 import { ColumnProps } from 'antd/lib/table'
 import moment from 'moment'
 import React, { useContext, useState } from 'react'
@@ -230,7 +229,6 @@ const MemberExportModal: React.FC<{
   emailSearch: string | null
 }> = ({ role, nameSearch, emailSearch, children }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
   const { loading, members } = useMemberCollection({ role, nameSearch, emailSearch })
   const [selectedExportFields, setSelectedExportFields] = useState<string[]>(['name', 'email'])
 
@@ -271,7 +269,7 @@ const MemberExportModal: React.FC<{
       okText={formatMessage(commonMessages.ui.export)}
       onOk={() => exportMemberList()}
     >
-      <Form form={form} layout="vertical" colon={false} hideRequiredMark>
+      <Form layout="vertical" colon={false} hideRequiredMark>
         <Form.Item label={formatMessage(commonMessages.label.roleType)}>{children}</Form.Item>
         <Form.Item label={formatMessage(commonMessages.label.exportFields)}>
           <Checkbox.Group

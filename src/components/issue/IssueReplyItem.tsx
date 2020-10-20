@@ -101,7 +101,7 @@ const IssueReplyItem: React.FC<{
           variables: { issueReplyId, memberId: currentMemberId || '' },
         })
 
-    onRefetch && onRefetch()
+    onRefetch?.()
   }
 
   return (
@@ -153,7 +153,7 @@ const IssueReplyItem: React.FC<{
                 <Menu.Item
                   onClick={() =>
                     window.confirm(formatMessage(commonMessages.label.cannotRecover)) &&
-                    deleteIssueReply({ variables: { issueReplyId } }).then(() => onRefetch && onRefetch())
+                    deleteIssueReply({ variables: { issueReplyId } }).then(() => onRefetch?.())
                   }
                 >
                   {formatMessage(commonMessages.ui.delete)}
@@ -188,8 +188,8 @@ const IssueReplyItem: React.FC<{
                       variables: { issueReplyId, content: contentState.toRAW() },
                     })
                       .then(() => {
-                        onRefetch && onRefetch()
                         setEditing(false)
+                        onRefetch?.()
                       })
                       .catch(err => message.error(formatMessage(messages.updateIssueFailed)))
                   }

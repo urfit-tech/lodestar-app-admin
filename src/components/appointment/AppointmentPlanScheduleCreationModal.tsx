@@ -3,7 +3,7 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, DatePicker, Form, message, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import momentTz from 'moment-timezone'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -12,6 +12,7 @@ import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { AppointmentPlanAdminProps } from '../../types/appointment'
+import { PeriodType } from '../../types/general'
 import { StyledSelect } from '../admin'
 import AdminModal from '../admin/AdminModal'
 
@@ -28,12 +29,17 @@ const StyledTimeZoneBlock = styled.div`
   font-size: 14px;
 `
 
+type FieldProps = {
+  startedAt: Moment
+  periodType: PeriodType
+}
+
 const AppointmentPlanScheduleCreationModal: React.FC<{
   appointmentPlanAdmin: AppointmentPlanAdminProps | null
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [createAppointmentSchedule] = useMutation<
     types.CREATE_APPOINTMENT_SCHEDULE,
     types.CREATE_APPOINTMENT_SCHEDULEVariables
@@ -52,8 +58,9 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
   const handleSubmit = (onSuccess: () => void) => {
     form
       .validateFields()
-      .then(values => {
+      .then(() => {
         setLoading(true)
+        const values = form.getFieldsValue()
         createAppointmentSchedule({
           variables: {
             appointmentPlanId: appointmentPlanAdmin.id,
@@ -63,9 +70,9 @@ const AppointmentPlanScheduleCreationModal: React.FC<{
           },
         })
           .then(() => {
-            onRefetch && onRefetch()
             message.success(formatMessage(commonMessages.event.successfullyCreated))
             onSuccess()
+            onRefetch?.()
           })
           .catch(handleError)
           .finally(() => setLoading(false))

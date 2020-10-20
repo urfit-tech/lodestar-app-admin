@@ -13,12 +13,16 @@ import { PodcastProgramAdminProps } from '../../types/podcast'
 import { StyledTips } from '../admin/index'
 import ImageInput from '../form/ImageInput'
 
+type FieldProps = {
+  abstract: string
+}
+
 const PodcastProgramIntroForm: React.FC<{
   podcastProgramAdmin: PodcastProgramAdminProps | null
   onRefetch?: () => void
 }> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { id: appId } = useContext(AppContext)
   const [loading, setLoading] = useState(false)
 
@@ -48,14 +52,14 @@ const PodcastProgramIntroForm: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullyUpload))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updatePodcastProgramIntro({
       variables: {
@@ -65,8 +69,8 @@ const PodcastProgramIntroForm: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

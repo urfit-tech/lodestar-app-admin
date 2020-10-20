@@ -534,29 +534,6 @@ export const useMemberSummaryCollection = () => {
   }
 }
 
-export const useUpdateMemberAccount = () => {
-  const [updateMemberAccount] = useMutation<types.UPDATE_MEMBER_ACCOUNT, types.UPDATE_MEMBER_ACCOUNTVariables>(
-    gql`
-      mutation UPDATE_MEMBER_ACCOUNT(
-        $memberId: String
-        $name: String
-        $description: String
-        $username: String
-        $email: String
-        $pictureUrl: String
-      ) {
-        update_member(
-          where: { id: { _eq: $memberId } }
-          _set: { name: $name, description: $description, username: $username, email: $email, picture_url: $pictureUrl }
-        ) {
-          affected_rows
-        }
-      }
-    `,
-  )
-
-  return updateMemberAccount
-}
 
 export const useProperty = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_PROPERTY, types.GET_PROPERTYVariables>(

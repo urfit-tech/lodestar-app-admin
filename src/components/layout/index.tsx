@@ -1,4 +1,3 @@
-import { Form } from 'antd'
 import styled from 'styled-components'
 import settings from '../../settings'
 
@@ -10,18 +9,4 @@ export const StyledContent = styled.div<{ noFooter?: boolean; white?: boolean }>
   overflow-y: auto;
   overflow-x: hidden;
   ${props => (props.white ? 'background: white;' : '')}
-`
-
-export const StyledForm = styled(Form)`
-  .ant-row {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-  }
-
-  @media (min-width: 768px) {
-    .ant-row {
-      flex-direction: row;
-    }
-  }
 `

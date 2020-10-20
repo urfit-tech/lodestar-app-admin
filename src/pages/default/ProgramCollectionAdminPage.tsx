@@ -130,14 +130,12 @@ const ProgramCollectionAdminPage: React.FC = () => {
                     position: index,
                   })) || [],
               },
-            })
-              .then(({ data }) => {
-                refetchProgramPreviews().then(() => {
-                  const programId = data?.insert_program?.returning[0]?.id
-                  programId && history.push(`/programs/${programId}`)
-                })
+            }).then(res => {
+              refetchProgramPreviews().then(() => {
+                const programId = res.data?.insert_program?.returning[0]?.id
+                programId && history.push(`/programs/${programId}`)
               })
-              .catch(handleError)
+            })
           }
         />
       </div>

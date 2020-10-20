@@ -8,7 +8,7 @@ import styled from 'styled-components'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { MemberNoteAdminProps } from '../../types/member'
-import AdminModal from '../admin/AdminModal'
+import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import { CustomRatioImage } from '../common/Image'
 
 const StyledFormLabel = styled.h3`
@@ -18,7 +18,6 @@ const StyledFormLabel = styled.h3`
   letter-spacing: 0.4px;
   color: var(--gray-darker);
 `
-
 const StyledMemberInfo = styled.div`
   font-size: 14px;
   font-weight: 500;
@@ -27,74 +26,75 @@ const StyledMemberInfo = styled.div`
   color: var(--gray-dark);
 `
 
-const MemberNoteAdminModal: React.FC<{
-  title: string
-  member: {
-    avatarUrl: string | null
-    name: string
+type FieldProps = {
+  type: MemberNoteAdminProps['type']
+  status: string | null
+  duration: number | null
+  description: string | null
+}
+
+const MemberNoteAdminModal: React.FC<
+  AdminModalProps & {
+    member: {
+      avatarUrl: string | null
+      name: string
+    }
+    note?: FieldProps
+    onSubmit?: (values: FieldProps) => Promise<any>
   }
-  renderSubmit: (values: {
-    type: MemberNoteAdminProps['type']
-    status: string | null
-    duration: number | null
-    description: string | null
-    resetForm: () => void
-  }) => void
-  renderTrigger: React.FC<{ setVisible: React.Dispatch<React.SetStateAction<boolean>> }>
-  note?: {
-    type: MemberNoteAdminProps['type']
-    status: string | null
-    duration: number | null
-    description: string | null
-  }
-}> = ({ title, member, renderSubmit, renderTrigger, note }) => {
+> = ({ member, note, onSubmit, ...props }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [type, setType] = useState<MemberNoteAdminProps['type']>(note?.type || null)
   const [status, setStatus] = useState<string | null>(note?.status || 'answered')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  const resetModal = () => {
+    setType(null)
+    setStatus('answered')
+    form.resetFields()
+  }
+
+  const handleSubmit = (onSuccess: () => void) => {
+    setIsSubmitting(true)
+    form
+      .validateFields()
+      .then(() => {
+        const values = form.getFieldsValue()
+        onSubmit?.({
+          ...values,
+          duration: values.duration && moment(values.duration).diff(moment().startOf('day'), 'seconds'),
+        })
+          .then(() => {
+            onSuccess()
+            resetModal()
+          })
+          .finally(() => setIsSubmitting(false))
+      })
+      .catch(() => {})
+  }
+
   return (
     <AdminModal
-      title={title}
-      renderTrigger={({ setVisible }) => renderTrigger({ setVisible })}
       footer={null}
       renderFooter={({ setVisible }) => (
         <>
-          <Button className="mr-2" onClick={() => setVisible(false)}>
-            {formatMessage(commonMessages.ui.cancel)}
-          </Button>
           <Button
-            loading={isSubmitting}
-            type="primary"
+            className="mr-2"
             onClick={() => {
-              if (!isSubmitting) {
-                setIsSubmitting(true)
-                form
-                  .validateFields()
-                  .then(({ type, status, duration, description }) =>
-                    renderSubmit({
-                      type,
-                      status,
-                      duration: duration && moment(duration).diff(moment().startOf('day'), 'seconds'),
-                      description,
-                      resetForm: () => {
-                        setType(null)
-                        setStatus('answered')
-                        form.resetFields()
-                      },
-                    }),
-                  )
-                  .then(() => setIsSubmitting(false))
-                  .finally(() => setVisible(false))
-              }
+              setVisible(false)
+              resetModal()
             }}
           >
+            {formatMessage(commonMessages.ui.cancel)}
+          </Button>
+          <Button loading={isSubmitting} type="primary" onClick={() => handleSubmit(() => setVisible(false))}>
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </>
       )}
       maskClosable={false}
+      {...props}
     >
       <StyledMemberInfo className="d-flex align-items-center mb-4">
         <CustomRatioImage

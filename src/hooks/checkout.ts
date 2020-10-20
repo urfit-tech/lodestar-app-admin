@@ -291,22 +291,23 @@ export const useMutateVoucherPlan = () => {
       variables: {
         ...values,
         appId,
-        voucherCodes: values.voucherCodes.flatMap(voucherCode =>
-          voucherCode.type === 'random'
-            ? times(
-                () => ({
-                  code: generate(),
-                  count: 1,
-                  remaining: 1,
-                }),
-                voucherCode.count,
-              )
-            : {
-                code: voucherCode.code,
-                count: voucherCode.count,
-                remaining: voucherCode.count,
-              },
-        ),
+        voucherCodes:
+          values.voucherCodes?.flatMap(voucherCode =>
+            voucherCode.type === 'random'
+              ? times(
+                  () => ({
+                    code: generate(),
+                    count: 1,
+                    remaining: 1,
+                  }),
+                  voucherCode.count,
+                )
+              : {
+                  code: voucherCode.code,
+                  count: voucherCode.count,
+                  remaining: voucherCode.count,
+                },
+          ) || [],
         voucherPlanProducts: values.voucherPlanProducts.flatMap(productId => ({
           product_id: productId,
         })),

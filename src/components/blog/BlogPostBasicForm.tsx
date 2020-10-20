@@ -23,12 +23,18 @@ const StyledText = styled.div`
   line-height: 1.2;
 `
 
+type FieldProps = {
+  title: string
+  categoryIds: string[]
+  tags: string[]
+}
+
 const BlogPostBasicForm: React.FC<{
   post: PostProps | null
   onRefetch?: () => {}
 }> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { settings } = useContext(AppContext)
   const [updatePostBasic] = useMutation<types.UPDATE_POST_BASIC, types.UPDATE_POST_BASICVariables>(UPDATE_POST_BASIC)
   const [codeName, setCodeName] = useState('')
@@ -40,7 +46,7 @@ const BlogPostBasicForm: React.FC<{
 
   const canCodeNameUse = !post.codeNames.filter(codeName => codeName !== post.codeName).includes(codeName)
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     if (!canCodeNameUse) {
       message.error(formatMessage(errorMessages.event.checkSameCodeName))
       return
@@ -69,8 +75,8 @@ const BlogPostBasicForm: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

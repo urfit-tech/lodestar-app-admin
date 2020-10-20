@@ -1,18 +1,26 @@
 import Icon from '@ant-design/icons'
+import { useMutation } from '@apollo/react-hooks'
 import { Skeleton } from 'antd'
+import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
+import { useHistory } from 'react-router-dom'
 import { AdminPageBlock, AdminPageTitle } from '../../components/admin'
+import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import PodcastProgramCollectionAdminTable from '../../components/podcast/PodcastProgramCollectionAdminTable'
-import PodcastProgramCreationModal from '../../components/podcast/PodcastProgramCreationModal'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as MicrophoneOIcon } from '../../images/icon/microphone-o.svg'
+import types from '../../types'
 
 const PodcastProgramCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
+  const history = useHistory()
   const { currentUserRole, currentMemberId } = useAuth()
+  const [createPodcastProgram] = useMutation<types.CREATE_PODCAST_PROGRAM, types.CREATE_PODCAST_PROGRAMVariables>(
+    CREATE_PODCAST_PROGRAM,
+  )
 
   return (
     <AdminLayout>
@@ -26,7 +34,25 @@ const PodcastProgramCollectionAdminPage: React.FC = () => {
       ) : (
         <>
           <div className="mb-5">
-            <PodcastProgramCreationModal memberId={currentMemberId} />
+            <ProductCreationModal
+              withCreatorSelector={currentUserRole === 'app-owner'}
+              onCreate={({ title, categoryIds, creatorId }) =>
+                createPodcastProgram({
+                  variables: {
+                    title,
+                    creatorId: creatorId || currentMemberId,
+                    podcastCategories:
+                      categoryIds?.map((categoryId: string, index: number) => ({
+                        category_id: categoryId,
+                        position: index,
+                      })) || [],
+                  },
+                }).then(({ data }) => {
+                  const podcastProgramId = data?.insert_podcast_program?.returning[0]?.id
+                  podcastProgramId && history.push(`/podcast-programs/${podcastProgramId}`)
+                })
+              }
+            />
           </div>
 
           <AdminPageBlock>
@@ -39,5 +65,28 @@ const PodcastProgramCollectionAdminPage: React.FC = () => {
     </AdminLayout>
   )
 }
+
+const CREATE_PODCAST_PROGRAM = gql`
+  mutation CREATE_PODCAST_PROGRAM(
+    $title: String!
+    $creatorId: String!
+    $podcastCategories: [podcast_program_category_insert_input!]!
+  ) {
+    insert_podcast_program(
+      objects: {
+        title: $title
+        creator_id: $creatorId
+        podcast_program_categories: { data: $podcastCategories }
+        podcast_program_bodies: { data: { description: "" } }
+        podcast_program_roles: { data: { member_id: $creatorId, name: "instructor" } }
+      }
+    ) {
+      affected_rows
+      returning {
+        id
+      }
+    }
+  }
+`
 
 export default PodcastProgramCollectionAdminPage

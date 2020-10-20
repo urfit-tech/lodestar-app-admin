@@ -48,7 +48,7 @@ const ProgramContentSectionAdminCard: React.FC<{
               updateProgramContentSection({
                 variables: { id: programContentSection.id, title },
               })
-                .then(() => onRefetch && onRefetch())
+                .then(() => onRefetch?.())
                 .catch(handleError)
             },
           }}
@@ -67,7 +67,7 @@ const ProgramContentSectionAdminCard: React.FC<{
                   deleteProgramContentSection({
                     variables: { programContentSectionId: programContentSection.id },
                   })
-                    .then(() => onRefetch && onRefetch())
+                    .then(() => onRefetch?.())
                     .catch(handleError)
                 }
               >
@@ -103,7 +103,7 @@ const ProgramContentSectionAdminCard: React.FC<{
               publishedAt: program && program.publishedAt ? undefined : new Date(),
             },
           })
-            .then(() => onRefetch && onRefetch())
+            .then(() => onRefetch?.())
             .catch(handleError)
         }
       >

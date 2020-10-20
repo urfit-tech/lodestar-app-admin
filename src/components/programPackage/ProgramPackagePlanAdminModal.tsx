@@ -2,7 +2,7 @@ import { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, Form, Input, InputNumber, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import BraftEditor from 'braft-editor'
+import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -10,10 +10,11 @@ import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
+import { PeriodType } from '../../types/general'
 import { ProgramPackagePlanProps } from '../../types/programPackage'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import AdminBraftEditor from '../form/AdminBraftEditor'
-import SaleInput from '../form/SaleInput'
+import SaleInput, { SaleProps } from '../form/SaleInput'
 import ProgramPeriodTypeDropdown from '../program/ProgramPeriodTypeDropdown'
 
 const messages = defineMessages({
@@ -45,6 +46,20 @@ const messages = defineMessages({
   planDescription: { id: 'program.label.planDescription', defaultMessage: '方案描述' },
 })
 
+type FieldProps = {
+  title: string
+  isTempoDelivery: boolean
+  isPublished: boolean
+  isParticipantsVisible: boolean
+  isSubscription: boolean
+  periodAmount: number
+  periodType: PeriodType
+  listPrice: number
+  sale: SaleProps
+  discountDownPrice?: number
+  description: EditorState
+}
+
 const ProgramPackagePlanAdminModal: React.FC<
   AdminModalProps & {
     programPackageId: string
@@ -53,7 +68,7 @@ const ProgramPackagePlanAdminModal: React.FC<
   }
 > = ({ programPackageId, plan, onRefetch, ...modalProps }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { enabledModules } = useContext(AppContext)
   const [insertProgramPackagePlan] = useMutation<
     types.INSERT_PROGRAM_PACKAGE_PLAN,
@@ -67,8 +82,9 @@ const ProgramPackagePlanAdminModal: React.FC<
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     form
       .validateFields()
-      .then((values: any) => {
+      .then(() => {
         setLoading(true)
+        const values = form.getFieldsValue()
         insertProgramPackagePlan({
           variables: {
             data: {
@@ -82,17 +98,17 @@ const ProgramPackagePlanAdminModal: React.FC<
               period_type: values.periodType,
               list_price: values.listPrice,
               sale_price: values.sale ? values.sale.price : null,
-              sold_at: values.sale ? values.sale.soldAt : null,
+              sold_at: values.sale?.soldAt || null,
               discount_down_price: withDiscountDownPrice ? values.discountDownPrice : null,
-              description: values.description.toRAW(),
+              description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
               position: plan?.position || -1,
               program_package_id: programPackageId,
             },
           },
         })
           .then(() => {
-            onRefetch && onRefetch()
             setVisible && setVisible(false)
+            onRefetch?.()
           })
           .catch(handleError)
           .finally(() => setLoading(false))

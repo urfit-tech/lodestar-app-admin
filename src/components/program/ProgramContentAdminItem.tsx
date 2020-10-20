@@ -77,8 +77,8 @@ const ProgramContentAdminItem: React.FC<{
                   publishedAt: programContent.publishedAt ? undefined : new Date(),
                 },
               })
-                .then(() => onRefetch && onRefetch())
-                .catch(error => handleError(error))
+                .then(() => onRefetch?.())
+                .catch(handleError)
             }
           />
         )}
@@ -88,8 +88,8 @@ const ProgramContentAdminItem: React.FC<{
             programContent={programContent}
             programContentBody={programContentBody}
             onRefetch={() => {
-              onRefetch && onRefetch()
               refetchProgramContentBody()
+              onRefetch?.()
             }}
           />
         )}

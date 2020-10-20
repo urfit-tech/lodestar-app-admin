@@ -15,12 +15,20 @@ import CategorySelector from '../form/CategorySelector'
 import LanguageSelector from '../form/LanguageSelector'
 import TagSelector from '../form/TagSelector'
 
+type FieldProps = {
+  title: string
+  categoryIds: string[]
+  tags: string[]
+  languages?: string[]
+  isIssuesOpen: boolean
+}
+
 const ProgramBasicForm: React.FC<{
   program: ProgramAdminProps | null
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { enabledModules } = useContext(AppContext)
   const [updateProgramBasic] = useMutation<types.UPDATE_PROGRAM_BASIC, types.UPDATE_PROGRAM_BASICVariables>(
     UPDATE_PROGRAM_BASIC,
@@ -31,13 +39,13 @@ const ProgramBasicForm: React.FC<{
     return <Skeleton active />
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateProgramBasic({
       variables: {
         programId: program.id,
         title: values.title,
-        supportLocales: !values.languages || values.languages.length === 0 ? null : values.languages,
+        supportLocales: values.languages?.length === 0 ? values.languages : null,
         isIssuesOpen: values.isIssuesOpen,
         programCategories: values.categoryIds.map((categoryId: string, index: number) => ({
           program_id: program.id,
@@ -56,8 +64,8 @@ const ProgramBasicForm: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

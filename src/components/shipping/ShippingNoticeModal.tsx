@@ -68,12 +68,12 @@ const ShippingNoticeModal: React.FC<ShippingNoticeModalProps> = ({
         deliverMessage,
         deliveredAt: deliverMessage ? new Date() : null,
       })
-        .then(() => onRefetch && onRefetch())
-        .catch(handleError)
-        .finally(() => {
-          setLoading(false)
+        .then(() => {
           setVisible(false)
+          onRefetch?.()
         })
+        .catch(handleError)
+        .finally(() => setLoading(false))
     })
   }
 

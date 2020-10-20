@@ -114,7 +114,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
                 },
               }).then(() => {
                 setSolved(updatedSolved)
-                onRefetch && onRefetch()
+                onRefetch?.()
               })
             }}
           >

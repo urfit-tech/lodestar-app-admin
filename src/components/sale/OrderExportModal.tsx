@@ -2,7 +2,7 @@ import { DownloadOutlined, DownOutlined, LoadingOutlined } from '@ant-design/ico
 import { useApolloClient } from '@apollo/react-hooks'
 import { Button, DatePicker, Dropdown, Form, Menu, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import React, { useCallback, useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -19,6 +19,17 @@ import {
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
 
+const messages = defineMessages({
+  exportOrder: { id: 'common.ui.exportOrder', defaultMessage: '匯出資料' },
+  exportOrderLog: { id: 'common.ui.exportOrderLog', defaultMessage: '匯出訂單' },
+  exportOrderProduct: { id: 'common.ui.exportOrderProduct', defaultMessage: '訂單明細' },
+  exportOrderDiscount: { id: 'common.ui.exportOrderDiscount', defaultMessage: '折扣明細' },
+  exportPaymentLog: { id: 'common.ui.exportPaymentLog', defaultMessage: '交易明細' },
+  invoiceSuccess: { id: 'payment.status.invoiceSuccess', defaultMessage: '開立成功' },
+  invoiceFailed: { id: 'payment.status.invoiceFailed', defaultMessage: '開立失敗 {errorCode}' },
+  invoicePending: { id: 'payment.status.invoicePending', defaultMessage: '未開立電子發票' },
+})
+
 const StyledRangePicker = styled(props => <DatePicker.RangePicker {...props} />)`
   input {
     width: 38%;
@@ -33,22 +44,15 @@ const StyledRangePicker = styled(props => <DatePicker.RangePicker {...props} />)
   }
 `
 
-const messages = defineMessages({
-  exportOrder: { id: 'common.ui.exportOrder', defaultMessage: '匯出資料' },
-  exportOrderLog: { id: 'common.ui.exportOrderLog', defaultMessage: '匯出訂單' },
-  exportOrderProduct: { id: 'common.ui.exportOrderProduct', defaultMessage: '訂單明細' },
-  exportOrderDiscount: { id: 'common.ui.exportOrderDiscount', defaultMessage: '折扣明細' },
-  exportPaymentLog: { id: 'common.ui.exportPaymentLog', defaultMessage: '交易明細' },
-
-  invoiceSuccess: { id: 'payment.status.invoiceSuccess', defaultMessage: '開立成功' },
-  invoiceFailed: { id: 'payment.status.invoiceFailed', defaultMessage: '開立失敗 {errorCode}' },
-  invoicePending: { id: 'payment.status.invoicePending', defaultMessage: '未開立電子發票' },
-})
+type FieldProps = {
+  timeRange: [Moment, Moment]
+  orderStatuses: ('UNPAID' | 'SUCCESS' | 'FAILED' | 'REFUND')[]
+}
 
 const OrderExportModal: React.FC = () => {
   const { formatMessage } = useIntl()
   const client = useApolloClient()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
 
   const { id: appId } = useContext(AppContext)
   const { data: allOrderStatuses } = useOrderStatuses()
@@ -304,9 +308,9 @@ const OrderExportModal: React.FC = () => {
   const handleExport = (exportTarget: 'orderLog' | 'orderProduct' | 'orderDiscount' | 'paymentLog') => {
     form
       .validateFields()
-      .then(async (values: any) => {
+      .then(async () => {
         setLoading(true)
-
+        const values = form.getFieldsValue()
         const startedAt = values.timeRange[0].toDate()
         const endedAt = values.timeRange[1].toDate()
         const orderStatuses: string[] = values.orderStatuses.includes('FAILED')

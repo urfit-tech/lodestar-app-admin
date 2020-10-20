@@ -10,12 +10,17 @@ import types from '../../types'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import SaleInput, { SaleProps } from '../form/SaleInput'
 
+type FieldProps = {
+  listPrice: number
+  sale: SaleProps
+}
+
 const PodcastProgramPlanForm: React.FC<{
   podcastProgramAdmin: PodcastProgramAdminProps | null
   onRefetch?: () => void
 }> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [updatePodcastProgramPlan] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_PLAN,
     types.UPDATE_PODCAST_PROGRAM_PLANVariables
@@ -26,7 +31,7 @@ const PodcastProgramPlanForm: React.FC<{
     return <Skeleton active />
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updatePodcastProgramPlan({
       variables: {
@@ -34,12 +39,12 @@ const PodcastProgramPlanForm: React.FC<{
         podcastProgramId: podcastProgramAdmin.id,
         listPrice: values.listPrice,
         salePrice: values.sale ? values.sale.price : null,
-        soldAt: values.sale ? values.sale.soldAt : null,
+        soldAt: values.sale?.soldAt || null,
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

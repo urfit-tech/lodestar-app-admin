@@ -23,18 +23,23 @@ const ForgetPassword = styled.div`
   }
 `
 
+type FieldProps = {
+  account: string
+  password: string
+}
+
 const LoginSection: React.FC<{
   noTitle?: boolean
   onAuthStateChange?: React.Dispatch<React.SetStateAction<AuthState>>
 }> = ({ noTitle, onAuthStateChange }) => {
   const app = useContext(AppContext)
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { setVisible } = useContext(AuthModalContext)
   const { login } = useAuth()
   const [loading, setLoading] = useState(false)
 
-  const handleLogin = (values: any) => {
+  const handleLogin = (values: FieldProps) => {
     if (!login) {
       return
     }

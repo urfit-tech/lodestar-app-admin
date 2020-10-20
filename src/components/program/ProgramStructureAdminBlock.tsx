@@ -38,7 +38,7 @@ const ProgramStructureAdminBlock: React.FC<{
         position: program.contentSections.length,
       },
     })
-      .then(() => onRefetch && onRefetch())
+      .then(() => onRefetch?.())
       .catch(handleError)
       .finally(() => setLoading(false))
   }

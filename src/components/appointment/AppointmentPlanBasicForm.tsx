@@ -9,12 +9,17 @@ import { appointmentMessages, commonMessages, errorMessages } from '../../helper
 import types from '../../types'
 import { AppointmentPlanAdminProps } from '../../types/appointment'
 
+type FieldProps = {
+  title: string
+  phone: string
+}
+
 const AppointmentPlanBasicForm: React.FC<{
   appointmentPlanAdmin: AppointmentPlanAdminProps | null
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
 
   const [updateAppointmentPlanTitle] = useMutation<
     types.UPDATE_APPOINTMENT_PLAN_TITLE,
@@ -26,19 +31,18 @@ const AppointmentPlanBasicForm: React.FC<{
     return <Skeleton active />
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateAppointmentPlanTitle({
       variables: {
         appointmentPlanId: appointmentPlanAdmin.id,
         title: values.title,
         phone: values.phone,
-        supportLocales: !values.languages || values.languages.length === 0 ? null : values.languages,
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -100,16 +104,8 @@ const AppointmentPlanBasicForm: React.FC<{
 }
 
 const UPDATE_APPOINTMENT_PLAN_TITLE = gql`
-  mutation UPDATE_APPOINTMENT_PLAN_TITLE(
-    $appointmentPlanId: uuid!
-    $title: String!
-    $phone: String!
-    $supportLocales: jsonb
-  ) {
-    update_appointment_plan(
-      where: { id: { _eq: $appointmentPlanId } }
-      _set: { title: $title, phone: $phone, support_locales: $supportLocales }
-    ) {
+  mutation UPDATE_APPOINTMENT_PLAN_TITLE($appointmentPlanId: uuid!, $title: String!, $phone: String!) {
+    update_appointment_plan(where: { id: { _eq: $appointmentPlanId } }, _set: { title: $title, phone: $phone }) {
       affected_rows
     }
   }

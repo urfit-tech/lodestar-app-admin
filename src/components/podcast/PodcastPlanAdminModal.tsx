@@ -9,11 +9,12 @@ import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
 import types from '../../types'
+import { PeriodType } from '../../types/general'
 import { PodcastPlanProps } from '../../types/podcast'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import ContentCreatorSelector from '../form/ContentCreatorSelector'
 import PeriodSelector from '../form/PeriodSelector'
-import SaleInput from '../form/SaleInput'
+import SaleInput, { SaleProps } from '../form/SaleInput'
 
 const messages = defineMessages({
   planPublished: { id: 'podcast.status.planPublished', defaultMessage: '發佈，立刻開賣訂閱方案' },
@@ -23,6 +24,17 @@ const messages = defineMessages({
   },
 })
 
+type FieldProps = {
+  creatorId?: string
+  isPublished: boolean
+  period: {
+    type: PeriodType
+    amount: number
+  }
+  listPrice: number
+  sale: SaleProps
+}
+
 const PodcastPlanAdminModal: React.FC<
   AdminModalProps & {
     podcastPlan?: PodcastPlanProps
@@ -31,43 +43,50 @@ const PodcastPlanAdminModal: React.FC<
 > = ({ podcastPlan, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
   const { currentMemberId, currentUserRole } = useAuth()
-  const [form] = useForm()
-
-  const createPodcastPlan = useCreatePodcastPlan()
-  const updatePodcastPlan = useUpdatePodcastPlan()
-
+  const [form] = useForm<FieldProps>()
+  const [createPodcastPlan] = useMutation<types.CREATE_PODCAST_PLAN, types.CREATE_PODCAST_PLANVariables>(
+    CREATE_PODCAST_PLAN,
+  )
+  const [updatePodcastPlan] = useMutation<types.UPDATE_PODCAST_PLAN, types.UPDATE_PODCAST_PLANVariables>(
+    UPDATE_PODCAST_PLAN,
+  )
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     form
       .validateFields()
-      .then((values: any) => {
+      .then(() => {
         setLoading(true)
+        const values = form.getFieldsValue()
         if (podcastPlan) {
           updatePodcastPlan({
-            podcastPlanId: podcastPlan.id,
-            publishedAt: values.isPublished ? new Date() : null,
-            listPrice: values.listPrice,
-            salePrice: values.sale?.price || null,
-            soldAt: values.sale?.soldAt || null,
-            periodAmount: values.period?.amount || 1,
-            periodType: values.period?.type || 'D',
-            creatorId: values.creatorId || currentMemberId,
+            variables: {
+              podcastPlanId: podcastPlan.id,
+              publishedAt: values.isPublished ? new Date() : null,
+              listPrice: values.listPrice,
+              salePrice: values.sale ? values.sale.price : null,
+              soldAt: values.sale?.soldAt || null,
+              periodAmount: values.period?.amount || 1,
+              periodType: values.period?.type || 'D',
+              creatorId: values.creatorId || currentMemberId || '',
+            },
           })
-            .then(() => onRefetch && onRefetch().then(() => setVisible(false)))
+            .then(() => onRefetch?.().then(() => setVisible(false)))
             .catch(handleError)
             .finally(() => setLoading(false))
         } else {
           createPodcastPlan({
-            publishedAt: values.isPublished ? new Date() : null,
-            listPrice: values.listPrice,
-            salePrice: values.sale?.price || null,
-            soldAt: values.sale?.soldAt || null,
-            periodAmount: values.period?.amount || 1,
-            periodType: values.period?.type || 'D',
-            creatorId: values.creatorId || currentMemberId,
+            variables: {
+              publishedAt: values.isPublished ? new Date() : null,
+              listPrice: values.listPrice,
+              salePrice: values.sale?.price || null,
+              soldAt: values.sale?.soldAt || null,
+              periodAmount: values.period?.amount || 1,
+              periodType: values.period?.type || 'D',
+              creatorId: values.creatorId || currentMemberId || '',
+            },
           })
-            .then(() => onRefetch && onRefetch().then(() => setVisible(false)))
+            .then(() => onRefetch?.().then(() => setVisible(false)))
             .catch(handleError)
             .finally(() => setLoading(false))
         }
@@ -178,71 +197,59 @@ const PodcastPlanAdminModal: React.FC<
   )
 }
 
-const useCreatePodcastPlan = () => {
-  const [createPodcastPlan] = useMutation<types.CREATE_PODCAST_PLAN, types.CREATE_PODCAST_PLANVariables>(
-    gql`
-      mutation CREATE_PODCAST_PLAN(
-        $publishedAt: timestamptz
-        $listPrice: numeric!
-        $salePrice: numeric
-        $soldAt: timestamptz
-        $periodAmount: numeric!
-        $periodType: String!
-        $creatorId: String!
-      ) {
-        insert_podcast_plan(
-          objects: {
-            is_subscription: true
-            published_at: $publishedAt
-            title: ""
-            list_price: $listPrice
-            sale_price: $salePrice
-            sold_at: $soldAt
-            period_amount: $periodAmount
-            period_type: $periodType
-            creator_id: $creatorId
-          }
-        ) {
-          affected_rows
-        }
+const CREATE_PODCAST_PLAN = gql`
+  mutation CREATE_PODCAST_PLAN(
+    $publishedAt: timestamptz
+    $listPrice: numeric!
+    $salePrice: numeric
+    $soldAt: timestamptz
+    $periodAmount: numeric!
+    $periodType: String!
+    $creatorId: String!
+  ) {
+    insert_podcast_plan(
+      objects: {
+        is_subscription: true
+        published_at: $publishedAt
+        title: ""
+        list_price: $listPrice
+        sale_price: $salePrice
+        sold_at: $soldAt
+        period_amount: $periodAmount
+        period_type: $periodType
+        creator_id: $creatorId
       }
-    `,
-  )
-
-  return (data: types.CREATE_PODCAST_PLANVariables) => createPodcastPlan({ variables: data })
-}
-const useUpdatePodcastPlan = () => {
-  const [updatePodcastPlan] = useMutation<types.UPDATE_PODCAST_PLAN, types.UPDATE_PODCAST_PLANVariables>(
-    gql`
-      mutation UPDATE_PODCAST_PLAN(
-        $podcastPlanId: uuid!
-        $publishedAt: timestamptz
-        $listPrice: numeric!
-        $salePrice: numeric
-        $soldAt: timestamptz
-        $periodAmount: numeric!
-        $periodType: String!
-        $creatorId: String!
-      ) {
-        update_podcast_plan(
-          where: { id: { _eq: $podcastPlanId } }
-          _set: {
-            published_at: $publishedAt
-            list_price: $listPrice
-            sale_price: $salePrice
-            sold_at: $soldAt
-            period_amount: $periodAmount
-            period_type: $periodType
-            creator_id: $creatorId
-          }
-        ) {
-          affected_rows
-        }
+    ) {
+      affected_rows
+    }
+  }
+`
+const UPDATE_PODCAST_PLAN = gql`
+  mutation UPDATE_PODCAST_PLAN(
+    $podcastPlanId: uuid!
+    $publishedAt: timestamptz
+    $listPrice: numeric!
+    $salePrice: numeric
+    $soldAt: timestamptz
+    $periodAmount: numeric!
+    $periodType: String!
+    $creatorId: String!
+  ) {
+    update_podcast_plan(
+      where: { id: { _eq: $podcastPlanId } }
+      _set: {
+        published_at: $publishedAt
+        list_price: $listPrice
+        sale_price: $salePrice
+        sold_at: $soldAt
+        period_amount: $periodAmount
+        period_type: $periodType
+        creator_id: $creatorId
       }
-    `,
-  )
-
-  return (data: types.UPDATE_PODCAST_PLANVariables) => updatePodcastPlan({ variables: data })
-}
+    ) {
+      affected_rows
+    }
+  }
+`
 
 export default PodcastPlanAdminModal

@@ -2,7 +2,7 @@ import { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, Form, Input, message, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import BraftEditor from 'braft-editor'
+import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -12,13 +12,14 @@ import { AppContext } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
+import { PeriodType } from '../../types/general'
 import { ProgramPlanProps } from '../../types/program'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import CurrencyInput from '../form/CurrencyInput'
 import CurrencySelector from '../form/CurrencySelector'
 import PeriodSelector from '../form/PeriodSelector'
-import SaleInput from '../form/SaleInput'
+import SaleInput, { SaleProps } from '../form/SaleInput'
 
 const StyledNotation = styled.div`
   line-height: 1.5;
@@ -42,6 +43,18 @@ const messages = defineMessages({
   planDescription: { id: 'program.label.planDescription', defaultMessage: '方案描述' },
 })
 
+type FieldProps = {
+  title: string
+  isPublished: boolean
+  period: { type: PeriodType; amount: number }
+  currencyId?: string
+  listPrice: number
+  sale: SaleProps
+  discountDownPrice?: number
+  type: 1 | 2 | 3
+  description: EditorState
+}
+
 const ProgramPlanAdminModal: React.FC<
   AdminModalProps & {
     programId: string
@@ -51,7 +64,7 @@ const ProgramPlanAdminModal: React.FC<
 > = ({ programId, programPlan, onRefetch, ...modalProps }) => {
   const { enabledModules } = useContext(AppContext)
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [upsertProgramPlan] = useMutation<types.UPSERT_PROGRAM_PLAN, types.UPSERT_PROGRAM_PLANVariables>(
     UPSERT_PROGRAM_PLAN,
   )
@@ -66,8 +79,9 @@ const ProgramPlanAdminModal: React.FC<
   const handleSubmit = (onSuccess: () => void) => {
     form
       .validateFields()
-      .then(values => {
+      .then(() => {
         setLoading(true)
+        const values = form.getFieldsValue()
         upsertProgramPlan({
           variables: {
             id: programPlan ? programPlan.id : uuid(),
@@ -77,20 +91,20 @@ const ProgramPlanAdminModal: React.FC<
             description: values.description.toRAW(),
             listPrice: values.listPrice,
             salePrice: values.sale ? values.sale.price : null,
-            soldAt: values.sale ? values.sale.soldAt : null,
+            soldAt: values.sale?.soldAt || null,
             discountDownPrice: withDiscountDownPrice ? values.discountDownPrice : 0,
             periodAmount: withPeriod ? values.period.amount : null,
             periodType: withPeriod ? values.period.type : null,
             currencyId: values.currencyId || programPlan?.currencyId || 'TWD',
-            autoRenewed: withPeriod ? values.autoRenewed || false : false,
+            autoRenewed: withPeriod ? withAutoRenewed : false,
             publishedAt: values.isPublished ? new Date() : null,
-            isCountdownTimerVisible: !!values.sale?.timerVisible,
+            isCountdownTimerVisible: !!values.sale?.isTimerVisible,
           },
         })
           .then(() => {
-            onRefetch && onRefetch()
             message.success(formatMessage(commonMessages.event.successfullySaved))
             onSuccess()
+            onRefetch?.()
           })
           .catch(handleError)
           .finally(() => setLoading(false))

@@ -27,16 +27,13 @@ const StyledIcon = styled(Icon)<{ variant?: string | null }>`
   ${props => props.variant === 'answered' && `color: var(--success);`}
   ${props => props.variant === 'missed' && `color: var(--error);`}
 `
-
 const StyledMenuItem = styled(Menu.Item)`
   width: 100px;
   line-height: 36px;
 `
-
 const StyledParagraph = styled.p`
   white-space: break-spaces;
 `
-
 const StyledAuthorName = styled.div`
   font-size: 12px;
   height: 18px;
@@ -48,7 +45,7 @@ const StyledAuthorName = styled.div`
 const MemberNoteAdminItem: React.FC<{
   note: MemberNoteAdminProps
   memberAdmin: MemberAdminProps
-  onRefetch: () => void
+  onRefetch?: () => void
 }> = ({ note, memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { updateMemberNote, deleteMemberNote } = useMutateMemberNote()
@@ -98,7 +95,7 @@ const MemberNoteAdminItem: React.FC<{
                 renderTrigger={({ setVisible }) => (
                   <div onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</div>
                 )}
-                renderSubmit={({ type, status, duration, description }) =>
+                onSubmit={({ type, status, duration, description }) =>
                   updateMemberNote({
                     variables: {
                       memberNoteId: note.id,
@@ -109,8 +106,8 @@ const MemberNoteAdminItem: React.FC<{
                     },
                   })
                     .then(() => {
-                      onRefetch()
                       message.success(formatMessage(commonMessages.event.successfullyEdited))
+                      onRefetch?.()
                     })
                     .catch(handleError)
                 }
@@ -127,8 +124,8 @@ const MemberNoteAdminItem: React.FC<{
                 onOk={() =>
                   deleteMemberNote({ variables: { memberNoteId: note.id } })
                     .then(() => {
-                      onRefetch()
                       message.success(formatMessage(commonMessages.event.successfullyDeleted))
+                      onRefetch?.()
                     })
                     .catch(handleError)
                 }

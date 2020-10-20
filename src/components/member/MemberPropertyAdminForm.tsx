@@ -10,11 +10,15 @@ import { useProperty } from '../../hooks/member'
 import types from '../../types'
 import { MemberPropertyProps } from '../../types/member'
 
+type FieldProps = {
+  [propertyId: string]: string
+}
+
 const MemberPropertyAdminForm: React.FC<{
   memberId: string
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { loadingProperties, properties } = useProperty()
   const { loadingMemberProperties, memberProperties, refetchMemberProperties } = useMemberPropertyCollection(memberId)
   const [updateMemberProperty] = useMutation<types.UPDATE_MEMBER_PROPERTY, types.UPDATE_MEMBER_PROPERTYVariables>(
@@ -26,7 +30,7 @@ const MemberPropertyAdminForm: React.FC<{
     return <Skeleton active />
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateMemberProperty({
       variables: {

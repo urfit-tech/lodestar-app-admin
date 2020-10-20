@@ -4,7 +4,7 @@ import { Button, Form, InputNumber, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { UploadChangeParam } from 'antd/lib/upload'
 import { UploadFile } from 'antd/lib/upload/interface'
-import BraftEditor from 'braft-editor'
+import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -34,12 +34,17 @@ const StyledFileBlock = styled.div`
   }
 `
 
+type FieldProps = {
+  duration: number
+  description: EditorState
+}
+
 const PodcastProgramContentForm: React.FC<{
   podcastProgramAdmin: PodcastProgramAdminProps | null
   onRefetch?: () => void
 }> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { id: appId, enabledModules } = useContext(AppContext)
   const { authToken } = useAuth()
   const history = useHistory()
@@ -73,27 +78,27 @@ const PodcastProgramContentForm: React.FC<{
     setLoading(true)
     appendPodcastProgramAduio(authToken, appId, podcastProgramAdmin.id, key, file.name, duration)
       .then(() => {
-        onRefetch && onRefetch()
-        form.setFields([{ name: 'duration', value: duration }])
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        form.setFields([{ name: 'duration', value: duration }])
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updatePodcastProgramBody({
       variables: {
         updatedAt: new Date(),
         podcastProgramId: podcastProgramAdmin.id,
         duration: values.duration,
-        description: values.description.toRAW(),
+        description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -165,8 +170,8 @@ const PodcastProgramContentForm: React.FC<{
                   setLoading(true)
                   deletePodcastProgramAduio(authToken, appId, audio.id)
                     .then(() => {
-                      onRefetch && onRefetch()
                       message.success(formatMessage(commonMessages.event.successfullySaved))
+                      onRefetch?.()
                     })
                     .catch(handleError)
                     .finally(() => setLoading(false))

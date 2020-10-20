@@ -1,7 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, message, Modal, Skeleton } from 'antd'
-import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -24,7 +23,6 @@ const PodcastProgramInstructorCollectionBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
   const [updatePodcastProgramRole] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_ROLE,
     types.UPDATE_PODCAST_PROGRAM_ROLEVariables
@@ -60,10 +58,10 @@ const PodcastProgramInstructorCollectionBlock: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
-        setSelectedMemberId(null)
-        setVisible(false)
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        setVisible(false)
+        setSelectedMemberId(null)
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -84,8 +82,8 @@ const PodcastProgramInstructorCollectionBlock: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
   }
@@ -110,7 +108,7 @@ const PodcastProgramInstructorCollectionBlock: React.FC<{
       <Modal title={null} footer={null} centered destroyOnClose visible={visible} onCancel={() => setVisible(false)}>
         <StyledModalTitle className="mb-4">{formatMessage(commonMessages.ui.addInstructor)}</StyledModalTitle>
 
-        <Form form={form} layout="vertical" colon={false} hideRequiredMark onFinish={handleSubmit}>
+        <Form layout="vertical" colon={false} hideRequiredMark onFinish={handleSubmit}>
           <Form.Item label={formatMessage(commonMessages.label.selectInstructor)}>
             <ContentCreatorSelector value={selectedMemberId || ''} onChange={value => setSelectedMemberId(value)} />
           </Form.Item>

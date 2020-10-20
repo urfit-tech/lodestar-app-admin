@@ -67,7 +67,7 @@ const ProgramPackageProgramCollectionBlock: React.FC<{
                 position: index,
               })),
             },
-          }).then(() => onRefetch && onRefetch())
+          }).then(() => onRefetch?.())
         }
         renderItem={(program, currentIndex, moveTarget) => (
           <div key={program.id} className="col-md-6 col-lg-4 col-12 mb-5">

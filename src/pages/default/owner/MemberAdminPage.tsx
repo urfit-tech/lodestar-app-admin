@@ -180,7 +180,7 @@ const MemberAdminPage: React.FC = () => {
                         {formatMessage(memberMessages.label.createMemberNote)}
                       </Button>
                     )}
-                    renderSubmit={({ type, status, duration, description, resetForm }) =>
+                    onSubmit={({ type, status, duration, description }) =>
                       insertMemberNote({
                         variables: {
                           memberId: memberAdmin.id,
@@ -192,9 +192,8 @@ const MemberAdminPage: React.FC = () => {
                         },
                       })
                         .then(() => {
-                          refetchMemberAdmin()
-                          resetForm()
                           message.success(formatMessage(commonMessages.event.successfullyCreated))
+                          refetchMemberAdmin()
                         })
                         .catch(handleError)
                     }

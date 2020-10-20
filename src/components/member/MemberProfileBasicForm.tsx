@@ -10,12 +10,17 @@ import types from '../../types'
 import { MemberAdminProps } from '../../types/member'
 import TagSelector from '../form/TagSelector'
 
+type FieldProps = {
+  phones: string[]
+  tags: string[]
+}
+
 const MemberProfileBasicForm: React.FC<{
   memberAdmin: MemberAdminProps | null
   onRefetch?: () => void
 }> = ({ memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [updateMemberProfileBasic] = useMutation<
     types.UPDATE_MEMBER_PROFILE_BASIC,
     types.UPDATE_MEMBER_PROFILE_BASICVariables
@@ -26,7 +31,7 @@ const MemberProfileBasicForm: React.FC<{
     return <Skeleton active />
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateMemberProfileBasic({
       variables: {
@@ -49,7 +54,7 @@ const MemberProfileBasicForm: React.FC<{
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
-        onRefetch && onRefetch()
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

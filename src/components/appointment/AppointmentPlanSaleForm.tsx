@@ -13,12 +13,18 @@ import { StyledTips } from '../admin'
 import CurrencyInput from '../form/CurrencyInput'
 import CurrencySelector from '../form/CurrencySelector'
 
+type FieldProps = {
+  duration: number
+  listPrice: number
+  currencyId: string
+}
+
 const AppointmentPlanSaleForm: React.FC<{
   appointmentPlanAdmin: AppointmentPlanAdminProps | null
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [updateAppointmentPlanSale] = useMutation<
     types.UPDATE_APPOINTMENT_PLAN_SALE,
     types.UPDATE_APPOINTMENT_PLAN_SALEVariables
@@ -29,7 +35,7 @@ const AppointmentPlanSaleForm: React.FC<{
     return <Skeleton active />
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateAppointmentPlanSale({
       variables: {
@@ -40,8 +46,8 @@ const AppointmentPlanSaleForm: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -100,7 +106,7 @@ const AppointmentPlanSaleForm: React.FC<{
           {
             required: true,
             message: formatMessage(errorMessages.form.isRequired, {
-              field: formatMessage(commonMessages.term.listPrice),
+              field: formatMessage(commonMessages.term.currency),
             }),
           },
         ]}

@@ -35,14 +35,19 @@ const StyledTitle = styled.h1`
   letter-spacing: 0.8px;
 `
 
+type FieldProps = {
+  password: string
+  passwordCheck: string
+}
+
 const ResetPasswordPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const [token] = useQueryParam('token', StringParam)
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     axios
       .post(

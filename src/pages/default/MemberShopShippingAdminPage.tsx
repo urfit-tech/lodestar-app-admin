@@ -26,7 +26,7 @@ const MemberShopAdminPage: React.FC = () => {
       <AdminPageTitle>{formatMessage(messages.shippingMethodsAdmin)}</AdminPageTitle>
       <AdminBlock>
         <AdminBlockTitle>{formatMessage(messages.shippingMethod)}</AdminBlockTitle>
-        <ShippingMethodAdminBlock memberShop={memberShop} refetch={refetchMemberShop} />
+        <ShippingMethodAdminBlock memberShop={memberShop} onRefetch={refetchMemberShop} />
       </AdminBlock>
     </MemberShopLayout>
   )

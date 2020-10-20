@@ -40,14 +40,18 @@ const StyledTitle = styled.h1`
   letter-spacing: 0.8px;
 `
 
+type FieldProps = {
+  email: string
+}
+
 const ForgotPasswordPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const app = useContext(AppContext)
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     axios
       .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/forgot-password`, {

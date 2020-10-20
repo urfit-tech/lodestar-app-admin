@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import { AppointmentPeriodCardProps } from '../components/appointment/AppointmentPeriodCard'
@@ -185,28 +185,4 @@ export const useAppointmentEnrollmentCollection = (startedAt: Date | null, ended
     appointmentEnrollments,
     refetchAppointmentEnrollments: refetch,
   }
-}
-
-export const useUpdateAppointmentResult = (orderProductId: string, options: any) => {
-  const [updateAppointmentResult] = useMutation<
-    types.UPDATE_APPOINTMENT_Result,
-    types.UPDATE_APPOINTMENT_ResultVariables
-  >(gql`
-    mutation UPDATE_APPOINTMENT_Result($orderProductId: uuid!, $data: jsonb) {
-      update_order_product(where: { id: { _eq: $orderProductId } }, _set: { options: $data }) {
-        affected_rows
-      }
-    }
-  `)
-
-  return (appointmentResult: string) =>
-    updateAppointmentResult({
-      variables: {
-        orderProductId,
-        data: {
-          ...options,
-          appointmentResult,
-        },
-      },
-    })
 }

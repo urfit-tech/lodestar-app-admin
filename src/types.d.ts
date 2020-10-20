@@ -480,6 +480,95 @@ export interface DELETE_PROGRAM_CATEGORYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_APP_BASIC
+// ====================================================
+
+export interface UPDATE_APP_BASIC_update_app {
+  __typename: "app_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APP_BASIC {
+  /**
+   * update data of the table: "app"
+   */
+  update_app: UPDATE_APP_BASIC_update_app | null;
+}
+
+export interface UPDATE_APP_BASICVariables {
+  appId: string;
+  name?: string | null;
+  title?: string | null;
+  description?: string | null;
+  vimeoProjectId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPSERT_APP_SETTINGS
+// ====================================================
+
+export interface UPSERT_APP_SETTINGS_insert_app_setting {
+  __typename: "app_setting_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_APP_SETTINGS {
+  /**
+   * insert data into the table: "app_setting"
+   */
+  insert_app_setting: UPSERT_APP_SETTINGS_insert_app_setting | null;
+}
+
+export interface UPSERT_APP_SETTINGSVariables {
+  appSettings: app_setting_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_APPOINTMENT_RESULT
+// ====================================================
+
+export interface UPDATE_APPOINTMENT_RESULT_update_order_product {
+  __typename: "order_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APPOINTMENT_RESULT {
+  /**
+   * update data of the table: "order_product"
+   */
+  update_order_product: UPDATE_APPOINTMENT_RESULT_update_order_product | null;
+}
+
+export interface UPDATE_APPOINTMENT_RESULTVariables {
+  orderProductId: any;
+  data?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_TITLE
 // ====================================================
 
@@ -502,7 +591,6 @@ export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
   appointmentPlanId: any;
   title: string;
   phone: string;
-  supportLocales?: any | null;
 }
 
 /* tslint:disable */
@@ -2131,6 +2219,36 @@ export interface DELETE_TASKVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_ACCOUNT
+// ====================================================
+
+export interface UPDATE_MEMBER_ACCOUNT_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_ACCOUNT {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_ACCOUNT_update_member | null;
+}
+
+export interface UPDATE_MEMBER_ACCOUNTVariables {
+  memberId: string;
+  username: string;
+  email: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_AVATAR
 // ====================================================
 
@@ -2218,8 +2336,6 @@ export interface UPDATE_MEMBER_BASICVariables {
   memberId: string;
   name?: string | null;
   description?: string | null;
-  username?: string | null;
-  email?: string | null;
   title?: string | null;
   abstract?: string | null;
   tags: tag_insert_input[];
@@ -5054,94 +5170,6 @@ export interface GET_ACTIVITY_ADMINVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_APP
-// ====================================================
-
-export interface UPDATE_APP_update_app {
-  __typename: "app_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_APP {
-  /**
-   * update data of the table: "app"
-   */
-  update_app: UPDATE_APP_update_app | null;
-}
-
-export interface UPDATE_APPVariables {
-  appId: string;
-  name?: string | null;
-  title?: string | null;
-  description?: string | null;
-  vimeoProjectId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPSERT_APP_SETTINGS
-// ====================================================
-
-export interface UPSERT_APP_SETTINGS_insert_app_setting {
-  __typename: "app_setting_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPSERT_APP_SETTINGS {
-  /**
-   * insert data into the table: "app_setting"
-   */
-  insert_app_setting: UPSERT_APP_SETTINGS_insert_app_setting | null;
-}
-
-export interface UPSERT_APP_SETTINGSVariables {
-  appSettings: app_setting_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPSERT_APP_SECRETS
-// ====================================================
-
-export interface UPSERT_APP_SECRETS_insert_app_secret {
-  __typename: "app_secret_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPSERT_APP_SECRETS {
-  /**
-   * insert data into the table: "app_secret"
-   */
-  insert_app_secret: UPSERT_APP_SECRETS_insert_app_secret | null;
-}
-
-export interface UPSERT_APP_SECRETSVariables {
-  appSecrets: app_secret_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_APPOINTMENT_PLAN_ADMIN
 // ====================================================
 
@@ -5313,35 +5341,6 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION {
 export interface GET_APPOINTMENT_ENROLLMENT_COLLECTIONVariables {
   startedAt?: any | null;
   endedAt?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_APPOINTMENT_Result
-// ====================================================
-
-export interface UPDATE_APPOINTMENT_Result_update_order_product {
-  __typename: "order_product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_APPOINTMENT_Result {
-  /**
-   * update data of the table: "order_product"
-   */
-  update_order_product: UPDATE_APPOINTMENT_Result_update_order_product | null;
-}
-
-export interface UPDATE_APPOINTMENT_ResultVariables {
-  orderProductId: any;
-  data?: any | null;
 }
 
 /* tslint:disable */
@@ -6992,39 +6991,6 @@ export interface GET_MEMBER_SUMMARY_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER_ACCOUNT
-// ====================================================
-
-export interface UPDATE_MEMBER_ACCOUNT_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_ACCOUNT {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: UPDATE_MEMBER_ACCOUNT_update_member | null;
-}
-
-export interface UPDATE_MEMBER_ACCOUNTVariables {
-  memberId?: string | null;
-  name?: string | null;
-  description?: string | null;
-  username?: string | null;
-  email?: string | null;
-  pictureUrl?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_PROPERTY
 // ====================================================
 
@@ -7931,38 +7897,6 @@ export interface GET_PODCAST_PROGRAM_ADMINVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PODCAST_PLAN
-// ====================================================
-
-export interface GET_PODCAST_PLAN_podcast_plan_by_pk {
-  __typename: "podcast_plan";
-  id: any;
-  creator_id: string;
-  period_type: string;
-  period_amount: any;
-  list_price: any;
-  sale_price: any | null;
-  sold_at: any | null;
-  published_at: any | null;
-}
-
-export interface GET_PODCAST_PLAN {
-  /**
-   * fetch data from the table: "podcast_plan" using primary key columns
-   */
-  podcast_plan_by_pk: GET_PODCAST_PLAN_podcast_plan_by_pk | null;
-}
-
-export interface GET_PODCAST_PLANVariables {
-  podcastPlanId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_PODCAST_PLAN_ADMIN_COLLECTION
 // ====================================================
 
@@ -8014,37 +7948,6 @@ export interface GET_PODCAST_PLAN_ADMIN_COLLECTION {
 
 export interface GET_PODCAST_PLAN_ADMIN_COLLECTIONVariables {
   creatorId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_CONTENT
-// ====================================================
-
-export interface UPDATE_PODCAST_PROGRAM_CONTENT_update_podcast_program {
-  __typename: "podcast_program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_CONTENT {
-  /**
-   * update data of the table: "podcast_program"
-   */
-  update_podcast_program: UPDATE_PODCAST_PROGRAM_CONTENT_update_podcast_program | null;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_CONTENTVariables {
-  podcastProgramId: any;
-  contentType?: string | null;
-  updatedAt: any;
-  duration?: any | null;
 }
 
 /* tslint:disable */
@@ -8392,86 +8295,6 @@ export interface GET_PROGRAM_CONTENT_BODY {
 }
 
 export interface GET_PROGRAM_CONTENT_BODYVariables {
-  programContentId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PROGRAM_CONTENT
-// ====================================================
-
-export interface GET_PROGRAM_CONTENT_program_content_by_pk_program_content_plans_program_plan {
-  __typename: "program_plan";
-  id: any;
-  title: string;
-}
-
-export interface GET_PROGRAM_CONTENT_program_content_by_pk_program_content_plans {
-  __typename: "program_content_plan";
-  id: any;
-  /**
-   * An object relationship
-   */
-  program_plan: GET_PROGRAM_CONTENT_program_content_by_pk_program_content_plans_program_plan;
-}
-
-export interface GET_PROGRAM_CONTENT_program_content_by_pk_program_content_body {
-  __typename: "program_content_body";
-  id: any;
-  description: string | null;
-  data: any | null;
-  type: string | null;
-}
-
-export interface GET_PROGRAM_CONTENT_program_content_by_pk_program_content_progress {
-  __typename: "program_content_progress";
-  id: any;
-  progress: any;
-}
-
-export interface GET_PROGRAM_CONTENT_program_content_by_pk {
-  __typename: "program_content";
-  id: any;
-  title: string;
-  abstract: string | null;
-  created_at: any;
-  list_price: any | null;
-  sale_price: any | null;
-  sold_at: any | null;
-  metadata: any | null;
-  /**
-   * sec
-   */
-  duration: any | null;
-  published_at: any | null;
-  is_notify_update: boolean;
-  notified_at: any | null;
-  /**
-   * An array relationship
-   */
-  program_content_plans: GET_PROGRAM_CONTENT_program_content_by_pk_program_content_plans[];
-  /**
-   * An object relationship
-   */
-  program_content_body: GET_PROGRAM_CONTENT_program_content_by_pk_program_content_body;
-  /**
-   * An array relationship
-   */
-  program_content_progress: GET_PROGRAM_CONTENT_program_content_by_pk_program_content_progress[];
-}
-
-export interface GET_PROGRAM_CONTENT {
-  /**
-   * fetch data from the table: "program_content" using primary key columns
-   */
-  program_content_by_pk: GET_PROGRAM_CONTENT_program_content_by_pk | null;
-}
-
-export interface GET_PROGRAM_CONTENTVariables {
   programContentId: any;
 }
 

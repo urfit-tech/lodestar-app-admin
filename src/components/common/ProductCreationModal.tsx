@@ -26,6 +26,14 @@ const StyledExample = styled.div`
   color: var(--gray-dark);
 `
 
+type FieldProps = {
+  title: string
+  categoryIds: string[]
+  creatorId?: string
+  isSubscription?: boolean
+  isPhysical?: boolean
+}
+
 const ProductCreationModal: React.FC<
   AdminModalProps & {
     categoryClassType?: ClassType
@@ -43,7 +51,7 @@ const ProductCreationModal: React.FC<
   }
 > = ({ categoryClassType, withCreatorSelector, withProgramType, withMerchandiseType, onCreate, ...props }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { currentMemberId } = useAuth()
   const { enabledModules } = useContext(AppContext)
   const [loading, setLoading] = useState(false)
@@ -51,10 +59,11 @@ const ProductCreationModal: React.FC<
   const handleSubmit = () => {
     form
       .validateFields()
-      .then((values: any) => {
+      .then(() => {
         if (!onCreate) {
           return
         }
+        const values = form.getFieldsValue()
         setLoading(true)
         onCreate({
           title: values.title,

@@ -1,18 +1,25 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Skeleton } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { useForm } from 'antd/lib/form/Form'
+import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import { useMember, useUpdateMemberAccount } from '../../hooks/member'
+import { useMember } from '../../hooks/member'
+import types from '../../types'
 import { AdminBlockTitle } from '../admin'
 import AdminCard from '../admin/AdminCard'
-import { StyledForm } from '../layout'
 
 const messages = defineMessages({
   profileAdminTitle: { id: 'common.label.profileAdminTitle', defaultMessage: '帳號資料' },
 })
+
+type FieldProps = {
+  email: string
+  username: string
+}
 
 const ProfileAccountAdminCard: React.FC<
   CardProps & {
@@ -20,9 +27,11 @@ const ProfileAccountAdminCard: React.FC<
   }
 > = ({ memberId, ...cardProps }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { member } = useMember(memberId)
-  const updateMemberAccount = useUpdateMemberAccount()
+  const [updateMemberAccount] = useMutation<types.UPDATE_MEMBER_ACCOUNT, types.UPDATE_MEMBER_ACCOUNTVariables>(
+    UPDATE_MEMBER_ACCOUNT,
+  )
   const [loading, setLoading] = useState(false)
 
   if (!member) {
@@ -34,19 +43,13 @@ const ProfileAccountAdminCard: React.FC<
     )
   }
 
-  const handleSubmit = (values: any) => {
-    if (!member.id) {
-      return
-    }
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateMemberAccount({
       variables: {
         memberId,
-        email: values._email,
+        email: values.email,
         username: values.username,
-        name: member.name,
-        pictureUrl: member.pictureUrl,
-        description: member.description,
       },
     })
       .then(() => message.success(formatMessage(commonMessages.event.successfullySaved)))
@@ -57,7 +60,7 @@ const ProfileAccountAdminCard: React.FC<
     <AdminCard {...cardProps}>
       <AdminBlockTitle className="mb-4">{formatMessage(messages.profileAdminTitle)}</AdminBlockTitle>
 
-      <StyledForm
+      <Form
         form={form}
         labelAlign="left"
         labelCol={{ md: { span: 4 } }}
@@ -66,7 +69,7 @@ const ProfileAccountAdminCard: React.FC<
         hideRequiredMark
         initialValues={{
           username: member.username,
-          _email: member.email,
+          email: member.email,
         }}
         onFinish={handleSubmit}
       >
@@ -79,7 +82,7 @@ const ProfileAccountAdminCard: React.FC<
         </Form.Item>
         <Form.Item
           label={formatMessage(commonMessages.term.email)}
-          name="_email"
+          name="email"
           rules={[
             {
               required: true,
@@ -100,9 +103,17 @@ const ProfileAccountAdminCard: React.FC<
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>
-      </StyledForm>
+      </Form>
     </AdminCard>
   )
 }
+
+const UPDATE_MEMBER_ACCOUNT = gql`
+  mutation UPDATE_MEMBER_ACCOUNT($memberId: String!, $username: String!, $email: String!) {
+    update_member(where: { id: { _eq: $memberId } }, _set: { username: $username, email: $email }) {
+      affected_rows
+    }
+  }
+`
 
 export default ProfileAccountAdminCard
