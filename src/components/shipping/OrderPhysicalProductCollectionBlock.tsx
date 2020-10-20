@@ -6,7 +6,7 @@ import moment from 'moment-timezone'
 import { default as React, useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import MultipleUploader from '../../components/common/MultipleUploader'
+import MultipleUploader, { StyledFileBlock } from '../../components/common/MultipleUploader'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages,merchandiseMessages } from '../../helpers/translation'
@@ -144,6 +144,16 @@ const StyledSpace = styled.div`
     width: 100px;
   }
 `
+const StyledUploaderWrapper = styled.div`
+  position: relative;
+
+  & ${StyledFileBlock}:nth-child(n) {
+    margin-top: 0 !important;
+  }
+  & ${StyledFileBlock}:nth-child(2) {
+    margin-top: 1.5rem !important;
+  }
+`
 
 const ShippingProductItem: React.FC<{
   orderProductId: string
@@ -182,7 +192,7 @@ const ShippingProductItem: React.FC<{
               <div className="mt-3">
                 <span>{formatMessage(messages.deliveryItem)}</span>：
               </div>
-              <div className="flex-grow-1 mt-sm-n5 pt-2" style={{ position: 'relative' }}>
+              <StyledUploaderWrapper className="flex-grow-1 mt-sm-n5 pt-2">
                 <MultipleUploader
                   renderTrigger={({ loading }) => (
                     <StyledButtonWrapper>
@@ -218,7 +228,7 @@ const ShippingProductItem: React.FC<{
                       })
                   }}
                 />
-              </div>
+              </StyledUploaderWrapper>
               <StyledSpace />
             </div>
           </div>

@@ -26,7 +26,7 @@ const StyledCloseOutlines = styled(CloseOutlined)`
     color: 'gray-darker';
   }
 `
-const StyledFileBlock = styled.div`
+export const StyledFileBlock = styled.div`
   padding: 0.5rem;
   transition: background 0.2s ease-in-out;
 
