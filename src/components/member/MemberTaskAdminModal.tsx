@@ -6,15 +6,34 @@ import TextArea from 'antd/lib/input/TextArea'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useState } from 'react'
-import { useIntl } from 'react-intl'
+import { defineMessages, useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, memberMessages } from '../../helpers/translation'
+import externalLinkIcon from '../../images/icon/external-link-square.svg'
 import types from '../../types'
 import { MemberTaskProps } from '../../types/member'
 import { MemberTaskTag } from '../admin'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import AllMemberSelector from '../form/AllMemberSelector'
 import CategorySelector from '../form/CategorySelector'
+
+const messages = defineMessages({
+  check: { id: 'common.ui.check', defaultMessage: '查看' },
+})
+
+const StyledLinkIconWrapper = styled.span`
+  cursor: pointer;
+  & path {
+    fill: ${props => props.theme['@primary-color']};
+  }
+  color: ${props => props.theme['@primary-color']};
+`
+const StyledFormItemWrapper = styled.div`
+  & label {
+    width: 100%;
+  }
+`
 
 const MemberTaskAdminModal: React.FC<
   {
@@ -164,11 +183,24 @@ const MemberTaskAdminModal: React.FC<
         <Form.Item label={formatMessage(memberMessages.label.category)} name="categoryId">
           <CategorySelector classType="task" single />
         </Form.Item>
-
         <div className="row">
-          <div className="col-6">
+          <StyledFormItemWrapper className="col-6">
             <Form.Item
-              label={formatMessage(memberMessages.label.target)}
+              label={
+                <span className="d-flex justify-content-between" style={{ width: 'inherit' }}>
+                  {formatMessage(memberMessages.label.target)}
+                  <StyledLinkIconWrapper
+                    className="d-flex"
+                    onClick={() => {
+                      form.getFieldValue('memberId') &&
+                        window.open(`/admin/members/${form.getFieldValue('memberId')}`, '_blank')
+                    }}
+                  >
+                    <img className="align-items-center mr-1" src={externalLinkIcon} alt="externalLinkIcon" />
+                    {formatMessage(messages.check)}
+                  </StyledLinkIconWrapper>
+                </span>
+              }
               name="memberId"
               rules={[
                 {
@@ -181,7 +213,7 @@ const MemberTaskAdminModal: React.FC<
             >
               <AllMemberSelector />
             </Form.Item>
-          </div>
+          </StyledFormItemWrapper>
           <div className="col-6">
             <Form.Item label={formatMessage(memberMessages.label.assign)} name="executorId">
               <AllMemberSelector />
