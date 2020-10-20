@@ -1,4 +1,4 @@
-import { MoreOutlined } from '@ant-design/icons'
+import Icon, { MoreOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, DatePicker, Dropdown, Form, Input, Menu, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
@@ -10,7 +10,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, memberMessages } from '../../helpers/translation'
-import externalLinkIcon from '../../images/icon/external-link-square.svg'
+import { ReactComponent as ExternalLinkIcon } from '../../images/icon/external-link-square.svg'
 import types from '../../types'
 import { MemberTaskProps } from '../../types/member'
 import { MemberTaskTag } from '../admin'
@@ -190,13 +190,12 @@ const MemberTaskAdminModal: React.FC<
                 <span className="d-flex justify-content-between" style={{ width: 'inherit' }}>
                   {formatMessage(memberMessages.label.target)}
                   <StyledLinkIconWrapper
-                    className="d-flex"
                     onClick={() => {
                       form.getFieldValue('memberId') &&
                         window.open(`/admin/members/${form.getFieldValue('memberId')}`, '_blank')
                     }}
                   >
-                    <img className="align-items-center mr-1" src={externalLinkIcon} alt="externalLinkIcon" />
+                    <Icon component={() => <ExternalLinkIcon />} className="mr-1" />
                     {formatMessage(messages.check)}
                   </StyledLinkIconWrapper>
                 </span>
