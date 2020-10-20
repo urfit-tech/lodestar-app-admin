@@ -348,7 +348,14 @@ const RecordingPage: React.FC = () => {
             <RecordButton
               onStart={() => {
                 setIsRecording(true)
-                noSleep.enable()
+                document.addEventListener(
+                  'click',
+                  function enableNoSleep() {
+                    document.removeEventListener('click', enableNoSleep, false)
+                    noSleep.enable()
+                  },
+                  false,
+                )
               }}
               onStop={() => {
                 setIsRecording(false)
