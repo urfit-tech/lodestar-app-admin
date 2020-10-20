@@ -87,6 +87,7 @@ export type ShippingProps = {
   address: string
   shippingMethod: string
   specification: string
+  storeName?: string
 }
 
 export type InvoiceProps = {
@@ -100,4 +101,5 @@ export type InvoiceProps = {
   donationCode?: string
   postCode?: string
   address?: string
+  status?: string
 }

@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { useContext } from 'react'
 import { useIntl } from 'react-intl'
+import { UploadFile } from 'antd/lib/upload/interface'
 import AppContext from '../contexts/AppContext'
 import { commonMessages } from '../helpers/translation'
 import types from '../types'
@@ -363,7 +364,7 @@ export const useOrderPhysicalProductLog = () => {
     gql`
       query GET_PHYSICAL_PRODUCT_ORDER_LOG {
         order_log(
-          where: { status: { _eq: "SUCCESS" }, shipping: { _has_key: "address" } }
+          where: { status: { _eq: "SUCCESS" }}
           order_by: [{ updated_at: desc_nulls_last }, { created_at: desc }]
         ) {
           id
@@ -377,7 +378,21 @@ export const useOrderPhysicalProductLog = () => {
             id
             name
             product_id
+            description
             options
+            order_product_files(order_by: { updated_at: asc }) {
+              id
+              data
+            }
+            product {
+              product_owner {
+                type
+                target
+              }
+            }
+          }
+          member {
+            name
           }
         }
       }
@@ -386,26 +401,31 @@ export const useOrderPhysicalProductLog = () => {
 
   const orderPhysicalProductLogs: {
     id: string
+    member: string
     createdAt: Date
     updatedAt: Date
     deliveredAt: Date
     deliverMessage: string | null
-    shipping: ShippingProps
+    shipping: ShippingProps | null
     invoice: InvoiceProps
     orderPhysicalProducts: {
       key: string
       id: string
       name: string
       productId: string
+      description: string | null
       quantity: number
+      files: UploadFile[]
+      memberShopId?: string | null
     }[]
   }[] =
     error || loading || !data
       ? []
       : data.order_log
-          .filter(orderLog => orderLog.order_products.length && orderLog.shipping.address)
+          .filter(orderLog => orderLog.order_products.length && orderLog.shipping?.address)
           .map(orderLog => ({
             id: orderLog.id,
+            member: orderLog.member.name,
             createdAt: orderLog.created_at,
             updatedAt: orderLog.updated_at,
             deliveredAt: orderLog.delivered_at,
@@ -418,6 +438,9 @@ export const useOrderPhysicalProductLog = () => {
               name: orderPhysicalProduct.name,
               productId: orderPhysicalProduct.product_id.split('_')[1],
               quantity: orderPhysicalProduct.options?.quantity || 1,
+              description: orderPhysicalProduct.description,
+              files: orderPhysicalProduct.order_product_files.map(v => v.data),
+              memberShopId: orderPhysicalProduct.product.product_owner?.target || undefined,
             })),
           }))
 
@@ -547,6 +570,8 @@ export const useSimpleProduct = (
           id
           title
           list_price
+          is_physical
+          is_customized
           merchandise_imgs(where: { type: { _eq: "cover" } }) {
             url
           }
@@ -575,6 +600,8 @@ export const useSimpleProduct = (
     endedAt?: Date
     quantity?: number
     isSubscription?: boolean
+    isPhysical?: boolean
+    isCustomized?: boolean
   } | null =
     loading || error || !data
       ? null
@@ -681,6 +708,8 @@ export const useSimpleProduct = (
           listPrice: data.merchandise_by_pk.list_price,
           coverUrl: data.merchandise_by_pk.merchandise_imgs[0]?.url,
           quantity: options.quantity,
+          isPhysical: data.merchandise_by_pk.is_physical,
+          isCustomized: data.merchandise_by_pk.is_customized,
         }
       : {
           id: targetId,
