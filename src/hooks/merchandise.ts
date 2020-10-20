@@ -313,7 +313,7 @@ export const useMemberShop = (shopId: string) => {
 }
 
 export const useMerchandiseSpecCollection = (
-  merchandiseSearchLike: string | null,
+  merchandiseSearch?: string,
   isLimited?: boolean,
   isCustomized?: boolean,
   merchandiseId?: string,
@@ -360,7 +360,7 @@ export const useMerchandiseSpecCollection = (
     `,
     {
       variables: {
-        merchandiseSearchLike,
+        merchandiseSearchLike: merchandiseSearch && `%${merchandiseSearch}%`,
         isLimited,
         isCustomized,
         merchandiseId,

@@ -51,7 +51,7 @@ const MerchandiseAdminPage: React.FC = () => {
   const { settings } = useContext(AppContext)
   const { loadingMerchandise, errorMerchandise, merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
   const { loadingMerchandiseSpecs, merchandiseSpecs, refetchMerchandiseSpecs } = useMerchandiseSpecCollection(
-    null,
+    undefined,
     true,
     false,
     merchandiseId,
@@ -180,7 +180,7 @@ const MerchandiseAdminPage: React.FC = () => {
                       merchandiseSpecTitle={merchandiseSpec.merchandiseSpecTitle}
                       merchandiseSpecInventoryStatus={merchandiseSpec.merchandiseSpecInventoryStatus}
                       merchandiseMemberShop={merchandiseSpec.merchandiseMemberShop}
-                      refetch={refetchMerchandiseSpecs}
+                      onRefetch={refetchMerchandiseSpecs}
                     />
                   ))
                 )}

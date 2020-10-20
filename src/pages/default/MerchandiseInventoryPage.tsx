@@ -24,7 +24,7 @@ const MerchandiseInventoryPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()
   const { memberShops } = useMemberShopCollection()
   const [selectedMemberShop, setSelectedMemberShop] = useState<string>('all')
-  const [merchandiseSearch, setMerchandiseSearch] = useState<string | null>(null)
+  const [merchandiseSearch, setMerchandiseSearch] = useState<string | undefined>(undefined)
   const { loadingMerchandiseSpecs, merchandiseSpecs, refetchMerchandiseSpecs } = useMerchandiseSpecCollection(
     merchandiseSearch,
     true,
@@ -102,7 +102,7 @@ const MerchandiseInventoryPage: React.FC<{}> = () => {
           <Search
             placeholder={formatMessage(merchandiseMessages.text.searchMerchandise)}
             onSearch={value => {
-              value === '' ? setMerchandiseSearch(null) : setMerchandiseSearch(`%${value}%`)
+              value === '' ? setMerchandiseSearch(undefined) : setMerchandiseSearch(value)
             }}
           />
         </div>
@@ -127,7 +127,7 @@ const MerchandiseInventoryPage: React.FC<{}> = () => {
                   merchandiseSpecTitle={merchandise.merchandiseSpecTitle}
                   merchandiseSpecInventoryStatus={merchandise.merchandiseSpecInventoryStatus}
                   merchandiseMemberShop={merchandise.merchandiseMemberShop}
-                  refetch={refetchMerchandiseSpecs}
+                  onRefetch={refetchMerchandiseSpecs}
                 />
               ))
             )}

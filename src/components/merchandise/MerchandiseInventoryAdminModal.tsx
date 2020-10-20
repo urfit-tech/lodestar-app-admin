@@ -1,5 +1,6 @@
 import { ArrowRightOutlined } from '@ant-design/icons'
 import { Button, Input, Modal } from 'antd'
+import { ModalProps } from 'antd/lib/modal'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -47,10 +48,10 @@ const StatusCardQuantity = styled.div`
   color: var(--gray-darker);
 `
 const MerchandiseInventoryAdminModal: React.FC<
-  MerchandiseInventoryCardProps & {
-    isModalVisible: boolean
-    setModalVisible: React.Dispatch<React.SetStateAction<boolean>>
-  }
+  MerchandiseInventoryCardProps &
+    ModalProps & {
+      setVisible: React.Dispatch<React.SetStateAction<boolean>>
+    }
 > = ({
   merchandiseSpecId,
   coverUrl,
@@ -58,9 +59,9 @@ const MerchandiseInventoryAdminModal: React.FC<
   merchandiseSpecTitle,
   merchandiseSpecInventoryStatus,
   merchandiseMemberShop,
-  isModalVisible,
-  refetch,
-  setModalVisible,
+  visible,
+  setVisible,
+  onRefetch,
 }) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
@@ -71,28 +72,25 @@ const MerchandiseInventoryAdminModal: React.FC<
 
   const handleSubmit = (closeModal: () => void) => {
     setLoading(true)
-    if (merchandiseSpecInventoryStatus.buyableQuantity + quantity < 0) {
-      setLoading(false)
-      return
-    }
+    if (merchandiseSpecInventoryStatus.buyableQuantity + quantity < 0) setLoading(false)
     arrangeProductInventory({
       specification: merchandiseSpecTitle,
       quantity: quantity,
       comment: comment || null,
     })
       .then(() => {
+        onRefetch && onRefetch()
         closeModal()
       })
       .catch(handleError)
       .finally(() => {
         setLoading(false)
-        refetch && refetch()
         refetchInventoryLogs && refetchInventoryLogs()
       })
   }
 
   return (
-    <Modal width="70vw" footer={null} visible={isModalVisible} onCancel={() => setModalVisible(false)}>
+    <Modal width="70vw" footer={null} visible={visible} onCancel={() => setVisible(false)}>
       <div className="container py-2">
         <MerchandiseModalTitle>{formatMessage(merchandiseMessages.status.arrange)}</MerchandiseModalTitle>
         <div className="d-flex align-items-center my-sm-4">
@@ -147,13 +145,13 @@ const MerchandiseInventoryAdminModal: React.FC<
             <Button
               className="mr-2"
               onClick={() => {
-                setModalVisible(false)
+                setVisible(false)
                 setQuantity(0)
               }}
             >
               {formatMessage(commonMessages.ui.cancel)}
             </Button>
-            <Button loading={loading} type="primary" onClick={() => handleSubmit(() => setModalVisible(false))}>
+            <Button loading={loading} type="primary" onClick={() => handleSubmit(() => setVisible(false))}>
               {formatMessage(commonMessages.ui.save)}
             </Button>
           </div>

@@ -58,7 +58,7 @@ export type MerchandiseInventoryCardProps = CardProps & {
   merchandiseSpecTitle: string
   merchandiseSpecInventoryStatus: ProductInventoryStatusProps
   merchandiseMemberShop?: string
-  refetch?: () => void
+  onRefetch?: () => void
 }
 
 const MerchandiseInventoryCard: React.FC<MerchandiseInventoryCardProps> = ({
@@ -68,15 +68,15 @@ const MerchandiseInventoryCard: React.FC<MerchandiseInventoryCardProps> = ({
   merchandiseSpecTitle,
   merchandiseSpecInventoryStatus,
   merchandiseMemberShop,
-  refetch,
+  onRefetch,
   ...cardProps
 }) => {
   const { formatMessage } = useIntl()
-  const [isModalVisible, setModalVisible] = useState<boolean>(false)
+  const [visible, setVisible] = useState(false)
 
   return (
     <>
-      <StyledMerchandiseInventoryCard className="mb-3" {...cardProps}>
+      <StyledMerchandiseInventoryCard className="mb-3" {...cardProps} onClick={() => setVisible(true)}>
         <div className="d-flex align-items-center">
           <MerchandiseCover src={coverUrl} className="mr-sm-3 mr-2" />
           <div>
@@ -106,7 +106,6 @@ const MerchandiseInventoryCard: React.FC<MerchandiseInventoryCardProps> = ({
             </div>
           </div>
         </div>
-        <div className="mask" onClick={() => setModalVisible(true)} />
       </StyledMerchandiseInventoryCard>
 
       <MerchandiseInventoryAdminModal
@@ -116,9 +115,9 @@ const MerchandiseInventoryCard: React.FC<MerchandiseInventoryCardProps> = ({
         merchandiseSpecTitle={merchandiseSpecTitle}
         merchandiseSpecInventoryStatus={merchandiseSpecInventoryStatus}
         merchandiseMemberShop={merchandiseMemberShop}
-        isModalVisible={isModalVisible}
-        setModalVisible={setModalVisible}
-        refetch={refetch}
+        visible={visible}
+        setVisible={setVisible}
+        onRefetch={onRefetch}
       />
     </>
   )
