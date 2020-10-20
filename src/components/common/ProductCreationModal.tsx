@@ -31,7 +31,7 @@ type FieldProps = {
   categoryIds: string[]
   creatorId?: string
   isSubscription?: boolean
-  isPhysical?: boolean
+  merchandiseType: 'general-physical' | 'general-virtual' | 'customized-physical' | 'customized-virtual'
 }
 
 const ProductCreationModal: React.FC<
