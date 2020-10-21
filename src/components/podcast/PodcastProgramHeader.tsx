@@ -5,6 +5,7 @@ import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { handleError } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { mergePodcastProgram } from '../../pages/default/RecordingPageHelpers'
 import { AdminHeader, AdminHeaderTitle } from '../admin'
@@ -33,10 +34,12 @@ const PodcastProgramHeader: React.FC<{
         <Button
           onClick={() => {
             setIsGeneratingAudio(true)
-            mergePodcastProgram(authToken, appId, podcastProgramId).then(() => {
-              setIsGeneratingAudio(false)
-              window.open(`https://${settings['host']}/podcasts/${podcastProgramId}`, '_blank')
-            })
+            mergePodcastProgram(authToken, appId, podcastProgramId)
+              .then(() => {
+                setIsGeneratingAudio(false)
+                window.open(`https://${settings['host']}/podcasts/${podcastProgramId}`, '_blank')
+              })
+              .catch(handleError)
           }}
         >
           {formatMessage(commonMessages.ui.preview)}
