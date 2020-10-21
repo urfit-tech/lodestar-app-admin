@@ -53,7 +53,9 @@ const ProductCreationModal: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { currentMemberId } = useAuth()
-  const { enabledModules } = useContext(AppContext)
+  const {
+    enabledModules: { merchandise_customization, merchandise_virtualness },
+  } = useContext(AppContext)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
@@ -146,14 +148,17 @@ const ProductCreationModal: React.FC<
               <StyledExample className="ml-4 mb-4">
                 {formatMessage(merchandiseMessages.text.generalPhysicalMerchandise)}
               </StyledExample>
-              <Radio value="general-virtual">
-                <StyledLabel>{formatMessage(merchandiseMessages.label.generalVirtualMerchandise)}</StyledLabel>
-              </Radio>
-              <StyledExample className="ml-4 mb-4">
-                {formatMessage(merchandiseMessages.text.generalVirtualMerchandise)}
-              </StyledExample>
-
-              {enabledModules.merchandise_customization && (
+              {merchandise_virtualness && (
+                <>
+                  <Radio value="general-virtual">
+                    <StyledLabel>{formatMessage(merchandiseMessages.label.generalVirtualMerchandise)}</StyledLabel>
+                  </Radio>
+                  <StyledExample className="ml-4 mb-4">
+                    {formatMessage(merchandiseMessages.text.generalVirtualMerchandise)}
+                  </StyledExample>
+                </>
+              )}
+              {merchandise_customization && (
                 <>
                   <Radio value="customized-physical">
                     <StyledLabel>{formatMessage(merchandiseMessages.label.customizedPhysicalMerchandise)}</StyledLabel>
@@ -161,6 +166,10 @@ const ProductCreationModal: React.FC<
                   <StyledExample className="ml-4 mb-4">
                     {formatMessage(merchandiseMessages.text.customizedPhysicalMerchandise)}
                   </StyledExample>
+                </>
+              )}
+              {merchandise_virtualness && merchandise_customization && (
+                <>
                   <Radio value="customized-virtual">
                     <StyledLabel>{formatMessage(merchandiseMessages.label.customizedVirtualMerchandise)}</StyledLabel>
                   </Radio>

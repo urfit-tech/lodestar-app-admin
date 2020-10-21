@@ -28,6 +28,7 @@ export type Module =
   | 'tempo_delivery'
   | 'voucher'
   | 'merchandise_customization'
+  | 'merchandise_virtualness'
 
 export type Currency = {
   name: string
