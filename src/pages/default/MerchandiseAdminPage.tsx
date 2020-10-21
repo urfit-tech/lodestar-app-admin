@@ -136,7 +136,11 @@ const MerchandiseAdminPage: React.FC = () => {
               </AdminBlock>
               <AdminBlock>
                 <AdminBlockTitle>{formatMessage(merchandiseMessages.label.delete)}</AdminBlockTitle>
-                <MerchandiseDeleteBlock merchandiseId={merchandiseId} onRefetch={refetchMerchandise} />
+                <MerchandiseDeleteBlock
+                  merchandiseId={merchandiseId}
+                  memberShopId={merchandise.memberShopId}
+                  onRefetch={refetchMerchandise}
+                />
               </AdminBlock>
             </div>
           </Tabs.TabPane>
