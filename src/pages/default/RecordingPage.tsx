@@ -1,6 +1,5 @@
 import { message, Modal, Spin } from 'antd'
 import { isEqual } from 'lodash'
-import NoSleep from 'nosleep.js'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
@@ -88,7 +87,6 @@ const RecordingPage: React.FC = () => {
   const [playRate, setPlayRate] = useState(1)
 
   const history = useHistory()
-  const noSleep = new NoSleep()
 
   const currentAudioIndex = signedPodCastProgramAudios.findIndex(body => body.id === currentAudioId)
 
@@ -348,18 +346,9 @@ const RecordingPage: React.FC = () => {
             <RecordButton
               onStart={() => {
                 setIsRecording(true)
-                document.addEventListener(
-                  'click',
-                  function enableNoSleep() {
-                    document.removeEventListener('click', enableNoSleep, false)
-                    noSleep.enable()
-                  },
-                  false,
-                )
               }}
               onStop={() => {
                 setIsRecording(false)
-                noSleep.disable()
               }}
               onGetAudio={onGetRecordAudio}
             />
