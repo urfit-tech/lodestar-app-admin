@@ -5,7 +5,6 @@ import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
 import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
-import { v4 as uuid } from 'uuid'
 import AudioTrackCard, { AudioTrackCardRef } from '../../components/podcast/AudioTrackCard'
 import PodcastProgramHeader from '../../components/podcast/PodcastProgramHeader'
 import RecordButton from '../../components/podcast/RecordButton'
@@ -92,7 +91,7 @@ const RecordingPage: React.FC = () => {
 
   const onGetRecordAudio = useCallback(
     (blob: Blob, duration: number) => {
-      const filename = `${uuid()}.mp3`
+      const filename = `未命名${`${signedPodCastProgramAudios.length + 1}`.padStart(2, '0')}.mp3`
       const audioKey = `audios/${appId}/${podcastProgramId}/${filename}`
 
       setIsGeneratingAudio(true)
@@ -108,7 +107,7 @@ const RecordingPage: React.FC = () => {
           setIsGeneratingAudio(false)
         })
     },
-    [appId, authToken, podcastProgramId, refetchPodcastProgramAdmin],
+    [appId, authToken, podcastProgramId, signedPodCastProgramAudios, refetchPodcastProgramAdmin],
   )
 
   useEffect(() => {
@@ -283,14 +282,14 @@ const RecordingPage: React.FC = () => {
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      const { keyCode } = event
-      if ([32, 39, 37, 68, 67, 83, 85].includes(keyCode)) {
+      const { code: keyCode } = event
+      if (['Space', 'ArrowRight', 'ArrowLeft', 'KeyD', 'KeyC', 'KeyS', 'KeyU'].includes(keyCode)) {
         event.preventDefault()
         event.stopPropagation()
       }
       switch (keyCode) {
         // Press space key
-        case 32:
+        case 'Space':
           if (isPlaying) {
             setIsPlaying(false)
           } else {
@@ -298,27 +297,27 @@ const RecordingPage: React.FC = () => {
           }
           break
         // Right key
-        case 39:
+        case 'ArrowRight':
           onForward()
           break
         // Left key
-        case 37:
+        case 'ArrowLeft':
           onBackward()
           break
         // D key for delete
-        case 68:
+        case 'KeyD':
           onDeleteAudioTrack()
           break
         // C key for cut
-        case 67:
+        case 'KeyC':
           onTrimAudio()
           break
         // S key for speed
-        case 83:
+        case 'KeyS':
           onPlayRateChange()
           break
         // U key for upload
-        case 85:
+        case 'KeyU':
           showUploadConfirmationModal()
           break
       }
