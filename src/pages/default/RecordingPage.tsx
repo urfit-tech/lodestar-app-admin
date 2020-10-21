@@ -1,5 +1,6 @@
 import { message, Modal, Spin } from 'antd'
 import { isEqual } from 'lodash'
+import NoSleep from 'nosleep.js'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
@@ -22,7 +23,6 @@ import {
   movePodcastProgramAudio,
   splitPodcastProgramAudio,
 } from './RecordingPageHelpers'
-
 const StyledLayoutContent = styled.div`
   height: calc(100vh - 64px);
   overflow-y: auto;
@@ -338,6 +338,28 @@ const RecordingPage: React.FC = () => {
     onPlay,
   ])
 
+  const [isNoSleep, setIsNoSleep] = useState(false)
+  const [noSleep, setNoSleep] = useState<NoSleep | null>(null)
+
+  try {
+    const _noSleep = new NoSleep()
+    setNoSleep(_noSleep)
+
+    document.querySelector('#recordButton')?.addEventListener('click', () => {
+      if (isNoSleep) {
+        console.log('sleep')
+        setIsNoSleep(false)
+        noSleep?.disable()
+      } else {
+        console.log('wake')
+        setIsNoSleep(true)
+        noSleep?.enable()
+      }
+    })
+  } catch (error) {
+    console.log(`noSleep is error: ${error}`)
+  }
+
   return (
     <div>
       <PodcastProgramHeader podcastProgramId={podcastProgramId} title={podcastProgramAdmin?.title} noPreview />
@@ -346,6 +368,7 @@ const RecordingPage: React.FC = () => {
           <div className="text-center mb-5">
             <StyledPageTitle>{formatMessage(podcastMessages.ui.recordAudio)}</StyledPageTitle>
             <RecordButton
+              id="recordButton"
               onStart={() => {
                 setIsRecording(true)
               }}
