@@ -2575,6 +2575,7 @@ export interface UPDATE_MERCHANDISE_BASICVariables {
   categories: merchandise_category_insert_input[];
   tags: tag_insert_input[];
   merchandiseTags: merchandise_tag_insert_input[];
+  isLimited: boolean;
 }
 
 /* tslint:disable */
@@ -3122,45 +3123,6 @@ export interface UPDATE_PODCAST_PROGRAM_BODYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: CREATE_PODCAST_PROGRAM
-// ====================================================
-
-export interface CREATE_PODCAST_PROGRAM_insert_podcast_program_returning {
-  __typename: "podcast_program";
-  id: any;
-}
-
-export interface CREATE_PODCAST_PROGRAM_insert_podcast_program {
-  __typename: "podcast_program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: CREATE_PODCAST_PROGRAM_insert_podcast_program_returning[];
-}
-
-export interface CREATE_PODCAST_PROGRAM {
-  /**
-   * insert data into the table: "podcast_program"
-   */
-  insert_podcast_program: CREATE_PODCAST_PROGRAM_insert_podcast_program | null;
-}
-
-export interface CREATE_PODCAST_PROGRAMVariables {
-  title: string;
-  creatorId: string;
-  podcastCategories: podcast_program_category_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_ROLE
 // ====================================================
 
@@ -3235,7 +3197,7 @@ export interface UPDATE_PODCAST_PROGRAM_COVER {
 
 export interface UPDATE_PODCAST_PROGRAM_COVERVariables {
   podcastProgramId: any;
-  coverUrl: string;
+  coverUrl?: string | null;
   updatedAt: any;
 }
 
@@ -9407,6 +9369,45 @@ export interface DELETE_POINT_LOG {
 
 export interface DELETE_POINT_LOGVariables {
   pointLogId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CREATE_PODCAST_PROGRAM
+// ====================================================
+
+export interface CREATE_PODCAST_PROGRAM_insert_podcast_program_returning {
+  __typename: "podcast_program";
+  id: any;
+}
+
+export interface CREATE_PODCAST_PROGRAM_insert_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: CREATE_PODCAST_PROGRAM_insert_podcast_program_returning[];
+}
+
+export interface CREATE_PODCAST_PROGRAM {
+  /**
+   * insert data into the table: "podcast_program"
+   */
+  insert_podcast_program: CREATE_PODCAST_PROGRAM_insert_podcast_program | null;
+}
+
+export interface CREATE_PODCAST_PROGRAMVariables {
+  title: string;
+  creatorId: string;
+  podcastCategories: podcast_program_category_insert_input[];
 }
 
 /* tslint:disable */

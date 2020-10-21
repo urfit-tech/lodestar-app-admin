@@ -776,6 +776,7 @@ export const merchandiseMessages = {
     shippingMail: { id: 'merchandise.label.shippingMail', defaultMessage: '收件人信箱' },
     specTitle: { id: 'merchandise.label.specTitle', defaultMessage: '規格名稱' },
     specSalePrice: { id: 'merchandise.label.specSalePrice', defaultMessage: '優惠價 (若無請留空)' },
+    inventory: { id: 'merchandise.label.inventory', defaultMessage: '庫存' },
   }),
   text: defineMessages({
     searchMerchandise: { id: 'merchandise.text.searchMerchandise', defaultMessage: '搜尋商品名稱' },
@@ -806,7 +807,7 @@ export const merchandiseMessages = {
     },
     generalPhysicalDescription: {
       id: 'merchandise.text.generalPhysicalDescription',
-      defaultMessage: '此為實體需寄送的商品，可於請設定庫存，出貨後請記得於出貨管理通知買家',
+      defaultMessage: '此為實體需寄送的商品，出貨後請記得於出貨管理通知買家',
     },
     generalVirtualDescription: {
       id: 'merchandise.text.generalVirtualDescription',
@@ -822,6 +823,7 @@ export const merchandiseMessages = {
     },
     specTitleHint: { id: 'merchandise.text.specTitleHint', defaultMessage: 'ex. 紅色 S 號' },
     noMatchingItems: { id: 'merchandise.text.noMatchingItems', defaultMessage: '沒有任何符合項目' },
+    deliveryItemHelp: { id: 'merchandise.text.deliveryItemHelp', defaultMessage: '單檔案大小不超過 5GB' },
   }),
 }
 

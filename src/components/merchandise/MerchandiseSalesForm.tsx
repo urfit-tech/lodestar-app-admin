@@ -2,11 +2,11 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, DatePicker, Form, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
 
@@ -17,13 +17,20 @@ const messages = defineMessages({
   showCountdownTimer: { id: 'merchandise.label.showCountdownTimer', defaultMessage: '顯示倒數計時' },
 })
 
+type FieldProps = {
+  startedAt: Moment
+  endedAt: Moment
+  soldAt: Moment
+  isCountdownTimerVisible: boolean
+}
+
 const MerchandiseSalesForm: React.FC<{
   merchandise: MerchandiseProps
   merchandiseId: string
   onRefetch?: () => void
 }> = ({ merchandise, merchandiseId, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [updateMerchandiseSales] = useMutation<types.UPDATE_MERCHANDISE_SALES, types.UPDATE_MERCHANDISE_SALESVariables>(
     UPDATE_MERCHANDISE_SALES,
   )
@@ -32,20 +39,20 @@ const MerchandiseSalesForm: React.FC<{
   const [withSellingTime, setWithSellingTime] = useState(!!merchandise.startedAt || !!merchandise.endedAt)
   const [withSoldAt, setWithSoldAt] = useState(!!merchandise.soldAt)
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateMerchandiseSales({
       variables: {
         merchandiseId,
-        soldAt: withSoldAt ? values.soldAt : null,
-        startedAt: withSellingTime ? values.startedAt : null,
-        endedAt: withSellingTime ? values.endedAt : null,
+        soldAt: withSoldAt ? values.soldAt.toDate() : null,
+        startedAt: withSellingTime ? values.startedAt.toDate() : null,
+        endedAt: withSellingTime ? values.endedAt.toDate() : null,
         isCountdownTimerVisible: values.isCountdownTimerVisible,
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -91,7 +98,17 @@ const MerchandiseSalesForm: React.FC<{
           {formatMessage(messages.withSalePrice)}
         </Checkbox>
         <div className={`mt-2 ml-3 ${withSoldAt ? '' : 'd-none'}`}>
-          <Form.Item name="soldAt">
+          <Form.Item
+            name="soldAt"
+            rules={[
+              {
+                required: withSoldAt,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(commonMessages.label.salePriceEndTime),
+                }),
+              },
+            ]}
+          >
             <DatePicker
               format="YYYY-MM-DD HH:mm"
               showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}

@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import BraftEditor from 'braft-editor'
+import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -11,30 +11,34 @@ import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 
+type FieldProps = {
+  description: EditorState
+}
+
 const MerchandiseDescriptionForm: React.FC<{
   merchandise: MerchandiseProps
   merchandiseId: string
   onRefetch?: () => void
 }> = ({ merchandise, merchandiseId, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [updateMerchandiseDescription] = useMutation<
     types.UPDATE_MERCHANDISE_DESCRIPTION,
     types.UPDATE_MERCHANDISE_DESCRIPTIONVariables
   >(UPDATE_MERCHANDISE_DESCRIPTION)
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateMerchandiseDescription({
       variables: {
         merchandiseId,
-        description: values.description.toRAW(),
+        description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

@@ -12,13 +12,17 @@ import { MerchandiseProps } from '../../types/merchandise'
 import { StyledTips } from '../admin'
 import MerchandiseImagesUploader from './MerchandiseImagesUploader'
 
+type FieldProps = {
+  abstract: string
+}
+
 const MerchandiseIntroductionForm: React.FC<{
   merchandise: MerchandiseProps
   merchandiseId: string
   onRefetch?: () => void
 }> = ({ merchandise, merchandiseId, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [updateMerchandiseImages] = useMutation<
     types.UPDATE_MERCHANDISE_IMAGES,
     types.UPDATE_MERCHANDISE_IMAGESVariables
@@ -29,7 +33,7 @@ const MerchandiseIntroductionForm: React.FC<{
   >(UPDATE_MERCHANDISE_INTRODUCTION)
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateMerchandiseIntroduction({
       variables: {
@@ -57,7 +61,7 @@ const MerchandiseIntroductionForm: React.FC<{
         })),
       },
     })
-      .then(() => onRefetch && onRefetch())
+      .then(() => onRefetch?.())
       .catch(handleError)
   }
 

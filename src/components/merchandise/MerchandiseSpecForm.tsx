@@ -1,6 +1,6 @@
-import { CloseOutlined, UploadOutlined } from '@ant-design/icons'
+import { CloseOutlined, QuestionCircleFilled, UploadOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Divider, Form, Input, message } from 'antd'
+import { Button, Divider, Form, Input, message, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
 import gql from 'graphql-tag'
@@ -14,7 +14,8 @@ import { commonMessages, errorMessages, merchandiseMessages } from '../../helper
 import { ReactComponent as PlusIcon } from '../../images/icon/plus.svg'
 import { ReactComponent as TrashOIcon } from '../../images/icon/trash-o.svg'
 import types from '../../types'
-import { MerchandiseProps, MerchandiseSpecProps } from '../../types/merchandise'
+import { MerchandiseProps } from '../../types/merchandise'
+import { StyledTips } from '../admin'
 import CurrencyInput from '../form/CurrencyInput'
 
 const StyledLabel = styled.div`
@@ -38,13 +39,23 @@ const StyledFileItem = styled.div`
   }
 `
 
+type FieldProps = {
+  specs: {
+    id: string
+    title: string
+    listPrice: number
+    salePrice?: number | null
+    quota?: number
+  }[]
+}
+
 const MerchandiseSpecForm: React.FC<{
   merchandise: MerchandiseProps
   merchandiseId: string
   onRefetch?: () => void
 }> = ({ merchandise, merchandiseId, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { authToken } = useAuth()
   const { id: appId } = useContext(AppContext)
   const [insertMerchandiseSpecCollection] = useMutation<
@@ -54,16 +65,15 @@ const MerchandiseSpecForm: React.FC<{
 
   const uploadCanceler = useRef<Canceler>()
   const [specFiles, setSpecFiles] = useState<File[][]>(merchandise.specs.map(spec => spec.files.map(file => file.data)))
-  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({})
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
-    const newSpecIds: string[] = values.specs.map((spec: MerchandiseSpecProps) => spec.id).filter(notEmpty)
+    const newSpecIds: string[] = values.specs.map(spec => spec.id).filter(notEmpty)
     insertMerchandiseSpecCollection({
       variables: {
         merchandiseId,
-        data: values.specs.map((spec: MerchandiseSpecProps, index: number) => ({
+        data: values.specs.map((spec, index) => ({
           merchandise_id: merchandiseId,
           id: spec.id || undefined,
           title: spec.title,
@@ -103,18 +113,11 @@ const MerchandiseSpecForm: React.FC<{
                 cancelToken: new axios.CancelToken(canceler => {
                   uploadCanceler.current = canceler
                 }),
-                onUploadProgress: progressEvent => {
-                  const percent = Math.floor((progressEvent.loaded / progressEvent.total) * 100)
-                  setUploadProgress(prev => ({
-                    ...prev,
-                    [file.name]: percent,
-                  }))
-                },
               })
             }
           }
-          onRefetch && onRefetch()
           message.success(formatMessage(commonMessages.event.successfullySaved))
+          onRefetch?.()
         } catch (error) {
           process.env.NODE_ENV === 'development' && console.error(error)
           return error
@@ -176,17 +179,29 @@ const MerchandiseSpecForm: React.FC<{
                   >
                     <CurrencyInput noUnit />
                   </Form.Item>
-                  <Form.Item
-                    name={[field.name, 'salePrice']}
-                    fieldKey={[field.fieldKey, 'salePrice']}
-                    label={<StyledLabel>{formatMessage(merchandiseMessages.label.specSalePrice)}</StyledLabel>}
-                    className="mb-0 mr-3"
-                  >
-                    <CurrencyInput noUnit />
-                  </Form.Item>
+                  {!!merchandise.soldAt && (
+                    <Form.Item
+                      name={[field.name, 'salePrice']}
+                      fieldKey={[field.fieldKey, 'salePrice']}
+                      label={<StyledLabel>{formatMessage(merchandiseMessages.label.specSalePrice)}</StyledLabel>}
+                      className="mb-0 mr-3"
+                    >
+                      <CurrencyInput noUnit />
+                    </Form.Item>
+                  )}
 
                   <Form.Item
-                    label={<StyledLabel>{formatMessage(merchandiseMessages.label.deliveryItem)}</StyledLabel>}
+                    label={
+                      <StyledLabel>
+                        <span className="mr-1">{formatMessage(merchandiseMessages.label.deliveryItem)}</span>
+                        <Tooltip
+                          placement="top"
+                          title={<StyledTips>{formatMessage(merchandiseMessages.text.deliveryItemHelp)}</StyledTips>}
+                        >
+                          <QuestionCircleFilled />
+                        </Tooltip>
+                      </StyledLabel>
+                    }
                     className={!merchandise.isPhysical && !merchandise.isCustomized ? undefined : 'd-none'}
                   >
                     <MerchandiseSpecFileUpload
@@ -215,9 +230,6 @@ const MerchandiseSpecForm: React.FC<{
                       className="d-flex align-items-center justify-content-between py-1 px-2"
                     >
                       <div className="flex-grow-1">{file.name}</div>
-                      {typeof uploadProgress[file.name] === 'number' && (
-                        <div className="flex-shrink-0">{uploadProgress[file.name]} %</div>
-                      )}
                       <StyledCloseIcon
                         className="flex-shrink-0 ml-2 pointer-cursor"
                         onClick={() => {

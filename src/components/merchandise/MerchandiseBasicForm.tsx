@@ -11,43 +11,54 @@ import { MerchandiseProps } from '../../types/merchandise'
 import CategorySelector from '../form/CategorySelector'
 import TagSelector from '../form/TagSelector'
 
+type FieldProps = {
+  title: string
+  categoryIds: string[]
+  tags: string[]
+  isLimited?: boolean
+}
+
 const MerchandiseBasicForm: React.FC<{
   merchandise: MerchandiseProps
   merchandiseId: string
   onRefetch?: () => void
 }> = ({ merchandise, merchandiseId, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [updateMerchandiseBasic] = useMutation<types.UPDATE_MERCHANDISE_BASIC, types.UPDATE_MERCHANDISE_BASICVariables>(
     UPDATE_MERCHANDISE_BASIC,
   )
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateMerchandiseBasic({
       variables: {
         merchandiseId: merchandiseId,
         title: values.title,
-        categories: values.categoryIds?.map((categoryId: string, index: number) => ({
-          merchandise_id: merchandiseId,
-          category_id: categoryId,
-          position: index,
-        })),
-        tags: values.tags?.map((tag: string) => ({
-          name: tag,
-          type: '',
-        })),
-        merchandiseTags: values.tags?.map((tag: string, index: number) => ({
-          merchandise_id: merchandiseId,
-          tag_name: tag,
-          position: index,
-        })),
+        categories:
+          values.categoryIds?.map((categoryId: string, index: number) => ({
+            merchandise_id: merchandiseId,
+            category_id: categoryId,
+            position: index,
+          })) || [],
+        tags:
+          values.tags?.map((tag: string) => ({
+            name: tag,
+            type: '',
+          })) || [],
+        merchandiseTags:
+          values.tags?.map((tag: string, index: number) => ({
+            merchandise_id: merchandiseId,
+            tag_name: tag,
+            position: index,
+          })) || [],
+        isLimited: values.isLimited ?? true,
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -65,6 +76,7 @@ const MerchandiseBasicForm: React.FC<{
         title: merchandise.title,
         categoryIds: merchandise.categories.map(category => category.id),
         tags: merchandise.tags,
+        isLimited: merchandise.isLimited,
       }}
       onFinish={handleSubmit}
     >
@@ -100,6 +112,7 @@ const MerchandiseBasicForm: React.FC<{
     </Form>
   )
 }
+
 const UPDATE_MERCHANDISE_BASIC = gql`
   mutation UPDATE_MERCHANDISE_BASIC(
     $merchandiseId: uuid!
@@ -107,8 +120,9 @@ const UPDATE_MERCHANDISE_BASIC = gql`
     $categories: [merchandise_category_insert_input!]!
     $tags: [tag_insert_input!]!
     $merchandiseTags: [merchandise_tag_insert_input!]!
+    $isLimited: Boolean!
   ) {
-    update_merchandise(where: { id: { _eq: $merchandiseId } }, _set: { title: $title }) {
+    update_merchandise(where: { id: { _eq: $merchandiseId } }, _set: { title: $title, is_limited: $isLimited }) {
       affected_rows
     }
 
