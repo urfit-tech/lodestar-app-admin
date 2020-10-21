@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
-import { exportPodcastProgram } from '../../pages/default/RecordingPageHelpers'
+import { mergePodcastProgram } from '../../pages/default/RecordingPageHelpers'
 import { AdminHeader, AdminHeaderTitle } from '../admin'
 
 const PodcastProgramHeader: React.FC<{
@@ -33,7 +33,7 @@ const PodcastProgramHeader: React.FC<{
         <Button
           onClick={() => {
             setIsGeneratingAudio(true)
-            exportPodcastProgram(authToken, appId, podcastProgramId).then(() => {
+            mergePodcastProgram(authToken, appId, podcastProgramId).then(() => {
               setIsGeneratingAudio(false)
               window.open(`https://${settings['host']}/podcasts/${podcastProgramId}`, '_blank')
             })

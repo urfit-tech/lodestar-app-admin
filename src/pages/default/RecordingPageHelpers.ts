@@ -17,7 +17,24 @@ export async function exportPodcastProgram(
   )
 }
 
-export async function appendPodcastProgramAduio(
+export async function mergePodcastProgram(
+  authToken: string | null,
+  appId: string,
+  podcastProgramId: string,
+): Promise<void> {
+  await axios.post(
+    `${process.env.REACT_APP_BACKEND_ENDPOINT}/podcast/merge`,
+    {
+      appId,
+      podcastProgramId,
+    },
+    {
+      headers: { authorization: `Bearer ${authToken}` },
+    },
+  )
+}
+
+export async function appendPodcastProgramAudio(
   authToken: string | null,
   appId: string,
   podcastProgramId: string,
@@ -40,7 +57,7 @@ export async function appendPodcastProgramAduio(
   )
 }
 
-export async function splitPodcastProgramAduio(
+export async function splitPodcastProgramAudio(
   authToken: string | null,
   appId: string,
   podcastProgramAudioId: string,
@@ -61,7 +78,7 @@ export async function splitPodcastProgramAduio(
   return resp.data.result.ids
 }
 
-export async function movePodcastProgramAduio(
+export async function movePodcastProgramAudio(
   authToken: string | null,
   appId: string,
   podcastProgramAudioId: string,
@@ -80,7 +97,7 @@ export async function movePodcastProgramAduio(
   )
 }
 
-export async function deletePodcastProgramAduio(
+export async function deletePodcastProgramAudio(
   authToken: string | null,
   appId: string,
   podcastProgramAudioId: string,

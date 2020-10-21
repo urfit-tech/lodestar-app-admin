@@ -17,7 +17,7 @@ import { handleError } from '../../helpers'
 import { getAudioDuration } from '../../helpers/audio'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
-import { appendPodcastProgramAduio, deletePodcastProgramAduio } from '../../pages/default/RecordingPageHelpers'
+import { appendPodcastProgramAudio, deletePodcastProgramAudio } from '../../pages/default/RecordingPageHelpers'
 import types from '../../types'
 import { PodcastProgramAdminProps } from '../../types/podcast'
 import { StyledTips } from '../admin'
@@ -71,7 +71,7 @@ const PodcastProgramContentForm: React.FC<{
     const duration = await getAudioDuration(file)
 
     setLoading(true)
-    appendPodcastProgramAduio(authToken, appId, podcastProgramAdmin.id, key, file.name, duration)
+    appendPodcastProgramAudio(authToken, appId, podcastProgramAdmin.id, key, file.name, duration)
       .then(() => {
         onRefetch && onRefetch()
         form.setFields([{ name: 'duration', value: duration }])
@@ -163,7 +163,7 @@ const PodcastProgramContentForm: React.FC<{
                 className="cursor-pointer"
                 onClick={() => {
                   setLoading(true)
-                  deletePodcastProgramAduio(authToken, appId, audio.id)
+                  deletePodcastProgramAudio(authToken, appId, audio.id)
                     .then(() => {
                       onRefetch && onRefetch()
                       message.success(formatMessage(commonMessages.event.successfullySaved))
