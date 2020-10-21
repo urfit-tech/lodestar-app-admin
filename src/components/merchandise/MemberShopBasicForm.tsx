@@ -12,7 +12,7 @@ import { MemberShopProps } from '../../types/merchandise'
 import ImageInput from '../form/ImageInput'
 
 const messages = defineMessages({
-  memberShopCover: { id: 'merchandise.text.memberShopCover', defaultMessage: '商城封面' },
+  memberShopCover: { id: 'merchandise.text.memberShopCover', defaultMessage: '商店封面' },
 })
 
 type FieldProps = {
