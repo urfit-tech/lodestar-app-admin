@@ -18,11 +18,11 @@ import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { usePodcastProgramAdmin } from '../../hooks/podcast'
 import { PodcastProgramAudio } from '../../types/podcast'
 import {
-  appendPodcastProgramAduio,
-  deletePodcastProgramAduio,
+  appendPodcastProgramAudio,
+  deletePodcastProgramAudio,
   exportPodcastProgram,
-  movePodcastProgramAduio,
-  splitPodcastProgramAduio,
+  movePodcastProgramAudio,
+  splitPodcastProgramAudio,
 } from './RecordingPageHelpers'
 
 const StyledLayoutContent = styled.div`
@@ -100,7 +100,7 @@ const RecordingPage: React.FC = () => {
       setIsGeneratingAudio(true)
       uploadFile(audioKey, blob, authToken, {})
         .then(async () => {
-          await appendPodcastProgramAduio(authToken, appId, podcastProgramId, audioKey, filename, duration)
+          await appendPodcastProgramAudio(authToken, appId, podcastProgramId, audioKey, filename, duration)
           await refetchPodcastProgramAdmin()
         })
         .catch(error => {
@@ -197,7 +197,7 @@ const RecordingPage: React.FC = () => {
     const audio = signedPodCastProgramAudios[currentAudioIndex]
 
     setIsGeneratingAudio(true)
-    deletePodcastProgramAduio(authToken, appId, audio.id)
+    deletePodcastProgramAudio(authToken, appId, audio.id)
       .then(async () => {
         await refetchPodcastProgramAdmin()
       })
@@ -229,7 +229,7 @@ const RecordingPage: React.FC = () => {
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const [audioId1, _] = await splitPodcastProgramAduio(authToken, appId, audio.id, currentPlayingSecond)
+      const [audioId1, _] = await splitPodcastProgramAudio(authToken, appId, audio.id, currentPlayingSecond)
 
       setCurrentPlayingSecond(0)
       setCurrentAudioId(audioId1)
@@ -400,7 +400,7 @@ const RecordingPage: React.FC = () => {
                 return
               }
 
-              movePodcastProgramAduio(authToken, appId, audioId, newIndex)
+              movePodcastProgramAudio(authToken, appId, audioId, newIndex)
             }}
           >
             {signedPodCastProgramAudios.map((audio, index) => {
