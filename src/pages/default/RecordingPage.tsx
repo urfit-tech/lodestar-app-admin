@@ -124,6 +124,9 @@ const RecordingPage: React.FC = () => {
       try {
         const signedPodCastProgramAudios = await signPodCastProgramAudios(authToken, podcastProgramAdmin.audios)
         setSignedPodCastProgramAudios(signedPodCastProgramAudios)
+        if (signedPodCastProgramAudios.length) {
+          setCurrentAudioId(signedPodCastProgramAudios[0].id)
+        }
       } catch (error) {
         message.error(error.message)
       }
