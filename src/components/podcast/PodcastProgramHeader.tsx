@@ -1,10 +1,12 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import { Button } from 'antd'
-import React, { useContext } from 'react'
+import { Button, Modal, Spin } from 'antd'
+import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import AppContext from '../../contexts/AppContext'
-import { commonMessages } from '../../helpers/translation'
+import { useAuth } from '../../contexts/AuthContext'
+import { commonMessages, podcastMessages } from '../../helpers/translation'
+import { exportPodcastProgram } from '../../pages/default/RecordingPageHelpers'
 import { AdminHeader, AdminHeaderTitle } from '../admin'
 
 const PodcastProgramHeader: React.FC<{
@@ -15,7 +17,9 @@ const PodcastProgramHeader: React.FC<{
 }> = ({ podcastProgramId, title, noPreview, goBackLink }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { settings } = useContext(AppContext)
+  const { authToken } = useAuth()
+  const { settings, id: appId } = useContext(AppContext)
+  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
 
   return (
     <AdminHeader>
@@ -26,10 +30,25 @@ const PodcastProgramHeader: React.FC<{
       <AdminHeaderTitle>{title || podcastProgramId}</AdminHeaderTitle>
 
       {!noPreview && (
-        <a href={`https://${settings['host']}/podcasts/${podcastProgramId}`} target="_blank" rel="noopener noreferrer">
-          <Button>{formatMessage(commonMessages.ui.preview)}</Button>
-        </a>
+        <Button
+          onClick={() => {
+            setIsGeneratingAudio(true)
+            exportPodcastProgram(authToken, appId, podcastProgramId).then(() => {
+              setIsGeneratingAudio(false)
+              window.open(`https://${settings['host']}/podcasts/${podcastProgramId}`, '_blank')
+            })
+          }}
+        >
+          {formatMessage(commonMessages.ui.preview)}
+        </Button>
       )}
+
+      <Modal visible={isGeneratingAudio} closable={false} footer={false}>
+        <div className="text-center">
+          <Spin size="large" className="my-5" />
+          <p className="mb-5">{formatMessage(podcastMessages.text.generatingVoice)}</p>
+        </div>
+      </Modal>
     </AdminHeader>
   )
 }
