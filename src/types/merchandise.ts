@@ -2,9 +2,9 @@ export type MerchandisePreviewProps = {
   id: string
   coverUrl: string | null
   title: string
-  listPrice: number
-  salePrice: number | null
   soldAt: Date | null
+  maxPrice: number | null
+  minPrice: number | null
   publishedAt: Date | null
   isPhysical: boolean
   isCustomized: boolean

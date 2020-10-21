@@ -6992,8 +6992,6 @@ export interface GET_MERCHANDISE_COLLECTION_merchandise {
   __typename: "merchandise";
   id: any;
   title: string;
-  list_price: any;
-  sale_price: any | null;
   sold_at: any | null;
   published_at: any | null;
   is_physical: boolean;
@@ -7196,6 +7194,12 @@ export interface GET_MEMBER_SHOP_member_shop_by_pk_member {
   picture_url: string | null;
 }
 
+export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_imgs {
+  __typename: "merchandise_img";
+  id: any;
+  url: string;
+}
+
 export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs_merchandise_spec_inventory_status {
   __typename: "merchandise_spec_inventory_status";
   total_quantity: any | null;
@@ -7205,24 +7209,18 @@ export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_spec
 export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs {
   __typename: "merchandise_spec";
   id: any;
+  list_price: any;
+  sale_price: any | null;
   /**
    * An object relationship
    */
   merchandise_spec_inventory_status: GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs_merchandise_spec_inventory_status | null;
 }
 
-export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_imgs {
-  __typename: "merchandise_img";
-  id: any;
-  url: string;
-}
-
 export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises {
   __typename: "merchandise";
   id: any;
   title: string;
-  list_price: any;
-  sale_price: any | null;
   sold_at: any | null;
   published_at: any | null;
   is_physical: boolean;
@@ -7230,11 +7228,11 @@ export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises {
   /**
    * An array relationship
    */
-  merchandise_specs: GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs[];
+  merchandise_imgs: GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_imgs[];
   /**
    * An array relationship
    */
-  merchandise_imgs: GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_imgs[];
+  merchandise_specs: GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs[];
 }
 
 export interface GET_MEMBER_SHOP_member_shop_by_pk {

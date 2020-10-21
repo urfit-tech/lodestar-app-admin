@@ -1,6 +1,6 @@
 import Icon, { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Input, Tabs, Select } from 'antd'
+import { Button, Input, Select, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -18,7 +18,10 @@ import types from '../../types'
 import { MerchandisePreviewProps } from '../../types/merchandise'
 import LoadingPage from './LoadingPage'
 
-type MerchandiseClass = 'generalPhysical' | 'generalVirtual' | 'customizedPhysical' | 'customizedVirtual'
+const messages = defineMessages({
+  allMerchandiseType: { id: 'merchandise.label.allMerchandiseType', defaultMessage: '所有商品類型' },
+  soldQuantity: { id: 'merchandise.label.soldQuantity', defaultMessage: '已售' },
+})
 
 const StyledHeader = styled.div<{ width?: string }>`
   ${props => (props.width ? `width: ${props.width};` : '')}
@@ -27,17 +30,14 @@ const StyledHeader = styled.div<{ width?: string }>`
   letter-spacing: 0.2px;
 `
 
-const messages = defineMessages({
-  allMerchandiseType: { id: 'merchandise.label.allMerchandiseType', defaultMessage: '所有商品類型' },
-  soldQuantity: { id: 'merchandise.label.soldQuantity', defaultMessage: '已售' },
-})
-
 const filteredCondition = {
   generalPhysical: { isCustomized: false, isPhysical: true },
   generalVirtual: { isCustomized: false, isPhysical: false },
   customizedPhysical: { isCustomized: true, isPhysical: true },
   customizedVirtual: { isCustomized: true, isPhysical: false },
 }
+
+type MerchandiseClass = 'generalPhysical' | 'generalVirtual' | 'customizedPhysical' | 'customizedVirtual'
 
 const MerchandiseCollectionAdminBlock: React.FC<{
   shopId: string
@@ -167,7 +167,7 @@ const MerchandiseCollectionAdminBlock: React.FC<{
           <Tabs.TabPane key={tabContent.key} tab={`${tabContent.name} (${tabContent.merchandises.length})`}>
             <div className="d-flex align-items-center justify-content-between p-3">
               <StyledHeader className="flex-grow-1">{formatMessage(commonMessages.term.merchandise)}</StyledHeader>
-              <StyledHeader className="flex-shrink-0" width="7rem">
+              <StyledHeader className="flex-shrink-0" width="12rem">
                 {formatMessage(commonMessages.label.price)}
               </StyledHeader>
               <StyledHeader className="flex-shrink-0" width="7rem">
@@ -178,16 +178,7 @@ const MerchandiseCollectionAdminBlock: React.FC<{
             {tabContent.merchandises
               .filter(merchandise => !searchText || merchandise.title.toLowerCase().includes(searchText))
               .map(merchandise => (
-                <MerchandiseAdminItem
-                  key={merchandise.id}
-                  id={merchandise.id}
-                  coverUrl={merchandise.coverUrl}
-                  title={merchandise.title}
-                  listPrice={merchandise.listPrice}
-                  salePrice={merchandise.salePrice}
-                  soldAt={merchandise.soldAt}
-                  soldQuantity={merchandise.soldQuantity}
-                />
+                <MerchandiseAdminItem key={merchandise.id} {...merchandise} />
               ))}
           </Tabs.TabPane>
         ))}

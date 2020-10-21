@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
+import { max, min } from 'lodash'
 import { sum } from 'ramda'
 import { notEmpty } from '../helpers'
 import types from '../types'
@@ -21,8 +22,6 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
         ) {
           id
           title
-          list_price
-          sale_price
           sold_at
           published_at
           is_physical
@@ -43,9 +42,9 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
       : data.merchandise.map(merchandise => ({
           id: merchandise.id,
           title: merchandise.title,
-          listPrice: merchandise.list_price,
-          salePrice: merchandise.sale_price,
           soldAt: merchandise.sold_at ? new Date(merchandise.sold_at) : null,
+          minPrice: 0,
+          maxPrice: 0,
           publishedAt: merchandise.published_at ? new Date(merchandise.published_at) : null,
           isPhysical: merchandise.is_physical,
           isCustomized: merchandise.is_customized,
@@ -240,22 +239,22 @@ export const useMemberShop = (shopId: string) => {
           ) {
             id
             title
-            list_price
-            sale_price
             sold_at
             published_at
             is_physical
             is_customized
+            merchandise_imgs(where: { type: { _eq: "cover" } }) {
+              id
+              url
+            }
             merchandise_specs {
               id
+              list_price
+              sale_price
               merchandise_spec_inventory_status {
                 total_quantity
                 buyable_quantity
               }
-            }
-            merchandise_imgs(where: { type: { _eq: "cover" } }) {
-              id
-              url
             }
           }
         }
@@ -285,9 +284,17 @@ export const useMemberShop = (shopId: string) => {
           merchandises: data.member_shop_by_pk.merchandises.map(v => ({
             id: v.id,
             title: v.title,
-            listPrice: v.list_price,
-            salePrice: v.sale_price,
-            soldAt: v.sold_at ? new Date(v.sold_at) : null,
+            soldAt: v.sold_at && new Date(v.sold_at),
+            minPrice: min(
+              v.merchandise_specs.map(spec =>
+                v.sold_at && typeof spec.sale_price === 'number' ? spec.sale_price : spec.list_price || 0,
+              ),
+            ),
+            maxPrice: max(
+              v.merchandise_specs.map(spec =>
+                v.sold_at && typeof spec.sale_price === 'number' ? spec.sale_price : spec.list_price || 0,
+              ),
+            ),
             isPhysical: v.is_physical,
             isCustomized: v.is_customized,
             publishedAt: v.published_at ? new Date(v.published_at) : null,
