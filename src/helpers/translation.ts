@@ -640,6 +640,9 @@ export const programPackageMessages = {
     program: { id: 'programPackage.label.program', defaultMessage: '課程項目' },
     deleteProgramPackage: { id: 'programPackage.label.delete', defaultMessage: '刪除課程組合' },
   }),
+  status: defineMessages({
+    unpublished: { id: 'programPackage.status.unpublished', defaultMessage: '未發佈' },
+  })
 }
 
 export const podcastMessages = {
