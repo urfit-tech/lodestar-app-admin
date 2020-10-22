@@ -103,6 +103,7 @@ export type MemberTaskProps = {
     name: string
   } | null
   dueAt: Date | null
+  createdAt: Date | null
   description: string | null
   member: {
     id: string

@@ -50,9 +50,13 @@ const MemberTaskAdminBlock: React.FC<{
     category?: string
     executor?: string
   }>({})
-  const { loadingMemberTasks, memberTasks, refetchMemberTasks } = useMemberTaskCollection({ ...filter, memberId })
+  const { loadingMemberTasks, memberTasks, loadMoreMemberTasks, refetchMemberTasks } = useMemberTaskCollection({
+    ...filter,
+    memberId,
+  })
   const [selectedMemberTask, setSelectedMemberTask] = useState<MemberTaskProps | null>(null)
   const [visible, setVisible] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const getColumnSearchProps: (dataIndex: keyof MemberTaskProps) => ColumnProps<MemberTaskProps> = dataIndex => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -203,6 +207,17 @@ const MemberTaskAdminBlock: React.FC<{
             },
           })}
         />
+        <div className="text-center mt-4">
+          <Button
+            loading={isLoading}
+            onClick={() => {
+              setIsLoading(true)
+              loadMoreMemberTasks().then(() => setIsLoading(false))
+            }}
+          >
+            {formatMessage(commonMessages.ui.showMore)}
+          </Button>
+        </div>
       </AdminBlock>
 
       {selectedMemberTask && (
@@ -221,13 +236,21 @@ const MemberTaskAdminBlock: React.FC<{
   )
 }
 
-const useMemberTaskCollection = (filter?: {
-  memberId?: string
-  title?: string
-  category?: string
-  executor?: string
-}) => {
-  const { loading, error, data, refetch } = useQuery<
+const useMemberTaskCollection = (
+  filter: {
+    memberId?: string
+    title?: string
+    category?: string
+    executor?: string
+  } = {
+    memberId: undefined,
+    title: undefined,
+    category: undefined,
+    executor: undefined,
+  },
+) => {
+  const { memberId, title, category, executor } = filter
+  const { loading, error, data, refetch, fetchMore } = useQuery<
     types.GET_MEMBER_TASK_COLLECTION,
     types.GET_MEMBER_TASK_COLLECTIONVariables
   >(
@@ -237,6 +260,7 @@ const useMemberTaskCollection = (filter?: {
         $titleSearch: String
         $categorySearch: String
         $executorSearch: String
+        $cursor: timestamptz
       ) {
         member_task(
           where: {
@@ -252,7 +276,9 @@ const useMemberTaskCollection = (filter?: {
                 ]
               }
             ]
+            created_at: { _lt: $cursor }
           }
+          limit: 10
           order_by: { created_at: desc }
         ) {
           id
@@ -261,6 +287,7 @@ const useMemberTaskCollection = (filter?: {
           priority
           status
           due_at
+          created_at
           category {
             id
             name
@@ -281,10 +308,11 @@ const useMemberTaskCollection = (filter?: {
     `,
     {
       variables: {
-        memberId: filter?.memberId,
-        titleSearch: filter?.title ? `%${filter.title}%` : undefined,
-        categorySearch: filter?.category ? `%${filter.category}%` : undefined,
-        executorSearch: filter?.executor ? `%${filter.executor}%` : undefined,
+        memberId,
+        titleSearch: title && `%${title}%`,
+        categorySearch: category && `%${category}%`,
+        executorSearch: executor && `%${executor}%`,
+        cursor: null,
       },
     },
   )
@@ -305,6 +333,7 @@ const useMemberTaskCollection = (filter?: {
                 }
               : null,
             dueAt: v.due_at && new Date(v.due_at),
+            createdAt: v.created_at && new Date(v.created_at),
             description: v.description,
             member: {
               id: v.member.id,
@@ -324,10 +353,31 @@ const useMemberTaskCollection = (filter?: {
               (!filter?.executor || memberTask.executor?.name.toLowerCase().includes(filter.executor)),
           )
 
+  const loadMoreMemberTasks = () =>
+    fetchMore({
+      variables: {
+        memberId,
+        titleSearch: title && `%${title}%`,
+        categorySearch: category && `%${category}%`,
+        executorSearch: executor && `%${executor}%`,
+        cursor: memberTasks.slice(-1).pop()?.createdAt,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        console.log(memberTasks)
+        if (!fetchMoreResult) {
+          return prev
+        }
+        return Object.assign({}, prev, {
+          member_task: [...prev.member_task, ...fetchMoreResult.member_task],
+        })
+      },
+    })
+
   return {
     loadingMemberTasks: loading,
     errorMemberTasks: error,
     memberTasks,
+    loadMoreMemberTasks,
     refetchMemberTasks: refetch,
   }
 }

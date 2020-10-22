@@ -2129,6 +2129,7 @@ export interface GET_MEMBER_TASK_COLLECTION_member_task {
    */
   status: string;
   due_at: any | null;
+  created_at: any | null;
   /**
    * An object relationship
    */
@@ -2155,6 +2156,7 @@ export interface GET_MEMBER_TASK_COLLECTIONVariables {
   titleSearch?: string | null;
   categorySearch?: string | null;
   executorSearch?: string | null;
+  cursor?: any | null;
 }
 
 /* tslint:disable */
