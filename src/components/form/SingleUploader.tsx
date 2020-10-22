@@ -64,7 +64,9 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
     ...uploadProps,
     fileList: fileList || [value].filter(notEmpty),
     onChange: info => {
-      onChange && onChange(info.file)
+      if (info.file.name) {
+        onChange && onChange(info.file)
+      }
       if (info.file.status === 'uploading') {
         onUploading && onUploading(info)
       } else {
