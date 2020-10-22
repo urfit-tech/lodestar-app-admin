@@ -413,7 +413,6 @@ export const useMemberCollection = ({
       query GET_PAGE_MEMBER_COLLECTION($role: String, $name: String, $email: String, $offset: Int!, $limit: Int!) {
         member(
           where: { _and: [{ role: { _eq: $role } }, { name: { _ilike: $name } }, { email: { _ilike: $email } }] }
-          order_by: { created_at: desc, id: asc }
           offset: $offset
           limit: $limit
         ) {
