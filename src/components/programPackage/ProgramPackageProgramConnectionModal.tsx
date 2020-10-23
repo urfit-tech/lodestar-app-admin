@@ -109,7 +109,9 @@ const ProgramPackageProgramConnectionModal: React.FC<{
                   .filter(program => !program.isSubscription)
                   .map(program => ({
                     key: program.id,
-                    title: program.title,
+                    title: program.publishedAt
+                      ? program.title
+                      : `( ${formatMessage(programPackageMessages.status.unpublished)} ) ${program.title}`,
                     value: `${program.id}_${program.title}`,
                   })),
               },
@@ -120,7 +122,9 @@ const ProgramPackageProgramConnectionModal: React.FC<{
                   .filter(program => program.isSubscription)
                   .map(program => ({
                     key: program.id,
-                    title: program.title,
+                    title: program.publishedAt
+                      ? program.title
+                      : `( ${formatMessage(programPackageMessages.status.unpublished)} ) ${program.title}`,
                     value: `${program.id}_${program.title}`,
                   })),
               },
@@ -139,10 +143,11 @@ const useGetAvailableProgramCollection = (appId: string) => {
   >(
     gql`
       query GET_AVAILABLE_PROGRAM_COLLECTION($appId: String!) {
-        program(where: { published_at: { _is_null: false }, is_deleted: { _eq: false }, app_id: { _eq: $appId } }) {
+        program(where: { is_deleted: { _eq: false }, app_id: { _eq: $appId } }) {
           id
           title
           is_subscription
+          published_at
         }
       }
     `,
@@ -153,6 +158,7 @@ const useGetAvailableProgramCollection = (appId: string) => {
     id: string
     title: string | null
     isSubscription: boolean
+    publishedAt: string
   }[] =
     loading || error || !data
       ? []
@@ -160,6 +166,7 @@ const useGetAvailableProgramCollection = (appId: string) => {
           id: program.id,
           title: program.title,
           isSubscription: program.is_subscription,
+          publishedAt: program.published_at,
         }))
 
   return {

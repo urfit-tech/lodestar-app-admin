@@ -4355,6 +4355,7 @@ export interface GET_AVAILABLE_PROGRAM_COLLECTION_program {
   id: any;
   title: string;
   is_subscription: boolean;
+  published_at: any | null;
 }
 
 export interface GET_AVAILABLE_PROGRAM_COLLECTION {
@@ -8679,6 +8680,7 @@ export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_progr
   id: any;
   title: string;
   cover_url: string | null;
+  published_at: any | null;
 }
 
 export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_programs {

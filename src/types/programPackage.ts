@@ -17,6 +17,7 @@ export type ProgramPackageProgramProps = {
     id: string
     title: string
     coverUrl: string | null
+    publishedAt:string | null
   }
   position: number
 }
