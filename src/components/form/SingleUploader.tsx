@@ -3,6 +3,7 @@ import { Button, message, Spin, Upload } from 'antd'
 import { UploadProps } from 'antd/lib/upload'
 import { UploadChangeParam, UploadFile } from 'antd/lib/upload/interface'
 import axios, { Canceler } from 'axios'
+import { cloneDeep } from 'lodash'
 import { extname } from 'path'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -65,7 +66,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
     fileList: fileList || [value].filter(notEmpty),
     onChange: info => {
       if (info.file.name) {
-        onChange && onChange(info.file)
+        onChange && onChange(cloneDeep(info.file))
       }
       if (info.file.status === 'uploading') {
         onUploading && onUploading(info)
@@ -84,21 +85,25 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
       onChange && onChange(undefined)
       uploadCanceler.current && uploadCanceler.current()
     },
-    customRequest: (option: any) => {
+    customRequest: option => {
       const { file, onProgress, onError, onSuccess } = option
       setLoading(true)
-      onChange && onChange(file)
       uploadFile(withExtension ? path + extname(file.name) : path, file, authToken, {
         onUploadProgress: progressEvent => {
-          onProgress({
-            percent: (progressEvent.loaded / progressEvent.total) * 100,
-          })
+          onProgress(
+            {
+              percent: (progressEvent.loaded / progressEvent.total) * 100,
+            },
+            file,
+          )
         },
         cancelToken: new axios.CancelToken(canceler => {
           uploadCanceler.current = canceler
         }),
       })
-        .then(onSuccess)
+        .then(({ data: response }) => {
+          onSuccess(response, file)
+        })
         .catch(error => {
           onError(error)
         })
