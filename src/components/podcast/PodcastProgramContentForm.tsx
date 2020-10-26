@@ -1,4 +1,4 @@
-import Icon, { CloseOutlined, QuestionCircleFilled } from '@ant-design/icons'
+import Icon, { CloseOutlined, ExclamationCircleFilled, QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, InputNumber, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
@@ -32,6 +32,10 @@ const StyledFileBlock = styled.div`
   :hover {
     background: var(--gray-lighter);
   }
+`
+
+const StyledIcon = styled(ExclamationCircleFilled)`
+  color: #ff7d62;
 `
 
 const PodcastProgramContentForm: React.FC<{
@@ -166,6 +170,14 @@ const PodcastProgramContentForm: React.FC<{
                 : formatMessage(podcastMessages.ui.recordAudio)}
             </span>
           </Button>
+        )}
+        {(!podcastProgramAdmin.contentType ||
+          !podcastProgramAdmin.filename ||
+          podcastProgramAdmin.audios.length > 0) && (
+          <>
+            <StyledIcon className="ml-2 mr-1" />
+            <span>尚未合併上傳</span>
+          </>
         )}
       </Form.Item>
       <>
