@@ -3123,6 +3123,36 @@ export interface UPDATE_PODCAST_PROGRAM_BODYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_DURATION
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_DURATION_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_DURATION {
+  /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: UPDATE_PODCAST_PROGRAM_DURATION_update_podcast_program | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_DURATIONVariables {
+  podcastProgramId: any;
+  duration?: any | null;
+  updatedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_ROLE
 // ====================================================
 
@@ -7856,6 +7886,7 @@ export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk {
   sale_price: any | null;
   sold_at: any | null;
   content_type: string | null;
+  filename: string | null;
   duration: any;
   published_at: any | null;
   creator_id: string;
@@ -11167,6 +11198,7 @@ export enum podcast_program_update_column {
   cover_url = "cover_url",
   creator_id = "creator_id",
   duration = "duration",
+  filename = "filename",
   id = "id",
   list_price = "list_price",
   podcast_id = "podcast_id",
@@ -16295,6 +16327,7 @@ export interface podcast_program_bool_exp {
   creator?: member_public_bool_exp | null;
   creator_id?: String_comparison_exp | null;
   duration?: numeric_comparison_exp | null;
+  filename?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
   playlist_podcast_programs?: playlist_podcast_program_bool_exp | null;
@@ -16380,6 +16413,7 @@ export interface podcast_program_insert_input {
   cover_url?: string | null;
   creator_id?: string | null;
   duration?: any | null;
+  filename?: string | null;
   id?: any | null;
   list_price?: any | null;
   playlist_podcast_programs?: playlist_podcast_program_arr_rel_insert_input | null;

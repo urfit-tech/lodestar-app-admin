@@ -1,3 +1,4 @@
+import { useMutation } from '@apollo/react-hooks'
 import { message, Modal, Spin } from 'antd'
 import { isEqual } from 'lodash'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
@@ -6,6 +7,7 @@ import { useHistory, useParams } from 'react-router-dom'
 import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
 import AudioTrackCard, { AudioTrackCardRef } from '../../components/podcast/AudioTrackCard'
+import { UPDATE_PODCAST_PROGRAM_DURATION } from '../../components/podcast/PodcastProgramContentForm'
 import PodcastProgramHeader from '../../components/podcast/PodcastProgramHeader'
 import RecordButton from '../../components/podcast/RecordButton'
 import RecordingController from '../../components/podcast/RecordingController'
@@ -14,6 +16,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { getFileDownloadableLink, handleError, uploadFile } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { usePodcastProgramAdmin } from '../../hooks/podcast'
+import types from '../../types'
 import { PodcastProgramAudio } from '../../types/podcast'
 import {
   appendPodcastProgramAudio,
@@ -86,6 +89,11 @@ const RecordingPage: React.FC = () => {
 
   const history = useHistory()
 
+  const [updatePodcastProgramDuration] = useMutation<
+    types.UPDATE_PODCAST_PROGRAM_DURATION,
+    types.UPDATE_PODCAST_PROGRAM_DURATIONVariables
+  >(UPDATE_PODCAST_PROGRAM_DURATION)
+
   const currentAudioIndex = signedPodCastProgramAudios.findIndex(body => body.id === currentAudioId)
 
   const onGetRecordAudio = useCallback(
@@ -93,11 +101,21 @@ const RecordingPage: React.FC = () => {
       const filename = `未命名${`${signedPodCastProgramAudios.length + 1}`.padStart(2, '0')}.mp3`
       const audioKey = `audios/${appId}/${podcastProgramId}/${filename}`
 
+      const totalDurationSecond = signedPodCastProgramAudios.reduce((sum, audio) => (sum += audio.duration), 0)
+      const totalDuration = Math.ceil((duration + totalDurationSecond) / 60 || 0)
+
       setIsGeneratingAudio(true)
       uploadFile(audioKey, blob, authToken, {})
         .then(async () => {
           await appendPodcastProgramAudio(authToken, appId, podcastProgramId, audioKey, filename, duration)
           await refetchPodcastProgramAdmin()
+          await updatePodcastProgramDuration({
+            variables: {
+              updatedAt: new Date(),
+              podcastProgramId,
+              duration: totalDuration,
+            },
+          })
         })
         .catch(error => {
           handleError(error)
@@ -106,7 +124,14 @@ const RecordingPage: React.FC = () => {
           setIsGeneratingAudio(false)
         })
     },
-    [appId, authToken, podcastProgramId, signedPodCastProgramAudios, refetchPodcastProgramAdmin],
+    [
+      appId,
+      authToken,
+      podcastProgramId,
+      signedPodCastProgramAudios,
+      refetchPodcastProgramAdmin,
+      updatePodcastProgramDuration,
+    ],
   )
 
   useEffect(() => {
@@ -194,11 +219,22 @@ const RecordingPage: React.FC = () => {
     }
 
     const audio = signedPodCastProgramAudios[currentAudioIndex]
+    const totalDurationSecond = signedPodCastProgramAudios
+      .filter(_audio => _audio.id !== audio.id)
+      .reduce((sum, audio) => (sum += audio.duration), 0)
+    const totalDuration = Math.ceil(totalDurationSecond / 60 || 0)
 
     setIsGeneratingAudio(true)
     deletePodcastProgramAudio(authToken, appId, audio.id)
       .then(async () => {
         await refetchPodcastProgramAdmin()
+        await updatePodcastProgramDuration({
+          variables: {
+            updatedAt: new Date(),
+            podcastProgramId,
+            duration: totalDuration,
+          },
+        })
       })
       .catch(error => {
         handleError(error)
