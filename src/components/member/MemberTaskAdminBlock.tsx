@@ -238,22 +238,19 @@ const MemberTaskAdminBlock: React.FC<{
   )
 }
 
-const useMemberTaskCollection = (
-  filter: {
-    memberId?: string
-    title?: string
-    category?: string
-    executor?: string
-    limit?: number
-  } = {
-    memberId: undefined,
-    title: undefined,
-    category: undefined,
-    executor: undefined,
-    limit: undefined,
-  },
-) => {
-  const { memberId, title, category, executor, limit = 10 } = filter
+const useMemberTaskCollection = ({
+  memberId,
+  title,
+  category,
+  executor,
+  limit = 10,
+}: {
+  memberId?: string
+  title?: string
+  category?: string
+  executor?: string
+  limit?: number
+}) => {
   const { loading, error, data, refetch, fetchMore } = useQuery<
     types.GET_MEMBER_TASK_COLLECTION,
     types.GET_MEMBER_TASK_COLLECTIONVariables
@@ -375,20 +372,23 @@ const useMemberTaskCollection = (
           }))
           .filter(
             memberTask =>
-              (!filter?.category || memberTask.category?.name.toLowerCase().includes(filter.category)) &&
-              (!filter?.executor || memberTask.executor?.name.toLowerCase().includes(filter.executor)),
+              (!category || memberTask.category?.name.toLowerCase().includes(category)) &&
+              (!executor || memberTask.executor?.name.toLowerCase().includes(executor)),
           )
 
   const totalCount = data?.member_task_aggregate.aggregate?.count || 0
-  const [hasMore, setHasMore] = useState<boolean | null>(null)
+  const [hasMore, setHasMore] = useState<boolean>(false)
 
   useEffect(() => {
+    if (loading) {
+      return
+    }
     if (hasMore) {
       totalCount < limit && setHasMore(false)
     } else if (totalCount > limit && totalCount > memberTasks.length) {
       setHasMore(true)
     }
-  }, [memberId, title, category, executor, totalCount])
+  }, [loading])
 
   const loadMoreMemberTasks = () =>
     fetchMore({
