@@ -1,6 +1,5 @@
 import { message, Modal, Spin } from 'antd'
 import { isEqual } from 'lodash'
-import NoSleep from 'nosleep.js'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
@@ -337,28 +336,6 @@ const RecordingPage: React.FC = () => {
     isPlaying,
     onPlay,
   ])
-
-  const [isNoSleep, setIsNoSleep] = useState(false)
-  const [noSleep, setNoSleep] = useState<NoSleep | null>(null)
-
-  try {
-    const _noSleep = new NoSleep()
-    setNoSleep(_noSleep)
-
-    document.querySelector('#recordButton')?.addEventListener('click', () => {
-      if (isNoSleep) {
-        console.log('sleep')
-        setIsNoSleep(false)
-        noSleep?.disable()
-      } else {
-        console.log('wake')
-        setIsNoSleep(true)
-        noSleep?.enable()
-      }
-    })
-  } catch (error) {
-    console.log(`noSleep is error: ${error}`)
-  }
 
   return (
     <div>
