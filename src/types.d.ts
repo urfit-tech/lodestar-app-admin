@@ -2975,6 +2975,36 @@ export interface UPDATE_PODCAST_PROGRAM_BODYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_DURATION
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_DURATION_update_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_DURATION {
+  /**
+   * update data of the table: "podcast_program"
+   */
+  update_podcast_program: UPDATE_PODCAST_PROGRAM_DURATION_update_podcast_program | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_DURATIONVariables {
+  podcastProgramId: any;
+  duration?: any | null;
+  updatedAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: CREATE_PODCAST_PROGRAM
 // ====================================================
 
@@ -7635,7 +7665,7 @@ export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program
 export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_bodies {
   __typename: "podcast_program_body";
   id: any;
-  description: string;
+  description: string | null;
 }
 
 export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_categories_category {
@@ -7698,6 +7728,7 @@ export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk {
   sale_price: any | null;
   sold_at: any | null;
   content_type: string | null;
+  filename: string | null;
   duration: any;
   published_at: any | null;
   creator_id: string;
@@ -7733,38 +7764,6 @@ export interface GET_PODCAST_PROGRAM_ADMIN {
 
 export interface GET_PODCAST_PROGRAM_ADMINVariables {
   podcastProgramId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PODCAST_PLAN
-// ====================================================
-
-export interface GET_PODCAST_PLAN_podcast_plan_by_pk {
-  __typename: "podcast_plan";
-  id: any;
-  creator_id: string;
-  period_type: string;
-  period_amount: any;
-  list_price: any;
-  sale_price: any | null;
-  sold_at: any | null;
-  published_at: any | null;
-}
-
-export interface GET_PODCAST_PLAN {
-  /**
-   * fetch data from the table: "podcast_plan" using primary key columns
-   */
-  podcast_plan_by_pk: GET_PODCAST_PLAN_podcast_plan_by_pk | null;
-}
-
-export interface GET_PODCAST_PLANVariables {
-  podcastPlanId: any;
 }
 
 /* tslint:disable */
@@ -7824,37 +7823,6 @@ export interface GET_PODCAST_PLAN_ADMIN_COLLECTION {
 
 export interface GET_PODCAST_PLAN_ADMIN_COLLECTIONVariables {
   creatorId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_CONTENT
-// ====================================================
-
-export interface UPDATE_PODCAST_PROGRAM_CONTENT_update_podcast_program {
-  __typename: "podcast_program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_CONTENT {
-  /**
-   * update data of the table: "podcast_program"
-   */
-  update_podcast_program: UPDATE_PODCAST_PROGRAM_CONTENT_update_podcast_program | null;
-}
-
-export interface UPDATE_PODCAST_PROGRAM_CONTENTVariables {
-  podcastProgramId: any;
-  contentType?: string | null;
-  updatedAt: any;
-  duration?: any | null;
 }
 
 /* tslint:disable */
@@ -8202,86 +8170,6 @@ export interface GET_PROGRAM_CONTENT_BODY {
 }
 
 export interface GET_PROGRAM_CONTENT_BODYVariables {
-  programContentId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PROGRAM_CONTENT
-// ====================================================
-
-export interface GET_PROGRAM_CONTENT_program_content_by_pk_program_content_plans_program_plan {
-  __typename: "program_plan";
-  id: any;
-  title: string;
-}
-
-export interface GET_PROGRAM_CONTENT_program_content_by_pk_program_content_plans {
-  __typename: "program_content_plan";
-  id: any;
-  /**
-   * An object relationship
-   */
-  program_plan: GET_PROGRAM_CONTENT_program_content_by_pk_program_content_plans_program_plan;
-}
-
-export interface GET_PROGRAM_CONTENT_program_content_by_pk_program_content_body {
-  __typename: "program_content_body";
-  id: any;
-  description: string | null;
-  data: any | null;
-  type: string | null;
-}
-
-export interface GET_PROGRAM_CONTENT_program_content_by_pk_program_content_progress {
-  __typename: "program_content_progress";
-  id: any;
-  progress: any;
-}
-
-export interface GET_PROGRAM_CONTENT_program_content_by_pk {
-  __typename: "program_content";
-  id: any;
-  title: string;
-  abstract: string | null;
-  created_at: any;
-  list_price: any | null;
-  sale_price: any | null;
-  sold_at: any | null;
-  metadata: any | null;
-  /**
-   * sec
-   */
-  duration: any | null;
-  published_at: any | null;
-  is_notify_update: boolean;
-  notified_at: any | null;
-  /**
-   * An array relationship
-   */
-  program_content_plans: GET_PROGRAM_CONTENT_program_content_by_pk_program_content_plans[];
-  /**
-   * An object relationship
-   */
-  program_content_body: GET_PROGRAM_CONTENT_program_content_by_pk_program_content_body;
-  /**
-   * An array relationship
-   */
-  program_content_progress: GET_PROGRAM_CONTENT_program_content_by_pk_program_content_progress[];
-}
-
-export interface GET_PROGRAM_CONTENT {
-  /**
-   * fetch data from the table: "program_content" using primary key columns
-   */
-  program_content_by_pk: GET_PROGRAM_CONTENT_program_content_by_pk | null;
-}
-
-export interface GET_PROGRAM_CONTENTVariables {
   programContentId: any;
 }
 
@@ -11080,6 +10968,7 @@ export enum podcast_program_update_column {
   cover_url = "cover_url",
   creator_id = "creator_id",
   duration = "duration",
+  filename = "filename",
   id = "id",
   list_price = "list_price",
   podcast_id = "podcast_id",
@@ -16208,6 +16097,7 @@ export interface podcast_program_bool_exp {
   creator?: member_public_bool_exp | null;
   creator_id?: String_comparison_exp | null;
   duration?: numeric_comparison_exp | null;
+  filename?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
   playlist_podcast_programs?: playlist_podcast_program_bool_exp | null;
@@ -16293,6 +16183,7 @@ export interface podcast_program_insert_input {
   cover_url?: string | null;
   creator_id?: string | null;
   duration?: any | null;
+  filename?: string | null;
   id?: any | null;
   list_price?: any | null;
   playlist_podcast_programs?: playlist_podcast_program_arr_rel_insert_input | null;

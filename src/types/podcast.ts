@@ -4,6 +4,7 @@ export type PodcastProgramAdminProps = {
   id: string
   title: string
   contentType: string | null
+  filename: string | null
   duration: number
   description: string | null
   coverUrl: string | null

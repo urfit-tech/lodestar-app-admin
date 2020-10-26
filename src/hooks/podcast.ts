@@ -110,6 +110,7 @@ export const usePodcastProgramAdmin = (appId: string, podcastProgramId: string) 
           sale_price
           sold_at
           content_type
+          filename
           duration
           published_at
           creator_id
@@ -167,6 +168,7 @@ export const usePodcastProgramAdmin = (appId: string, podcastProgramId: string) 
       id: data.podcast_program_by_pk.id,
       title: data.podcast_program_by_pk.title,
       contentType: data.podcast_program_by_pk.content_type,
+      filename: data.podcast_program_by_pk.filename,
       duration: data.podcast_program_by_pk.duration,
       description: data.podcast_program_by_pk.podcast_program_bodies[0]
         ? data.podcast_program_by_pk.podcast_program_bodies[0].description

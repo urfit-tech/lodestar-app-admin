@@ -49,6 +49,11 @@ const PodcastProgramContentForm: React.FC<{
     types.UPDATE_PODCAST_PROGRAM_BODYVariables
   >(UPDATE_PODCAST_PROGRAM_BODY)
 
+  const [updatePodcastProgramDuration] = useMutation<
+    types.UPDATE_PODCAST_PROGRAM_DURATION,
+    types.UPDATE_PODCAST_PROGRAM_DURATIONVariables
+  >(UPDATE_PODCAST_PROGRAM_DURATION)
+
   const [loading, setLoading] = useState(false)
   const [uploadAudioBase, setUploadAudioBase] = useState<string>(uuid())
 
@@ -69,13 +74,22 @@ const PodcastProgramContentForm: React.FC<{
     setUploadAudioBase(uuid())
 
     const duration = await getAudioDuration(file)
+    const totalDurationSecond = podcastProgramAdmin.audios.reduce((sum, audio) => (sum += audio.duration), 0)
+    const totalDuration = Math.ceil((duration + totalDurationSecond) / 60 || 0)
 
     setLoading(true)
     appendPodcastProgramAudio(authToken, appId, podcastProgramAdmin.id, key, file.name, duration)
-      .then(() => {
-        onRefetch && onRefetch()
-        form.setFields([{ name: 'duration', value: duration }])
+      .then(async () => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        form.setFields([{ name: 'duration', value: totalDuration }])
+        await updatePodcastProgramDuration({
+          variables: {
+            updatedAt: new Date(),
+            podcastProgramId: podcastProgramAdmin.id,
+            duration: totalDuration,
+          },
+        })
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -163,10 +177,22 @@ const PodcastProgramContentForm: React.FC<{
                 className="cursor-pointer"
                 onClick={() => {
                   setLoading(true)
+                  const totalDurationSecond = podcastProgramAdmin.audios
+                    .filter(_audio => _audio.id !== audio.id)
+                    .reduce((sum, audio) => (sum += audio.duration), 0)
+                  const totalDuration = Math.ceil(totalDurationSecond / 60 || 0)
                   deletePodcastProgramAudio(authToken, appId, audio.id)
-                    .then(() => {
-                      onRefetch && onRefetch()
+                    .then(async () => {
                       message.success(formatMessage(commonMessages.event.successfullySaved))
+                      await updatePodcastProgramDuration({
+                        variables: {
+                          updatedAt: new Date(),
+                          podcastProgramId: podcastProgramAdmin.id,
+                          duration: totalDuration,
+                        },
+                      })
+                      form.setFields([{ name: 'duration', value: totalDuration }])
+                      onRefetch?.()
                     })
                     .catch(handleError)
                     .finally(() => setLoading(false))
@@ -211,6 +237,17 @@ const UPDATE_PODCAST_PROGRAM_BODY = gql`
     update_podcast_program_body(
       where: { podcast_program_id: { _eq: $podcastProgramId } }
       _set: { description: $description }
+    ) {
+      affected_rows
+    }
+  }
+`
+
+export const UPDATE_PODCAST_PROGRAM_DURATION = gql`
+  mutation UPDATE_PODCAST_PROGRAM_DURATION($podcastProgramId: uuid!, $duration: numeric, $updatedAt: timestamptz!) {
+    update_podcast_program(
+      where: { id: { _eq: $podcastProgramId } }
+      _set: { duration: $duration, updated_at: $updatedAt }
     ) {
       affected_rows
     }
