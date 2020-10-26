@@ -2094,6 +2094,16 @@ export interface UPDATE_MEMBER_PROPERTYVariables {
 // GraphQL query operation: GET_MEMBER_TASK_COLLECTION
 // ====================================================
 
+export interface GET_MEMBER_TASK_COLLECTION_member_task_aggregate_aggregate {
+  __typename: "member_task_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_MEMBER_TASK_COLLECTION_member_task_aggregate {
+  __typename: "member_task_aggregate";
+  aggregate: GET_MEMBER_TASK_COLLECTION_member_task_aggregate_aggregate | null;
+}
+
 export interface GET_MEMBER_TASK_COLLECTION_member_task_category {
   __typename: "category";
   id: string;
@@ -2129,6 +2139,7 @@ export interface GET_MEMBER_TASK_COLLECTION_member_task {
    */
   status: string;
   due_at: any | null;
+  created_at: any | null;
   /**
    * An object relationship
    */
@@ -2145,6 +2156,10 @@ export interface GET_MEMBER_TASK_COLLECTION_member_task {
 
 export interface GET_MEMBER_TASK_COLLECTION {
   /**
+   * fetch aggregated fields from the table: "member_task"
+   */
+  member_task_aggregate: GET_MEMBER_TASK_COLLECTION_member_task_aggregate;
+  /**
    * fetch data from the table: "member_task"
    */
   member_task: GET_MEMBER_TASK_COLLECTION_member_task[];
@@ -2155,6 +2170,8 @@ export interface GET_MEMBER_TASK_COLLECTIONVariables {
   titleSearch?: string | null;
   categorySearch?: string | null;
   executorSearch?: string | null;
+  cursor?: any | null;
+  limit?: number | null;
 }
 
 /* tslint:disable */
