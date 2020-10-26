@@ -80,7 +80,6 @@ const RecordButton: React.FC<
     // rely on the `dataavailable` callback of AudioRecorder for
     // onGetAudio callback
     recorder.stop()
-    noSleep?.disable()
     for (const track of recorder.stream.getTracks()) {
       track.stop()
     }
@@ -94,7 +93,6 @@ const RecordButton: React.FC<
 
       // Start recording
       recorder_.start()
-      noSleep?.enable()
 
       onStart && onStart()
       setIsRecording(true)
@@ -107,8 +105,10 @@ const RecordButton: React.FC<
   const handleClickRecordButton = () => {
     if (isRecording) {
       handleStopRecording()
+      noSleep?.disable()
     } else {
       handleStartRecording()
+      noSleep?.enable()
     }
   }
 
