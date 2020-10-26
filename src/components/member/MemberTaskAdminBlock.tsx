@@ -376,13 +376,13 @@ const useMemberTaskCollection = ({
               (!executor || memberTask.executor?.name.toLowerCase().includes(executor)),
           )
 
-  const totalCount = data?.member_task_aggregate.aggregate?.count || 0
   const [hasMore, setHasMore] = useState<boolean>(false)
 
   useEffect(() => {
     if (loading) {
       return
     }
+    const totalCount = data?.member_task_aggregate.aggregate?.count || 0
     if (hasMore) {
       totalCount < limit && setHasMore(false)
     } else if (totalCount > limit && totalCount > memberTasks.length) {

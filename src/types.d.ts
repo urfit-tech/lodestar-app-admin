@@ -7769,7 +7769,7 @@ export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program
 export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_bodies {
   __typename: "podcast_program_body";
   id: any;
-  description: string;
+  description: string | null;
 }
 
 export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_categories_category {
