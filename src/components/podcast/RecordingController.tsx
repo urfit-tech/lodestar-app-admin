@@ -57,10 +57,10 @@ const StyledOverlayButton = styled(Button)`
     font-size: 24px;
   }
 `
-const StyledBarIconButton = styled(Button)<{ height?: string; iconSize?: string; marginBottom?: string }>`
+const StyledBarIconButton = styled(Button)<{ height?: string; iconsize?: string; marginBottom?: string }>`
   height: ${props => (props.height ? props.height : '36px')};
   color: white;
-  font-size: ${props => props.iconSize || '24px'};
+  font-size: ${props => props.iconsize || '24px'};
   line-height: 1;
   padding: 0;
   margin-bottom: ${props => props.marginBottom || '0px'};
@@ -203,7 +203,7 @@ const RecordingController: React.FC<{
             </div>
 
             <div className="col-6 col-lg-4 d-flex align-items-center justify-content-center">
-              <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.backward)}</TooltipText>}>
+              <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.backwardFiveSecond)}</TooltipText>}>
                 <StyledBarIconButton type="link" className="p-0 mx-2" onClick={() => onBackward && onBackward()}>
                   <BackwardIcon />
                 </StyledBarIconButton>
@@ -213,14 +213,13 @@ const RecordingController: React.FC<{
                 type="link"
                 className="mx-0"
                 height="66px"
-                iconSize="44px"
+                iconsize="44px"
                 onClick={() => (isPlaying ? onPause && onPause() : onPlay && onPlay())}
-                // onClick={() => setIsPlaying && setIsPlaying(!isPlaying)}
               >
                 {isPlaying ? <PauseCircleIcon /> : <PlayCircleIcon />}
               </StyledBarIconButton>
 
-              <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.forward)}</TooltipText>}>
+              <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.forwardFiveSecond)}</TooltipText>}>
                 <StyledBarIconButton type="link" className="p-0 mx-2" onClick={() => onForward && onForward()}>
                   <ForwardIcon />
                 </StyledBarIconButton>

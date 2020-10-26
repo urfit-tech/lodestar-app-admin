@@ -1,7 +1,5 @@
 import Icon from '@ant-design/icons'
-import { Typography } from 'antd'
-import { throttle } from 'lodash'
-import Slider from 'rc-slider'
+import { Slider, Typography } from 'antd'
 import React, { HTMLAttributes, useEffect, useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
 import styled from 'styled-components'
@@ -27,21 +25,14 @@ const StyledCard = styled.div<{ isActive?: boolean }>`
   box-shadow: ${props =>
     props.isActive ? '0 8px 20px 1px rgba(76, 91, 143, 0.6)' : '0 6px 12px 2px rgba(221, 221, 221, 0.5)'};
 `
-const WaveWrapper = styled.div`
-  height: 116px;
+const PlayerWrapper = styled.div`
+  padding: 20px 0 7px;
   width: 100%;
   overflow-x: auto;
 `
 const StyledDuration = styled.div`
   color: var(--gray-dark);
-`
-const StyledText = styled.div`
-  color: var(--gray-dark);
-  font-size: 12px;
-  letter-spacing: 0.6px;
-  line-height: 1;
-  min-width: 100px;
-  text-align: right;
+  letter-spacing: 0.4px;
 `
 const StyledTypographyText = styled(Typography.Text)`
   color: var(--gray-darker);
@@ -49,30 +40,38 @@ const StyledTypographyText = styled(Typography.Text)`
   letter-spacing: 0.6px;
   line-height: 1;
   font-weight: 600;
+  & .anticon-edit {
+    font-size: 16px;
+  }
+`
+const SliderWrapper = styled.div`
+  height: 18px;
+  padding: 5px;
 `
 const StyledSlider = styled(Slider)`
   && {
-    z-index: 1003;
     padding: 0;
     width: 100%;
     height: 0.25rem;
-    border-radius: 0;
+    border-radius: 6px;
   }
-  .rc-slider-rail {
+  .ant-slider-rail {
     border-radius: 0;
+    height: 8px;
   }
-  .rc-slider-track {
+  .ant-slider-track {
     background: ${props => props.theme['@primary-color']};
     border-radius: 0;
+    height: 8px;
   }
-  .rc-slider-step {
+  .ant-slider-step {
     cursor: pointer;
   }
-  .rc-slider-handle {
-    display: none;
-    width: 20px;
-    height: 20px;
-    margin-top: -9px;
+  .ant-slider-handle {
+    width: 18px;
+    height: 18px;
+    box-shadow: 0 2px 6px 1px rgba(76, 91, 143, 0.4);
+    background: #fff;
     cursor: pointer;
   }
 `
@@ -85,6 +84,9 @@ const durationFormat: (time: number) => string = time => {
 
 export interface AudioTrackCardRef {
   play: () => void
+  backward: () => void
+  forward: () => void
+  init: () => void
 }
 
 const AudioTrackCard: React.ForwardRefRenderFunction<
@@ -129,27 +131,21 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
   const trackWrapperRef = useRef() as React.RefObject<HTMLDivElement>
   const playerRef = useRef<ReactPlayer | null>(null)
 
-  const [duration, setDuration] = useState<number | undefined>()
+  const [duration, setDuration] = useState(0)
   const [isSeeking, setIsSeeking] = useState(false)
   const [progress, setProgress] = useState(0)
 
   const onAudioPlayingRef = useRef(onAudioPlaying)
   const onFinishPlayingRef = useRef(onFinishPlaying)
-  const durationRef = useRef(duration)
 
   onAudioPlayingRef.current = onAudioPlaying
   onFinishPlayingRef.current = onFinishPlaying
 
   useEffect(() => {
     if (isSeeking) {
-      throttle((progress: number) => {
-        if (durationRef.current == null) {
-          return
-        }
-        onAudioPlayingRef.current && onAudioPlayingRef.current(durationRef.current * progress)
-      }, 100)
+      onAudioPlayingRef.current && onAudioPlayingRef.current(progress)
     }
-  }, [isSeeking])
+  }, [isSeeking, progress])
 
   useEffect(() => {
     if (isActive) {
@@ -161,11 +157,11 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
 
   // initialize when changing
   useEffect(() => {
-    if (!isActive) {
-      setDuration(0)
+    if (!isActive && progress > 0) {
       setProgress(0)
+      playerRef.current?.seekTo(0)
     }
-  }, [isActive])
+  }, [isActive, progress])
 
   React.useImperativeHandle(ref, () => ({
     play: () => {
@@ -177,6 +173,16 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
       if (onIsPlayingChanged) {
         onIsPlayingChanged(true)
       }
+    },
+    backward: () => {
+      playerRef.current?.seekTo(playerRef.current.getCurrentTime() - 5)
+    },
+    forward: () => {
+      playerRef.current?.seekTo(playerRef.current.getCurrentTime() + 5)
+    },
+    init: () => {
+      setProgress(0)
+      playerRef.current?.seekTo(0)
     },
   }))
 
@@ -198,7 +204,7 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
         >
           {filename}
         </StyledTypographyText>
-        <WaveWrapper className="mb-3">
+        <PlayerWrapper>
           <ReactPlayer
             ref={playerRef}
             url={audioUrl}
@@ -219,24 +225,26 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
               onFinishPlayingRef.current()
             }}
           />
-          <div>
+          <SliderWrapper className="d-flex align-items-center justify-content-between">
             <StyledSlider
-              max={duration}
-              step={0.1}
+              max={Math.floor(duration)}
+              step={Math.floor(duration) / 100}
               value={progress}
-              onBeforeChange={() => setIsSeeking(true)}
-              onChange={value => setProgress(value)}
-              onAfterChange={value => {
+              onChange={(value: number) => {
+                setIsSeeking(true)
+                setProgress(value)
+              }}
+              onAfterChange={(value: number) => {
                 setIsSeeking(false)
                 playerRef.current && playerRef.current.seekTo(value, 'seconds')
               }}
             />
-          </div>
-        </WaveWrapper>
+          </SliderWrapper>
+        </PlayerWrapper>
 
         <div className="d-flex align-items-center justify-content-between">
           <StyledDuration>{durationFormat(progress)}</StyledDuration>
-          <StyledText>{duration ? durationFormat(duration) : '--:--'}</StyledText>
+          <StyledDuration>{duration ? durationFormat(duration) : '--:--'}</StyledDuration>
         </div>
       </StyledCard>
     </TrackWrapper>

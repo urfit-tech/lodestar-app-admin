@@ -198,19 +198,52 @@ const RecordingPage: React.FC = () => {
     } else {
       setIsPlaying(false)
     }
-  }, [currentAudioIndex, signedPodCastProgramAudios])
+
+    if (currentAudioId) {
+      const audioTrack = audioTrackRefMap.get(currentAudioId)?.current
+      if (audioTrack == null) {
+        console.warn('audioTrack is null or undefined')
+        return
+      }
+      if (currentAudioIndex + 1 === signedPodCastProgramAudios.length) {
+        audioTrack.init()
+      }
+    }
+  }, [audioTrackRefMap, currentAudioId, currentAudioIndex, signedPodCastProgramAudios])
 
   const onForward = useCallback(() => {
-    if (currentAudioIndex + 1 < signedPodCastProgramAudios.length) {
-      setCurrentAudioId(signedPodCastProgramAudios[currentAudioIndex + 1].id)
+    if (currentAudioId == null) {
+      console.log('No audio is selected')
+
+      return
     }
-  }, [currentAudioIndex, signedPodCastProgramAudios])
+
+    const audioTrack = audioTrackRefMap.get(currentAudioId)?.current
+    if (audioTrack == null) {
+      console.warn('audioTrack is null or undefined')
+
+      return
+    }
+
+    audioTrack.forward()
+  }, [audioTrackRefMap, currentAudioId])
 
   const onBackward = useCallback(() => {
-    if (currentAudioIndex > 0) {
-      setCurrentAudioId(signedPodCastProgramAudios[currentAudioIndex - 1].id)
+    if (currentAudioId == null) {
+      console.log('No audio is selected')
+
+      return
     }
-  }, [currentAudioIndex, signedPodCastProgramAudios])
+
+    const audioTrack = audioTrackRefMap.get(currentAudioId)?.current
+    if (audioTrack == null) {
+      console.warn('audioTrack is null or undefined')
+
+      return
+    }
+
+    audioTrack.backward()
+  }, [audioTrackRefMap, currentAudioId])
 
   const onDeleteAudioTrack = useCallback(() => {
     if (currentAudioIndex === 0 && signedPodCastProgramAudios.length > 1) {

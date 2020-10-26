@@ -642,7 +642,7 @@ export const programPackageMessages = {
   }),
   status: defineMessages({
     unpublished: { id: 'programPackage.status.unpublished', defaultMessage: '未發佈' },
-  })
+  }),
 }
 
 export const podcastMessages = {
@@ -657,7 +657,9 @@ export const podcastMessages = {
     play: { id: 'podcast.ui.play', defaultMessage: '播放' },
     pause: { id: 'podcast.ui.pause', defaultMessage: '暫停' },
     backward: { id: 'podcast.ui.backward', defaultMessage: '上一首' },
+    backwardFiveSecond: { id: 'podcast.ui.backwardFiveSecond', defaultMessage: '前五秒' },
     forward: { id: 'podcast.ui.forward', defaultMessage: '下一首' },
+    forwardFiveSecond: { id: 'podcast.ui.forwardFiveSecond', defaultMessage: '後五秒' },
     trim: { id: 'podcast.ui.trim', defaultMessage: '裁切' },
     upload: { id: 'podcast.ui.upload', defaultMessage: '合併上傳' },
     voiceFile: { id: 'podcast.ui.voiceFile', defaultMessage: '音檔' },
