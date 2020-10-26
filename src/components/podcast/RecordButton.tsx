@@ -3,7 +3,8 @@ import { Button } from 'antd'
 import { ButtonProps } from 'antd/lib/button'
 import AudioRecorder from 'audio-recorder-polyfill'
 import mpegEncoder from 'audio-recorder-polyfill/mpeg-encoder'
-import React, { useState } from 'react'
+import NoSleep from 'nosleep.js'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { durationFormatter } from '../../helpers'
 import { getAudioDuration } from '../../helpers/audio'
@@ -49,9 +50,18 @@ const RecordButton: React.FC<
   }
 > = ({ onStart, onStop, onGetAudio, ...buttonProps }) => {
   const [recorder, setRecorder] = useState<any | undefined>(undefined)
+  const [noSleep, setNoSleep] = useState<NoSleep | null>(null)
   const [isRecording, setIsRecording] = useState(false)
   const [startedAt, setStartedAt] = useState(0)
   const [duration, setDuration] = useState(0)
+
+  useEffect(() => {
+    const setupNoSleep = () => {
+      const _noSleep = new NoSleep()
+      setNoSleep(_noSleep)
+    }
+    !noSleep && setupNoSleep()
+  }, [noSleep])
 
   const handleAudioDataAvailable = (e: any) => {
     onStop && onStop()
@@ -70,6 +80,7 @@ const RecordButton: React.FC<
     // rely on the `dataavailable` callback of AudioRecorder for
     // onGetAudio callback
     recorder.stop()
+    noSleep?.disable()
     for (const track of recorder.stream.getTracks()) {
       track.stop()
     }
@@ -83,6 +94,7 @@ const RecordButton: React.FC<
 
       // Start recording
       recorder_.start()
+      noSleep?.enable()
 
       onStart && onStart()
       setIsRecording(true)
