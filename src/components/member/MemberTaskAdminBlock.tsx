@@ -377,16 +377,12 @@ const useMemberTaskCollection = ({
           )
 
   const [hasMore, setHasMore] = useState<boolean>(false)
-
+  const totalCount = data?.member_task_aggregate.aggregate?.count || 0
   useEffect(() => {
-    if (loading) {
-      return
-    }
-    const totalCount = data?.member_task_aggregate.aggregate?.count || 0
     hasMore
       ? totalCount < limit && setHasMore(false)
       : totalCount > limit && totalCount > memberTasks.length && setHasMore(true)
-  }, [loading])
+  }, [totalCount])
 
   const loadMoreMemberTasks = () =>
     fetchMore({
