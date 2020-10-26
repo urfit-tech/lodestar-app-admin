@@ -9,7 +9,7 @@ import styled from 'styled-components'
 import MultipleUploader, { StyledFileBlock } from '../../components/common/MultipleUploader'
 import AppContext from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
-import { commonMessages,merchandiseMessages } from '../../helpers/translation'
+import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { useSimpleProduct } from '../../hooks/data'
 import { ReactComponent as CalendarOIcon } from '../../images/default/calendar-alt-o.svg'
 import EmptyCover from '../../images/default/empty-cover.png'
@@ -23,7 +23,7 @@ import ShippingNoticeModal from './ShippingNoticeModal'
 const messages = defineMessages({
   purchase: { id: 'merchandise.text.purchase', defaultMessage: '購買' },
   seller: { id: 'merchandise.ui.seller', defaultMessage: '賣家通知' },
-  deliveryItem: { id: 'merchandise.label.deliveryItem', defaultMessage: '交付' },
+  deliveryItem: { id: 'merchandise.label.deliveryItem', defaultMessage: '交付：' },
   uploadFile: { id: 'common.ui.uploadFile', defaultMessage: '上傳' },
 })
 
@@ -167,10 +167,13 @@ const ShippingProductItem: React.FC<{
   const { id: appId } = useContext(AppContext)
   const [files, setFiles] = useState<UploadFile[]>(productFiles || [])
   const filesRef = React.useRef<UploadFile[]>([])
+
   if (loading || !target) {
     return <Spin />
   }
+
   filesRef.current = files
+
   return (
     <div>
       <Divider />
@@ -185,13 +188,12 @@ const ShippingProductItem: React.FC<{
           shape="rounded"
           className="mr-3 flex-shrink-0"
         />
+
         {!target.isPhysical && target.isCustomized ? (
           <div className="flex-grow-1">
-            {target.title}
+            <span>{target.title}</span>
             <div className="d-flex">
-              <div className="mt-3">
-                <span>{formatMessage(messages.deliveryItem)}</span>：
-              </div>
+              <div className="mt-3">{formatMessage(messages.deliveryItem)}</div>
               <StyledUploaderWrapper className="flex-grow-1 mt-sm-n5 pt-2">
                 <MultipleUploader
                   renderTrigger={({ loading }) => (
@@ -201,7 +203,7 @@ const ShippingProductItem: React.FC<{
                       </Button>
                     </StyledButtonWrapper>
                   )}
-                  path={`merchandise_customized_files/${appId}/${target.id}`}
+                  path={`merchandise_files/${appId}/${orderProductId}`}
                   fileList={files}
                   onSetFileList={setFiles}
                   onSuccess={() => {

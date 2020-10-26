@@ -362,7 +362,7 @@ export const useOrderPhysicalProductLog = () => {
     gql`
       query GET_PHYSICAL_PRODUCT_ORDER_LOG {
         order_log(
-          where: { status: { _eq: "SUCCESS" }}
+          where: { status: { _eq: "SUCCESS" } }
           order_by: [{ updated_at: desc_nulls_last }, { created_at: desc }]
         ) {
           id
@@ -372,7 +372,7 @@ export const useOrderPhysicalProductLog = () => {
           deliver_message
           shipping
           invoice
-          order_products(where: { product_id: { _similar: "(ProjectPlan|Merchandise)_%" } }) {
+          order_products(where: { product_id: { _similar: "(ProjectPlan|MerchandiseSpec)_%" } }) {
             id
             name
             product_id
@@ -383,6 +383,7 @@ export const useOrderPhysicalProductLog = () => {
               data
             }
             product {
+              id
               product_owner {
                 type
                 target
@@ -390,6 +391,7 @@ export const useOrderPhysicalProductLog = () => {
             }
           }
           member {
+            id
             name
           }
         }
@@ -571,7 +573,25 @@ export const useSimpleProduct = (
           is_physical
           is_customized
           merchandise_imgs(where: { type: { _eq: "cover" } }) {
+            id
             url
+          }
+        }
+        merchandise_spec_by_pk(id: $id) {
+          id
+          title
+          list_price
+          sale_price
+          merchandise {
+            id
+            title
+            sold_at
+            is_physical
+            is_customized
+            merchandise_imgs(where: { type: { _eq: "cover" } }) {
+              id
+              url
+            }
           }
         }
       }
@@ -708,6 +728,22 @@ export const useSimpleProduct = (
           quantity: options.quantity,
           isPhysical: data.merchandise_by_pk.is_physical,
           isCustomized: data.merchandise_by_pk.is_customized,
+        }
+      : data.merchandise_spec_by_pk
+      ? {
+          id: data.merchandise_spec_by_pk.id,
+          productType: 'MerchandiseSpec',
+          title: `${data.merchandise_spec_by_pk.title} - ${data.merchandise_spec_by_pk.title}`,
+          listPrice: data.merchandise_spec_by_pk.list_price,
+          salePrice:
+            data.merchandise_spec_by_pk.merchandise.sold_at &&
+            new Date(data.merchandise_spec_by_pk.merchandise.sold_at).getTime() > Date.now()
+              ? data.merchandise_spec_by_pk.sale_price
+              : undefined,
+          coverUrl: data.merchandise_spec_by_pk.merchandise.merchandise_imgs[0]?.url,
+          quantity: options.quantity,
+          isPhysical: data.merchandise_spec_by_pk.merchandise.is_physical,
+          isCustomized: data.merchandise_spec_by_pk.merchandise.is_customized,
         }
       : {
           id: targetId,

@@ -6155,6 +6155,10 @@ export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products_product
 export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products_product {
   __typename: "product";
   /**
+   * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
+   */
+  id: string;
+  /**
    * An object relationship
    */
   product_owner: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products_product_product_owner | null;
@@ -6179,6 +6183,7 @@ export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products {
 
 export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_member {
   __typename: "member";
+  id: string;
   name: string;
 }
 
@@ -6387,6 +6392,7 @@ export interface GET_PRODUCT_SIMPLE_appointment_plan_by_pk {
 
 export interface GET_PRODUCT_SIMPLE_merchandise_by_pk_merchandise_imgs {
   __typename: "merchandise_img";
+  id: any;
   url: string;
 }
 
@@ -6401,6 +6407,37 @@ export interface GET_PRODUCT_SIMPLE_merchandise_by_pk {
    * An array relationship
    */
   merchandise_imgs: GET_PRODUCT_SIMPLE_merchandise_by_pk_merchandise_imgs[];
+}
+
+export interface GET_PRODUCT_SIMPLE_merchandise_spec_by_pk_merchandise_merchandise_imgs {
+  __typename: "merchandise_img";
+  id: any;
+  url: string;
+}
+
+export interface GET_PRODUCT_SIMPLE_merchandise_spec_by_pk_merchandise {
+  __typename: "merchandise";
+  id: any;
+  title: string;
+  sold_at: any | null;
+  is_physical: boolean;
+  is_customized: boolean;
+  /**
+   * An array relationship
+   */
+  merchandise_imgs: GET_PRODUCT_SIMPLE_merchandise_spec_by_pk_merchandise_merchandise_imgs[];
+}
+
+export interface GET_PRODUCT_SIMPLE_merchandise_spec_by_pk {
+  __typename: "merchandise_spec";
+  id: any;
+  title: string;
+  list_price: any;
+  sale_price: any | null;
+  /**
+   * An object relationship
+   */
+  merchandise: GET_PRODUCT_SIMPLE_merchandise_spec_by_pk_merchandise;
 }
 
 export interface GET_PRODUCT_SIMPLE {
@@ -6444,6 +6481,10 @@ export interface GET_PRODUCT_SIMPLE {
    * fetch data from the table: "merchandise" using primary key columns
    */
   merchandise_by_pk: GET_PRODUCT_SIMPLE_merchandise_by_pk | null;
+  /**
+   * fetch data from the table: "merchandise_spec" using primary key columns
+   */
+  merchandise_spec_by_pk: GET_PRODUCT_SIMPLE_merchandise_spec_by_pk | null;
 }
 
 export interface GET_PRODUCT_SIMPLEVariables {
@@ -7752,7 +7793,7 @@ export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program
 export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_bodies {
   __typename: "podcast_program_body";
   id: any;
-  description: string;
+  description: string | null;
 }
 
 export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk_podcast_program_categories_category {

@@ -29,7 +29,7 @@ const MemberShopSelector: React.FC<{
     >
       {allText && <Select.Option value="">{allText}</Select.Option>}
       {data?.member_shop.map(memberShop => (
-        <Select.Option value={memberShop.id} title={memberShop.title}>
+        <Select.Option key={memberShop.id} value={memberShop.id} title={memberShop.title}>
           {memberShop.title}
         </Select.Option>
       ))}
