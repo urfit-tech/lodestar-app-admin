@@ -33,11 +33,17 @@ const PodcastProgramHeader: React.FC<{
       {!noPreview && (
         <Button
           onClick={() => {
+            const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+            const windowReference = isSafari ? window.open() : null
             setIsGeneratingAudio(true)
             mergePodcastProgram(authToken, appId, podcastProgramId)
               .then(() => {
                 setIsGeneratingAudio(false)
-                window.open(`https://${settings['host']}/podcasts/${podcastProgramId}`, '_blank')
+                if (windowReference) {
+                  ;(windowReference.location as any) = `https://${settings['host']}/podcasts/${podcastProgramId}`
+                } else {
+                  window.open(`https://${settings['host']}/podcasts/${podcastProgramId}`, '_blank')
+                }
               })
               .catch(handleError)
           }}
