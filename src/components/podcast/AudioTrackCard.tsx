@@ -1,15 +1,11 @@
 import Icon from '@ant-design/icons'
 import { Typography } from 'antd'
 import { throttle } from 'lodash'
-import moment from 'moment'
-import React, { HTMLAttributes, useContext, useEffect, useRef, useState } from 'react'
-import { useIntl } from 'react-intl'
-import styled, { ThemeContext } from 'styled-components'
-import WaveSurfer from 'wavesurfer.js'
-import { durationFormatter } from '../../helpers'
-import { podcastMessages } from '../../helpers/translation'
+import Slider from 'rc-slider'
+import React, { HTMLAttributes, useEffect, useRef, useState } from 'react'
+import ReactPlayer from 'react-player'
+import styled from 'styled-components'
 import { ReactComponent as MoveIcon } from '../../images/icon/move.svg'
-const TimelinePlugin = require('wavesurfer.js/dist/plugin/wavesurfer.timeline.min.js')
 
 const TrackWrapper = styled.div`
   display: flex;
@@ -36,15 +32,8 @@ const WaveWrapper = styled.div`
   width: 100%;
   overflow-x: auto;
 `
-const WaveBlock = styled.div<{ width?: number }>`
-  width: ${props => props.width}px;
-  min-width: 100%;
-  height: 90px;
-`
-const WaveTimelineBlock = styled.div<{ width?: number }>`
-  width: ${props => props.width}px;
-  min-width: 100%;
-  height: 25px;
+const StyledDuration = styled.div`
+  color: var(--gray-dark);
 `
 const StyledText = styled.div`
   color: var(--gray-dark);
@@ -61,6 +50,38 @@ const StyledTypographyText = styled(Typography.Text)`
   line-height: 1;
   font-weight: 600;
 `
+const StyledSlider = styled(Slider)`
+  && {
+    z-index: 1003;
+    padding: 0;
+    width: 100%;
+    height: 0.25rem;
+    border-radius: 0;
+  }
+  .rc-slider-rail {
+    border-radius: 0;
+  }
+  .rc-slider-track {
+    background: ${props => props.theme['@primary-color']};
+    border-radius: 0;
+  }
+  .rc-slider-step {
+    cursor: pointer;
+  }
+  .rc-slider-handle {
+    display: none;
+    width: 20px;
+    height: 20px;
+    margin-top: -9px;
+    cursor: pointer;
+  }
+`
+
+const durationFormat: (time: number) => string = time => {
+  return `${Math.floor(time / 60)}:${Math.floor(time % 60)
+    .toString()
+    .padStart(2, '0')}`
+}
 
 export interface AudioTrackCardRef {
   play: () => void
@@ -70,6 +91,7 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
   AudioTrackCardRef,
   HTMLAttributes<HTMLDivElement> & {
     id: string
+    currentAudioId?: string
     handleClassName?: string
     position: number
     playRate?: number
@@ -78,6 +100,7 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
     isActive?: boolean
     isPlaying?: boolean
     onAudioPlaying?: (second: number) => void
+    onIsEditingTitle?: (isEditingTitle: boolean) => void
     onIsPlayingChanged?: (isPlaying: boolean) => void
     onFinishPlaying?: () => void
     onChangeFilename?: (id: string, filename: string) => void
@@ -85,6 +108,7 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
 > = (
   {
     id,
+    currentAudioId,
     handleClassName,
     position,
     playRate,
@@ -93,6 +117,7 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
     isActive,
     isPlaying,
     onAudioPlaying,
+    onIsEditingTitle,
     onIsPlayingChanged,
     onFinishPlaying,
     onChangeFilename,
@@ -101,17 +126,13 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
   },
   ref,
 ) => {
-  const { formatMessage } = useIntl()
-  const theme = useContext(ThemeContext)
-
   const trackWrapperRef = useRef() as React.RefObject<HTMLDivElement>
-  const waveformRef = useRef() as React.MutableRefObject<HTMLInputElement>
-  const waveformTimelineRef = useRef() as React.MutableRefObject<HTMLInputElement>
+  const playerRef = useRef<ReactPlayer | null>(null)
 
-  const [wavesurfer, setWaveSurfer] = useState<WaveSurfer | null>(null)
   const [duration, setDuration] = useState<number | undefined>()
+  const [isSeeking, setIsSeeking] = useState(false)
+  const [progress, setProgress] = useState(0)
 
-  // ref to variable used in wavesurfer initialization
   const onAudioPlayingRef = useRef(onAudioPlaying)
   const onFinishPlayingRef = useRef(onFinishPlaying)
   const durationRef = useRef(duration)
@@ -120,87 +141,15 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
   onFinishPlayingRef.current = onFinishPlaying
 
   useEffect(() => {
-    if (!wavesurfer && waveformRef.current && waveformTimelineRef.current) {
-      const _wavesurfer = WaveSurfer.create({
-        backend: 'MediaElement',
-        container: waveformRef.current,
-        waveColor: '#cecece',
-        progressColor: theme['@primary-color'] || '#555',
-        skipLength: 5,
-        height: 90,
-        scrollParent: true,
-        minPxPerSec: 70,
-        pixelRatio: 1,
-        plugins: [
-          TimelinePlugin.create({
-            container: waveformTimelineRef.current,
-            height: 20,
-            timeInterval: 0.2,
-            primaryLabelInterval: 5,
-            formatTimeCallback: (recordingSeconds: number) => {
-              const intSeconds = Math.round(recordingSeconds)
-              return recordingSeconds >= 3600
-                ? moment.utc(intSeconds * 1000).format('HH:mm:ss.SS')
-                : moment.utc(intSeconds * 1000).format('mm:ss.SS')
-            },
-          }),
-        ],
-      })
-      _wavesurfer.on('finish', () => {
-        if (onFinishPlayingRef.current == null) {
+    if (isSeeking) {
+      throttle((progress: number) => {
+        if (durationRef.current == null) {
           return
         }
-
-        onFinishPlayingRef.current()
-      })
-      _wavesurfer.on(
-        'seek',
-        throttle((progress: number) => {
-          if (durationRef.current == null) {
-            return
-          }
-
-          onAudioPlayingRef.current && onAudioPlayingRef.current(durationRef.current * progress)
-        }, 100),
-      )
-      _wavesurfer.on(
-        'audioprocess',
-        throttle((second: number) => {
-          onAudioPlayingRef.current && onAudioPlayingRef.current(second)
-        }, 100),
-      )
-      _wavesurfer.on('ready', () => {
-        const duration = _wavesurfer.getDuration()
-
-        durationRef.current = duration
-        setDuration(duration)
-      })
-      _wavesurfer.load(audioUrl, [], 'none')
-
-      setWaveSurfer(_wavesurfer)
+        onAudioPlayingRef.current && onAudioPlayingRef.current(durationRef.current * progress)
+      }, 100)
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wavesurfer, waveformRef, waveformTimelineRef])
-
-  useEffect(() => {
-    return () => {
-      if (wavesurfer) {
-        wavesurfer.pause()
-      }
-    }
-  }, [wavesurfer])
-
-  useEffect(() => {
-    if (isPlaying === true) wavesurfer?.play()
-    if (isPlaying === false) wavesurfer?.pause()
-  }, [isPlaying, wavesurfer])
-
-  useEffect(() => {
-    if (wavesurfer && playRate) {
-      wavesurfer.setPlaybackRate(playRate)
-    }
-  }, [playRate, wavesurfer])
+  }, [isSeeking])
 
   useEffect(() => {
     if (isActive) {
@@ -210,20 +159,20 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
     }
   }, [isActive, trackWrapperRef])
 
+  // initialize when changing
   useEffect(() => {
-    if (!isActive && wavesurfer) {
-      wavesurfer.getCurrentTime() > 0 && wavesurfer.seekTo(0)
+    if (!isActive) {
+      setDuration(0)
+      setProgress(0)
     }
-  }, [isActive, wavesurfer])
+  }, [isActive])
 
   React.useImperativeHandle(ref, () => ({
     play: () => {
-      if (wavesurfer == null) {
-        console.warn('wavesurfer has not been initialized')
+      if (playerRef == null) {
+        console.warn('playerRef has not been initialized')
         return
       }
-
-      wavesurfer.play()
 
       if (onIsPlayingChanged) {
         onIsPlayingChanged(true)
@@ -238,18 +187,56 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
       </ActionBlock>
 
       <StyledCard className="p-3 flex-grow-1" isActive={isActive}>
+        <StyledTypographyText
+          editable={{
+            onStart: () => onIsEditingTitle && onIsEditingTitle(true),
+            onChange: filename => {
+              onIsEditingTitle && onIsEditingTitle(false)
+              onChangeFilename && onChangeFilename(id, filename)
+            },
+          }}
+        >
+          {filename}
+        </StyledTypographyText>
         <WaveWrapper className="mb-3">
-          <WaveTimelineBlock ref={waveformTimelineRef} />
-          <WaveBlock ref={waveformRef} />
+          <ReactPlayer
+            ref={playerRef}
+            url={audioUrl}
+            style={{ display: 'none' }}
+            playing={isPlaying}
+            playbackRate={playRate}
+            progressInterval={500}
+            onDuration={duration => {
+              setDuration(duration)
+            }}
+            onProgress={progress => {
+              if (!isSeeking) {
+                setProgress(progress.playedSeconds)
+              }
+            }}
+            onEnded={() => {
+              if (onFinishPlayingRef.current == null) return
+              onFinishPlayingRef.current()
+            }}
+          />
+          <div>
+            <StyledSlider
+              max={duration}
+              step={0.1}
+              value={progress}
+              onBeforeChange={() => setIsSeeking(true)}
+              onChange={value => setProgress(value)}
+              onAfterChange={value => {
+                setIsSeeking(false)
+                playerRef.current && playerRef.current.seekTo(value, 'seconds')
+              }}
+            />
+          </div>
         </WaveWrapper>
 
         <div className="d-flex align-items-center justify-content-between">
-          <StyledTypographyText editable={{ onChange: filename => onChangeFilename && onChangeFilename(id, filename) }}>
-            {filename}
-          </StyledTypographyText>
-          <StyledText>
-            {formatMessage(podcastMessages.label.totalDuration)} {duration ? durationFormatter(duration) : '--:--'}
-          </StyledText>
+          <StyledDuration>{durationFormat(progress)}</StyledDuration>
+          <StyledText>{duration ? durationFormat(duration) : '--:--'}</StyledText>
         </div>
       </StyledCard>
     </TrackWrapper>
