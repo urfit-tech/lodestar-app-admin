@@ -383,11 +383,9 @@ const useMemberTaskCollection = ({
       return
     }
     const totalCount = data?.member_task_aggregate.aggregate?.count || 0
-    if (hasMore) {
-      totalCount < limit && setHasMore(false)
-    } else if (totalCount > limit && totalCount > memberTasks.length) {
-      setHasMore(true)
-    }
+    hasMore
+      ? totalCount < limit && setHasMore(false)
+      : totalCount > limit && totalCount > memberTasks.length && setHasMore(true)
   }, [loading])
 
   const loadMoreMemberTasks = () =>
