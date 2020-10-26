@@ -242,7 +242,15 @@ const RecordingPage: React.FC = () => {
       .finally(() => {
         setIsGeneratingAudio(false)
       })
-  }, [appId, authToken, currentAudioIndex, refetchPodcastProgramAdmin, signedPodCastProgramAudios])
+  }, [
+    appId,
+    authToken,
+    podcastProgramId,
+    currentAudioIndex,
+    refetchPodcastProgramAdmin,
+    signedPodCastProgramAudios,
+    updatePodcastProgramDuration,
+  ])
 
   const onPlayRateChange = useCallback(() => {
     playRate < 1 ? setPlayRate(1) : playRate < 1.5 ? setPlayRate(1.5) : playRate < 2 ? setPlayRate(2) : setPlayRate(0.5)
