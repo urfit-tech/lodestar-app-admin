@@ -154,8 +154,8 @@ const RecordingPage: React.FC = () => {
       try {
         const signedPodCastProgramAudios = await signPodCastProgramAudios(authToken, podcastProgramAdmin.audios)
         setSignedPodCastProgramAudios(signedPodCastProgramAudios)
-        if (!currentAudioId && signedPodCastProgramAudios.length) {
-          setCurrentAudioId(signedPodCastProgramAudios[0].id)
+        if (signedPodCastProgramAudios.length) {
+          setCurrentAudioId(currentAudioId => currentAudioId || signedPodCastProgramAudios[0].id)
         }
       } catch (error) {
         message.error(error.message)
@@ -165,7 +165,7 @@ const RecordingPage: React.FC = () => {
     }
 
     signAudios()
-  }, [authToken, podcastProgramAdmin, currentAudioId])
+  }, [authToken, podcastProgramAdmin])
 
   const audioTrackRefMap: Map<string, React.RefObject<AudioTrackCardRef>> = useMemo(() => {
     if (podcastAudios == null) {
