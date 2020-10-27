@@ -193,21 +193,20 @@ const RecordingPage: React.FC = () => {
   const onFinishPlaying = useCallback(() => {
     if (currentAudioIndex + 1 < signedPodCastProgramAudios.length) {
       setCurrentAudioId(signedPodCastProgramAudios[currentAudioIndex + 1].id)
-    } else {
-      setIsPlaying(false)
-    }
 
-    if (currentAudioId) {
-      const audioTrack = audioTrackRefMap.get(currentAudioId)?.current
+      const _currentAudioId = signedPodCastProgramAudios[currentAudioIndex + 1].id
+      const audioTrack = audioTrackRefMap.get(_currentAudioId)?.current
       if (audioTrack == null) {
         console.warn('audioTrack is null or undefined')
         return
-      }
-      if (currentAudioIndex + 1 === signedPodCastProgramAudios.length) {
+      } else {
         audioTrack.init()
+        audioTrack.play()
       }
+    } else {
+      setIsPlaying(false)
     }
-  }, [audioTrackRefMap, currentAudioId, currentAudioIndex, signedPodCastProgramAudios])
+  }, [audioTrackRefMap, currentAudioIndex, signedPodCastProgramAudios])
 
   const onForward = useCallback(() => {
     if (currentAudioId == null) {
