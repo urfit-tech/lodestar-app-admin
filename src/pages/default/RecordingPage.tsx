@@ -80,7 +80,7 @@ const RecordingPage: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
-  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [onEditingTitle, setonEditingTitle] = useState(false)
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
   const [currentPlayingSecond, setCurrentPlayingSecond] = useState(0)
   const [currentAudioId, setCurrentAudioId] = useState<string | undefined>()
@@ -387,7 +387,7 @@ const RecordingPage: React.FC = () => {
   )
 
   useEffect(() => {
-    if (isEditingTitle) return
+    if (onEditingTitle) return
     const onKeyDown = (event: KeyboardEvent) => {
       const { code: keyCode } = event
       if (['Space', 'ArrowRight', 'ArrowLeft', 'KeyD', 'KeyC', 'KeyS', 'KeyU'].includes(keyCode)) {
@@ -440,7 +440,7 @@ const RecordingPage: React.FC = () => {
     showUploadConfirmationModal,
     isPlaying,
     onPlay,
-    isEditingTitle,
+    onEditingTitle,
   ])
 
   return (
@@ -478,7 +478,7 @@ const RecordingPage: React.FC = () => {
                 isActive={audio.id === currentAudioId}
                 isPlaying={audio.id === currentAudioId && isPlaying}
                 onAudioPlaying={second => setCurrentPlayingSecond(second)}
-                onIsEditingTitle={isEditingTitle => setIsEditingTitle(isEditingTitle)}
+                onEditingTitle={onEditingTitle => setonEditingTitle(onEditingTitle)}
                 onIsPlayingChanged={isPlaying => setIsPlaying(isPlaying)}
                 onFinishPlaying={onFinishPlaying}
                 onChangeFilename={(id, filename) => {

@@ -110,7 +110,7 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
     isActive?: boolean
     isPlaying?: boolean
     onAudioPlaying?: (second: number) => void
-    onIsEditingTitle?: (isEditingTitle: boolean) => void
+    onEditingTitle?: (isEditingTitle: boolean) => void
     onIsPlayingChanged?: (isPlaying: boolean) => void
     onFinishPlaying?: () => void
     onChangeFilename?: (id: string, filename: string) => void
@@ -129,7 +129,7 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
     isActive,
     isPlaying,
     onAudioPlaying,
-    onIsEditingTitle,
+    onEditingTitle,
     onIsPlayingChanged,
     onFinishPlaying,
     onChangeFilename,
@@ -147,17 +147,14 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
   const [isSeeking, setIsSeeking] = useState(false)
   const [progress, setProgress] = useState(0)
 
-  const onAudioPlayingRef = useRef(onAudioPlaying)
   const onFinishPlayingRef = useRef(onFinishPlaying)
-
-  onAudioPlayingRef.current = onAudioPlaying
   onFinishPlayingRef.current = onFinishPlaying
 
   useEffect(() => {
     if (isSeeking) {
-      onAudioPlayingRef.current && onAudioPlayingRef.current(progress)
+      onAudioPlaying && onAudioPlaying(progress)
     }
-  }, [isSeeking, progress])
+  }, [isSeeking, onAudioPlaying, progress])
 
   useEffect(() => {
     if (isActive) {
@@ -218,9 +215,9 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
       <StyledCard className="p-3 flex-grow-1" isActive={isActive}>
         <StyledTypographyText
           editable={{
-            onStart: () => onIsEditingTitle && onIsEditingTitle(true),
+            onStart: () => onEditingTitle && onEditingTitle(true),
             onChange: filename => {
-              onIsEditingTitle && onIsEditingTitle(false)
+              onEditingTitle && onEditingTitle(false)
               onChangeFilename && onChangeFilename(id, filename)
             },
           }}
@@ -240,7 +237,6 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
             }}
             onPause={() => {
               setIsSeeking(false)
-              onIsPlayingChanged && onIsPlayingChanged(false)
             }}
             onDuration={duration => setDuration(duration)}
             onProgress={progress => {
