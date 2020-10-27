@@ -62,6 +62,7 @@ export async function splitPodcastProgramAudio(
   appId: string,
   podcastProgramAudioId: string,
   atSec: number,
+  options?: { filenames: string[] },
 ): Promise<string[]> {
   const resp = await axios.post(
     `${process.env.REACT_APP_BACKEND_ENDPOINT}/podcast/split`,
@@ -69,6 +70,7 @@ export async function splitPodcastProgramAudio(
       appId,
       podcastProgramAudioId,
       atSec,
+      options,
     },
     {
       headers: { authorization: `Bearer ${authToken}` },
