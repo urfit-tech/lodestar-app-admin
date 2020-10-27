@@ -246,6 +246,7 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
             onProgress={progress => {
               if (!isSeeking) {
                 setProgress(progress.playedSeconds)
+                onAudioPlaying && onAudioPlaying(progress.playedSeconds)
               }
             }}
             onEnded={() => {
