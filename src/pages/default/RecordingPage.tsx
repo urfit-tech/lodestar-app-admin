@@ -1,10 +1,8 @@
 import { useMutation } from '@apollo/react-hooks'
 import { message, Modal, Spin } from 'antd'
-import { isEqual } from 'lodash'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
-import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
 import AudioTrackCard, { AudioTrackCardRef } from '../../components/podcast/AudioTrackCard'
 import { UPDATE_PODCAST_PROGRAM_DURATION } from '../../components/podcast/PodcastProgramContentForm'
@@ -82,6 +80,7 @@ const RecordingPage: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
+  const [onEditingTitle, setonEditingTitle] = useState(false)
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
   const [currentPlayingSecond, setCurrentPlayingSecond] = useState(0)
   const [currentAudioId, setCurrentAudioId] = useState<string | undefined>()
@@ -194,22 +193,54 @@ const RecordingPage: React.FC = () => {
   const onFinishPlaying = useCallback(() => {
     if (currentAudioIndex + 1 < signedPodCastProgramAudios.length) {
       setCurrentAudioId(signedPodCastProgramAudios[currentAudioIndex + 1].id)
+
+      const _currentAudioId = signedPodCastProgramAudios[currentAudioIndex + 1].id
+      const audioTrack = audioTrackRefMap.get(_currentAudioId)?.current
+      if (audioTrack == null) {
+        console.warn('audioTrack is null or undefined')
+        return
+      } else {
+        audioTrack.init()
+        audioTrack.play()
+      }
     } else {
       setIsPlaying(false)
     }
-  }, [currentAudioIndex, signedPodCastProgramAudios])
+  }, [audioTrackRefMap, currentAudioIndex, signedPodCastProgramAudios])
 
   const onForward = useCallback(() => {
-    if (currentAudioIndex + 1 < signedPodCastProgramAudios.length) {
-      setCurrentAudioId(signedPodCastProgramAudios[currentAudioIndex + 1].id)
+    if (currentAudioId == null) {
+      console.log('No audio is selected')
+
+      return
     }
-  }, [currentAudioIndex, signedPodCastProgramAudios])
+
+    const audioTrack = audioTrackRefMap.get(currentAudioId)?.current
+    if (audioTrack == null) {
+      console.warn('audioTrack is null or undefined')
+
+      return
+    }
+
+    audioTrack.forward()
+  }, [audioTrackRefMap, currentAudioId])
 
   const onBackward = useCallback(() => {
-    if (currentAudioIndex > 0) {
-      setCurrentAudioId(signedPodCastProgramAudios[currentAudioIndex - 1].id)
+    if (currentAudioId == null) {
+      console.log('No audio is selected')
+
+      return
     }
-  }, [currentAudioIndex, signedPodCastProgramAudios])
+
+    const audioTrack = audioTrackRefMap.get(currentAudioId)?.current
+    if (audioTrack == null) {
+      console.warn('audioTrack is null or undefined')
+
+      return
+    }
+
+    audioTrack.backward()
+  }, [audioTrackRefMap, currentAudioId])
 
   const onDeleteAudioTrack = useCallback(() => {
     if (currentAudioIndex === 0 && signedPodCastProgramAudios.length > 1) {
@@ -337,7 +368,36 @@ const RecordingPage: React.FC = () => {
     })
   }, [formatMessage, onUploadAudio])
 
+  const onMoveUp = useCallback(
+    audioId => {
+      const oldIndex = signedPodCastProgramAudios.findIndex(audio => audio.id === audioId)
+      if (oldIndex === 0) return
+      const newIndex = oldIndex - 1
+      const newAudios = signedPodCastProgramAudios.map(v => v)
+      const currentAudio = newAudios.splice(oldIndex, 1)[0]
+      newAudios.splice(newIndex, 0, currentAudio)
+      setSignedPodCastProgramAudios(newAudios)
+      movePodcastProgramAudio(authToken, appId, audioId, newIndex)
+    },
+    [appId, authToken, signedPodCastProgramAudios],
+  )
+
+  const onMoveDown = useCallback(
+    audioId => {
+      const oldIndex = signedPodCastProgramAudios.findIndex(audio => audio.id === audioId)
+      if (oldIndex === signedPodCastProgramAudios.length - 1) return
+      const newIndex = oldIndex + 1
+      const newAudios = signedPodCastProgramAudios.map(v => v)
+      const currentAudio = newAudios.splice(oldIndex, 1)[0]
+      newAudios.splice(newIndex, 0, currentAudio)
+      setSignedPodCastProgramAudios(newAudios)
+      movePodcastProgramAudio(authToken, appId, audioId, newIndex)
+    },
+    [appId, authToken, signedPodCastProgramAudios],
+  )
+
   useEffect(() => {
+    if (onEditingTitle) return
     const onKeyDown = (event: KeyboardEvent) => {
       const { code: keyCode } = event
       if (['Space', 'ArrowRight', 'ArrowLeft', 'KeyD', 'KeyC', 'KeyS', 'KeyU'].includes(keyCode)) {
@@ -390,6 +450,7 @@ const RecordingPage: React.FC = () => {
     showUploadConfirmationModal,
     isPlaying,
     onPlay,
+    onEditingTitle,
   ])
 
   return (
@@ -410,82 +471,47 @@ const RecordingPage: React.FC = () => {
               onGetAudio={onGetRecordAudio}
             />
           </div>
+          {signedPodCastProgramAudios.map((audio, index) => {
+            return (
+              <AudioTrackCard
+                ref={audioTrackRefMap.get(audio.id)}
+                key={audio.id}
+                id={audio.id}
+                position={index}
+                playRate={playRate}
+                filename={audio.filename}
+                audioUrl={audio.url}
+                onClick={() => {
+                  setIsPlaying(false)
+                  setCurrentAudioId(audio.id)
+                }}
+                isActive={audio.id === currentAudioId}
+                isPlaying={audio.id === currentAudioId && isPlaying}
+                onAudioPlaying={second => setCurrentPlayingSecond(second)}
+                onEditingTitle={onEditingTitle => setonEditingTitle(onEditingTitle)}
+                onIsPlayingChanged={isPlaying => setIsPlaying(isPlaying)}
+                onFinishPlaying={onFinishPlaying}
+                onChangeFilename={(id, filename) => {
+                  const audios = signedPodCastProgramAudios.map(audio => {
+                    if (audio.id !== id) {
+                      return audio
+                    }
 
-          <ReactSortable
-            handle=".handle"
-            list={signedPodCastProgramAudios}
-            setList={newAudios => {
-              if (isEqual(newAudios, signedPodCastProgramAudios)) {
-                // ReactSortable seems to be calling this callback when user
-                // drag the first time, and setting signedPodCastProgramAudios
-                // would invalidate the drag
+                    return {
+                      ...audio,
+                      filename,
+                    }
+                  })
 
-                return
-              }
+                  setSignedPodCastProgramAudios(audios)
+                }}
+                onMoveUp={onMoveUp}
+                onMoveDown={onMoveDown}
+              />
+            )
+          })}
 
-              setSignedPodCastProgramAudios(newAudios)
-            }}
-            onEnd={e => {
-              const oldIndex = e.oldIndex
-              const newIndex = e.newIndex
-
-              if (oldIndex == null || newIndex == null) {
-                console.warn('Either oldIndex or newIndex are zero in ReactSortable.onEnd')
-
-                return
-              }
-
-              if (oldIndex === newIndex) {
-                return
-              }
-
-              const audioId = e.item.dataset['id']
-              if (!audioId) {
-                console.warn('Got empty audioId')
-
-                return
-              }
-
-              movePodcastProgramAudio(authToken, appId, audioId, newIndex)
-            }}
-          >
-            {signedPodCastProgramAudios.map((audio, index) => {
-              return (
-                <AudioTrackCard
-                  ref={audioTrackRefMap.get(audio.id)}
-                  key={audio.id}
-                  id={audio.id}
-                  position={index}
-                  playRate={playRate}
-                  filename={audio.filename}
-                  audioUrl={audio.url}
-                  onClick={() => {
-                    setIsPlaying(false)
-                    setCurrentAudioId(audio.id)
-                  }}
-                  isActive={audio.id === currentAudioId}
-                  isPlaying={audio.id === currentAudioId && isPlaying}
-                  onAudioPlaying={second => setCurrentPlayingSecond(second)}
-                  onIsPlayingChanged={isPlaying => setIsPlaying(isPlaying)}
-                  onFinishPlaying={onFinishPlaying}
-                  onChangeFilename={(id, filename) => {
-                    const audios = signedPodCastProgramAudios.map(audio => {
-                      if (audio.id !== id) {
-                        return audio
-                      }
-
-                      return {
-                        ...audio,
-                        filename,
-                      }
-                    })
-
-                    setSignedPodCastProgramAudios(audios)
-                  }}
-                />
-              )
-            })}
-          </ReactSortable>
+          {/* </ReactSortable> */}
         </StyledContainer>
       </StyledLayoutContent>
 
