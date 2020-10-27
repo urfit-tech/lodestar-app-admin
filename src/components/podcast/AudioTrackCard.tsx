@@ -252,6 +252,7 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
               max={Math.floor(duration)}
               step={Math.floor(duration) / 100}
               value={progress}
+              tipFormatter={value => durationFormatter(value || 0)}
               onChange={(value: number) => {
                 setProgress(value)
               }}

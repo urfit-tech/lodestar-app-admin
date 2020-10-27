@@ -148,7 +148,7 @@ const RecordingPage: React.FC = () => {
       try {
         const signedPodCastProgramAudios = await signPodCastProgramAudios(authToken, podcastProgramAdmin.audios)
         setSignedPodCastProgramAudios(signedPodCastProgramAudios)
-        if (signedPodCastProgramAudios.length) {
+        if (!currentAudioId && signedPodCastProgramAudios.length) {
           setCurrentAudioId(signedPodCastProgramAudios[0].id)
         }
       } catch (error) {
@@ -159,7 +159,7 @@ const RecordingPage: React.FC = () => {
     }
 
     signAudios()
-  }, [authToken, podcastProgramAdmin])
+  }, [authToken, podcastProgramAdmin, currentAudioId])
 
   const audioTrackRefMap: Map<string, React.RefObject<AudioTrackCardRef>> = useMemo(() => {
     if (podcastAudios == null) {
@@ -300,25 +300,24 @@ const RecordingPage: React.FC = () => {
       return
     }
 
-    const [, originalFileName, ,] = /^([^()]+)\(?(\d+)?\)?\.(\w+)?$/.exec(audio.filename) || []
+    const [, filename, originalFileName, ,] = /^(([^()]+)\(?(\d+)?\)?)\.(\w+)?$/.exec(audio.filename) || []
     const serialNumber =
       Math.max(
         ...signedPodCastProgramAudios
           .filter(audio => audio.filename.includes(originalFileName))
-          .map(audio => (/^([^()]+)\(?(\d+)?\)?\.(\w+)?$/.exec(audio.filename) || [])[2] || '0')
+          .map(audio => (/^(([^()]+)\(?(\d+)?\)?)\.(\w+)?$/.exec(audio.filename) || [])[3] || '0')
           .map(Number),
       ) + 1
 
     setIsGeneratingAudio(true)
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const [audioId1, _] = await splitPodcastProgramAudio(authToken, appId, audio.id, currentPlayingSecond, {
-        filenames: [originalFileName, `${originalFileName}(${serialNumber})`],
+      const [, audioId2] = await splitPodcastProgramAudio(authToken, appId, audio.id, currentPlayingSecond, {
+        filenames: [filename, `${originalFileName}(${serialNumber})`],
       })
 
       setCurrentPlayingSecond(0)
-      setCurrentAudioId(audioId1)
+      setCurrentAudioId(audioId2)
 
       await refetchPodcastProgramAdmin()
     } catch (error) {
