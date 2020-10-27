@@ -1,10 +1,8 @@
 import { useMutation } from '@apollo/react-hooks'
 import { message, Modal, Spin } from 'antd'
-import { isEqual } from 'lodash'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
-import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
 import AudioTrackCard, { AudioTrackCardRef } from '../../components/podcast/AudioTrackCard'
 import { UPDATE_PODCAST_PROGRAM_DURATION } from '../../components/podcast/PodcastProgramContentForm'
@@ -360,6 +358,34 @@ const RecordingPage: React.FC = () => {
     })
   }, [formatMessage, onUploadAudio])
 
+  const moveUp = useCallback(
+    audioId => {
+      const oldIndex = signedPodCastProgramAudios.findIndex(audio => audio.id === audioId)
+      if (oldIndex === 0) return
+      const newIndex = oldIndex - 1
+      const newAudios = signedPodCastProgramAudios.map(v => v)
+      const currentAudio = newAudios.splice(oldIndex, 1)[0]
+      newAudios.splice(newIndex, 0, currentAudio)
+      setSignedPodCastProgramAudios(newAudios)
+      movePodcastProgramAudio(authToken, appId, audioId, newIndex)
+    },
+    [appId, authToken, signedPodCastProgramAudios],
+  )
+
+  const moveDown = useCallback(
+    audioId => {
+      const oldIndex = signedPodCastProgramAudios.findIndex(audio => audio.id === audioId)
+      if (oldIndex === signedPodCastProgramAudios.length - 1) return
+      const newIndex = oldIndex + 1
+      const newAudios = signedPodCastProgramAudios.map(v => v)
+      const currentAudio = newAudios.splice(oldIndex, 1)[0]
+      newAudios.splice(newIndex, 0, currentAudio)
+      setSignedPodCastProgramAudios(newAudios)
+      movePodcastProgramAudio(authToken, appId, audioId, newIndex)
+    },
+    [appId, authToken, signedPodCastProgramAudios],
+  )
+
   useEffect(() => {
     if (isEditingTitle) return
     const onKeyDown = (event: KeyboardEvent) => {
@@ -435,7 +461,7 @@ const RecordingPage: React.FC = () => {
               onGetAudio={onGetRecordAudio}
             />
           </div>
-
+          {/*
           <ReactSortable
             handle=".handle"
             list={signedPodCastProgramAudios}
@@ -473,45 +499,49 @@ const RecordingPage: React.FC = () => {
 
               movePodcastProgramAudio(authToken, appId, audioId, newIndex)
             }}
-          >
-            {signedPodCastProgramAudios.map((audio, index) => {
-              return (
-                <AudioTrackCard
-                  ref={audioTrackRefMap.get(audio.id)}
-                  key={audio.id}
-                  id={audio.id}
-                  position={index}
-                  playRate={playRate}
-                  filename={audio.filename}
-                  audioUrl={audio.url}
-                  onClick={() => {
-                    setIsPlaying(false)
-                    setCurrentAudioId(audio.id)
-                  }}
-                  isActive={audio.id === currentAudioId}
-                  isPlaying={audio.id === currentAudioId && isPlaying}
-                  onAudioPlaying={second => setCurrentPlayingSecond(second)}
-                  onIsEditingTitle={isEditingTitle => setIsEditingTitle(isEditingTitle)}
-                  onIsPlayingChanged={isPlaying => setIsPlaying(isPlaying)}
-                  onFinishPlaying={onFinishPlaying}
-                  onChangeFilename={(id, filename) => {
-                    const audios = signedPodCastProgramAudios.map(audio => {
-                      if (audio.id !== id) {
-                        return audio
-                      }
+          > */}
 
-                      return {
-                        ...audio,
-                        filename,
-                      }
-                    })
+          {signedPodCastProgramAudios.map((audio, index) => {
+            return (
+              <AudioTrackCard
+                ref={audioTrackRefMap.get(audio.id)}
+                key={audio.id}
+                id={audio.id}
+                position={index}
+                playRate={playRate}
+                filename={audio.filename}
+                audioUrl={audio.url}
+                onClick={() => {
+                  setIsPlaying(false)
+                  setCurrentAudioId(audio.id)
+                }}
+                isActive={audio.id === currentAudioId}
+                isPlaying={audio.id === currentAudioId && isPlaying}
+                onAudioPlaying={second => setCurrentPlayingSecond(second)}
+                onIsEditingTitle={isEditingTitle => setIsEditingTitle(isEditingTitle)}
+                onIsPlayingChanged={isPlaying => setIsPlaying(isPlaying)}
+                onFinishPlaying={onFinishPlaying}
+                onChangeFilename={(id, filename) => {
+                  const audios = signedPodCastProgramAudios.map(audio => {
+                    if (audio.id !== id) {
+                      return audio
+                    }
 
-                    setSignedPodCastProgramAudios(audios)
-                  }}
-                />
-              )
-            })}
-          </ReactSortable>
+                    return {
+                      ...audio,
+                      filename,
+                    }
+                  })
+
+                  setSignedPodCastProgramAudios(audios)
+                }}
+                moveUp={moveUp}
+                moveDown={moveDown}
+              />
+            )
+          })}
+
+          {/* </ReactSortable> */}
         </StyledContainer>
       </StyledLayoutContent>
 
