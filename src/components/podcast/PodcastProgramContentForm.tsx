@@ -171,12 +171,10 @@ const PodcastProgramContentForm: React.FC<{
             </span>
           </Button>
         )}
-        {(!podcastProgramAdmin.contentType ||
-          !podcastProgramAdmin.filename ||
-          podcastProgramAdmin.audios.length > 0) && (
+        {podcastProgramAdmin.audios.length > 1 && (
           <>
             <StyledIcon className="ml-2 mr-1" />
-            <span>尚未合併上傳</span>
+            <span>{formatMessage(podcastMessages.label.notMerged)}</span>
           </>
         )}
       </Form.Item>
