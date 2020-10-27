@@ -358,7 +358,7 @@ const RecordingPage: React.FC = () => {
     })
   }, [formatMessage, onUploadAudio])
 
-  const moveUp = useCallback(
+  const onMoveUp = useCallback(
     audioId => {
       const oldIndex = signedPodCastProgramAudios.findIndex(audio => audio.id === audioId)
       if (oldIndex === 0) return
@@ -372,7 +372,7 @@ const RecordingPage: React.FC = () => {
     [appId, authToken, signedPodCastProgramAudios],
   )
 
-  const moveDown = useCallback(
+  const onMoveDown = useCallback(
     audioId => {
       const oldIndex = signedPodCastProgramAudios.findIndex(audio => audio.id === audioId)
       if (oldIndex === signedPodCastProgramAudios.length - 1) return
@@ -461,46 +461,6 @@ const RecordingPage: React.FC = () => {
               onGetAudio={onGetRecordAudio}
             />
           </div>
-          {/*
-          <ReactSortable
-            handle=".handle"
-            list={signedPodCastProgramAudios}
-            setList={newAudios => {
-              if (isEqual(newAudios, signedPodCastProgramAudios)) {
-                // ReactSortable seems to be calling this callback when user
-                // drag the first time, and setting signedPodCastProgramAudios
-                // would invalidate the drag
-
-                return
-              }
-
-              setSignedPodCastProgramAudios(newAudios)
-            }}
-            onEnd={e => {
-              const oldIndex = e.oldIndex
-              const newIndex = e.newIndex
-
-              if (oldIndex == null || newIndex == null) {
-                console.warn('Either oldIndex or newIndex are zero in ReactSortable.onEnd')
-
-                return
-              }
-
-              if (oldIndex === newIndex) {
-                return
-              }
-
-              const audioId = e.item.dataset['id']
-              if (!audioId) {
-                console.warn('Got empty audioId')
-
-                return
-              }
-
-              movePodcastProgramAudio(authToken, appId, audioId, newIndex)
-            }}
-          > */}
-
           {signedPodCastProgramAudios.map((audio, index) => {
             return (
               <AudioTrackCard
@@ -535,8 +495,8 @@ const RecordingPage: React.FC = () => {
 
                   setSignedPodCastProgramAudios(audios)
                 }}
-                moveUp={moveUp}
-                moveDown={moveDown}
+                onMoveUp={onMoveUp}
+                onMoveDown={onMoveDown}
               />
             )
           })}

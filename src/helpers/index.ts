@@ -99,7 +99,7 @@ export const dateRangeFormatter: (props: {
 export const durationFormatter = (seconds: number) => {
   return `MINUTES:SECONDS`
     .replace('MINUTES', `${Math.floor(seconds / 60)}`.padStart(2, '0'))
-    .replace('SECONDS', `${(seconds % 60).toFixed(0)}`.padStart(2, '0'))
+    .replace('SECONDS', `${Math.floor(seconds % 60).toFixed(0)}`.padStart(2, '0'))
 }
 
 export const rgba = (hexColor: string, alpha: number) => {

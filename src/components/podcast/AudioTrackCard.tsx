@@ -114,8 +114,8 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
     onIsPlayingChanged?: (isPlaying: boolean) => void
     onFinishPlaying?: () => void
     onChangeFilename?: (id: string, filename: string) => void
-    moveUp?: (id: string) => void
-    moveDown?: (id: string) => void
+    onMoveUp?: (id: string) => void
+    onMoveDown?: (id: string) => void
   }
 > = (
   {
@@ -133,8 +133,8 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
     onIsPlayingChanged,
     onFinishPlaying,
     onChangeFilename,
-    moveUp,
-    moveDown,
+    onMoveUp,
+    onMoveDown,
     children,
     ...divProps
   },
@@ -203,13 +203,13 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
       <ActionBlockWrapper>
         <ActionBlock className="mb-3">
           <StyledIcon
-            component={() => <MoveUpIcon onClick={() => moveUp && moveUp(id)} />}
+            component={() => <MoveUpIcon onClick={() => onMoveUp && onMoveUp(id)} />}
             className={`cursor-pointer ${handleClassName || 'handle'}`}
           />
         </ActionBlock>
         <ActionBlock>
           <StyledIcon
-            component={() => <MoveDownIcon onClick={() => moveDown && moveDown(id)} />}
+            component={() => <MoveDownIcon onClick={() => onMoveDown && onMoveDown(id)} />}
             className={`cursor-pointer ${handleClassName || 'handle'}`}
           />
         </ActionBlock>
