@@ -268,11 +268,22 @@ const RecordingPage: React.FC = () => {
       return
     }
 
+    const [, originalFileName] = /^([^()]+)(.+)?$/.exec(audio.filename) || []
+    const serialNumber =
+      Math.max(
+        ...signedPodCastProgramAudios
+          .filter(audio => audio.filename.includes(originalFileName))
+          .map(audio => (/^([^.()]+)([(]+)([1-9])([)]+)?$/.exec(audio.filename) || [])[3] || '0')
+          .map(Number),
+      ) + 1
+
     setIsGeneratingAudio(true)
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const [audioId1, _] = await splitPodcastProgramAudio(authToken, appId, audio.id, currentPlayingSecond)
+      const [audioId1, _] = await splitPodcastProgramAudio(authToken, appId, audio.id, currentPlayingSecond, {
+        filenames: [audio.filename, `${originalFileName}(${serialNumber})`],
+      })
 
       setCurrentPlayingSecond(0)
       setCurrentAudioId(audioId1)
