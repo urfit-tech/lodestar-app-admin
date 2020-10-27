@@ -678,6 +678,7 @@ export const podcastMessages = {
     podcastIntroduction: { id: 'podcast.label.podcastIntroduction', defaultMessage: '廣播介紹' },
     totalDuration: { id: 'podcast.label.totalDuration', defaultMessage: '總時長' },
     playRate: { id: 'podcast.label.playRate', defaultMessage: '播放速度' },
+    notMerged: { id: 'podcast.label.notMerged', defaultMessage: '尚未合併上傳' },
   }),
   term: defineMessages({
     podcastPlan: { id: 'podcast.term.podcastPlan', defaultMessage: '廣播頻道訂閱方案' },
