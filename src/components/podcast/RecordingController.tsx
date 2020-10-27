@@ -5,8 +5,8 @@ import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import { desktopViewMixin, durationFormatter } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
-import { ReactComponent as BackwardIcon } from '../../images/icon/backward.svg'
-import { ReactComponent as ForwardIcon } from '../../images/icon/forward.svg'
+import { ReactComponent as BackwardIcon } from '../../images/icon/backward-5.svg'
+import { ReactComponent as ForwardIcon } from '../../images/icon/forward-5.svg'
 import { ReactComponent as PauseCircleIcon } from '../../images/icon/pause-circle.svg'
 import { ReactComponent as PlayCircleIcon } from '../../images/icon/play-circle.svg'
 import { ReactComponent as TrashOIcon } from '../../images/icon/trash-o.svg'
@@ -57,13 +57,13 @@ const StyledOverlayButton = styled(Button)`
     font-size: 24px;
   }
 `
-const StyledBarIconButton = styled(Button)<{ height?: string; iconsize?: string; marginbottom?: string }>`
+const StyledBarIconButton = styled(Button)<{ height?: string; iconsize?: string; marginBottom?: string }>`
   height: ${props => (props.height ? props.height : '36px')};
   color: white;
   font-size: ${props => props.iconsize || '24px'};
   line-height: 1;
   padding: 0;
-  margin-bottom: ${props => props.marginbottom || '0px'};
+  margin-bottom: ${props => props.marginBottom || '0px'};
   span {
     line-height: 1;
   }
@@ -203,7 +203,7 @@ const RecordingController: React.FC<{
             </div>
 
             <div className="col-6 col-lg-4 d-flex align-items-center justify-content-center">
-              <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.backward)}</TooltipText>}>
+              <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.backwardFiveSecond)}</TooltipText>}>
                 <StyledBarIconButton type="link" className="p-0 mx-2" onClick={() => onBackward && onBackward()}>
                   <BackwardIcon />
                 </StyledBarIconButton>
@@ -219,7 +219,7 @@ const RecordingController: React.FC<{
                 {isPlaying ? <PauseCircleIcon /> : <PlayCircleIcon />}
               </StyledBarIconButton>
 
-              <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.forward)}</TooltipText>}>
+              <Tooltip title={<TooltipText>{formatMessage(podcastMessages.ui.forwardFiveSecond)}</TooltipText>}>
                 <StyledBarIconButton type="link" className="p-0 mx-2" onClick={() => onForward && onForward()}>
                   <ForwardIcon />
                 </StyledBarIconButton>
@@ -235,7 +235,7 @@ const RecordingController: React.FC<{
                     render={({ playRate, onPlayRateChange }) => {
                       return (
                         <StyledBarIconButton
-                          marginbottom="2px"
+                          marginBottom="2px"
                           type="link"
                           className="p-0"
                           onClick={() => onPlayRateChange && onPlayRateChange()}

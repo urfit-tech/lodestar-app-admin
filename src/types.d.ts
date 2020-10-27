@@ -10351,6 +10351,7 @@ export enum member_tag_update_column {
 export enum member_update_column {
   abstract = "abstract",
   app_id = "app_id",
+  assigned_at = "assigned_at",
   created_at = "created_at",
   description = "description",
   email = "email",
@@ -10358,6 +10359,7 @@ export enum member_update_column {
   google_user_id = "google_user_id",
   id = "id",
   logined_at = "logined_at",
+  manager_id = "manager_id",
   metadata = "metadata",
   name = "name",
   passhash = "passhash",
@@ -10365,6 +10367,7 @@ export enum member_update_column {
   refresh_token = "refresh_token",
   role = "role",
   roles_deprecated = "roles_deprecated",
+  star = "star",
   title = "title",
   username = "username",
   youtube_channel_ids = "youtube_channel_ids",
@@ -13896,6 +13899,7 @@ export interface member_bool_exp {
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
   appointment_plans?: appointment_plan_bool_exp | null;
+  assigned_at?: timestamptz_comparison_exp | null;
   coin_logs?: coin_log_bool_exp | null;
   comment_reactions?: comment_reaction_bool_exp | null;
   comment_replies?: comment_reply_bool_exp | null;
@@ -13913,6 +13917,7 @@ export interface member_bool_exp {
   issue_reply_reactions?: issue_reply_reaction_bool_exp | null;
   issues?: issue_bool_exp | null;
   logined_at?: timestamptz_comparison_exp | null;
+  manager_id?: String_comparison_exp | null;
   media?: media_bool_exp | null;
   memberNotesByAuthorId?: member_note_bool_exp | null;
   member_cards?: member_card_bool_exp | null;
@@ -13949,6 +13954,7 @@ export interface member_bool_exp {
   refresh_token?: uuid_comparison_exp | null;
   role?: String_comparison_exp | null;
   roles_deprecated?: jsonb_comparison_exp | null;
+  star?: numeric_comparison_exp | null;
   title?: String_comparison_exp | null;
   username?: String_comparison_exp | null;
   vouchers?: voucher_bool_exp | null;
@@ -14069,6 +14075,7 @@ export interface member_insert_input {
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
   appointment_plans?: appointment_plan_arr_rel_insert_input | null;
+  assigned_at?: any | null;
   coin_logs?: coin_log_arr_rel_insert_input | null;
   comment_reactions?: comment_reaction_arr_rel_insert_input | null;
   comment_replies?: comment_reply_arr_rel_insert_input | null;
@@ -14086,6 +14093,7 @@ export interface member_insert_input {
   issue_reply_reactions?: issue_reply_reaction_arr_rel_insert_input | null;
   issues?: issue_arr_rel_insert_input | null;
   logined_at?: any | null;
+  manager_id?: string | null;
   media?: media_arr_rel_insert_input | null;
   memberNotesByAuthorId?: member_note_arr_rel_insert_input | null;
   member_cards?: member_card_arr_rel_insert_input | null;
@@ -14119,6 +14127,7 @@ export interface member_insert_input {
   refresh_token?: any | null;
   role?: string | null;
   roles_deprecated?: any | null;
+  star?: any | null;
   title?: string | null;
   username?: string | null;
   vouchers?: voucher_arr_rel_insert_input | null;
