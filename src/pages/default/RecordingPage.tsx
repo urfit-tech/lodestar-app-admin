@@ -1,5 +1,6 @@
 import { useMutation } from '@apollo/react-hooks'
 import { message, Modal, Spin } from 'antd'
+import gql from 'graphql-tag'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
@@ -93,6 +94,11 @@ const RecordingPage: React.FC = () => {
     types.UPDATE_PODCAST_PROGRAM_DURATION,
     types.UPDATE_PODCAST_PROGRAM_DURATIONVariables
   >(UPDATE_PODCAST_PROGRAM_DURATION)
+
+  const [updatePodcastProgramAudioData] = useMutation<
+    types.UPDATE_PODCAST_PROGRAM_AUDIO_DATA,
+    types.UPDATE_PODCAST_PROGRAM_AUDIO_DATAVariables
+  >(UPDATE_PODCAST_PROGRAM_AUDIO_DATA)
 
   const currentAudioIndex = signedPodCastProgramAudios.findIndex(body => body.id === currentAudioId)
 
@@ -494,6 +500,20 @@ const RecordingPage: React.FC = () => {
                       return audio
                     }
 
+                    const targetAudio = podcastAudios?.find(audio => audio.id === id)
+                    if (targetAudio) {
+                      updatePodcastProgramAudioData({
+                        variables: {
+                          podcastProgramAudioId: id,
+                          data: {
+                            key: targetAudio.key,
+                            duration: targetAudio.duration,
+                            filename,
+                          },
+                        },
+                      })
+                    }
+
                     return {
                       ...audio,
                       filename,
@@ -549,5 +569,13 @@ const RecordingPage: React.FC = () => {
     </div>
   )
 }
+
+const UPDATE_PODCAST_PROGRAM_AUDIO_DATA = gql`
+  mutation UPDATE_PODCAST_PROGRAM_AUDIO_DATA($podcastProgramAudioId: uuid!, $data: jsonb) {
+    update_podcast_program_audio(where: { id: { _eq: $podcastProgramAudioId } }, _set: { data: $data }) {
+      affected_rows
+    }
+  }
+`
 
 export default RecordingPage

@@ -9436,6 +9436,35 @@ export interface INSERT_PROGRAM_PACKAGEVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_AUDIO_DATA
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_AUDIO_DATA_update_podcast_program_audio {
+  __typename: "podcast_program_audio_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_AUDIO_DATA {
+  /**
+   * update data of the table: "podcast_program_audio"
+   */
+  update_podcast_program_audio: UPDATE_PODCAST_PROGRAM_AUDIO_DATA_update_podcast_program_audio | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_AUDIO_DATAVariables {
+  podcastProgramAudioId: any;
+  data?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
 //==============================================================
 // START Enums and Input Objects
 //==============================================================
@@ -10150,6 +10179,23 @@ export enum member_card_update_column {
   card_secret = "card_secret",
   id = "id",
   member_id = "member_id",
+}
+
+/**
+ * unique or primary key constraints on table "member_category"
+ */
+export enum member_category_constraint {
+  member_category_pkey = "member_category_pkey",
+}
+
+/**
+ * update columns of table "member_category"
+ */
+export enum member_category_update_column {
+  category_id = "category_id",
+  id = "id",
+  member_id = "member_id",
+  position = "position",
 }
 
 /**
@@ -12963,6 +13009,7 @@ export interface category_bool_exp {
   app_id?: String_comparison_exp | null;
   class?: String_comparison_exp | null;
   id?: String_comparison_exp | null;
+  member_categories?: member_category_bool_exp | null;
   merchandise_categories?: merchandise_category_bool_exp | null;
   name?: String_comparison_exp | null;
   podcast_program_categories?: podcast_program_category_bool_exp | null;
@@ -12981,6 +13028,7 @@ export interface category_insert_input {
   app_id?: string | null;
   class?: string | null;
   id?: string | null;
+  member_categories?: member_category_arr_rel_insert_input | null;
   merchandise_categories?: merchandise_category_arr_rel_insert_input | null;
   name?: string | null;
   podcast_program_categories?: podcast_program_category_arr_rel_insert_input | null;
@@ -13921,6 +13969,7 @@ export interface member_bool_exp {
   media?: media_bool_exp | null;
   memberNotesByAuthorId?: member_note_bool_exp | null;
   member_cards?: member_card_bool_exp | null;
+  member_categories?: member_category_bool_exp | null;
   member_contracts?: member_contract_bool_exp | null;
   member_notes?: member_note_bool_exp | null;
   member_permission_extras?: member_permission_extra_bool_exp | null;
@@ -14006,6 +14055,50 @@ export interface member_card_on_conflict {
   constraint: member_card_constraint;
   update_columns: member_card_update_column[];
   where?: member_card_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "member_category"
+ */
+export interface member_category_arr_rel_insert_input {
+  data: member_category_insert_input[];
+  on_conflict?: member_category_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_category". All fields are combined with a logical 'AND'.
+ */
+export interface member_category_bool_exp {
+  _and?: (member_category_bool_exp | null)[] | null;
+  _not?: member_category_bool_exp | null;
+  _or?: (member_category_bool_exp | null)[] | null;
+  category?: category_bool_exp | null;
+  category_id?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_category"
+ */
+export interface member_category_insert_input {
+  category?: category_obj_rel_insert_input | null;
+  category_id?: string | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  position?: number | null;
+}
+
+/**
+ * on conflict condition type for table "member_category"
+ */
+export interface member_category_on_conflict {
+  constraint: member_category_constraint;
+  update_columns: member_category_update_column[];
+  where?: member_category_bool_exp | null;
 }
 
 /**
@@ -14097,6 +14190,7 @@ export interface member_insert_input {
   media?: media_arr_rel_insert_input | null;
   memberNotesByAuthorId?: member_note_arr_rel_insert_input | null;
   member_cards?: member_card_arr_rel_insert_input | null;
+  member_categories?: member_category_arr_rel_insert_input | null;
   member_contracts?: member_contract_arr_rel_insert_input | null;
   member_notes?: member_note_arr_rel_insert_input | null;
   member_permission_extras?: member_permission_extra_arr_rel_insert_input | null;
@@ -17725,6 +17819,7 @@ export interface program_plan_enrollment_bool_exp {
   ended_at?: timestamptz_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   program_plan?: program_plan_bool_exp | null;
   program_plan_id?: uuid_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
