@@ -110,7 +110,7 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
     isActive?: boolean
     isPlaying?: boolean
     onAudioPlaying?: (second: number) => void
-    onEditingTitle?: (isEditingTitle: boolean) => void
+    onIsEditingTitleChanged?: (isEditingTitle: boolean) => void
     onIsPlayingChanged?: (isPlaying: boolean) => void
     onFinishPlaying?: () => void
     onChangeFilename?: (id: string, filename: string) => void
@@ -129,7 +129,7 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
     isActive,
     isPlaying,
     onAudioPlaying,
-    onEditingTitle,
+    onIsEditingTitleChanged,
     onIsPlayingChanged,
     onFinishPlaying,
     onChangeFilename,
@@ -146,9 +146,6 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
   const [duration, setDuration] = useState(0)
   const [isSeeking, setIsSeeking] = useState(false)
   const [progress, setProgress] = useState(0)
-
-  const onFinishPlayingRef = useRef(onFinishPlaying)
-  onFinishPlayingRef.current = onFinishPlaying
 
   useEffect(() => {
     if (isSeeking) {
@@ -215,9 +212,9 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
       <StyledCard className="p-3 flex-grow-1" isActive={isActive}>
         <StyledTypographyText
           editable={{
-            onStart: () => onEditingTitle && onEditingTitle(true),
+            onStart: () => onIsEditingTitleChanged && onIsEditingTitleChanged(true),
             onChange: filename => {
-              onEditingTitle && onEditingTitle(false)
+              onIsEditingTitleChanged && onIsEditingTitleChanged(false)
               onChangeFilename && onChangeFilename(id, filename)
             },
           }}
@@ -247,8 +244,7 @@ const AudioTrackCard: React.ForwardRefRenderFunction<
             }}
             onEnded={() => {
               setIsSeeking(false)
-              if (onFinishPlayingRef.current == null) return
-              onFinishPlayingRef.current()
+              onFinishPlaying && onFinishPlaying()
             }}
           />
           <SliderWrapper className="d-flex align-items-center justify-content-between">

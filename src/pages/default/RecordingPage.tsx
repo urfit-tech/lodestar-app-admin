@@ -488,7 +488,7 @@ const RecordingPage: React.FC = () => {
                 isActive={audio.id === currentAudioId}
                 isPlaying={audio.id === currentAudioId && isPlaying}
                 onAudioPlaying={second => setCurrentPlayingSecond(second)}
-                onEditingTitle={onEditingTitle => setonEditingTitle(onEditingTitle)}
+                onIsEditingTitleChanged={isEditingTitle => setonEditingTitle(isEditingTitle)}
                 onIsPlayingChanged={isPlaying => setIsPlaying(isPlaying)}
                 onFinishPlaying={onFinishPlaying}
                 onChangeFilename={(id, filename) => {
