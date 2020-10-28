@@ -69,10 +69,10 @@ const PodcastProgramPublishBlock: React.FC<{
     })
 
   const publishStatus: PublishStatus = podcastProgramAdmin.publishedAt
-    ? 'ordinary'
+    ? 'success'
     : checklist.length > 0
     ? 'alert'
-    : 'success'
+    : 'ordinary'
 
   const [title, description] =
     publishStatus === 'alert'

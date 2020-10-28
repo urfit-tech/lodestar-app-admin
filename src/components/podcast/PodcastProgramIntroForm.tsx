@@ -66,6 +66,7 @@ const PodcastProgramIntroForm: React.FC<{
         updatedAt: new Date(),
         podcastProgramId: podcastProgramAdmin.id,
         abstract: values.abstract,
+        coverUrl: podcastProgramAdmin.coverUrl,
       },
     })
       .then(() => {
