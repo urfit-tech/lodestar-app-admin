@@ -104,6 +104,10 @@ const RecordingPage: React.FC = () => {
 
   const currentAudioIndex = signedPodCastProgramAudios.findIndex(body => body.id === currentAudioId)
 
+  useEffect(() => {
+    refetchPodcastProgramAdmin()
+  }, [refetchPodcastProgramAdmin])
+
   const onGetRecordAudio = useCallback(
     (blob: Blob, duration: number) => {
       const filename = `未命名${`${signedPodCastProgramAudios.length + 1}`.padStart(2, '0')}.mp3`
