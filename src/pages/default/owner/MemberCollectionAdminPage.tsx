@@ -3,7 +3,7 @@ import { Button, Checkbox, Dropdown, Form, Input, Menu, Table, Tag } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { ColumnProps } from 'antd/lib/table'
 import moment from 'moment'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { ThemeContext } from 'styled-components'
 import { AdminPageTitle } from '../../../components/admin'
@@ -42,50 +42,26 @@ const StyledTag = styled(Tag)`
   }
 `
 
-const getColumnSearchProps = ({
-  theme,
-  onSearch,
-}: {
-  theme: any
-  onSearch: (selectedKeys?: string[], confirm?: () => void) => void
-}): ColumnProps<any> => ({
-  filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-    <div className="p-2">
-      <Input
-        autoFocus
-        value={selectedKeys && selectedKeys[0]}
-        onChange={e => {
-          setSelectedKeys && setSelectedKeys([e.target.value || ''])
-          onSearch([e.target.value || ''], confirm)
-        }}
-        style={{ width: 188, marginBottom: 8, display: 'block' }}
-      />
-    </div>
-  ),
-  filterIcon: filtered => <SearchOutlined style={{ color: filtered ? theme['@primary-color'] : undefined }} />,
-})
-
 const MemberCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const theme = useContext(ThemeContext)
+  const { id: appId } = useContext(AppContext)
 
   // get member info
-  const [roleFilter, setRoleFilter] = useState<UserRole | null>(null)
-  const [nameSearch, setNameSearch] = useState<string | null>(null)
-  const [emailSearch, setEmailSearch] = useState<string | null>(null)
-  const { loading: loadingMembers, members, loadMoreMembers } = useMemberCollection({
-    role: roleFilter,
-    nameSearch,
-    emailSearch,
-  })
+  const searchInputRef = useRef<Input | null>(null)
+  const [filter, setFilter] = useState<{
+    role?: UserRole
+    name?: string
+    email?: string
+  }>({})
+  const { loadingMembers, members, loadMoreMembers } = useMemberCollection(filter)
   const [loading, setLoading] = useState(false)
 
   // dropdown
-  const { id: appId } = useContext(AppContext)
-  const { menu } = useMemberRoleCount({ appId, nameSearch, emailSearch })
+  const { menu } = useMemberRoleCount(appId, filter)
   const dropdownMenu = menu.map(menuItem => ({
     ...menuItem,
-    text: formatMessage(menuItem.text),
+    text: formatMessage(menuItem.intlKey),
   }))
 
   const roleSelectDropdown = (
@@ -96,9 +72,12 @@ const MemberCollectionAdminPage: React.FC = () => {
           {dropdownMenu.map(item => (
             <StyledMenuItem
               key={item.text}
-              onClick={() => {
-                setRoleFilter(item.role as UserRole)
-              }}
+              onClick={() =>
+                setFilter({
+                  ...filter,
+                  role: item.role as UserRole,
+                })
+              }
             >
               {item.text} ({item.count})
             </StyledMenuItem>
@@ -108,8 +87,8 @@ const MemberCollectionAdminPage: React.FC = () => {
     >
       <Button className="d-flex justify-content-between align-items-center">
         <span>
-          {roleFilter ? <UserRoleName userRole={roleFilter} /> : formatMessage(commonMessages.label.allMembers)}
-          {` (${menu.filter(item => item.role === roleFilter)[0].count})`}
+          {filter.role ? <UserRoleName userRole={filter.role} /> : formatMessage(commonMessages.label.allMembers)}
+          {` (${menu.filter(item => item.role === (filter.role || null))[0].count})`}
         </span>
         <CaretDownOutlined />
       </Button>
@@ -117,15 +96,68 @@ const MemberCollectionAdminPage: React.FC = () => {
   )
 
   // table
+  const getColumnSearchProps: (dataIndex: keyof MemberInfoProps) => ColumnProps<MemberInfoProps> = dataIndex => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div className="p-2">
+        <Input
+          ref={searchInputRef}
+          value={selectedKeys[0]}
+          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => {
+            confirm()
+            setFilter(filter => ({
+              ...filter,
+              [dataIndex]: selectedKeys[0],
+            }))
+          }}
+          style={{ width: 188, marginBottom: 8, display: 'block' }}
+        />
+        <div>
+          <Button
+            type="primary"
+            onClick={() => {
+              confirm()
+              setFilter(filter => ({
+                ...filter,
+                [dataIndex]: selectedKeys[0],
+              }))
+            }}
+            icon={<SearchOutlined />}
+            size="small"
+            className="mr-2"
+            style={{ width: 90 }}
+          >
+            {formatMessage(commonMessages.ui.search)}
+          </Button>
+          <Button
+            onClick={() => {
+              clearFilters && clearFilters()
+              setFilter(filter => ({
+                ...filter,
+                [dataIndex]: undefined,
+              }))
+            }}
+            size="small"
+            style={{ width: 90 }}
+          >
+            {formatMessage(commonMessages.ui.reset)}
+          </Button>
+        </div>
+      </div>
+    ),
+    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+    onFilterDropdownVisibleChange: visible => visible && setTimeout(() => searchInputRef.current?.select(), 100),
+  })
+
   const columns: ColumnProps<MemberInfoProps>[] = [
     {
       title: formatMessage(commonMessages.term.memberName),
-      dataIndex: 'id',
-      key: 'id',
+      dataIndex: 'name',
+      key: 'name',
       render: (text, record, index) => (
         <div className="d-flex align-items-center">
-          <AvatarImage size="32px" src={record.avatarUrl} />
-          <StyledMemberName className="ml-3 mr-2">{record.name}</StyledMemberName>
+          <AvatarImage size="32px" src={record.avatarUrl} className="flex-shrink-0 mr-3" />
+          <StyledMemberName>{record.name}</StyledMemberName>
           {record.role === 'app-owner' && (
             <StyledTag color="#585858" className="ml-2 mr-0">
               {formatMessage(commonMessages.term.appOwner)}
@@ -138,23 +170,13 @@ const MemberCollectionAdminPage: React.FC = () => {
           )}
         </div>
       ),
-      ...getColumnSearchProps({
-        theme,
-        onSearch: (selectedKeys, confirm) => {
-          selectedKeys && setNameSearch(selectedKeys[0].length ? selectedKeys[0] : null)
-        },
-      }),
+      ...getColumnSearchProps('name'),
     },
     {
       title: 'Email',
       dataIndex: 'email',
       key: 'email',
-      ...getColumnSearchProps({
-        theme,
-        onSearch: (selectedKeys, confirm) => {
-          selectedKeys && setEmailSearch(selectedKeys[0].length ? selectedKeys[0] : null)
-        },
-      }),
+      ...getColumnSearchProps('email'),
     },
     {
       title: formatMessage(commonMessages.label.phone),
@@ -187,9 +209,7 @@ const MemberCollectionAdminPage: React.FC = () => {
       <div className="d-flex align-items-center justify-content-between mb-4">
         {roleSelectDropdown}
 
-        <MemberExportModal role={roleFilter} nameSearch={nameSearch} emailSearch={emailSearch}>
-          {roleSelectDropdown}
-        </MemberExportModal>
+        <MemberExportModal filter={filter}>{roleSelectDropdown}</MemberExportModal>
       </div>
 
       <AdminCard className="mb-5">
@@ -225,13 +245,15 @@ const MemberCollectionAdminPage: React.FC = () => {
 }
 
 const MemberExportModal: React.FC<{
-  role: UserRole | null
-  nameSearch: string | null
-  emailSearch: string | null
-}> = ({ role, nameSearch, emailSearch, children }) => {
-  const { formatMessage } = useIntl()
+  filter?: {
+    role?: UserRole
+    name?: string
+    email?: string
+  }
+}> = ({ filter, children }) => {
   const [form] = useForm()
-  const { loading, members } = useMemberCollection({ role, nameSearch, emailSearch })
+  const { formatMessage } = useIntl()
+  const { loadingMembers, members } = useMemberCollection(filter)
   const [selectedExportFields, setSelectedExportFields] = useState<string[]>(['name', 'email'])
 
   const options = [
@@ -265,7 +287,7 @@ const MemberExportModal: React.FC<{
           {formatMessage(commonMessages.ui.export)}
         </Button>
       )}
-      confirmLoading={loading}
+      confirmLoading={loadingMembers}
       title={formatMessage(commonMessages.ui.downloadMemberList)}
       cancelText={formatMessage(commonMessages.ui.cancel)}
       okText={formatMessage(commonMessages.ui.export)}

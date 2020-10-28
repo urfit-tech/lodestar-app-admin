@@ -295,15 +295,7 @@ export const usePublicMember = (memberId: string) => {
   }
 }
 
-export const useMemberRoleCount = ({
-  appId,
-  nameSearch = null,
-  emailSearch = null,
-}: {
-  appId: string
-  nameSearch?: string | null
-  emailSearch?: string | null
-}) => {
+export const useMemberRoleCount = (appId: string, filter?: { name?: string; email?: string }) => {
   const { loading, error, data, refetch } = useQuery<types.GET_MEMBER_ROLE_COUNT, types.GET_MEMBER_ROLE_COUNTVariables>(
     gql`
       query GET_MEMBER_ROLE_COUNT($appId: String, $email: String, $name: String) {
@@ -361,8 +353,8 @@ export const useMemberRoleCount = ({
     {
       variables: {
         appId,
-        name: nameSearch && `%${nameSearch}%`,
-        email: emailSearch && `%${emailSearch}%`,
+        name: filter?.name && `%${filter.name}%`,
+        email: filter?.email && `%${filter.email}%`,
       },
     },
   )
@@ -389,47 +381,52 @@ export const useMemberRoleCount = ({
       {
         role: null,
         count: count.all,
-        text: commonMessages.label.allMembers,
+        intlKey: commonMessages.label.allMembers,
       },
       {
         role: 'app-owner',
         count: count.appOwner,
-        text: commonMessages.term.appOwner,
+        intlKey: commonMessages.term.appOwner,
       },
       {
         role: 'content-creator',
         count: count.contentCreator,
-        text: commonMessages.term.contentCreator,
+        intlKey: commonMessages.term.contentCreator,
       },
       {
         role: 'general-member',
         count: count.generalMember,
-        text: commonMessages.term.generalMember,
+        intlKey: commonMessages.term.generalMember,
       },
     ],
     refetch,
   }
 }
 
-export const useMemberCollection = ({
-  role,
-  nameSearch = null,
-  emailSearch = null,
-}: {
-  role: UserRole | null
-  nameSearch?: string | null
-  emailSearch?: string | null
-}) => {
+export const useMemberCollection = (filter?: { role?: UserRole; name?: string; email?: string }) => {
   const [isNoMore, setIsNoMore] = useState(false)
   const { loading, error, data, refetch, fetchMore } = useQuery<
     types.GET_PAGE_MEMBER_COLLECTION,
     types.GET_PAGE_MEMBER_COLLECTIONVariables
   >(
     gql`
-      query GET_PAGE_MEMBER_COLLECTION($role: String, $name: String, $email: String, $offset: Int!, $limit: Int!) {
+      query GET_PAGE_MEMBER_COLLECTION(
+        $role: String
+        $name: String
+        $email: String
+        $cursor: timestamptz
+        $limit: Int!
+      ) {
         member(
-          where: { _and: [{ role: { _eq: $role } }, { name: { _ilike: $name } }, { email: { _ilike: $email } }] }
-          offset: $offset
+          where: {
+            _and: [
+              { role: { _eq: $role } }
+              { name: { _ilike: $name } }
+              { email: { _ilike: $email } }
+              { created_at: { _lt: $cursor } }
+            ]
+          }
+          order_by: { created_at: desc }
           limit: $limit
         ) {
           id
@@ -458,10 +455,9 @@ export const useMemberCollection = ({
     `,
     {
       variables: {
-        role,
-        name: nameSearch && `%${nameSearch}%`,
-        email: emailSearch && `%${emailSearch}%`,
-        offset: 0,
+        role: filter?.role,
+        name: filter?.name && `%${filter.name}%`,
+        email: filter?.email && `%${filter.email}%`,
         limit: 10,
       },
       context: {
@@ -490,11 +486,11 @@ export const useMemberCollection = ({
   const loadMoreMembers = () =>
     fetchMore({
       variables: {
-        role,
-        name: nameSearch && `%${nameSearch}%`,
-        email: emailSearch && `%${emailSearch}%`,
-        offset: data?.member.length || 0,
+        role: filter?.role,
+        name: filter?.name && `%${filter.name}%`,
+        email: filter?.email && `%${filter.email}%`,
         limit: 10,
+        cursor: data?.member.slice(-1)[0]?.created_at,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
@@ -510,10 +506,10 @@ export const useMemberCollection = ({
     })
 
   return {
-    loading,
-    error,
+    loadingMembers: loading,
+    errorMembers: error,
     members,
-    refetch,
+    refetchMembers: refetch,
     loadMoreMembers: isNoMore ? undefined : loadMoreMembers,
   }
 }
