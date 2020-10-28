@@ -7007,7 +7007,7 @@ export interface GET_PAGE_MEMBER_COLLECTIONVariables {
   role?: string | null;
   name?: string | null;
   email?: string | null;
-  offset: number;
+  cursor?: any | null;
   limit: number;
 }
 
