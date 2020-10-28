@@ -4,6 +4,7 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -21,6 +22,7 @@ const MemberProfileBasicForm: React.FC<{
 }> = ({ memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
+  const { permissions } = useAuth()
   const [updateMemberProfileBasic] = useMutation<
     types.UPDATE_MEMBER_PROFILE_BASIC,
     types.UPDATE_MEMBER_PROFILE_BASICVariables
@@ -87,9 +89,11 @@ const MemberProfileBasicForm: React.FC<{
       <Form.Item label={formatMessage(commonMessages.term.email)} name="email">
         <Input disabled />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.phone)} name="phones">
-        <PhoneCollectionInput />
-      </Form.Item>
+      {permissions['MEMBER_PHONE_ADMIN'] && (
+        <Form.Item label={formatMessage(commonMessages.term.phone)} name="phones">
+          <PhoneCollectionInput />
+        </Form.Item>
+      )}
       <Form.Item label={formatMessage(commonMessages.term.speciality)} name="specialities">
         <TagSelector disabled />
       </Form.Item>

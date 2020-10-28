@@ -104,12 +104,13 @@ const MemberAdminPage: React.FC = () => {
             <Icon className="mr-2" component={() => <EmailIcon />} />
             <span>{memberAdmin?.email}</span>
           </StyledDescription>
-          {memberAdmin?.phones.map(phone => (
-            <StyledDescription key={phone}>
-              <Icon className="mr-2" component={() => <PhoneIcon />} />
-              <span>{phone}</span>
-            </StyledDescription>
-          ))}
+          {permissions['MEMBER_PHONE_ADMIN'] &&
+            memberAdmin?.phones.map(phone => (
+              <StyledDescription key={phone}>
+                <Icon className="mr-2" component={() => <PhoneIcon />} />
+                <span>{phone}</span>
+              </StyledDescription>
+            ))}
 
           <Divider className="my-4" />
 

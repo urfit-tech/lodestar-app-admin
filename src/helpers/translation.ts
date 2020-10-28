@@ -1013,6 +1013,8 @@ export const permissionMessages = defineMessages({
   // member
   MEMBER_ADMIN: { id: 'permission.MEMBER_ADMIN', defaultMessage: '所有會員列表功能' },
   MEMBER_PROPERTY_ADMIN: { id: 'permission.MEMBER_PROPERTY_ADMIN', defaultMessage: '所有自訂欄位功能' },
+  MEMBER_PHONE_ADMIN: {id: 'permission.MEMBER_PHONE_ADMIN',defaultMessage: '檢視電話欄位'},
+  MEMBER_STAR_ADMIN: {id: 'permission.MEMBER_STAR_ADMIN', defaultMessage: '檢視星等欄位'},
 
   // task
   TASK_ADMIN: { id: 'permission.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },
