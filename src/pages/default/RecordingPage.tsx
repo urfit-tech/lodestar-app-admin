@@ -21,7 +21,6 @@ import {
   appendPodcastProgramAudio,
   deletePodcastProgramAudio,
   exportPodcastProgram,
-  movePodcastProgramAudio,
   splitPodcastProgramAudio,
 } from './RecordingPageHelpers'
 const StyledLayoutContent = styled.div`
@@ -98,6 +97,10 @@ const RecordingPage: React.FC = () => {
     types.UPDATE_PODCAST_PROGRAM_AUDIO_DATA,
     types.UPDATE_PODCAST_PROGRAM_AUDIO_DATAVariables
   >(UPDATE_PODCAST_PROGRAM_AUDIO_DATA)
+  const [updatePodcastProgramAudioPosition] = useMutation<
+    types.UPDATE_PODCAST_PROGRAM_AUDIO_POSITION,
+    types.UPDATE_PODCAST_PROGRAM_AUDIO_POSITIONVariables
+  >(UPDATE_PODCAST_PROGRAM_AUDIO_POSITION)
 
   const currentAudioIndex = signedPodCastProgramAudios.findIndex(body => body.id === currentAudioId)
 
@@ -381,10 +384,19 @@ const RecordingPage: React.FC = () => {
       const newAudios = signedPodCastProgramAudios.map(v => v)
       const currentAudio = newAudios.splice(oldIndex, 1)[0]
       newAudios.splice(newIndex, 0, currentAudio)
+      updatePodcastProgramAudioPosition({
+        variables: {
+          podcastProgramAudios: newAudios.map((audio, index) => ({
+            id: audio.id,
+            podcast_program_id: audio.id,
+            data: {},
+            position: index,
+          })),
+        },
+      })
       setSignedPodCastProgramAudios(newAudios)
-      movePodcastProgramAudio(authToken, appId, audioId, newIndex)
     },
-    [appId, authToken, signedPodCastProgramAudios],
+    [signedPodCastProgramAudios, updatePodcastProgramAudioPosition],
   )
 
   const onMoveDown = useCallback(
@@ -395,10 +407,19 @@ const RecordingPage: React.FC = () => {
       const newAudios = signedPodCastProgramAudios.map(v => v)
       const currentAudio = newAudios.splice(oldIndex, 1)[0]
       newAudios.splice(newIndex, 0, currentAudio)
+      updatePodcastProgramAudioPosition({
+        variables: {
+          podcastProgramAudios: newAudios.map((audio, index) => ({
+            id: audio.id,
+            podcast_program_id: audio.id,
+            data: {},
+            position: index,
+          })),
+        },
+      })
       setSignedPodCastProgramAudios(newAudios)
-      movePodcastProgramAudio(authToken, appId, audioId, newIndex)
     },
-    [appId, authToken, signedPodCastProgramAudios],
+    [signedPodCastProgramAudios, updatePodcastProgramAudioPosition],
   )
 
   useEffect(() => {
@@ -575,6 +596,17 @@ const RecordingPage: React.FC = () => {
 const UPDATE_PODCAST_PROGRAM_AUDIO_DATA = gql`
   mutation UPDATE_PODCAST_PROGRAM_AUDIO_DATA($podcastProgramAudioId: uuid!, $data: jsonb) {
     update_podcast_program_audio(where: { id: { _eq: $podcastProgramAudioId } }, _set: { data: $data }) {
+      affected_rows
+    }
+  }
+`
+
+const UPDATE_PODCAST_PROGRAM_AUDIO_POSITION = gql`
+  mutation UPDATE_PODCAST_PROGRAM_AUDIO_POSITION($podcastProgramAudios: [podcast_program_audio_insert_input!]!) {
+    insert_podcast_program_audio(
+      objects: $podcastProgramAudios
+      on_conflict: { constraint: podcast_program_audio_pkey, update_columns: position }
+    ) {
       affected_rows
     }
   }

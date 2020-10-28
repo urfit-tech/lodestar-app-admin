@@ -9712,6 +9712,34 @@ export interface UPDATE_PODCAST_PROGRAM_AUDIO_DATAVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
+// ====================================================
+// GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_AUDIO_POSITION
+// ====================================================
+
+export interface UPDATE_PODCAST_PROGRAM_AUDIO_POSITION_insert_podcast_program_audio {
+  __typename: "podcast_program_audio_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_AUDIO_POSITION {
+  /**
+   * insert data into the table: "podcast_program_audio"
+   */
+  insert_podcast_program_audio: UPDATE_PODCAST_PROGRAM_AUDIO_POSITION_insert_podcast_program_audio | null;
+}
+
+export interface UPDATE_PODCAST_PROGRAM_AUDIO_POSITIONVariables {
+  podcastProgramAudios: podcast_program_audio_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
 //==============================================================
 // START Enums and Input Objects
 //==============================================================
@@ -14212,6 +14240,7 @@ export interface member_bool_exp {
   issue_reply_reactions?: issue_reply_reaction_bool_exp | null;
   issues?: issue_bool_exp | null;
   logined_at?: timestamptz_comparison_exp | null;
+  manager?: member_bool_exp | null;
   manager_id?: String_comparison_exp | null;
   media?: media_bool_exp | null;
   memberNotesByAuthorId?: member_note_bool_exp | null;
@@ -14227,6 +14256,7 @@ export interface member_bool_exp {
   member_socials?: member_social_bool_exp | null;
   member_specialities?: member_speciality_bool_exp | null;
   member_tags?: member_tag_bool_exp | null;
+  members?: member_bool_exp | null;
   merchandises?: merchandise_bool_exp | null;
   metadata?: jsonb_comparison_exp | null;
   name?: String_comparison_exp | null;
@@ -14433,6 +14463,7 @@ export interface member_insert_input {
   issue_reply_reactions?: issue_reply_reaction_arr_rel_insert_input | null;
   issues?: issue_arr_rel_insert_input | null;
   logined_at?: any | null;
+  manager?: member_obj_rel_insert_input | null;
   manager_id?: string | null;
   media?: media_arr_rel_insert_input | null;
   memberNotesByAuthorId?: member_note_arr_rel_insert_input | null;
@@ -14447,6 +14478,7 @@ export interface member_insert_input {
   member_socials?: member_social_arr_rel_insert_input | null;
   member_specialities?: member_speciality_arr_rel_insert_input | null;
   member_tags?: member_tag_arr_rel_insert_input | null;
+  members?: member_arr_rel_insert_input | null;
   merchandises?: merchandise_arr_rel_insert_input | null;
   metadata?: any | null;
   name?: string | null;
