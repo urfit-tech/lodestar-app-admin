@@ -901,6 +901,8 @@ export const memberMessages = {
     assign: { id: 'member.label.assign', defaultMessage: '指派' },
     target: { id: 'member.label.target', defaultMessage: '學員' },
     taskDescription: { id: 'member.label.taskDescription', defaultMessage: '內容' },
+    field: { id: 'member.label.field', defaultMessage: '欄位' },
+    fieldVisible: { id: 'member.label.fieldVisible', defaultMessage: '欄位顯示' },
   }),
   text: {
     deleteMemberNoteConfirmation: {

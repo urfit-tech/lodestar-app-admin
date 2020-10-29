@@ -1,5 +1,5 @@
-import { CaretDownOutlined, ExportOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
-import { Button, Checkbox, Dropdown, Form, Input, Menu, Table, Tag } from 'antd'
+import Icon, { CaretDownOutlined, ExportOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
+import { Button, Checkbox, Dropdown, Form, Input, Menu, Popover, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import moment from 'moment'
 import React, { useContext, useRef, useState } from 'react'
@@ -13,30 +13,53 @@ import { UserRoleName } from '../../../components/common/UserRole'
 import AdminLayout from '../../../components/layout/AdminLayout'
 import AppContext from '../../../contexts/AppContext'
 import { currencyFormatter, downloadCSV, toCSV } from '../../../helpers'
-import { commonMessages } from '../../../helpers/translation'
+import { commonMessages, memberMessages } from '../../../helpers/translation'
 import { useMemberCollection, useMemberRoleCount, useProperty } from '../../../hooks/member'
+import { ReactComponent as TableIcon } from '../../../images/icon/table.svg'
 import { MemberInfoProps, UserRole } from '../../../types/member'
 
 const StyledDropdown = styled(Dropdown)`
   width: 240px;
-  color: #585858;
+  color: var(--gray-darker);
 `
 const StyledMenuItem = styled(Menu.Item)`
   && {
     padding: 12px 16px;
   }
 `
-const StyledWrapper = styled.div`
+const StyledOverlay = styled.div`
+  padding: 1rem;
+  max-width: 20rem;
+  max-height: 20rem;
+  overflow: auto;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 5px 10px 0 var(--black-10);
+`
+const OverlayTitle = styled.div`
+  margin-bottom: 0.75rem;
+  color: var(--gray-dark);
+  font-size: 14px;
+`
+const FilterWrapper = styled.div`
+  columns: 2;
+  .ant-checkbox-wrapper {
+    display: block;
+    margin-left: 0;
+    margin-bottom: 1rem;
+  }
+`
+const TableWrapper = styled.div`
   overflow-x: auto;
   th {
     white-space: nowrap;
   }
   td {
-    color: #585858;
+    color: var(--gray-darker);
   }
 `
 const StyledMemberName = styled.span`
-  color: #585858;
+  color: var(--gray-darker);
   font-size: 16px;
 `
 const StyledTag = styled(Tag)`
@@ -50,18 +73,24 @@ const MemberCollectionAdminPage: React.FC = () => {
   const theme = useContext(ThemeContext)
   const { id: appId } = useContext(AppContext)
 
-  // get member info
+  // table column filter
   const { properties } = useProperty()
-  const allColumns = [
-    'email',
-    'phone',
-    'createdAt',
-    'consumption',
-    'categories',
-    'tags',
-    ...properties.map(property => property.id),
+  const allColumns: {
+    id: string
+    title: string
+  }[] = [
+    { id: 'email', title: 'Email' },
+    { id: 'phone', title: formatMessage(commonMessages.label.phone) },
+    { id: 'createdAt', title: formatMessage(commonMessages.label.createdDate) },
+    { id: 'consumption', title: formatMessage(commonMessages.label.consumption) },
+    { id: 'categories', title: formatMessage(commonMessages.term.category) },
+    { id: 'tags', title: formatMessage(commonMessages.term.tags) },
+    ...properties.map(property => ({
+      id: property.id,
+      title: property.name,
+    })),
   ]
-  const [visibleColumns, setVisibleColumns] = useState<string[]>([
+  const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>([
     'email',
     'phone',
     'createdAt',
@@ -70,6 +99,7 @@ const MemberCollectionAdminPage: React.FC = () => {
     'tags',
   ])
 
+  // get member info
   const [fieldFilter, setFieldFilter] = useState<{
     role?: UserRole
     name?: string
@@ -89,7 +119,7 @@ const MemberCollectionAdminPage: React.FC = () => {
   })
   const [loading, setLoading] = useState(false)
 
-  // dropdown
+  // role selector
   const { menu } = useMemberRoleCount(appId, fieldFilter)
   const dropdownMenu = menu.map(menuItem => ({
     ...menuItem,
@@ -275,15 +305,37 @@ const MemberCollectionAdminPage: React.FC = () => {
       </AdminPageTitle>
 
       <div className="d-flex align-items-center justify-content-between mb-4">
-        {roleSelectDropdown}
+        <div className="flex-grow-1">{roleSelectDropdown}</div>
 
+        <Popover
+          trigger="click"
+          placement="bottomLeft"
+          content={
+            <StyledOverlay>
+              <OverlayTitle>{formatMessage(memberMessages.label.fieldVisible)}</OverlayTitle>
+              <Checkbox.Group value={visibleColumnIds} onChange={value => setVisibleColumnIds(value as string[])}>
+                <FilterWrapper>
+                  {allColumns.map(column => (
+                    <Checkbox key={column.id} value={column.id}>
+                      {column.title}
+                    </Checkbox>
+                  ))}
+                </FilterWrapper>
+              </Checkbox.Group>
+            </StyledOverlay>
+          }
+        >
+          <Button type="link" icon={<Icon component={() => <TableIcon />} />} className="mr-2">
+            {formatMessage(memberMessages.label.field)}
+          </Button>
+        </Popover>
         <MemberExportModal filter={fieldFilter}>{roleSelectDropdown}</MemberExportModal>
       </div>
 
       <AdminCard className="mb-5">
-        <StyledWrapper>
+        <TableWrapper>
           <Table
-            columns={columns.filter(column => column.key === 'name' || visibleColumns.includes(column.key as string))}
+            columns={columns.filter(column => column.key === 'name' || visibleColumnIds.includes(column.key as string))}
             rowKey="id"
             loading={loadingMembers}
             dataSource={members}
@@ -306,7 +358,7 @@ const MemberCollectionAdminPage: React.FC = () => {
               </Button>
             </div>
           )}
-        </StyledWrapper>
+        </TableWrapper>
       </AdminCard>
     </AdminLayout>
   )
