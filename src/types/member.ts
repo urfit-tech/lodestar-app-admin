@@ -29,6 +29,14 @@ export type MemberInfoProps = {
   loginedAt: Date | null
   phones: string[]
   consumption: number
+  categories: {
+    id: string
+    name: string
+  }[]
+  tags: string[]
+  properties: {
+    [propertyId: string]: string
+  }
 }
 
 export type MemberPublicProps = {
