@@ -15,7 +15,7 @@ import AdminLayout from '../../../components/layout/AdminLayout'
 import AppContext from '../../../contexts/AppContext'
 import { currencyFormatter, downloadCSV, toCSV } from '../../../helpers'
 import { commonMessages } from '../../../helpers/translation'
-import { useMemberCollection, useMemberRoleCount } from '../../../hooks/member'
+import { useMemberCollection, useMemberRoleCount, useProperty } from '../../../hooks/member'
 import { MemberInfoProps, UserRole } from '../../../types/member'
 
 const StyledDropdown = styled(Dropdown)`
@@ -28,6 +28,10 @@ const StyledMenuItem = styled(Menu.Item)`
   }
 `
 const StyledWrapper = styled.div`
+  overflow-x: auto;
+  th {
+    white-space: nowrap;
+  }
   td {
     color: #585858;
   }
@@ -48,17 +52,46 @@ const MemberCollectionAdminPage: React.FC = () => {
   const { id: appId } = useContext(AppContext)
 
   // get member info
-  const searchInputRef = useRef<Input | null>(null)
-  const [filter, setFilter] = useState<{
+  const { properties } = useProperty()
+  const allColumns = [
+    'email',
+    'phone',
+    'createdAt',
+    'consumption',
+    'categories',
+    'tags',
+    ...properties.map(property => property.id),
+  ]
+  const [visibleColumns, setVisibleColumns] = useState<string[]>([
+    'email',
+    'phone',
+    'createdAt',
+    'consumption',
+    'categories',
+    'tags',
+  ])
+
+  const [fieldFilter, setFieldFilter] = useState<{
     role?: UserRole
     name?: string
     email?: string
+    category?: string
+    tag?: string
   }>({})
-  const { loadingMembers, members, loadMoreMembers } = useMemberCollection(filter)
+  const [propertyFilter, setPropertyFilter] = useState<{
+    [propertyId: string]: string
+  }>({})
+  const { loadingMembers, members, loadMoreMembers } = useMemberCollection({
+    ...fieldFilter,
+    properties: Object.keys(propertyFilter).map(propertyId => ({
+      id: propertyId,
+      value: propertyFilter[propertyId],
+    })),
+  })
   const [loading, setLoading] = useState(false)
 
   // dropdown
-  const { menu } = useMemberRoleCount(appId, filter)
+  const { menu } = useMemberRoleCount(appId, fieldFilter)
   const dropdownMenu = menu.map(menuItem => ({
     ...menuItem,
     text: formatMessage(menuItem.intlKey),
@@ -73,10 +106,10 @@ const MemberCollectionAdminPage: React.FC = () => {
             <StyledMenuItem
               key={item.text}
               onClick={() =>
-                setFilter({
+                setFieldFilter(filter => ({
                   ...filter,
                   role: item.role as UserRole,
-                })
+                }))
               }
             >
               {item.text} ({item.count})
@@ -87,8 +120,12 @@ const MemberCollectionAdminPage: React.FC = () => {
     >
       <Button className="d-flex justify-content-between align-items-center">
         <span>
-          {filter.role ? <UserRoleName userRole={filter.role} /> : formatMessage(commonMessages.label.allMembers)}
-          {` (${menu.filter(item => item.role === (filter.role || null))[0].count})`}
+          {fieldFilter.role ? (
+            <UserRoleName userRole={fieldFilter.role} />
+          ) : (
+            formatMessage(commonMessages.label.allMembers)
+          )}
+          {` (${menu.filter(item => item.role === (fieldFilter.role || null))[0].count})`}
         </span>
         <CaretDownOutlined />
       </Button>
@@ -96,7 +133,8 @@ const MemberCollectionAdminPage: React.FC = () => {
   )
 
   // table
-  const getColumnSearchProps: (dataIndex: keyof MemberInfoProps) => ColumnProps<MemberInfoProps> = dataIndex => ({
+  const searchInputRef = useRef<Input | null>(null)
+  const getColumnSearchProps: (field: keyof typeof fieldFilter) => ColumnProps<MemberInfoProps> = field => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div className="p-2">
         <Input
@@ -105,9 +143,9 @@ const MemberCollectionAdminPage: React.FC = () => {
           onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
           onPressEnter={() => {
             confirm()
-            setFilter(filter => ({
+            setFieldFilter(filter => ({
               ...filter,
-              [dataIndex]: selectedKeys[0],
+              [field]: selectedKeys[0] as string,
             }))
           }}
           style={{ width: 188, marginBottom: 8, display: 'block' }}
@@ -117,9 +155,9 @@ const MemberCollectionAdminPage: React.FC = () => {
             type="primary"
             onClick={() => {
               confirm()
-              setFilter(filter => ({
+              setFieldFilter(filter => ({
                 ...filter,
-                [dataIndex]: selectedKeys[0],
+                [field]: selectedKeys[0] as string,
               }))
             }}
             icon={<SearchOutlined />}
@@ -132,9 +170,9 @@ const MemberCollectionAdminPage: React.FC = () => {
           <Button
             onClick={() => {
               clearFilters && clearFilters()
-              setFilter(filter => ({
+              setFieldFilter(filter => ({
                 ...filter,
-                [dataIndex]: undefined,
+                [field]: undefined,
               }))
             }}
             size="small"
@@ -152,7 +190,6 @@ const MemberCollectionAdminPage: React.FC = () => {
   const columns: ColumnProps<MemberInfoProps>[] = [
     {
       title: formatMessage(commonMessages.term.memberName),
-      dataIndex: 'name',
       key: 'name',
       render: (text, record, index) => (
         <div className="d-flex align-items-center">
@@ -181,11 +218,13 @@ const MemberCollectionAdminPage: React.FC = () => {
     {
       title: formatMessage(commonMessages.label.phone),
       dataIndex: 'phone',
-      render: (text, record, index) => record.phones.join(','),
+      key: 'phone',
+      render: (text, record, index) => record.phones.join(', '),
     },
     {
       title: formatMessage(commonMessages.label.createdDate),
       dataIndex: 'createdAt',
+      key: 'createdAt',
       render: (text, record, index) => (record.createdAt ? moment(record.createdAt).format('YYYY-MM-DD') : ''),
       sorter: (a, b) => (b.createdAt ? b.createdAt.getTime() : 0) - (a.createdAt ? a.createdAt.getTime() : 0),
     },
@@ -197,6 +236,36 @@ const MemberCollectionAdminPage: React.FC = () => {
       render: currencyFormatter,
       sorter: (a, b) => b.consumption - a.consumption,
     },
+    {
+      title: formatMessage(commonMessages.term.category),
+      dataIndex: 'categories',
+      key: 'categories',
+      render: (text, record, index) => record.categories.map(category => category.name).join(', '),
+      ...getColumnSearchProps('category'),
+    },
+    {
+      title: formatMessage(commonMessages.term.tags),
+      dataIndex: 'tags',
+      key: 'tags',
+      render: (text, record, index) => (
+        <>
+          {record.tags.map(tag => (
+            <Tag key={tag} className="mr-1 mb-1">
+              {tag}
+            </Tag>
+          ))}
+        </>
+      ),
+      ...getColumnSearchProps('tag'),
+    },
+    ...properties.map(property => {
+      const column: ColumnProps<MemberInfoProps> = {
+        title: property.name,
+        key: property.id,
+        render: (text, record, index) => record.properties[property.id],
+      }
+      return column
+    }),
   ]
 
   return (
@@ -209,13 +278,13 @@ const MemberCollectionAdminPage: React.FC = () => {
       <div className="d-flex align-items-center justify-content-between mb-4">
         {roleSelectDropdown}
 
-        <MemberExportModal filter={filter}>{roleSelectDropdown}</MemberExportModal>
+        <MemberExportModal filter={fieldFilter}>{roleSelectDropdown}</MemberExportModal>
       </div>
 
       <AdminCard className="mb-5">
         <StyledWrapper>
           <Table
-            columns={columns}
+            columns={columns.filter(column => column.key === 'name' || visibleColumns.includes(column.key as string))}
             rowKey="id"
             loading={loadingMembers}
             dataSource={members}

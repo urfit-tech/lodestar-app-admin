@@ -6885,10 +6885,48 @@ export interface GET_MEMBER_ROLE_COUNTVariables {
 // GraphQL query operation: GET_PAGE_MEMBER_COLLECTION
 // ====================================================
 
+export interface GET_PAGE_MEMBER_COLLECTION_member_aggregate_aggregate {
+  __typename: "member_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PAGE_MEMBER_COLLECTION_member_aggregate {
+  __typename: "member_aggregate";
+  aggregate: GET_PAGE_MEMBER_COLLECTION_member_aggregate_aggregate | null;
+}
+
 export interface GET_PAGE_MEMBER_COLLECTION_member_member_phones {
   __typename: "member_phone";
   id: any;
   phone: string;
+}
+
+export interface GET_PAGE_MEMBER_COLLECTION_member_member_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_PAGE_MEMBER_COLLECTION_member_member_categories {
+  __typename: "member_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_PAGE_MEMBER_COLLECTION_member_member_categories_category;
+}
+
+export interface GET_PAGE_MEMBER_COLLECTION_member_member_tags {
+  __typename: "member_tag";
+  id: any;
+  tag_name: string;
+}
+
+export interface GET_PAGE_MEMBER_COLLECTION_member_member_properties {
+  __typename: "member_property";
+  id: any;
+  property_id: any;
+  value: string;
 }
 
 export interface GET_PAGE_MEMBER_COLLECTION_member_order_logs_order_products_aggregate_aggregate_sum {
@@ -6934,10 +6972,26 @@ export interface GET_PAGE_MEMBER_COLLECTION_member {
   /**
    * An array relationship
    */
+  member_categories: GET_PAGE_MEMBER_COLLECTION_member_member_categories[];
+  /**
+   * An array relationship
+   */
+  member_tags: GET_PAGE_MEMBER_COLLECTION_member_member_tags[];
+  /**
+   * An array relationship
+   */
+  member_properties: GET_PAGE_MEMBER_COLLECTION_member_member_properties[];
+  /**
+   * An array relationship
+   */
   order_logs: GET_PAGE_MEMBER_COLLECTION_member_order_logs[];
 }
 
 export interface GET_PAGE_MEMBER_COLLECTION {
+  /**
+   * fetch aggregated fields from the table: "member"
+   */
+  member_aggregate: GET_PAGE_MEMBER_COLLECTION_member_aggregate;
   /**
    * fetch data from the table: "member"
    */
@@ -6945,10 +6999,7 @@ export interface GET_PAGE_MEMBER_COLLECTION {
 }
 
 export interface GET_PAGE_MEMBER_COLLECTIONVariables {
-  role?: string | null;
-  name?: string | null;
-  email?: string | null;
-  cursor?: any | null;
+  condition?: member_bool_exp | null;
   limit: number;
 }
 

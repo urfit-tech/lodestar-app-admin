@@ -12,7 +12,6 @@ import {
   MemberPublicProps,
   UserRole,
 } from '../types/member'
-import { useState } from 'react'
 
 export const useMember = (memberId: string) => {
   const { loading, data, error, refetch } = useQuery<types.GET_MEMBER, types.GET_MEMBERVariables>(
@@ -413,32 +412,59 @@ export const useMemberRoleCount = (appId: string, filter?: { name?: string; emai
   }
 }
 
-export const useMemberCollection = (filter?: { role?: UserRole; name?: string; email?: string }) => {
-  const [isNoMore, setIsNoMore] = useState(false)
+export const useMemberCollection = (filter?: {
+  role?: UserRole
+  name?: string
+  email?: string
+  category?: string
+  tag?: string
+  properties?: {
+    id: string
+    value: string
+  }[]
+}) => {
+  const condition: types.GET_PAGE_MEMBER_COLLECTIONVariables['condition'] = {
+    role: filter?.role ? { _eq: filter.role } : undefined,
+    name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
+    email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
+    member_categories: filter?.category
+      ? {
+          category: {
+            name: {
+              _ilike: `%${filter.category}%`,
+            },
+          },
+        }
+      : undefined,
+    member_tags: filter?.tag
+      ? {
+          tag_name: {
+            _eq: filter.tag,
+          },
+        }
+      : undefined,
+    member_properties: filter?.properties?.length
+      ? {
+          _and: filter.properties.map(property => ({
+            property_id: { _eq: property.id },
+            value: { _ilike: `%${property.value}%` },
+          })),
+        }
+      : undefined,
+  }
+
   const { loading, error, data, refetch, fetchMore } = useQuery<
     types.GET_PAGE_MEMBER_COLLECTION,
     types.GET_PAGE_MEMBER_COLLECTIONVariables
   >(
     gql`
-      query GET_PAGE_MEMBER_COLLECTION(
-        $role: String
-        $name: String
-        $email: String
-        $cursor: timestamptz
-        $limit: Int!
-      ) {
-        member(
-          where: {
-            _and: [
-              { role: { _eq: $role } }
-              { name: { _ilike: $name } }
-              { email: { _ilike: $email } }
-              { created_at: { _lt: $cursor } }
-            ]
+      query GET_PAGE_MEMBER_COLLECTION($condition: member_bool_exp, $limit: Int!) {
+        member_aggregate(where: $condition) {
+          aggregate {
+            count
           }
-          order_by: { created_at: desc }
-          limit: $limit
-        ) {
+        }
+        member(where: $condition, order_by: { created_at: desc_nulls_last }, limit: $limit) {
           id
           picture_url
           name
@@ -450,6 +476,22 @@ export const useMemberCollection = (filter?: { role?: UserRole; name?: string; e
           member_phones {
             id
             phone
+          }
+          member_categories {
+            id
+            category {
+              id
+              name
+            }
+          }
+          member_tags {
+            id
+            tag_name
+          }
+          member_properties {
+            id
+            property_id
+            value
           }
           order_logs(where: { status: { _eq: "SUCCESS" } }) {
             order_products_aggregate {
@@ -465,13 +507,8 @@ export const useMemberCollection = (filter?: { role?: UserRole; name?: string; e
     `,
     {
       variables: {
-        role: filter?.role,
-        name: filter?.name && `%${filter.name}%`,
-        email: filter?.email && `%${filter.email}%`,
+        condition,
         limit: 10,
-      },
-      context: {
-        important: true,
       },
     },
   )
@@ -491,23 +528,33 @@ export const useMemberCollection = (filter?: { role?: UserRole; name?: string; e
           consumption: sum(
             v.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
           ),
+          categories: v.member_categories.map(w => ({
+            id: w.category.id,
+            name: w.category.name,
+          })),
+          tags: v.member_tags.map(w => w.tag_name),
+          properties: v.member_properties.reduce((accumulator, currentValue) => {
+            return {
+              ...accumulator,
+              [currentValue.property_id]: currentValue.value,
+            }
+          }, {} as MemberInfoProps['properties']),
         }))
 
   const loadMoreMembers = () =>
     fetchMore({
       variables: {
-        role: filter?.role,
-        name: filter?.name && `%${filter.name}%`,
-        email: filter?.email && `%${filter.email}%`,
+        condition: {
+          ...condition,
+          created_at: {
+            _lt: data?.member.slice(-1)[0]?.created_at,
+          },
+        },
         limit: 10,
-        cursor: data?.member.slice(-1)[0]?.created_at,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
           return prev
-        }
-        if (fetchMoreResult.member.length < 10) {
-          setIsNoMore(true)
         }
         return Object.assign({}, prev, {
           member: [...prev.member, ...fetchMoreResult.member],
@@ -520,7 +567,8 @@ export const useMemberCollection = (filter?: { role?: UserRole; name?: string; e
     errorMembers: error,
     members,
     refetchMembers: refetch,
-    loadMoreMembers: isNoMore ? undefined : loadMoreMembers,
+    loadMoreMembers:
+      (data?.member_aggregate.aggregate?.count || 0) > (data?.member.length || 0) ? loadMoreMembers : undefined,
   }
 }
 
