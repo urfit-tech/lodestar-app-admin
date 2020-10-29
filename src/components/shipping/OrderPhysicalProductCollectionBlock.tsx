@@ -207,12 +207,12 @@ const ShippingProductItem: React.FC<{
                   fileList={files}
                   onSetFileList={setFiles}
                   onSuccess={() => {
-                    updateOrderProductFiles({
-                      orderProductFiles: filesRef.current.map(v => ({
+                    updateOrderProductFiles(
+                      filesRef.current.map(v => ({
                         order_product_id: orderProductId,
                         data: v,
                       })),
-                    })
+                    )
                       .then(() => {
                         message.success(formatMessage(commonMessages.event.successfullyUpload))
                       })
@@ -220,14 +220,14 @@ const ShippingProductItem: React.FC<{
                   }}
                   onDelete={value => {
                     value &&
-                      updateOrderProductFiles({
-                        orderProductFiles: files
+                      updateOrderProductFiles(
+                        files
                           .filter(file => file.uid !== value.uid)
                           .map(v => ({
                             order_product_id: orderProductId,
                             data: v,
                           })),
-                      })
+                      ).catch(handleError)
                   }}
                 />
               </StyledUploaderWrapper>
@@ -260,25 +260,13 @@ const useUpdateOrderProductFiles = (orderProductId: string) => {
     }
   `)
 
-  const updateOrderProductFiles: (data: {
-    orderProductFiles: {
-      order_product_id: string
-      data: UploadFile
-    }[]
-  }) => Promise<void> = async ({ orderProductFiles }) => {
-    try {
-      await updateFiles({
-        variables: {
-          orderProductId,
-          orderProductFiles,
-        },
-      })
-    } catch (error) {
-      handleError(error)
-    }
-  }
-
-  return updateOrderProductFiles
+  return (orderProductFiles: { order_product_id: string; data: UploadFile }[]) =>
+    updateFiles({
+      variables: {
+        orderProductId,
+        orderProductFiles,
+      },
+    })
 }
 
 export default OrderPhysicalProductCollectionBlock

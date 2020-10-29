@@ -733,7 +733,7 @@ export const useSimpleProduct = (
       ? {
           id: data.merchandise_spec_by_pk.id,
           productType: 'MerchandiseSpec',
-          title: `${data.merchandise_spec_by_pk.title} - ${data.merchandise_spec_by_pk.title}`,
+          title: `${data.merchandise_spec_by_pk.merchandise.title} - ${data.merchandise_spec_by_pk.title}`,
           listPrice: data.merchandise_spec_by_pk.list_price,
           salePrice:
             data.merchandise_spec_by_pk.merchandise.sold_at &&
