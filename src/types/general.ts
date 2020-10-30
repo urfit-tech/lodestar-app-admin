@@ -1,5 +1,13 @@
 export type AuthState = 'login' | 'register' | 'forgotPassword' | 'confirm'
-export type ClassType = 'program' | 'podcastProgram' | 'activity' | 'post' | 'merchandise' | 'programPackage' | 'task'
+export type ClassType =
+  | 'program'
+  | 'podcastProgram'
+  | 'activity'
+  | 'post'
+  | 'merchandise'
+  | 'programPackage'
+  | 'task'
+  | 'member'
 export type ProductType =
   | 'Program'
   | 'ProgramPlan'

@@ -1898,6 +1898,22 @@ export interface UPDATE_MEMBER_PROFILE_BASIC_insert_member_phone {
   affected_rows: number;
 }
 
+export interface UPDATE_MEMBER_PROFILE_BASIC_delete_member_category {
+  __typename: "member_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_PROFILE_BASIC_insert_member_category {
+  __typename: "member_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_MEMBER_PROFILE_BASIC {
   /**
    * update data of the table: "member"
@@ -1923,6 +1939,14 @@ export interface UPDATE_MEMBER_PROFILE_BASIC {
    * insert data into the table: "member_phone"
    */
   insert_member_phone: UPDATE_MEMBER_PROFILE_BASIC_insert_member_phone | null;
+  /**
+   * delete data from the table: "member_category"
+   */
+  delete_member_category: UPDATE_MEMBER_PROFILE_BASIC_delete_member_category | null;
+  /**
+   * insert data into the table: "member_category"
+   */
+  insert_member_category: UPDATE_MEMBER_PROFILE_BASIC_insert_member_category | null;
 }
 
 export interface UPDATE_MEMBER_PROFILE_BASICVariables {
@@ -1932,6 +1956,7 @@ export interface UPDATE_MEMBER_PROFILE_BASICVariables {
   tags: tag_insert_input[];
   memberTags: member_tag_insert_input[];
   phones: member_phone_insert_input[];
+  memberCategories: member_category_insert_input[];
 }
 
 /* tslint:disable */
@@ -6586,6 +6611,20 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs {
   order_products_aggregate: GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate;
 }
 
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_categories {
+  __typename: "member_category";
+  /**
+   * An object relationship
+   */
+  category: GET_MEMBER_DESCRIPTION_member_by_pk_member_categories_category;
+}
+
 export interface GET_MEMBER_DESCRIPTION_member_by_pk {
   __typename: "member";
   id: string;
@@ -6632,6 +6671,10 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk {
    * An array relationship
    */
   order_logs: GET_MEMBER_DESCRIPTION_member_by_pk_order_logs[];
+  /**
+   * An array relationship
+   */
+  member_categories: GET_MEMBER_DESCRIPTION_member_by_pk_member_categories[];
 }
 
 export interface GET_MEMBER_DESCRIPTION {

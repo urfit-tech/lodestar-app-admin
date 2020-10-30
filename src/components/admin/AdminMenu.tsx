@@ -256,6 +256,9 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           {permissions.MEMBER_ADMIN && (
             <Menu.Item key="owner_members">{formatMessage(commonMessages.menu.members)}</Menu.Item>
           )}
+          {permissions.MEMBER_CATEGORY_ADMIN && (
+            <Menu.Item key="owner_member_category">{formatMessage(commonMessages.menu.memberCategory)}</Menu.Item>
+          )}
           {enabledModules.member_property && permissions.MEMBER_PROPERTY_ADMIN && (
             <Menu.Item key="owner_member_properties">{formatMessage(commonMessages.menu.memberProperties)}</Menu.Item>
           )}

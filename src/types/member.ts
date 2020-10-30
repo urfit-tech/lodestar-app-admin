@@ -1,3 +1,5 @@
+import { CategoryProps } from './general'
+
 export type UserRole = 'app-owner' | 'content-creator' | 'general-member' | 'anonymous'
 
 export type MemberProps = {
@@ -68,7 +70,7 @@ export type MemberAdminProps = {
   tags: string[]
   specialities: string[]
   phones: string[]
-
+  categories: CategoryProps[]
   notes: MemberNoteAdminProps[]
   permissionIds: string[]
 
