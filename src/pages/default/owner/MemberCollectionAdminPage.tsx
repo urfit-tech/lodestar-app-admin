@@ -12,6 +12,7 @@ import { UserRoleName } from '../../../components/common/UserRole'
 import AdminLayout from '../../../components/layout/AdminLayout'
 import MemberExportModal from '../../../components/member/MemberExportModal'
 import AppContext from '../../../contexts/AppContext'
+import { useAuth } from '../../../contexts/AuthContext'
 import { currencyFormatter } from '../../../helpers'
 import { commonMessages, memberMessages } from '../../../helpers/translation'
 import { useMemberCollection, useMemberRoleCount, useProperty } from '../../../hooks/member'
@@ -78,15 +79,15 @@ const MemberCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const theme = useContext(ThemeContext)
   const { id: appId } = useContext(AppContext)
-
+  const { permissions } = useAuth()
   // table column filter
   const { properties } = useProperty()
-  const allColumns: {
+  const allColumns: ({
     id: string
     title: string
-  }[] = [
+  } | null)[] = [
     { id: 'email', title: 'Email' },
-    { id: 'phone', title: formatMessage(commonMessages.label.phone) },
+    permissions['MEMBER_PHONE_ADMIN'] ? { id: 'phone', title: formatMessage(commonMessages.label.phone) } : null,
     { id: 'createdAt', title: formatMessage(commonMessages.label.createdDate) },
     { id: 'consumption', title: formatMessage(commonMessages.label.consumption) },
     { id: 'categories', title: formatMessage(commonMessages.term.category) },
@@ -96,7 +97,7 @@ const MemberCollectionAdminPage: React.FC = () => {
       title: property.name,
     })),
   ]
-  const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(['email', 'phone', 'createdAt', 'consumption'])
+  const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(['email', 'createdAt', 'consumption'])
 
   // get member info
   const [fieldFilter, setFieldFilter] = useState<{
@@ -326,11 +327,13 @@ const MemberCollectionAdminPage: React.FC = () => {
               <OverlayTitle>{formatMessage(memberMessages.label.fieldVisible)}</OverlayTitle>
               <Checkbox.Group value={visibleColumnIds} onChange={value => setVisibleColumnIds(value as string[])}>
                 <FilterWrapper>
-                  {allColumns.map(column => (
-                    <Checkbox key={column.id} value={column.id}>
-                      {column.title}
-                    </Checkbox>
-                  ))}
+                  {allColumns.map(column =>
+                    column ? (
+                      <Checkbox key={column.id} value={column.id}>
+                        {column.title}
+                      </Checkbox>
+                    ) : null,
+                  )}
                 </FilterWrapper>
               </Checkbox.Group>
             </StyledOverlay>
