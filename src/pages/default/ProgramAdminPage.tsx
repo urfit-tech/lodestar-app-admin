@@ -44,6 +44,7 @@ const ProgramAdminPage: React.FC = () => {
 
         <AdminHeaderTitle>{program?.title || programId}</AdminHeaderTitle>
         <Dropdown
+          trigger={['click']}
           placement="bottomRight"
           overlay={
             <Menu onClick={({ key }) => window.open(`//${settings['host']}${key}`, '_blank')}>
