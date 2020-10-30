@@ -9,11 +9,13 @@ import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MemberAdminProps } from '../../types/member'
+import CategorySelector from '../form/CategorySelector'
 import TagSelector from '../form/TagSelector'
 
 type FieldProps = {
   phones: string[]
   tags: string[]
+  categoryIds: string[]
 }
 
 const MemberProfileBasicForm: React.FC<{
@@ -38,12 +40,17 @@ const MemberProfileBasicForm: React.FC<{
     updateMemberProfileBasic({
       variables: {
         memberId: memberAdmin.id,
-        phones: values.phones
-          .filter((phone: string) => !!phone)
-          .map((phone: string) => ({
-            member_id: memberAdmin.id,
-            phone,
-          })),
+        phones: permissions['MEMBER_PHONE_ADMIN']
+          ? values.phones
+              .filter((phone: string) => !!phone)
+              .map((phone: string) => ({
+                member_id: memberAdmin.id,
+                phone,
+              }))
+          : memberAdmin.phones.map((phone: string) => ({
+              member_id: memberAdmin.id,
+              phone,
+            })),
         tags: values.tags.map((tag: string) => ({
           name: tag,
           type: '',
@@ -51,6 +58,11 @@ const MemberProfileBasicForm: React.FC<{
         memberTags: values.tags.map((tag: string) => ({
           member_id: memberAdmin.id,
           tag_name: tag,
+        })),
+        memberCategories: values.categoryIds.map((categoryId: string, index: number) => ({
+          member_id: memberAdmin.id,
+          category_id: categoryId,
+          position: index,
         })),
       },
     })
@@ -76,6 +88,7 @@ const MemberProfileBasicForm: React.FC<{
         email: memberAdmin.email,
         phones: memberAdmin.phones.length ? memberAdmin.phones : [''],
         specialities: memberAdmin.specialities,
+        categoryIds: memberAdmin.categories.map(category => category.id),
         tags: memberAdmin.tags,
       }}
       onFinish={handleSubmit}
@@ -96,6 +109,9 @@ const MemberProfileBasicForm: React.FC<{
       )}
       <Form.Item label={formatMessage(commonMessages.term.speciality)} name="specialities">
         <TagSelector disabled />
+      </Form.Item>
+      <Form.Item label={formatMessage(commonMessages.term.memberCategories)} name="categoryIds">
+        <CategorySelector classType="member" />
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.term.tags)} name="tags">
         <TagSelector />
@@ -141,6 +157,7 @@ const UPDATE_MEMBER_PROFILE_BASIC = gql`
     $tags: [tag_insert_input!]!
     $memberTags: [member_tag_insert_input!]!
     $phones: [member_phone_insert_input!]!
+    $memberCategories: [member_category_insert_input!]!
   ) {
     # update tags
     delete_member_tag(where: { member_id: { _eq: $memberId } }) {
@@ -158,6 +175,14 @@ const UPDATE_MEMBER_PROFILE_BASIC = gql`
       affected_rows
     }
     insert_member_phone(objects: $phones) {
+      affected_rows
+    }
+
+    # update memberCategories
+    delete_member_category(where: { member_id: { _eq: $memberId } }) {
+      affected_rows
+    }
+    insert_member_category(objects: $memberCategories) {
       affected_rows
     }
   }

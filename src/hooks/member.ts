@@ -131,6 +131,12 @@ export const useMemberAdmin = (memberId: string) => {
               }
             }
           }
+          member_categories {
+            category {
+              id
+              name
+            }
+          }
         }
       }
     `,
@@ -169,6 +175,10 @@ export const useMemberAdmin = (memberId: string) => {
             data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
           ),
           coins: data.member_by_pk.coin_logs_aggregate.aggregate?.sum?.amount || 0,
+          categories: data.member_by_pk.member_categories.map(v => ({
+            id: v.category.id,
+            name: v.category.name,
+          })),
         }
 
   return {

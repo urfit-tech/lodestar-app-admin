@@ -217,6 +217,7 @@ export const commonMessages = {
     author: { id: 'common.term.author', defaultMessage: '作者' },
     supportedLanguages: { id: 'common.term.supportedLanguages', defaultMessage: '選擇顯示於哪個語系' },
     tags: { id: 'common.term.tags', defaultMessage: '標籤' },
+    memberCategories: { id: 'common.term.memberCategories', defaultMessage: '會員分類' },
   }),
   text: defineMessages({
     shortDescriptionPlaceholder: { id: 'common.text.shortDescriptionPlaceholder', defaultMessage: '100 字以內' },
@@ -318,6 +319,7 @@ export const commonMessages = {
     categories: { id: 'common.menu.categories', defaultMessage: '分類設定' },
     memberAdmin: { id: 'common.menu.memberAdmin', defaultMessage: '會員管理' },
     members: { id: 'common.menu.members', defaultMessage: '會員列表' },
+    memberCategory: { id: 'common.menu.memberCategory', defaultMessage: '會員分類' },
     memberProperties: { id: 'common.menu.memberProperties', defaultMessage: '自訂欄位' },
     taskAdmin: { id: 'common.menu.taskAdmin', defaultMessage: '待辦管理' },
     tasks: { id: 'common.menu.tasks', defaultMessage: '待辦清單' },
@@ -1013,8 +1015,9 @@ export const permissionMessages = defineMessages({
   // member
   MEMBER_ADMIN: { id: 'permission.MEMBER_ADMIN', defaultMessage: '所有會員列表功能' },
   MEMBER_PROPERTY_ADMIN: { id: 'permission.MEMBER_PROPERTY_ADMIN', defaultMessage: '所有自訂欄位功能' },
-  MEMBER_PHONE_ADMIN: {id: 'permission.MEMBER_PHONE_ADMIN',defaultMessage: '檢視電話欄位'},
-  MEMBER_STAR_ADMIN: {id: 'permission.MEMBER_STAR_ADMIN', defaultMessage: '檢視星等欄位'},
+  MEMBER_PHONE_ADMIN: { id: 'permission.MEMBER_PHONE_ADMIN', defaultMessage: '檢視電話欄位' },
+  MEMBER_STAR_ADMIN: { id: 'permission.MEMBER_STAR_ADMIN', defaultMessage: '檢視星等欄位' },
+  MEMBER_CATEGORY_ADMIN: { id: 'permission.MEMBER_CATEGORY_ADMIN', defaultMessage: '所有會員分類功能' },
 
   // task
   TASK_ADMIN: { id: 'permission.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },
