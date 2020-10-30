@@ -1,6 +1,5 @@
-import Icon, { CaretDownOutlined, ExportOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
-import { Button, Checkbox, Dropdown, Form, Input, Menu, Popover, Table, Tag } from 'antd'
-import { useForm } from 'antd/lib/form/Form'
+import Icon, { CaretDownOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
+import { Button, Checkbox, Dropdown, Input, Menu, Popover, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import moment from 'moment'
 import React, { useContext, useRef, useState } from 'react'
@@ -8,12 +7,12 @@ import { useIntl } from 'react-intl'
 import styled, { ThemeContext } from 'styled-components'
 import { AdminPageTitle } from '../../../components/admin'
 import AdminCard from '../../../components/admin/AdminCard'
-import AdminModal from '../../../components/admin/AdminModal'
 import { AvatarImage } from '../../../components/common/Image'
 import { UserRoleName } from '../../../components/common/UserRole'
 import AdminLayout from '../../../components/layout/AdminLayout'
+import MemberExportModal from '../../../components/member/MemberExportModal'
 import AppContext from '../../../contexts/AppContext'
-import { currencyFormatter, downloadCSV, toCSV } from '../../../helpers'
+import { currencyFormatter } from '../../../helpers'
 import { commonMessages, memberMessages } from '../../../helpers/translation'
 import { useMemberCollection, useMemberRoleCount, useProperty } from '../../../hooks/member'
 import { ReactComponent as TableIcon } from '../../../images/icon/table.svg'
@@ -26,6 +25,11 @@ const StyledDropdown = styled(Dropdown)`
 const StyledMenuItem = styled(Menu.Item)`
   && {
     padding: 12px 16px;
+  }
+`
+const StyledButton = styled(Button)`
+  && {
+    color: var(--gray-darker);
   }
 `
 const StyledOverlay = styled.div`
@@ -44,7 +48,7 @@ const OverlayTitle = styled.div`
 `
 const FilterWrapper = styled.div`
   columns: 2;
-  .ant-checkbox-wrapper {
+  .ant-checkbox-wrapper.ant-checkbox-wrapper {
     display: block;
     margin-left: 0;
     margin-bottom: 1rem;
@@ -62,6 +66,7 @@ const TableWrapper = styled.div`
 const StyledMemberName = styled.span`
   color: var(--gray-darker);
   font-size: 16px;
+  white-space: nowrap;
 `
 const StyledTag = styled(Tag)`
   && {
@@ -91,25 +96,19 @@ const MemberCollectionAdminPage: React.FC = () => {
       title: property.name,
     })),
   ]
-  const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>([
-    'email',
-    'phone',
-    'createdAt',
-    'consumption',
-    'categories',
-    'tags',
-  ])
+  const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(['email', 'phone', 'createdAt', 'consumption'])
 
   // get member info
   const [fieldFilter, setFieldFilter] = useState<{
     role?: UserRole
     name?: string
     email?: string
+    phone?: string
     category?: string
     tag?: string
   }>({})
   const [propertyFilter, setPropertyFilter] = useState<{
-    [propertyId: string]: string
+    [propertyId: string]: string | undefined
   }>({})
   const { loadingMembers, members, loadMoreMembers } = useMemberCollection({
     ...fieldFilter,
@@ -127,7 +126,7 @@ const MemberCollectionAdminPage: React.FC = () => {
     text: formatMessage(menuItem.intlKey),
   }))
 
-  const roleSelectDropdown = (
+  const roleSelector = (
     <StyledDropdown
       trigger={['click']}
       overlay={
@@ -164,7 +163,23 @@ const MemberCollectionAdminPage: React.FC = () => {
 
   // table
   const searchInputRef = useRef<Input | null>(null)
-  const getColumnSearchProps: (field: keyof typeof fieldFilter) => ColumnProps<MemberInfoProps> = field => ({
+  const setFilter = (columnId: string, value: string | null, isProperty?: boolean) => {
+    if (isProperty) {
+      setPropertyFilter(filter => ({
+        ...filter,
+        [columnId]: value ?? undefined,
+      }))
+    } else {
+      setFieldFilter(filter => ({
+        ...filter,
+        [columnId]: value ?? undefined,
+      }))
+    }
+  }
+  const getColumnSearchProps: (
+    field: keyof typeof fieldFilter,
+    isProperty?: boolean,
+  ) => ColumnProps<MemberInfoProps> = (columnId, isProperty) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div className="p-2">
         <Input
@@ -173,10 +188,7 @@ const MemberCollectionAdminPage: React.FC = () => {
           onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
           onPressEnter={() => {
             confirm()
-            setFieldFilter(filter => ({
-              ...filter,
-              [field]: selectedKeys[0] as string,
-            }))
+            setFilter(columnId, selectedKeys[0] as string, isProperty)
           }}
           style={{ width: 188, marginBottom: 8, display: 'block' }}
         />
@@ -185,10 +197,7 @@ const MemberCollectionAdminPage: React.FC = () => {
             type="primary"
             onClick={() => {
               confirm()
-              setFieldFilter(filter => ({
-                ...filter,
-                [field]: selectedKeys[0] as string,
-              }))
+              setFilter(columnId, selectedKeys[0] as string, isProperty)
             }}
             icon={<SearchOutlined />}
             size="small"
@@ -200,10 +209,7 @@ const MemberCollectionAdminPage: React.FC = () => {
           <Button
             onClick={() => {
               clearFilters && clearFilters()
-              setFieldFilter(filter => ({
-                ...filter,
-                [field]: undefined,
-              }))
+              setFilter(columnId, null, isProperty)
             }}
             size="small"
             style={{ width: 90 }}
@@ -250,6 +256,7 @@ const MemberCollectionAdminPage: React.FC = () => {
       dataIndex: 'phone',
       key: 'phone',
       render: (text, record, index) => record.phones.join(', '),
+      ...getColumnSearchProps('phone'),
     },
     {
       title: formatMessage(commonMessages.label.createdDate),
@@ -288,14 +295,17 @@ const MemberCollectionAdminPage: React.FC = () => {
       ),
       ...getColumnSearchProps('tag'),
     },
-    ...properties.map(property => {
-      const column: ColumnProps<MemberInfoProps> = {
-        title: property.name,
-        key: property.id,
-        render: (text, record, index) => record.properties[property.id],
-      }
-      return column
-    }),
+    ...properties
+      .filter(property => visibleColumnIds.includes(property.id))
+      .map(property => {
+        const column: ColumnProps<MemberInfoProps> = {
+          title: property.name,
+          key: property.id,
+          render: (text, record, index) => record.properties[property.id],
+          ...getColumnSearchProps(property.id, true),
+        }
+        return column
+      }),
   ]
 
   return (
@@ -306,7 +316,7 @@ const MemberCollectionAdminPage: React.FC = () => {
       </AdminPageTitle>
 
       <div className="d-flex align-items-center justify-content-between mb-4">
-        <div className="flex-grow-1">{roleSelectDropdown}</div>
+        <div className="flex-grow-1">{roleSelector}</div>
 
         <Popover
           trigger="click"
@@ -326,11 +336,11 @@ const MemberCollectionAdminPage: React.FC = () => {
             </StyledOverlay>
           }
         >
-          <Button type="link" icon={<Icon component={() => <TableIcon />} />} className="mr-2">
+          <StyledButton type="link" icon={<Icon component={() => <TableIcon />} />} className="mr-2">
             {formatMessage(memberMessages.label.field)}
-          </Button>
+          </StyledButton>
         </Popover>
-        <MemberExportModal filter={fieldFilter}>{roleSelectDropdown}</MemberExportModal>
+        <MemberExportModal roleSelector={roleSelector} filter={fieldFilter} />
       </div>
 
       <AdminCard className="mb-5">
@@ -346,85 +356,23 @@ const MemberCollectionAdminPage: React.FC = () => {
               onClick: () => window.open(`/admin/members/${record.id}`, '_blank'),
             })}
           />
-          {!loadingMembers && loadMoreMembers && (
-            <div className="text-center mt-4">
-              <Button
-                loading={loading}
-                onClick={() => {
-                  setLoading(true)
-                  loadMoreMembers().finally(() => setLoading(false))
-                }}
-              >
-                {formatMessage(commonMessages.ui.showMore)}
-              </Button>
-            </div>
-          )}
         </TableWrapper>
+
+        {!loadingMembers && loadMoreMembers && (
+          <div className="text-center mt-4">
+            <Button
+              loading={loading}
+              onClick={() => {
+                setLoading(true)
+                loadMoreMembers().finally(() => setLoading(false))
+              }}
+            >
+              {formatMessage(commonMessages.ui.showMore)}
+            </Button>
+          </div>
+        )}
       </AdminCard>
     </AdminLayout>
-  )
-}
-
-const MemberExportModal: React.FC<{
-  filter?: {
-    role?: UserRole
-    name?: string
-    email?: string
-  }
-}> = ({ filter, children }) => {
-  const [form] = useForm()
-  const { formatMessage } = useIntl()
-  const { loadingMembers, members } = useMemberCollection(filter)
-  const [selectedExportFields, setSelectedExportFields] = useState<string[]>(['name', 'email'])
-
-  const options = [
-    { label: formatMessage(commonMessages.term.memberName), value: 'name' },
-    { label: 'Email', value: 'email' },
-    { label: formatMessage(commonMessages.label.lastLogin), value: 'lastLogin' },
-    { label: formatMessage(commonMessages.label.consumption), value: 'consumption' },
-  ]
-
-  const exportMemberList = () => {
-    const data: string[][] = [
-      options.filter(option => selectedExportFields.some(field => field === option.value)).map(option => option.label),
-      ...members.map(member => {
-        const row: string[] = []
-        selectedExportFields.some(field => field === 'name') && row.push(member.name)
-        selectedExportFields.some(field => field === 'email') && row.push(member.email)
-        selectedExportFields.some(field => field === 'lastLogin') &&
-          row.push(member.loginedAt ? moment(member.loginedAt).format('YYYYMMDD HH:mm') : '')
-        selectedExportFields.some(field => field === 'consumption') && row.push(`${member.consumption}`)
-        return row
-      }),
-    ]
-
-    downloadCSV('members', toCSV(data))
-  }
-
-  return (
-    <AdminModal
-      renderTrigger={({ setVisible }) => (
-        <Button icon={<ExportOutlined />} onClick={() => setVisible(true)}>
-          {formatMessage(commonMessages.ui.export)}
-        </Button>
-      )}
-      confirmLoading={loadingMembers}
-      title={formatMessage(commonMessages.ui.downloadMemberList)}
-      cancelText={formatMessage(commonMessages.ui.cancel)}
-      okText={formatMessage(commonMessages.ui.export)}
-      onOk={() => exportMemberList()}
-    >
-      <Form form={form} layout="vertical" colon={false} hideRequiredMark>
-        <Form.Item label={formatMessage(commonMessages.label.roleType)}>{children}</Form.Item>
-        <Form.Item label={formatMessage(commonMessages.label.exportFields)}>
-          <Checkbox.Group
-            options={options}
-            value={selectedExportFields}
-            onChange={checkedValues => setSelectedExportFields(checkedValues.map(v => v.toString()))}
-          />
-        </Form.Item>
-      </Form>
-    </AdminModal>
   )
 }
 
