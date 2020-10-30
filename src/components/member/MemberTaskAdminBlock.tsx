@@ -382,7 +382,7 @@ const useMemberTaskCollection = ({
     hasMore
       ? totalCount < limit && setHasMore(false)
       : totalCount > limit && totalCount > memberTasks.length && setHasMore(true)
-  }, [totalCount])
+  }, [totalCount, hasMore, limit, memberTasks.length])
 
   const loadMoreMemberTasks = () =>
     fetchMore({
