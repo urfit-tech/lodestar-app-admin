@@ -400,17 +400,23 @@ export const useMemberCollection = (filter?: {
   role?: UserRole
   name?: string
   email?: string
+  phone?: string
   category?: string
   tag?: string
   properties?: {
     id: string
-    value: string
+    value?: string
   }[]
 }) => {
   const condition: types.GET_PAGE_MEMBER_COLLECTIONVariables['condition'] = {
     role: filter?.role ? { _eq: filter.role } : undefined,
     name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
     email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
+    member_phones: filter?.phone
+      ? {
+          phone: { _ilike: `%${filter.phone}%` },
+        }
+      : undefined,
     member_categories: filter?.category
       ? {
           category: {
@@ -551,8 +557,7 @@ export const useMemberCollection = (filter?: {
     errorMembers: error,
     members,
     refetchMembers: refetch,
-    loadMoreMembers:
-      (data?.member_aggregate.aggregate?.count || 0) > (data?.member.length || 0) ? loadMoreMembers : undefined,
+    loadMoreMembers: (data?.member_aggregate.aggregate?.count || 0) > 10 ? loadMoreMembers : undefined,
   }
 }
 
