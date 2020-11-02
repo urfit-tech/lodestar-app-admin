@@ -3579,6 +3579,22 @@ export interface UPDATE_PROGRAM_CONTENT_SECTIONVariables {
 // GraphQL mutation operation: DELETE_PROGRAM_CONTENT_SECTION
 // ====================================================
 
+export interface DELETE_PROGRAM_CONTENT_SECTION_delete_program_content_progress {
+  __typename: "program_content_progress_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CONTENT_SECTION_delete_program_content_body {
+  __typename: "program_content_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface DELETE_PROGRAM_CONTENT_SECTION_delete_program_content {
   __typename: "program_content_mutation_response";
   /**
@@ -3596,6 +3612,14 @@ export interface DELETE_PROGRAM_CONTENT_SECTION_delete_program_content_section {
 }
 
 export interface DELETE_PROGRAM_CONTENT_SECTION {
+  /**
+   * delete data from the table: "program_content_progress"
+   */
+  delete_program_content_progress: DELETE_PROGRAM_CONTENT_SECTION_delete_program_content_progress | null;
+  /**
+   * delete data from the table: "program_content_body"
+   */
+  delete_program_content_body: DELETE_PROGRAM_CONTENT_SECTION_delete_program_content_body | null;
   /**
    * delete data from the table: "program_content"
    */
