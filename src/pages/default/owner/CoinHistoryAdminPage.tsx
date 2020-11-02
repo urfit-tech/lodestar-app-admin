@@ -27,9 +27,10 @@ import NotFoundPage from '../NotFoundPage'
 
 const messages = defineMessages({
   coinReleaseHistory: { id: 'promotion.label.coinReleaseHistory', defaultMessage: '發送紀錄' },
-  coinConsumptionHistory: { id: 'promotion.label.coinConsumptionHistory', defaultMessage: '消費記錄' },
+  coinConsumptionHistory: { id: 'promotion.label.coinConsumptionHistory', defaultMessage: '消費紀錄' },
   coinAboutToSend: { id: 'promotion.label.coinAboutToSend', defaultMessage: '即將發送' },
   createdAt: { id: 'promotion.label.createdAt', defaultMessage: '建立日期' },
+  orderLogId: { id: 'promotion.label.orderLogId', defaultMessage: '訂單編號' },
   nameAndEmail: { id: 'promotion.label.nameAndEmail', defaultMessage: '姓名與 Email' },
   coinLogTitle: { id: 'promotion.label.coinLogTitle', defaultMessage: '項目' },
   coinAvailableDate: { id: 'promotion.label.coinAvailableDate', defaultMessage: '代幣效期' },
@@ -384,6 +385,11 @@ const CoinHistoryAdminPage: React.FC = () => {
                     render: (text, record, index) => moment(text).format('YYYY/MM/DD'),
                   },
                   {
+                    title: formatMessage(messages.orderLogId),
+                    dataIndex: 'id',
+                    render: (text, record, index) => <div>{record.id}</div>,
+                  },
+                  {
                     title: formatMessage(messages.nameAndEmail),
                     key: 'member',
                     render: (text, record, index) => (
@@ -402,7 +408,7 @@ const CoinHistoryAdminPage: React.FC = () => {
                     dataIndex: 'coins',
                     render: (text, record, index) => (
                       <StyledLabel variant="order-log">
-                        -{text} {coinUnit}
+                        -{record.amount} {coinUnit}
                       </StyledLabel>
                     ),
                   },

@@ -27,7 +27,7 @@ import NotFoundPage from '../NotFoundPage'
 
 const messages = defineMessages({
   pointReleaseHistory: { id: 'promotion.label.pointReleaseHistory', defaultMessage: '發送紀錄' },
-  pointConsumptionHistory: { id: 'promotion.label.pointConsumptionHistory', defaultMessage: '消費記錄' },
+  pointConsumptionHistory: { id: 'promotion.label.pointConsumptionHistory', defaultMessage: '消費紀錄' },
   createdAt: { id: 'promotion.label.createdAt', defaultMessage: '建立日期' },
   nameAndEmail: { id: 'promotion.label.nameAndEmail', defaultMessage: '姓名與 Email' },
   pointLogTitle: { id: 'promotion.label.pointLogTitle', defaultMessage: '項目' },
