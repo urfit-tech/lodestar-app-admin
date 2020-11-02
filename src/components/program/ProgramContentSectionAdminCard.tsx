@@ -144,6 +144,16 @@ const UPDATE_PROGRAM_CONTENT_SECTION = gql`
 `
 const DELETE_PROGRAM_CONTENT_SECTION = gql`
   mutation DELETE_PROGRAM_CONTENT_SECTION($programContentSectionId: uuid!) {
+    delete_program_content_progress(
+      where: { program_content: { content_section_id: { _eq: $programContentSectionId } } }
+    ) {
+      affected_rows
+    }
+    delete_program_content_body(
+      where: { program_contents: { content_section_id: { _eq: $programContentSectionId } } }
+    ) {
+      affected_rows
+    }
     delete_program_content(where: { content_section_id: { _eq: $programContentSectionId } }) {
       affected_rows
     }

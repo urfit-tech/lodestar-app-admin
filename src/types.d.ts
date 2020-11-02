@@ -3691,6 +3691,22 @@ export interface UPDATE_PROGRAM_CONTENT_SECTIONVariables {
 // GraphQL mutation operation: DELETE_PROGRAM_CONTENT_SECTION
 // ====================================================
 
+export interface DELETE_PROGRAM_CONTENT_SECTION_delete_program_content_progress {
+  __typename: "program_content_progress_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CONTENT_SECTION_delete_program_content_body {
+  __typename: "program_content_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface DELETE_PROGRAM_CONTENT_SECTION_delete_program_content {
   __typename: "program_content_mutation_response";
   /**
@@ -3708,6 +3724,14 @@ export interface DELETE_PROGRAM_CONTENT_SECTION_delete_program_content_section {
 }
 
 export interface DELETE_PROGRAM_CONTENT_SECTION {
+  /**
+   * delete data from the table: "program_content_progress"
+   */
+  delete_program_content_progress: DELETE_PROGRAM_CONTENT_SECTION_delete_program_content_progress | null;
+  /**
+   * delete data from the table: "program_content_body"
+   */
+  delete_program_content_body: DELETE_PROGRAM_CONTENT_SECTION_delete_program_content_body | null;
   /**
    * delete data from the table: "program_content"
    */
@@ -10210,6 +10234,7 @@ export enum cart_product_update_column {
  * unique or primary key constraints on table "category"
  */
 export enum category_constraint {
+  category_app_id_class_name_key = "category_app_id_class_name_key",
   category_id_key = "category_id_key",
   category_pkey = "category_pkey",
 }
@@ -10334,6 +10359,7 @@ export enum contract_update_column {
   description = "description",
   id = "id",
   name = "name",
+  published_at = "published_at",
   revocation = "revocation",
   template = "template",
   updated_at = "updated_at",
@@ -10554,6 +10580,7 @@ export enum member_card_update_column {
  * unique or primary key constraints on table "member_category"
  */
 export enum member_category_constraint {
+  member_category_member_id_category_id_key = "member_category_member_id_category_id_key",
   member_category_pkey = "member_category_pkey",
 }
 
@@ -10755,9 +10782,11 @@ export enum member_tag_constraint {
  * update columns of table "member_tag"
  */
 export enum member_tag_update_column {
+  created_at = "created_at",
   id = "id",
   member_id = "member_id",
   tag_name = "tag_name",
+  updated_at = "updated_at",
 }
 
 /**
@@ -12078,6 +12107,7 @@ export enum property_update_column {
   created_at = "created_at",
   id = "id",
   name = "name",
+  placeholder = "placeholder",
   position = "position",
   type = "type",
   updated_at = "updated_at",
@@ -13694,6 +13724,7 @@ export interface contract_bool_exp {
   id?: uuid_comparison_exp | null;
   member_contracts?: member_contract_bool_exp | null;
   name?: String_comparison_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
   revocation?: String_comparison_exp | null;
   template?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -13709,6 +13740,7 @@ export interface contract_insert_input {
   id?: any | null;
   member_contracts?: member_contract_arr_rel_insert_input | null;
   name?: string | null;
+  published_at?: any | null;
   revocation?: string | null;
   template?: string | null;
   updated_at?: any | null;
@@ -15027,22 +15059,26 @@ export interface member_tag_bool_exp {
   _and?: (member_tag_bool_exp | null)[] | null;
   _not?: member_tag_bool_exp | null;
   _or?: (member_tag_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   tag?: tag_bool_exp | null;
   tag_name?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**
  * input type for inserting data into table "member_tag"
  */
 export interface member_tag_insert_input {
+  created_at?: any | null;
   id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   tag?: tag_obj_rel_insert_input | null;
   tag_name?: string | null;
+  updated_at?: any | null;
 }
 
 /**
@@ -18725,6 +18761,7 @@ export interface property_bool_exp {
   id?: uuid_comparison_exp | null;
   member_properties?: member_property_bool_exp | null;
   name?: String_comparison_exp | null;
+  placeholder?: String_comparison_exp | null;
   position?: Int_comparison_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -18740,6 +18777,7 @@ export interface property_insert_input {
   id?: any | null;
   member_properties?: member_property_arr_rel_insert_input | null;
   name?: string | null;
+  placeholder?: string | null;
   position?: number | null;
   type?: string | null;
   updated_at?: any | null;
