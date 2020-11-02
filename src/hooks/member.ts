@@ -445,7 +445,7 @@ export const useMemberCollection = (filter?: {
     member_tags: filter?.tag
       ? {
           tag_name: {
-            _eq: filter.tag,
+            _ilike: filter.tag,
           },
         }
       : undefined,
