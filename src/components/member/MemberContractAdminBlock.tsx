@@ -5,16 +5,13 @@ import moment from 'moment'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { memberMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const messages = defineMessages({
   agreed: { id: 'contract.status.agreed', defaultMessage: '已簽署' },
   pending: { id: 'contract.status.pending', defaultMessage: '未簽署' },
   revoked: { id: 'contract.status.revoked', defaultMessage: '已解約' },
-  agreedAt: { id: 'contract.text.agreedAt', defaultMessage: '於 {time} 簽署合約' },
-  revokedAt: { id: 'contract.text.revokedAt', defaultMessage: '於 {time} 解除合約' },
-  startedAt: { id: 'contract.text.startedAt', defaultMessage: '開始時間：{time}' },
-  endedAt: { id: 'contract.text.endedAt', defaultMessage: '結束時間：{time}' },
 })
 
 const StyledCard = styled(Card)`
@@ -51,35 +48,49 @@ const MemberContractAdminBlock: React.FC<{
   return (
     <div className="container">
       {contracts.map(contract => (
-        <StyledCard
+        <a
           key={contract.id}
-          title={
-            <div className="d-flex align-items-center justify-content-between">
-              <span className="mr-1">{contract.title}</span>
-              {contract.revokedAt ? (
-                <StyledLabel variant="revoked">{formatMessage(messages.revoked)}</StyledLabel>
-              ) : contract.agreedAt ? (
-                <StyledLabel variant="agreed">{formatMessage(messages.agreed)}</StyledLabel>
-              ) : (
-                <StyledLabel>{formatMessage(messages.pending)}</StyledLabel>
-              )}
-            </div>
-          }
+          href={`/members/${memberId}/contracts/${contract.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          <StyledMeta>
-            {contract.revokedAt
-              ? formatMessage(messages.revokedAt, { time: moment(contract.revokedAt).format('YYYY-MM-DD HH:mm:ss') })
-              : contract.agreedAt
-              ? formatMessage(messages.agreedAt, { time: moment(contract.agreedAt).format('YYYY-MM-DD HH:mm:ss') })
-              : null}
-          </StyledMeta>
+          <StyledCard
+            title={
+              <div className="d-flex align-items-center justify-content-between">
+                <span className="mr-1">{contract.title}</span>
+                {contract.revokedAt ? (
+                  <StyledLabel variant="revoked">{formatMessage(messages.revoked)}</StyledLabel>
+                ) : contract.agreedAt ? (
+                  <StyledLabel variant="agreed">{formatMessage(messages.agreed)}</StyledLabel>
+                ) : (
+                  <StyledLabel>{formatMessage(messages.pending)}</StyledLabel>
+                )}
+              </div>
+            }
+          >
+            <StyledMeta>
+              {contract.revokedAt
+                ? formatMessage(memberMessages.text.revokedAt, {
+                    time: moment(contract.revokedAt).format('YYYY-MM-DD HH:mm:ss'),
+                  })
+                : contract.agreedAt
+                ? formatMessage(memberMessages.text.agreedAt, {
+                    time: moment(contract.agreedAt).format('YYYY-MM-DD HH:mm:ss'),
+                  })
+                : null}
+            </StyledMeta>
 
-          <StyledDescription>
-            {formatMessage(messages.startedAt, { time: moment(contract.startedAt).format('YYYY-MM-DD HH:mm:ss') })}
-            <br />
-            {formatMessage(messages.endedAt, { time: moment(contract.endedAt).format('YYYY-MM-DD HH:mm:ss') })}
-          </StyledDescription>
-        </StyledCard>
+            <StyledDescription>
+              {formatMessage(memberMessages.text.startedAt, {
+                time: moment(contract.startedAt).format('YYYY-MM-DD HH:mm:ss'),
+              })}
+              <br />
+              {formatMessage(memberMessages.text.endedAt, {
+                time: moment(contract.endedAt).format('YYYY-MM-DD HH:mm:ss'),
+              })}
+            </StyledDescription>
+          </StyledCard>
+        </a>
       ))}
     </div>
   )

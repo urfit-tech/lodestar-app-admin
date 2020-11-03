@@ -1863,18 +1863,19 @@ export interface UPDATE_ISSUE_REPLYVariables {
 
 export interface GET_MEMBER_CONTRACTS_member_contract_contract {
   __typename: "contract";
+  id: any;
   name: string;
 }
 
 export interface GET_MEMBER_CONTRACTS_member_contract {
   __typename: "member_contract";
   id: any;
+  started_at: any | null;
+  ended_at: any | null;
   agreed_at: any | null;
   agreed_ip: string | null;
   agreed_options: any | null;
   revoked_at: any | null;
-  started_at: any | null;
-  ended_at: any | null;
   /**
    * An object relationship
    */
@@ -9133,6 +9134,48 @@ export interface INSERT_POSTVariables {
   title: string;
   postCategories: post_category_insert_input[];
   postRoles: post_role_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MEMBER_CONTRACT
+// ====================================================
+
+export interface GET_MEMBER_CONTRACT_member_contract_by_pk_contract {
+  __typename: "contract";
+  name: string;
+  description: string;
+  template: string;
+}
+
+export interface GET_MEMBER_CONTRACT_member_contract_by_pk {
+  __typename: "member_contract";
+  started_at: any | null;
+  ended_at: any | null;
+  values: any | null;
+  agreed_at: any | null;
+  agreed_ip: string | null;
+  revoked_at: any | null;
+  agreed_options: any | null;
+  /**
+   * An object relationship
+   */
+  contract: GET_MEMBER_CONTRACT_member_contract_by_pk_contract;
+}
+
+export interface GET_MEMBER_CONTRACT {
+  /**
+   * fetch data from the table: "member_contract" using primary key columns
+   */
+  member_contract_by_pk: GET_MEMBER_CONTRACT_member_contract_by_pk | null;
+}
+
+export interface GET_MEMBER_CONTRACTVariables {
+  memberContractId: any;
 }
 
 /* tslint:disable */
