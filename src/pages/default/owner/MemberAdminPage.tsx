@@ -16,6 +16,7 @@ import {
 } from '../../../components/admin'
 import { CustomRatioImage } from '../../../components/common/Image'
 import { StyledLayoutContent } from '../../../components/layout/DefaultLayout'
+import MemberContractAdminBlock from '../../../components/member/MemberContractAdminBlock'
 import MemberNoteAdminItem from '../../../components/member/MemberNoteAdminItem'
 import MemberNoteAdminModal from '../../../components/member/MemberNoteAdminModal'
 import MemberPermissionForm from '../../../components/member/MemberPermissionForm'
@@ -222,6 +223,13 @@ const MemberAdminPage: React.FC = () => {
               <Tabs.TabPane key="task" tab={formatMessage(memberMessages.label.task)}>
                 <div className="p-5">
                   <MemberTaskAdminBlock memberId={memberId} />
+                </div>
+              </Tabs.TabPane>
+            )}
+            {enabledModules.contract && (
+              <Tabs.TabPane key="contract" tab={formatMessage(memberMessages.label.contract)}>
+                <div className="p-5">
+                  <MemberContractAdminBlock memberId={memberId} />
                 </div>
               </Tabs.TabPane>
             )}
