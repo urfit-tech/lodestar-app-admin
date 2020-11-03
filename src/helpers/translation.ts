@@ -885,6 +885,7 @@ export const memberMessages = {
     basic: { id: 'profile.label.basic', defaultMessage: '基本資料' },
     property: { id: 'profile.label.property', defaultMessage: '自訂欄位' },
     task: { id: 'profile.label.task', defaultMessage: '待辦清單' },
+    contract: { id: 'profile.label.contract', defaultMessage: '學員合約' },
     permission: { id: 'profile.label.property', defaultMessage: '權限設定' },
     order: { id: 'profile.label.order', defaultMessage: '訂單紀錄' },
     callType: { id: 'profile.label.callType', defaultMessage: '通話類型' },

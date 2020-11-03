@@ -1858,6 +1858,46 @@ export interface UPDATE_ISSUE_REPLYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_MEMBER_CONTRACTS
+// ====================================================
+
+export interface GET_MEMBER_CONTRACTS_member_contract_contract {
+  __typename: "contract";
+  name: string;
+}
+
+export interface GET_MEMBER_CONTRACTS_member_contract {
+  __typename: "member_contract";
+  id: any;
+  agreed_at: any | null;
+  agreed_ip: string | null;
+  agreed_options: any | null;
+  revoked_at: any | null;
+  started_at: any | null;
+  ended_at: any | null;
+  /**
+   * An object relationship
+   */
+  contract: GET_MEMBER_CONTRACTS_member_contract_contract;
+}
+
+export interface GET_MEMBER_CONTRACTS {
+  /**
+   * fetch data from the table: "member_contract"
+   */
+  member_contract: GET_MEMBER_CONTRACTS_member_contract[];
+}
+
+export interface GET_MEMBER_CONTRACTSVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_ROLE
 // ====================================================
 
