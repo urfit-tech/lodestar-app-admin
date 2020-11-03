@@ -1,8 +1,10 @@
+import Icon from '@ant-design/icons'
 import { Button } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { merchandiseMessages } from '../../helpers/translation'
+import { ReactComponent as IconList } from '../../images/icon/list-o.svg'
 import { InvoiceProps, ShippingProps } from '../../types/merchandise'
 import AdminModal from '../admin/AdminModal'
 import ShippingMethodLabel from '../common/ShippingMethodLabel'
@@ -29,7 +31,9 @@ const ShippingInfoModal: React.FC<{
   return (
     <AdminModal
       renderTrigger={({ setVisible }) => (
-        <Button onClick={() => setVisible(true)}>{formatMessage(merchandiseMessages.label.shippingInfo)}</Button>
+        <Button icon={<Icon component={() => <IconList />} />} type="text" onClick={() => setVisible(true)}>
+          {formatMessage(merchandiseMessages.label.shippingInfo)}
+        </Button>
       )}
       footer={null}
     >
