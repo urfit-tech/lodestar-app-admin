@@ -407,9 +407,7 @@ const CoinHistoryAdminPage: React.FC = () => {
                     title: formatMessage(messages.coins),
                     dataIndex: 'coins',
                     render: (text, record, index) => (
-                      <StyledLabel variant="order-log">
-                        -{record.amount} {coinUnit}
-                      </StyledLabel>
+                      <StyledLabel variant="order-log">{`- ${record.amount} ${coinUnit}`}</StyledLabel>
                     ),
                   },
                 ]}
