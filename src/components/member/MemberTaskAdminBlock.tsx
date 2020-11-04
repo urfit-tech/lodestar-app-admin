@@ -1,3 +1,4 @@
+// organize-imports-ignore
 import { FileAddOutlined, SearchOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Button, Input, Table } from 'antd'
@@ -14,6 +15,9 @@ import { MemberTaskProps } from '../../types/member'
 import { AdminBlock, MemberTaskTag } from '../admin'
 import { AvatarImage } from '../common/Image'
 import MemberTaskAdminModal from './MemberTaskAdminModal'
+
+import FullCalendar from '@fullcalendar/react'
+import dayGridPlugin from '@fullcalendar/daygrid'
 
 const StyledTitle = styled.span`
   color: var(--gray-darker);
@@ -42,6 +46,7 @@ const statusLevel: { [key in MemberTaskProps['status']]: number } = {
 const MemberTaskAdminBlock: React.FC<{
   memberId?: string
 }> = ({ memberId }) => {
+  const [display, setDisplay] = useState('table')
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const searchInputRef = useRef<Input | null>(null)
@@ -186,23 +191,41 @@ const MemberTaskAdminBlock: React.FC<{
           onRefetch={refetchMemberTasks}
         />
       </div>
-
+      <Button className="mb-3" onClick={() => setDisplay(display === 'table' ? 'calendar' : 'table')}>
+        切換檢視模式
+      </Button>
       <AdminBlock>
-        <Table
-          columns={columns}
-          dataSource={memberTasks}
-          rowKey="id"
-          loading={loadingMemberTasks}
-          showSorterTooltip={false}
-          rowClassName="cursor-pointer"
-          pagination={false}
-          onRow={record => ({
-            onClick: () => {
-              setSelectedMemberTask(record)
-              setVisible(true)
-            },
-          })}
-        />
+        {display === 'calendar' && (
+          <FullCalendar
+            plugins={[dayGridPlugin]}
+            initialView="dayGridMonth"
+            events={memberTasks
+              .filter(memberTask => memberTask.dueAt)
+              .map(memberTask => {
+                return {
+                  title: memberTask.title,
+                  start: moment(memberTask.dueAt).format(),
+                }
+              })}
+          />
+        )}
+        {display === 'table' && (
+          <Table
+            columns={columns}
+            dataSource={memberTasks}
+            rowKey="id"
+            loading={loadingMemberTasks}
+            showSorterTooltip={false}
+            rowClassName="cursor-pointer"
+            pagination={false}
+            onRow={record => ({
+              onClick: () => {
+                setSelectedMemberTask(record)
+                setVisible(true)
+              },
+            })}
+          />
+        )}
       </AdminBlock>
 
       {selectedMemberTask && (
