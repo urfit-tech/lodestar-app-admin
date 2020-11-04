@@ -80,6 +80,7 @@ const MemberCollectionAdminPage: React.FC = () => {
   const theme = useContext(ThemeContext)
   const { id: appId } = useContext(AppContext)
   const { permissions } = useAuth()
+
   // table column filter
   const { properties } = useProperty()
   const allColumns: ({
@@ -166,15 +167,15 @@ const MemberCollectionAdminPage: React.FC = () => {
   const searchInputRef = useRef<Input | null>(null)
   const setFilter = (columnId: string, value: string | null, isProperty?: boolean) => {
     if (isProperty) {
-      setPropertyFilter(filter => ({
-        ...filter,
+      setPropertyFilter({
+        ...propertyFilter,
         [columnId]: value ?? undefined,
-      }))
+      })
     } else {
-      setFieldFilter(filter => ({
-        ...filter,
+      setFieldFilter({
+        ...fieldFilter,
         [columnId]: value ?? undefined,
-      }))
+      })
     }
   }
   const getColumnSearchProps: (

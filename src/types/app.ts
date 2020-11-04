@@ -16,6 +16,7 @@ export type Module =
   | 'member_task'
   | 'merchandise'
   | 'merchandise_customization'
+  | 'merchandise_virtualness'
   | 'permission'
   | 'podcast'
   | 'podcast_recording'
@@ -24,11 +25,10 @@ export type Module =
   | 'project'
   | 'qrcode'
   | 'search'
+  | 'sharing_code'
   | 'social_connect'
   | 'tempo_delivery'
   | 'voucher'
-  | 'merchandise_customization'
-  | 'merchandise_virtualness'
 
 export type Currency = {
   name: string
