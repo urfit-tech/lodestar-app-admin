@@ -45,8 +45,8 @@ const MerchandiseSalesForm: React.FC<{
       variables: {
         merchandiseId,
         soldAt: withSoldAt ? values.soldAt.toDate() : null,
-        startedAt: withSellingTime ? values.startedAt.toDate() : null,
-        endedAt: withSellingTime ? values.endedAt.toDate() : null,
+        startedAt: withSellingTime ? values.startedAt?.toDate() || null : null,
+        endedAt: withSellingTime ? values.endedAt?.toDate() || null : null,
         isCountdownTimerVisible: values.isCountdownTimerVisible,
       },
     })
