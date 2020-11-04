@@ -451,10 +451,12 @@ export const useMemberCollection = (filter?: {
       : undefined,
     member_properties: filter?.properties?.length
       ? {
-          _and: filter.properties.map(property => ({
-            property_id: { _eq: property.id },
-            value: { _ilike: `%${property.value}%` },
-          })),
+          _and: filter.properties
+            .filter(property => property.value)
+            .map(property => ({
+              property_id: { _eq: property.id },
+              value: { _ilike: `%${property.value}%` },
+            })),
         }
       : undefined,
   }
