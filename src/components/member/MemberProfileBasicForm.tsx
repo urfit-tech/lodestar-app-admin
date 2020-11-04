@@ -74,7 +74,7 @@ const MemberProfileBasicForm: React.FC<{
       onFinish={handleSubmit}
     >
       <Form.Item label={formatMessage(commonMessages.term.name)} name="name">
-        <Input disabled />
+        <Input />
       </Form.Item>
       <Form.Item label={formatMessage(commonMessages.term.account)} name="username">
         <Input disabled />
