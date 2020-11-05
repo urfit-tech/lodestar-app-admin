@@ -2,12 +2,14 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
+import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MemberAdminProps } from '../../types/member'
+import AllMemberSelector from '../form/AllMemberSelector'
 import TagSelector from '../form/TagSelector'
 
 const MemberProfileBasicForm: React.FC<{
@@ -31,6 +33,8 @@ const MemberProfileBasicForm: React.FC<{
     updateMemberProfileBasic({
       variables: {
         memberId: memberAdmin.id,
+        managerId: values.managerId,
+        assignedAt: new Date(),
         phones: values.phones
           .filter((phone: string) => !!phone)
           .map((phone: string) => ({
@@ -64,6 +68,7 @@ const MemberProfileBasicForm: React.FC<{
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 12 } }}
       initialValues={{
+        managerId: memberAdmin.manager?.id,
         name: memberAdmin.name,
         username: memberAdmin.username,
         email: memberAdmin.email,
@@ -73,6 +78,13 @@ const MemberProfileBasicForm: React.FC<{
       }}
       onFinish={handleSubmit}
     >
+      <Form.Item
+        label={formatMessage(commonMessages.term.assign)}
+        name="managerId"
+        extra={memberAdmin.assignedAt ? moment(memberAdmin.assignedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
+      >
+        <AllMemberSelector />
+      </Form.Item>
       <Form.Item label={formatMessage(commonMessages.term.name)} name="name">
         <Input />
       </Form.Item>
@@ -129,10 +141,15 @@ const PhoneCollectionInput: React.FC<{
 const UPDATE_MEMBER_PROFILE_BASIC = gql`
   mutation UPDATE_MEMBER_PROFILE_BASIC(
     $memberId: String!
+    $managerId: String
+    $assignedAt: timestamptz
     $tags: [tag_insert_input!]!
     $memberTags: [member_tag_insert_input!]!
     $phones: [member_phone_insert_input!]!
   ) {
+    update_member(where: { id: { _eq: $memberId } }, _set: { manager_id: $managerId, assigned_at: $assignedAt }) {
+      affected_rows
+    }
     # update tags
     delete_member_tag(where: { member_id: { _eq: $memberId } }) {
       affected_rows

@@ -1850,6 +1850,14 @@ export interface GET_ROLE_PERMISSION {
 // GraphQL mutation operation: UPDATE_MEMBER_PROFILE_BASIC
 // ====================================================
 
+export interface UPDATE_MEMBER_PROFILE_BASIC_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_MEMBER_PROFILE_BASIC_delete_member_tag {
   __typename: "member_tag_mutation_response";
   /**
@@ -1892,6 +1900,10 @@ export interface UPDATE_MEMBER_PROFILE_BASIC_insert_member_phone {
 
 export interface UPDATE_MEMBER_PROFILE_BASIC {
   /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_PROFILE_BASIC_update_member | null;
+  /**
    * delete data from the table: "member_tag"
    */
   delete_member_tag: UPDATE_MEMBER_PROFILE_BASIC_delete_member_tag | null;
@@ -1915,6 +1927,8 @@ export interface UPDATE_MEMBER_PROFILE_BASIC {
 
 export interface UPDATE_MEMBER_PROFILE_BASICVariables {
   memberId: string;
+  managerId?: string | null;
+  assignedAt?: any | null;
   tags: tag_insert_input[];
   memberTags: member_tag_insert_input[];
   phones: member_phone_insert_input[];
@@ -3118,7 +3132,7 @@ export interface UPDATE_PODCAST_PROGRAM_COVER {
 
 export interface UPDATE_PODCAST_PROGRAM_COVERVariables {
   podcastProgramId: any;
-  coverUrl: string;
+  coverUrl?: string | null;
   updatedAt: any;
 }
 
@@ -6475,6 +6489,14 @@ export interface GET_MEMBERVariables {
 // GraphQL query operation: GET_MEMBER_DESCRIPTION
 // ====================================================
 
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_manager {
+  __typename: "member";
+  id: string;
+  email: string;
+  name: string;
+  picture_url: string | null;
+}
+
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_tags {
   __typename: "member_tag";
   id: any;
@@ -6577,6 +6599,11 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk {
   role: string;
   created_at: any | null;
   logined_at: any | null;
+  assigned_at: any | null;
+  /**
+   * An object relationship
+   */
+  manager: GET_MEMBER_DESCRIPTION_member_by_pk_manager | null;
   /**
    * An array relationship
    */
@@ -6953,6 +6980,7 @@ export interface GET_PROPERTY_property {
   __typename: "property";
   id: any;
   name: string;
+  placeholder: string | null;
 }
 
 export interface GET_PROPERTY {
@@ -9898,6 +9926,7 @@ export enum cart_product_update_column {
  * unique or primary key constraints on table "category"
  */
 export enum category_constraint {
+  category_app_id_class_name_key = "category_app_id_class_name_key",
   category_id_key = "category_id_key",
   category_pkey = "category_pkey",
 }
@@ -10022,6 +10051,7 @@ export enum contract_update_column {
   description = "description",
   id = "id",
   name = "name",
+  published_at = "published_at",
   revocation = "revocation",
   template = "template",
   updated_at = "updated_at",
@@ -10242,6 +10272,7 @@ export enum member_card_update_column {
  * unique or primary key constraints on table "member_category"
  */
 export enum member_category_constraint {
+  member_category_member_id_category_id_key = "member_category_member_id_category_id_key",
   member_category_pkey = "member_category_pkey",
 }
 
@@ -10443,9 +10474,11 @@ export enum member_tag_constraint {
  * update columns of table "member_tag"
  */
 export enum member_tag_update_column {
+  created_at = "created_at",
   id = "id",
   member_id = "member_id",
   tag_name = "tag_name",
+  updated_at = "updated_at",
 }
 
 /**
@@ -11766,6 +11799,7 @@ export enum property_update_column {
   created_at = "created_at",
   id = "id",
   name = "name",
+  placeholder = "placeholder",
   position = "position",
   type = "type",
   updated_at = "updated_at",
@@ -13382,6 +13416,7 @@ export interface contract_bool_exp {
   id?: uuid_comparison_exp | null;
   member_contracts?: member_contract_bool_exp | null;
   name?: String_comparison_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
   revocation?: String_comparison_exp | null;
   template?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -13397,6 +13432,7 @@ export interface contract_insert_input {
   id?: any | null;
   member_contracts?: member_contract_arr_rel_insert_input | null;
   name?: string | null;
+  published_at?: any | null;
   revocation?: string | null;
   template?: string | null;
   updated_at?: any | null;
@@ -14715,22 +14751,26 @@ export interface member_tag_bool_exp {
   _and?: (member_tag_bool_exp | null)[] | null;
   _not?: member_tag_bool_exp | null;
   _or?: (member_tag_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   tag?: tag_bool_exp | null;
   tag_name?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
 }
 
 /**
  * input type for inserting data into table "member_tag"
  */
 export interface member_tag_insert_input {
+  created_at?: any | null;
   id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   tag?: tag_obj_rel_insert_input | null;
   tag_name?: string | null;
+  updated_at?: any | null;
 }
 
 /**
@@ -18413,6 +18453,7 @@ export interface property_bool_exp {
   id?: uuid_comparison_exp | null;
   member_properties?: member_property_bool_exp | null;
   name?: String_comparison_exp | null;
+  placeholder?: String_comparison_exp | null;
   position?: Int_comparison_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -18428,6 +18469,7 @@ export interface property_insert_input {
   id?: any | null;
   member_properties?: member_property_arr_rel_insert_input | null;
   name?: string | null;
+  placeholder?: string | null;
   position?: number | null;
   type?: string | null;
   updated_at?: any | null;
