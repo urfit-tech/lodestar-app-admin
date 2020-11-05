@@ -9,6 +9,7 @@ import {
   AdminBlockTitle,
   AdminHeader,
   AdminHeaderTitle,
+  AdminPaneDescription,
   AdminPaneTitle,
   AdminTabBarWrapper,
 } from '../../components/admin'
@@ -20,6 +21,7 @@ import ProgramIntroForm from '../../components/program/ProgramIntroForm'
 import ProgramPlanAdminBlock from '../../components/program/ProgramPlanAdminBlock'
 import ProgramPublishBlock from '../../components/program/ProgramPublishBlock'
 import ProgramRoleAdminPane from '../../components/program/ProgramRoleAdminPane'
+import ProgramSharingCodeAdminForm from '../../components/program/ProgramSharingCodeAdminForm'
 import ProgramStructureAdminBlock from '../../components/program/ProgramStructureAdminBlock'
 import ProgramStructureAdminModal from '../../components/program/ProgramStructureAdminModal'
 import AppContext from '../../contexts/AppContext'
@@ -103,6 +105,18 @@ const ProgramAdminPage: React.FC = () => {
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.salesPlan)}</AdminPaneTitle>
               <ProgramPlanAdminBlock program={program} onRefetch={refetchProgram} />
+            </div>
+          </Tabs.TabPane>
+
+          <Tabs.TabPane key="sharing" tab={formatMessage(programMessages.label.sharingCode)}>
+            <div className="container py-5">
+              <AdminPaneTitle>{formatMessage(programMessages.label.sharingCode)}</AdminPaneTitle>
+              <AdminPaneDescription className="mb-4">
+                {formatMessage(programMessages.text.sharingCodeDescription)}
+              </AdminPaneDescription>
+              <AdminBlock>
+                <ProgramSharingCodeAdminForm programId={programId} />
+              </AdminBlock>
             </div>
           </Tabs.TabPane>
 

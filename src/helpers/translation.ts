@@ -556,6 +556,9 @@ export const programMessages = {
     applyDescription: { id: 'program.label.applyDescription', defaultMessage: '備註(非必填)' },
     rejectModalTitle: { id: 'program.label.rejectModalTitle', defaultMessage: '退回案件' },
     rejectDescription: { id: 'program.label.rejectDescription', defaultMessage: '退件原因' },
+    sharingCode: { id: 'program.label.sharingCode', defaultMessage: '推廣網址' },
+    code: { id: 'program.label.code', defaultMessage: '設定網址' },
+    note: { id: 'program.label.note', defaultMessage: '用途備註' },
   }),
   text: defineMessages({
     enrolledSubscriptionCount: {
@@ -615,6 +618,11 @@ export const programMessages = {
     noPrice: { id: 'program.text.noPrice', defaultMessage: '尚未訂定售價' },
     noCreatedProgram: { id: 'program.text.noCreatedProgram', defaultMessage: '尚無建立課程' },
     noProgram: { id: 'program.text.noProgram', defaultMessage: '尚無任何課程' },
+    sharingCodeDescription: {
+      id: 'program.text.sharingCodeDescription',
+      defaultMessage:
+        '1. 當學生由你所設定的「推廣網址」進入購買，該筆訂單將標記為由推廣網址下單。\n2. 刪除或修改將會直接取代並失效原本的網址，因此網址公開推廣曝光後，不建議再做刪除或修改。',
+    },
   }),
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
@@ -627,6 +635,7 @@ export const programMessages = {
     reApply: { id: 'program.ui.reApply', defaultMessage: '重新送審' },
     reject: { id: 'program.ui.reject', defaultMessage: '退回案件' },
     approve: { id: 'program.ui.approve', defaultMessage: '審核通過' },
+    addUrl: { id: 'program.ui.addUrl', defaultMessage: '新增網址' },
   }),
 }
 
