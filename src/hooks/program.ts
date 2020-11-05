@@ -67,7 +67,13 @@ export const useProgramPreviewCollection = (memberId: string | null) => {
         }
       }
     `,
-    { variables: { memberId } },
+    {
+      variables: { memberId },
+      fetchPolicy: 'no-cache',
+      context: {
+        important: true,
+      },
+    },
   )
 
   const programPreviews: ProgramPreviewProps[] =

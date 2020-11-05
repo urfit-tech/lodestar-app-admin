@@ -1,5 +1,7 @@
 import { FileAddOutlined, SearchOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import FullCalendar from '@fullcalendar/react'
 import { Button, Input, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
@@ -42,6 +44,7 @@ const statusLevel: { [key in MemberTaskProps['status']]: number } = {
 const MemberTaskAdminBlock: React.FC<{
   memberId?: string
 }> = ({ memberId }) => {
+  const [display, setDisplay] = useState('table')
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const searchInputRef = useRef<Input | null>(null)
@@ -190,23 +193,41 @@ const MemberTaskAdminBlock: React.FC<{
           onRefetch={refetchMemberTasks}
         />
       </div>
-
+      <Button className="mb-3" onClick={() => setDisplay(display === 'table' ? 'calendar' : 'table')}>
+        切換檢視模式
+      </Button>
       <AdminBlock>
-        <Table
-          columns={columns}
-          dataSource={memberTasks}
-          rowKey="id"
-          loading={loadingMemberTasks}
-          showSorterTooltip={false}
-          rowClassName="cursor-pointer"
-          pagination={false}
-          onRow={record => ({
-            onClick: () => {
-              setSelectedMemberTask(record)
-              setVisible(true)
-            },
-          })}
-        />
+        {display === 'calendar' ? (
+          <FullCalendar
+            plugins={[dayGridPlugin]}
+            initialView="dayGridMonth"
+            events={memberTasks
+              .filter(memberTask => memberTask.dueAt)
+              .map(memberTask => {
+                return {
+                  title: memberTask.title,
+                  start: moment(memberTask.dueAt).format(),
+                }
+              })}
+          />
+        ) : display === 'table' ? (
+          <Table
+            columns={columns}
+            dataSource={memberTasks}
+            rowKey="id"
+            loading={loadingMemberTasks}
+            showSorterTooltip={false}
+            rowClassName="cursor-pointer"
+            pagination={false}
+            onRow={record => ({
+              onClick: () => {
+                setSelectedMemberTask(record)
+                setVisible(true)
+              },
+            })}
+          />
+        ) : null}
+
         {loadMoreMemberTasks && (
           <div className="text-center mt-4">
             <Button

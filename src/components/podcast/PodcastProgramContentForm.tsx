@@ -38,6 +38,7 @@ type FieldProps = {
   duration: number
   description: EditorState
 }
+
 const StyledIcon = styled(ExclamationCircleFilled)`
   color: #ff7d62;
 `
