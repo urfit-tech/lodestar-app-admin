@@ -4167,6 +4167,75 @@ export interface DELETE_PROGRAM_ROLEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_SHARING_CODE_COLLECTION
+// ====================================================
+
+export interface GET_SHARING_CODE_COLLECTION_sharing_code {
+  __typename: "sharing_code";
+  id: any;
+  path: string;
+  code: string;
+  note: string | null;
+}
+
+export interface GET_SHARING_CODE_COLLECTION {
+  /**
+   * fetch data from the table: "sharing_code"
+   */
+  sharing_code: GET_SHARING_CODE_COLLECTION_sharing_code[];
+}
+
+export interface GET_SHARING_CODE_COLLECTIONVariables {
+  path: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_SHARING_CODE
+// ====================================================
+
+export interface INSERT_SHARING_CODE_delete_sharing_code {
+  __typename: "sharing_code_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_SHARING_CODE_insert_sharing_code {
+  __typename: "sharing_code_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_SHARING_CODE {
+  /**
+   * delete data from the table: "sharing_code"
+   */
+  delete_sharing_code: INSERT_SHARING_CODE_delete_sharing_code | null;
+  /**
+   * insert data into the table: "sharing_code"
+   */
+  insert_sharing_code: INSERT_SHARING_CODE_insert_sharing_code | null;
+}
+
+export interface INSERT_SHARING_CODEVariables {
+  path: string;
+  sharingCodes: sharing_code_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_CONTENT_SECTION
 // ====================================================
 
@@ -18881,6 +18950,19 @@ export interface property_on_conflict {
   constraint: property_constraint;
   update_columns: property_update_column[];
   where?: property_bool_exp | null;
+}
+
+/**
+ * input type for inserting data into table "sharing_code"
+ */
+export interface sharing_code_insert_input {
+  app_id?: string | null;
+  code?: string | null;
+  created_at?: any | null;
+  id?: any | null;
+  note?: string | null;
+  path?: string | null;
+  updated_at?: any | null;
 }
 
 /**

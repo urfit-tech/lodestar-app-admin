@@ -31,7 +31,7 @@ import { useProgram } from '../../hooks/program'
 const ProgramAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { programId } = useParams<{ programId: string }>()
-  const { settings } = useContext(AppContext)
+  const { settings, enabledModules } = useContext(AppContext)
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { program, refetchProgram } = useProgram(programId)
 
@@ -108,17 +108,19 @@ const ProgramAdminPage: React.FC = () => {
             </div>
           </Tabs.TabPane>
 
-          <Tabs.TabPane key="sharing" tab={formatMessage(programMessages.label.sharingCode)}>
-            <div className="container py-5">
-              <AdminPaneTitle>{formatMessage(programMessages.label.sharingCode)}</AdminPaneTitle>
-              <AdminPaneDescription className="mb-4">
-                {formatMessage(programMessages.text.sharingCodeDescription)}
-              </AdminPaneDescription>
-              <AdminBlock>
-                <ProgramSharingCodeAdminForm programId={programId} />
-              </AdminBlock>
-            </div>
-          </Tabs.TabPane>
+          {enabledModules.sharing_code && (
+            <Tabs.TabPane key="sharing" tab={formatMessage(programMessages.label.sharingCode)}>
+              <div className="container py-5">
+                <AdminPaneTitle>{formatMessage(programMessages.label.sharingCode)}</AdminPaneTitle>
+                <AdminPaneDescription className="mb-4">
+                  {formatMessage(programMessages.text.sharingCodeDescription)}
+                </AdminPaneDescription>
+                <AdminBlock>
+                  <ProgramSharingCodeAdminForm programId={programId} />
+                </AdminBlock>
+              </div>
+            </Tabs.TabPane>
+          )}
 
           <Tabs.TabPane key="roles" tab={formatMessage(commonMessages.label.roleAdmin)}>
             <div className="container py-5">
