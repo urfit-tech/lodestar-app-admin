@@ -4812,6 +4812,7 @@ export interface GET_PRODUCT_OWNER_ORDERS_order_product {
   name: string;
   price: any;
   ended_at: any | null;
+  options: any | null;
   /**
    * An object relationship
    */

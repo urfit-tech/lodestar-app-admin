@@ -44,7 +44,7 @@ const ProgramSharingCodeAdminForm: React.FC<{
   const [form] = useForm<FieldProps>()
   const { id: appId, settings } = useContext(AppContext)
   const pathKey = `/programs/${programId}`
-  const { loadingSharingCodes, sharingCodes } = useSharingCodeCollection(pathKey)
+  const { loadingSharingCodes, sharingCodes, refetchSharingCodes } = useSharingCodeCollection(pathKey)
   const [insertSharingCode] = useMutation<types.INSERT_SHARING_CODE, types.INSERT_SHARING_CODEVariables>(
     INSERT_SHARING_CODE,
   )
@@ -72,6 +72,7 @@ const ProgramSharingCodeAdminForm: React.FC<{
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        refetchSharingCodes()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
