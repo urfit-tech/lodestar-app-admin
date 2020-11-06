@@ -5040,35 +5040,6 @@ export interface UPDATE_DELIVER_INFOVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_LOGINED_AT
-// ====================================================
-
-export interface UPDATE_LOGINED_AT_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_LOGINED_AT {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: UPDATE_LOGINED_AT_update_member | null;
-}
-
-export interface UPDATE_LOGINED_ATVariables {
-  memberId: string;
-  loginedAt?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_APPLICATION
 // ====================================================
 
@@ -9289,6 +9260,16 @@ export interface INSERT_MERCHANDISEVariables {
 // GraphQL query operation: GET_COIN_RELEASE_HISTORY
 // ====================================================
 
+export interface GET_COIN_RELEASE_HISTORY_coin_log_aggregate_aggregate {
+  __typename: "coin_log_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_COIN_RELEASE_HISTORY_coin_log_aggregate {
+  __typename: "coin_log_aggregate";
+  aggregate: GET_COIN_RELEASE_HISTORY_coin_log_aggregate_aggregate | null;
+}
+
 export interface GET_COIN_RELEASE_HISTORY_coin_log_member {
   __typename: "member";
   id: string;
@@ -9316,13 +9297,18 @@ export interface GET_COIN_RELEASE_HISTORY_coin_log {
 
 export interface GET_COIN_RELEASE_HISTORY {
   /**
+   * fetch aggregated fields from the table: "coin_log"
+   */
+  coin_log_aggregate: GET_COIN_RELEASE_HISTORY_coin_log_aggregate;
+  /**
    * fetch data from the table: "coin_log"
    */
   coin_log: GET_COIN_RELEASE_HISTORY_coin_log[];
 }
 
 export interface GET_COIN_RELEASE_HISTORYVariables {
-  offset?: number | null;
+  condition?: coin_log_bool_exp | null;
+  limit: number;
 }
 
 /* tslint:disable */
@@ -9333,6 +9319,16 @@ export interface GET_COIN_RELEASE_HISTORYVariables {
 // ====================================================
 // GraphQL query operation: GET_COIN_ABOUT_TO_SEND
 // ====================================================
+
+export interface GET_COIN_ABOUT_TO_SEND_coin_log_aggregate_aggregate {
+  __typename: "coin_log_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_COIN_ABOUT_TO_SEND_coin_log_aggregate {
+  __typename: "coin_log_aggregate";
+  aggregate: GET_COIN_ABOUT_TO_SEND_coin_log_aggregate_aggregate | null;
+}
 
 export interface GET_COIN_ABOUT_TO_SEND_coin_log_member {
   __typename: "member";
@@ -9361,13 +9357,18 @@ export interface GET_COIN_ABOUT_TO_SEND_coin_log {
 
 export interface GET_COIN_ABOUT_TO_SEND {
   /**
+   * fetch aggregated fields from the table: "coin_log"
+   */
+  coin_log_aggregate: GET_COIN_ABOUT_TO_SEND_coin_log_aggregate;
+  /**
    * fetch data from the table: "coin_log"
    */
   coin_log: GET_COIN_ABOUT_TO_SEND_coin_log[];
 }
 
 export interface GET_COIN_ABOUT_TO_SENDVariables {
-  offset?: number | null;
+  condition?: coin_log_bool_exp | null;
+  limit: number;
 }
 
 /* tslint:disable */
@@ -9378,6 +9379,16 @@ export interface GET_COIN_ABOUT_TO_SENDVariables {
 // ====================================================
 // GraphQL query operation: GET_ORDER_LOG_WITH_COINS_COLLECTION
 // ====================================================
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_aggregate_aggregate {
+  __typename: "order_log_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_aggregate {
+  __typename: "order_log_aggregate";
+  aggregate: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_aggregate_aggregate | null;
+}
 
 export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_member {
   __typename: "member";
@@ -9429,13 +9440,18 @@ export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log {
 
 export interface GET_ORDER_LOG_WITH_COINS_COLLECTION {
   /**
+   * fetch aggregated fields from the table: "order_log"
+   */
+  order_log_aggregate: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_aggregate;
+  /**
    * fetch data from the table: "order_log"
    */
   order_log: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log[];
 }
 
 export interface GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables {
-  offset?: number | null;
+  condition?: order_log_bool_exp | null;
+  limit: number;
 }
 
 /* tslint:disable */
