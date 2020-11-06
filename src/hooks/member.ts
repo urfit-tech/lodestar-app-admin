@@ -85,6 +85,13 @@ export const useMemberAdmin = (memberId: string) => {
           role
           created_at
           logined_at
+          assigned_at
+          manager {
+            id
+            email
+            name
+            picture_url
+          }
           member_tags {
             id
             tag_name
@@ -97,7 +104,7 @@ export const useMemberAdmin = (memberId: string) => {
             id
             phone
           }
-          member_notes(order_by: { updated_at: desc }) {
+          member_notes(order_by: { created_at: desc }) {
             id
             type
             status
@@ -154,6 +161,15 @@ export const useMemberAdmin = (memberId: string) => {
           role: data.member_by_pk.role as UserRole,
           createdAt: new Date(data.member_by_pk.created_at),
           loginedAt: data.member_by_pk.logined_at && new Date(data.member_by_pk.logined_at),
+          assignedAt: new Date(data.member_by_pk.assigned_at),
+          manager: data.member_by_pk.manager
+            ? {
+                id: data.member_by_pk.manager.id,
+                email: data.member_by_pk.manager.email,
+                name: data.member_by_pk.manager.name,
+                avatarUrl: data.member_by_pk.manager.picture_url,
+              }
+            : null,
           tags: data.member_by_pk.member_tags.map(v => v.tag_name),
           specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
           phones: data.member_by_pk.member_phones.map(v => v.phone).filter(v => v),
@@ -503,8 +519,8 @@ export const useMemberCollection = (filter?: {
         limit: 10,
       },
       context: {
-        important: true
-      }
+        important: true,
+      },
     },
   )
 
@@ -607,6 +623,7 @@ export const useProperty = () => {
         property(where: { type: { _eq: $type } }, order_by: { position: asc }) {
           id
           name
+          placeholder
         }
       }
     `,
@@ -619,6 +636,7 @@ export const useProperty = () => {
       : data.property.map(v => ({
           id: v.id,
           name: v.name,
+          placeholder: v.placeholder,
         }))
 
   return {

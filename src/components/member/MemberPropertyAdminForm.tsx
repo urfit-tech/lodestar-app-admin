@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Button, Form, Input, message, Skeleton } from 'antd'
+import { Button, Form, Input, message, Select, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
@@ -71,7 +71,17 @@ const MemberPropertyAdminForm: React.FC<{
     >
       {properties.map(property => (
         <Form.Item key={property.id} label={property.name} name={property.id}>
-          <Input />
+          {property?.placeholder?.includes('/') ? (
+            <Select>
+              {property?.placeholder?.split('/').map((value: string, idx: number) => (
+                <Select.Option key={idx} value={value}>
+                  {value}
+                </Select.Option>
+              ))}
+            </Select>
+          ) : (
+            <Input />
+          )}
         </Form.Item>
       ))}
 

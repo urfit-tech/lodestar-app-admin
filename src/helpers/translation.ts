@@ -168,6 +168,7 @@ export const commonMessages = {
     propertyItem: { id: 'common.label.propertyItem', defaultMessage: '欄位項目' },
   }),
   term: defineMessages({
+    assign: { id: 'common.term.assign', defaultMessage: '指派' },
     instructor: { id: 'common.term.instructor', defaultMessage: '老師' },
     price: { id: 'common.term.price', defaultMessage: '售價' },
     teachingAssistant: { id: 'common.term.teachingAssistant', defaultMessage: '助教' },

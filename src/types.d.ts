@@ -1979,6 +1979,14 @@ export interface GET_ROLE_PERMISSION {
 // GraphQL mutation operation: UPDATE_MEMBER_PROFILE_BASIC
 // ====================================================
 
+export interface UPDATE_MEMBER_PROFILE_BASIC_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_MEMBER_PROFILE_BASIC_delete_member_tag {
   __typename: "member_tag_mutation_response";
   /**
@@ -2037,6 +2045,10 @@ export interface UPDATE_MEMBER_PROFILE_BASIC_insert_member_category {
 
 export interface UPDATE_MEMBER_PROFILE_BASIC {
   /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_PROFILE_BASIC_update_member | null;
+  /**
    * delete data from the table: "member_tag"
    */
   delete_member_tag: UPDATE_MEMBER_PROFILE_BASIC_delete_member_tag | null;
@@ -2068,6 +2080,8 @@ export interface UPDATE_MEMBER_PROFILE_BASIC {
 
 export interface UPDATE_MEMBER_PROFILE_BASICVariables {
   memberId: string;
+  managerId?: string | null;
+  assignedAt?: any | null;
   tags: tag_insert_input[];
   memberTags: member_tag_insert_input[];
   phones: member_phone_insert_input[];
@@ -6764,6 +6778,14 @@ export interface GET_MEMBERVariables {
 // GraphQL query operation: GET_MEMBER_DESCRIPTION
 // ====================================================
 
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_manager {
+  __typename: "member";
+  id: string;
+  email: string;
+  name: string;
+  picture_url: string | null;
+}
+
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_tags {
   __typename: "member_tag";
   id: any;
@@ -6880,6 +6902,11 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk {
   role: string;
   created_at: any | null;
   logined_at: any | null;
+  assigned_at: any | null;
+  /**
+   * An object relationship
+   */
+  manager: GET_MEMBER_DESCRIPTION_member_by_pk_manager | null;
   /**
    * An array relationship
    */
@@ -7278,6 +7305,7 @@ export interface GET_PROPERTY_property {
   __typename: "property";
   id: any;
   name: string;
+  placeholder: string | null;
 }
 
 export interface GET_PROPERTY {

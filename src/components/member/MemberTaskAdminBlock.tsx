@@ -1,7 +1,7 @@
 // organize-imports-ignore
 import { FileAddOutlined, SearchOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Button, Input, Table } from 'antd'
+import { Button, Input, Table, Select } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import moment from 'moment'
@@ -63,6 +63,11 @@ const MemberTaskAdminBlock: React.FC<{
   const [visible, setVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
+  const [executorIdSearch, setExecutorIdSearch] = useState('')
+  const executors = memberTasks
+    .map(task => ({ executorId: task.executor?.id, name: task.executor?.name }))
+    .filter(executor => executor?.executorId)
+    .filter((v, i, a) => a.findIndex(t => t.executorId === v.executorId) === i)
   const getColumnSearchProps: (dataIndex: keyof MemberTaskProps) => ColumnProps<MemberTaskProps> = dataIndex => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div className="p-2">
@@ -179,7 +184,6 @@ const MemberTaskAdminBlock: React.FC<{
       ...getColumnSearchProps('executor'),
     },
   ]
-
   return (
     <>
       <div className="d-flex align-item-center justify-content-between mb-4">
@@ -195,9 +199,29 @@ const MemberTaskAdminBlock: React.FC<{
           onRefetch={refetchMemberTasks}
         />
       </div>
-      <Button className="mb-3" onClick={() => setDisplay(display === 'table' ? 'calendar' : 'table')}>
-        切換檢視模式
-      </Button>
+      <div className="d-flex align-item-center justify-content-between mb-4">
+        <Button className="mb-3" onClick={() => setDisplay(display === 'table' ? 'calendar' : 'table')}>
+          {display === 'calendar' ? '切換列表模式' : '切換月曆模式'}
+        </Button>
+        {display === 'calendar' && (
+          <Select
+            showSearch
+            defaultValue={''}
+            style={{ width: '150px' }}
+            filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            onSelect={LabeledValue => {
+              setExecutorIdSearch(`${LabeledValue}`)
+            }}
+          >
+            <Select.Option value="">全部指派人員</Select.Option>
+            {executors.map((executor, index) => (
+              <Select.Option key={executor?.executorId || index} value={executor?.executorId || ''}>
+                {executor.name}
+              </Select.Option>
+            ))}
+          </Select>
+        )}
+      </div>
       <AdminBlock>
         {display === 'calendar' ? (
           <FullCalendar
@@ -205,9 +229,16 @@ const MemberTaskAdminBlock: React.FC<{
             initialView="dayGridMonth"
             events={memberTasks
               .filter(memberTask => memberTask.dueAt)
+              .filter(memberTask => (executorIdSearch ? memberTask.executor?.id === executorIdSearch : true))
               .map(memberTask => {
                 return {
-                  title: memberTask.title,
+                  title:
+                    memberTask.title +
+                    (memberTask.title.includes('Demo') ||
+                    memberTask.title.includes('DEMO') ||
+                    memberTask.title.includes('demo')
+                      ? ` ${memberTask.member.name}`
+                      : ''),
                   start: moment(memberTask.dueAt).format(),
                 }
               })}
