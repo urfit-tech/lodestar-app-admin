@@ -97,7 +97,11 @@ const StyledLabel = styled.span<{ variant?: 'coin-log' | 'order-log' }>`
 const StyledIcon = styled(Icon)`
   color: ${props => props.theme['@primary-color']};
 `
-
+const StyledSearchOutlined = styled(SearchOutlined)`
+  &.filtered {
+    color: ${props => props.theme['@primary-color']};
+  }
+`
 const CoinHistoryAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { loading: loadingApp, enabledModules, settings } = useContext(AppContext)
@@ -185,7 +189,7 @@ const CoinHistoryAdminPage: React.FC = () => {
         </div>
       </div>
     ),
-    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+    filterIcon: filtered => <StyledSearchOutlined className={filtered ? 'filtered' : undefined} />,
     onFilterDropdownVisibleChange: visible => {
       if (visible) {
         setTimeout(() => searchInputRef.current?.select(), 100)
