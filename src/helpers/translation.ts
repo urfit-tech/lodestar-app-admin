@@ -58,6 +58,7 @@ export const commonMessages = {
     showMore: { id: 'common.ui.showMore', defaultMessage: '顯示更多' },
     send: { id: 'common.ui.send', defaultMessage: '送出' },
     uploadFile: { id: 'common.ui.uploadFile', defaultMessage: '上傳檔案' },
+    copy: { id: 'common.ui.copy', defaultMessage: '複製' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -250,6 +251,7 @@ export const commonMessages = {
       id: 'common.text.deletePropertyNotation',
       defaultMessage: '確定要刪除此欄位？此動作無法復原',
     },
+    copiedToClipboard: { id: 'common.text.copiedToClipboard', defaultMessage: '已複製到剪貼簿' },
   }),
   event: defineMessages({
     successfullySaved: { id: 'common.event.successfullySaved', defaultMessage: '儲存成功' },
@@ -624,6 +626,8 @@ export const programMessages = {
       defaultMessage:
         '1. 當學生由你所設定的「推廣網址」進入購買，該筆訂單將標記為由推廣網址下單。\n2. 刪除或修改將會直接取代並失效原本的網址，因此網址公開推廣曝光後，不建議再做刪除或修改。',
     },
+    codeIsRequired: { id: 'program.text.codeIsRequired', defaultMessage: '未填寫設定網址' },
+    duplicatedCodesWarning: { id: 'program.text.duplicatedCodesWarning', defaultMessage: '推廣網址不可重複' },
   }),
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },

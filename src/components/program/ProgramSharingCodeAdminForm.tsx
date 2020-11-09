@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
+import { countBy } from 'ramda'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -34,6 +35,7 @@ type FieldProps = {
   sharingCodes: {
     code: string
     note: string
+    isDuplicated?: boolean
   }[]
 }
 
@@ -56,6 +58,9 @@ const ProgramSharingCodeAdminForm: React.FC<{
   }
 
   const handleSubmit = (values: FieldProps) => {
+    if (sharingCodeInputs.some(input => input.isDuplicated)) {
+      return
+    }
     setLoading(true)
     insertSharingCode({
       variables: {
@@ -78,6 +83,19 @@ const ProgramSharingCodeAdminForm: React.FC<{
       .finally(() => setLoading(false))
   }
 
+  const copyToClipboard = (str: string) => {
+    const el = document.createElement('textarea')
+    el.value = str
+    el.setAttribute('readonly', '')
+    el.style.position = 'absolute'
+    el.style.left = '-9999px'
+    document.body.appendChild(el)
+    el.select()
+    document.execCommand('copy')
+    document.body.removeChild(el)
+    message.success(formatMessage(commonMessages.text.copiedToClipboard))
+  }
+
   return (
     <Form
       form={form}
@@ -86,11 +104,16 @@ const ProgramSharingCodeAdminForm: React.FC<{
         sharingCodes: sharingCodes,
       }}
       onValuesChange={(_, values) => {
+        const sharingCodeCounts = countBy((v: string) => v)(values.sharingCodes.map(v => v.code))
         setSharingCodeInputs(
-          values.sharingCodes.map(sharingCode => ({
-            code: sharingCode?.code.trim().replace(/ +/g, '-') || '',
-            note: sharingCode?.note || '',
-          })),
+          values.sharingCodes.map(sharingCode => {
+            const code = sharingCode?.code.trim().replace(/ +/g, '-') || ''
+            return {
+              code,
+              note: sharingCode?.note || '',
+              isDuplicated: sharingCodeCounts[code] > 1,
+            }
+          }),
         )
       }}
       onFinish={handleSubmit}
@@ -104,8 +127,19 @@ const ProgramSharingCodeAdminForm: React.FC<{
                   name={[field.name, 'code']}
                   fieldKey={[field.fieldKey, 'code']}
                   label={<StyledLabel>{formatMessage(programMessages.label.code)}</StyledLabel>}
-                  required
                   className="mb-0 mr-3"
+                  rules={[
+                    {
+                      required: true,
+                      message: formatMessage(programMessages.text.codeIsRequired),
+                    },
+                  ]}
+                  validateStatus={sharingCodeInputs[index]?.isDuplicated ? 'error' : undefined}
+                  help={
+                    sharingCodeInputs[index]?.code && sharingCodeInputs[index]?.isDuplicated
+                      ? formatMessage(programMessages.text.duplicatedCodesWarning)
+                      : undefined
+                  }
                 >
                   <Input style={{ width: '400px' }} />
                 </Form.Item>
@@ -119,13 +153,38 @@ const ProgramSharingCodeAdminForm: React.FC<{
                 </Form.Item>
                 <StyledDeleteButton type="link" icon={<TrashOIcon />} onClick={() => remove(field.name)} />
                 <StyledDescription className="mt-1">
-                  {settings['host']}/programs/{programId}?sharing=
-                  {sharingCodeInputs[index]?.code || sharingCodes[index]?.code}
+                  <span>
+                    https://{settings['host']}/programs/{programId}?sharing=
+                    {sharingCodeInputs[index]?.code || sharingCodes[index]?.code}
+                  </span>
+                  <Button
+                    type="link"
+                    size="small"
+                    onClick={() =>
+                      copyToClipboard(
+                        `https://${settings['host']}/programs/${programId}?sharing=${
+                          sharingCodeInputs[index]?.code || sharingCodes[index]?.code
+                        }`,
+                      )
+                    }
+                  >
+                    {formatMessage(commonMessages.ui.copy)}
+                  </Button>
                 </StyledDescription>
               </div>
             ))}
 
-            <Button type="link" icon={<PlusIcon />} className="mb-4" onClick={() => add()}>
+            <Button
+              type="link"
+              icon={<PlusIcon />}
+              className="mb-4"
+              onClick={() =>
+                add({
+                  code: '',
+                  note: '',
+                })
+              }
+            >
               {formatMessage(programMessages.ui.addUrl)}
             </Button>
           </>
