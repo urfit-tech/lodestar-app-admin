@@ -914,6 +914,7 @@ export const memberMessages = {
     category: { id: 'member.label.category', defaultMessage: '分類' },
     dueDate: { id: 'member.label.dueDate', defaultMessage: '到期日' },
     assign: { id: 'member.label.assign', defaultMessage: '指派' },
+    manager: { id: 'member.label.manager', defaultMessage: '承辦人' },
     target: { id: 'member.label.target', defaultMessage: '學員' },
     taskDescription: { id: 'member.label.taskDescription', defaultMessage: '內容' },
     field: { id: 'member.label.field', defaultMessage: '欄位' },

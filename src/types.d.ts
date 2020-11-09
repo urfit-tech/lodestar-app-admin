@@ -7161,6 +7161,12 @@ export interface GET_PAGE_MEMBER_COLLECTION_member_aggregate {
   aggregate: GET_PAGE_MEMBER_COLLECTION_member_aggregate_aggregate | null;
 }
 
+export interface GET_PAGE_MEMBER_COLLECTION_member_manager {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
 export interface GET_PAGE_MEMBER_COLLECTION_member_member_phones {
   __typename: "member_phone";
   id: any;
@@ -7231,6 +7237,11 @@ export interface GET_PAGE_MEMBER_COLLECTION_member {
    * app-owner / content-creator
    */
   role: string;
+  /**
+   * An object relationship
+   */
+  manager: GET_PAGE_MEMBER_COLLECTION_member_manager | null;
+  assigned_at: any | null;
   /**
    * An array relationship
    */

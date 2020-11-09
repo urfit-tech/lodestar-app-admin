@@ -418,6 +418,7 @@ export const useMemberCollection = (filter?: {
   email?: string
   phone?: string
   category?: string
+  managerName?: string
   tag?: string
   properties?: {
     id: string
@@ -428,36 +429,39 @@ export const useMemberCollection = (filter?: {
     role: filter?.role ? { _eq: filter.role } : undefined,
     name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
     email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
+    manager: filter?.managerName ? {
+      name: { _ilike: `%${filter.managerName}%` },
+    } : undefined,
     member_phones: filter?.phone
       ? {
-          phone: { _ilike: `%${filter.phone}%` },
-        }
+        phone: { _ilike: `%${filter.phone}%` },
+      }
       : undefined,
     member_categories: filter?.category
       ? {
-          category: {
-            name: {
-              _ilike: `%${filter.category}%`,
-            },
+        category: {
+          name: {
+            _ilike: `%${filter.category}%`,
           },
-        }
+        },
+      }
       : undefined,
     member_tags: filter?.tag
       ? {
-          tag_name: {
-            _ilike: filter.tag,
-          },
-        }
+        tag_name: {
+          _ilike: filter.tag,
+        },
+      }
       : undefined,
     member_properties: filter?.properties?.length
       ? {
-          _and: filter.properties
-            .filter(property => property.value)
-            .map(property => ({
-              property_id: { _eq: property.id },
-              value: { _ilike: `%${property.value}%` },
-            })),
-        }
+        _and: filter.properties
+          .filter(property => property.value)
+          .map(property => ({
+            property_id: { _eq: property.id },
+            value: { _ilike: `%${property.value}%` },
+          })),
+      }
       : undefined,
   }
 
@@ -481,6 +485,11 @@ export const useMemberCollection = (filter?: {
           created_at
           logined_at
           role
+          manager{
+            id
+            name
+          }
+          assigned_at
           member_phones {
             id
             phone
@@ -528,29 +537,31 @@ export const useMemberCollection = (filter?: {
     loading || error || !data
       ? []
       : data.member.map(v => ({
-          id: v.id,
-          avatarUrl: v.picture_url,
-          name: v.name || v.username,
-          email: v.email,
-          role: v.role as UserRole,
-          createdAt: v.created_at ? new Date(v.created_at) : null,
-          loginedAt: v.logined_at,
-          phones: v.member_phones.map(v => v.phone),
-          consumption: sum(
-            v.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
-          ),
-          categories: v.member_categories.map(w => ({
-            id: w.category.id,
-            name: w.category.name,
-          })),
-          tags: v.member_tags.map(w => w.tag_name),
-          properties: v.member_properties.reduce((accumulator, currentValue) => {
-            return {
-              ...accumulator,
-              [currentValue.property_id]: currentValue.value,
-            }
-          }, {} as MemberInfoProps['properties']),
-        }))
+        id: v.id,
+        avatarUrl: v.picture_url,
+        name: v.name || v.username,
+        email: v.email,
+        role: v.role as UserRole,
+        createdAt: v.created_at ? new Date(v.created_at) : null,
+        loginedAt: v.logined_at,
+        manager: v.manager,
+        assigned_at: v.assigned_at,
+        phones: v.member_phones.map(v => v.phone),
+        consumption: sum(
+          v.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
+        ),
+        categories: v.member_categories.map(w => ({
+          id: w.category.id,
+          name: w.category.name,
+        })),
+        tags: v.member_tags.map(w => w.tag_name),
+        properties: v.member_properties.reduce((accumulator, currentValue) => {
+          return {
+            ...accumulator,
+            [currentValue.property_id]: currentValue.value,
+          }
+        }, {} as MemberInfoProps['properties']),
+      }))
 
   const loadMoreMembers = () =>
     fetchMore({

@@ -78,8 +78,8 @@ const StyledTag = styled(Tag)`
 const MemberCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const theme = useContext(ThemeContext)
-  const { id: appId } = useContext(AppContext)
-  const { permissions } = useAuth()
+  const { id: appId, enabledModules } = useContext(AppContext)
+  const { permissions, currentUserRole } = useAuth()
 
   // table column filter
   const { properties } = useProperty()
@@ -93,6 +93,9 @@ const MemberCollectionAdminPage: React.FC = () => {
     { id: 'consumption', title: formatMessage(commonMessages.label.consumption) },
     { id: 'categories', title: formatMessage(commonMessages.term.category) },
     { id: 'tags', title: formatMessage(commonMessages.term.tags) },
+    enabledModules.member_assignment && currentUserRole === 'app-owner'
+      ? { id: 'managerName', title: formatMessage(memberMessages.label.manager) }
+      : null,
     ...properties.map(property => ({
       id: property.id,
       title: property.name,
@@ -107,6 +110,7 @@ const MemberCollectionAdminPage: React.FC = () => {
     email?: string
     phone?: string
     category?: string
+    managerName?: string
     tag?: string
   }>({})
   const [propertyFilter, setPropertyFilter] = useState<{
@@ -296,6 +300,16 @@ const MemberCollectionAdminPage: React.FC = () => {
         </>
       ),
       ...getColumnSearchProps('tag'),
+    },
+    {
+      title: formatMessage(memberMessages.label.manager),
+      key: 'managerName',
+      render: (text, record, index) => (
+        <div className="d-flex align-items-center">
+          <StyledMemberName>{record.manager?.name}</StyledMemberName>
+        </div>
+      ),
+      ...getColumnSearchProps('managerName'),
     },
     ...properties
       .filter(property => visibleColumnIds.includes(property.id))

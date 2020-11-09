@@ -27,6 +27,11 @@ export type MemberInfoProps = {
   role: UserRole
   createdAt: Date | null
   loginedAt: Date | null
+  manager: {
+    id: string
+    name: string
+  } | null
+  assigned_at: Date | null
   phones: string[]
   consumption: number
   categories: {
