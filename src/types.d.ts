@@ -2250,6 +2250,8 @@ export interface GET_MEMBER_TASK_COLLECTIONVariables {
   titleSearch?: string | null;
   categorySearch?: string | null;
   executorSearch?: string | null;
+  dueAtStartSearch?: any | null;
+  dueAtEndSearch?: any | null;
   cursor?: any | null;
   limit?: number | null;
 }

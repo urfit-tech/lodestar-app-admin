@@ -1,7 +1,7 @@
 // organize-imports-ignore
 import { FileAddOutlined, SearchOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Button, Input, Table, Select } from 'antd'
+import { Button, Input, Table, Select, DatePicker } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import moment from 'moment'
@@ -54,6 +54,7 @@ const MemberTaskAdminBlock: React.FC<{
     title?: string
     category?: string
     executor?: string
+    dueAt?: Date[]
   }>({})
   const { loadingMemberTasks, memberTasks, loadMoreMemberTasks, refetchMemberTasks } = useMemberTaskCollection({
     ...filter,
@@ -170,6 +171,53 @@ const MemberTaskAdminBlock: React.FC<{
       title: formatMessage(memberMessages.label.dueDate),
       render: (text, record, index) => (record.dueAt ? moment(record.dueAt).format('YYYY-MM-DD HH:mm') : ''),
       sorter: (a, b) => (b.dueAt?.getTime() || 0) - (a.dueAt?.getTime() || 0),
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div className="p-2">
+          <DatePicker.RangePicker
+            className="mb-2"
+            value={selectedKeys.length ? [moment(selectedKeys[0]), moment(selectedKeys[1])] : null}
+            onChange={(date, dateString: [string, string]) => {
+              setSelectedKeys(date ? dateString : [])
+            }}
+          />
+          <div className="d-flex justify-content-center">
+            <Button
+              type="primary"
+              onClick={() => {
+                confirm()
+                setFilter(filter => ({
+                  ...filter,
+                  dueAt: selectedKeys.length
+                    ? [
+                        new Date(moment(selectedKeys[0]).startOf('day').format()),
+                        new Date(moment(selectedKeys[1]).endOf('day').format()),
+                      ]
+                    : undefined,
+                }))
+              }}
+              icon={<SearchOutlined />}
+              size="small"
+              className="mr-2"
+              style={{ width: 90 }}
+            >
+              {formatMessage(commonMessages.ui.search)}
+            </Button>
+            <Button
+              onClick={() => {
+                clearFilters && clearFilters()
+                setFilter(filter => ({
+                  ...filter,
+                  dueAt: undefined,
+                }))
+              }}
+              size="small"
+              style={{ width: 90 }}
+            >
+              {formatMessage(commonMessages.ui.reset)}
+            </Button>
+          </div>
+        </div>
+      ),
     },
     {
       dataIndex: 'executor',
@@ -232,6 +280,7 @@ const MemberTaskAdminBlock: React.FC<{
               .filter(memberTask => (executorIdSearch ? memberTask.executor?.id === executorIdSearch : true))
               .map(memberTask => {
                 return {
+                  id: memberTask.id,
                   title:
                     memberTask.title +
                     (memberTask.title.includes('Demo') ||
@@ -242,6 +291,10 @@ const MemberTaskAdminBlock: React.FC<{
                   start: moment(memberTask.dueAt).format(),
                 }
               })}
+            eventClick={e => {
+              setSelectedMemberTask(memberTasks.find(memberTask => memberTask.id === e.event.id) || null)
+              setVisible(true)
+            }}
           />
         ) : display === 'table' ? (
           <Table
@@ -297,12 +350,14 @@ const useMemberTaskCollection = ({
   title,
   category,
   executor,
+  dueAt,
   limit = 10,
 }: {
   memberId?: string
   title?: string
   category?: string
   executor?: string
+  dueAt?: Date[]
   limit?: number
 }) => {
   const { loading, error, data, refetch, fetchMore } = useQuery<
@@ -315,6 +370,8 @@ const useMemberTaskCollection = ({
         $titleSearch: String
         $categorySearch: String
         $executorSearch: String
+        $dueAtStartSearch: timestamptz
+        $dueAtEndSearch: timestamptz
         $cursor: timestamptz
         $limit: Int
       ) {
@@ -331,6 +388,7 @@ const useMemberTaskCollection = ({
                   { executor: { username: { _ilike: $executorSearch } } }
                 ]
               }
+              { _or: [{ due_at: { _is_null: true } }, { due_at: { _gte: $dueAtStartSearch, _lte: $dueAtEndSearch } }] }
             ]
           }
         ) {
@@ -351,6 +409,7 @@ const useMemberTaskCollection = ({
                   { executor: { username: { _ilike: $executorSearch } } }
                 ]
               }
+              { _or: [{ due_at: { _is_null: true } }, { due_at: { _gte: $dueAtStartSearch, _lte: $dueAtEndSearch } }] }
             ]
             created_at: { _lt: $cursor }
           }
@@ -388,6 +447,8 @@ const useMemberTaskCollection = ({
         titleSearch: title && `%${title}%`,
         categorySearch: category && `%${category}%`,
         executorSearch: executor && `%${executor}%`,
+        dueAtStartSearch: dueAt?.length ? dueAt[0] : null,
+        dueAtEndSearch: dueAt?.length ? dueAt[1] : null,
         cursor: null,
         limit,
       },
