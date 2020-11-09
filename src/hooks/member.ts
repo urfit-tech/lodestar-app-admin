@@ -153,48 +153,48 @@ export const useMemberAdmin = (memberId: string) => {
     loading || error || !data || !data.member_by_pk
       ? null
       : {
-          id: data.member_by_pk.id,
-          avatarUrl: data.member_by_pk.picture_url,
-          username: data.member_by_pk.username,
-          name: data.member_by_pk.name,
-          email: data.member_by_pk.email,
-          role: data.member_by_pk.role as UserRole,
-          createdAt: new Date(data.member_by_pk.created_at),
-          loginedAt: data.member_by_pk.logined_at && new Date(data.member_by_pk.logined_at),
-          assignedAt: new Date(data.member_by_pk.assigned_at),
-          manager: data.member_by_pk.manager
-            ? {
-                id: data.member_by_pk.manager.id,
-                email: data.member_by_pk.manager.email,
-                name: data.member_by_pk.manager.name,
-                avatarUrl: data.member_by_pk.manager.picture_url,
-              }
-            : null,
-          tags: data.member_by_pk.member_tags.map(v => v.tag_name),
-          specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
-          phones: data.member_by_pk.member_phones.map(v => v.phone).filter(v => v),
-          notes: data.member_by_pk.member_notes.map(v => ({
-            id: v.id,
-            type: v.type as MemberNoteAdminProps['type'],
-            status: v.status,
-            duration: v.duration,
-            description: v.description,
-            createdAt: new Date(v.created_at),
-            author: {
-              name: v.author.name,
-              pictureUrl: v.author.picture_url,
-            },
-          })),
-          permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission_id),
-          consumption: sum(
-            data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
-          ),
-          coins: data.member_by_pk.coin_logs_aggregate.aggregate?.sum?.amount || 0,
-          categories: data.member_by_pk.member_categories.map(v => ({
-            id: v.category.id,
-            name: v.category.name,
-          })),
-        }
+        id: data.member_by_pk.id,
+        avatarUrl: data.member_by_pk.picture_url,
+        username: data.member_by_pk.username,
+        name: data.member_by_pk.name,
+        email: data.member_by_pk.email,
+        role: data.member_by_pk.role as UserRole,
+        createdAt: new Date(data.member_by_pk.created_at),
+        loginedAt: data.member_by_pk.logined_at && new Date(data.member_by_pk.logined_at),
+        assignedAt: data.member_by_pk.assigned_at && new Date(data.member_by_pk.assigned_at),
+        manager: data.member_by_pk.manager
+          ? {
+            id: data.member_by_pk.manager.id,
+            email: data.member_by_pk.manager.email,
+            name: data.member_by_pk.manager.name,
+            avatarUrl: data.member_by_pk.manager.picture_url,
+          }
+          : null,
+        tags: data.member_by_pk.member_tags.map(v => v.tag_name),
+        specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
+        phones: data.member_by_pk.member_phones.map(v => v.phone).filter(v => v),
+        notes: data.member_by_pk.member_notes.map(v => ({
+          id: v.id,
+          type: v.type as MemberNoteAdminProps['type'],
+          status: v.status,
+          duration: v.duration,
+          description: v.description,
+          createdAt: new Date(v.created_at),
+          author: {
+            name: v.author.name,
+            pictureUrl: v.author.picture_url,
+          },
+        })),
+        permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission_id),
+        consumption: sum(
+          data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
+        ),
+        coins: data.member_by_pk.coin_logs_aggregate.aggregate?.sum?.amount || 0,
+        categories: data.member_by_pk.member_categories.map(v => ({
+          id: v.category.id,
+          name: v.category.name,
+        })),
+      }
 
   return {
     loadingMemberAdmin: loading,

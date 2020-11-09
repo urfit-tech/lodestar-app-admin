@@ -25,8 +25,9 @@ const MemberSelector: React.FC<{
   value?: string | string[]
   onChange?: (value: string | string[]) => void
   disabled?: boolean
+  allowClear?: boolean
   mode?: SelectProps<string[]>['mode']
-}> = ({ members, value, onChange, disabled, mode }) => {
+}> = ({ members, value, onChange, disabled, allowClear = false, mode }) => {
   const { formatMessage } = useIntl()
 
   return (
@@ -37,9 +38,11 @@ const MemberSelector: React.FC<{
       optionFilterProp="data-source"
       value={value}
       onChange={value => onChange && onChange(value)}
+      onClear={() => onChange && onChange('')}
       showSearch
       disabled={disabled}
       style={{ width: '100%' }}
+      allowClear={allowClear}
     >
       {members.map(member => (
         <Select.Option

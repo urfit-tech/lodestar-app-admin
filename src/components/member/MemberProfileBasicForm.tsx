@@ -3,8 +3,9 @@ import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
+import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -27,7 +28,8 @@ const MemberProfileBasicForm: React.FC<{
 }> = ({ memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { permissions } = useAuth()
+  const { permissions, currentUserRole } = useAuth()
+  const { enabledModules } = useContext(AppContext)
   const [updateMemberProfileBasic] = useMutation<
     types.UPDATE_MEMBER_PROFILE_BASIC,
     types.UPDATE_MEMBER_PROFILE_BASICVariables
@@ -54,8 +56,8 @@ const MemberProfileBasicForm: React.FC<{
               member_id: memberAdmin.id,
               phone,
             })),
-        managerId: values.managerId,
-        assignedAt: new Date(),
+        managerId: values.managerId || null,
+        assignedAt: values.managerId ? new Date() : null,
         tags: values.tags.map((tag: string) => ({
           name: tag,
           type: '',
@@ -99,13 +101,16 @@ const MemberProfileBasicForm: React.FC<{
       }}
       onFinish={handleSubmit}
     >
-      <Form.Item
-        label={formatMessage(commonMessages.term.assign)}
-        name="managerId"
-        extra={memberAdmin.assignedAt ? moment(memberAdmin.assignedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
-      >
-        <AllMemberSelector />
-      </Form.Item>
+      {enabledModules.member_assignment && currentUserRole === 'app-owner' && (
+        <Form.Item
+          label={formatMessage(commonMessages.term.assign)}
+          name="managerId"
+          extra={memberAdmin.assignedAt ? moment(memberAdmin.assignedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
+        >
+          <AllMemberSelector allowClear />
+        </Form.Item>
+      )}
+
       <Form.Item label={formatMessage(commonMessages.term.name)} name="name">
         <Input />
       </Form.Item>

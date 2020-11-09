@@ -10,6 +10,7 @@ export type Module =
   | 'invoice'
   | 'learning_statistics'
   | 'locale'
+  | 'member_assignment'
   | 'member_card'
   | 'member_note'
   | 'member_property'
