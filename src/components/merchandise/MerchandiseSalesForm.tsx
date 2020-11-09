@@ -6,9 +6,10 @@ import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
-import { commonMessages, errorMessages } from '../../helpers/translation'
+import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
+import SaleInput, { SaleProps } from '../form/SaleInput'
 
 const messages = defineMessages({
   setSalePrice: { id: 'merchandise.label.setSalePrice', defaultMessage: '設定優惠價' },
@@ -20,8 +21,7 @@ const messages = defineMessages({
 type FieldProps = {
   startedAt: Moment
   endedAt: Moment
-  soldAt: Moment
-  isCountdownTimerVisible: boolean
+  sale: SaleProps
 }
 
 const MerchandiseSalesForm: React.FC<{
@@ -34,20 +34,18 @@ const MerchandiseSalesForm: React.FC<{
   const [updateMerchandiseSales] = useMutation<types.UPDATE_MERCHANDISE_SALES, types.UPDATE_MERCHANDISE_SALESVariables>(
     UPDATE_MERCHANDISE_SALES,
   )
-
   const [loading, setLoading] = useState(false)
   const [withSellingTime, setWithSellingTime] = useState(!!merchandise.startedAt || !!merchandise.endedAt)
-  const [withSoldAt, setWithSoldAt] = useState(!!merchandise.soldAt)
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateMerchandiseSales({
       variables: {
         merchandiseId,
-        soldAt: withSoldAt ? values.soldAt.toDate() : null,
         startedAt: withSellingTime ? values.startedAt?.toDate() || null : null,
         endedAt: withSellingTime ? values.endedAt?.toDate() || null : null,
-        isCountdownTimerVisible: values.isCountdownTimerVisible,
+        soldAt: values.sale?.soldAt || null,
+        isCountdownTimerVisible: values.sale?.isTimerVisible ?? false,
       },
     })
       .then(() => {
@@ -66,8 +64,13 @@ const MerchandiseSalesForm: React.FC<{
       initialValues={{
         startedAt: merchandise.startedAt && moment(merchandise.startedAt),
         endedAt: merchandise.endedAt && moment(merchandise.endedAt),
-        soldAt: merchandise.soldAt && moment(merchandise.soldAt),
-        isCountdownTimerVisible: merchandise.isCountdownTimerVisible,
+        sale: merchandise.soldAt
+          ? {
+              price: 0,
+              soldAt: merchandise.soldAt,
+              isTimerVisible: merchandise.isCountdownTimerVisible,
+            }
+          : null,
       }}
       onFinish={handleSubmit}
     >
@@ -75,7 +78,7 @@ const MerchandiseSalesForm: React.FC<{
         <Checkbox checked={withSellingTime} onChange={e => setWithSellingTime(e.target.checked)}>
           {formatMessage(messages.setSellingTime)}
         </Checkbox>
-        <div className={`mt-2 ml-3 ${withSellingTime ? '' : 'd-none'}`}>
+        <div className={`mt-2 pl-3 ${withSellingTime ? '' : 'd-none'}`}>
           <Form.Item name="startedAt" noStyle>
             <DatePicker
               format="YYYY-MM-DD HH:mm"
@@ -93,32 +96,9 @@ const MerchandiseSalesForm: React.FC<{
         </div>
       </div>
 
-      <div className="mb-4">
-        <Checkbox checked={withSoldAt} onChange={e => setWithSoldAt(e.target.checked)}>
-          {formatMessage(messages.withSalePrice)}
-        </Checkbox>
-        <div className={`mt-2 ml-3 ${withSoldAt ? '' : 'd-none'}`}>
-          <Form.Item
-            name="soldAt"
-            rules={[
-              {
-                required: withSoldAt,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(commonMessages.label.salePriceEndTime),
-                }),
-              },
-            ]}
-          >
-            <DatePicker
-              format="YYYY-MM-DD HH:mm"
-              showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
-            />
-          </Form.Item>
-          <Form.Item name="isCountdownTimerVisible" valuePropName="checked">
-            <Checkbox>{formatMessage(messages.showCountdownTimer)}</Checkbox>
-          </Form.Item>
-        </div>
-      </div>
+      <Form.Item name="sale">
+        <SaleInput noPrice withTimer />
+      </Form.Item>
 
       <div>
         <Button onClick={() => form.resetFields()} className="mr-2">

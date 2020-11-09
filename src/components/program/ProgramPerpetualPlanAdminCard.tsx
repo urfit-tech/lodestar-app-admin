@@ -87,7 +87,7 @@ const ProgramPerpetualPlanAdminCard: React.FC<{
         name="sale"
         rules={[{ validator: (rule, value, callback) => callback(value && !value.soldAt ? '' : undefined) }]}
       >
-        <SaleInput timer />
+        <SaleInput withTimer />
       </Form.Item>
 
       <Form.Item>

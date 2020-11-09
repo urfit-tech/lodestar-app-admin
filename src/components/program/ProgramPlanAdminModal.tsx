@@ -223,7 +223,7 @@ const ProgramPlanAdminModal: React.FC<
           name="sale"
           rules={[{ validator: (rule, value, callback) => callback(value && !value.soldAt ? '' : undefined) }]}
         >
-          <SaleInput currencyId={currencyId} timer />
+          <SaleInput currencyId={currencyId} withTimer />
         </Form.Item>
 
         {withPeriod && withAutoRenewed && (
