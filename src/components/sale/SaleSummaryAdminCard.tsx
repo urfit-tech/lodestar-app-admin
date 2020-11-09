@@ -14,7 +14,11 @@ const messages = defineMessages({
 const SaleSummaryAdminCard: React.FC = () => {
   const { formatMessage } = useIntl()
 
-  const { loading, data } = useQuery<types.GET_TOTAL_ORDER_AMOUNT>(GET_TOTAL_ORDER_AMOUNT)
+  const { loading, data } = useQuery<types.GET_TOTAL_ORDER_AMOUNT>(GET_TOTAL_ORDER_AMOUNT, {
+    context: {
+      important: true,
+    },
+  })
 
   const totalSales =
     (data?.order_product_aggregate.aggregate?.sum?.price || 0) -
