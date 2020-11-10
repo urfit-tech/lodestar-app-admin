@@ -103,7 +103,7 @@ const MemberProfileBasicForm: React.FC<{
       }}
       onFinish={handleSubmit}
     >
-      {enabledModules.member_assignment && currentUserRole === 'app-owner' && (
+      {enabledModules.member_assignment && permissions['MEMBER_MANAGER_ADMIN'] && (
         <Form.Item
           label={formatMessage(commonMessages.term.assign)}
           name="managerId"
