@@ -4,9 +4,9 @@ import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -28,7 +28,7 @@ const ProgramIntroForm: React.FC<{
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
   const [updateProgramCover] = useMutation<types.UPDATE_PROGRAM_COVER, types.UPDATE_PROGRAM_COVERVariables>(
     UPDATE_PROGRAM_COVER,
   )

@@ -3,10 +3,10 @@ import { Button, Form } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
@@ -32,7 +32,7 @@ const IssueReplyCreationBlock: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { authToken, backendEndpoint } = useAuth()
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
   const [insertIssueReply] = useMutation<types.INSERT_ISSUE_REPLY, types.INSERT_ISSUE_REPLYVariables>(
     INSERT_ISSUE_REPLY,
   )

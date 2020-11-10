@@ -1,12 +1,17 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import React, { createContext, useEffect } from 'react'
+import React, { createContext, useContext, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import types from '../types'
 import { AppProps, Module } from '../types/app'
 import { useAuth } from './AuthContext'
 
-type AppContextProps = { loading: boolean; error?: Error; refetch?: () => void } & AppProps
+type AppContextProps = AppProps & {
+  loading: boolean
+  error?: Error
+  refetch?: () => void
+}
+
 const defaultContextValue: AppContextProps = {
   loading: true,
   id: '',
@@ -17,7 +22,8 @@ const defaultContextValue: AppContextProps = {
   settings: {},
   currencies: {},
 }
-export const AppContext = createContext<AppContextProps>(defaultContextValue)
+
+const AppContext = createContext<AppContextProps>(defaultContextValue)
 
 export const AppProvider: React.FC = ({ children }) => {
   const history = useHistory()
@@ -30,9 +36,9 @@ export const AppProvider: React.FC = ({ children }) => {
   )
 
   const settings =
-    data?.app_admin_by_pk?.app.app_settings?.reduce((dict, el, index) => {
-      dict[el.key] = el.value
-      return dict
+    data?.app_admin_by_pk?.app.app_settings?.reduce((accumulator, appSetting, index) => {
+      accumulator[appSetting.key] = appSetting.value
+      return accumulator
     }, {} as { [key: string]: string }) || {}
 
   if (data?.app_admin_by_pk?.api_host && data.app_admin_by_pk.api_host !== backendEndpoint) {
@@ -106,4 +112,4 @@ const GET_APPLICATION = gql`
   }
 `
 
-export default AppContext
+export const useApp = () => useContext(AppContext)

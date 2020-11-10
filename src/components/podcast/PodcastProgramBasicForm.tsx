@@ -3,9 +3,9 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -34,7 +34,7 @@ const PodcastProgramBasicForm: React.FC<{
 }> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { enabledModules } = useContext(AppContext)
+  const { enabledModules } = useApp()
   const [updatePodcastProgramBasic] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_BASIC,
     types.UPDATE_PODCAST_PROGRAM_BASICVariables

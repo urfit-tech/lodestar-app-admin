@@ -5,9 +5,9 @@ import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -50,7 +50,7 @@ const ProgramContentAdminModal: React.FC<{
 }> = ({ program, programContent, programContentBody, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
 
   const [updateProgramContent] = useMutation<types.UPDATE_PROGRAM_CONTENT, types.UPDATE_PROGRAM_CONTENTVariables>(
     UPDATE_PROGRAM_CONTENT,

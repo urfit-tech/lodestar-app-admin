@@ -1,7 +1,7 @@
 import { ControlType, EditorState } from 'braft-editor'
-import React, { useContext } from 'react'
+import React from 'react'
 import { v4 as uuid } from 'uuid'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { uploadFile } from '../../helpers'
 import StyledBraftEditor from '../common/StyledBraftEditor'
@@ -109,7 +109,7 @@ const AdminBraftEditor: React.FC<{
   value?: EditorState
   onChange?: (editorState: EditorState) => void
 }> = ({ variant, value, onChange }) => {
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
   const { authToken, backendEndpoint } = useAuth()
 
   return (

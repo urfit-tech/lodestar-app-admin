@@ -1,8 +1,8 @@
 import { Checkbox, Radio, TreeSelect } from 'antd'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAllBriefProductCollection } from '../../hooks/data'
 import { ProductType } from '../../types/general'
 import ProductTypeLabel from '../common/ProductTypeLabel'
@@ -63,7 +63,7 @@ const ScopeSelector: React.FC<{
   otherProductText?: string
 }> = ({ value, onChange, allText, specificTypeText, otherProductText }) => {
   const { formatMessage } = useIntl()
-  const { enabledModules } = useContext(AppContext)
+  const { enabledModules } = useApp()
   const { briefProducts } = useAllBriefProductCollection()
 
   const [scopeType, setScopeType] = useState<'all' | 'specific'>(

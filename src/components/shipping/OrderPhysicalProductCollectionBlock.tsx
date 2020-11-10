@@ -3,11 +3,11 @@ import { Button, Divider, message, Spin } from 'antd'
 import { UploadFile } from 'antd/lib/upload/interface'
 import gql from 'graphql-tag'
 import moment from 'moment-timezone'
-import { default as React, useContext, useState } from 'react'
+import { default as React, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import MultipleUploader, { StyledFileBlock } from '../../components/common/MultipleUploader'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { useSimpleProduct } from '../../hooks/data'
@@ -162,11 +162,11 @@ const ShippingProductItem: React.FC<{
   productFiles: UploadFile[]
 }> = ({ orderProductId, productId, quantity, productFiles }) => {
   const { formatMessage } = useIntl()
+  const { id: appId } = useApp()
   const { loading, target } = useSimpleProduct(productId, {})
   const updateOrderProductFiles = useUpdateOrderProductFiles(orderProductId)
-  const { id: appId } = useContext(AppContext)
-  const [files, setFiles] = useState<UploadFile[]>(productFiles || [])
   const filesRef = React.useRef<UploadFile[]>([])
+  const [files, setFiles] = useState<UploadFile[]>(productFiles || [])
 
   if (loading || !target) {
     return <Spin />

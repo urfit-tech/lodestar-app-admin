@@ -6,12 +6,12 @@ import { UploadChangeParam } from 'antd/lib/upload'
 import { UploadFile } from 'antd/lib/upload/interface'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
-import { AppContext } from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { getAudioDuration } from '../../helpers/audio'
@@ -49,8 +49,8 @@ const PodcastProgramContentForm: React.FC<{
 }> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { id: appId, enabledModules } = useContext(AppContext)
   const { authToken, backendEndpoint } = useAuth()
+  const { id: appId, enabledModules } = useApp()
   const history = useHistory()
 
   const [updatePodcastProgramBody] = useMutation<

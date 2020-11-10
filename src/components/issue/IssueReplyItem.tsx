@@ -8,7 +8,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled, { ThemeContext } from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { rgba } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -59,9 +59,9 @@ const IssueReplyItem: React.FC<{
   onRefetch?: () => void
 }> = ({ programRoles, issueReplyId, content, reactedMemberIds, createdAt, memberId, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { id: appId } = useContext(AppContext)
   const [qIssueReplyId] = useQueryParam('issueReplyId', StringParam)
   const { currentMemberId, authToken, backendEndpoint } = useAuth()
+  const { id: appId } = useApp()
   const theme = useContext(ThemeContext)
 
   const [insertIssueReplyReaction] = useMutation<

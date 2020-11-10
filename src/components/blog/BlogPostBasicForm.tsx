@@ -3,10 +3,10 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { blogMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -35,7 +35,7 @@ const BlogPostBasicForm: React.FC<{
 }> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { settings } = useContext(AppContext)
+  const { settings } = useApp()
   const [updatePostBasic] = useMutation<types.UPDATE_POST_BASIC, types.UPDATE_POST_BASICVariables>(UPDATE_POST_BASIC)
   const [codeName, setCodeName] = useState('')
   const [loading, setLoading] = useState(false)

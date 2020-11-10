@@ -2,14 +2,14 @@ import { DeleteOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Typography } from 'antd'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'
 import { AdminPageTitle } from '../../../components/admin'
 import AdminCard from '../../../components/admin/AdminCard'
 import DraggableItem from '../../../components/common/DraggableItem'
 import AdminLayout from '../../../components/layout/AdminLayout'
-import AppContext from '../../../contexts/AppContext'
+import { useApp } from '../../../contexts/AppContext'
 import { handleError } from '../../../helpers'
 import { commonMessages } from '../../../helpers/translation'
 import { useProperty } from '../../../hooks/member'
@@ -17,7 +17,7 @@ import types from '../../../types'
 
 const MemberPropertyAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const app = useContext(AppContext)
+  const app = useApp()
   const { loadingProperties, properties, refetchProperties } = useProperty()
   const [insertProperty] = useMutation<types.INSERT_PROPERTY, types.INSERT_PROPERTYVariables>(INSERT_PROPERTY)
   const [updateProperty] = useMutation<types.UPDATE_PROPERTY, types.UPDATE_PROPERTYVariables>(UPDATE_PROPERTY)

@@ -2,14 +2,14 @@ import Icon, { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Tabs } from 'antd'
 import gql from 'graphql-tag'
-import React, { useContext } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import { AdminPageTitle } from '../../components/admin'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ProgramPackageAdminCard from '../../components/programPackage/ProgramPackageAdminCard'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, programPackageMessages } from '../../helpers/translation'
 import { useGetProgramPackageCollection } from '../../hooks/programPackage'
@@ -19,7 +19,7 @@ import types from '../../types'
 const ProgramPackageCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
   const { programPackages, refetch } = useGetProgramPackageCollection(appId)
   const [createProgramPackage] = useMutation<types.INSERT_PROGRAM_PACKAGE, types.INSERT_PROGRAM_PACKAGEVariables>(
     INSERT_PROGRAM_PACKAGE,

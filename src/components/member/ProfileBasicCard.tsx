@@ -4,9 +4,9 @@ import { CardProps } from 'antd/lib/card'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useTags } from '../../hooks/data'
@@ -41,7 +41,7 @@ const ProfileBasicCard: React.FC<
 > = ({ memberId, withTitle, withTags, withAbstract, withDescription, ...cardProps }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
   const { member, refetchMember } = useMember(memberId)
   const { tags } = useTags()
 

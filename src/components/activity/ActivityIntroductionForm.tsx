@@ -4,9 +4,9 @@ import { Button, Form, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { activityMessages, commonMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -25,7 +25,7 @@ const ActivityIntroductionForm: React.FC<{
 }> = ({ activityAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const app = useContext(AppContext)
+  const app = useApp()
   const [updateActivityCover] = useMutation<types.UPDATE_ACTIVITY_COVER, types.UPDATE_ACTIVITY_COVERVariables>(
     UPDATE_ACTIVITY_COVER,
   )

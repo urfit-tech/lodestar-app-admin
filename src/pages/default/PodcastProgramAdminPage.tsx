@@ -1,5 +1,5 @@
 import { Tabs } from 'antd'
-import React, { useContext } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -13,13 +13,13 @@ import PodcastProgramInstructorCollectionBlock from '../../components/podcast/Po
 import PodcastProgramIntroForm from '../../components/podcast/PodcastProgramIntroForm'
 import PodcastProgramPlanForm from '../../components/podcast/PodcastProgramPlanForm'
 import PodcastProgramPublishBlock from '../../components/podcast/PodcastProgramPublishBlock'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { usePodcastProgramAdmin } from '../../hooks/podcast'
 
 const PodcastProgramAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
   const { podcastProgramId } = useParams<{ podcastProgramId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { podcastProgramAdmin, refetchPodcastProgramAdmin } = usePodcastProgramAdmin(appId, podcastProgramId)

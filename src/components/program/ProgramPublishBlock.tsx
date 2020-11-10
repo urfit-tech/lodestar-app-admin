@@ -5,10 +5,10 @@ import { useForm } from 'antd/lib/form/Form'
 import TextArea from 'antd/lib/input/TextArea'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
@@ -31,8 +31,8 @@ const ProgramPublishBlock: React.FC<{
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { enabledModules } = useContext(AppContext)
   const { currentUserRole } = useAuth()
+  const { enabledModules } = useApp()
   const [publishProgram] = useMutation<types.PUBLISH_PROGRAM, types.PUBLISH_PROGRAMVariables>(PUBLISH_PROGRAM)
   const [sendProgramApproval] = useMutation<types.SEND_PROGRAM_APPROVAL, types.SEND_PROGRAM_APPROVALVariables>(
     SEND_PROGRAM_APPROVAL,

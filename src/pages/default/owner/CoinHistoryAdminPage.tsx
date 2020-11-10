@@ -4,7 +4,7 @@ import { Button, Dropdown, Input, Menu, message, Popover, Table, Tabs } from 'an
 import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import React, { useContext, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminBlock, AdminPageTitle } from '../../../components/admin'
@@ -16,7 +16,7 @@ import {
   StyledModalParagraph,
   StyledModalTitle,
 } from '../../../components/program/ProgramDeletionAdminCard'
-import AppContext from '../../../contexts/AppContext'
+import { useApp } from '../../../contexts/AppContext'
 import { handleError } from '../../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../../helpers/translation'
 import { ReactComponent as CoinIcon } from '../../../images/icon/coin.svg'
@@ -104,7 +104,7 @@ const StyledSearchOutlined = styled(SearchOutlined)`
 `
 const CoinHistoryAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { loading: loadingApp, enabledModules, settings } = useContext(AppContext)
+  const { loading: loadingApp, enabledModules, settings } = useApp()
   const coinUnit = settings['coin.unit'] || formatMessage(messages.unitOfCoins)
   const deleteCoinLog = useDeleteCoinLog()
   const [isRevokedModalVisible, setIsRevokedModalVisible] = useState<boolean>(false)

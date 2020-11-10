@@ -1,11 +1,11 @@
 import { Button, message } from 'antd'
 import axios from 'axios'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import DefaultLayout from '../../components/layout/DefaultLayout'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { codeMessages } from '../../helpers/translation'
@@ -37,12 +37,11 @@ const messages = defineMessages({
 })
 
 const CheckEmailPage: React.FC = () => {
-  const app = useContext(AppContext)
   const { formatMessage } = useIntl()
-  const { backendEndpoint } = useAuth()
   const [email] = useQueryParam('email', StringParam)
   const [type] = useQueryParam('type', StringParam)
-
+  const { backendEndpoint } = useAuth()
+  const app = useApp()
   const [loading, setLoading] = useState(false)
 
   const handleResendEmail = () => {

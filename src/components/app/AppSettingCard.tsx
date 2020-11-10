@@ -3,9 +3,9 @@ import { Button, Form, Input, message } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { AppContext } from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -69,7 +69,7 @@ const AppSettingCard: React.FC<
 > = ({ appId, ...cardProps }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { loading: loadingApp, refetch: refetchApp, settings, ...app } = useContext(AppContext)
+  const { loading: loadingApp, refetch: refetchApp, settings, ...app } = useApp()
   const [updateAppSettings] = useMutation<types.UPSERT_APP_SETTINGS, types.UPSERT_APP_SETTINGSVariables>(
     UPSERT_APP_SETTINGS,
   )

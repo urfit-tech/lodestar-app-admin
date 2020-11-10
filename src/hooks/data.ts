@@ -1,9 +1,8 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import gql from 'graphql-tag'
-import { useContext } from 'react'
-import { useIntl } from 'react-intl'
 import { UploadFile } from 'antd/lib/upload/interface'
-import AppContext from '../contexts/AppContext'
+import gql from 'graphql-tag'
+import { useIntl } from 'react-intl'
+import { useApp } from '../contexts/AppContext'
 import { commonMessages } from '../helpers/translation'
 import types from '../types'
 import { CategoryProps, ClassType, ProductInventoryLogProps, ProductType } from '../types/general'
@@ -32,7 +31,7 @@ export const useTags = () => {
 }
 
 export const useCategory = (classType: ClassType) => {
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
   const { loading, data, error, refetch } = useQuery<types.GET_CATEGORIES, types.GET_CATEGORIESVariables>(
     gql`
       query GET_CATEGORIES($appId: String!, $classType: String) {
@@ -210,7 +209,7 @@ export const useArrangeProductInventory = (productId: string) => {
 }
 
 export const useAllBriefProductCollection = () => {
-  const { enabledModules } = useContext(AppContext)
+  const { enabledModules } = useApp()
 
   const { loading, error, data, refetch } = useQuery<types.GET_ALL_BRIEF_PRODUCT_COLLECTION>(
     gql`

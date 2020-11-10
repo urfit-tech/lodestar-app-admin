@@ -2,7 +2,7 @@ import Icon, { EditOutlined, FileTextFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Popover, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
-import React, { useContext } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useHistory } from 'react-router-dom'
 import styled from 'styled-components'
@@ -18,7 +18,7 @@ import { AvatarImage } from '../../components/common/Image'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ProgramAdminCard from '../../components/program/ProgramAdminCard'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
@@ -46,7 +46,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { currentMemberId, currentUserRole } = useAuth()
-  const { loading, id: appId, enabledModules } = useContext(AppContext)
+  const { loading, id: appId, enabledModules } = useApp()
 
   const { loadingProgramPreviews, programPreviews, refetchProgramPreviews } = useProgramPreviewCollection(
     currentUserRole === 'app-owner' ? null : currentMemberId,

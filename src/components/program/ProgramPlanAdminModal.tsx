@@ -4,11 +4,11 @@ import { Button, Checkbox, Form, Input, message, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
-import { AppContext } from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -62,9 +62,9 @@ const ProgramPlanAdminModal: React.FC<
     onRefetch?: () => void
   }
 > = ({ programId, programPlan, onRefetch, ...modalProps }) => {
-  const { enabledModules } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
+  const { enabledModules } = useApp()
   const [upsertProgramPlan] = useMutation<types.UPSERT_PROGRAM_PLAN, types.UPSERT_PROGRAM_PLANVariables>(
     UPSERT_PROGRAM_PLAN,
   )

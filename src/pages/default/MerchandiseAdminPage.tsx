@@ -1,6 +1,6 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, Skeleton, Tabs, Tag } from 'antd'
-import React, { useContext } from 'react'
+import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -23,7 +23,7 @@ import MerchandiseInventoryCard from '../../components/merchandise/MerchandiseIn
 import MerchandisePublishBlock from '../../components/merchandise/MerchandisePublishBlock'
 import MerchandiseSalesForm from '../../components/merchandise/MerchandiseSalesForm'
 import MerchandiseSpecForm from '../../components/merchandise/MerchandiseSpecForm'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { useMerchandise, useMerchandiseSpecCollection } from '../../hooks/merchandise'
 
@@ -48,7 +48,7 @@ const MerchandiseAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { merchandiseId } = useParams<{ merchandiseId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const { settings } = useContext(AppContext)
+  const { settings } = useApp()
   const { loadingMerchandise, errorMerchandise, merchandise, refetchMerchandise } = useMerchandise(merchandiseId)
   const { loadingMerchandiseSpecs, merchandiseSpecs, refetchMerchandiseSpecs } = useMerchandiseSpecCollection({
     isLimited: true,

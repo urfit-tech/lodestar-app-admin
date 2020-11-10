@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/react-hooks'
 import { message, Modal, Spin } from 'antd'
 import gql from 'graphql-tag'
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -10,7 +10,7 @@ import { UPDATE_PODCAST_PROGRAM_DURATION } from '../../components/podcast/Podcas
 import PodcastProgramHeader from '../../components/podcast/PodcastProgramHeader'
 import RecordButton from '../../components/podcast/RecordButton'
 import RecordingController from '../../components/podcast/RecordingController'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { getFileDownloadableLink, handleError, uploadFile } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
@@ -69,10 +69,10 @@ async function signPodCastProgramAudios(
 }
 
 const RecordingPage: React.FC = () => {
-  const { id: appId } = useContext(AppContext)
-  const { authToken, backendEndpoint } = useAuth()
   const { formatMessage } = useIntl()
   const { podcastProgramId } = useParams<{ podcastProgramId: string }>()
+  const { authToken, backendEndpoint } = useAuth()
+  const { id: appId } = useApp()
   const { podcastProgramAdmin, refetchPodcastProgramAdmin } = usePodcastProgramAdmin(appId, podcastProgramId)
 
   const [signedPodCastProgramAudios, setSignedPodCastProgramAudios] = useState<SignedPodCastProgramAudio[]>([])

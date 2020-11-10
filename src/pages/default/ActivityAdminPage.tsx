@@ -1,6 +1,6 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, Skeleton, Tabs } from 'antd'
-import React, { useContext } from 'react'
+import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -18,7 +18,7 @@ import {
   AdminTabBarWrapper,
 } from '../../components/admin'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { activityMessages, commonMessages } from '../../helpers/translation'
 import { useActivityAdmin } from '../../hooks/activity'
 
@@ -33,7 +33,7 @@ const ActivityAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { activityId } = useParams<{ activityId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const { settings } = useContext(AppContext)
+  const { settings } = useApp()
   const { loadingActivityAdmin, activityAdmin, refetchActivityAdmin } = useActivityAdmin(activityId)
 
   return (

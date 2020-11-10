@@ -3,9 +3,9 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { blogMessages, commonMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -24,7 +24,7 @@ const BlogPostSettingForm: React.FC<{
 }> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
   const [updatePostCover] = useMutation<types.UPDATE_POST_COVER, types.UPDATE_POST_COVERVariables>(UPDATE_POST_COVER)
   const [updatePostMerchandises] = useMutation<
     types.UPDATE_POST_MERCHANDISE_COLLECTION,

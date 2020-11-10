@@ -2,9 +2,9 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Form, message, Select, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -26,7 +26,7 @@ const MemberPermissionForm: React.FC<{
   onRefetch?: () => void
 }> = ({ memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { enabledModules } = useContext(AppContext)
+  const { enabledModules } = useApp()
   const [form] = useForm<FieldProps>()
   const [updateMemberRole] = useMutation<types.UPDATE_MEMBER_ROLE, types.UPDATE_MEMBER_ROLEVariables>(
     UPDATE_MEMBER_ROLE,

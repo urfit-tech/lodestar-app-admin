@@ -3,10 +3,10 @@ import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import { countBy } from 'ramda'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { ReactComponent as PlusIcon } from '../../images/icon/plus.svg'
@@ -44,7 +44,7 @@ const ProgramSharingCodeAdminForm: React.FC<{
 }> = ({ programId }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { id: appId, settings } = useContext(AppContext)
+  const { id: appId, settings } = useApp()
   const pathKey = `/programs/${programId}`
   const { loadingSharingCodes, sharingCodes, refetchSharingCodes } = useSharingCodeCollection(pathKey)
   const [insertSharingCode] = useMutation<types.INSERT_SHARING_CODE, types.INSERT_SHARING_CODEVariables>(

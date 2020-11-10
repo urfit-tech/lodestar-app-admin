@@ -2,12 +2,12 @@ import { MailOutlined } from '@ant-design/icons'
 import { Button, Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import DefaultLayout from '../../components/layout/DefaultLayout'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { desktopViewMixin, handleError } from '../../helpers'
 import { codeMessages, commonMessages, errorMessages } from '../../helpers/translation'
@@ -50,7 +50,7 @@ const ForgotPasswordPage: React.FC = () => {
   const history = useHistory()
   const [form] = useForm<FieldProps>()
   const { backendEndpoint } = useAuth()
-  const app = useContext(AppContext)
+  const app = useApp()
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = (values: FieldProps) => {

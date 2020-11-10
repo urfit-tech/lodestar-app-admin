@@ -5,9 +5,9 @@ import { generate } from 'coupon-code'
 import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
 import { times } from 'ramda'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -36,7 +36,7 @@ const CouponPlanAdminModal: React.FC<
 > = ({ couponPlan, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { id: appId, enabledModules } = useContext(AppContext)
+  const { id: appId, enabledModules } = useApp()
 
   const [createCouponPlan] = useMutation<types.INSERT_COUPON_PLAN, types.INSERT_COUPON_PLANVariables>(
     INSERT_COUPON_PLAN,

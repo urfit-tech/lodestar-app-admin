@@ -3,9 +3,9 @@ import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -29,8 +29,8 @@ const MemberProfileBasicForm: React.FC<{
 }> = ({ memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { permissions, currentUserRole } = useAuth()
-  const { enabledModules } = useContext(AppContext)
+  const { permissions } = useAuth()
+  const { enabledModules } = useApp()
   const [updateMemberProfileBasic] = useMutation<
     types.UPDATE_MEMBER_PROFILE_BASIC,
     types.UPDATE_MEMBER_PROFILE_BASICVariables

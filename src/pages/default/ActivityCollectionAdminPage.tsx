@@ -1,14 +1,14 @@
 import Icon from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import React, { useContext } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import ActivityCollectionTabs from '../../components/activity/ActivityCollectionTabs'
 import { AdminPageTitle } from '../../components/admin'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -19,7 +19,7 @@ const ActivityCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { currentMemberId, currentUserRole } = useAuth()
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
   const [createActivity] = useMutation<types.INSERT_ACTIVITY, types.INSERT_ACTIVITYVariables>(INSERT_ACTIVITY)
 
   return (

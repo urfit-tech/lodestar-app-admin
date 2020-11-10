@@ -3,9 +3,9 @@ import { Button, Form, Input, message } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -28,7 +28,7 @@ const AppBasicCard: React.FC<
 > = ({ appId, ...cardProps }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { loading: loadingApp, refetch, ...app } = useContext(AppContext)
+  const { loading: loadingApp, refetch, ...app } = useApp()
   const [updateAppBasic] = useMutation<types.UPDATE_APP_BASIC, types.UPDATE_APP_BASICVariables>(UPDATE_APP_BASIC)
   const [loading, setLoading] = useState(false)
 

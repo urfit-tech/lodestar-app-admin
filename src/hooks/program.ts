@@ -1,8 +1,8 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
-import { useContext, useEffect, useState } from 'react'
-import AppContext from '../contexts/AppContext'
+import { useEffect, useState } from 'react'
+import { useApp } from '../contexts/AppContext'
 import types from '../types'
 import {
   ProgramAdminProps,
@@ -353,7 +353,7 @@ export const useProgramContentBody = (programContentId: string) => {
 }
 
 export const useOwnedPrograms = () => {
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
   const { loading, error, data, refetch } = useQuery<types.GET_OWNED_PROGRAMS, types.GET_OWNED_PROGRAMSVariables>(
     gql`
       query GET_OWNED_PROGRAMS($appId: String!) {

@@ -3,9 +3,9 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Form, message, TreeSelect } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, programPackageMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -26,7 +26,7 @@ const ProgramPackageProgramConnectionModal: React.FC<{
 }> = ({ programPackageId, programs, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
   const { availablePrograms } = useGetAvailableProgramCollection(appId)
   const [insertProgramPackageProgram] = useMutation<
     types.INSERT_PROGRAM_PACKAGE_PROGRAM,

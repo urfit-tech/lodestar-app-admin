@@ -11,7 +11,7 @@ import { AvatarImage } from '../../../components/common/Image'
 import { UserRoleName } from '../../../components/common/UserRole'
 import AdminLayout from '../../../components/layout/AdminLayout'
 import MemberExportModal from '../../../components/member/MemberExportModal'
-import AppContext from '../../../contexts/AppContext'
+import { useApp } from '../../../contexts/AppContext'
 import { useAuth } from '../../../contexts/AuthContext'
 import { currencyFormatter } from '../../../helpers'
 import { commonMessages, memberMessages } from '../../../helpers/translation'
@@ -78,8 +78,8 @@ const StyledTag = styled(Tag)`
 const MemberCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const theme = useContext(ThemeContext)
-  const { id: appId, enabledModules } = useContext(AppContext)
   const { permissions, currentUserRole } = useAuth()
+  const { id: appId, enabledModules } = useApp()
 
   // table column filter
   const { properties } = useProperty()

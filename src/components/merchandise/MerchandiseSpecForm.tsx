@@ -4,10 +4,10 @@ import { Button, Divider, Form, Input, message, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
 import gql from 'graphql-tag'
-import React, { Fragment, useContext, useRef, useState } from 'react'
+import React, { Fragment, useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError, notEmpty, uploadFile } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
@@ -57,7 +57,7 @@ const MerchandiseSpecForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { authToken, backendEndpoint } = useAuth()
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
   const [insertMerchandiseSpecCollection] = useMutation<
     types.INSERT_MERCHANDISE_SPEC_COLLECTION,
     types.INSERT_MERCHANDISE_SPEC_COLLECTIONVariables

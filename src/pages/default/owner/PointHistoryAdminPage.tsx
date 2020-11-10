@@ -3,7 +3,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Dropdown, Menu, message, Popover, Skeleton, Table, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminBlock, AdminPageTitle } from '../../../components/admin'
@@ -15,7 +15,7 @@ import {
   StyledModalParagraph,
   StyledModalTitle,
 } from '../../../components/program/ProgramDeletionAdminCard'
-import AppContext from '../../../contexts/AppContext'
+import { useApp } from '../../../contexts/AppContext'
 import { handleError } from '../../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../../helpers/translation'
 import { ReactComponent as PointIcon } from '../../../images/icon/point.svg'
@@ -77,7 +77,7 @@ const StyledIcon = styled(Icon)`
 
 const PointHistoryAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { loading: loadingApp, enabledModules, settings } = useContext(AppContext)
+  const { loading: loadingApp, enabledModules, settings } = useApp()
   const pointUnit = settings['point.unit'] || formatMessage(messages.unitOfPoints)
   const { loadingPointLogs, errorPointLogs, pointLogs, refetchPointLogs, fetchMorePointLogs } = usePointLogCollection()
   const deletePointLog = useDeletePointLog()

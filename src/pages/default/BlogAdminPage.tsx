@@ -1,6 +1,6 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, Tabs } from 'antd'
-import React, { useContext } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -21,7 +21,7 @@ import BlogPostPublishBlock from '../../components/blog/BlogPostPublishBlock'
 import BlogPostSettingForm from '../../components/blog/BlogPostSettingForm'
 import BlogPostVideoForm from '../../components/blog/BlogPostVideoForm'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { blogMessages, commonMessages } from '../../helpers/translation'
 import { usePost } from '../../hooks/blog'
 import { usePublicMember } from '../../hooks/member'
@@ -29,7 +29,7 @@ import { usePublicMember } from '../../hooks/member'
 const BlogAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { postId } = useParams<{ postId: string }>()
-  const { settings } = useContext(AppContext)
+  const { settings } = useApp()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
 
   const { post, refetchPost } = usePost(postId)

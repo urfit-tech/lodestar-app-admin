@@ -1,9 +1,9 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, Modal, Spin } from 'antd'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
@@ -19,7 +19,7 @@ const PodcastProgramHeader: React.FC<{
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { authToken, backendEndpoint } = useAuth()
-  const { settings, id: appId } = useContext(AppContext)
+  const { settings, id: appId } = useApp()
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
 
   return (

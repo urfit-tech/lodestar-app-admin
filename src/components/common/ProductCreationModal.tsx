@@ -1,10 +1,10 @@
 import { FileAddOutlined } from '@ant-design/icons'
 import { Button, Form, Input, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, errorMessages, merchandiseMessages, programMessages } from '../../helpers/translation'
 import { ClassType } from '../../types/general'
@@ -53,9 +53,7 @@ const ProductCreationModal: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { currentMemberId } = useAuth()
-  const {
-    enabledModules: { merchandise_customization, merchandise_virtualness },
-  } = useContext(AppContext)
+  const { enabledModules } = useApp()
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = () => {
@@ -148,7 +146,7 @@ const ProductCreationModal: React.FC<
               <StyledExample className="ml-4 mb-4">
                 {formatMessage(merchandiseMessages.text.generalPhysicalMerchandise)}
               </StyledExample>
-              {merchandise_virtualness && (
+              {enabledModules.merchandise_virtualness && (
                 <>
                   <Radio value="general-virtual">
                     <StyledLabel>{formatMessage(merchandiseMessages.label.generalVirtualMerchandise)}</StyledLabel>
@@ -158,7 +156,7 @@ const ProductCreationModal: React.FC<
                   </StyledExample>
                 </>
               )}
-              {merchandise_customization && (
+              {enabledModules.merchandise_customization && (
                 <>
                   <Radio value="customized-physical">
                     <StyledLabel>{formatMessage(merchandiseMessages.label.customizedPhysicalMerchandise)}</StyledLabel>
@@ -168,7 +166,7 @@ const ProductCreationModal: React.FC<
                   </StyledExample>
                 </>
               )}
-              {merchandise_virtualness && merchandise_customization && (
+              {enabledModules.merchandise_virtualness && enabledModules.merchandise_customization && (
                 <>
                   <Radio value="customized-virtual">
                     <StyledLabel>{formatMessage(merchandiseMessages.label.customizedVirtualMerchandise)}</StyledLabel>

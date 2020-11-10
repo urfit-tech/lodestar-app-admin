@@ -3,9 +3,9 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Radio, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { activityMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -27,7 +27,7 @@ const ActivityBasicForm: React.FC<{
 }> = ({ activityAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { enabledModules } = useContext(AppContext)
+  const { enabledModules } = useApp()
   const [updateActivityBasic] = useMutation<types.UPDATE_ACTIVITY_BASIC, types.UPDATE_ACTIVITY_BASICVariables>(
     UPDATE_ACTIVITY_BASIC,
   )

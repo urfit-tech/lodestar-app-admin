@@ -2,14 +2,14 @@ import Icon, { FileAddOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Input, Select, Tabs } from 'antd'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { AdminPaneTitle } from '../../components/admin'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import MerchandiseAdminItem from '../../components/merchandise/MerchandiseAdminItem'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
@@ -46,7 +46,7 @@ const MerchandiseCollectionAdminBlock: React.FC<{
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { currentMemberId } = useAuth()
-  const { loading, id: appId, enabledModules } = useContext(AppContext)
+  const { loading, id: appId, enabledModules } = useApp()
 
   const [insertMerchandise] = useMutation<types.INSERT_MERCHANDISE, types.INSERT_MERCHANDISEVariables>(
     INSERT_MERCHANDISE,

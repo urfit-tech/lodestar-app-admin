@@ -2,9 +2,9 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -25,7 +25,7 @@ const MemberShopBasicForm: React.FC<{
 }> = ({ memberShop, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
   const [updateMemberShopTitle] = useMutation<types.UPDATE_MEMBER_SHOP_TITLE, types.UPDATE_MEMBER_SHOP_TITLEVariables>(
     UPDATE_MEMBER_SHOP_TITLE,
   )

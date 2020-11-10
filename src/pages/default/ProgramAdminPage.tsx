@@ -1,6 +1,6 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, Dropdown, Menu, Tabs } from 'antd'
-import React, { useContext } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -24,14 +24,14 @@ import ProgramRoleAdminPane from '../../components/program/ProgramRoleAdminPane'
 import ProgramSharingCodeAdminForm from '../../components/program/ProgramSharingCodeAdminForm'
 import ProgramStructureAdminBlock from '../../components/program/ProgramStructureAdminBlock'
 import ProgramStructureAdminModal from '../../components/program/ProgramStructureAdminModal'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useProgram } from '../../hooks/program'
 
 const ProgramAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { programId } = useParams<{ programId: string }>()
-  const { settings, enabledModules } = useContext(AppContext)
+  const { settings, enabledModules } = useApp()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { program, refetchProgram } = useProgram(programId)
 

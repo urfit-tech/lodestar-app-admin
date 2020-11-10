@@ -1,11 +1,11 @@
 import { message } from 'antd'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import AuthModal, { AuthModalContext } from '../../components/auth/AuthModal'
 import LoginSection from '../../components/auth/LoginSection'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 
 const StyledWrapper = styled.div`
@@ -44,7 +44,7 @@ const HomePage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { isAuthenticated, currentUserRole, permissions, logout } = useAuth()
-  const app = useContext(AppContext)
+  const app = useApp()
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {

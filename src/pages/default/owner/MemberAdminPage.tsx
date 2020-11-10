@@ -2,7 +2,7 @@ import Icon, { CloseOutlined } from '@ant-design/icons'
 import { Button, Divider, Layout, message, Skeleton, Tabs } from 'antd'
 import moment from 'moment'
 import { isEmpty } from 'ramda'
-import React, { useContext } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -24,7 +24,7 @@ import MemberProfileBasicForm from '../../../components/member/MemberProfileBasi
 import MemberPropertyAdminForm from '../../../components/member/MemberPropertyAdminForm'
 import MemberTaskAdminBlock from '../../../components/member/MemberTaskAdminBlock'
 import SaleCollectionAdminCard from '../../../components/sale/SaleCollectionAdminCard'
-import AppContext from '../../../contexts/AppContext'
+import { useApp } from '../../../contexts/AppContext'
 import { useAuth } from '../../../contexts/AuthContext'
 import { currencyFormatter, handleError } from '../../../helpers'
 import { commonMessages, memberMessages } from '../../../helpers/translation'
@@ -64,10 +64,10 @@ const MemberAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { memberId } = useParams<{ memberId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const { enabledModules, settings } = useContext(AppContext)
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
+  const { enabledModules, settings } = useApp()
   const { loadingMemberAdmin, errorMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
   const { insertMemberNote } = useMutateMemberNote()
-  const { currentMemberId, currentUserRole, permissions } = useAuth()
 
   if (loadingMemberAdmin || errorMemberAdmin || !memberAdmin) {
     return <Skeleton active />

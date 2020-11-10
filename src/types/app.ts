@@ -7,6 +7,7 @@ export type Module =
   | 'contract'
   | 'coupon_scope'
   | 'currency'
+  | 'customer_review'
   | 'invoice'
   | 'learning_statistics'
   | 'locale'
