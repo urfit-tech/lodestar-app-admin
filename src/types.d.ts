@@ -5041,6 +5041,75 @@ export interface UPDATE_ORDER_PRODUCT_FILESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_ORDER_CONTACT
+// ====================================================
+
+export interface GET_ORDER_CONTACT_order_contact_member {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  picture_url: string | null;
+}
+
+export interface GET_ORDER_CONTACT_order_contact {
+  __typename: "order_contact";
+  id: any;
+  message: string;
+  created_at: any;
+  updated_at: any;
+  /**
+   * An object relationship
+   */
+  member: GET_ORDER_CONTACT_order_contact_member | null;
+}
+
+export interface GET_ORDER_CONTACT {
+  /**
+   * fetch data from the table: "order_contact"
+   */
+  order_contact: GET_ORDER_CONTACT_order_contact[];
+}
+
+export interface GET_ORDER_CONTACTVariables {
+  orderId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_ORDER_CONTACT
+// ====================================================
+
+export interface INSERT_ORDER_CONTACT_insert_order_contact {
+  __typename: "order_contact_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_ORDER_CONTACT {
+  /**
+   * insert data into the table: "order_contact"
+   */
+  insert_order_contact: INSERT_ORDER_CONTACT_insert_order_contact | null;
+}
+
+export interface INSERT_ORDER_CONTACTVariables {
+  orderId: string;
+  memberId: string;
+  message: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_DELIVER_INFO
 // ====================================================
 
@@ -6391,26 +6460,6 @@ export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products {
   product: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products_product;
 }
 
-export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_contacts_member {
-  __typename: "member_public";
-  id: string | null;
-  name: string | null;
-  picture_url: string | null;
-}
-
-export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_contacts {
-  __typename: "order_contact";
-  id: any;
-  order_id: string;
-  message: string;
-  created_at: any;
-  updated_at: any;
-  /**
-   * An object relationship
-   */
-  member: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_contacts_member | null;
-}
-
 export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_member {
   __typename: "member";
   id: string;
@@ -6433,10 +6482,6 @@ export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log {
    * An array relationship
    */
   order_products: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products[];
-  /**
-   * An array relationship
-   */
-  order_contacts: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_contacts[];
   /**
    * An object relationship
    */

@@ -389,18 +389,6 @@ export const useOrderPhysicalProductLog = () => {
               }
             }
           }
-          order_contacts {
-            id
-            order_id
-            message
-            created_at
-            updated_at
-            member {
-              id
-              name
-              picture_url
-            }
-          }
           member {
             id
             name
@@ -429,17 +417,6 @@ export const useOrderPhysicalProductLog = () => {
       files: UploadFile[]
       memberShopId?: string | null
     }[]
-    orderContacts: {
-      id: string
-      message: string
-      createdAt: Date
-      updatedAt: Date
-      member: {
-        id: string
-        name: string
-        pictureUrl: string | null
-      }
-    }[]
   }[] =
     error || loading || !data
       ? []
@@ -463,17 +440,6 @@ export const useOrderPhysicalProductLog = () => {
               description: orderPhysicalProduct.description,
               files: orderPhysicalProduct.order_product_files.map(v => v.data),
               memberShopId: orderPhysicalProduct.product.product_owner?.target || undefined,
-            })),
-            orderContacts: v.order_contacts.map(w => ({
-              id: w.id,
-              message: w.message,
-              createdAt: w.created_at,
-              updatedAt: w.updated_at,
-              member: {
-                id: w.member.id,
-                name: w.member.name,
-                pictureUrl: w.member.picture_url,
-              },
             })),
           }))
 

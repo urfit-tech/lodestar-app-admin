@@ -62,17 +62,6 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
       quantity: number
       files: UploadFile[]
     }[]
-    orderContacts: {
-      id: string
-      message: string
-      createdAt: Date
-      updatedAt: Date
-      member: {
-        id: string
-        name: string
-        pictureUrl: string | null
-      }
-    }[]
   }[]
   onRefetch?: () => void
 }> = ({ orderPhysicalProductLogs, onRefetch }) => {
@@ -103,7 +92,7 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
 
               <div>
                 <span className="mr-2">
-                  <ShippingContactModal orderContacts={orderLog.orderContacts} />
+                  <ShippingContactModal orderId={orderLog.id} />
                 </span>
                 <span className="mr-2">
                   <ShippingInfoModal shipping={orderLog.shipping} invoice={orderLog.invoice} />
