@@ -2079,6 +2079,7 @@ export interface UPDATE_MEMBER_PROFILE_BASIC {
 }
 
 export interface UPDATE_MEMBER_PROFILE_BASICVariables {
+  name?: string | null;
   memberId: string;
   managerId?: string | null;
   assignedAt?: any | null;
