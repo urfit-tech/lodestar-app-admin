@@ -21,18 +21,24 @@ export const AppContext = createContext<AppContextProps>(defaultContextValue)
 
 export const AppProvider: React.FC = ({ children }) => {
   const history = useHistory()
-  const { refreshToken, authToken } = useAuth()
-  const { loading, error, refetch, data } = useQuery<types.GET_APPLICATION, types.GET_APPLICATIONVariables>(
+  const { refreshToken, authToken, backendEndpoint, setBackendEndpoint } = useAuth()
+  const { loading, error, data, refetch } = useQuery<types.GET_APPLICATION, types.GET_APPLICATIONVariables>(
     GET_APPLICATION,
     {
       variables: { host: window.location.host },
     },
   )
+
   const settings =
-    data?.app_admin_by_pk?.app.app_settings.reduce((dict, el, index) => {
+    data?.app_admin_by_pk?.app.app_settings?.reduce((dict, el, index) => {
       dict[el.key] = el.value
       return dict
     }, {} as { [key: string]: string }) || {}
+
+  if (data?.app_admin_by_pk?.api_host && data.app_admin_by_pk.api_host !== backendEndpoint) {
+    setBackendEndpoint?.(`https://${data.app_admin_by_pk.api_host}`)
+  }
+
   const contextValue = {
     ...defaultContextValue,
     loading,
@@ -50,20 +56,22 @@ export const AppProvider: React.FC = ({ children }) => {
       }, {} as { [key in Module]?: boolean }) || {},
     settings,
     currencies:
-      data?.currency.reduce((accum, currency) => {
-        accum[currency.id] = {
+      data?.currency.reduce((accumulator, currency) => {
+        accumulator[currency.id] = {
           name: currency.id === 'LSC' && settings['coin.name'] ? settings['coin.name'] : currency.name,
           label: currency.id === 'LSC' && settings['coin.label'] ? settings['coin.label'] : currency.label,
           unit: currency.id === 'LSC' && settings['coin.unit'] ? settings['coin.unit'] : currency.unit,
         }
-        return accum
+        return accumulator
       }, {} as AppProps['currencies']) || {},
   }
 
   // after getting app, fetch the auth token
   const appId = contextValue.id
   useEffect(() => {
-    appId && !authToken && refreshToken && refreshToken({ appId }).catch(err => history.push('/'))
+    if (appId && !authToken) {
+      refreshToken?.({ appId }).catch(() => history.push('/'))
+    }
   }, [appId, authToken, history, refreshToken])
 
   return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>
@@ -78,6 +86,7 @@ const GET_APPLICATION = gql`
       unit
     }
     app_admin_by_pk(host: $host) {
+      api_host
       app {
         id
         name

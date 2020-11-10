@@ -5132,6 +5132,7 @@ export interface GET_APPLICATION_app_admin_by_pk_app {
 
 export interface GET_APPLICATION_app_admin_by_pk {
   __typename: "app_admin";
+  api_host: string | null;
   /**
    * An object relationship
    */
@@ -10249,6 +10250,7 @@ export enum app_admin_constraint {
  * update columns of table "app_admin"
  */
 export enum app_admin_update_column {
+  api_host = "api_host",
   app_id = "app_id",
   host = "host",
   position = "position",
@@ -11242,6 +11244,25 @@ export enum notification_update_column {
   source_member_id = "source_member_id",
   target_member_id = "target_member_id",
   type = "type",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "order_contact"
+ */
+export enum order_contact_constraint {
+  order_contact_pkey = "order_contact_pkey",
+}
+
+/**
+ * update columns of table "order_contact"
+ */
+export enum order_contact_update_column {
+  created_at = "created_at",
+  id = "id",
+  member_id = "member_id",
+  message = "message",
+  order_id = "order_id",
   updated_at = "updated_at",
 }
 
@@ -12959,6 +12980,7 @@ export interface app_admin_bool_exp {
   _and?: (app_admin_bool_exp | null)[] | null;
   _not?: app_admin_bool_exp | null;
   _or?: (app_admin_bool_exp | null)[] | null;
+  api_host?: String_comparison_exp | null;
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
   host?: String_comparison_exp | null;
@@ -12969,6 +12991,7 @@ export interface app_admin_bool_exp {
  * input type for inserting data into table "app_admin"
  */
 export interface app_admin_insert_input {
+  api_host?: string | null;
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
   host?: string | null;
@@ -15880,6 +15903,54 @@ export interface numeric_comparison_exp {
 }
 
 /**
+ * input type for inserting array relation for remote table "order_contact"
+ */
+export interface order_contact_arr_rel_insert_input {
+  data: order_contact_insert_input[];
+  on_conflict?: order_contact_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "order_contact". All fields are combined with a logical 'AND'.
+ */
+export interface order_contact_bool_exp {
+  _and?: (order_contact_bool_exp | null)[] | null;
+  _not?: order_contact_bool_exp | null;
+  _or?: (order_contact_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  message?: String_comparison_exp | null;
+  order_id?: String_comparison_exp | null;
+  order_log?: order_log_bool_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "order_contact"
+ */
+export interface order_contact_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  message?: string | null;
+  order_id?: string | null;
+  order_log?: order_log_obj_rel_insert_input | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "order_contact"
+ */
+export interface order_contact_on_conflict {
+  constraint: order_contact_constraint;
+  update_columns: order_contact_update_column[];
+  where?: order_contact_bool_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "order_discount"
  */
 export interface order_discount_arr_rel_insert_input {
@@ -16002,6 +16073,7 @@ export interface order_log_bool_exp {
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   message?: String_comparison_exp | null;
+  order_contacts?: order_contact_bool_exp | null;
   order_discounts?: order_discount_bool_exp | null;
   order_executors?: order_executor_bool_exp | null;
   order_products?: order_product_bool_exp | null;
@@ -16031,6 +16103,7 @@ export interface order_log_insert_input {
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   message?: string | null;
+  order_contacts?: order_contact_arr_rel_insert_input | null;
   order_discounts?: order_discount_arr_rel_insert_input | null;
   order_executors?: order_executor_arr_rel_insert_input | null;
   order_products?: order_product_arr_rel_insert_input | null;

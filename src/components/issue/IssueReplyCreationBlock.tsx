@@ -31,7 +31,7 @@ const IssueReplyCreationBlock: React.FC<{
 }> = ({ memberId, issueId, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { authToken } = useAuth()
+  const { authToken, backendEndpoint } = useAuth()
   const { id: appId } = useContext(AppContext)
   const [insertIssueReply] = useMutation<types.INSERT_ISSUE_REPLY, types.INSERT_ISSUE_REPLYVariables>(
     INSERT_ISSUE_REPLY,
@@ -75,7 +75,7 @@ const IssueReplyCreationBlock: React.FC<{
           style={{ border: '1px solid #cdcdcd', borderRadius: '4px' }}
           language="zh-hant"
           controls={['bold', 'italic', 'underline', 'separator', 'media']}
-          media={{ uploadFn: createUploadFn(appId, authToken) }}
+          media={{ uploadFn: createUploadFn(appId, authToken, backendEndpoint) }}
         />
       </Form.Item>
       <Form.Item className="text-right">

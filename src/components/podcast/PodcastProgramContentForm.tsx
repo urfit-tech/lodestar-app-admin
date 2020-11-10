@@ -50,7 +50,7 @@ const PodcastProgramContentForm: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId, enabledModules } = useContext(AppContext)
-  const { authToken } = useAuth()
+  const { authToken, backendEndpoint } = useAuth()
   const history = useHistory()
 
   const [updatePodcastProgramBody] = useMutation<
@@ -87,7 +87,7 @@ const PodcastProgramContentForm: React.FC<{
     const totalDuration = Math.ceil((duration + totalDurationSecond) / 60 || 0)
 
     setLoading(true)
-    appendPodcastProgramAudio(authToken, appId, podcastProgramAdmin.id, key, file.name, duration)
+    appendPodcastProgramAudio(authToken, backendEndpoint, appId, podcastProgramAdmin.id, key, file.name, duration)
       .then(async () => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
         form.setFields([{ name: 'duration', value: totalDuration }])
@@ -196,7 +196,7 @@ const PodcastProgramContentForm: React.FC<{
                     .filter(_audio => _audio.id !== audio.id)
                     .reduce((sum, audio) => (sum += audio.duration), 0)
                   const totalDuration = Math.ceil(totalDurationSecond / 60 || 0)
-                  deletePodcastProgramAudio(authToken, appId, audio.id)
+                  deletePodcastProgramAudio(authToken, backendEndpoint, appId, audio.id)
                     .then(async () => {
                       message.success(formatMessage(commonMessages.event.successfullySaved))
                       await updatePodcastProgramDuration({

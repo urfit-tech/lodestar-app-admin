@@ -58,10 +58,10 @@ const IssueReplyItem: React.FC<{
   memberId: string
   onRefetch?: () => void
 }> = ({ programRoles, issueReplyId, content, reactedMemberIds, createdAt, memberId, onRefetch }) => {
-  const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
+  const { id: appId } = useContext(AppContext)
   const [qIssueReplyId] = useQueryParam('issueReplyId', StringParam)
-  const { currentMemberId, authToken } = useAuth()
+  const { currentMemberId, authToken, backendEndpoint } = useAuth()
   const theme = useContext(ThemeContext)
 
   const [insertIssueReplyReaction] = useMutation<
@@ -175,7 +175,7 @@ const IssueReplyItem: React.FC<{
                 value={contentState}
                 onChange={value => setContentState(value)}
                 controls={['bold', 'italic', 'underline', 'separator', 'media']}
-                media={{ uploadFn: createUploadFn(appId, authToken) }}
+                media={{ uploadFn: createUploadFn(appId, authToken, backendEndpoint) }}
               />
               <div>
                 <Button className="mr-2" onClick={() => setEditing(false)}>
