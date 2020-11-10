@@ -389,6 +389,18 @@ export const useOrderPhysicalProductLog = () => {
               }
             }
           }
+          order_contacts {
+            id
+            order_id
+            message
+            created_at
+            updated_at
+            member {
+              id
+              name
+              picture_url
+            }
+          }
           member {
             id
             name
@@ -417,22 +429,33 @@ export const useOrderPhysicalProductLog = () => {
       files: UploadFile[]
       memberShopId?: string | null
     }[]
+    orderContacts: {
+      id: string
+      message: string
+      createdAt: Date
+      updatedAt: Date
+      member: {
+        id: string
+        name: string
+        pictureUrl: string | null
+      }
+    }[]
   }[] =
     error || loading || !data
       ? []
       : data.order_log
           .filter(orderLog => orderLog.order_products.length && orderLog.shipping?.address)
-          .map(orderLog => ({
-            id: orderLog.id,
-            member: orderLog.member.name,
-            createdAt: orderLog.created_at,
-            updatedAt: orderLog.updated_at,
-            deliveredAt: orderLog.delivered_at,
-            deliverMessage: orderLog.deliver_message,
-            shipping: orderLog.shipping,
-            invoice: orderLog.invoice,
-            orderPhysicalProducts: orderLog.order_products.map(orderPhysicalProduct => ({
-              key: `${orderLog.id}_${orderPhysicalProduct.name}`,
+          .map(v => ({
+            id: v.id,
+            member: v.member.name,
+            createdAt: v.created_at,
+            updatedAt: v.updated_at,
+            deliveredAt: v.delivered_at,
+            deliverMessage: v.deliver_message,
+            shipping: v.shipping,
+            invoice: v.invoice,
+            orderPhysicalProducts: v.order_products.map(orderPhysicalProduct => ({
+              key: `${v.id}_${orderPhysicalProduct.name}`,
               id: orderPhysicalProduct.id,
               name: orderPhysicalProduct.name,
               productId: orderPhysicalProduct.product_id.split('_')[1],
@@ -440,6 +463,17 @@ export const useOrderPhysicalProductLog = () => {
               description: orderPhysicalProduct.description,
               files: orderPhysicalProduct.order_product_files.map(v => v.data),
               memberShopId: orderPhysicalProduct.product.product_owner?.target || undefined,
+            })),
+            orderContacts: v.order_contacts.map(w => ({
+              id: w.id,
+              message: w.message,
+              createdAt: w.created_at,
+              updatedAt: w.updated_at,
+              member: {
+                id: w.member.id,
+                name: w.member.name,
+                pictureUrl: w.member.picture_url,
+              },
             })),
           }))
 

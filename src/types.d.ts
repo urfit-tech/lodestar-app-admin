@@ -6391,6 +6391,26 @@ export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products {
   product: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products_product;
 }
 
+export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_contacts_member {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  picture_url: string | null;
+}
+
+export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_contacts {
+  __typename: "order_contact";
+  id: any;
+  order_id: string;
+  message: string;
+  created_at: any;
+  updated_at: any;
+  /**
+   * An object relationship
+   */
+  member: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_contacts_member | null;
+}
+
 export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_member {
   __typename: "member";
   id: string;
@@ -6413,6 +6433,10 @@ export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log {
    * An array relationship
    */
   order_products: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products[];
+  /**
+   * An array relationship
+   */
+  order_contacts: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_contacts[];
   /**
    * An object relationship
    */
@@ -11356,24 +11380,6 @@ export enum order_contact_constraint {
 }
 
 /**
- * unique or primary key constraints on table "order_contact_mark"
- */
-export enum order_contact_mark_constraint {
-  order_contact_mark_order_contact_id_member_id_key = "order_contact_mark_order_contact_id_member_id_key",
-  order_contact_mark_pkey = "order_contact_mark_pkey",
-}
-
-/**
- * update columns of table "order_contact_mark"
- */
-export enum order_contact_mark_update_column {
-  id = "id",
-  member_id = "member_id",
-  order_contact_id = "order_contact_id",
-  read_at = "read_at",
-}
-
-/**
  * update columns of table "order_contact"
  */
 export enum order_contact_update_column {
@@ -16063,10 +16069,9 @@ export interface order_contact_bool_exp {
   _or?: (order_contact_bool_exp | null)[] | null;
   created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
-  member?: member_bool_exp | null;
+  member?: member_public_bool_exp | null;
   member_id?: String_comparison_exp | null;
   message?: String_comparison_exp | null;
-  order_contact_marks?: order_contact_mark_bool_exp | null;
   order_id?: String_comparison_exp | null;
   order_log?: order_log_bool_exp | null;
   read_at?: timestamptz_comparison_exp | null;
@@ -16079,66 +16084,12 @@ export interface order_contact_bool_exp {
 export interface order_contact_insert_input {
   created_at?: any | null;
   id?: any | null;
-  member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   message?: string | null;
-  order_contact_marks?: order_contact_mark_arr_rel_insert_input | null;
   order_id?: string | null;
   order_log?: order_log_obj_rel_insert_input | null;
   read_at?: any | null;
   updated_at?: any | null;
-}
-
-/**
- * input type for inserting array relation for remote table "order_contact_mark"
- */
-export interface order_contact_mark_arr_rel_insert_input {
-  data: order_contact_mark_insert_input[];
-  on_conflict?: order_contact_mark_on_conflict | null;
-}
-
-/**
- * Boolean expression to filter rows from the table "order_contact_mark". All fields are combined with a logical 'AND'.
- */
-export interface order_contact_mark_bool_exp {
-  _and?: (order_contact_mark_bool_exp | null)[] | null;
-  _not?: order_contact_mark_bool_exp | null;
-  _or?: (order_contact_mark_bool_exp | null)[] | null;
-  id?: uuid_comparison_exp | null;
-  member?: member_bool_exp | null;
-  member_id?: String_comparison_exp | null;
-  order_contact?: order_contact_bool_exp | null;
-  order_contact_id?: uuid_comparison_exp | null;
-  read_at?: timestamptz_comparison_exp | null;
-}
-
-/**
- * input type for inserting data into table "order_contact_mark"
- */
-export interface order_contact_mark_insert_input {
-  id?: any | null;
-  member?: member_obj_rel_insert_input | null;
-  member_id?: string | null;
-  order_contact?: order_contact_obj_rel_insert_input | null;
-  order_contact_id?: any | null;
-  read_at?: any | null;
-}
-
-/**
- * on conflict condition type for table "order_contact_mark"
- */
-export interface order_contact_mark_on_conflict {
-  constraint: order_contact_mark_constraint;
-  update_columns: order_contact_mark_update_column[];
-  where?: order_contact_mark_bool_exp | null;
-}
-
-/**
- * input type for inserting object relation for remote table "order_contact"
- */
-export interface order_contact_obj_rel_insert_input {
-  data: order_contact_insert_input;
-  on_conflict?: order_contact_on_conflict | null;
 }
 
 /**
