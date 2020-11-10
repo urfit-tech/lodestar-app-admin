@@ -1,12 +1,12 @@
 // organize-imports-ignore
 import { FileAddOutlined, SearchOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Button, Input, Table, Select, DatePicker } from 'antd'
+import { Button, Input, Table, Select, DatePicker, Spin } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
-import { useIntl } from 'react-intl'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, memberMessages } from '../../helpers/translation'
@@ -18,6 +18,11 @@ import MemberTaskAdminModal from './MemberTaskAdminModal'
 
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
+
+const messages = defineMessages({
+  switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: '切換月曆模式' },
+  switchTable: { id: 'member.ui.switchTable', defaultMessage: '切換列表模式' },
+})
 
 const StyledTitle = styled.span`
   color: var(--gray-darker);
@@ -55,16 +60,17 @@ const MemberTaskAdminBlock: React.FC<{
     category?: string
     executor?: string
     dueAt?: Date[]
+    status?: string
   }>({})
   const { loadingMemberTasks, memberTasks, loadMoreMemberTasks, refetchMemberTasks } = useMemberTaskCollection({
     ...filter,
     memberId,
+    ...(display === 'calendar' && { limit: 99999 }),
   })
   const [selectedMemberTask, setSelectedMemberTask] = useState<MemberTaskProps | null>(null)
   const [visible, setVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  const [executorIdSearch, setExecutorIdSearch] = useState('')
   const executors = memberTasks
     .map(task => ({ executorId: task.executor?.id, name: task.executor?.name }))
     .filter(executor => executor?.executorId)
@@ -248,54 +254,97 @@ const MemberTaskAdminBlock: React.FC<{
         />
       </div>
       <div className="d-flex align-item-center justify-content-between mb-4">
-        <Button className="mb-3" onClick={() => setDisplay(display === 'table' ? 'calendar' : 'table')}>
-          {display === 'calendar' ? '切換列表模式' : '切換月曆模式'}
+        <Button
+          className="mb-3"
+          onClick={() => {
+            setFilter({})
+            setDisplay(display === 'table' ? 'calendar' : 'table')
+          }}
+        >
+          {display === 'table' ? formatMessage(messages.switchCalendar) : formatMessage(messages.switchTable)}
         </Button>
         {display === 'calendar' && (
-          <Select
-            showSearch
-            defaultValue={''}
-            style={{ width: '150px' }}
-            filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            onSelect={LabeledValue => {
-              setExecutorIdSearch(`${LabeledValue}`)
-            }}
-          >
-            <Select.Option value="">全部指派人員</Select.Option>
-            {executors.map((executor, index) => (
-              <Select.Option key={executor?.executorId || index} value={executor?.executorId || ''}>
-                {executor.name}
+          <div>
+            <Select
+              allowClear
+              placeholder={formatMessage(memberMessages.label.status)}
+              className="mr-3"
+              style={{ width: '150px' }}
+              filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              onSelect={(value: MemberTaskProps['status']) => {
+                setFilter(filter => ({
+                  ...filter,
+                  status: value,
+                }))
+              }}
+              onClear={() => {
+                setFilter(filter => ({
+                  ...filter,
+                  status: undefined,
+                }))
+              }}
+            >
+              <Select.Option value={'pending'}>{formatMessage(memberMessages.status.statusPending)}</Select.Option>
+              <Select.Option value={'in-progress'}>
+                {formatMessage(memberMessages.status.statusInProgress)}
               </Select.Option>
-            ))}
-          </Select>
+              <Select.Option value={'done'}>{formatMessage(memberMessages.status.statusDone)}</Select.Option>
+            </Select>
+            <Select
+              allowClear
+              showSearch
+              placeholder={formatMessage(memberMessages.label.manager)}
+              style={{ width: '150px' }}
+              filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              onSelect={value => {
+                setFilter(filter => ({
+                  ...filter,
+                  executor: `${value}` || undefined,
+                }))
+              }}
+              onClear={() => {
+                setFilter(filter => ({
+                  ...filter,
+                  executor: undefined,
+                }))
+              }}
+            >
+              {executors.map((executor, index) => (
+                <Select.Option key={executor?.executorId || index} value={executor?.name || ''}>
+                  {executor.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
         )}
       </div>
       <AdminBlock>
         {display === 'calendar' ? (
-          <FullCalendar
-            plugins={[dayGridPlugin]}
-            initialView="dayGridMonth"
-            events={memberTasks
-              .filter(memberTask => memberTask.dueAt)
-              .filter(memberTask => (executorIdSearch ? memberTask.executor?.id === executorIdSearch : true))
-              .map(memberTask => {
-                return {
-                  id: memberTask.id,
-                  title:
-                    memberTask.title +
-                    (memberTask.title.includes('Demo') ||
-                    memberTask.title.includes('DEMO') ||
-                    memberTask.title.includes('demo')
-                      ? ` ${memberTask.member.name}`
-                      : ''),
-                  start: moment(memberTask.dueAt).format(),
-                }
-              })}
-            eventClick={e => {
-              setSelectedMemberTask(memberTasks.find(memberTask => memberTask.id === e.event.id) || null)
-              setVisible(true)
-            }}
-          />
+          <Spin spinning={loadingMemberTasks}>
+            <FullCalendar
+              plugins={[dayGridPlugin]}
+              initialView="dayGridMonth"
+              events={memberTasks
+                .filter(memberTask => memberTask.dueAt)
+                .map(memberTask => {
+                  return {
+                    id: memberTask.id,
+                    title:
+                      memberTask.title +
+                      (memberTask.title.includes('Demo') ||
+                      memberTask.title.includes('DEMO') ||
+                      memberTask.title.includes('demo')
+                        ? ` ${memberTask.member.name}`
+                        : ''),
+                    start: moment(memberTask.dueAt).format(),
+                  }
+                })}
+              eventClick={e => {
+                setSelectedMemberTask(memberTasks.find(memberTask => memberTask.id === e.event.id) || null)
+                setVisible(true)
+              }}
+            />
+          </Spin>
         ) : display === 'table' ? (
           <Table
             columns={columns}
@@ -351,6 +400,7 @@ const useMemberTaskCollection = ({
   category,
   executor,
   dueAt,
+  status,
   limit = 10,
 }: {
   memberId?: string
@@ -358,6 +408,7 @@ const useMemberTaskCollection = ({
   category?: string
   executor?: string
   dueAt?: Date[]
+  status?: string
   limit?: number
 }) => {
   const { loading, error, data, refetch, fetchMore } = useQuery<
@@ -372,6 +423,7 @@ const useMemberTaskCollection = ({
         $executorSearch: String
         $dueAtStartSearch: timestamptz
         $dueAtEndSearch: timestamptz
+        $statusSearch: String
         $cursor: timestamptz
         $limit: Int
       ) {
@@ -388,7 +440,8 @@ const useMemberTaskCollection = ({
                   { executor: { username: { _ilike: $executorSearch } } }
                 ]
               }
-              { _or: [{ due_at: { _is_null: true } }, { due_at: { _gte: $dueAtStartSearch, _lte: $dueAtEndSearch } }] }
+              { _or: [{ due_at: { _gte: $dueAtStartSearch, _lte: $dueAtEndSearch } }] }
+              { _or: [{ status: { _is_null: true } }, { status: { _ilike: $statusSearch } }] }
             ]
           }
         ) {
@@ -409,7 +462,8 @@ const useMemberTaskCollection = ({
                   { executor: { username: { _ilike: $executorSearch } } }
                 ]
               }
-              { _or: [{ due_at: { _is_null: true } }, { due_at: { _gte: $dueAtStartSearch, _lte: $dueAtEndSearch } }] }
+              { _or: [{ due_at: { _gte: $dueAtStartSearch, _lte: $dueAtEndSearch } }] }
+              { _or: [{ status: { _is_null: true } }, { status: { _ilike: $statusSearch } }] }
             ]
             created_at: { _lt: $cursor }
           }
@@ -449,6 +503,7 @@ const useMemberTaskCollection = ({
         executorSearch: executor && `%${executor}%`,
         dueAtStartSearch: dueAt?.length ? dueAt[0] : null,
         dueAtEndSearch: dueAt?.length ? dueAt[1] : null,
+        statusSearch: status && `%${status}%`,
         cursor: null,
         limit,
       },
