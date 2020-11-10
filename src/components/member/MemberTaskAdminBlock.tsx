@@ -276,6 +276,7 @@ const MemberTaskAdminBlock: React.FC<{
                   ...filter,
                   status: value,
                 }))
+                refetchMemberTasks()
               }}
               onClear={() => {
                 setFilter(filter => ({
