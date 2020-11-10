@@ -15,6 +15,7 @@ import CategorySelector from '../form/CategorySelector'
 import TagSelector from '../form/TagSelector'
 
 type FieldProps = {
+  name: string
   phones: string[]
   tags: string[]
   categoryIds: string[]
@@ -41,6 +42,7 @@ const MemberProfileBasicForm: React.FC<{
     setLoading(true)
     updateMemberProfileBasic({
       variables: {
+        name: values?.name || memberAdmin.name,
         memberId: memberAdmin.id,
         managerId: values.managerId,
         assignedAt: new Date(),
@@ -163,6 +165,7 @@ const PhoneCollectionInput: React.FC<{
 
 const UPDATE_MEMBER_PROFILE_BASIC = gql`
   mutation UPDATE_MEMBER_PROFILE_BASIC(
+    $name: String
     $memberId: String!
     $managerId: String
     $assignedAt: timestamptz
@@ -171,7 +174,10 @@ const UPDATE_MEMBER_PROFILE_BASIC = gql`
     $phones: [member_phone_insert_input!]!
     $memberCategories: [member_category_insert_input!]!
   ) {
-    update_member(where: { id: { _eq: $memberId } }, _set: { manager_id: $managerId, assigned_at: $assignedAt }) {
+    update_member(
+      where: { id: { _eq: $memberId } }
+      _set: { name: $name, manager_id: $managerId, assigned_at: $assignedAt }
+    ) {
       affected_rows
     }
     # update tags
