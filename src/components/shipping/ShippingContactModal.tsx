@@ -1,6 +1,6 @@
 import Icon from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Button, Form, Modal } from 'antd'
+import { Button, Form, message, Modal } from 'antd'
 import ButtonGroup from 'antd/lib/button/button-group'
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
@@ -85,6 +85,7 @@ const ShippingContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
       },
     }).then(() => {
       form.resetFields()
+      message.success(formatMessage(commonMessages.event.successfullySaved))
       refetch()
     })
   }
