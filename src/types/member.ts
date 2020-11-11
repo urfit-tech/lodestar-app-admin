@@ -31,7 +31,7 @@ export type MemberInfoProps = {
     id: string
     name: string
   } | null
-  assigned_at: Date | null
+  assignedAt: Date | null
   phones: string[]
   consumption: number
   categories: {

@@ -545,7 +545,7 @@ export const useMemberCollection = (filter?: {
         createdAt: v.created_at ? new Date(v.created_at) : null,
         loginedAt: v.logined_at,
         manager: v.manager,
-        assigned_at: v.assigned_at,
+        assignedAt: v.assigned_at,
         phones: v.member_phones.map(v => v.phone),
         consumption: sum(
           v.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
