@@ -90,6 +90,7 @@ const MemberCollectionAdminPage: React.FC = () => {
     { id: 'email', title: 'Email' },
     permissions['MEMBER_PHONE_ADMIN'] ? { id: 'phone', title: formatMessage(commonMessages.label.phone) } : null,
     { id: 'createdAt', title: formatMessage(commonMessages.label.createdDate) },
+    { id: 'loginedAt', title: formatMessage(commonMessages.label.lastLogin) },
     { id: 'consumption', title: formatMessage(commonMessages.label.consumption) },
     { id: 'categories', title: formatMessage(commonMessages.term.category) },
     { id: 'tags', title: formatMessage(commonMessages.term.tags) },
@@ -270,6 +271,13 @@ const MemberCollectionAdminPage: React.FC = () => {
       key: 'createdAt',
       render: (text, record, index) => (record.createdAt ? moment(record.createdAt).format('YYYY-MM-DD') : ''),
       sorter: (a, b) => (b.createdAt ? b.createdAt.getTime() : 0) - (a.createdAt ? a.createdAt.getTime() : 0),
+    },
+    {
+      title: formatMessage(commonMessages.label.lastLogin),
+      dataIndex: 'loginedAt',
+      key: 'loginedAt',
+      render: (text, record, index) => (record.loginedAt ? moment(record.loginedAt).format('YYYY-MM-DD HH:mm:ss') : ''),
+      sorter: (a, b) => (b.loginedAt ? b.loginedAt.getTime() : 0) - (a.loginedAt ? a.loginedAt.getTime() : 0),
     },
     {
       title: formatMessage(commonMessages.label.consumption),
