@@ -252,8 +252,8 @@ export const useMemberShop = (shopId: string) => {
               list_price
               sale_price
               merchandise_spec_inventory_status {
-                total_quantity
-                buyable_quantity
+                undelivered_quantity
+                delivered_quantity
               }
             }
           }
@@ -283,6 +283,7 @@ export const useMemberShop = (shopId: string) => {
           },
           merchandises: data.member_shop_by_pk.merchandises.map(v => ({
             id: v.id,
+            coverUrl: v.merchandise_imgs[0]?.url || null,
             title: v.title,
             soldAt: v.sold_at && new Date(v.sold_at),
             minPrice: min(
@@ -303,11 +304,10 @@ export const useMemberShop = (shopId: string) => {
                 .filter(notEmpty)
                 .map(
                   w =>
-                    (w.merchandise_spec_inventory_status?.total_quantity || 0) -
-                    (w.merchandise_spec_inventory_status?.buyable_quantity || 0),
+                    (w.merchandise_spec_inventory_status?.delivered_quantity || 0) +
+                    (w.merchandise_spec_inventory_status?.undelivered_quantity || 0),
                 ),
             ),
-            coverUrl: v.merchandise_imgs[0]?.url || null,
           })),
         }
 

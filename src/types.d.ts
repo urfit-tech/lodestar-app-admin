@@ -5058,35 +5058,6 @@ export interface UPDATE_DELIVER_INFOVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_LOGINED_AT
-// ====================================================
-
-export interface UPDATE_LOGINED_AT_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_LOGINED_AT {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: UPDATE_LOGINED_AT_update_member | null;
-}
-
-export interface UPDATE_LOGINED_ATVariables {
-  memberId: string;
-  loginedAt?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_APPLICATION
 // ====================================================
 
@@ -7564,8 +7535,8 @@ export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_imgs
 
 export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs_merchandise_spec_inventory_status {
   __typename: "merchandise_spec_inventory_status";
-  total_quantity: any | null;
-  buyable_quantity: any | null;
+  undelivered_quantity: any | null;
+  delivered_quantity: any | null;
 }
 
 export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs {
