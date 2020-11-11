@@ -78,7 +78,7 @@ const MerchandiseSpecForm: React.FC<{
           id: spec.id || undefined,
           title: spec.title,
           list_price: spec.listPrice || 0,
-          sale_price: spec.salePrice || null,
+          sale_price: spec.salePrice ?? null,
           quota: spec.quota || undefined,
           merchandise_spec_files: {
             data: specFiles[index].map(file => ({
