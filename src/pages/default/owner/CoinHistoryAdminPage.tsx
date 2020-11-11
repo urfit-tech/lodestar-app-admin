@@ -53,6 +53,7 @@ type CustomizeColumnProps = {
   note?: string | null
   startedAt?: Date | null
   endedAt?: Date | null
+  orderLogId?: string
   amount: number
 }
 type CoinLogProps = {
@@ -110,6 +111,7 @@ const CoinHistoryAdminPage: React.FC = () => {
   const [isRevokedModalVisible, setIsRevokedModalVisible] = useState<boolean>(false)
 
   const [fieldFilter, setFieldFilter] = useState<{
+    orderLogId?: string
     nameAndEmail?: string
     title?: string
   }>({})
@@ -455,8 +457,9 @@ const CoinHistoryAdminPage: React.FC = () => {
                 },
                 {
                   title: formatMessage(messages.orderLogId),
-                  dataIndex: 'id',
+                  dataIndex: 'orderLogId',
                   render: (text, record, index) => <div>{record.id}</div>,
+                  ...getColumnSearchProps('orderLogId'),
                 },
                 {
                   title: formatMessage(messages.nameAndEmail),
@@ -699,8 +702,9 @@ const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: st
   }
 }
 
-const useOrderLogWithCoinsCollection = (filter?: { nameAndEmail?: string; title?: string }) => {
+const useOrderLogWithCoinsCollection = (filter?: { orderLogId?: string; nameAndEmail?: string; title?: string }) => {
   const condition: types.GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables['condition'] = {
+    id: filter?.orderLogId ? { _like: `%${filter.orderLogId}%` } : undefined,
     member: filter?.nameAndEmail
       ? {
           name: { _like: `%${filter.nameAndEmail}%` },
