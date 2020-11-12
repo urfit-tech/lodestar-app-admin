@@ -73,12 +73,22 @@ export const AppProvider: React.FC = ({ children }) => {
   }
 
   // after getting app, fetch the auth token
-  const appId = contextValue.id
+  const appId = data?.app_admin_by_pk?.app.id
+  const apiHost = data?.app_admin_by_pk?.api_host
+
   useEffect(() => {
-    if (appId && !authToken) {
-      refreshToken?.({ appId }).catch(() => history.push('/'))
+    if (appId) {
+      if (!backendEndpoint) {
+        if (apiHost) {
+          setBackendEndpoint?.(`https://${apiHost}`)
+        } else {
+          setBackendEndpoint?.(process.env.REACT_APP_BACKEND_ENDPOINT || '')
+        }
+      } else if (!authToken) {
+        refreshToken?.({ appId }).catch(() => history.push('/'))
+      }
     }
-  }, [appId, authToken, history, refreshToken])
+  }, [apiHost, appId, authToken, backendEndpoint, history, refreshToken, setBackendEndpoint])
 
   return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>
 }
