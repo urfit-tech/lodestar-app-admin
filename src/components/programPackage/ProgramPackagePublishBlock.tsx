@@ -82,8 +82,8 @@ const ProgramPackagePublishBlock: React.FC<{
             variables: { programPackageId: programPackage.id, publishedAt },
           })
             .then(() => {
-              onRefetch && onRefetch()
-              onSuccess && onSuccess()
+              onRefetch?.()
+              onSuccess?.()
             })
             .catch(error => onError && onError(error))
             .finally(() => onFinally && onFinally())

@@ -1,16 +1,18 @@
 import Icon from '@ant-design/icons'
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Form, message, Modal } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import BraftEditor from 'braft-editor'
+import BraftEditor, { EditorState } from 'braft-editor'
+import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { dateRangeFormatter, handleError } from '../../helpers'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
-import { useUpdateAppointmentResult } from '../../hooks/appointment'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import { ReactComponent as UserOIcon } from '../../images/icon/user-o.svg'
+import types from '../../types'
 import { AvatarImage } from '../common/Image'
 import { BraftContent } from '../common/StyledBraftEditor'
 import AdminBraftEditor from '../form/AdminBraftEditor'
@@ -121,6 +123,10 @@ export type AppointmentPeriodCardProps = {
   appointmentResult: string | null
 }
 
+type FieldProps = {
+  appointmentResult: EditorState
+}
+
 const AppointmentPeriodCard: React.FC<
   AppointmentPeriodCardProps & {
     onRefetch?: () => void
@@ -139,8 +145,11 @@ const AppointmentPeriodCard: React.FC<
   onRefetch,
 }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
-  const updateAppointmentResult = useUpdateAppointmentResult(orderProduct.id, orderProduct.options)
+  const [form] = useForm<FieldProps>()
+  const [updateAppointmentResult] = useMutation<
+    types.UPDATE_APPOINTMENT_RESULT,
+    types.UPDATE_APPOINTMENT_RESULTVariables
+  >(UPDATE_APPOINTMENT_RESULT)
 
   const [visible, setVisible] = useState(false)
   const [issueModalVisible, setIssueModalVisible] = useState(false)
@@ -153,13 +162,24 @@ const AppointmentPeriodCard: React.FC<
   const handleSubmit = () => {
     form
       .validateFields()
-      .then(values => {
+      .then(() => {
         setLoading(true)
-        updateAppointmentResult(values.appointmentResult.toRAW())
+        const values = form.getFieldsValue()
+        updateAppointmentResult({
+          variables: {
+            orderProductId: orderProduct.id,
+            data: {
+              ...orderProduct.options,
+              appointmentResult: values.appointmentResult?.getCurrentContent().hasText()
+                ? values.appointmentResult.toRAW()
+                : null,
+            },
+          },
+        })
           .then(() => {
-            onRefetch && onRefetch()
-            setIssueModalVisible(false)
             message.success(formatMessage(commonMessages.event.successfullySaved))
+            setIssueModalVisible(false)
+            onRefetch?.()
           })
           .catch(handleError)
           .finally(() => setLoading(false))
@@ -308,5 +328,13 @@ const AppointmentPeriodCard: React.FC<
     </StyledWrapper>
   )
 }
+
+const UPDATE_APPOINTMENT_RESULT = gql`
+  mutation UPDATE_APPOINTMENT_RESULT($orderProductId: uuid!, $data: jsonb) {
+    update_order_product(where: { id: { _eq: $orderProductId } }, _set: { options: $data }) {
+      affected_rows
+    }
+  }
+`
 
 export default AppointmentPeriodCard

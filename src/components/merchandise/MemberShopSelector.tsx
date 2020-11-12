@@ -7,9 +7,10 @@ import { merchandiseMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const MemberShopSelector: React.FC<{
+  allText?: string
   value?: string
   onChange?: (value: string) => void
-}> = ({ value, onChange }) => {
+}> = ({ allText, value, onChange }) => {
   const { formatMessage } = useIntl()
   const { loading, data } = useQuery<types.GET_MEMBER_SHOP_TITLE_COLLECTION>(GET_MEMBER_SHOP_TITLE_COLLECTION)
 
@@ -24,9 +25,11 @@ const MemberShopSelector: React.FC<{
       placeholder={formatMessage(merchandiseMessages.text.selectMemberShopPlaceholder)}
       value={value}
       onChange={value => onChange && onChange(value)}
+      style={{ width: '100%' }}
     >
+      {allText && <Select.Option value="">{allText}</Select.Option>}
       {data?.member_shop.map(memberShop => (
-        <Select.Option value={memberShop.id} title={memberShop.title}>
+        <Select.Option key={memberShop.id} value={memberShop.id} title={memberShop.title}>
           {memberShop.title}
         </Select.Option>
       ))}

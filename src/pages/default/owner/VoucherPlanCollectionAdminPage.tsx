@@ -1,19 +1,19 @@
 import Icon from '@ant-design/icons'
 import { Skeleton } from 'antd'
-import React, { useContext } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../../components/admin'
 import AdminLayout from '../../../components/layout/AdminLayout'
 import DefaultLayout from '../../../components/layout/DefaultLayout'
 import VoucherPlanCollectionBlock from '../../../components/voucher/VoucherPlanCollectionBlock'
-import AppContext from '../../../contexts/AppContext'
+import { useApp } from '../../../contexts/AppContext'
 import { commonMessages } from '../../../helpers/translation'
 import { ReactComponent as DiscountIcon } from '../../../images/icon/discount.svg'
 import NotFoundPage from '../NotFoundPage'
 
-const VoucherPlanCollectionAdminPage = () => {
+const VoucherPlanCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { loading, enabledModules } = useContext(AppContext)
+  const { loading, enabledModules } = useApp()
 
   if (loading) {
     return (

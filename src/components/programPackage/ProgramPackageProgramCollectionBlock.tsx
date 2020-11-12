@@ -5,7 +5,7 @@ import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, programPackageMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { ReactComponent as MoveIcon } from '../../images/icon/move.svg'
 import types from '../../types'
@@ -67,7 +67,7 @@ const ProgramPackageProgramCollectionBlock: React.FC<{
                 position: index,
               })),
             },
-          }).then(() => onRefetch && onRefetch())
+          }).then(() => onRefetch?.())
         }
         renderItem={(program, currentIndex, moveTarget) => (
           <div key={program.id} className="col-md-6 col-lg-4 col-12 mb-5">
@@ -93,7 +93,13 @@ const ProgramPackageProgramCollectionBlock: React.FC<{
                               onClick={() => moveTarget(currentIndex, index)}
                             >
                               <span className="flex-shrink-0">{index + 1}</span>
-                              <span>{program.program.title}</span>
+                              <span>
+                                {program.program.publishedAt
+                                  ? program.program.title
+                                  : `( ${formatMessage(programPackageMessages.status.unpublished)} ) ${
+                                      program.program.title
+                                    }`}
+                              </span>
                             </OverlayListItem>
                           ))}
                         </OverlayListContent>
@@ -110,7 +116,9 @@ const ProgramPackageProgramCollectionBlock: React.FC<{
             </OverlayWrapper>
 
             <StyledTitle level={3} ellipsis={{ rows: 2 }}>
-              {program.program.title}
+              {program.program.publishedAt
+                ? program.program.title
+                : `( ${formatMessage(programPackageMessages.status.unpublished)} ) ${program.program.title}`}
             </StyledTitle>
           </div>
         )}

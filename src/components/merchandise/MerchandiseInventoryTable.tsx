@@ -10,7 +10,11 @@ import { ReactComponent as TextIcon } from '../../images/icon/text.svg'
 import { ProductInventoryLogProps } from '../../types/general'
 
 const StyledQuantity = styled.span<{ quantity: number }>`
-  color: ${props => (props.quantity > 0 ? '#4ed1b3' : '#ff7d62')};
+  background: ${props => (props.quantity > 0 ? '#4ed1b3' : '#ffbe1e')};
+  color: #fff;
+  border-radius: 12px;
+  padding: 2px 8px;
+  letter-spacing: 0.58px;
 `
 const StyledIcon = styled(Icon)`
   color: ${props => props.theme['@primary-color']};
@@ -53,28 +57,32 @@ const MerchandiseInventoryTable: React.FC<{
         </>
       ),
     },
-    {
-      dataIndex: 'specification',
-      title: formatMessage(merchandiseMessages.label.specification),
-    },
+    // {
+    //   dataIndex: 'comment',
+    //   title: formatMessage(merchandiseMessages.label.comment),
+    //   ellipsis: true,
+    // },
     {
       dataIndex: 'quantity',
       title: formatMessage(merchandiseMessages.label.quantity),
       align: 'right',
       render: (text, record, index) => (
         <StyledQuantity quantity={record.quantity}>
-          {record.quantity > 0 ? `+${record.quantity}` : record.quantity}
+          {record.quantity > 0 ? `+ ${record.quantity}` : `- ${Math.abs(record.quantity)}`}
         </StyledQuantity>
       ),
     },
   ]
 
   return (
-    <Table<ProductInventoryLogProps>
-      columns={columns}
-      rowKey={inventoryLog => inventoryLog.id}
-      dataSource={inventoryLogs}
-    />
+    <>
+      <Table<ProductInventoryLogProps>
+        columns={columns}
+        rowKey={inventoryLog => inventoryLog.id}
+        dataSource={inventoryLogs}
+        // pagination={false}
+      />
+    </>
   )
 }
 

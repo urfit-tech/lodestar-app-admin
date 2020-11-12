@@ -11,7 +11,8 @@ import MemberSelector from './MemberSelector'
 const AllMemberSelector: React.FC<{
   value?: string
   onChange?: (value: string | null) => void
-}> = ({ value, onChange }) => {
+  allowClear?: boolean
+}> = ({ value, onChange, allowClear }) => {
   const { formatMessage } = useIntl()
   const { loading, error, members } = useAllMemberCollection()
 
@@ -28,6 +29,7 @@ const AllMemberSelector: React.FC<{
       members={members}
       value={value}
       onChange={value => typeof value === 'string' && onChange && onChange(value)}
+      allowClear={allowClear}
     />
   )
 }

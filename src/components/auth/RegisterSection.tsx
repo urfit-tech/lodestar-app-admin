@@ -3,7 +3,7 @@ import { Button, Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
@@ -11,17 +11,23 @@ import { AuthState } from '../../types/general'
 import { AuthModalContext, StyledAction, StyledDivider, StyledTitle } from './AuthModal'
 import { FacebookLoginButton, GoogleLoginButton } from './SocialLoginButton'
 
+type FieldProps = {
+  username: string
+  email: string
+  password: string
+}
+
 const RegisterSection: React.FC<{
   onAuthStateChange: React.Dispatch<React.SetStateAction<AuthState>>
 }> = ({ onAuthStateChange }) => {
-  const app = useContext(AppContext)
+  const app = useApp()
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { setVisible } = useContext(AuthModalContext)
   const { register } = useAuth()
   const [loading, setLoading] = useState(false)
 
-  const handleRegister = (values: any) => {
+  const handleRegister = (values: FieldProps) => {
     if (!register) {
       return
     }

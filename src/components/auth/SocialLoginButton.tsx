@@ -3,7 +3,7 @@ import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import SocialLogin from 'react-social-login'
 import styled from 'styled-components'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { codeMessages, commonMessages, errorMessages } from '../../helpers/translation'
@@ -58,7 +58,7 @@ class WrappedSocialLoginButton extends React.Component<{
 const SocialLoginButton = SocialLogin(WrappedSocialLoginButton)
 
 export const FacebookLoginButton: React.FC = () => {
-  const app = useContext(AppContext)
+  const app = useApp()
   const { formatMessage } = useIntl()
   const { socialLogin } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
@@ -104,7 +104,7 @@ export const FacebookLoginButton: React.FC = () => {
 }
 
 export const GoogleLoginButton: React.FC = () => {
-  const app = useContext(AppContext)
+  const app = useApp()
   const { formatMessage } = useIntl()
   const { socialLogin } = useAuth()
   const { setVisible } = useContext(AuthModalContext)

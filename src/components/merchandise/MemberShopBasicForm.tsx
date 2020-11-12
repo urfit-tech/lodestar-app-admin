@@ -1,39 +1,40 @@
-import '@ant-design/compatible/assets/index.css'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
+import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, merchandiseMessages } from '../../helpers/translation'
 import types from '../../types'
 import { MemberShopProps } from '../../types/merchandise'
 import ImageInput from '../form/ImageInput'
 
 const messages = defineMessages({
-  memberShopCover: { id: 'merchandise.text.memberShopCover', defaultMessage: '商城封面' },
+  memberShopCover: { id: 'merchandise.text.memberShopCover', defaultMessage: '商店封面' },
 })
 
-type MemberShopBasicFormProps = {
-  memberShop: MemberShopProps
-  refetch?: () => void
+type FieldProps = {
+  title: string
 }
-const MemberShopBasicForm: React.FC<MemberShopBasicFormProps> = ({ memberShop, refetch }) => {
-  const { formatMessage } = useIntl()
-  const [form] = useForm()
-  const { id: appId } = useContext(AppContext)
 
+const MemberShopBasicForm: React.FC<{
+  memberShop: MemberShopProps
+  onRefetch?: () => void
+}> = ({ memberShop, onRefetch }) => {
+  const { formatMessage } = useIntl()
+  const [form] = useForm<FieldProps>()
+  const { id: appId } = useApp()
   const [updateMemberShopTitle] = useMutation<types.UPDATE_MEMBER_SHOP_TITLE, types.UPDATE_MEMBER_SHOP_TITLEVariables>(
     UPDATE_MEMBER_SHOP_TITLE,
   )
   const [updateMembersShopCover] = useMutation<types.UPDATE_MEMBER_SHOP_COVER, types.UPDATE_MEMBER_SHOP_COVERVariables>(
     UPDATE_MEMBER_SHOP_COVER,
   )
-
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateMemberShopTitle({
       variables: {
@@ -42,13 +43,15 @@ const MemberShopBasicForm: React.FC<MemberShopBasicFormProps> = ({ memberShop, r
       },
     })
       .then(() => {
-        refetch && refetch()
         message.success(formatMessage(commonMessages.event.successfullyUpload))
+        onRefetch?.()
       })
+      .catch(handleError)
       .finally(() => setLoading(false))
   }
 
   const handleUpload = () => {
+    setLoading(true)
     updateMembersShopCover({
       variables: {
         memberShopId: memberShop.id,
@@ -56,10 +59,13 @@ const MemberShopBasicForm: React.FC<MemberShopBasicFormProps> = ({ memberShop, r
           memberShop.id
         }?t=${Date.now()}`,
       },
-    }).then(() => {
-      refetch && refetch()
-      message.success(formatMessage(commonMessages.event.successfullySaved))
     })
+      .then(() => {
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
@@ -71,7 +77,7 @@ const MemberShopBasicForm: React.FC<MemberShopBasicFormProps> = ({ memberShop, r
       wrapperCol={{ md: { span: 8 } }}
       hideRequiredMark
       onFinish={values => handleSubmit(values)}
-      initialValues={{ title: memberShop.title, memberShopCover: memberShop.coverUrl }}
+      initialValues={{ title: memberShop.title }}
     >
       <Form.Item
         label={formatMessage(merchandiseMessages.label.shopTitle)}
@@ -104,7 +110,7 @@ const MemberShopBasicForm: React.FC<MemberShopBasicFormProps> = ({ memberShop, r
         <Button className="mr-2" onClick={() => form.resetFields()}>
           {formatMessage(commonMessages.ui.cancel)}
         </Button>
-        <Button type="primary" loading={loading} htmlType="submit">
+        <Button type="primary" htmlType="submit" loading={loading}>
           {formatMessage(commonMessages.ui.save)}
         </Button>
       </div>
@@ -119,7 +125,6 @@ const UPDATE_MEMBER_SHOP_TITLE = gql`
     }
   }
 `
-
 const UPDATE_MEMBER_SHOP_COVER = gql`
   mutation UPDATE_MEMBER_SHOP_COVER($memberShopId: uuid!, $coverUrl: String) {
     update_member_shop(where: { id: { _eq: $memberShopId } }, _set: { cover_url: $coverUrl }) {

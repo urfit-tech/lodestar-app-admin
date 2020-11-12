@@ -2,13 +2,13 @@ import { BookFilled } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Select, Skeleton } from 'antd'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../components/admin'
 import IssueAdminCard from '../../components/issue/IssueAdminCard'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { EditableProgramSelector, OwnedProgramSelector } from '../../components/program/ProgramSelector'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, errorMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -111,7 +111,7 @@ const AllProgramIssueCollectionBlock: React.FC<{
 }
 
 const useGetCreatorProgramIssue = (memberId: string | null, selectedProgramId: string, unsolved?: boolean) => {
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
   const { loading, error, data, refetch } = useQuery<
     types.GET_CREATOR_PROGRAM_ISSUES,
     types.GET_CREATOR_PROGRAM_ISSUESVariables

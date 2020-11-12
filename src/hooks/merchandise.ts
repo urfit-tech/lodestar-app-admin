@@ -1,5 +1,6 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
+import { max, min } from 'lodash'
 import { sum } from 'ramda'
 import { notEmpty } from '../helpers'
 import types from '../types'
@@ -11,34 +12,6 @@ import {
   MerchandiseProps,
 } from '../types/merchandise'
 
-export const useInsertMerchandise = () => {
-  const [insertMerchandise] = useMutation<types.INSERT_MERCHANDISE, types.INSERT_MERCHANDISEVariables>(gql`
-    mutation INSERT_MERCHANDISE(
-      $appId: String!
-      $memberId: String!
-      $memberShopId: uuid!
-      $title: String!
-      $merchandiseCategories: [merchandise_category_insert_input!]!
-      $isPhysical: Boolean
-    ) {
-      insert_merchandise_one(
-        object: {
-          app_id: $appId
-          title: $title
-          member_id: $memberId
-          member_shop_id: $memberShopId
-          merchandise_categories: { data: $merchandiseCategories }
-          is_physical: $isPhysical
-        }
-      ) {
-        id
-      }
-    }
-  `)
-
-  return insertMerchandise
-}
-
 export const useMerchandiseCollection = (isNotPublished?: boolean) => {
   const { loading, error, data, refetch } = useQuery<types.GET_MERCHANDISE_COLLECTION>(
     gql`
@@ -49,8 +22,6 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
         ) {
           id
           title
-          list_price
-          sale_price
           sold_at
           published_at
           is_physical
@@ -71,9 +42,9 @@ export const useMerchandiseCollection = (isNotPublished?: boolean) => {
       : data.merchandise.map(merchandise => ({
           id: merchandise.id,
           title: merchandise.title,
-          listPrice: merchandise.list_price,
-          salePrice: merchandise.sale_price,
           soldAt: merchandise.sold_at ? new Date(merchandise.sold_at) : null,
+          minPrice: 0,
+          maxPrice: 0,
           publishedAt: merchandise.published_at ? new Date(merchandise.published_at) : null,
           isPhysical: merchandise.is_physical,
           isCustomized: merchandise.is_customized,
@@ -95,11 +66,8 @@ export const useMerchandise = (id: string) => {
         merchandise_by_pk(id: $id) {
           id
           title
-          meta
           abstract
           description
-          list_price
-          sale_price
           sold_at
           started_at
           ended_at
@@ -107,6 +75,9 @@ export const useMerchandise = (id: string) => {
           published_at
           member_shop_id
           is_physical
+          is_customized
+          is_limited
+          is_countdown_timer_visible
           merchandise_categories(order_by: { position: asc }) {
             id
             category {
@@ -123,14 +94,21 @@ export const useMerchandise = (id: string) => {
             type
             url
           }
-          merchandise_files(order_by: { updated_at: asc }) {
-            id
-            data
-          }
           merchandise_inventory_status {
             buyable_quantity
             undelivered_quantity
             delivered_quantity
+          }
+          merchandise_specs {
+            id
+            title
+            list_price
+            sale_price
+            quota
+            merchandise_spec_files {
+              id
+              data
+            }
           }
         }
       }
@@ -156,24 +134,34 @@ export const useMerchandise = (id: string) => {
             url: img.url,
             isCover: img.type === 'cover',
           })),
-          files: data.merchandise_by_pk.merchandise_files.map(v => v.data),
           abstract: data.merchandise_by_pk.abstract,
-          meta: data.merchandise_by_pk.meta,
           link: data.merchandise_by_pk.link,
           description: data.merchandise_by_pk.description,
-          listPrice: data.merchandise_by_pk.list_price,
-          salePrice: data.merchandise_by_pk.sale_price,
           soldAt: data.merchandise_by_pk.sold_at,
           startedAt: data.merchandise_by_pk.started_at,
           endedAt: data.merchandise_by_pk.ended_at,
           publishedAt: data.merchandise_by_pk.published_at ? new Date(data.merchandise_by_pk.published_at) : null,
           memberShopId: data.merchandise_by_pk.member_shop_id,
           isPhysical: data.merchandise_by_pk.is_physical,
+          isCustomized: data.merchandise_by_pk.is_customized,
+          isLimited: data.merchandise_by_pk.is_limited,
+          isCountdownTimerVisible: data.merchandise_by_pk.is_countdown_timer_visible,
           merchandiseInventoryStatus: {
             buyableQuantity: data.merchandise_by_pk.merchandise_inventory_status?.buyable_quantity || 0,
             undeliveredQuantity: data.merchandise_by_pk.merchandise_inventory_status?.undelivered_quantity || 0,
             deliveredQuantity: data.merchandise_by_pk.merchandise_inventory_status?.delivered_quantity || 0,
           },
+          specs: data.merchandise_by_pk.merchandise_specs.map(v => ({
+            id: v.id,
+            title: v.title,
+            listPrice: v.list_price,
+            salePrice: v.sale_price,
+            quota: v.quota,
+            files: v.merchandise_spec_files.map(u => ({
+              id: u.id,
+              data: u.data,
+            })),
+          })),
         }
 
   return {
@@ -251,33 +239,28 @@ export const useMemberShop = (shopId: string) => {
           ) {
             id
             title
-            list_price
-            sale_price
             sold_at
             published_at
             is_physical
             is_customized
-            merchandise_specs {
-              id
-              merchandise_spec_inventory_status {
-                total_quantity
-                buyable_quantity
-              }
-            }
             merchandise_imgs(where: { type: { _eq: "cover" } }) {
               id
               url
+            }
+            merchandise_specs {
+              id
+              list_price
+              sale_price
+              merchandise_spec_inventory_status {
+                undelivered_quantity
+                delivered_quantity
+              }
             }
           }
         }
       }
     `,
-    {
-      variables: {
-        shopId,
-      },
-      fetchPolicy: 'no-cache',
-    },
+    { variables: { shopId }, fetchPolicy: 'no-cache' },
   )
 
   const memberShop:
@@ -300,10 +283,19 @@ export const useMemberShop = (shopId: string) => {
           },
           merchandises: data.member_shop_by_pk.merchandises.map(v => ({
             id: v.id,
+            coverUrl: v.merchandise_imgs[0]?.url || null,
             title: v.title,
-            listPrice: v.list_price,
-            salePrice: v.sale_price,
-            soldAt: v.sold_at ? new Date(v.sold_at) : null,
+            soldAt: v.sold_at && new Date(v.sold_at),
+            minPrice: min(
+              v.merchandise_specs.map(spec =>
+                v.sold_at && typeof spec.sale_price === 'number' ? spec.sale_price : spec.list_price || 0,
+              ),
+            ),
+            maxPrice: max(
+              v.merchandise_specs.map(spec =>
+                v.sold_at && typeof spec.sale_price === 'number' ? spec.sale_price : spec.list_price || 0,
+              ),
+            ),
             isPhysical: v.is_physical,
             isCustomized: v.is_customized,
             publishedAt: v.published_at ? new Date(v.published_at) : null,
@@ -312,11 +304,10 @@ export const useMemberShop = (shopId: string) => {
                 .filter(notEmpty)
                 .map(
                   w =>
-                    (w.merchandise_spec_inventory_status?.total_quantity || 0) -
-                    (w.merchandise_spec_inventory_status?.buyable_quantity || 0),
+                    (w.merchandise_spec_inventory_status?.delivered_quantity || 0) +
+                    (w.merchandise_spec_inventory_status?.undelivered_quantity || 0),
                 ),
             ),
-            coverUrl: v.merchandise_imgs[0]?.url || null,
           })),
         }
 
@@ -325,5 +316,95 @@ export const useMemberShop = (shopId: string) => {
     errorMemberShop: error,
     memberShop,
     refetchMemberShop: refetch,
+  }
+}
+
+export const useMerchandiseSpecCollection = (options?: {
+  merchandiseSearch?: string
+  isLimited?: boolean
+  isCustomized?: boolean
+  merchandiseId?: string
+}) => {
+  const { loading, error, data, refetch } = useQuery<types.GET_MERCHANDISE_SPEC_COLLECTION>(
+    gql`
+      query GET_MERCHANDISE_SPEC_COLLECTION(
+        $merchandiseSearchLike: String
+        $isCustomized: Boolean
+        $isLimited: Boolean
+        $merchandiseId: uuid
+      ) {
+        merchandise_spec(
+          where: {
+            merchandise: {
+              is_limited: { _eq: $isLimited }
+              is_customized: { _eq: $isCustomized }
+              is_deleted: { _eq: false }
+              title: { _like: $merchandiseSearchLike }
+              id: { _eq: $merchandiseId }
+            }
+          }
+        ) {
+          id
+          merchandise {
+            title
+            published_at
+            merchandise_imgs {
+              url
+            }
+            member_shop {
+              id
+              title
+            }
+          }
+          title
+          merchandise_spec_inventory_status {
+            buyable_quantity
+            delivered_quantity
+            undelivered_quantity
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        merchandiseSearchLike: options?.merchandiseSearch && `%${options.merchandiseSearch}%`,
+        isLimited: options?.isLimited,
+        isCustomized: options?.isCustomized,
+        merchandiseId: options?.merchandiseId,
+      },
+      fetchPolicy: 'no-cache',
+    },
+  )
+  const merchandiseSpecs: {
+    merchandiseSpecId: string
+    merchandiseTitle: string
+    published_at: Date | null
+    merchandiseMemberShopId?: string
+    merchandiseMemberShop?: string
+    coverUrl: string | null
+    merchandiseSpecTitle: string
+    merchandiseSpecInventoryStatus: ProductInventoryStatusProps
+  }[] =
+    loading || error || !data
+      ? []
+      : data.merchandise_spec.map(v => ({
+          merchandiseSpecId: v.id,
+          merchandiseTitle: v.merchandise.title,
+          published_at: v.merchandise.published_at,
+          merchandiseMemberShopId: v.merchandise?.member_shop?.id,
+          merchandiseMemberShop: v.merchandise?.member_shop?.title,
+          coverUrl: v.merchandise.merchandise_imgs[0]?.url || null,
+          merchandiseSpecTitle: v.title,
+          merchandiseSpecInventoryStatus: {
+            buyableQuantity: v.merchandise_spec_inventory_status?.buyable_quantity | 0,
+            deliveredQuantity: v.merchandise_spec_inventory_status?.delivered_quantity | 0,
+            undeliveredQuantity: v.merchandise_spec_inventory_status?.undelivered_quantity | 0,
+          },
+        }))
+  return {
+    loadingMerchandiseSpecs: loading,
+    errorMerchandiseSpecs: error,
+    merchandiseSpecs,
+    refetchMerchandiseSpecs: refetch,
   }
 }

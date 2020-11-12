@@ -2,7 +2,7 @@ import { HeartFilled, HeartOutlined, MessageOutlined, MoreOutlined } from '@ant-
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Dropdown, Form, Input, Menu, Tag, Typography } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import BraftEditor from 'braft-editor'
+import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useContext, useEffect, useState } from 'react'
@@ -58,6 +58,11 @@ const messages = defineMessages({
   markIssueAs: { id: 'program.label.markIssueAs', defaultMessage: '標記為 {status}' },
 })
 
+type FieldProps = {
+  title: string
+  description: EditorState
+}
+
 const IssueItem: React.FC<{
   programRoles: ProgramRoleProps[]
   issueId: string
@@ -88,7 +93,7 @@ const IssueItem: React.FC<{
   const { formatMessage } = useIntl()
   const [qIssueId] = useQueryParam('issueId', StringParam)
   const [qIssueReplyId] = useQueryParam('issueReplyId', StringParam)
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { currentMemberId, currentUserRole } = useAuth()
   const theme = useContext(ThemeContext)
 
@@ -130,20 +135,20 @@ const IssueItem: React.FC<{
             memberId: currentMemberId || '',
           },
         })
-    onRefetch && onRefetch()
+    onRefetch?.()
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     updateIssue({
       variables: {
         issueId,
         title: values.title,
-        description: values.description.toRAW(),
+        description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
       },
     })
       .then(() => {
         setEditing(false)
-        onRefetch && onRefetch()
+        onRefetch?.()
       })
       .catch(handleError)
   }
@@ -202,7 +207,9 @@ const IssueItem: React.FC<{
                 <Menu.Item
                   onClick={() => {
                     window.confirm(formatMessage(messages.deleteIssuePrompt)) &&
-                      deleteIssue().then(() => onRefetch && onRefetch())
+                      deleteIssue()
+                        .then(() => onRefetch?.())
+                        .catch(handleError)
                   }}
                 >
                   {formatMessage(commonMessages.ui.delete)}
@@ -216,7 +223,9 @@ const IssueItem: React.FC<{
                         description,
                         solvedAt: solvedAt ? undefined : new Date(),
                       },
-                    }).then(() => onRefetch && onRefetch())
+                    })
+                      .then(() => onRefetch?.())
+                      .catch(handleError)
                   }
                 >
                   {formatMessage(messages.markIssueAs, {

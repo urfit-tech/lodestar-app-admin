@@ -153,48 +153,48 @@ export const useMemberAdmin = (memberId: string) => {
     loading || error || !data || !data.member_by_pk
       ? null
       : {
-          id: data.member_by_pk.id,
-          avatarUrl: data.member_by_pk.picture_url,
-          username: data.member_by_pk.username,
-          name: data.member_by_pk.name,
-          email: data.member_by_pk.email,
-          role: data.member_by_pk.role as UserRole,
-          createdAt: new Date(data.member_by_pk.created_at),
-          loginedAt: data.member_by_pk.logined_at && new Date(data.member_by_pk.logined_at),
-          assignedAt: new Date(data.member_by_pk.assigned_at),
-          manager: data.member_by_pk.manager
-            ? {
-                id: data.member_by_pk.manager.id,
-                email: data.member_by_pk.manager.email,
-                name: data.member_by_pk.manager.name,
-                avatarUrl: data.member_by_pk.manager.picture_url,
-              }
-            : null,
-          tags: data.member_by_pk.member_tags.map(v => v.tag_name),
-          specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
-          phones: data.member_by_pk.member_phones.map(v => v.phone).filter(v => v),
-          notes: data.member_by_pk.member_notes.map(v => ({
-            id: v.id,
-            type: v.type as MemberNoteAdminProps['type'],
-            status: v.status,
-            duration: v.duration,
-            description: v.description,
-            createdAt: new Date(v.created_at),
-            author: {
-              name: v.author.name,
-              pictureUrl: v.author.picture_url,
-            },
-          })),
-          permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission_id),
-          consumption: sum(
-            data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
-          ),
-          coins: data.member_by_pk.coin_logs_aggregate.aggregate?.sum?.amount || 0,
-          categories: data.member_by_pk.member_categories.map(v => ({
-            id: v.category.id,
-            name: v.category.name,
-          })),
-        }
+        id: data.member_by_pk.id,
+        avatarUrl: data.member_by_pk.picture_url,
+        username: data.member_by_pk.username,
+        name: data.member_by_pk.name,
+        email: data.member_by_pk.email,
+        role: data.member_by_pk.role as UserRole,
+        createdAt: new Date(data.member_by_pk.created_at),
+        loginedAt: data.member_by_pk.logined_at && new Date(data.member_by_pk.logined_at),
+        assignedAt: data.member_by_pk.assigned_at && new Date(data.member_by_pk.assigned_at),
+        manager: data.member_by_pk.manager
+          ? {
+            id: data.member_by_pk.manager.id,
+            email: data.member_by_pk.manager.email,
+            name: data.member_by_pk.manager.name,
+            avatarUrl: data.member_by_pk.manager.picture_url,
+          }
+          : null,
+        tags: data.member_by_pk.member_tags.map(v => v.tag_name),
+        specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
+        phones: data.member_by_pk.member_phones.map(v => v.phone).filter(v => v),
+        notes: data.member_by_pk.member_notes.map(v => ({
+          id: v.id,
+          type: v.type as MemberNoteAdminProps['type'],
+          status: v.status,
+          duration: v.duration,
+          description: v.description,
+          createdAt: new Date(v.created_at),
+          author: {
+            name: v.author.name,
+            pictureUrl: v.author.picture_url,
+          },
+        })),
+        permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission_id),
+        consumption: sum(
+          data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
+        ),
+        coins: data.member_by_pk.coin_logs_aggregate.aggregate?.sum?.amount || 0,
+        categories: data.member_by_pk.member_categories.map(v => ({
+          id: v.category.id,
+          name: v.category.name,
+        })),
+      }
 
   return {
     loadingMemberAdmin: loading,
@@ -418,6 +418,7 @@ export const useMemberCollection = (filter?: {
   email?: string
   phone?: string
   category?: string
+  managerName?: string
   tag?: string
   properties?: {
     id: string
@@ -428,36 +429,39 @@ export const useMemberCollection = (filter?: {
     role: filter?.role ? { _eq: filter.role } : undefined,
     name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
     email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
+    manager: filter?.managerName ? {
+      name: { _ilike: `%${filter.managerName}%` },
+    } : undefined,
     member_phones: filter?.phone
       ? {
-          phone: { _ilike: `%${filter.phone}%` },
-        }
+        phone: { _ilike: `%${filter.phone}%` },
+      }
       : undefined,
     member_categories: filter?.category
       ? {
-          category: {
-            name: {
-              _ilike: `%${filter.category}%`,
-            },
+        category: {
+          name: {
+            _ilike: `%${filter.category}%`,
           },
-        }
+        },
+      }
       : undefined,
     member_tags: filter?.tag
       ? {
-          tag_name: {
-            _ilike: filter.tag,
-          },
-        }
+        tag_name: {
+          _ilike: filter.tag,
+        },
+      }
       : undefined,
     member_properties: filter?.properties?.length
       ? {
-          _and: filter.properties
-            .filter(property => property.value)
-            .map(property => ({
-              property_id: { _eq: property.id },
-              value: { _ilike: `%${property.value}%` },
-            })),
-        }
+        _and: filter.properties
+          .filter(property => property.value)
+          .map(property => ({
+            property_id: { _eq: property.id },
+            value: { _ilike: `%${property.value}%` },
+          })),
+      }
       : undefined,
   }
 
@@ -481,6 +485,11 @@ export const useMemberCollection = (filter?: {
           created_at
           logined_at
           role
+          manager{
+            id
+            name
+          }
+          assigned_at
           member_phones {
             id
             phone
@@ -528,29 +537,31 @@ export const useMemberCollection = (filter?: {
     loading || error || !data
       ? []
       : data.member.map(v => ({
-          id: v.id,
-          avatarUrl: v.picture_url,
-          name: v.name || v.username,
-          email: v.email,
-          role: v.role as UserRole,
-          createdAt: v.created_at ? new Date(v.created_at) : null,
-          loginedAt: v.logined_at,
-          phones: v.member_phones.map(v => v.phone),
-          consumption: sum(
-            v.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
-          ),
-          categories: v.member_categories.map(w => ({
-            id: w.category.id,
-            name: w.category.name,
-          })),
-          tags: v.member_tags.map(w => w.tag_name),
-          properties: v.member_properties.reduce((accumulator, currentValue) => {
-            return {
-              ...accumulator,
-              [currentValue.property_id]: currentValue.value,
-            }
-          }, {} as MemberInfoProps['properties']),
-        }))
+        id: v.id,
+        avatarUrl: v.picture_url,
+        name: v.name || v.username,
+        email: v.email,
+        role: v.role as UserRole,
+        createdAt: v.created_at ? new Date(v.created_at) : null,
+        loginedAt: v.logined_at,
+        manager: v.manager,
+        assignedAt: v.assigned_at,
+        phones: v.member_phones.map(v => v.phone),
+        consumption: sum(
+          v.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
+        ),
+        categories: v.member_categories.map(w => ({
+          id: w.category.id,
+          name: w.category.name,
+        })),
+        tags: v.member_tags.map(w => w.tag_name),
+        properties: v.member_properties.reduce((accumulator, currentValue) => {
+          return {
+            ...accumulator,
+            [currentValue.property_id]: currentValue.value,
+          }
+        }, {} as MemberInfoProps['properties']),
+      }))
 
   const loadMoreMembers = () =>
     fetchMore({
@@ -614,30 +625,6 @@ export const useMemberSummaryCollection = () => {
     members,
     refetchMembers: refetch,
   }
-}
-
-export const useUpdateMemberAccount = () => {
-  const [updateMemberAccount] = useMutation<types.UPDATE_MEMBER_ACCOUNT, types.UPDATE_MEMBER_ACCOUNTVariables>(
-    gql`
-      mutation UPDATE_MEMBER_ACCOUNT(
-        $memberId: String
-        $name: String
-        $description: String
-        $username: String
-        $email: String
-        $pictureUrl: String
-      ) {
-        update_member(
-          where: { id: { _eq: $memberId } }
-          _set: { name: $name, description: $description, username: $username, email: $email, picture_url: $pictureUrl }
-        ) {
-          affected_rows
-        }
-      }
-    `,
-  )
-
-  return updateMemberAccount
 }
 
 export const useProperty = () => {

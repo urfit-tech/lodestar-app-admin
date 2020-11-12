@@ -2,15 +2,16 @@ import { FileAddOutlined, ShoppingFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Tabs } from 'antd'
 import gql from 'graphql-tag'
-import React, { useContext } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import { AdminPageTitle } from '../../components/admin'
 import BlogPostCard from '../../components/blog/BlogPostCard'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { handleError } from '../../helpers'
 import { blogMessages, commonMessages } from '../../helpers/translation'
 import { usePostCollection } from '../../hooks/blog'
 import types from '../../types'
@@ -18,9 +19,9 @@ import types from '../../types'
 const BlogAdminCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { id: appId } = useContext(AppContext)
   const { currentMemberId } = useAuth()
-  const { posts } = usePostCollection()
+  const { id: appId } = useApp()
+  const { posts, refetchPosts } = usePostCollection()
   const [insertPost] = useMutation<types.INSERT_POST, types.INSERT_POSTVariables>(INSERT_POST)
 
   const tabContents = [
@@ -45,8 +46,7 @@ const BlogAdminCollectionPage: React.FC = () => {
 
       <div className="mb-4">
         <ProductCreationModal
-          withCategorySelector
-          classType="post"
+          categoryClassType="post"
           renderTrigger={({ setVisible }) => (
             <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
               {formatMessage(blogMessages.ui.createPost)}
@@ -70,15 +70,20 @@ const BlogAdminCollectionPage: React.FC = () => {
                     position: -1,
                   },
                 ],
-                postCategories: categoryIds.map((categoryId, index) => ({
-                  category_id: categoryId,
-                  position: index,
-                })),
+                postCategories:
+                  categoryIds?.map((categoryId, index) => ({
+                    category_id: categoryId,
+                    position: index,
+                  })) || [],
               },
-            }).then(({ data }) => {
-              const postId = data?.insert_post?.returning[0].id
-              postId && history.push(`/blog/${postId}`)
             })
+              .then(({ data }) => {
+                refetchPosts().then(() => {
+                  const postId = data?.insert_post?.returning[0].id
+                  postId && history.push(`/blog/${postId}`)
+                })
+              })
+              .catch(handleError)
           }
         />
       </div>

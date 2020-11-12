@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import BraftEditor from 'braft-editor'
+import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -11,12 +11,16 @@ import types from '../../types'
 import { ProgramPackageProps } from '../../types/programPackage'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 
+type FieldProps = {
+  description: EditorState
+}
+
 const ProgramPackageDescriptionForm: React.FC<{
   programPackage: ProgramPackageProps | null
   onRefetch?: () => void
 }> = ({ programPackage, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [updateProgramPackageDescription] = useMutation<
     types.UPDATE_PROGRAM_PACKAGE_DESCRIPTION,
     types.UPDATE_PROGRAM_PACKAGE_DESCRIPTIONVariables
@@ -27,17 +31,17 @@ const ProgramPackageDescriptionForm: React.FC<{
     return <Skeleton active />
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateProgramPackageDescription({
       variables: {
         programPackageId: programPackage.id,
-        description: values.description.toRAW(),
+        description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

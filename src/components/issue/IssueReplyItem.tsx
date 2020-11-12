@@ -8,7 +8,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled, { ThemeContext } from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { rgba } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -58,10 +58,10 @@ const IssueReplyItem: React.FC<{
   memberId: string
   onRefetch?: () => void
 }> = ({ programRoles, issueReplyId, content, reactedMemberIds, createdAt, memberId, onRefetch }) => {
-  const { id: appId } = useContext(AppContext)
   const { formatMessage } = useIntl()
   const [qIssueReplyId] = useQueryParam('issueReplyId', StringParam)
-  const { currentMemberId, authToken } = useAuth()
+  const { currentMemberId, authToken, backendEndpoint } = useAuth()
+  const { id: appId } = useApp()
   const theme = useContext(ThemeContext)
 
   const [insertIssueReplyReaction] = useMutation<
@@ -101,7 +101,7 @@ const IssueReplyItem: React.FC<{
           variables: { issueReplyId, memberId: currentMemberId || '' },
         })
 
-    onRefetch && onRefetch()
+    onRefetch?.()
   }
 
   return (
@@ -153,7 +153,7 @@ const IssueReplyItem: React.FC<{
                 <Menu.Item
                   onClick={() =>
                     window.confirm(formatMessage(commonMessages.label.cannotRecover)) &&
-                    deleteIssueReply({ variables: { issueReplyId } }).then(() => onRefetch && onRefetch())
+                    deleteIssueReply({ variables: { issueReplyId } }).then(() => onRefetch?.())
                   }
                 >
                   {formatMessage(commonMessages.ui.delete)}
@@ -175,7 +175,7 @@ const IssueReplyItem: React.FC<{
                 value={contentState}
                 onChange={value => setContentState(value)}
                 controls={['bold', 'italic', 'underline', 'separator', 'media']}
-                media={{ uploadFn: createUploadFn(appId, authToken) }}
+                media={{ uploadFn: createUploadFn(appId, authToken, backendEndpoint) }}
               />
               <div>
                 <Button className="mr-2" onClick={() => setEditing(false)}>
@@ -188,8 +188,8 @@ const IssueReplyItem: React.FC<{
                       variables: { issueReplyId, content: contentState.toRAW() },
                     })
                       .then(() => {
-                        onRefetch && onRefetch()
                         setEditing(false)
+                        onRefetch?.()
                       })
                       .catch(err => message.error(formatMessage(messages.updateIssueFailed)))
                   }

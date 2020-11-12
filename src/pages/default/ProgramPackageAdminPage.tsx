@@ -1,6 +1,6 @@
 import { ArrowLeftOutlined, FileAddOutlined } from '@ant-design/icons'
 import { Button, Tabs } from 'antd'
-import React, { useContext } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -20,7 +20,7 @@ import ProgramPackagePlanCollectionBlock from '../../components/programPackage/P
 import ProgramPackageProgramCollectionBlock from '../../components/programPackage/ProgramPackageProgramCollectionBlock'
 import ProgramPackageProgramConnectionModal from '../../components/programPackage/ProgramPackageProgramConnectionModal'
 import ProgramPackagePublishBlock from '../../components/programPackage/ProgramPackagePublishBlock'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { commonMessages, programPackageMessages } from '../../helpers/translation'
 import { useGetProgramPackage } from '../../hooks/programPackage'
 
@@ -28,7 +28,7 @@ const ProgramPackageAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { programPackageId } = useParams<{ programPackageId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const { settings } = useContext(AppContext)
+  const { settings } = useApp()
   const { programPackage, refetch } = useGetProgramPackage(programPackageId)
 
   return (

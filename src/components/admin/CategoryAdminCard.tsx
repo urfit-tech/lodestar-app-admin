@@ -2,10 +2,10 @@ import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Typography } from 'antd'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useCategory } from '../../hooks/data'
@@ -18,7 +18,7 @@ const CategoryAdminCard: React.FC<{
   classType: ClassType
 }> = ({ classType }) => {
   const { formatMessage } = useIntl()
-  const app = useContext(AppContext)
+  const app = useApp()
   const { loading: loadingCategory, categories, refetch } = useCategory(classType)
 
   const [insertCategory] = useMutation<types.INSERT_PROGRAM_CATEGORY, types.INSERT_PROGRAM_CATEGORYVariables>(

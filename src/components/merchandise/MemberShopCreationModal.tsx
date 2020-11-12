@@ -55,7 +55,7 @@ const MemberShopCreationModal: React.FC<FormComponentProps> = ({ form }) => {
         })
       }}
     >
-      <Form hideRequiredMark colon={false}>
+      <Form layout="vertical" hideRequiredMark colon={false}>
         <Form.Item label={formatMessage(merchandiseMessages.label.selectContentCreator)}>
           {form.getFieldDecorator('creatorId', {
             rules: [

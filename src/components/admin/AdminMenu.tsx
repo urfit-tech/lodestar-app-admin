@@ -2,11 +2,11 @@ import Icon, { GlobalOutlined, GoldenFilled, ShoppingFilled } from '@ant-design/
 import { Menu } from 'antd'
 import { MenuProps } from 'antd/lib/menu'
 import { MenuClickEventHandler } from 'rc-menu/lib/interface'
-import React, { useContext } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { ReactComponent as BookIcon } from '../../images/icon/book.svg'
@@ -29,7 +29,7 @@ export const StyledMenu = styled(Menu)`
 const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { enabledModules } = useContext(AppContext)
+  const { enabledModules } = useApp()
   const { permissions, currentUserRole } = useAuth()
 
   const handleClick: MenuClickEventHandler = ({ key, item }) => {
@@ -199,6 +199,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           }
         >
           <Menu.Item key="merchandise_shop_collection">{formatMessage(commonMessages.menu.merchandiseShop)}</Menu.Item>
+          <Menu.Item key="merchandise_inventory">{formatMessage(commonMessages.menu.merchandiseInventory)}</Menu.Item>
           <Menu.Item key="merchandise_category">{formatMessage(commonMessages.menu.merchandiseCategory)}</Menu.Item>
         </Menu.SubMenu>
       )}

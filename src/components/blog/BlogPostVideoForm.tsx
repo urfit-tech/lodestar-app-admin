@@ -28,12 +28,16 @@ const StyledNotation = styled.div`
   color: var(--gray-dark);
 `
 
+type FieldProps = {
+  videoUrl: string
+}
+
 const BlogPostVideoForm: React.FC<{
   post: PostProps | null
   onRefetch?: () => void
 }> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [updatePostVideoUrl] = useMutation<types.UPDATE_POST_VIDEO_URL, types.UPDATE_POST_VIDEO_URLVariables>(
     UPDATE_POST_VIDEO_URL,
   )
@@ -43,7 +47,7 @@ const BlogPostVideoForm: React.FC<{
     return <Skeleton active />
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updatePostVideoUrl({
       variables: {
@@ -52,12 +56,13 @@ const BlogPostVideoForm: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
   }
+
   return (
     <div className="row">
       <div className="col-9">
@@ -95,7 +100,9 @@ const BlogPostVideoForm: React.FC<{
   )
 }
 
-const BlogPostPlayer: React.FC<{ url: string | null }> = ({ url }) => {
+const BlogPostPlayer: React.FC<{
+  url: string | null
+}> = ({ url }) => {
   const { formatMessage } = useIntl()
   const [status, setStatus] = useState('loading')
 

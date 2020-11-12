@@ -5,6 +5,7 @@ import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -19,6 +20,7 @@ type FieldProps = {
   phones: string[]
   tags: string[]
   categoryIds: string[]
+  managerId: string
 }
 
 const MemberProfileBasicForm: React.FC<{
@@ -26,26 +28,25 @@ const MemberProfileBasicForm: React.FC<{
   onRefetch?: () => void
 }> = ({ memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
+  const { permissions } = useAuth()
+  const { enabledModules } = useApp()
   const [updateMemberProfileBasic] = useMutation<
     types.UPDATE_MEMBER_PROFILE_BASIC,
     types.UPDATE_MEMBER_PROFILE_BASICVariables
   >(UPDATE_MEMBER_PROFILE_BASIC)
   const [loading, setLoading] = useState(false)
-  const { permissions } = useAuth()
 
   if (!memberAdmin) {
     return <Skeleton active />
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateMemberProfileBasic({
       variables: {
         name: values?.name || memberAdmin.name,
         memberId: memberAdmin.id,
-        managerId: values.managerId,
-        assignedAt: new Date(),
         phones: permissions['MEMBER_PHONE_ADMIN']
           ? values.phones
               .filter((phone: string) => !!phone)
@@ -57,6 +58,8 @@ const MemberProfileBasicForm: React.FC<{
               member_id: memberAdmin.id,
               phone,
             })),
+        managerId: values.managerId || null,
+        assignedAt: values.managerId ? new Date() : null,
         tags: values.tags.map((tag: string) => ({
           name: tag,
           type: '',
@@ -74,7 +77,7 @@ const MemberProfileBasicForm: React.FC<{
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
-        onRefetch && onRefetch()
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -100,13 +103,16 @@ const MemberProfileBasicForm: React.FC<{
       }}
       onFinish={handleSubmit}
     >
-      <Form.Item
-        label={formatMessage(commonMessages.term.assign)}
-        name="managerId"
-        extra={memberAdmin.assignedAt ? moment(memberAdmin.assignedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
-      >
-        <AllMemberSelector />
-      </Form.Item>
+      {enabledModules.member_assignment && permissions['MEMBER_MANAGER_ADMIN'] && (
+        <Form.Item
+          label={formatMessage(commonMessages.term.assign)}
+          name="managerId"
+          extra={memberAdmin.assignedAt ? moment(memberAdmin.assignedAt).format('YYYY-MM-DD HH:mm:ss') : ''}
+        >
+          <AllMemberSelector allowClear />
+        </Form.Item>
+      )}
+
       <Form.Item label={formatMessage(commonMessages.term.name)} name="name">
         <Input />
       </Form.Item>
@@ -116,9 +122,11 @@ const MemberProfileBasicForm: React.FC<{
       <Form.Item label={formatMessage(commonMessages.term.email)} name="email">
         <Input disabled />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.phone)} name="phones">
-        <PhoneCollectionInput />
-      </Form.Item>
+      {permissions['MEMBER_PHONE_ADMIN'] && (
+        <Form.Item label={formatMessage(commonMessages.term.phone)} name="phones">
+          <PhoneCollectionInput />
+        </Form.Item>
+      )}
       <Form.Item label={formatMessage(commonMessages.term.speciality)} name="specialities">
         <TagSelector disabled />
       </Form.Item>

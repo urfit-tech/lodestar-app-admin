@@ -17,6 +17,7 @@ export type ProductType =
   | 'Card'
   | 'ActivityTicket'
   | 'Merchandise'
+  | 'MerchandiseSpec'
   | 'PodcastProgram'
   | 'PodcastPlan'
   | 'AppointmentPlan'

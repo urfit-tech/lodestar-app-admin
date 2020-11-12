@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
+import { UploadFile } from 'antd/lib/upload/interface'
 import gql from 'graphql-tag'
-import { useContext } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../contexts/AppContext'
+import { useApp } from '../contexts/AppContext'
 import { commonMessages } from '../helpers/translation'
 import types from '../types'
 import { CategoryProps, ClassType, ProductInventoryLogProps, ProductType } from '../types/general'
@@ -31,7 +31,7 @@ export const useTags = () => {
 }
 
 export const useCategory = (classType: ClassType) => {
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
   const { loading, data, error, refetch } = useQuery<types.GET_CATEGORIES, types.GET_CATEGORIESVariables>(
     gql`
       query GET_CATEGORIES($appId: String!, $classType: String) {
@@ -147,7 +147,7 @@ export const useProductInventoryLog = (productId: string) => {
         }
       }
     `,
-    { variables: { productId } },
+    { variables: { productId }, fetchPolicy: 'no-cache' },
   )
 
   const inventoryLogs: ProductInventoryLogProps[] =
@@ -186,32 +186,30 @@ export const useArrangeProductInventory = (productId: string) => {
     types.ARRANGE_PRODUCT_INVENTORYVariables
   >(
     gql`
-      mutation ARRANGE_PRODUCT_INVENTORY($data: [product_inventory_insert_input!]!) {
-        insert_product_inventory(objects: $data) {
-          affected_rows
+      mutation ARRANGE_PRODUCT_INVENTORY($data: product_inventory_insert_input!) {
+        insert_product_inventory_one(object: $data) {
+          id
         }
       }
     `,
   )
 
-  return (data: { specification: string; quantity: number; comment: string | null }[]) =>
+  return (data: { specification: string; quantity: number; comment: string | null }) =>
     arrangeMerchandiseInventory({
       variables: {
-        data: data
-          .filter(data => data.quantity)
-          .map(data => ({
-            product_id: productId,
-            status: 'arrange',
-            specification: data.specification,
-            quantity: data.quantity,
-            comment: data.comment,
-          })),
+        data: {
+          product_id: productId,
+          status: 'arrange',
+          specification: data.specification,
+          quantity: data.quantity,
+          comment: data.comment,
+        },
       },
     })
 }
 
 export const useAllBriefProductCollection = () => {
-  const { enabledModules } = useContext(AppContext)
+  const { enabledModules } = useApp()
 
   const { loading, error, data, refetch } = useQuery<types.GET_ALL_BRIEF_PRODUCT_COLLECTION>(
     gql`
@@ -363,7 +361,7 @@ export const useOrderPhysicalProductLog = () => {
     gql`
       query GET_PHYSICAL_PRODUCT_ORDER_LOG {
         order_log(
-          where: { status: { _eq: "SUCCESS" }, shipping: { _has_key: "address" } }
+          where: { status: { _eq: "SUCCESS" } }
           order_by: [{ updated_at: desc_nulls_last }, { created_at: desc }]
         ) {
           id
@@ -373,11 +371,27 @@ export const useOrderPhysicalProductLog = () => {
           deliver_message
           shipping
           invoice
-          order_products(where: { product_id: { _similar: "(ProjectPlan|Merchandise)_%" } }) {
+          order_products(where: { product_id: { _similar: "(ProjectPlan|MerchandiseSpec)_%" } }) {
             id
             name
             product_id
+            description
             options
+            order_product_files(order_by: { updated_at: asc }) {
+              id
+              data
+            }
+            product {
+              id
+              product_owner {
+                type
+                target
+              }
+            }
+          }
+          member {
+            id
+            name
           }
         }
       }
@@ -386,26 +400,31 @@ export const useOrderPhysicalProductLog = () => {
 
   const orderPhysicalProductLogs: {
     id: string
+    member: string
     createdAt: Date
     updatedAt: Date
     deliveredAt: Date
     deliverMessage: string | null
-    shipping: ShippingProps
+    shipping: ShippingProps | null
     invoice: InvoiceProps
     orderPhysicalProducts: {
       key: string
       id: string
       name: string
       productId: string
+      description: string | null
       quantity: number
+      files: UploadFile[]
+      memberShopId?: string | null
     }[]
   }[] =
     error || loading || !data
       ? []
       : data.order_log
-          .filter(orderLog => orderLog.order_products.length && orderLog.shipping.address)
+          .filter(orderLog => orderLog.order_products.length && orderLog.shipping?.address)
           .map(orderLog => ({
             id: orderLog.id,
+            member: orderLog.member.name,
             createdAt: orderLog.created_at,
             updatedAt: orderLog.updated_at,
             deliveredAt: orderLog.delivered_at,
@@ -418,6 +437,9 @@ export const useOrderPhysicalProductLog = () => {
               name: orderPhysicalProduct.name,
               productId: orderPhysicalProduct.product_id.split('_')[1],
               quantity: orderPhysicalProduct.options?.quantity || 1,
+              description: orderPhysicalProduct.description,
+              files: orderPhysicalProduct.order_product_files.map(v => v.data),
+              memberShopId: orderPhysicalProduct.product.product_owner?.target || undefined,
             })),
           }))
 
@@ -547,8 +569,28 @@ export const useSimpleProduct = (
           id
           title
           list_price
+          is_physical
+          is_customized
           merchandise_imgs(where: { type: { _eq: "cover" } }) {
+            id
             url
+          }
+        }
+        merchandise_spec_by_pk(id: $id) {
+          id
+          title
+          list_price
+          sale_price
+          merchandise {
+            id
+            title
+            sold_at
+            is_physical
+            is_customized
+            merchandise_imgs(where: { type: { _eq: "cover" } }) {
+              id
+              url
+            }
           }
         }
       }
@@ -575,6 +617,8 @@ export const useSimpleProduct = (
     endedAt?: Date
     quantity?: number
     isSubscription?: boolean
+    isPhysical?: boolean
+    isCustomized?: boolean
   } | null =
     loading || error || !data
       ? null
@@ -681,6 +725,24 @@ export const useSimpleProduct = (
           listPrice: data.merchandise_by_pk.list_price,
           coverUrl: data.merchandise_by_pk.merchandise_imgs[0]?.url,
           quantity: options.quantity,
+          isPhysical: data.merchandise_by_pk.is_physical,
+          isCustomized: data.merchandise_by_pk.is_customized,
+        }
+      : data.merchandise_spec_by_pk
+      ? {
+          id: data.merchandise_spec_by_pk.id,
+          productType: 'MerchandiseSpec',
+          title: `${data.merchandise_spec_by_pk.merchandise.title} - ${data.merchandise_spec_by_pk.title}`,
+          listPrice: data.merchandise_spec_by_pk.list_price,
+          salePrice:
+            data.merchandise_spec_by_pk.merchandise.sold_at &&
+            new Date(data.merchandise_spec_by_pk.merchandise.sold_at).getTime() > Date.now()
+              ? data.merchandise_spec_by_pk.sale_price
+              : undefined,
+          coverUrl: data.merchandise_spec_by_pk.merchandise.merchandise_imgs[0]?.url,
+          quantity: options.quantity,
+          isPhysical: data.merchandise_spec_by_pk.merchandise.is_physical,
+          isCustomized: data.merchandise_spec_by_pk.merchandise.is_customized,
         }
       : {
           id: targetId,

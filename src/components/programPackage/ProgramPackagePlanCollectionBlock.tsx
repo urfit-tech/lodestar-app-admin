@@ -85,7 +85,7 @@ const ProgramPackagePlanCollectionBlock: React.FC<{
                 position: index,
               })),
             },
-          }).then(() => onRefetch && onRefetch())
+          }).then(() => onRefetch?.())
         }
         renderItem={(plan, currentIndex, moveTarget) => (
           <div key={plan.id} className="col-12 col-md-6 mb-4">

@@ -284,10 +284,7 @@ export const useGetProgramPackageCollection = (appId: string) => {
         }
       }
     `,
-    {
-      variables: { appId },
-      fetchPolicy: 'no-cache',
-    },
+    { variables: { appId } },
   )
 
   const programPackages: {
@@ -335,6 +332,7 @@ export const useGetProgramPackage = (id: string) => {
               id
               title
               cover_url
+              published_at
             }
             position
           }
@@ -392,6 +390,7 @@ export const useGetProgramPackage = (id: string) => {
               id: programPackageProgram.program.id,
               title: programPackageProgram.program.title,
               coverUrl: programPackageProgram.program.cover_url,
+              publishedAt:programPackageProgram.program.published_at
             },
             position: programPackageProgram.position,
           })),

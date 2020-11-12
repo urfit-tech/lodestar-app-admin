@@ -20,8 +20,8 @@ const ShippingMethodIds: ShippingMethodType[] = [
 
 const ShippingMethodAdminBlock: React.FC<{
   memberShop: MemberShopProps
-  refetch?: () => void
-}> = ({ memberShop, refetch }) => {
+  onRefetch?: () => void
+}> = ({ memberShop, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [updateShippingMethods] = useMutation<types.UPDATE_SHIPPING_METHODS, types.UPDATE_SHIPPING_METHODSVariables>(
     UPDATE_SHIPPING_METHODS,
@@ -94,8 +94,8 @@ const ShippingMethodAdminBlock: React.FC<{
               },
             })
               .then(() => {
-                refetch && refetch()
                 message.success(formatMessage(commonMessages.event.successfullySaved))
+                onRefetch?.()
               })
               .finally(() => setLoading(false))
           }}

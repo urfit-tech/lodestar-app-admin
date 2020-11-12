@@ -1,11 +1,12 @@
 import { Button, message } from 'antd'
 import axios from 'axios'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import DefaultLayout from '../../components/layout/DefaultLayout'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { codeMessages } from '../../helpers/translation'
 import { ReactComponent as CheckEmailIcon } from '../../images/default/check-email.svg'
@@ -35,12 +36,12 @@ const messages = defineMessages({
   sendEmailAgain: { id: 'common.ui.sendEmailAgain', defaultMessage: '再寄一次' },
 })
 
-const CheckEmailPage = () => {
-  const app = useContext(AppContext)
+const CheckEmailPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const [email] = useQueryParam('email', StringParam)
   const [type] = useQueryParam('type', StringParam)
-
+  const { backendEndpoint } = useAuth()
+  const app = useApp()
   const [loading, setLoading] = useState(false)
 
   const handleResendEmail = () => {
@@ -52,7 +53,7 @@ const CheckEmailPage = () => {
       return
     }
     axios
-      .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/forgot-password`, {
+      .post(`${backendEndpoint}/auth/forgot-password`, {
         appId: app.id,
         account: email,
       })

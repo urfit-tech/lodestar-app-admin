@@ -1,7 +1,7 @@
 import { Button, DatePicker, Form, Input, InputNumber, Radio, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import BraftEditor from 'braft-editor'
-import moment from 'moment'
+import BraftEditor, { EditorState } from 'braft-editor'
+import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
@@ -22,6 +22,17 @@ const messages = defineMessages({
   limit: { id: 'activity.label.limit', defaultMessage: '張數限制' },
   selectSession: { id: 'activity.warning.selectSession', defaultMessage: '選擇場次' },
 })
+
+type FieldProps = {
+  title: string
+  sessionIds: string[]
+  isPublished: 'public' | 'private'
+  startedAt: Moment
+  endedAt: Moment
+  price: number
+  count: number
+  description: EditorState
+}
 
 const ActivityTicketAdminModal: React.FC<
   AdminModalProps & {
@@ -49,17 +60,18 @@ const ActivityTicketAdminModal: React.FC<
   }
 > = ({ activityTicket, activitySessions, onSubmit, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = (onSuccess: () => void) => {
     form
       .validateFields()
-      .then((values: any) => {
+      .then(() => {
         if (!onSubmit) {
           return
         }
         setLoading(true)
+        const values = form.getFieldsValue()
         onSubmit({
           title: values.title,
           sessionIds: values.sessionIds,
@@ -67,13 +79,12 @@ const ActivityTicketAdminModal: React.FC<
           startedAt: values.startedAt.toDate(),
           endedAt: values.endedAt.toDate(),
           price: values.price,
-          count: parseInt(values.count),
-          description:
-            values.description && values.description.getCurrentContent().hasText() ? values.description.toRAW() : null,
+          count: values.count,
+          description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
         })
           .then(() => {
-            onRefetch && onRefetch()
             onSuccess()
+            onRefetch?.()
           })
           .catch(handleError)
           .finally(() => setLoading(false))
@@ -154,16 +165,14 @@ const ActivityTicketAdminModal: React.FC<
           rules={[
             {
               required: true,
-              message: formatMessage(errorMessages.form.isRequired, {
-                field: formatMessage(messages.ticketStartedAt),
-              }),
+              message: formatMessage(errorMessages.form.isRequired, { field: formatMessage(messages.ticketStartedAt) }),
             },
           ]}
         >
           <DatePicker
             format="YYYY-MM-DD HH:mm"
             showTime={{ format: 'HH:mm', defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-            disabledDate={current => !!current && current < moment().startOf('day')}
+            disabledDate={current => current < moment().startOf('day')}
           />
         </Form.Item>
         <Form.Item
@@ -179,15 +188,11 @@ const ActivityTicketAdminModal: React.FC<
           <DatePicker
             format="YYYY-MM-DD HH:mm"
             showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
-            disabledDate={current => !!current && current < moment().startOf('day')}
+            disabledDate={current => current < moment().startOf('day')}
           />
         </Form.Item>
         <Form.Item label={formatMessage(commonMessages.term.listPrice)} name="price">
-          <InputNumber
-            min={0}
-            formatter={value => `NT$ ${value}`}
-            parser={value => (value ? value.replace(/\D/g, '') : '')}
-          />
+          <InputNumber min={0} formatter={value => `NT$ ${value}`} parser={value => value?.replace(/\D/g, '') || ''} />
         </Form.Item>
         <Form.Item label={formatMessage(messages.limit)} name="count">
           <InputNumber min={1} />

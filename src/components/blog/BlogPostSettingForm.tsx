@@ -3,9 +3,9 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { blogMessages, commonMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -14,13 +14,17 @@ import { StyledTips } from '../admin'
 import ImageInput from '../form/ImageInput'
 import MerchandiseSelector from '../form/MerchandiseSelector'
 
+type FieldProps = {
+  merchandiseIds: string[]
+}
+
 const BlogPostSettingForm: React.FC<{
   post: PostProps | null
   onRefetch?: () => void
 }> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
-  const { id: appId } = useContext(AppContext)
+  const [form] = useForm<FieldProps>()
+  const { id: appId } = useApp()
   const [updatePostCover] = useMutation<types.UPDATE_POST_COVER, types.UPDATE_POST_COVERVariables>(UPDATE_POST_COVER)
   const [updatePostMerchandises] = useMutation<
     types.UPDATE_POST_MERCHANDISE_COLLECTION,
@@ -35,7 +39,6 @@ const BlogPostSettingForm: React.FC<{
   const handleUpload = () => {
     setLoading(true)
     const uploadTime = Date.now()
-
     updatePostCover({
       variables: {
         postId: post.id,
@@ -43,14 +46,14 @@ const BlogPostSettingForm: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updatePostMerchandises({
       variables: {
@@ -63,8 +66,8 @@ const BlogPostSettingForm: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

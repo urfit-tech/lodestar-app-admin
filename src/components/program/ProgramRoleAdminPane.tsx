@@ -1,7 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Skeleton } from 'antd'
-import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -20,14 +19,12 @@ const ProgramRoleAdminPane: React.FC<{
   onRefetch?: () => void
 }> = ({ program, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
   const [updateProgramRole] = useMutation<types.UPDATE_PROGRAM_ROLE, types.UPDATE_PROGRAM_ROLEVariables>(
     UPDATE_PROGRAM_ROLE,
   )
   const [deleteProgramRole] = useMutation<types.DELETE_PROGRAM_ROLE, types.DELETE_PROGRAM_ROLEVariables>(
     DELETE_PROGRAM_ROLE,
   )
-
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -56,9 +53,9 @@ const ProgramRoleAdminPane: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         setSelectedMemberId(null)
         onSuccess()
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -90,7 +87,7 @@ const ProgramRoleAdminPane: React.FC<{
                     programId: program.id,
                   },
                 })
-                  .then(() => onRefetch && onRefetch())
+                  .then(() => onRefetch?.())
                   .catch(handleError)
               }
             />
@@ -117,7 +114,7 @@ const ProgramRoleAdminPane: React.FC<{
             </>
           )}
         >
-          <Form form={form} layout="vertical" colon={false} hideRequiredMark>
+          <Form layout="vertical" colon={false} hideRequiredMark>
             <Form.Item label={formatMessage(commonMessages.label.selectInstructor)}>
               <ContentCreatorSelector value={selectedMemberId || ''} onChange={value => setSelectedMemberId(value)} />
             </Form.Item>

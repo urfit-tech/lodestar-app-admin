@@ -3,19 +3,30 @@ import { Button, DatePicker, Form, Input, InputNumber, message } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { generate } from 'coupon-code'
 import gql from 'graphql-tag'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import { times } from 'ramda'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../helpers/translation'
 import types from '../../types'
 import { CouponPlanProps } from '../../types/checkout'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
-import ScopeSelector from '../form/ScopeSelector'
-import CouponPlanDiscountSelector from './CouponPlanDiscountSelector'
+import ScopeSelector, { ScopeProps } from '../form/ScopeSelector'
+import CouponPlanDiscountSelector, { CouponPlanDiscountProps } from './CouponPlanDiscountSelector'
 import PlanCodeSelector, { PlanCodeProps } from './PlanCodeSelector'
+
+type FieldProps = {
+  title: string
+  scope?: ScopeProps | null
+  constraint: number
+  discount: CouponPlanDiscountProps
+  codes?: PlanCodeProps[]
+  startedAt: Moment | null
+  endedAt: Moment | null
+  description: string
+}
 
 const CouponPlanAdminModal: React.FC<
   AdminModalProps & {
@@ -24,8 +35,8 @@ const CouponPlanAdminModal: React.FC<
   }
 > = ({ couponPlan, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
-  const { id: appId, enabledModules } = useContext(AppContext)
+  const [form] = useForm<FieldProps>()
+  const { id: appId, enabledModules } = useApp()
 
   const [createCouponPlan] = useMutation<types.INSERT_COUPON_PLAN, types.INSERT_COUPON_PLANVariables>(
     INSERT_COUPON_PLAN,
@@ -38,8 +49,9 @@ const CouponPlanAdminModal: React.FC<
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     form
       .validateFields()
-      .then(values => {
+      .then(() => {
         setLoading(true)
+        const values = form.getFieldsValue()
         if (couponPlan) {
           updateCouponPlan({
             variables: {
@@ -61,8 +73,8 @@ const CouponPlanAdminModal: React.FC<
           })
             .then(() => {
               message.success(formatMessage(commonMessages.event.successfullySaved))
-              onRefetch && onRefetch()
               setVisible(false)
+              onRefetch?.()
             })
             .catch(handleError)
             .finally(() => setLoading(false))
@@ -70,25 +82,26 @@ const CouponPlanAdminModal: React.FC<
           // create a new coupon plan
           createCouponPlan({
             variables: {
-              couponCodes: values.codes.flatMap((couponCode: PlanCodeProps) => {
-                if (couponCode.type === 'random') {
-                  return times(
-                    () => ({
-                      app_id: appId,
-                      code: generate(),
-                      count: 1,
-                      remaining: 1,
-                    }),
-                    couponCode.count,
-                  )
-                }
-                return {
-                  app_id: appId,
-                  code: couponCode.code,
-                  count: couponCode.count,
-                  remaining: couponCode.count,
-                }
-              }),
+              couponCodes:
+                values.codes?.flatMap((couponCode: PlanCodeProps) => {
+                  if (couponCode.type === 'random') {
+                    return times(
+                      () => ({
+                        app_id: appId,
+                        code: generate(),
+                        count: 1,
+                        remaining: 1,
+                      }),
+                      couponCode.count,
+                    )
+                  }
+                  return {
+                    app_id: appId,
+                    code: couponCode.code,
+                    count: couponCode.count,
+                    remaining: couponCode.count,
+                  }
+                }) || [],
               constraint: values.constraint,
               description: values.description,
               startedAt: values.startedAt,
@@ -105,8 +118,8 @@ const CouponPlanAdminModal: React.FC<
           })
             .then(() => {
               message.success(formatMessage(commonMessages.event.successfullyCreated))
-              onRefetch && onRefetch()
               setVisible(false)
+              onRefetch?.()
             })
             .catch(error => {
               if (/^GraphQL error: Uniqueness violation/.test(error.message)) {

@@ -1,6 +1,6 @@
 import { InputNumber } from 'antd'
-import React, { useContext } from 'react'
-import { AppContext } from '../../contexts/AppContext'
+import React from 'react'
+import { useApp } from '../../contexts/AppContext'
 import { Currency } from '../../types/app'
 
 const CurrencyInput: React.FC<{
@@ -10,8 +10,9 @@ const CurrencyInput: React.FC<{
   noUnit?: boolean
   noLabel?: boolean
 }> = ({ currencyId, value, onChange, noLabel, noUnit }) => {
-  const { currencies, settings } = useContext(AppContext)
+  const { currencies, settings } = useApp()
   const currency: Currency = currencies[currencyId || settings['currency_id'] || 'TWD']
+
   return (
     <InputNumber
       value={value}

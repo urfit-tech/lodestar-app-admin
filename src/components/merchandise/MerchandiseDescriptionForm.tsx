@@ -1,63 +1,63 @@
-import { Form } from '@ant-design/compatible'
-import '@ant-design/compatible/assets/index.css'
-import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, message } from 'antd'
-import BraftEditor from 'braft-editor'
+import { Button, Form, message } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
+import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import types from '../../types'
 import { MerchandiseProps } from '../../types/merchandise'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 
-type MerchandiseDescriptionFormProps = FormComponentProps & {
+type FieldProps = {
+  description: EditorState
+}
+
+const MerchandiseDescriptionForm: React.FC<{
   merchandise: MerchandiseProps
   merchandiseId: string
-  refetch?: () => void
-}
-const MerchandiseDescriptionForm: React.FC<MerchandiseDescriptionFormProps> = ({
-  form,
-  merchandise,
-  merchandiseId,
-  refetch,
-}) => {
+  onRefetch?: () => void
+}> = ({ merchandise, merchandiseId, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const updateMerchandiseDescription = useUpdateMerchandiseDescription(merchandiseId)
+  const [form] = useForm<FieldProps>()
+  const [updateMerchandiseDescription] = useMutation<
+    types.UPDATE_MERCHANDISE_DESCRIPTION,
+    types.UPDATE_MERCHANDISE_DESCRIPTIONVariables
+  >(UPDATE_MERCHANDISE_DESCRIPTION)
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = () => {
-    form.validateFields((errors, values) => {
-      if (errors) {
-        return
-      }
-
-      setLoading(true)
-      updateMerchandiseDescription({
-        description: values.description.toRAW(),
-      })
-        .then(() => {
-          refetch && refetch()
-          message.success(formatMessage(commonMessages.event.successfullySaved))
-        })
-        .finally(() => setLoading(false))
+  const handleSubmit = (values: FieldProps) => {
+    setLoading(true)
+    updateMerchandiseDescription({
+      variables: {
+        merchandiseId,
+        description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
+      },
     })
+      .then(() => {
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
+      })
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
     <Form
+      form={form}
+      colon={false}
       hideRequiredMark
-      onSubmit={e => {
-        e.preventDefault()
-        handleSubmit()
+      initialValues={{
+        description: BraftEditor.createEditorState(merchandise.description),
       }}
+      onFinish={handleSubmit}
     >
-      <Form.Item>
-        {form.getFieldDecorator('description', {
-          initialValue: BraftEditor.createEditorState(merchandise.description),
-        })(<AdminBraftEditor />)}
+      <Form.Item name="description">
+        <AdminBraftEditor />
       </Form.Item>
+
       <Form.Item>
         <Button onClick={() => form.resetFields()} className="mr-2">
           {formatMessage(commonMessages.ui.cancel)}
@@ -70,29 +70,12 @@ const MerchandiseDescriptionForm: React.FC<MerchandiseDescriptionFormProps> = ({
   )
 }
 
-const useUpdateMerchandiseDescription = (merchandiseId: string) => {
-  const [updateDescription] = useMutation(gql`
-    mutation UPDATE_MERCHANDISE_DESCRIPTION($merchandiseId: uuid!, $description: String) {
-      update_merchandise(where: { id: { _eq: $merchandiseId } }, _set: { description: $description }) {
-        affected_rows
-      }
-    }
-  `)
-
-  const updateMerchandiseDescription: (data: { description: string }) => Promise<void> = async ({ description }) => {
-    try {
-      await updateDescription({
-        variables: {
-          merchandiseId,
-          description,
-        },
-      })
-    } catch (error) {
-      handleError(error)
+const UPDATE_MERCHANDISE_DESCRIPTION = gql`
+  mutation UPDATE_MERCHANDISE_DESCRIPTION($merchandiseId: uuid!, $description: String) {
+    update_merchandise(where: { id: { _eq: $merchandiseId } }, _set: { description: $description }) {
+      affected_rows
     }
   }
+`
 
-  return updateMerchandiseDescription
-}
-
-export default Form.create<MerchandiseDescriptionFormProps>()(MerchandiseDescriptionForm)
+export default MerchandiseDescriptionForm

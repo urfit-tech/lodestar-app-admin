@@ -2,11 +2,11 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Select, Skeleton } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { useForm } from 'antd/lib/form/Form'
-import BraftEditor from 'braft-editor'
+import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { useTags } from '../../hooks/data'
@@ -17,11 +17,18 @@ import { AdminBlockTitle } from '../admin'
 import AdminCard from '../admin/AdminCard'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import ImageInput from '../form/ImageInput'
-import { StyledForm } from '../layout'
 
 const messages = defineMessages({
   profileBasic: { id: 'common.label.profileBasic', defaultMessage: '基本資料' },
 })
+
+type FieldProps = {
+  name: string
+  title?: string
+  abstract?: string
+  description?: EditorState
+  specialities?: string[]
+}
 
 const ProfileBasicCard: React.FC<
   CardProps & {
@@ -33,8 +40,8 @@ const ProfileBasicCard: React.FC<
   }
 > = ({ memberId, withTitle, withTags, withAbstract, withDescription, ...cardProps }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
-  const { id: appId } = useContext(AppContext)
+  const [form] = useForm<FieldProps>()
+  const { id: appId } = useApp()
   const { member, refetchMember } = useMember(memberId)
   const { tags } = useTags()
 
@@ -66,27 +73,22 @@ const ProfileBasicCard: React.FC<
       },
     })
       .then(() => {
-        refetchMember()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        refetchMember()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
   }
 
-  const handleSubmit = (values: any) => {
-    if (!member.id) {
-      return
-    }
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateMemberBasic({
       variables: {
         memberId,
-        email: member.email,
-        username: member.username,
         name: values.name,
         title: values.title,
         abstract: values.abstract,
-        description: values.description ? values.description.toRAW() : null,
+        description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
         tags:
           values.specialities?.map((tag: string) => ({
             name: tag,
@@ -100,8 +102,8 @@ const ProfileBasicCard: React.FC<
       },
     })
       .then(() => {
-        refetchMember()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        refetchMember()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -111,7 +113,7 @@ const ProfileBasicCard: React.FC<
     <AdminCard {...cardProps}>
       <AdminBlockTitle className="mb-4">{formatMessage(messages.profileBasic)}</AdminBlockTitle>
 
-      <StyledForm
+      <Form
         form={form}
         labelAlign="left"
         labelCol={{ md: { span: 4 } }}
@@ -211,7 +213,7 @@ const ProfileBasicCard: React.FC<
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>
-      </StyledForm>
+      </Form>
     </AdminCard>
   )
 }
@@ -228,8 +230,6 @@ const UPDATE_MEMBER_BASIC = gql`
     $memberId: String!
     $name: String
     $description: String
-    $username: String
-    $email: String
     $title: String
     $abstract: String
     $tags: [tag_insert_input!]!
@@ -237,14 +237,7 @@ const UPDATE_MEMBER_BASIC = gql`
   ) {
     update_member(
       where: { id: { _eq: $memberId } }
-      _set: {
-        name: $name
-        description: $description
-        username: $username
-        email: $email
-        title: $title
-        abstract: $abstract
-      }
+      _set: { name: $name, description: $description, title: $title, abstract: $abstract }
     ) {
       affected_rows
     }

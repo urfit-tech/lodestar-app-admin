@@ -10,6 +10,7 @@ import AppointmentPlanCollectionTable from '../../components/appointment/Appoint
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { useAuth } from '../../contexts/AuthContext'
+import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 import types from '../../types'
@@ -38,10 +39,12 @@ const AppointmentPlanCollectionAdminPage: React.FC = () => {
                 title,
                 creatorId: creatorId || currentMemberId || '',
               },
-            }).then(({ data }) => {
-              const appointmentPlanId = data?.insert_appointment_plan?.returning[0].id
-              appointmentPlanId && history.push(`/appointment-plans/${appointmentPlanId}`)
             })
+              .then(({ data }) => {
+                const appointmentPlanId = data?.insert_appointment_plan?.returning[0].id
+                appointmentPlanId && history.push(`/appointment-plans/${appointmentPlanId}`)
+              })
+              .catch(handleError)
           }
         />
       </div>

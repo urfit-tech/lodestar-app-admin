@@ -16,6 +16,7 @@ const messages = defineMessages({
 })
 
 const StyledCloseOutlines = styled(CloseOutlined)`
+  cursor: pointer;
   color: 'gray-darker';
 
   &:hover {
@@ -25,7 +26,7 @@ const StyledCloseOutlines = styled(CloseOutlined)`
     color: 'gray-darker';
   }
 `
-const StyledFileBlock = styled.div`
+export const StyledFileBlock = styled.div`
   padding: 0.5rem;
   transition: background 0.2s ease-in-out;
 
@@ -41,6 +42,7 @@ type MultipleUploaderProps = UploadProps & {
   uploadText?: string
   value?: UploadFile
   onChange?: (value?: UploadFile) => void
+  onDelete?: (value?: UploadFile) => void
   onUploading?: (info: UploadChangeParam<UploadFile>) => void
   onSuccess?: (info: UploadChangeParam<UploadFile>) => void
   onError?: (info: UploadChangeParam<UploadFile>) => void
@@ -54,6 +56,7 @@ const MultipleUploader: React.FC<MultipleUploaderProps> = ({
   uploadText,
   value,
   onChange,
+  onDelete,
   onUploading,
   onSuccess,
   onError,
@@ -62,8 +65,8 @@ const MultipleUploader: React.FC<MultipleUploaderProps> = ({
 }) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState<boolean>(false)
+  const { authToken, backendEndpoint } = useAuth()
   const uploadCanceler = useRef<Canceler>()
-  const { authToken } = useAuth()
 
   const duplicateName = (file: UploadFile) => {
     const getFileName = (fileName: string) => (/^([^.()]+)(.+)?$/.exec(fileName) || [])[1]
@@ -113,7 +116,7 @@ const MultipleUploader: React.FC<MultipleUploaderProps> = ({
       setLoading(true)
       onChange && onChange(file)
 
-      uploadFile(`${path}_${duplicateName(file)}`, file, authToken, {
+      uploadFile(`${path}_${duplicateName(file)}`, file, authToken, backendEndpoint, {
         cancelToken: new axios.CancelToken(canceler => {
           uploadCanceler.current = canceler
         }),
@@ -141,8 +144,8 @@ const MultipleUploader: React.FC<MultipleUploaderProps> = ({
             <span className="mr-2">{file.name}</span>
           </div>
           <StyledCloseOutlines
-            className="cursor-pointer"
             onClick={() => {
+              onDelete?.(fileList.find(oldFile => oldFile.uid === file.uid))
               onSetFileList(fileList.filter(oldFile => oldFile.uid !== file.uid))
               message.success(formatMessage(commonMessages.ui.deleted))
             }}

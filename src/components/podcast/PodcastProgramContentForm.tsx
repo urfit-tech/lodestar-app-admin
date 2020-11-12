@@ -4,14 +4,14 @@ import { Button, Form, InputNumber, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { UploadChangeParam } from 'antd/lib/upload'
 import { UploadFile } from 'antd/lib/upload/interface'
-import BraftEditor from 'braft-editor'
+import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
-import { AppContext } from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { getAudioDuration } from '../../helpers/audio'
@@ -34,6 +34,11 @@ const StyledFileBlock = styled.div`
   }
 `
 
+type FieldProps = {
+  duration: number
+  description: EditorState
+}
+
 const StyledIcon = styled(ExclamationCircleFilled)`
   color: #ff7d62;
 `
@@ -43,9 +48,9 @@ const PodcastProgramContentForm: React.FC<{
   onRefetch?: () => void
 }> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
-  const { id: appId, enabledModules } = useContext(AppContext)
-  const { authToken } = useAuth()
+  const [form] = useForm<FieldProps>()
+  const { authToken, backendEndpoint } = useAuth()
+  const { id: appId, enabledModules } = useApp()
   const history = useHistory()
 
   const [updatePodcastProgramBody] = useMutation<
@@ -82,7 +87,7 @@ const PodcastProgramContentForm: React.FC<{
     const totalDuration = Math.ceil((duration + totalDurationSecond) / 60 || 0)
 
     setLoading(true)
-    appendPodcastProgramAudio(authToken, appId, podcastProgramAdmin.id, key, file.name, duration)
+    appendPodcastProgramAudio(authToken, backendEndpoint, appId, podcastProgramAdmin.id, key, file.name, duration)
       .then(async () => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
         form.setFields([{ name: 'duration', value: totalDuration }])
@@ -99,19 +104,19 @@ const PodcastProgramContentForm: React.FC<{
       .finally(() => setLoading(false))
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updatePodcastProgramBody({
       variables: {
         updatedAt: new Date(),
         podcastProgramId: podcastProgramAdmin.id,
         duration: values.duration,
-        description: values.description.toRAW(),
+        description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -191,7 +196,7 @@ const PodcastProgramContentForm: React.FC<{
                     .filter(_audio => _audio.id !== audio.id)
                     .reduce((sum, audio) => (sum += audio.duration), 0)
                   const totalDuration = Math.ceil(totalDurationSecond / 60 || 0)
-                  deletePodcastProgramAudio(authToken, appId, audio.id)
+                  deletePodcastProgramAudio(authToken, backendEndpoint, appId, audio.id)
                     .then(async () => {
                       message.success(formatMessage(commonMessages.event.successfullySaved))
                       await updatePodcastProgramDuration({

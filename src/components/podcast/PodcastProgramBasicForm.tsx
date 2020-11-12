@@ -3,9 +3,9 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, podcastMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -15,6 +15,13 @@ import { StyledTips } from '../admin'
 import CategorySelector from '../form/CategorySelector'
 import LanguageSelector from '../form/LanguageSelector'
 import TagSelector from '../form/TagSelector'
+
+type FieldProps = {
+  title: string
+  categoryIds: string[]
+  tags: string[]
+  languages?: string[]
+}
 
 const PodcastProgramBasicForm: React.FC<{
   podcastProgramAdmin:
@@ -26,27 +33,26 @@ const PodcastProgramBasicForm: React.FC<{
   onRefetch?: () => void
 }> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
-  const { enabledModules } = useContext(AppContext)
-  const [loading, setLoading] = useState(false)
-
+  const [form] = useForm<FieldProps>()
+  const { enabledModules } = useApp()
   const [updatePodcastProgramBasic] = useMutation<
     types.UPDATE_PODCAST_PROGRAM_BASIC,
     types.UPDATE_PODCAST_PROGRAM_BASICVariables
   >(UPDATE_PODCAST_PROGRAM_BASIC)
+  const [loading, setLoading] = useState(false)
 
   if (!podcastProgramAdmin) {
     return <Skeleton active />
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updatePodcastProgramBasic({
       variables: {
         updatedAt: new Date(),
         podcastProgramId: podcastProgramAdmin.id,
         title: values.title,
-        supportLocales: !values.languages || values.languages.length === 0 ? null : values.languages,
+        supportLocales: values.languages?.length ? values.languages : null,
         podcastCategories: values.categoryIds
           ? values.categoryIds.map((categoryId: string, position: number) => ({
               podcast_program_id: podcastProgramAdmin.id,
@@ -70,8 +76,8 @@ const PodcastProgramBasicForm: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

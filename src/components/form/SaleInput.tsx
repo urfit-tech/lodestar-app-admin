@@ -23,10 +23,11 @@ export type SaleProps = {
 
 const SaleInput: React.FC<{
   currencyId?: string
-  timer?: boolean
   value?: SaleProps
   onChange?: (value: SaleProps) => void
-}> = ({ value, onChange, currencyId, timer = false }) => {
+  noPrice?: boolean
+  withTimer?: boolean
+}> = ({ value, onChange, currencyId, noPrice, withTimer }) => {
   const { formatMessage } = useIntl()
   const [active, setActive] = useState(!!value?.soldAt)
   const [isTimerVisible, setIsTimerVisible] = useState(!!value?.isTimerVisible)
@@ -35,7 +36,7 @@ const SaleInput: React.FC<{
     <div>
       <Checkbox
         checked={active}
-        className={'mb-2'}
+        className="mb-2"
         onChange={e => {
           setActive(e.target.checked)
           onChange?.(
@@ -52,22 +53,24 @@ const SaleInput: React.FC<{
         {formatMessage(commonMessages.term.salePrice)}
       </Checkbox>
 
-      <div className={active ? '' : 'd-none'}>
-        <Form.Item className="d-inline-block mb-0 mr-3">
-          <CurrencyInput
-            noLabel
-            currencyId={currencyId}
-            value={value?.price || 0}
-            onChange={price =>
-              onChange &&
-              onChange({
-                ...value,
-                price: typeof price === 'number' ? price : 0,
-                soldAt: value?.soldAt || null,
-              })
-            }
-          />
-        </Form.Item>
+      <div className={active ? 'pl-3' : 'd-none'}>
+        {!noPrice && (
+          <Form.Item className="d-inline-block mb-0 mr-3">
+            <CurrencyInput
+              noLabel
+              currencyId={currencyId}
+              value={value?.price || 0}
+              onChange={price =>
+                onChange &&
+                onChange({
+                  ...value,
+                  price: typeof price === 'number' ? price : 0,
+                  soldAt: value?.soldAt || null,
+                })
+              }
+            />
+          </Form.Item>
+        )}
         <Form.Item className="d-inline-block mb-0 mr-3">
           <DatePicker
             format="YYYY-MM-DD HH:mm"
@@ -91,7 +94,7 @@ const SaleInput: React.FC<{
             <span>{formatMessage(commonMessages.label.outdated)}</span>
           </Form.Item>
         ) : null}
-        {timer && (
+        {withTimer && (
           <Form.Item className="mb-0">
             <Checkbox
               checked={isTimerVisible}

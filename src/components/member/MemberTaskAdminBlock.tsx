@@ -1,12 +1,12 @@
 // organize-imports-ignore
 import { FileAddOutlined, SearchOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Button, Input, Table, Select } from 'antd'
+import { Button, Input, Table, Select, DatePicker, Spin } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import React, { useRef, useState } from 'react'
-import { useIntl } from 'react-intl'
+import React, { useEffect, useRef, useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, memberMessages } from '../../helpers/translation'
@@ -18,6 +18,11 @@ import MemberTaskAdminModal from './MemberTaskAdminModal'
 
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
+
+const messages = defineMessages({
+  switchCalendar: { id: 'member.ui.switchCalendar', defaultMessage: '切換月曆模式' },
+  switchTable: { id: 'member.ui.switchTable', defaultMessage: '切換列表模式' },
+})
 
 const StyledTitle = styled.span`
   color: var(--gray-darker);
@@ -54,11 +59,18 @@ const MemberTaskAdminBlock: React.FC<{
     title?: string
     category?: string
     executor?: string
+    dueAt?: Date[]
+    status?: string
   }>({})
-  const { loadingMemberTasks, memberTasks, refetchMemberTasks } = useMemberTaskCollection({ ...filter, memberId })
+  const { loadingMemberTasks, memberTasks, loadMoreMemberTasks, refetchMemberTasks } = useMemberTaskCollection({
+    ...filter,
+    memberId,
+    ...(display === 'calendar' && { limit: 99999 }),
+  })
   const [selectedMemberTask, setSelectedMemberTask] = useState<MemberTaskProps | null>(null)
   const [visible, setVisible] = useState(false)
-  const [executorIdSearch, setExecutorIdSearch] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
   const executors = memberTasks
     .map(task => ({ executorId: task.executor?.id, name: task.executor?.name }))
     .filter(executor => executor?.executorId)
@@ -165,6 +177,53 @@ const MemberTaskAdminBlock: React.FC<{
       title: formatMessage(memberMessages.label.dueDate),
       render: (text, record, index) => (record.dueAt ? moment(record.dueAt).format('YYYY-MM-DD HH:mm') : ''),
       sorter: (a, b) => (b.dueAt?.getTime() || 0) - (a.dueAt?.getTime() || 0),
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div className="p-2">
+          <DatePicker.RangePicker
+            className="mb-2"
+            value={selectedKeys.length ? [moment(selectedKeys[0]), moment(selectedKeys[1])] : null}
+            onChange={(date, dateString: [string, string]) => {
+              setSelectedKeys(date ? dateString : [])
+            }}
+          />
+          <div className="d-flex justify-content-center">
+            <Button
+              type="primary"
+              onClick={() => {
+                confirm()
+                setFilter(filter => ({
+                  ...filter,
+                  dueAt: selectedKeys.length
+                    ? [
+                        new Date(moment(selectedKeys[0]).startOf('day').format()),
+                        new Date(moment(selectedKeys[1]).endOf('day').format()),
+                      ]
+                    : undefined,
+                }))
+              }}
+              icon={<SearchOutlined />}
+              size="small"
+              className="mr-2"
+              style={{ width: 90 }}
+            >
+              {formatMessage(commonMessages.ui.search)}
+            </Button>
+            <Button
+              onClick={() => {
+                clearFilters && clearFilters()
+                setFilter(filter => ({
+                  ...filter,
+                  dueAt: undefined,
+                }))
+              }}
+              size="small"
+              style={{ width: 90 }}
+            >
+              {formatMessage(commonMessages.ui.reset)}
+            </Button>
+          </div>
+        </div>
+      ),
     },
     {
       dataIndex: 'executor',
@@ -195,45 +254,93 @@ const MemberTaskAdminBlock: React.FC<{
         />
       </div>
       <div className="d-flex align-item-center justify-content-between mb-4">
-        <Button className="mb-3" onClick={() => setDisplay(display === 'table' ? 'calendar' : 'table')}>
-          {display === 'calendar' ? '切換列表模式' : '切換月曆模式'}
+        <Button
+          className="mb-3"
+          onClick={() => {
+            setFilter({})
+            setDisplay(display === 'table' ? 'calendar' : 'table')
+          }}
+        >
+          {display === 'table' ? formatMessage(messages.switchCalendar) : formatMessage(messages.switchTable)}
         </Button>
         {display === 'calendar' && (
-          <Select
-            showSearch
-            defaultValue={''}
-            style={{ width: '150px' }}
-            filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-            onSelect={LabeledValue => {
-              setExecutorIdSearch(`${LabeledValue}`)
-            }}
-          >
-            <Select.Option value="">全部指派人員</Select.Option>
-            {executors.map((executor, index) => (
-              <Select.Option key={executor?.executorId || index} value={executor?.executorId || ''}>
-                {executor.name}
+          <div>
+            <Select
+              allowClear
+              placeholder={formatMessage(memberMessages.label.status)}
+              className="mr-3"
+              style={{ width: '150px' }}
+              filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              onSelect={(value: MemberTaskProps['status']) => {
+                setFilter(filter => ({
+                  ...filter,
+                  status: value,
+                }))
+                refetchMemberTasks()
+              }}
+              onClear={() => {
+                setFilter(filter => ({
+                  ...filter,
+                  status: undefined,
+                }))
+              }}
+            >
+              <Select.Option value={'pending'}>{formatMessage(memberMessages.status.statusPending)}</Select.Option>
+              <Select.Option value={'in-progress'}>
+                {formatMessage(memberMessages.status.statusInProgress)}
               </Select.Option>
-            ))}
-          </Select>
+              <Select.Option value={'done'}>{formatMessage(memberMessages.status.statusDone)}</Select.Option>
+            </Select>
+            <Select
+              allowClear
+              showSearch
+              placeholder={formatMessage(memberMessages.label.manager)}
+              style={{ width: '150px' }}
+              filterOption={(input, option: any) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              onSelect={value => {
+                setFilter(filter => ({
+                  ...filter,
+                  executor: `${value}` || undefined,
+                }))
+              }}
+              onClear={() => {
+                setFilter(filter => ({
+                  ...filter,
+                  executor: undefined,
+                }))
+              }}
+            >
+              {executors.map((executor, index) => (
+                <Select.Option key={executor?.executorId || index} value={executor?.name || ''}>
+                  {executor.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
         )}
       </div>
       <AdminBlock>
-        {display === 'calendar' && (
-          <FullCalendar
-            plugins={[dayGridPlugin]}
-            initialView="dayGridMonth"
-            events={memberTasks
-              .filter(memberTask => memberTask.dueAt)
-              .filter(memberTask => (executorIdSearch ? memberTask.executor?.id === executorIdSearch : true))
-              .map(memberTask => {
-                return {
-                  title: `${memberTask.title}(${memberTask.member.name})`,
-                  start: moment(memberTask.dueAt).format(),
-                }
-              })}
-          />
-        )}
-        {display === 'table' && (
+        {display === 'calendar' ? (
+          <Spin spinning={loadingMemberTasks}>
+            <FullCalendar
+              plugins={[dayGridPlugin]}
+              initialView="dayGridMonth"
+              events={memberTasks
+                .filter(memberTask => memberTask.dueAt)
+                .map(memberTask => {
+                  return {
+                    id: memberTask.id,
+                    title: `${memberTask.title}(${memberTask.member.name})`,
+                    start: moment(memberTask.dueAt).format(),
+                  }
+                })}
+              eventClick={e => {
+                setSelectedMemberTask(memberTasks.find(memberTask => memberTask.id === e.event.id) || null)
+                setVisible(true)
+              }}
+            />
+          </Spin>
+        ) : display === 'table' ? (
           <Table
             columns={columns}
             dataSource={memberTasks}
@@ -249,6 +356,20 @@ const MemberTaskAdminBlock: React.FC<{
               },
             })}
           />
+        ) : null}
+
+        {loadMoreMemberTasks && (
+          <div className="text-center mt-4">
+            <Button
+              loading={isLoading}
+              onClick={() => {
+                setIsLoading(true)
+                loadMoreMemberTasks().then(() => setIsLoading(false))
+              }}
+            >
+              {formatMessage(commonMessages.ui.showMore)}
+            </Button>
+          </div>
         )}
       </AdminBlock>
 
@@ -268,13 +389,24 @@ const MemberTaskAdminBlock: React.FC<{
   )
 }
 
-const useMemberTaskCollection = (filter?: {
+const useMemberTaskCollection = ({
+  memberId,
+  title,
+  category,
+  executor,
+  dueAt,
+  status,
+  limit = 10,
+}: {
   memberId?: string
   title?: string
   category?: string
   executor?: string
+  dueAt?: Date[]
+  status?: string
+  limit?: number
 }) => {
-  const { loading, error, data, refetch } = useQuery<
+  const { loading, error, data, refetch, fetchMore } = useQuery<
     types.GET_MEMBER_TASK_COLLECTION,
     types.GET_MEMBER_TASK_COLLECTIONVariables
   >(
@@ -284,7 +416,34 @@ const useMemberTaskCollection = (filter?: {
         $titleSearch: String
         $categorySearch: String
         $executorSearch: String
+        $dueAtStartSearch: timestamptz
+        $dueAtEndSearch: timestamptz
+        $statusSearch: String
+        $cursor: timestamptz
+        $limit: Int
       ) {
+        member_task_aggregate(
+          where: {
+            member_id: { _eq: $memberId }
+            title: { _ilike: $titleSearch }
+            _and: [
+              { _or: [{ category_id: { _is_null: true } }, { category: { name: { _ilike: $categorySearch } } }] }
+              {
+                _or: [
+                  { executor_id: { _is_null: true } }
+                  { executor: { name: { _ilike: $executorSearch } } }
+                  { executor: { username: { _ilike: $executorSearch } } }
+                ]
+              }
+              { _or: [{ due_at: { _gte: $dueAtStartSearch, _lte: $dueAtEndSearch } }] }
+              { _or: [{ status: { _is_null: true } }, { status: { _ilike: $statusSearch } }] }
+            ]
+          }
+        ) {
+          aggregate {
+            count
+          }
+        }
         member_task(
           where: {
             member_id: { _eq: $memberId }
@@ -298,8 +457,12 @@ const useMemberTaskCollection = (filter?: {
                   { executor: { username: { _ilike: $executorSearch } } }
                 ]
               }
+              { _or: [{ due_at: { _gte: $dueAtStartSearch, _lte: $dueAtEndSearch } }] }
+              { _or: [{ status: { _is_null: true } }, { status: { _ilike: $statusSearch } }] }
             ]
+            created_at: { _lt: $cursor }
           }
+          limit: $limit
           order_by: { created_at: desc }
         ) {
           id
@@ -308,6 +471,7 @@ const useMemberTaskCollection = (filter?: {
           priority
           status
           due_at
+          created_at
           category {
             id
             name
@@ -328,10 +492,15 @@ const useMemberTaskCollection = (filter?: {
     `,
     {
       variables: {
-        memberId: filter?.memberId,
-        titleSearch: filter?.title ? `%${filter.title}%` : undefined,
-        categorySearch: filter?.category ? `%${filter.category}%` : undefined,
-        executorSearch: filter?.executor ? `%${filter.executor}%` : undefined,
+        memberId,
+        titleSearch: title && `%${title}%`,
+        categorySearch: category && `%${category}%`,
+        executorSearch: executor && `%${executor}%`,
+        dueAtStartSearch: dueAt?.length ? dueAt[0] : null,
+        dueAtEndSearch: dueAt?.length ? dueAt[1] : null,
+        statusSearch: status && `%${status}%`,
+        cursor: null,
+        limit,
       },
     },
   )
@@ -352,6 +521,7 @@ const useMemberTaskCollection = (filter?: {
                 }
               : null,
             dueAt: v.due_at && new Date(v.due_at),
+            createdAt: v.created_at && new Date(v.created_at),
             description: v.description,
             member: {
               id: v.member.id,
@@ -367,14 +537,46 @@ const useMemberTaskCollection = (filter?: {
           }))
           .filter(
             memberTask =>
-              (!filter?.category || memberTask.category?.name.toLowerCase().includes(filter.category)) &&
-              (!filter?.executor || memberTask.executor?.name.toLowerCase().includes(filter.executor)),
+              (!category || memberTask.category?.name.toLowerCase().includes(category)) &&
+              (!executor || memberTask.executor?.name.toLowerCase().includes(executor)),
           )
+
+  const [hasMore, setHasMore] = useState<boolean>(false)
+  const totalCount = data?.member_task_aggregate.aggregate?.count || 0
+  useEffect(() => {
+    hasMore
+      ? totalCount < limit && setHasMore(false)
+      : totalCount > limit && totalCount > memberTasks.length && setHasMore(true)
+  }, [totalCount, hasMore, limit, memberTasks.length])
+
+  const loadMoreMemberTasks = () =>
+    fetchMore({
+      variables: {
+        memberId,
+        titleSearch: title && `%${title}%`,
+        categorySearch: category && `%${category}%`,
+        executorSearch: executor && `%${executor}%`,
+        cursor: memberTasks.slice(-1).pop()?.createdAt,
+        limit,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) {
+          return prev
+        }
+        if (limit > fetchMoreResult.member_task.length) {
+          setHasMore(false)
+        }
+        return Object.assign({}, prev, {
+          member_task: [...prev.member_task, ...fetchMoreResult.member_task],
+        })
+      },
+    })
 
   return {
     loadingMemberTasks: loading,
     errorMemberTasks: error,
     memberTasks,
+    loadMoreMemberTasks: hasMore && loadMoreMemberTasks,
     refetchMemberTasks: refetch,
   }
 }

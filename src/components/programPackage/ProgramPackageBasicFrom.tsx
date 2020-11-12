@@ -2,9 +2,9 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -12,13 +12,18 @@ import { ProgramPackageProps } from '../../types/programPackage'
 import CategorySelector from '../form/CategorySelector'
 import ImageInput from '../form/ImageInput'
 
+type FieldProps = {
+  title: string
+  categoryIds: string[]
+}
+
 const ProgramPackageBasicForm: React.FC<{
   programPackage: ProgramPackageProps | null
   onRefetch?: () => void
 }> = ({ programPackage, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
-  const { id: appId } = useContext(AppContext)
+  const [form] = useForm<FieldProps>()
+  const { id: appId } = useApp()
   const [updateProgramPackageBasic] = useMutation<
     types.UPDATE_PROGRAM_PACKAGE_BASIC,
     types.UPDATE_PROGRAM_PACKAGE_BASICVariables
@@ -43,14 +48,14 @@ const ProgramPackageBasicForm: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateProgramPackageBasic({
       variables: {
@@ -64,7 +69,7 @@ const ProgramPackageBasicForm: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
+        onRefetch?.()
         message.success(formatMessage(commonMessages.event.successfullySaved))
       })
       .catch(handleError)

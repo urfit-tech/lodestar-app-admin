@@ -41,8 +41,8 @@ const BlogPostDeletionModal: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullyDeleted))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

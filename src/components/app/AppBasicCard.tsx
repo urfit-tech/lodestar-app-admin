@@ -1,19 +1,25 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { useForm } from 'antd/lib/form/Form'
-import React, { useContext, useState } from 'react'
+import gql from 'graphql-tag'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import { useUpdateApp } from '../../hooks/app'
+import types from '../../types'
 import AdminCard from '../admin/AdminCard'
-import { StyledForm } from '../layout'
 
 const messages = defineMessages({
   appName: { id: 'app.label.name', defaultMessage: '網站名稱' },
   appVimeoProjectId: { id: 'app.label.vimeoProjectId', defaultMessage: 'Vimeo ID' },
 })
+
+type FieldProps = {
+  name: string
+  vimeoProjectId: string
+}
 
 const AppBasicCard: React.FC<
   CardProps & {
@@ -21,33 +27,31 @@ const AppBasicCard: React.FC<
   }
 > = ({ appId, ...cardProps }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
-  const { refetch, ...app } = useContext(AppContext)
-  const updateApp = useUpdateApp()
-  const [updating, setUpdating] = useState(false)
+  const [form] = useForm<FieldProps>()
+  const { loading: loadingApp, refetch, ...app } = useApp()
+  const [updateAppBasic] = useMutation<types.UPDATE_APP_BASIC, types.UPDATE_APP_BASICVariables>(UPDATE_APP_BASIC)
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (values: any) => {
-    setUpdating(true)
-    updateApp({
+  const handleSubmit = (values: FieldProps) => {
+    setLoading(true)
+    updateAppBasic({
       variables: {
         appId: app.id,
         name: values.name,
-        title: values.title,
-        description: values.description,
         vimeoProjectId: values.vimeoProjectId,
       },
     })
       .then(() => {
-        setUpdating(false)
         message.success(formatMessage(commonMessages.event.successfullySaved))
-        refetch && refetch()
+        refetch?.()
       })
-      .catch(error => handleError(error))
+      .catch(handleError)
+      .finally(() => setLoading(false))
   }
 
   return (
-    <AdminCard {...cardProps} loading={updating}>
-      <StyledForm
+    <AdminCard {...cardProps} loading={loadingApp}>
+      <Form
         labelCol={{ span: 24, md: { span: 4 } }}
         wrapperCol={{ span: 24, md: { span: 12 } }}
         initialValues={{
@@ -78,13 +82,30 @@ const AppBasicCard: React.FC<
           <Button className="mr-2" onClick={() => form.resetFields()}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" htmlType="submit" loading={updating}>
+          <Button type="primary" htmlType="submit" loading={loading}>
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>
-      </StyledForm>
+      </Form>
     </AdminCard>
   )
 }
+
+const UPDATE_APP_BASIC = gql`
+  mutation UPDATE_APP_BASIC(
+    $appId: String!
+    $name: String
+    $title: String
+    $description: String
+    $vimeoProjectId: String
+  ) {
+    update_app(
+      where: { id: { _eq: $appId } }
+      _set: { name: $name, title: $title, description: $description, vimeo_project_id: $vimeoProjectId }
+    ) {
+      affected_rows
+    }
+  }
+`
 
 export default AppBasicCard

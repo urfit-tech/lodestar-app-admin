@@ -44,7 +44,7 @@ const AppointmentPlanScheduleBlock: React.FC<{
         appointmentScheduleId: scheduleId,
       },
     })
-      .then(() => onRefetch && onRefetch())
+      .then(() => onRefetch?.())
       .catch(handleError)
 
   const handleClose = (scheduleId: string, startedAt: Date) => {
@@ -64,7 +64,7 @@ const AppointmentPlanScheduleBlock: React.FC<{
         excludes: excludes.map(exclude => new Date(exclude).toISOString()),
       },
     })
-      .then(() => onRefetch && onRefetch())
+      .then(() => onRefetch?.())
       .catch(handleError)
   }
 

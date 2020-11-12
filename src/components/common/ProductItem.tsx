@@ -80,13 +80,12 @@ const StyledListTitleBlock = styled.div`
   letter-spacing: 0.4px;
 `
 
-type ProductItemProps = {
+const ProductItem: React.FC<{
   id: string
   startedAt?: Date
   variant?: 'default' | 'simple' | 'cartProduct' | 'simpleCartProduct' | 'checkout' | 'coupon-product'
   quantity?: number
-}
-const ProductItem: React.FC<ProductItemProps> = ({ id, startedAt, variant, quantity }) => {
+}> = ({ id, startedAt, variant, quantity }) => {
   const { formatMessage } = useIntl()
   const [productType, targetId] = id.split('_') as [ProductType, string]
   const { target } = useSimpleProduct(targetId, { startedAt, quantity })

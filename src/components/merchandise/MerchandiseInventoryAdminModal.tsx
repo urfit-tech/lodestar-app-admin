@@ -1,104 +1,177 @@
-import { FileAddOutlined } from '@ant-design/icons'
-import { Button, Input } from 'antd'
+import { ArrowRightOutlined } from '@ant-design/icons'
+import { Button, Input, Modal } from 'antd'
+import { ModalProps } from 'antd/lib/modal'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
-import { useArrangeProductInventory } from '../../hooks/data'
-import AdminModal from '../admin/AdminModal'
+import { useArrangeProductInventory, useProductInventoryLog } from '../../hooks/data'
 import QuantityInput from '../form/QuantityInput'
+import {
+  MerchandiseCover,
+  MerchandiseInventoryCardProps,
+  MerchandiseInventoryLabel,
+  MerchandiseTitle,
+} from './MerchandiseInventoryCard'
+import MerchandiseInventoryTable from './MerchandiseInventoryTable'
 
-const MerchandiseSpecification = styled.div`
-  color: var(--gray-darker);
-  line-height: 1.5;
-  letter-spacing: 0.2px;
-`
 const StyledLabel = styled.div`
   color: var(--gray-darker);
   font-size: 14px;
   line-height: 1.57;
   letter-spacing: 0.18px;
 `
-
-const MerchandiseInventoryAdminModal: React.FC<{
-  merchandiseId: string
-  inventories: {
-    specification: string
-    buyableQuantity: number
-  }[]
-  refetch?: () => void
-}> = ({ merchandiseId, inventories, refetch }) => {
+const MerchandiseModalTitle = styled.div`
+  font-size: 18px;
+  letter-spacing: 0.8px;
+  color: var(--gray-darker);
+  font-weight: bold;
+`
+const StyledStatus = styled.div`
+  background: var(--gray-lighter);
+  border-radius: 4px;
+`
+const StatusCardTitle = styled.div`
+  margin-bottom: 0.75rem;
+  color: var(--gray-darker);
+  font-size: 14px;
+  line-height: 1.57;
+  letter-spacing: 0.18px;
+`
+const StatusCardNumber = styled.div`
+  color: var(--gray-darker);
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 0.2px;
+`
+const StatusCardQuantity = styled.div`
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--gray-darker);
+`
+const MerchandiseInventoryAdminModal: React.FC<MerchandiseInventoryCardProps & ModalProps> = ({
+  merchandiseSpecId,
+  coverUrl,
+  merchandiseTitle,
+  merchandiseSpecTitle,
+  merchandiseSpecInventoryStatus,
+  merchandiseMemberShop,
+  onCancel,
+  onRefetch,
+  ...props
+}) => {
   const { formatMessage } = useIntl()
-  const arrangeProductInventory = useArrangeProductInventory(`Merchandise_${merchandiseId}`)
   const [loading, setLoading] = useState(false)
-  const [quantities, setQuantities] = useState<number[]>(Array(inventories.length).fill(0))
+  const [quantity, setQuantity] = useState('0')
   const [comment, setComment] = useState('')
+  const arrangeProductInventory = useArrangeProductInventory(`MerchandiseSpec_${merchandiseSpecId}`)
+  const { inventoryLogs, refetchInventoryLogs } = useProductInventoryLog(`MerchandiseSpec_${merchandiseSpecId}`)
 
-  const handleSubmit = (closeModal: () => void) => {
+  const handleSubmit = (closeModal?: () => void) => {
+    if (merchandiseSpecInventoryStatus.buyableQuantity + Number(quantity) < 0) {
+      return
+    }
     setLoading(true)
-    arrangeProductInventory(
-      inventories.map((inventory, index) => ({
-        specification: inventory.specification,
-        quantity: quantities[index],
-        comment: comment || null,
-      })),
-    )
+    arrangeProductInventory({
+      specification: merchandiseSpecTitle,
+      quantity: Number(quantity),
+      comment: comment || null,
+    })
       .then(() => {
-        refetch && refetch()
-        closeModal()
+        onRefetch?.()
+        refetchInventoryLogs?.()
+        closeModal?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
   }
 
   return (
-    <AdminModal
-      title={formatMessage(merchandiseMessages.ui.modifyInventory)}
-      footer={null}
-      renderTrigger={({ setVisible }) => (
-        <Button
-          type="primary"
-          icon={<FileAddOutlined />}
-          disabled={inventories.length === 0}
-          onClick={() => setVisible(true)}
-        >
-          {formatMessage(merchandiseMessages.ui.modifyInventory)}
-        </Button>
-      )}
-      renderFooter={({ setVisible }) => (
-        <div className="mt-4">
-          <Button className="mr-2" onClick={() => setVisible(false)}>
-            {formatMessage(commonMessages.ui.cancel)}
-          </Button>
-          <Button
-            type="primary"
-            loading={loading}
-            disabled={inventories.some((inventory, index) => quantities[index] + inventory.buyableQuantity < 0)}
-            onClick={() => handleSubmit(() => setVisible(false))}
-          >
-            {formatMessage(commonMessages.ui.confirm)}
-          </Button>
+    <Modal width="70vw" footer={null} onCancel={onCancel} {...props}>
+      <div className="container py-2">
+        <MerchandiseModalTitle>{formatMessage(merchandiseMessages.status.arrange)}</MerchandiseModalTitle>
+        <div className="d-flex align-items-center my-sm-4 mb-1">
+          <MerchandiseCover src={coverUrl} className="mr-3" />
+          <div>
+            <MerchandiseTitle>
+              {merchandiseTitle}
+              <span>|</span>
+              {merchandiseSpecTitle}
+            </MerchandiseTitle>
+            <MerchandiseInventoryLabel>{merchandiseMemberShop}</MerchandiseInventoryLabel>
+          </div>
         </div>
-      )}
-      destroyOnClose
-      maskClosable={false}
-    >
-      {inventories.map((inventory, index) => (
-        <div key={inventory.specification} className="d-flex align-items-center justify-content-between mb-3">
-          <MerchandiseSpecification>{inventory.specification}</MerchandiseSpecification>
-          <QuantityInput
-            value={quantities[index]}
-            onChange={value =>
-              typeof value === 'number' && setQuantities(quantities.map((q, i) => (i === index ? value : q)))
-            }
-          />
+        <div className="row mb-1 mb-sm-4">
+          <div className="col-12 col-lg-4 mb-1">
+            <StyledStatus className="p-4">
+              <StatusCardTitle>{formatMessage(merchandiseMessages.status.currentInventory)}</StatusCardTitle>
+              <div className="d-flex align-items-center">
+                <StatusCardNumber className="mr-2">{merchandiseSpecInventoryStatus.buyableQuantity}</StatusCardNumber>
+                <ArrowRightOutlined className="mr-2" style={{ fontSize: '16px' }} />
+                <StatusCardQuantity>
+                  {merchandiseSpecInventoryStatus.buyableQuantity + Number(quantity)}
+                </StatusCardQuantity>
+              </div>
+            </StyledStatus>
+          </div>
+          <div className="col-12 col-lg-4 mb-1">
+            <StyledStatus className="p-4">
+              <StatusCardTitle>{formatMessage(merchandiseMessages.status.shipping)}</StatusCardTitle>
+              <StatusCardNumber>{merchandiseSpecInventoryStatus.undeliveredQuantity}</StatusCardNumber>
+            </StyledStatus>
+          </div>
+          <div className="col-12 col-lg-4 mb-1">
+            <StyledStatus className="p-4">
+              <StatusCardTitle>{formatMessage(merchandiseMessages.status.shipped)}</StatusCardTitle>
+              <StatusCardNumber>{merchandiseSpecInventoryStatus.deliveredQuantity}</StatusCardNumber>
+            </StyledStatus>
+          </div>
         </div>
-      ))}
-
-      <StyledLabel className="mb-1">{formatMessage(merchandiseMessages.label.comment)}</StyledLabel>
-      <Input.TextArea rows={3} onBlur={e => setComment(e.target.value)} />
-    </AdminModal>
+        <div className="d-sm-flex mb-sm-4">
+          <div className="mr-2">
+            <StyledLabel className="mb-1">{formatMessage(merchandiseMessages.ui.modifyInventory)}</StyledLabel>
+            <QuantityInput
+              setInputValue={setQuantity}
+              value={Number(quantity)}
+              min={-merchandiseSpecInventoryStatus.buyableQuantity}
+              onChange={value => typeof value === 'number' && setQuantity(`${value}`)}
+            />
+          </div>
+          <div className="flex-sm-grow-1 mr-sm-2">
+            <StyledLabel className="mb-1">{formatMessage(merchandiseMessages.label.comment)}</StyledLabel>
+            <Input value={comment} onChange={e => setComment(e.target.value)} />
+          </div>
+          <div className="d-flex align-items-end flex-sm-end">
+            <Button
+              className="mr-2"
+              onClick={e => {
+                setQuantity('0')
+                setComment('')
+                onCancel?.(e)
+              }}
+            >
+              {formatMessage(commonMessages.ui.cancel)}
+            </Button>
+            <Button
+              loading={loading}
+              type="primary"
+              onClick={() =>
+                handleSubmit(() => {
+                  setQuantity('0')
+                  setComment('')
+                })
+              }
+            >
+              {formatMessage(commonMessages.ui.save)}
+            </Button>
+          </div>
+        </div>
+        <div>
+          <MerchandiseInventoryTable inventoryLogs={inventoryLogs} />
+        </div>
+      </div>
+    </Modal>
   )
 }
 

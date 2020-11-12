@@ -1,12 +1,12 @@
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Form } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import BraftEditor from 'braft-editor'
+import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
@@ -20,32 +20,36 @@ export const StyledEditor = styled(BraftEditor)`
   }
 `
 
+type FieldProps = {
+  content: EditorState
+}
+
 const IssueReplyCreationBlock: React.FC<{
   memberId: string
   issueId: string
   onRefetch?: () => void
 }> = ({ memberId, issueId, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
-  const { authToken } = useAuth()
-  const { id: appId } = useContext(AppContext)
+  const [form] = useForm<FieldProps>()
+  const { authToken, backendEndpoint } = useAuth()
+  const { id: appId } = useApp()
   const [insertIssueReply] = useMutation<types.INSERT_ISSUE_REPLY, types.INSERT_ISSUE_REPLYVariables>(
     INSERT_ISSUE_REPLY,
   )
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     insertIssueReply({
       variables: {
         memberId,
         issueId,
-        content: values.content.toRAW(),
+        content: values.content?.getCurrentContent().hasText() ? values.content.toRAW() : null,
       },
     })
       .then(() => {
         form.resetFields()
-        onRefetch && onRefetch()
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -71,7 +75,7 @@ const IssueReplyCreationBlock: React.FC<{
           style={{ border: '1px solid #cdcdcd', borderRadius: '4px' }}
           language="zh-hant"
           controls={['bold', 'italic', 'underline', 'separator', 'media']}
-          media={{ uploadFn: createUploadFn(appId, authToken) }}
+          media={{ uploadFn: createUploadFn(appId, authToken, backendEndpoint) }}
         />
       </Form.Item>
       <Form.Item className="text-right">

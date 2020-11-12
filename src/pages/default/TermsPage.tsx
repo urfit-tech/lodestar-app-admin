@@ -1,8 +1,8 @@
 import { Card, Typography } from 'antd'
-import React, { useContext } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import DefaultLayout from '../../components/layout/DefaultLayout'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 
 const StyledTitle = styled(Typography.Title)`
   && {
@@ -56,7 +56,7 @@ const StyledSection = styled.section`
 `
 
 const TermsPage: React.FC = () => {
-  const { name } = useContext(AppContext)
+  const { name } = useApp()
 
   return (
     <DefaultLayout>

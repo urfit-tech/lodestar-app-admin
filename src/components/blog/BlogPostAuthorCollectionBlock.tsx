@@ -21,12 +21,16 @@ const StyledModalTitle = styled.div`
   letter-spacing: 0.77px;
 `
 
+type FieldPRops = {
+  memberId: string
+}
+
 const BlogPostAuthorCollectionBlock: React.FC<{
   post: PostProps | null
   onRefetch?: () => {}
 }> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldPRops>()
   const [updatePostRole] = useMutation<types.UPDATE_POST_ROLE, types.UPDATE_POST_ROLEVariables>(UPDATE_POST_ROLE)
   const [isVisible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -45,21 +49,21 @@ const BlogPostAuthorCollectionBlock: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        setVisible(false)
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldPRops) => {
     setLoading(true)
-    const memberIds: string[] = [values.memberId]
     updatePostRole({
       variables: {
         postId: post.id,
         updatedAt: new Date(),
-        postRoles: memberIds.map((postRoleId: string, index: number) => ({
+        postRoles: [values.memberId].map((postRoleId: string, index: number) => ({
           post_id: post.id,
           member_id: postRoleId,
           name: 'author',
@@ -68,14 +72,12 @@ const BlogPostAuthorCollectionBlock: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        setVisible(false)
+        onRefetch?.()
       })
       .catch(handleError)
-      .finally(() => {
-        setVisible(false)
-        setLoading(false)
-      })
+      .finally(() => setLoading(false))
   }
 
   return (

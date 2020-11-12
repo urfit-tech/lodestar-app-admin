@@ -1,14 +1,15 @@
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { useForm } from 'antd/lib/form/Form'
-import React, { useContext, useState } from 'react'
+import gql from 'graphql-tag'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { AppContext } from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { useUpdateAppSettings } from '../../hooks/app'
+import types from '../../types'
 import AdminCard from '../admin/AdminCard'
-import { StyledForm } from '../layout'
 
 const messages = defineMessages({
   appTitle: { id: 'app.label.title', defaultMessage: '網站標題' },
@@ -37,37 +38,59 @@ const messages = defineMessages({
   themeLayoutHeaderBackground: { id: 'app.label.themeLayoutHeaderBackground', defaultMessage: '主題色：Header背景色' },
 })
 
+type FieldProps = {
+  title: string
+  description: string
+  'open_graph.title': string
+  'open_graph.description': string
+  'open_graph.url': string
+  'open_graph.image': string
+  'seo.name': string
+  'seo.url': string
+  'tracking.gtm_id': string
+  'tracking.ga_id': string
+  'tracking.fb_pixel_id': string
+  'theme.@layout-body-background': string
+  'theme.@primary-color': string
+  'theme.@btn-primary-color': string
+  'theme.@btn-primary-bg': string
+  'theme.@btn-danger-border': string
+  'theme.@btn-danger-bg': string
+  'theme.@layout-header-background': string
+  'tappay.app_id': string
+  'tappay.app_key': string
+  'payment.due_days': string
+}
+
 const AppSettingCard: React.FC<
   CardProps & {
     appId: string
   }
 > = ({ appId, ...cardProps }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
-  const { refetch: refetchApp, loading: loadingApp, ...app } = useContext(AppContext)
-  const updateAppSettings = useUpdateAppSettings()
+  const [form] = useForm<FieldProps>()
+  const { loading: loadingApp, refetch: refetchApp, settings, ...app } = useApp()
+  const [updateAppSettings] = useMutation<types.UPSERT_APP_SETTINGS, types.UPSERT_APP_SETTINGSVariables>(
+    UPSERT_APP_SETTINGS,
+  )
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (values: any) => {
-    if (!app) {
-      return
-    }
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
-    const appSettings = Object.keys(values)
-      .filter(key => values[key])
-      .map(key => ({
-        app_id: app.id,
-        key,
-        value: values[key],
-      }))
     updateAppSettings({
       variables: {
-        appSettings,
+        appSettings: Object.keys(values)
+          .filter(key => values[key as keyof FieldProps])
+          .map(key => ({
+            app_id: app.id,
+            key,
+            value: values[key as keyof FieldProps],
+          })),
       },
     })
       .then(() => {
-        refetchApp && refetchApp()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        refetchApp?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -75,7 +98,7 @@ const AppSettingCard: React.FC<
 
   return (
     <AdminCard {...cardProps} loading={loadingApp}>
-      <StyledForm
+      <Form
         form={form}
         labelAlign="left"
         labelCol={{ md: { span: 4 } }}
@@ -83,27 +106,27 @@ const AppSettingCard: React.FC<
         colon={false}
         hideRequiredMark
         initialValues={{
-          title: app?.settings['title'],
-          description: app?.settings['description'],
-          'open_graph.title': app?.settings['open_graph.title'],
-          'open_graph.description': app?.settings['open_graph.description'],
-          'open_graph.url': app?.settings['open_graph.url'],
-          'open_graph.image': app?.settings['open_graph.image'],
-          'seo.name': app?.settings['seo.name'],
-          'seo.url': app?.settings['seo.url'],
-          'tracking.gtm_id': app?.settings['tracking.gtm_id'],
-          'tracking.ga_id': app?.settings['tracking.ga_id'],
-          'tracking.fb_pixel_id': app?.settings['tracking.fb_pixel_id'],
-          'theme.@layout-body-background': app?.settings['theme.@layout-body-background'],
-          'theme.@primary-color': app?.settings['theme.@primary-color'],
-          'theme.@btn-primary-color': app?.settings['theme.@btn-primary-color'],
-          'theme.@btn-primary-bg': app?.settings['theme.@btn-primary-bg'],
-          'theme.@btn-danger-border': app?.settings['theme.@btn-danger-border'],
-          'theme.@btn-danger-bg': app?.settings['theme.@btn-danger-bg'],
-          'theme.@layout-header-background': app?.settings['theme.@layout-header-background'],
-          'tappay.app_id': app?.settings['tappay.app_id'],
-          'tappay.app_key': app?.settings['tappay.app_key'],
-          'payment.due_days': app?.settings['payment.due_days'],
+          title: settings['title'],
+          description: settings['description'],
+          'open_graph.title': settings['open_graph.title'],
+          'open_graph.description': settings['open_graph.description'],
+          'open_graph.url': settings['open_graph.url'],
+          'open_graph.image': settings['open_graph.image'],
+          'seo.name': settings['seo.name'],
+          'seo.url': settings['seo.url'],
+          'tracking.gtm_id': settings['tracking.gtm_id'],
+          'tracking.ga_id': settings['tracking.ga_id'],
+          'tracking.fb_pixel_id': settings['tracking.fb_pixel_id'],
+          'theme.@layout-body-background': settings['theme.@layout-body-background'],
+          'theme.@primary-color': settings['theme.@primary-color'],
+          'theme.@btn-primary-color': settings['theme.@btn-primary-color'],
+          'theme.@btn-primary-bg': settings['theme.@btn-primary-bg'],
+          'theme.@btn-danger-border': settings['theme.@btn-danger-border'],
+          'theme.@btn-danger-bg': settings['theme.@btn-danger-bg'],
+          'theme.@layout-header-background': settings['theme.@layout-header-background'],
+          'tappay.app_id': settings['tappay.app_id'],
+          'tappay.app_key': settings['tappay.app_key'],
+          'payment.due_days': settings['payment.due_days'],
         }}
         onFinish={handleSubmit}
       >
@@ -189,9 +212,20 @@ const AppSettingCard: React.FC<
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>
-      </StyledForm>
+      </Form>
     </AdminCard>
   )
 }
+
+const UPSERT_APP_SETTINGS = gql`
+  mutation UPSERT_APP_SETTINGS($appSettings: [app_setting_insert_input!]!) {
+    insert_app_setting(
+      objects: $appSettings
+      on_conflict: { update_columns: value, constraint: app_setting_app_id_key_key }
+    ) {
+      affected_rows
+    }
+  }
+`
 
 export default AppSettingCard

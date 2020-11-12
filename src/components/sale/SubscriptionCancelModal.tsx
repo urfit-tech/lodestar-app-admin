@@ -77,7 +77,7 @@ const SubscriptionCancelModal: React.FC<{
         })
       }
       message.success(formatMessage(messages.cancelSubscriptionSuccess))
-      onRefetch && onRefetch()
+      onRefetch?.()
     } catch (error) {
       handleError(error)
     }

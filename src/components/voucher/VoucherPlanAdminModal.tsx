@@ -16,12 +16,12 @@ const messages = defineMessages({
 
 export type VoucherPlanFields = {
   title: string
-  productQuantityLimit: number
-  voucherCodes: PlanCodeProps[]
+  voucherCodes?: PlanCodeProps[]
   voucherPlanProducts: string[]
-  description: string | null
+  productQuantityLimit: number
   startedAt?: Date
   endedAt?: Date
+  description: string
 }
 
 const VoucherPlanAdminModal: React.FC<
@@ -35,13 +35,14 @@ const VoucherPlanAdminModal: React.FC<
   }
 > = ({ voucherPlan, onSubmit, ...props }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<VoucherPlanFields>()
   const [loading, setLoading] = useState(false)
 
   const handleClick = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     form
       .validateFields()
-      .then((values: any) => {
+      .then(() => {
+        const values = form.getFieldsValue()
         if (onSubmit) {
           onSubmit(setVisible, setLoading, values)
         }

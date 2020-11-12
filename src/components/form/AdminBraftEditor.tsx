@@ -1,7 +1,7 @@
 import { ControlType, EditorState } from 'braft-editor'
-import React, { useContext } from 'react'
+import React from 'react'
 import { v4 as uuid } from 'uuid'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { uploadFile } from '../../helpers'
 import StyledBraftEditor from '../common/StyledBraftEditor'
@@ -20,7 +20,7 @@ const braftLanguageFn = (languages: { [lan: string]: any }, context: any) => {
   }
 }
 
-export const createUploadFn = (appId: string, authToken: string | null) => {
+export const createUploadFn = (appId: string, authToken: string | null, backendEndpoint: string | null) => {
   return async (params: {
     file: File
     success: (res: {
@@ -37,7 +37,7 @@ export const createUploadFn = (appId: string, authToken: string | null) => {
     }) => void
   }) => {
     const uniqId = uuid()
-    uploadFile(`images/${appId}/editor/${uniqId}`, params.file, authToken).then(() => {
+    uploadFile(`images/${appId}/editor/${uniqId}`, params.file, authToken, backendEndpoint).then(() => {
       params.success({
         url: `https://${process.env.REACT_APP_S3_BUCKET}/images/${appId}/editor/${uniqId}`,
         meta: {
@@ -109,8 +109,8 @@ const AdminBraftEditor: React.FC<{
   value?: EditorState
   onChange?: (editorState: EditorState) => void
 }> = ({ variant, value, onChange }) => {
-  const { id: appId } = useContext(AppContext)
-  const { authToken } = useAuth()
+  const { id: appId } = useApp()
+  const { authToken, backendEndpoint } = useAuth()
 
   return (
     <StyledBraftEditor
@@ -119,7 +119,7 @@ const AdminBraftEditor: React.FC<{
       contentClassName={variant === 'short' ? 'short-bf-content' : undefined}
       language={braftLanguageFn}
       controls={controls[variant || 'default']}
-      media={{ uploadFn: createUploadFn(appId, authToken) }}
+      media={{ uploadFn: createUploadFn(appId, authToken, backendEndpoint) }}
     />
   )
 }

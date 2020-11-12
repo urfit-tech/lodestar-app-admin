@@ -1,6 +1,6 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, Dropdown, Menu, Tabs } from 'antd'
-import React, { useContext } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -9,6 +9,7 @@ import {
   AdminBlockTitle,
   AdminHeader,
   AdminHeaderTitle,
+  AdminPaneDescription,
   AdminPaneTitle,
   AdminTabBarWrapper,
 } from '../../components/admin'
@@ -20,16 +21,17 @@ import ProgramIntroForm from '../../components/program/ProgramIntroForm'
 import ProgramPlanAdminBlock from '../../components/program/ProgramPlanAdminBlock'
 import ProgramPublishBlock from '../../components/program/ProgramPublishBlock'
 import ProgramRoleAdminPane from '../../components/program/ProgramRoleAdminPane'
+import ProgramSharingCodeAdminForm from '../../components/program/ProgramSharingCodeAdminForm'
 import ProgramStructureAdminBlock from '../../components/program/ProgramStructureAdminBlock'
 import ProgramStructureAdminModal from '../../components/program/ProgramStructureAdminModal'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useProgram } from '../../hooks/program'
 
 const ProgramAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { programId } = useParams<{ programId: string }>()
-  const { settings } = useContext(AppContext)
+  const { settings, enabledModules } = useApp()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { program, refetchProgram } = useProgram(programId)
 
@@ -105,6 +107,20 @@ const ProgramAdminPage: React.FC = () => {
               <ProgramPlanAdminBlock program={program} onRefetch={refetchProgram} />
             </div>
           </Tabs.TabPane>
+
+          {enabledModules.sharing_code && (
+            <Tabs.TabPane key="sharing" tab={formatMessage(programMessages.label.sharingCode)}>
+              <div className="container py-5">
+                <AdminPaneTitle>{formatMessage(programMessages.label.sharingCode)}</AdminPaneTitle>
+                <AdminPaneDescription className="mb-4">
+                  {formatMessage(programMessages.text.sharingCodeDescription)}
+                </AdminPaneDescription>
+                <AdminBlock>
+                  <ProgramSharingCodeAdminForm programId={programId} />
+                </AdminBlock>
+              </div>
+            </Tabs.TabPane>
+          )}
 
           <Tabs.TabPane key="roles" tab={formatMessage(commonMessages.label.roleAdmin)}>
             <div className="container py-5">

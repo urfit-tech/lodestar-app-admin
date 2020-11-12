@@ -55,6 +55,11 @@ export const AdminPaneTitle = styled.h1`
   font-weight: bold;
   letter-spacing: 0.2px;
 `
+export const AdminPaneDescription = styled.div`
+  color: var(--gray-darker);
+  font-size: 14px;
+  white-space: pre-line;
+`
 export const AdminBlock = styled.div`
   margin-bottom: 1.25rem;
   padding: 2rem;

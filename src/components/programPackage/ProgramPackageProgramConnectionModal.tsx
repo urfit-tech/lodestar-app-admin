@@ -3,13 +3,17 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Form, message, TreeSelect } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, programPackageMessages } from '../../helpers/translation'
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
+
+type FieldProps = {
+  programValues: string[]
+}
 
 const ProgramPackageProgramConnectionModal: React.FC<{
   programPackageId: string
@@ -21,8 +25,8 @@ const ProgramPackageProgramConnectionModal: React.FC<{
   onRefetch?: () => void
 }> = ({ programPackageId, programs, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
-  const { id: appId } = useContext(AppContext)
+  const [form] = useForm<FieldProps>()
+  const { id: appId } = useApp()
   const { availablePrograms } = useGetAvailableProgramCollection(appId)
   const [insertProgramPackageProgram] = useMutation<
     types.INSERT_PROGRAM_PACKAGE_PROGRAM,
@@ -34,8 +38,9 @@ const ProgramPackageProgramConnectionModal: React.FC<{
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     form
       .validateFields()
-      .then((values: any) => {
+      .then(() => {
         setLoading(true)
+        const values = form.getFieldsValue()
         const programsId = values.programValues.map((value: string) => value.split('_')[0])
         insertProgramPackageProgram({
           variables: {
@@ -50,11 +55,11 @@ const ProgramPackageProgramConnectionModal: React.FC<{
           },
         })
           .then(() => {
-            onRefetch && onRefetch()
-            setVisible(false)
             message.success(formatMessage(commonMessages.event.successfullySaved))
+            setVisible(false)
+            onRefetch?.()
           })
-          .catch(err => handleError(err))
+          .catch(handleError)
           .finally(() => setLoading(false))
       })
       .catch(() => {})
@@ -104,7 +109,9 @@ const ProgramPackageProgramConnectionModal: React.FC<{
                   .filter(program => !program.isSubscription)
                   .map(program => ({
                     key: program.id,
-                    title: program.title,
+                    title: program.publishedAt
+                      ? program.title
+                      : `( ${formatMessage(programPackageMessages.status.unpublished)} ) ${program.title}`,
                     value: `${program.id}_${program.title}`,
                   })),
               },
@@ -115,7 +122,9 @@ const ProgramPackageProgramConnectionModal: React.FC<{
                   .filter(program => program.isSubscription)
                   .map(program => ({
                     key: program.id,
-                    title: program.title,
+                    title: program.publishedAt
+                      ? program.title
+                      : `( ${formatMessage(programPackageMessages.status.unpublished)} ) ${program.title}`,
                     value: `${program.id}_${program.title}`,
                   })),
               },
@@ -134,10 +143,11 @@ const useGetAvailableProgramCollection = (appId: string) => {
   >(
     gql`
       query GET_AVAILABLE_PROGRAM_COLLECTION($appId: String!) {
-        program(where: { published_at: { _is_null: false }, is_deleted: { _eq: false }, app_id: { _eq: $appId } }) {
+        program(where: { is_deleted: { _eq: false }, app_id: { _eq: $appId } }) {
           id
           title
           is_subscription
+          published_at
         }
       }
     `,
@@ -148,6 +158,7 @@ const useGetAvailableProgramCollection = (appId: string) => {
     id: string
     title: string | null
     isSubscription: boolean
+    publishedAt: string
   }[] =
     loading || error || !data
       ? []
@@ -155,6 +166,7 @@ const useGetAvailableProgramCollection = (appId: string) => {
           id: program.id,
           title: program.title,
           isSubscription: program.is_subscription,
+          publishedAt: program.published_at,
         }))
 
   return {

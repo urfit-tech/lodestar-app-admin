@@ -8,6 +8,7 @@ import { useHistory } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import DefaultLayout from '../../components/layout/DefaultLayout'
+import { useAuth } from '../../contexts/AuthContext'
 import { desktopViewMixin, handleError } from '../../helpers'
 import { codeMessages, commonMessages, errorMessages } from '../../helpers/translation'
 
@@ -35,18 +36,24 @@ const StyledTitle = styled.h1`
   letter-spacing: 0.8px;
 `
 
+type FieldProps = {
+  password: string
+  passwordCheck: string
+}
+
 const ResetPasswordPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const [token] = useQueryParam('token', StringParam)
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
+  const { backendEndpoint } = useAuth()
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     axios
       .post(
-        `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/reset-password`,
+        `${backendEndpoint}/auth/reset-password`,
         { newPassword: values.password },
         {
           headers: { authorization: `Bearer ${token}` },

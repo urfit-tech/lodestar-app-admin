@@ -3,11 +3,11 @@ import '@ant-design/compatible/assets/index.css'
 import { FormComponentProps } from '@ant-design/compatible/lib/form'
 import Icon, { LoadingOutlined } from '@ant-design/icons'
 import { Button, Dropdown, Menu } from 'antd'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { ReactComponent as MoreIcon } from '../../images/icon/more.svg'
 import { ReactComponent as PlusIcon } from '../../images/icon/plus.svg'
@@ -90,7 +90,7 @@ const MerchandiseImagesUploader: React.FC<MerchandiseImagesUploaderProps> = ({
   onChange,
 }) => {
   const { formatMessage } = useIntl()
-  const app = useContext(AppContext)
+  const app = useApp()
   const [fieldId, setFieldId] = useState(uuid())
 
   const handleSuccess = () => {

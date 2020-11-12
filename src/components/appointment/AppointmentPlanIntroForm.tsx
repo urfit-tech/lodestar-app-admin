@@ -11,12 +11,16 @@ import types from '../../types'
 import { AppointmentPlanAdminProps } from '../../types/appointment'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 
+type FieldProps = {
+  description: EditorState
+}
+
 const AppointmentPlanIntroForm: React.FC<{
   appointmentPlanAdmin: AppointmentPlanAdminProps | null
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [updateAppointmentPlanDescription] = useMutation<
     types.UPDATE_APPOINTMENT_PLAN_DESCRIPTION,
     types.UPDATE_APPOINTMENT_PLAN_DESCRIPTIONVariables
@@ -27,17 +31,17 @@ const AppointmentPlanIntroForm: React.FC<{
     return <Skeleton active />
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateAppointmentPlanDescription({
       variables: {
         appointmentPlanId: appointmentPlanAdmin.id,
-        description: values.description.toRAW(),
+        description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

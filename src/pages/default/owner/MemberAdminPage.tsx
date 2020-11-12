@@ -2,7 +2,7 @@ import Icon, { CloseOutlined } from '@ant-design/icons'
 import { Button, Divider, Layout, message, Skeleton, Tabs } from 'antd'
 import moment from 'moment'
 import { isEmpty } from 'ramda'
-import React, { useContext } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -24,7 +24,7 @@ import MemberProfileBasicForm from '../../../components/member/MemberProfileBasi
 import MemberPropertyAdminForm from '../../../components/member/MemberPropertyAdminForm'
 import MemberTaskAdminBlock from '../../../components/member/MemberTaskAdminBlock'
 import SaleCollectionAdminCard from '../../../components/sale/SaleCollectionAdminCard'
-import AppContext from '../../../contexts/AppContext'
+import { useApp } from '../../../contexts/AppContext'
 import { useAuth } from '../../../contexts/AuthContext'
 import { currencyFormatter, handleError } from '../../../helpers'
 import { commonMessages, memberMessages } from '../../../helpers/translation'
@@ -64,10 +64,10 @@ const MemberAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { memberId } = useParams<{ memberId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const { enabledModules, settings } = useContext(AppContext)
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
+  const { enabledModules, settings } = useApp()
   const { loadingMemberAdmin, errorMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
   const { insertMemberNote } = useMutateMemberNote()
-  const { currentMemberId, currentUserRole, permissions } = useAuth()
 
   if (loadingMemberAdmin || errorMemberAdmin || !memberAdmin) {
     return <Skeleton active />
@@ -105,12 +105,13 @@ const MemberAdminPage: React.FC = () => {
             <Icon className="mr-2" component={() => <EmailIcon />} />
             <span>{memberAdmin?.email}</span>
           </StyledDescription>
-          {memberAdmin?.phones.map(phone => (
-            <StyledDescription key={phone}>
-              <Icon className="mr-2" component={() => <PhoneIcon />} />
-              <span>{phone}</span>
-            </StyledDescription>
-          ))}
+          {permissions['MEMBER_PHONE_ADMIN'] &&
+            memberAdmin?.phones.map(phone => (
+              <StyledDescription key={phone}>
+                <Icon className="mr-2" component={() => <PhoneIcon />} />
+                <span>{phone}</span>
+              </StyledDescription>
+            ))}
 
           <Divider className="my-4" />
 
@@ -181,7 +182,7 @@ const MemberAdminPage: React.FC = () => {
                         {formatMessage(memberMessages.label.createMemberNote)}
                       </Button>
                     )}
-                    renderSubmit={({ type, status, duration, description, resetForm }) =>
+                    onSubmit={({ type, status, duration, description }) =>
                       insertMemberNote({
                         variables: {
                           memberId: memberAdmin.id,
@@ -193,9 +194,8 @@ const MemberAdminPage: React.FC = () => {
                         },
                       })
                         .then(() => {
-                          refetchMemberAdmin()
-                          resetForm()
                           message.success(formatMessage(commonMessages.event.successfullyCreated))
+                          refetchMemberAdmin()
                         })
                         .catch(handleError)
                     }

@@ -2,21 +2,20 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { generate } from 'coupon-code'
 import gql from 'graphql-tag'
 import { reverse, times } from 'ramda'
-import { useContext } from 'react'
 import { VoucherPlanFields } from '../components/voucher/VoucherPlanAdminModal'
-import AppContext from '../contexts/AppContext'
+import { useApp } from '../contexts/AppContext'
 import types from '../types'
 import {
-  CouponPlanProps,
   CouponCodeProps,
+  CouponPlanProps,
   CouponProps,
-  VoucherPlanProps,
   VoucherCodeProps,
+  VoucherPlanProps,
   VoucherProps,
 } from '../types/checkout'
 
 export const useCouponPlanCollection = () => {
-  const app = useContext(AppContext)
+  const app = useApp()
 
   const { loading, error, data, refetch } = useQuery<
     types.GET_COUPON_PLAN_COLLECTION,
@@ -255,7 +254,7 @@ const GET_VOUCHER_PLAN_COLLECTION = gql`
 `
 
 export const useMutateVoucherPlan = () => {
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
 
   const [insertVoucherPlanHandler] = useMutation<types.INSERT_VOUCHER_PLAN, types.INSERT_VOUCHER_PLANVariables>(
     gql`
@@ -291,22 +290,23 @@ export const useMutateVoucherPlan = () => {
       variables: {
         ...values,
         appId,
-        voucherCodes: values.voucherCodes.flatMap(voucherCode =>
-          voucherCode.type === 'random'
-            ? times(
-                () => ({
-                  code: generate(),
-                  count: 1,
-                  remaining: 1,
-                }),
-                voucherCode.count,
-              )
-            : {
-                code: voucherCode.code,
-                count: voucherCode.count,
-                remaining: voucherCode.count,
-              },
-        ),
+        voucherCodes:
+          values.voucherCodes?.flatMap(voucherCode =>
+            voucherCode.type === 'random'
+              ? times(
+                  () => ({
+                    code: generate(),
+                    count: 1,
+                    remaining: 1,
+                  }),
+                  voucherCode.count,
+                )
+              : {
+                  code: voucherCode.code,
+                  count: voucherCode.count,
+                  remaining: voucherCode.count,
+                },
+          ) || [],
         voucherPlanProducts: values.voucherPlanProducts.flatMap(productId => ({
           product_id: productId,
         })),

@@ -3,7 +3,7 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, DatePicker, Form, Input, InputNumber } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
@@ -26,34 +26,57 @@ const messages = defineMessages({
   descriptionPlaceholder: { id: 'promotion.text.descriptionPlaceholder', defaultMessage: '請填寫項目描述' },
 })
 
+type FieldProps = {
+  memberIds: string[]
+  title: string
+  description: string
+  amount: number
+  startedAt: Moment | null
+  endedAt: Moment | null
+  note: string
+}
+
 const CoinSendingModal: React.FC<{
   onRefetch?: () => Promise<any>
 }> = ({ onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const { members } = useMemberSummaryCollection()
-  const sendCoins = useSendCoins()
+  const [insertCoinLogCollection] = useMutation<
+    types.INSERT_COIN_LOG_COLLECTION,
+    types.INSERT_COIN_LOG_COLLECTIONVariables
+  >(INSERT_COIN_LOG_COLLECTION)
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
-    form.validateFields().then((values: any) => {
-      setLoading(true)
-      sendCoins({
-        ...values,
-        startedAt: values.startedAt && moment(values.startedAt).startOf('day'),
-        endedAt: values.endedAt && moment(values.endedAt).endOf('day'),
-      })
-        .then(
-          () =>
-            onRefetch &&
-            onRefetch().then(() => {
-              setVisible(false)
+  const handleSubmit = (onSuccess: () => void) => {
+    form
+      .validateFields()
+      .then(() => {
+        setLoading(true)
+        const values = form.getFieldsValue()
+        insertCoinLogCollection({
+          variables: {
+            data: values.memberIds.map(memberId => ({
+              member_id: memberId,
+              title: values.title,
+              description: values.description,
+              amount: values.amount,
+              started_at: values.startedAt && moment(values.startedAt).startOf('minute').toDate(),
+              ended_at: values.endedAt && moment(values.endedAt).startOf('minute').toDate(),
+              note: values.note,
+            })),
+          },
+        })
+          .then(() =>
+            onRefetch?.().then(() => {
+              onSuccess()
               form.resetFields()
             }),
-        )
-        .catch(handleError)
-        .finally(() => setLoading(false))
-    })
+          )
+          .catch(handleError)
+          .finally(() => setLoading(false))
+      })
+      .catch(() => {})
   }
 
   return (
@@ -70,7 +93,7 @@ const CoinSendingModal: React.FC<{
           <Button className="mr-2" onClick={() => setVisible(false)}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
-          <Button type="primary" loading={loading} onClick={() => handleSubmit(setVisible)}>
+          <Button type="primary" loading={loading} onClick={() => handleSubmit(() => setVisible(false))}>
             {formatMessage(commonMessages.ui.confirm)}
           </Button>
         </>
@@ -137,40 +160,12 @@ const CoinSendingModal: React.FC<{
   )
 }
 
-const useSendCoins = () => {
-  const [insertCoinLogCollection] = useMutation<
-    types.INSERT_COIN_LOG_COLLECTION,
-    types.INSERT_COIN_LOG_COLLECTIONVariables
-  >(gql`
-    mutation INSERT_COIN_LOG_COLLECTION($data: [coin_log_insert_input!]!) {
-      insert_coin_log(objects: $data) {
-        affected_rows
-      }
+const INSERT_COIN_LOG_COLLECTION = gql`
+  mutation INSERT_COIN_LOG_COLLECTION($data: [coin_log_insert_input!]!) {
+    insert_coin_log(objects: $data) {
+      affected_rows
     }
-  `)
-
-  return (value: {
-    memberIds: string[]
-    title: string
-    description: string
-    amount: number
-    startedAt: Date | null
-    endedAt: Date | null
-    note: string
-  }) =>
-    insertCoinLogCollection({
-      variables: {
-        data: value.memberIds.map(memberId => ({
-          member_id: memberId,
-          title: value.title,
-          description: value.description,
-          amount: value.amount,
-          started_at: value.startedAt && moment(value.startedAt).startOf('minute').toDate(),
-          ended_at: value.endedAt && moment(value.endedAt).startOf('minute').toDate(),
-          note: value.note,
-        })),
-      },
-    })
-}
+  }
+`
 
 export default CoinSendingModal

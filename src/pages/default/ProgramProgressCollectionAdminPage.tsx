@@ -1,12 +1,12 @@
 import { DownloadOutlined, FileTextFilled } from '@ant-design/icons'
 import { Button, Select } from 'antd'
 import { SelectProps } from 'antd/lib/select'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { AdminPageBlock, AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ProgramProgressTable from '../../containers/program/ProgramProgressTable'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { downloadCSV, toCSV } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
@@ -23,7 +23,7 @@ const messages = defineMessages({
 const ProgramProgressCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
-  const { enabledModules, loading } = useContext(AppContext)
+  const { enabledModules, loading } = useApp()
   const [selectedProgramId, setSelectedProgramId] = useState('all')
   const [memberList, setMemberList] = useState<string[][]>([[]])
 

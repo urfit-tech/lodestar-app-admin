@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import BraftEditor from 'braft-editor'
+import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -11,12 +11,16 @@ import types from '../../types'
 import { PostProps } from '../../types/blog'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 
+type FieldProps = {
+  description: EditorState
+}
+
 const BlogPostContentForm: React.FC<{
   post: PostProps | null
   onRefetch?: () => {}
 }> = ({ post, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
+  const [form] = useForm<FieldProps>()
   const [updatePostDescription] = useMutation<types.UPDATE_POST_DESCRIPTION, types.UPDATE_POST_DESCRIPTIONVariables>(
     UPDATE_POST_DESCRIPTION,
   )
@@ -26,17 +30,17 @@ const BlogPostContentForm: React.FC<{
     return <Skeleton active />
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updatePostDescription({
       variables: {
         id: post.id,
-        description: values.description.toRAW(),
+        description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

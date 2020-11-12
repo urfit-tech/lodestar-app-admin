@@ -11,7 +11,10 @@ const StyledGroup = styled(Input.Group)`
   }
 `
 
-type CouponPlanDiscountProps = { type: CouponPlanType; amount: number }
+export type CouponPlanDiscountProps = {
+  type: CouponPlanType
+  amount: number
+}
 
 const CouponPlanDiscountSelector: React.FC<{
   value?: CouponPlanDiscountProps

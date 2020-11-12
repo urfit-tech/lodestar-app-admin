@@ -2,10 +2,10 @@ import { useQuery } from '@apollo/react-hooks'
 import { Button, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import { groupBy } from 'ramda'
-import React, { useContext } from 'react'
+import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { downloadCSV, toCSV } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -62,7 +62,7 @@ const ActivityParticipantCollectionModal: React.FC<
   }
 > = ({ activityId, ...props }) => {
   const { formatMessage } = useIntl()
-  const { enabledModules } = useContext(AppContext)
+  const { enabledModules } = useApp()
   const { sessions } = useActivitySessionParticipants(activityId)
 
   return (

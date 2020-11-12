@@ -480,6 +480,95 @@ export interface DELETE_PROGRAM_CATEGORYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_APP_BASIC
+// ====================================================
+
+export interface UPDATE_APP_BASIC_update_app {
+  __typename: "app_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APP_BASIC {
+  /**
+   * update data of the table: "app"
+   */
+  update_app: UPDATE_APP_BASIC_update_app | null;
+}
+
+export interface UPDATE_APP_BASICVariables {
+  appId: string;
+  name?: string | null;
+  title?: string | null;
+  description?: string | null;
+  vimeoProjectId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPSERT_APP_SETTINGS
+// ====================================================
+
+export interface UPSERT_APP_SETTINGS_insert_app_setting {
+  __typename: "app_setting_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_APP_SETTINGS {
+  /**
+   * insert data into the table: "app_setting"
+   */
+  insert_app_setting: UPSERT_APP_SETTINGS_insert_app_setting | null;
+}
+
+export interface UPSERT_APP_SETTINGSVariables {
+  appSettings: app_setting_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_APPOINTMENT_RESULT
+// ====================================================
+
+export interface UPDATE_APPOINTMENT_RESULT_update_order_product {
+  __typename: "order_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_APPOINTMENT_RESULT {
+  /**
+   * update data of the table: "order_product"
+   */
+  update_order_product: UPDATE_APPOINTMENT_RESULT_update_order_product | null;
+}
+
+export interface UPDATE_APPOINTMENT_RESULTVariables {
+  orderProductId: any;
+  data?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_APPOINTMENT_PLAN_TITLE
 // ====================================================
 
@@ -502,7 +591,6 @@ export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
   appointmentPlanId: any;
   title: string;
   phone: string;
-  supportLocales?: any | null;
 }
 
 /* tslint:disable */
@@ -2087,6 +2175,16 @@ export interface UPDATE_MEMBER_PROPERTYVariables {
 // GraphQL query operation: GET_MEMBER_TASK_COLLECTION
 // ====================================================
 
+export interface GET_MEMBER_TASK_COLLECTION_member_task_aggregate_aggregate {
+  __typename: "member_task_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_MEMBER_TASK_COLLECTION_member_task_aggregate {
+  __typename: "member_task_aggregate";
+  aggregate: GET_MEMBER_TASK_COLLECTION_member_task_aggregate_aggregate | null;
+}
+
 export interface GET_MEMBER_TASK_COLLECTION_member_task_category {
   __typename: "category";
   id: string;
@@ -2122,6 +2220,7 @@ export interface GET_MEMBER_TASK_COLLECTION_member_task {
    */
   status: string;
   due_at: any | null;
+  created_at: any | null;
   /**
    * An object relationship
    */
@@ -2138,6 +2237,10 @@ export interface GET_MEMBER_TASK_COLLECTION_member_task {
 
 export interface GET_MEMBER_TASK_COLLECTION {
   /**
+   * fetch aggregated fields from the table: "member_task"
+   */
+  member_task_aggregate: GET_MEMBER_TASK_COLLECTION_member_task_aggregate;
+  /**
    * fetch data from the table: "member_task"
    */
   member_task: GET_MEMBER_TASK_COLLECTION_member_task[];
@@ -2148,6 +2251,11 @@ export interface GET_MEMBER_TASK_COLLECTIONVariables {
   titleSearch?: string | null;
   categorySearch?: string | null;
   executorSearch?: string | null;
+  dueAtStartSearch?: any | null;
+  dueAtEndSearch?: any | null;
+  statusSearch?: string | null;
+  cursor?: any | null;
+  limit?: number | null;
 }
 
 /* tslint:disable */
@@ -2204,6 +2312,36 @@ export interface DELETE_TASK {
 
 export interface DELETE_TASKVariables {
   taskId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_ACCOUNT
+// ====================================================
+
+export interface UPDATE_MEMBER_ACCOUNT_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_ACCOUNT {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_ACCOUNT_update_member | null;
+}
+
+export interface UPDATE_MEMBER_ACCOUNTVariables {
+  memberId: string;
+  username: string;
+  email: string;
 }
 
 /* tslint:disable */
@@ -2299,8 +2437,6 @@ export interface UPDATE_MEMBER_BASICVariables {
   memberId: string;
   name?: string | null;
   description?: string | null;
-  username?: string | null;
-  email?: string | null;
   title?: string | null;
   abstract?: string | null;
   tags: tag_insert_input[];
@@ -2540,6 +2676,7 @@ export interface UPDATE_MERCHANDISE_BASICVariables {
   categories: merchandise_category_insert_input[];
   tags: tag_insert_input[];
   merchandiseTags: merchandise_tag_insert_input[];
+  isLimited: boolean;
 }
 
 /* tslint:disable */
@@ -2657,43 +2794,16 @@ export interface UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise {
   affected_rows: number;
 }
 
-export interface UPDATE_MERCHANDISE_INTRODUCTION_delete_merchandise_file {
-  __typename: "merchandise_file_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MERCHANDISE_INTRODUCTION_insert_merchandise_file {
-  __typename: "merchandise_file_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
 export interface UPDATE_MERCHANDISE_INTRODUCTION {
   /**
    * update data of the table: "merchandise"
    */
   update_merchandise: UPDATE_MERCHANDISE_INTRODUCTION_update_merchandise | null;
-  /**
-   * delete data from the table: "merchandise_file"
-   */
-  delete_merchandise_file: UPDATE_MERCHANDISE_INTRODUCTION_delete_merchandise_file | null;
-  /**
-   * insert data into the table: "merchandise_file"
-   */
-  insert_merchandise_file: UPDATE_MERCHANDISE_INTRODUCTION_insert_merchandise_file | null;
 }
 
 export interface UPDATE_MERCHANDISE_INTRODUCTIONVariables {
   merchandiseId: any;
   abstract?: string | null;
-  meta?: string | null;
-  memberShopId?: any | null;
-  merchandiseFiles: merchandise_file_insert_input[];
 }
 
 /* tslint:disable */
@@ -2751,11 +2861,69 @@ export interface UPDATE_MERCHANDISE_SALES {
 
 export interface UPDATE_MERCHANDISE_SALESVariables {
   merchandiseId: any;
-  listPrice?: any | null;
-  salePrice?: any | null;
   soldAt?: any | null;
   startedAt?: any | null;
   endedAt?: any | null;
+  isCountdownTimerVisible?: boolean | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_MERCHANDISE_SPEC_COLLECTION
+// ====================================================
+
+export interface INSERT_MERCHANDISE_SPEC_COLLECTION_delete_merchandise_spec_file {
+  __typename: "merchandise_spec_file_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_MERCHANDISE_SPEC_COLLECTION_insert_merchandise_spec_returning {
+  __typename: "merchandise_spec";
+  id: any;
+}
+
+export interface INSERT_MERCHANDISE_SPEC_COLLECTION_insert_merchandise_spec {
+  __typename: "merchandise_spec_mutation_response";
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_MERCHANDISE_SPEC_COLLECTION_insert_merchandise_spec_returning[];
+}
+
+export interface INSERT_MERCHANDISE_SPEC_COLLECTION_update_merchandise_spec {
+  __typename: "merchandise_spec_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_MERCHANDISE_SPEC_COLLECTION {
+  /**
+   * delete data from the table: "merchandise_spec_file"
+   */
+  delete_merchandise_spec_file: INSERT_MERCHANDISE_SPEC_COLLECTION_delete_merchandise_spec_file | null;
+  /**
+   * insert data into the table: "merchandise_spec"
+   */
+  insert_merchandise_spec: INSERT_MERCHANDISE_SPEC_COLLECTION_insert_merchandise_spec | null;
+  /**
+   * update data of the table: "merchandise_spec"
+   */
+  update_merchandise_spec: INSERT_MERCHANDISE_SPEC_COLLECTION_update_merchandise_spec | null;
+}
+
+export interface INSERT_MERCHANDISE_SPEC_COLLECTIONVariables {
+  merchandiseId: any;
+  data: merchandise_spec_insert_input[];
+  archivedMerchandiseSpecIds: any[];
 }
 
 /* tslint:disable */
@@ -3078,45 +3246,6 @@ export interface UPDATE_PODCAST_PROGRAM_DURATIONVariables {
   podcastProgramId: any;
   duration?: any | null;
   updatedAt: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: CREATE_PODCAST_PROGRAM
-// ====================================================
-
-export interface CREATE_PODCAST_PROGRAM_insert_podcast_program_returning {
-  __typename: "podcast_program";
-  id: any;
-}
-
-export interface CREATE_PODCAST_PROGRAM_insert_podcast_program {
-  __typename: "podcast_program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: CREATE_PODCAST_PROGRAM_insert_podcast_program_returning[];
-}
-
-export interface CREATE_PODCAST_PROGRAM {
-  /**
-   * insert data into the table: "podcast_program"
-   */
-  insert_podcast_program: CREATE_PODCAST_PROGRAM_insert_podcast_program | null;
-}
-
-export interface CREATE_PODCAST_PROGRAMVariables {
-  title: string;
-  creatorId: string;
-  podcastCategories: podcast_program_category_insert_input[];
 }
 
 /* tslint:disable */
@@ -4056,6 +4185,75 @@ export interface DELETE_PROGRAM_ROLEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_SHARING_CODE_COLLECTION
+// ====================================================
+
+export interface GET_SHARING_CODE_COLLECTION_sharing_code {
+  __typename: "sharing_code";
+  id: any;
+  path: string;
+  code: string;
+  note: string | null;
+}
+
+export interface GET_SHARING_CODE_COLLECTION {
+  /**
+   * fetch data from the table: "sharing_code"
+   */
+  sharing_code: GET_SHARING_CODE_COLLECTION_sharing_code[];
+}
+
+export interface GET_SHARING_CODE_COLLECTIONVariables {
+  path: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_SHARING_CODE
+// ====================================================
+
+export interface INSERT_SHARING_CODE_delete_sharing_code {
+  __typename: "sharing_code_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_SHARING_CODE_insert_sharing_code {
+  __typename: "sharing_code_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_SHARING_CODE {
+  /**
+   * delete data from the table: "sharing_code"
+   */
+  delete_sharing_code: INSERT_SHARING_CODE_delete_sharing_code | null;
+  /**
+   * insert data into the table: "sharing_code"
+   */
+  insert_sharing_code: INSERT_SHARING_CODE_insert_sharing_code | null;
+}
+
+export interface INSERT_SHARING_CODEVariables {
+  path: string;
+  sharingCodes: sharing_code_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_CONTENT_SECTION
 // ====================================================
 
@@ -4381,6 +4579,7 @@ export interface GET_AVAILABLE_PROGRAM_COLLECTION_program {
   id: any;
   title: string;
   is_subscription: boolean;
+  published_at: any | null;
 }
 
 export interface GET_AVAILABLE_PROGRAM_COLLECTION {
@@ -4631,6 +4830,7 @@ export interface GET_PRODUCT_OWNER_ORDERS_order_product {
   name: string;
   price: any;
   ended_at: any | null;
+  options: any | null;
   /**
    * An object relationship
    */
@@ -4787,6 +4987,47 @@ export interface UPDATE_SUBSCRIPTION_CANCELEDVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_ORDER_PRODUCT_FILES
+// ====================================================
+
+export interface UPDATE_ORDER_PRODUCT_FILES_delete_order_product_file {
+  __typename: "order_product_file_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ORDER_PRODUCT_FILES_insert_order_product_file {
+  __typename: "order_product_file_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ORDER_PRODUCT_FILES {
+  /**
+   * delete data from the table: "order_product_file"
+   */
+  delete_order_product_file: UPDATE_ORDER_PRODUCT_FILES_delete_order_product_file | null;
+  /**
+   * insert data into the table: "order_product_file"
+   */
+  insert_order_product_file: UPDATE_ORDER_PRODUCT_FILES_insert_order_product_file | null;
+}
+
+export interface UPDATE_ORDER_PRODUCT_FILESVariables {
+  orderProductId: any;
+  orderProductFiles: order_product_file_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_DELIVER_INFO
 // ====================================================
 
@@ -4809,35 +5050,6 @@ export interface UPDATE_DELIVER_INFOVariables {
   deliverMessage?: string | null;
   deliveredAt?: any | null;
   orderLogId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_LOGINED_AT
-// ====================================================
-
-export interface UPDATE_LOGINED_AT_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_LOGINED_AT {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: UPDATE_LOGINED_AT_update_member | null;
-}
-
-export interface UPDATE_LOGINED_ATVariables {
-  memberId: string;
-  loginedAt?: any | null;
 }
 
 /* tslint:disable */
@@ -4891,6 +5103,7 @@ export interface GET_APPLICATION_app_admin_by_pk_app {
 
 export interface GET_APPLICATION_app_admin_by_pk {
   __typename: "app_admin";
+  api_host: string | null;
   /**
    * An object relationship
    */
@@ -5117,94 +5330,6 @@ export interface GET_ACTIVITY_ADMINVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_APP
-// ====================================================
-
-export interface UPDATE_APP_update_app {
-  __typename: "app_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_APP {
-  /**
-   * update data of the table: "app"
-   */
-  update_app: UPDATE_APP_update_app | null;
-}
-
-export interface UPDATE_APPVariables {
-  appId: string;
-  name?: string | null;
-  title?: string | null;
-  description?: string | null;
-  vimeoProjectId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPSERT_APP_SETTINGS
-// ====================================================
-
-export interface UPSERT_APP_SETTINGS_insert_app_setting {
-  __typename: "app_setting_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPSERT_APP_SETTINGS {
-  /**
-   * insert data into the table: "app_setting"
-   */
-  insert_app_setting: UPSERT_APP_SETTINGS_insert_app_setting | null;
-}
-
-export interface UPSERT_APP_SETTINGSVariables {
-  appSettings: app_setting_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPSERT_APP_SECRETS
-// ====================================================
-
-export interface UPSERT_APP_SECRETS_insert_app_secret {
-  __typename: "app_secret_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPSERT_APP_SECRETS {
-  /**
-   * insert data into the table: "app_secret"
-   */
-  insert_app_secret: UPSERT_APP_SECRETS_insert_app_secret | null;
-}
-
-export interface UPSERT_APP_SECRETSVariables {
-  appSecrets: app_secret_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_APPOINTMENT_PLAN_ADMIN
 // ====================================================
 
@@ -5376,35 +5501,6 @@ export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION {
 export interface GET_APPOINTMENT_ENROLLMENT_COLLECTIONVariables {
   startedAt?: any | null;
   endedAt?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_APPOINTMENT_Result
-// ====================================================
-
-export interface UPDATE_APPOINTMENT_Result_update_order_product {
-  __typename: "order_product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_APPOINTMENT_Result {
-  /**
-   * update data of the table: "order_product"
-   */
-  update_order_product: UPDATE_APPOINTMENT_Result_update_order_product | null;
-}
-
-export interface UPDATE_APPOINTMENT_ResultVariables {
-  orderProductId: any;
-  data?: any | null;
 }
 
 /* tslint:disable */
@@ -6052,23 +6148,20 @@ export interface GET_PRODUCT_INVENTORYVariables {
 // GraphQL mutation operation: ARRANGE_PRODUCT_INVENTORY
 // ====================================================
 
-export interface ARRANGE_PRODUCT_INVENTORY_insert_product_inventory {
-  __typename: "product_inventory_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
+export interface ARRANGE_PRODUCT_INVENTORY_insert_product_inventory_one {
+  __typename: "product_inventory";
+  id: any;
 }
 
 export interface ARRANGE_PRODUCT_INVENTORY {
   /**
-   * insert data into the table: "product_inventory"
+   * insert a single row into the table: "product_inventory"
    */
-  insert_product_inventory: ARRANGE_PRODUCT_INVENTORY_insert_product_inventory | null;
+  insert_product_inventory_one: ARRANGE_PRODUCT_INVENTORY_insert_product_inventory_one | null;
 }
 
 export interface ARRANGE_PRODUCT_INVENTORYVariables {
-  data: product_inventory_insert_input[];
+  data: product_inventory_insert_input;
 }
 
 /* tslint:disable */
@@ -6244,12 +6337,51 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
 // GraphQL query operation: GET_PHYSICAL_PRODUCT_ORDER_LOG
 // ====================================================
 
+export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products_order_product_files {
+  __typename: "order_product_file";
+  id: any;
+  data: any | null;
+}
+
+export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products_product_product_owner {
+  __typename: "product_owner";
+  type: string | null;
+  target: string | null;
+}
+
+export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products_product {
+  __typename: "product";
+  /**
+   * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
+   */
+  id: string;
+  /**
+   * An object relationship
+   */
+  product_owner: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products_product_product_owner | null;
+}
+
 export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products {
   __typename: "order_product";
   id: any;
   name: string;
   product_id: string;
+  description: string | null;
   options: any | null;
+  /**
+   * An array relationship
+   */
+  order_product_files: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products_order_product_files[];
+  /**
+   * An object relationship
+   */
+  product: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products_product;
+}
+
+export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_member {
+  __typename: "member";
+  id: string;
+  name: string;
 }
 
 export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log {
@@ -6268,6 +6400,10 @@ export interface GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log {
    * An array relationship
    */
   order_products: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_order_products[];
+  /**
+   * An object relationship
+   */
+  member: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log_member;
 }
 
 export interface GET_PHYSICAL_PRODUCT_ORDER_LOG {
@@ -6453,6 +6589,7 @@ export interface GET_PRODUCT_SIMPLE_appointment_plan_by_pk {
 
 export interface GET_PRODUCT_SIMPLE_merchandise_by_pk_merchandise_imgs {
   __typename: "merchandise_img";
+  id: any;
   url: string;
 }
 
@@ -6461,10 +6598,43 @@ export interface GET_PRODUCT_SIMPLE_merchandise_by_pk {
   id: any;
   title: string;
   list_price: any;
+  is_physical: boolean;
+  is_customized: boolean;
   /**
    * An array relationship
    */
   merchandise_imgs: GET_PRODUCT_SIMPLE_merchandise_by_pk_merchandise_imgs[];
+}
+
+export interface GET_PRODUCT_SIMPLE_merchandise_spec_by_pk_merchandise_merchandise_imgs {
+  __typename: "merchandise_img";
+  id: any;
+  url: string;
+}
+
+export interface GET_PRODUCT_SIMPLE_merchandise_spec_by_pk_merchandise {
+  __typename: "merchandise";
+  id: any;
+  title: string;
+  sold_at: any | null;
+  is_physical: boolean;
+  is_customized: boolean;
+  /**
+   * An array relationship
+   */
+  merchandise_imgs: GET_PRODUCT_SIMPLE_merchandise_spec_by_pk_merchandise_merchandise_imgs[];
+}
+
+export interface GET_PRODUCT_SIMPLE_merchandise_spec_by_pk {
+  __typename: "merchandise_spec";
+  id: any;
+  title: string;
+  list_price: any;
+  sale_price: any | null;
+  /**
+   * An object relationship
+   */
+  merchandise: GET_PRODUCT_SIMPLE_merchandise_spec_by_pk_merchandise;
 }
 
 export interface GET_PRODUCT_SIMPLE {
@@ -6508,6 +6678,10 @@ export interface GET_PRODUCT_SIMPLE {
    * fetch data from the table: "merchandise" using primary key columns
    */
   merchandise_by_pk: GET_PRODUCT_SIMPLE_merchandise_by_pk | null;
+  /**
+   * fetch data from the table: "merchandise_spec" using primary key columns
+   */
+  merchandise_spec_by_pk: GET_PRODUCT_SIMPLE_merchandise_spec_by_pk | null;
 }
 
 export interface GET_PRODUCT_SIMPLEVariables {
@@ -6961,6 +7135,12 @@ export interface GET_PAGE_MEMBER_COLLECTION_member_aggregate {
   aggregate: GET_PAGE_MEMBER_COLLECTION_member_aggregate_aggregate | null;
 }
 
+export interface GET_PAGE_MEMBER_COLLECTION_member_manager {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
 export interface GET_PAGE_MEMBER_COLLECTION_member_member_phones {
   __typename: "member_phone";
   id: any;
@@ -7032,6 +7212,11 @@ export interface GET_PAGE_MEMBER_COLLECTION_member {
    */
   role: string;
   /**
+   * An object relationship
+   */
+  manager: GET_PAGE_MEMBER_COLLECTION_member_manager | null;
+  assigned_at: any | null;
+  /**
    * An array relationship
    */
   member_phones: GET_PAGE_MEMBER_COLLECTION_member_member_phones[];
@@ -7100,39 +7285,6 @@ export interface GET_MEMBER_SUMMARY_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER_ACCOUNT
-// ====================================================
-
-export interface UPDATE_MEMBER_ACCOUNT_update_member {
-  __typename: "member_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_MEMBER_ACCOUNT {
-  /**
-   * update data of the table: "member"
-   */
-  update_member: UPDATE_MEMBER_ACCOUNT_update_member | null;
-}
-
-export interface UPDATE_MEMBER_ACCOUNTVariables {
-  memberId?: string | null;
-  name?: string | null;
-  description?: string | null;
-  username?: string | null;
-  email?: string | null;
-  pictureUrl?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_PROPERTY
 // ====================================================
 
@@ -7160,36 +7312,6 @@ export interface GET_PROPERTYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: INSERT_MERCHANDISE
-// ====================================================
-
-export interface INSERT_MERCHANDISE_insert_merchandise_one {
-  __typename: "merchandise";
-  id: any;
-}
-
-export interface INSERT_MERCHANDISE {
-  /**
-   * insert a single row into the table: "merchandise"
-   */
-  insert_merchandise_one: INSERT_MERCHANDISE_insert_merchandise_one | null;
-}
-
-export interface INSERT_MERCHANDISEVariables {
-  appId: string;
-  memberId: string;
-  memberShopId: any;
-  title: string;
-  merchandiseCategories: merchandise_category_insert_input[];
-  isPhysical?: boolean | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_MERCHANDISE_COLLECTION
 // ====================================================
 
@@ -7203,8 +7325,6 @@ export interface GET_MERCHANDISE_COLLECTION_merchandise {
   __typename: "merchandise";
   id: any;
   title: string;
-  list_price: any;
-  sale_price: any | null;
   sold_at: any | null;
   published_at: any | null;
   is_physical: boolean;
@@ -7266,12 +7386,6 @@ export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_imgs {
   url: string;
 }
 
-export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_files {
-  __typename: "merchandise_file";
-  id: any;
-  data: any;
-}
-
 export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_inventory_status {
   __typename: "merchandise_inventory_status";
   buyable_quantity: any | null;
@@ -7279,15 +7393,31 @@ export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_inventory_status 
   delivered_quantity: any | null;
 }
 
+export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_specs_merchandise_spec_files {
+  __typename: "merchandise_spec_file";
+  id: any;
+  data: any | null;
+}
+
+export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_specs {
+  __typename: "merchandise_spec";
+  id: any;
+  title: string;
+  list_price: any;
+  sale_price: any | null;
+  quota: number;
+  /**
+   * An array relationship
+   */
+  merchandise_spec_files: GET_MERCHANDISE_merchandise_by_pk_merchandise_specs_merchandise_spec_files[];
+}
+
 export interface GET_MERCHANDISE_merchandise_by_pk {
   __typename: "merchandise";
   id: any;
   title: string;
-  meta: string | null;
   abstract: string | null;
   description: string | null;
-  list_price: any;
-  sale_price: any | null;
   sold_at: any | null;
   started_at: any | null;
   ended_at: any | null;
@@ -7295,6 +7425,9 @@ export interface GET_MERCHANDISE_merchandise_by_pk {
   published_at: any | null;
   member_shop_id: any | null;
   is_physical: boolean;
+  is_customized: boolean;
+  is_limited: boolean;
+  is_countdown_timer_visible: boolean;
   /**
    * An array relationship
    */
@@ -7308,13 +7441,13 @@ export interface GET_MERCHANDISE_merchandise_by_pk {
    */
   merchandise_imgs: GET_MERCHANDISE_merchandise_by_pk_merchandise_imgs[];
   /**
-   * An array relationship
-   */
-  merchandise_files: GET_MERCHANDISE_merchandise_by_pk_merchandise_files[];
-  /**
    * An object relationship
    */
   merchandise_inventory_status: GET_MERCHANDISE_merchandise_by_pk_merchandise_inventory_status | null;
+  /**
+   * An array relationship
+   */
+  merchandise_specs: GET_MERCHANDISE_merchandise_by_pk_merchandise_specs[];
 }
 
 export interface GET_MERCHANDISE {
@@ -7394,33 +7527,33 @@ export interface GET_MEMBER_SHOP_member_shop_by_pk_member {
   picture_url: string | null;
 }
 
-export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs_merchandise_spec_inventory_status {
-  __typename: "merchandise_spec_inventory_status";
-  total_quantity: any | null;
-  buyable_quantity: any | null;
-}
-
-export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs {
-  __typename: "merchandise_spec";
-  id: any;
-  /**
-   * An object relationship
-   */
-  merchandise_spec_inventory_status: GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs_merchandise_spec_inventory_status | null;
-}
-
 export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_imgs {
   __typename: "merchandise_img";
   id: any;
   url: string;
 }
 
+export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs_merchandise_spec_inventory_status {
+  __typename: "merchandise_spec_inventory_status";
+  undelivered_quantity: any | null;
+  delivered_quantity: any | null;
+}
+
+export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs {
+  __typename: "merchandise_spec";
+  id: any;
+  list_price: any;
+  sale_price: any | null;
+  /**
+   * An object relationship
+   */
+  merchandise_spec_inventory_status: GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs_merchandise_spec_inventory_status | null;
+}
+
 export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises {
   __typename: "merchandise";
   id: any;
   title: string;
-  list_price: any;
-  sale_price: any | null;
   sold_at: any | null;
   published_at: any | null;
   is_physical: boolean;
@@ -7428,11 +7561,11 @@ export interface GET_MEMBER_SHOP_member_shop_by_pk_merchandises {
   /**
    * An array relationship
    */
-  merchandise_specs: GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs[];
+  merchandise_imgs: GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_imgs[];
   /**
    * An array relationship
    */
-  merchandise_imgs: GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_imgs[];
+  merchandise_specs: GET_MEMBER_SHOP_member_shop_by_pk_merchandises_merchandise_specs[];
 }
 
 export interface GET_MEMBER_SHOP_member_shop_by_pk {
@@ -7461,6 +7594,75 @@ export interface GET_MEMBER_SHOP {
 
 export interface GET_MEMBER_SHOPVariables {
   shopId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MERCHANDISE_SPEC_COLLECTION
+// ====================================================
+
+export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_merchandise_imgs {
+  __typename: "merchandise_img";
+  url: string;
+}
+
+export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_member_shop {
+  __typename: "member_shop";
+  id: any;
+  title: string;
+}
+
+export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise {
+  __typename: "merchandise";
+  title: string;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  merchandise_imgs: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_merchandise_imgs[];
+  /**
+   * An object relationship
+   */
+  member_shop: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_member_shop | null;
+}
+
+export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_spec_inventory_status {
+  __typename: "merchandise_spec_inventory_status";
+  buyable_quantity: any | null;
+  delivered_quantity: any | null;
+  undelivered_quantity: any | null;
+}
+
+export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec {
+  __typename: "merchandise_spec";
+  id: any;
+  /**
+   * An object relationship
+   */
+  merchandise: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise;
+  title: string;
+  /**
+   * An object relationship
+   */
+  merchandise_spec_inventory_status: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_spec_inventory_status | null;
+}
+
+export interface GET_MERCHANDISE_SPEC_COLLECTION {
+  /**
+   * fetch data from the table: "merchandise_spec"
+   */
+  merchandise_spec: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec[];
+}
+
+export interface GET_MERCHANDISE_SPEC_COLLECTIONVariables {
+  merchandiseSearchLike?: string | null;
+  isCustomized?: boolean | null;
+  isLimited?: boolean | null;
+  merchandiseId?: any | null;
 }
 
 /* tslint:disable */
@@ -8811,6 +9013,7 @@ export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_progr
   id: any;
   title: string;
   cover_url: string | null;
+  published_at: any | null;
 }
 
 export interface GET_PROGRAM_PACKAGE_program_package_by_pk_program_package_programs {
@@ -9101,6 +9304,16 @@ export interface INSERT_MERCHANDISEVariables {
 // GraphQL query operation: GET_COIN_RELEASE_HISTORY
 // ====================================================
 
+export interface GET_COIN_RELEASE_HISTORY_coin_log_aggregate_aggregate {
+  __typename: "coin_log_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_COIN_RELEASE_HISTORY_coin_log_aggregate {
+  __typename: "coin_log_aggregate";
+  aggregate: GET_COIN_RELEASE_HISTORY_coin_log_aggregate_aggregate | null;
+}
+
 export interface GET_COIN_RELEASE_HISTORY_coin_log_member {
   __typename: "member";
   id: string;
@@ -9128,13 +9341,18 @@ export interface GET_COIN_RELEASE_HISTORY_coin_log {
 
 export interface GET_COIN_RELEASE_HISTORY {
   /**
+   * fetch aggregated fields from the table: "coin_log"
+   */
+  coin_log_aggregate: GET_COIN_RELEASE_HISTORY_coin_log_aggregate;
+  /**
    * fetch data from the table: "coin_log"
    */
   coin_log: GET_COIN_RELEASE_HISTORY_coin_log[];
 }
 
 export interface GET_COIN_RELEASE_HISTORYVariables {
-  offset?: number | null;
+  condition?: coin_log_bool_exp | null;
+  limit: number;
 }
 
 /* tslint:disable */
@@ -9145,6 +9363,16 @@ export interface GET_COIN_RELEASE_HISTORYVariables {
 // ====================================================
 // GraphQL query operation: GET_COIN_ABOUT_TO_SEND
 // ====================================================
+
+export interface GET_COIN_ABOUT_TO_SEND_coin_log_aggregate_aggregate {
+  __typename: "coin_log_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_COIN_ABOUT_TO_SEND_coin_log_aggregate {
+  __typename: "coin_log_aggregate";
+  aggregate: GET_COIN_ABOUT_TO_SEND_coin_log_aggregate_aggregate | null;
+}
 
 export interface GET_COIN_ABOUT_TO_SEND_coin_log_member {
   __typename: "member";
@@ -9173,13 +9401,18 @@ export interface GET_COIN_ABOUT_TO_SEND_coin_log {
 
 export interface GET_COIN_ABOUT_TO_SEND {
   /**
+   * fetch aggregated fields from the table: "coin_log"
+   */
+  coin_log_aggregate: GET_COIN_ABOUT_TO_SEND_coin_log_aggregate;
+  /**
    * fetch data from the table: "coin_log"
    */
   coin_log: GET_COIN_ABOUT_TO_SEND_coin_log[];
 }
 
 export interface GET_COIN_ABOUT_TO_SENDVariables {
-  offset?: number | null;
+  condition?: coin_log_bool_exp | null;
+  limit: number;
 }
 
 /* tslint:disable */
@@ -9190,6 +9423,16 @@ export interface GET_COIN_ABOUT_TO_SENDVariables {
 // ====================================================
 // GraphQL query operation: GET_ORDER_LOG_WITH_COINS_COLLECTION
 // ====================================================
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_aggregate_aggregate {
+  __typename: "order_log_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_aggregate {
+  __typename: "order_log_aggregate";
+  aggregate: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_aggregate_aggregate | null;
+}
 
 export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_member {
   __typename: "member";
@@ -9241,13 +9484,18 @@ export interface GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log {
 
 export interface GET_ORDER_LOG_WITH_COINS_COLLECTION {
   /**
+   * fetch aggregated fields from the table: "order_log"
+   */
+  order_log_aggregate: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log_aggregate;
+  /**
    * fetch data from the table: "order_log"
    */
   order_log: GET_ORDER_LOG_WITH_COINS_COLLECTION_order_log[];
 }
 
 export interface GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables {
-  offset?: number | null;
+  condition?: order_log_bool_exp | null;
+  limit: number;
 }
 
 /* tslint:disable */
@@ -9541,6 +9789,45 @@ export interface DELETE_POINT_LOG {
 
 export interface DELETE_POINT_LOGVariables {
   pointLogId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: CREATE_PODCAST_PROGRAM
+// ====================================================
+
+export interface CREATE_PODCAST_PROGRAM_insert_podcast_program_returning {
+  __typename: "podcast_program";
+  id: any;
+}
+
+export interface CREATE_PODCAST_PROGRAM_insert_podcast_program {
+  __typename: "podcast_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: CREATE_PODCAST_PROGRAM_insert_podcast_program_returning[];
+}
+
+export interface CREATE_PODCAST_PROGRAM {
+  /**
+   * insert data into the table: "podcast_program"
+   */
+  insert_podcast_program: CREATE_PODCAST_PROGRAM_insert_podcast_program | null;
+}
+
+export interface CREATE_PODCAST_PROGRAMVariables {
+  title: string;
+  creatorId: string;
+  podcastCategories: podcast_program_category_insert_input[];
 }
 
 /* tslint:disable */
@@ -9934,6 +10221,7 @@ export enum app_admin_constraint {
  * update columns of table "app_admin"
  */
 export enum app_admin_update_column {
+  api_host = "api_host",
   app_id = "app_id",
   host = "host",
   position = "position",
@@ -10927,6 +11215,25 @@ export enum notification_update_column {
   source_member_id = "source_member_id",
   target_member_id = "target_member_id",
   type = "type",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "order_contact"
+ */
+export enum order_contact_constraint {
+  order_contact_pkey = "order_contact_pkey",
+}
+
+/**
+ * update columns of table "order_contact"
+ */
+export enum order_contact_update_column {
+  created_at = "created_at",
+  id = "id",
+  member_id = "member_id",
+  message = "message",
+  order_id = "order_id",
   updated_at = "updated_at",
 }
 
@@ -12644,6 +12951,7 @@ export interface app_admin_bool_exp {
   _and?: (app_admin_bool_exp | null)[] | null;
   _not?: app_admin_bool_exp | null;
   _or?: (app_admin_bool_exp | null)[] | null;
+  api_host?: String_comparison_exp | null;
   app?: app_bool_exp | null;
   app_id?: String_comparison_exp | null;
   host?: String_comparison_exp | null;
@@ -12654,6 +12962,7 @@ export interface app_admin_bool_exp {
  * input type for inserting data into table "app_admin"
  */
 export interface app_admin_insert_input {
+  api_host?: string | null;
   app?: app_obj_rel_insert_input | null;
   app_id?: string | null;
   host?: string | null;
@@ -15565,6 +15874,54 @@ export interface numeric_comparison_exp {
 }
 
 /**
+ * input type for inserting array relation for remote table "order_contact"
+ */
+export interface order_contact_arr_rel_insert_input {
+  data: order_contact_insert_input[];
+  on_conflict?: order_contact_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "order_contact". All fields are combined with a logical 'AND'.
+ */
+export interface order_contact_bool_exp {
+  _and?: (order_contact_bool_exp | null)[] | null;
+  _not?: order_contact_bool_exp | null;
+  _or?: (order_contact_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  message?: String_comparison_exp | null;
+  order_id?: String_comparison_exp | null;
+  order_log?: order_log_bool_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "order_contact"
+ */
+export interface order_contact_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  message?: string | null;
+  order_id?: string | null;
+  order_log?: order_log_obj_rel_insert_input | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "order_contact"
+ */
+export interface order_contact_on_conflict {
+  constraint: order_contact_constraint;
+  update_columns: order_contact_update_column[];
+  where?: order_contact_bool_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "order_discount"
  */
 export interface order_discount_arr_rel_insert_input {
@@ -15687,6 +16044,7 @@ export interface order_log_bool_exp {
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   message?: String_comparison_exp | null;
+  order_contacts?: order_contact_bool_exp | null;
   order_discounts?: order_discount_bool_exp | null;
   order_executors?: order_executor_bool_exp | null;
   order_products?: order_product_bool_exp | null;
@@ -15716,6 +16074,7 @@ export interface order_log_insert_input {
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   message?: string | null;
+  order_contacts?: order_contact_arr_rel_insert_input | null;
   order_discounts?: order_discount_arr_rel_insert_input | null;
   order_executors?: order_executor_arr_rel_insert_input | null;
   order_products?: order_product_arr_rel_insert_input | null;
@@ -18724,6 +19083,19 @@ export interface property_on_conflict {
   constraint: property_constraint;
   update_columns: property_update_column[];
   where?: property_bool_exp | null;
+}
+
+/**
+ * input type for inserting data into table "sharing_code"
+ */
+export interface sharing_code_insert_input {
+  app_id?: string | null;
+  code?: string | null;
+  created_at?: any | null;
+  id?: any | null;
+  note?: string | null;
+  path?: string | null;
+  updated_at?: any | null;
 }
 
 /**

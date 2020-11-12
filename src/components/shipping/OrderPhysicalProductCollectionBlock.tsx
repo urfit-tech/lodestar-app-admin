@@ -1,12 +1,19 @@
-import { Divider, Spin } from 'antd'
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Divider, message, Spin } from 'antd'
+import { UploadFile } from 'antd/lib/upload/interface'
+import gql from 'graphql-tag'
 import moment from 'moment-timezone'
-import { default as React } from 'react'
+import { default as React, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { commonMessages } from '../../helpers/translation'
+import MultipleUploader, { StyledFileBlock } from '../../components/common/MultipleUploader'
+import { useApp } from '../../contexts/AppContext'
+import { handleError } from '../../helpers'
+import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { useSimpleProduct } from '../../hooks/data'
 import { ReactComponent as CalendarOIcon } from '../../images/default/calendar-alt-o.svg'
 import EmptyCover from '../../images/default/empty-cover.png'
+import types from '../../types'
 import { InvoiceProps, ShippingProps } from '../../types/merchandise'
 import AdminCard from '../admin/AdminCard'
 import { CustomRatioImage } from '../common/Image'
@@ -16,7 +23,8 @@ import ShippingNoticeModal from './ShippingNoticeModal'
 const messages = defineMessages({
   purchase: { id: 'merchandise.text.purchase', defaultMessage: '購買' },
   seller: { id: 'merchandise.ui.seller', defaultMessage: '賣家通知' },
-  noMatchingItems: { id: 'merchandise.text.noMatchingItems', defaultMessage: '沒有任何符合項目' },
+  deliveryItem: { id: 'merchandise.label.deliveryItem', defaultMessage: '交付：' },
+  uploadFile: { id: 'common.ui.uploadFile', defaultMessage: '上傳' },
 })
 
 const StyledOrderTitle = styled.h3`
@@ -43,7 +51,7 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
     updatedAt: Date
     deliveredAt: Date
     deliverMessage: string | null
-    shipping: ShippingProps
+    shipping: ShippingProps | null
     invoice: InvoiceProps
     orderPhysicalProducts: {
       key: string
@@ -51,18 +59,12 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
       name: string
       productId: string
       quantity: number
+      files: UploadFile[]
     }[]
   }[]
-  searchText: string
   onRefetch?: () => void
-}> = ({ orderPhysicalProductLogs, searchText, onRefetch }) => {
+}> = ({ orderPhysicalProductLogs, onRefetch }) => {
   const { formatMessage } = useIntl()
-
-  orderPhysicalProductLogs = orderPhysicalProductLogs.filter(orderPhysicalProductLog =>
-    orderPhysicalProductLog.orderPhysicalProducts
-      .map(orderPhysicalProduct => !searchText || orderPhysicalProduct.key.toLowerCase().includes(searchText))
-      .includes(true),
-  )
 
   return (
     <div className="pt-4">
@@ -82,8 +84,8 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
                   </StyledDate>
                 )}
 
-                {orderLog?.shipping?.specification ? (
-                  <StyledSpecification className="mb-2">{orderLog.shipping.specification}</StyledSpecification>
+                {orderLog.shipping?.specification ? (
+                  <StyledSpecification className="mb-2">{orderLog.shipping?.specification}</StyledSpecification>
                 ) : null}
               </div>
 
@@ -107,13 +109,15 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
                 key={orderPhysicalProduct.id}
                 productId={orderPhysicalProduct.productId}
                 quantity={orderPhysicalProduct.quantity}
+                orderProductId={orderPhysicalProduct.id}
+                productFiles={orderPhysicalProduct.files}
               />
             ))}
           </AdminCard>
         ))
       ) : (
         <div className="container d-flex align-items-center">
-          <div>{formatMessage(messages.noMatchingItems)}</div>
+          <div>{formatMessage(merchandiseMessages.text.noMatchingItems)}</div>
         </div>
       )}
     </div>
@@ -126,22 +130,57 @@ const StyledQuantity = styled.div`
   line-height: 1.71;
   letter-spacing: 0.4px;
 `
+const StyledButtonWrapper = styled.div`
+  position: absolute;
+  top: 20px;
+  right: -100px;
+  @media (max-width: 767px) {
+    top: 10px;
+    right: 0px;
+  }
+`
+const StyledSpace = styled.div`
+  @media (min-width: 768px) {
+    width: 100px;
+  }
+`
+const StyledUploaderWrapper = styled.div`
+  position: relative;
+
+  & ${StyledFileBlock}:nth-child(n) {
+    margin-top: 0 !important;
+  }
+  & ${StyledFileBlock}:nth-child(2) {
+    margin-top: 1.5rem !important;
+  }
+`
 
 const ShippingProductItem: React.FC<{
+  orderProductId: string
   productId: string
   quantity: number
-}> = ({ productId, quantity }) => {
+  productFiles: UploadFile[]
+}> = ({ orderProductId, productId, quantity, productFiles }) => {
+  const { formatMessage } = useIntl()
+  const { id: appId } = useApp()
   const { loading, target } = useSimpleProduct(productId, {})
+  const updateOrderProductFiles = useUpdateOrderProductFiles(orderProductId)
+  const filesRef = React.useRef<UploadFile[]>([])
+  const [files, setFiles] = useState<UploadFile[]>(productFiles || [])
 
   if (loading || !target) {
     return <Spin />
   }
 
+  filesRef.current = files
+
   return (
     <div>
       <Divider />
 
-      <div className="d-flex align-items-center">
+      <div
+        className={'d-flex ' + (!target.isPhysical && target.isCustomized ? 'align-items-start' : 'align-items-center')}
+      >
         <CustomRatioImage
           width="64px"
           ratio={1}
@@ -149,11 +188,85 @@ const ShippingProductItem: React.FC<{
           shape="rounded"
           className="mr-3 flex-shrink-0"
         />
-        <div className="flex-grow-1">{target.title}</div>
-        <StyledQuantity className="px-4">x{quantity}</StyledQuantity>
+
+        {!target.isPhysical && target.isCustomized ? (
+          <div className="flex-grow-1">
+            <span>{target.title}</span>
+            <div className="d-flex">
+              <div className="mt-3">{formatMessage(messages.deliveryItem)}</div>
+              <StyledUploaderWrapper className="flex-grow-1 mt-sm-n5 pt-2">
+                <MultipleUploader
+                  renderTrigger={({ loading }) => (
+                    <StyledButtonWrapper>
+                      <Button loading={loading} disabled={loading}>
+                        {formatMessage(messages.uploadFile)}
+                      </Button>
+                    </StyledButtonWrapper>
+                  )}
+                  path={`merchandise_files/${appId}/${orderProductId}`}
+                  fileList={files}
+                  onSetFileList={setFiles}
+                  onSuccess={() => {
+                    updateOrderProductFiles(
+                      filesRef.current.map(v => ({
+                        order_product_id: orderProductId,
+                        data: v,
+                      })),
+                    )
+                      .then(() => {
+                        message.success(formatMessage(commonMessages.event.successfullyUpload))
+                      })
+                      .catch(handleError)
+                  }}
+                  onDelete={value => {
+                    value &&
+                      updateOrderProductFiles(
+                        files
+                          .filter(file => file.uid !== value.uid)
+                          .map(v => ({
+                            order_product_id: orderProductId,
+                            data: v,
+                          })),
+                      ).catch(handleError)
+                  }}
+                />
+              </StyledUploaderWrapper>
+              <StyledSpace />
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="flex-grow-1">{target.title}</div>
+            <StyledQuantity className="px-4">x{quantity}</StyledQuantity>
+          </>
+        )}
       </div>
     </div>
   )
+}
+
+const useUpdateOrderProductFiles = (orderProductId: string) => {
+  const [updateFiles] = useMutation<types.UPDATE_ORDER_PRODUCT_FILES, types.UPDATE_ORDER_PRODUCT_FILESVariables>(gql`
+    mutation UPDATE_ORDER_PRODUCT_FILES(
+      $orderProductId: uuid!
+      $orderProductFiles: [order_product_file_insert_input!]!
+    ) {
+      delete_order_product_file(where: { order_product_id: { _eq: $orderProductId } }) {
+        affected_rows
+      }
+      insert_order_product_file(objects: $orderProductFiles) {
+        affected_rows
+      }
+    }
+  `)
+
+  return (orderProductFiles: { order_product_id: string; data: UploadFile }[]) =>
+    updateFiles({
+      variables: {
+        orderProductId,
+        orderProductFiles,
+      },
+    })
 }
 
 export default OrderPhysicalProductCollectionBlock

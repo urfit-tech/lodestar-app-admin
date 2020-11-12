@@ -2,10 +2,10 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, Modal } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { programMessages } from '../../helpers/translation'
 import { useProgram } from '../../hooks/program'
@@ -66,8 +66,8 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
   ...cardProps
 }) => {
   const { formatMessage } = useIntl()
-  const { settings } = useContext(AppContext)
   const { currentMemberId, currentUserRole } = useAuth()
+  const { settings } = useApp()
   const { program } = useProgram(programId)
   const [updateIssueStatus] = useMutation<types.UPDATE_ISSUE_STATUS, types.UPDATE_ISSUE_STATUSVariables>(
     UPDATE_ISSUE_STATUS,
@@ -114,7 +114,7 @@ const IssueAdminCard: React.FC<IssueAdminCardProps> = ({
                 },
               }).then(() => {
                 setSolved(updatedSolved)
-                onRefetch && onRefetch()
+                onRefetch?.()
               })
             }}
           >

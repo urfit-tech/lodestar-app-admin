@@ -3,9 +3,9 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import { AppContext } from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -13,13 +13,17 @@ import { PodcastProgramAdminProps } from '../../types/podcast'
 import { StyledTips } from '../admin/index'
 import ImageInput from '../form/ImageInput'
 
+type FieldProps = {
+  abstract: string
+}
+
 const PodcastProgramIntroForm: React.FC<{
   podcastProgramAdmin: PodcastProgramAdminProps | null
   onRefetch?: () => void
 }> = ({ podcastProgramAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
-  const { id: appId } = useContext(AppContext)
+  const [form] = useForm<FieldProps>()
+  const { id: appId } = useApp()
   const [loading, setLoading] = useState(false)
 
   const [updatePodcastProgramCover] = useMutation<
@@ -48,14 +52,14 @@ const PodcastProgramIntroForm: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullyUpload))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updatePodcastProgramIntro({
       variables: {
@@ -65,8 +69,8 @@ const PodcastProgramIntroForm: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

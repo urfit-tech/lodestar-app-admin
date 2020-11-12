@@ -1,16 +1,16 @@
 import { GlobalOutlined } from '@ant-design/icons'
-import React, { useContext } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { AdminPageTitle } from '../../components/admin'
 import AppBasicCard from '../../components/app/AppBasicCard'
 import AppSettingCard from '../../components/app/AppSettingCard'
 import AdminLayout from '../../components/layout/AdminLayout'
-import { AppContext } from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { commonMessages } from '../../helpers/translation'
 
 const AppAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
 
   return (
     <AdminLayout>

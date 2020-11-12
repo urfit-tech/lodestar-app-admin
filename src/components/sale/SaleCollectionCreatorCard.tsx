@@ -13,6 +13,7 @@ import AdminCard from '../admin/AdminCard'
 
 const messages = defineMessages({
   purchasedAt: { id: 'common.text.purchasedAt', defaultMessage: '{name} 於 {date} 購買' },
+  withSharingCode: { id: 'common.text.withSharingCode', defaultMessage: '推廣網址：{code}' },
 })
 
 const ListItemWrapper = styled.div`
@@ -44,12 +45,17 @@ const StyledTitle = styled.div`
   text-overflow: ellipsis;
   white-space: nowrap;
 `
+const SharingCodeLabel = styled.span`
+  padding-left: 0.5rem;
+  border-left: 1px solid var(--gray);
+`
 
 type SaleOrderProductProps = {
   id: string
   name: string
   price: number
   endedAt: Date | null
+  options: any
   orderLog: {
     id: string
     createdAt: Date
@@ -91,7 +97,9 @@ const SaleCollectionCreatorCard: React.FC<{
   )
 }
 
-const ListItem: React.FC<{ orderProduct: SaleOrderProductProps }> = ({ orderProduct }) => {
+const ListItem: React.FC<{
+  orderProduct: SaleOrderProductProps
+}> = ({ orderProduct }) => {
   const { formatMessage } = useIntl()
   const { member } = usePublicMember(orderProduct.orderLog.memberId)
 
@@ -109,10 +117,17 @@ const ListItem: React.FC<{ orderProduct: SaleOrderProductProps }> = ({ orderProd
             )}
           </StyledTitle>
           <p>
-            {formatMessage(messages.purchasedAt, {
-              name: member.name,
-              date: dateFormatter(orderProduct.orderLog.createdAt),
-            })}
+            <span>
+              {formatMessage(messages.purchasedAt, {
+                name: member.name,
+                date: dateFormatter(orderProduct.orderLog.createdAt),
+              })}
+            </span>
+            {orderProduct.options?.sharingCode && (
+              <SharingCodeLabel className="ml-2">
+                {formatMessage(messages.withSharingCode, { code: orderProduct.options.sharingCode })}
+              </SharingCodeLabel>
+            )}
           </p>
         </div>
         <div className="flex-shrink-0 price">{currencyFormatter(orderProduct.price)}</div>
@@ -141,6 +156,7 @@ const useProductOwnerOrders = (memberId: string) => {
           name
           price
           ended_at
+          options
           order_log {
             id
             created_at
@@ -153,19 +169,18 @@ const useProductOwnerOrders = (memberId: string) => {
   )
 
   const orderProducts: SaleOrderProductProps[] =
-    loading || error || !data
-      ? []
-      : data.order_product.map(orderProduct => ({
-          id: orderProduct.id,
-          name: orderProduct.name,
-          price: orderProduct.price,
-          endedAt: orderProduct.ended_at,
-          orderLog: {
-            id: orderProduct.order_log.id,
-            createdAt: orderProduct.order_log.created_at,
-            memberId: orderProduct.order_log.member_id,
-          },
-        }))
+    data?.order_product.map(v => ({
+      id: v.id,
+      name: v.name,
+      price: v.price,
+      endedAt: v.ended_at,
+      options: v.options,
+      orderLog: {
+        id: v.order_log.id,
+        createdAt: v.order_log.created_at,
+        memberId: v.order_log.member_id,
+      },
+    })) || []
 
   return {
     loadingOrderProducts: loading,

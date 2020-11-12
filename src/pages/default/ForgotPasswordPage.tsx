@@ -2,12 +2,13 @@ import { MailOutlined } from '@ant-design/icons'
 import { Button, Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import DefaultLayout from '../../components/layout/DefaultLayout'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { desktopViewMixin, handleError } from '../../helpers'
 import { codeMessages, commonMessages, errorMessages } from '../../helpers/translation'
 
@@ -40,17 +41,22 @@ const StyledTitle = styled.h1`
   letter-spacing: 0.8px;
 `
 
+type FieldProps = {
+  email: string
+}
+
 const ForgotPasswordPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const [form] = useForm()
-  const app = useContext(AppContext)
+  const [form] = useForm<FieldProps>()
+  const { backendEndpoint } = useAuth()
+  const app = useApp()
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     axios
-      .post(`${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/forgot-password`, {
+      .post(`${backendEndpoint}/auth/forgot-password`, {
         appId: app.id,
         account: values.email,
       })

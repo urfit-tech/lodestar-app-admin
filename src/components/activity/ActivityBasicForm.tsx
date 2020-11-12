@@ -3,9 +3,9 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, Input, message, Radio, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { activityMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -14,13 +14,20 @@ import { StyledTips } from '../admin'
 import CategorySelector from '../form/CategorySelector'
 import LanguageSelector from '../form/LanguageSelector'
 
+type FieldProps = {
+  title: string
+  categoryIds: string[]
+  languages?: string[]
+  isParticipantsVisible: 'public' | 'private'
+}
+
 const ActivityBasicForm: React.FC<{
   activityAdmin: ActivityAdminProps | null
   onRefetch?: () => void
 }> = ({ activityAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
-  const { enabledModules } = useContext(AppContext)
+  const [form] = useForm<FieldProps>()
+  const { enabledModules } = useApp()
   const [updateActivityBasic] = useMutation<types.UPDATE_ACTIVITY_BASIC, types.UPDATE_ACTIVITY_BASICVariables>(
     UPDATE_ACTIVITY_BASIC,
   )
@@ -30,13 +37,13 @@ const ActivityBasicForm: React.FC<{
     return <Skeleton active />
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateActivityBasic({
       variables: {
         activityId: activityAdmin.id,
         title: values.title,
-        supportLocales: !values.languages || values.languages.length === 0 ? null : values.languages,
+        supportLocales: values.languages?.length ? values.languages : null,
         activityCategories: values.categoryIds.map((categoryId: string, index: number) => ({
           activity_id: activityAdmin.id,
           category_id: categoryId,
@@ -46,8 +53,8 @@ const ActivityBasicForm: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

@@ -2,12 +2,12 @@ import { EditOutlined, MoreOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, DatePicker, Dropdown, Form, Input, InputNumber, Menu, Modal } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import BraftEditor from 'braft-editor'
+import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
-import moment from 'moment'
-import React, { useContext, useEffect, useState } from 'react'
+import moment, { Moment } from 'moment'
+import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -32,6 +32,16 @@ const messages = defineMessages({
   notifyUpdate: { id: 'program.label.notifyUpdate', defaultMessage: '通知內容更新' },
 })
 
+type FieldProps = {
+  publishedAt: Moment | null
+  isNotifyUpdate: boolean
+  title: string
+  planIds?: string[]
+  duration: number
+  description: EditorState
+  texttrack: any
+}
+
 const ProgramContentAdminModal: React.FC<{
   program: ProgramProps
   programContent: ProgramContentProps
@@ -39,8 +49,8 @@ const ProgramContentAdminModal: React.FC<{
   onRefetch?: () => void
 }> = ({ program, programContent, programContentBody, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
-  const { id: appId } = useContext(AppContext)
+  const [form] = useForm<FieldProps>()
+  const { id: appId } = useApp()
 
   const [updateProgramContent] = useMutation<types.UPDATE_PROGRAM_CONTENT, types.UPDATE_PROGRAM_CONTENTVariables>(
     UPDATE_PROGRAM_CONTENT,
@@ -60,9 +70,8 @@ const ProgramContentAdminModal: React.FC<{
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
-
     Promise.all([
       updateProgramContent({
         variables: {
@@ -76,7 +85,7 @@ const ProgramContentAdminModal: React.FC<{
             ? new Date()
             : null,
           title: values.title,
-          description: values.description.toRAW(),
+          description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
           duration: values.duration && values.duration * 60,
           type: video ? 'video' : null,
           data: {
@@ -91,17 +100,18 @@ const ProgramContentAdminModal: React.FC<{
         ? updateProgramContentPlan({
             variables: {
               programContentId: programContent.id,
-              programContentPlans: values.planIds.map((planId: string) => ({
-                program_content_id: programContent.id,
-                program_plan_id: planId,
-              })),
+              programContentPlans:
+                values.planIds?.map((planId: string) => ({
+                  program_content_id: programContent.id,
+                  program_plan_id: planId,
+                })) || [],
             },
           })
         : null,
     ])
       .then(() => {
-        onRefetch && onRefetch()
         setVisible(false)
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
@@ -182,7 +192,7 @@ const ProgramContentAdminModal: React.FC<{
                         window.confirm(formatMessage(messages.deleteContentWarning)) &&
                         deleteProgramContent({
                           variables: { programContentId: programContent.id },
-                        }).then(() => onRefetch && onRefetch())
+                        }).then(() => onRefetch?.())
                       }
                     >
                       {formatMessage(messages.deleteContent)}

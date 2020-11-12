@@ -58,6 +58,7 @@ export const commonMessages = {
     showMore: { id: 'common.ui.showMore', defaultMessage: '顯示更多' },
     send: { id: 'common.ui.send', defaultMessage: '送出' },
     uploadFile: { id: 'common.ui.uploadFile', defaultMessage: '上傳檔案' },
+    copy: { id: 'common.ui.copy', defaultMessage: '複製' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -250,6 +251,7 @@ export const commonMessages = {
       id: 'common.text.deletePropertyNotation',
       defaultMessage: '確定要刪除此欄位？此動作無法復原',
     },
+    copiedToClipboard: { id: 'common.text.copiedToClipboard', defaultMessage: '已複製到剪貼簿' },
   }),
   event: defineMessages({
     successfullySaved: { id: 'common.event.successfullySaved', defaultMessage: '儲存成功' },
@@ -304,6 +306,7 @@ export const commonMessages = {
     eCommerce: { id: 'common.menu.eCommerce', defaultMessage: '電子商務' },
     merchandiseAdmin: { id: 'common.menu.merchandise', defaultMessage: '商品' },
     merchandises: { id: 'common.menu.merchandises', defaultMessage: '商品管理' },
+    merchandiseInventory: { id: 'common.menu.merchandiseInventory', defaultMessage: '庫存管理' },
     merchandiseIssues: { id: 'common.menu.merchandiseIssues', defaultMessage: '問答管理' },
     merchandiseShop: { id: 'common.menu.merchandiseShop', defaultMessage: '商店管理' },
     merchandiseCategory: { id: 'common.menu.merchandiseCategory', defaultMessage: '商品分類' },
@@ -556,6 +559,9 @@ export const programMessages = {
     applyDescription: { id: 'program.label.applyDescription', defaultMessage: '備註(非必填)' },
     rejectModalTitle: { id: 'program.label.rejectModalTitle', defaultMessage: '退回案件' },
     rejectDescription: { id: 'program.label.rejectDescription', defaultMessage: '退件原因' },
+    sharingCode: { id: 'program.label.sharingCode', defaultMessage: '推廣網址' },
+    code: { id: 'program.label.code', defaultMessage: '設定網址' },
+    note: { id: 'program.label.note', defaultMessage: '用途備註' },
   }),
   text: defineMessages({
     enrolledSubscriptionCount: {
@@ -615,6 +621,13 @@ export const programMessages = {
     noPrice: { id: 'program.text.noPrice', defaultMessage: '尚未訂定售價' },
     noCreatedProgram: { id: 'program.text.noCreatedProgram', defaultMessage: '尚無建立課程' },
     noProgram: { id: 'program.text.noProgram', defaultMessage: '尚無任何課程' },
+    sharingCodeDescription: {
+      id: 'program.text.sharingCodeDescription',
+      defaultMessage:
+        '1. 當學生由你所設定的「推廣網址」進入購買，該筆訂單將標記為由推廣網址下單。\n2. 刪除或修改將會直接取代並失效原本的網址，因此網址公開推廣曝光後，不建議再做刪除或修改。',
+    },
+    codeIsRequired: { id: 'program.text.codeIsRequired', defaultMessage: '未填寫設定網址' },
+    duplicatedCodesWarning: { id: 'program.text.duplicatedCodesWarning', defaultMessage: '推廣網址不可重複' },
   }),
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
@@ -627,6 +640,7 @@ export const programMessages = {
     reApply: { id: 'program.ui.reApply', defaultMessage: '重新送審' },
     reject: { id: 'program.ui.reject', defaultMessage: '退回案件' },
     approve: { id: 'program.ui.approve', defaultMessage: '審核通過' },
+    addUrl: { id: 'program.ui.addUrl', defaultMessage: '新增網址' },
   }),
 }
 
@@ -715,9 +729,11 @@ export const merchandiseMessages = {
     deleteImage: { id: 'merchandise.ui.deleteImage', defaultMessage: '刪除圖片' },
     modifyInventory: { id: 'merchandise.ui.modifyInventory', defaultMessage: '調整庫存' },
     createMemberShop: { id: 'merchandise.ui.createMemberShop', defaultMessage: '建立商店' },
+    addSpec: { id: 'merchandise.ui.addSpec', defaultMessage: '新增規格' },
   }),
   status: defineMessages({
     selling: { id: 'merchandise.status.selling', defaultMessage: '販賣中' },
+    soldOut: { id: 'common.status.soldOut', defaultMessage: '已售完' },
     unpublished: { id: 'merchandise.status.unpublished', defaultMessage: '未上架' },
     currentInventory: { id: 'merchandise.status.currentInventory', defaultMessage: '現有庫存' },
     shipping: { id: 'merchandise.status.shipping', defaultMessage: '待出貨' },
@@ -750,7 +766,6 @@ export const merchandiseMessages = {
     homeDelivery: { id: 'merchandise.label.homeDelivery', defaultMessage: '宅配' },
     sendByPost: { id: 'merchandise.label.sendByPost', defaultMessage: '郵寄' },
     other: { id: 'merchandise.label.other', defaultMessage: '其他' },
-    shippingFee: { id: 'merchandise.label.shippingFee', defaultMessage: '運費' },
     comment: { id: 'merchandise.label.comment', defaultMessage: '備註' },
     selectContentCreator: { id: 'merchandise.label.selectContentCreator', defaultMessage: '選擇創作者' },
     memberShopTitle: { id: 'merchandise.label.memberShopTitle', defaultMessage: '商店名稱' },
@@ -769,12 +784,27 @@ export const merchandiseMessages = {
     generalVirtual: { id: 'merchandise.label.generalVirtual', defaultMessage: '一般虛擬' },
     customizedPhysical: { id: 'merchandise.label.customizedPhysical', defaultMessage: '客製實體' },
     customizedVirtual: { id: 'merchandise.label.customizedVirtual', defaultMessage: '客製虛擬' },
+    generalPhysicalTag: { id: 'merchandise.label.generalPhysicalTag', defaultMessage: '一般實體' },
+    generalVirtualTag: { id: 'merchandise.label.generalVirtualTag', defaultMessage: '一般虛擬' },
+    customizedPhysicalTag: { id: 'merchandise.label.customizedPhysicalTag', defaultMessage: '客製實體' },
+    customizedVirtualTag: { id: 'merchandise.label.customizedVirtualTag', defaultMessage: '客製虛擬' },
     deliveryItem: { id: 'merchandise.label.deliveryItem', defaultMessage: '交付項目' },
+    shippingFee: { id: 'merchandise.label.shippingFee', defaultMessage: '運費' },
+    shippingInfo: { id: 'merchandise.label.shippingInfo', defaultMessage: '收件資訊' },
+    shippingName: { id: 'merchandise.label.shippingName', defaultMessage: '收件姓名' },
+    shippingMethod: { id: 'merchandise.label.shippingMethod', defaultMessage: '收件方式' },
+    shippingPhone: { id: 'merchandise.label.shippingPhone', defaultMessage: '收件人電話' },
+    shippingAddress: { id: 'merchandise.label.shippingAddress', defaultMessage: '收件地址' },
+    shippingMail: { id: 'merchandise.label.shippingMail', defaultMessage: '收件人信箱' },
+    specTitle: { id: 'merchandise.label.specTitle', defaultMessage: '規格名稱' },
+    specSalePrice: { id: 'merchandise.label.specSalePrice', defaultMessage: '優惠價 (若無請留空)' },
+    inventory: { id: 'merchandise.label.inventory', defaultMessage: '庫存' },
   }),
   text: defineMessages({
     searchMerchandise: { id: 'merchandise.text.searchMerchandise', defaultMessage: '搜尋商品名稱' },
     searchMerchandiseOrder: { id: 'merchandise.text.searchMerchandiseOrder', defaultMessage: '搜尋訂單編號、商品名稱' },
-    imageTips: { id: 'merchandise.text.imageTips', defaultMessage: '建議圖片尺寸：600*600px 以上' },
+    imageTips: { id: 'merchandise.text.imageTips', defaultMessage: '建議圖片尺寸：600*600px' },
+    abstractTips: { id: 'merchandise.text.abstractTips', defaultMessage: '僅會顯示於部落格「查看商品」內的描述' },
     estimatedShippingDays: { id: 'merchandise.text.estimatedShippingDays', defaultMessage: '預估寄送天數' },
     selectMemberShopPlaceholder: {
       id: 'merchandise.text.selectMemberShopPlaceholder',
@@ -789,6 +819,33 @@ export const merchandiseMessages = {
       id: 'merchandise.text.generalVirtualMerchandise',
       defaultMessage: 'ex.素材、圖庫...等虛擬商品。',
     },
+    customizedPhysicalMerchandise: {
+      id: 'merchandise.text.customizedPhysicalMerchandise',
+      defaultMessage: 'ex.姓名貼、客製T-shirt...等客製實體商品。',
+    },
+    customizedVirtualMerchandise: {
+      id: 'merchandise.text.customizedVirtualMerchandise',
+      defaultMessage: 'ex.似顏繪、設計簽名...等客製虛擬商品。',
+    },
+    generalPhysicalDescription: {
+      id: 'merchandise.text.generalPhysicalDescription',
+      defaultMessage: '此為實體需寄送的商品，出貨後請記得於出貨管理通知買家',
+    },
+    generalVirtualDescription: {
+      id: 'merchandise.text.generalVirtualDescription',
+      defaultMessage: '此為虛擬商品，請預先於「銷售規格」內上傳交付給買家的檔案',
+    },
+    customizedPhysicalDescription: {
+      id: 'merchandise.text.customizedPhysicalDescription',
+      defaultMessage: '此為實體客製化且需寄送的商品，出貨後請記得於出貨管理通知買家',
+    },
+    customizedVirtualDescription: {
+      id: 'merchandise.text.customizedVirtualDescription',
+      defaultMessage: '此為虛擬客製化商品，若有人購買，請記得於「出貨管理」上傳交付檔案，並通知出貨讓買家可下載',
+    },
+    specTitleHint: { id: 'merchandise.text.specTitleHint', defaultMessage: 'ex. 紅色 S 號' },
+    noMatchingItems: { id: 'merchandise.text.noMatchingItems', defaultMessage: '沒有任何符合項目' },
+    deliveryItemHelp: { id: 'merchandise.text.deliveryItemHelp', defaultMessage: '單檔案大小不超過 5GB' },
   }),
 }
 
@@ -857,6 +914,7 @@ export const memberMessages = {
     category: { id: 'member.label.category', defaultMessage: '分類' },
     dueDate: { id: 'member.label.dueDate', defaultMessage: '到期日' },
     assign: { id: 'member.label.assign', defaultMessage: '指派' },
+    manager: { id: 'member.label.manager', defaultMessage: '承辦人' },
     target: { id: 'member.label.target', defaultMessage: '學員' },
     taskDescription: { id: 'member.label.taskDescription', defaultMessage: '內容' },
     field: { id: 'member.label.field', defaultMessage: '欄位' },
@@ -984,6 +1042,7 @@ export const permissionMessages = defineMessages({
   MEMBER_PHONE_ADMIN: { id: 'permission.MEMBER_PHONE_ADMIN', defaultMessage: '檢視電話欄位' },
   MEMBER_STAR_ADMIN: { id: 'permission.MEMBER_STAR_ADMIN', defaultMessage: '檢視星等欄位' },
   MEMBER_CATEGORY_ADMIN: { id: 'permission.MEMBER_CATEGORY_ADMIN', defaultMessage: '所有會員分類功能' },
+  MEMBER_MANAGER_ADMIN: { id: 'permission.MEMBER_MANAGER_ADMIN', defaultMessage: '指派承辦人功能' },
 
   // task
   TASK_ADMIN: { id: 'permission.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },

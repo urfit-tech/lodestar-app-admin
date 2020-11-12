@@ -2,7 +2,7 @@ import Icon, { EditOutlined, FileTextFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Popover, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
-import React, { useContext } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useHistory } from 'react-router-dom'
 import styled from 'styled-components'
@@ -18,7 +18,7 @@ import { AvatarImage } from '../../components/common/Image'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ProgramAdminCard from '../../components/program/ProgramAdminCard'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
@@ -46,7 +46,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { currentMemberId, currentUserRole } = useAuth()
-  const { loading, id: appId, enabledModules } = useContext(AppContext)
+  const { loading, id: appId, enabledModules } = useApp()
 
   const { loadingProgramPreviews, programPreviews, refetchProgramPreviews } = useProgramPreviewCollection(
     currentUserRole === 'app-owner' ? null : currentMemberId,
@@ -113,28 +113,29 @@ const ProgramCollectionAdminPage: React.FC = () => {
 
       <div className="mb-5">
         <ProductCreationModal
-          classType="program"
+          categoryClassType="program"
           withCreatorSelector={currentUserRole === 'app-owner'}
           withProgramType
-          onCreate={values =>
+          onCreate={({ title, categoryIds, creatorId, isSubscription }) =>
             insertProgram({
               variables: {
                 ownerId: currentMemberId,
-                instructorId: values.creatorId || currentMemberId,
-                appId: appId,
-                title: values.title,
-                isSubscription: values.isSubscription || false,
-                programCategories: values.categoryIds.map((categoryId, index) => ({
-                  category_id: categoryId,
-                  position: index,
-                })),
+                instructorId: creatorId || currentMemberId,
+                appId,
+                title,
+                isSubscription: isSubscription || false,
+                programCategories:
+                  categoryIds?.map((categoryId, index) => ({
+                    category_id: categoryId,
+                    position: index,
+                  })) || [],
               },
-            })
-              .then(res => {
+            }).then(res => {
+              refetchProgramPreviews().then(() => {
                 const programId = res.data?.insert_program?.returning[0]?.id
                 programId && history.push(`/programs/${programId}`)
               })
-              .catch(handleError)
+            })
           }
         />
       </div>

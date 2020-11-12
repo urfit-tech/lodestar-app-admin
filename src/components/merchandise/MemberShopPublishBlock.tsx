@@ -29,8 +29,8 @@ const messages = defineMessages({
 
 const MemberShopPublishBlock: React.FC<{
   memberShop: MemberShopProps
-  refetch?: () => void
-}> = ({ memberShop, refetch }) => {
+  onRefetch?: () => void
+}> = ({ memberShop, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [publishMemberShop] = useMutation<types.PUBLISH_MEMBER_SHOP, types.PUBLISH_MEMBER_SHOPVariables>(
     PUBLISH_MEMBER_SHOP,
@@ -76,8 +76,8 @@ const MemberShopPublishBlock: React.FC<{
       },
     })
       .then(() => {
-        refetch && refetch()
-        onSuccess && onSuccess()
+        onSuccess?.()
+        onRefetch?.()
       })
       .catch(error => onError && onError(error))
       .finally(() => onFinally && onFinally())

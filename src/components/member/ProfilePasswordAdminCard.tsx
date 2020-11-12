@@ -8,12 +8,16 @@ import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { codeMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import AdminCard from '../admin/AdminCard'
-import { StyledForm } from '../layout'
 
 const messages = defineMessages({
   editPassword: { id: 'common.ui.editPassword', defaultMessage: '修改密碼' },
   successfullyUpdatePassword: { id: 'common.event.successfullyUpdatePassword', defaultMessage: '已更新密碼' },
 })
+
+type FieldProps = {
+  password: string
+  newPassword: string
+}
 
 const ProfilePasswordAdminCard: React.FC<
   CardProps & {
@@ -21,15 +25,15 @@ const ProfilePasswordAdminCard: React.FC<
   }
 > = ({ memberId, ...cardProps }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
-  const { authToken } = useAuth()
+  const [form] = useForm<FieldProps>()
+  const { authToken, backendEndpoint } = useAuth()
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     axios
       .post(
-        `${process.env.REACT_APP_BACKEND_ENDPOINT}/auth/change-password`,
+        `${backendEndpoint}/auth/change-password`,
         {
           password: values.password,
           newPassword: values.newPassword,
@@ -54,7 +58,7 @@ const ProfilePasswordAdminCard: React.FC<
       <Typography.Title className="mb-4" level={4}>
         {formatMessage(messages.editPassword)}
       </Typography.Title>
-      <StyledForm
+      <Form
         form={form}
         labelAlign="left"
         labelCol={{ md: { span: 4 } }}
@@ -123,7 +127,7 @@ const ProfilePasswordAdminCard: React.FC<
             {formatMessage(commonMessages.ui.save)}
           </Button>
         </Form.Item>
-      </StyledForm>
+      </Form>
     </AdminCard>
   )
 }

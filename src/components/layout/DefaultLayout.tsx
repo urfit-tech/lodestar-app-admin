@@ -4,7 +4,7 @@ import React, { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import { footerHeight } from '.'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import LanguageContext from '../../contexts/LanguageContext'
 import settings from '../../settings'
@@ -57,13 +57,12 @@ const StyledButton = styled(Button)`
   }
 `
 
-type DefaultLayoutProps = {
+const DefaultLayout: React.FC<{
   white?: boolean
   noFooter?: boolean
   centeredBox?: boolean
   renderTitle?: () => React.ReactNode
-}
-const DefaultLayout: React.FC<DefaultLayoutProps> = ({ white, noFooter, centeredBox, renderTitle, children }) => {
+}> = ({ white, noFooter, centeredBox, renderTitle, children }) => {
   const [visible, setVisible] = useState(false)
 
   return (
@@ -83,9 +82,11 @@ const DefaultLayout: React.FC<DefaultLayoutProps> = ({ white, noFooter, centered
   )
 }
 
-export const DefaultLayoutHeader: React.FC<{ renderTitle?: () => React.ReactNode }> = ({ renderTitle }) => {
+export const DefaultLayoutHeader: React.FC<{
+  renderTitle?: () => React.ReactNode
+}> = ({ renderTitle }) => {
   const { currentMemberId } = useAuth()
-  const { enabledModules, id: appId } = useContext(AppContext)
+  const { enabledModules, id: appId } = useApp()
   const { currentLanguage, setCurrentLanguage } = useContext(LanguageContext)
 
   let Logo: string | undefined

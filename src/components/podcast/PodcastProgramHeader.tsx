@@ -1,9 +1,9 @@
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { Button, Modal, Spin } from 'antd'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
@@ -18,8 +18,8 @@ const PodcastProgramHeader: React.FC<{
 }> = ({ podcastProgramId, title, noPreview, goBackLink }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { authToken } = useAuth()
-  const { settings, id: appId } = useContext(AppContext)
+  const { authToken, backendEndpoint } = useAuth()
+  const { settings, id: appId } = useApp()
   const [isGeneratingAudio, setIsGeneratingAudio] = useState(false)
 
   return (
@@ -36,7 +36,7 @@ const PodcastProgramHeader: React.FC<{
             const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
             const windowReference = isSafari ? window.open() : null
             setIsGeneratingAudio(true)
-            mergePodcastProgram(authToken, appId, podcastProgramId)
+            mergePodcastProgram(authToken, backendEndpoint, appId, podcastProgramId)
               .then(() => {
                 setIsGeneratingAudio(false)
                 if (windowReference) {

@@ -2,9 +2,9 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Form, message, Select, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -16,13 +16,18 @@ const messages = defineMessages({
   permissionSettings: { id: 'common.label.permissionSettings', defaultMessage: '權限設定' },
 })
 
+type FieldProps = {
+  roleId: UserRole
+  permissionIds?: string[]
+}
+
 const MemberPermissionForm: React.FC<{
   memberAdmin: MemberAdminProps | null
   onRefetch?: () => void
 }> = ({ memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { enabledModules } = useContext(AppContext)
-  const [form] = useForm()
+  const { enabledModules } = useApp()
+  const [form] = useForm<FieldProps>()
   const [updateMemberRole] = useMutation<types.UPDATE_MEMBER_ROLE, types.UPDATE_MEMBER_ROLEVariables>(
     UPDATE_MEMBER_ROLE,
   )
@@ -34,7 +39,7 @@ const MemberPermissionForm: React.FC<{
     return <Skeleton active />
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateMemberRole({
       variables: {
@@ -49,7 +54,7 @@ const MemberPermissionForm: React.FC<{
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
-        onRefetch && onRefetch()
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

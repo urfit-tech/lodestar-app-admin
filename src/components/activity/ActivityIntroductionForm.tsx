@@ -2,11 +2,11 @@ import { QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Form, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import BraftEditor from 'braft-editor'
+import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { activityMessages, commonMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -15,13 +15,17 @@ import { StyledTips } from '../admin'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import ImageInput from '../form/ImageInput'
 
+type FieldProps = {
+  description: EditorState
+}
+
 const ActivityIntroductionForm: React.FC<{
   activityAdmin: ActivityAdminProps | null
   onRefetch?: () => void
 }> = ({ activityAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm()
-  const app = useContext(AppContext)
+  const [form] = useForm<FieldProps>()
+  const app = useApp()
   const [updateActivityCover] = useMutation<types.UPDATE_ACTIVITY_COVER, types.UPDATE_ACTIVITY_COVERVariables>(
     UPDATE_ACTIVITY_COVER,
   )
@@ -45,24 +49,24 @@ const ActivityIntroductionForm: React.FC<{
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))
   }
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     updateActivityIntroduction({
       variables: {
         activityId: activityAdmin.id,
-        description: values.description.toRAW(),
+        description: values.description.getCurrentContent().hasText() ? values.description.toRAW() : null,
       },
     })
       .then(() => {
-        onRefetch && onRefetch()
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onRefetch?.()
       })
       .catch(handleError)
       .finally(() => setLoading(false))

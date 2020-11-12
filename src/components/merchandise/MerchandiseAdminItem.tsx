@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { currencyFormatter } from '../../helpers'
 import EmptyCover from '../../images/default/empty-cover.png'
+import { MerchandisePreviewProps } from '../../types/merchandise'
 import { CustomRatioImage } from '../common/Image'
 
 const StyledWrapper = styled.div`
@@ -20,14 +21,9 @@ const StyledTitle = styled.div`
   text-overflow: ellipsis;
 `
 const StyledPriceLabel = styled.div`
-  width: 7rem;
+  width: 12rem;
   letter-spacing: 0.2px;
   color: ${props => props.theme['@primary-color']};
-
-  &:not(:last-child) {
-    color: var(--gray-dark);
-    text-decoration: line-through;
-  }
 `
 
 const StyledQuantityLabel = styled.div`
@@ -39,15 +35,14 @@ const StyledQuantityLabel = styled.div`
   color: var(--gray-darker);
 `
 
-const MerchandiseAdminItem: React.FC<{
-  id: string
-  coverUrl: string | null
-  title: string
-  listPrice: number
-  salePrice: number | null
-  soldAt: Date | null
-  soldQuantity?: number
-}> = ({ id, coverUrl, title, listPrice, salePrice, soldAt, soldQuantity }) => {
+const MerchandiseAdminItem: React.FC<MerchandisePreviewProps> = ({
+  id,
+  coverUrl,
+  title,
+  minPrice,
+  maxPrice,
+  soldQuantity,
+}) => {
   return (
     <Link to={`/merchandises/${id}`}>
       <StyledWrapper className="d-flex align-items-center justify-content-between p-3">
@@ -55,12 +50,9 @@ const MerchandiseAdminItem: React.FC<{
           <CustomRatioImage width="56px" ratio={1} src={coverUrl || EmptyCover} shape="rounded" className="mr-3" />
           <StyledTitle>{title}</StyledTitle>
         </div>
-        <div>
-          <StyledPriceLabel className="flex-shrink-0">{currencyFormatter(listPrice)}</StyledPriceLabel>
-          {soldAt && Date.now() < soldAt.getTime() && (
-            <StyledPriceLabel className="flex-shrink-0">{currencyFormatter(salePrice)}</StyledPriceLabel>
-          )}
-        </div>
+        <StyledPriceLabel className="flex-shrink-0">
+          {currencyFormatter(minPrice)} ~ {currencyFormatter(maxPrice)}
+        </StyledPriceLabel>
         {<StyledQuantityLabel className="flex-shrink-0">{soldQuantity}</StyledQuantityLabel>}
       </StyledWrapper>
     </Link>

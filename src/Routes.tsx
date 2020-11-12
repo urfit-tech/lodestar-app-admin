@@ -225,6 +225,11 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'MerchandiseAdminPage',
     authenticated: true,
   },
+  merchandise_inventory: {
+    path: '/merchandise-inventory',
+    pageName: 'MerchandiseInventoryPage',
+    authenticated: true,
+  },
   merchandise_category: {
     path: '/merchandise-category',
     pageName: 'MerchandiseCategoryPage',

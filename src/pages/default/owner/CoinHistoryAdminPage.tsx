@@ -1,9 +1,10 @@
-import Icon, { MoreOutlined } from '@ant-design/icons'
+import Icon, { MoreOutlined, SearchOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Button, Dropdown, Menu, message, Popover, Skeleton, Table, Tabs } from 'antd'
+import { Button, Dropdown, Input, Menu, message, Popover, Table, Tabs } from 'antd'
+import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import React, { useContext, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminBlock, AdminPageTitle } from '../../../components/admin'
@@ -15,7 +16,7 @@ import {
   StyledModalParagraph,
   StyledModalTitle,
 } from '../../../components/program/ProgramDeletionAdminCard'
-import AppContext from '../../../contexts/AppContext'
+import { useApp } from '../../../contexts/AppContext'
 import { handleError } from '../../../helpers'
 import { commonMessages, errorMessages, promotionMessages } from '../../../helpers/translation'
 import { ReactComponent as CoinIcon } from '../../../images/icon/coin.svg'
@@ -44,6 +45,17 @@ const messages = defineMessages({
   successfullyRevoked: { id: 'promotion.event.successfullyRevoked', defaultMessage: '收回成功' },
 })
 
+type CustomizeColumnProps = {
+  id: string
+  createdAt?: Date
+  member: MemberBriefProps
+  title: string
+  note?: string | null
+  startedAt?: Date | null
+  endedAt?: Date | null
+  orderLogId?: string
+  amount: number
+}
 type CoinLogProps = {
   id: string
   createdAt: Date
@@ -86,29 +98,48 @@ const StyledLabel = styled.span<{ variant?: 'coin-log' | 'order-log' }>`
 const StyledIcon = styled(Icon)`
   color: ${props => props.theme['@primary-color']};
 `
-
+const StyledSearchOutlined = styled(SearchOutlined)`
+  &.filtered {
+    color: ${props => props.theme['@primary-color']};
+  }
+`
 const CoinHistoryAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { loading: loadingApp, enabledModules, settings } = useContext(AppContext)
+  const { loading: loadingApp, enabledModules, settings } = useApp()
   const coinUnit = settings['coin.unit'] || formatMessage(messages.unitOfCoins)
-  const { loadingCoinLogs, errorCoinLogs, coinLogs, refetchCoinLogs, fetchMoreCoinLogs } = useCoinLogCollection()
   const deleteCoinLog = useDeleteCoinLog()
   const [isRevokedModalVisible, setIsRevokedModalVisible] = useState<boolean>(false)
+
+  const [fieldFilter, setFieldFilter] = useState<{
+    orderLogId?: string
+    nameAndEmail?: string
+    title?: string
+  }>({})
+
+  const { loadingCoinLogs, errorCoinLogs, coinLogs, refetchCoinLogs, loadMoreCoinLogs } = useCoinLogCollection({
+    ...fieldFilter,
+  })
   const {
     loadingCoinFutureLogs,
     errorCoinFutureLogs,
     coinFutureLogs,
     refetchCoinFutureLogs,
-    fetchMoreCoinFutureLogs,
-  } = useFutureCoinLogCollection()
+    loadMoreCoinFutureLogs,
+  } = useFutureCoinLogCollection({ ...fieldFilter })
   const {
     loadingOrderLogs,
     errorOrderLogs,
     orderLogs,
     refetchOrderLogs,
-    fetchMoreOrderLogs,
-  } = useOrderLogWithCoinsCollection()
+    loadMoreOrderLogs,
+  } = useOrderLogWithCoinsCollection({ ...fieldFilter })
+
   const [loading, setLoading] = useState(false)
+
+  const searchInputRef = useRef<Input | null>(null)
+  const setFilter = (columnId: string, value: string | null) => {
+    setFieldFilter({ ...fieldFilter, [columnId]: value ?? undefined })
+  }
 
   const handleRevokeCoin = (id: String) => {
     deleteCoinLog(id).then(() => {
@@ -117,6 +148,56 @@ const CoinHistoryAdminPage: React.FC = () => {
       refetchCoinLogs()
     })
   }
+
+  const getColumnSearchProps: (field: keyof typeof fieldFilter) => ColumnProps<CustomizeColumnProps> = columnId => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div className="p-2">
+        <Input
+          ref={searchInputRef}
+          value={selectedKeys[0]}
+          onChange={e => {
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }}
+          onPressEnter={() => {
+            confirm()
+            setFilter(columnId, selectedKeys[0] as string)
+          }}
+          style={{ width: 188, marginBottom: 8, display: 'block' }}
+        />
+        <div>
+          <Button
+            type="primary"
+            size="small"
+            className="mr-2"
+            style={{ width: 90 }}
+            icon={<SearchOutlined />}
+            onClick={() => {
+              confirm()
+              setFilter(columnId, selectedKeys[0] as string)
+            }}
+          >
+            {formatMessage(commonMessages.ui.search)}
+          </Button>
+          <Button
+            size="small"
+            onClick={() => {
+              clearFilters && clearFilters()
+              setFilter(columnId, null)
+            }}
+            style={{ width: 90 }}
+          >
+            {formatMessage(commonMessages.ui.reset)}
+          </Button>
+        </div>
+      </div>
+    ),
+    filterIcon: filtered => <StyledSearchOutlined className={filtered ? 'filtered' : undefined} />,
+    onFilterDropdownVisibleChange: visible => {
+      if (visible) {
+        setTimeout(() => searchInputRef.current?.select(), 100)
+      }
+    },
+  })
 
   if (loadingApp) {
     return <LoadingPage />
@@ -151,106 +232,103 @@ const CoinHistoryAdminPage: React.FC = () => {
       >
         <Tabs.TabPane key="coin-log" tab={formatMessage(messages.coinReleaseHistory)} className="pt-3">
           <AdminBlock>
-            {loadingCoinLogs ? (
-              <Skeleton active />
-            ) : (
-              <Table<CoinLogProps>
-                columns={[
-                  {
-                    title: formatMessage(messages.createdAt),
-                    dataIndex: 'createdAt',
-                    render: (text, record, index) => <div>{moment(text).format('YYYY/MM/DD')}</div>,
-                  },
-                  {
-                    title: formatMessage(messages.nameAndEmail),
-                    key: 'member',
-                    render: (text, record, index) => (
-                      <div className="d-flex align-items-center">
-                        <AvatarImage size="32px" src={record.member.avatarUrl} className="mr-3 flex-shrink-0" />
-                        <div className="flex-grow-1">
-                          <div>{record.member.name}</div>
-                          <StyledDescription>{record.member.email}</StyledDescription>
-                        </div>
+            <Table<CustomizeColumnProps>
+              columns={[
+                {
+                  title: formatMessage(messages.createdAt),
+                  dataIndex: 'createdAt',
+                  render: (text, record, index) => <div>{moment(text).format('YYYY/MM/DD')}</div>,
+                },
+                {
+                  title: formatMessage(messages.nameAndEmail),
+                  key: 'nameAndEmail',
+                  render: (text, record, index) => (
+                    <div className="d-flex align-items-center">
+                      <AvatarImage size="32px" src={record.member.avatarUrl} className="mr-3 flex-shrink-0" />
+                      <div className="flex-grow-1">
+                        <div>{record.member.name}</div>
+                        <StyledDescription>{record.member.email}</StyledDescription>
                       </div>
-                    ),
-                  },
-                  {
-                    title: formatMessage(messages.coinLogTitle),
-                    dataIndex: 'title',
-                    render: (text, record, index) => (
-                      <div>
-                        {text}
-                        {record.note && (
-                          <Popover title={record.note} className="cursor-coiner">
-                            <StyledIcon component={() => <TextIcon />} className="ml-2" />
-                          </Popover>
-                        )}
-                      </div>
-                    ),
-                  },
-                  {
-                    title: formatMessage(messages.coinAvailableDate),
-                    key: 'date',
-                    render: (text, record, index) => (
-                      <div>
-                        {record.startedAt
-                          ? moment(record.startedAt).format('YYYY/MM/DD')
-                          : formatMessage(promotionMessages.label.fromNow)}
-                        {` ~ `}
-                        {record.endedAt
-                          ? moment(record.endedAt).format('YYYY/MM/DD')
-                          : formatMessage(promotionMessages.label.unlimited)}
-                      </div>
-                    ),
-                  },
-                  {
-                    title: formatMessage(messages.coins),
-                    dataIndex: 'amount',
-                    render: (text, record, index) => (
-                      <div className="d-flex justify-content-between">
-                        <StyledLabel variant="coin-log">
-                          {text > 0 && '+'}
-                          {text} {coinUnit}
-                        </StyledLabel>
-                        <Dropdown
-                          trigger={['click']}
-                          overlay={
-                            <Menu onClick={() => setIsRevokedModalVisible(true)}>
-                              <Menu.Item>{formatMessage(messages.revokeCoin)}</Menu.Item>
-                              <StyledModal
-                                visible={isRevokedModalVisible}
-                                onOk={() => handleRevokeCoin(record.id)}
-                                okText={formatMessage(messages.revokeCoin)}
-                                onCancel={() => setIsRevokedModalVisible(false)}
-                              >
-                                <StyledModalTitle className="mb-4">
-                                  {formatMessage(messages.revokeCoin)}
-                                </StyledModalTitle>
-                                <StyledModalParagraph>{formatMessage(messages.revokeCoinWarning)}</StyledModalParagraph>
-                              </StyledModal>
-                            </Menu>
-                          }
-                          placement="bottomRight"
-                        >
-                          <MoreOutlined className="cursor-coiner" />
-                        </Dropdown>
-                      </div>
-                    ),
-                  },
-                ]}
-                dataSource={coinLogs}
-                rowKey="id"
-                pagination={false}
-              />
-            )}
+                    </div>
+                  ),
+                  ...getColumnSearchProps('nameAndEmail'),
+                },
+                {
+                  title: formatMessage(messages.coinLogTitle),
+                  dataIndex: 'title',
+                  render: (text, record, index) => (
+                    <div>
+                      {text}
+                      {record.note && (
+                        <Popover title={record.note} className="cursor-coiner">
+                          <StyledIcon component={() => <TextIcon />} className="ml-2" />
+                        </Popover>
+                      )}
+                    </div>
+                  ),
+                  ...getColumnSearchProps('title'),
+                },
+                {
+                  title: formatMessage(messages.coinAvailableDate),
+                  key: 'date',
+                  render: (text, record, index) => (
+                    <div>
+                      {record.startedAt
+                        ? moment(record.startedAt).format('YYYY/MM/DD')
+                        : formatMessage(promotionMessages.label.fromNow)}
+                      {` ~ `}
+                      {record.endedAt
+                        ? moment(record.endedAt).format('YYYY/MM/DD')
+                        : formatMessage(promotionMessages.label.unlimited)}
+                    </div>
+                  ),
+                },
+                {
+                  title: formatMessage(messages.coins),
+                  dataIndex: 'amount',
+                  render: (text, record, index) => (
+                    <div className="d-flex justify-content-between">
+                      <StyledLabel variant="coin-log">
+                        {text > 0 && '+'}
+                        {text} {coinUnit}
+                      </StyledLabel>
+                      <Dropdown
+                        trigger={['click']}
+                        overlay={
+                          <Menu onClick={() => setIsRevokedModalVisible(true)}>
+                            <Menu.Item>{formatMessage(messages.revokeCoin)}</Menu.Item>
+                            <StyledModal
+                              visible={isRevokedModalVisible}
+                              onOk={() => handleRevokeCoin(record.id)}
+                              okText={formatMessage(messages.revokeCoin)}
+                              onCancel={() => setIsRevokedModalVisible(false)}
+                            >
+                              <StyledModalTitle className="mb-4">{formatMessage(messages.revokeCoin)}</StyledModalTitle>
+                              <StyledModalParagraph>{formatMessage(messages.revokeCoinWarning)}</StyledModalParagraph>
+                            </StyledModal>
+                          </Menu>
+                        }
+                        placement="bottomRight"
+                      >
+                        <MoreOutlined className="cursor-coiner" />
+                      </Dropdown>
+                    </div>
+                  ),
+                },
+              ]}
+              dataSource={coinLogs}
+              rowKey="id"
+              pagination={false}
+              loading={loadingCoinLogs}
+            />
 
-            {coinLogs.length > 0 && fetchMoreCoinLogs && (
+            {coinLogs.length > 0 && loadMoreCoinLogs && (
               <div className="text-center mt-4">
                 <Button
                   loading={loading}
                   onClick={() => {
                     setLoading(true)
-                    fetchMoreCoinLogs().finally(() => setLoading(false))
+                    loadMoreCoinLogs().finally(() => setLoading(false))
                   }}
                 >
                   {formatMessage(commonMessages.ui.showMore)}
@@ -262,107 +340,103 @@ const CoinHistoryAdminPage: React.FC = () => {
 
         <Tabs.TabPane key="future-log" tab={formatMessage(messages.coinAboutToSend)} className="pt-3">
           <AdminBlock>
-            {loadingCoinFutureLogs ? (
-              <Skeleton active />
-            ) : (
-              <Table<CoinLogProps>
-                columns={[
-                  {
-                    title: formatMessage(messages.createdAt),
-                    dataIndex: 'createdAt',
-                    render: (text, record, index) => <div>{moment(text).format('YYYY/MM/DD')}</div>,
-                  },
-                  {
-                    title: formatMessage(messages.nameAndEmail),
-                    key: 'member',
-                    render: (text, record, index) => (
-                      <div className="d-flex align-items-center">
-                        <AvatarImage size="32px" src={record.member.avatarUrl} className="mr-3 flex-shrink-0" />
-                        <div className="flex-grow-1">
-                          <div>{record.member.name}</div>
-                          <StyledDescription>{record.member.email}</StyledDescription>
-                        </div>
+            <Table<CustomizeColumnProps>
+              columns={[
+                {
+                  title: formatMessage(messages.createdAt),
+                  dataIndex: 'createdAt',
+                  render: (text, record, index) => <div>{moment(text).format('YYYY/MM/DD')}</div>,
+                },
+                {
+                  title: formatMessage(messages.nameAndEmail),
+                  key: 'nameAndEmail',
+                  render: (text, record, index) => (
+                    <div className="d-flex align-items-center">
+                      <AvatarImage size="32px" src={record.member.avatarUrl} className="mr-3 flex-shrink-0" />
+                      <div className="flex-grow-1">
+                        <div>{record.member.name}</div>
+                        <StyledDescription>{record.member.email}</StyledDescription>
                       </div>
-                    ),
-                  },
-                  {
-                    title: formatMessage(messages.coinLogTitle),
-                    dataIndex: 'title',
-                    render: (text, record, index) => (
-                      <div>
-                        {text}
-                        {record.note && (
-                          <Popover title={record.note} className="cursor-coiner">
-                            <StyledIcon component={() => <TextIcon />} className="ml-2" />
-                          </Popover>
-                        )}
-                      </div>
-                    ),
-                  },
-                  {
-                    title: formatMessage(messages.coinAvailableDate),
-                    key: 'date',
-                    render: (text, record, index) => (
-                      <div>
-                        {record.startedAt
-                          ? moment(record.startedAt).format('YYYY/MM/DD')
-                          : formatMessage(promotionMessages.label.fromNow)}
-                        {` ~ `}
-                        {record.endedAt
-                          ? moment(record.endedAt).format('YYYY/MM/DD')
-                          : formatMessage(promotionMessages.label.unlimited)}
-                      </div>
-                    ),
-                  },
-                  {
-                    title: formatMessage(messages.coins),
-                    dataIndex: 'amount',
-                    render: (text, record, index) => (
-                      <div className="d-flex justify-content-between">
-                        <StyledLabel variant="coin-log">
-                          {text > 0 && '+'}
-                          {text} {coinUnit}
-                        </StyledLabel>
-                        <Dropdown
-                          trigger={['click']}
-                          overlay={
-                            <Menu onClick={() => setIsRevokedModalVisible(true)}>
-                              <Menu.Item>{formatMessage(messages.revokeCoin)}</Menu.Item>
-                              <StyledModal
-                                visible={isRevokedModalVisible}
-                                onOk={() => handleRevokeCoin(record.id)}
-                                okText={formatMessage(messages.revokeCoin)}
-                                onCancel={() => setIsRevokedModalVisible(false)}
-                              >
-                                <StyledModalTitle className="mb-4">
-                                  {formatMessage(messages.revokeCoin)}
-                                </StyledModalTitle>
-                                <StyledModalParagraph>{formatMessage(messages.revokeCoinWarning)}</StyledModalParagraph>
-                              </StyledModal>
-                            </Menu>
-                          }
-                          placement="bottomRight"
-                        >
-                          <MoreOutlined className="cursor-coiner" />
-                        </Dropdown>
-                      </div>
-                    ),
-                  },
-                ]}
-                // dataSource={coinLogs.filter(coinLog => coinLog.startedAt && coinLog.startedAt > moment().toDate())}
-                dataSource={coinFutureLogs}
-                rowKey="id"
-                pagination={false}
-              />
-            )}
+                    </div>
+                  ),
+                  ...getColumnSearchProps('nameAndEmail'),
+                },
+                {
+                  title: formatMessage(messages.coinLogTitle),
+                  dataIndex: 'title',
+                  render: (text, record, index) => (
+                    <div>
+                      {text}
+                      {record.note && (
+                        <Popover title={record.note} className="cursor-coiner">
+                          <StyledIcon component={() => <TextIcon />} className="ml-2" />
+                        </Popover>
+                      )}
+                    </div>
+                  ),
+                  ...getColumnSearchProps('title'),
+                },
+                {
+                  title: formatMessage(messages.coinAvailableDate),
+                  key: 'date',
+                  render: (text, record, index) => (
+                    <div>
+                      {record.startedAt
+                        ? moment(record.startedAt).format('YYYY/MM/DD')
+                        : formatMessage(promotionMessages.label.fromNow)}
+                      {` ~ `}
+                      {record.endedAt
+                        ? moment(record.endedAt).format('YYYY/MM/DD')
+                        : formatMessage(promotionMessages.label.unlimited)}
+                    </div>
+                  ),
+                },
+                {
+                  title: formatMessage(messages.coins),
+                  dataIndex: 'amount',
+                  render: (text, record, index) => (
+                    <div className="d-flex justify-content-between">
+                      <StyledLabel variant="coin-log">
+                        {text > 0 && '+'}
+                        {text} {coinUnit}
+                      </StyledLabel>
+                      <Dropdown
+                        trigger={['click']}
+                        overlay={
+                          <Menu onClick={() => setIsRevokedModalVisible(true)}>
+                            <Menu.Item>{formatMessage(messages.revokeCoin)}</Menu.Item>
+                            <StyledModal
+                              visible={isRevokedModalVisible}
+                              onOk={() => handleRevokeCoin(record.id)}
+                              okText={formatMessage(messages.revokeCoin)}
+                              onCancel={() => setIsRevokedModalVisible(false)}
+                            >
+                              <StyledModalTitle className="mb-4">{formatMessage(messages.revokeCoin)}</StyledModalTitle>
+                              <StyledModalParagraph>{formatMessage(messages.revokeCoinWarning)}</StyledModalParagraph>
+                            </StyledModal>
+                          </Menu>
+                        }
+                        placement="bottomRight"
+                      >
+                        <MoreOutlined className="cursor-coiner" />
+                      </Dropdown>
+                    </div>
+                  ),
+                },
+              ]}
+              dataSource={coinFutureLogs}
+              rowKey="id"
+              pagination={false}
+              loading={loadingCoinFutureLogs}
+            />
 
-            {coinFutureLogs.length > 0 && fetchMoreCoinFutureLogs && (
+            {coinFutureLogs.length > 0 && loadMoreCoinFutureLogs && (
               <div className="text-center mt-4">
                 <Button
                   loading={loading}
                   onClick={() => {
                     setLoading(true)
-                    fetchMoreCoinFutureLogs().finally(() => setLoading(false))
+                    loadMoreCoinFutureLogs().finally(() => setLoading(false))
                   }}
                 >
                   {formatMessage(commonMessages.ui.showMore)}
@@ -374,56 +448,61 @@ const CoinHistoryAdminPage: React.FC = () => {
 
         <Tabs.TabPane key="order-log" tab={formatMessage(messages.coinConsumptionHistory)} className="pt-3">
           <AdminBlock>
-            {loadingOrderLogs ? (
-              <Skeleton active />
-            ) : (
-              <Table<OrderLogProps>
-                columns={[
-                  {
-                    title: formatMessage(messages.createdAt),
-                    dataIndex: 'createdAt',
-                    render: (text, record, index) => moment(text).format('YYYY/MM/DD'),
-                  },
-                  {
-                    title: formatMessage(messages.orderLogId),
-                    dataIndex: 'id',
-                    render: (text, record, index) => <div>{record.id}</div>,
-                  },
-                  {
-                    title: formatMessage(messages.nameAndEmail),
-                    key: 'member',
-                    render: (text, record, index) => (
-                      <div className="d-flex align-items-center">
-                        <AvatarImage size="32px" src={record.member.avatarUrl} className="mr-3 flex-shrink-0" />
-                        <div className="flex-grow-1">
-                          <div>{record.member.name}</div>
-                          <StyledDescription>{record.member.email}</StyledDescription>
-                        </div>
+            <Table<CustomizeColumnProps>
+              columns={[
+                {
+                  title: formatMessage(messages.createdAt),
+                  dataIndex: 'createdAt',
+                  render: (text, record, index) => moment(record.createdAt).format('YYYY/MM/DD'),
+                },
+                {
+                  title: formatMessage(messages.orderLogId),
+                  dataIndex: 'orderLogId',
+                  render: (text, record, index) => <div>{record.id}</div>,
+                  ...getColumnSearchProps('orderLogId'),
+                },
+                {
+                  title: formatMessage(messages.nameAndEmail),
+                  key: 'nameAndEmail',
+                  render: (text, record, index) => (
+                    <div className="d-flex align-items-center">
+                      <AvatarImage size="32px" src={record.member.avatarUrl} className="mr-3 flex-shrink-0" />
+                      <div className="flex-grow-1">
+                        <div>{record.member.name}</div>
+                        <StyledDescription>{record.member.email}</StyledDescription>
                       </div>
-                    ),
-                  },
-                  { title: formatMessage(messages.coinLogTitle), dataIndex: 'title' },
-                  {
-                    title: formatMessage(messages.coins),
-                    dataIndex: 'coins',
-                    render: (text, record, index) => (
-                      <StyledLabel variant="order-log">{`- ${record.amount} ${coinUnit}`}</StyledLabel>
-                    ),
-                  },
-                ]}
-                dataSource={orderLogs}
-                rowKey="id"
-                pagination={false}
-              />
-            )}
+                    </div>
+                  ),
+                  ...getColumnSearchProps('nameAndEmail'),
+                },
+                {
+                  title: formatMessage(messages.coinLogTitle),
+                  dataIndex: 'title',
+                  render: (text, record, index) => <div>{text}</div>,
+                  ...getColumnSearchProps('title'),
+                },
 
-            {orderLogs.length > 0 && fetchMoreOrderLogs && (
+                {
+                  title: formatMessage(messages.coins),
+                  dataIndex: 'coins',
+                  render: (text, record, index) => (
+                    <StyledLabel variant="order-log">{`- ${record.amount} ${coinUnit}`}</StyledLabel>
+                  ),
+                },
+              ]}
+              dataSource={orderLogs}
+              rowKey="id"
+              pagination={false}
+              loading={loadingOrderLogs}
+            />
+
+            {orderLogs.length > 0 && loadMoreOrderLogs && (
               <div className="text-center mt-4">
                 <Button
                   loading={loading}
                   onClick={() => {
                     setLoading(true)
-                    fetchMoreOrderLogs().finally(() => setLoading(false))
+                    loadMoreOrderLogs().finally(() => setLoading(false))
                   }}
                 >
                   {formatMessage(commonMessages.ui.showMore)}
@@ -437,32 +516,52 @@ const CoinHistoryAdminPage: React.FC = () => {
   )
 }
 
-const useCoinLogCollection = () => {
+const useCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string }) => {
+  const condition: types.GET_COIN_RELEASE_HISTORYVariables['condition'] = {
+    member: filter?.nameAndEmail
+      ? {
+          _or: [{ name: { _like: `%${filter.nameAndEmail}%` } }, { email: { _like: `%${filter.nameAndEmail}%` } }],
+        }
+      : undefined,
+    title: filter?.title ? { _like: `%${filter.title}%` } : undefined,
+  }
   const { loading, error, data, refetch, fetchMore } = useQuery<
     types.GET_COIN_RELEASE_HISTORY,
     types.GET_COIN_RELEASE_HISTORYVariables
-  >(gql`
-    query GET_COIN_RELEASE_HISTORY($offset: Int) {
-      coin_log(order_by: { created_at: desc }, limit: 10, offset: $offset) {
-        id
-        member {
-          id
-          picture_url
-          name
-          username
-          email
+  >(
+    gql`
+      query GET_COIN_RELEASE_HISTORY($condition: coin_log_bool_exp, $limit: Int!) {
+        coin_log_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
         }
-        title
-        description
-        note
-        created_at
-        started_at
-        ended_at
-        amount
+        coin_log(where: $condition, order_by: { created_at: desc }, limit: $limit) {
+          id
+          member {
+            id
+            picture_url
+            name
+            username
+            email
+          }
+          title
+          description
+          note
+          created_at
+          started_at
+          ended_at
+          amount
+        }
       }
-    }
-  `)
-  const [isNoMore, setIsNoMore] = useState(false)
+    `,
+    {
+      variables: {
+        condition,
+        limit: 10,
+      },
+    },
+  )
 
   const coinLogs: CoinLogProps[] =
     loading || error || !data
@@ -484,61 +583,79 @@ const useCoinLogCollection = () => {
           amount: coinLog.amount,
         }))
 
+  const loadMoreCoinLogs = () =>
+    fetchMore({
+      variables: {
+        condition: { ...condition, created_at: { _lt: data?.coin_log.slice(-1)[0]?.created_at } },
+        limit: 10,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) {
+          return prev
+        }
+        return Object.assign({}, prev, {
+          coin_log: [...prev.coin_log, ...fetchMoreResult.coin_log],
+        })
+      },
+    })
+
   return {
     loadingCoinLogs: loading,
     errorCoinLogs: error,
     coinLogs,
-    refetchCoinLogs: () => {
-      setIsNoMore(false)
-      return refetch()
-    },
-    fetchMoreCoinLogs: isNoMore
-      ? undefined
-      : () =>
-          fetchMore({
-            variables: { offset: data?.coin_log.length || 0 },
-            updateQuery: (prev, { fetchMoreResult }) => {
-              if (!fetchMoreResult) {
-                return prev
-              }
-              if (fetchMoreResult.coin_log.length < 10) {
-                setIsNoMore(true)
-              }
-              return {
-                ...prev,
-                coin_log: [...prev.coin_log, ...fetchMoreResult.coin_log],
-              }
-            },
-          }),
+    refetchCoinLogs: refetch,
+    loadMoreCoinLogs: (data?.coin_log_aggregate.aggregate?.count || 0) > 10 ? loadMoreCoinLogs : undefined,
   }
 }
 
-const useFutureCoinLogCollection = () => {
+const useFutureCoinLogCollection = (filter?: { nameAndEmail?: string; title?: string }) => {
+  const condition: types.GET_COIN_ABOUT_TO_SENDVariables['condition'] = {
+    member: filter?.nameAndEmail
+      ? {
+          name: { _like: `%${filter.nameAndEmail}%` },
+          email: { _like: `%${filter.nameAndEmail}%` },
+        }
+      : undefined,
+    title: filter?.title ? { _like: `%${filter.title}%` } : undefined,
+    started_at: { _gte: 'now()' },
+  }
   const { loading, error, data, refetch, fetchMore } = useQuery<
     types.GET_COIN_ABOUT_TO_SEND,
     types.GET_COIN_ABOUT_TO_SENDVariables
-  >(gql`
-    query GET_COIN_ABOUT_TO_SEND($offset: Int) {
-      coin_log(order_by: { created_at: desc }, limit: 10, offset: $offset, where: { started_at: { _gte: "now()" } }) {
-        id
-        member {
-          id
-          picture_url
-          name
-          username
-          email
+  >(
+    gql`
+      query GET_COIN_ABOUT_TO_SEND($condition: coin_log_bool_exp, $limit: Int!) {
+        coin_log_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
         }
-        title
-        description
-        note
-        created_at
-        started_at
-        ended_at
-        amount
+        coin_log(order_by: { created_at: desc }, limit: $limit, where: $condition) {
+          id
+          member {
+            id
+            picture_url
+            name
+            username
+            email
+          }
+          title
+          description
+          note
+          created_at
+          started_at
+          ended_at
+          amount
+        }
       }
-    }
-  `)
-  const [isNoMore, setIsNoMore] = useState(false)
+    `,
+    {
+      variables: {
+        condition,
+        limit: 10,
+      },
+    },
+  )
 
   const coinFutureLogs: CoinFutureLogProps[] =
     loading || error || !data
@@ -560,71 +677,89 @@ const useFutureCoinLogCollection = () => {
           amount: coinFutureLog.amount,
         }))
 
+  const loadMoreCoinFutureLogs = () =>
+    fetchMore({
+      variables: {
+        condition: { ...condition },
+        limit: 10,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) {
+          return prev
+        }
+        return Object.assign({}, prev, {
+          coin_log: [...prev.coin_log, ...fetchMoreResult.coin_log],
+        })
+      },
+    })
+
   return {
     loadingCoinFutureLogs: loading,
     errorCoinFutureLogs: error,
     coinFutureLogs,
-    refetchCoinFutureLogs: () => {
-      setIsNoMore(false)
-      return refetch()
-    },
-    fetchMoreCoinFutureLogs: isNoMore
-      ? undefined
-      : () =>
-          fetchMore({
-            variables: { offset: data?.coin_log.length || 0 },
-            updateQuery: (prev, { fetchMoreResult }) => {
-              if (!fetchMoreResult) {
-                return prev
-              }
-              if (fetchMoreResult.coin_log.length < 10) {
-                setIsNoMore(true)
-              }
-              return {
-                ...prev,
-                coin_log: [...prev.coin_log, ...fetchMoreResult.coin_log],
-              }
-            },
-          }),
+    refetchCoinFutureLogs: refetch,
+    loadMoreCoinFutureLogs: (data?.coin_log_aggregate.aggregate?.count || 0) > 10 ? loadMoreCoinFutureLogs : undefined,
   }
 }
 
-const useOrderLogWithCoinsCollection = () => {
+const useOrderLogWithCoinsCollection = (filter?: { orderLogId?: string; nameAndEmail?: string; title?: string }) => {
+  const condition: types.GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables['condition'] = {
+    id: filter?.orderLogId ? { _like: `%${filter.orderLogId}%` } : undefined,
+    member: filter?.nameAndEmail
+      ? {
+          name: { _like: `%${filter.nameAndEmail}%` },
+          email: { _like: `%${filter.nameAndEmail}%` },
+        }
+      : undefined,
+    order_discounts: filter?.title
+      ? {
+          name: { _like: `%${filter.title}%` },
+          type: { _eq: 'Coin' },
+        }
+      : { type: { _eq: 'Coin' } },
+  }
   const { loading, error, data, refetch, fetchMore } = useQuery<
     types.GET_ORDER_LOG_WITH_COINS_COLLECTION,
     types.GET_ORDER_LOG_WITH_COINS_COLLECTIONVariables
-  >(gql`
-    query GET_ORDER_LOG_WITH_COINS_COLLECTION($offset: Int) {
-      order_log(
-        where: { order_discounts: { type: { _eq: "Coin" } } }
-        order_by: { created_at: desc }
-        limit: 10
-        offset: $offset
-      ) {
-        id
-        created_at
-        member {
-          id
-          picture_url
-          name
-          username
-          email
-        }
-        order_discounts(where: { type: { _eq: "Coin" } }, limit: 1) {
-          id
-          name
-        }
-        order_discounts_aggregate(where: { type: { _eq: "Coin" } }) {
+  >(
+    gql`
+      query GET_ORDER_LOG_WITH_COINS_COLLECTION($condition: order_log_bool_exp, $limit: Int!) {
+        order_log_aggregate(where: $condition) {
           aggregate {
-            sum {
-              price
+            count
+          }
+        }
+        order_log(where: $condition, limit: $limit, order_by: { created_at: desc }) {
+          id
+          created_at
+          member {
+            id
+            picture_url
+            name
+            username
+            email
+          }
+          order_discounts(where: { type: { _eq: "Coin" } }, limit: 1) {
+            id
+            name
+          }
+          order_discounts_aggregate(where: { type: { _eq: "Coin" } }) {
+            aggregate {
+              sum {
+                price
+              }
             }
           }
         }
       }
-    }
-  `)
-  const [isNoMore, setIsNoMore] = useState(false)
+    `,
+    {
+      variables: {
+        condition,
+        limit: 10,
+      },
+    },
+  )
 
   const orderLogs: OrderLogProps[] =
     loading || error || !data
@@ -641,32 +776,28 @@ const useOrderLogWithCoinsCollection = () => {
           amount: orderLog.order_discounts_aggregate.aggregate?.sum?.price || 0,
         }))
 
+  const loadMoreOrderLogs = () =>
+    fetchMore({
+      variables: {
+        condition: { ...condition },
+        limit: 10,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) {
+          return prev
+        }
+        return Object.assign({}, prev, {
+          coin_log: [...prev.order_log, ...fetchMoreResult.order_log],
+        })
+      },
+    })
+
   return {
     loadingOrderLogs: loading,
     errorOrderLogs: error,
     orderLogs,
-    refetchOrderLogs: () => {
-      setIsNoMore(false)
-      return refetch()
-    },
-    fetchMoreOrderLogs: isNoMore
-      ? undefined
-      : () =>
-          fetchMore({
-            variables: { offset: data?.order_log.length || 0 },
-            updateQuery: (prev, { fetchMoreResult }) => {
-              if (!fetchMoreResult) {
-                return prev
-              }
-              if (fetchMoreResult.order_log.length < 10) {
-                setIsNoMore(true)
-              }
-              return {
-                ...prev,
-                order_log: [...prev.order_log, ...fetchMoreResult.order_log],
-              }
-            },
-          }),
+    refetchOrderLogs: refetch,
+    loadMoreOrderLogs: (data?.order_log_aggregate.aggregate?.count || 0) > 10 ? loadMoreOrderLogs : undefined,
   }
 }
 
