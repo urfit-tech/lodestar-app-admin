@@ -92,7 +92,7 @@ export const useMemberAdmin = (memberId: string) => {
             name
             picture_url
           }
-          member_tags {
+          member_tags(distinct_on: [tag_name]) {
             id
             tag_name
           }
