@@ -227,13 +227,7 @@ const MemberTaskAdminBlock: React.FC<{
               .filter(memberTask => (executorIdSearch ? memberTask.executor?.id === executorIdSearch : true))
               .map(memberTask => {
                 return {
-                  title:
-                    memberTask.title +
-                    (memberTask.title.includes('Demo') ||
-                    memberTask.title.includes('DEMO') ||
-                    memberTask.title.includes('demo')
-                      ? ` ${memberTask.member.name}`
-                      : ''),
+                  title: `${memberTask.title}(${memberTask.member.name})`,
                   start: moment(memberTask.dueAt).format(),
                 }
               })}
