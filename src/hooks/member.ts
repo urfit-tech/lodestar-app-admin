@@ -26,11 +26,11 @@ export const useMember = (memberId: string) => {
           description
           abstract
           title
-          member_specialities {
+          member_specialities(distinct_on: [tag_name]) {
             id
             tag_name
           }
-          member_tags {
+          member_tags(distinct_on: [tag_name]) {
             id
             tag_name
           }
