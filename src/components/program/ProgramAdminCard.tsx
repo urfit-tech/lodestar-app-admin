@@ -49,7 +49,6 @@ const ProgramAdminCard: React.FC<ProgramPreviewProps & CardProps> = ({
   periodAmount,
   periodType,
   enrollment,
-  isDraft,
   isPrivate,
   ...props
 }) => {

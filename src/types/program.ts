@@ -20,9 +20,7 @@ export type ProgramPreviewProps = {
   periodAmount: number | null
   periodType: ProgramPlanPeriodType | null
   enrollment: number
-  isDraft: boolean
   isPrivate: boolean
-  approvalStatus: ProgramApprovalProps['status'] | null
 }
 
 export type ProgramProps = {

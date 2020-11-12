@@ -8250,115 +8250,6 @@ export interface GET_PODCAST_PLAN_ADMIN_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PROGRAM_PREVIEW_COLLECTION
-// ====================================================
-
-export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_roles_member {
-  __typename: "member_public";
-  id: string | null;
-  picture_url: string | null;
-  name: string | null;
-  username: string | null;
-}
-
-export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_roles {
-  __typename: "program_role";
-  id: any;
-  /**
-   * An object relationship
-   */
-  member: GET_PROGRAM_PREVIEW_COLLECTION_program_program_roles_member | null;
-}
-
-export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate_aggregate {
-  __typename: "program_plan_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate {
-  __typename: "program_plan_enrollment_aggregate";
-  aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate_aggregate | null;
-}
-
-export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans {
-  __typename: "program_plan";
-  id: any;
-  list_price: any;
-  sale_price: any | null;
-  sold_at: any | null;
-  period_type: string | null;
-  /**
-   * An aggregated array relationship
-   */
-  program_plan_enrollments_aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate;
-}
-
-export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate_aggregate {
-  __typename: "program_enrollment_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate {
-  __typename: "program_enrollment_aggregate";
-  aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate_aggregate | null;
-}
-
-export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_approvals {
-  __typename: "program_approval";
-  id: any;
-  /**
-   * pending / canceled / rejected / approved
-   */
-  status: string;
-}
-
-export interface GET_PROGRAM_PREVIEW_COLLECTION_program {
-  __typename: "program";
-  id: any;
-  cover_url: string | null;
-  title: string;
-  abstract: string | null;
-  /**
-   * An array relationship
-   */
-  program_roles: GET_PROGRAM_PREVIEW_COLLECTION_program_program_roles[];
-  is_subscription: boolean;
-  list_price: any | null;
-  sale_price: any | null;
-  sold_at: any | null;
-  published_at: any | null;
-  is_private: boolean;
-  /**
-   * An array relationship
-   */
-  program_plans: GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans[];
-  /**
-   * An aggregated array relationship
-   */
-  program_enrollments_aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate;
-  /**
-   * An array relationship
-   */
-  program_approvals: GET_PROGRAM_PREVIEW_COLLECTION_program_program_approvals[];
-}
-
-export interface GET_PROGRAM_PREVIEW_COLLECTION {
-  /**
-   * fetch data from the table: "program"
-   */
-  program: GET_PROGRAM_PREVIEW_COLLECTION_program[];
-}
-
-export interface GET_PROGRAM_PREVIEW_COLLECTIONVariables {
-  memberId?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_PROGRAM
 // ====================================================
 
@@ -9836,6 +9727,232 @@ export interface CREATE_PODCAST_PROGRAMVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAM_PREVIEW_COLLECTION
+// ====================================================
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_aggregate_aggregate {
+  __typename: "program_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_aggregate {
+  __typename: "program_aggregate";
+  aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_roles_member {
+  __typename: "member_public";
+  id: string | null;
+  picture_url: string | null;
+  name: string | null;
+  username: string | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_roles {
+  __typename: "program_role";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_PROGRAM_PREVIEW_COLLECTION_program_program_roles_member | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate_aggregate {
+  __typename: "program_plan_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate {
+  __typename: "program_plan_enrollment_aggregate";
+  aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans {
+  __typename: "program_plan";
+  id: any;
+  list_price: any;
+  sale_price: any | null;
+  sold_at: any | null;
+  period_type: string | null;
+  /**
+   * An aggregated array relationship
+   */
+  program_plan_enrollments_aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans_program_plan_enrollments_aggregate;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate_aggregate {
+  __typename: "program_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate {
+  __typename: "program_enrollment_aggregate";
+  aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_program {
+  __typename: "program";
+  id: any;
+  cover_url: string | null;
+  title: string;
+  abstract: string | null;
+  /**
+   * An array relationship
+   */
+  program_roles: GET_PROGRAM_PREVIEW_COLLECTION_program_program_roles[];
+  list_price: any | null;
+  sale_price: any | null;
+  sold_at: any | null;
+  position: number | null;
+  updated_at: any | null;
+  published_at: any | null;
+  is_private: boolean;
+  is_subscription: boolean;
+  /**
+   * An array relationship
+   */
+  program_plans: GET_PROGRAM_PREVIEW_COLLECTION_program_program_plans[];
+  /**
+   * An aggregated array relationship
+   */
+  program_enrollments_aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_program_enrollments_aggregate;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION {
+  /**
+   * fetch aggregated fields from the table: "program"
+   */
+  program_aggregate: GET_PROGRAM_PREVIEW_COLLECTION_program_aggregate;
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_PROGRAM_PREVIEW_COLLECTION_program[];
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTIONVariables {
+  condition: program_bool_exp;
+  limit: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION
+// ====================================================
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program_aggregate_aggregate {
+  __typename: "program_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program_aggregate {
+  __typename: "program_aggregate";
+  aggregate: GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program_program_roles_member {
+  __typename: "member_public";
+  id: string | null;
+  picture_url: string | null;
+  name: string | null;
+  username: string | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program_program_roles {
+  __typename: "program_role";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program_program_roles_member | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program_program_plans_program_plan_enrollments_aggregate_aggregate {
+  __typename: "program_plan_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program_program_plans_program_plan_enrollments_aggregate {
+  __typename: "program_plan_enrollment_aggregate";
+  aggregate: GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program_program_plans_program_plan_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program_program_plans {
+  __typename: "program_plan";
+  id: any;
+  list_price: any;
+  sale_price: any | null;
+  sold_at: any | null;
+  period_type: string | null;
+  /**
+   * An aggregated array relationship
+   */
+  program_plan_enrollments_aggregate: GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program_program_plans_program_plan_enrollments_aggregate;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program_program_enrollments_aggregate_aggregate {
+  __typename: "program_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program_program_enrollments_aggregate {
+  __typename: "program_enrollment_aggregate";
+  aggregate: GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program_program_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program {
+  __typename: "program";
+  id: any;
+  cover_url: string | null;
+  title: string;
+  abstract: string | null;
+  /**
+   * An array relationship
+   */
+  program_roles: GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program_program_roles[];
+  list_price: any | null;
+  sale_price: any | null;
+  sold_at: any | null;
+  position: number | null;
+  updated_at: any | null;
+  published_at: any | null;
+  is_private: boolean;
+  is_subscription: boolean;
+  /**
+   * An array relationship
+   */
+  program_plans: GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program_program_plans[];
+  /**
+   * An aggregated array relationship
+   */
+  program_enrollments_aggregate: GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program_program_enrollments_aggregate;
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION {
+  /**
+   * fetch aggregated fields from the table: "program"
+   */
+  program_aggregate: GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program_aggregate;
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION_program[];
+}
+
+export interface GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITIONVariables {
+  condition: program_bool_exp;
+  limit: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM
 // ====================================================
 
@@ -11223,6 +11340,24 @@ export enum notification_update_column {
  */
 export enum order_contact_constraint {
   order_contact_pkey = "order_contact_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "order_contact_mark"
+ */
+export enum order_contact_mark_constraint {
+  order_contact_mark_order_contact_id_member_id_key = "order_contact_mark_order_contact_id_member_id_key",
+  order_contact_mark_pkey = "order_contact_mark_pkey",
+}
+
+/**
+ * update columns of table "order_contact_mark"
+ */
+export enum order_contact_mark_update_column {
+  id = "id",
+  member_id = "member_id",
+  order_contact_id = "order_contact_id",
+  read_at = "read_at",
 }
 
 /**
@@ -15893,6 +16028,7 @@ export interface order_contact_bool_exp {
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   message?: String_comparison_exp | null;
+  order_contact_marks?: order_contact_mark_bool_exp | null;
   order_id?: String_comparison_exp | null;
   order_log?: order_log_bool_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -15907,9 +16043,62 @@ export interface order_contact_insert_input {
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   message?: string | null;
+  order_contact_marks?: order_contact_mark_arr_rel_insert_input | null;
   order_id?: string | null;
   order_log?: order_log_obj_rel_insert_input | null;
   updated_at?: any | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "order_contact_mark"
+ */
+export interface order_contact_mark_arr_rel_insert_input {
+  data: order_contact_mark_insert_input[];
+  on_conflict?: order_contact_mark_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "order_contact_mark". All fields are combined with a logical 'AND'.
+ */
+export interface order_contact_mark_bool_exp {
+  _and?: (order_contact_mark_bool_exp | null)[] | null;
+  _not?: order_contact_mark_bool_exp | null;
+  _or?: (order_contact_mark_bool_exp | null)[] | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  order_contact?: order_contact_bool_exp | null;
+  order_contact_id?: uuid_comparison_exp | null;
+  read_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "order_contact_mark"
+ */
+export interface order_contact_mark_insert_input {
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  order_contact?: order_contact_obj_rel_insert_input | null;
+  order_contact_id?: any | null;
+  read_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "order_contact_mark"
+ */
+export interface order_contact_mark_on_conflict {
+  constraint: order_contact_mark_constraint;
+  update_columns: order_contact_mark_update_column[];
+  where?: order_contact_mark_bool_exp | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "order_contact"
+ */
+export interface order_contact_obj_rel_insert_input {
+  data: order_contact_insert_input;
+  on_conflict?: order_contact_on_conflict | null;
 }
 
 /**
@@ -17661,6 +17850,19 @@ export interface program_approval_on_conflict {
 }
 
 /**
+ * Boolean expression to filter rows from the table "program_approval_status". All fields are combined with a logical 'AND'.
+ */
+export interface program_approval_status_bool_exp {
+  _and?: (program_approval_status_bool_exp | null)[] | null;
+  _not?: program_approval_status_bool_exp | null;
+  _or?: (program_approval_status_bool_exp | null)[] | null;
+  program?: program_bool_exp | null;
+  program_id?: uuid_comparison_exp | null;
+  status?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
  * input type for inserting array relation for remote table "program"
  */
 export interface program_arr_rel_insert_input {
@@ -17695,6 +17897,7 @@ export interface program_bool_exp {
   package_items?: package_item_bool_exp | null;
   position?: Int_comparison_exp | null;
   program_announcements?: program_announcement_bool_exp | null;
+  program_approval_status?: program_approval_status_bool_exp | null;
   program_approvals?: program_approval_bool_exp | null;
   program_categories?: program_category_bool_exp | null;
   program_content_enrollments?: program_content_enrollment_bool_exp | null;
