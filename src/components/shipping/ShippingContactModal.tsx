@@ -72,9 +72,9 @@ const ShippingContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useContext(AppContext)
   const { authToken, currentMemberId } = useAuth()
-  const [isVisible, setVisible] = useState(false)
-  const [form] = useForm()
   const { loading, error, orderContacts, refetch, insertOrderContact } = useOrderContact(orderId)
+  const [form] = useForm()
+  const [isVisible, setVisible] = useState(false)
 
   const handleFinish = (values: any) => {
     insertOrderContact({
