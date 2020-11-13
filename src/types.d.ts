@@ -2175,6 +2175,21 @@ export interface UPDATE_MEMBER_PROPERTYVariables {
 // GraphQL query operation: GET_MEMBER_TASK_COLLECTION
 // ====================================================
 
+export interface GET_MEMBER_TASK_COLLECTION_executors_executor {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_TASK_COLLECTION_executors {
+  __typename: "member_task";
+  id: string;
+  /**
+   * An object relationship
+   */
+  executor: GET_MEMBER_TASK_COLLECTION_executors_executor | null;
+}
+
 export interface GET_MEMBER_TASK_COLLECTION_member_task_aggregate_aggregate {
   __typename: "member_task_aggregate_fields";
   count: number | null;
@@ -2237,6 +2252,10 @@ export interface GET_MEMBER_TASK_COLLECTION_member_task {
 
 export interface GET_MEMBER_TASK_COLLECTION {
   /**
+   * fetch data from the table: "member_task"
+   */
+  executors: GET_MEMBER_TASK_COLLECTION_executors[];
+  /**
    * fetch aggregated fields from the table: "member_task"
    */
   member_task_aggregate: GET_MEMBER_TASK_COLLECTION_member_task_aggregate;
@@ -2247,14 +2266,7 @@ export interface GET_MEMBER_TASK_COLLECTION {
 }
 
 export interface GET_MEMBER_TASK_COLLECTIONVariables {
-  memberId?: string | null;
-  titleSearch?: string | null;
-  categorySearch?: string | null;
-  executorSearch?: string | null;
-  dueAtStartSearch?: any | null;
-  dueAtEndSearch?: any | null;
-  statusSearch?: string | null;
-  cursor?: any | null;
+  condition?: member_task_bool_exp | null;
   limit?: number | null;
 }
 
@@ -11369,6 +11381,7 @@ export enum order_contact_update_column {
   member_id = "member_id",
   message = "message",
   order_id = "order_id",
+  read_at = "read_at",
   updated_at = "updated_at",
 }
 
@@ -15461,6 +15474,29 @@ export interface member_tag_on_conflict {
 }
 
 /**
+ * Boolean expression to filter rows from the table "member_task". All fields are combined with a logical 'AND'.
+ */
+export interface member_task_bool_exp {
+  _and?: (member_task_bool_exp | null)[] | null;
+  _not?: member_task_bool_exp | null;
+  _or?: (member_task_bool_exp | null)[] | null;
+  category?: category_bool_exp | null;
+  category_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  due_at?: timestamptz_comparison_exp | null;
+  executor?: member_bool_exp | null;
+  executor_id?: String_comparison_exp | null;
+  id?: String_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  priority?: String_comparison_exp | null;
+  status?: String_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
  * input type for inserting data into table "member_task"
  */
 export interface member_task_insert_input {
@@ -16031,6 +16067,7 @@ export interface order_contact_bool_exp {
   order_contact_marks?: order_contact_mark_bool_exp | null;
   order_id?: String_comparison_exp | null;
   order_log?: order_log_bool_exp | null;
+  read_at?: timestamptz_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
 
@@ -16046,6 +16083,7 @@ export interface order_contact_insert_input {
   order_contact_marks?: order_contact_mark_arr_rel_insert_input | null;
   order_id?: string | null;
   order_log?: order_log_obj_rel_insert_input | null;
+  read_at?: any | null;
   updated_at?: any | null;
 }
 

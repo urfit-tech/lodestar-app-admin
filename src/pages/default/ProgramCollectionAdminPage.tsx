@@ -2,7 +2,7 @@ import Icon, { EditOutlined, FileTextFilled } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Popover, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
-import { clone, sum } from 'ramda'
+import { sum } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useHistory } from 'react-router-dom'
@@ -344,33 +344,36 @@ const useProgramPreviewCollection = (
           }
         })
 
-  const loadMorePrograms = () =>
-    fetchMore({
-      variables: {
-        condition: {
-          ...condition,
-          updated_at: options?.withPositionControl ? undefined : { _lt: data?.program.slice(-1)[0]?.updated_at },
-          position: options?.withPositionControl ? { _gt: data?.program.slice(-1)[0]?.position } : undefined,
-        },
-        limit: 10,
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) {
-          return prev
-        }
-        return {
-          program_aggregate: clone(fetchMoreResult.program_aggregate),
-          program: [...clone(prev.program), ...clone(fetchMoreResult.program)],
-        }
-      },
-    })
+  const loadMorePrograms =
+    (data?.program_aggregate.aggregate?.count || 0) > 10
+      ? () =>
+          fetchMore({
+            variables: {
+              condition: {
+                ...condition,
+                updated_at: options?.withPositionControl ? undefined : { _lt: data?.program.slice(-1)[0]?.updated_at },
+                position: options?.withPositionControl ? { _gt: data?.program.slice(-1)[0]?.position } : undefined,
+              },
+              limit: 10,
+            },
+            updateQuery: (prev, { fetchMoreResult }) => {
+              if (!fetchMoreResult) {
+                return prev
+              }
+              return {
+                program_aggregate: fetchMoreResult.program_aggregate,
+                program: [...prev.program, ...fetchMoreResult.program],
+              }
+            },
+          })
+      : undefined
 
   return {
     loadingProgramPreviews: loading,
     errorProgramPreviews: error,
     programPreviews,
     refetchProgramPreviews: refetch,
-    loadMorePrograms: (data?.program_aggregate.aggregate?.count || 0) > 10 ? loadMorePrograms : undefined,
+    loadMorePrograms,
   }
 }
 
