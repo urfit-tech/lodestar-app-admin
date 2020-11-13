@@ -345,6 +345,8 @@ export const useMerchandiseSpecCollection = (options?: {
           }
         ) {
           id
+          title
+
           merchandise {
             title
             published_at
@@ -356,7 +358,7 @@ export const useMerchandiseSpecCollection = (options?: {
               title
             }
           }
-          title
+
           merchandise_spec_inventory_status {
             buyable_quantity
             delivered_quantity
@@ -375,6 +377,7 @@ export const useMerchandiseSpecCollection = (options?: {
       fetchPolicy: 'no-cache',
     },
   )
+  
   const merchandiseSpecs: {
     merchandiseSpecId: string
     merchandiseTitle: string

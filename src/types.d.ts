@@ -5000,47 +5000,6 @@ export interface UPDATE_SUBSCRIPTION_CANCELEDVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_ORDER_PRODUCT_FILES
-// ====================================================
-
-export interface UPDATE_ORDER_PRODUCT_FILES_delete_order_product_file {
-  __typename: "order_product_file_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_ORDER_PRODUCT_FILES_insert_order_product_file {
-  __typename: "order_product_file_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_ORDER_PRODUCT_FILES {
-  /**
-   * delete data from the table: "order_product_file"
-   */
-  delete_order_product_file: UPDATE_ORDER_PRODUCT_FILES_delete_order_product_file | null;
-  /**
-   * insert data into the table: "order_product_file"
-   */
-  insert_order_product_file: UPDATE_ORDER_PRODUCT_FILES_insert_order_product_file | null;
-}
-
-export interface UPDATE_ORDER_PRODUCT_FILESVariables {
-  orderProductId: any;
-  orderProductFiles: order_product_file_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_ORDER_CONTACT
 // ====================================================
 
@@ -5102,6 +5061,77 @@ export interface INSERT_ORDER_CONTACTVariables {
   orderId: string;
   memberId: string;
   message: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_ORDER_CONTACT_READ_AT
+// ====================================================
+
+export interface UPDATE_ORDER_CONTACT_READ_AT_update_order_contact {
+  __typename: "order_contact_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ORDER_CONTACT_READ_AT {
+  /**
+   * update data of the table: "order_contact"
+   */
+  update_order_contact: UPDATE_ORDER_CONTACT_READ_AT_update_order_contact | null;
+}
+
+export interface UPDATE_ORDER_CONTACT_READ_ATVariables {
+  orderId: any;
+  memberId: string;
+  readAt: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_ORDER_PRODUCT_FILES
+// ====================================================
+
+export interface UPDATE_ORDER_PRODUCT_FILES_delete_order_product_file {
+  __typename: "order_product_file_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ORDER_PRODUCT_FILES_insert_order_product_file {
+  __typename: "order_product_file_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ORDER_PRODUCT_FILES {
+  /**
+   * delete data from the table: "order_product_file"
+   */
+  delete_order_product_file: UPDATE_ORDER_PRODUCT_FILES_delete_order_product_file | null;
+  /**
+   * insert data into the table: "order_product_file"
+   */
+  insert_order_product_file: UPDATE_ORDER_PRODUCT_FILES_insert_order_product_file | null;
+}
+
+export interface UPDATE_ORDER_PRODUCT_FILESVariables {
+  orderProductId: any;
+  orderProductFiles: order_product_file_insert_input[];
 }
 
 /* tslint:disable */
@@ -7722,11 +7752,11 @@ export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise_sp
 export interface GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec {
   __typename: "merchandise_spec";
   id: any;
+  title: string;
   /**
    * An object relationship
    */
   merchandise: GET_MERCHANDISE_SPEC_COLLECTION_merchandise_spec_merchandise;
-  title: string;
   /**
    * An object relationship
    */
@@ -11422,6 +11452,24 @@ export enum notification_update_column {
  */
 export enum order_contact_constraint {
   order_contact_pkey = "order_contact_pkey",
+}
+
+/**
+ * unique or primary key constraints on table "order_contact_mark"
+ */
+export enum order_contact_mark_constraint {
+  order_contact_mark_order_contact_id_member_id_key = "order_contact_mark_order_contact_id_member_id_key",
+  order_contact_mark_pkey = "order_contact_mark_pkey",
+}
+
+/**
+ * update columns of table "order_contact_mark"
+ */
+export enum order_contact_mark_update_column {
+  id = "id",
+  member_id = "member_id",
+  order_contact_id = "order_contact_id",
+  read_at = "read_at",
 }
 
 /**
@@ -16117,6 +16165,7 @@ export interface order_contact_bool_exp {
   member?: member_public_bool_exp | null;
   member_id?: String_comparison_exp | null;
   message?: String_comparison_exp | null;
+  order_contact_marks?: order_contact_mark_bool_exp | null;
   order_id?: String_comparison_exp | null;
   order_log?: order_log_bool_exp | null;
   read_at?: timestamptz_comparison_exp | null;
@@ -16131,10 +16180,63 @@ export interface order_contact_insert_input {
   id?: any | null;
   member_id?: string | null;
   message?: string | null;
+  order_contact_marks?: order_contact_mark_arr_rel_insert_input | null;
   order_id?: string | null;
   order_log?: order_log_obj_rel_insert_input | null;
   read_at?: any | null;
   updated_at?: any | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "order_contact_mark"
+ */
+export interface order_contact_mark_arr_rel_insert_input {
+  data: order_contact_mark_insert_input[];
+  on_conflict?: order_contact_mark_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "order_contact_mark". All fields are combined with a logical 'AND'.
+ */
+export interface order_contact_mark_bool_exp {
+  _and?: (order_contact_mark_bool_exp | null)[] | null;
+  _not?: order_contact_mark_bool_exp | null;
+  _or?: (order_contact_mark_bool_exp | null)[] | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  order_contact?: order_contact_bool_exp | null;
+  order_contact_id?: uuid_comparison_exp | null;
+  read_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "order_contact_mark"
+ */
+export interface order_contact_mark_insert_input {
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  order_contact?: order_contact_obj_rel_insert_input | null;
+  order_contact_id?: any | null;
+  read_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "order_contact_mark"
+ */
+export interface order_contact_mark_on_conflict {
+  constraint: order_contact_mark_constraint;
+  update_columns: order_contact_mark_update_column[];
+  where?: order_contact_mark_bool_exp | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "order_contact"
+ */
+export interface order_contact_obj_rel_insert_input {
+  data: order_contact_insert_input;
+  on_conflict?: order_contact_on_conflict | null;
 }
 
 /**

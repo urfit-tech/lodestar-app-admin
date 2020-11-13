@@ -17,7 +17,7 @@ import types from '../../types'
 import { InvoiceProps, ShippingProps } from '../../types/merchandise'
 import AdminCard from '../admin/AdminCard'
 import { CustomRatioImage } from '../common/Image'
-import ShippingContactModal from './ShippingContactModal'
+import OrderContactModal from './OrderContactModal'
 import ShippingInfoModal from './ShippingInfoModal'
 import ShippingNoticeModal from './ShippingNoticeModal'
 
@@ -92,7 +92,7 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
 
               <div>
                 <span className="mr-2">
-                  <ShippingContactModal orderId={orderLog.id} />
+                  <OrderContactModal orderId={orderLog.id} />
                 </span>
                 <span className="mr-2">
                   <ShippingInfoModal shipping={orderLog.shipping} invoice={orderLog.invoice} />

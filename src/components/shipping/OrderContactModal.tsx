@@ -48,7 +48,7 @@ const StyledMemberInfo = styled.div`
   color: var(--gray-dark);
 `
 
-const MerchandiseContactBlock: React.FC<{
+const OrderContactBlock: React.FC<{
   avatarUrl: string | null
   name: string
   createdAt: Date
@@ -68,24 +68,19 @@ const MerchandiseContactBlock: React.FC<{
   )
 }
 
-const ShippingContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
+const OrderContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useContext(AppContext)
   const { authToken, currentMemberId } = useAuth()
-  const { loading, error, orderContacts, refetch, insertOrderContact } = useOrderContact(orderId)
+  const { loading, error, orderContacts, refetch } = useOrderContact(orderId)
+  const { insertOrderContact, updateOrderContactReadAt } = useMutateOrderContact(orderId, currentMemberId || '')
   const [form] = useForm()
   const [isVisible, setVisible] = useState(false)
 
   const handleFinish = (values: any) => {
-    insertOrderContact({
-      variables: {
-        orderId,
-        memberId: currentMemberId || '',
-        message: values.message.toRAW(),
-      },
-    }).then(() => {
-      form.resetFields()
+    insertOrderContact(values.message.toRAW()).then(() => {
       message.success(formatMessage(commonMessages.event.successfullySaved))
+      form.resetFields()
       refetch()
     })
   }
@@ -96,7 +91,15 @@ const ShippingContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
 
   return (
     <>
-      <Button icon={<Icon component={() => <IconMail />} />} type="text" onClick={() => setVisible(true)}>
+      <Button
+        icon={<Icon component={() => <IconMail />} />}
+        type="text"
+        onClick={() =>
+          updateOrderContactReadAt(new Date())
+            .catch(err => console.error(err))
+            .finally(() => setVisible(true))
+        }
+      >
         {formatMessage(messages.contactMessage)}
       </Button>
       <Modal
@@ -126,17 +129,15 @@ const ShippingContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
             </ButtonGroup>
           </Form.Item>
         </Form>
-        <div>
-          {orderContacts.map(v => (
-            <MerchandiseContactBlock
-              key={v.id}
-              avatarUrl={v.member.pictureUrl}
-              name={v.member.name}
-              createdAt={v.createdAt}
-              message={v.message}
-            />
-          ))}
-        </div>
+        {orderContacts.map(v => (
+          <OrderContactBlock
+            key={v.id}
+            avatarUrl={v.member.pictureUrl}
+            name={v.member.name}
+            createdAt={v.createdAt}
+            message={v.message}
+          />
+        ))}
       </Modal>
     </>
   )
@@ -150,9 +151,6 @@ const useOrderContact = (orderId: string) => {
         orderId,
       },
     },
-  )
-  const [insertOrderContact] = useMutation<types.INSERT_ORDER_CONTACT, types.INSERT_ORDER_CONTACTVariables>(
-    INSERT_ORDER_CONTACT,
   )
 
   const orderContacts: {
@@ -185,7 +183,40 @@ const useOrderContact = (orderId: string) => {
     error,
     orderContacts,
     refetch,
+  }
+}
+
+const useMutateOrderContact = (orderId: string, memberId: string) => {
+  const [insertOrderContactHandler] = useMutation<types.INSERT_ORDER_CONTACT, types.INSERT_ORDER_CONTACTVariables>(
+    INSERT_ORDER_CONTACT,
+  )
+  const insertOrderContact = (message: string) =>
+    insertOrderContactHandler({
+      variables: {
+        orderId,
+        memberId,
+        message,
+      },
+    })
+
+  const [updateOrderContactHandler] = useMutation<
+    types.UPDATE_ORDER_CONTACT_READ_AT,
+    types.UPDATE_ORDER_CONTACT_READ_ATVariables
+  >(UPDATE_ORDER_CONTACT_READ_AT)
+
+  const updateOrderContactReadAt = (readAt: Date) => {
+    return updateOrderContactHandler({
+      variables: {
+        orderId,
+        memberId,
+        readAt,
+      },
+    })
+  }
+
+  return {
     insertOrderContact,
+    updateOrderContactReadAt,
   }
 }
 
@@ -213,4 +244,15 @@ const INSERT_ORDER_CONTACT = gql`
   }
 `
 
-export default ShippingContactModal
+const UPDATE_ORDER_CONTACT_READ_AT = gql`
+  mutation UPDATE_ORDER_CONTACT_READ_AT($orderId: String!, $memberId: String!, $readAt: timestamptz!) {
+    update_order_contact(
+      _set: { read_at: $readAt }
+      where: { order_id: { _eq: $orderId }, member_id: { _neq: $memberId }, read_at: { _is_null: true } }
+    ) {
+      affected_rows
+    }
+  }
+`
+
+export default OrderContactModal
