@@ -5015,11 +5015,27 @@ export interface GET_ORDER_CONTACT_order_contact {
   id: any;
   message: string;
   created_at: any;
-  updated_at: any;
+  read_at: any | null;
   /**
    * An object relationship
    */
   member: GET_ORDER_CONTACT_order_contact_member | null;
+}
+
+export interface GET_ORDER_CONTACT_order_contact_aggregate_aggregate_max {
+  __typename: "order_contact_max_fields";
+  read_at: any | null;
+  created_at: any | null;
+}
+
+export interface GET_ORDER_CONTACT_order_contact_aggregate_aggregate {
+  __typename: "order_contact_aggregate_fields";
+  max: GET_ORDER_CONTACT_order_contact_aggregate_aggregate_max | null;
+}
+
+export interface GET_ORDER_CONTACT_order_contact_aggregate {
+  __typename: "order_contact_aggregate";
+  aggregate: GET_ORDER_CONTACT_order_contact_aggregate_aggregate | null;
 }
 
 export interface GET_ORDER_CONTACT {
@@ -5027,6 +5043,10 @@ export interface GET_ORDER_CONTACT {
    * fetch data from the table: "order_contact"
    */
   order_contact: GET_ORDER_CONTACT_order_contact[];
+  /**
+   * fetch aggregated fields from the table: "order_contact"
+   */
+  order_contact_aggregate: GET_ORDER_CONTACT_order_contact_aggregate;
 }
 
 export interface GET_ORDER_CONTACTVariables {
@@ -5088,7 +5108,7 @@ export interface UPDATE_ORDER_CONTACT_READ_AT {
 }
 
 export interface UPDATE_ORDER_CONTACT_READ_ATVariables {
-  orderId: any;
+  orderId: string;
   memberId: string;
   readAt: any;
 }

@@ -8,7 +8,7 @@ import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useContext, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import AppContext from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
@@ -22,6 +22,25 @@ const messages = defineMessages({
   contactMessage: { id: 'merchandise.ui.contactMessage', defaultMessage: '聯絡訊息' },
   messageContent: { id: 'merchandise.label.messageContent', defaultMessage: '請填寫訊息內容' },
 })
+
+const StyledButton = styled(Button)<{ variant?: 'mark' }>`
+  position: relative;
+
+  ${props =>
+    props.variant === 'mark' &&
+    css`
+      &::after {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        border-radius: 50%;
+        width: 6px;
+        height: 6px;
+        background-color: var(--error);
+        content: '';
+      }
+    `}
+`
 
 const StyledEditor = styled(BraftEditor)`
   .bf-controlbar {
@@ -72,7 +91,7 @@ const OrderContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useContext(AppContext)
   const { authToken, currentMemberId } = useAuth()
-  const { loading, error, orderContacts, refetch } = useOrderContact(orderId)
+  const { loading, error, orderContacts, hasUnread, refetch } = useOrderContact(orderId)
   const { insertOrderContact, updateOrderContactReadAt } = useMutateOrderContact(orderId, currentMemberId || '')
   const [form] = useForm()
   const [isVisible, setVisible] = useState(false)
@@ -91,17 +110,19 @@ const OrderContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
 
   return (
     <>
-      <Button
+      <StyledButton
+        variant={hasUnread ? 'mark' : undefined}
         icon={<Icon component={() => <IconMail />} />}
         type="text"
         onClick={() =>
           updateOrderContactReadAt(new Date())
+            .then(() => refetch())
             .catch(err => console.error(err))
             .finally(() => setVisible(true))
         }
       >
         {formatMessage(messages.contactMessage)}
-      </Button>
+      </StyledButton>
       <Modal
         visible={isVisible}
         title={formatMessage(messages.contactMessage)}
@@ -157,7 +178,6 @@ const useOrderContact = (orderId: string) => {
     id: string
     message: string
     createdAt: Date
-    updatedAt: Date
     member: {
       id: string
       name: string
@@ -170,7 +190,6 @@ const useOrderContact = (orderId: string) => {
           id: v.id,
           message: v.message,
           createdAt: v.created_at,
-          updatedAt: v.updated_at,
           member: {
             id: v.member.id,
             name: v.member.name,
@@ -178,10 +197,17 @@ const useOrderContact = (orderId: string) => {
           },
         }))
 
+  const hasUnread =
+    loading || error || !data
+      ? false
+      : data?.order_contact_aggregate?.aggregate?.max?.created_at >
+        data?.order_contact_aggregate?.aggregate?.max?.read_at
+
   return {
     loading,
     error,
     orderContacts,
+    hasUnread,
     refetch,
   }
 }
@@ -226,11 +252,19 @@ const GET_ORDER_CONTACT = gql`
       id
       message
       created_at
-      updated_at
+      read_at
       member {
         id
         name
         picture_url
+      }
+    }
+    order_contact_aggregate(where: { order_log: { id: { _eq: $orderId } } }) {
+      aggregate {
+        max {
+          read_at
+          created_at
+        }
       }
     }
   }
