@@ -13,7 +13,7 @@ import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { handleError } from '../../helpers'
+import { handleError, isiPhoneChrome, isWebview } from '../../helpers'
 import { getAudioDuration } from '../../helpers/audio'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
@@ -123,9 +123,8 @@ const PodcastProgramContentForm: React.FC<{
   }
 
   const handleRecording = () => {
-    const userAgent = window.navigator.userAgent
-    if (userAgent.match(/iPhone/i) && userAgent.match(/CriOS/i)) {
-      alert(formatMessage(podcastMessages.text.chromeNotSupported))
+    if (isiPhoneChrome() || isWebview()) {
+      message.error(formatMessage(podcastMessages.text.browserNotSupported))
     } else {
       history.push(`/podcast-programs/${podcastProgramAdmin.id}/recording`)
     }
@@ -175,6 +174,12 @@ const PodcastProgramContentForm: React.FC<{
                 : formatMessage(podcastMessages.ui.recordAudio)}
             </span>
           </Button>
+        )}
+        {(isiPhoneChrome() || isWebview()) && (
+          <div>
+            <StyledIcon className="ml-2 mr-1" />
+            <span>{formatMessage(podcastMessages.text.browserNotSupported)}</span>
+          </div>
         )}
         {podcastProgramAdmin.audios.length > 1 && (
           <>

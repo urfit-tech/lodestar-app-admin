@@ -407,6 +407,17 @@ const RecordingPage: React.FC = () => {
     })
   }, [formatMessage, onUploadAudio])
 
+  const showDeleteConfirmationModal = useCallback(() => {
+    return Modal.confirm({
+      icon: null,
+      title: formatMessage(podcastMessages.ui.deleteAudio),
+      content: formatMessage(podcastMessages.text.deleteMessage),
+      okText: formatMessage(podcastMessages.ui.deleteAudio),
+      centered: true,
+      onOk: () => onDeleteAudioTrack(),
+    })
+  }, [formatMessage, onDeleteAudioTrack])
+
   const onMoveUp = useCallback(
     audioId => {
       const oldIndex = signedPodCastProgramAudios.findIndex(audio => audio.id === audioId)
@@ -480,7 +491,7 @@ const RecordingPage: React.FC = () => {
           break
         // D key for delete
         case 'KeyD':
-          onDeleteAudioTrack()
+          showDeleteConfirmationModal()
           break
         // C key for cut
         case 'KeyC':
@@ -501,7 +512,7 @@ const RecordingPage: React.FC = () => {
   }, [
     onBackward,
     onForward,
-    onDeleteAudioTrack,
+    showDeleteConfirmationModal,
     onTrimAudio,
     onPlayRateChange,
     showUploadConfirmationModal,
@@ -602,7 +613,7 @@ const RecordingPage: React.FC = () => {
         }}
         onTrim={onTrimAudio}
         onDelete={() => {
-          onDeleteAudioTrack()
+          showDeleteConfirmationModal()
           setIsEditing(false)
         }}
         onUpload={() => {

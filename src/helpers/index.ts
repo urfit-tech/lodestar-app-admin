@@ -176,3 +176,15 @@ export const desktopViewMixin = (children: FlattenSimpleInterpolation) => css`
     ${children}
   }
 `
+
+export const isiPhoneChrome = () => {
+  const userAgent = window.navigator.userAgent
+  return userAgent.match(/iPhone/i) && userAgent.match(/CriOS/i)
+}
+
+export const isWebview = () => {
+  var useragent = navigator.userAgent
+  var rules = ['WebView', '(iPhone|iPod|iPad)(?!.*Safari/)', 'Android.*(wv|.0.0.0)']
+  var regex = new RegExp(`(${rules.join('|')})`, 'ig')
+  return Boolean(useragent.match(regex))
+}
