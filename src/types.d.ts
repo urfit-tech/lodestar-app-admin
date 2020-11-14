@@ -3257,6 +3257,7 @@ export interface UPDATE_PODCAST_PROGRAM_DURATION {
 export interface UPDATE_PODCAST_PROGRAM_DURATIONVariables {
   podcastProgramId: any;
   duration?: any | null;
+  durationSecond?: any | null;
   updatedAt: any;
 }
 
@@ -11796,6 +11797,7 @@ export enum podcast_program_update_column {
   cover_url = "cover_url",
   creator_id = "creator_id",
   duration = "duration",
+  duration_second = "duration_second",
   filename = "filename",
   id = "id",
   list_price = "list_price",
@@ -17121,6 +17123,7 @@ export interface podcast_program_bool_exp {
   creator?: member_public_bool_exp | null;
   creator_id?: String_comparison_exp | null;
   duration?: numeric_comparison_exp | null;
+  duration_second?: numeric_comparison_exp | null;
   filename?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
@@ -17207,6 +17210,7 @@ export interface podcast_program_insert_input {
   cover_url?: string | null;
   creator_id?: string | null;
   duration?: any | null;
+  duration_second?: any | null;
   filename?: string | null;
   id?: any | null;
   list_price?: any | null;

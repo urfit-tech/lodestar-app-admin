@@ -135,6 +135,7 @@ const RecordingPage: React.FC = () => {
               updatedAt: new Date(),
               podcastProgramId,
               duration: totalDuration,
+              durationSecond: totalDurationSecond,
             },
           })
         })
@@ -291,6 +292,7 @@ const RecordingPage: React.FC = () => {
             updatedAt: new Date(),
             podcastProgramId,
             duration: totalDuration,
+            durationSecond: totalDurationSecond,
           },
         })
       })

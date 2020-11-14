@@ -689,7 +689,7 @@ export const podcastMessages = {
     podcastProgramTitle: { id: 'podcast.label.podcastProgramTitle', defaultMessage: '廣播名稱' },
     status: { id: 'podcast.label.status', defaultMessage: '狀態' },
     salesCount: { id: 'podcast.label.salesCount', defaultMessage: '購買' },
-    duration: { id: 'podcast.label.duration', defaultMessage: '內容時長（分鐘）' },
+    duration: { id: 'podcast.label.duration', defaultMessage: '內容時長' },
     description: { id: 'podcast.label.description', defaultMessage: '內容描述' },
     podcastContent: { id: 'podcast.label.podcastContent', defaultMessage: '廣播內容' },
     podcastSettings: { id: 'podcast.label.podcastSettings', defaultMessage: '廣播設定' },
