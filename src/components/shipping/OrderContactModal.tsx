@@ -6,10 +6,10 @@ import { useForm } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
-import AppContext from '../../contexts/AppContext'
+import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as IconMail } from '../../images/icon/email-o.svg'
@@ -23,11 +23,11 @@ const messages = defineMessages({
   messageContent: { id: 'merchandise.label.messageContent', defaultMessage: '請填寫訊息內容' },
 })
 
-const StyledButton = styled(Button)<{ variant?: 'mark' }>`
+const StyledButton = styled(Button)<{ isMark?: boolean }>`
   position: relative;
 
   ${props =>
-    props.variant === 'mark' &&
+    props.isMark &&
     css`
       &::after {
         position: absolute;
@@ -89,10 +89,17 @@ const OrderContactBlock: React.FC<{
 
 const OrderContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
   const { formatMessage } = useIntl()
-  const { id: appId } = useContext(AppContext)
+  const { id: appId } = useApp()
   const { authToken, currentMemberId } = useAuth()
-  const { loading, error, orderContacts, hasUnread, refetch } = useOrderContact(orderId)
-  const { insertOrderContact, updateOrderContactReadAt } = useMutateOrderContact(orderId, currentMemberId || '')
+  const {
+    loading,
+    error,
+    orderContacts,
+    withUnread,
+    refetch,
+    insertOrderContact,
+    updateOrderContactReadAt,
+  } = useOrderContact(orderId, currentMemberId || '')
   const [form] = useForm()
   const [isVisible, setVisible] = useState(false)
 
@@ -111,7 +118,7 @@ const OrderContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
   return (
     <>
       <StyledButton
-        variant={hasUnread ? 'mark' : undefined}
+        isMark={withUnread}
         icon={<Icon component={() => <IconMail />} />}
         type="text"
         onClick={() =>
@@ -164,12 +171,13 @@ const OrderContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
   )
 }
 
-const useOrderContact = (orderId: string) => {
+const useOrderContact = (orderId: string, memberId: string) => {
   const { loading, error, data, refetch } = useQuery<types.GET_ORDER_CONTACT, types.GET_ORDER_CONTACTVariables>(
     GET_ORDER_CONTACT,
     {
       variables: {
         orderId,
+        memberId,
       },
     },
   )
@@ -191,28 +199,18 @@ const useOrderContact = (orderId: string) => {
           message: v.message,
           createdAt: v.created_at,
           member: {
-            id: v.member.id,
-            name: v.member.name,
-            pictureUrl: v.member.picture_url,
+            id: v.member?.id || '',
+            name: v.member?.name || '',
+            pictureUrl: v.member?.picture_url || '',
           },
         }))
 
-  const hasUnread =
-    loading || error || !data
-      ? false
-      : data?.order_contact_aggregate?.aggregate?.max?.created_at >
-        data?.order_contact_aggregate?.aggregate?.max?.read_at
+  const latestCreatedAt: Date | null = data?.order_contact_aggregate.aggregate?.max?.created_at
+  const latestReadAt: Date | null = data?.order_contact_aggregate.aggregate?.max?.read_at
 
-  return {
-    loading,
-    error,
-    orderContacts,
-    hasUnread,
-    refetch,
-  }
-}
+  const withUnread =
+    loading || error || !data ? false : !!latestCreatedAt && (latestReadAt ? latestCreatedAt > latestReadAt : true)
 
-const useMutateOrderContact = (orderId: string, memberId: string) => {
   const [insertOrderContactHandler] = useMutation<types.INSERT_ORDER_CONTACT, types.INSERT_ORDER_CONTACTVariables>(
     INSERT_ORDER_CONTACT,
   )
@@ -241,14 +239,19 @@ const useMutateOrderContact = (orderId: string, memberId: string) => {
   }
 
   return {
+    loading,
+    error,
+    orderContacts,
+    withUnread,
+    refetch,
     insertOrderContact,
     updateOrderContactReadAt,
   }
 }
 
 const GET_ORDER_CONTACT = gql`
-  query GET_ORDER_CONTACT($orderId: String!) {
-    order_contact(where: { order_log: { id: { _eq: $orderId } } }) {
+  query GET_ORDER_CONTACT($orderId: String!, $memberId: String!) {
+    order_contact(where: { order_id: { _eq: $orderId } }, order_by: { created_at: asc }) {
       id
       message
       created_at
@@ -259,11 +262,11 @@ const GET_ORDER_CONTACT = gql`
         picture_url
       }
     }
-    order_contact_aggregate(where: { order_log: { id: { _eq: $orderId } } }) {
+    order_contact_aggregate(where: { order_id: { _eq: $orderId }, member_id: { _neq: $memberId } }) {
       aggregate {
         max {
-          read_at
           created_at
+          read_at
         }
       }
     }
