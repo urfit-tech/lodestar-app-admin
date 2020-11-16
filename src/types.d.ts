@@ -7521,13 +7521,6 @@ export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_imgs {
   url: string;
 }
 
-export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_inventory_status {
-  __typename: "merchandise_inventory_status";
-  buyable_quantity: any | null;
-  undelivered_quantity: any | null;
-  delivered_quantity: any | null;
-}
-
 export interface GET_MERCHANDISE_merchandise_by_pk_merchandise_specs_merchandise_spec_files {
   __typename: "merchandise_spec_file";
   id: any;
@@ -7575,10 +7568,6 @@ export interface GET_MERCHANDISE_merchandise_by_pk {
    * An array relationship
    */
   merchandise_imgs: GET_MERCHANDISE_merchandise_by_pk_merchandise_imgs[];
-  /**
-   * An object relationship
-   */
-  merchandise_inventory_status: GET_MERCHANDISE_merchandise_by_pk_merchandise_inventory_status | null;
   /**
    * An array relationship
    */
@@ -7643,6 +7632,10 @@ export interface GET_MEMBER_SHOP_COLLECTION {
    * fetch data from the table: "member_shop"
    */
   member_shop: GET_MEMBER_SHOP_COLLECTION_member_shop[];
+}
+
+export interface GET_MEMBER_SHOP_COLLECTIONVariables {
+  memberId?: string | null;
 }
 
 /* tslint:disable */

@@ -188,7 +188,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         </Menu.SubMenu>
       )}
 
-      {enabledModules.merchandise && currentUserRole === 'app-owner' && (
+      {enabledModules.merchandise && (currentUserRole === 'app-owner' || currentUserRole === 'content-creator') && (
         <Menu.SubMenu
           key="owner_merchandise_admin"
           title={

@@ -1,6 +1,6 @@
 import Icon from '@ant-design/icons'
-import { Tabs } from 'antd'
-import React, { useEffect } from 'react'
+import { Skeleton, Tabs } from 'antd'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
@@ -9,6 +9,7 @@ import { AdminPageTitle } from '../../components/admin'
 import { CustomRatioImage } from '../../components/common/Image'
 import AdminLayout from '../../components/layout/AdminLayout'
 import MemberShopCreationModal from '../../components/merchandise/MemberShopCreationModal'
+import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { useMemberShopCollection } from '../../hooks/merchandise'
 import DefaultAvatar from '../../images/default/avatar.svg'
@@ -43,12 +44,11 @@ const StyledCardMeta = styled.div`
 
 const MemberShopCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { memberShops, refetchMemberShops } = useMemberShopCollection()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-
-  useEffect(() => {
-    refetchMemberShops()
-  }, [refetchMemberShops])
+  const { currentMemberId, currentUserRole, isAuthenticating } = useAuth()
+  const { loadingMemberShops, memberShops } = useMemberShopCollection(
+    currentUserRole !== 'app-owner' ? currentMemberId : undefined,
+  )
 
   const tabContents = [
     {
@@ -75,32 +75,36 @@ const MemberShopCollectionAdminPage: React.FC = () => {
       </div>
 
       <Tabs activeKey={activeKey || 'activated'} onChange={key => setActiveKey(key)}>
-        {tabContents.map(tabContent => (
-          <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
-            <div className="row py-3">
-              {tabContent.memberShops.map(memberShop => (
-                <div key={memberShop.id} className="col-6 col-md-4 col-lg-3">
-                  <Link to={`/member-shops/${memberShop.id}`}>
-                    <StyledCard className="text-center">
-                      <CustomRatioImage
-                        width="128px"
-                        ratio={1}
-                        src={memberShop.member.pictureUrl || DefaultAvatar}
-                        shape="circle"
-                        className="mb-4 mx-auto"
-                      />
-                      <StyledCardTitle className="mb-2">{memberShop.title}</StyledCardTitle>
-                      <StyledCardSubTitle className="mb-4">{memberShop.member.name}</StyledCardSubTitle>
-                      <StyledCardMeta>
-                        {formatMessage(commonMessages.term.merchandise)} {memberShop.merchandisesCount}
-                      </StyledCardMeta>
-                    </StyledCard>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </Tabs.TabPane>
-        ))}
+        {isAuthenticating || loadingMemberShops ? (
+          <Skeleton active />
+        ) : (
+          tabContents.map(tabContent => (
+            <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
+              <div className="row py-3">
+                {tabContent.memberShops.map(memberShop => (
+                  <div key={memberShop.id} className="col-6 col-md-4 col-lg-3">
+                    <Link to={`/member-shops/${memberShop.id}`}>
+                      <StyledCard className="text-center">
+                        <CustomRatioImage
+                          width="128px"
+                          ratio={1}
+                          src={memberShop.member.pictureUrl || DefaultAvatar}
+                          shape="circle"
+                          className="mb-4 mx-auto"
+                        />
+                        <StyledCardTitle className="mb-2">{memberShop.title}</StyledCardTitle>
+                        <StyledCardSubTitle className="mb-4">{memberShop.member.name}</StyledCardSubTitle>
+                        <StyledCardMeta>
+                          {formatMessage(commonMessages.term.merchandise)} {memberShop.merchandisesCount}
+                        </StyledCardMeta>
+                      </StyledCard>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </Tabs.TabPane>
+          ))
+        )}
       </Tabs>
     </AdminLayout>
   )

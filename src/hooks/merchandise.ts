@@ -94,11 +94,6 @@ export const useMerchandise = (id: string) => {
             type
             url
           }
-          merchandise_inventory_status {
-            buyable_quantity
-            undelivered_quantity
-            delivered_quantity
-          }
           merchandise_specs {
             id
             title
@@ -115,11 +110,7 @@ export const useMerchandise = (id: string) => {
     `,
     { variables: { id } },
   )
-  const merchandise:
-    | (MerchandiseProps & {
-        merchandiseInventoryStatus: ProductInventoryStatusProps
-      })
-    | null =
+  const merchandise: MerchandiseProps | null =
     loading || error || !data || !data.merchandise_by_pk
       ? null
       : {
@@ -146,11 +137,6 @@ export const useMerchandise = (id: string) => {
           isCustomized: data.merchandise_by_pk.is_customized,
           isLimited: data.merchandise_by_pk.is_limited,
           isCountdownTimerVisible: data.merchandise_by_pk.is_countdown_timer_visible,
-          merchandiseInventoryStatus: {
-            buyableQuantity: data.merchandise_by_pk.merchandise_inventory_status?.buyable_quantity || 0,
-            undeliveredQuantity: data.merchandise_by_pk.merchandise_inventory_status?.undelivered_quantity || 0,
-            deliveredQuantity: data.merchandise_by_pk.merchandise_inventory_status?.delivered_quantity || 0,
-          },
           specs: data.merchandise_by_pk.merchandise_specs.map(v => ({
             id: v.id,
             title: v.title,
@@ -172,42 +158,49 @@ export const useMerchandise = (id: string) => {
   }
 }
 
-export const useMemberShopCollection = () => {
-  const { loading, error, data, refetch } = useQuery<types.GET_MEMBER_SHOP_COLLECTION>(gql`
-    query GET_MEMBER_SHOP_COLLECTION {
-      member_shop(order_by: { member_id: asc }) {
-        id
-        title
-        member {
+export const useMemberShopCollection = (memberId?: string | null) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_MEMBER_SHOP_COLLECTION,
+    types.GET_MEMBER_SHOP_COLLECTIONVariables
+  >(
+    gql`
+      query GET_MEMBER_SHOP_COLLECTION($memberId: String) {
+        member_shop(where: { member_id: { _eq: $memberId } }, order_by: { member_id: asc }) {
           id
-          name
-          username
-          picture_url
-        }
-        published_at
-        merchandises_aggregate {
-          aggregate {
-            count
+          title
+          member {
+            id
+            name
+            username
+            picture_url
+          }
+          published_at
+          merchandises_aggregate {
+            aggregate {
+              count
+            }
           }
         }
       }
-    }
-  `)
+    `,
+    {
+      variables: { memberId },
+      fetchPolicy: 'no-cache',
+    },
+  )
 
   const memberShops: MemberShopPreviewProps[] =
-    loading || error || !data
-      ? []
-      : data.member_shop.map(memberShop => ({
-          id: memberShop.id,
-          title: memberShop.title,
-          member: {
-            id: memberShop.member?.id || '',
-            name: memberShop.member?.name || memberShop.member?.username || '',
-            pictureUrl: memberShop.member?.picture_url || '',
-          },
-          merchandisesCount: memberShop.merchandises_aggregate.aggregate?.count || 0,
-          publishedAt: memberShop.published_at ? new Date(memberShop.published_at) : null,
-        }))
+    data?.member_shop.map(memberShop => ({
+      id: memberShop.id,
+      title: memberShop.title,
+      member: {
+        id: memberShop.member?.id || '',
+        name: memberShop.member?.name || memberShop.member?.username || '',
+        pictureUrl: memberShop.member?.picture_url || '',
+      },
+      merchandisesCount: memberShop.merchandises_aggregate.aggregate?.count || 0,
+      publishedAt: memberShop.published_at ? new Date(memberShop.published_at) : null,
+    })) || []
 
   return {
     loadingMemberShops: loading,
