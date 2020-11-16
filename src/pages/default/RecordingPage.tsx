@@ -385,7 +385,17 @@ const RecordingPage: React.FC = () => {
 
     const modal = showUploadingModal()
     exportPodcastProgram(authToken, backendEndpoint, appId, podcastProgramId)
-      .then(() => {
+      .then(async () => {
+        const totalDurationSecond = signedPodCastProgramAudios.reduce((sum, audio) => (sum += audio.duration), 0)
+        const totalDuration = Math.ceil(totalDurationSecond / 60 || 0)
+        await updatePodcastProgramDuration({
+          variables: {
+            updatedAt: new Date(),
+            podcastProgramId,
+            duration: totalDuration,
+            durationSecond: totalDurationSecond,
+          },
+        })
         return refetchPodcastProgramAdmin()
       })
       .then(
@@ -396,7 +406,17 @@ const RecordingPage: React.FC = () => {
         error => handleError(error),
       )
       .finally(() => modal.destroy())
-  }, [appId, authToken, backendEndpoint, formatMessage, history, podcastProgramId, refetchPodcastProgramAdmin])
+  }, [
+    appId,
+    authToken,
+    backendEndpoint,
+    formatMessage,
+    history,
+    podcastProgramId,
+    refetchPodcastProgramAdmin,
+    signedPodCastProgramAudios,
+    updatePodcastProgramDuration,
+  ])
 
   const showUploadConfirmationModal = useCallback(() => {
     return Modal.confirm({

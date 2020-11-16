@@ -1,5 +1,5 @@
 import { Tabs } from 'antd'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -23,6 +23,10 @@ const PodcastProgramAdminPage: React.FC = () => {
   const { podcastProgramId } = useParams<{ podcastProgramId: string }>()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { podcastProgramAdmin, refetchPodcastProgramAdmin } = usePodcastProgramAdmin(appId, podcastProgramId)
+
+  useEffect(() => {
+    refetchPodcastProgramAdmin()
+  }, [refetchPodcastProgramAdmin])
 
   return (
     <>
