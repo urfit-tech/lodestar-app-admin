@@ -404,6 +404,7 @@ const RecordingPage: React.FC = () => {
       title: formatMessage(podcastMessages.ui.bulkUpload),
       content: formatMessage(podcastMessages.text.bulkUploadMessage),
       okText: formatMessage(podcastMessages.ui.bulkUpload),
+      cancelText: formatMessage(commonMessages.ui.cancel),
       centered: true,
       onOk: () => onUploadAudio(),
     })
@@ -415,6 +416,7 @@ const RecordingPage: React.FC = () => {
       title: formatMessage(podcastMessages.ui.deleteAudio),
       content: formatMessage(podcastMessages.text.deleteMessage),
       okText: formatMessage(podcastMessages.ui.deleteAudio),
+      cancelText: formatMessage(commonMessages.ui.cancel),
       centered: true,
       onOk: () => onDeleteAudioTrack(),
     })
