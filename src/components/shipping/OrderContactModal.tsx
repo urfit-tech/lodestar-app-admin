@@ -90,7 +90,7 @@ const OrderContactBlock: React.FC<{
 const OrderContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
-  const { authToken, currentMemberId } = useAuth()
+  const { authToken, currentMemberId, backendEndpoint } = useAuth()
   const {
     loading,
     error,
@@ -142,7 +142,7 @@ const OrderContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
               language="zh-hant"
               className="mb-3"
               controls={['bold', 'italic', 'underline', 'remove-styles', 'separator', 'media']}
-              media={{ uploadFn: createUploadFn(appId, authToken) }}
+              media={{ uploadFn: createUploadFn(appId, authToken, backendEndpoint) }}
               placeholder={formatMessage(messages.messageContent)}
             />
           </Form.Item>
