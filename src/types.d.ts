@@ -3227,6 +3227,7 @@ export interface UPDATE_PODCAST_PROGRAM_BODYVariables {
   podcastProgramId: any;
   description?: string | null;
   duration?: any | null;
+  durationSecond?: any | null;
   updatedAt: any;
 }
 
@@ -8283,6 +8284,7 @@ export interface GET_PODCAST_PROGRAM_ADMIN_podcast_program_by_pk {
   content_type: string | null;
   filename: string | null;
   duration: any;
+  duration_second: any;
   published_at: any | null;
   creator_id: string;
   support_locales: any | null;

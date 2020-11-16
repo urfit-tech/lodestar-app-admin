@@ -112,6 +112,7 @@ export const usePodcastProgramAdmin = (appId: string, podcastProgramId: string) 
           content_type
           filename
           duration
+          duration_second
           published_at
           creator_id
           support_locales
@@ -170,6 +171,7 @@ export const usePodcastProgramAdmin = (appId: string, podcastProgramId: string) 
       contentType: data.podcast_program_by_pk.content_type,
       filename: data.podcast_program_by_pk.filename,
       duration: data.podcast_program_by_pk.duration,
+      durationSecond: data.podcast_program_by_pk.duration_second,
       description: data.podcast_program_by_pk.podcast_program_bodies[0]
         ? data.podcast_program_by_pk.podcast_program_bodies[0].description
         : null,

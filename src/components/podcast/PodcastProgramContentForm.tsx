@@ -111,7 +111,8 @@ const PodcastProgramContentForm: React.FC<{
       variables: {
         updatedAt: new Date(),
         podcastProgramId: podcastProgramAdmin.id,
-        duration: durationFormatToSeconds(values.duration),
+        duration: Math.ceil(durationFormatToSeconds(values.duration) / 60 || 0),
+        durationSecond: durationFormatToSeconds(values.duration),
         description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
       },
     })
@@ -138,7 +139,7 @@ const PodcastProgramContentForm: React.FC<{
       colon={false}
       hideRequiredMark
       initialValues={{
-        duration: durationFormatter(podcastProgramAdmin.duration),
+        duration: durationFormatter(podcastProgramAdmin.durationSecond),
         description: BraftEditor.createEditorState(podcastProgramAdmin.description),
       }}
       onFinish={handleSubmit}
@@ -248,11 +249,12 @@ const UPDATE_PODCAST_PROGRAM_BODY = gql`
     $podcastProgramId: uuid!
     $description: String
     $duration: numeric
+    $durationSecond: numeric
     $updatedAt: timestamptz!
   ) {
     update_podcast_program(
       where: { id: { _eq: $podcastProgramId } }
-      _set: { duration: $duration, updated_at: $updatedAt }
+      _set: { duration: $duration, duration_second: $durationSecond, updated_at: $updatedAt }
     ) {
       affected_rows
     }
