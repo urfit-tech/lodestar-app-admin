@@ -405,13 +405,13 @@ const useMemberTaskCollection = (options?: {
 }) => {
   const condition: types.GET_MEMBER_TASK_COLLECTIONVariables['condition'] = {
     member_id: { _eq: options?.memberId },
-    title: options?.title ? { _ilike: options?.title } : undefined,
-    category: options?.category ? { name: { _ilike: options?.category } } : undefined,
+    title: options?.title ? { _ilike: `%${options.title}%` } : undefined,
+    category: options?.category ? { name: { _ilike: options.category } } : undefined,
     executor: options?.executor
-      ? { _or: [{ name: { _ilike: options?.executor } }, { username: { _ilike: options?.executor } }] }
+      ? { _or: [{ name: { _ilike: `%${options.executor}%` } }, { username: { _ilike: `%${options.executor}%` } }] }
       : undefined,
     due_at: options?.dueAt ? { _gte: options?.dueAt[0], _lte: options?.dueAt[1] } : undefined,
-    status: options?.status ? { _ilike: options?.status } : undefined,
+    status: options?.status ? { _ilike: options.status } : undefined,
   }
 
   const { loading, error, data, refetch, fetchMore } = useQuery<

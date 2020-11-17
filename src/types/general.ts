@@ -56,3 +56,40 @@ export type ProductInventoryLogProps = {
   quantity: number
   comment: string | null
 }
+
+type OrderProductProps = {
+  id: string
+  name: string
+  price: number
+  startedAt: Date | null
+  endedAt: Date | null
+  product: {
+    id: string
+    type: string
+  }
+  quantity: number
+  options: any
+}
+
+type OrderDiscountProps = {
+  id: string
+  name: string
+  description: string | null
+  price: number
+}
+
+export type OrderLogProps = {
+  id: string
+  createdAt: Date
+  status: string
+  shipping: any
+  name: string
+  email: string
+  totalPrice: number
+  expiredAt: Date
+  paymentMethod: string | null
+
+  orderProducts: OrderProductProps[]
+  orderDiscounts: OrderDiscountProps[]
+  orderExecutors: string[]
+}

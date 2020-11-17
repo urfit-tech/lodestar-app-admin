@@ -4816,7 +4816,7 @@ export interface GET_ORDERS {
 export interface GET_ORDERSVariables {
   offset?: number | null;
   limit?: number | null;
-  status?: string | null;
+  statuses?: (string | null)[] | null;
   orderIdLike?: string | null;
   memberNameAndEmailLike?: string | null;
   memberId?: string | null;

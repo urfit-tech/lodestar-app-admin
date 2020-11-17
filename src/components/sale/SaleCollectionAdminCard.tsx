@@ -1,7 +1,7 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Button, Divider, Input, Table, Tooltip, Typography } from 'antd'
-import { ColumnProps, TablePaginationConfig } from 'antd/lib/table'
+import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import { prop, sum } from 'ramda'
@@ -11,6 +11,7 @@ import styled, { css } from 'styled-components'
 import { currencyFormatter, dateFormatter, dateRangeFormatter, desktopViewMixin } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
+import { OrderLogProps } from '../../types/general'
 import AdminCard from '../admin/AdminCard'
 import ProductTypeLabel from '../common/ProductTypeLabel'
 import ShippingMethodLabel from '../common/ShippingMethodLabel'
@@ -28,6 +29,10 @@ const StyledFilterButton = styled(Button)`
   height: 36px;
   width: 90px;
 `
+const StyledFilterInput = styled(Input)`
+  width: 188px;
+`
+
 const StyledCell = styled.div`
   div {
     white-space: nowrap;
@@ -43,63 +48,53 @@ const StyledCell = styled.div`
   `)}
 `
 
-const DEFAULT_PAGE_SIZE = 20
-const DEFAULT_PAGE_CURRENT = 1
-
-type OrderProduct = {
-  id: string
-  name: string
-  price: number
-  startedAt: Date | null
-  endedAt: Date | null
-  product: {
-    id: string
-    type: string
-  }
-  quantity: number
-  options: any
-}
-
-type OrderDiscount = {
-  id: string
-  name: string
-  description: string | null
-  price: number
-}
-
-type OrderRow = {
-  id: string
-  createdAt: Date
-  status: string
-  orderDiscounts: OrderDiscount[]
-  orderProducts: OrderProduct[]
-  shipping: any
-  name: string
-  email: string
-  totalPrice: number
-  expiredAt: Date
-  paymentMethod: string | null
-  orderExecutors: string[]
-}
 const SaleCollectionAdminCard: React.FC<{ memberId?: string }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
 
-  const [status, setStatus] = useState()
+  const [statuses, setStatuses] = useState<string[] | null>(null)
   const [orderIdLike, setOrderIdLike] = useState<string | null>(null)
   const [memberNameAndEmailLike, setMemberNameAndEmailLike] = useState<string | null>(null)
-  const [pagination, setPagination] = useState<TablePaginationConfig>({})
 
-  const pageSize = pagination.pageSize || DEFAULT_PAGE_SIZE
-  const { loadingOrderLog, dataSource, totalCount, refetchUseDataSource } = useDataSource({
-    pageSize,
-    pagination,
-    status,
+  const { loadingOrderLog, orderLogs, totalCount, refetchOrderLog, loadMoreOrderLogs } = useOrderLog({
+    statuses,
     orderIdLike,
     memberNameAndEmailLike,
     memberId,
   })
 
-  const columns: ColumnProps<any>[] = [
+  const getColumnSearchProps = ({
+    onReset,
+    onSearch,
+  }: {
+    onReset: (clearFilters: any) => void
+    onSearch: (selectedKeys?: React.ReactText[], confirm?: () => void) => void
+  }): ColumnProps<any> => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div className="p-2">
+        <StyledFilterInput
+          autoFocus
+          value={selectedKeys && selectedKeys[0]}
+          onChange={e => setSelectedKeys && setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => onSearch(selectedKeys, confirm)}
+          className="mb-2 d-block"
+        />
+        <StyledFilterButton
+          className="mr-2"
+          type="primary"
+          size="small"
+          onClick={() => onSearch(selectedKeys, confirm)}
+        >
+          {formatMessage(commonMessages.ui.search)}
+        </StyledFilterButton>
+        <StyledFilterButton size="small" onClick={() => onReset(clearFilters)}>
+          {formatMessage(commonMessages.ui.reset)}
+        </StyledFilterButton>
+      </div>
+    ),
+    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+  })
+
+  const columns: ColumnProps<OrderLogProps>[] = [
     {
       title: formatMessage(commonMessages.label.orderLogId),
       dataIndex: 'id',
@@ -115,7 +110,7 @@ const SaleCollectionAdminCard: React.FC<{ memberId?: string }> = ({ memberId }) 
           setOrderIdLike(null)
         },
         onSearch: (selectedKeys, confirm) => {
-          confirm && confirm()
+          confirm?.()
           selectedKeys && setOrderIdLike(`%${selectedKeys[0]}%`)
         },
       }),
@@ -124,7 +119,7 @@ const SaleCollectionAdminCard: React.FC<{ memberId?: string }> = ({ memberId }) 
       title: formatMessage(commonMessages.label.orderLogPaymentDate),
       dataIndex: 'updatedAt',
       key: 'updatedAt',
-      render: (value: Date, record: OrderRow) => {
+      render: (value: Date, record) => {
         const orderLogPaymentDate = moment(value || record.createdAt)
 
         return (
@@ -144,11 +139,11 @@ const SaleCollectionAdminCard: React.FC<{ memberId?: string }> = ({ memberId }) 
           setMemberNameAndEmailLike(null)
         },
         onSearch: (selectedKeys, confirm) => {
-          confirm && confirm()
+          confirm?.()
           selectedKeys && setMemberNameAndEmailLike(`%${selectedKeys[0]}%`)
         },
       }),
-      render: (text, record, index) => (
+      render: (_, record) => (
         <StyledCell>
           <div>
             {record.name}
@@ -191,107 +186,105 @@ const SaleCollectionAdminCard: React.FC<{ memberId?: string }> = ({ memberId }) 
     },
   ]
 
-  const expandedRow = (record: OrderRow) => {
-    return (
-      <div>
-        {record.orderProducts.map(orderProduct => (
-          <React.Fragment key={orderProduct.id}>
-            <div className="row">
-              <div className="col-2">
-                <ProductTypeLabel productType={orderProduct.product.type} />
-              </div>
-              <div className="col-8">
-                {orderProduct.name}
-                {orderProduct.endedAt && orderProduct.product.type !== 'AppointmentPlan' && (
-                  <span className="ml-2">
-                    {`(${moment(orderProduct.endedAt).format('YYYY-MM-DD')} ${formatMessage(
-                      commonMessages.status.productExpired,
-                    )})`}
-                  </span>
-                )}
-                {orderProduct.startedAt && orderProduct.endedAt && orderProduct.product.type === 'AppointmentPlan' && (
-                  <span>
-                    (
-                    {dateRangeFormatter({
-                      startedAt: orderProduct.startedAt,
-                      endedAt: orderProduct.endedAt,
-                      dateFormat: 'YYYY-MM-DD',
-                    })}
-                    )
-                  </span>
-                )}
-                {orderProduct.quantity && <span>{` X ${orderProduct.quantity} `}</span>}
-              </div>
-              <div className="col-2 text-right">{currencyFormatter(orderProduct.price)}</div>
+  const expandedRow = ({
+    orderProducts,
+    orderDiscounts,
+    orderExecutors,
+    paymentMethod,
+    expiredAt,
+    shipping,
+    totalPrice,
+  }: OrderLogProps) => (
+    <div>
+      {orderProducts.map(v => (
+        <>
+          <div className="row" key={v.id}>
+            <div className="col-2">
+              <ProductTypeLabel productType={v.product.type} />
             </div>
-            <Divider />
-          </React.Fragment>
-        ))}
-        <div className="row">
-          <div className="col-3" style={{ fontSize: '14px' }}>
-            {record.orderExecutors.length !== 0 && <div>承辦人：{record.orderExecutors.join('、')}</div>}
-            {record.paymentMethod && <div>付款方式：{record.paymentMethod}</div>}
-            {record.expiredAt && <div>付款期限：{moment(record.expiredAt).format('YYYY-MM-DD')}</div>}
-          </div>
-          <div className="col-9">
-            {record.shipping?.shippingMethod && typeof record.shipping?.fee === 'number' && (
-              <div className="row text-right">
-                <div className="col-9">
-                  <ShippingMethodLabel shippingMethodId={record.shipping.shippingMethod} />
-                </div>
-                <div className="col-3">{currencyFormatter(record.shipping.fee || 0)}</div>
-              </div>
-            )}
-            {record.orderDiscounts.map(orderDiscount => {
-              return (
-                <div className="row text-right">
-                  <div className="col-9">{orderDiscount.name}</div>
-                  <div className="col-3">- {currencyFormatter(orderDiscount.price)}</div>
-                </div>
-              )
-            })}
-            <div className="row align-items-center">
-              <div className="col-9 text-right">{formatMessage(commonMessages.label.totalPrice)}</div>
-              <div className="col-3 text-right">{currencyFormatter(record.totalPrice)}</div>
+            <div className="col-8">
+              <span>{v.name}</span>
+
+              {v.endedAt && v.product.type !== 'AppointmentPlan' && (
+                <span className="ml-2">
+                  {`(${moment(v.endedAt).format('YYYY-MM-DD')} ${formatMessage(commonMessages.status.productExpired)})`}
+                </span>
+              )}
+
+              {v.startedAt && v.endedAt && v.product.type === 'AppointmentPlan' && (
+                <span>
+                  {`(${dateRangeFormatter({
+                    startedAt: v.startedAt,
+                    endedAt: v.endedAt,
+                    dateFormat: 'YYYY-MM-DD',
+                  })})`}
+                </span>
+              )}
+              {v.quantity && <span>{` X ${v.quantity} `}</span>}
             </div>
+            <div className="col-2 text-right">{currencyFormatter(v.price)}</div>
           </div>
+          <Divider />
+        </>
+      ))}
+
+      <div className="row">
+        <div className="col-3" style={{ fontSize: '14px' }}>
+          {orderExecutors.length !== 0 && <div>承辦人：{orderExecutors.join('、')}</div>}
+          {paymentMethod && <div>付款方式：{paymentMethod}</div>}
+          {expiredAt && <div>付款期限：{moment(expiredAt).format('YYYY-MM-DD')}</div>}
         </div>
 
-        {record.orderProducts.some(
-          orderProduct =>
-            (orderProduct.endedAt?.getTime() || 0) > Date.now() &&
-            ['ProgramPlan', 'ProjectPlan', 'PodcastPlan', 'ProgramPackagePlan'].includes(orderProduct.product.type),
-        ) &&
-          (record.orderProducts.some(orderProduct => orderProduct.options?.unsubscribedAt) ? (
-            <div className="row col-12 align-items-center pt-3">
-              <span style={{ color: '#9b9b9b', fontSize: '14px' }}>
-                {formatMessage(commonMessages.text.cancelSubscriptionDate, {
-                  date: dateFormatter(
-                    record.orderProducts.find(orderProduct => orderProduct.options?.unsubscribedAt)?.options
-                      ?.unsubscribedAt,
-                  ),
-                })}
-              </span>
+        <div className="col-9">
+          {shipping?.shippingMethod && typeof shipping?.fee === 'number' && (
+            <div className="row text-right">
+              <div className="col-9">
+                <ShippingMethodLabel shippingMethodId={shipping.shippingMethod} />
+              </div>
+              <div className="col-3">{currencyFormatter(shipping.fee || 0)}</div>
             </div>
-          ) : (
-            <div className="row col-12 align-items-center pt-3">
-              <SubscriptionCancelModal
-                orderProducts={record.orderProducts.map(orderProduct => ({
-                  id: orderProduct.id,
-                  options: orderProduct.options,
-                }))}
-                onRefetch={refetchUseDataSource}
-              />
+          )}
+
+          {orderDiscounts.map(v => (
+            <div className="row text-right">
+              <div className="col-9">{v.name}</div>
+              <div className="col-3">- {currencyFormatter(v.price)}</div>
             </div>
           ))}
-      </div>
-    )
-  }
 
-  const handleTableChange = ({ current }: TablePaginationConfig, filters: any) => {
-    setPagination({ ...pagination, current })
-    filters.status && setStatus(filters.status[0])
-  }
+          <div className="row align-items-center">
+            <div className="col-9 text-right">{formatMessage(commonMessages.label.totalPrice)}</div>
+            <div className="col-3 text-right">{currencyFormatter(totalPrice)}</div>
+          </div>
+        </div>
+      </div>
+
+      {orderProducts.some(
+        v =>
+          (v.endedAt?.getTime() || 0) > Date.now() &&
+          ['ProgramPlan', 'ProjectPlan', 'PodcastPlan', 'ProgramPackagePlan'].includes(v.product.type),
+      ) &&
+        (orderProducts.some(v => v.options?.unsubscribedAt) ? (
+          <div className="row col-12 align-items-center pt-3">
+            <span style={{ color: '#9b9b9b', fontSize: '14px' }}>
+              {formatMessage(commonMessages.text.cancelSubscriptionDate, {
+                date: dateFormatter(orderProducts.find(v => v.options?.unsubscribedAt)?.options?.unsubscribedAt),
+              })}
+            </span>
+          </div>
+        ) : (
+          <div className="row col-12 align-items-center pt-3">
+            <SubscriptionCancelModal
+              orderProducts={orderProducts.map(v => ({
+                id: v.id,
+                options: v.options,
+              }))}
+              onRefetch={refetchOrderLog}
+            />
+          </div>
+        ))}
+    </div>
+  )
 
   return (
     <AdminCard>
@@ -302,119 +295,103 @@ const SaleCollectionAdminCard: React.FC<{ memberId?: string }> = ({ memberId }) 
           </Typography.Text>
         </div>
 
-        <Table
-          loading={loadingOrderLog}
+        <Table<OrderLogProps>
           rowKey="id"
-          dataSource={dataSource}
+          loading={loadingOrderLog}
+          dataSource={orderLogs}
           columns={columns}
-          onChange={handleTableChange}
-          pagination={{
-            defaultPageSize: DEFAULT_PAGE_SIZE,
-            total: totalCount || undefined,
-            ...pagination,
-          }}
           expandedRowRender={expandedRow}
+          pagination={false}
+          onChange={(_, filters) => setStatuses(filters.status as string[])}
         />
       </StyledContainer>
     </AdminCard>
   )
 }
 
-const getColumnSearchProps = ({
-  onReset,
-  onSearch,
-}: {
-  // dataIndex: string,
-  onReset: (clearFilters: any) => void
-  onSearch: (selectedKeys?: React.ReactText[], confirm?: () => void) => void
-}): ColumnProps<any> => ({
-  filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-    <div className="p-2">
-      <Input
-        autoFocus
-        value={selectedKeys && selectedKeys[0]}
-        onChange={e => setSelectedKeys && setSelectedKeys(e.target.value ? [e.target.value] : [])}
-        onPressEnter={() => onSearch(selectedKeys, confirm)}
-        style={{ width: 188, marginBottom: 8, display: 'block' }}
-      />
-      <StyledFilterButton type="primary" size="small" onClick={() => onSearch(selectedKeys, confirm)} className="mr-2">
-        Search
-      </StyledFilterButton>
-      <StyledFilterButton size="small" onClick={() => onReset(clearFilters)}>
-        Reset
-      </StyledFilterButton>
-    </div>
-  ),
-  filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-})
-
-const useDataSource = (options?: {
-  pageSize?: number
-  pagination?: TablePaginationConfig
-  status?: any
+const useOrderLog = (options?: {
+  statuses?: string[] | null
   orderIdLike?: string | null
   memberNameAndEmailLike?: string | null
   memberId?: string
 }) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_ORDERS, types.GET_ORDERSVariables>(GET_ORDERS, {
-    variables: {
-      limit: options?.pageSize,
-      offset:
-        options?.pageSize &&
-        options?.pagination &&
-        options?.pageSize * ((options?.pagination.current || DEFAULT_PAGE_CURRENT) - 1),
-      status: options?.status,
-      orderIdLike: options?.orderIdLike,
-      memberNameAndEmailLike: options?.memberNameAndEmailLike,
-      memberId: options?.memberId,
+  const { loading, error, data, refetch, fetchMore } = useQuery<types.GET_ORDERS, types.GET_ORDERSVariables>(
+    GET_ORDERS,
+    {
+      variables: {
+        limit: 20,
+        statuses: options?.statuses,
+        orderIdLike: options?.orderIdLike,
+        memberNameAndEmailLike: options?.memberNameAndEmailLike,
+        memberId: options?.memberId,
+      },
+      context: {
+        important: true,
+      },
     },
-    context: {
-      important: true,
-    },
-  })
+  )
 
-  const dataSource: OrderRow[] =
+  const loadMoreOrderLogs = () =>
+    fetchMore({
+      variables: {
+        limit: 20,
+        statuses: options?.statuses,
+        orderIdLike: options?.orderIdLike,
+        memberNameAndEmailLike: options?.memberNameAndEmailLike,
+        memberId: options?.memberId,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) {
+          return prev
+        }
+        return Object.assign({}, prev, {})
+      },
+    })
+
+  const orderLogs: OrderLogProps[] =
     loading || error || !data
       ? []
-      : data.order_log.map(log => ({
-          id: log.id,
-          createdAt: log.created_at,
-          status: log.status,
-          orderProducts: log.order_products.map(orderProduct => ({
-            id: orderProduct.id,
-            name: orderProduct.name,
-            price: orderProduct.price,
-            startedAt: orderProduct.started_at && new Date(orderProduct.started_at),
-            endedAt: orderProduct.ended_at && new Date(orderProduct.ended_at),
-            product: orderProduct.product,
-            quantity: orderProduct.options?.quantity,
-            options: orderProduct.options,
+      : data.order_log.map(v => ({
+          id: v.id,
+          createdAt: v.created_at,
+          status: v.status,
+          orderProducts: v.order_products.map(w => ({
+            id: w.id,
+            name: w.name,
+            price: w.price,
+            startedAt: w.started_at && new Date(w.started_at),
+            endedAt: w.ended_at && new Date(w.ended_at),
+            product: w.product,
+            quantity: w.options?.quantity,
+            options: w.options,
           })),
-          orderDiscounts: log.order_discounts.map(orderDiscount => ({
-            id: orderDiscount.id,
-            name: orderDiscount.name,
-            description: orderDiscount.description,
-            price: orderDiscount.price,
+          orderDiscounts: v.order_discounts.map(w => ({
+            id: w.id,
+            name: w.name,
+            description: w.description,
+            price: w.price,
           })),
-          shipping: log.shipping,
-          name: log.member.name,
-          email: log.member.email,
+          shipping: v.shipping,
+          name: v.member.name,
+          email: v.member.email,
           totalPrice:
-            sum(log.order_products.map(prop('price'))) -
-            sum(log.order_discounts.map(prop('price'))) +
-            (log.shipping?.fee || 0),
-          expiredAt: log.expired_at,
-          paymentMethod: log.payment_logs[0]?.gateway,
-          orderExecutors: log.order_executors.map(orderExecutor => orderExecutor.member.name),
+            sum(v.order_products.map(prop('price'))) -
+            sum(v.order_discounts.map(prop('price'))) +
+            (v.shipping?.fee || 0),
+          expiredAt: v.expired_at,
+          paymentMethod: v.payment_logs[0]?.gateway,
+          orderExecutors: v.order_executors.map(w => w.member.name),
         }))
+
   const totalCount = data?.order_log_aggregate.aggregate?.count || 0
 
   return {
     loadingOrderLog: loading,
     errorOrderLog: error,
-    dataSource,
+    orderLogs,
     totalCount,
-    refetchUseDataSource: refetch,
+    refetchOrderLog: refetch,
+    loadMoreOrderLogs,
   }
 }
 
@@ -422,7 +399,7 @@ const GET_ORDERS = gql`
   query GET_ORDERS(
     $offset: Int
     $limit: Int
-    $status: String
+    $statuses: [String!]
     $orderIdLike: String
     $memberNameAndEmailLike: String
     $memberId: String
@@ -430,7 +407,7 @@ const GET_ORDERS = gql`
     order_log_aggregate(
       where: {
         id: { _like: $orderIdLike }
-        status: { _eq: $status }
+        status: { _in: $statuses }
         member: {
           _or: [{ name: { _like: $memberNameAndEmailLike } }, { email: { _like: $memberNameAndEmailLike } }]
           id: { _eq: $memberId }
@@ -446,7 +423,7 @@ const GET_ORDERS = gql`
       limit: $limit
       where: {
         id: { _like: $orderIdLike }
-        status: { _eq: $status }
+        status: { _in: $statuses }
         member: {
           _or: [{ name: { _like: $memberNameAndEmailLike } }, { email: { _like: $memberNameAndEmailLike } }]
           id: { _eq: $memberId }
