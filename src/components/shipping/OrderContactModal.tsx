@@ -95,7 +95,7 @@ const OrderContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
     loading,
     error,
     orderContacts,
-    withUnread,
+    isUnread,
     refetch,
     insertOrderContact,
     updateOrderContactReadAt,
@@ -118,7 +118,7 @@ const OrderContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
   return (
     <>
       <StyledButton
-        isMark={withUnread}
+        isMark={isUnread}
         icon={<Icon component={() => <IconMail />} />}
         type="text"
         onClick={() =>
@@ -205,11 +205,10 @@ const useOrderContact = (orderId: string, memberId: string) => {
           },
         }))
 
-  const latestCreatedAt: Date | null = data?.order_contact_aggregate.aggregate?.max?.created_at
-  const latestReadAt: Date | null = data?.order_contact_aggregate.aggregate?.max?.read_at
+  const latestCreatedAt = new Date(data?.order_contact_aggregate.aggregate?.max?.created_at || 0)
+  const latestReadAt = new Date(data?.order_contact_aggregate.aggregate?.max?.read_at || 0)
 
-  const withUnread =
-    loading || error || !data ? false : !!latestCreatedAt && (latestReadAt ? latestCreatedAt > latestReadAt : true)
+  const isUnread = latestCreatedAt.getTime() > latestReadAt.getTime()
 
   const [insertOrderContactHandler] = useMutation<types.INSERT_ORDER_CONTACT, types.INSERT_ORDER_CONTACTVariables>(
     INSERT_ORDER_CONTACT,
@@ -242,7 +241,7 @@ const useOrderContact = (orderId: string, memberId: string) => {
     loading,
     error,
     orderContacts,
-    withUnread,
+    isUnread,
     refetch,
     insertOrderContact,
     updateOrderContactReadAt,
@@ -251,7 +250,7 @@ const useOrderContact = (orderId: string, memberId: string) => {
 
 const GET_ORDER_CONTACT = gql`
   query GET_ORDER_CONTACT($orderId: String!, $memberId: String!) {
-    order_contact(where: { order_id: { _eq: $orderId } }, order_by: { created_at: asc }) {
+    order_contact(where: { order_id: { _eq: $orderId } }, order_by: { created_at: desc }) {
       id
       message
       created_at
