@@ -5017,7 +5017,6 @@ export interface GET_ORDER_CONTACT_order_contact {
   message: string;
   created_at: any;
   read_at: any | null;
-  member_id: string;
   /**
    * An object relationship
    */
@@ -6546,6 +6545,10 @@ export interface GET_PHYSICAL_PRODUCT_ORDER_LOG {
    * fetch data from the table: "order_log"
    */
   order_log: GET_PHYSICAL_PRODUCT_ORDER_LOG_order_log[];
+}
+
+export interface GET_PHYSICAL_PRODUCT_ORDER_LOGVariables {
+  memberId?: string | null;
 }
 
 /* tslint:disable */
@@ -18309,6 +18312,7 @@ export interface program_content_progress_enrollment_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   last_progress?: numeric_comparison_exp | null;
+  member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   program_content_id?: uuid_comparison_exp | null;
   program_content_section_id?: uuid_comparison_exp | null;

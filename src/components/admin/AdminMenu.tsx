@@ -204,12 +204,13 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         </Menu.SubMenu>
       )}
 
-      {(enabledModules.merchandise || enabledModules.project) && currentUserRole === 'app-owner' && (
-        <Menu.Item key="shipping">
-          <GoldenFilled />
-          {formatMessage(commonMessages.menu.shipping)}
-        </Menu.Item>
-      )}
+      {(enabledModules.merchandise || enabledModules.project) &&
+        (currentUserRole === 'app-owner' || currentUserRole === 'content-creator') && (
+          <Menu.Item key="shipping">
+            <GoldenFilled />
+            {formatMessage(commonMessages.menu.shipping)}
+          </Menu.Item>
+        )}
 
       {(permissions.COUPON_PLAN_ADMIN || permissions.VOUCHER_PLAN_ADMIN) && (
         <Menu.SubMenu

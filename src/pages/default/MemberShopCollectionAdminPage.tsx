@@ -75,13 +75,13 @@ const MemberShopCollectionAdminPage: React.FC = () => {
       </div>
 
       <Tabs activeKey={activeKey || 'activated'} onChange={key => setActiveKey(key)}>
-        {isAuthenticating || loadingMemberShops ? (
-          <Skeleton active />
-        ) : (
-          tabContents.map(tabContent => (
-            <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
-              <div className="row py-3">
-                {tabContent.memberShops.map(memberShop => (
+        {tabContents.map(tabContent => (
+          <Tabs.TabPane key={tabContent.key} tab={tabContent.tab}>
+            <div className="row py-3">
+              {isAuthenticating || loadingMemberShops ? (
+                <Skeleton active />
+              ) : (
+                tabContent.memberShops.map(memberShop => (
                   <div key={memberShop.id} className="col-6 col-md-4 col-lg-3">
                     <Link to={`/member-shops/${memberShop.id}`}>
                       <StyledCard className="text-center">
@@ -100,11 +100,11 @@ const MemberShopCollectionAdminPage: React.FC = () => {
                       </StyledCard>
                     </Link>
                   </div>
-                ))}
-              </div>
-            </Tabs.TabPane>
-          ))
-        )}
+                ))
+              )}
+            </div>
+          </Tabs.TabPane>
+        ))}
       </Tabs>
     </AdminLayout>
   )

@@ -356,13 +356,18 @@ export const useAllBriefProductCollection = () => {
   }
 }
 
-export const useOrderPhysicalProductLog = () => {
+export const useOrderPhysicalProductLog = (memberId?: string | null) => {
   const { error, loading, data, refetch } = useQuery<types.GET_PHYSICAL_PRODUCT_ORDER_LOG>(
     gql`
-      query GET_PHYSICAL_PRODUCT_ORDER_LOG {
+      query GET_PHYSICAL_PRODUCT_ORDER_LOG($memberId: String) {
         order_log(
-          where: { status: { _eq: "SUCCESS" } }
-          order_by: [{ updated_at: desc_nulls_last }, { created_at: desc }]
+          where: {
+            status: { _eq: "SUCCESS" }
+            order_products: {
+              product_id: { _similar: "(ProjectPlan|Merchandise|MerchandiseSpec)%" }
+              product: { product_owner: { member_id: { _eq: $memberId } } }
+            }
+          }
         ) {
           id
           created_at
@@ -371,7 +376,12 @@ export const useOrderPhysicalProductLog = () => {
           deliver_message
           shipping
           invoice
-          order_products(where: { product_id: { _similar: "(ProjectPlan|MerchandiseSpec)_%" } }) {
+          order_products(
+            where: {
+              product_id: { _similar: "(ProjectPlan|Merchandise|MerchandiseSpec)%" }
+              product: { product_owner: { member_id: { _eq: $memberId } } }
+            }
+          ) {
             id
             name
             product_id
@@ -396,6 +406,7 @@ export const useOrderPhysicalProductLog = () => {
         }
       }
     `,
+    { variables: { memberId } },
   )
 
   const orderPhysicalProductLogs: {
@@ -424,7 +435,7 @@ export const useOrderPhysicalProductLog = () => {
           .filter(orderLog => orderLog.order_products.length && orderLog.shipping?.address)
           .map(v => ({
             id: v.id,
-            member: v.member.name,
+            member: v.member?.name || v.invoice?.name || '',
             createdAt: v.created_at,
             updatedAt: v.updated_at,
             deliveredAt: v.delivered_at,
