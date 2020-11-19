@@ -1,6 +1,6 @@
 import Icon, { CloseOutlined, ExclamationCircleFilled, QuestionCircleFilled } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Form, InputNumber, message, Skeleton, Tooltip } from 'antd'
+import { Button, Form, Input, message, Skeleton, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { UploadChangeParam } from 'antd/lib/upload'
 import { UploadFile } from 'antd/lib/upload/interface'
@@ -13,7 +13,7 @@ import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { handleError } from '../../helpers'
+import { durationFormatter, durationFormatToSeconds, handleError, isiPhoneChrome, isWebview } from '../../helpers'
 import { getAudioDuration } from '../../helpers/audio'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
@@ -35,7 +35,7 @@ const StyledFileBlock = styled.div`
 `
 
 type FieldProps = {
-  duration: number
+  duration: string
   description: EditorState
 }
 
@@ -96,6 +96,7 @@ const PodcastProgramContentForm: React.FC<{
             updatedAt: new Date(),
             podcastProgramId: podcastProgramAdmin.id,
             duration: totalDuration,
+            durationSecond: totalDurationSecond,
           },
         })
         onRefetch?.()
@@ -110,7 +111,8 @@ const PodcastProgramContentForm: React.FC<{
       variables: {
         updatedAt: new Date(),
         podcastProgramId: podcastProgramAdmin.id,
-        duration: values.duration,
+        duration: Math.ceil(durationFormatToSeconds(values.duration) / 60 || 0),
+        durationSecond: durationFormatToSeconds(values.duration),
         description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
       },
     })
@@ -123,9 +125,8 @@ const PodcastProgramContentForm: React.FC<{
   }
 
   const handleRecording = () => {
-    const userAgent = window.navigator.userAgent
-    if (userAgent.match(/iPhone/i) && userAgent.match(/CriOS/i)) {
-      alert(formatMessage(podcastMessages.text.chromeNotSupported))
+    if (isiPhoneChrome() || isWebview()) {
+      message.error(formatMessage(podcastMessages.text.browserNotSupported))
     } else {
       history.push(`/podcast-programs/${podcastProgramAdmin.id}/recording`)
     }
@@ -138,7 +139,7 @@ const PodcastProgramContentForm: React.FC<{
       colon={false}
       hideRequiredMark
       initialValues={{
-        duration: podcastProgramAdmin.duration,
+        duration: durationFormatter(podcastProgramAdmin.durationSecond),
         description: BraftEditor.createEditorState(podcastProgramAdmin.description),
       }}
       onFinish={handleSubmit}
@@ -176,6 +177,12 @@ const PodcastProgramContentForm: React.FC<{
             </span>
           </Button>
         )}
+        {(isiPhoneChrome() || isWebview()) && (
+          <div>
+            <StyledIcon className="ml-2 mr-1" />
+            <span>{formatMessage(podcastMessages.text.browserNotSupported)}</span>
+          </div>
+        )}
         {podcastProgramAdmin.audios.length > 1 && (
           <>
             <StyledIcon className="ml-2 mr-1" />
@@ -204,6 +211,7 @@ const PodcastProgramContentForm: React.FC<{
                           updatedAt: new Date(),
                           podcastProgramId: podcastProgramAdmin.id,
                           duration: totalDuration,
+                          durationSecond: totalDurationSecond,
                         },
                       })
                       form.setFields([{ name: 'duration', value: totalDuration }])
@@ -218,7 +226,7 @@ const PodcastProgramContentForm: React.FC<{
         })}
       </>
       <Form.Item label={formatMessage(podcastMessages.label.duration)} name="duration">
-        <InputNumber min={0} />
+        <Input />
       </Form.Item>
       <Form.Item label={formatMessage(podcastMessages.label.description)} name="description">
         <AdminBraftEditor />
@@ -241,11 +249,12 @@ const UPDATE_PODCAST_PROGRAM_BODY = gql`
     $podcastProgramId: uuid!
     $description: String
     $duration: numeric
+    $durationSecond: numeric
     $updatedAt: timestamptz!
   ) {
     update_podcast_program(
       where: { id: { _eq: $podcastProgramId } }
-      _set: { duration: $duration, updated_at: $updatedAt }
+      _set: { duration: $duration, duration_second: $durationSecond, updated_at: $updatedAt }
     ) {
       affected_rows
     }
@@ -259,10 +268,15 @@ const UPDATE_PODCAST_PROGRAM_BODY = gql`
 `
 
 export const UPDATE_PODCAST_PROGRAM_DURATION = gql`
-  mutation UPDATE_PODCAST_PROGRAM_DURATION($podcastProgramId: uuid!, $duration: numeric, $updatedAt: timestamptz!) {
+  mutation UPDATE_PODCAST_PROGRAM_DURATION(
+    $podcastProgramId: uuid!
+    $duration: numeric
+    $durationSecond: numeric
+    $updatedAt: timestamptz!
+  ) {
     update_podcast_program(
       where: { id: { _eq: $podcastProgramId } }
-      _set: { duration: $duration, updated_at: $updatedAt }
+      _set: { duration: $duration, duration_second: $durationSecond, updated_at: $updatedAt }
     ) {
       affected_rows
     }

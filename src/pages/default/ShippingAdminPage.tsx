@@ -6,6 +6,7 @@ import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import MemberShopSelector from '../../components/merchandise/MemberShopSelector'
 import OrderPhysicalProductCollectionBlock from '../../components/shipping/OrderPhysicalProductCollectionBlock'
+import { useAuth } from '../../contexts/AuthContext'
 import { downloadCSV, toCSV } from '../../helpers'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { useOrderPhysicalProductLog } from '../../hooks/data'
@@ -22,11 +23,14 @@ const messages = defineMessages({
 
 const ShippingAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { loading, orderPhysicalProductLogs, refetch } = useOrderPhysicalProductLog()
+  const { isAuthenticating, currentMemberId, currentUserRole } = useAuth()
+  const { loading, orderPhysicalProductLogs, refetch } = useOrderPhysicalProductLog(
+    currentUserRole === 'content-creator' ? currentMemberId : undefined,
+  )
   const [searchText, setSearchText] = useState('')
-  const [selectedShopId, setSelectedShopId] = useState<string>('')
-  const [activeKey, setActiveKey] = useState<string>('shipping')
-  const [isCreatedAtDesc, setIsCreatedAtDesc] = useState<boolean>(false)
+  const [selectedShopId, setSelectedShopId] = useState('')
+  const [activeKey, setActiveKey] = useState('shipping')
+  const [isCreatedAtDesc, setIsCreatedAtDesc] = useState(false)
 
   const filteredProductLogs = orderPhysicalProductLogs
     .filter(orderPhysicalProductLog =>
@@ -148,14 +152,11 @@ const ShippingAdminPage: React.FC = () => {
           {isCreatedAtDesc ? <CaretDownOutlined /> : <CaretUpOutlined />}
         </div>
       </div>
-      <Tabs
-        onChange={tapActiveKey => {
-          setActiveKey(tapActiveKey)
-        }}
-      >
+
+      <Tabs onChange={key => setActiveKey(key)}>
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={`${tabContent.name} (${tabContent.orderPhysicalProductLogs.length})`}>
-            {loading ? (
+            {loading || isAuthenticating ? (
               <Skeleton active />
             ) : tabContent.orderPhysicalProductLogs.length === 0 ? (
               formatMessage(messages.noMerchandiseOrder)

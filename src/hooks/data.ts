@@ -356,13 +356,18 @@ export const useAllBriefProductCollection = () => {
   }
 }
 
-export const useOrderPhysicalProductLog = () => {
+export const useOrderPhysicalProductLog = (memberId?: string | null) => {
   const { error, loading, data, refetch } = useQuery<types.GET_PHYSICAL_PRODUCT_ORDER_LOG>(
     gql`
-      query GET_PHYSICAL_PRODUCT_ORDER_LOG {
+      query GET_PHYSICAL_PRODUCT_ORDER_LOG($memberId: String) {
         order_log(
-          where: { status: { _eq: "SUCCESS" } }
-          order_by: [{ updated_at: desc_nulls_last }, { created_at: desc }]
+          where: {
+            status: { _eq: "SUCCESS" }
+            order_products: {
+              product_id: { _similar: "(ProjectPlan|Merchandise|MerchandiseSpec)%" }
+              product: { product_owner: { member_id: { _eq: $memberId } } }
+            }
+          }
         ) {
           id
           created_at
@@ -371,7 +376,12 @@ export const useOrderPhysicalProductLog = () => {
           deliver_message
           shipping
           invoice
-          order_products(where: { product_id: { _similar: "(ProjectPlan|MerchandiseSpec)_%" } }) {
+          order_products(
+            where: {
+              product_id: { _similar: "(ProjectPlan|Merchandise|MerchandiseSpec)%" }
+              product: { product_owner: { member_id: { _eq: $memberId } } }
+            }
+          ) {
             id
             name
             product_id
@@ -396,6 +406,7 @@ export const useOrderPhysicalProductLog = () => {
         }
       }
     `,
+    { variables: { memberId } },
   )
 
   const orderPhysicalProductLogs: {
@@ -422,17 +433,17 @@ export const useOrderPhysicalProductLog = () => {
       ? []
       : data.order_log
           .filter(orderLog => orderLog.order_products.length && orderLog.shipping?.address)
-          .map(orderLog => ({
-            id: orderLog.id,
-            member: orderLog.member.name,
-            createdAt: orderLog.created_at,
-            updatedAt: orderLog.updated_at,
-            deliveredAt: orderLog.delivered_at,
-            deliverMessage: orderLog.deliver_message,
-            shipping: orderLog.shipping,
-            invoice: orderLog.invoice,
-            orderPhysicalProducts: orderLog.order_products.map(orderPhysicalProduct => ({
-              key: `${orderLog.id}_${orderPhysicalProduct.name}`,
+          .map(v => ({
+            id: v.id,
+            member: v.member?.name || v.invoice?.name || '',
+            createdAt: v.created_at,
+            updatedAt: v.updated_at,
+            deliveredAt: v.delivered_at,
+            deliverMessage: v.deliver_message,
+            shipping: v.shipping,
+            invoice: v.invoice,
+            orderPhysicalProducts: v.order_products.map(orderPhysicalProduct => ({
+              key: `${v.id}_${orderPhysicalProduct.name}`,
               id: orderPhysicalProduct.id,
               name: orderPhysicalProduct.name,
               productId: orderPhysicalProduct.product_id.split('_')[1],

@@ -107,9 +107,26 @@ export const dateRangeFormatter: (props: {
 }
 
 export const durationFormatter = (seconds: number) => {
-  return `MINUTES:SECONDS`
-    .replace('MINUTES', `${Math.floor(seconds / 60)}`.padStart(2, '0'))
-    .replace('SECONDS', `${Math.floor(seconds % 60)}`.padStart(2, '0'))
+  if (seconds >= 3600) {
+    const remainSeconds = seconds % 3600
+    return `HOURS:MINUTES:SECONDS`
+      .replace('HOURS', `${Math.floor(seconds / 3600)}`.padStart(2, '0'))
+      .replace('MINUTES', `${Math.floor(remainSeconds / 60)}`.padStart(2, '0'))
+      .replace('SECONDS', `${Math.floor(remainSeconds % 60)}`.padStart(2, '0'))
+  } else {
+    return `MINUTES:SECONDS`
+      .replace('MINUTES', `${Math.floor(seconds / 60)}`.padStart(2, '0'))
+      .replace('SECONDS', `${Math.floor(seconds % 60)}`.padStart(2, '0'))
+  }
+}
+
+export const durationFormatToSeconds = (formattedDuration: string) => {
+  const durationArr = formattedDuration.split(':')
+  if (durationArr.length === 3) {
+    return parseInt(durationArr[0]) * 60 * 60 + parseInt(durationArr[1]) * 60 + parseInt(durationArr[2])
+  } else {
+    return parseInt(durationArr[0]) * 60 + parseInt(durationArr[1])
+  }
 }
 
 export const rgba = (hexColor: string, alpha: number) => {
@@ -176,3 +193,15 @@ export const desktopViewMixin = (children: FlattenSimpleInterpolation) => css`
     ${children}
   }
 `
+
+export const isiPhoneChrome = () => {
+  const userAgent = window.navigator.userAgent
+  return userAgent.match(/iPhone/i) && userAgent.match(/CriOS/i)
+}
+
+export const isWebview = () => {
+  var useragent = navigator.userAgent
+  var rules = ['WebView', '(iPhone|iPod|iPad)(?!.*Safari/)', 'Android.*(wv|.0.0.0)']
+  var regex = new RegExp(`(${rules.join('|')})`, 'ig')
+  return Boolean(useragent.match(regex))
+}

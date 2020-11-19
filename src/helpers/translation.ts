@@ -689,7 +689,7 @@ export const podcastMessages = {
     podcastProgramTitle: { id: 'podcast.label.podcastProgramTitle', defaultMessage: '廣播名稱' },
     status: { id: 'podcast.label.status', defaultMessage: '狀態' },
     salesCount: { id: 'podcast.label.salesCount', defaultMessage: '購買' },
-    duration: { id: 'podcast.label.duration', defaultMessage: '內容時長（分鐘）' },
+    duration: { id: 'podcast.label.duration', defaultMessage: '內容時長' },
     description: { id: 'podcast.label.description', defaultMessage: '內容描述' },
     podcastContent: { id: 'podcast.label.podcastContent', defaultMessage: '廣播內容' },
     podcastSettings: { id: 'podcast.label.podcastSettings', defaultMessage: '廣播設定' },
@@ -714,9 +714,17 @@ export const podcastMessages = {
       id: 'podcast.text.bulkUploadMessage',
       defaultMessage: '將會合併上傳所有音檔，確定要上傳嗎？ ',
     },
+    deleteMessage: {
+      id: 'podcast.text.deleteMessage',
+      defaultMessage: '音檔一經刪除即不可恢復，確定要刪除嗎？',
+    },
     chromeNotSupported: {
       id: 'podcast.text.chromeNotSupported',
       defaultMessage: 'iOS Chrome 尚不支援錄音功能，請改用 Safari 瀏覽器',
+    },
+    browserNotSupported: {
+      id: 'podcast.text.browserNotSupported',
+      defaultMessage: '本瀏覽器尚不支援錄音功能，請改用 Safari 瀏覽器',
     },
   }),
 }

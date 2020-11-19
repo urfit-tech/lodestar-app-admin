@@ -19,6 +19,7 @@ export type Module =
   | 'merchandise'
   | 'merchandise_customization'
   | 'merchandise_virtualness'
+  | 'order_contact'
   | 'permission'
   | 'podcast'
   | 'podcast_recording'

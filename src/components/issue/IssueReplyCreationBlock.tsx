@@ -15,6 +15,9 @@ import MemberAvatar from '../common/MemberAvatar'
 import { createUploadFn } from '../form/AdminBraftEditor'
 
 export const StyledEditor = styled(BraftEditor)`
+  border: 1px solid #cdcdcd;
+  border-radius: 4px;
+
   .bf-content {
     height: initial;
   }
@@ -72,7 +75,6 @@ const IssueReplyCreationBlock: React.FC<{
         className="mb-1"
       >
         <StyledEditor
-          style={{ border: '1px solid #cdcdcd', borderRadius: '4px' }}
           language="zh-hant"
           controls={['bold', 'italic', 'underline', 'separator', 'media']}
           media={{ uploadFn: createUploadFn(appId, authToken, backendEndpoint) }}

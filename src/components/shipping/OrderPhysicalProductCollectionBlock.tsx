@@ -17,6 +17,7 @@ import types from '../../types'
 import { InvoiceProps, ShippingProps } from '../../types/merchandise'
 import AdminCard from '../admin/AdminCard'
 import { CustomRatioImage } from '../common/Image'
+import OrderContactModal from './OrderContactModal'
 import ShippingInfoModal from './ShippingInfoModal'
 import ShippingNoticeModal from './ShippingNoticeModal'
 
@@ -65,6 +66,7 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ orderPhysicalProductLogs, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
 
   return (
     <div className="pt-4">
@@ -90,6 +92,9 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
               </div>
 
               <div>
+                <span className="mr-2">
+                  {enabledModules.order_contact && <OrderContactModal orderId={orderLog.id} />}
+                </span>
                 <span className="mr-2">
                   <ShippingInfoModal shipping={orderLog.shipping} invoice={orderLog.invoice} />
                 </span>
