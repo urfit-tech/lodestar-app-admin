@@ -66,6 +66,7 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ orderPhysicalProductLogs, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
 
   return (
     <div className="pt-4">
@@ -92,7 +93,7 @@ const OrderPhysicalProductCollectionBlock: React.FC<{
 
               <div>
                 <span className="mr-2">
-                  <OrderContactModal orderId={orderLog.id} />
+                  {enabledModules.order_contact && <OrderContactModal orderId={orderLog.id} />}
                 </span>
                 <span className="mr-2">
                   <ShippingInfoModal shipping={orderLog.shipping} invoice={orderLog.invoice} />
