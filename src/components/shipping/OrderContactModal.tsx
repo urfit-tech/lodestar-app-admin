@@ -55,7 +55,7 @@ const StyledEditor = styled(BraftEditor)`
 
 const StyledContactBlock = styled.div`
   &:nth-child(n + 1):not(:last-child) {
-    border-bottom: 1px solid var(--gray);
+    border-bottom: 1px solid var(--gray-light);
   }
 `
 
@@ -75,8 +75,8 @@ const OrderContactBlock: React.FC<{
 }> = ({ avatarUrl, name, createdAt, message }) => {
   return (
     <StyledContactBlock className="d-flex align-items-between mt-4">
-      <AvatarImage src={avatarUrl} className="mr-3" size="36px" shape="circle" />
-      <div className="mb-4">
+      <AvatarImage src={avatarUrl} className="flex-shrink-0 mr-3" size="36px" shape="circle" />
+      <div className="flex-grow-1 mb-4">
         <StyledMemberInfo className="mb-3">
           <span className="mr-2">{name}</span>
           <span>{moment(createdAt).fromNow()}</span>
