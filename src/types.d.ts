@@ -4709,6 +4709,20 @@ export interface GET_ORDERS_order_log_aggregate {
   aggregate: GET_ORDERS_order_log_aggregate_aggregate | null;
 }
 
+export interface GET_ORDERS_order_log_member {
+  __typename: "member";
+  name: string;
+  email: string;
+}
+
+export interface GET_ORDERS_order_log_payment_logs {
+  __typename: "payment_log";
+  /**
+   * spgateway, tappay, ezfund
+   */
+  gateway: string | null;
+}
+
 export interface GET_ORDERS_order_log_order_products_product {
   __typename: "product";
   /**
@@ -4743,20 +4757,6 @@ export interface GET_ORDERS_order_log_order_discounts {
   price: any;
 }
 
-export interface GET_ORDERS_order_log_member {
-  __typename: "member";
-  name: string;
-  email: string;
-}
-
-export interface GET_ORDERS_order_log_payment_logs {
-  __typename: "payment_log";
-  /**
-   * spgateway, tappay, ezfund
-   */
-  gateway: string | null;
-}
-
 export interface GET_ORDERS_order_log_order_executors_member {
   __typename: "member";
   name: string;
@@ -4775,6 +4775,19 @@ export interface GET_ORDERS_order_log {
   id: string;
   created_at: any;
   status: string;
+  shipping: any | null;
+  /**
+   * expired order cannot be paid
+   */
+  expired_at: any | null;
+  /**
+   * An object relationship
+   */
+  member: GET_ORDERS_order_log_member;
+  /**
+   * An array relationship
+   */
+  payment_logs: GET_ORDERS_order_log_payment_logs[];
   /**
    * An array relationship
    */
@@ -4783,19 +4796,6 @@ export interface GET_ORDERS_order_log {
    * An array relationship
    */
   order_discounts: GET_ORDERS_order_log_order_discounts[];
-  shipping: any | null;
-  /**
-   * An object relationship
-   */
-  member: GET_ORDERS_order_log_member;
-  /**
-   * expired order cannot be paid
-   */
-  expired_at: any | null;
-  /**
-   * An array relationship
-   */
-  payment_logs: GET_ORDERS_order_log_payment_logs[];
   /**
    * An array relationship
    */
@@ -4814,12 +4814,8 @@ export interface GET_ORDERS {
 }
 
 export interface GET_ORDERSVariables {
-  offset?: number | null;
+  condition?: order_log_bool_exp | null;
   limit?: number | null;
-  statuses?: (string | null)[] | null;
-  orderIdLike?: string | null;
-  memberNameAndEmailLike?: string | null;
-  memberId?: string | null;
 }
 
 /* tslint:disable */

@@ -51,14 +51,15 @@ const StyledCell = styled.div`
 const SaleCollectionAdminCard: React.FC<{ memberId?: string }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
 
+  const [isLoading, setIsLoading] = useState(false)
   const [statuses, setStatuses] = useState<string[] | null>(null)
-  const [orderIdLike, setOrderIdLike] = useState<string | null>(null)
-  const [memberNameAndEmailLike, setMemberNameAndEmailLike] = useState<string | null>(null)
+  const [orderId, setOrderId] = useState<string | null>(null)
+  const [memberNameAndEmail, setMemberNameAndEmail] = useState<string | null>(null)
 
-  const { loadingOrderLog, orderLogs, totalCount, refetchOrderLog, loadMoreOrderLogs } = useOrderLog({
+  const { loadingOrderLogs, errorOrderLogs, orderLogs, totalCount, refetchOrderLogs, loadMoreOrderLogs } = useOrderLog({
     statuses,
-    orderIdLike,
-    memberNameAndEmailLike,
+    orderId,
+    memberNameAndEmail,
     memberId,
   })
 
@@ -107,11 +108,11 @@ const SaleCollectionAdminCard: React.FC<{ memberId?: string }> = ({ memberId }) 
       ...getColumnSearchProps({
         onReset: clearFilters => {
           clearFilters()
-          setOrderIdLike(null)
+          setOrderId(null)
         },
         onSearch: (selectedKeys, confirm) => {
           confirm?.()
-          selectedKeys && setOrderIdLike(`%${selectedKeys[0]}%`)
+          selectedKeys && setOrderId(`${selectedKeys[0]}`)
         },
       }),
     },
@@ -136,11 +137,11 @@ const SaleCollectionAdminCard: React.FC<{ memberId?: string }> = ({ memberId }) 
       ...getColumnSearchProps({
         onReset: clearFilters => {
           clearFilters()
-          setMemberNameAndEmailLike(null)
+          setMemberNameAndEmail(null)
         },
         onSearch: (selectedKeys, confirm) => {
           confirm?.()
-          selectedKeys && setMemberNameAndEmailLike(`%${selectedKeys[0]}%`)
+          selectedKeys && setMemberNameAndEmail(`${selectedKeys[0]}`)
         },
       }),
       render: (_, record) => (
@@ -279,7 +280,7 @@ const SaleCollectionAdminCard: React.FC<{ memberId?: string }> = ({ memberId }) 
                 id: v.id,
                 options: v.options,
               }))}
-              onRefetch={refetchOrderLog}
+              onRefetch={refetchOrderLogs}
             />
           </div>
         ))}
@@ -297,33 +298,66 @@ const SaleCollectionAdminCard: React.FC<{ memberId?: string }> = ({ memberId }) 
 
         <Table<OrderLogProps>
           rowKey="id"
-          loading={loadingOrderLog}
+          loading={!!(loadingOrderLogs || errorOrderLogs)}
           dataSource={orderLogs}
           columns={columns}
           expandedRowRender={expandedRow}
           pagination={false}
           onChange={(_, filters) => setStatuses(filters.status as string[])}
         />
+
+        {loadMoreOrderLogs && (
+          <div className="text-center mt-4">
+            <Button
+              loading={isLoading}
+              onClick={() => {
+                setIsLoading(true)
+                loadMoreOrderLogs().then(() => setIsLoading(false))
+              }}
+            >
+              {formatMessage(commonMessages.ui.showMore)}
+            </Button>
+          </div>
+        )}
       </StyledContainer>
     </AdminCard>
   )
 }
 
-const useOrderLog = (options?: {
+const useOrderLog = (filters?: {
   statuses?: string[] | null
-  orderIdLike?: string | null
-  memberNameAndEmailLike?: string | null
+  orderId?: string | null
+  memberNameAndEmail?: string | null
   memberId?: string
 }) => {
+  const condition: types.GET_ORDERSVariables['condition'] = {
+    status: { _in: filters?.statuses ? filters.statuses : undefined },
+    id: { _ilike: filters?.orderId ? `%${filters.orderId}%` : undefined },
+    member: {
+      id: {
+        _like: filters?.memberId ? `%${filters.memberId}%` : undefined,
+      },
+      _or: [
+        {
+          name: {
+            _ilike: filters?.memberNameAndEmail ? `%${filters.memberNameAndEmail}%` : undefined,
+          },
+        },
+        {
+          email: {
+            _ilike: filters?.memberNameAndEmail ? `%${filters.memberNameAndEmail}%` : undefined,
+          },
+        },
+      ],
+    },
+  }
+
   const { loading, error, data, refetch, fetchMore } = useQuery<types.GET_ORDERS, types.GET_ORDERSVariables>(
     GET_ORDERS,
     {
       variables: {
+        condition,
         limit: 20,
-        statuses: options?.statuses,
-        orderIdLike: options?.orderIdLike,
-        memberNameAndEmailLike: options?.memberNameAndEmailLike,
-        memberId: options?.memberId,
       },
       context: {
         important: true,
@@ -331,22 +365,28 @@ const useOrderLog = (options?: {
     },
   )
 
-  const loadMoreOrderLogs = () =>
-    fetchMore({
-      variables: {
-        limit: 20,
-        statuses: options?.statuses,
-        orderIdLike: options?.orderIdLike,
-        memberNameAndEmailLike: options?.memberNameAndEmailLike,
-        memberId: options?.memberId,
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) {
-          return prev
-        }
-        return Object.assign({}, prev, {})
-      },
-    })
+  const loadMoreOrderLogs =
+    (data?.order_log_aggregate.aggregate?.count || 0) > 20
+      ? () =>
+          fetchMore({
+            variables: {
+              condition: {
+                ...condition,
+                created_at: { _lt: data?.order_log.slice(-1)[0]?.created_at },
+              },
+              limit: 20,
+            },
+            updateQuery: (prev, { fetchMoreResult }) => {
+              if (!fetchMoreResult) {
+                return prev
+              }
+              return Object.assign({}, prev, {
+                order_log_aggregate: fetchMoreResult.order_log_aggregate,
+                order_log: [...prev.order_log, ...fetchMoreResult.order_log],
+              })
+            },
+          })
+      : undefined
 
   const orderLogs: OrderLogProps[] =
     loading || error || !data
@@ -355,6 +395,10 @@ const useOrderLog = (options?: {
           id: v.id,
           createdAt: v.created_at,
           status: v.status,
+          shipping: v.shipping,
+          name: v.member.name,
+          email: v.member.email,
+
           orderProducts: v.order_products.map(w => ({
             id: w.id,
             name: w.name,
@@ -365,19 +409,19 @@ const useOrderLog = (options?: {
             quantity: w.options?.quantity,
             options: w.options,
           })),
+
           orderDiscounts: v.order_discounts.map(w => ({
             id: w.id,
             name: w.name,
             description: w.description,
             price: w.price,
           })),
-          shipping: v.shipping,
-          name: v.member.name,
-          email: v.member.email,
+
           totalPrice:
             sum(v.order_products.map(prop('price'))) -
             sum(v.order_discounts.map(prop('price'))) +
             (v.shipping?.fee || 0),
+
           expiredAt: v.expired_at,
           paymentMethod: v.payment_logs[0]?.gateway,
           orderExecutors: v.order_executors.map(w => w.member.name),
@@ -386,54 +430,38 @@ const useOrderLog = (options?: {
   const totalCount = data?.order_log_aggregate.aggregate?.count || 0
 
   return {
-    loadingOrderLog: loading,
-    errorOrderLog: error,
+    loadingOrderLogs: loading,
+    errorOrderLogs: error,
     orderLogs,
     totalCount,
-    refetchOrderLog: refetch,
+    refetchOrderLogs: refetch,
     loadMoreOrderLogs,
   }
 }
 
 const GET_ORDERS = gql`
-  query GET_ORDERS(
-    $offset: Int
-    $limit: Int
-    $statuses: [String!]
-    $orderIdLike: String
-    $memberNameAndEmailLike: String
-    $memberId: String
-  ) {
-    order_log_aggregate(
-      where: {
-        id: { _like: $orderIdLike }
-        status: { _in: $statuses }
-        member: {
-          _or: [{ name: { _like: $memberNameAndEmailLike } }, { email: { _like: $memberNameAndEmailLike } }]
-          id: { _eq: $memberId }
-        }
-      }
-    ) {
+  query GET_ORDERS($condition: order_log_bool_exp, $limit: Int) {
+    order_log_aggregate(where: $condition) {
       aggregate {
         count
       }
     }
-    order_log(
-      offset: $offset
-      limit: $limit
-      where: {
-        id: { _like: $orderIdLike }
-        status: { _in: $statuses }
-        member: {
-          _or: [{ name: { _like: $memberNameAndEmailLike } }, { email: { _like: $memberNameAndEmailLike } }]
-          id: { _eq: $memberId }
-        }
-      }
-      order_by: { created_at: desc }
-    ) {
+
+    order_log(where: $condition, order_by: { created_at: desc }, limit: $limit) {
       id
       created_at
       status
+      shipping
+      expired_at
+      member {
+        name
+        email
+      }
+
+      payment_logs(order_by: { created_at: desc }, limit: 1) {
+        gateway
+      }
+
       order_products {
         id
         name
@@ -446,21 +474,14 @@ const GET_ORDERS = gql`
         }
         options
       }
+
       order_discounts {
         id
         name
         description
         price
       }
-      shipping
-      member {
-        name
-        email
-      }
-      expired_at
-      payment_logs(order_by: { created_at: desc }, limit: 1) {
-        gateway
-      }
+
       order_executors {
         member {
           name
