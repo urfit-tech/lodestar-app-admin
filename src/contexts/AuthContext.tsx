@@ -36,7 +36,7 @@ const AuthContext = React.createContext<AuthContext>(defaultAuthContext)
 export const AuthProvider: React.FC = ({ children }) => {
   const [isAuthenticating, setIsAuthenticating] = useState(defaultAuthContext.isAuthenticating)
   const [authToken, setAuthToken] = useState<string | null>(null)
-  const [backendEndpoint, setBackendEndpoint] = useState(process.env.REACT_APP_BACKEND_ENDPOINT || null)
+  const [backendEndpoint, setBackendEndpoint] = useState<string | null>(null)
 
   // TODO: add auth payload type
   const payload = authToken ? (jwt.decode(authToken) as any) : null

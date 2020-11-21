@@ -77,7 +77,7 @@ export const AppProvider: React.FC = ({ children }) => {
   const apiHost = data?.app_admin_by_pk?.api_host
 
   useEffect(() => {
-    if (appId) {
+    if (appId && !loading) {
       if (!backendEndpoint) {
         if (apiHost) {
           setBackendEndpoint?.(`https://${apiHost}`)
@@ -88,7 +88,7 @@ export const AppProvider: React.FC = ({ children }) => {
         refreshToken?.({ appId }).catch(() => history.push('/'))
       }
     }
-  }, [apiHost, appId, authToken, backendEndpoint, history, refreshToken, setBackendEndpoint])
+  }, [loading, apiHost, appId, authToken, backendEndpoint, history, refreshToken, setBackendEndpoint])
 
   return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>
 }
