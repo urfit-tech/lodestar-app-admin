@@ -142,10 +142,10 @@ export const useAppointmentEnrollmentCreator = () => {
 const current = new Date()
 export const useAppointmentEnrollments = (
   selectedCreatorId: string,
-  isCanceled: boolean,
-  isFinished: boolean,
   startedAt: Date | null,
   endedAt: Date | null,
+  isCanceled: boolean,
+  isFinished: boolean,
 ) => {
   // !! should get startedAt & endedAt
   const condition: types.GET_APPOINTMENT_ENROLLMENTSVariables['condition'] = {
