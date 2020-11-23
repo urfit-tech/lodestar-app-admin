@@ -23,6 +23,7 @@ const messages = defineMessages({
   emptyAppointment: { id: 'appointment.ui.emptyAppointment', defaultMessage: '目前還沒有任何預約' },
 })
 
+// !! to be delete
 const AppointmentPeriodCollectionTabs: React.FC<{
   withSelector?: boolean
 }> = ({ withSelector }) => {
