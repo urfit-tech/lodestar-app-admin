@@ -99,17 +99,14 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
   }
 }
 
-export const useAppointmentEnrollmentCreator = (startedAt: Date | null, endedAt: Date | null) => {
+export const useAppointmentEnrollmentCreator = () => {
   const { loading, error, data, refetch } = useQuery<
     types.GET_APPOINTMENT_ENROLLMENT_CREATOR,
     types.GET_APPOINTMENT_ENROLLMENT_CREATORVariables
   >(
     gql`
       query GET_APPOINTMENT_ENROLLMENT_CREATOR($startedAt: timestamptz, $endedAt: timestamptz) {
-        appointment_enrollment(
-          where: { started_at: { _gte: $startedAt, _lte: $endedAt } }
-          order_by: { started_at: desc }
-        ) {
+        appointment_enrollment(order_by: { started_at: desc }) {
           id
           appointment_plan {
             creator {
@@ -120,12 +117,6 @@ export const useAppointmentEnrollmentCreator = (startedAt: Date | null, endedAt:
         }
       }
     `,
-    {
-      variables: {
-        startedAt,
-        endedAt,
-      },
-    },
   )
 
   const appointmentCreators: { id: string; name: string }[] =
@@ -149,14 +140,22 @@ export const useAppointmentEnrollmentCreator = (startedAt: Date | null, endedAt:
 
 // !! should be rename to useAppointmentEnrollmentCollection
 const current = new Date()
-export const useAppointmentEnrollments = (selectedCreatorId: string, isCanceled: boolean, isFinished: boolean) => {
+export const useAppointmentEnrollments = (
+  selectedCreatorId: string,
+  isCanceled: boolean,
+  isFinished: boolean,
+  startedAt: Date | null,
+  endedAt: Date | null,
+) => {
   // !! should get startedAt & endedAt
   const condition: types.GET_APPOINTMENT_ENROLLMENTSVariables['condition'] = {
     appointment_plan: {
       creator_id: { _eq: selectedCreatorId ? selectedCreatorId : undefined },
     },
-    canceled_at: { _is_null: !isCanceled },
-    ended_at: isCanceled ? (isFinished ? { _lt: current } : { _gt: current }) : undefined,
+    // started_at: { _gte: startedAt },
+    // ended_at: { _lte: endedAt },
+    // canceled_at: { _is_null: !isCanceled },
+    // ended_at: isCanceled ? (isFinished ? { _lt: current } : { _gt: current }) : undefined,
   }
   // !! order
   // cons: types.GET_APPOINTMENT_ENROLLMENTSVariables['order_by'] = [{ startedAt: order_by['desc'] }]

@@ -1,7 +1,7 @@
 import Icon from '@ant-design/icons'
 import { Button, DatePicker, Input, Select, Skeleton, Tabs } from 'antd'
 import moment from 'moment'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { AdminPageTitle, EmptyBlock } from '../../components/admin'
@@ -27,6 +27,7 @@ const AppointmentPeriodCollectionAdminPage: React.FC = () => {
   const [startedAt, setStartedAt] = useState<Date | null>(null)
   const [endedAt, setEndedAt] = useState<Date | null>(null)
   const [selectedCreatorId, setSelectedCreatorId] = useState<string>('')
+  const { appointmentCreators } = useAppointmentEnrollmentCreator()
 
   const tabConditions = [
     {
@@ -58,12 +59,17 @@ const AppointmentPeriodCollectionAdminPage: React.FC = () => {
 
       <StyledFilterBlock className="d-flex">
         {currentUserRole === 'app-owner' && (
-          <AppointmentPeriodCreatorSelector
-            startedAt={startedAt}
-            endedAt={endedAt}
-            selectedCreatorId={selectedCreatorId}
-            onSetSelectedCreatorId={setSelectedCreatorId}
-          />
+          <Select<string>
+            value={selectedCreatorId}
+            onChange={(value: string) => setSelectedCreatorId?.(value)}
+            className="mr-3"
+            style={{ width: '100%', maxWidth: '15rem' }}
+          >
+            <Select.Option value="">{formatMessage(messages.allInstructors)}</Select.Option>
+            {appointmentCreators.map(v => (
+              <Select.Option value={v.id}>{v.name}</Select.Option>
+            ))}
+          </Select>
         )}
 
         <Input.Group compact>
@@ -90,6 +96,8 @@ const AppointmentPeriodCollectionAdminPage: React.FC = () => {
             <div className="py-4">
               <AppointmentPlanPeriodTabContent
                 selectedCreatorId={selectedCreatorId}
+                startedAt={startedAt}
+                endedAt={endedAt}
                 isFinished={v.isFinished}
                 isCanceled={v.isCanceled}
               />
@@ -101,49 +109,22 @@ const AppointmentPeriodCollectionAdminPage: React.FC = () => {
   )
 }
 
-const AppointmentPeriodCreatorSelector: React.FC<{
-  selectedCreatorId: string
-  startedAt: Date | null
-  endedAt: Date | null
-  withSelector?: Boolean
-  onSetSelectedCreatorId?: React.Dispatch<React.SetStateAction<string>>
-}> = ({ selectedCreatorId, startedAt, endedAt, onSetSelectedCreatorId, withSelector }) => {
-  const { formatMessage } = useIntl()
-  const { appointmentCreators } = useAppointmentEnrollmentCreator(startedAt, endedAt)
-
-  useEffect(() => {
-    onSetSelectedCreatorId?.('')
-  }, [startedAt, endedAt, onSetSelectedCreatorId])
-
-  return (
-    <Select<string>
-      value={selectedCreatorId}
-      onChange={(value: string) => onSetSelectedCreatorId?.(value)}
-      className="mr-3"
-      style={{ width: '100%', maxWidth: '15rem' }}
-    >
-      <Select.Option value="">{formatMessage(messages.allInstructors)}</Select.Option>
-      {appointmentCreators.map(v => (
-        <Select.Option value={v.id}>{v.name}</Select.Option>
-      ))}
-    </Select>
-  )
-}
-
 export default AppointmentPeriodCollectionAdminPage
 
 const AppointmentPlanPeriodTabContent: React.FC<{
   selectedCreatorId: string
+  startedAt: Date | null
+  endedAt: Date | null
   isCanceled: boolean
   isFinished: boolean
-}> = ({ selectedCreatorId, isCanceled, isFinished }) => {
+}> = ({ selectedCreatorId, isCanceled, isFinished, startedAt, endedAt }) => {
   const { formatMessage } = useIntl()
 
   const {
     loadingAppointmentEnrollments,
     appointmentEnrollments,
     loadMoreAppointmentEnrollments,
-  } = useAppointmentEnrollments(selectedCreatorId, isCanceled, isFinished)
+  } = useAppointmentEnrollments(selectedCreatorId, isCanceled, isFinished, startedAt, endedAt)
   const [isLoading, setIsLoading] = useState(false)
 
   if (loadingAppointmentEnrollments) {
