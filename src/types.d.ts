@@ -5663,6 +5663,7 @@ export interface GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment {
   member: GET_APPOINTMENT_ENROLLMENTS_appointment_enrollment_member | null;
   started_at: any | null;
   canceled_at: string | null;
+  ended_at: any | null;
   created_at: any | null;
   member_name: string | null;
   member_email: string | null;

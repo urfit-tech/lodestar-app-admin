@@ -99,6 +99,7 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
   }
 }
 
+// !! should move to AppointmentPlanPeriodTabContent
 export const useAppointmentEnrollmentCreator = () => {
   const { loading, error, data, refetch } = useQuery<
     types.GET_APPOINTMENT_ENROLLMENT_CREATOR,
@@ -147,18 +148,35 @@ export const useAppointmentEnrollments = (
   isCanceled: boolean,
   isFinished: boolean,
 ) => {
-  // !! should get startedAt & endedAt
   const condition: types.GET_APPOINTMENT_ENROLLMENTSVariables['condition'] = {
     appointment_plan: {
-      creator_id: { _eq: selectedCreatorId ? selectedCreatorId : undefined },
+      creator_id: { _eq: selectedCreatorId || undefined },
     },
-    // started_at: { _gte: startedAt },
-    // ended_at: { _lte: endedAt },
-    // canceled_at: { _is_null: !isCanceled },
-    // ended_at: isCanceled ? (isFinished ? { _lt: current } : { _gt: current }) : undefined,
+    started_at: { _gte: startedAt },
+    canceled_at: { _is_null: !isCanceled },
+    ended_at: isCanceled
+      ? {
+          _lte: endedAt,
+        }
+      : isFinished
+      ? {
+          _lte: current,
+        }
+      : {
+          _lte: endedAt,
+          _gte: current,
+        },
   }
-  // !! order
-  // cons: types.GET_APPOINTMENT_ENROLLMENTSVariables['order_by'] = [{ startedAt: order_by['desc'] }]
+
+  const orderCondition: types.GET_APPOINTMENT_ENROLLMENTSVariables['orderCondition'] = [
+    !isFinished && !isCanceled
+      ? {
+          started_at: 'asc' as types.order_by,
+        }
+      : {
+          ended_at: 'desc' as types.order_by,
+        },
+  ]
 
   const { loading, error, data, refetch, fetchMore } = useQuery<
     types.GET_APPOINTMENT_ENROLLMENTS,
@@ -174,7 +192,7 @@ export const useAppointmentEnrollments = (
             count
           }
         }
-        appointment_enrollment(where: $condition, limit: 10, order_by: { started_at: desc }) {
+        appointment_enrollment(where: $condition, limit: 10, order_by: $orderCondition) {
           id
           appointment_plan {
             id
@@ -191,6 +209,7 @@ export const useAppointmentEnrollments = (
           }
           started_at
           canceled_at
+          ended_at
           created_at
           member_name
           member_email
@@ -210,8 +229,24 @@ export const useAppointmentEnrollments = (
         }
       }
     `,
-    { variables: { condition } },
+    {
+      variables: {
+        condition,
+        orderCondition,
+      },
+    },
   )
+
+  const cursor =
+    !isFinished && !isCanceled
+      ? {
+          started_at: { _gt: data?.appointment_enrollment.slice(-1)[0]?.started_at },
+          ended_at: undefined,
+        }
+      : {
+          started_at: undefined,
+          ended_at: { _lt: data?.appointment_enrollment.slice(-1)[0]?.ended_at },
+        }
 
   const loadMoreAppointmentEnrollments =
     (data?.appointment_enrollment_aggregate.aggregate?.count || 0) > 10
@@ -220,8 +255,14 @@ export const useAppointmentEnrollments = (
             variables: {
               condition: {
                 ...condition,
-                created_at: { _lt: data?.appointment_enrollment.slice(-1)[0]?.created_at },
+                started_at:
+                  !isFinished && !isCanceled
+                    ? { _gt: data?.appointment_enrollment.slice(-1)[0]?.started_at }
+                    : undefined,
+                ended_at:
+                  !isFinished && !isCanceled ? undefined : { _lt: data?.appointment_enrollment.slice(-1)[0]?.ended_at },
               },
+              orderCondition,
             },
             updateQuery: (prev, { fetchMoreResult }) => {
               if (!fetchMoreResult) {
