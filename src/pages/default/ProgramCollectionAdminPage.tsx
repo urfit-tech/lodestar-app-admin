@@ -151,7 +151,8 @@ const ProgramCollectionAdminPage: React.FC = () => {
         <div className="col-4">
           <Input.Search
             placeholder={formatMessage(programMessages.text.searchProgramTitle)}
-            onSearch={value => setSearchText(value)}
+            onChange={e => !e.target.value.trim() && setSearchText('')}
+            onSearch={value => setSearchText(value.trim())}
           />
         </div>
       </div>
