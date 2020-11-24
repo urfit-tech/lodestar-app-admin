@@ -86,7 +86,7 @@ export const commaFormatter = (value?: number | string | null) =>
 export const currencyFormatter = (value?: number | string | null) =>
   value !== null && value !== undefined && `NT$ ${value < 0 ? 0 : value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
-export const dateFormatter = (value: Date, format?: string) => moment(value).format(format || `YYYY/MM/DD HH:mm`)
+export const dateFormatter = (value: Date | string, format?: string) => moment(value).format(format || `YYYY/MM/DD HH:mm`)
 
 export const dateRangeFormatter: (props: {
   startedAt: Date

@@ -4696,6 +4696,167 @@ export interface PUBLISH_PROGRAM_PACKAGEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_ORDER_LOG_EXPORT
+// ====================================================
+
+export interface GET_ORDER_LOG_EXPORT_order_log_export {
+  __typename: "order_log_export";
+  order_log_id: string | null;
+  status: string | null;
+  created_at: any | null;
+  updated_at: any | null;
+  invoice: any | null;
+  app_id: string | null;
+  member_id: string | null;
+  member_name: string | null;
+  member_email: string | null;
+  payment_no: string | null;
+  paid_at: string | null;
+  payment_options: string | null;
+  order_products: string | null;
+  order_product_num: any | null;
+  order_product_total_price: any | null;
+  sharing_codes: string | null;
+  sharing_notes: string | null;
+  order_discounts: string | null;
+  order_discount_total_price: any | null;
+  order_executors: string | null;
+}
+
+export interface GET_ORDER_LOG_EXPORT {
+  /**
+   * fetch data from the table: "order_log_export"
+   */
+  order_log_export: GET_ORDER_LOG_EXPORT_order_log_export[];
+}
+
+export interface GET_ORDER_LOG_EXPORTVariables {
+  condition?: order_log_export_bool_exp | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ORDER_PRODUCT_EXPORT
+// ====================================================
+
+export interface GET_ORDER_PRODUCT_EXPORT_order_product_export {
+  __typename: "order_product_export";
+  order_product_id: any | null;
+  name: string | null;
+  quantity: number | null;
+  price: any | null;
+  options: any | null;
+  order_log_id: string | null;
+  app_id: string | null;
+  product_owner: string | null;
+  paid_at: any | null;
+  product_id: string | null;
+}
+
+export interface GET_ORDER_PRODUCT_EXPORT {
+  /**
+   * fetch data from the table: "order_product_export"
+   */
+  order_product_export: GET_ORDER_PRODUCT_EXPORT_order_product_export[];
+}
+
+export interface GET_ORDER_PRODUCT_EXPORTVariables {
+  condition?: order_product_export_bool_exp | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ORDER_DISCOUNT_COLLECTION
+// ====================================================
+
+export interface GET_ORDER_DISCOUNT_COLLECTION_order_discount_order_log {
+  __typename: "order_log";
+  id: string;
+  /**
+   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
+   */
+  invoice: any;
+}
+
+export interface GET_ORDER_DISCOUNT_COLLECTION_order_discount {
+  __typename: "order_discount";
+  id: any;
+  /**
+   * An object relationship
+   */
+  order_log: GET_ORDER_DISCOUNT_COLLECTION_order_discount_order_log;
+  /**
+   * Coupon / Voucher / Card / DownPrice
+   */
+  type: string | null;
+  target: string | null;
+  name: string;
+  price: any;
+}
+
+export interface GET_ORDER_DISCOUNT_COLLECTION {
+  /**
+   * fetch data from the table: "order_discount"
+   */
+  order_discount: GET_ORDER_DISCOUNT_COLLECTION_order_discount[];
+}
+
+export interface GET_ORDER_DISCOUNT_COLLECTIONVariables {
+  startedAt: any;
+  endedAt: any;
+  orderStatuses?: string[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PAYMENT_LOG_EXPORT
+// ====================================================
+
+export interface GET_PAYMENT_LOG_EXPORT_payment_log_export {
+  __typename: "payment_log_export";
+  payment_log_no: any | null;
+  paid_at: any | null;
+  order_log_id: string | null;
+  status: string | null;
+  invoice: any | null;
+  app_id: string | null;
+  member_name: string | null;
+  email: string | null;
+  order_products: string | null;
+  order_product_num: any | null;
+  order_product_total_price: any | null;
+  order_discount_total_price: any | null;
+}
+
+export interface GET_PAYMENT_LOG_EXPORT {
+  /**
+   * fetch data from the table: "payment_log_export"
+   */
+  payment_log_export: GET_PAYMENT_LOG_EXPORT_payment_log_export[];
+}
+
+export interface GET_PAYMENT_LOG_EXPORTVariables {
+  condition?: payment_log_export_bool_exp | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ORDERS
 // ====================================================
 
@@ -7866,290 +8027,6 @@ export interface GET_ORDER_LOG_STATUS {
    * fetch data from the table: "order_log"
    */
   order_log: GET_ORDER_LOG_STATUS_order_log[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ORDER_LOG_COLLECTION
-// ====================================================
-
-export interface GET_ORDER_LOG_COLLECTION_order_log_member {
-  __typename: "member";
-  id: string;
-  name: string;
-  email: string;
-}
-
-export interface GET_ORDER_LOG_COLLECTION_order_log_order_products_aggregate_aggregate_sum {
-  __typename: "order_product_sum_fields";
-  price: any | null;
-}
-
-export interface GET_ORDER_LOG_COLLECTION_order_log_order_products_aggregate_aggregate {
-  __typename: "order_product_aggregate_fields";
-  sum: GET_ORDER_LOG_COLLECTION_order_log_order_products_aggregate_aggregate_sum | null;
-}
-
-export interface GET_ORDER_LOG_COLLECTION_order_log_order_products_aggregate {
-  __typename: "order_product_aggregate";
-  aggregate: GET_ORDER_LOG_COLLECTION_order_log_order_products_aggregate_aggregate | null;
-}
-
-export interface GET_ORDER_LOG_COLLECTION_order_log_order_discounts_aggregate_aggregate_sum {
-  __typename: "order_discount_sum_fields";
-  price: any | null;
-}
-
-export interface GET_ORDER_LOG_COLLECTION_order_log_order_discounts_aggregate_aggregate {
-  __typename: "order_discount_aggregate_fields";
-  sum: GET_ORDER_LOG_COLLECTION_order_log_order_discounts_aggregate_aggregate_sum | null;
-}
-
-export interface GET_ORDER_LOG_COLLECTION_order_log_order_discounts_aggregate {
-  __typename: "order_discount_aggregate";
-  aggregate: GET_ORDER_LOG_COLLECTION_order_log_order_discounts_aggregate_aggregate | null;
-}
-
-export interface GET_ORDER_LOG_COLLECTION_order_log {
-  __typename: "order_log";
-  id: string;
-  status: string;
-  /**
-   * An object relationship
-   */
-  member: GET_ORDER_LOG_COLLECTION_order_log_member;
-  created_at: any;
-  updated_at: any | null;
-  /**
-   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
-   */
-  invoice: any;
-  /**
-   * An aggregated array relationship
-   */
-  order_products_aggregate: GET_ORDER_LOG_COLLECTION_order_log_order_products_aggregate;
-  /**
-   * An aggregated array relationship
-   */
-  order_discounts_aggregate: GET_ORDER_LOG_COLLECTION_order_log_order_discounts_aggregate;
-}
-
-export interface GET_ORDER_LOG_COLLECTION {
-  /**
-   * fetch data from the table: "order_log"
-   */
-  order_log: GET_ORDER_LOG_COLLECTION_order_log[];
-}
-
-export interface GET_ORDER_LOG_COLLECTIONVariables {
-  appId: string;
-  startedAt: any;
-  endedAt: any;
-  orderStatuses?: string[] | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ORDER_PRODUCT_COLLECTION
-// ====================================================
-
-export interface GET_ORDER_PRODUCT_COLLECTION_order_product_order_log_member {
-  __typename: "member";
-  username: string;
-  email: string;
-}
-
-export interface GET_ORDER_PRODUCT_COLLECTION_order_product_order_log {
-  __typename: "order_log";
-  id: string;
-  /**
-   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
-   */
-  name: any;
-  /**
-   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
-   */
-  phone: any;
-  /**
-   * An object relationship
-   */
-  member: GET_ORDER_PRODUCT_COLLECTION_order_product_order_log_member;
-}
-
-export interface GET_ORDER_PRODUCT_COLLECTION_order_product_product {
-  __typename: "product";
-  /**
-   * {type}_{target}, ex: Program_123-456, ProgramPlan_123-456
-   */
-  id: string;
-  /**
-   * Program / ProgramPlan / ProgramContent / ProgramPackagePlan / ActivityTicket / Card / Merchandise / ProjectPlan / PodcastProgram / PodcastPlan / AppointmentServicePlan
-   */
-  type: string;
-}
-
-export interface GET_ORDER_PRODUCT_COLLECTION_order_product {
-  __typename: "order_product";
-  id: any;
-  /**
-   * An object relationship
-   */
-  order_log: GET_ORDER_PRODUCT_COLLECTION_order_product_order_log;
-  /**
-   * An object relationship
-   */
-  product: GET_ORDER_PRODUCT_COLLECTION_order_product_product;
-  name: string;
-  price: any;
-  started_at: any | null;
-  ended_at: any | null;
-  auto_renewed: boolean;
-  amount: any | null;
-}
-
-export interface GET_ORDER_PRODUCT_COLLECTION {
-  /**
-   * fetch data from the table: "order_product"
-   */
-  order_product: GET_ORDER_PRODUCT_COLLECTION_order_product[];
-}
-
-export interface GET_ORDER_PRODUCT_COLLECTIONVariables {
-  appId: string;
-  startedAt: any;
-  endedAt: any;
-  orderStatuses?: string[] | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ORDER_DISCOUNT_COLLECTION
-// ====================================================
-
-export interface GET_ORDER_DISCOUNT_COLLECTION_order_discount_order_log {
-  __typename: "order_log";
-  id: string;
-  /**
-   * name | email | phone | address | postCode | buyerPhone | uniformTitle | uniformNumber
-   */
-  invoice: any;
-}
-
-export interface GET_ORDER_DISCOUNT_COLLECTION_order_discount {
-  __typename: "order_discount";
-  id: any;
-  /**
-   * An object relationship
-   */
-  order_log: GET_ORDER_DISCOUNT_COLLECTION_order_discount_order_log;
-  /**
-   * Coupon / Voucher / Card / DownPrice
-   */
-  type: string | null;
-  target: string | null;
-  name: string;
-  price: any;
-}
-
-export interface GET_ORDER_DISCOUNT_COLLECTION {
-  /**
-   * fetch data from the table: "order_discount"
-   */
-  order_discount: GET_ORDER_DISCOUNT_COLLECTION_order_discount[];
-}
-
-export interface GET_ORDER_DISCOUNT_COLLECTIONVariables {
-  appId: string;
-  startedAt: any;
-  endedAt: any;
-  orderStatuses?: string[] | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PAYMENT_LOG_COLLECTION
-// ====================================================
-
-export interface GET_PAYMENT_LOG_COLLECTION_payment_log_order_log_member {
-  __typename: "member";
-  id: string;
-  name: string;
-  email: string;
-}
-
-export interface GET_PAYMENT_LOG_COLLECTION_payment_log_order_log_order_products_aggregate_aggregate_sum {
-  __typename: "order_product_sum_fields";
-  price: any | null;
-}
-
-export interface GET_PAYMENT_LOG_COLLECTION_payment_log_order_log_order_products_aggregate_aggregate {
-  __typename: "order_product_aggregate_fields";
-  sum: GET_PAYMENT_LOG_COLLECTION_payment_log_order_log_order_products_aggregate_aggregate_sum | null;
-}
-
-export interface GET_PAYMENT_LOG_COLLECTION_payment_log_order_log_order_products_aggregate {
-  __typename: "order_product_aggregate";
-  aggregate: GET_PAYMENT_LOG_COLLECTION_payment_log_order_log_order_products_aggregate_aggregate | null;
-}
-
-export interface GET_PAYMENT_LOG_COLLECTION_payment_log_order_log {
-  __typename: "order_log";
-  id: string;
-  /**
-   * An object relationship
-   */
-  member: GET_PAYMENT_LOG_COLLECTION_payment_log_order_log_member;
-  status: string;
-  /**
-   * An aggregated array relationship
-   */
-  order_products_aggregate: GET_PAYMENT_LOG_COLLECTION_payment_log_order_log_order_products_aggregate;
-}
-
-export interface GET_PAYMENT_LOG_COLLECTION_payment_log {
-  __typename: "payment_log";
-  /**
-   * An object relationship
-   */
-  order_log: GET_PAYMENT_LOG_COLLECTION_payment_log_order_log;
-  no: any;
-  status: string | null;
-  /**
-   * merchant order number 
-   */
-  created_at: any;
-  paid_at: any | null;
-  price: any | null;
-}
-
-export interface GET_PAYMENT_LOG_COLLECTION {
-  /**
-   * fetch data from the table: "payment_log"
-   */
-  payment_log: GET_PAYMENT_LOG_COLLECTION_payment_log[];
-}
-
-export interface GET_PAYMENT_LOG_COLLECTIONVariables {
-  appId: string;
-  startedAt: any;
-  endedAt: any;
-  orderStatuses?: string[] | null;
 }
 
 /* tslint:disable */
@@ -19103,6 +18980,35 @@ export interface order_log_bool_exp {
 }
 
 /**
+ * Boolean expression to filter rows from the table "order_log_export". All fields are combined with a logical 'AND'.
+ */
+export interface order_log_export_bool_exp {
+  _and?: (order_log_export_bool_exp | null)[] | null;
+  _not?: order_log_export_bool_exp | null;
+  _or?: (order_log_export_bool_exp | null)[] | null;
+  app_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  invoice?: jsonb_comparison_exp | null;
+  member_email?: String_comparison_exp | null;
+  member_id?: String_comparison_exp | null;
+  member_name?: String_comparison_exp | null;
+  order_discount_total_price?: numeric_comparison_exp | null;
+  order_discounts?: String_comparison_exp | null;
+  order_executors?: String_comparison_exp | null;
+  order_log_id?: String_comparison_exp | null;
+  order_product_num?: bigint_comparison_exp | null;
+  order_product_total_price?: numeric_comparison_exp | null;
+  order_products?: String_comparison_exp | null;
+  paid_at?: String_comparison_exp | null;
+  payment_no?: String_comparison_exp | null;
+  payment_options?: String_comparison_exp | null;
+  sharing_codes?: String_comparison_exp | null;
+  sharing_notes?: String_comparison_exp | null;
+  status?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
  * input type for inserting data into table "order_log"
  */
 export interface order_log_insert_input {
@@ -19342,6 +19248,26 @@ export interface order_product_bool_exp {
   product_id?: String_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "order_product_export". All fields are combined with a logical 'AND'.
+ */
+export interface order_product_export_bool_exp {
+  _and?: (order_product_export_bool_exp | null)[] | null;
+  _not?: order_product_export_bool_exp | null;
+  _or?: (order_product_export_bool_exp | null)[] | null;
+  app_id?: String_comparison_exp | null;
+  name?: String_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
+  order_log?: order_log_bool_exp | null;
+  order_log_id?: String_comparison_exp | null;
+  order_product_id?: uuid_comparison_exp | null;
+  paid_at?: timestamptz_comparison_exp | null;
+  price?: numeric_comparison_exp | null;
+  product_id?: String_comparison_exp | null;
+  product_owner?: String_comparison_exp | null;
+  quantity?: Int_comparison_exp | null;
 }
 
 /**
@@ -19870,6 +19796,28 @@ export interface payment_log_bool_exp {
   price?: numeric_comparison_exp | null;
   status?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "payment_log_export". All fields are combined with a logical 'AND'.
+ */
+export interface payment_log_export_bool_exp {
+  _and?: (payment_log_export_bool_exp | null)[] | null;
+  _not?: payment_log_export_bool_exp | null;
+  _or?: (payment_log_export_bool_exp | null)[] | null;
+  app_id?: String_comparison_exp | null;
+  email?: String_comparison_exp | null;
+  invoice?: jsonb_comparison_exp | null;
+  member_name?: String_comparison_exp | null;
+  order_discount_total_price?: numeric_comparison_exp | null;
+  order_log?: order_log_bool_exp | null;
+  order_log_id?: String_comparison_exp | null;
+  order_product_num?: bigint_comparison_exp | null;
+  order_product_total_price?: numeric_comparison_exp | null;
+  order_products?: String_comparison_exp | null;
+  paid_at?: timestamptz_comparison_exp | null;
+  payment_log_no?: numeric_comparison_exp | null;
+  status?: String_comparison_exp | null;
 }
 
 /**

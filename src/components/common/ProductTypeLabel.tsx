@@ -22,6 +22,8 @@ const ProductTypeLabel: React.FC<{ productType?: string }> = ({ productType }) =
       return <>{formatMessage(commonMessages.product.activityTicket)}</>
     case 'Merchandise':
       return <>{formatMessage(commonMessages.product.merchandise)}</>
+    case 'MerchandiseSpec':
+      return <>{formatMessage(commonMessages.product.merchandiseSpec)}</>
     case 'PodcastProgram':
       return <>{formatMessage(commonMessages.product.podcastProgram)}</>
     case 'PodcastPlan':
