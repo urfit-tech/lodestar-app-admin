@@ -564,6 +564,7 @@ export const programMessages = {
     note: { id: 'program.label.note', defaultMessage: '用途備註' },
   }),
   text: defineMessages({
+    searchProgramTitle: { id: 'program.text.searchProgramTitle', defaultMessage: '搜尋課程名稱' },
     enrolledSubscriptionCount: {
       id: 'program.text.enrolledSubscriptionCount',
       defaultMessage: '目前 {count} 人訂閱中',

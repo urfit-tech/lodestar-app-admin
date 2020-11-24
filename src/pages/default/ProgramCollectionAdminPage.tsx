@@ -1,20 +1,14 @@
-import Icon, { EditOutlined, FileTextFilled } from '@ant-design/icons'
+import { EditOutlined, FileTextFilled } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Button, Popover, Skeleton, Tabs } from 'antd'
+import { Button, Input, Skeleton, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { AdminPageTitle, EmptyBlock } from '../../components/admin'
-import PositionAdminLayout, {
-  OverlayBlock,
-  OverlayList,
-  OverlayListContent,
-  OverlayListItem,
-  OverlayWrapper,
-} from '../../components/admin/PositionAdminLayout'
+import PositionAdminLayout, { OverlayBlock, OverlayWrapper } from '../../components/admin/PositionAdminLayout'
 import { AvatarImage } from '../../components/common/Image'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
@@ -23,7 +17,6 @@ import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
-import { ReactComponent as MoveIcon } from '../../images/icon/move.svg'
 import types from '../../types'
 import { ProgramPlanPeriodType, ProgramPreviewProps } from '../../types/program'
 import LoadingPage from './LoadingPage'
@@ -47,6 +40,8 @@ const ProgramCollectionAdminPage: React.FC = () => {
   const history = useHistory()
   const { currentMemberId, currentUserRole } = useAuth()
   const { loading, id: appId, enabledModules } = useApp()
+  const [searchText, setSearchText] = useState('')
+  const [counts, setCounts] = useState<{ [key: string]: number }>({})
 
   const [insertProgram] = useMutation<types.INSERT_PROGRAM, types.INSERT_PROGRAMVariables>(INSERT_PROGRAM)
 
@@ -72,9 +67,11 @@ const ProgramCollectionAdminPage: React.FC = () => {
               { program_approval_status: { status: { _eq: 'canceled' } } },
               { program_approval_status: { status: { _eq: 'rejected' } } },
             ],
+            title: searchText ? { _like: `%${searchText}%` } : undefined,
           }
         : {
             published_at: { _is_null: true },
+            title: searchText ? { _like: `%${searchText}%` } : undefined,
           },
     },
     {
@@ -83,6 +80,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
       condition: {
         published_at: { _is_null: true },
         program_approval_status: { status: { _eq: 'pending' } },
+        title: searchText ? { _like: `%${searchText}%` } : undefined,
       },
       hidden: !enabledModules.approval,
     },
@@ -92,6 +90,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
       condition: {
         published_at: { _is_null: true },
         program_approval_status: { status: { _eq: 'approved' } },
+        title: searchText ? { _like: `%${searchText}%` } : undefined,
       },
       hidden: !enabledModules.approval,
     },
@@ -101,8 +100,8 @@ const ProgramCollectionAdminPage: React.FC = () => {
       condition: {
         published_at: { _is_null: false },
         is_private: { _eq: false },
+        title: searchText ? { _like: `%${searchText}%` } : undefined,
       },
-      withPositionControl: currentUserRole === 'app-owner',
     },
     {
       key: 'privatelyPublish',
@@ -110,6 +109,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
       condition: {
         published_at: { _is_null: false },
         is_private: { _eq: true },
+        title: searchText ? { _like: `%${searchText}%` } : undefined,
       },
     },
   ]
@@ -121,42 +121,61 @@ const ProgramCollectionAdminPage: React.FC = () => {
         <span>{formatMessage(commonMessages.menu.programs)}</span>
       </AdminPageTitle>
 
-      <div className="mb-5">
-        <ProductCreationModal
-          categoryClassType="program"
-          withCreatorSelector={currentUserRole === 'app-owner'}
-          withProgramType
-          onCreate={({ title, categoryIds, creatorId, isSubscription }) =>
-            insertProgram({
-              variables: {
-                ownerId: currentMemberId,
-                instructorId: creatorId || currentMemberId,
-                appId,
-                title,
-                isSubscription: isSubscription || false,
-                programCategories:
-                  categoryIds?.map((categoryId, index) => ({
-                    category_id: categoryId,
-                    position: index,
-                  })) || [],
-              },
-            }).then(res => {
-              const programId = res.data?.insert_program?.returning[0]?.id
-              programId && history.push(`/programs/${programId}`)
-            })
-          }
-        />
+      <div className="row mb-5">
+        <div className="col-8">
+          <ProductCreationModal
+            categoryClassType="program"
+            withCreatorSelector={currentUserRole === 'app-owner'}
+            withProgramType
+            onCreate={({ title, categoryIds, creatorId, isSubscription }) =>
+              insertProgram({
+                variables: {
+                  ownerId: currentMemberId,
+                  instructorId: creatorId || currentMemberId,
+                  appId,
+                  title,
+                  isSubscription: isSubscription || false,
+                  programCategories:
+                    categoryIds?.map((categoryId, index) => ({
+                      category_id: categoryId,
+                      position: index,
+                    })) || [],
+                },
+              }).then(res => {
+                const programId = res.data?.insert_program?.returning[0]?.id
+                programId && history.push(`/programs/${programId}`)
+              })
+            }
+          />
+        </div>
+        <div className="col-4">
+          <Input.Search
+            placeholder={formatMessage(programMessages.text.searchProgramTitle)}
+            onSearch={value => setSearchText(value)}
+          />
+        </div>
       </div>
 
       <Tabs defaultActiveKey="draft">
         {tabContents
           .filter(tabContent => !tabContent.hidden)
           .map(tabContent => (
-            <Tabs.TabPane key={tabContent.key} tab={`${tabContent.tab}`}>
+            <Tabs.TabPane
+              key={tabContent.key}
+              tab={`${tabContent.tab} ${
+                typeof counts[tabContent.key] === 'number' ? `(${counts[tabContent.key]})` : ''
+              }`}
+            >
               <ProgramCollectionBlock
                 appId={appId}
                 condition={tabContent.condition}
-                withPositionControl={tabContent.withPositionControl}
+                onReady={count =>
+                  count !== counts[tabContent.key] &&
+                  setCounts({
+                    ...counts,
+                    [tabContent.key]: count,
+                  })
+                }
               />
             </Tabs.TabPane>
           ))}
@@ -168,28 +187,30 @@ const ProgramCollectionAdminPage: React.FC = () => {
 const ProgramCollectionBlock: React.FC<{
   appId: string
   condition: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition']
-  withPositionControl?: boolean
-}> = ({ appId, condition, withPositionControl }) => {
+  onReady?: (count: number) => void
+}> = ({ appId, condition, onReady }) => {
   const { formatMessage } = useIntl()
   const {
     loadingProgramPreviews,
     errorProgramPreviews,
+    programPreviewCount,
     programPreviews,
     refetchProgramPreviews,
     loadMorePrograms,
-  } = useProgramPreviewCollection(condition, { withPositionControl })
+  } = useProgramPreviewCollection(condition)
   const [updatePositions] = useMutation<
     types.UPDATE_PROGRAM_POSITION_COLLECTION,
     types.UPDATE_PROGRAM_POSITION_COLLECTIONVariables
   >(UPDATE_PROGRAM_POSITION_COLLECTION)
   const [loading, setLoading] = useState(false)
 
-  if (loadingProgramPreviews) {
-    return <Skeleton active />
-  }
+  useEffect(() => {
+    onReady?.(programPreviewCount)
+    refetchProgramPreviews()
+  }, [onReady, programPreviewCount, refetchProgramPreviews])
 
-  if (errorProgramPreviews) {
-    return null
+  if (loadingProgramPreviews || errorProgramPreviews) {
+    return <Skeleton active />
   }
 
   if (programPreviews.length === 0) {
@@ -237,39 +258,6 @@ const ProgramCollectionBlock: React.FC<{
                       {formatMessage(programMessages.ui.editProgram)}
                     </StyledButton>
                   </Link>
-
-                  {withPositionControl && (
-                    <Popover
-                      placement="bottomLeft"
-                      content={
-                        <OverlayList
-                          header={formatMessage(commonMessages.label.currentPosition, {
-                            position: currentIndex + 1,
-                          })}
-                        >
-                          <OverlayListContent>
-                            {programPreviews.map((program, index) => (
-                              <OverlayListItem
-                                key={program.id}
-                                className={
-                                  currentIndex === index ? 'active' : currentIndex > index ? 'hoverTop' : 'hoverBottom'
-                                }
-                                onClick={() => moveTarget(currentIndex, index)}
-                              >
-                                <span className="flex-shrink-0">{index + 1}</span>
-                                <span>{program.title}</span>
-                              </OverlayListItem>
-                            ))}
-                          </OverlayListContent>
-                        </OverlayList>
-                      }
-                    >
-                      <StyledButton block className="mt-4">
-                        <Icon component={() => <MoveIcon />} />
-                        {formatMessage(commonMessages.ui.changePosition)}
-                      </StyledButton>
-                    </Popover>
-                  )}
                 </div>
               </OverlayBlock>
             </OverlayWrapper>
@@ -294,16 +282,11 @@ const ProgramCollectionBlock: React.FC<{
   )
 }
 
-const useProgramPreviewCollection = (
-  condition: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition'],
-  options?: {
-    withPositionControl?: boolean
-  },
-) => {
+const useProgramPreviewCollection = (condition: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition']) => {
   const { loading, error, data, refetch, fetchMore } = useQuery<
     types.GET_PROGRAM_PREVIEW_COLLECTION,
     types.GET_PROGRAM_PREVIEW_COLLECTIONVariables
-  >(options?.withPositionControl ? GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION : GET_PROGRAM_PREVIEW_COLLECTION, {
+  >(GET_PROGRAM_PREVIEW_COLLECTION, {
     variables: {
       condition,
       limit: 10,
@@ -345,14 +328,13 @@ const useProgramPreviewCollection = (
         })
 
   const loadMorePrograms =
-    (data?.program_aggregate.aggregate?.count || 0) > 10
+    (data?.program.length || 0) < (data?.program_aggregate.aggregate?.count || 0)
       ? () =>
           fetchMore({
             variables: {
               condition: {
                 ...condition,
-                updated_at: options?.withPositionControl ? undefined : { _lt: data?.program.slice(-1)[0]?.updated_at },
-                position: options?.withPositionControl ? { _gt: data?.program.slice(-1)[0]?.position } : undefined,
+                updated_at: { _lt: data?.program.slice(-1)[0]?.updated_at },
               },
               limit: 10,
             },
@@ -361,7 +343,7 @@ const useProgramPreviewCollection = (
                 return prev
               }
               return {
-                program_aggregate: fetchMoreResult.program_aggregate,
+                program_aggregate: prev.program_aggregate,
                 program: [...prev.program, ...fetchMoreResult.program],
               }
             },
@@ -371,6 +353,7 @@ const useProgramPreviewCollection = (
   return {
     loadingProgramPreviews: loading,
     errorProgramPreviews: error,
+    programPreviewCount: data?.program_aggregate.aggregate?.count || 0,
     programPreviews,
     refetchProgramPreviews: refetch,
     loadMorePrograms,
@@ -385,55 +368,6 @@ const GET_PROGRAM_PREVIEW_COLLECTION = gql`
       }
     }
     program(where: $condition, order_by: [{ updated_at: desc_nulls_last }], limit: $limit) {
-      id
-      cover_url
-      title
-      abstract
-      program_roles(where: { name: { _eq: "instructor" } }, limit: 1) {
-        id
-        member {
-          id
-          picture_url
-          name
-          username
-        }
-      }
-      list_price
-      sale_price
-      sold_at
-      position
-      updated_at
-      published_at
-      is_private
-      is_subscription
-      program_plans {
-        id
-        list_price
-        sale_price
-        sold_at
-        period_type
-        program_plan_enrollments_aggregate {
-          aggregate {
-            count
-          }
-        }
-      }
-      program_enrollments_aggregate {
-        aggregate {
-          count
-        }
-      }
-    }
-  }
-`
-const GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION = gql`
-  query GET_PROGRAM_PREVIEW_COLLECTION_ORDER_BY_POSITION($condition: program_bool_exp!, $limit: Int!) {
-    program_aggregate(where: $condition) {
-      aggregate {
-        count
-      }
-    }
-    program(where: $condition, order_by: [{ position: asc_nulls_last }], limit: $limit) {
       id
       cover_url
       title
