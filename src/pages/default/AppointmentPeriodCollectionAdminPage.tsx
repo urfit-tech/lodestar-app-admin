@@ -9,7 +9,7 @@ import AppointmentPeriodCard from '../../components/appointment/AppointmentPerio
 import AdminLayout from '../../components/layout/AdminLayout'
 import { useAuth } from '../../contexts/AuthContext'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
-import { useAppointmentEnrollmentCreator, useAppointmentEnrollments } from '../../hooks/appointment'
+import { useAppointmentEnrollmentCollection, useAppointmentEnrollmentCreator } from '../../hooks/appointment'
 import { ReactComponent as CalendarAltOIcon } from '../../images/icon/calendar-alt-o.svg'
 
 const StyledFilterBlock = styled.div`
@@ -40,7 +40,6 @@ const AppointmentPeriodCollectionAdminPage: React.FC = () => {
       key: 'canceled',
       tab: formatMessage(appointmentMessages.status.canceled),
       isCanceled: true,
-      isFinished: false,
     },
     {
       key: 'finished',
@@ -109,14 +108,12 @@ const AppointmentPeriodCollectionAdminPage: React.FC = () => {
   )
 }
 
-export default AppointmentPeriodCollectionAdminPage
-
 const AppointmentPlanPeriodTabContent: React.FC<{
   selectedCreatorId: string
   startedAt: Date | null
   endedAt: Date | null
   isCanceled: boolean
-  isFinished: boolean
+  isFinished?: boolean
 }> = ({ selectedCreatorId, startedAt, endedAt, isCanceled, isFinished }) => {
   const { formatMessage } = useIntl()
 
@@ -124,7 +121,7 @@ const AppointmentPlanPeriodTabContent: React.FC<{
     loadingAppointmentEnrollments,
     appointmentEnrollments,
     loadMoreAppointmentEnrollments,
-  } = useAppointmentEnrollments(selectedCreatorId, startedAt, endedAt, isCanceled, isFinished)
+  } = useAppointmentEnrollmentCollection(selectedCreatorId, startedAt, endedAt, isCanceled, isFinished)
   const [isLoading, setIsLoading] = useState(false)
 
   if (loadingAppointmentEnrollments) {
@@ -138,7 +135,6 @@ const AppointmentPlanPeriodTabContent: React.FC<{
   return (
     <>
       {appointmentEnrollments.map(v => (
-        // !! to many props
         <AppointmentPeriodCard
           key={v.orderProduct.id}
           id={v.id}
@@ -171,3 +167,5 @@ const AppointmentPlanPeriodTabContent: React.FC<{
     </>
   )
 }
+
+export default AppointmentPeriodCollectionAdminPage

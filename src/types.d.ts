@@ -5583,11 +5583,6 @@ export interface GET_APPOINTMENT_ENROLLMENT_CREATOR {
   appointment_enrollment: GET_APPOINTMENT_ENROLLMENT_CREATOR_appointment_enrollment[];
 }
 
-export interface GET_APPOINTMENT_ENROLLMENT_CREATORVariables {
-  startedAt?: any | null;
-  endedAt?: any | null;
-}
-
 /* tslint:disable */
 /* eslint-disable */
 // @generated
@@ -5690,96 +5685,7 @@ export interface GET_APPOINTMENT_ENROLLMENTS {
 
 export interface GET_APPOINTMENT_ENROLLMENTSVariables {
   condition?: appointment_enrollment_bool_exp | null;
-  orderCondition?: appointment_enrollment_order_by[] | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_APPOINTMENT_ENROLLMENT_COLLECTION
-// ====================================================
-
-export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_appointment_plan_creator {
-  __typename: "member_public";
-  id: string | null;
-  name: string | null;
-}
-
-export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_appointment_plan {
-  __typename: "appointment_plan";
-  id: any;
-  title: string;
-  /**
-   * minutes
-   */
-  duration: any;
-  /**
-   * An object relationship
-   */
-  creator: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_appointment_plan_creator | null;
-}
-
-export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_member {
-  __typename: "member_public";
-  id: string | null;
-  picture_url: string | null;
-}
-
-export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product_order_log {
-  __typename: "order_log";
-  id: string;
-  created_at: any;
-  updated_at: any | null;
-}
-
-export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product {
-  __typename: "order_product";
-  id: any;
-  options: any | null;
-  /**
-   * An object relationship
-   */
-  order_log: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product_order_log;
-}
-
-export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment {
-  __typename: "appointment_enrollment";
-  id: any | null;
-  /**
-   * An object relationship
-   */
-  appointment_plan: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_appointment_plan | null;
-  /**
-   * An object relationship
-   */
-  member: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_member | null;
-  started_at: any | null;
-  canceled_at: string | null;
-  member_name: string | null;
-  member_email: string | null;
-  member_phone: string | null;
-  order_product_id: any | null;
-  /**
-   * An object relationship
-   */
-  order_product: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment_order_product | null;
-  issue: string | null;
-  result: string | null;
-}
-
-export interface GET_APPOINTMENT_ENROLLMENT_COLLECTION {
-  /**
-   * fetch data from the table: "appointment_enrollment"
-   */
-  appointment_enrollment: GET_APPOINTMENT_ENROLLMENT_COLLECTION_appointment_enrollment[];
-}
-
-export interface GET_APPOINTMENT_ENROLLMENT_COLLECTIONVariables {
-  startedAt?: any | null;
-  endedAt?: any | null;
+  sort?: appointment_enrollment_order_by[] | null;
 }
 
 /* tslint:disable */

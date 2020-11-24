@@ -99,14 +99,10 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
   }
 }
 
-// !! should move to AppointmentPlanPeriodTabContent
 export const useAppointmentEnrollmentCreator = () => {
-  const { loading, error, data, refetch } = useQuery<
-    types.GET_APPOINTMENT_ENROLLMENT_CREATOR,
-    types.GET_APPOINTMENT_ENROLLMENT_CREATORVariables
-  >(
+  const { loading, error, data, refetch } = useQuery<types.GET_APPOINTMENT_ENROLLMENT_CREATOR>(
     gql`
-      query GET_APPOINTMENT_ENROLLMENT_CREATOR($startedAt: timestamptz, $endedAt: timestamptz) {
+      query GET_APPOINTMENT_ENROLLMENT_CREATOR {
         appointment_enrollment(order_by: { started_at: desc }) {
           id
           appointment_plan {
@@ -139,14 +135,13 @@ export const useAppointmentEnrollmentCreator = () => {
   }
 }
 
-// !! should be rename to useAppointmentEnrollmentCollection
-const current = new Date()
-export const useAppointmentEnrollments = (
+
+export const useAppointmentEnrollmentCollection = (
   selectedCreatorId: string,
   startedAt: Date | null,
   endedAt: Date | null,
   isCanceled: boolean,
-  isFinished: boolean,
+  isFinished?: boolean,
 ) => {
   const condition: types.GET_APPOINTMENT_ENROLLMENTSVariables['condition'] = {
     appointment_plan: {
@@ -160,16 +155,16 @@ export const useAppointmentEnrollments = (
         }
       : isFinished
       ? {
-          _lte: current,
+          _lte: moment().startOf('minute').toDate(),
         }
       : {
+          _gte: moment().startOf('minute').toDate(),
           _lte: endedAt,
-          _gte: current,
         },
   }
 
-  const orderCondition: types.GET_APPOINTMENT_ENROLLMENTSVariables['orderCondition'] = [
-    !isFinished && !isCanceled
+  const sort: types.GET_APPOINTMENT_ENROLLMENTSVariables['sort'] = [
+    !isCanceled && !isFinished
       ? {
           started_at: 'asc' as types.order_by,
         }
@@ -185,14 +180,14 @@ export const useAppointmentEnrollments = (
     gql`
       query GET_APPOINTMENT_ENROLLMENTS(
         $condition: appointment_enrollment_bool_exp
-        $orderCondition: [appointment_enrollment_order_by!]
+        $sort: [appointment_enrollment_order_by!]
       ) {
         appointment_enrollment_aggregate(where: $condition) {
           aggregate {
             count
           }
         }
-        appointment_enrollment(where: $condition, limit: 10, order_by: $orderCondition) {
+        appointment_enrollment(where: $condition, limit: 10, order_by: $sort) {
           id
           appointment_plan {
             id
@@ -232,7 +227,7 @@ export const useAppointmentEnrollments = (
     {
       variables: {
         condition,
-        orderCondition,
+        sort,
       },
     },
   )
@@ -240,12 +235,14 @@ export const useAppointmentEnrollments = (
   const cursor =
     !isFinished && !isCanceled
       ? {
-          started_at: { _gt: data?.appointment_enrollment.slice(-1)[0]?.started_at },
-          ended_at: undefined,
+          started_at: {
+            _gt: data?.appointment_enrollment.slice(-1)[0]?.started_at,
+          } as types.timestamptz_comparison_exp,
         }
       : {
-          started_at: undefined,
-          ended_at: { _lt: data?.appointment_enrollment.slice(-1)[0]?.ended_at },
+          ended_at: {
+            _lt: data?.appointment_enrollment.slice(-1)[0]?.ended_at,
+          } as types.timestamptz_comparison_exp,
         }
 
   const loadMoreAppointmentEnrollments =
@@ -255,14 +252,9 @@ export const useAppointmentEnrollments = (
             variables: {
               condition: {
                 ...condition,
-                started_at:
-                  !isFinished && !isCanceled
-                    ? { _gt: data?.appointment_enrollment.slice(-1)[0]?.started_at }
-                    : undefined,
-                ended_at:
-                  !isFinished && !isCanceled ? undefined : { _lt: data?.appointment_enrollment.slice(-1)[0]?.ended_at },
+                ...cursor,
               },
-              orderCondition,
+              sort,
             },
             updateQuery: (prev, { fetchMoreResult }) => {
               if (!fetchMoreResult) {
@@ -289,9 +281,7 @@ export const useAppointmentEnrollments = (
           },
           appointmentPlanTitle: enrollment.appointment_plan?.title || '',
           startedAt: new Date(enrollment.started_at),
-          endedAt: moment(enrollment.started_at)
-            .add(enrollment.appointment_plan?.duration || 0, 'minutes')
-            .toDate(),
+          endedAt: new Date(enrollment.ended_at),
           canceledAt: enrollment.canceled_at ? new Date(enrollment.canceled_at) : null,
           creator: {
             id: enrollment.appointment_plan?.creator?.id || '',
@@ -315,95 +305,5 @@ export const useAppointmentEnrollments = (
     appointmentEnrollments,
     refetchAppointmentEnrollments: refetch,
     loadMoreAppointmentEnrollments,
-  }
-}
-
-// !! to be delete
-export const useAppointmentEnrollmentCollection = (startedAt: Date | null, endedAt: Date | null) => {
-  const { loading, error, data, refetch } = useQuery<
-    types.GET_APPOINTMENT_ENROLLMENT_COLLECTION,
-    types.GET_APPOINTMENT_ENROLLMENT_COLLECTIONVariables
-  >(
-    gql`
-      query GET_APPOINTMENT_ENROLLMENT_COLLECTION($startedAt: timestamptz, $endedAt: timestamptz) {
-        appointment_enrollment(
-          where: { started_at: { _gte: $startedAt, _lte: $endedAt } }
-          order_by: { started_at: desc }
-        ) {
-          id
-          appointment_plan {
-            id
-            title
-            duration
-            creator {
-              id
-              name
-            }
-          }
-          member {
-            id
-            picture_url
-          }
-          started_at
-          canceled_at
-          member_name
-          member_email
-          member_phone
-          order_product_id
-          order_product {
-            id
-            options
-            order_log {
-              id
-              created_at
-              updated_at
-            }
-          }
-          issue
-          result
-        }
-      }
-    `,
-    { variables: { startedAt, endedAt } },
-  )
-
-  const appointmentEnrollments: AppointmentPeriodCardProps[] =
-    loading || error || !data
-      ? []
-      : data.appointment_enrollment.map(enrollment => ({
-          id: enrollment.id,
-          avatarUrl: enrollment.member?.picture_url || null,
-          member: {
-            name: enrollment.member_name || '',
-            email: enrollment.member_email,
-            phone: enrollment.member_phone,
-          },
-          appointmentPlanTitle: enrollment.appointment_plan?.title || '',
-          startedAt: new Date(enrollment.started_at),
-          endedAt: moment(enrollment.started_at)
-            .add(enrollment.appointment_plan?.duration || 0, 'minutes')
-            .toDate(),
-          canceledAt: enrollment.canceled_at ? new Date(enrollment.canceled_at) : null,
-          creator: {
-            id: enrollment.appointment_plan?.creator?.id || '',
-            name: enrollment.appointment_plan?.creator?.name || '',
-          },
-          orderProduct: {
-            id: enrollment.order_product_id || '',
-            options: enrollment.order_product?.options,
-            orderLog: {
-              createdAt: enrollment.order_product?.order_log.created_at,
-              updatedAt: enrollment.order_product?.order_log.updated_at,
-            },
-          },
-          appointmentIssue: enrollment.issue,
-          appointmentResult: enrollment.result,
-        }))
-
-  return {
-    loadingAppointmentEnrollments: loading,
-    errorAppointmentEnrollments: error,
-    appointmentEnrollments,
-    refetchAppointmentEnrollments: refetch,
   }
 }
