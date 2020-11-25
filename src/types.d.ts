@@ -8006,6 +8006,7 @@ export interface GET_MERCHANDISE_SPEC_COLLECTIONVariables {
   isCustomized?: boolean | null;
   isLimited?: boolean | null;
   merchandiseId?: any | null;
+  memberId?: string | null;
 }
 
 /* tslint:disable */
