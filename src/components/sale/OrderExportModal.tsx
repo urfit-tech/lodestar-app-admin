@@ -212,24 +212,26 @@ const OrderExportModal: React.FC = () => {
           formatMessage(orderMessages.label.orderProductName),
           formatMessage(orderMessages.label.productQuantity),
           formatMessage(orderMessages.label.productPrice),
-          formatMessage(orderMessages.label.sharingCode),
-        ],
-        ...orderProducts.map(orderProduct => [
-          orderProduct.order_log_id,
-          orderProduct.paid_at ? dateFormatter(orderProduct.paid_at) : '',
-          orderProduct.product_owner || '',
-          productTypeLabel[orderProduct.product_id?.split('_')[0] || ''] ||
-            formatMessage(commonMessages.product.unknownType),
-          orderProduct.name,
-          orderProduct.quantity,
-          orderProduct.price,
-          orderProduct.options?.sharingCode || '',
-        ]),
+          enabledModules.sharing_code ? formatMessage(orderMessages.label.sharingCode) : undefined,
+        ].filter(v => typeof v !== 'undefined'),
+        ...orderProducts.map(orderProduct =>
+          [
+            orderProduct.order_log_id,
+            orderProduct.paid_at ? dateFormatter(orderProduct.paid_at) : '',
+            orderProduct.product_owner || '',
+            productTypeLabel[orderProduct.product_id?.split('_')[0] || ''] ||
+              formatMessage(commonMessages.product.unknownType),
+            orderProduct.name,
+            orderProduct.quantity,
+            orderProduct.price,
+            enabledModules.sharing_code ? orderProduct.options?.sharingCode || '' : undefined,
+          ].filter(v => typeof v !== 'undefined'),
+        ),
       ]
 
       return data
     },
-    [client, formatMessage, productTypeLabel],
+    [client, enabledModules, formatMessage, productTypeLabel],
   )
 
   const getOrderDiscountContent: (
@@ -306,7 +308,7 @@ const OrderExportModal: React.FC = () => {
         [
           formatMessage(orderMessages.label.orderLogId),
           formatMessage(orderMessages.label.paymentLogNo),
-          formatMessage(orderMessages.label.invoiceId),
+          enabledModules.invoice ? formatMessage(orderMessages.label.invoiceId) : undefined,
           formatMessage(orderMessages.label.orderLogStatus),
           formatMessage(orderMessages.label.orderProductName),
           formatMessage(orderMessages.label.memberName),
@@ -317,31 +319,33 @@ const OrderExportModal: React.FC = () => {
           formatMessage(orderMessages.label.orderDiscountTotalPrice),
           formatMessage(orderMessages.label.orderLogTotalPrice),
           formatMessage(orderMessages.label.invoiceStatus),
-        ],
-        ...paymentLogs.map(paymentLog => [
-          paymentLog.order_log_id,
-          paymentLog.payment_log_no,
-          paymentLog.invoice?.id || '',
-          paymentLog.status,
-          paymentLog.order_products?.split('\\n').join('\n'),
-          paymentLog.member_name,
-          paymentLog.email,
-          paymentLog.paid_at ? dateFormatter(paymentLog.paid_at) : '',
-          paymentLog.order_product_num || 0,
-          paymentLog.order_product_total_price || 0,
-          paymentLog.order_discount_total_price || 0,
-          (paymentLog.order_product_total_price || 0) - (paymentLog.order_discount_total_price || 0),
-          !paymentLog.invoice?.status
-            ? formatMessage(messages.invoicePending)
-            : paymentLog.invoice?.status === 'SUCCESS'
-            ? formatMessage(messages.invoiceSuccess)
-            : formatMessage(messages.invoiceFailed, { errorCode: paymentLog.invoice?.status }),
-        ]),
+        ].filter(v => typeof v !== 'undefined'),
+        ...paymentLogs.map(paymentLog =>
+          [
+            paymentLog.order_log_id,
+            paymentLog.payment_log_no,
+            enabledModules.invoice ? paymentLog.invoice?.id || '' : undefined,
+            paymentLog.status,
+            paymentLog.order_products?.split('\\n').join('\n'),
+            paymentLog.member_name,
+            paymentLog.email,
+            paymentLog.paid_at ? dateFormatter(paymentLog.paid_at) : '',
+            paymentLog.order_product_num || 0,
+            paymentLog.order_product_total_price || 0,
+            paymentLog.order_discount_total_price || 0,
+            (paymentLog.order_product_total_price || 0) - (paymentLog.order_discount_total_price || 0),
+            !paymentLog.invoice?.status
+              ? formatMessage(messages.invoicePending)
+              : paymentLog.invoice?.status === 'SUCCESS'
+              ? formatMessage(messages.invoiceSuccess)
+              : formatMessage(messages.invoiceFailed, { errorCode: paymentLog.invoice?.status }),
+          ].filter(v => typeof v !== 'undefined'),
+        ),
       ]
 
       return data
     },
-    [client, formatMessage],
+    [client, enabledModules, formatMessage],
   )
 
   const handleExport = (exportTarget: 'orderLog' | 'orderProduct' | 'orderDiscount' | 'paymentLog') => {
