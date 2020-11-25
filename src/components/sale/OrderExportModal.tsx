@@ -7,6 +7,7 @@ import moment, { Moment } from 'moment'
 import React, { useCallback, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { useApp } from '../../contexts/AppContext'
 import { dateFormatter, downloadCSV, toCSV } from '../../helpers'
 import { commonMessages, errorMessages, orderMessages } from '../../helpers/translation'
 import { useOrderStatuses } from '../../hooks/order'
@@ -48,6 +49,7 @@ const OrderExportModal: React.FC = () => {
   const client = useApolloClient()
   const [form] = useForm<FieldProps>()
   const { data: allOrderStatuses } = useOrderStatuses()
+  const { enabledModules } = useApp()
 
   const [loading, setLoading] = useState(false)
 
@@ -105,9 +107,9 @@ const OrderExportModal: React.FC = () => {
           formatMessage(orderMessages.label.orderDiscountTotalPrice),
           formatMessage(orderMessages.label.orderLogTotalPrice),
           formatMessage(orderMessages.label.paymentLogDetails),
-          formatMessage(orderMessages.label.sharingCode),
-          formatMessage(orderMessages.label.sharingNote),
-          formatMessage(orderMessages.label.orderLogExecutor),
+          enabledModules.sharing_code ? formatMessage(orderMessages.label.sharingCode) : undefined,
+          enabledModules.sharing_code ? formatMessage(orderMessages.label.sharingNote) : undefined,
+          enabledModules.member_assignment ? formatMessage(orderMessages.label.orderLogExecutor) : undefined,
           formatMessage(orderMessages.label.invoiceName),
           formatMessage(orderMessages.label.invoiceEmail),
           formatMessage(orderMessages.label.invoicePhone),
@@ -117,57 +119,59 @@ const OrderExportModal: React.FC = () => {
           formatMessage(orderMessages.label.invoiceUniformNumber),
           formatMessage(orderMessages.label.invoiceUniformTitle),
           formatMessage(orderMessages.label.invoiceAddress),
-          formatMessage(orderMessages.label.invoiceId),
+          enabledModules.invoice ? formatMessage(orderMessages.label.invoiceId) : undefined,
           formatMessage(orderMessages.label.invoiceStatus),
-        ],
+        ].filter(v => typeof v !== 'undefined'),
         ...orderLogs
           .sort(
             (a, b) =>
               new Date(b.updated_at || b.created_at).getTime() - new Date(a.updated_at || a.created_at).getTime(),
           )
-          .map(orderLog => [
-            orderLog.order_log_id,
-            orderLog.payment_no?.split('\\n').join('\n') || '',
-            orderLog.status,
-            dateFormatter(orderLog.created_at),
-            orderLog.updated_at ? dateFormatter(orderLog.updated_at) : '',
-            orderLog.paid_at
-              ?.split('\\n')
-              .map(v => (v ? dateFormatter(v) : ''))
-              .join('\n') || '',
-            orderLog.member_name,
-            orderLog.member_email,
-            orderLog.order_products?.split('\\n').join('\n') || '',
-            orderLog.order_discounts?.split('\\n').join('\n') || '',
-            orderLog.order_product_num || 0,
-            orderLog.order_product_total_price || 0,
-            orderLog.order_discount_total_price || 0,
-            (orderLog.order_product_total_price || 0) - (orderLog.order_discount_total_price || 0),
-            orderLog.payment_options?.split('\\n').join('\n') || '',
-            orderLog.sharing_codes?.split('\\n').join('\n') || '',
-            orderLog.sharing_notes?.split('\\n').join('\n') || '',
-            orderLog.order_executors?.split('\\n').join('\n') || '',
-            orderLog.invoice?.name || '',
-            orderLog.invoice?.email || '',
-            orderLog.invoice?.phone || orderLog.invoice?.buyerPhone || '',
-            orderLog.invoice?.donationCode ? '捐贈' : orderLog.invoice?.uniformNumber ? '公司' : '個人',
-            orderLog.invoice?.donationCode || '',
-            orderLog.invoice?.phoneBarCode ? '手機' : orderLog.invoice?.citizenCode ? '自然人憑證' : '',
-            orderLog.invoice?.uniformNumber || '',
-            orderLog.invoice?.uniformTitle || '',
-            `${orderLog.invoice?.postCode || ''} ${orderLog.invoice?.address || ''}`,
-            orderLog.invoice?.id || '',
-            !orderLog.invoice?.status
-              ? formatMessage(messages.invoicePending)
-              : orderLog.invoice?.status === 'SUCCESS'
-              ? formatMessage(messages.invoiceSuccess)
-              : formatMessage(messages.invoiceFailed, { errorCode: orderLog.invoice?.status }),
-          ]),
+          .map(orderLog =>
+            [
+              orderLog.order_log_id,
+              orderLog.payment_no?.split('\\n').join('\n') || '',
+              orderLog.status,
+              dateFormatter(orderLog.created_at),
+              orderLog.updated_at ? dateFormatter(orderLog.updated_at) : '',
+              orderLog.paid_at
+                ?.split('\\n')
+                .map(v => (v ? dateFormatter(v) : ''))
+                .join('\n') || '',
+              orderLog.member_name,
+              orderLog.member_email,
+              orderLog.order_products?.split('\\n').join('\n') || '',
+              orderLog.order_discounts?.split('\\n').join('\n') || '',
+              orderLog.order_product_num || 0,
+              orderLog.order_product_total_price || 0,
+              orderLog.order_discount_total_price || 0,
+              (orderLog.order_product_total_price || 0) - (orderLog.order_discount_total_price || 0),
+              orderLog.payment_options?.split('\\n').join('\n') || '',
+              enabledModules.sharing_code ? orderLog.sharing_codes?.split('\\n').join('\n') || '' : undefined,
+              enabledModules.sharing_code ? orderLog.sharing_notes?.split('\\n').join('\n') || '' : undefined,
+              enabledModules.member_assignment ? orderLog.order_executors?.split('\\n').join('\n') || '' : undefined,
+              orderLog.invoice?.name || '',
+              orderLog.invoice?.email || '',
+              orderLog.invoice?.phone || orderLog.invoice?.buyerPhone || '',
+              orderLog.invoice?.donationCode ? '捐贈' : orderLog.invoice?.uniformNumber ? '公司' : '個人',
+              orderLog.invoice?.donationCode || '',
+              orderLog.invoice?.phoneBarCode ? '手機' : orderLog.invoice?.citizenCode ? '自然人憑證' : '',
+              orderLog.invoice?.uniformNumber || '',
+              orderLog.invoice?.uniformTitle || '',
+              `${orderLog.invoice?.postCode || ''} ${orderLog.invoice?.address || ''}`,
+              enabledModules.invoice ? orderLog.invoice?.id || '' : undefined,
+              !orderLog.invoice?.status
+                ? formatMessage(messages.invoicePending)
+                : orderLog.invoice?.status === 'SUCCESS'
+                ? formatMessage(messages.invoiceSuccess)
+                : formatMessage(messages.invoiceFailed, { errorCode: orderLog.invoice?.status }),
+            ].filter(v => typeof v !== 'undefined'),
+          ),
       ]
 
       return data
     },
-    [client, formatMessage],
+    [client, enabledModules, formatMessage],
   )
 
   const getOrderProductContent: (
