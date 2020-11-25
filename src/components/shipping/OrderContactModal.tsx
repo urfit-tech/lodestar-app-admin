@@ -3,7 +3,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Form, message, Modal } from 'antd'
 import ButtonGroup from 'antd/lib/button/button-group'
 import { useForm } from 'antd/lib/form/Form'
-import BraftEditor from 'braft-editor'
+import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -144,12 +144,19 @@ const OrderContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
         <Form form={form}>
           <Form.Item
             name="message"
+            validateTrigger="onClick"
+            initialValue={BraftEditor.createEditorState(null)}
             rules={[
               {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(messages.contactMessage),
-                }),
+                validator: (_, value: EditorState, callback) => {
+                  value.isEmpty()
+                    ? callback(
+                        formatMessage(errorMessages.form.isRequired, {
+                          field: formatMessage(messages.contactMessage),
+                        }),
+                      )
+                    : callback()
+                },
               },
             ]}
           >
