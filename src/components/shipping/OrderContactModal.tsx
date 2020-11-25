@@ -11,7 +11,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages } from '../../helpers/translation'
 import { ReactComponent as IconMail } from '../../images/icon/email-o.svg'
 import types from '../../types'
 import { AvatarImage } from '../common/Image'
@@ -42,12 +42,12 @@ const StyledButton = styled(Button)<{ isMark?: boolean }>`
     `}
 `
 
-const StyledEditor = styled(BraftEditor)`
+const StyledEditor = styled(BraftEditor)<{ isInvalid: boolean }>`
   .bf-controlbar {
     box-shadow: initial;
   }
   .bf-content {
-    border: 1px solid #cdcdcd;
+    border: 1px solid ${props => (props.isInvalid ? 'var(--error)' : 'var(--gray)')};
     border-radius: 4px;
     height: initial;
   }
@@ -102,14 +102,19 @@ const OrderContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
   } = useOrderContact(orderId, currentMemberId || '')
   const [form] = useForm()
   const [isVisible, setVisible] = useState(false)
+  const [isError, setIsError] = useState(false)
 
-  const handleFinish = (values: any) => {
-    insertOrderContact(values.message.toRAW()).then(() => {
-      message.success(formatMessage(commonMessages.event.successfullySaved))
-      form.resetFields()
-      refetch()
-    })
-  }
+  const handleSubmit = () =>
+    form
+      .validateFields(['message'])
+      .then(() => insertOrderContact(form.getFieldValue([]).message.toRAW()))
+      .then(() => {
+        message.success(formatMessage(commonMessages.event.successfullySaved))
+        form.resetFields()
+        setIsError(false)
+        refetch()
+      })
+      .catch(() => setIsError(true))
 
   if (loading || error) {
     return null
@@ -136,9 +141,20 @@ const OrderContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
         footer={null}
         onCancel={() => setVisible(false)}
       >
-        <Form onFinish={handleFinish} form={form}>
-          <Form.Item name="message" rules={[{ required: true }]}>
+        <Form form={form}>
+          <Form.Item
+            name="message"
+            rules={[
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(messages.contactMessage),
+                }),
+              },
+            ]}
+          >
             <StyledEditor
+              isInvalid={isError}
               language="zh-hant"
               className="mb-3"
               controls={['bold', 'italic', 'underline', 'remove-styles', 'separator', 'media']}
@@ -151,7 +167,7 @@ const OrderContactModal: React.FC<{ orderId: string }> = ({ orderId }) => {
               <Button className="mr-2" onClick={() => setVisible(false)}>
                 {formatMessage(commonMessages.ui.cancel)}
               </Button>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" onClick={() => handleSubmit()}>
                 {formatMessage(commonMessages.ui.save)}
               </Button>
             </ButtonGroup>
