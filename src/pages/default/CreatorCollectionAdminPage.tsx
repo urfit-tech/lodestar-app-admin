@@ -8,6 +8,7 @@ import styled from 'styled-components'
 import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { useApp } from '../../contexts/AppContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as CalendarAltIcon } from '../../images/icon/calendar-alt.svg'
 import LoadingPage from './LoadingPage'
@@ -28,13 +29,14 @@ const StyledFilterInput = styled(Input)`
 const CreatorCollectionAdminPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()
   const { loading, enabledModules } = useApp()
+  const { isAuthenticating, currentUserRole } = useAuth()
 
-  if (loading) {
+  if (loading || isAuthenticating) {
     return <LoadingPage />
   }
 
-  if (!enabledModules.creator_display) {
-    return <Redirect to="/" />
+  if (!enabledModules.creator_display || currentUserRole === 'content-creator') {
+    return <Redirect to="/studio/sales" />
   }
 
   const tabContents = [
