@@ -49,6 +49,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         'owner_promotion_admin',
         'owner_podcast_admin',
         'owner_appointment_admin',
+        'owner_creator_display_admin',
         'owner_activity_admin',
         'owner_merchandise_admin',
         'owner_blog_admin',
@@ -146,6 +147,29 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           )}
           {permissions.APPOINTMENT_PERIOD_ADMIN && (
             <Menu.Item key="appointment_period_collection">{formatMessage(commonMessages.menu.appointments)}</Menu.Item>
+          )}
+        </Menu.SubMenu>
+      )}
+
+      {enabledModules.creator_display && (permissions.APPOINTMENT_PLAN_ADMIN || permissions.APPOINTMENT_PERIOD_ADMIN) && (
+        <Menu.SubMenu
+          key="owner_creator_display_admin"
+          title={
+            <span>
+              <Icon component={() => <UsersIcon />} />
+              <span>{formatMessage(commonMessages.menu.creatorDisplayAdmin)}</span>
+            </span>
+          }
+        >
+          {permissions.APPOINTMENT_PLAN_ADMIN && (
+            <Menu.Item key="creator_display_management">
+              {formatMessage(commonMessages.menu.creatorDisplayManagement)}
+            </Menu.Item>
+          )}
+          {permissions.APPOINTMENT_PERIOD_ADMIN && (
+            <Menu.Item key="creator_display_category">
+              {formatMessage(commonMessages.menu.creatorDisplayCategory)}
+            </Menu.Item>
           )}
         </Menu.SubMenu>
       )}

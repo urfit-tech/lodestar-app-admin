@@ -160,6 +160,18 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
   },
 
+  // creator_display
+  creator_display_management: {
+    path: '/creator-display-management',
+    pageName: 'CreatorDisplayManagementAdminPage',
+    authenticated: true,
+  },
+  creator_display_category: {
+    path: '/creator-display-category',
+    pageName: 'CreatorDisplayCategoryAdminPage',
+    authenticated: true,
+  },
+
   // activity
   activity_collection: {
     path: '/activities',
