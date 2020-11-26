@@ -182,6 +182,7 @@ export const commonMessages = {
     name: { id: 'common.term.name', defaultMessage: '名稱' },
     creatorTitle: { id: 'common.term.creatorTitle', defaultMessage: '稱號' },
     speciality: { id: 'common.term.speciality', defaultMessage: '專長' },
+    field: { id: 'common.term.field', defaultMessage: '領域' },
     shortDescription: { id: 'common.term.shortDescription', defaultMessage: '簡述' },
     introduction: { id: 'common.label.introduction', defaultMessage: '介紹' },
     video: { id: 'common.label.video', defaultMessage: '影片' },

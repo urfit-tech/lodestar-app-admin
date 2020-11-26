@@ -163,7 +163,7 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   // creator_display
   creator_display_management: {
     path: '/creator-display-management',
-    pageName: 'CreatorDisplayManagementAdminPage',
+    pageName: 'CreatorDisplayAdminPage',
     authenticated: true,
   },
   creator_display_category: {
