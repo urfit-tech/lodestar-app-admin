@@ -151,7 +151,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         </Menu.SubMenu>
       )}
 
-      {enabledModules.creator_display && (permissions.APPOINTMENT_PLAN_ADMIN || permissions.APPOINTMENT_PERIOD_ADMIN) && (
+      {enabledModules.creator_display && currentUserRole === 'app-owner' && (
         <Menu.SubMenu
           key="owner_creator_display_admin"
           title={
