@@ -161,16 +161,8 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
             </span>
           }
         >
-          {permissions.APPOINTMENT_PLAN_ADMIN && (
-            <Menu.Item key="creator_display_management">
-              {formatMessage(commonMessages.menu.creatorDisplayManagement)}
-            </Menu.Item>
-          )}
-          {permissions.APPOINTMENT_PERIOD_ADMIN && (
-            <Menu.Item key="creator_display_category">
-              {formatMessage(commonMessages.menu.creatorDisplayCategory)}
-            </Menu.Item>
-          )}
+          <Menu.Item key="creator_collection">{formatMessage(commonMessages.menu.creatorDisplayManagement)}</Menu.Item>
+          <Menu.Item key="creator_category">{formatMessage(commonMessages.menu.creatorDisplayCategory)}</Menu.Item>
         </Menu.SubMenu>
       )}
 

@@ -161,14 +161,14 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   },
 
   // creator_display
-  creator_display_management: {
-    path: '/creator-display-management',
-    pageName: 'CreatorDisplayAdminPage',
+  creator_collection: {
+    path: '/creators',
+    pageName: 'CreatorCollectionAdminPage',
     authenticated: true,
   },
-  creator_display_category: {
-    path: '/creator-display-category',
-    pageName: 'CreatorDisplayCategoryAdminPage',
+  creator_category: {
+    path: '/creator-category',
+    pageName: 'CreatorCategoryAdminPage',
     authenticated: true,
   },
 

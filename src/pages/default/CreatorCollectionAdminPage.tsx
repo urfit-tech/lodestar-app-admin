@@ -25,7 +25,7 @@ const StyledFilterInput = styled(Input)`
   width: 188px;
 `
 
-const CreatorDisplayAdminPage: React.FC<{}> = () => {
+const CreatorCollectionAdminPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()
   const { loading, enabledModules } = useApp()
 
@@ -128,4 +128,4 @@ const CreatorDisplayAdminPage: React.FC<{}> = () => {
   )
 }
 
-export default CreatorDisplayAdminPage
+export default CreatorCollectionAdminPage

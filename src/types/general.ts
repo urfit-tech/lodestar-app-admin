@@ -8,6 +8,7 @@ export type ClassType =
   | 'programPackage'
   | 'task'
   | 'member'
+  | 'creator'
 export type ProductType =
   | 'Program'
   | 'ProgramPlan'
