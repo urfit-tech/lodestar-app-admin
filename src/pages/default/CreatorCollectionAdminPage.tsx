@@ -1,6 +1,8 @@
 import Icon, { SearchOutlined } from '@ant-design/icons'
+import { useQuery } from '@apollo/react-hooks'
 import { Button, Input, Table, Tabs } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Redirect } from 'react-router-dom'
@@ -11,6 +13,7 @@ import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
 import { ReactComponent as CalendarAltIcon } from '../../images/icon/calendar-alt.svg'
+import types from '../../types'
 import LoadingPage from './LoadingPage'
 
 const messages = defineMessages({
@@ -30,6 +33,7 @@ const CreatorCollectionAdminPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()
   const { loading, enabledModules } = useApp()
   const { isAuthenticating, currentUserRole } = useAuth()
+  const { creators } = useCreatorCollection()
 
   if (loading || isAuthenticating) {
     return <LoadingPage />
@@ -131,3 +135,53 @@ const CreatorCollectionAdminPage: React.FC<{}> = () => {
 }
 
 export default CreatorCollectionAdminPage
+
+const useCreatorCollection = () => {
+  const { loading, error, data, refetch, fetchMore } = useQuery<types.GET_CREATOR_COLLECTION>(gql`
+    query GET_CREATOR_COLLECTION {
+      creator {
+        id
+        published_at
+        creator_categories {
+          id
+          category {
+            id
+            name
+          }
+        }
+        member_specialities {
+          id
+          tag_name
+        }
+      }
+    }
+  `)
+
+  const creators: {
+    id: string
+    isPublished: boolean
+    categories: { id: string; name: string }[]
+    specialities: { id: string; name: string }[]
+  }[] =
+    loading || error || !data
+      ? []
+      : data.creator.map(v => ({
+          id: v.id || '',
+          isPublished: !!v.published_at,
+          categories: v.creator_categories.map(w => ({
+            id: w.category.id,
+            name: w.category.name,
+          })),
+          specialities: v.member_specialities.map(w => ({
+            id: w.id,
+            name: w.tag_name,
+          })),
+        }))
+
+  return {
+    loadingCreators: loading,
+    errorCreators: error,
+    creators,
+    refetchCreators: refetch,
+  }
+}

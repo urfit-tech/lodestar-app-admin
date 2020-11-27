@@ -9255,6 +9255,57 @@ export interface GET_MEMBER_CONTRACTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_CREATOR_COLLECTION
+// ====================================================
+
+export interface GET_CREATOR_COLLECTION_creator_creator_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_CREATOR_COLLECTION_creator_creator_categories {
+  __typename: "creator_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_CREATOR_COLLECTION_creator_creator_categories_category;
+}
+
+export interface GET_CREATOR_COLLECTION_creator_member_specialities {
+  __typename: "member_speciality";
+  id: any;
+  tag_name: string;
+}
+
+export interface GET_CREATOR_COLLECTION_creator {
+  __typename: "creator";
+  id: string | null;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  creator_categories: GET_CREATOR_COLLECTION_creator_creator_categories[];
+  /**
+   * An array relationship
+   */
+  member_specialities: GET_CREATOR_COLLECTION_creator_member_specialities[];
+}
+
+export interface GET_CREATOR_COLLECTION {
+  /**
+   * fetch data from the table: "creator"
+   */
+  creator: GET_CREATOR_COLLECTION_creator[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_MERCHANDISE
 // ====================================================
 
@@ -15806,6 +15857,7 @@ export interface creator_category_bool_exp {
   _and?: (creator_category_bool_exp | null)[] | null;
   _not?: creator_category_bool_exp | null;
   _or?: (creator_category_bool_exp | null)[] | null;
+  category?: category_bool_exp | null;
   category_id?: String_comparison_exp | null;
   creator?: member_bool_exp | null;
   creator_id?: String_comparison_exp | null;
@@ -15817,6 +15869,7 @@ export interface creator_category_bool_exp {
  * input type for inserting data into table "creator_category"
  */
 export interface creator_category_insert_input {
+  category?: category_obj_rel_insert_input | null;
   category_id?: string | null;
   creator?: member_obj_rel_insert_input | null;
   creator_id?: string | null;
