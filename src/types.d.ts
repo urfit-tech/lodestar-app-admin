@@ -9282,6 +9282,8 @@ export interface GET_CREATOR_COLLECTION_creator_member_specialities {
 export interface GET_CREATOR_COLLECTION_creator {
   __typename: "creator";
   id: string | null;
+  name: string | null;
+  picture_url: string | null;
   published_at: any | null;
   /**
    * An array relationship
@@ -15819,6 +15821,24 @@ export interface coupon_status_order_by {
 }
 
 /**
+ * Boolean expression to filter rows from the table "creator". All fields are combined with a logical 'AND'.
+ */
+export interface creator_bool_exp {
+  _and?: (creator_bool_exp | null)[] | null;
+  _not?: creator_bool_exp | null;
+  _or?: (creator_bool_exp | null)[] | null;
+  block_id?: String_comparison_exp | null;
+  creator_categories?: creator_category_bool_exp | null;
+  id?: String_comparison_exp | null;
+  member?: member_public_bool_exp | null;
+  member_specialities?: member_speciality_bool_exp | null;
+  name?: String_comparison_exp | null;
+  picture_url?: String_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+}
+
+/**
  * order by aggregate values of table "creator_category"
  */
 export interface creator_category_aggregate_order_by {
@@ -15859,9 +15879,10 @@ export interface creator_category_bool_exp {
   _or?: (creator_category_bool_exp | null)[] | null;
   category?: category_bool_exp | null;
   category_id?: String_comparison_exp | null;
-  creator?: member_bool_exp | null;
+  creator?: creator_bool_exp | null;
   creator_id?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
   position?: Int_comparison_exp | null;
 }
 
@@ -15871,9 +15892,9 @@ export interface creator_category_bool_exp {
 export interface creator_category_insert_input {
   category?: category_obj_rel_insert_input | null;
   category_id?: string | null;
-  creator?: member_obj_rel_insert_input | null;
   creator_id?: string | null;
   id?: any | null;
+  member?: member_obj_rel_insert_input | null;
   position?: number | null;
 }
 
