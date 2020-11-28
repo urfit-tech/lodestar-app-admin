@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import types from '../types'
 import { CreatorProps } from '../types/creator'
