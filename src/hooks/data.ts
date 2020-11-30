@@ -364,7 +364,7 @@ export const useOrderPhysicalProductLog = (memberId?: string | null) => {
           where: {
             status: { _eq: "SUCCESS" }
             order_products: {
-              product_id: { _similar: "(ProjectPlan|Merchandise|MerchandiseSpec)%" }
+              product_id: { _similar: "(ProjectPlan|MerchandiseSpec)%" }
               product: { product_owner: { member_id: { _eq: $memberId } } }
             }
           }
@@ -378,7 +378,7 @@ export const useOrderPhysicalProductLog = (memberId?: string | null) => {
           invoice
           order_products(
             where: {
-              product_id: { _similar: "(ProjectPlan|Merchandise|MerchandiseSpec)%" }
+              product_id: { _similar: "(ProjectPlan|MerchandiseSpec)%" }
               product: { product_owner: { member_id: { _eq: $memberId } } }
             }
           ) {

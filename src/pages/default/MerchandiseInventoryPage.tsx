@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import { AdminPageTitle } from '../../components/admin'
 import AdminLayout from '../../components/layout/AdminLayout'
 import MerchandiseInventoryCard from '../../components/merchandise/MerchandiseInventoryCard'
+import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, merchandiseMessages } from '../../helpers/translation'
 import { useMemberShopCollection, useMerchandiseSpecCollection } from '../../hooks/merchandise'
 import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
@@ -25,9 +26,11 @@ const MerchandiseInventoryPage: React.FC<{}> = () => {
   const { memberShops } = useMemberShopCollection()
   const [selectedMemberShop, setSelectedMemberShop] = useState<string>('all')
   const [merchandiseSearch, setMerchandiseSearch] = useState<string | undefined>(undefined)
+  const { isAuthenticating, currentMemberId, currentUserRole } = useAuth()
   const { loadingMerchandiseSpecs, merchandiseSpecs, refetchMerchandiseSpecs } = useMerchandiseSpecCollection({
     merchandiseSearch,
     isLimited: true,
+    memberId: currentUserRole === 'content-creator' ? currentMemberId || '' : undefined,
   })
 
   const tabContents = [
@@ -110,7 +113,7 @@ const MerchandiseInventoryPage: React.FC<{}> = () => {
       <Tabs defaultActiveKey="selling">
         {tabContents.map(tabContent => (
           <Tabs.TabPane key={tabContent.key} tab={`${tabContent.tab} (${tabContent.merchandises.length})`}>
-            {loadingMerchandiseSpecs ? (
+            {isAuthenticating || loadingMerchandiseSpecs ? (
               <Skeleton active />
             ) : tabContent.merchandises.length === 0 ? (
               <StyledNoMatching>

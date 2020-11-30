@@ -317,6 +317,7 @@ export const useMerchandiseSpecCollection = (options?: {
   isLimited?: boolean
   isCustomized?: boolean
   merchandiseId?: string
+  memberId?: string
 }) => {
   const { loading, error, data, refetch } = useQuery<types.GET_MERCHANDISE_SPEC_COLLECTION>(
     gql`
@@ -325,6 +326,7 @@ export const useMerchandiseSpecCollection = (options?: {
         $isCustomized: Boolean
         $isLimited: Boolean
         $merchandiseId: uuid
+        $memberId: String
       ) {
         merchandise_spec(
           where: {
@@ -334,6 +336,7 @@ export const useMerchandiseSpecCollection = (options?: {
               is_deleted: { _eq: false }
               title: { _like: $merchandiseSearchLike }
               id: { _eq: $merchandiseId }
+              member_shop: { member_id: { _eq: $memberId } }
             }
           }
         ) {
@@ -366,11 +369,12 @@ export const useMerchandiseSpecCollection = (options?: {
         isLimited: options?.isLimited,
         isCustomized: options?.isCustomized,
         merchandiseId: options?.merchandiseId,
+        memberId: options?.memberId,
       },
       fetchPolicy: 'no-cache',
     },
   )
-  
+
   const merchandiseSpecs: {
     merchandiseSpecId: string
     merchandiseTitle: string

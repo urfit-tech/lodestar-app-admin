@@ -1,6 +1,7 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import moment from 'moment'
+import { uniqBy } from 'ramda'
 import { AppointmentPeriodCardProps } from '../components/appointment/AppointmentPeriodCard'
 import types from '../types'
 import { AppointmentPlanAdminProps, ScheduleIntervalType } from '../types/appointment'
@@ -98,17 +99,95 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
   }
 }
 
-export const useAppointmentEnrollmentCollection = (startedAt: Date | null, endedAt: Date | null) => {
-  const { loading, error, data, refetch } = useQuery<
-    types.GET_APPOINTMENT_ENROLLMENT_COLLECTION,
-    types.GET_APPOINTMENT_ENROLLMENT_COLLECTIONVariables
+export const useAppointmentEnrollmentCreator = () => {
+  const { loading, error, data, refetch } = useQuery<types.GET_APPOINTMENT_ENROLLMENT_CREATOR>(
+    gql`
+      query GET_APPOINTMENT_ENROLLMENT_CREATOR {
+        appointment_enrollment(order_by: { started_at: desc }) {
+          id
+          appointment_plan {
+            creator {
+              id
+              name
+            }
+          }
+        }
+      }
+    `,
+  )
+
+  const appointmentCreators: { id: string; name: string }[] =
+    loading || error || !data
+      ? []
+      : uniqBy(
+          creator => creator.id,
+          data.appointment_enrollment.map(v => ({
+            id: v.appointment_plan?.creator?.id || '',
+            name: v.appointment_plan?.creator?.name || '',
+          })),
+        )
+
+  return {
+    loading,
+    error,
+    appointmentCreators,
+    refetch,
+  }
+}
+
+
+export const useAppointmentEnrollmentCollection = (
+  selectedCreatorId: string,
+  startedAt: Date | null,
+  endedAt: Date | null,
+  isCanceled: boolean,
+  isFinished?: boolean,
+) => {
+  const condition: types.GET_APPOINTMENT_ENROLLMENTSVariables['condition'] = {
+    appointment_plan: {
+      creator_id: { _eq: selectedCreatorId || undefined },
+    },
+    started_at: { _gte: startedAt },
+    canceled_at: { _is_null: !isCanceled },
+    ended_at: isCanceled
+      ? {
+          _lte: endedAt,
+        }
+      : isFinished
+      ? {
+          _lte: moment().startOf('minute').toDate(),
+        }
+      : {
+          _gte: moment().startOf('minute').toDate(),
+          _lte: endedAt,
+        },
+  }
+
+  const sort: types.GET_APPOINTMENT_ENROLLMENTSVariables['sort'] = [
+    !isCanceled && !isFinished
+      ? {
+          started_at: 'asc' as types.order_by,
+        }
+      : {
+          ended_at: 'desc' as types.order_by,
+        },
+  ]
+
+  const { loading, error, data, refetch, fetchMore } = useQuery<
+    types.GET_APPOINTMENT_ENROLLMENTS,
+    types.GET_APPOINTMENT_ENROLLMENTSVariables
   >(
     gql`
-      query GET_APPOINTMENT_ENROLLMENT_COLLECTION($startedAt: timestamptz, $endedAt: timestamptz) {
-        appointment_enrollment(
-          where: { started_at: { _gte: $startedAt, _lte: $endedAt } }
-          order_by: { started_at: desc }
-        ) {
+      query GET_APPOINTMENT_ENROLLMENTS(
+        $condition: appointment_enrollment_bool_exp
+        $sort: [appointment_enrollment_order_by!]
+      ) {
+        appointment_enrollment_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
+        }
+        appointment_enrollment(where: $condition, limit: 10, order_by: $sort) {
           id
           appointment_plan {
             id
@@ -125,6 +204,8 @@ export const useAppointmentEnrollmentCollection = (startedAt: Date | null, ended
           }
           started_at
           canceled_at
+          ended_at
+          created_at
           member_name
           member_email
           member_phone
@@ -143,8 +224,49 @@ export const useAppointmentEnrollmentCollection = (startedAt: Date | null, ended
         }
       }
     `,
-    { variables: { startedAt, endedAt } },
+    {
+      variables: {
+        condition,
+        sort,
+      },
+    },
   )
+
+  const cursor =
+    !isFinished && !isCanceled
+      ? {
+          started_at: {
+            _gt: data?.appointment_enrollment.slice(-1)[0]?.started_at,
+          } as types.timestamptz_comparison_exp,
+        }
+      : {
+          ended_at: {
+            _lt: data?.appointment_enrollment.slice(-1)[0]?.ended_at,
+          } as types.timestamptz_comparison_exp,
+        }
+
+  const loadMoreAppointmentEnrollments =
+    (data?.appointment_enrollment_aggregate.aggregate?.count || 0) > 10
+      ? () =>
+          fetchMore({
+            variables: {
+              condition: {
+                ...condition,
+                ...cursor,
+              },
+              sort,
+            },
+            updateQuery: (prev, { fetchMoreResult }) => {
+              if (!fetchMoreResult) {
+                return prev
+              }
+              return Object.assign({}, prev, {
+                appointment_enrollment_aggregate: fetchMoreResult.appointment_enrollment_aggregate,
+                appointment_enrollment: [...prev.appointment_enrollment, ...fetchMoreResult.appointment_enrollment],
+              })
+            },
+          })
+      : undefined
 
   const appointmentEnrollments: AppointmentPeriodCardProps[] =
     loading || error || !data
@@ -159,9 +281,7 @@ export const useAppointmentEnrollmentCollection = (startedAt: Date | null, ended
           },
           appointmentPlanTitle: enrollment.appointment_plan?.title || '',
           startedAt: new Date(enrollment.started_at),
-          endedAt: moment(enrollment.started_at)
-            .add(enrollment.appointment_plan?.duration || 0, 'minutes')
-            .toDate(),
+          endedAt: new Date(enrollment.ended_at),
           canceledAt: enrollment.canceled_at ? new Date(enrollment.canceled_at) : null,
           creator: {
             id: enrollment.appointment_plan?.creator?.id || '',
@@ -184,5 +304,6 @@ export const useAppointmentEnrollmentCollection = (startedAt: Date | null, ended
     errorAppointmentEnrollments: error,
     appointmentEnrollments,
     refetchAppointmentEnrollments: refetch,
+    loadMoreAppointmentEnrollments,
   }
 }

@@ -341,6 +341,7 @@ export const commonMessages = {
     card: { id: 'common.product.card', defaultMessage: '會員卡' },
     activityTicket: { id: 'common.product.activityTicket', defaultMessage: '線下實體' },
     merchandise: { id: 'common.product.merchandise', defaultMessage: '商品' },
+    merchandiseSpec: { id: 'common.product.merchandiseSpec', defaultMessage: '商品規格' },
     podcastProgram: { id: 'common.product.podcastProgram', defaultMessage: '廣播' },
     podcastPlan: { id: 'common.product.podcastPlan', defaultMessage: '廣播頻道' },
     appointmentPlan: { id: 'common.product.appointmentPlan', defaultMessage: '預約' },
@@ -564,6 +565,7 @@ export const programMessages = {
     note: { id: 'program.label.note', defaultMessage: '用途備註' },
   }),
   text: defineMessages({
+    searchProgramTitle: { id: 'program.text.searchProgramTitle', defaultMessage: '搜尋課程名稱' },
     enrolledSubscriptionCount: {
       id: 'program.text.enrolledSubscriptionCount',
       defaultMessage: '目前 {count} 人訂閱中',
@@ -944,6 +946,50 @@ export const memberMessages = {
     endedAt: { id: 'member.text.endedAt', defaultMessage: '結束時間：{time}' },
     unavailableContract: { id: 'member.text.unavailableContract', defaultMessage: '此合約已失效' },
   },
+}
+
+export const orderMessages = {
+  label: defineMessages({
+    // order log
+    orderLogId: { id: 'order.label.orderLogId', defaultMessage: '訂單編號' },
+    orderLogStatus: { id: 'order.label.orderLogStatus', defaultMessage: '訂單狀態' },
+    orderLogCreatedAt: { id: 'order.label.orderCreatedAt', defaultMessage: '訂單建立時間' },
+    orderLogUpdatedAt: { id: 'order.label.orderLogUpdatedAt', defaultMessage: '訂單更新時間' },
+    orderLogTotalPrice: { id: 'order.label.orderLogTotalPrice', defaultMessage: '訂單總額' },
+    orderLogExecutor: { id: 'order.label.orderLogExecutor', defaultMessage: '承辦人與分潤' },
+    // order product
+    orderProductName: { id: 'order.label.orderProductName', defaultMessage: '項目名稱' },
+    orderProductCount: { id: 'order.label.orderProductCount', defaultMessage: '項目總數' },
+    orderProductTotalPrice: { id: 'order.label.orderProductTotalPrice', defaultMessage: '項目總額' },
+    sharingCode: { id: 'order.label.sharingCode', defaultMessage: '推廣網址' },
+    sharingNote: { id: 'order.label.sharingNote', defaultMessage: '推廣備註' },
+    productOwner: { id: 'order.label.productOwner', defaultMessage: '創作者' },
+    productType: { id: 'order.label.productType', defaultMessage: '項目類別' },
+    productQuantity: { id: 'order.label.productQuantity', defaultMessage: '項目數量' },
+    productPrice: { id: 'order.label.productPrice', defaultMessage: '項目金額' },
+    // order discount
+    orderDiscountName: { id: 'order.label.orderDiscountName', defaultMessage: '折扣名稱' },
+    orderDiscountTotalPrice: { id: 'order.label.orderDiscountTotalPrice', defaultMessage: '折扣總額' },
+    // payment log
+    paymentLogNo: { id: 'order.label.paymentLogNo', defaultMessage: '交易編號' },
+    paymentLogPaidAt: { id: 'order.label.paymentLogPaidAt', defaultMessage: '付款時間' },
+    paymentLogDetails: { id: 'order.label.paymentLogDetails', defaultMessage: '付款方式' },
+    // member
+    memberName: { id: 'order.label.memberName', defaultMessage: '會員姓名' },
+    memberEmail: { id: 'order.label.memberEmail', defaultMessage: '會員信箱' },
+    // invoice
+    invoiceName: { id: 'order.label.invoiceName', defaultMessage: '發票姓名' },
+    invoiceEmail: { id: 'order.label.invoiceEmail', defaultMessage: '發票信箱' },
+    invoicePhone: { id: 'order.label.invoicePhone', defaultMessage: '發票電話' },
+    invoiceTarget: { id: 'order.label.invoiceTarget', defaultMessage: '發票對象' },
+    invoiceDonationCode: { id: 'order.label.invoiceDonationCode', defaultMessage: '發票捐贈碼' },
+    invoiceCarrier: { id: 'order.label.invoiceCarrier', defaultMessage: '發票載具' },
+    invoiceUniformNumber: { id: 'order.label.invoiceUniformNumber', defaultMessage: '發票統編' },
+    invoiceUniformTitle: { id: 'order.label.invoiceUniformTitle', defaultMessage: '發票抬頭' },
+    invoiceAddress: { id: 'order.label.invoiceAddress', defaultMessage: '發票地址' },
+    invoiceId: { id: 'order.label.invoiceId', defaultMessage: '發票編號' },
+    invoiceStatus: { id: 'order.label.invoiceStatus', defaultMessage: '發票狀態' },
+  }),
 }
 
 export const permissionMessages = defineMessages({

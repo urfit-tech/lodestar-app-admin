@@ -2,20 +2,15 @@ import { DownloadOutlined, DownOutlined, LoadingOutlined } from '@ant-design/ico
 import { useApolloClient } from '@apollo/react-hooks'
 import { Button, DatePicker, Dropdown, Form, Menu, Select } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
 import React, { useCallback, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { dateFormatter, downloadCSV, toCSV } from '../../helpers'
-import { commonMessages, errorMessages } from '../../helpers/translation'
-import {
-  GET_ORDER_DISCOUNT_COLLECTION,
-  GET_ORDER_LOG_COLLECTION,
-  GET_ORDER_PRODUCT_COLLECTION,
-  GET_PAYMENT_LOG_COLLECTION,
-  useOrderStatuses,
-} from '../../hooks/order'
+import { commonMessages, errorMessages, orderMessages } from '../../helpers/translation'
+import { useOrderStatuses } from '../../hooks/order'
 import types from '../../types'
 import AdminModal from '../admin/AdminModal'
 
@@ -53,8 +48,8 @@ const OrderExportModal: React.FC = () => {
   const { formatMessage } = useIntl()
   const client = useApolloClient()
   const [form] = useForm<FieldProps>()
-  const { id: appId } = useApp()
   const { data: allOrderStatuses } = useOrderStatuses()
+  const { enabledModules } = useApp()
 
   const [loading, setLoading] = useState(false)
 
@@ -66,7 +61,7 @@ const OrderExportModal: React.FC = () => {
     ProjectPlan: formatMessage(commonMessages.product.projectPlan),
     Card: formatMessage(commonMessages.product.card),
     ActivityTicket: formatMessage(commonMessages.product.activityTicket),
-    Merchandise: formatMessage(commonMessages.product.merchandise),
+    MerchandiseSpec: formatMessage(commonMessages.product.merchandiseSpec),
     PodcastProgram: formatMessage(commonMessages.product.podcastProgram),
     PodcastPlan: formatMessage(commonMessages.product.podcastPlan),
     AppointmentPlan: formatMessage(commonMessages.product.appointmentPlan),
@@ -78,83 +73,105 @@ const OrderExportModal: React.FC = () => {
     orderStatuses: string[],
   ) => Promise<string[][]> = useCallback(
     async (startedAt, endedAt, orderStatuses) => {
-      const orderLogResult = await client.query<
-        types.GET_ORDER_LOG_COLLECTION,
-        types.GET_ORDER_LOG_COLLECTIONVariables
-      >({
-        query: GET_ORDER_LOG_COLLECTION,
+      const orderLogExportResult = await client.query<types.GET_ORDER_LOG_EXPORT, types.GET_ORDER_LOG_EXPORTVariables>({
+        query: GET_ORDER_LOG_EXPORT,
         variables: {
-          appId,
-          startedAt,
-          endedAt,
-          orderStatuses,
+          condition: {
+            _or: [
+              { updated_at: { _gte: startedAt, _lte: endedAt } },
+              { updated_at: { _is_null: true }, created_at: { _gte: startedAt, _lte: endedAt } },
+            ],
+            status: {
+              _in: orderStatuses,
+            },
+          },
         },
       })
 
-      const orderLogs: types.GET_ORDER_LOG_COLLECTION['order_log'] = orderLogResult.data?.order_log || []
+      const orderLogs: types.GET_ORDER_LOG_EXPORT['order_log_export'] = orderLogExportResult.data.order_log_export || []
 
       const data: string[][] = [
         [
-          formatMessage(commonMessages.label.orderLogId),
-          formatMessage(commonMessages.label.orderLogStatus),
-          formatMessage(commonMessages.label.orderLogMemberName),
-          formatMessage(commonMessages.label.orderLogMemberEmail),
-          formatMessage(commonMessages.label.orderLogCreatedDate),
-          formatMessage(commonMessages.label.orderProductPriceTotal),
-          formatMessage(commonMessages.label.orderDiscountPriceTotal),
-          formatMessage(commonMessages.label.orderLogPriceTotal),
-          formatMessage(commonMessages.label.invoiceName),
-          formatMessage(commonMessages.label.invoiceEmail),
-          formatMessage(commonMessages.label.invoiceBuyerPhone),
-          formatMessage(commonMessages.label.invoiceTarget),
-          formatMessage(commonMessages.label.invoiceDonationCode),
-          formatMessage(commonMessages.label.invoiceCarrier),
-          formatMessage(commonMessages.label.invoiceUniformNumber),
-          formatMessage(commonMessages.label.invoiceUniformTitle),
-          formatMessage(commonMessages.label.invoiceAddress),
-          formatMessage(commonMessages.label.invoiceId),
-          formatMessage(commonMessages.label.invoiceStatus),
-        ],
+          formatMessage(orderMessages.label.orderLogId),
+          formatMessage(orderMessages.label.paymentLogNo),
+          formatMessage(orderMessages.label.orderLogStatus),
+          formatMessage(orderMessages.label.orderLogCreatedAt),
+          formatMessage(orderMessages.label.orderLogUpdatedAt),
+          formatMessage(orderMessages.label.paymentLogPaidAt),
+          formatMessage(orderMessages.label.memberName),
+          formatMessage(orderMessages.label.memberEmail),
+          formatMessage(orderMessages.label.orderProductName),
+          formatMessage(orderMessages.label.orderDiscountName),
+          formatMessage(orderMessages.label.orderProductCount),
+          formatMessage(orderMessages.label.orderProductTotalPrice),
+          formatMessage(orderMessages.label.orderDiscountTotalPrice),
+          formatMessage(orderMessages.label.orderLogTotalPrice),
+          formatMessage(orderMessages.label.paymentLogDetails),
+          enabledModules.sharing_code ? formatMessage(orderMessages.label.sharingCode) : undefined,
+          enabledModules.sharing_code ? formatMessage(orderMessages.label.sharingNote) : undefined,
+          enabledModules.member_assignment ? formatMessage(orderMessages.label.orderLogExecutor) : undefined,
+          formatMessage(orderMessages.label.invoiceName),
+          formatMessage(orderMessages.label.invoiceEmail),
+          formatMessage(orderMessages.label.invoicePhone),
+          formatMessage(orderMessages.label.invoiceTarget),
+          formatMessage(orderMessages.label.invoiceDonationCode),
+          formatMessage(orderMessages.label.invoiceCarrier),
+          formatMessage(orderMessages.label.invoiceUniformNumber),
+          formatMessage(orderMessages.label.invoiceUniformTitle),
+          formatMessage(orderMessages.label.invoiceAddress),
+          enabledModules.invoice ? formatMessage(orderMessages.label.invoiceId) : undefined,
+          formatMessage(orderMessages.label.invoiceStatus),
+        ].filter(v => typeof v !== 'undefined'),
         ...orderLogs
           .sort(
             (a, b) =>
-              new Date(a.updated_at || a.created_at).valueOf() - new Date(b.updated_at || b.created_at).valueOf(),
+              new Date(b.updated_at || b.created_at).getTime() - new Date(a.updated_at || a.created_at).getTime(),
           )
-          .map(orderLog => {
-            const totalProductPrice = orderLog.order_products_aggregate.aggregate?.sum?.price || 0
-            const totalDiscountPrice = orderLog.order_discounts_aggregate.aggregate?.sum?.price || 0
-
-            return [
-              orderLog.id,
+          .map(orderLog =>
+            [
+              orderLog.order_log_id,
+              orderLog.payment_no?.split('\\n').join('\n') || '',
               orderLog.status,
-              orderLog.member.name,
-              orderLog.member.email,
               dateFormatter(orderLog.created_at),
-              totalProductPrice,
-              totalDiscountPrice,
-              totalProductPrice - totalDiscountPrice,
-              orderLog.invoice.name || '',
-              orderLog.invoice.email || '',
-              orderLog.invoice.phone || orderLog.invoice.buyerPhone || '', // buyerPhone is a deprecated field
-              orderLog.invoice.donationCode ? '捐贈' : orderLog.invoice.uniformNumber ? '公司' : '個人',
-              orderLog.invoice.donationCode || '',
-              orderLog.invoice.phoneBarCode ? '手機' : orderLog.invoice.citizenCode ? '自然人憑證' : '',
-              orderLog.invoice.uniformNumber || '',
-              orderLog.invoice.uniformTitle || '',
-              `${orderLog.invoice.postCode || ''} ${orderLog.invoice.address || ''}`,
-              orderLog.invoice.id || '',
-              !orderLog.invoice.status
+              orderLog.updated_at ? dateFormatter(orderLog.updated_at) : '',
+              orderLog.paid_at
+                ?.split('\\n')
+                .map(v => (v ? dateFormatter(v) : ''))
+                .join('\n') || '',
+              orderLog.member_name,
+              orderLog.member_email,
+              orderLog.order_products?.split('\\n').join('\n') || '',
+              orderLog.order_discounts?.split('\\n').join('\n') || '',
+              orderLog.order_product_num || 0,
+              orderLog.order_product_total_price || 0,
+              orderLog.order_discount_total_price || 0,
+              (orderLog.order_product_total_price || 0) - (orderLog.order_discount_total_price || 0),
+              orderLog.payment_options?.split('\\n').join('\n') || '',
+              enabledModules.sharing_code ? orderLog.sharing_codes?.split('\\n').join('\n') || '' : undefined,
+              enabledModules.sharing_code ? orderLog.sharing_notes?.split('\\n').join('\n') || '' : undefined,
+              enabledModules.member_assignment ? orderLog.order_executors?.split('\\n').join('\n') || '' : undefined,
+              orderLog.invoice?.name || '',
+              orderLog.invoice?.email || '',
+              orderLog.invoice?.phone || orderLog.invoice?.buyerPhone || '',
+              orderLog.invoice?.donationCode ? '捐贈' : orderLog.invoice?.uniformNumber ? '公司' : '個人',
+              orderLog.invoice?.donationCode || '',
+              orderLog.invoice?.phoneBarCode ? '手機' : orderLog.invoice?.citizenCode ? '自然人憑證' : '',
+              orderLog.invoice?.uniformNumber || '',
+              orderLog.invoice?.uniformTitle || '',
+              `${orderLog.invoice?.postCode || ''} ${orderLog.invoice?.address || ''}`,
+              enabledModules.invoice ? orderLog.invoice?.id || '' : undefined,
+              !orderLog.invoice?.status
                 ? formatMessage(messages.invoicePending)
-                : orderLog.invoice.status === 'SUCCESS'
+                : orderLog.invoice?.status === 'SUCCESS'
                 ? formatMessage(messages.invoiceSuccess)
-                : formatMessage(messages.invoiceFailed, { errorCode: orderLog.invoice.status }),
-            ]
-          }),
+                : formatMessage(messages.invoiceFailed, { errorCode: orderLog.invoice?.status }),
+            ].filter(v => typeof v !== 'undefined'),
+          ),
       ]
 
       return data
     },
-    [appId, client, formatMessage],
+    [client, enabledModules, formatMessage],
   )
 
   const getOrderProductContent: (
@@ -163,54 +180,58 @@ const OrderExportModal: React.FC = () => {
     orderStatuses: string[],
   ) => Promise<string[][]> = useCallback(
     async (startedAt, endedAt, orderStatuses) => {
-      const orderProductResult = await client.query<
-        types.GET_ORDER_PRODUCT_COLLECTION,
-        types.GET_ORDER_PRODUCT_COLLECTIONVariables
+      const orderProductExportResult = await client.query<
+        types.GET_ORDER_PRODUCT_EXPORT,
+        types.GET_ORDER_PRODUCT_EXPORTVariables
       >({
-        query: GET_ORDER_PRODUCT_COLLECTION,
+        query: GET_ORDER_PRODUCT_EXPORT,
         variables: {
-          appId,
-          startedAt,
-          endedAt,
-          orderStatuses,
+          condition: {
+            order_log: {
+              _or: [
+                { updated_at: { _gte: startedAt, _lte: endedAt } },
+                { updated_at: { _is_null: true }, created_at: { _gte: startedAt, _lte: endedAt } },
+              ],
+              status: {
+                _in: orderStatuses,
+              },
+            },
+          },
         },
       })
 
-      const orderProducts: types.GET_ORDER_PRODUCT_COLLECTION['order_product'] =
-        orderProductResult.data?.order_product || []
+      const orderProducts: types.GET_ORDER_PRODUCT_EXPORT['order_product_export'] =
+        orderProductExportResult.data?.order_product_export || []
 
       const data: string[][] = [
         [
-          formatMessage(commonMessages.label.orderLogId),
-          formatMessage(commonMessages.label.orderLogMemberName),
-          formatMessage(commonMessages.label.orderLogMemberEmail),
-          formatMessage(commonMessages.label.invoicePhone),
-          formatMessage(commonMessages.label.orderProductType),
-          formatMessage(commonMessages.label.orderProductName),
-          formatMessage(commonMessages.label.orderProductAmount),
-          formatMessage(commonMessages.label.orderProductPrice),
-          formatMessage(commonMessages.term.startedAt),
-          formatMessage(commonMessages.term.endedAt),
-          formatMessage(commonMessages.label.orderProductAutoRenew),
-        ],
-        ...orderProducts.map(orderProduct => [
-          orderProduct.order_log.id,
-          orderProduct.order_log.name,
-          orderProduct.order_log.member.email,
-          orderProduct.order_log.phone,
-          productTypeLabel[orderProduct.product.type] || formatMessage(commonMessages.product.unknownType),
-          orderProduct.name,
-          orderProduct.amount || 1,
-          orderProduct.price,
-          dateFormatter(orderProduct.started_at),
-          dateFormatter(orderProduct.ended_at),
-          orderProduct.auto_renewed,
-        ]),
+          formatMessage(orderMessages.label.orderLogId),
+          formatMessage(orderMessages.label.paymentLogPaidAt),
+          formatMessage(orderMessages.label.productOwner),
+          formatMessage(orderMessages.label.productType),
+          formatMessage(orderMessages.label.orderProductName),
+          formatMessage(orderMessages.label.productQuantity),
+          formatMessage(orderMessages.label.productPrice),
+          enabledModules.sharing_code ? formatMessage(orderMessages.label.sharingCode) : undefined,
+        ].filter(v => typeof v !== 'undefined'),
+        ...orderProducts.map(orderProduct =>
+          [
+            orderProduct.order_log_id,
+            orderProduct.paid_at ? dateFormatter(orderProduct.paid_at) : '',
+            orderProduct.product_owner || '',
+            productTypeLabel[orderProduct.product_id?.split('_')[0] || ''] ||
+              formatMessage(commonMessages.product.unknownType),
+            orderProduct.name,
+            orderProduct.quantity,
+            orderProduct.price,
+            enabledModules.sharing_code ? orderProduct.options?.sharingCode || '' : undefined,
+          ].filter(v => typeof v !== 'undefined'),
+        ),
       ]
 
       return data
     },
-    [appId, client, formatMessage, productTypeLabel],
+    [client, enabledModules, formatMessage, productTypeLabel],
   )
 
   const getOrderDiscountContent: (
@@ -225,7 +246,6 @@ const OrderExportModal: React.FC = () => {
       >({
         query: GET_ORDER_DISCOUNT_COLLECTION,
         variables: {
-          appId,
           startedAt,
           endedAt,
           orderStatuses,
@@ -238,14 +258,12 @@ const OrderExportModal: React.FC = () => {
       const data: string[][] = [
         [
           formatMessage(commonMessages.label.orderLogId),
-          formatMessage(commonMessages.label.orderDiscountType),
           formatMessage(commonMessages.label.orderDiscountId),
           formatMessage(commonMessages.label.orderDiscountName),
           formatMessage(commonMessages.label.orderDiscountPrice),
         ],
         ...orderDiscounts.map(orderDiscount => [
           orderDiscount.order_log.id,
-          orderDiscount.type,
           orderDiscount.id,
           orderDiscount.name,
           orderDiscount.price,
@@ -254,7 +272,7 @@ const OrderExportModal: React.FC = () => {
 
       return data
     },
-    [appId, client, formatMessage],
+    [client, formatMessage],
   )
 
   const getPaymentLogContent: (
@@ -263,45 +281,71 @@ const OrderExportModal: React.FC = () => {
     orderStatuses: string[],
   ) => Promise<string[][]> = useCallback(
     async (startedAt, endedAt, orderStatuses) => {
-      const paymentLogResult = await client.query<
-        types.GET_PAYMENT_LOG_COLLECTION,
-        types.GET_PAYMENT_LOG_COLLECTIONVariables
+      const paymentLogExportResult = await client.query<
+        types.GET_PAYMENT_LOG_EXPORT,
+        types.GET_PAYMENT_LOG_EXPORTVariables
       >({
-        query: GET_PAYMENT_LOG_COLLECTION,
+        query: GET_PAYMENT_LOG_EXPORT,
         variables: {
-          appId,
-          startedAt,
-          endedAt,
-          orderStatuses,
+          condition: {
+            order_log: {
+              _or: [
+                { updated_at: { _gte: startedAt, _lte: endedAt } },
+                { updated_at: { _is_null: true }, created_at: { _gte: startedAt, _lte: endedAt } },
+              ],
+              status: {
+                _in: orderStatuses,
+              },
+            },
+          },
         },
       })
 
-      const paymentLogs: types.GET_PAYMENT_LOG_COLLECTION['payment_log'] = paymentLogResult.data?.payment_log || []
+      const paymentLogs: types.GET_PAYMENT_LOG_EXPORT['payment_log_export'] =
+        paymentLogExportResult.data?.payment_log_export || []
 
       const data: string[][] = [
         [
-          formatMessage(commonMessages.label.orderLogMemberName),
-          formatMessage(commonMessages.label.orderLogMemberEmail),
-          formatMessage(commonMessages.label.orderLogId),
-          formatMessage(commonMessages.label.paymentNo),
-          formatMessage(commonMessages.label.orderLogStatus),
-          formatMessage(commonMessages.label.paymentCreatedAt),
-          formatMessage(commonMessages.label.paymentPrice),
-        ],
-        ...paymentLogs.map(paymentLog => [
-          paymentLog.order_log.member.name,
-          paymentLog.order_log.member.email,
-          paymentLog.order_log.id,
-          paymentLog.no,
-          paymentLog.status,
-          dateFormatter(paymentLog.paid_at || paymentLog.created_at),
-          paymentLog.price,
-        ]),
+          formatMessage(orderMessages.label.orderLogId),
+          formatMessage(orderMessages.label.paymentLogNo),
+          enabledModules.invoice ? formatMessage(orderMessages.label.invoiceId) : undefined,
+          formatMessage(orderMessages.label.orderLogStatus),
+          formatMessage(orderMessages.label.orderProductName),
+          formatMessage(orderMessages.label.memberName),
+          formatMessage(orderMessages.label.memberEmail),
+          formatMessage(orderMessages.label.paymentLogPaidAt),
+          formatMessage(orderMessages.label.orderProductCount),
+          formatMessage(orderMessages.label.orderProductTotalPrice),
+          formatMessage(orderMessages.label.orderDiscountTotalPrice),
+          formatMessage(orderMessages.label.orderLogTotalPrice),
+          formatMessage(orderMessages.label.invoiceStatus),
+        ].filter(v => typeof v !== 'undefined'),
+        ...paymentLogs.map(paymentLog =>
+          [
+            paymentLog.order_log_id,
+            paymentLog.payment_log_no,
+            enabledModules.invoice ? paymentLog.invoice?.id || '' : undefined,
+            paymentLog.status,
+            paymentLog.order_products?.split('\\n').join('\n'),
+            paymentLog.member_name,
+            paymentLog.email,
+            paymentLog.paid_at ? dateFormatter(paymentLog.paid_at) : '',
+            paymentLog.order_product_num || 0,
+            paymentLog.order_product_total_price || 0,
+            paymentLog.order_discount_total_price || 0,
+            (paymentLog.order_product_total_price || 0) - (paymentLog.order_discount_total_price || 0),
+            !paymentLog.invoice?.status
+              ? formatMessage(messages.invoicePending)
+              : paymentLog.invoice?.status === 'SUCCESS'
+              ? formatMessage(messages.invoiceSuccess)
+              : formatMessage(messages.invoiceFailed, { errorCode: paymentLog.invoice?.status }),
+          ].filter(v => typeof v !== 'undefined'),
+        ),
       ]
 
       return data
     },
-    [appId, client, formatMessage],
+    [client, enabledModules, formatMessage],
   )
 
   const handleExport = (exportTarget: 'orderLog' | 'orderProduct' | 'orderDiscount' | 'paymentLog') => {
@@ -372,6 +416,7 @@ const OrderExportModal: React.FC = () => {
           <Dropdown.Button
             type="primary"
             icon={<DownOutlined />}
+            trigger={['click']}
             overlay={
               <Menu>
                 <Menu.Item key="order-product" onClick={() => handleExport('orderProduct')}>
@@ -446,5 +491,92 @@ const OrderExportModal: React.FC = () => {
     </AdminModal>
   )
 }
+
+const GET_ORDER_LOG_EXPORT = gql`
+  query GET_ORDER_LOG_EXPORT($condition: order_log_export_bool_exp) {
+    order_log_export(where: $condition) {
+      order_log_id
+      status
+      created_at
+      updated_at
+      invoice
+      app_id
+      member_id
+      member_name
+      member_email
+      payment_no
+      paid_at
+      payment_options
+      order_products
+      order_product_num
+      order_product_total_price
+      sharing_codes
+      sharing_notes
+      order_discounts
+      order_discount_total_price
+      order_executors
+    }
+  }
+`
+const GET_ORDER_PRODUCT_EXPORT = gql`
+  query GET_ORDER_PRODUCT_EXPORT($condition: order_product_export_bool_exp) {
+    order_product_export(where: $condition) {
+      order_product_id
+      name
+      quantity
+      price
+      options
+      order_log_id
+      app_id
+      product_owner
+      paid_at
+      product_id
+    }
+  }
+`
+const GET_ORDER_DISCOUNT_COLLECTION = gql`
+  query GET_ORDER_DISCOUNT_COLLECTION($startedAt: timestamptz!, $endedAt: timestamptz!, $orderStatuses: [String!]) {
+    order_discount(
+      where: {
+        order_log: {
+          status: { _in: $orderStatuses }
+          _or: [
+            { updated_at: { _gte: $startedAt, _lte: $endedAt } }
+            { updated_at: { _is_null: true }, created_at: { _gte: $startedAt, _lte: $endedAt } }
+          ]
+        }
+      }
+      order_by: { order_log: { updated_at: desc } }
+    ) {
+      id
+      order_log {
+        id
+        invoice
+      }
+      type
+      target
+      name
+      price
+    }
+  }
+`
+const GET_PAYMENT_LOG_EXPORT = gql`
+  query GET_PAYMENT_LOG_EXPORT($condition: payment_log_export_bool_exp) {
+    payment_log_export(where: $condition) {
+      payment_log_no
+      paid_at
+      order_log_id
+      status
+      invoice
+      app_id
+      member_name
+      email
+      order_products
+      order_product_num
+      order_product_total_price
+      order_discount_total_price
+    }
+  }
+`
 
 export default OrderExportModal
