@@ -1,25 +1,19 @@
-import Icon, { SearchOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
-import { Button, Input, Table, Tabs } from 'antd'
-import { ColumnProps, TableProps } from 'antd/lib/table'
-import gql from 'graphql-tag'
+import { MoreOutlined, SearchOutlined } from '@ant-design/icons'
+import { Button, Dropdown, Input, Menu, message } from 'antd'
+import Table, { ColumnProps, TableProps } from 'antd/lib/table'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { Redirect } from 'react-router-dom'
 import styled from 'styled-components'
-import { AdminPageTitle } from '../../components/admin'
-import { AvatarImage } from '../../components/common/Image'
-import AdminLayout from '../../components/layout/AdminLayout'
-import { useApp } from '../../contexts/AppContext'
-import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages } from '../../helpers/translation'
-import { ReactComponent as CalendarAltIcon } from '../../images/icon/calendar-alt.svg'
-import types from '../../types'
-import LoadingPage from './LoadingPage'
+import { useCreator } from '../../hooks/creators'
+import { CreatorProps } from '../../types/creator'
+import { AvatarImage } from '../common/Image'
 
 const messages = defineMessages({
-  published: { id: 'creator.label.published', defaultMessage: '已公開 ({count})' },
-  hidden: { id: 'creator.label.hidden', defaultMessage: '隱藏 ({count})' },
+  publishedSuccess: { id: 'creator.status.publishedSuccess', defaultMessage: '已公開' },
+  hiddenSuccess: { id: 'creator.status.hiddenSuccess', defaultMessage: '已隱藏' },
+  showCreator: { id: 'creator.label.showCreator', defaultMessage: '顯示講師' },
+  hideCreator: { id: 'creator.ui.hideCreator', defaultMessage: '隱藏講師' },
 })
 
 const StyledFilterButton = styled(Button)`
@@ -30,7 +24,7 @@ const StyledFilterInput = styled(Input)`
   width: 188px;
 `
 
-const StyledCategory = styled.span`
+const StyledField = styled.span`
   border-radius: 2px;
   border: solid 1px var(--gray);
   text-align: center;
@@ -58,61 +52,6 @@ const StyledTag = styled.span`
   }
 `
 
-type CreatorProps = {
-  id: string
-  isPublished: boolean
-  pictureUrl: string | null
-  name: string
-  categoryNames: string[]
-  specialityNames: string[]
-}
-
-const CreatorCollectionAdminPage: React.FC<{}> = () => {
-  const { formatMessage } = useIntl()
-  const { loading, enabledModules } = useApp()
-  const { isAuthenticating, currentUserRole } = useAuth()
-  const { creators } = useCreatorCollection()
-
-  if (loading || isAuthenticating) {
-    return <LoadingPage />
-  }
-
-  if (!enabledModules.creator_display || currentUserRole === 'content-creator') {
-    return <Redirect to="/studio/sales" />
-  }
-
-  const tabContents = [
-    {
-      key: 'published',
-      tab: formatMessage(messages.published, { count: creators.filter(v => v.isPublished).length }),
-      creators: creators.filter(v => v.isPublished),
-    },
-    {
-      key: 'hidden',
-      tab: formatMessage(messages.hidden, { count: creators.filter(v => !v.isPublished).length }),
-      creators: creators.filter(v => !v.isPublished),
-    },
-  ]
-  return (
-    <AdminLayout>
-      <AdminPageTitle className="mb-4">
-        <Icon component={() => <CalendarAltIcon />} className="mr-3" />
-        <span>{formatMessage(commonMessages.menu.creatorDisplayManagement)}</span>
-      </AdminPageTitle>
-
-      <Tabs defaultActiveKey="published">
-        {tabContents.map(v => (
-          <Tabs.TabPane key={v.key} tab={v.tab}>
-            <CreatorCollectionAdminTable creators={v.creators} />
-          </Tabs.TabPane>
-        ))}
-      </Tabs>
-    </AdminLayout>
-  )
-}
-
-export default CreatorCollectionAdminPage
-
 const CreatorCollectionAdminTable: React.FC<{ creators: CreatorProps[] } & TableProps<CreatorProps>> = ({
   creators,
   ...props
@@ -127,6 +66,7 @@ const CreatorCollectionAdminTable: React.FC<{ creators: CreatorProps[] } & Table
     field: null,
     speciality: null,
   })
+  const { insertCreatorDisplay, deleteCreatorDisplay, refetchCreators } = useCreator()
 
   const filteredCreators = creators.filter(
     v =>
@@ -172,6 +112,7 @@ const CreatorCollectionAdminTable: React.FC<{ creators: CreatorProps[] } & Table
       title: formatMessage(commonMessages.term.instructor),
       dataIndex: 'name',
       key: 'name',
+      width: '30%',
       ...getColumnSearchProps({
         onReset: clearFilters => {
           clearFilters()
@@ -194,6 +135,7 @@ const CreatorCollectionAdminTable: React.FC<{ creators: CreatorProps[] } & Table
       title: formatMessage(commonMessages.term.field),
       dataIndex: 'categoryNames',
       key: 'field',
+      width: '30%',
       ...getColumnSearchProps({
         onReset: clearFilters => {
           clearFilters()
@@ -204,12 +146,13 @@ const CreatorCollectionAdminTable: React.FC<{ creators: CreatorProps[] } & Table
         },
         onSearch: ([searchText] = []) => setFilter({ ...filter, field: searchText as string }),
       }),
-      render: fields => fields.map((v: string) => <StyledCategory>{v}</StyledCategory>),
+      render: fields => fields.map((v: string) => <StyledField>{v}</StyledField>),
     },
     {
       title: formatMessage(commonMessages.term.speciality),
       dataIndex: 'specialityNames',
       key: 'speciality',
+      width: '40%',
       ...getColumnSearchProps({
         onReset: clearFilters => {
           clearFilters()
@@ -223,50 +166,46 @@ const CreatorCollectionAdminTable: React.FC<{ creators: CreatorProps[] } & Table
       }),
       render: tags => tags.map((v: string) => <StyledTag>{v}</StyledTag>),
     },
+    {
+      dataIndex: 'isPublished',
+      render: (isPublished, { id: creatorId }) => (
+        <Dropdown
+          overlay={
+            <Menu>
+              {isPublished ? (
+                <Menu.Item
+                  onClick={() =>
+                    deleteCreatorDisplay(creatorId).then(() => {
+                      message.success(formatMessage(messages.hiddenSuccess))
+                      refetchCreators()
+                    })
+                  }
+                >
+                  {formatMessage(messages.hideCreator)}
+                </Menu.Item>
+              ) : (
+                <Menu.Item
+                  onClick={() =>
+                    insertCreatorDisplay(creatorId).then(() => {
+                      message.success(formatMessage(messages.publishedSuccess))
+                      refetchCreators()
+                    })
+                  }
+                >
+                  {formatMessage(messages.showCreator)}
+                </Menu.Item>
+              )}
+            </Menu>
+          }
+          trigger={['click']}
+        >
+          <MoreOutlined />
+        </Dropdown>
+      ),
+    },
   ]
 
   return <Table dataSource={filteredCreators} columns={columns} {...props} />
 }
 
-const useCreatorCollection = () => {
-  const { loading, error, data, refetch, fetchMore } = useQuery<types.GET_CREATOR_COLLECTION>(gql`
-    query GET_CREATOR_COLLECTION {
-      creator {
-        id
-        name
-        picture_url
-        published_at
-        creator_categories {
-          id
-          category {
-            id
-            name
-          }
-        }
-        member_specialities {
-          id
-          tag_name
-        }
-      }
-    }
-  `)
-
-  const creators: CreatorProps[] =
-    loading || error || !data
-      ? []
-      : data.creator.map(v => ({
-          id: v.id || '',
-          isPublished: !!v.published_at,
-          pictureUrl: v.picture_url,
-          name: v.name || '',
-          categoryNames: v.creator_categories.map(w => w.category.name),
-          specialityNames: v.member_specialities.map(w => w.tag_name),
-        }))
-
-  return {
-    loadingCreators: loading,
-    errorCreators: error,
-    creators,
-    refetchCreators: refetch,
-  }
-}
+export default CreatorCollectionAdminTable

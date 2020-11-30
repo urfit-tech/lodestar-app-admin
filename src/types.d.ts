@@ -9255,6 +9255,59 @@ export interface GET_MEMBER_CONTRACTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_CREATOR_DISPLAY
+// ====================================================
+
+export interface INSERT_CREATOR_DISPLAY_insert_creator_display_one {
+  __typename: "creator_display";
+  id: any;
+}
+
+export interface INSERT_CREATOR_DISPLAY {
+  /**
+   * insert a single row into the table: "creator_display"
+   */
+  insert_creator_display_one: INSERT_CREATOR_DISPLAY_insert_creator_display_one | null;
+}
+
+export interface INSERT_CREATOR_DISPLAYVariables {
+  creatorId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_CREATOR_DISPLAY
+// ====================================================
+
+export interface DELETE_CREATOR_DISPLAY_delete_creator_display {
+  __typename: "creator_display_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_CREATOR_DISPLAY {
+  /**
+   * delete data from the table: "creator_display"
+   */
+  delete_creator_display: DELETE_CREATOR_DISPLAY_delete_creator_display | null;
+}
+
+export interface DELETE_CREATOR_DISPLAYVariables {
+  creatorId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_CREATOR_COLLECTION
 // ====================================================
 

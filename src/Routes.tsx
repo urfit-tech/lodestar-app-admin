@@ -160,18 +160,6 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
   },
 
-  // creator_display
-  creator_collection: {
-    path: '/creators',
-    pageName: 'CreatorCollectionAdminPage',
-    authenticated: true,
-  },
-  creator_category: {
-    path: '/creator-category',
-    pageName: 'CreatorCategoryAdminPage',
-    authenticated: true,
-  },
-
   // activity
   activity_collection: {
     path: '/activities',
@@ -308,6 +296,16 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'owner/PointHistoryAdminPage',
     authenticated: true,
     allowedUserRole: 'app-owner',
+  },
+  owner_creator_collection: {
+    path: '/admin/creators',
+    pageName: 'owner/CreatorCollectionAdminPage',
+    authenticated: true,
+  },
+  owner_creator_category: {
+    path: '/admin/creator-category',
+    pageName: 'owner/CreatorCategoryAdminPage',
+    authenticated: true,
   },
 
   // content creator admin
