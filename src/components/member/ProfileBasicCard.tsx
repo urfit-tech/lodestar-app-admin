@@ -176,7 +176,7 @@ const ProfileBasicCard: React.FC<
           className={withFields ? '' : 'd-none'}
           name="fields"
         >
-          <Select mode="tags">
+          <Select mode="multiple">
             {categories.map(v => (
               <Select.Option key={v.id} value={v.id}>
                 {v.name}
