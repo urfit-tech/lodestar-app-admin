@@ -1,11 +1,13 @@
-import { MoreOutlined, SearchOutlined } from '@ant-design/icons'
+import Icon, { MoreOutlined, SearchOutlined } from '@ant-design/icons'
 import { Button, Dropdown, Input, Menu, message } from 'antd'
 import Table, { ColumnProps, TableProps } from 'antd/lib/table'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { useApp } from '../../contexts/AppContext'
 import { commonMessages } from '../../helpers/translation'
 import { useCreator } from '../../hooks/creators'
+import { ReactComponent as ExternalLinkIcon } from '../../images/icon/external-link-square.svg'
 import { CreatorProps } from '../../types/creator'
 import { AvatarImage } from '../common/Image'
 
@@ -57,6 +59,8 @@ const CreatorCollectionAdminTable: React.FC<{ creators: CreatorProps[] } & Table
   ...props
 }) => {
   const { formatMessage } = useIntl()
+  const { settings } = useApp()
+  const { insertCreatorDisplay, deleteCreatorDisplay, refetchCreators } = useCreator()
   const [filter, setFilter] = useState<{
     name: string | null
     field: string | null
@@ -66,7 +70,6 @@ const CreatorCollectionAdminTable: React.FC<{ creators: CreatorProps[] } & Table
     field: null,
     speciality: null,
   })
-  const { insertCreatorDisplay, deleteCreatorDisplay, refetchCreators } = useCreator()
 
   const filteredCreators = creators.filter(
     v =>
@@ -152,7 +155,7 @@ const CreatorCollectionAdminTable: React.FC<{ creators: CreatorProps[] } & Table
       title: formatMessage(commonMessages.term.speciality),
       dataIndex: 'specialityNames',
       key: 'speciality',
-      width: '40%',
+      width: '35%',
       ...getColumnSearchProps({
         onReset: clearFilters => {
           clearFilters()
@@ -167,40 +170,49 @@ const CreatorCollectionAdminTable: React.FC<{ creators: CreatorProps[] } & Table
       render: tags => tags.map((v: string) => <StyledTag>{v}</StyledTag>),
     },
     {
-      dataIndex: 'isPublished',
-      render: (isPublished, { id: creatorId }) => (
-        <Dropdown
-          overlay={
-            <Menu>
-              {isPublished ? (
-                <Menu.Item
-                  onClick={() =>
-                    deleteCreatorDisplay(creatorId).then(() => {
-                      message.success(formatMessage(messages.hiddenSuccess))
-                      refetchCreators()
-                    })
-                  }
-                >
-                  {formatMessage(messages.hideCreator)}
-                </Menu.Item>
-              ) : (
-                <Menu.Item
-                  onClick={() =>
-                    insertCreatorDisplay(creatorId).then(() => {
-                      message.success(formatMessage(messages.publishedSuccess))
-                      refetchCreators()
-                    })
-                  }
-                >
-                  {formatMessage(messages.showCreator)}
-                </Menu.Item>
-              )}
-            </Menu>
-          }
-          trigger={['click']}
-        >
-          <MoreOutlined />
-        </Dropdown>
+      dataIndex: 'id',
+      width: '5%',
+      render: (creatorId, { isPublished }) => (
+        <div className="d-flex align-items-center">
+          <Button
+            type="link"
+            onClick={() => window.open(`https://${settings['host']}/creators/${creatorId}`, '_blank')}
+          >
+            <Icon component={() => <ExternalLinkIcon />} />
+          </Button>
+          <Dropdown
+            overlay={
+              <Menu>
+                {isPublished ? (
+                  <Menu.Item
+                    onClick={() =>
+                      deleteCreatorDisplay(creatorId).then(() => {
+                        message.success(formatMessage(messages.hiddenSuccess))
+                        refetchCreators()
+                      })
+                    }
+                  >
+                    {formatMessage(messages.hideCreator)}
+                  </Menu.Item>
+                ) : (
+                  <Menu.Item
+                    onClick={() =>
+                      insertCreatorDisplay(creatorId).then(() => {
+                        message.success(formatMessage(messages.publishedSuccess))
+                        refetchCreators()
+                      })
+                    }
+                  >
+                    {formatMessage(messages.showCreator)}
+                  </Menu.Item>
+                )}
+              </Menu>
+            }
+            trigger={['click']}
+          >
+            <MoreOutlined />
+          </Dropdown>
+        </div>
       ),
     },
   ]
