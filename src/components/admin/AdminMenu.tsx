@@ -105,7 +105,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           {permissions.PROGRAM_CATEGORY_ADMIN && (
             <Menu.Item key="program_category">{formatMessage(commonMessages.menu.programCategory)}</Menu.Item>
           )}
-          {permissions.PROGRAM_PACKAGE_CATEGORY_ADMIN && (
+          {enabledModules.program_package && permissions.PROGRAM_PACKAGE_CATEGORY_ADMIN && (
             <Menu.Item key="program_package_category">
               {formatMessage(commonMessages.menu.programPackageCategory)}
             </Menu.Item>
