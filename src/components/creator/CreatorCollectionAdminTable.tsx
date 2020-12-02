@@ -32,17 +32,16 @@ const StyledField = styled.span`
   border-radius: 2px;
   border: solid 1px var(--gray);
   text-align: center;
-  width: 70px;
+  margin-bottom: 0.5rem;
   padding: 2px 6px;
   background-color: var(--gray-lighter);
 
-  & + & {
-    margin-left: 0.5rem;
+  &:not(:last-child) {
+    margin-right: 4px;
   }
 `
 
 const StyledTag = styled.span`
-  width: 44px;
   font-size: 14px;
   text-align: center;
   color: ${props => props.theme['@primary-color']};
@@ -51,8 +50,8 @@ const StyledTag = styled.span`
     content: '#';
   }
 
-  & + & {
-    margin-left: 0.5rem;
+  &:not(:last-child) {
+    margin-right: 4px;
   }
 `
 
@@ -168,7 +167,13 @@ const CreatorCollectionAdminTable: React.FC<
         },
         onSearch: ([searchText] = []) => setFilter({ ...filter, field: searchText as string }),
       }),
-      render: fields => fields.map((v: string) => <StyledField>{v}</StyledField>),
+      render: fields => (
+        <div className="d-flex flex-wrap">
+          {fields.map((v: string) => (
+            <StyledField>{v}</StyledField>
+          ))}
+        </div>
+      ),
     },
     {
       title: formatMessage(commonMessages.term.speciality),
@@ -186,7 +191,13 @@ const CreatorCollectionAdminTable: React.FC<
             speciality: searchText as string,
           }),
       }),
-      render: tags => tags.map((v: string) => <StyledTag>{v}</StyledTag>),
+      render: tags => (
+        <div className="d-flex flex-wrap">
+          {tags.map((v: string) => (
+            <StyledTag>{v}</StyledTag>
+          ))}
+        </div>
+      ),
     },
     {
       dataIndex: 'id',
