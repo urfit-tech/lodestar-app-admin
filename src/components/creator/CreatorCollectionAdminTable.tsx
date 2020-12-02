@@ -206,7 +206,7 @@ const CreatorCollectionAdminTable: React.FC<
                   <Menu.Item
                     onClick={() =>
                       deleteCreatorDisplay({ variables: { creatorId } }).then(() => {
-                        message.success(messages.hiddenSuccess)
+                        message.success(formatMessage(messages.hiddenSuccess))
                         onRefetch?.()
                       })
                     }
@@ -217,7 +217,7 @@ const CreatorCollectionAdminTable: React.FC<
                   <Menu.Item
                     onClick={() =>
                       insertCreatorDisplay({ variables: { creatorId } }).then(() => {
-                        message.success(messages.publishedSuccess)
+                        message.success(formatMessage(messages.publishedSuccess))
                         onRefetch?.()
                       })
                     }
