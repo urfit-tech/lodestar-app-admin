@@ -93,8 +93,8 @@ const CreatorCollectionAdminTable: React.FC<
   const filteredCreators = creators.filter(
     v =>
       (!filter.name || v.name.includes(filter.name)) &&
-      (!filter.field || v.categoryNames.find(v => v.search(filter.field || '') !== -1)) &&
-      (!filter.speciality || v.specialityNames.find(v => v.search(filter.speciality || '') !== -1)),
+      (!filter.field || v.categoryNames.some(v => v.includes(filter.field || ''))) &&
+      (!filter.speciality || v.specialityNames.some(v => v.includes(filter.speciality || ''))),
   )
 
   const getColumnSearchProps = ({
