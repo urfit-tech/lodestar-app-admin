@@ -297,6 +297,16 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
     allowedUserRole: 'app-owner',
   },
+  owner_creator_collection: {
+    path: '/admin/creators',
+    pageName: 'owner/CreatorCollectionAdminPage',
+    authenticated: true,
+  },
+  owner_creator_category: {
+    path: '/admin/creator-category',
+    pageName: 'owner/CreatorCategoryAdminPage',
+    authenticated: true,
+  },
 
   // content creator admin
   creator_sales: {

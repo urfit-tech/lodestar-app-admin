@@ -34,6 +34,9 @@ export const useMember = (memberId: string) => {
             id
             tag_name
           }
+          creator_categories {
+            category_id
+          }
           role
         }
       }
@@ -54,6 +57,7 @@ export const useMember = (memberId: string) => {
           abstract: data.member_by_pk.abstract || '',
           title: data.member_by_pk.title || '',
           specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
+          creatorCategoryIds: data.member_by_pk.creator_categories.map(v => v.category_id),
           memberTags: data.member_by_pk.member_tags.map(tag => ({
             id: tag.id || '',
             tagName: tag.tag_name || '',

@@ -8,6 +8,7 @@ export type Module =
   | 'coupon_scope'
   | 'currency'
   | 'customer_review'
+  | 'creator_display'
   | 'invoice'
   | 'learning_statistics'
   | 'locale'

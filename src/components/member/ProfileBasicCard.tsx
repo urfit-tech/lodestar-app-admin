@@ -9,7 +9,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import { useTags } from '../../hooks/data'
+import { useCategory, useTags } from '../../hooks/data'
 import { useMember } from '../../hooks/member'
 import DefaultAvatarImage from '../../images/default/avatar.svg'
 import types from '../../types'
@@ -27,6 +27,7 @@ type FieldProps = {
   title?: string
   abstract?: string
   description?: EditorState
+  fields?: string[]
   specialities?: string[]
 }
 
@@ -34,15 +35,17 @@ const ProfileBasicCard: React.FC<
   CardProps & {
     memberId: string
     withTitle?: boolean
+    withFields?: boolean
     withTags?: boolean
     withAbstract?: boolean
     withDescription?: boolean
   }
-> = ({ memberId, withTitle, withTags, withAbstract, withDescription, ...cardProps }) => {
+> = ({ memberId, withTitle, withFields, withTags, withAbstract, withDescription, ...cardProps }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
   const { member, refetchMember } = useMember(memberId)
+  const { categories } = useCategory('creator')
   const { tags } = useTags()
 
   const [updateMemberAvatar] = useMutation<types.UPDATE_MEMBER_AVATAR, types.UPDATE_MEMBER_AVATARVariables>(
@@ -89,6 +92,11 @@ const ProfileBasicCard: React.FC<
         title: values.title,
         abstract: values.abstract,
         description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
+        creatorCategories:
+          values.fields?.map(v => ({
+            creator_id: memberId,
+            category_id: v,
+          })) || [],
         tags:
           values.specialities?.map((tag: string) => ({
             name: tag,
@@ -123,6 +131,7 @@ const ProfileBasicCard: React.FC<
         initialValues={{
           name: member.name,
           title: member.title,
+          fields: member.creatorCategoryIds,
           specialities: member.specialities || [],
           abstract: member.abstract,
           description: BraftEditor.createEditorState(member.description),
@@ -161,6 +170,19 @@ const ProfileBasicCard: React.FC<
           className={withTitle ? '' : 'd-none'}
         >
           <Input />
+        </Form.Item>
+        <Form.Item
+          label={formatMessage(commonMessages.term.field)}
+          className={withFields ? '' : 'd-none'}
+          name="fields"
+        >
+          <Select mode="multiple">
+            {categories.map(v => (
+              <Select.Option key={v.id} value={v.id}>
+                {v.name}
+              </Select.Option>
+            ))}
+          </Select>
         </Form.Item>
         <Form.Item
           label={formatMessage(commonMessages.term.speciality)}
@@ -232,6 +254,7 @@ const UPDATE_MEMBER_BASIC = gql`
     $description: String
     $title: String
     $abstract: String
+    $creatorCategories: [creator_category_insert_input!]!
     $tags: [tag_insert_input!]!
     $memberSpecialities: [member_speciality_insert_input!]!
   ) {
@@ -242,6 +265,12 @@ const UPDATE_MEMBER_BASIC = gql`
       affected_rows
     }
     delete_member_speciality(where: { member_id: { _eq: $memberId } }) {
+      affected_rows
+    }
+    delete_creator_category(where: { creator_id: { _eq: $memberId } }) {
+      affected_rows
+    }
+    insert_creator_category(objects: $creatorCategories) {
       affected_rows
     }
     insert_tag(objects: $tags, on_conflict: { constraint: tag_pkey, update_columns: [updated_at] }) {

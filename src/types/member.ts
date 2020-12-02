@@ -16,6 +16,7 @@ export type MemberProps = {
     id: string
     tagName: string
   }[]
+  creatorCategoryIds?: string[]
   role: string
 }
 

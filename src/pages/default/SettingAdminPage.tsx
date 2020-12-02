@@ -35,6 +35,7 @@ const SettingAdminPage: React.FC = () => {
           className="mb-4"
           memberId={currentMemberId}
           withTitle={currentUserRole === 'content-creator'}
+          withFields={currentUserRole === 'content-creator'}
           withTags={currentUserRole === 'content-creator'}
           withAbstract={currentUserRole === 'content-creator'}
           withDescription={currentUserRole === 'content-creator'}
