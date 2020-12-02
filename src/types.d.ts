@@ -2410,6 +2410,22 @@ export interface UPDATE_MEMBER_BASIC_delete_member_speciality {
   affected_rows: number;
 }
 
+export interface UPDATE_MEMBER_BASIC_delete_creator_category {
+  __typename: "creator_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_BASIC_insert_creator_category {
+  __typename: "creator_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_MEMBER_BASIC_insert_tag {
   __typename: "tag_mutation_response";
   /**
@@ -2436,6 +2452,14 @@ export interface UPDATE_MEMBER_BASIC {
    */
   delete_member_speciality: UPDATE_MEMBER_BASIC_delete_member_speciality | null;
   /**
+   * delete data from the table: "creator_category"
+   */
+  delete_creator_category: UPDATE_MEMBER_BASIC_delete_creator_category | null;
+  /**
+   * insert data into the table: "creator_category"
+   */
+  insert_creator_category: UPDATE_MEMBER_BASIC_insert_creator_category | null;
+  /**
    * insert data into the table: "tag"
    */
   insert_tag: UPDATE_MEMBER_BASIC_insert_tag | null;
@@ -2451,6 +2475,7 @@ export interface UPDATE_MEMBER_BASICVariables {
   description?: string | null;
   title?: string | null;
   abstract?: string | null;
+  creatorCategories: creator_category_insert_input[];
   tags: tag_insert_input[];
   memberSpecialities: member_speciality_insert_input[];
 }
@@ -5364,7 +5389,7 @@ export interface GET_APPLICATION_app_admin_by_pk_app_app_modules {
   __typename: "app_module";
   id: any;
   /**
-   * activity | appointment | blog | invoice | learning_statistics | locale | member_card | merchandise | podcast | program_package | qrcode | social_connect | tempo_delivery | voucher
+   * activity | appointment | blog | invoice | learning_statistics | locale | member_card | merchandise | podcast | program_package | qrcode | social_connect | tempo_delivery | voucher | creator_display
    */
   module_id: string;
 }
@@ -7060,6 +7085,11 @@ export interface GET_MEMBER_member_by_pk_member_tags {
   tag_name: string;
 }
 
+export interface GET_MEMBER_member_by_pk_creator_categories {
+  __typename: "creator_category";
+  category_id: string;
+}
+
 export interface GET_MEMBER_member_by_pk {
   __typename: "member";
   id: string;
@@ -7078,6 +7108,10 @@ export interface GET_MEMBER_member_by_pk {
    * An array relationship
    */
   member_tags: GET_MEMBER_member_by_pk_member_tags[];
+  /**
+   * An array relationship
+   */
+  creator_categories: GET_MEMBER_member_by_pk_creator_categories[];
   /**
    * app-owner / content-creator
    */
@@ -9221,6 +9255,112 @@ export interface GET_MEMBER_CONTRACTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_CREATOR_DISPLAY
+// ====================================================
+
+export interface INSERT_CREATOR_DISPLAY_insert_creator_display_one {
+  __typename: "creator_display";
+  id: any;
+}
+
+export interface INSERT_CREATOR_DISPLAY {
+  /**
+   * insert a single row into the table: "creator_display"
+   */
+  insert_creator_display_one: INSERT_CREATOR_DISPLAY_insert_creator_display_one | null;
+}
+
+export interface INSERT_CREATOR_DISPLAYVariables {
+  creatorId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_CREATOR_DISPLAY
+// ====================================================
+
+export interface DELETE_CREATOR_DISPLAY_delete_creator_display {
+  __typename: "creator_display_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_CREATOR_DISPLAY {
+  /**
+   * delete data from the table: "creator_display"
+   */
+  delete_creator_display: DELETE_CREATOR_DISPLAY_delete_creator_display | null;
+}
+
+export interface DELETE_CREATOR_DISPLAYVariables {
+  creatorId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CREATOR_COLLECTION
+// ====================================================
+
+export interface GET_CREATOR_COLLECTION_creator_creator_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_CREATOR_COLLECTION_creator_creator_categories {
+  __typename: "creator_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_CREATOR_COLLECTION_creator_creator_categories_category;
+}
+
+export interface GET_CREATOR_COLLECTION_creator_member_specialities {
+  __typename: "member_speciality";
+  id: any;
+  tag_name: string;
+}
+
+export interface GET_CREATOR_COLLECTION_creator {
+  __typename: "creator";
+  id: string | null;
+  name: string | null;
+  picture_url: string | null;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  creator_categories: GET_CREATOR_COLLECTION_creator_creator_categories[];
+  /**
+   * An array relationship
+   */
+  member_specialities: GET_CREATOR_COLLECTION_creator_member_specialities[];
+}
+
+export interface GET_CREATOR_COLLECTION {
+  /**
+   * fetch data from the table: "creator"
+   */
+  creator: GET_CREATOR_COLLECTION_creator[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_MERCHANDISE
 // ====================================================
 
@@ -10720,6 +10860,23 @@ export enum coupon_update_column {
   created_at = "created_at",
   id = "id",
   member_id = "member_id",
+}
+
+/**
+ * unique or primary key constraints on table "creator_category"
+ */
+export enum creator_category_constraint {
+  creator_category_pkey = "creator_category_pkey",
+}
+
+/**
+ * update columns of table "creator_category"
+ */
+export enum creator_category_update_column {
+  category_id = "category_id",
+  creator_id = "creator_id",
+  id = "id",
+  position = "position",
 }
 
 /**
@@ -15717,6 +15874,162 @@ export interface coupon_status_order_by {
 }
 
 /**
+ * Boolean expression to filter rows from the table "creator". All fields are combined with a logical 'AND'.
+ */
+export interface creator_bool_exp {
+  _and?: (creator_bool_exp | null)[] | null;
+  _not?: creator_bool_exp | null;
+  _or?: (creator_bool_exp | null)[] | null;
+  block_id?: String_comparison_exp | null;
+  creator_categories?: creator_category_bool_exp | null;
+  id?: String_comparison_exp | null;
+  member?: member_public_bool_exp | null;
+  member_specialities?: member_speciality_bool_exp | null;
+  name?: String_comparison_exp | null;
+  picture_url?: String_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * order by aggregate values of table "creator_category"
+ */
+export interface creator_category_aggregate_order_by {
+  avg?: creator_category_avg_order_by | null;
+  count?: order_by | null;
+  max?: creator_category_max_order_by | null;
+  min?: creator_category_min_order_by | null;
+  stddev?: creator_category_stddev_order_by | null;
+  stddev_pop?: creator_category_stddev_pop_order_by | null;
+  stddev_samp?: creator_category_stddev_samp_order_by | null;
+  sum?: creator_category_sum_order_by | null;
+  var_pop?: creator_category_var_pop_order_by | null;
+  var_samp?: creator_category_var_samp_order_by | null;
+  variance?: creator_category_variance_order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "creator_category"
+ */
+export interface creator_category_arr_rel_insert_input {
+  data: creator_category_insert_input[];
+  on_conflict?: creator_category_on_conflict | null;
+}
+
+/**
+ * order by avg() on columns of table "creator_category"
+ */
+export interface creator_category_avg_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "creator_category". All fields are combined with a logical 'AND'.
+ */
+export interface creator_category_bool_exp {
+  _and?: (creator_category_bool_exp | null)[] | null;
+  _not?: creator_category_bool_exp | null;
+  _or?: (creator_category_bool_exp | null)[] | null;
+  category?: category_bool_exp | null;
+  category_id?: String_comparison_exp | null;
+  creator?: creator_bool_exp | null;
+  creator_id?: String_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  position?: Int_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "creator_category"
+ */
+export interface creator_category_insert_input {
+  category?: category_obj_rel_insert_input | null;
+  category_id?: string | null;
+  creator_id?: string | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  position?: number | null;
+}
+
+/**
+ * order by max() on columns of table "creator_category"
+ */
+export interface creator_category_max_order_by {
+  category_id?: order_by | null;
+  creator_id?: order_by | null;
+  id?: order_by | null;
+  position?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "creator_category"
+ */
+export interface creator_category_min_order_by {
+  category_id?: order_by | null;
+  creator_id?: order_by | null;
+  id?: order_by | null;
+  position?: order_by | null;
+}
+
+/**
+ * on conflict condition type for table "creator_category"
+ */
+export interface creator_category_on_conflict {
+  constraint: creator_category_constraint;
+  update_columns: creator_category_update_column[];
+  where?: creator_category_bool_exp | null;
+}
+
+/**
+ * order by stddev() on columns of table "creator_category"
+ */
+export interface creator_category_stddev_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "creator_category"
+ */
+export interface creator_category_stddev_pop_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "creator_category"
+ */
+export interface creator_category_stddev_samp_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "creator_category"
+ */
+export interface creator_category_sum_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "creator_category"
+ */
+export interface creator_category_var_pop_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "creator_category"
+ */
+export interface creator_category_var_samp_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "creator_category"
+ */
+export interface creator_category_variance_order_by {
+  position?: order_by | null;
+}
+
+/**
  * Boolean expression to filter rows from the table "currency". All fields are combined with a logical 'AND'.
  */
 export interface currency_bool_exp {
@@ -16349,6 +16662,7 @@ export interface member_bool_exp {
   comments?: comment_bool_exp | null;
   coupons?: coupon_bool_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  creator_categories?: creator_category_bool_exp | null;
   description?: String_comparison_exp | null;
   email?: String_comparison_exp | null;
   facebook_user_id?: String_comparison_exp | null;
@@ -16729,6 +17043,7 @@ export interface member_insert_input {
   comments?: comment_arr_rel_insert_input | null;
   coupons?: coupon_arr_rel_insert_input | null;
   created_at?: any | null;
+  creator_categories?: creator_category_arr_rel_insert_input | null;
   description?: string | null;
   email?: string | null;
   facebook_user_id?: string | null;
@@ -17029,6 +17344,7 @@ export interface member_order_by {
   comments_aggregate?: comment_aggregate_order_by | null;
   coupons_aggregate?: coupon_aggregate_order_by | null;
   created_at?: order_by | null;
+  creator_categories_aggregate?: creator_category_aggregate_order_by | null;
   description?: order_by | null;
   email?: order_by | null;
   facebook_user_id?: order_by | null;
