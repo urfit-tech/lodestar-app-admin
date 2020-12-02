@@ -27,43 +27,6 @@ export const useCreator = () => {
       }
     `,
   )
-  const [insertCreatorDisplayHandler] = useMutation<
-    types.INSERT_CREATOR_DISPLAY,
-    types.INSERT_CREATOR_DISPLAYVariables
-  >(gql`
-    mutation INSERT_CREATOR_DISPLAY($creatorId: String!) {
-      insert_creator_display_one(object: { member_id: $creatorId }) {
-        id
-      }
-    }
-  `)
-
-  const [deleteCreatorDisplayHandler] = useMutation<
-    types.DELETE_CREATOR_DISPLAY,
-    types.DELETE_CREATOR_DISPLAYVariables
-  >(gql`
-    mutation DELETE_CREATOR_DISPLAY($creatorId: String!) {
-      delete_creator_display(where: { member_id: { _eq: $creatorId }, block_id: { _eq: "default" } }) {
-        affected_rows
-      }
-    }
-  `)
-
-  const insertCreatorDisplay = (creatorId: string) => {
-    return insertCreatorDisplayHandler({
-      variables: {
-        creatorId,
-      },
-    })
-  }
-
-  const deleteCreatorDisplay = (creatorId: string) => {
-    return deleteCreatorDisplayHandler({
-      variables: {
-        creatorId,
-      },
-    })
-  }
 
   const creators: CreatorProps[] =
     loading || error || !data
@@ -82,7 +45,5 @@ export const useCreator = () => {
     errorCreators: error,
     creators,
     refetchCreators: refetch,
-    insertCreatorDisplay,
-    deleteCreatorDisplay,
   }
 }

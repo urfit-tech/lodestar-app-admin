@@ -1,21 +1,23 @@
 import Icon, { MoreOutlined, SearchOutlined } from '@ant-design/icons'
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Dropdown, Input, Menu, message } from 'antd'
 import Table, { ColumnProps, TableProps } from 'antd/lib/table'
+import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { commonMessages } from '../../helpers/translation'
-import { useCreator } from '../../hooks/creators'
 import { ReactComponent as ExternalLinkIcon } from '../../images/icon/external-link-square.svg'
+import types from '../../types'
 import { CreatorProps } from '../../types/creator'
 import { AvatarImage } from '../common/Image'
 
 const messages = defineMessages({
-  publishedSuccess: { id: 'creator.status.publishedSuccess', defaultMessage: '已公開' },
-  hiddenSuccess: { id: 'creator.status.hiddenSuccess', defaultMessage: '已隱藏' },
   showCreator: { id: 'creator.label.showCreator', defaultMessage: '顯示講師' },
   hideCreator: { id: 'creator.ui.hideCreator', defaultMessage: '隱藏講師' },
+  publishedSuccess: { id: 'creator.status.publishedSuccess', defaultMessage: '已公開' },
+  hiddenSuccess: { id: 'creator.status.hiddenSuccess', defaultMessage: '已隱藏' },
 })
 
 const StyledFilterButton = styled(Button)`
@@ -54,13 +56,14 @@ const StyledTag = styled.span`
   }
 `
 
-const CreatorCollectionAdminTable: React.FC<{ creators: CreatorProps[] } & TableProps<CreatorProps>> = ({
-  creators,
-  ...props
-}) => {
+const CreatorCollectionAdminTable: React.FC<
+  {
+    creators: CreatorProps[]
+    onRefetch?: () => void
+  } & TableProps<CreatorProps>
+> = ({ creators, onRefetch, ...props }) => {
   const { formatMessage } = useIntl()
   const { settings } = useApp()
-  const { insertCreatorDisplay, deleteCreatorDisplay, refetchCreators } = useCreator()
   const [filter, setFilter] = useState<{
     name: string | null
     field: string | null
@@ -70,6 +73,22 @@ const CreatorCollectionAdminTable: React.FC<{ creators: CreatorProps[] } & Table
     field: null,
     speciality: null,
   })
+
+  const [insertCreatorDisplay] = useMutation<types.INSERT_CREATOR_DISPLAY, types.INSERT_CREATOR_DISPLAYVariables>(gql`
+    mutation INSERT_CREATOR_DISPLAY($creatorId: String!) {
+      insert_creator_display_one(object: { member_id: $creatorId }) {
+        id
+      }
+    }
+  `)
+
+  const [deleteCreatorDisplay] = useMutation<types.DELETE_CREATOR_DISPLAY, types.DELETE_CREATOR_DISPLAYVariables>(gql`
+    mutation DELETE_CREATOR_DISPLAY($creatorId: String!) {
+      delete_creator_display(where: { member_id: { _eq: $creatorId }, block_id: { _eq: "default" } }) {
+        affected_rows
+      }
+    }
+  `)
 
   const filteredCreators = creators.filter(
     v =>
@@ -186,9 +205,9 @@ const CreatorCollectionAdminTable: React.FC<{ creators: CreatorProps[] } & Table
                 {isPublished ? (
                   <Menu.Item
                     onClick={() =>
-                      deleteCreatorDisplay(creatorId).then(() => {
-                        message.success(formatMessage(messages.hiddenSuccess))
-                        refetchCreators()
+                      deleteCreatorDisplay({ variables: { creatorId } }).then(() => {
+                        message.success(messages.hiddenSuccess)
+                        onRefetch?.()
                       })
                     }
                   >
@@ -197,9 +216,9 @@ const CreatorCollectionAdminTable: React.FC<{ creators: CreatorProps[] } & Table
                 ) : (
                   <Menu.Item
                     onClick={() =>
-                      insertCreatorDisplay(creatorId).then(() => {
-                        message.success(formatMessage(messages.publishedSuccess))
-                        refetchCreators()
+                      insertCreatorDisplay({ variables: { creatorId } }).then(() => {
+                        message.success(messages.publishedSuccess)
+                        onRefetch?.()
                       })
                     }
                   >

@@ -22,7 +22,7 @@ const CreatorCollectionAdminPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()
   const { loading, enabledModules } = useApp()
   const { isAuthenticating, currentUserRole } = useAuth()
-  const { creators } = useCreator()
+  const { creators, refetchCreators } = useCreator()
 
   if (loading || isAuthenticating) {
     return <LoadingPage />
@@ -55,7 +55,7 @@ const CreatorCollectionAdminPage: React.FC<{}> = () => {
       <Tabs defaultActiveKey="published">
         {tabContents.map(v => (
           <Tabs.TabPane key={v.key} tab={v.tab}>
-            <CreatorCollectionAdminTable creators={v.creators} />
+            <CreatorCollectionAdminTable creators={v.creators} onRefetch={refetchCreators} />
           </Tabs.TabPane>
         ))}
       </Tabs>
