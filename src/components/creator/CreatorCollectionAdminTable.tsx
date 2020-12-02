@@ -216,10 +216,12 @@ const CreatorCollectionAdminTable: React.FC<
                 {isPublished ? (
                   <Menu.Item
                     onClick={() =>
-                      deleteCreatorDisplay({ variables: { creatorId } }).then(() => {
-                        message.success(formatMessage(messages.hiddenSuccess))
-                        onRefetch?.()
-                      })
+                      deleteCreatorDisplay({ variables: { creatorId } })
+                        .then(() => {
+                          message.success(formatMessage(messages.hiddenSuccess))
+                          onRefetch?.()
+                        })
+                        .catch(err => process.env.NODE_ENV === 'development' && console.error(err))
                     }
                   >
                     {formatMessage(messages.hideCreator)}
@@ -227,10 +229,12 @@ const CreatorCollectionAdminTable: React.FC<
                 ) : (
                   <Menu.Item
                     onClick={() =>
-                      insertCreatorDisplay({ variables: { creatorId } }).then(() => {
-                        message.success(formatMessage(messages.publishedSuccess))
-                        onRefetch?.()
-                      })
+                      insertCreatorDisplay({ variables: { creatorId } })
+                        .then(() => {
+                          message.success(formatMessage(messages.publishedSuccess))
+                          onRefetch?.()
+                        })
+                        .catch(err => process.env.NODE_ENV === 'development' && console.error(err))
                     }
                   >
                     {formatMessage(messages.showCreator)}
