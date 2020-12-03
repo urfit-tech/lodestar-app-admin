@@ -7,7 +7,7 @@ export const useCreator = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_CREATOR_COLLECTION>(
     gql`
       query GET_CREATOR_COLLECTION {
-        creator {
+        creator(order_by: { published_at: desc, position: asc }) {
           id
           name
           picture_url
