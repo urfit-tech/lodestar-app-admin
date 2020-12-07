@@ -80,7 +80,7 @@ export const AppProvider: React.FC = ({ children }) => {
     if (appId) {
       if (!backendEndpoint) {
         if (apiHost) {
-          setBackendEndpoint?.(`${window.location.protocol}//${apiHost}`)
+          setBackendEndpoint?.(`https://${apiHost}`)
         } else {
           setBackendEndpoint?.(process.env.REACT_APP_BACKEND_ENDPOINT || '')
         }
