@@ -59,6 +59,7 @@ export const commonMessages = {
     send: { id: 'common.ui.send', defaultMessage: '送出' },
     uploadFile: { id: 'common.ui.uploadFile', defaultMessage: '上傳檔案' },
     copy: { id: 'common.ui.copy', defaultMessage: '複製' },
+    jumpTo: { id: 'common.ui.jumpTo', defaultMessage: '前往填寫' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -253,6 +254,7 @@ export const commonMessages = {
       defaultMessage: '確定要刪除此欄位？此動作無法復原',
     },
     copiedToClipboard: { id: 'common.text.copiedToClipboard', defaultMessage: '已複製到剪貼簿' },
+    unpublishingTitle: { id: 'common.text.unpublishingTitle', defaultMessage: '確定要取消發佈？' },
   }),
   event: defineMessages({
     successfullySaved: { id: 'common.event.successfullySaved', defaultMessage: '儲存成功' },
@@ -449,6 +451,26 @@ export const appointmentMessages = {
     durationTips: { id: 'appointment.text.durationTips', defaultMessage: '設定單次預約服務的時間長度' },
     selectStartedAt: { id: 'appointment.text.selectStartedAt', defaultMessage: '選擇起始時間' },
     timezone: { id: 'appointment.text.timezone', defaultMessage: '時間以 {city} (GMT{timezone}) 顯示' },
+    noTitle: { id: 'appointment.text.noTitle', defaultMessage: '尚未設定方案名稱' },
+    noDuration: { id: 'appointment.text.noDuration', defaultMessage: '尚未設定時間長度' },
+    noListPrice: { id: 'appointment.text.noListPrice', defaultMessage: '尚未設定售價' },
+    noPeriod: { id: 'appointment.text.noPeriod', defaultMessage: '尚未設定時段' },
+    notCompleteNotation: {
+      id: 'appointment.text.notCompleteNotation',
+      defaultMessage: '請填寫以下必填資料，填寫完畢即可由此發佈',
+    },
+    isUnpublishedNotation: {
+      id: 'appointment.text.unpublishedNotation',
+      defaultMessage: '預約方案未發佈，此方案並不會顯示在頁面上，學生也不能購買此方案。',
+    },
+    isPublishedNotation: {
+      id: 'appointment.text.publishedNotation',
+      defaultMessage: '預約方案已經公開發佈，學生將能購買預約。',
+    },
+    isPrivatePublishedNotation: {
+      id: 'appointment.text.isPrivatePublishedNotation',
+      defaultMessage: '你的預約方案已經私密發佈，學生將能購買預約並由預覽網址關注這個方案。',
+    },
   }),
 }
 
@@ -580,7 +602,6 @@ export const programMessages = {
     videoPlaceholder: { id: 'program.text.videoPlaceholder', defaultMessage: '貼上影片網址' },
     uploadVideo: { id: 'program.text.uploadVideo', defaultMessage: '上傳影片' },
     imageTips: { id: 'program.text.programImgTips', defaultMessage: '建議圖片尺寸：1200*675px' },
-    unpublishingTitle: { id: 'program.text.unpublishingTitle', defaultMessage: '確定要取消發佈？' },
     unpublishingWarning: {
       id: 'program.text.unpublishingWarning',
       defaultMessage: '課程將下架且不會出現在課程列表，已購買的學生仍然可以看到課程內容。',
@@ -640,7 +661,6 @@ export const programMessages = {
     editProgram: { id: 'program.ui.editProgram', defaultMessage: '編輯課程' },
     delivery: { id: 'program.ui.delivery', defaultMessage: '交付課程' },
     deliver: { id: 'program.ui.deliver', defaultMessage: '啟用' },
-    jumpTo: { id: 'program.ui.jumpTo', defaultMessage: '前往填寫' },
     apply: { id: 'program.ui.apply', defaultMessage: '立即送審' },
     cancel: { id: 'program.ui.cancel', defaultMessage: '取消送審' },
     reApply: { id: 'program.ui.reApply', defaultMessage: '重新送審' },

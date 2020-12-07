@@ -707,6 +707,7 @@ export interface PUBLISH_APPOINTMENT_PLAN {
 export interface PUBLISH_APPOINTMENT_PLANVariables {
   appointmentPlanId: any;
   publishedAt?: any | null;
+  isPrivate?: boolean | null;
 }
 
 /* tslint:disable */
@@ -1312,6 +1313,59 @@ export interface INSERT_POINT_LOG_COLLECTION {
 
 export interface INSERT_POINT_LOG_COLLECTIONVariables {
   data: point_log_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_CREATOR_DISPLAY
+// ====================================================
+
+export interface INSERT_CREATOR_DISPLAY_insert_creator_display_one {
+  __typename: "creator_display";
+  id: any;
+}
+
+export interface INSERT_CREATOR_DISPLAY {
+  /**
+   * insert a single row into the table: "creator_display"
+   */
+  insert_creator_display_one: INSERT_CREATOR_DISPLAY_insert_creator_display_one | null;
+}
+
+export interface INSERT_CREATOR_DISPLAYVariables {
+  creatorId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_CREATOR_DISPLAY
+// ====================================================
+
+export interface DELETE_CREATOR_DISPLAY_delete_creator_display {
+  __typename: "creator_display_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_CREATOR_DISPLAY {
+  /**
+   * delete data from the table: "creator_display"
+   */
+  delete_creator_display: DELETE_CREATOR_DISPLAY_delete_creator_display | null;
+}
+
+export interface DELETE_CREATOR_DISPLAYVariables {
+  creatorId: string;
 }
 
 /* tslint:disable */
@@ -5704,6 +5758,8 @@ export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk {
   published_at: any | null;
   support_locales: any | null;
   currency_id: string;
+  creator_id: string;
+  is_private: boolean;
   /**
    * An array relationship
    */
@@ -6374,6 +6430,59 @@ export interface UPDATE_VOUCHER_PLANVariables {
   endedAt?: any | null;
   productQuantityLimit: number;
   voucherPlanProducts: voucher_plan_product_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CREATOR_COLLECTION
+// ====================================================
+
+export interface GET_CREATOR_COLLECTION_creator_creator_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_CREATOR_COLLECTION_creator_creator_categories {
+  __typename: "creator_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_CREATOR_COLLECTION_creator_creator_categories_category;
+}
+
+export interface GET_CREATOR_COLLECTION_creator_member_specialities {
+  __typename: "member_speciality";
+  id: any;
+  tag_name: string;
+}
+
+export interface GET_CREATOR_COLLECTION_creator {
+  __typename: "creator";
+  id: string | null;
+  name: string | null;
+  picture_url: string | null;
+  published_at: any | null;
+  /**
+   * An array relationship
+   */
+  creator_categories: GET_CREATOR_COLLECTION_creator_creator_categories[];
+  /**
+   * An array relationship
+   */
+  member_specialities: GET_CREATOR_COLLECTION_creator_member_specialities[];
+}
+
+export interface GET_CREATOR_COLLECTION {
+  /**
+   * fetch data from the table: "creator"
+   */
+  creator: GET_CREATOR_COLLECTION_creator[];
 }
 
 /* tslint:disable */
@@ -9255,112 +9364,6 @@ export interface GET_MEMBER_CONTRACTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: INSERT_CREATOR_DISPLAY
-// ====================================================
-
-export interface INSERT_CREATOR_DISPLAY_insert_creator_display_one {
-  __typename: "creator_display";
-  id: any;
-}
-
-export interface INSERT_CREATOR_DISPLAY {
-  /**
-   * insert a single row into the table: "creator_display"
-   */
-  insert_creator_display_one: INSERT_CREATOR_DISPLAY_insert_creator_display_one | null;
-}
-
-export interface INSERT_CREATOR_DISPLAYVariables {
-  creatorId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_CREATOR_DISPLAY
-// ====================================================
-
-export interface DELETE_CREATOR_DISPLAY_delete_creator_display {
-  __typename: "creator_display_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_CREATOR_DISPLAY {
-  /**
-   * delete data from the table: "creator_display"
-   */
-  delete_creator_display: DELETE_CREATOR_DISPLAY_delete_creator_display | null;
-}
-
-export interface DELETE_CREATOR_DISPLAYVariables {
-  creatorId: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_CREATOR_COLLECTION
-// ====================================================
-
-export interface GET_CREATOR_COLLECTION_creator_creator_categories_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_CREATOR_COLLECTION_creator_creator_categories {
-  __typename: "creator_category";
-  id: any;
-  /**
-   * An object relationship
-   */
-  category: GET_CREATOR_COLLECTION_creator_creator_categories_category;
-}
-
-export interface GET_CREATOR_COLLECTION_creator_member_specialities {
-  __typename: "member_speciality";
-  id: any;
-  tag_name: string;
-}
-
-export interface GET_CREATOR_COLLECTION_creator {
-  __typename: "creator";
-  id: string | null;
-  name: string | null;
-  picture_url: string | null;
-  published_at: any | null;
-  /**
-   * An array relationship
-   */
-  creator_categories: GET_CREATOR_COLLECTION_creator_creator_categories[];
-  /**
-   * An array relationship
-   */
-  member_specialities: GET_CREATOR_COLLECTION_creator_member_specialities[];
-}
-
-export interface GET_CREATOR_COLLECTION {
-  /**
-   * fetch data from the table: "creator"
-   */
-  creator: GET_CREATOR_COLLECTION_creator[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: INSERT_MERCHANDISE
 // ====================================================
 
@@ -10546,6 +10549,7 @@ export enum appointment_plan_update_column {
   description = "description",
   duration = "duration",
   id = "id",
+  is_private = "is_private",
   phone = "phone",
   price = "price",
   published_at = "published_at",
@@ -12509,6 +12513,7 @@ export enum project_plan_update_column {
   period_type = "period_type",
   position = "position",
   project_id = "project_id",
+  published_at = "published_at",
   sale_price = "sale_price",
   sold_at = "sold_at",
   title = "title",
@@ -14127,6 +14132,7 @@ export interface appointment_plan_bool_exp {
   description?: String_comparison_exp | null;
   duration?: numeric_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_private?: Boolean_comparison_exp | null;
   phone?: String_comparison_exp | null;
   price?: numeric_comparison_exp | null;
   published_at?: timestamptz_comparison_exp | null;
@@ -14147,6 +14153,7 @@ export interface appointment_plan_insert_input {
   description?: string | null;
   duration?: any | null;
   id?: any | null;
+  is_private?: boolean | null;
   phone?: string | null;
   price?: any | null;
   published_at?: any | null;
@@ -14221,6 +14228,7 @@ export interface appointment_plan_order_by {
   description?: order_by | null;
   duration?: order_by | null;
   id?: order_by | null;
+  is_private?: order_by | null;
   phone?: order_by | null;
   price?: order_by | null;
   published_at?: order_by | null;
@@ -15008,6 +15016,22 @@ export interface coin_log_on_conflict {
 }
 
 /**
+ * ordering options when selecting data from "coin_log"
+ */
+export interface coin_log_order_by {
+  amount?: order_by | null;
+  created_at?: order_by | null;
+  description?: order_by | null;
+  ended_at?: order_by | null;
+  id?: order_by | null;
+  member?: member_order_by | null;
+  member_id?: order_by | null;
+  note?: order_by | null;
+  started_at?: order_by | null;
+  title?: order_by | null;
+}
+
+/**
  * order by stddev() on columns of table "coin_log"
  */
 export interface coin_log_stddev_order_by {
@@ -15054,6 +15078,33 @@ export interface coin_log_var_samp_order_by {
  */
 export interface coin_log_variance_order_by {
   amount?: order_by | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "coin_status". All fields are combined with a logical 'AND'.
+ */
+export interface coin_status_bool_exp {
+  _and?: (coin_status_bool_exp | null)[] | null;
+  _not?: coin_status_bool_exp | null;
+  _or?: (coin_status_bool_exp | null)[] | null;
+  amount?: numeric_comparison_exp | null;
+  coin_id?: uuid_comparison_exp | null;
+  coin_log?: coin_log_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  remaining?: numeric_comparison_exp | null;
+  used_coins?: numeric_comparison_exp | null;
+}
+
+/**
+ * ordering options when selecting data from "coin_status"
+ */
+export interface coin_status_order_by {
+  amount?: order_by | null;
+  coin_id?: order_by | null;
+  coin_log?: coin_log_order_by | null;
+  member_id?: order_by | null;
+  remaining?: order_by | null;
+  used_coins?: order_by | null;
 }
 
 /**
@@ -16656,6 +16707,7 @@ export interface member_bool_exp {
   appointment_plans?: appointment_plan_bool_exp | null;
   assigned_at?: timestamptz_comparison_exp | null;
   coin_logs?: coin_log_bool_exp | null;
+  coin_status?: coin_status_bool_exp | null;
   comment_reactions?: comment_reaction_bool_exp | null;
   comment_replies?: comment_reply_bool_exp | null;
   comment_reply_reactions?: comment_reply_reaction_bool_exp | null;
@@ -17338,6 +17390,7 @@ export interface member_order_by {
   appointment_plans_aggregate?: appointment_plan_aggregate_order_by | null;
   assigned_at?: order_by | null;
   coin_logs_aggregate?: coin_log_aggregate_order_by | null;
+  coin_status?: coin_status_order_by | null;
   comment_reactions_aggregate?: comment_reaction_aggregate_order_by | null;
   comment_replies_aggregate?: comment_reply_aggregate_order_by | null;
   comment_reply_reactions_aggregate?: comment_reply_reaction_aggregate_order_by | null;
@@ -17684,6 +17737,7 @@ export interface member_public_bool_exp {
   app_id?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: String_comparison_exp | null;
+  member_specialities?: member_speciality_bool_exp | null;
   metadata?: jsonb_comparison_exp | null;
   name?: String_comparison_exp | null;
   picture_url?: String_comparison_exp | null;
@@ -17703,6 +17757,7 @@ export interface member_public_order_by {
   app_id?: order_by | null;
   description?: order_by | null;
   id?: order_by | null;
+  member_specialities_aggregate?: member_speciality_aggregate_order_by | null;
   metadata?: order_by | null;
   name?: order_by | null;
   picture_url?: order_by | null;
@@ -24003,6 +24058,7 @@ export interface project_plan_bool_exp {
   project_id?: uuid_comparison_exp | null;
   project_plan_enrollments?: project_plan_enrollment_bool_exp | null;
   project_plan_inventory_status?: project_plan_inventory_status_bool_exp | null;
+  published_at?: timestamptz_comparison_exp | null;
   sale_price?: numeric_comparison_exp | null;
   sold_at?: timestamptz_comparison_exp | null;
   title?: String_comparison_exp | null;
@@ -24040,6 +24096,7 @@ export interface project_plan_insert_input {
   position?: number | null;
   project?: project_obj_rel_insert_input | null;
   project_id?: any | null;
+  published_at?: any | null;
   sale_price?: any | null;
   sold_at?: any | null;
   title?: string | null;

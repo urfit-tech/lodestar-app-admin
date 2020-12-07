@@ -1,37 +1,26 @@
+import { DownOutlined, RightOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Skeleton } from 'antd'
+import { Button, Dropdown, Menu, Modal, Skeleton, Typography } from 'antd'
 import gql from 'graphql-tag'
-import React from 'react'
-import { defineMessages, useIntl } from 'react-intl'
-import { commonMessages } from '../../helpers/translation'
+import React, { useState } from 'react'
+import { useIntl } from 'react-intl'
+import { Link } from 'react-router-dom'
+import { handleError } from '../../helpers'
+import { appointmentMessages, commonMessages } from '../../helpers/translation'
+import { ReactComponent as StatusAlertIcon } from '../../images/default/status-alert.svg'
+import { ReactComponent as StatusOrdinaryIcon } from '../../images/default/status-ordinary.svg'
+import { ReactComponent as StatusSuccessIcon } from '../../images/default/status-success.svg'
+import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import types from '../../types'
 import { AppointmentPlanAdminProps } from '../../types/appointment'
-import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } from '../admin/AdminPublishBlock'
-
-const messages = defineMessages({
-  noTitle: { id: 'appointment.text.noTitle', defaultMessage: '尚未設定方案名稱' },
-  noDuration: { id: 'appointment.text.noDuration', defaultMessage: '尚未設定時間長度' },
-  noListPrice: { id: 'appointment.text.noListPrice', defaultMessage: '尚未設定售價' },
-  noPeriod: { id: 'appointment.text.noPeriod', defaultMessage: '尚未設定時段' },
-  notCompleteNotation: {
-    id: 'appointment.text.notCompleteNotation',
-    defaultMessage: '請填寫以下必填資料，填寫完畢即可由此發佈',
-  },
-  unpublishedNotation: {
-    id: 'appointment.text.unpublishedNotation',
-    defaultMessage: '預約方案未發佈，此方案並不會顯示在頁面上，學生也不能購買此方案。',
-  },
-  publishedNotation: {
-    id: 'appointment.text.publishedNotation',
-    defaultMessage: '預約方案已經發佈，學生將能購買預約。',
-  },
-})
+import { AdminBlock } from '../admin'
 
 const AppointmentPlanPublishBlock: React.FC<{
   appointmentPlanAdmin: AppointmentPlanAdminProps | null
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const [publishState, setPublishState] = useState<string>(formatMessage(commonMessages.ui.publiclyPublished))
   const [publishAppointmentPlan] = useMutation<types.PUBLISH_APPOINTMENT_PLAN, types.PUBLISH_APPOINTMENT_PLANVariables>(
     PUBLISH_APPOINTMENT_PLAN,
   )
@@ -40,68 +29,170 @@ const AppointmentPlanPublishBlock: React.FC<{
     return <Skeleton active />
   }
 
-  const checklist: ChecklistItemProps[] = []
+  const errors: { message: string; to: string }[] = []
 
   !appointmentPlanAdmin.title &&
-    checklist.push({
-      id: 'NO_TITLE',
-      text: formatMessage(messages.noTitle),
-      tab: 'settings',
+    errors.push({
+      message: formatMessage(appointmentMessages.text.noTitle),
+      to: `/appointment-plans/${appointmentPlanAdmin.id}?tab=settings`,
     })
   !appointmentPlanAdmin.duration &&
-    checklist.push({
-      id: 'NO_DURATION',
-      text: formatMessage(messages.noDuration),
-      tab: 'sale',
+    errors.push({
+      message: formatMessage(appointmentMessages.text.noDuration),
+      to: `/appointment-plans/${appointmentPlanAdmin.id}?tab=sale`,
     })
   !appointmentPlanAdmin.periods.length &&
-    checklist.push({
-      id: 'NO_PERIOD',
-      text: formatMessage(messages.noPeriod),
-      tab: 'schedule',
+    errors.push({
+      message: formatMessage(appointmentMessages.text.noPeriod),
+      to: `/appointment-plans/${appointmentPlanAdmin.id}?tab=schedule`,
     })
 
-  const publishStatus: PublishStatus =
-    checklist.length > 0 ? 'alert' : !appointmentPlanAdmin.isPublished ? 'ordinary' : 'success'
+  const appointmentPlanStatus =
+    errors.length > 0
+      ? 'notValidated'
+      : !appointmentPlanAdmin.isPublished
+      ? 'unpublished'
+      : appointmentPlanAdmin.isPrivate
+      ? 'publishedInPrivate'
+      : 'published'
 
-  const [title, description] =
-    publishStatus === 'alert'
-      ? [formatMessage(commonMessages.status.notComplete), formatMessage(messages.notCompleteNotation)]
-      : publishStatus === 'ordinary'
-      ? [formatMessage(commonMessages.status.unpublished), formatMessage(messages.unpublishedNotation)]
-      : publishStatus === 'success'
-      ? [formatMessage(commonMessages.status.published), formatMessage(messages.publishedNotation)]
-      : ['', '']
+  const appointmentPlanStatusMessage: {
+    [status in typeof appointmentPlanStatus]: {
+      title: string
+      description: string
+    }
+  } = {
+    notValidated: {
+      title: formatMessage(commonMessages.status.notComplete),
+      description: formatMessage(appointmentMessages.text.notCompleteNotation),
+    },
+    unpublished: {
+      title: formatMessage(commonMessages.status.unpublished),
+      description: formatMessage(appointmentMessages.text.isUnpublishedNotation),
+    },
+    published: {
+      title: formatMessage(commonMessages.status.publiclyPublished),
+      description: formatMessage(appointmentMessages.text.isPublishedNotation),
+    },
+    publishedInPrivate: {
+      title: formatMessage(commonMessages.status.privatelyPublished),
+      description: formatMessage(appointmentMessages.text.isPrivatePublishedNotation),
+    },
+  }
 
-  const handlePublish: (event: PublishEvent) => void = ({ values, onSuccess, onError, onFinally }) => {
+  const handlePublish = (isPrivate?: boolean) => {
     publishAppointmentPlan({
       variables: {
         appointmentPlanId: appointmentPlanAdmin.id,
-        publishedAt: values.publishedAt,
+        publishedAt: new Date(),
+        isPrivate: isPrivate,
       },
     })
-      .then(() => {
-        onRefetch?.()
-        onSuccess?.()
-      })
-      .catch(error => onError && onError(error))
-      .finally(() => onFinally && onFinally())
+      .then(() => onRefetch?.())
+      .catch(handleError)
   }
 
+  const handleUnPublish = () => {
+    Modal.confirm({
+      title: formatMessage(commonMessages.text.unpublishingTitle),
+      onOk: () => {
+        publishAppointmentPlan({
+          variables: {
+            appointmentPlanId: appointmentPlanAdmin.id,
+            publishedAt: null,
+            isPrivate: false,
+          },
+        })
+          .then(() => onRefetch?.())
+          .catch(handleError)
+      },
+      onCancel: () => {},
+    })
+  }
+  const overlay = (
+    <Menu>
+      {[formatMessage(commonMessages.ui.publiclyPublished), formatMessage(commonMessages.ui.privatelyPublished)]
+        .filter(publishType => publishType !== appointmentPlanStatus)
+        .map(publishType => (
+          <Menu.Item key={publishType}>
+            <Button
+              type="link"
+              onClick={() => {
+                setPublishState(publishType)
+                handlePublish(publishType !== formatMessage(commonMessages.ui.publiclyPublished))
+              }}
+            >
+              {publishType}
+            </Button>
+          </Menu.Item>
+        ))}
+    </Menu>
+  )
+
   return (
-    <AdminPublishBlock
-      type={publishStatus}
-      title={title}
-      description={description}
-      checklist={checklist}
-      onPublish={handlePublish}
-    />
+    <AdminBlock>
+      <div className="d-flex flex-column align-items-center py-3">
+        <div className="mb-3">
+          {appointmentPlanStatus === 'notValidated' ? (
+            <StatusAlertIcon />
+          ) : appointmentPlanStatus === 'unpublished' ? (
+            <StatusOrdinaryIcon />
+          ) : appointmentPlanStatus === 'published' || appointmentPlanStatus === 'publishedInPrivate' ? (
+            <StatusSuccessIcon />
+          ) : null}
+        </div>
+
+        <Typography.Title level={4} className="mb-2">
+          {appointmentPlanStatusMessage[appointmentPlanStatus].title}
+        </Typography.Title>
+
+        <Typography.Paragraph type="secondary" className="mb-3">
+          {appointmentPlanStatusMessage[appointmentPlanStatus].description}
+        </Typography.Paragraph>
+
+        {appointmentPlanStatus === 'notValidated' && (
+          <div className="px-5 py-4 mb-3" style={{ backgroundColor: '#f7f8f8', width: '100%' }}>
+            {errors.map((error, index) => (
+              <div key={index} className="d-flex align-items-center mb-2">
+                <ExclamationCircleIcon className="mr-1" />
+                <span className="mr-1">{error.message}</span>
+                <span>
+                  <Link to={error.to}>
+                    {formatMessage(commonMessages.ui.jumpTo)} <RightOutlined />
+                  </Link>
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {appointmentPlanStatus === 'notValidated' ? (
+          <Dropdown.Button disabled icon={<DownOutlined />} overlay={overlay}>
+            <div>{publishState}</div>
+          </Dropdown.Button>
+        ) : appointmentPlanStatus === 'published' || appointmentPlanStatus === 'publishedInPrivate' ? (
+          <Button onClick={handleUnPublish}>{formatMessage(commonMessages.ui.cancelPublishing)}</Button>
+        ) : appointmentPlanStatus === 'unpublished' ? (
+          <Dropdown.Button
+            type="primary"
+            icon={<DownOutlined />}
+            overlay={overlay}
+            onClick={() => handlePublish(publishState === formatMessage(commonMessages.ui.privatelyPublished))}
+          >
+            <div>{publishState}</div>
+          </Dropdown.Button>
+        ) : null}
+      </div>
+    </AdminBlock>
   )
 }
 
 const PUBLISH_APPOINTMENT_PLAN = gql`
-  mutation PUBLISH_APPOINTMENT_PLAN($appointmentPlanId: uuid!, $publishedAt: timestamptz) {
-    update_appointment_plan(where: { id: { _eq: $appointmentPlanId } }, _set: { published_at: $publishedAt }) {
+  mutation PUBLISH_APPOINTMENT_PLAN($appointmentPlanId: uuid!, $publishedAt: timestamptz, $isPrivate: Boolean) {
+    update_appointment_plan(
+      where: { id: { _eq: $appointmentPlanId } }
+      _set: { published_at: $publishedAt, is_private: $isPrivate }
+    ) {
       affected_rows
     }
   }

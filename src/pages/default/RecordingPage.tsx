@@ -616,8 +616,6 @@ const RecordingPage: React.FC = () => {
               />
             )
           })}
-
-          {/* </ReactSortable> */}
         </StyledContainer>
       </StyledLayoutContent>
 
