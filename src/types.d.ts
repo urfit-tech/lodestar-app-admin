@@ -10044,6 +10044,33 @@ export interface GET_PROGRAM_PREVIEW_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROGRAM_SORT_COLLECTION
+// ====================================================
+
+export interface GET_PROGRAM_SORT_COLLECTION_program {
+  __typename: "program";
+  id: any;
+  title: string;
+  is_subscription: boolean;
+}
+
+export interface GET_PROGRAM_SORT_COLLECTION {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_PROGRAM_SORT_COLLECTION_program[];
+}
+
+export interface GET_PROGRAM_SORT_COLLECTIONVariables {
+  condition: program_bool_exp;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM
 // ====================================================
 
