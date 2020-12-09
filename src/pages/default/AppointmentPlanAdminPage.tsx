@@ -136,12 +136,10 @@ const AppointmentPlanAdminPage: React.FC = () => {
           <Tabs.TabPane tab={formatMessage(commonMessages.label.publishAdmin)} key="publish">
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
-              <AdminBlock>
-                <AppointmentPlanPublishBlock
-                  appointmentPlanAdmin={appointmentPlanAdmin}
-                  onRefetch={refetchAppointmentPlanAdmin}
-                />
-              </AdminBlock>
+              <AppointmentPlanPublishBlock
+                appointmentPlanAdmin={appointmentPlanAdmin}
+                onRefetch={refetchAppointmentPlanAdmin}
+              />
             </div>
           </Tabs.TabPane>
         </Tabs>
