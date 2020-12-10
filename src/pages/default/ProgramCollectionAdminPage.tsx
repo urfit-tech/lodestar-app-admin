@@ -234,7 +234,7 @@ const ProgramCollectionBlock: React.FC<{
   return (
     <div className="row py-3">
       {withSortingButton && (
-        <div className="text-center" style={{ width: '100%' }}>
+        <div className="d-flex flex-row-reverse" style={{ width: '100%' }}>
           <ProgramCollectionStructureAdminModal
             programs={programSorts}
             onSubmit={values =>
