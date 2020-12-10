@@ -12,11 +12,6 @@ export type CouponPlanProps = {
   constraint: number | null
   startedAt: Date | null
   endedAt: Date | null
-  count: number
-  remaining: number
-  available?: boolean
-  used: number
-  productIds?: string[]
 }
 
 export type CouponCodeProps = {

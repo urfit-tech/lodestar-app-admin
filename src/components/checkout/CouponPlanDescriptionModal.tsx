@@ -66,7 +66,7 @@ const StyledTitle = styled.div`
 
 const CouponPlanDescriptionModal: React.FC<
   ModalProps & {
-    couponPlan: CouponPlanProps
+    couponPlan: CouponPlanProps & { productIds: string[] }
   }
 > = ({ couponPlan, ...modalProps }) => {
   const { formatMessage } = useIntl()

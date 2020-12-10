@@ -58,7 +58,13 @@ export const useCouponPlanCollection = () => {
     { variables: { appId: app.id } },
   )
 
-  const couponPlans: CouponPlanProps[] =
+  const couponPlans: (CouponPlanProps & {
+    count: number
+    remaining: number
+    available: boolean
+    used: number
+    productIds: string[]
+  })[] =
     loading || error || !data
       ? []
       : data.coupon_plan.map(couponPlan => {

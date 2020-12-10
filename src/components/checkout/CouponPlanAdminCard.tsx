@@ -1,5 +1,4 @@
-import { EditOutlined, MoreOutlined } from '@ant-design/icons'
-import { Button, Divider, Dropdown, Menu } from 'antd'
+import { Button, Divider } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -7,7 +6,6 @@ import { currencyFormatter, dateFormatter } from '../../helpers'
 import { commonMessages, promotionMessages } from '../../helpers/translation'
 import { CouponPlanProps } from '../../types/checkout'
 import AdminCard from '../admin/AdminCard'
-import CouponPlanAdminModal from './CouponPlanAdminModal'
 import CouponPlanDescriptionModal from './CouponPlanDescriptionModal'
 
 const StyledAdminCard = styled(AdminCard)`
@@ -79,19 +77,25 @@ const StyledText = styled.span<{ active?: boolean }>`
   line-height: 1.57;
   letter-spacing: 0.4px;
 `
-const StyledCount = styled.span`
-  color: var(--gray-dark);
-  padding: 2px 6px;
-  font-size: 14px;
-  line-height: 1.57;
-  letter-spacing: 0.4px;
-`
 
+const StyledButton = styled(Button)`
+  font-size: 14px;
+  padding: 0;
+  letter-spacing: -1px;
+  height: auto;
+  padding-right: 24px;
+`
+const StyledPeriod = styled.div`
+  font-size: 14px;
+`
 const CouponPlanAdminCard: React.FC<{
-  couponPlan: CouponPlanProps
+  couponPlan: CouponPlanProps & {
+    productIds: string[]
+  }
   isAvailable?: boolean
-  onRefetch?: () => void
-}> = ({ couponPlan, isAvailable, onRefetch }) => {
+  renderCount?: () => React.ReactNode
+  renderEditDropdown?: () => React.ReactNode
+}> = ({ couponPlan, isAvailable, renderCount, renderEditDropdown }) => {
   const { formatMessage } = useIntl()
   const [modalVisible, setModalVisible] = useState(false)
 
@@ -125,58 +129,24 @@ const CouponPlanAdminCard: React.FC<{
           : null}
       </StyledText>
 
-      <div style={{ fontFamily: 'Roboto', fontSize: '14px', paddingTop: '12px' }}>
-        {couponPlan.startedAt ? dateFormatter(couponPlan.startedAt) : formatMessage(promotionMessages.label.fromNow)}
-        {' - '}
-        {couponPlan.endedAt ? dateFormatter(couponPlan.endedAt) : formatMessage(promotionMessages.label.forever)}
-      </div>
+      <StyledPeriod className="mt-2">
+        <span>
+          {couponPlan.startedAt ? dateFormatter(couponPlan.startedAt) : formatMessage(promotionMessages.label.fromNow)}
+        </span>
+        <span className="m-1">-</span>
+        <span>
+          {couponPlan.endedAt ? dateFormatter(couponPlan.endedAt) : formatMessage(promotionMessages.label.forever)}
+        </span>
+      </StyledPeriod>
 
       <Divider className="mt-3" />
 
       <div className="d-flex align-items-center justify-content-between">
-        <Button
-          type="link"
-          onClick={() => setModalVisible(true)}
-          style={{
-            fontSize: '14px',
-            padding: 0,
-            letterSpacing: '-1px',
-            height: 'auto',
-            paddingRight: '24px',
-          }}
-        >
+        <StyledButton type="link" onClick={() => setModalVisible(true)}>
           {formatMessage(commonMessages.ui.detail)}
-        </Button>
-        <div className="flex-grow-1">
-          <StyledCount>
-            {formatMessage(promotionMessages.text.sentUsedCount, {
-              total: couponPlan.count,
-              exchanged: couponPlan.count - couponPlan.remaining,
-              used: couponPlan.used,
-            })}
-          </StyledCount>
-        </div>
-        <Dropdown
-          placement="bottomRight"
-          trigger={['click']}
-          overlay={
-            <Menu>
-              <Menu.Item>
-                <CouponPlanAdminModal
-                  renderTrigger={({ setVisible }) => (
-                    <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</span>
-                  )}
-                  icon={<EditOutlined />}
-                  title={formatMessage(promotionMessages.ui.editCouponPlan)}
-                  couponPlan={couponPlan}
-                  onRefetch={onRefetch}
-                />
-              </Menu.Item>
-            </Menu>
-          }
-        >
-          <MoreOutlined />
-        </Dropdown>
+        </StyledButton>
+        <div className="flex-grow-1">{renderCount?.()}</div>
+        {renderEditDropdown?.()}
       </div>
 
       {modalVisible && (

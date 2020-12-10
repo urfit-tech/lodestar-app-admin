@@ -27,7 +27,7 @@ import SaleCollectionAdminCard from '../../../components/sale/SaleCollectionAdmi
 import { useApp } from '../../../contexts/AppContext'
 import { useAuth } from '../../../contexts/AuthContext'
 import { currencyFormatter, handleError } from '../../../helpers'
-import { commonMessages, memberMessages } from '../../../helpers/translation'
+import { commonMessages, memberMessages, promotionMessages } from '../../../helpers/translation'
 import { useMemberAdmin, useMutateMemberNote } from '../../../hooks/member'
 import DefaultAvatar from '../../../images/default/avatar.svg'
 import { ReactComponent as EmailIcon } from '../../../images/icon/email.svg'
@@ -226,6 +226,11 @@ const MemberAdminPage: React.FC = () => {
                 </div>
               </Tabs.TabPane>
             )}
+            <Tabs.TabPane key="coupon" tab={formatMessage(promotionMessages.term.coupon)}>
+              <div className="p-5">
+                <Tabs></Tabs>
+              </div>
+            </Tabs.TabPane>
             {enabledModules.contract && (
               <Tabs.TabPane key="contract" tab={formatMessage(memberMessages.label.contract)}>
                 <div className="p-5">

@@ -476,6 +476,7 @@ export const appointmentMessages = {
 
 export const promotionMessages = {
   term: defineMessages({
+    coupon: { id: 'promotion.term.coupon', defaultMessage: '折價券' },
     couponPlanTitle: { id: 'promotion.term.couponPlanTitle', defaultMessage: '折價方案名稱' },
     couponCode: { id: 'promotion.term.couponCode', defaultMessage: '折扣代碼' },
     voucherCode: { id: 'promotion.term.voucherCode', defaultMessage: '兌換代碼' },

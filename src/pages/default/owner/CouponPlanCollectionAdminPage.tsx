@@ -1,7 +1,8 @@
-import Icon, { FileAddOutlined } from '@ant-design/icons'
-import { Button, Tabs } from 'antd'
+import Icon, { EditOutlined, FileAddOutlined, MoreOutlined } from '@ant-design/icons'
+import { Button, Dropdown, Menu, Tabs } from 'antd'
 import React from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { AdminPageTitle } from '../../../components/admin'
 import CouponPlanAdminCard from '../../../components/checkout/CouponPlanAdminCard'
 import CouponPlanAdminModal from '../../../components/checkout/CouponPlanAdminModal'
@@ -9,6 +10,14 @@ import AdminLayout from '../../../components/layout/AdminLayout'
 import { commonMessages, promotionMessages } from '../../../helpers/translation'
 import { useCouponPlanCollection } from '../../../hooks/checkout'
 import { ReactComponent as DiscountIcon } from '../../../images/icon/discount.svg'
+
+const StyledCount = styled.span`
+  color: var(--gray-dark);
+  padding: 2px 6px;
+  font-size: 14px;
+  line-height: 1.57;
+  letter-spacing: 0.4px;
+`
 
 const CouponPlanCollectionAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -63,7 +72,38 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
                   <CouponPlanAdminCard
                     couponPlan={couponPlan}
                     isAvailable={couponPlan.available}
-                    onRefetch={refetchCouponPlans}
+                    renderCount={() => (
+                      <StyledCount>
+                        {formatMessage(promotionMessages.text.sentUsedCount, {
+                          total: couponPlan.count,
+                          exchanged: couponPlan.count - couponPlan.remaining,
+                          used: couponPlan.used,
+                        })}
+                      </StyledCount>
+                    )}
+                    renderEditDropdown={() => (
+                      <Dropdown
+                        placement="bottomRight"
+                        trigger={['click']}
+                        overlay={
+                          <Menu>
+                            <Menu.Item>
+                              <CouponPlanAdminModal
+                                renderTrigger={({ setVisible }) => (
+                                  <span onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</span>
+                                )}
+                                icon={<EditOutlined />}
+                                title={formatMessage(promotionMessages.ui.editCouponPlan)}
+                                couponPlan={couponPlan}
+                                onRefetch={refetchCouponPlans}
+                              />
+                            </Menu.Item>
+                          </Menu>
+                        }
+                      >
+                        <MoreOutlined />
+                      </Dropdown>
+                    )}
                   />
                 </div>
               ))}
