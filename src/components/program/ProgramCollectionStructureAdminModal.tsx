@@ -1,10 +1,11 @@
 import { DragOutlined } from '@ant-design/icons'
 import { Button, Select } from 'antd'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
+import { ProgramSortProps } from '../../pages/default/ProgramCollectionAdminPage'
 import AdminModal from '../admin/AdminModal'
 import DraggableItem from '../common/DraggableItem'
 
@@ -25,23 +26,14 @@ const StyledSelect = styled(Select)`
   width: 50px;
 `
 
-type ProgramSortingProps = {
-  id: string
-  title: string
-  isSubscription: boolean
-}
 const ProgramCollectionStructureAdminModal: React.FC<{
-  programs: ProgramSortingProps[]
-  onSubmit?: (value: ProgramSortingProps[]) => Promise<any>
+  programs: ProgramSortProps[]
+  onSubmit?: (value: ProgramSortProps[]) => Promise<any>
 }> = ({ programs, onSubmit, ...props }) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
   const [sortingPrograms, setSortingPrograms] = useState(programs)
-  useEffect(() => {
-    if (!programs.length) {
-      setSortingPrograms(programs)
-    }
-  }, [programs])
+
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     if (!programs.length) {
       setVisible(false)
