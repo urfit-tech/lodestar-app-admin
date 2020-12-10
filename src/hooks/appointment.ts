@@ -107,14 +107,11 @@ export const useAppointmentEnrollmentCreator = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_APPOINTMENT_ENROLLMENT_CREATOR>(
     gql`
       query GET_APPOINTMENT_ENROLLMENT_CREATOR {
-        appointment_enrollment(order_by: { started_at: desc }) {
+        member(
+          where: { appointment_plans: { appointment_enrollments: { appointment_plan_id: { _is_null: false } } } }
+        ) {
           id
-          appointment_plan {
-            creator {
-              id
-              name
-            }
-          }
+          name
         }
       }
     `,
@@ -123,13 +120,10 @@ export const useAppointmentEnrollmentCreator = () => {
   const appointmentCreators: { id: string; name: string }[] =
     loading || error || !data
       ? []
-      : uniqBy(
-          creator => creator.id,
-          data.appointment_enrollment.map(v => ({
-            id: v.appointment_plan?.creator?.id || '',
-            name: v.appointment_plan?.creator?.name || '',
-          })),
-        )
+      : data.member.map(v => ({
+          id: v.id,
+          name: v.name,
+        }))
 
   return {
     loading,
@@ -138,7 +132,6 @@ export const useAppointmentEnrollmentCreator = () => {
     refetch,
   }
 }
-
 
 export const useAppointmentEnrollmentCollection = (
   selectedCreatorId: string,
