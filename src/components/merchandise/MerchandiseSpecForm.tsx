@@ -56,7 +56,7 @@ const MerchandiseSpecForm: React.FC<{
 }> = ({ merchandise, merchandiseId, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { authToken, backendEndpoint } = useAuth()
+  const { authToken, apiHost } = useAuth()
   const { id: appId } = useApp()
   const [insertMerchandiseSpecCollection] = useMutation<
     types.INSERT_MERCHANDISE_SPEC_COLLECTION,
@@ -109,17 +109,11 @@ const MerchandiseSpecForm: React.FC<{
               ) {
                 continue
               }
-              await uploadFile(
-                `merchandise_files/${appId}/${merchandiseId}_${file.name}`,
-                file,
-                authToken,
-                backendEndpoint,
-                {
-                  cancelToken: new axios.CancelToken(canceler => {
-                    uploadCanceler.current = canceler
-                  }),
-                },
-              )
+              await uploadFile(`merchandise_files/${appId}/${merchandiseId}_${file.name}`, file, authToken, apiHost, {
+                cancelToken: new axios.CancelToken(canceler => {
+                  uploadCanceler.current = canceler
+                }),
+              })
             }
           }
           message.success(formatMessage(commonMessages.event.successfullySaved))

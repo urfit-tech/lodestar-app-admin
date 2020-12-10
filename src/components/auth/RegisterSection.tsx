@@ -3,7 +3,6 @@ import { Button, Form, Input } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
-import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
@@ -20,11 +19,10 @@ type FieldProps = {
 const RegisterSection: React.FC<{
   onAuthStateChange: React.Dispatch<React.SetStateAction<AuthState>>
 }> = ({ onAuthStateChange }) => {
-  const app = useApp()
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { setVisible } = useContext(AuthModalContext)
   const { register } = useAuth()
+  const { setVisible } = useContext(AuthModalContext)
   const [loading, setLoading] = useState(false)
 
   const handleRegister = (values: FieldProps) => {
@@ -33,7 +31,6 @@ const RegisterSection: React.FC<{
     }
     setLoading(true)
     register({
-      appId: app.id,
       username: values.username.trim().toLowerCase(),
       email: values.email.trim().toLowerCase(),
       password: values.password,

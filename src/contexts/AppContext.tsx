@@ -25,38 +25,34 @@ const defaultContextValue: AppContextProps = {
 
 const AppContext = createContext<AppContextProps>(defaultContextValue)
 
-export const AppProvider: React.FC = ({ children }) => {
+export const AppProvider: React.FC<{
+  appId: string
+}> = ({ appId, children }) => {
   const history = useHistory()
-  const { refreshToken, authToken, backendEndpoint, setBackendEndpoint } = useAuth()
+  const { refreshToken, authToken } = useAuth()
   const { loading, error, data, refetch } = useQuery<types.GET_APPLICATION, types.GET_APPLICATIONVariables>(
     GET_APPLICATION,
-    {
-      variables: { host: window.location.host },
-    },
+    { variables: { host: window.location.host } },
   )
 
   const settings =
-    data?.app_admin_by_pk?.app.app_settings?.reduce((accumulator, appSetting, index) => {
+    data?.app_admin_by_pk?.app.app_settings?.reduce((accumulator, appSetting) => {
       accumulator[appSetting.key] = appSetting.value
       return accumulator
     }, {} as { [key: string]: string }) || {}
-
-  if (data?.app_admin_by_pk?.api_host && data.app_admin_by_pk.api_host !== backendEndpoint) {
-    setBackendEndpoint?.(`https://${data.app_admin_by_pk.api_host}`)
-  }
 
   const contextValue = {
     ...defaultContextValue,
     loading,
     error,
     refetch,
-    id: data?.app_admin_by_pk?.app.id || '',
+    id: appId,
     name: data?.app_admin_by_pk?.app.name || '',
     title: data?.app_admin_by_pk?.app.title || '',
     description: data?.app_admin_by_pk?.app.description || '',
     vimeoProjectId: data?.app_admin_by_pk?.app.vimeo_project_id,
     enabledModules:
-      data?.app_admin_by_pk?.app.app_modules.reduce((dict, el, indx) => {
+      data?.app_admin_by_pk?.app.app_modules.reduce((dict, el) => {
         dict[el.module_id as Module] = true
         return dict
       }, {} as { [key in Module]?: boolean }) || {},
@@ -72,23 +68,11 @@ export const AppProvider: React.FC = ({ children }) => {
       }, {} as AppProps['currencies']) || {},
   }
 
-  // after getting app, fetch the auth token
-  const appId = data?.app_admin_by_pk?.app.id
-  const apiHost = data?.app_admin_by_pk?.api_host
-
   useEffect(() => {
-    if (appId) {
-      if (!backendEndpoint) {
-        if (apiHost) {
-          setBackendEndpoint?.(`https://${apiHost}`)
-        } else {
-          setBackendEndpoint?.(process.env.REACT_APP_BACKEND_ENDPOINT || '')
-        }
-      } else if (!authToken) {
-        refreshToken?.({ appId }).catch(() => history.push('/'))
-      }
+    if (!authToken) {
+      refreshToken?.().catch(() => history.push('/'))
     }
-  }, [apiHost, appId, authToken, backendEndpoint, history, refreshToken, setBackendEndpoint])
+  }, [authToken, history, refreshToken])
 
   return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>
 }
@@ -102,7 +86,7 @@ const GET_APPLICATION = gql`
       unit
     }
     app_admin_by_pk(host: $host) {
-      api_host
+      host
       app {
         id
         name
