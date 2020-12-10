@@ -5739,34 +5739,17 @@ export interface GET_APPOINTMENT_PLAN_ADMINVariables {
 // GraphQL query operation: GET_APPOINTMENT_ENROLLMENT_CREATOR
 // ====================================================
 
-export interface GET_APPOINTMENT_ENROLLMENT_CREATOR_appointment_enrollment_appointment_plan_creator {
-  __typename: "member_public";
-  id: string | null;
-  name: string | null;
-}
-
-export interface GET_APPOINTMENT_ENROLLMENT_CREATOR_appointment_enrollment_appointment_plan {
-  __typename: "appointment_plan";
-  /**
-   * An object relationship
-   */
-  creator: GET_APPOINTMENT_ENROLLMENT_CREATOR_appointment_enrollment_appointment_plan_creator | null;
-}
-
-export interface GET_APPOINTMENT_ENROLLMENT_CREATOR_appointment_enrollment {
-  __typename: "appointment_enrollment";
-  id: any | null;
-  /**
-   * An object relationship
-   */
-  appointment_plan: GET_APPOINTMENT_ENROLLMENT_CREATOR_appointment_enrollment_appointment_plan | null;
+export interface GET_APPOINTMENT_ENROLLMENT_CREATOR_member {
+  __typename: "member";
+  id: string;
+  name: string;
 }
 
 export interface GET_APPOINTMENT_ENROLLMENT_CREATOR {
   /**
-   * fetch data from the table: "appointment_enrollment"
+   * fetch data from the table: "member"
    */
-  appointment_enrollment: GET_APPOINTMENT_ENROLLMENT_CREATOR_appointment_enrollment[];
+  member: GET_APPOINTMENT_ENROLLMENT_CREATOR_member[];
 }
 
 /* tslint:disable */
@@ -11222,6 +11205,30 @@ export enum member_tag_update_column {
   id = "id",
   member_id = "member_id",
   tag_name = "tag_name",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "member_task"
+ */
+export enum member_task_constraint {
+  member_task_pkey = "member_task_pkey",
+}
+
+/**
+ * update columns of table "member_task"
+ */
+export enum member_task_update_column {
+  category_id = "category_id",
+  created_at = "created_at",
+  description = "description",
+  due_at = "due_at",
+  executor_id = "executor_id",
+  id = "id",
+  member_id = "member_id",
+  priority = "priority",
+  status = "status",
+  title = "title",
   updated_at = "updated_at",
 }
 
@@ -16689,6 +16696,7 @@ export interface member_bool_exp {
   member_socials?: member_social_bool_exp | null;
   member_specialities?: member_speciality_bool_exp | null;
   member_tags?: member_tag_bool_exp | null;
+  member_tasks?: member_task_bool_exp | null;
   members?: member_bool_exp | null;
   merchandises?: merchandise_bool_exp | null;
   metadata?: jsonb_comparison_exp | null;
@@ -17069,6 +17077,7 @@ export interface member_insert_input {
   member_socials?: member_social_arr_rel_insert_input | null;
   member_specialities?: member_speciality_arr_rel_insert_input | null;
   member_tags?: member_tag_arr_rel_insert_input | null;
+  member_tasks?: member_task_arr_rel_insert_input | null;
   members?: member_arr_rel_insert_input | null;
   merchandises?: merchandise_arr_rel_insert_input | null;
   metadata?: any | null;
@@ -17371,6 +17380,7 @@ export interface member_order_by {
   member_socials_aggregate?: member_social_aggregate_order_by | null;
   member_specialities_aggregate?: member_speciality_aggregate_order_by | null;
   member_tags_aggregate?: member_tag_aggregate_order_by | null;
+  member_tasks_aggregate?: member_task_aggregate_order_by | null;
   members_aggregate?: member_aggregate_order_by | null;
   merchandises_aggregate?: merchandise_aggregate_order_by | null;
   metadata?: order_by | null;
@@ -18088,6 +18098,23 @@ export interface member_tag_on_conflict {
 }
 
 /**
+ * order by aggregate values of table "member_task"
+ */
+export interface member_task_aggregate_order_by {
+  count?: order_by | null;
+  max?: member_task_max_order_by | null;
+  min?: member_task_min_order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "member_task"
+ */
+export interface member_task_arr_rel_insert_input {
+  data: member_task_insert_input[];
+  on_conflict?: member_task_on_conflict | null;
+}
+
+/**
  * Boolean expression to filter rows from the table "member_task". All fields are combined with a logical 'AND'.
  */
 export interface member_task_bool_exp {
@@ -18128,6 +18155,49 @@ export interface member_task_insert_input {
   status?: string | null;
   title?: string | null;
   updated_at?: any | null;
+}
+
+/**
+ * order by max() on columns of table "member_task"
+ */
+export interface member_task_max_order_by {
+  category_id?: order_by | null;
+  created_at?: order_by | null;
+  description?: order_by | null;
+  due_at?: order_by | null;
+  executor_id?: order_by | null;
+  id?: order_by | null;
+  member_id?: order_by | null;
+  priority?: order_by | null;
+  status?: order_by | null;
+  title?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "member_task"
+ */
+export interface member_task_min_order_by {
+  category_id?: order_by | null;
+  created_at?: order_by | null;
+  description?: order_by | null;
+  due_at?: order_by | null;
+  executor_id?: order_by | null;
+  id?: order_by | null;
+  member_id?: order_by | null;
+  priority?: order_by | null;
+  status?: order_by | null;
+  title?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
+ * on conflict condition type for table "member_task"
+ */
+export interface member_task_on_conflict {
+  constraint: member_task_constraint;
+  update_columns: member_task_update_column[];
+  where?: member_task_bool_exp | null;
 }
 
 /**
