@@ -1,7 +1,6 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import { uniqBy } from 'ramda'
 import { AppointmentPeriodCardProps } from '../components/appointment/AppointmentPeriodCard'
 import types from '../types'
 import { AppointmentPlanAdminProps, ScheduleIntervalType } from '../types/appointment'
@@ -152,11 +151,11 @@ export const useAppointmentEnrollmentCollection = (
         }
       : isFinished
       ? {
-          _lte: moment().startOf('minute').toDate(),
+          _lte: endedAt,
         }
       : {
-          _gte: moment().startOf('minute').toDate(),
           _lte: endedAt,
+          _gte: moment().startOf('minute').toDate(),
         },
   }
 
