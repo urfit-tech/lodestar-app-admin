@@ -22,6 +22,12 @@ import types from '../../types'
 import { ProgramPlanPeriodType, ProgramPreviewProps } from '../../types/program'
 import LoadingPage from './LoadingPage'
 
+export type ProgramSortProps = {
+  id: string
+  title: string
+  isSubscription: boolean
+}
+
 const AvatarPlaceHolder = styled.div`
   margin: 16px 0;
   height: 32px;
@@ -55,7 +61,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
     tab: string
     condition: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition']
     hidden?: boolean
-    withPositionControl?: boolean
+    withSortingButton?: boolean
   }[] = [
     {
       key: 'draft',
@@ -98,6 +104,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
     {
       key: 'publiclyPublish',
       tab: formatMessage(commonMessages.status.publiclyPublish),
+      withSortingButton: true,
       condition: {
         published_at: { _is_null: false },
         is_private: { _eq: false },
@@ -171,6 +178,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
               <ProgramCollectionBlock
                 appId={appId}
                 condition={tabContent.condition}
+                withSortingButton={tabContent.withSortingButton}
                 onReady={count =>
                   count !== counts[tabContent.key] &&
                   setCounts({
@@ -189,8 +197,9 @@ const ProgramCollectionAdminPage: React.FC = () => {
 const ProgramCollectionBlock: React.FC<{
   appId: string
   condition: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition']
+  withSortingButton?: boolean
   onReady?: (count: number) => void
-}> = ({ appId, condition, onReady }) => {
+}> = ({ appId, condition, withSortingButton, onReady }) => {
   const { formatMessage } = useIntl()
   const {
     loadingProgramPreviews,
@@ -205,25 +214,16 @@ const ProgramCollectionBlock: React.FC<{
     types.UPDATE_PROGRAM_POSITION_COLLECTIONVariables
   >(UPDATE_PROGRAM_POSITION_COLLECTION)
   const [loading, setLoading] = useState(false)
-  const {
-    loading: loadingProgramSort,
-    error: errorProgramSort,
-    data: ProgramSort,
-    refetch: refetchProgramSort,
-  } = useQuery<types.GET_PROGRAM_SORT_COLLECTION, types.GET_PROGRAM_SORT_COLLECTIONVariables>(
-    GET_PROGRAM_SORT_COLLECTION,
-    {
-      variables: {
-        condition,
-      },
-    },
+  const { loadingProgramSorts, errorProgramSorts, programSorts, refetchProgramSorts } = useProgramSortCollection(
+    condition,
   )
+
   useEffect(() => {
     onReady?.(programPreviewCount)
     refetchProgramPreviews()
   }, [onReady, programPreviewCount, refetchProgramPreviews])
 
-  if (loadingProgramPreviews || errorProgramPreviews || loadingProgramSort || errorProgramSort) {
+  if (loadingProgramPreviews || errorProgramPreviews || loadingProgramSorts || errorProgramSorts) {
     return <Skeleton active />
   }
 
@@ -232,17 +232,11 @@ const ProgramCollectionBlock: React.FC<{
   }
 
   return (
-    <>
-      {!condition.published_at?._is_null && !condition.is_private?._eq && (
-        <div className="d-flex align-items-center flex-row-reverse">
+    <div className="row py-3">
+      {withSortingButton && (
+        <div className="text-center" style={{ width: '100%' }}>
           <ProgramCollectionStructureAdminModal
-            programs={
-              ProgramSort?.program.map(program => ({
-                id: program.id,
-                title: program.title,
-                isSubscription: program.is_subscription,
-              })) || []
-            }
+            programs={programSorts}
             onSubmit={values =>
               updatePositions({
                 variables: {
@@ -256,7 +250,7 @@ const ProgramCollectionBlock: React.FC<{
                 },
               })
                 .then(() => {
-                  refetchProgramSort()
+                  refetchProgramSorts()
                   refetchProgramPreviews()
                 })
                 .catch(handleError)
@@ -264,68 +258,67 @@ const ProgramCollectionBlock: React.FC<{
           />
         </div>
       )}
-      <div className="row py-3">
-        <PositionAdminLayout<ProgramPreviewProps>
-          value={programPreviews}
-          onChange={value => {
-            updatePositions({
-              variables: {
-                data: value.map((program, index) => ({
-                  app_id: appId,
-                  id: program.id,
-                  title: program.title,
-                  is_subscription: program.isSubscription,
-                  position: index,
-                })),
-              },
-            })
-              .then(() => refetchProgramPreviews())
-              .catch(handleError)
-          }}
-          renderItem={(program, currentIndex, moveTarget) => (
-            <div key={program.id} className="col-12 col-md-6 col-lg-4 mb-5">
-              <AvatarPlaceHolder className="mb-3">
-                {program.instructors[0] ? (
-                  <div className="d-flex align-items-center">
-                    <AvatarImage size="32px" src={program.instructors[0].avatarUrl || ''} />
-                    <span className="pl-2">{program.instructors[0].name}</span>
-                  </div>
-                ) : (
-                  formatMessage(programMessages.text.noAssignedInstructor)
-                )}
-              </AvatarPlaceHolder>
 
-              <OverlayWrapper>
-                <ProgramAdminCard {...program} />
-                <OverlayBlock>
-                  <div>
-                    <Link to={`/programs/${program.id}`}>
-                      <StyledButton block icon={<EditOutlined />}>
-                        {formatMessage(programMessages.ui.editProgram)}
-                      </StyledButton>
-                    </Link>
-                  </div>
-                </OverlayBlock>
-              </OverlayWrapper>
-            </div>
-          )}
-        />
+      <PositionAdminLayout<ProgramPreviewProps>
+        value={programPreviews}
+        onChange={value => {
+          updatePositions({
+            variables: {
+              data: value.map((program, index) => ({
+                app_id: appId,
+                id: program.id,
+                title: program.title,
+                is_subscription: program.isSubscription,
+                position: index,
+              })),
+            },
+          })
+            .then(() => refetchProgramPreviews())
+            .catch(handleError)
+        }}
+        renderItem={(program, currentIndex, moveTarget) => (
+          <div key={program.id} className="col-12 col-md-6 col-lg-4 mb-5">
+            <AvatarPlaceHolder className="mb-3">
+              {program.instructors[0] ? (
+                <div className="d-flex align-items-center">
+                  <AvatarImage size="32px" src={program.instructors[0].avatarUrl || ''} />
+                  <span className="pl-2">{program.instructors[0].name}</span>
+                </div>
+              ) : (
+                formatMessage(programMessages.text.noAssignedInstructor)
+              )}
+            </AvatarPlaceHolder>
 
-        {loadMorePrograms && (
-          <div className="text-center" style={{ width: '100%' }}>
-            <Button
-              loading={loading}
-              onClick={() => {
-                setLoading(true)
-                loadMorePrograms().finally(() => setLoading(false))
-              }}
-            >
-              {formatMessage(commonMessages.ui.showMore)}
-            </Button>
+            <OverlayWrapper>
+              <ProgramAdminCard {...program} />
+              <OverlayBlock>
+                <div>
+                  <Link to={`/programs/${program.id}`}>
+                    <StyledButton block icon={<EditOutlined />}>
+                      {formatMessage(programMessages.ui.editProgram)}
+                    </StyledButton>
+                  </Link>
+                </div>
+              </OverlayBlock>
+            </OverlayWrapper>
           </div>
         )}
-      </div>
-    </>
+      />
+
+      {loadMorePrograms && (
+        <div className="text-center" style={{ width: '100%' }}>
+          <Button
+            loading={loading}
+            onClick={() => {
+              setLoading(true)
+              loadMorePrograms().finally(() => setLoading(false))
+            }}
+          >
+            {formatMessage(commonMessages.ui.showMore)}
+          </Button>
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -404,6 +397,34 @@ const useProgramPreviewCollection = (condition: types.GET_PROGRAM_PREVIEW_COLLEC
     programPreviews,
     refetchProgramPreviews: refetch,
     loadMorePrograms,
+  }
+}
+const useProgramSortCollection = (condition: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition']) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_PROGRAM_SORT_COLLECTION,
+    types.GET_PROGRAM_SORT_COLLECTIONVariables
+  >(GET_PROGRAM_SORT_COLLECTION, {
+    variables: {
+      condition,
+    },
+  })
+
+  const programSorts: ProgramSortProps[] =
+    loading || error || !data
+      ? []
+      : data.program.map(program => {
+          return {
+            id: program.id,
+            title: program.title,
+            isSubscription: program.is_subscription,
+          }
+        })
+
+  return {
+    loadingProgramSorts: loading,
+    errorProgramSorts: error,
+    programSorts,
+    refetchProgramSorts: refetch,
   }
 }
 
