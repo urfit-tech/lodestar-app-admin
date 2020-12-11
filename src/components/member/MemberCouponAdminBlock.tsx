@@ -24,6 +24,7 @@ const MemberCouponAdminBlock: React.FC<{
       key: 'available',
       tab: formatMessage(promotionMessages.status.available),
       couponPlans: coupons.filter(v => !v.status.outdated && !v.status.used).map(w => w.couponPlan),
+      isAvailable: true,
     },
     {
       key: 'notYet',
@@ -31,6 +32,7 @@ const MemberCouponAdminBlock: React.FC<{
       couponPlans: coupons
         .filter(v => v.couponPlan.startedAt && v.couponPlan.startedAt.getTime() > Date.now() && !v.status.used)
         .map(w => w.couponPlan),
+      isAvailable: false,
     },
     {
       key: 'expired',
@@ -38,6 +40,7 @@ const MemberCouponAdminBlock: React.FC<{
       couponPlans: coupons
         .filter(v => (v.couponPlan.endedAt && v.couponPlan.endedAt.getTime() < Date.now()) || v.status.used)
         .map(w => w.couponPlan),
+      isAvailable: false,
     },
   ]
 
@@ -49,6 +52,7 @@ const MemberCouponAdminBlock: React.FC<{
             {v.couponPlans.map(w => (
               <div className="col-6 mb-3">
                 <CouponPlanAdminCard
+                  isAvailable={v.isAvailable}
                   couponPlan={w}
                   renderDescription={() => (
                     <CouponPlanDescriptionScopeBlock
