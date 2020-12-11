@@ -7283,6 +7283,12 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
   author: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author;
 }
 
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_status {
+  __typename: "coupon_status";
+  outdated: boolean | null;
+  used: boolean | null;
+}
+
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code_coupon_plan {
   __typename: "coupon_plan";
   id: any;
@@ -7301,6 +7307,7 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code_coupon_
 
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code {
   __typename: "coupon_code";
+  id: any;
   /**
    * An object relationship
    */
@@ -7309,6 +7316,11 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code {
 
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons {
   __typename: "coupon";
+  id: any;
+  /**
+   * An object relationship
+   */
+  status: GET_MEMBER_DESCRIPTION_member_by_pk_coupons_status | null;
   /**
    * An object relationship
    */

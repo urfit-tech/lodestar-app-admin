@@ -124,6 +124,10 @@ export const useMemberAdmin = (memberId: string) => {
           }
           coupons {
             id
+            status {
+              outdated
+              used
+            }
             coupon_code {
               id
               coupon_plan {
@@ -174,6 +178,10 @@ export const useMemberAdmin = (memberId: string) => {
   const memberAdmin:
     | (MemberAdminProps & {
         couponPlans: (CouponPlanProps & {
+          couponStatus: {
+            outdated: boolean
+            used: boolean
+          }
           productIds: string[]
         })[]
       })
@@ -222,9 +230,13 @@ export const useMemberAdmin = (memberId: string) => {
               v.coupon_code.coupon_plan.type === 1 ? 'cash' : v.coupon_code.coupon_plan.type === 2 ? 'percent' : null,
             amount: v.coupon_code.coupon_plan.amount,
             constraint: v.coupon_code.coupon_plan.constraint,
-            startedAt: v.coupon_code.coupon_plan.started_at,
-            endedAt: v.coupon_code.coupon_plan.ended_at,
+            startedAt: v.coupon_code.coupon_plan.started_at ? new Date(v.coupon_code.coupon_plan.started_at) : null,
+            endedAt: v.coupon_code.coupon_plan.ended_at ? new Date(v.coupon_code.coupon_plan.ended_at) : null,
             productIds: [],
+            couponStatus: {
+              outdated: !!v.status?.outdated,
+              used: !!v.status?.used,
+            },
           })),
           permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission_id),
           consumption: sum(
