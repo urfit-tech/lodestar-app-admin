@@ -15,6 +15,8 @@ export type AppointmentPlanAdminProps = {
   isPublished: boolean | null
   supportLocales: string[]
   currencyId: string
+  creatorId: string
+  isPrivate: boolean
 }
 
 export type AppointmentPeriodProps = {

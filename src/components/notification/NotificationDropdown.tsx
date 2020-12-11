@@ -2,7 +2,7 @@ import { BellOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Badge, Button, List, Popover } from 'antd'
 import gql from 'graphql-tag'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
@@ -58,15 +58,11 @@ const NotificationDropdown: React.FC<{
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
   const history = useHistory()
-  const { notifications, startPolling, refetch } = useNotifications(memberId, 15)
+  const { notifications, refetch } = useNotifications(memberId, 15)
 
   const [readAllNotification] = useMutation<types.READ_ALL_NOTIFICATIONS, types.READ_ALL_NOTIFICATIONSVariables>(
     READ_ALL_NOTIFICATION,
   )
-
-  useEffect(() => {
-    process.env.NODE_ENV === 'production' && startPolling(3000)
-  }, [startPolling])
 
   const content = (
     <Wrapper>

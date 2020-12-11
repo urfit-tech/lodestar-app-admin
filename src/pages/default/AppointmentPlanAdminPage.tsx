@@ -19,6 +19,7 @@ import AppointmentPlanSaleForm from '../../components/appointment/AppointmentPla
 import AppointmentPlanScheduleBlock from '../../components/appointment/AppointmentPlanScheduleBlock'
 import AppointmentPlanScheduleCreationModal from '../../components/appointment/AppointmentPlanScheduleCreationModal'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
+import { useApp } from '../../contexts/AppContext'
 import { commonMessages } from '../../helpers/translation'
 import { useAppointmentPlanAdmin } from '../../hooks/appointment'
 
@@ -32,6 +33,7 @@ const messages = defineMessages({
 const AppointmentPlanAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { appointmentPlanId } = useParams<{ appointmentPlanId: string }>()
+  const { settings } = useApp()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { appointmentPlanAdmin, refetchAppointmentPlanAdmin } = useAppointmentPlanAdmin(appointmentPlanId)
 
@@ -45,6 +47,29 @@ const AppointmentPlanAdminPage: React.FC = () => {
         </Link>
 
         <AdminHeaderTitle>{appointmentPlanAdmin?.title || appointmentPlanId}</AdminHeaderTitle>
+        {appointmentPlanAdmin?.isPrivate ? (
+          <Button
+            onClick={() => {
+              window.open(
+                `//${settings['host']}/creators/${appointmentPlanAdmin?.creatorId}?tabkey=appointments&appointment_plan=${appointmentPlanId}`,
+                '_blank',
+              )
+            }}
+          >
+            {formatMessage(commonMessages.ui.preview)}
+          </Button>
+        ) : (
+          <Button
+            onClick={() => {
+              window.open(
+                `//${settings['host']}/creators/${appointmentPlanAdmin?.creatorId}?tabkey=appointments`,
+                '_blank',
+              )
+            }}
+          >
+            {formatMessage(commonMessages.ui.preview)}
+          </Button>
+        )}
       </AdminHeader>
 
       <StyledLayoutContent variant="gray">
@@ -111,12 +136,10 @@ const AppointmentPlanAdminPage: React.FC = () => {
           <Tabs.TabPane tab={formatMessage(commonMessages.label.publishAdmin)} key="publish">
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
-              <AdminBlock>
-                <AppointmentPlanPublishBlock
-                  appointmentPlanAdmin={appointmentPlanAdmin}
-                  onRefetch={refetchAppointmentPlanAdmin}
-                />
-              </AdminBlock>
+              <AppointmentPlanPublishBlock
+                appointmentPlanAdmin={appointmentPlanAdmin}
+                onRefetch={refetchAppointmentPlanAdmin}
+              />
             </div>
           </Tabs.TabPane>
         </Tabs>

@@ -26,14 +26,14 @@ const ProfilePasswordAdminCard: React.FC<
 > = ({ memberId, ...cardProps }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { authToken, backendEndpoint } = useAuth()
+  const { authToken, apiHost } = useAuth()
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     axios
       .post(
-        `${backendEndpoint}/auth/change-password`,
+        `${apiHost}/auth/change-password`,
         {
           password: values.password,
           newPassword: values.newPassword,

@@ -161,7 +161,7 @@ const ProgramPublishBlock: React.FC<{
   }
   const handleUnPublish = () => {
     Modal.confirm({
-      title: formatMessage(programMessages.text.unpublishingTitle),
+      title: formatMessage(commonMessages.text.unpublishingTitle),
       content: formatMessage(programMessages.text.unpublishingWarning),
       onOk: () => {
         publishProgram({
@@ -271,7 +271,7 @@ const ProgramPublishBlock: React.FC<{
                 <span className="mr-1">{error.message}</span>
                 <span>
                   <Link to={error.to}>
-                    {formatMessage(programMessages.ui.jumpTo)} <RightOutlined />
+                    {formatMessage(commonMessages.ui.jumpTo)} <RightOutlined />
                   </Link>
                 </span>
               </div>

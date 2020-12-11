@@ -38,7 +38,7 @@ export async function mergePodcastProgram(
 
 export async function appendPodcastProgramAudio(
   authToken: string | null,
-  backendEndpoint: string | null,
+  apiHost: string,
   appId: string,
   podcastProgramId: string,
   key: string,
@@ -46,7 +46,7 @@ export async function appendPodcastProgramAudio(
   duration: number,
 ): Promise<void> {
   await axios.post(
-    `${backendEndpoint}/podcast/append`,
+    `${apiHost}/podcast/append`,
     {
       appId,
       podcastProgramId,
@@ -54,9 +54,7 @@ export async function appendPodcastProgramAudio(
       filename,
       duration,
     },
-    {
-      headers: { authorization: `Bearer ${authToken}` },
-    },
+    { headers: { authorization: `Bearer ${authToken}` } },
   )
 }
 

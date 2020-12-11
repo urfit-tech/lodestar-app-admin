@@ -56,7 +56,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
   ...uploadProps
 }) => {
   const { formatMessage } = useIntl()
-  const { authToken, backendEndpoint } = useAuth()
+  const { authToken, apiHost } = useAuth()
   const uploadCanceler = useRef<Canceler>()
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -87,7 +87,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
     customRequest: option => {
       const { file, onProgress, onError, onSuccess } = option
       setLoading(true)
-      uploadFile(withExtension ? path + extname(file.name) : path, file, authToken, backendEndpoint, {
+      uploadFile(withExtension ? path + extname(file.name) : path, file, authToken, apiHost, {
         onUploadProgress: progressEvent => {
           onProgress(
             {

@@ -11,17 +11,25 @@ import { ApiProvider } from './contexts/ApiContext'
 import { AppProvider } from './contexts/AppContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { LanguageProvider } from './contexts/LanguageContext'
+import { useAppAdmin } from './hooks/util'
+import LoadingPage from './pages/default/LoadingPage'
 import Routes from './Routes'
 import './styles/default/index.scss'
 import theme from './theme/default.json'
 
 const Application: React.FC = () => {
+  const appAdmin = useAppAdmin(window.location.host)
+
+  if (!appAdmin || !appAdmin.apiHost) {
+    return <LoadingPage />
+  }
+
   return (
     <BrowserRouter>
       <QueryParamProvider ReactRouterRoute={Route}>
-        <AuthProvider>
+        <AuthProvider appId={appAdmin.appId} apiHost={appAdmin.apiHost}>
           <ApiProvider>
-            <AppProvider>
+            <AppProvider appId={appAdmin.appId}>
               <LanguageProvider>
                 <ThemeProvider theme={theme}>
                   <ConfigProvider locale={zhTW}>

@@ -3,7 +3,6 @@ import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import SocialLogin from 'react-social-login'
 import styled from 'styled-components'
-import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { codeMessages, commonMessages, errorMessages } from '../../helpers/translation'
@@ -58,7 +57,6 @@ class WrappedSocialLoginButton extends React.Component<{
 const SocialLoginButton = SocialLogin(WrappedSocialLoginButton)
 
 export const FacebookLoginButton: React.FC = () => {
-  const app = useApp()
   const { formatMessage } = useIntl()
   const { socialLogin } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
@@ -81,7 +79,7 @@ export const FacebookLoginButton: React.FC = () => {
       onLoginSuccess={({ _provider, _token }: any) => {
         setLoading(true)
         socialLogin &&
-          socialLogin({ appId: app.id, provider: _provider, providerToken: _token.accessToken })
+          socialLogin({ provider: _provider, providerToken: _token.accessToken })
             .then(() => {
               setVisible && setVisible(false)
             })
@@ -104,7 +102,6 @@ export const FacebookLoginButton: React.FC = () => {
 }
 
 export const GoogleLoginButton: React.FC = () => {
-  const app = useApp()
   const { formatMessage } = useIntl()
   const { socialLogin } = useAuth()
   const { setVisible } = useContext(AuthModalContext)
@@ -127,7 +124,7 @@ export const GoogleLoginButton: React.FC = () => {
       onLoginSuccess={({ _provider, _token }: any) => {
         setLoading(true)
         socialLogin &&
-          socialLogin({ appId: app.id, provider: _provider, providerToken: _token.idToken })
+          socialLogin({ provider: _provider, providerToken: _token.idToken })
             .then(() => {
               setVisible && setVisible(false)
             })

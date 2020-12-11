@@ -22,6 +22,8 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
           published_at
           support_locales
           currency_id
+          creator_id
+          is_private
           appointment_schedules {
             id
             excludes
@@ -88,6 +90,8 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
           isPublished: !!data.appointment_plan_by_pk.published_at,
           supportLocales: data?.appointment_plan_by_pk.support_locales || [],
           currencyId: data?.appointment_plan_by_pk.currency_id || 'TWD',
+          creatorId: data?.appointment_plan_by_pk.creator_id,
+          isPrivate: data?.appointment_plan_by_pk.is_private,
         }
 
   return {

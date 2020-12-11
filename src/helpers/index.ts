@@ -31,12 +31,12 @@ export const uploadFile = async (
   key: string,
   file: Blob,
   authToken: string | null,
-  backendEndpoint: string | null,
+  apiHost: string,
   config?: AxiosRequestConfig,
 ) =>
   await axios
     .post(
-      `${backendEndpoint}/sys/sign-url`,
+      `${apiHost}/sys/sign-url`,
       {
         operation: 'putObject',
         params: {
@@ -60,13 +60,9 @@ export const uploadFile = async (
       })
     })
 
-export const getFileDownloadableLink = async (
-  key: string,
-  authToken: string | null,
-  backendEndpoint: string | null,
-) => {
+export const getFileDownloadableLink = async (key: string, authToken: string | null, apiHost: string) => {
   const { data } = await axios.post(
-    `${backendEndpoint}/sys/sign-url`,
+    `${apiHost}/sys/sign-url`,
     {
       operation: 'getObject',
       params: {
@@ -86,7 +82,8 @@ export const commaFormatter = (value?: number | string | null) =>
 export const currencyFormatter = (value?: number | string | null) =>
   value !== null && value !== undefined && `NT$ ${value < 0 ? 0 : value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
-export const dateFormatter = (value: Date | string, format?: string) => moment(value).format(format || `YYYY/MM/DD HH:mm`)
+export const dateFormatter = (value: Date | string, format?: string) =>
+  moment(value).format(format || `YYYY/MM/DD HH:mm`)
 
 export const dateRangeFormatter: (props: {
   startedAt: Date

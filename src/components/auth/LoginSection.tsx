@@ -5,7 +5,6 @@ import React, { useContext, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
@@ -34,9 +33,8 @@ const LoginSection: React.FC<{
 }> = ({ noTitle, onAuthStateChange }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { setVisible } = useContext(AuthModalContext)
   const { login } = useAuth()
-  const app = useApp()
+  const { setVisible } = useContext(AuthModalContext)
   const [loading, setLoading] = useState(false)
 
   const handleLogin = (values: FieldProps) => {
@@ -45,7 +43,6 @@ const LoginSection: React.FC<{
     }
     setLoading(true)
     login({
-      appId: app.id,
       account: values.account.trim().toLowerCase(),
       password: values.password,
     })
