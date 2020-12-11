@@ -77,7 +77,6 @@ export const AuthProvider: React.FC<{
                 setAuthToken(result.authToken)
               } else {
                 setAuthToken(null)
-                throw new Error(code)
               }
             })
             .finally(() => setIsAuthenticating(false)),
@@ -131,7 +130,8 @@ export const AuthProvider: React.FC<{
           }),
         logout: async () => {
           localStorage.clear()
-          return Axios.post(`//${apiHost}/auth/logout`, {
+          Axios(`//${apiHost}/auth/logout`, {
+            method: 'post',
             withCredentials: true,
           }).then(({ data: { code, message, result } }) => {
             setAuthToken(null)

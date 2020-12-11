@@ -1,7 +1,6 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import React, { createContext, useContext, useEffect } from 'react'
-import { useHistory } from 'react-router-dom'
 import types from '../types'
 import { AppProps, Module } from '../types/app'
 import { useAuth } from './AuthContext'
@@ -28,7 +27,6 @@ const AppContext = createContext<AppContextProps>(defaultContextValue)
 export const AppProvider: React.FC<{
   appId: string
 }> = ({ appId, children }) => {
-  const history = useHistory()
   const { refreshToken, authToken } = useAuth()
   const { loading, error, data, refetch } = useQuery<types.GET_APPLICATION, types.GET_APPLICATIONVariables>(
     GET_APPLICATION,
@@ -70,9 +68,9 @@ export const AppProvider: React.FC<{
 
   useEffect(() => {
     if (!authToken) {
-      refreshToken?.().catch(() => history.push('/'))
+      refreshToken?.()
     }
-  }, [authToken, history, refreshToken])
+  }, [authToken, refreshToken])
 
   return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>
 }

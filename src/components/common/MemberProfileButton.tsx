@@ -76,7 +76,7 @@ const MemberProfileButton: React.FC<{ memberId: string }> = ({ memberId }) => {
           </BorderedItem>
         </Responsive.Default>
 
-        <List.Item className="cursor-pointer" onClick={() => logout && logout().then(() => history.push('/'))}>
+        <List.Item className="cursor-pointer" onClick={() => logout?.().then(() => history.push('/'))}>
           <LogoutOutlined className="mr-2" />
           {formatMessage(commonMessages.ui.logout)}
         </List.Item>
