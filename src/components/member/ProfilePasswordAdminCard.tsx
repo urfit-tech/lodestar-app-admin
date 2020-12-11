@@ -33,7 +33,7 @@ const ProfilePasswordAdminCard: React.FC<
     setLoading(true)
     axios
       .post(
-        `//${apiHost}/auth/change-password`,
+        `${apiHost}/auth/change-password`,
         {
           password: values.password,
           newPassword: values.newPassword,

@@ -46,7 +46,7 @@ export async function appendPodcastProgramAudio(
   duration: number,
 ): Promise<void> {
   await axios.post(
-    `//${apiHost}/podcast/append`,
+    `${apiHost}/podcast/append`,
     {
       appId,
       podcastProgramId,

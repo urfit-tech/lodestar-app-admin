@@ -56,7 +56,7 @@ const ForgotPasswordPage: React.FC = () => {
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
     axios
-      .post(`//${apiHost}/auth/forgot-password`, {
+      .post(`${apiHost}/auth/forgot-password`, {
         appId: app.id,
         account: values.email,
       })

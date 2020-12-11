@@ -49,7 +49,7 @@ export const useAppAdmin = (host: string) => {
       .then(({ data }) => {
         setAppAdmin({
           appId: data.data.app_admin_by_pk.app_id,
-          apiHost: data.data.app_admin_by_pk.api_host || process.env.REACT_APP_API_HOST || null,
+          apiHost: `https://${data.data.app_admin_by_pk.api_host || process.env.REACT_APP_API_HOST || null}`,
         })
       })
       .catch(handleError)

@@ -53,7 +53,7 @@ const ResetPasswordPage: React.FC = () => {
     setLoading(true)
     axios
       .post(
-        `//${apiHost}/auth/reset-password`,
+        `${apiHost}/auth/reset-password`,
         { newPassword: values.password },
         {
           headers: { authorization: `Bearer ${token}` },
