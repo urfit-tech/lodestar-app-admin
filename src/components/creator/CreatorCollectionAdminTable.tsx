@@ -1,7 +1,7 @@
 import Icon, { MoreOutlined, SearchOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Dropdown, Input, Menu, message } from 'antd'
-import Table, { ColumnProps, TableProps } from 'antd/lib/table'
+import Table, { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -27,7 +27,6 @@ const StyledFilterButton = styled(Button)`
 const StyledFilterInput = styled(Input)`
   width: 188px;
 `
-
 const StyledField = styled.span`
   border-radius: 2px;
   border: solid 1px var(--gray);
@@ -40,7 +39,6 @@ const StyledField = styled.span`
     margin-right: 4px;
   }
 `
-
 const StyledTag = styled.span`
   font-size: 14px;
   text-align: center;
@@ -55,12 +53,10 @@ const StyledTag = styled.span`
   }
 `
 
-const CreatorCollectionAdminTable: React.FC<
-  {
-    creators: CreatorProps[]
-    onRefetch?: () => void
-  } & TableProps<CreatorProps>
-> = ({ creators, onRefetch, ...props }) => {
+const CreatorCollectionAdminTable: React.FC<{
+  creators: CreatorProps[]
+  onRefetch?: () => void
+}> = ({ creators, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { settings } = useApp()
   const [filter, setFilter] = useState<{
@@ -251,7 +247,7 @@ const CreatorCollectionAdminTable: React.FC<
     },
   ]
 
-  return <Table dataSource={filteredCreators} columns={columns} {...props} />
+  return <Table dataSource={filteredCreators} columns={columns} rowKey="id" pagination={false} />
 }
 
 export default CreatorCollectionAdminTable
