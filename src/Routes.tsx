@@ -290,6 +290,11 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'owner/MemberAdminPage',
     authenticated: true,
   },
+  member_contract_creation: {
+    path: '/admin/members/:memberId/contract/new',
+    pageName: 'owner/MemberContractCreationPage',
+    authenticated: true,
+  },
   owner_member_properties: {
     path: '/admin/member-properties',
     pageName: 'owner/MemberPropertyAdminPage',

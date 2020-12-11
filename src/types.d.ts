@@ -9965,6 +9965,205 @@ export interface DELETE_COIN_LOGVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_CONTRACT_MEMBER
+// ====================================================
+
+export interface GET_CONTRACT_MEMBER_member_by_pk_member_phones {
+  __typename: "member_phone";
+  phone: string;
+}
+
+export interface GET_CONTRACT_MEMBER_member_by_pk_member_properties_property {
+  __typename: "property";
+  id: any;
+  name: string;
+}
+
+export interface GET_CONTRACT_MEMBER_member_by_pk_member_properties {
+  __typename: "member_property";
+  id: any;
+  value: string;
+  /**
+   * An object relationship
+   */
+  property: GET_CONTRACT_MEMBER_member_by_pk_member_properties_property;
+}
+
+export interface GET_CONTRACT_MEMBER_member_by_pk {
+  __typename: "member";
+  id: string;
+  name: string;
+  email: string;
+  /**
+   * An array relationship
+   */
+  member_phones: GET_CONTRACT_MEMBER_member_by_pk_member_phones[];
+  /**
+   * An array relationship
+   */
+  member_properties: GET_CONTRACT_MEMBER_member_by_pk_member_properties[];
+}
+
+export interface GET_CONTRACT_MEMBER {
+  /**
+   * fetch data from the table: "member" using primary key columns
+   */
+  member_by_pk: GET_CONTRACT_MEMBER_member_by_pk | null;
+}
+
+export interface GET_CONTRACT_MEMBERVariables {
+  id: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: ADD_MEMBER_CONTRACT
+// ====================================================
+
+export interface ADD_MEMBER_CONTRACT_insert_member_contract_one {
+  __typename: "member_contract";
+  id: any;
+}
+
+export interface ADD_MEMBER_CONTRACT {
+  /**
+   * insert a single row into the table: "member_contract"
+   */
+  insert_member_contract_one: ADD_MEMBER_CONTRACT_insert_member_contract_one | null;
+}
+
+export interface ADD_MEMBER_CONTRACTVariables {
+  memberId: string;
+  contractId: any;
+  startedAt: any;
+  endedAt: any;
+  values: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CONTRACTS
+// ====================================================
+
+export interface GET_CONTRACTS_contract {
+  __typename: "contract";
+  id: any;
+  name: string;
+}
+
+export interface GET_CONTRACTS {
+  /**
+   * fetch data from the table: "contract"
+   */
+  contract: GET_CONTRACTS_contract[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROJECT_PLANS
+// ====================================================
+
+export interface GET_PROJECT_PLANS_project_plan {
+  __typename: "project_plan";
+  id: any;
+  period_amount: any | null;
+  /**
+   * Y / M / W / D
+   */
+  period_type: string | null;
+}
+
+export interface GET_PROJECT_PLANS {
+  /**
+   * fetch data from the table: "project_plan"
+   */
+  project_plan: GET_PROJECT_PLANS_project_plan[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROPERTIES
+// ====================================================
+
+export interface GET_PROPERTIES_property {
+  __typename: "property";
+  id: any;
+  name: string;
+}
+
+export interface GET_PROPERTIES {
+  /**
+   * fetch data from the table: "property"
+   */
+  property: GET_PROPERTIES_property[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_CONTRACT_PRODUCT
+// ====================================================
+
+export interface GET_CONTRACT_PRODUCT_xuemi_product {
+  __typename: "xuemi_product";
+  name: string;
+}
+
+export interface GET_CONTRACT_PRODUCT {
+  /**
+   * fetch data from the table: "xuemi.product"
+   */
+  xuemi_product: GET_CONTRACT_PRODUCT_xuemi_product[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SALE_COLLECTION
+// ====================================================
+
+export interface GET_SALE_COLLECTION_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+}
+
+export interface GET_SALE_COLLECTION {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_SALE_COLLECTION_member[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_PROPERTY
 // ====================================================
 
