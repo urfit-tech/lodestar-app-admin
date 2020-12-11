@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import { AdminPageTitle } from '../../../components/admin'
 import CouponPlanAdminCard from '../../../components/checkout/CouponPlanAdminCard'
 import CouponPlanAdminModal from '../../../components/checkout/CouponPlanAdminModal'
+import CouponPlanDescriptionTabs from '../../../components/checkout/CouponPlanDescriptionTabs'
 import AdminLayout from '../../../components/layout/AdminLayout'
 import { commonMessages, promotionMessages } from '../../../helpers/translation'
 import { useCouponPlanCollection } from '../../../hooks/checkout'
@@ -72,6 +73,18 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
                   <CouponPlanAdminCard
                     couponPlan={couponPlan}
                     isAvailable={couponPlan.available}
+                    renderDescription={() => (
+                      <CouponPlanDescriptionTabs
+                        couponPlanId={couponPlan.id}
+                        title={couponPlan.title}
+                        description={couponPlan.description}
+                        constraint={couponPlan.constraint}
+                        type={couponPlan.type}
+                        amount={couponPlan.amount}
+                        scope={couponPlan.scope}
+                        productIds={couponPlan.productIds}
+                      />
+                    )}
                     renderCount={() => (
                       <StyledCount>
                         {formatMessage(promotionMessages.text.sentUsedCount, {

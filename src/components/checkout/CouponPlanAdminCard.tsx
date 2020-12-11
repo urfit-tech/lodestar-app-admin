@@ -93,9 +93,10 @@ const CouponPlanAdminCard: React.FC<{
     productIds: string[]
   }
   isAvailable?: boolean
+  renderDescription?: () => React.ReactNode
   renderCount?: () => React.ReactNode
   renderEditDropdown?: () => React.ReactNode
-}> = ({ couponPlan, isAvailable, renderCount, renderEditDropdown }) => {
+}> = ({ couponPlan, isAvailable, renderDescription, renderCount, renderEditDropdown }) => {
   const { formatMessage } = useIntl()
   const [modalVisible, setModalVisible] = useState(false)
 
@@ -153,6 +154,7 @@ const CouponPlanAdminCard: React.FC<{
         <CouponPlanDescriptionModal
           couponPlan={couponPlan}
           visible={modalVisible}
+          renderContent={() => renderDescription?.()}
           onCancel={() => setModalVisible(false)}
         />
       )}
