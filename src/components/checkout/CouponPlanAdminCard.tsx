@@ -1,4 +1,4 @@
-import { Button, Divider } from 'antd'
+import { Button, Divider, Modal } from 'antd'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -6,7 +6,6 @@ import { currencyFormatter, dateFormatter } from '../../helpers'
 import { commonMessages, promotionMessages } from '../../helpers/translation'
 import { CouponPlanProps } from '../../types/checkout'
 import AdminCard from '../admin/AdminCard'
-import CouponPlanDescriptionModal from './CouponPlanDescriptionModal'
 
 const StyledAdminCard = styled(AdminCard)`
   position: relative;
@@ -88,6 +87,32 @@ const StyledButton = styled(Button)`
 const StyledPeriod = styled.div`
   font-size: 14px;
 `
+
+const StyledModal = styled(Modal)`
+  color: ${props => props.theme['@normal-color']};
+
+  .ant-modal-header {
+    border-bottom: 0px solid #e8e8e8;
+  }
+  .ant-modal-title {
+    font-weight: bold;
+  }
+  .ant-modal-body {
+    font-size: 14px;
+    line-height: 1.57;
+    letter-spacing: 0.18px;
+    color: var(--gray-darker);
+  }
+  .ant-modal-close-x {
+    color: #9b9b9b;
+  }
+`
+const StyledModalTitle = styled.div`
+  color: var(--gray-darker);
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 0.2px;
+`
 const CouponPlanAdminCard: React.FC<{
   couponPlan: CouponPlanProps & {
     productIds: string[]
@@ -98,7 +123,7 @@ const CouponPlanAdminCard: React.FC<{
   renderEditDropdown?: () => React.ReactNode
 }> = ({ couponPlan, isAvailable, renderDescription, renderCount, renderEditDropdown }) => {
   const { formatMessage } = useIntl()
-  const [modalVisible, setModalVisible] = useState(false)
+  const [isModalVisible, setIsModalVisible] = useState(false)
 
   return (
     <StyledAdminCard
@@ -143,21 +168,17 @@ const CouponPlanAdminCard: React.FC<{
       <Divider className="mt-3" />
 
       <div className="d-flex align-items-center justify-content-between">
-        <StyledButton type="link" onClick={() => setModalVisible(true)}>
+        <StyledButton type="link" onClick={() => setIsModalVisible(true)}>
           {formatMessage(commonMessages.ui.detail)}
         </StyledButton>
         <div className="flex-grow-1">{renderCount?.()}</div>
         {renderEditDropdown?.()}
       </div>
 
-      {modalVisible && (
-        <CouponPlanDescriptionModal
-          couponPlan={couponPlan}
-          visible={modalVisible}
-          renderContent={() => renderDescription?.()}
-          onCancel={() => setModalVisible(false)}
-        />
-      )}
+      <StyledModal visible={isModalVisible} title={null} footer={null} onCancel={() => setIsModalVisible(false)}>
+        <StyledModalTitle className="mb-3">{couponPlan.title}</StyledModalTitle>
+        {renderDescription?.()}
+      </StyledModal>
     </StyledAdminCard>
   )
 }
