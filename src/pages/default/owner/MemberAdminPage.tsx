@@ -229,7 +229,7 @@ const MemberAdminPage: React.FC = () => {
             )}
             <Tabs.TabPane key="coupon" tab={formatMessage(promotionMessages.term.coupon)}>
               <div className="p-5">
-                <MemberCouponAdminBlock couponPlans={memberAdmin.couponPlans} />
+                <MemberCouponAdminBlock coupons={memberAdmin.coupons} />
               </div>
             </Tabs.TabPane>
             {enabledModules.contract && (

@@ -7,31 +7,37 @@ import CouponPlanAdminCard from '../checkout/CouponPlanAdminCard'
 import CouponPlanDescriptionScopeBlock from '../checkout/CouponPlanDescriptionScopeBlock'
 
 const MemberCouponAdminBlock: React.FC<{
-  couponPlans: (CouponPlanProps & {
-    couponStatus: {
+  coupons: {
+    status: {
       outdated: boolean
       used: boolean
     }
-    productIds: string[]
-  })[]
-}> = ({ couponPlans }) => {
+    couponPlan: CouponPlanProps & {
+      productIds: string[]
+    }
+  }[]
+}> = ({ coupons }) => {
   const { formatMessage } = useIntl()
 
   const tabContents = [
     {
       key: 'available',
       tab: formatMessage(promotionMessages.status.available),
-      couponPlans: couponPlans.filter(v => !v.couponStatus.outdated && !v.couponStatus.used),
+      couponPlans: coupons.filter(v => !v.status.outdated && !v.status.used).map(w => w.couponPlan),
     },
     {
       key: 'notYet',
       tab: formatMessage(promotionMessages.status.notYet),
-      couponPlans: couponPlans.filter(v => v.startedAt && v.startedAt.getTime() > Date.now() && !v.couponStatus.used),
+      couponPlans: coupons
+        .filter(v => v.couponPlan.startedAt && v.couponPlan.startedAt.getTime() > Date.now() && !v.status.used)
+        .map(w => w.couponPlan),
     },
     {
       key: 'expired',
       tab: formatMessage(promotionMessages.status.unavailable),
-      couponPlans: couponPlans.filter(v => (v.endedAt && v.endedAt.getTime() < Date.now()) || v.couponStatus.used),
+      couponPlans: coupons
+        .filter(v => (v.couponPlan.endedAt && v.couponPlan.endedAt.getTime() < Date.now()) || v.status.used)
+        .map(w => w.couponPlan),
     },
   ]
 

@@ -7289,6 +7289,12 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_status {
   used: boolean | null;
 }
 
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code_coupon_plan_coupon_plan_products {
+  __typename: "coupon_plan_product";
+  id: any;
+  product_id: string;
+}
+
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code_coupon_plan {
   __typename: "coupon_plan";
   id: any;
@@ -7303,6 +7309,10 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code_coupon_
   constraint: any | null;
   started_at: any | null;
   ended_at: any | null;
+  /**
+   * An array relationship
+   */
+  coupon_plan_products: GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code_coupon_plan_coupon_plan_products[];
 }
 
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code {
