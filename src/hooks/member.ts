@@ -3,6 +3,7 @@ import gql from 'graphql-tag'
 import { sum } from 'ramda'
 import { commonMessages } from '../helpers/translation'
 import types from '../types'
+import { CouponPlanProps } from '../types/checkout'
 import {
   MemberAdminProps,
   MemberInfoProps,
@@ -121,6 +122,23 @@ export const useMemberAdmin = (memberId: string) => {
               picture_url
             }
           }
+          coupons {
+            id
+            coupon_code {
+              id
+              coupon_plan {
+                id
+                title
+                description
+                scope
+                type
+                amount
+                constraint
+                started_at
+                ended_at
+              }
+            }
+          }
           member_permission_extras {
             id
             permission_id
@@ -153,7 +171,13 @@ export const useMemberAdmin = (memberId: string) => {
     { variables: { memberId } },
   )
 
-  const memberAdmin: MemberAdminProps | null =
+  const memberAdmin:
+    | (MemberAdminProps & {
+        couponPlans: (CouponPlanProps & {
+          productIds: string[]
+        })[]
+      })
+    | null =
     loading || error || !data || !data.member_by_pk
       ? null
       : {
@@ -188,6 +212,19 @@ export const useMemberAdmin = (memberId: string) => {
               name: v.author.name,
               pictureUrl: v.author.picture_url,
             },
+          })),
+          couponPlans: data.member_by_pk.coupons.map(v => ({
+            id: v.coupon_code.coupon_plan.id,
+            title: v.coupon_code.coupon_plan.title,
+            description: v.coupon_code.coupon_plan.description,
+            scope: v.coupon_code.coupon_plan.scope,
+            type:
+              v.coupon_code.coupon_plan.type === 1 ? 'cash' : v.coupon_code.coupon_plan.type === 2 ? 'percent' : null,
+            amount: v.coupon_code.coupon_plan.amount,
+            constraint: v.coupon_code.coupon_plan.constraint,
+            startedAt: v.coupon_code.coupon_plan.started_at,
+            endedAt: v.coupon_code.coupon_plan.ended_at,
+            productIds: [],
           })),
           permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission_id),
           consumption: sum(

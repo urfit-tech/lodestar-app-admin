@@ -17,6 +17,7 @@ import {
 import { CustomRatioImage } from '../../../components/common/Image'
 import { StyledLayoutContent } from '../../../components/layout/DefaultLayout'
 import MemberContractAdminBlock from '../../../components/member/MemberContractAdminBlock'
+import MemberCouponAdminBlock from '../../../components/member/MemberCouponAdminBlock'
 import MemberNoteAdminItem from '../../../components/member/MemberNoteAdminItem'
 import MemberNoteAdminModal from '../../../components/member/MemberNoteAdminModal'
 import MemberPermissionForm from '../../../components/member/MemberPermissionForm'
@@ -228,7 +229,7 @@ const MemberAdminPage: React.FC = () => {
             )}
             <Tabs.TabPane key="coupon" tab={formatMessage(promotionMessages.term.coupon)}>
               <div className="p-5">
-                <Tabs></Tabs>
+                <MemberCouponAdminBlock couponPlans={memberAdmin.couponPlans} />
               </div>
             </Tabs.TabPane>
             {enabledModules.contract && (

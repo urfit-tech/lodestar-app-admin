@@ -5473,7 +5473,7 @@ export interface GET_APPLICATION_app_admin_by_pk_app {
 
 export interface GET_APPLICATION_app_admin_by_pk {
   __typename: "app_admin";
-  api_host: string | null;
+  host: string;
   /**
    * An object relationship
    */
@@ -7283,6 +7283,38 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
   author: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author;
 }
 
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code_coupon_plan {
+  __typename: "coupon_plan";
+  id: any;
+  title: string;
+  description: string | null;
+  scope: any | null;
+  /**
+   * 1 - cash / 2 - percent
+   */
+  type: number;
+  amount: any;
+  constraint: any | null;
+  started_at: any | null;
+  ended_at: any | null;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code {
+  __typename: "coupon_code";
+  /**
+   * An object relationship
+   */
+  coupon_plan: GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code_coupon_plan;
+}
+
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons {
+  __typename: "coupon";
+  /**
+   * An object relationship
+   */
+  coupon_code: GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code;
+}
+
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_permission_extras {
   __typename: "member_permission_extra";
   id: any;
@@ -7375,6 +7407,10 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk {
    * An array relationship
    */
   member_notes: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes[];
+  /**
+   * An array relationship
+   */
+  coupons: GET_MEMBER_DESCRIPTION_member_by_pk_coupons[];
   /**
    * An array relationship
    */
