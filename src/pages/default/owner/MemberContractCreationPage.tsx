@@ -8,8 +8,10 @@ import { range } from 'ramda'
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { v4 } from 'uuid'
+import { AdminBlock } from '../../../components/admin'
 import DefaultLayout from '../../../components/layout/DefaultLayout'
 import types from '../../../types'
+import { PeriodType } from '../../../types/general'
 import LoadingPage from '../LoadingPage'
 
 const MemberContractCreationPage: React.FC = () => {
@@ -27,16 +29,16 @@ const MemberContractCreationPage: React.FC = () => {
     return <LoadingPage />
   }
 
-  if (errorMember || errorProducts) {
+  if (errorMember || errorProducts || !dataMember?.member_by_pk) {
     return null
   }
 
   return (
-    <MemberContractForm
-      product={dataProducts?.xuemi_product.map(v => v.name) || []}
-      member={
-        dataMember?.member_by_pk
-          ? {
+    <DefaultLayout>
+      <div className="container py-5">
+        <AdminBlock>
+          <MemberContractForm
+            member={{
               id: dataMember.member_by_pk.id,
               name: dataMember.member_by_pk.name,
               email: dataMember.member_by_pk.email,
@@ -47,10 +49,12 @@ const MemberContractCreationPage: React.FC = () => {
                 propertyId: v.property.id,
                 name: v.property.name,
               })),
-            }
-          : null
-      }
-    />
+            }}
+            products={dataProducts?.xuemi_product.map(v => v.name) || []}
+          />
+        </AdminBlock>
+      </div>
+    </DefaultLayout>
   )
 }
 
@@ -62,7 +66,7 @@ const paymentSelect = ['藍新', '歐付寶', '富比世', '新仲信', '舊仲�
 const installmentPlans = [1, 3, 6, 8, 9, 12, 18, 24, 30]
 
 const MemberContractForm: React.FC<{
-  member?: {
+  member: {
     id: string
     name: string
     email: string
@@ -73,20 +77,20 @@ const MemberContractForm: React.FC<{
       propertyId: string
       name: string
     }[]
-  } | null
-  product: string[]
-}> = ({ member, product }) => {
+  }
+  products: string[]
+}> = ({ member, products }) => {
   const [form] = useForm()
-  const { data: propertiesData } = useQuery(GET_PROPERTIES)
-  const { data: contractsData } = useQuery(GET_CONTRACTS)
-  const { data: projectPlansData } = useQuery(GET_PROJECT_PLANS)
+  const { data: propertiesData } = useQuery<types.GET_PROPERTIES>(GET_PROPERTIES)
+  const { data: contractsData } = useQuery<types.GET_CONTRACTS>(GET_CONTRACTS)
+  const { data: projectPlansData } = useQuery<types.GET_PROJECT_PLANS>(GET_PROJECT_PLANS)
   const [addMemberContract] = useMutation(ADD_MEMBER_CONTRACT)
-  const { dataSource: members } = useMemberCollection()
+  const { xuemiSales } = useXuemiSales()
+  const memberBlockRef = useRef<HTMLDivElement | null>(null)
+
   const [memberContractUrl, setMemberContractUrl] = useState('')
   const [selectedContractId, setSelectedContractId] = useState<string | undefined>(contractsData?.contract[0]?.id)
-  const [selectedProjectPlanId, setSelectedProjectPlanId] = useState<string | undefined>(
-    projectPlansData?.project_plan[0]?.id,
-  )
+  const [selectedProjectPlanId, setSelectedProjectPlanId] = useState<string | undefined>()
   const [coinAmount, setCoinAmount] = useState(0)
   const [appointmentAmount, setAppointmentAmount] = useState(0)
   const [currencyConversionValue, setCurrencyConversionValue] = useState(0)
@@ -94,17 +98,20 @@ const MemberContractForm: React.FC<{
   const [endedAt, setEndedAt] = useState<string | undefined>('')
   const [orderExecutorId, setOrderExecutorId] = useState<string>('')
   const [orderExecutorRatio, setOrderExecutorRatio] = useState<number>(1)
-  const memberBlockRef = useRef(null)
-  const formItemClass = 'mb-0'
 
   useEffect(() => {
-    const projectPlan = projectPlansData?.project_plan.filter((v: any) => v.id === selectedProjectPlanId)[0]
-    projectPlan && setEndedAt(moment(startedAt).add(projectPlan.period_amount, projectPlan.period_type).format())
+    const projectPlan = projectPlansData?.project_plan.filter(v => v.id === selectedProjectPlanId)[0]
+    projectPlan &&
+      setEndedAt(
+        moment(startedAt)
+          .add(projectPlan.period_amount, projectPlan.period_type as PeriodType)
+          .format(),
+      )
   }, [projectPlansData, selectedProjectPlanId, startedAt])
 
   const handleContractAdded = async () => {
     const alert = document.getElementsByClassName('ant-alert')[0]
-    if ((memberBlockRef.current! as any).contains(alert)) {
+    if (memberBlockRef.current?.contains(alert)) {
       message.warning('學員資料請填寫完整')
       return
     }
@@ -118,7 +125,7 @@ const MemberContractForm: React.FC<{
         if (window.confirm('請確認合約是否正確？')) {
           // generate coupons
           const couponPlanId = v4()
-          const coupons = range(0, appointmentAmount).map((v: any) => {
+          const coupons = range(0, appointmentAmount).map(v => {
             return {
               member_id: member?.id,
               coupon_code: {
@@ -206,439 +213,285 @@ const MemberContractForm: React.FC<{
       })
       .catch(() => {})
   }
-  return (
-    <DefaultLayout>
-      <div className="site-layout-content pt-5">
-        <div className="container">
-          {member && (
-            <div className="mb-5">
-              <div ref={memberBlockRef}>
-                <Descriptions
-                  title={
-                    <>
-                      <span>學生資料</span>
-                      <div style={{ fontSize: '14px', fontWeight: 'normal' }}>
-                        {'請去學米後台 > 會員列表 > 找到學員並將資料填寫完成'}
-                      </div>
-                    </>
-                  }
-                  bordered
-                  className="mb-3"
-                  extra={
-                    <Button
-                      type="primary"
-                      onClick={() => window.open(`https://admin.xuemi.co/admin/members/${member.id}`, '_blank')}
-                    >
-                      前往學生頁
-                    </Button>
-                  }
-                >
-                  <Descriptions.Item label="學員姓名">
-                    {member?.name || <Alert type="error" message="未設定"></Alert>}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="學員信箱">
-                    {member?.email || <Alert type="error" message="未設定"></Alert>}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="學員電話">
-                    {(member?.phones && member?.phones.split(',').map((v, index) => <Tag key={index}>{v}</Tag>)) || (
-                      <Alert type="error" message="未設定"></Alert>
-                    )}
-                  </Descriptions.Item>
-                  {propertiesData?.property.map((property: any) => (
-                    <Descriptions.Item label={property.name} key={property.id}>
-                      <div className="d-flex align-items-center">
-                        {member.properties.find(v => v?.propertyId === property.id)?.value || (
-                          <Alert type="error" message="未設定" />
-                        )}
 
-                        {member.properties.find(v => v?.propertyId === property.id)?.value &&
-                          property.name
-                            .split('(')[1]
-                            ?.toLowerCase()
-                            .indexOf(member.properties.find(v => v?.propertyId === property.id)?.value.toLowerCase()) <
-                            0 && (
-                            <div className="ml-3">
-                              <Alert message="內容不符合" type="warning" />
-                            </div>
-                          )}
-                      </div>
-                    </Descriptions.Item>
-                  ))}
-                </Descriptions>
+  return (
+    <>
+      <div ref={memberBlockRef}>
+        <Descriptions
+          title={
+            <>
+              <span>學生資料</span>
+              <div style={{ fontSize: '14px', fontWeight: 'normal' }}>
+                {'請去學米後台 > 會員列表 > 找到學員並將資料填寫完成'}
               </div>
-              <Descriptions title="購買項目" bordered className="mb-3">
-                <Descriptions.Item label="開始日期">
-                  <DatePicker
-                    showTime
-                    format="YYYY-MM-DD   HH:mm:ss"
-                    defaultValue={moment(startedAt)}
-                    onChange={(date, dateString: string) => {
-                      setStartedAt(moment(dateString).format())
-                      const projectPlan = projectPlansData?.project_plan.filter(
-                        (v: any) => v.id === selectedProjectPlanId,
-                      )[0]
-                      projectPlan &&
-                        setEndedAt(moment(dateString).add(projectPlan.period_amount, projectPlan.period_type).format())
-                    }}
-                  />
-                </Descriptions.Item>
-                <Descriptions.Item label="結束日期" span={2}>
-                  {endedAt ? moment(endedAt).format('YYYY-MM-DD   HH:mm:ss') : ''}
-                </Descriptions.Item>
-                <Descriptions.Item label="產品項目" span={3}>
-                  <Form form={form} name="projectPlan">
-                    <Form.Item
-                      className={formItemClass}
-                      name="projectPlanName"
-                      rules={[{ required: true, message: '請填寫產品項目' }]}
-                    >
-                      <Select mode="multiple" placeholder="Please select" style={{ width: '100%' }}>
-                        {product.map(name => (
-                          <Select.Option value={name} key={name}>
-                            {name}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </Form>
-                </Descriptions.Item>
-                <Descriptions.Item label="支付金額">
-                  <InputNumber
-                    min={0}
-                    value={currencyConversionValue}
-                    onChange={v => typeof v === 'number' && setCurrencyConversionValue(v)}
-                  />
-                </Descriptions.Item>
-                <Descriptions.Item label="承辦人 / 分潤">
-                  <Form form={form} name="orderExecutors" autoComplete="off">
-                    <Form.Item noStyle name="defaultOrderExecutor">
+            </>
+          }
+          bordered
+          className="mb-5"
+        >
+          <Descriptions.Item label="學員姓名">
+            {member?.name || <Alert type="error" message="未設定"></Alert>}
+          </Descriptions.Item>
+          <Descriptions.Item label="學員信箱">
+            {member?.email || <Alert type="error" message="未設定"></Alert>}
+          </Descriptions.Item>
+          <Descriptions.Item label="學員電話">
+            {(member?.phones && member?.phones.split(',').map((v, index) => <Tag key={index}>{v}</Tag>)) || (
+              <Alert type="error" message="未設定"></Alert>
+            )}
+          </Descriptions.Item>
+          {propertiesData?.property.map(property => (
+            <Descriptions.Item label={property.name} key={property.id}>
+              <div className="d-flex align-items-center">
+                {member.properties.find(v => v.propertyId === property.id)?.value || (
+                  <Alert type="error" message="未設定" />
+                )}
+              </div>
+            </Descriptions.Item>
+          ))}
+        </Descriptions>
+      </div>
+
+      <Descriptions title="購買項目" bordered className="mb-5">
+        <Descriptions.Item label="開始日期">
+          <DatePicker
+            showTime
+            format="YYYY-MM-DD   HH:mm:ss"
+            defaultValue={moment(startedAt)}
+            onChange={(date, dateString: string) => {
+              setStartedAt(moment(dateString).format())
+              const projectPlan = projectPlansData?.project_plan.filter(v => v.id === selectedProjectPlanId)[0]
+              projectPlan &&
+                setEndedAt(
+                  moment(dateString)
+                    .add(projectPlan.period_amount, projectPlan.period_type as PeriodType)
+                    .format(),
+                )
+            }}
+          />
+        </Descriptions.Item>
+        <Descriptions.Item label="結束日期" span={2}>
+          {endedAt ? moment(endedAt).format('YYYY-MM-DD   HH:mm:ss') : ''}
+        </Descriptions.Item>
+        <Descriptions.Item label="產品項目" span={3}>
+          <Form form={form} name="projectPlan">
+            <Form.Item className="mb-0" name="projectPlanName" rules={[{ required: true, message: '請填寫產品項目' }]}>
+              <Select mode="multiple" placeholder="Please select" style={{ width: '100%' }}>
+                {products.map(name => (
+                  <Select.Option value={name} key={name}>
+                    {name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Form>
+        </Descriptions.Item>
+        <Descriptions.Item label="支付金額">
+          <InputNumber
+            min={0}
+            value={currencyConversionValue}
+            onChange={v => typeof v === 'number' && setCurrencyConversionValue(v)}
+          />
+        </Descriptions.Item>
+        <Descriptions.Item label="承辦人 / 分潤">
+          <Form form={form} name="orderExecutors" autoComplete="off">
+            <Form.Item noStyle name="defaultOrderExecutor">
+              <Space
+                style={{
+                  display: 'flex',
+                  marginBottom: '15px',
+                }}
+                align="start"
+              >
+                <Select
+                  showSearch
+                  placeholder="承辦人"
+                  style={{ width: '150px' }}
+                  onChange={v => {
+                    typeof v === 'string' && setOrderExecutorId(v)
+                  }}
+                  filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                >
+                  {xuemiSales?.map(member => (
+                    <Select.Option key={member.id} value={member.id}>
+                      {member.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+
+                <InputNumber
+                  min={0.1}
+                  max={1}
+                  step={0.1}
+                  style={{ width: '60px' }}
+                  value={orderExecutorRatio}
+                  onChange={v => {
+                    typeof v === 'number' && setOrderExecutorRatio(v)
+                  }}
+                />
+              </Space>
+            </Form.Item>
+            <Form.List name="orderExecutors">
+              {(fields, { add, remove }) => {
+                return (
+                  <div>
+                    {fields.map(field => (
                       <Space
+                        key={field.key}
                         style={{
                           display: 'flex',
                           marginBottom: '15px',
                         }}
                         align="start"
                       >
-                        <Select
-                          showSearch
-                          placeholder="承辦人"
-                          style={{ width: '150px' }}
-                          onChange={v => {
-                            typeof v === 'string' && setOrderExecutorId(v)
-                          }}
-                          filterOption={(input, option) =>
-                            option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                          }
+                        <Form.Item
+                          {...field}
+                          name={[field.name, 'member_id']}
+                          fieldKey={[field.fieldKey, 'member_id']}
+                          noStyle
                         >
-                          {members &&
-                            members.map((member: any) => (
+                          <Select
+                            showSearch
+                            placeholder="承辦人"
+                            style={{ width: '150px' }}
+                            filterOption={(input, option) =>
+                              option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }
+                          >
+                            {xuemiSales?.map(member => (
                               <Select.Option key={member.id} value={member.id}>
                                 {member.name}
                               </Select.Option>
                             ))}
-                        </Select>
+                          </Select>
+                        </Form.Item>
+                        <Form.Item {...field} name={[field.name, 'ratio']} fieldKey={[field.fieldKey, 'ratio']} noStyle>
+                          <InputNumber min={0.1} max={1} step={0.1} style={{ width: '60px' }} />
+                        </Form.Item>
 
-                        <InputNumber
-                          min={0.1}
-                          max={1}
-                          step={0.1}
-                          style={{ width: '60px' }}
-                          value={orderExecutorRatio}
-                          onChange={v => {
-                            typeof v === 'number' && setOrderExecutorRatio(v)
+                        <MinusCircleOutlined
+                          onClick={() => {
+                            remove(field.name)
                           }}
                         />
                       </Space>
-                    </Form.Item>
-                    <Form.List name="orderExecutors">
-                      {(fields, { add, remove }) => {
-                        return (
-                          <div>
-                            {fields.map(field => (
-                              <Space
-                                key={field.key}
-                                style={{
-                                  display: 'flex',
-                                  marginBottom: '15px',
-                                }}
-                                align="start"
-                              >
-                                <Form.Item
-                                  {...field}
-                                  name={[field.name, 'member_id']}
-                                  fieldKey={[field.fieldKey, 'member_id']}
-                                  noStyle
-                                >
-                                  <Select
-                                    showSearch
-                                    placeholder="承辦人"
-                                    style={{ width: '150px' }}
-                                    filterOption={(input, option) =>
-                                      option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    }
-                                  >
-                                    {members &&
-                                      members.map((member: any) => (
-                                        <Select.Option key={member.id} value={member.id}>
-                                          {member.name}
-                                        </Select.Option>
-                                      ))}
-                                  </Select>
-                                </Form.Item>
-                                <Form.Item
-                                  {...field}
-                                  name={[field.name, 'ratio']}
-                                  fieldKey={[field.fieldKey, 'ratio']}
-                                  noStyle
-                                >
-                                  <InputNumber min={0.1} max={1} step={0.1} style={{ width: '60px' }} />
-                                </Form.Item>
+                    ))}
 
-                                <MinusCircleOutlined
-                                  onClick={() => {
-                                    remove(field.name)
-                                  }}
-                                />
-                              </Space>
-                            ))}
+                    <Form.Item>
+                      <Button
+                        type="dashed"
+                        onClick={() => {
+                          add()
+                        }}
+                        block
+                      >
+                        <PlusOutlined /> 加入
+                      </Button>
+                    </Form.Item>
+                  </div>
+                )
+              }}
+            </Form.List>
+          </Form>
+        </Descriptions.Item>
+      </Descriptions>
 
-                            <Form.Item>
-                              <Button
-                                type="dashed"
-                                onClick={() => {
-                                  add()
-                                }}
-                                block
-                              >
-                                <PlusOutlined /> 加入
-                              </Button>
-                            </Form.Item>
-                          </div>
-                        )
-                      }}
-                    </Form.List>
-                  </Form>
-                </Descriptions.Item>
-              </Descriptions>
-              <Descriptions bordered className="mb-4">
-                <Descriptions.Item label="合約項目" span={3}>
-                  <Form form={form} name="contract">
-                    <Form.Item
-                      className={formItemClass}
-                      name="contract"
-                      rules={[{ required: true, message: '請選擇合約' }]}
-                    >
-                      <Select<string>
-                        style={{ width: 150 }}
-                        value={selectedContractId}
-                        onChange={setSelectedContractId}
-                      >
-                        {contractsData?.contract.map((contract: any) => {
-                          return (
-                            <Select.Option key={contract.id} value={contract.id}>
-                              {contract.name}
-                            </Select.Option>
-                          )
-                        })}
-                      </Select>
-                    </Form.Item>
-                  </Form>
-                </Descriptions.Item>
-                <Descriptions.Item label="合約效期" span={3}>
-                  <Form form={form} name="contractPeriod">
-                    <Form.Item
-                      className={formItemClass}
-                      name="contractPeriod"
-                      rules={[{ required: true, message: '請選擇合約效期' }]}
-                    >
-                      <Select<string>
-                        style={{ width: 150 }}
-                        value={selectedProjectPlanId}
-                        onChange={setSelectedProjectPlanId}
-                      >
-                        {projectPlansData?.project_plan.map((projectPlan: any) => {
-                          return (
-                            <Select.Option key={projectPlan.id} value={projectPlan.id}>
-                              {projectPlan.period_amount} {projectPlan.period_type}
-                            </Select.Option>
-                          )
-                        })}
-                      </Select>
-                    </Form.Item>
-                  </Form>
-                </Descriptions.Item>
-                <Descriptions.Item label="代幣數量">
-                  <InputNumber min={0} value={coinAmount} onChange={v => typeof v === 'number' && setCoinAmount(v)} />
-                </Descriptions.Item>
-                <Descriptions.Item label="諮詢次數">
-                  <InputNumber
-                    min={0}
-                    value={appointmentAmount}
-                    onChange={v => typeof v === 'number' && setAppointmentAmount(v)}
-                  />
-                </Descriptions.Item>
-              </Descriptions>
-              <Descriptions title="付款選項" bordered className="mb-4">
-                <Descriptions.Item label="付款方式">
-                  <Form form={form} name="orderPayment">
-                    <Form.Item
-                      className={formItemClass}
-                      name="paymentMethod"
-                      rules={[{ required: true, message: '請選擇付款方式' }]}
-                    >
-                      <Select<string> style={{ width: 120 }}>
-                        {paymentSelect.map((payment: string) => {
-                          return (
-                            <Select.Option key={payment} value={payment}>
-                              {payment}
-                            </Select.Option>
-                          )
-                        })}
-                      </Select>
-                    </Form.Item>
-                  </Form>
-                </Descriptions.Item>
-                <Descriptions.Item label="分期期數">
-                  <Form form={form} name="orderInstallment">
-                    <Form.Item
-                      className={formItemClass}
-                      name="installmentPlan"
-                      rules={[{ required: true, message: '請選擇分期期數' }]}
-                    >
-                      <Select<string> style={{ width: 120 }}>
-                        {installmentPlans.map((installmentPlan: number) => {
-                          return (
-                            <Select.Option key={installmentPlan} value={installmentPlan}>
-                              {installmentPlan}
-                            </Select.Option>
-                          )
-                        })}
-                      </Select>
-                    </Form.Item>
-                  </Form>
-                </Descriptions.Item>
-                <Descriptions.Item label="金流編號">
-                  <Form form={form} name="orderPaymentNumber">
-                    <Form.Item
-                      className={formItemClass}
-                      name="paymentNumber"
-                      rules={[{ required: true, message: '請填寫金流編號' }]}
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Form>
-                </Descriptions.Item>
-              </Descriptions>
-            </div>
-          )}
-          {memberContractUrl ? (
-            <Alert className="mb-3" message="合約連結" description={memberContractUrl} type="success" showIcon />
-          ) : (
-            member && (
-              <Button className="mb-3" size="large" block type="primary" onClick={handleContractAdded}>
-                產生合約
-              </Button>
-            )
-          )}
-        </div>
-      </div>
-    </DefaultLayout>
+      <Descriptions bordered className="mb-5">
+        <Descriptions.Item label="合約項目" span={3}>
+          <Form form={form} name="contract">
+            <Form.Item className="mb-0" name="contract" rules={[{ required: true, message: '請選擇合約' }]}>
+              <Select<string> style={{ width: 150 }} value={selectedContractId} onChange={setSelectedContractId}>
+                {contractsData?.contract.map(contract => {
+                  return (
+                    <Select.Option key={contract.id} value={contract.id}>
+                      {contract.name}
+                    </Select.Option>
+                  )
+                })}
+              </Select>
+            </Form.Item>
+          </Form>
+        </Descriptions.Item>
+        <Descriptions.Item label="合約效期" span={3}>
+          <Form form={form} name="contractPeriod">
+            <Form.Item className="mb-0" name="contractPeriod" rules={[{ required: true, message: '請選擇合約效期' }]}>
+              <Select<string> style={{ width: 150 }} value={selectedProjectPlanId} onChange={setSelectedProjectPlanId}>
+                {projectPlansData?.project_plan.map(projectPlan => {
+                  return (
+                    <Select.Option key={projectPlan.id} value={projectPlan.id}>
+                      {projectPlan.period_amount} {projectPlan.period_type}
+                    </Select.Option>
+                  )
+                })}
+              </Select>
+            </Form.Item>
+          </Form>
+        </Descriptions.Item>
+        <Descriptions.Item label="代幣數量">
+          <InputNumber min={0} value={coinAmount} onChange={v => typeof v === 'number' && setCoinAmount(v)} />
+        </Descriptions.Item>
+        <Descriptions.Item label="諮詢次數">
+          <InputNumber
+            min={0}
+            value={appointmentAmount}
+            onChange={v => typeof v === 'number' && setAppointmentAmount(v)}
+          />
+        </Descriptions.Item>
+      </Descriptions>
+
+      <Descriptions title="付款選項" bordered className="mb-5">
+        <Descriptions.Item label="付款方式">
+          <Form form={form} name="orderPayment">
+            <Form.Item className="mb-0" name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
+              <Select<string> style={{ width: 120 }}>
+                {paymentSelect.map((payment: string) => {
+                  return (
+                    <Select.Option key={payment} value={payment}>
+                      {payment}
+                    </Select.Option>
+                  )
+                })}
+              </Select>
+            </Form.Item>
+          </Form>
+        </Descriptions.Item>
+        <Descriptions.Item label="分期期數">
+          <Form form={form} name="orderInstallment">
+            <Form.Item className="mb-0" name="installmentPlan" rules={[{ required: true, message: '請選擇分期期數' }]}>
+              <Select<string> style={{ width: 120 }}>
+                {installmentPlans.map((installmentPlan: number) => {
+                  return (
+                    <Select.Option key={installmentPlan} value={installmentPlan}>
+                      {installmentPlan}
+                    </Select.Option>
+                  )
+                })}
+              </Select>
+            </Form.Item>
+          </Form>
+        </Descriptions.Item>
+        <Descriptions.Item label="金流編號">
+          <Form form={form} name="orderPaymentNumber">
+            <Form.Item className="mb-0" name="paymentNumber" rules={[{ required: true, message: '請填寫金流編號' }]}>
+              <Input />
+            </Form.Item>
+          </Form>
+        </Descriptions.Item>
+      </Descriptions>
+
+      {memberContractUrl ? (
+        <Alert message="合約連結" description={memberContractUrl} type="success" showIcon />
+      ) : (
+        <Button size="large" block type="primary" onClick={handleContractAdded}>
+          產生合約
+        </Button>
+      )}
+    </>
   )
 }
 
-const GET_CONTRACT_MEMBER = gql`
-  query GET_CONTRACT_MEMBER($id: String!) {
-    member_by_pk(id: $id) {
-      id
-      name
-      email
-      member_phones {
-        phone
-      }
-      member_properties {
-        id
-        value
-        property {
-          id
-          name
-        }
-      }
-    }
-  }
-`
-
-const ADD_MEMBER_CONTRACT = gql`
-  mutation ADD_MEMBER_CONTRACT(
-    $memberId: String!
-    $contractId: uuid!
-    $startedAt: timestamptz!
-    $endedAt: timestamptz!
-    $values: jsonb!
-  ) {
-    insert_member_contract_one(
-      object: {
-        member_id: $memberId
-        contract_id: $contractId
-        started_at: $startedAt
-        ended_at: $endedAt
-        values: $values
-      }
-    ) {
-      id
-    }
-  }
-`
-
-const GET_CONTRACTS = gql`
-  query GET_CONTRACTS {
-    contract(where: { published_at: { _is_null: false } }) {
-      id
-      name
-    }
-  }
-`
-
-const GET_PROJECT_PLANS = gql`
-  query GET_PROJECT_PLANS {
-    project_plan(where: { title: { _like: "%私塾方案%" } }) {
-      id
-      period_amount
-      period_type
-    }
-  }
-`
-
-const GET_PROPERTIES = gql`
-  query GET_PROPERTIES {
-    property(
-      where: {
-        name: {
-          _in: [
-            "學生程度(零基礎/有接觸/有工作經驗)"
-            "每月學習預算"
-            "轉職意願(是/否)"
-            "上過其他課程(是/否)"
-            "特別需求"
-          ]
-        }
-      }
-    ) {
-      id
-      name
-    }
-  }
-`
-
-const GET_CONTRACT_PRODUCT = gql`
-  query GET_CONTRACT_PRODUCT {
-    xuemi_product(order_by: { name: desc }) {
-      name
-    }
-  }
-`
-
-export const useMemberCollection = () => {
-  const { loading, error, data, refetch } = useQuery(
+const useXuemiSales = () => {
+  const { loading, error, data, refetch } = useQuery<types.GET_SALE_COLLECTION>(
     gql`
       query GET_SALE_COLLECTION {
         member(
@@ -680,20 +533,92 @@ export const useMemberCollection = () => {
     `,
   )
 
-  const dataSource =
-    loading || error || !data
-      ? []
-      : data.member.map((v: any) => ({
-          id: v?.id,
-          name: v?.name || v?.username,
-        }))
+  const xuemiSales =
+    data?.member.map(v => ({
+      id: v?.id || '',
+      name: v?.name || v?.username || '',
+    })) || []
 
   return {
     loading,
     error,
-    dataSource,
+    xuemiSales,
     refetch,
   }
 }
+
+const GET_CONTRACT_MEMBER = gql`
+  query GET_CONTRACT_MEMBER($id: String!) {
+    member_by_pk(id: $id) {
+      id
+      name
+      email
+      member_phones {
+        phone
+      }
+      member_properties {
+        id
+        value
+        property {
+          id
+          name
+        }
+      }
+    }
+  }
+`
+const GET_CONTRACTS = gql`
+  query GET_CONTRACTS {
+    contract(where: { published_at: { _is_null: false } }) {
+      id
+      name
+    }
+  }
+`
+const GET_PROJECT_PLANS = gql`
+  query GET_PROJECT_PLANS {
+    project_plan(where: { title: { _like: "%私塾方案%" } }) {
+      id
+      period_amount
+      period_type
+    }
+  }
+`
+const GET_PROPERTIES = gql`
+  query GET_PROPERTIES {
+    property(where: { name: { _in: ["學生程度", "每月學習預算", "轉職意願", "上過其他課程", "特別需求"] } }) {
+      id
+      name
+    }
+  }
+`
+const GET_CONTRACT_PRODUCT = gql`
+  query GET_CONTRACT_PRODUCT {
+    xuemi_product(order_by: { name: desc }) {
+      name
+    }
+  }
+`
+const ADD_MEMBER_CONTRACT = gql`
+  mutation ADD_MEMBER_CONTRACT(
+    $memberId: String!
+    $contractId: uuid!
+    $startedAt: timestamptz!
+    $endedAt: timestamptz!
+    $values: jsonb!
+  ) {
+    insert_member_contract_one(
+      object: {
+        member_id: $memberId
+        contract_id: $contractId
+        started_at: $startedAt
+        ended_at: $endedAt
+        values: $values
+      }
+    ) {
+      id
+    }
+  }
+`
 
 export default MemberContractCreationPage
