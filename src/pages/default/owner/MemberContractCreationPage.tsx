@@ -1,6 +1,19 @@
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Alert, Button, DatePicker, Descriptions, Form, Input, InputNumber, message, Select, Space, Tag } from 'antd'
+import {
+  Alert,
+  Button,
+  DatePicker,
+  Descriptions,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Radio,
+  Select,
+  Space,
+  Tag,
+} from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import moment from 'moment'
@@ -21,15 +34,12 @@ const MemberContractCreationPage: React.FC = () => {
     GET_CONTRACT_MEMBER,
     { variables: { id: memberId } },
   )
-  const { loading: loadingProducts, error: errorProducts, data: dataProducts } = useQuery<types.GET_CONTRACT_PRODUCT>(
-    GET_CONTRACT_PRODUCT,
-  )
 
-  if (loadingMember || loadingProducts) {
+  if (loadingMember) {
     return <LoadingPage />
   }
 
-  if (errorMember || errorProducts || !dataMember?.member_by_pk) {
+  if (errorMember || !dataMember?.member_by_pk) {
     return null
   }
 
@@ -50,7 +60,6 @@ const MemberContractCreationPage: React.FC = () => {
                 name: v.property.name,
               })),
             }}
-            products={dataProducts?.xuemi_product.map(v => v.name) || []}
           />
         </AdminBlock>
       </div>
@@ -62,8 +71,6 @@ type OrderExecutorProps = {
   member_id: string | undefined
   ratio: number | undefined
 }
-const paymentSelect = ['藍新', '歐付寶', '富比世', '新仲信', '舊仲信', '匯款', '現金', '裕富']
-const installmentPlans = [1, 3, 6, 8, 9, 12, 18, 24, 30]
 
 const MemberContractForm: React.FC<{
   member: {
@@ -78,36 +85,49 @@ const MemberContractForm: React.FC<{
       name: string
     }[]
   }
-  products: string[]
-}> = ({ member, products }) => {
+}> = ({ member }) => {
   const [form] = useForm()
-  const { data: propertiesData } = useQuery<types.GET_PROPERTIES>(GET_PROPERTIES)
-  const { data: contractsData } = useQuery<types.GET_CONTRACTS>(GET_CONTRACTS)
-  const { data: projectPlansData } = useQuery<types.GET_PROJECT_PLANS>(GET_PROJECT_PLANS)
-  const [addMemberContract] = useMutation(ADD_MEMBER_CONTRACT)
   const { xuemiSales } = useXuemiSales()
+
+  const { data: dataProducts } = useQuery<types.GET_CONTRACT_PRODUCT>(GET_CONTRACT_PRODUCT)
+  const { data: dataProperties } = useQuery<types.GET_PROPERTIES>(GET_PROPERTIES)
+  const { data: dataContracts } = useQuery<types.GET_CONTRACTS>(GET_CONTRACTS)
+  const { data: dataProjectPlans } = useQuery<types.GET_PROJECT_PLANS>(GET_PROJECT_PLANS)
+  const { data: dataCreators } = useQuery<types.GET_APPOINTMENT_PLAN_CREATORS>(GET_APPOINTMENT_PLAN_CREATORS)
+  const [addMemberContract] = useMutation(ADD_MEMBER_CONTRACT)
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
 
   const [memberContractUrl, setMemberContractUrl] = useState('')
-  const [selectedContractId, setSelectedContractId] = useState<string | undefined>(contractsData?.contract[0]?.id)
+  const [selectedContractId, setSelectedContractId] = useState<string | undefined>(dataContracts?.contract[0]?.id)
   const [selectedProjectPlanId, setSelectedProjectPlanId] = useState<string | undefined>()
   const [coinAmount, setCoinAmount] = useState(0)
   const [appointmentAmount, setAppointmentAmount] = useState(0)
   const [currencyConversionValue, setCurrencyConversionValue] = useState(0)
-  const [startedAt, setStartedAt] = useState<string | undefined>(moment().format())
-  const [endedAt, setEndedAt] = useState<string | undefined>('')
-  const [orderExecutorId, setOrderExecutorId] = useState<string>('')
-  const [orderExecutorRatio, setOrderExecutorRatio] = useState<number>(1)
+  const [startedAt, setStartedAt] = useState(moment().format())
+  const [endedAt, setEndedAt] = useState('')
+  const [orderExecutorId, setOrderExecutorId] = useState('')
+  const [orderExecutorRatio, setOrderExecutorRatio] = useState(1)
+  const [referralMemberFilter, setReferralMemberFilter] = useState('')
+
+  const { data: dataReferralMembers } = useQuery<
+    types.GET_REFERRAL_MEMBER_COLLECTION,
+    types.GET_REFERRAL_MEMBER_COLLECTIONVariables
+  >(GET_REFERRAL_MEMBER_COLLECTION, {
+    variables: { condition: referralMemberFilter ? { name: { _eq: referralMemberFilter } } : undefined },
+  })
 
   useEffect(() => {
-    const projectPlan = projectPlansData?.project_plan.filter(v => v.id === selectedProjectPlanId)[0]
-    projectPlan &&
-      setEndedAt(
-        moment(startedAt)
-          .add(projectPlan.period_amount, projectPlan.period_type as PeriodType)
-          .format(),
-      )
-  }, [projectPlansData, selectedProjectPlanId, startedAt])
+    const projectPlan = dataProjectPlans?.project_plan.find(v => v.id === selectedProjectPlanId)
+    if (!projectPlan) {
+      return
+    }
+
+    setEndedAt(
+      moment(startedAt)
+        .add(projectPlan.period_amount, projectPlan.period_type as PeriodType)
+        .format(),
+    )
+  }, [dataProjectPlans, selectedProjectPlanId, startedAt])
 
   const handleContractAdded = async () => {
     const alert = document.getElementsByClassName('ant-alert')[0]
@@ -119,6 +139,7 @@ const MemberContractForm: React.FC<{
       message.warning('請填寫承辦人')
       return
     }
+
     form
       .validateFields()
       .then((values: any) => {
@@ -215,7 +236,13 @@ const MemberContractForm: React.FC<{
   }
 
   return (
-    <>
+    <Form
+      form={form}
+      initialValues={{
+        withCreatorId: false,
+        identity: 'normal',
+      }}
+    >
       <div ref={memberBlockRef}>
         <Descriptions
           title={
@@ -230,17 +257,17 @@ const MemberContractForm: React.FC<{
           className="mb-5"
         >
           <Descriptions.Item label="學員姓名">
-            {member?.name || <Alert type="error" message="未設定"></Alert>}
+            {member?.name || <Alert type="error" message="未設定" />}
           </Descriptions.Item>
           <Descriptions.Item label="學員信箱">
-            {member?.email || <Alert type="error" message="未設定"></Alert>}
+            {member?.email || <Alert type="error" message="未設定" />}
           </Descriptions.Item>
           <Descriptions.Item label="學員電話">
             {(member?.phones && member?.phones.split(',').map((v, index) => <Tag key={index}>{v}</Tag>)) || (
-              <Alert type="error" message="未設定"></Alert>
+              <Alert type="error" message="未設定" />
             )}
           </Descriptions.Item>
-          {propertiesData?.property.map(property => (
+          {dataProperties?.property.map(property => (
             <Descriptions.Item label={property.name} key={property.id}>
               <div className="d-flex align-items-center">
                 {member.properties.find(v => v.propertyId === property.id)?.value || (
@@ -252,15 +279,39 @@ const MemberContractForm: React.FC<{
         </Descriptions>
       </div>
 
-      <Descriptions title="購買項目" bordered className="mb-5">
-        <Descriptions.Item label="開始日期">
+      <Descriptions title="合約期間" column={2} bordered className="mb-5">
+        <Descriptions.Item label="合約項目">
+          <Form.Item className="mb-0" name="contract" rules={[{ required: true, message: '請選擇合約' }]}>
+            <Select<string> style={{ width: 150 }} value={selectedContractId} onChange={setSelectedContractId}>
+              {dataContracts?.contract.map(contract => (
+                <Select.Option key={contract.id} value={contract.id}>
+                  {contract.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Descriptions.Item>
+        <Descriptions.Item label="合約效期">
+          <Form.Item className="mb-0" name="contractPeriod" rules={[{ required: true, message: '請選擇合約效期' }]}>
+            <Select<string> style={{ width: 150 }} value={selectedProjectPlanId} onChange={setSelectedProjectPlanId}>
+              {dataProjectPlans?.project_plan.map(projectPlan => {
+                return (
+                  <Select.Option key={projectPlan.id} value={projectPlan.id}>
+                    {projectPlan.period_amount} {projectPlan.period_type}
+                  </Select.Option>
+                )
+              })}
+            </Select>
+          </Form.Item>
+        </Descriptions.Item>
+        <Descriptions.Item label="服務開始日">
           <DatePicker
             showTime
-            format="YYYY-MM-DD   HH:mm:ss"
+            format="YYYY-MM-DD HH:mm:ss"
             defaultValue={moment(startedAt)}
             onChange={(date, dateString: string) => {
               setStartedAt(moment(dateString).format())
-              const projectPlan = projectPlansData?.project_plan.filter(v => v.id === selectedProjectPlanId)[0]
+              const projectPlan = dataProjectPlans?.project_plan.filter(v => v.id === selectedProjectPlanId)[0]
               projectPlan &&
                 setEndedAt(
                   moment(dateString)
@@ -270,21 +321,173 @@ const MemberContractForm: React.FC<{
             }}
           />
         </Descriptions.Item>
-        <Descriptions.Item label="結束日期" span={2}>
+        <Descriptions.Item label="服務結束日">
           {endedAt ? moment(endedAt).format('YYYY-MM-DD   HH:mm:ss') : ''}
         </Descriptions.Item>
-        <Descriptions.Item label="產品項目" span={3}>
-          <Form form={form} name="projectPlan">
-            <Form.Item className="mb-0" name="projectPlanName" rules={[{ required: true, message: '請填寫產品項目' }]}>
-              <Select mode="multiple" placeholder="Please select" style={{ width: '100%' }}>
-                {products.map(name => (
-                  <Select.Option value={name} key={name}>
-                    {name}
+      </Descriptions>
+
+      <Descriptions column={1} bordered className="mb-5">
+        <Descriptions.Item label="指定業師">
+          <div className="d-flex align-items-center">
+            <Form.Item name="withCreatorId" noStyle>
+              <Radio.Group>
+                <Radio value={false}>不指定</Radio>
+                <Radio value={true}>指定</Radio>
+              </Radio.Group>
+            </Form.Item>
+            <Form.Item name="creatorId" noStyle>
+              <Select<string> style={{ width: '150px' }}>
+                {dataCreators?.appointment_plan.map(v =>
+                  v.creator?.id ? (
+                    <Select.Option key={v.creator.id} value={v.creator.id}>
+                      {v.creator.name}
+                    </Select.Option>
+                  ) : null,
+                )}
+              </Select>
+            </Form.Item>
+          </div>
+        </Descriptions.Item>
+        <Descriptions.Item label="學員身份">
+          <Form.Item name="identity" className="m-0">
+            <Radio.Group>
+              <Radio value="normal">一般</Radio>
+              <Radio value="student">學生</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </Descriptions.Item>
+        <Descriptions.Item label="介紹人">
+          <Form.Item name="referralMemberId" className="m-0">
+            <Select<string> showSearch onSearch={v => setReferralMemberFilter(v)} style={{ width: '150px' }}>
+              {dataReferralMembers?.member.map(v => (
+                <Select.Option key={v.id} value={v.id}>
+                  {v.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Descriptions.Item>
+      </Descriptions>
+
+      <Descriptions title="付款選項" bordered className="mb-5">
+        <Descriptions.Item label="付款方式">
+          <Form.Item className="mb-0" name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
+            <Select<string> style={{ width: 120 }}>
+              {['藍新', '歐付寶', '富比世', '新仲信', '舊仲信', '匯款', '現金', '裕富'].map((payment: string) => (
+                <Select.Option key={payment} value={payment}>
+                  {payment}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Descriptions.Item>
+        <Descriptions.Item label="分期期數">
+          <Form.Item className="mb-0" name="installmentPlan" rules={[{ required: true, message: '請選擇分期期數' }]}>
+            <Select<string> style={{ width: 120 }}>
+              {[1, 3, 6, 8, 9, 12, 18, 24, 30].map((installmentPlan: number) => (
+                <Select.Option key={installmentPlan} value={installmentPlan}>
+                  {installmentPlan}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Descriptions.Item>
+        <Descriptions.Item label="金流編號">
+          <Form.Item className="mb-0" name="paymentNumber" rules={[{ required: true, message: '請填寫金流編號' }]}>
+            <Input />
+          </Form.Item>
+        </Descriptions.Item>
+        <Descriptions.Item label="承辦人 / 分潤" span={3}>
+          <Form.Item noStyle name="defaultOrderExecutor">
+            <Space align="center" className="d-flex mb-3">
+              <Select
+                showSearch
+                placeholder="承辦人"
+                style={{ width: '150px' }}
+                onChange={v => {
+                  typeof v === 'string' && setOrderExecutorId(v)
+                }}
+                filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              >
+                {xuemiSales?.map(member => (
+                  <Select.Option key={member.id} value={member.id}>
+                    {member.name}
                   </Select.Option>
                 ))}
               </Select>
-            </Form.Item>
-          </Form>
+
+              <InputNumber
+                min={0.1}
+                max={1}
+                step={0.1}
+                style={{ width: '60px' }}
+                value={orderExecutorRatio}
+                onChange={v => {
+                  typeof v === 'number' && setOrderExecutorRatio(v)
+                }}
+              />
+            </Space>
+          </Form.Item>
+          <Form.List name="orderExecutors">
+            {(fields, { add, remove }) => {
+              return (
+                <div>
+                  {fields.map(field => (
+                    <Space key={field.key} align="center" className="d-flex mb-3">
+                      <Form.Item
+                        {...field}
+                        name={[field.name, 'member_id']}
+                        fieldKey={[field.fieldKey, 'member_id']}
+                        noStyle
+                      >
+                        <Select
+                          showSearch
+                          placeholder="承辦人"
+                          style={{ width: '150px' }}
+                          filterOption={(input, option) =>
+                            option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                          }
+                        >
+                          {xuemiSales?.map(member => (
+                            <Select.Option key={member.id} value={member.id}>
+                              {member.name}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                      <Form.Item {...field} name={[field.name, 'ratio']} fieldKey={[field.fieldKey, 'ratio']} noStyle>
+                        <InputNumber min={0.1} max={1} step={0.1} style={{ width: '60px' }} />
+                      </Form.Item>
+
+                      <MinusCircleOutlined onClick={() => remove(field.name)} />
+                    </Space>
+                  ))}
+
+                  <Form.Item>
+                    <Button type="dashed" onClick={() => add({ ratio: 0.1 })} block>
+                      <PlusOutlined /> 加入
+                    </Button>
+                  </Form.Item>
+                </div>
+              )
+            }}
+          </Form.List>
+        </Descriptions.Item>
+      </Descriptions>
+
+      {/* ===== */}
+
+      <Descriptions title="購買項目" bordered className="mb-5">
+        <Descriptions.Item label="產品項目" span={3}>
+          <Form.Item className="mb-0" name="projectPlanName" rules={[{ required: true, message: '請填寫產品項目' }]}>
+            <Select mode="multiple" placeholder="Please select" style={{ width: '100%' }}>
+              {dataProducts?.xuemi_product?.map(v => (
+                <Select.Option key={v.name} value={v.name}>
+                  {v.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
         </Descriptions.Item>
         <Descriptions.Item label="支付金額">
           <InputNumber
@@ -293,140 +496,9 @@ const MemberContractForm: React.FC<{
             onChange={v => typeof v === 'number' && setCurrencyConversionValue(v)}
           />
         </Descriptions.Item>
-        <Descriptions.Item label="承辦人 / 分潤">
-          <Form form={form} name="orderExecutors" autoComplete="off">
-            <Form.Item noStyle name="defaultOrderExecutor">
-              <Space
-                style={{
-                  display: 'flex',
-                  marginBottom: '15px',
-                }}
-                align="start"
-              >
-                <Select
-                  showSearch
-                  placeholder="承辦人"
-                  style={{ width: '150px' }}
-                  onChange={v => {
-                    typeof v === 'string' && setOrderExecutorId(v)
-                  }}
-                  filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                >
-                  {xuemiSales?.map(member => (
-                    <Select.Option key={member.id} value={member.id}>
-                      {member.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-
-                <InputNumber
-                  min={0.1}
-                  max={1}
-                  step={0.1}
-                  style={{ width: '60px' }}
-                  value={orderExecutorRatio}
-                  onChange={v => {
-                    typeof v === 'number' && setOrderExecutorRatio(v)
-                  }}
-                />
-              </Space>
-            </Form.Item>
-            <Form.List name="orderExecutors">
-              {(fields, { add, remove }) => {
-                return (
-                  <div>
-                    {fields.map(field => (
-                      <Space
-                        key={field.key}
-                        style={{
-                          display: 'flex',
-                          marginBottom: '15px',
-                        }}
-                        align="start"
-                      >
-                        <Form.Item
-                          {...field}
-                          name={[field.name, 'member_id']}
-                          fieldKey={[field.fieldKey, 'member_id']}
-                          noStyle
-                        >
-                          <Select
-                            showSearch
-                            placeholder="承辦人"
-                            style={{ width: '150px' }}
-                            filterOption={(input, option) =>
-                              option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                            }
-                          >
-                            {xuemiSales?.map(member => (
-                              <Select.Option key={member.id} value={member.id}>
-                                {member.name}
-                              </Select.Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
-                        <Form.Item {...field} name={[field.name, 'ratio']} fieldKey={[field.fieldKey, 'ratio']} noStyle>
-                          <InputNumber min={0.1} max={1} step={0.1} style={{ width: '60px' }} />
-                        </Form.Item>
-
-                        <MinusCircleOutlined
-                          onClick={() => {
-                            remove(field.name)
-                          }}
-                        />
-                      </Space>
-                    ))}
-
-                    <Form.Item>
-                      <Button
-                        type="dashed"
-                        onClick={() => {
-                          add()
-                        }}
-                        block
-                      >
-                        <PlusOutlined /> 加入
-                      </Button>
-                    </Form.Item>
-                  </div>
-                )
-              }}
-            </Form.List>
-          </Form>
-        </Descriptions.Item>
       </Descriptions>
 
       <Descriptions bordered className="mb-5">
-        <Descriptions.Item label="合約項目" span={3}>
-          <Form form={form} name="contract">
-            <Form.Item className="mb-0" name="contract" rules={[{ required: true, message: '請選擇合約' }]}>
-              <Select<string> style={{ width: 150 }} value={selectedContractId} onChange={setSelectedContractId}>
-                {contractsData?.contract.map(contract => {
-                  return (
-                    <Select.Option key={contract.id} value={contract.id}>
-                      {contract.name}
-                    </Select.Option>
-                  )
-                })}
-              </Select>
-            </Form.Item>
-          </Form>
-        </Descriptions.Item>
-        <Descriptions.Item label="合約效期" span={3}>
-          <Form form={form} name="contractPeriod">
-            <Form.Item className="mb-0" name="contractPeriod" rules={[{ required: true, message: '請選擇合約效期' }]}>
-              <Select<string> style={{ width: 150 }} value={selectedProjectPlanId} onChange={setSelectedProjectPlanId}>
-                {projectPlansData?.project_plan.map(projectPlan => {
-                  return (
-                    <Select.Option key={projectPlan.id} value={projectPlan.id}>
-                      {projectPlan.period_amount} {projectPlan.period_type}
-                    </Select.Option>
-                  )
-                })}
-              </Select>
-            </Form.Item>
-          </Form>
-        </Descriptions.Item>
         <Descriptions.Item label="代幣數量">
           <InputNumber min={0} value={coinAmount} onChange={v => typeof v === 'number' && setCoinAmount(v)} />
         </Descriptions.Item>
@@ -439,46 +511,6 @@ const MemberContractForm: React.FC<{
         </Descriptions.Item>
       </Descriptions>
 
-      <Descriptions title="付款選項" bordered className="mb-5">
-        <Descriptions.Item label="付款方式">
-          <Form form={form} name="orderPayment">
-            <Form.Item className="mb-0" name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
-              <Select<string> style={{ width: 120 }}>
-                {paymentSelect.map((payment: string) => {
-                  return (
-                    <Select.Option key={payment} value={payment}>
-                      {payment}
-                    </Select.Option>
-                  )
-                })}
-              </Select>
-            </Form.Item>
-          </Form>
-        </Descriptions.Item>
-        <Descriptions.Item label="分期期數">
-          <Form form={form} name="orderInstallment">
-            <Form.Item className="mb-0" name="installmentPlan" rules={[{ required: true, message: '請選擇分期期數' }]}>
-              <Select<string> style={{ width: 120 }}>
-                {installmentPlans.map((installmentPlan: number) => {
-                  return (
-                    <Select.Option key={installmentPlan} value={installmentPlan}>
-                      {installmentPlan}
-                    </Select.Option>
-                  )
-                })}
-              </Select>
-            </Form.Item>
-          </Form>
-        </Descriptions.Item>
-        <Descriptions.Item label="金流編號">
-          <Form form={form} name="orderPaymentNumber">
-            <Form.Item className="mb-0" name="paymentNumber" rules={[{ required: true, message: '請填寫金流編號' }]}>
-              <Input />
-            </Form.Item>
-          </Form>
-        </Descriptions.Item>
-      </Descriptions>
-
       {memberContractUrl ? (
         <Alert message="合約連結" description={memberContractUrl} type="success" showIcon />
       ) : (
@@ -486,7 +518,7 @@ const MemberContractForm: React.FC<{
           產生合約
         </Button>
       )}
-    </>
+    </Form>
   )
 }
 
@@ -595,6 +627,25 @@ const GET_PROPERTIES = gql`
 const GET_CONTRACT_PRODUCT = gql`
   query GET_CONTRACT_PRODUCT {
     xuemi_product(order_by: { name: desc }) {
+      name
+    }
+  }
+`
+const GET_APPOINTMENT_PLAN_CREATORS = gql`
+  query GET_APPOINTMENT_PLAN_CREATORS {
+    appointment_plan(distinct_on: [creator_id]) {
+      id
+      creator {
+        id
+        name
+      }
+    }
+  }
+`
+const GET_REFERRAL_MEMBER_COLLECTION = gql`
+  query GET_REFERRAL_MEMBER_COLLECTION($condition: member_bool_exp) {
+    member(where: $condition, limit: 10) {
+      id
       name
     }
   }

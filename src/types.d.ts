@@ -9965,6 +9965,29 @@ export interface DELETE_COIN_LOGVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_SALE_COLLECTION
+// ====================================================
+
+export interface GET_SALE_COLLECTION_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+}
+
+export interface GET_SALE_COLLECTION {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_SALE_COLLECTION_member[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_CONTRACT_MEMBER
 // ====================================================
 
@@ -10013,35 +10036,6 @@ export interface GET_CONTRACT_MEMBER {
 
 export interface GET_CONTRACT_MEMBERVariables {
   id: string;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: ADD_MEMBER_CONTRACT
-// ====================================================
-
-export interface ADD_MEMBER_CONTRACT_insert_member_contract_one {
-  __typename: "member_contract";
-  id: any;
-}
-
-export interface ADD_MEMBER_CONTRACT {
-  /**
-   * insert a single row into the table: "member_contract"
-   */
-  insert_member_contract_one: ADD_MEMBER_CONTRACT_insert_member_contract_one | null;
-}
-
-export interface ADD_MEMBER_CONTRACTVariables {
-  memberId: string;
-  contractId: any;
-  startedAt: any;
-  endedAt: any;
-  values: any;
 }
 
 /* tslint:disable */
@@ -10141,21 +10135,84 @@ export interface GET_CONTRACT_PRODUCT {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_SALE_COLLECTION
+// GraphQL query operation: GET_APPOINTMENT_PLAN_CREATORS
 // ====================================================
 
-export interface GET_SALE_COLLECTION_member {
+export interface GET_APPOINTMENT_PLAN_CREATORS_appointment_plan_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_CREATORS_appointment_plan {
+  __typename: "appointment_plan";
+  id: any;
+  /**
+   * An object relationship
+   */
+  creator: GET_APPOINTMENT_PLAN_CREATORS_appointment_plan_creator | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_CREATORS {
+  /**
+   * fetch data from the table: "appointment_plan"
+   */
+  appointment_plan: GET_APPOINTMENT_PLAN_CREATORS_appointment_plan[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_REFERRAL_MEMBER_COLLECTION
+// ====================================================
+
+export interface GET_REFERRAL_MEMBER_COLLECTION_member {
   __typename: "member";
   id: string;
   name: string;
-  username: string;
 }
 
-export interface GET_SALE_COLLECTION {
+export interface GET_REFERRAL_MEMBER_COLLECTION {
   /**
    * fetch data from the table: "member"
    */
-  member: GET_SALE_COLLECTION_member[];
+  member: GET_REFERRAL_MEMBER_COLLECTION_member[];
+}
+
+export interface GET_REFERRAL_MEMBER_COLLECTIONVariables {
+  condition?: member_bool_exp | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: ADD_MEMBER_CONTRACT
+// ====================================================
+
+export interface ADD_MEMBER_CONTRACT_insert_member_contract_one {
+  __typename: "member_contract";
+  id: any;
+}
+
+export interface ADD_MEMBER_CONTRACT {
+  /**
+   * insert a single row into the table: "member_contract"
+   */
+  insert_member_contract_one: ADD_MEMBER_CONTRACT_insert_member_contract_one | null;
+}
+
+export interface ADD_MEMBER_CONTRACTVariables {
+  memberId: string;
+  contractId: any;
+  startedAt: any;
+  endedAt: any;
+  values: any;
 }
 
 /* tslint:disable */
