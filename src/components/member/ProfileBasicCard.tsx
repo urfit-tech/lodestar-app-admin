@@ -190,7 +190,7 @@ const ProfileBasicCard: React.FC<
           className={withTags ? '' : 'd-none'}
         >
           <Select mode="tags">
-            {tags.map(tag => (
+            {member.specialities?.map(tag => (
               <Select.Option key={tag} value={tag}>
                 {tag}
               </Select.Option>
