@@ -291,7 +291,7 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
   },
   member_contract_creation: {
-    path: '/admin/members/:memberId/contract/new',
+    path: '/admin/members/:memberId/contracts/new',
     pageName: 'owner/MemberContractCreationPage',
     authenticated: true,
   },

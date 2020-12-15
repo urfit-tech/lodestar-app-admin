@@ -1,11 +1,11 @@
 import { useQuery } from '@apollo/react-hooks'
-import { Card } from 'antd'
+import { Button, Card } from 'antd'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { memberMessages } from '../../helpers/translation'
+import { commonMessages, memberMessages } from '../../helpers/translation'
 import types from '../../types'
 
 const messages = defineMessages({
@@ -47,6 +47,10 @@ const MemberContractAdminBlock: React.FC<{
 
   return (
     <div className="container">
+      <a href={`/admin/members/${memberId}/contracts/new`} target="_blank" rel="noopener noreferrer" className="mb-5">
+        <Button type="primary">{formatMessage(commonMessages.ui.createContract)}</Button>
+      </a>
+
       {contracts.map(contract => (
         <a
           key={contract.id}
