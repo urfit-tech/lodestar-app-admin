@@ -9794,7 +9794,9 @@ export interface GET_PROPERTIES {
 
 export interface GET_CONTRACT_PRODUCT_xuemi_product {
   __typename: "xuemi_product";
+  id: any;
   name: string;
+  price: any;
 }
 
 export interface GET_CONTRACT_PRODUCT {
