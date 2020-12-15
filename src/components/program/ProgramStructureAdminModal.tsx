@@ -88,7 +88,7 @@ const ProgramStructureAdminModal: React.FC<{
     <AdminModal
       renderTrigger={({ setVisible }) => (
         <Button type="link" icon={<DragOutlined />} onClick={() => setVisible(true)}>
-          {formatMessage(messages.sortProgram)}
+          {formatMessage(messages.contentSorting)}
         </Button>
       )}
       title={formatMessage(messages.contentSorting)}

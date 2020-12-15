@@ -13,6 +13,7 @@ import { AvatarImage } from '../../components/common/Image'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ProgramAdminCard from '../../components/program/ProgramAdminCard'
+import ProgramCollectionStructureAdminModal from '../../components/program/ProgramCollectionStructureAdminModal'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
@@ -20,6 +21,12 @@ import { commonMessages, programMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramPlanPeriodType, ProgramPreviewProps } from '../../types/program'
 import LoadingPage from './LoadingPage'
+
+export type ProgramSortProps = {
+  id: string
+  title: string
+  isSubscription: boolean
+}
 
 const AvatarPlaceHolder = styled.div`
   margin: 16px 0;
@@ -54,7 +61,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
     tab: string
     condition: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition']
     hidden?: boolean
-    withPositionControl?: boolean
+    withSortingButton?: boolean
   }[] = [
     {
       key: 'draft',
@@ -97,6 +104,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
     {
       key: 'publiclyPublish',
       tab: formatMessage(commonMessages.status.publiclyPublish),
+      withSortingButton: true,
       condition: {
         published_at: { _is_null: false },
         is_private: { _eq: false },
@@ -170,6 +178,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
               <ProgramCollectionBlock
                 appId={appId}
                 condition={tabContent.condition}
+                withSortingButton={tabContent.withSortingButton}
                 onReady={count =>
                   count !== counts[tabContent.key] &&
                   setCounts({
@@ -188,8 +197,9 @@ const ProgramCollectionAdminPage: React.FC = () => {
 const ProgramCollectionBlock: React.FC<{
   appId: string
   condition: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition']
+  withSortingButton?: boolean
   onReady?: (count: number) => void
-}> = ({ appId, condition, onReady }) => {
+}> = ({ appId, condition, withSortingButton, onReady }) => {
   const { formatMessage } = useIntl()
   const {
     loadingProgramPreviews,
@@ -204,13 +214,16 @@ const ProgramCollectionBlock: React.FC<{
     types.UPDATE_PROGRAM_POSITION_COLLECTIONVariables
   >(UPDATE_PROGRAM_POSITION_COLLECTION)
   const [loading, setLoading] = useState(false)
+  const { loadingProgramSorts, errorProgramSorts, programSorts, refetchProgramSorts } = useProgramSortCollection(
+    condition,
+  )
 
   useEffect(() => {
     onReady?.(programPreviewCount)
     refetchProgramPreviews()
   }, [onReady, programPreviewCount, refetchProgramPreviews])
 
-  if (loadingProgramPreviews || errorProgramPreviews) {
+  if (loadingProgramPreviews || errorProgramPreviews || loadingProgramSorts || errorProgramSorts) {
     return <Skeleton active />
   }
 
@@ -220,6 +233,32 @@ const ProgramCollectionBlock: React.FC<{
 
   return (
     <div className="row py-3">
+      {withSortingButton && (
+        <div className="d-flex flex-row-reverse" style={{ width: '100%' }}>
+          <ProgramCollectionStructureAdminModal
+            programs={programSorts}
+            onSubmit={values =>
+              updatePositions({
+                variables: {
+                  data: values.map((value, index) => ({
+                    app_id: appId,
+                    id: value.id,
+                    title: value.title,
+                    is_subscription: value.isSubscription,
+                    position: index,
+                  })),
+                },
+              })
+                .then(() => {
+                  refetchProgramSorts()
+                  refetchProgramPreviews()
+                })
+                .catch(handleError)
+            }
+          />
+        </div>
+      )}
+
       <PositionAdminLayout<ProgramPreviewProps>
         value={programPreviews}
         onChange={value => {
@@ -360,6 +399,34 @@ const useProgramPreviewCollection = (condition: types.GET_PROGRAM_PREVIEW_COLLEC
     loadMorePrograms,
   }
 }
+const useProgramSortCollection = (condition: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition']) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_PROGRAM_SORT_COLLECTION,
+    types.GET_PROGRAM_SORT_COLLECTIONVariables
+  >(GET_PROGRAM_SORT_COLLECTION, {
+    variables: {
+      condition,
+    },
+  })
+
+  const programSorts: ProgramSortProps[] =
+    loading || error || !data
+      ? []
+      : data.program.map(program => {
+          return {
+            id: program.id,
+            title: program.title,
+            isSubscription: program.is_subscription,
+          }
+        })
+
+  return {
+    loadingProgramSorts: loading,
+    errorProgramSorts: error,
+    programSorts,
+    refetchProgramSorts: refetch,
+  }
+}
 
 const GET_PROGRAM_PREVIEW_COLLECTION = gql`
   query GET_PROGRAM_PREVIEW_COLLECTION($condition: program_bool_exp!, $limit: Int!) {
@@ -407,6 +474,15 @@ const GET_PROGRAM_PREVIEW_COLLECTION = gql`
           count
         }
       }
+    }
+  }
+`
+const GET_PROGRAM_SORT_COLLECTION = gql`
+  query GET_PROGRAM_SORT_COLLECTION($condition: program_bool_exp!) {
+    program(where: $condition, order_by: { position: asc }) {
+      id
+      title
+      is_subscription
     }
   }
 `
