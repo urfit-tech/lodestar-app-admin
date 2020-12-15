@@ -59,14 +59,14 @@ const ProgramCollectionStructureAdminModal: React.FC<{
       title={formatMessage(messages.sortProgram)}
       footer={null}
       renderFooter={({ setVisible }) => (
-        <>
+        <div className="mt-4">
           <Button className="mr-2" onClick={() => setVisible(false)}>
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" loading={loading} onClick={() => handleSubmit(setVisible)}>
             {formatMessage(commonMessages.ui.confirm)}
           </Button>
-        </>
+        </div>
       )}
       {...props}
     >
