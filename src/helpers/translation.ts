@@ -68,6 +68,8 @@ export const commonMessages = {
     createContract: { id: 'common.ui.createContract', defaultMessage: '建立合約' },
     createPlan: { id: 'common.ui.createPlan', defaultMessage: '建立方案' },
     uploadImage: { id: 'common.ui.uploadImage', defaultMessage: '上傳圖片' },
+    uploadCertification: { id: 'common.ui.uploadCertification', defaultMessage: '上傳證明' },
+    createContract: { id: 'common.ui.createContract', defaultMessage: '建立合約' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
