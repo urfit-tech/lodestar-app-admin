@@ -32,6 +32,7 @@ const StyledReactSortableWrapper = styled.div`
     height: 5px;
     color: transparent;
     & ${StyledSelect} {
+      color: transparent;
       border-left: none;
     }
   }
