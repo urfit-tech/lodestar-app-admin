@@ -13,6 +13,7 @@ const messages = defineMessages({
   current: { id: 'program.label.current', defaultMessage: '目前' },
   sortProgram: { id: 'program.ui.sortProgram', defaultMessage: '課程排序' },
 })
+
 const StyledDraggableItem = styled(DraggableItem)`
   padding: 0 0 0 14px;
   background: white;
@@ -24,6 +25,16 @@ const StyledSelect = styled(Select)`
   border-left: solid 1px var(--gray-light);
   height: 100%;
   width: 50px;
+`
+const StyledReactSortableWrapper = styled.div`
+  & .hoverBackground {
+    background: ${props => props.theme['@primary-color']};
+    height: 5px;
+    color: transparent;
+    & ${StyledSelect} {
+      border-left: none;
+    }
+  }
 `
 
 const ProgramCollectionStructureAdminModal: React.FC<{
@@ -70,46 +81,49 @@ const ProgramCollectionStructureAdminModal: React.FC<{
       )}
       {...props}
     >
-      <ReactSortable
-        handle=".draggable-content"
-        list={sortingPrograms}
-        setList={newSections => {
-          setSortingPrograms(newSections)
-        }}
-      >
-        {sortingPrograms.map((sortingProgram, sortingProgramIndex) => (
-          <StyledDraggableItem
-            key={sortingProgram.id}
-            className="mb-2"
-            dataId={sortingProgram.id}
-            handlerClassName="draggable-content"
-            actions={[
-              <StyledSelect
-                value={sortingProgramIndex + 1}
-                showArrow={false}
-                bordered={false}
-                onSelect={position => {
-                  const cloneData = sortingPrograms.slice()
-                  cloneData.splice(Number(sortingProgramIndex), 1)
-                  cloneData.splice(Number(position) - 1, 0, sortingProgram)
-                  setSortingPrograms(cloneData)
-                }}
-                optionLabelProp="label"
-                dropdownStyle={{ minWidth: '120px', borderRadius: '4px' }}
-              >
-                {Array.from(Array(sortingPrograms.length).keys()).map((v, i) => (
-                  <Select.Option key={v} value={v + 1} label={v + 1}>
-                    <span>{v + 1}</span>
-                    {sortingProgramIndex === i ? `（${formatMessage(messages.current)}）` : ''}
-                  </Select.Option>
-                ))}
-              </StyledSelect>,
-            ]}
-          >
-            {sortingProgram.title}
-          </StyledDraggableItem>
-        ))}
-      </ReactSortable>
+      <StyledReactSortableWrapper>
+        <ReactSortable
+          handle=".draggable-content"
+          list={sortingPrograms}
+          ghostClass="hoverBackground"
+          setList={newSections => {
+            setSortingPrograms(newSections)
+          }}
+        >
+          {sortingPrograms.map((sortingProgram, sortingProgramIndex) => (
+            <StyledDraggableItem
+              key={sortingProgram.id}
+              className="mb-2"
+              dataId={sortingProgram.id}
+              handlerClassName="draggable-content"
+              actions={[
+                <StyledSelect
+                  value={sortingProgramIndex + 1}
+                  showArrow={false}
+                  bordered={false}
+                  onSelect={position => {
+                    const cloneData = sortingPrograms.slice()
+                    cloneData.splice(Number(sortingProgramIndex), 1)
+                    cloneData.splice(Number(position) - 1, 0, sortingProgram)
+                    setSortingPrograms(cloneData)
+                  }}
+                  optionLabelProp="label"
+                  dropdownStyle={{ minWidth: '120px', borderRadius: '4px' }}
+                >
+                  {Array.from(Array(sortingPrograms.length).keys()).map((v, i) => (
+                    <Select.Option key={v} value={v + 1} label={v + 1}>
+                      <span>{v + 1}</span>
+                      {sortingProgramIndex === i ? `（${formatMessage(messages.current)}）` : ''}
+                    </Select.Option>
+                  ))}
+                </StyledSelect>,
+              ]}
+            >
+              {sortingProgram.title}
+            </StyledDraggableItem>
+          ))}
+        </ReactSortable>
+      </StyledReactSortableWrapper>
     </AdminModal>
   )
 }
