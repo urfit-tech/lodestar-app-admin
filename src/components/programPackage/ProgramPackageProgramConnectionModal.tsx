@@ -192,12 +192,12 @@ const INSERT_PROGRAM_PACKAGE_PROGRAM = gql`
     ) {
       affected_rows
     }
+    delete_program_tempo_delivery(where: { program_package_program_id: { _in: $delete_programs_id } }) {
+      affected_rows
+    }
     delete_program_package_program(
       where: { _and: [{ program_package_id: { _eq: $program_package_id } }, { id: { _in: $delete_programs_id } }] }
     ) {
-      affected_rows
-    }
-    delete_program_tempo_delivery(where: { program_package_program_id: { _in: $delete_programs_id } }) {
       affected_rows
     }
   }
