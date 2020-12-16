@@ -38,6 +38,19 @@ const StyledReactSortableWrapper = styled.div`
   }
 `
 
+const StyledSelectOptionWrapper = styled.div`
+  & .ant-select-item {
+    transition: all 0.08s;
+    border-top: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+    &.hoverTop:hover {
+      border-top: 2px solid ${props => props.theme['@primary-color']};
+    }
+    &.hoverBottom:hover {
+      border-bottom: 2px solid ${props => props.theme['@primary-color']};
+    }
+  }
+`
 const ProgramCollectionStructureAdminModal: React.FC<{
   programs: ProgramSortProps[]
   onSubmit?: (value: ProgramSortProps[]) => Promise<any>
@@ -110,11 +123,23 @@ const ProgramCollectionStructureAdminModal: React.FC<{
                   }}
                   optionLabelProp="label"
                   dropdownStyle={{ minWidth: '120px', borderRadius: '4px' }}
+                  dropdownRender={menu => <StyledSelectOptionWrapper>{menu}</StyledSelectOptionWrapper>}
                 >
-                  {Array.from(Array(sortingPrograms.length).keys()).map((v, i) => (
-                    <Select.Option key={v} value={v + 1} label={v + 1}>
-                      <span>{v + 1}</span>
-                      {sortingProgramIndex === i ? `（${formatMessage(messages.current)}）` : ''}
+                  {Array.from(Array(sortingPrograms.length).keys()).map((value, index) => (
+                    <Select.Option
+                      className={
+                        sortingProgramIndex === index
+                          ? 'active'
+                          : sortingProgramIndex > index
+                          ? 'hoverTop'
+                          : 'hoverBottom'
+                      }
+                      key={value}
+                      value={value + 1}
+                      label={value + 1}
+                    >
+                      <span>{value + 1}</span>
+                      {sortingProgramIndex === index ? `（${formatMessage(messages.current)}）` : ''}
                     </Select.Option>
                   ))}
                 </StyledSelect>,
