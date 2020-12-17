@@ -57,6 +57,7 @@ export const commonMessages = {
     export: { id: 'common.ui.export', defaultMessage: '匯出' },
     showMore: { id: 'common.ui.showMore', defaultMessage: '顯示更多' },
     send: { id: 'common.ui.send', defaultMessage: '送出' },
+    upload: { id: 'common.ui.upload', defaultMessage: '上傳' },
     uploadFile: { id: 'common.ui.uploadFile', defaultMessage: '上傳檔案' },
     copy: { id: 'common.ui.copy', defaultMessage: '複製' },
     jumpTo: { id: 'common.ui.jumpTo', defaultMessage: '前往填寫' },
