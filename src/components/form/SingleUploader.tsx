@@ -106,6 +106,9 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
         .catch(error => {
           onError(error)
         })
+        .finally(() => {
+          setLoading(false)
+        })
     },
   }
   return (

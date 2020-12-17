@@ -16,6 +16,7 @@ import {
 } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
+import { sum } from 'lodash'
 import moment from 'moment'
 import { range } from 'ramda'
 import React, { useRef, useState } from 'react'
@@ -27,6 +28,7 @@ import { AdminBlock, AdminBlockTitle } from '../../../components/admin'
 import SingleUploader from '../../../components/form/SingleUploader'
 import DefaultLayout from '../../../components/layout/DefaultLayout'
 import { useApp } from '../../../contexts/AppContext'
+import { currencyFormatter } from '../../../helpers'
 import { commonMessages } from '../../../helpers/translation'
 import types from '../../../types'
 import { PeriodType } from '../../../types/general'
@@ -58,6 +60,16 @@ const StyledFieldLabel = styled.div`
 `
 const StyledPriceField = styled.div`
   width: 150px;
+`
+const StyledOrder = styled.div`
+  border: 1px solid var(--gray-darker);
+  padding: 1rem;
+`
+const StyledTotal = styled.div`
+  margin-bottom: 0.5rem;
+  color: ${props => props.theme['@primary-color']};
+  font-size: 20px;
+  text-align: right;
 `
 
 const MemberContractCreationPage: React.FC = () => {
@@ -124,12 +136,15 @@ const MemberContractForm: React.FC<{
   const { data: dataContracts } = useQuery<types.GET_CONTRACTS>(GET_CONTRACTS)
   const { data: dataProjectPlans } = useQuery<types.GET_PROJECT_PLANS>(GET_PROJECT_PLANS)
   const { data: dataCreators } = useQuery<types.GET_APPOINTMENT_PLAN_CREATORS>(GET_APPOINTMENT_PLAN_CREATORS)
-  const [addMemberContract] = useMutation(ADD_MEMBER_CONTRACT)
+  const [addMemberContract] = useMutation<types.ADD_MEMBER_CONTRACT, types.ADD_MEMBER_CONTRACTVariables>(
+    ADD_MEMBER_CONTRACT,
+  )
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
 
   const [memberContractUrl, setMemberContractUrl] = useState('')
   const [selectedProjectPlanId, setSelectedProjectPlanId] = useState<string>('')
   const [startedAt, setStartedAt] = useState<Date>(moment().add(1, 'hour').startOf('hour').toDate())
+  const [certificationPath, setCertificationPath] = useState('')
   const [referralMemberFilter, setReferralMemberFilter] = useState('')
   const [contractProducts, setContractProducts] = useState<
     {
@@ -174,6 +189,11 @@ const MemberContractForm: React.FC<{
       .validateFields()
       .then(() => {
         const values = form.getFieldsValue()
+        if (values.identity === 'student' && !certificationPath) {
+          message.warn('需上傳證明')
+          return
+        }
+
         if (window.confirm('請確認合約是否正確？')) {
           // generate coupons
           const couponPlanId = v4()
@@ -211,53 +231,58 @@ const MemberContractForm: React.FC<{
           const orderId = moment().format('YYYYMMDDHHmmssSSS') + `${times}`.padStart(2, '0')
           const projectPlanName = values.contractProducts.map(product => product.name).join('、')
 
-          const variables = {
-            memberId: member?.id,
-            contractId: values.contractId,
-            startedAt,
-            endedAt,
-            values: {
-              orderId,
-              price: currencyConversionValue,
-              coupons,
+          addMemberContract({
+            variables: {
+              memberId: member.id,
+              contractId: values.contractId,
               startedAt,
               endedAt,
-              invoice: {
-                name: member?.name,
-                phone: member?.phones,
-                email: member?.email,
-              },
-              cardName: '學米 VIP 會員卡',
-              coinName: `${projectPlanName}`,
-              memberId: member?.id,
-              paymentNo: moment().format('YYYYMMDDHHmmss'),
-              coinAmount,
-              projectPlanName,
-              projectPlanProductId: `ProjectPlan_${selectedProjectPlanId}`,
-              orderExecutors: [
-                {
-                  member_id: values.orderExecutorId,
-                  ratio: values.orderExecutorRatio,
+              values: {
+                orderId,
+                price: currencyConversionValue,
+                coupons,
+                startedAt,
+                endedAt,
+                invoice: {
+                  name: member.name,
+                  phone: member.phones,
+                  email: member.email,
                 },
-                ...(values.orderExecutors
-                  .filter(orderExecutor => orderExecutor.memberId && orderExecutor.ratio)
-                  .map(orderExecutor => ({
-                    member_id: orderExecutor.memberId,
-                    ratio: orderExecutor.ratio,
-                  })) || []),
-              ],
-              paymentOptions: {
-                paymentMethod: values?.paymentMethod,
-                installmentPlan: values?.installmentPlan,
-                paymentNumber: values?.paymentNumber,
+                cardName: '學米 VIP 會員卡',
+                coinName: projectPlanName,
+                memberId: member.id,
+                paymentNo: moment().format('YYYYMMDDHHmmss'),
+                coinAmount,
+                projectPlanName,
+                projectPlanProductId: `ProjectPlan_${selectedProjectPlanId}`,
+                orderExecutors: [
+                  {
+                    member_id: values.orderExecutorId,
+                    ratio: values.orderExecutorRatio,
+                  },
+                  ...(values.orderExecutors
+                    .filter(orderExecutor => orderExecutor.memberId && orderExecutor.ratio)
+                    .map(orderExecutor => ({
+                      member_id: orderExecutor.memberId,
+                      ratio: orderExecutor.ratio,
+                    })) || []),
+                ],
+                paymentOptions: {
+                  paymentMethod: values.paymentMethod,
+                  installmentPlan: values.installmentPlan,
+                  paymentNumber: values.paymentNumber,
+                },
+              },
+              options: {
+                appointmentCreatorId: values.withCreatorId ? values.creatorId : null,
+                studentCertification: values.identity === 'student' ? certificationPath : null,
+                referralMemberId: values.referralMemberId,
               },
             },
-          }
-          addMemberContract({ variables })
+          })
             .then(({ data }) => {
-              setMemberContractUrl(
-                `https://www.xuemi.co/members/${member.id}/contracts/${data.insert_member_contract_one.id}`,
-              )
+              const contractId = data?.insert_member_contract_one?.id
+              setMemberContractUrl(`https://www.xuemi.co/members/${member.id}/contracts/${contractId}`)
               message.success('成功產生合約')
             })
             .catch(err => message.error(`產生合約失敗，請確認資料是否正確。錯誤代碼：${err}`))
@@ -436,15 +461,22 @@ const MemberContractForm: React.FC<{
               <SingleUploader
                 uploadText={formatMessage(commonMessages.ui.uploadCertification)}
                 path={`certification/${appId}/student_${member.id}`}
+                onSuccess={() => setCertificationPath(`certification/${appId}/student_${member.id}`)}
               />
+              <span>{certificationPath}</span>
             </Radio.Group>
           </Form.Item>
         </Descriptions.Item>
         <Descriptions.Item label="介紹人">
           <Form.Item name="referralMemberId" className="m-0">
-            <Select<string> showSearch onSearch={v => setReferralMemberFilter(v)} style={{ width: '150px' }}>
+            <Select<string>
+              showSearch
+              filterOption={false}
+              onSearch={v => setReferralMemberFilter(v)}
+              style={{ width: '150px' }}
+            >
               {dataReferralMembers?.member.map(v => (
-                <Select.Option key={v.id} value={v.id}>
+                <Select.Option key={v.name} value={v.id}>
                   {v.name}
                 </Select.Option>
               ))}
@@ -550,41 +582,37 @@ const MemberContractForm: React.FC<{
         </Descriptions.Item>
       </Descriptions>
 
-      {/* ===== */}
+      <StyledOrder className="mb-5">
+        {contractProducts.map(contractProduct => (
+          <div className="row mb-2">
+            <div className="col-6 text-right"></div>
+            <div className="col-3">
+              {contractProduct.name}
+              {contractProduct.amount > 1 ? `x${contractProduct.amount}` : ''}
+            </div>
+            <div className="col-3 text-right">
+              {currencyFormatter(productPrice[contractProduct.name] * contractProduct.amount)}
+            </div>
+          </div>
+        ))}
 
-      {/* <Descriptions title="購買項目" bordered className="mb-5">
-        <Descriptions.Item label="產品項目" span={3}>
-          <Form.Item className="mb-0" name="projectPlanName" rules={[{ required: true, message: '請填寫產品項目' }]}>
-            <Select mode="multiple" placeholder="Please select" style={{ width: '100%' }}>
-              {dataProducts?.xuemi_product?.map(v => (
-                <Select.Option key={v.name} value={v.name}>
-                  {v.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-        </Descriptions.Item>
-        <Descriptions.Item label="支付金額">
-          <InputNumber
-            min={0}
-            value={currencyConversionValue}
-            onChange={v => typeof v === 'number' && setCurrencyConversionValue(v)}
-          />
-        </Descriptions.Item>
-      </Descriptions>
-
-      <Descriptions bordered className="mb-5">
-        <Descriptions.Item label="代幣數量">
-          <InputNumber min={0} value={coinAmount} onChange={v => typeof v === 'number' && setCoinAmount(v)} />
-        </Descriptions.Item>
-        <Descriptions.Item label="諮詢次數">
-          <InputNumber
-            min={0}
-            value={appointmentAmount}
-            onChange={v => typeof v === 'number' && setAppointmentAmount(v)}
-          />
-        </Descriptions.Item>
-      </Descriptions> */}
+        <div className="row mb-2">
+          <div className="col-6 text-right">
+            <strong>合計</strong>
+          </div>
+          <div className="col-6 text-right">
+            <StyledTotal>
+              {currencyFormatter(
+                sum(
+                  contractProducts.map(contractProduct => productPrice[contractProduct.name] * contractProduct.amount),
+                ),
+              )}
+            </StyledTotal>
+            <StyledTotal>0 次諮詢</StyledTotal>
+            <StyledTotal>0 XP</StyledTotal>
+          </div>
+        </div>
+      </StyledOrder>
 
       {memberContractUrl ? (
         <Alert message="合約連結" description={memberContractUrl} type="success" showIcon />
@@ -734,6 +762,7 @@ const ADD_MEMBER_CONTRACT = gql`
     $startedAt: timestamptz!
     $endedAt: timestamptz!
     $values: jsonb!
+    $options: jsonb
   ) {
     insert_member_contract_one(
       object: {
@@ -742,6 +771,7 @@ const ADD_MEMBER_CONTRACT = gql`
         started_at: $startedAt
         ended_at: $endedAt
         values: $values
+        options: $options
       }
     ) {
       id

@@ -10215,6 +10215,7 @@ export interface ADD_MEMBER_CONTRACTVariables {
   startedAt: any;
   endedAt: any;
   values: any;
+  options?: any | null;
 }
 
 /* tslint:disable */
