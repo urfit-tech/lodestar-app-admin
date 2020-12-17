@@ -25,7 +25,6 @@ const messages = defineMessages({
   purchase: { id: 'merchandise.text.purchase', defaultMessage: '購買' },
   seller: { id: 'merchandise.ui.seller', defaultMessage: '賣家通知' },
   deliveryItem: { id: 'merchandise.label.deliveryItem', defaultMessage: '交付：' },
-  uploadFile: { id: 'common.ui.uploadFile', defaultMessage: '上傳' },
 })
 
 const StyledOrderTitle = styled.h3`
@@ -204,7 +203,7 @@ const ShippingProductItem: React.FC<{
                   renderTrigger={({ loading }) => (
                     <StyledButtonWrapper>
                       <Button loading={loading} disabled={loading}>
-                        {formatMessage(messages.uploadFile)}
+                        {formatMessage(commonMessages.ui.upload)}
                       </Button>
                     </StyledButtonWrapper>
                   )}
