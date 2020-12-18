@@ -5165,6 +5165,95 @@ export interface PUBLISH_PROJECTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROJECT_COLLECTION
+// ====================================================
+
+export interface GET_PROJECT_COLLECTION_project_aggregate_aggregate {
+  __typename: "project_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROJECT_COLLECTION_project_aggregate {
+  __typename: "project_aggregate";
+  aggregate: GET_PROJECT_COLLECTION_project_aggregate_aggregate | null;
+}
+
+export interface GET_PROJECT_COLLECTION_project_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+  picture_url: string | null;
+}
+
+export interface GET_PROJECT_COLLECTION_project_project_plans {
+  __typename: "project_plan";
+  id: any;
+}
+
+export interface GET_PROJECT_COLLECTION_project {
+  __typename: "project";
+  id: any;
+  title: string;
+  abstract: string;
+  introduction: string;
+  description: string;
+  position: number;
+  published_at: any | null;
+  target_amount: any;
+  /**
+   * funds / participants
+   */
+  target_unit: string;
+  /**
+   * funding / pre-order / on-sale / modular
+   */
+  type: string;
+  updates: any;
+  created_at: any;
+  expired_at: any | null;
+  comments: any;
+  contents: any;
+  /**
+   * image / video
+   */
+  cover_type: string;
+  cover_url: string;
+  is_participants_visible: boolean;
+  is_countdown_timer_visible: boolean;
+  preview_url: string | null;
+  /**
+   * An object relationship
+   */
+  creator: GET_PROJECT_COLLECTION_project_creator | null;
+  /**
+   * An array relationship
+   */
+  project_plans: GET_PROJECT_COLLECTION_project_project_plans[];
+}
+
+export interface GET_PROJECT_COLLECTION {
+  /**
+   * fetch aggregated fields from the table: "project"
+   */
+  project_aggregate: GET_PROJECT_COLLECTION_project_aggregate;
+  /**
+   * fetch data from the table: "project"
+   */
+  project: GET_PROJECT_COLLECTION_project[];
+}
+
+export interface GET_PROJECT_COLLECTIONVariables {
+  condition: project_bool_exp;
+  limit: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ORDER_LOG_EXPORT
 // ====================================================
 
