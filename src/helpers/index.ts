@@ -5,6 +5,7 @@ import moment from 'moment'
 import queryString from 'query-string'
 import { css, FlattenSimpleInterpolation } from 'styled-components'
 import { BREAK_POINT } from '../components/common/Responsive'
+import { PermissionType } from '../types/general'
 
 export const TPDirect = (window as any)['TPDirect']
 
@@ -201,4 +202,17 @@ export const isWebview = () => {
   var rules = ['WebView', '(iPhone|iPod|iPad)(?!.*Safari/)', 'Android.*(wv|.0.0.0)']
   var regex = new RegExp(`(${rules.join('|')})`, 'ig')
   return Boolean(useragent.match(regex))
+}
+
+export const permissionFormatter = (permission: PermissionType) => {
+  switch (permission) {
+    case 'funding':
+      return 'PROJECT_FUNDING_ADMIN'
+    case 'preOrder':
+      return 'PROJECT_PRE_ORDER_ADMIN'
+    case 'onSale':
+      return 'PROJECT_ON_SALE_ADMIN'
+    default:
+      break
+  }
 }
