@@ -23,6 +23,7 @@ export type ProductType =
   | 'PodcastPlan'
   | 'AppointmentPlan'
 
+export type PermissionType = 'funding' | 'preOrder' | 'onSale'
 export type CategoryProps = {
   id: string
   name: string

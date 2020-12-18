@@ -64,6 +64,7 @@ export const commonMessages = {
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
     selectAuthor: { id: 'common.label.selectAuthor', defaultMessage: '選擇作者' },
+    selectCreatorAppellation: { id: 'common.label.selectCreatorAppellation', defaultMessage: '{creatorAppellation}' },
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },
     alreadyMember: { id: 'common.label.alreadyMember', defaultMessage: '已經是是會員嗎？' },
     goToLogin: { id: 'common.label.goToLogin', defaultMessage: '前往登入' },
@@ -189,6 +190,7 @@ export const commonMessages = {
     video: { id: 'common.label.video', defaultMessage: '影片' },
     caption: { id: 'common.label.caption', defaultMessage: '字幕' },
     title: { id: 'common.term.title', defaultMessage: '名稱' },
+    customTitle: { id: 'common.term.customTitle', defaultMessage: '{customTitle}' },
     category: { id: 'common.term.category', defaultMessage: '分類' },
     tag: { id: 'common.term.tag', defaultMessage: '標籤' },
     startedAt: { id: 'common.term.startedAt', defaultMessage: '開始時間' },
@@ -282,6 +284,7 @@ export const commonMessages = {
     notPublished: { id: 'common.status.notPublished', defaultMessage: '尚未發售' },
     selling: { id: 'common.status.selling', defaultMessage: '販售中' },
     soldOut: { id: 'common.status.soldOut', defaultMessage: '已售完' },
+    finished: { id: 'common.status.finished', defaultMessage: '已結束' },
   }),
   menu: defineMessages({
     salesAdmin: { id: 'common.menu.salesAdmin', defaultMessage: '銷售管理' },
@@ -293,6 +296,10 @@ export const commonMessages = {
     tempoDelivery: { id: 'common.menu.tempoDelivery', defaultMessage: '節奏交付' },
     programCategory: { id: 'common.menu.programCategory', defaultMessage: '課程分類' },
     programPackageCategory: { id: 'common.menu.programCategory', defaultMessage: '課程組合分類' },
+    projectAdmin: { id: 'common.menu.projectAdmin', defaultMessage: '專案管理' },
+    projectFunding: { id: 'common.menu.projectFunding', defaultMessage: '募資專案' },
+    projectPreOrder: { id: 'common.menu.projectPreOrder', defaultMessage: '預購專案' },
+    projectOnSale: { id: 'common.menu.projectOnSale', defaultMessage: '促銷專案' },
     podcastAdmin: { id: 'common.menu.podcastAdmin', defaultMessage: '音頻廣播' },
     podcastPrograms: { id: 'common.menu.podcastPrograms', defaultMessage: '廣播管理' },
     podcastPlans: { id: 'common.menu.podcastPlans', defaultMessage: '訂閱方案' },
@@ -687,7 +694,17 @@ export const programPackageMessages = {
     unpublished: { id: 'programPackage.status.unpublished', defaultMessage: '未發佈' },
   }),
 }
-
+export const projectMessages = {
+  label: defineMessages({
+    Sponsor: { id: 'project.label.Sponsor', defaultMessage: '發起者' },
+  }),
+  term: defineMessages({
+    title: { id: 'project.term.title', defaultMessage: '專案名稱' },
+  }),
+  text: defineMessages({
+    noProject: { id: 'project.text.noProject', defaultMessage: '尚未有任何專案' },
+  }),
+}
 export const podcastMessages = {
   ui: defineMessages({
     subscribe: { id: 'podcast.ui.subscribe', defaultMessage: '訂閱頻道' },
