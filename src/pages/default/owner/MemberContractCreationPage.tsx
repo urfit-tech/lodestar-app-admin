@@ -28,7 +28,7 @@ import { AdminBlock, AdminBlockTitle } from '../../../components/admin'
 import SingleUploader from '../../../components/form/SingleUploader'
 import DefaultLayout from '../../../components/layout/DefaultLayout'
 import { useApp } from '../../../contexts/AppContext'
-import { currencyFormatter } from '../../../helpers'
+import { currencyFormatter, notEmpty } from '../../../helpers'
 import { commonMessages } from '../../../helpers/translation'
 import types from '../../../types'
 import { PeriodType } from '../../../types/general'
@@ -36,10 +36,7 @@ import LoadingPage from '../LoadingPage'
 
 type FieldProps = {
   contractId: string
-  withCreatorId: boolean
   creatorId?: string | null
-  identity: 'normal' | 'student'
-  referralMemberId?: string | null
   paymentMethod: string
   installmentPlan: number
   paymentNumber: string
@@ -50,9 +47,17 @@ type FieldProps = {
     ratio?: number
   }[]
   contractProducts: {
-    name: string
+    id: string
     amount: number
   }[]
+}
+type ProductProps = {
+  id: string
+  name: string
+  price: number
+  addonPrice: number | null
+  appointments: number
+  coins: number
 }
 
 const StyledFieldLabel = styled.div`
@@ -131,7 +136,7 @@ const MemberContractForm: React.FC<{
   const { id: appId } = useApp()
   const { xuemiSales } = useXuemiSales()
 
-  const { data: dataProducts } = useQuery<types.GET_CONTRACT_PRODUCT>(GET_CONTRACT_PRODUCT)
+  const { products } = useProducts()
   const { data: dataProperties } = useQuery<types.GET_PROPERTIES>(GET_PROPERTIES)
   const { data: dataContracts } = useQuery<types.GET_CONTRACTS>(GET_CONTRACTS)
   const { data: dataProjectPlans } = useQuery<types.GET_PROJECT_PLANS>(GET_PROJECT_PLANS)
@@ -148,10 +153,13 @@ const MemberContractForm: React.FC<{
   const [referralMemberFilter, setReferralMemberFilter] = useState('')
   const [contractProducts, setContractProducts] = useState<
     {
-      name: string
+      id: string
       amount: number
     }[]
   >([])
+  const [withCreatorId, setWithCreatorId] = useState(false)
+  const [identity, setIdentity] = useState<'normal' | 'student'>('normal')
+  const [referralMemberId, setReferralMemberId] = useState('')
 
   const { data: dataReferralMembers } = useQuery<
     types.GET_REFERRAL_MEMBER_COLLECTION,
@@ -166,12 +174,47 @@ const MemberContractForm: React.FC<{
         .add(selectedProjectPlan.period_amount, selectedProjectPlan.period_type as PeriodType)
         .toDate()
     : null
-  const productPrice =
-    dataProducts?.xuemi_product.reduce((accumulator, currentValue) => {
-      const tmp = { ...accumulator }
-      tmp[currentValue.name] = currentValue.price
-      return tmp
-    }, {} as { [productName: string]: number }) || {}
+
+  // TODO: calculate product contents
+  const selectedMainProducts = contractProducts.filter(contractProduct =>
+    products.find(product => product.id === contractProduct.id && product.price),
+  )
+  const isAppointmentOnly =
+    selectedMainProducts.length === 1 &&
+    products.find(product => product.id === selectedMainProducts[0].id)?.name === '業師諮詢'
+  const selectedProducts = contractProducts
+    .map(contractProduct => {
+      const product = products.find(product => product.id === contractProduct.id)
+      if (!product) {
+        return null
+      }
+
+      const productType =
+        product.name === '業師諮詢' && isAppointmentOnly ? 'main' : product.addonPrice ? 'addon' : 'main'
+
+      return {
+        id: contractProduct.id,
+        name: product.name,
+        type: productType,
+        price:
+          productType === 'main'
+            ? (product.price - (referralMemberId ? 2000 : 0)) * (identity === 'student' ? 0.9 : 1)
+            : product.addonPrice || 0,
+        appointments: product.appointments / (productType === 'main' && identity === 'student' ? 2 : 1),
+        coins: product.coins,
+        amount: contractProduct.amount,
+      }
+    })
+    .filter(notEmpty)
+  const mainProductCount = selectedProducts.filter(product => product.type === 'main').length
+  const totalAppointments = sum(selectedProducts.map(product => product.appointments))
+  const totalCoins = sum(selectedProducts.map(product => product.coins))
+  const groupDiscount = mainProductCount <= 1 ? 0 : mainProductCount === 2 ? 0.1 : mainProductCount === 3 ? 0.15 : 0.2
+  const totalPrice =
+    sum(selectedProducts.filter(product => product.type === 'main').map(product => product.price)) *
+      (1 - groupDiscount) +
+    sum(selectedProducts.filter(product => product.type === 'addon').map(product => product.price)) +
+    (withCreatorId ? totalAppointments * 1000 : 0)
 
   const handleContractAdded = async () => {
     const alert = document.getElementsByClassName('ant-alert')[0]
@@ -180,16 +223,11 @@ const MemberContractForm: React.FC<{
       return
     }
 
-    // TODO: calculate product contents
-    const appointmentAmount = 0
-    const currencyConversionValue = 0
-    const coinAmount = 0
-
     form
       .validateFields()
       .then(() => {
         const values = form.getFieldsValue()
-        if (values.identity === 'student' && !certificationPath) {
+        if (identity === 'student' && !certificationPath) {
           message.warn('需上傳證明')
           return
         }
@@ -197,7 +235,7 @@ const MemberContractForm: React.FC<{
         if (window.confirm('請確認合約是否正確？')) {
           // generate coupons
           const couponPlanId = v4()
-          const coupons = range(0, appointmentAmount).map(v => {
+          const coupons = range(0, totalAppointments).map(v => {
             return {
               member_id: member?.id,
               coupon_code: {
@@ -229,7 +267,7 @@ const MemberContractForm: React.FC<{
 
           let times = 0
           const orderId = moment().format('YYYYMMDDHHmmssSSS') + `${times}`.padStart(2, '0')
-          const projectPlanName = values.contractProducts.map(product => product.name).join('、')
+          const projectPlanName = ''
 
           addMemberContract({
             variables: {
@@ -239,7 +277,7 @@ const MemberContractForm: React.FC<{
               endedAt,
               values: {
                 orderId,
-                price: currencyConversionValue,
+                price: totalPrice,
                 coupons,
                 startedAt,
                 endedAt,
@@ -252,7 +290,7 @@ const MemberContractForm: React.FC<{
                 coinName: projectPlanName,
                 memberId: member.id,
                 paymentNo: moment().format('YYYYMMDDHHmmss'),
-                coinAmount,
+                coinAmount: totalCoins,
                 projectPlanName,
                 projectPlanProductId: `ProjectPlan_${selectedProjectPlanId}`,
                 orderExecutors: [
@@ -274,9 +312,9 @@ const MemberContractForm: React.FC<{
                 },
               },
               options: {
-                appointmentCreatorId: values.withCreatorId ? values.creatorId : null,
-                studentCertification: values.identity === 'student' ? certificationPath : null,
-                referralMemberId: values.referralMemberId,
+                appointmentCreatorId: withCreatorId ? values.creatorId : null,
+                studentCertification: identity === 'student' ? certificationPath : null,
+                referralMemberId,
               },
             },
           })
@@ -334,9 +372,8 @@ const MemberContractForm: React.FC<{
           {dataProperties?.property.map(property => (
             <Descriptions.Item label={property.name} key={property.id}>
               <div className="d-flex align-items-center">
-                {member.properties.find(v => v.propertyId === property.id)?.value || (
-                  <Alert type="error" message="未設定" />
-                )}
+                {member.properties.find(v => v.propertyId === property.id)?.value ||
+                  (property.placeholder ? <Alert type="error" message="未設定" /> : null)}
               </div>
             </Descriptions.Item>
           ))}
@@ -394,21 +431,23 @@ const MemberContractForm: React.FC<{
                 {fields.map((field, index) => (
                   <div key={field.key} className="d-flex align-items-center justify-content-start">
                     <Form.Item
-                      name={[field.name, 'name']}
-                      fieldKey={[field.fieldKey, 'name']}
+                      name={[field.name, 'id']}
+                      fieldKey={[field.fieldKey, 'id']}
                       label={field.key === 0 ? <StyledFieldLabel>項目名稱</StyledFieldLabel> : undefined}
                       rules={[{ required: true }]}
                     >
                       <Select<string> className="mr-3" style={{ width: '250px' }}>
-                        {dataProducts?.xuemi_product.map(product => (
-                          <Select.Option key={product.name} value={product.name}>
+                        {products?.map(product => (
+                          <Select.Option key={product.id} value={product.id}>
                             {product.name}
                           </Select.Option>
                         ))}
                       </Select>
                     </Form.Item>
                     <Form.Item label={field.key === 0 ? <StyledFieldLabel>單價</StyledFieldLabel> : undefined}>
-                      <StyledPriceField>{productPrice[contractProducts[field.key].name]}</StyledPriceField>
+                      <StyledPriceField>
+                        {products.find(product => product.id === contractProducts[field.key].id)?.price || 0}
+                      </StyledPriceField>
                     </Form.Item>
                     <Form.Item
                       name={[field.name, 'amount']}
@@ -434,8 +473,8 @@ const MemberContractForm: React.FC<{
       <Descriptions column={1} bordered className="mb-5">
         <Descriptions.Item label="指定業師">
           <div className="d-flex align-items-center">
-            <Form.Item name="withCreatorId" noStyle>
-              <Radio.Group>
+            <Form.Item noStyle>
+              <Radio.Group value={withCreatorId} onChange={e => setWithCreatorId(e.target.value)}>
                 <Radio value={false}>不指定</Radio>
                 <Radio value={true}>指定</Radio>
               </Radio.Group>
@@ -454,8 +493,8 @@ const MemberContractForm: React.FC<{
           </div>
         </Descriptions.Item>
         <Descriptions.Item label="學員身份">
-          <Form.Item name="identity" className="m-0">
-            <Radio.Group>
+          <Form.Item className="m-0">
+            <Radio.Group value={identity} onChange={e => setIdentity(e.target.value)}>
               <Radio value="normal">一般</Radio>
               <Radio value="student">學生</Radio>
               <SingleUploader
@@ -468,10 +507,12 @@ const MemberContractForm: React.FC<{
           </Form.Item>
         </Descriptions.Item>
         <Descriptions.Item label="介紹人">
-          <Form.Item name="referralMemberId" className="m-0">
+          <Form.Item className="m-0">
             <Select<string>
               showSearch
               filterOption={false}
+              value={referralMemberId}
+              onChange={value => setReferralMemberId(value)}
               onSearch={v => setReferralMemberFilter(v)}
               style={{ width: '150px' }}
             >
@@ -583,33 +624,51 @@ const MemberContractForm: React.FC<{
       </Descriptions>
 
       <StyledOrder className="mb-5">
-        {contractProducts.map(contractProduct => (
+        {selectedProducts.map(selectedProduct => (
           <div className="row mb-2">
             <div className="col-6 text-right"></div>
             <div className="col-3">
-              {contractProduct.name}
-              {contractProduct.amount > 1 ? `x${contractProduct.amount}` : ''}
+              {selectedProduct.name}
+              {selectedProduct.amount > 1 ? `x${selectedProduct.amount}` : ''}
             </div>
-            <div className="col-3 text-right">
-              {currencyFormatter(productPrice[contractProduct.name] * contractProduct.amount)}
-            </div>
+            <div className="col-3 text-right">{currencyFormatter(selectedProduct.price * selectedProduct.amount)}</div>
           </div>
         ))}
+
+        {groupDiscount > 0 && (
+          <div className="row mb-2">
+            <div className="col-6 text-right"></div>
+            <div className="col-3">合購折抵</div>
+            <div className="col-3 text-right">
+              {currencyFormatter(
+                sum(
+                  selectedProducts
+                    .filter(selectedProduct => selectedProduct.type === 'main')
+                    .map(selectedProduct => selectedProduct.price),
+                ) *
+                  groupDiscount *
+                  -1,
+              )}
+            </div>
+          </div>
+        )}
+
+        {withCreatorId && (
+          <div className="row mb-2">
+            <div className="col-6 text-right"></div>
+            <div className="col-3">指定業師</div>
+            <div className="col-3 text-right">{currencyFormatter(withCreatorId ? totalAppointments * 1000 : 0)}</div>
+          </div>
+        )}
 
         <div className="row mb-2">
           <div className="col-6 text-right">
             <strong>合計</strong>
           </div>
           <div className="col-6 text-right">
-            <StyledTotal>
-              {currencyFormatter(
-                sum(
-                  contractProducts.map(contractProduct => productPrice[contractProduct.name] * contractProduct.amount),
-                ),
-              )}
-            </StyledTotal>
-            <StyledTotal>0 次諮詢</StyledTotal>
-            <StyledTotal>0 XP</StyledTotal>
+            <StyledTotal>{currencyFormatter(totalPrice)}</StyledTotal>
+            <StyledTotal>{totalAppointments} 次諮詢</StyledTotal>
+            <StyledTotal>{totalCoins} XP</StyledTotal>
           </div>
         </div>
       </StyledOrder>
@@ -682,6 +741,21 @@ const useXuemiSales = () => {
   }
 }
 
+const useProducts = () => {
+  const { data } = useQuery<types.GET_CONTRACT_PRODUCT>(GET_CONTRACT_PRODUCT)
+  const products: ProductProps[] =
+    data?.xuemi_product.map(v => ({
+      id: v.id,
+      name: v.name,
+      price: v.price,
+      addonPrice: v.addon_price,
+      appointments: v.appointments,
+      coins: v.coins,
+    })) || []
+
+  return { products }
+}
+
 const GET_CONTRACT_MEMBER = gql`
   query GET_CONTRACT_MEMBER($id: String!) {
     member_by_pk(id: $id) {
@@ -724,6 +798,7 @@ const GET_PROPERTIES = gql`
     property(where: { name: { _in: ["學生程度", "每月學習預算", "轉職意願", "上過其他課程", "特別需求"] } }) {
       id
       name
+      placeholder
     }
   }
 `
@@ -733,6 +808,9 @@ const GET_CONTRACT_PRODUCT = gql`
       id
       name
       price
+      addon_price
+      appointments
+      coins
     }
   }
 `

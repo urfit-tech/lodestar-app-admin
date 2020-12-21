@@ -80,7 +80,7 @@ export const commaFormatter = (value?: number | string | null) =>
   value !== null && value !== undefined && `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
 export const currencyFormatter = (value?: number | string | null) =>
-  value !== null && value !== undefined && `NT$ ${value < 0 ? 0 : value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  value !== null && value !== undefined && `NT$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
 export const dateFormatter = (value: Date | string, format?: string) =>
   moment(value).format(format || `YYYY/MM/DD HH:mm`)
