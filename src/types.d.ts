@@ -10099,6 +10099,7 @@ export interface GET_PROPERTIES_property {
   __typename: "property";
   id: any;
   name: string;
+  placeholder: string | null;
 }
 
 export interface GET_PROPERTIES {
@@ -10122,6 +10123,9 @@ export interface GET_CONTRACT_PRODUCT_xuemi_product {
   id: any;
   name: string;
   price: any;
+  addon_price: any | null;
+  coins: number;
+  appointments: number;
 }
 
 export interface GET_CONTRACT_PRODUCT {
