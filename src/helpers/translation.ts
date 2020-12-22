@@ -668,6 +668,7 @@ export const programMessages = {
     reject: { id: 'program.ui.reject', defaultMessage: '退回案件' },
     approve: { id: 'program.ui.approve', defaultMessage: '審核通過' },
     addUrl: { id: 'program.ui.addUrl', defaultMessage: '新增網址' },
+    sortProgram: { id: 'program.ui.sortProgram', defaultMessage: '課程排序' }
   }),
 }
 
