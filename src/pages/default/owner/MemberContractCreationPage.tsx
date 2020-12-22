@@ -175,46 +175,105 @@ const MemberContractForm: React.FC<{
         .toDate()
     : null
 
-  // TODO: calculate product contents
+  // calculate order items results
   const selectedMainProducts = contractProducts.filter(contractProduct =>
     products.find(product => product.id === contractProduct.id && product.price),
   )
   const isAppointmentOnly =
     selectedMainProducts.length === 1 &&
     products.find(product => product.id === selectedMainProducts[0].id)?.name === '業師諮詢'
-  const selectedProducts = contractProducts
+  const orderItems: {
+    id: string
+    type: 'mainProduct' | 'addonProduct' | 'referralDiscount' | 'promotionDiscount'
+    name: string
+    price: number
+    appointments: number
+    coins: number
+    amount: number
+  }[] = contractProducts
     .map(contractProduct => {
       const product = products.find(product => product.id === contractProduct.id)
       if (!product) {
         return null
       }
 
-      const productType =
-        product.name === '業師諮詢' && isAppointmentOnly ? 'main' : product.addonPrice ? 'addon' : 'main'
+      const productType: 'mainProduct' | 'addonProduct' =
+        product.name === '業師諮詢' && isAppointmentOnly
+          ? 'mainProduct'
+          : product.addonPrice
+          ? 'addonProduct'
+          : 'mainProduct'
 
       return {
         id: contractProduct.id,
         name: product.name,
         type: productType,
-        price:
-          productType === 'main'
-            ? (product.price - (referralMemberId ? 2000 : 0)) * (identity === 'student' ? 0.9 : 1)
-            : product.addonPrice || 0,
-        appointments: product.appointments / (productType === 'main' && identity === 'student' ? 2 : 1),
+        price: productType === 'mainProduct' ? product.price : product.addonPrice || 0,
+        appointments:
+          productType === 'mainProduct' && identity === 'student' ? product.appointments / 2 : product.appointments,
         coins: product.coins,
         amount: contractProduct.amount,
       }
     })
     .filter(notEmpty)
-  const mainProductCount = selectedProducts.filter(product => product.type === 'main').length
-  const totalAppointments = sum(selectedProducts.map(product => product.appointments))
-  const totalCoins = sum(selectedProducts.map(product => product.coins))
-  const groupDiscount = mainProductCount <= 1 ? 0 : mainProductCount === 2 ? 0.1 : mainProductCount === 3 ? 0.15 : 0.2
-  const totalPrice =
-    sum(selectedProducts.filter(product => product.type === 'main').map(product => product.price)) *
-      (1 - groupDiscount) +
-    sum(selectedProducts.filter(product => product.type === 'addon').map(product => product.price)) +
-    (withCreatorId ? totalAppointments * 1000 : 0)
+  const mainProducts = orderItems.filter(selectedProduct => selectedProduct.type === 'mainProduct')
+  const totalAppointments = sum(orderItems.map(product => product.appointments * product.amount))
+  const totalCoins = sum(orderItems.map(product => product.coins * product.amount))
+
+  if (withCreatorId && totalAppointments > 0) {
+    orderItems.push({
+      id: 'assignmentFee',
+      type: 'addonProduct',
+      name: '指定業師',
+      price: 1000,
+      appointments: 0,
+      coins: 0,
+      amount: totalAppointments,
+    })
+  }
+
+  const referralDiscountPrice = referralMemberId ? (identity === 'student' ? 1800 : 2000) * -1 : 0
+  if (referralDiscountPrice) {
+    orderItems.push({
+      id: 'referralDiscount',
+      type: 'referralDiscount',
+      name: '被介紹人折抵',
+      price: referralDiscountPrice,
+      appointments: 0,
+      coins: 0,
+      amount: mainProducts.length,
+    })
+  }
+
+  const studentDiscountPrice =
+    identity === 'student' ? sum(mainProducts.map(selectedProduct => selectedProduct.price)) * -0.1 : 0
+  if (studentDiscountPrice) {
+    orderItems.push({
+      id: 'studentDiscount',
+      type: 'promotionDiscount',
+      name: '學生方案',
+      price: studentDiscountPrice,
+      appointments: 0,
+      coins: 0,
+      amount: 1,
+    })
+  }
+
+  const groupDiscountPrice =
+    (sum(mainProducts.map(mainProduct => mainProduct.price)) + studentDiscountPrice + referralDiscountPrice) *
+    (mainProducts.length < 2 ? 0 : mainProducts.length === 2 ? -0.1 : mainProducts.length === 3 ? -0.15 : -0.2)
+  if (groupDiscountPrice) {
+    orderItems.push({
+      id: 'groupDiscount',
+      type: 'promotionDiscount',
+      name: mainProducts.length === 2 ? '任選兩件折抵' : mainProducts.length === 3 ? '任選三件折抵' : '任選四件折抵',
+      price: groupDiscountPrice,
+      appointments: 0,
+      coins: 0,
+      amount: 1,
+    })
+  }
+  const totalPrice = sum(orderItems.map(orderItem => orderItem.price * orderItem.amount))
 
   const handleContractAdded = async () => {
     const alert = document.getElementsByClassName('ant-alert')[0]
@@ -428,39 +487,45 @@ const MemberContractForm: React.FC<{
           {(fields, { add, remove }) => {
             return (
               <div>
-                {fields.map((field, index) => (
-                  <div key={field.key} className="d-flex align-items-center justify-content-start">
-                    <Form.Item
-                      name={[field.name, 'id']}
-                      fieldKey={[field.fieldKey, 'id']}
-                      label={field.key === 0 ? <StyledFieldLabel>項目名稱</StyledFieldLabel> : undefined}
-                      rules={[{ required: true }]}
-                    >
-                      <Select<string> className="mr-3" style={{ width: '250px' }}>
-                        {products?.map(product => (
-                          <Select.Option key={product.id} value={product.id}>
-                            {product.name}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                    <Form.Item label={field.key === 0 ? <StyledFieldLabel>單價</StyledFieldLabel> : undefined}>
-                      <StyledPriceField>
-                        {products.find(product => product.id === contractProducts[field.key].id)?.price || 0}
-                      </StyledPriceField>
-                    </Form.Item>
-                    <Form.Item
-                      name={[field.name, 'amount']}
-                      fieldKey={[field.fieldKey, 'amount']}
-                      label={field.key === 0 ? <StyledFieldLabel>數量</StyledFieldLabel> : undefined}
-                    >
-                      <InputNumber min={1} className="mr-3" />
-                    </Form.Item>
-                    <div className={field.key === 0 ? 'mt-2' : undefined}>
-                      <CloseOutlined className="cursor-pointer" onClick={() => remove(field.name)} />
+                {fields.map((field, index) => {
+                  const contractProduct = products.find(product => product.id === contractProducts[index]?.id)
+
+                  return (
+                    <div key={field.key} className="d-flex align-items-center justify-content-start">
+                      <Form.Item
+                        name={[field.name, 'id']}
+                        fieldKey={[field.fieldKey, 'id']}
+                        label={index === 0 ? <StyledFieldLabel>項目名稱</StyledFieldLabel> : undefined}
+                        rules={[{ required: true }]}
+                      >
+                        <Select<string> className="mr-3" style={{ width: '250px' }}>
+                          {products?.map(product => (
+                            <Select.Option key={product.id} value={product.id}>
+                              {product.name}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                      <Form.Item label={index === 0 ? <StyledFieldLabel>單價</StyledFieldLabel> : undefined}>
+                        <StyledPriceField>
+                          {contractProduct?.name === '業師諮詢' && isAppointmentOnly
+                            ? contractProduct?.price
+                            : contractProduct?.addonPrice || contractProduct?.price || 0}
+                        </StyledPriceField>
+                      </Form.Item>
+                      <Form.Item
+                        name={[field.name, 'amount']}
+                        fieldKey={[field.fieldKey, 'amount']}
+                        label={index === 0 ? <StyledFieldLabel>數量</StyledFieldLabel> : undefined}
+                      >
+                        <InputNumber min={1} className="mr-3" />
+                      </Form.Item>
+                      <div className={index === 0 ? 'mt-2' : 'mb-4'}>
+                        <CloseOutlined className="cursor-pointer" onClick={() => remove(field.name)} />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
                 <Button icon={<PlusOutlined />} onClick={() => add({ amount: 1 })}>
                   新增項目
                 </Button>
@@ -624,42 +689,24 @@ const MemberContractForm: React.FC<{
       </Descriptions>
 
       <StyledOrder className="mb-5">
-        {selectedProducts.map(selectedProduct => (
+        {orderItems.map(orderItem => (
           <div className="row mb-2">
-            <div className="col-6 text-right"></div>
-            <div className="col-3">
-              {selectedProduct.name}
-              {selectedProduct.amount > 1 ? `x${selectedProduct.amount}` : ''}
+            <div className="col-6 text-right">
+              {orderItem.type === 'addonProduct'
+                ? '【加購項目】'
+                : orderItem.type === 'referralDiscount'
+                ? '【介紹折抵】'
+                : orderItem.type === 'promotionDiscount'
+                ? '【促銷折抵】'
+                : ''}
             </div>
-            <div className="col-3 text-right">{currencyFormatter(selectedProduct.price * selectedProduct.amount)}</div>
+            <div className="col-3">
+              {orderItem.name}
+              {orderItem.amount > 1 ? `x${orderItem.amount}` : ''}
+            </div>
+            <div className="col-3 text-right">{currencyFormatter(orderItem.price * orderItem.amount)}</div>
           </div>
         ))}
-
-        {groupDiscount > 0 && (
-          <div className="row mb-2">
-            <div className="col-6 text-right"></div>
-            <div className="col-3">合購折抵</div>
-            <div className="col-3 text-right">
-              {currencyFormatter(
-                sum(
-                  selectedProducts
-                    .filter(selectedProduct => selectedProduct.type === 'main')
-                    .map(selectedProduct => selectedProduct.price),
-                ) *
-                  groupDiscount *
-                  -1,
-              )}
-            </div>
-          </div>
-        )}
-
-        {withCreatorId && (
-          <div className="row mb-2">
-            <div className="col-6 text-right"></div>
-            <div className="col-3">指定業師</div>
-            <div className="col-3 text-right">{currencyFormatter(withCreatorId ? totalAppointments * 1000 : 0)}</div>
-          </div>
-        )}
 
         <div className="row mb-2">
           <div className="col-6 text-right">
@@ -804,7 +851,7 @@ const GET_PROPERTIES = gql`
 `
 const GET_CONTRACT_PRODUCT = gql`
   query GET_CONTRACT_PRODUCT {
-    xuemi_product(order_by: { name: desc }) {
+    xuemi_product(order_by: { name: asc }) {
       id
       name
       price
