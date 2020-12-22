@@ -83,6 +83,7 @@ export const commonMessages = {
     cannotRecover: { id: 'common.label.cannotRecover', defaultMessage: '此動作無法復原' },
     sellingStatus: { id: 'common.label.sellingStatus', defaultMessage: '販售狀態' },
     salePriceEndTime: { id: 'common.label.salePriceEndTime', defaultMessage: '優惠截止日期' },
+    selectEndTime: { id: 'common.label.selectEndTime', defaultMessage: '選擇截止日' },
     outdated: { id: 'common.label.outdated', defaultMessage: '已過期' },
     autoRenewed: { id: 'common.label.autoRenewed', defaultMessage: '自動續訂' },
     period: { id: 'common.label.period', defaultMessage: '方案週期' },
@@ -162,6 +163,8 @@ export const commonMessages = {
     nameAndEmail: { id: 'common.label.nameAndEmail', defaultMessage: '姓名 / Email' },
     languages: { id: 'common.label.languages', defaultMessage: '顯示語系' },
     price: { id: 'common.label.price', defaultMessage: '價格' },
+    funds: { id: 'common.label.funds', defaultMessage: '金額' },
+    participants: { id: 'common.label.participants', defaultMessage: '人數' },
     uploading: { id: 'command.label.uploading', defaultMessage: '上傳中' },
     currentPosition: { id: 'common.label.currentPosition', defaultMessage: '目前排序：{position}' },
     roleType: { id: 'common.label.roleType', defaultMessage: '會員類型' },
@@ -169,6 +172,9 @@ export const commonMessages = {
     date: { id: 'common.label.date', defaultMessage: '日期' },
     podcastSubscription: { id: 'common.label.podcastSubscription', defaultMessage: '訂閱廣播頻道' },
     propertyItem: { id: 'common.label.propertyItem', defaultMessage: '欄位項目' },
+    amountDollar: { id: 'common.label.amountDollar', defaultMessage: '{amount} 元' },
+    amountParticipants: { id: 'common.label.amountParticipants', defaultMessage: '{amount} 人' },
+    introductionVideo: { id: 'common.label.introductionVideo', defaultMessage: '介紹影片' },
   }),
   term: defineMessages({
     assign: { id: 'common.term.assign', defaultMessage: '指派' },
@@ -285,6 +291,8 @@ export const commonMessages = {
     selling: { id: 'common.status.selling', defaultMessage: '販售中' },
     soldOut: { id: 'common.status.soldOut', defaultMessage: '已售完' },
     finished: { id: 'common.status.finished', defaultMessage: '已結束' },
+    visible: { id: 'common.status.visible', defaultMessage: '顯示' },
+    invisible: { id: 'common.status.invisible', defaultMessage: '隱藏' },
   }),
   menu: defineMessages({
     salesAdmin: { id: 'common.menu.salesAdmin', defaultMessage: '銷售管理' },
@@ -580,7 +588,6 @@ export const programMessages = {
     selectDeliveryAt: { id: 'program.label.selectDeliveryAt', defaultMessage: '選擇啟用日期' },
     programIntroduction: { id: 'program.label.programIntroduction', defaultMessage: '課程介紹' },
     programCover: { id: 'program.label.programCover', defaultMessage: '課程封面' },
-    introductionVideo: { id: 'program.label.introductionVideo', defaultMessage: '介紹影片' },
     programAbstract: { id: 'program.label.programAbstract', defaultMessage: '課程摘要' },
     programDescription: { id: 'program.label.programDescription', defaultMessage: '課程描述' },
     deleteProgram: { id: 'program.label.deleteProgram', defaultMessage: '刪除課程' },
@@ -696,13 +703,21 @@ export const programPackageMessages = {
 }
 export const projectMessages = {
   label: defineMessages({
-    Sponsor: { id: 'project.label.Sponsor', defaultMessage: '發起者' },
-  }),
-  term: defineMessages({
-    title: { id: 'project.term.title', defaultMessage: '專案名稱' },
+    projectTitle: { id: 'project.label.projectTitle', defaultMessage: '專案名稱' },
+    sponsor: { id: 'project.label.sponsor', defaultMessage: '發起者' },
+    settings: { id: 'project.label.settings', defaultMessage: '專案設定' },
+    projectIntroduction: { id: 'project.label.projectIntroduction', defaultMessage: '專案介紹' },
+    fundingTerm: { id: 'project.label.fundingTerm', defaultMessage: '募資條件' },
+    participantsAmount: { id: 'project.label.projectCountdownTimer', defaultMessage: '參與人數' },
+    projectCountdownTimer: { id: 'project.label.projectCountdownTimer', defaultMessage: '專案倒數' },
+    unnamedProject: { id: 'project.label.unnamedProject', defaultMessage: '未命名專案' },
+    projectCover: { id: 'project.label.projectCover', defaultMessage: '專案封面' },
+    projectAbstract: { id: 'project.label.projectAbstract', defaultMessage: '專案摘要' },
+    projectContent: { id: 'project.label.projectContent', defaultMessage: '專案內容' },
   }),
   text: defineMessages({
     noProject: { id: 'project.text.noProject', defaultMessage: '尚未有任何專案' },
+    soldOutProjectCount: { id: 'project.text.soldOutProjectCount', defaultMessage: '已售 {count}' },
   }),
 }
 export const podcastMessages = {

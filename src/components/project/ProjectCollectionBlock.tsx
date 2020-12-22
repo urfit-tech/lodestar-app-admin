@@ -1,61 +1,54 @@
 import { useQuery } from '@apollo/react-hooks'
 import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
-import React, { useEffect, useState } from 'react'
+import { sum } from 'ramda'
+import React, { useEffect } from 'react'
 import { useIntl } from 'react-intl'
 import { projectMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProjectProps } from '../../types/project'
+import { ProjectDataType, ProjectPreviewProps } from '../../types/project'
 import { EmptyBlock } from '../admin'
+import ProjectAdminCard from './ProjectAdminCard'
 
 const ProjectCollectionBlock: React.FC<{
   appId: string
-  condition: types.GET_PROJECT_COLLECTIONVariables['condition']
+  condition: types.GET_PROJECT_PREVIEW_COLLECTIONVariables['condition']
   onReady?: (count: number) => void
 }> = ({ appId, condition, onReady }) => {
   const { formatMessage } = useIntl()
-  const {
-    loadingProject,
-    errorProject,
-    project,
-    projectCount,
-    refetchProject,
-    loadMoreProjects,
-  } = useProjectCollection(condition)
-
-  const [loading, setLoading] = useState(false)
+  const { loadingProject, projectPreview, projectPreviewCount, refetchProject } = useProjectPreviewCollection(condition)
 
   useEffect(() => {
-    onReady?.(projectCount)
+    onReady?.(projectPreviewCount)
     refetchProject()
-  }, [onReady, projectCount, refetchProject])
+  }, [onReady, projectPreviewCount, refetchProject])
 
   if (loadingProject) {
     return <Skeleton active />
   }
 
-  if (project.length === 0) {
+  if (projectPreview.length === 0) {
     return <EmptyBlock>{formatMessage(projectMessages.text.noProject)}</EmptyBlock>
   }
 
   return (
     <div className="row py-3">
-      {project.map(v => (
-        <div key={v.id} className="col-12 col-md-6 col-lg-4 mb-5">
-          {/* <ProjectCard /> */}
+      {projectPreview.map(project => (
+        <div key={project.id} className="col-12 col-md-6 col-lg-4 mb-5">
+          <ProjectAdminCard {...project} />
         </div>
       ))}
     </div>
   )
 }
 
-const useProjectCollection = (condition: types.GET_PROJECT_COLLECTIONVariables['condition']) => {
+const useProjectPreviewCollection = (condition: types.GET_PROJECT_PREVIEW_COLLECTIONVariables['condition']) => {
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_PROJECT_COLLECTION,
-    types.GET_PROJECT_COLLECTIONVariables
-  >(GET_PROJECT_COLLECTION, { variables: { condition, limit: 10 } })
+    types.GET_PROJECT_PREVIEW_COLLECTION,
+    types.GET_PROJECT_PREVIEW_COLLECTIONVariables
+  >(GET_PROJECT_PREVIEW_COLLECTION, { variables: { condition, limit: 10 } })
 
-  const project: ProjectProps[] =
+  const projectPreview: ProjectPreviewProps[] =
     loading || error || !data
       ? []
       : data.project.map(v => {
@@ -63,23 +56,13 @@ const useProjectCollection = (condition: types.GET_PROJECT_COLLECTIONVariables['
             id: v.id,
             title: v.title,
             abstract: v.abstract,
-            introduction: v.introduction,
-            description: v.description,
-            position: v.position,
-            targetAmount: v.target_amount,
-            targetUnit: v.target_unit,
-            type: v.type,
-            updates: v.updates,
+            projectType: v.type as ProjectDataType,
             createdAt: v.created_at,
             publishedAt: v.published_at,
             expiredAt: v.expired_at,
-            comments: v.comments,
-            contents: v.contents,
-            coverType: v.cover_type,
             coverUrl: v.cover_url,
             previewUrl: v.preview_url,
-            isParticipantsVisible: v.is_participants_visible,
-            isCountdownTimerVisible: v.is_countdown_timer_visible,
+            totalCount: sum(v.project_plans.map(w => w.project_plan_enrollments_aggregate.aggregate?.count || 0)),
           }
         })
   const loadMoreProjects =
@@ -107,14 +90,15 @@ const useProjectCollection = (condition: types.GET_PROJECT_COLLECTIONVariables['
   return {
     loadingProject: loading,
     errorProject: error,
-    projectCount: data?.project_aggregate.aggregate?.count || 0,
-    project,
+    projectPreviewCount: data?.project_aggregate.aggregate?.count || 0,
+    projectPreview,
     refetchProject: refetch,
     loadMoreProjects,
   }
 }
-const GET_PROJECT_COLLECTION = gql`
-  query GET_PROJECT_COLLECTION($condition: project_bool_exp!, $limit: Int!) {
+
+const GET_PROJECT_PREVIEW_COLLECTION = gql`
+  query GET_PROJECT_PREVIEW_COLLECTION($condition: project_bool_exp!, $limit: Int!) {
     project_aggregate(where: $condition) {
       aggregate {
         count
@@ -124,32 +108,20 @@ const GET_PROJECT_COLLECTION = gql`
       id
       title
       abstract
-      introduction
-      description
-      position
-      published_at
-      target_amount
-      target_unit
       type
-      updates
       created_at
       published_at
       expired_at
-      comments
-      contents
-      cover_type
       cover_url
-      is_participants_visible
-      is_countdown_timer_visible
       preview_url
-      creator {
-        id
-        name
-        username
-        picture_url
-      }
+      creator_id
       project_plans {
         id
+        project_plan_enrollments_aggregate {
+          aggregate {
+            count
+          }
+        }
       }
     }
   }

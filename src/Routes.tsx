@@ -116,12 +116,17 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
   },
   //project
-  project_funding: {
+  project: {
+    path: '/projects/:projectId',
+    pageName: 'ProjectAdminPage',
+    authenticated: true,
+  },
+  project_funding_collection: {
     path: '/project-funding',
     pageName: 'ProjectFundingPage',
     authenticated: true,
   },
-  project_pre_order: {
+  project_pre_orderCollection: {
     path: '/project-pre-order',
     pageName: 'ProjectPreOrderPage',
     authenticated: true,
