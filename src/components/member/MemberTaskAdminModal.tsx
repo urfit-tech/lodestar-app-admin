@@ -6,7 +6,7 @@ import TextArea from 'antd/lib/input/TextArea'
 import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages, memberMessages } from '../../helpers/translation'
@@ -17,10 +17,6 @@ import { MemberTaskTag } from '../admin'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import AllMemberSelector from '../form/AllMemberSelector'
 import CategorySelector from '../form/CategorySelector'
-
-const messages = defineMessages({
-  check: { id: 'common.ui.check', defaultMessage: '查看' },
-})
 
 const StyledLinkIconWrapper = styled.span`
   cursor: pointer;
@@ -208,7 +204,7 @@ const MemberTaskAdminModal: React.FC<
                     }}
                   >
                     <Icon component={() => <ExternalLinkIcon />} className="mr-1" />
-                    {formatMessage(messages.check)}
+                    {formatMessage(commonMessages.ui.check)}
                   </StyledLinkIconWrapper>
                 </span>
               }
