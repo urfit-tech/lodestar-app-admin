@@ -51,6 +51,7 @@ const ProductCreationModal: React.FC<
     memberPermission?: string
     creatorAppellation?: string
     customTitle?: string
+    customTitleDefault?: string
   }
 > = ({
   categoryClassType,
@@ -61,6 +62,7 @@ const ProductCreationModal: React.FC<
   memberPermission,
   creatorAppellation,
   customTitle,
+  customTitleDefault,
   ...props
 }) => {
   const { formatMessage } = useIntl()
@@ -113,6 +115,7 @@ const ProductCreationModal: React.FC<
           memberId: currentMemberId,
           isSubscription: false,
           merchandiseType: 'general-physical',
+          title: customTitleDefault ? customTitleDefault : '',
         }}
       >
         {withCreatorSelector && (

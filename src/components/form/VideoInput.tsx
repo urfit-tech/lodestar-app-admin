@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { programMessages } from '../../helpers/translation'
+import { ClassType } from '../../types/general'
 import SingleUploader from './SingleUploader'
 
 const StyleInputGroup = styled(Input.Group)`
@@ -19,10 +20,11 @@ const StyleInputGroup = styled(Input.Group)`
 
 const VideoInput: React.FC<{
   appId: string
-  programId: string
+  productId: string
+  productType: ClassType
   value?: string | null
   onChange?: (value: string | null) => void
-}> = ({ value, onChange, appId, programId }) => {
+}> = ({ value, onChange, appId, productId, productType }) => {
   const { formatMessage } = useIntl()
   const [file, setFile] = useState<UploadFile | undefined>(undefined)
 
@@ -40,12 +42,13 @@ const VideoInput: React.FC<{
         value={file}
         accept="video/*"
         uploadText={formatMessage(programMessages.text.uploadVideo)}
-        path={`program_covers/${appId}/${programId}_video`}
+        path={`${productType}_covers/${appId}/${productId}_video`}
         showUploadList={false}
         isPublic
         onChange={(value: any) => setFile(value as UploadFile)}
         onSuccess={() =>
-          onChange && onChange(`https://${process.env.REACT_APP_S3_BUCKET}/program_covers/${appId}/${programId}_video`)
+          onChange &&
+          onChange(`https://${process.env.REACT_APP_S3_BUCKET}/${productType}_covers/${appId}/${productId}_video`)
         }
       />
     </StyleInputGroup>

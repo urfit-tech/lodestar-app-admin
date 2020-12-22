@@ -125,9 +125,9 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
             </span>
           }
         >
-          <Menu.Item key="project_funding">{formatMessage(commonMessages.menu.projectFunding)}</Menu.Item>
-          {/* <Menu.Item key="project_pre_order">{formatMessage(commonMessages.menu.projectPreOrder)}</Menu.Item> */}
-          {/* <Menu.Item key="project_on_sale">{formatMessage(commonMessages.menu.projectOnSale)}</Menu.Item> */}
+          <Menu.Item key="project_funding_collection">{formatMessage(commonMessages.menu.projectFunding)}</Menu.Item>
+          {/* <Menu.Item key="project_pre_order_collection">{formatMessage(commonMessages.menu.projectPreOrder)}</Menu.Item> */}
+          {/* <Menu.Item key="project_on_sale_collection">{formatMessage(commonMessages.menu.projectOnSale)}</Menu.Item> */}
         </Menu.SubMenu>
       )}
       {enabledModules.podcast && (currentUserRole === 'app-owner' || currentUserRole === 'content-creator') && (

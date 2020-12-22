@@ -1,6 +1,7 @@
 export type AuthState = 'login' | 'register' | 'forgotPassword' | 'confirm'
 export type ClassType =
   | 'program'
+  | 'project'
   | 'podcastProgram'
   | 'activity'
   | 'post'
