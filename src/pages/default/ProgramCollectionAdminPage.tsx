@@ -10,10 +10,10 @@ import styled from 'styled-components'
 import { AdminPageTitle, EmptyBlock } from '../../components/admin'
 import PositionAdminLayout, { OverlayBlock, OverlayWrapper } from '../../components/admin/PositionAdminLayout'
 import { AvatarImage } from '../../components/common/Image'
+import ItemsSortingModal from '../../components/common/ItemsSortingModal'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import ProgramAdminCard from '../../components/program/ProgramAdminCard'
-import ProgramCollectionStructureAdminModal from '../../components/program/ProgramCollectionStructureAdminModal'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
@@ -22,7 +22,7 @@ import types from '../../types'
 import { ProgramPlanPeriodType, ProgramPreviewProps } from '../../types/program'
 import LoadingPage from './LoadingPage'
 
-export type ProgramSortProps = {
+type ProgramSortProps = {
   id: string
   title: string
   isSubscription: boolean
@@ -235,8 +235,9 @@ const ProgramCollectionBlock: React.FC<{
     <div className="row py-3">
       {withSortingButton && (
         <div className="d-flex flex-row-reverse" style={{ width: '100%' }}>
-          <ProgramCollectionStructureAdminModal
-            programs={programSorts}
+          <ItemsSortingModal
+            items={programSorts}
+            triggerText={formatMessage(programMessages.ui.sortProgram)}
             onSubmit={values =>
               updatePositions({
                 variables: {
