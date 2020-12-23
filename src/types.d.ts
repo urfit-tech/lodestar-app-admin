@@ -4905,6 +4905,7 @@ export interface UPDATE_PROJECT_COVER {
 
 export interface UPDATE_PROJECT_COVERVariables {
   projectId: any;
+  previewUrl?: string | null;
   coverUrl?: string | null;
 }
 
@@ -4937,6 +4938,7 @@ export interface UPDATE_PROJECT_INTROVariables {
   abstract?: string | null;
   introduction?: string | null;
   coverUrl?: string | null;
+  type?: string | null;
 }
 
 /* tslint:disable */
@@ -10938,6 +10940,26 @@ export interface GET_PROJECT_ADMIN_project_by_pk_project_plans_project_plan_enro
 export interface GET_PROJECT_ADMIN_project_by_pk_project_plans {
   __typename: "project_plan";
   id: any;
+  project_id: any;
+  cover_url: string | null;
+  title: string;
+  description: string;
+  list_price: any;
+  sale_price: any | null;
+  sold_at: any | null;
+  discount_down_price: any;
+  is_subscription: boolean;
+  period_amount: any | null;
+  /**
+   * Y / M / W / D
+   */
+  period_type: string | null;
+  position: number | null;
+  is_participants_visible: boolean;
+  is_physical: boolean;
+  is_limited: boolean;
+  published_at: any | null;
+  auto_renewed: boolean;
   /**
    * An aggregated array relationship
    */
@@ -10983,7 +11005,7 @@ export interface GET_PROJECT_ADMIN_project_by_pk {
   /**
    * image / video
    */
-  cover_type: string | null;
+  cover_type: string;
   cover_url: string | null;
   preview_url: string | null;
   is_participants_visible: boolean;

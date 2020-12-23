@@ -17,6 +17,7 @@ import {
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import ProjectBasicForm from '../../components/project/ProjectBasicForm'
 import ProjectIntroForm from '../../components/project/ProjectIntroForm'
+import ProjectPlanAdminBlock from '../../components/project/ProjectPlanAdminBlock'
 import { useApp } from '../../contexts/AppContext'
 import { commonMessages, projectMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -82,11 +83,7 @@ const ProjectAdminPage: React.FC<{}> = () => {
             <Tabs.TabPane key="salesPlan" tab={formatMessage(commonMessages.label.salesPlan)}>
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(commonMessages.label.salesPlan)}</AdminPaneTitle>
-                {/* <ProjectSalesPlanAdminBlock
-                  projectAdmin={projectAdmin}
-                  onRefetch={refetchProjectAdmin}
-                  onChangeTab={() => setActiveKey('tickets')}
-                /> */}
+                <ProjectPlanAdminBlock project={projectAdmin} onRefetch={refetchProjectAdmin} />
               </div>
             </Tabs.TabPane>
 
@@ -137,6 +134,23 @@ const useProjectAdmin = (projectId: string) => {
           }
           project_plans {
             id
+            project_id
+            cover_url
+            title
+            description
+            list_price
+            sale_price
+            sold_at
+            discount_down_price
+            is_subscription
+            period_amount
+            period_type
+            position
+            is_participants_visible
+            is_physical
+            is_limited
+            published_at
+            auto_renewed
             project_plan_enrollments_aggregate {
               aggregate {
                 count
@@ -180,6 +194,26 @@ const useProjectAdmin = (projectId: string) => {
           previewUrl: data.project_by_pk.preview_url,
           isParticipantsVisible: data.project_by_pk.is_participants_visible,
           isCountdownTimerVisible: data.project_by_pk.is_countdown_timer_visible,
+          projectPlan: data.project_by_pk.project_plans.map(v => ({
+            id: v.id,
+            projectId: v.project_id,
+            coverUrl: v.cover_url,
+            title: v.title,
+            description: v.description,
+            listPrice: v.list_price,
+            salePrice: v.sale_price,
+            soldAt: v.sold_at,
+            discountDownPrice: v.discount_down_price,
+            isSubscription: v.is_subscription,
+            periodAmount: v.period_amount,
+            periodType: v.period_type,
+            position: v.position,
+            isParticipantsVisible: v.is_participants_visible,
+            isPhysical: v.is_physical,
+            isLimited: v.is_limited,
+            publishedAt: v.published_at,
+            autoRenewed: v.auto_renewed,
+          })),
           categories: data.project_by_pk.project_categories.map(v => ({ id: v.category.id, name: v.category.name })),
         }
 

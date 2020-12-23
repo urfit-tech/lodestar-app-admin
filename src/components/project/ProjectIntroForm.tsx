@@ -45,7 +45,10 @@ const ProjectIntroForm: React.FC<{
     updateProjectCover({
       variables: {
         projectId: project.id,
-        coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}?t=${uploadTime}`,
+        previewUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}?t=${uploadTime}`,
+        coverUrl: project.coverUrl
+          ? project.coverUrl
+          : `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}?t=${uploadTime}`,
       },
     })
       .then(() => {
@@ -58,12 +61,14 @@ const ProjectIntroForm: React.FC<{
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
+    console.log(values)
     updateProjectIntro({
       variables: {
         projectId: project.id,
         abstract: values.abstract,
         introduction: values.introduction?.getCurrentContent().hasText() ? values.introduction.toRAW() : null,
         coverUrl: values.coverUrl,
+        type: values.coverUrl ? 'video' : 'image',
       },
     })
       .then(() => {
@@ -130,17 +135,23 @@ const ProjectIntroForm: React.FC<{
 }
 
 const UPDATE_PROJECT_COVER = gql`
-  mutation UPDATE_PROJECT_COVER($projectId: uuid!, $coverUrl: String) {
-    update_project(where: { id: { _eq: $projectId } }, _set: { preview_url: $coverUrl }) {
+  mutation UPDATE_PROJECT_COVER($projectId: uuid!, $previewUrl: String, $coverUrl: String) {
+    update_project(where: { id: { _eq: $projectId } }, _set: { preview_url: $previewUrl, cover_url: $coverUrl }) {
       affected_rows
     }
   }
 `
 const UPDATE_PROJECT_INTRO = gql`
-  mutation UPDATE_PROJECT_INTRO($projectId: uuid!, $abstract: String, $introduction: String, $coverUrl: String) {
+  mutation UPDATE_PROJECT_INTRO(
+    $projectId: uuid!
+    $abstract: String
+    $introduction: String
+    $coverUrl: String
+    $type: String
+  ) {
     update_project(
       where: { id: { _eq: $projectId } }
-      _set: { abstract: $abstract, introduction: $introduction, cover_url: $coverUrl }
+      _set: { abstract: $abstract, introduction: $introduction, cover_url: $coverUrl, type: $type }
     ) {
       affected_rows
     }
