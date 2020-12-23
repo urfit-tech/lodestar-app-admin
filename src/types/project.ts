@@ -23,6 +23,7 @@ export type ProjectAdminProps = {
   previewUrl: string | null
   isParticipantsVisible: boolean
   isCountdownTimerVisible: boolean
+  projectPlan: ProjectPlanProps[]
 }
 
 export type ProjectPreviewProps = {
@@ -36,4 +37,25 @@ export type ProjectPreviewProps = {
   coverUrl: string | null
   previewUrl: string | null
   totalCount: number
+}
+
+export type ProjectPlanProps = {
+  id: string
+  projectId: string
+  coverUrl: string | null
+  title: string
+  description: string
+  listPrice: number
+  salePrice: number
+  soldAt: Date | null
+  discountDownPrice: number
+  isSubscription: boolean
+  periodAmount: number | null
+  periodType: string | null
+  position: number | null
+  isParticipantsVisible: boolean
+  isPhysical: boolean
+  isLimited: boolean
+  publishedAt: Date | null
+  autoRenewed: boolean
 }

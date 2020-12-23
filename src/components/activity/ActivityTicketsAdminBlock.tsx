@@ -4,7 +4,7 @@ import { Button, Dropdown, Menu, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import { activityMessages, commonMessages } from '../../helpers/translation'
+import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ActivityAdminProps } from '../../types/activity'
 import ActivityTicket from './ActivityTicket'
@@ -36,7 +36,7 @@ const ActivityTicketsAdminBlock: React.FC<{
       <ActivityTicketAdminModal
         renderTrigger={({ setVisible }) => (
           <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)} className="mb-5">
-            {formatMessage(activityMessages.ui.createTicketPlan)}
+            {formatMessage(commonMessages.ui.createPlan)}
           </Button>
         )}
         icon={<FileAddOutlined />}

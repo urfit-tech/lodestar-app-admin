@@ -60,6 +60,7 @@ export const commonMessages = {
     uploadFile: { id: 'common.ui.uploadFile', defaultMessage: '上傳檔案' },
     copy: { id: 'common.ui.copy', defaultMessage: '複製' },
     jumpTo: { id: 'common.ui.jumpTo', defaultMessage: '前往填寫' },
+    createPlan: { id: 'common.ui.createPlan', defaultMessage: '建立方案' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -175,6 +176,7 @@ export const commonMessages = {
     amountDollar: { id: 'common.label.amountDollar', defaultMessage: '{amount} 元' },
     amountParticipants: { id: 'common.label.amountParticipants', defaultMessage: '{amount} 人' },
     introductionVideo: { id: 'common.label.introductionVideo', defaultMessage: '介紹影片' },
+    planTitle: { id: 'common.label.planTitle', defaultMessage: '方案名稱' },
   }),
   term: defineMessages({
     assign: { id: 'common.term.assign', defaultMessage: '指派' },
@@ -428,7 +430,6 @@ export const activityMessages = {
     threshold: { id: 'activity.ui.threshold', defaultMessage: '最少' },
     createSession: { id: 'activity.ui.createSession', defaultMessage: '建立場次' },
     addTicketPlan: { id: 'activity.ui.addTicketPlan', defaultMessage: '加入票券方案' },
-    createTicketPlan: { id: 'activity.ui.createTicketPlan', defaultMessage: '建立方案' },
   }),
   label: defineMessages({
     showParticipantsNumber: { id: 'activity.label.showParticipantsNumber', defaultMessage: '顯示人數' },
@@ -443,9 +444,6 @@ export const activityMessages = {
 }
 
 export const appointmentMessages = {
-  ui: defineMessages({
-    createPlan: { id: 'appointment.ui.createPlan', defaultMessage: '建立方案' },
-  }),
   term: defineMessages({
     period: { id: 'appointment.term.period', defaultMessage: '時段' },
     planTitle: { id: 'appointment.term.planTitle', defaultMessage: '方案名稱' },
@@ -689,7 +687,6 @@ export const programPackageMessages = {
   ui: defineMessages({
     createProgramPackage: { id: 'programPackage.ui.createProgramPackage', defaultMessage: '建立課程組合' },
     connectProgram: { id: 'programPackage.ui.connectProgram', defaultMessage: '加入課程' },
-    createPlan: { id: 'programPackage.ui.createPlan', defaultMessage: '建立方案' },
     editPlan: { id: 'programPackage.ui.editPlan', defaultMessage: '編輯方案' },
   }),
   label: defineMessages({

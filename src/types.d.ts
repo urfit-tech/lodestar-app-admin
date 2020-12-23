@@ -4933,6 +4933,7 @@ export interface UPDATE_PROJECT_COVER {
 
 export interface UPDATE_PROJECT_COVERVariables {
   projectId: any;
+  previewUrl?: string | null;
   coverUrl?: string | null;
 }
 
@@ -4965,6 +4966,7 @@ export interface UPDATE_PROJECT_INTROVariables {
   abstract?: string | null;
   introduction?: string | null;
   coverUrl?: string | null;
+  type?: string | null;
 }
 
 /* tslint:disable */
@@ -10513,6 +10515,26 @@ export interface GET_PROJECT_ADMIN_project_by_pk_project_plans_project_plan_enro
 export interface GET_PROJECT_ADMIN_project_by_pk_project_plans {
   __typename: "project_plan";
   id: any;
+  project_id: any;
+  cover_url: string | null;
+  title: string;
+  description: string;
+  list_price: any;
+  sale_price: any | null;
+  sold_at: any | null;
+  discount_down_price: any;
+  is_subscription: boolean;
+  period_amount: any | null;
+  /**
+   * Y / M / W / D
+   */
+  period_type: string | null;
+  position: number | null;
+  is_participants_visible: boolean;
+  is_physical: boolean;
+  is_limited: boolean;
+  published_at: any | null;
+  auto_renewed: boolean;
   /**
    * An aggregated array relationship
    */
@@ -10558,7 +10580,7 @@ export interface GET_PROJECT_ADMIN_project_by_pk {
   /**
    * image / video
    */
-  cover_type: string | null;
+  cover_type: string;
   cover_url: string | null;
   preview_url: string | null;
   is_participants_visible: boolean;
@@ -12934,6 +12956,7 @@ export enum project_plan_constraint {
  * update columns of table "project_plan"
  */
 export enum project_plan_update_column {
+  auto_renewed = "auto_renewed",
   cover_url = "cover_url",
   created_at = "created_at",
   deliverables = "deliverables",
@@ -24541,6 +24564,7 @@ export interface project_plan_bool_exp {
   _and?: (project_plan_bool_exp | null)[] | null;
   _not?: project_plan_bool_exp | null;
   _or?: (project_plan_bool_exp | null)[] | null;
+  auto_renewed?: Boolean_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   deliverables?: String_comparison_exp | null;
@@ -24581,6 +24605,7 @@ export interface project_plan_enrollment_bool_exp {
  * input type for inserting data into table "project_plan"
  */
 export interface project_plan_insert_input {
+  auto_renewed?: boolean | null;
   cover_url?: string | null;
   created_at?: any | null;
   deliverables?: string | null;

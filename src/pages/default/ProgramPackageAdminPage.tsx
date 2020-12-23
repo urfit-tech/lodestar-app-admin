@@ -107,10 +107,10 @@ const ProgramPackageAdminPage: React.FC = () => {
               <ProgramPackagePlanAdminModal
                 programPackageId={programPackageId}
                 onRefetch={refetch}
-                title={formatMessage(programPackageMessages.ui.createPlan)}
+                title={formatMessage(commonMessages.ui.createPlan)}
                 renderTrigger={({ setVisible }) => (
                   <Button type="primary" icon={<FileAddOutlined />} onClick={() => setVisible(true)}>
-                    {formatMessage(programPackageMessages.ui.createPlan)}
+                    {formatMessage(commonMessages.ui.createPlan)}
                   </Button>
                 )}
               />
