@@ -116,6 +116,7 @@ const ItemsSortingModal: <T extends { id: string; title: string }>(
               handlerClassName="draggable-items"
               actions={[
                 <StyledSelect
+                  key={sortingItem.id}
                   value={sortingItemIndex + 1}
                   showArrow={false}
                   bordered={false}
