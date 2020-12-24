@@ -4636,34 +4636,6 @@ export interface UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION
-// ====================================================
-
-export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION_insert_program_package_program {
-  __typename: "program_package_program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION {
-  /**
-   * insert data into the table: "program_package_program"
-   */
-  insert_program_package_program: UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION_insert_program_package_program | null;
-}
-
-export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTIONVariables {
-  data: program_package_program_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_AVAILABLE_PROGRAM_COLLECTION
 // ====================================================
 
@@ -4703,16 +4675,16 @@ export interface INSERT_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program {
   affected_rows: number;
 }
 
-export interface INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program {
-  __typename: "program_package_program_mutation_response";
+export interface INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_tempo_delivery {
+  __typename: "program_tempo_delivery_mutation_response";
   /**
    * number of affected rows by the mutation
    */
   affected_rows: number;
 }
 
-export interface INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_tempo_delivery {
-  __typename: "program_tempo_delivery_mutation_response";
+export interface INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program {
+  __typename: "program_package_program_mutation_response";
   /**
    * number of affected rows by the mutation
    */
@@ -4725,13 +4697,13 @@ export interface INSERT_PROGRAM_PACKAGE_PROGRAM {
    */
   insert_program_package_program: INSERT_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program | null;
   /**
-   * delete data from the table: "program_package_program"
-   */
-  delete_program_package_program: INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program | null;
-  /**
    * delete data from the table: "program_tempo_delivery"
    */
   delete_program_tempo_delivery: INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_tempo_delivery | null;
+  /**
+   * delete data from the table: "program_package_program"
+   */
+  delete_program_package_program: INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program | null;
 }
 
 export interface INSERT_PROGRAM_PACKAGE_PROGRAMVariables {
@@ -10253,6 +10225,34 @@ export interface GET_CREATOR_PROGRAM_ISSUESVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION
+// ====================================================
+
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION_insert_program_package_program {
+  __typename: "program_package_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION {
+  /**
+   * insert data into the table: "program_package_program"
+   */
+  insert_program_package_program: UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION_insert_program_package_program | null;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTIONVariables {
+  data: program_package_program_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_PACKAGE
 // ====================================================
 
@@ -11131,6 +11131,7 @@ export enum member_contract_update_column {
   ended_at = "ended_at",
   id = "id",
   member_id = "member_id",
+  options = "options",
   revocation_values = "revocation_values",
   revoked_at = "revoked_at",
   started_at = "started_at",
@@ -12590,6 +12591,7 @@ export enum project_plan_constraint {
  * update columns of table "project_plan"
  */
 export enum project_plan_update_column {
+  auto_renewed = "auto_renewed",
   cover_url = "cover_url",
   created_at = "created_at",
   deliverables = "deliverables",
@@ -17109,6 +17111,7 @@ export interface member_contract_bool_exp {
   id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   revocation_values?: jsonb_comparison_exp | null;
   revoked_at?: timestamptz_comparison_exp | null;
   started_at?: timestamptz_comparison_exp | null;
@@ -17128,6 +17131,7 @@ export interface member_contract_insert_input {
   id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
+  options?: any | null;
   revocation_values?: any | null;
   revoked_at?: any | null;
   started_at?: any | null;
@@ -24195,6 +24199,7 @@ export interface project_plan_bool_exp {
   _and?: (project_plan_bool_exp | null)[] | null;
   _not?: project_plan_bool_exp | null;
   _or?: (project_plan_bool_exp | null)[] | null;
+  auto_renewed?: Boolean_comparison_exp | null;
   cover_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   deliverables?: String_comparison_exp | null;
@@ -24235,6 +24240,7 @@ export interface project_plan_enrollment_bool_exp {
  * input type for inserting data into table "project_plan"
  */
 export interface project_plan_insert_input {
+  auto_renewed?: boolean | null;
   cover_url?: string | null;
   created_at?: any | null;
   deliverables?: string | null;

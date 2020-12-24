@@ -8,7 +8,7 @@ import { useIntl } from 'react-intl'
 import { Link, useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { AdminPageTitle, EmptyBlock } from '../../components/admin'
-import PositionAdminLayout, { OverlayBlock, OverlayWrapper } from '../../components/admin/PositionAdminLayout'
+import { OverlayBlock, OverlayWrapper } from '../../components/admin/PositionAdminLayout'
 import { AvatarImage } from '../../components/common/Image'
 import ItemsSortingModal from '../../components/common/ItemsSortingModal'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
@@ -260,51 +260,33 @@ const ProgramCollectionBlock: React.FC<{
         </div>
       )}
 
-      <PositionAdminLayout<ProgramPreviewProps>
-        value={programPreviews}
-        onChange={value => {
-          updatePositions({
-            variables: {
-              data: value.map((program, index) => ({
-                app_id: appId,
-                id: program.id,
-                title: program.title,
-                is_subscription: program.isSubscription,
-                position: index,
-              })),
-            },
-          })
-            .then(() => refetchProgramPreviews())
-            .catch(handleError)
-        }}
-        renderItem={(program, currentIndex, moveTarget) => (
-          <div key={program.id} className="col-12 col-md-6 col-lg-4 mb-5">
-            <AvatarPlaceHolder className="mb-3">
-              {program.instructors[0] ? (
-                <div className="d-flex align-items-center">
-                  <AvatarImage size="32px" src={program.instructors[0].avatarUrl || ''} />
-                  <span className="pl-2">{program.instructors[0].name}</span>
-                </div>
-              ) : (
-                formatMessage(programMessages.text.noAssignedInstructor)
-              )}
-            </AvatarPlaceHolder>
+      {programPreviews.map(program => (
+        <div key={program.id} className="col-12 col-md-6 col-lg-4 mb-5">
+          <AvatarPlaceHolder className="mb-3">
+            {program.instructors[0] ? (
+              <div className="d-flex align-items-center">
+                <AvatarImage size="32px" src={program.instructors[0].avatarUrl || ''} />
+                <span className="pl-2">{program.instructors[0].name}</span>
+              </div>
+            ) : (
+              formatMessage(programMessages.text.noAssignedInstructor)
+            )}
+          </AvatarPlaceHolder>
 
-            <OverlayWrapper>
-              <ProgramAdminCard {...program} />
-              <OverlayBlock>
-                <div>
-                  <Link to={`/programs/${program.id}`}>
-                    <StyledButton block icon={<EditOutlined />}>
-                      {formatMessage(programMessages.ui.editProgram)}
-                    </StyledButton>
-                  </Link>
-                </div>
-              </OverlayBlock>
-            </OverlayWrapper>
-          </div>
-        )}
-      />
+          <OverlayWrapper>
+            <ProgramAdminCard {...program} />
+            <OverlayBlock>
+              <div>
+                <Link to={`/programs/${program.id}`}>
+                  <StyledButton block icon={<EditOutlined />}>
+                    {formatMessage(programMessages.ui.editProgram)}
+                  </StyledButton>
+                </Link>
+              </div>
+            </OverlayBlock>
+          </OverlayWrapper>
+        </div>
+      ))}
 
       {loadMorePrograms && (
         <div className="text-center" style={{ width: '100%' }}>

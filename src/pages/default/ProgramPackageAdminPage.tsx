@@ -114,7 +114,6 @@ const ProgramPackageAdminPage: React.FC = () => {
               <ProgramPackageProgramCollectionBlock
                 programPackageId={programPackageId}
                 programs={programPackage?.programs || []}
-                onRefetch={refetch}
               />
             </div>
           </Tabs.TabPane>

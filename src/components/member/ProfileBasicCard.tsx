@@ -9,7 +9,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
-import { useCategory, useTags } from '../../hooks/data'
+import { useCategory } from '../../hooks/data'
 import { useMember } from '../../hooks/member'
 import DefaultAvatarImage from '../../images/default/avatar.svg'
 import types from '../../types'
@@ -46,7 +46,6 @@ const ProfileBasicCard: React.FC<
   const { id: appId } = useApp()
   const { member, refetchMember } = useMember(memberId)
   const { categories } = useCategory('creator')
-  const { tags } = useTags()
 
   const [updateMemberAvatar] = useMutation<types.UPDATE_MEMBER_AVATAR, types.UPDATE_MEMBER_AVATARVariables>(
     UPDATE_MEMBER_AVATAR,
