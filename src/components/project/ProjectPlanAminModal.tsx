@@ -10,9 +10,9 @@ import { commonMessages, errorMessages, projectMessages } from '../../helpers/tr
 import { PeriodType } from '../../types/general'
 import { ProjectPlanProps } from '../../types/project'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
+import ImageUploader from '../common/ImageUploader'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import CurrencyInput from '../form/CurrencyInput'
-import ImageInput from '../form/ImageInput'
 import PeriodSelector from '../form/PeriodSelector'
 import SaleInput, { SaleProps } from '../form/SaleInput'
 
@@ -63,6 +63,7 @@ const ProjectPlanAdminModal: React.FC<
   const [withAutoRenewed, setWithAutoRenewed] = useState(!!projectPlan?.autoRenewed)
 
   const [loading, setLoading] = useState(false)
+  const [coverImage, setCoverImage] = useState<File | null>(null)
 
   const handleUpdateCover = () => {
     setLoading(true)
@@ -138,7 +139,7 @@ const ProjectPlanAdminModal: React.FC<
         hideRequiredMark
         initialValues={{
           title: projectPlan?.title,
-          isPublished: !!projectPlan?.publishedAt,
+          isPublished: projectPlan?.publishedAt ? !!projectPlan?.publishedAt : null,
           listPrice: projectPlan?.listPrice,
           sale: projectPlan?.soldAt
             ? {
@@ -167,16 +168,7 @@ const ProjectPlanAdminModal: React.FC<
         </Form.Item>
 
         <Form.Item label={<span>{formatMessage(projectMessages.label.projectCover)}</span>}>
-          <ImageInput
-            path={`project_plan_covers/${appId}/`}
-            image={{
-              width: '160px',
-              ratio: 9 / 16,
-              shape: 'rounded',
-            }}
-            value={projectPlan?.coverUrl}
-            onChange={() => handleUpdateCover()}
-          />
+          <ImageUploader file={coverImage} onChange={file => setCoverImage(file)} />
         </Form.Item>
 
         <Form.Item label={formatMessage(messages.isContinued)} name="isOnSale">
