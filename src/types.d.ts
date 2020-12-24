@@ -4640,34 +4640,6 @@ export interface UPDATE_PROGRAM_PACKAGE_PLAN_POSITION_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION
-// ====================================================
-
-export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION_insert_program_package_program {
-  __typename: "program_package_program_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION {
-  /**
-   * insert data into the table: "program_package_program"
-   */
-  insert_program_package_program: UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION_insert_program_package_program | null;
-}
-
-export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTIONVariables {
-  data: program_package_program_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_AVAILABLE_PROGRAM_COLLECTION
 // ====================================================
 
@@ -4707,16 +4679,16 @@ export interface INSERT_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program {
   affected_rows: number;
 }
 
-export interface INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program {
-  __typename: "program_package_program_mutation_response";
+export interface INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_tempo_delivery {
+  __typename: "program_tempo_delivery_mutation_response";
   /**
    * number of affected rows by the mutation
    */
   affected_rows: number;
 }
 
-export interface INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_tempo_delivery {
-  __typename: "program_tempo_delivery_mutation_response";
+export interface INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program {
+  __typename: "program_package_program_mutation_response";
   /**
    * number of affected rows by the mutation
    */
@@ -4729,13 +4701,13 @@ export interface INSERT_PROGRAM_PACKAGE_PROGRAM {
    */
   insert_program_package_program: INSERT_PROGRAM_PACKAGE_PROGRAM_insert_program_package_program | null;
   /**
-   * delete data from the table: "program_package_program"
-   */
-  delete_program_package_program: INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program | null;
-  /**
    * delete data from the table: "program_tempo_delivery"
    */
   delete_program_tempo_delivery: INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_tempo_delivery | null;
+  /**
+   * delete data from the table: "program_package_program"
+   */
+  delete_program_package_program: INSERT_PROGRAM_PACKAGE_PROGRAM_delete_program_package_program | null;
 }
 
 export interface INSERT_PROGRAM_PACKAGE_PROGRAMVariables {
@@ -10445,6 +10417,34 @@ export interface GET_CREATOR_PROGRAM_ISSUESVariables {
   threadIdLike?: string | null;
   unsolved?: boolean | null;
   memberId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION
+// ====================================================
+
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION_insert_program_package_program {
+  __typename: "program_package_program_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION {
+  /**
+   * insert data into the table: "program_package_program"
+   */
+  insert_program_package_program: UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION_insert_program_package_program | null;
+}
+
+export interface UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTIONVariables {
+  data: program_package_program_insert_input[];
 }
 
 /* tslint:disable */

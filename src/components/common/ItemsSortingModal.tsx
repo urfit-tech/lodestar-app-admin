@@ -61,8 +61,10 @@ const ItemsSortingModal: <T extends { id: string; title: string }>(
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
   const [sortingItems, setSortingItems] = useState(items)
+
   useEffect(() => {
     setSortingItems(items)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(items)])
 
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
