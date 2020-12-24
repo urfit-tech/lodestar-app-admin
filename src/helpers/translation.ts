@@ -61,6 +61,7 @@ export const commonMessages = {
     copy: { id: 'common.ui.copy', defaultMessage: '複製' },
     jumpTo: { id: 'common.ui.jumpTo', defaultMessage: '前往填寫' },
     createPlan: { id: 'common.ui.createPlan', defaultMessage: '建立方案' },
+    uploadImage: { id: 'common.ui.uploadImage', defaultMessage: '上傳圖片' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
