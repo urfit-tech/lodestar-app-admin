@@ -1,5 +1,7 @@
 import { ArrowLeftOutlined, FileAddOutlined } from '@ant-design/icons'
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Tabs } from 'antd'
+import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useParams } from 'react-router-dom'
@@ -12,6 +14,7 @@ import {
   AdminPaneTitle,
   AdminTabBarWrapper,
 } from '../../components/admin'
+import ItemsSortingModal from '../../components/common/ItemsSortingModal'
 import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import ProgramPackageBasicForm from '../../components/programPackage/ProgramPackageBasicFrom'
 import ProgramPackageDescriptionForm from '../../components/programPackage/ProgramPackageDescriptionForm'
@@ -21,8 +24,10 @@ import ProgramPackageProgramCollectionBlock from '../../components/programPackag
 import ProgramPackageProgramConnectionModal from '../../components/programPackage/ProgramPackageProgramConnectionModal'
 import ProgramPackagePublishBlock from '../../components/programPackage/ProgramPackagePublishBlock'
 import { useApp } from '../../contexts/AppContext'
-import { commonMessages, programPackageMessages } from '../../helpers/translation'
+import { handleError } from '../../helpers'
+import { commonMessages, programMessages, programPackageMessages } from '../../helpers/translation'
 import { useGetProgramPackage } from '../../hooks/programPackage'
+import types from '../../types'
 
 const ProgramPackageAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -30,6 +35,10 @@ const ProgramPackageAdminPage: React.FC = () => {
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
   const { settings } = useApp()
   const { programPackage, refetch } = useGetProgramPackage(programPackageId)
+  const [updatePosition] = useMutation<
+    types.UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION,
+    types.UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTIONVariables
+  >(UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION)
 
   return (
     <>
@@ -64,18 +73,44 @@ const ProgramPackageAdminPage: React.FC = () => {
           <Tabs.TabPane key="programs" tab={formatMessage(programPackageMessages.label.program)}>
             <div className="container py-5">
               <AdminPaneTitle>{formatMessage(programPackageMessages.label.program)}</AdminPaneTitle>
+              <div className="d-flex justify-content-between align-items-center">
+                <ProgramPackageProgramConnectionModal
+                  programPackageId={programPackageId}
+                  programs={
+                    programPackage?.programs.map(program => ({
+                      id: program.program.id,
+                      title: program.program.title,
+                      programPackageProgramId: program.id,
+                    })) || []
+                  }
+                  onRefetch={refetch}
+                />
+                <ItemsSortingModal
+                  items={
+                    programPackage?.programs.map(program => ({
+                      id: program.id,
+                      title: program.program.title,
+                      programId: program.program.id,
+                    })) || []
+                  }
+                  triggerText={formatMessage(programMessages.ui.sortProgram)}
+                  onSubmit={values =>
+                    updatePosition({
+                      variables: {
+                        data: values.map((value, index) => ({
+                          id: value.id,
+                          program_id: value.programId,
+                          program_package_id: programPackageId,
+                          position: index,
+                        })),
+                      },
+                    })
+                      .then(() => refetch())
+                      .catch(handleError)
+                  }
+                />
+              </div>
 
-              <ProgramPackageProgramConnectionModal
-                programPackageId={programPackageId}
-                programs={
-                  programPackage?.programs.map(program => ({
-                    id: program.program.id,
-                    title: program.program.title,
-                    programPackageProgramId: program.id,
-                  })) || []
-                }
-                onRefetch={refetch}
-              />
               <ProgramPackageProgramCollectionBlock
                 programPackageId={programPackageId}
                 programs={programPackage?.programs || []}
@@ -137,5 +172,16 @@ const ProgramPackageAdminPage: React.FC = () => {
     </>
   )
 }
+
+const UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION = gql`
+  mutation UPDATE_PROGRAM_PACKAGE_PROGRAM_POSITION_COLLECTION($data: [program_package_program_insert_input!]!) {
+    insert_program_package_program(
+      objects: $data
+      on_conflict: { constraint: program_package_program_pkey, update_columns: position }
+    ) {
+      affected_rows
+    }
+  }
+`
 
 export default ProgramPackageAdminPage

@@ -1,22 +1,15 @@
-import Icon from '@ant-design/icons'
+import { EyeOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Popover, Typography } from 'antd'
+import { Button, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { commonMessages, programPackageMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
-import { ReactComponent as MoveIcon } from '../../images/icon/move.svg'
 import types from '../../types'
 import { ProgramPackageProgramProps } from '../../types/programPackage'
-import PositionAdminLayout, {
-  OverlayBlock,
-  OverlayList,
-  OverlayListContent,
-  OverlayListItem,
-  OverlayWrapper,
-} from '../admin/PositionAdminLayout'
+import PositionAdminLayout, { OverlayBlock, OverlayWrapper } from '../admin/PositionAdminLayout'
 
 const StyledButton = styled(Button)`
   && {
@@ -75,42 +68,11 @@ const ProgramPackageProgramCollectionBlock: React.FC<{
               <StyledCover src={program.program.coverUrl} className="mb-3" />
               <OverlayBlock>
                 <div>
-                  <Popover
-                    placement="bottomLeft"
-                    content={
-                      <OverlayList
-                        header={formatMessage(commonMessages.label.currentPosition, {
-                          position: currentIndex + 1,
-                        })}
-                      >
-                        <OverlayListContent>
-                          {programs.map((program, index) => (
-                            <OverlayListItem
-                              key={program.id}
-                              className={
-                                currentIndex === index ? 'active' : currentIndex > index ? 'hoverTop' : 'hoverBottom'
-                              }
-                              onClick={() => moveTarget(currentIndex, index)}
-                            >
-                              <span className="flex-shrink-0">{index + 1}</span>
-                              <span>
-                                {program.program.publishedAt
-                                  ? program.program.title
-                                  : `( ${formatMessage(programPackageMessages.status.unpublished)} ) ${
-                                      program.program.title
-                                    }`}
-                              </span>
-                            </OverlayListItem>
-                          ))}
-                        </OverlayListContent>
-                      </OverlayList>
-                    }
-                  >
-                    <StyledButton block>
-                      <Icon component={() => <MoveIcon />} />
-                      {formatMessage(commonMessages.ui.changePosition)}
+                  <a href={`/programs/${program.program.id}`} target="_blank" rel="noopener noreferrer">
+                    <StyledButton block icon={<EyeOutlined />}>
+                      {formatMessage(commonMessages.ui.check)}
                     </StyledButton>
-                  </Popover>
+                  </a>
                 </div>
               </OverlayBlock>
             </OverlayWrapper>

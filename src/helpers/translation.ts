@@ -7,6 +7,7 @@ export const commonMessages = {
 
   ui: defineMessages({
     comma: { id: 'common.ui.comma', defaultMessage: '、' },
+    check: { id: 'common.ui.check', defaultMessage: '查看' },
     print: { id: 'common.ui.print', defaultMessage: '列印' },
     create: { id: 'common.ui.create', defaultMessage: '建立' },
     cancel: { id: 'common.ui.cancel', defaultMessage: '取消' },
@@ -669,6 +670,7 @@ export const programMessages = {
     reject: { id: 'program.ui.reject', defaultMessage: '退回案件' },
     approve: { id: 'program.ui.approve', defaultMessage: '審核通過' },
     addUrl: { id: 'program.ui.addUrl', defaultMessage: '新增網址' },
+    sortProgram: { id: 'program.ui.sortProgram', defaultMessage: '課程排序' }
   }),
 }
 

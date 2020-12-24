@@ -1,17 +1,16 @@
 import { DragOutlined } from '@ant-design/icons'
 import { Button, Select } from 'antd'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
-import { ProgramSortProps } from '../../pages/default/ProgramCollectionAdminPage'
-import AdminModal from '../admin/AdminModal'
-import DraggableItem from '../common/DraggableItem'
+import AdminModal, { AdminModalProps } from '../admin/AdminModal'
+import DraggableItem from './DraggableItem'
 
 const messages = defineMessages({
-  current: { id: 'program.label.current', defaultMessage: '目前' },
-  sortProgram: { id: 'program.ui.sortProgram', defaultMessage: '課程排序' },
+  current: { id: 'common.label.current', defaultMessage: '目前' },
+  sortItems: { id: 'common.ui.sortItems', defaultMessage: '排序' },
 })
 
 const StyledDraggableItem = styled(DraggableItem)`
@@ -37,7 +36,6 @@ const StyledReactSortableWrapper = styled.div`
     }
   }
 `
-
 const StyledSelectOptionWrapper = styled.div`
   & .ant-select-item {
     transition: all 0.08s;
@@ -51,21 +49,29 @@ const StyledSelectOptionWrapper = styled.div`
     }
   }
 `
-const ProgramCollectionStructureAdminModal: React.FC<{
-  programs: ProgramSortProps[]
-  onSubmit?: (value: ProgramSortProps[]) => Promise<any>
-}> = ({ programs, onSubmit, ...props }) => {
+
+type ItemsSortingModalProps<V> = AdminModalProps & {
+  items: V[]
+  triggerText?: string
+  onSubmit?: (value: V[]) => Promise<any>
+}
+const ItemsSortingModal: <T extends { id: string; title: string }>(
+  props: ItemsSortingModalProps<T>,
+) => React.ReactElement<ItemsSortingModalProps<T>> = ({ items, triggerText, onSubmit, ...props }) => {
   const { formatMessage } = useIntl()
   const [loading, setLoading] = useState(false)
-  const [sortingPrograms, setSortingPrograms] = useState(programs)
+  const [sortingItems, setSortingItems] = useState(items)
+  useEffect(() => {
+    setSortingItems(items)
+  }, [JSON.stringify(items)])
 
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
-    if (!programs.length) {
+    if (!items.length) {
       setVisible(false)
       return
     }
     setLoading(true)
-    onSubmit?.(sortingPrograms)
+    onSubmit?.(sortingItems)
       .then(() => {
         setVisible(false)
       })
@@ -78,10 +84,10 @@ const ProgramCollectionStructureAdminModal: React.FC<{
     <AdminModal
       renderTrigger={({ setVisible }) => (
         <Button type="link" icon={<DragOutlined />} onClick={() => setVisible(true)}>
-          {formatMessage(messages.sortProgram)}
+          {triggerText || formatMessage(messages.sortItems)}
         </Button>
       )}
-      title={formatMessage(messages.sortProgram)}
+      title={formatMessage(messages.sortItems)}
       footer={null}
       renderFooter={({ setVisible }) => (
         <div className="mt-4">
@@ -97,55 +103,50 @@ const ProgramCollectionStructureAdminModal: React.FC<{
     >
       <StyledReactSortableWrapper>
         <ReactSortable
-          handle=".draggable-content"
-          list={sortingPrograms}
+          handle=".draggable-items"
+          list={sortingItems}
           ghostClass="hoverBackground"
-          setList={newSections => {
-            setSortingPrograms(newSections)
-          }}
+          setList={setSortingItems}
         >
-          {sortingPrograms.map((sortingProgram, sortingProgramIndex) => (
+          {sortingItems.map((sortingItem, sortingItemIndex) => (
             <StyledDraggableItem
-              key={sortingProgram.id}
+              key={sortingItem.id}
               className="mb-2"
-              dataId={sortingProgram.id}
-              handlerClassName="draggable-content"
+              dataId={sortingItem.id}
+              handlerClassName="draggable-items"
               actions={[
                 <StyledSelect
-                  value={sortingProgramIndex + 1}
+                  key={sortingItem.id}
+                  value={sortingItemIndex + 1}
                   showArrow={false}
                   bordered={false}
                   onSelect={position => {
-                    const cloneData = sortingPrograms.slice()
-                    cloneData.splice(Number(sortingProgramIndex), 1)
-                    cloneData.splice(Number(position) - 1, 0, sortingProgram)
-                    setSortingPrograms(cloneData)
+                    const cloneData = sortingItems.slice()
+                    cloneData.splice(Number(sortingItemIndex), 1)
+                    cloneData.splice(Number(position) - 1, 0, sortingItem)
+                    setSortingItems(cloneData)
                   }}
                   optionLabelProp="label"
                   dropdownStyle={{ minWidth: '120px', borderRadius: '4px' }}
                   dropdownRender={menu => <StyledSelectOptionWrapper>{menu}</StyledSelectOptionWrapper>}
                 >
-                  {Array.from(Array(sortingPrograms.length).keys()).map((value, index) => (
+                  {Array.from(Array(sortingItems.length).keys()).map((value, index) => (
                     <Select.Option
                       className={
-                        sortingProgramIndex === index
-                          ? 'active'
-                          : sortingProgramIndex > index
-                          ? 'hoverTop'
-                          : 'hoverBottom'
+                        sortingItemIndex === index ? 'active' : sortingItemIndex > index ? 'hoverTop' : 'hoverBottom'
                       }
                       key={value}
                       value={value + 1}
                       label={value + 1}
                     >
                       <span>{value + 1}</span>
-                      {sortingProgramIndex === index ? `（${formatMessage(messages.current)}）` : ''}
+                      {sortingItemIndex === index ? `（${formatMessage(messages.current)}）` : ''}
                     </Select.Option>
                   ))}
                 </StyledSelect>,
               ]}
             >
-              {sortingProgram.title}
+              {sortingItem.title}
             </StyledDraggableItem>
           ))}
         </ReactSortable>
@@ -154,4 +155,4 @@ const ProgramCollectionStructureAdminModal: React.FC<{
   )
 }
 
-export default ProgramCollectionStructureAdminModal
+export default ItemsSortingModal
