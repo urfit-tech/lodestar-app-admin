@@ -10644,6 +10644,7 @@ export interface GET_PROGRAM_PREVIEW_COLLECTION {
 
 export interface GET_PROGRAM_PREVIEW_COLLECTIONVariables {
   condition: program_bool_exp;
+  orderBy: program_order_by[];
   limit: number;
 }
 
@@ -24014,6 +24015,50 @@ export interface program_on_conflict {
   constraint: program_constraint;
   update_columns: program_update_column[];
   where?: program_bool_exp | null;
+}
+
+/**
+ * ordering options when selecting data from "program"
+ */
+export interface program_order_by {
+  abstract?: order_by | null;
+  app?: app_order_by | null;
+  app_id?: order_by | null;
+  cover_url?: order_by | null;
+  cover_video_url?: order_by | null;
+  created_at?: order_by | null;
+  description?: order_by | null;
+  editors_aggregate?: program_editor_aggregate_order_by | null;
+  id?: order_by | null;
+  in_advance?: order_by | null;
+  is_countdown_timer_visible?: order_by | null;
+  is_deleted?: order_by | null;
+  is_issues_open?: order_by | null;
+  is_private?: order_by | null;
+  is_sold_out?: order_by | null;
+  is_subscription?: order_by | null;
+  list_price?: order_by | null;
+  package_items_aggregate?: package_item_aggregate_order_by | null;
+  position?: order_by | null;
+  program_announcements_aggregate?: program_announcement_aggregate_order_by | null;
+  program_approval_status?: program_approval_status_order_by | null;
+  program_approvals_aggregate?: program_approval_aggregate_order_by | null;
+  program_categories_aggregate?: program_category_aggregate_order_by | null;
+  program_content_enrollments_aggregate?: program_content_enrollment_aggregate_order_by | null;
+  program_content_progress_enrollments_aggregate?: program_content_progress_enrollment_aggregate_order_by | null;
+  program_content_sections_aggregate?: program_content_section_aggregate_order_by | null;
+  program_enrollments_aggregate?: program_enrollment_aggregate_order_by | null;
+  program_package_programs_aggregate?: program_package_program_aggregate_order_by | null;
+  program_plans_aggregate?: program_plan_aggregate_order_by | null;
+  program_related_items_aggregate?: program_related_item_aggregate_order_by | null;
+  program_roles_aggregate?: program_role_aggregate_order_by | null;
+  program_tags_aggregate?: program_tag_aggregate_order_by | null;
+  published_at?: order_by | null;
+  sale_price?: order_by | null;
+  sold_at?: order_by | null;
+  support_locales?: order_by | null;
+  title?: order_by | null;
+  updated_at?: order_by | null;
 }
 
 /**

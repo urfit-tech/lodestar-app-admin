@@ -60,6 +60,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
     key: string
     tab: string
     condition: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition']
+    orderBy?: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['orderBy']
     hidden?: boolean
     withSortingButton?: boolean
   }[] = [
@@ -110,6 +111,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
         is_private: { _eq: false },
         title: searchText ? { _like: `%${searchText}%` } : undefined,
       },
+      orderBy: [{ position: 'asc' as types.order_by }],
     },
     {
       key: 'privatelyPublish',
@@ -178,6 +180,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
               <ProgramCollectionBlock
                 appId={appId}
                 condition={tabContent.condition}
+                orderBy={tabContent?.orderBy}
                 withSortingButton={tabContent.withSortingButton}
                 onReady={count =>
                   count !== counts[tabContent.key] &&
@@ -197,9 +200,10 @@ const ProgramCollectionAdminPage: React.FC = () => {
 const ProgramCollectionBlock: React.FC<{
   appId: string
   condition: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition']
+  orderBy?: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['orderBy']
   withSortingButton?: boolean
   onReady?: (count: number) => void
-}> = ({ appId, condition, withSortingButton, onReady }) => {
+}> = ({ appId, condition, orderBy, withSortingButton, onReady }) => {
   const { formatMessage } = useIntl()
   const {
     loadingProgramPreviews,
@@ -208,7 +212,7 @@ const ProgramCollectionBlock: React.FC<{
     programPreviews,
     refetchProgramPreviews,
     loadMorePrograms,
-  } = useProgramPreviewCollection(condition)
+  } = useProgramPreviewCollection(condition, orderBy)
   const [updatePositions] = useMutation<
     types.UPDATE_PROGRAM_POSITION_COLLECTION,
     types.UPDATE_PROGRAM_POSITION_COLLECTIONVariables
@@ -305,13 +309,19 @@ const ProgramCollectionBlock: React.FC<{
   )
 }
 
-const useProgramPreviewCollection = (condition: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition']) => {
+const useProgramPreviewCollection = (
+  condition: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition'],
+  orderBy: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['orderBy'] = [
+    { updated_at: 'desc_nulls_last' as types.order_by },
+  ],
+) => {
   const { loading, error, data, refetch, fetchMore } = useQuery<
     types.GET_PROGRAM_PREVIEW_COLLECTION,
     types.GET_PROGRAM_PREVIEW_COLLECTIONVariables
   >(GET_PROGRAM_PREVIEW_COLLECTION, {
     variables: {
       condition,
+      orderBy,
       limit: 10,
     },
   })
@@ -357,7 +367,9 @@ const useProgramPreviewCollection = (condition: types.GET_PROGRAM_PREVIEW_COLLEC
             variables: {
               condition: {
                 ...condition,
-                updated_at: { _lt: data?.program.slice(-1)[0]?.updated_at },
+                ...(Object.keys(orderBy[0])[0] === 'position'
+                  ? { position: { _gt: data?.program.slice(-1)[0]?.position } }
+                  : { updated_at: { _lt: data?.program.slice(-1)[0]?.updated_at } }),
               },
               limit: 10,
             },
@@ -412,13 +424,13 @@ const useProgramSortCollection = (condition: types.GET_PROGRAM_PREVIEW_COLLECTIO
 }
 
 const GET_PROGRAM_PREVIEW_COLLECTION = gql`
-  query GET_PROGRAM_PREVIEW_COLLECTION($condition: program_bool_exp!, $limit: Int!) {
+  query GET_PROGRAM_PREVIEW_COLLECTION($condition: program_bool_exp!, $orderBy: [program_order_by!], $limit: Int!) {
     program_aggregate(where: $condition) {
       aggregate {
         count
       }
     }
-    program(where: $condition, order_by: [{ updated_at: desc_nulls_last }], limit: $limit) {
+    program(where: $condition, order_by: $orderBy, limit: $limit) {
       id
       cover_url
       title
