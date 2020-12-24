@@ -9643,18 +9643,26 @@ export interface DELETE_COIN_LOGVariables {
 // GraphQL query operation: GET_SALE_COLLECTION
 // ====================================================
 
-export interface GET_SALE_COLLECTION_member {
+export interface GET_SALE_COLLECTION_xuemi_sales_member {
   __typename: "member";
   id: string;
   name: string;
   username: string;
 }
 
+export interface GET_SALE_COLLECTION_xuemi_sales {
+  __typename: "xuemi_sales";
+  /**
+   * An object relationship
+   */
+  member: GET_SALE_COLLECTION_xuemi_sales_member | null;
+}
+
 export interface GET_SALE_COLLECTION {
   /**
-   * fetch data from the table: "member"
+   * fetch data from the table: "xuemi.sales"
    */
-  member: GET_SALE_COLLECTION_member[];
+  xuemi_sales: GET_SALE_COLLECTION_xuemi_sales[];
 }
 
 /* tslint:disable */
@@ -9799,8 +9807,8 @@ export interface GET_CONTRACT_PRODUCT_xuemi_product {
   name: string;
   price: any;
   addon_price: any | null;
-  coins: number;
   appointments: number;
+  coins: number;
 }
 
 export interface GET_CONTRACT_PRODUCT {

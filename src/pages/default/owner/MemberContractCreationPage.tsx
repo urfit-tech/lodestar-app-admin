@@ -18,7 +18,7 @@ import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import { sum } from 'lodash'
 import moment from 'moment'
-import { range } from 'ramda'
+import { range, uniqBy } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
@@ -147,7 +147,7 @@ const MemberContractForm: React.FC<{
   const memberBlockRef = useRef<HTMLDivElement | null>(null)
 
   const [memberContractUrl, setMemberContractUrl] = useState('')
-  const [selectedProjectPlanId, setSelectedProjectPlanId] = useState<string>('')
+  const [selectedProjectPlanId, setSelectedProjectPlanId] = useState('')
   const [startedAt, setStartedAt] = useState<Date>(moment().add(1, 'hour').startOf('hour').toDate())
   const [certificationPath, setCertificationPath] = useState('')
   const [referralMemberFilter, setReferralMemberFilter] = useState('')
@@ -286,8 +286,28 @@ const MemberContractForm: React.FC<{
       .validateFields()
       .then(() => {
         const values = form.getFieldsValue()
+
         if (identity === 'student' && !certificationPath) {
           message.warn('需上傳證明')
+          return
+        }
+
+        const orderExecutors: {
+          member_id: string
+          ratio: number
+        }[] = [
+          {
+            member_id: values.orderExecutorId || '',
+            ratio: values.orderExecutorRatio,
+          },
+          ...(values.orderExecutors?.map(orderExecutor => ({
+            member_id: orderExecutor.memberId || '',
+            ratio: orderExecutor.ratio || 0,
+          })) || []),
+        ].filter(v => v.member_id && v.ratio)
+
+        if (orderExecutors.length === 0 || sum(orderExecutors.map(v => v.ratio)) !== 1) {
+          message.warn('承辦人填寫錯誤')
           return
         }
 
@@ -326,7 +346,7 @@ const MemberContractForm: React.FC<{
 
           let times = 0
           const orderId = moment().format('YYYYMMDDHHmmssSSS') + `${times}`.padStart(2, '0')
-          const projectPlanName = ''
+          const projectPlanName = orderItems.filter(orderItem => orderItem.name).join('、')
 
           addMemberContract({
             variables: {
@@ -352,18 +372,7 @@ const MemberContractForm: React.FC<{
                 coinAmount: totalCoins,
                 projectPlanName,
                 projectPlanProductId: `ProjectPlan_${selectedProjectPlanId}`,
-                orderExecutors: [
-                  {
-                    member_id: values.orderExecutorId,
-                    ratio: values.orderExecutorRatio,
-                  },
-                  ...(values.orderExecutors
-                    .filter(orderExecutor => orderExecutor.memberId && orderExecutor.ratio)
-                    .map(orderExecutor => ({
-                      member_id: orderExecutor.memberId,
-                      ratio: orderExecutor.ratio,
-                    })) || []),
-                ],
+                orderExecutors,
                 paymentOptions: {
                   paymentMethod: values.paymentMethod,
                   installmentPlan: values.installmentPlan,
@@ -385,7 +394,9 @@ const MemberContractForm: React.FC<{
             .catch(err => message.error(`產生合約失敗，請確認資料是否正確。錯誤代碼：${err}`))
         }
       })
-      .catch(() => {})
+      .catch(error => {
+        process.env.NODE_ENV === 'development' && console.error(error)
+      })
   }
 
   return (
@@ -401,7 +412,7 @@ const MemberContractForm: React.FC<{
         orderExecutorRatio: 1,
       }}
       onValuesChange={(_, values) => {
-        setContractProducts(values.contractProducts)
+        setContractProducts(uniqBy(v => v.id, values.contractProducts || []))
       }}
     >
       <div ref={memberBlockRef}>
@@ -452,7 +463,11 @@ const MemberContractForm: React.FC<{
           </Form.Item>
         </Descriptions.Item>
         <Descriptions.Item label="合約效期">
-          <Form.Item className="mb-0" rules={[{ required: true, message: '請選擇合約效期' }]}>
+          <Form.Item
+            className="mb-0"
+            name="selectedProjectPlanId"
+            rules={[{ required: true, message: '請選擇合約效期' }]}
+          >
             <Select<string>
               style={{ width: 150 }}
               value={selectedProjectPlanId}
@@ -486,7 +501,7 @@ const MemberContractForm: React.FC<{
         <Form.List name="contractProducts">
           {(fields, { add, remove }) => {
             return (
-              <div>
+              <>
                 {fields.map((field, index) => {
                   const contractProduct = products.find(product => product.id === contractProducts[index]?.id)
 
@@ -496,7 +511,6 @@ const MemberContractForm: React.FC<{
                         name={[field.name, 'id']}
                         fieldKey={[field.fieldKey, 'id']}
                         label={index === 0 ? <StyledFieldLabel>項目名稱</StyledFieldLabel> : undefined}
-                        rules={[{ required: true }]}
                       >
                         <Select<string> className="mr-3" style={{ width: '250px' }}>
                           {products?.map(product => (
@@ -529,7 +543,7 @@ const MemberContractForm: React.FC<{
                 <Button icon={<PlusOutlined />} onClick={() => add({ amount: 1 })}>
                   新增項目
                 </Button>
-              </div>
+              </>
             )
           }}
         </Form.List>
@@ -574,6 +588,7 @@ const MemberContractForm: React.FC<{
         <Descriptions.Item label="介紹人">
           <Form.Item className="m-0">
             <Select<string>
+              allowClear
               showSearch
               filterOption={false}
               value={referralMemberId}
@@ -690,7 +705,7 @@ const MemberContractForm: React.FC<{
 
       <StyledOrder className="mb-5">
         {orderItems.map(orderItem => (
-          <div className="row mb-2">
+          <div key={orderItem.id} className="row mb-2">
             <div className="col-6 text-right">
               {orderItem.type === 'addonProduct'
                 ? '【加購項目】'
@@ -735,50 +750,24 @@ const useXuemiSales = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_SALE_COLLECTION>(
     gql`
       query GET_SALE_COLLECTION {
-        member(
-          where: {
-            _and: [
-              { app_id: { _eq: "xuemi" } }
-              {
-                id: {
-                  _nin: [
-                    "36fd9f57-8b10-448f-a4f9-0bed863fd6d6"
-                    "da47da06-0216-473d-a9f4-4c4c61bf527a"
-                    "3ef84eb1-440c-4a1e-bad5-8ec4f8db2da3"
-                    "e2b33255-5a91-48f1-a990-4c23481a69a4"
-                    "5d2d2ceb-cdfe-451f-8b5e-4b9f4647181f"
-                    "f1048043-b504-4688-8763-a81a1fe0ce0c"
-                    "fab0d8bc-77fe-4f7e-b5d0-bf363b594e9a"
-                    "a88cf509-a31b-4031-a82b-bbb69705e65f"
-                    "01ddcad1-10ba-41c9-866b-73de354db5f3"
-                    "ddd38d96-ce13-4ed9-a8cf-9b3ec0127cb8"
-                    "751409f3-2d93-4f2c-8864-3a697a44a272"
-                    "401c2f40-5b42-46d9-a0e6-90ec327d9d4a"
-                    "c22a2f4a-8975-4bff-9719-7c06aed30d2f"
-                    "35c76fb3-4426-4c7a-b157-a512bf5ab0c8"
-                    "7800c80f-cf2d-4c6b-8e0c-ced911b765ff"
-                    "61d34cbc-4253-41e7-b112-54eb3e962eba"
-                    "39cab75f-1976-429d-a919-f87ecff48da5"
-                  ]
-                }
-              }
-              { email: { _like: "%@xuemi.co%" } }
-            ]
+        xuemi_sales {
+          member {
+            id
+            name
+            username
           }
-        ) {
-          id
-          name
-          username
         }
       }
     `,
   )
 
   const xuemiSales =
-    data?.member.map(v => ({
-      id: v?.id || '',
-      name: v?.name || v?.username || '',
-    })) || []
+    data?.xuemi_sales
+      ?.map(v => ({
+        id: v.member?.id || '',
+        name: v.member?.name || v.member?.username || '',
+      }))
+      .filter(v => v.id && v.name) || []
 
   return {
     loading,
@@ -874,7 +863,17 @@ const GET_APPOINTMENT_PLAN_CREATORS = gql`
 `
 const GET_REFERRAL_MEMBER_COLLECTION = gql`
   query GET_REFERRAL_MEMBER_COLLECTION($condition: member_bool_exp) {
-    member(where: $condition, limit: 10) {
+    member(
+      where: {
+        _and: [
+          {
+            order_logs: { status: { _eq: "SUCCESS" }, payment_logs: { status: { _eq: "SUCCESS" }, price: { _gt: 0 } } }
+          }
+          $condition
+        ]
+      }
+      limit: 10
+    ) {
       id
       name
     }
