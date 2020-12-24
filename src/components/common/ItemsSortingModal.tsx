@@ -62,13 +62,8 @@ const ItemsSortingModal: <T extends { id: string; title: string }>(
   const [loading, setLoading] = useState(false)
   const [sortingItems, setSortingItems] = useState(items)
   useEffect(() => {
-    if (
-      items.length !== sortingItems.length ||
-      !items.every(item => sortingItems.some(sortingItem => sortingItem.id === item.id))
-    ) {
-      setSortingItems(items)
-    }
-  }, [items])
+    setSortingItems(items)
+  }, [JSON.stringify(items)])
 
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     if (!items.length) {
