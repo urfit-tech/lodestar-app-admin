@@ -1,12 +1,19 @@
 import { FileAddOutlined } from '@ant-design/icons'
-import { Button, Checkbox, Form, Input, Radio } from 'antd'
+import { useMutation } from '@apollo/react-hooks'
+import { Button, Checkbox, Form, Input, message, Radio } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import axios, { Canceler } from 'axios'
 import BraftEditor, { EditorState } from 'braft-editor'
-import React, { useState } from 'react'
+import gql from 'graphql-tag'
+import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { v4 as uuid } from 'uuid'
 import { useApp } from '../../contexts/AppContext'
+import { useAuth } from '../../contexts/AuthContext'
+import { handleError, uploadFile } from '../../helpers'
 import { commonMessages, errorMessages, projectMessages } from '../../helpers/translation'
+import types from '../../types'
 import { PeriodType } from '../../types/general'
 import { ProjectPlanProps } from '../../types/project'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
@@ -26,10 +33,10 @@ const StyledNotation = styled.div`
 `
 
 const messages = defineMessages({
-  isContinued: { id: 'project.label.isContinued', defaultMessage: '是否開賣' },
-  continued: { id: 'project.label.continued', defaultMessage: '發售，專案上架後立即開賣' },
-  discontinued: { id: 'project.label.discontinued', defaultMessage: '停售，此方案暫停對外銷售，並從專案中隱藏' },
-  numberOfPurchases: { id: 'project.label.numberOfPurchases', defaultMessage: '購買人數' },
+  isPublished: { id: 'project.label.isPublished', defaultMessage: '是否開賣' },
+  published: { id: 'project.label.published', defaultMessage: '發售，專案上架後立即開賣' },
+  unPublished: { id: 'project.label.unPublished', defaultMessage: '停售，此方案暫停對外銷售，並從專案中隱藏' },
+  isParticipantsVisible: { id: 'project.label.isParticipantsVisible', defaultMessage: '購買人數' },
   planDescription: { id: 'project.label.planDescription', defaultMessage: '方案描述' },
   saveProjectPlan: { id: 'project.ui.saveProjectPlan', defaultMessage: '儲存方案' },
 })
@@ -37,7 +44,9 @@ const messages = defineMessages({
 type FieldProps = {
   title: string
   isPublished: boolean
+  isParticipantsVisible: boolean
   period: { type: PeriodType; amount: number }
+  autoRenewed: boolean
   listPrice: number
   sale: SaleProps
   discountDownPrice?: number
@@ -54,9 +63,16 @@ const ProjectPlanAdminModal: React.FC<
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
-  // const [upsertProjectPlan] = useMutation<types.UPSERT_PROJECT_PLAN, types.UPSERT_PROJECT_PLANVariables>(
-  //   UPSERT_PROJECT_PLAN,
-  // )
+  const { authToken, apiHost } = useAuth()
+  const uploadCanceler = useRef<Canceler>()
+  const [upsertProjectPlan] = useMutation<types.UPSERT_PROJECT_PLAN, types.UPSERT_PROJECT_PLANVariables>(
+    UPSERT_PROJECT_PLAN,
+  )
+
+  const [updateProjectPlanCoverUrl] = useMutation<
+    types.UPDATE_PROJECT_PLAN_COVER_URL,
+    types.UPDATE_PROJECT_PLAN_COVER_URLVariables
+  >(UPDATE_PROJECT_PLAN_COVER_URL)
 
   const [withDiscountDownPrice, setWithDiscountDownPrice] = useState(!!projectPlan?.discountDownPrice)
   const [withPeriod, setWithPeriod] = useState(!!(projectPlan?.periodAmount && projectPlan?.periodType))
@@ -65,53 +81,63 @@ const ProjectPlanAdminModal: React.FC<
   const [loading, setLoading] = useState(false)
   const [coverImage, setCoverImage] = useState<File | null>(null)
 
-  const handleUpdateCover = () => {
-    setLoading(true)
-    const uploadTime = Date.now()
-    // updateProjectPlanCover({
-    //   variables: {
-    //     projectPlanId: projectPlan.id,
-    //     coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}?t=${uploadTime}`,
-    //   },
-    // })
-    //   .then(() => {
-    //     message.success(formatMessage(commonMessages.event.successfullySaved))
-    //     onRefetch?.()
-    //   })
-    //   .catch(handleError)
-    //   .finally(() => setLoading(false))
-  }
-
   const handleSubmit = (onSuccess: () => void) => {
     form
       .validateFields()
       .then(() => {
         setLoading(true)
         const values = form.getFieldsValue()
-        // upsertProjectPlan({
-        //   variables: {
-        //     id: projectPlan ? projectPlan.id : uuid(),
-        //     projectId,
-        //     title: values.title,
-        //     description: values.description.toRAW(),
-        //     listPrice: values.listPrice,
-        //     salePrice: values.sale ? values.sale.price : null,
-        //     soldAt: values.sale?.soldAt || null,
-        //     discountDownPrice: withDiscountDownPrice ? values.discountDownPrice : 0,
-        //     periodAmount: withPeriod ? values.period.amount : null,
-        //     periodType: withPeriod ? values.period.type : null,
-        //     autoRenewed: withPeriod ? withAutoRenewed : false,
-        //     publishedAt: values.isPublished ? new Date() : null,
-        //     isCountdownTimerVisible: !!values.sale?.isTimerVisible,
-        //   },
-        // })
-        //   .then(() => {
-        //     message.success(formatMessage(commonMessages.event.successfullySaved))
-        //     onSuccess()
-        //     onRefetch?.()
-        //   })
-        //   .catch(handleError)
-        //   .finally(() => setLoading(false))
+        const projectPlanId = projectPlan ? projectPlan.id : uuid()
+        upsertProjectPlan({
+          variables: {
+            id: projectPlanId,
+            projectId,
+            title: values.title,
+            publishedAt: values.isPublished ? new Date() : null,
+            isParticipantsVisible: values.isParticipantsVisible,
+            periodAmount: withPeriod ? values.period.amount : null,
+            periodType: withPeriod ? values.period.type : null,
+            autoRenewed: withPeriod ? withAutoRenewed : false,
+            listPrice: values.listPrice,
+            salePrice: values.sale ? values.sale.price : null,
+            soldAt: values.sale?.soldAt || null,
+            discountDownPrice: withDiscountDownPrice ? values.discountDownPrice : 0,
+            description: values.description.toRAW(),
+          },
+        })
+          .then(async () => {
+            if (coverImage) {
+              try {
+                await uploadFile(
+                  `project_covers/${appId}/${projectId}/${projectPlanId}`,
+                  coverImage,
+                  authToken,
+                  apiHost,
+                  {
+                    cancelToken: new axios.CancelToken(canceler => {
+                      uploadCanceler.current = canceler
+                    }),
+                  },
+                )
+              } catch (error) {
+                process.env.NODE_ENV === 'development' && console.log(error)
+                return error
+              }
+              updateProjectPlanCoverUrl({
+                variables: {
+                  id: projectPlanId,
+                  coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${projectId}/${projectPlanId}`,
+                },
+              })
+            }
+          })
+          .then(() => {
+            message.success(formatMessage(commonMessages.event.successfullySaved))
+            onSuccess()
+            onRefetch?.()
+          })
+          .catch(handleError)
+          .finally(() => setLoading(false))
       })
       .catch(() => {})
   }
@@ -139,7 +165,8 @@ const ProjectPlanAdminModal: React.FC<
         hideRequiredMark
         initialValues={{
           title: projectPlan?.title,
-          isPublished: projectPlan?.publishedAt ? !!projectPlan?.publishedAt : null,
+          isPublished: !!projectPlan?.publishedAt,
+          isParticipantsVisible: !!projectPlan?.isParticipantsVisible,
           listPrice: projectPlan?.listPrice,
           sale: projectPlan?.soldAt
             ? {
@@ -171,18 +198,18 @@ const ProjectPlanAdminModal: React.FC<
           <ImageUploader file={coverImage} onChange={file => setCoverImage(file)} />
         </Form.Item>
 
-        <Form.Item label={formatMessage(messages.isContinued)} name="isOnSale">
+        <Form.Item label={formatMessage(messages.isPublished)} name="isPublished">
           <Radio.Group>
             <Radio value={true} className="d-block">
-              {formatMessage(messages.continued)}
+              {formatMessage(messages.published)}
             </Radio>
             <Radio value={false} className="d-block">
-              {formatMessage(messages.discontinued)}
+              {formatMessage(messages.unPublished)}
             </Radio>
           </Radio.Group>
         </Form.Item>
 
-        <Form.Item label={formatMessage(messages.numberOfPurchases)} name="isPublished">
+        <Form.Item label={formatMessage(messages.isParticipantsVisible)} name="isParticipantsVisible">
           <Radio.Group>
             <Radio value={true} className="d-block">
               {formatMessage(commonMessages.status.visible)}
@@ -212,7 +239,18 @@ const ProjectPlanAdminModal: React.FC<
           </div>
         )}
 
-        <Form.Item label={formatMessage(commonMessages.term.listPrice)} name="listPrice">
+        <Form.Item
+          label={formatMessage(commonMessages.term.listPrice)}
+          name="listPrice"
+          rules={[
+            {
+              required: true,
+              message: formatMessage(errorMessages.form.isRequired, {
+                field: formatMessage(commonMessages.term.listPrice),
+              }),
+            },
+          ]}
+        >
           <CurrencyInput noLabel />
         </Form.Item>
 
@@ -220,7 +258,7 @@ const ProjectPlanAdminModal: React.FC<
           name="sale"
           rules={[{ validator: (rule, value, callback) => callback(value && !value.soldAt ? '' : undefined) }]}
         >
-          <SaleInput withTimer />
+          <SaleInput />
         </Form.Item>
 
         {withPeriod && withAutoRenewed && (
@@ -247,66 +285,69 @@ const ProjectPlanAdminModal: React.FC<
   )
 }
 
-// const UPSERT_PROJECT_PLAN = gql`
-//   mutation UPSERT_PROJECT_PLAN(
-//     $id: uuid!
-//     $projectId: uuid!
-//     $coverUrl: String!
-//     $title: String!
-//     $description: String!
-//     $listPrice: numeric!
-//     $salePrice: numeric
-//     $soldAt: timestamptz
-//     $discountDownPrice: numeric!
-//     $isSubscription: boolean
-//     $periodAmount: numeric
-//     $periodType: String
-//     $position: numeric
-//     $isParticipantsVisible: boolean
-//     $isPhysical: boolean
-//      $isLimited: boolean
-//     $publishedAt: Date | null
-//     $autoRenewed: boolean
-//   ) {
-//     insert_project_plan(
-//       objects: {
-//         id: $id
-//         project_id: $projectId
-//         coverUrl: $coverUrl
-//         title: $title
-//         description: $description
-//         list_price: $listPrice
-//         sale_price: $salePrice
-//         soldAt: $soldAt
-//         discount_down_price: $discountDownPrice
-//         is_subscription: $isSubscription
-//         period_amount: $periodAmount
-//         period_type: $periodType
-//         position: $position
-//         is_participants_visible: $isParticipantsVisible
-//         is_physical: $isPhysical
-//         published_at: $publishedAt
-//         auto_renewed: $autoRenewed
-//       }
-//         constraint: project_plan_pkey
-//         update_columns: [
-//           type
-//           title
-//           description
-//           list_price
-//           sale_price
-//           discount_down_price
-//           period_amount
-//           period_type
-//           sold_at
-//           currency_ida
-//           published_at
-//           auto_renewed
-//         ]
-//       }
-//     ) {
-//       affected_rows
-//     }
-//   }
-// `
+const UPDATE_PROJECT_PLAN_COVER_URL = gql`
+  mutation UPDATE_PROJECT_PLAN_COVER_URL($id: uuid!, $coverUrl: String) {
+    update_project_plan(where: { id: { _eq: $id } }, _set: { cover_url: $coverUrl }) {
+      affected_rows
+    }
+  }
+`
+
+const UPSERT_PROJECT_PLAN = gql`
+  mutation UPSERT_PROJECT_PLAN(
+    $id: uuid!
+    $projectId: uuid!
+    $coverUrl: String
+    $title: String!
+    $description: String!
+    $listPrice: numeric!
+    $salePrice: numeric
+    $soldAt: timestamptz
+    $discountDownPrice: numeric
+    $periodAmount: numeric
+    $periodType: String
+    $isParticipantsVisible: Boolean
+    $publishedAt: timestamptz
+    $autoRenewed: Boolean
+  ) {
+    insert_project_plan(
+      objects: {
+        id: $id
+        project_id: $projectId
+        cover_url: $coverUrl
+        title: $title
+        description: $description
+        list_price: $listPrice
+        sale_price: $salePrice
+        sold_at: $soldAt
+        discount_down_price: $discountDownPrice
+        period_amount: $periodAmount
+        period_type: $periodType
+        is_participants_visible: $isParticipantsVisible
+        published_at: $publishedAt
+        auto_renewed: $autoRenewed
+      }
+      on_conflict: {
+        constraint: project_plan_pkey
+        update_columns: [
+          title
+          cover_url
+          title
+          description
+          list_price
+          sale_price
+          sold_at
+          discount_down_price
+          period_amount
+          period_type
+          is_participants_visible
+          published_at
+          auto_renewed
+        ]
+      }
+    ) {
+      affected_rows
+    }
+  }
+`
 export default ProjectPlanAdminModal

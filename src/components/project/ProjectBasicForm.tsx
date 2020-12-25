@@ -7,7 +7,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
-import { commonMessages, projectMessages } from '../../helpers/translation'
+import { commonMessages, errorMessages, projectMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProjectAdminProps } from '../../types/project'
 import { BREAK_POINT } from '../common/Responsive'
@@ -136,10 +136,30 @@ const ProjectBasicForm: React.FC<{
               </Select.Option>
             </Select>
           </Form.Item>
-          <Form.Item name="targetAmount">
+          <Form.Item
+            name="targetAmount"
+            rules={[
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(projectMessages.label.fundingTerm),
+                }),
+              },
+            ]}
+          >
             <AmountInput unit={targetUnit} />
           </Form.Item>
-          <StyledFormItem name="expiredAt">
+          <StyledFormItem
+            name="expiredAt"
+            rules={[
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(projectMessages.label.expireAt),
+                }),
+              },
+            ]}
+          >
             <DatePicker
               style={{ width: '100%' }}
               format="YYYY-MM-DD HH:mm"

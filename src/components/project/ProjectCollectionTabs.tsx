@@ -42,7 +42,7 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
       tab: formatMessage(commonMessages.status.finished),
       condition: {
         type: { _eq: projectType },
-        expired_at: { _lte: 'now()' },
+        expired_at: { _lt: 'now()' },
         creator_id: { _eq: currentUserRole !== 'app-owner' ? currentMemberId : null },
       },
     },

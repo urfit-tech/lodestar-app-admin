@@ -1,7 +1,10 @@
 import { Button } from 'antd'
+import { title } from 'process'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import EmptyCover from '../../images/default/empty-cover.png'
+import { ProjectPlanProps } from '../../types/project'
 
 const messages = defineMessages({
   limited: { id: 'product.project.text.limited', defaultMessage: '限量' },
@@ -19,7 +22,8 @@ const StyledButton = styled(Button)`
   }
 `
 const StyledWrapper = styled.div`
-  background: white;
+  /* background: white; */
+  background: gray;
   overflow: hidden;
   border-radius: 4px;
   box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.15);
@@ -76,36 +80,39 @@ const StyledProjectPlanInfoBlock = styled.div<{ active?: boolean }>`
   }
 `
 
-const ProjectPlanCard: React.FC<{}> = ({}) => {
+const ProjectPlanCard: React.FC<{
+  projectId: string
+  projectPlan: ProjectPlanProps
+}> = ({ projectId, projectPlan }) => {
   const { formatMessage } = useIntl()
 
   return (
     <StyledWrapper>
-      {/* <CoverImage src={coverUrl || EmptyCover} />
+      <CoverImage src={projectPlan.coverUrl || EmptyCover} />
       <div className="p-4">
         <StyledTitle className="mb-3">{title}</StyledTitle>
 
         <div className="mb-3">
-          <PriceLabel
+          {/* <PriceLabel
             variant="full-detail"
             listPrice={listPrice}
             salePrice={(soldAt?.getTime() || 0) > Date.now() ? salePrice : undefined}
             downPrice={isSubscription && discountDownPrice > 0 ? discountDownPrice : undefined}
             periodAmount={periodAmount}
             periodType={periodType ? (periodType as PeriodType) : undefined}
-          />
+          /> */}
         </div>
 
-        {!isSubscription && periodType && (
+        {/* {!isSubscription && periodType && (
           <StyledPeriod className="mb-3">
             {formatMessage(messages.availableForLimitTime, {
               amount: periodAmount || 1,
               unit: <ShortenPeriodTypeLabel periodType={periodType as PeriodType} withQuantifier />,
             })}
           </StyledPeriod>
-        )}
+        )} */}
 
-        {(isLimited || isParticipantsVisible) && (
+        {/* {(isLimited || isParticipantsVisible) && (
           <StyledProjectPlanInfo
             className="mb-4"
             active={!isExpired && (!isLimited || Boolean(buyableQuantity && buyableQuantity > 0))}
@@ -118,14 +125,12 @@ const ProjectPlanCard: React.FC<{}> = ({}) => {
               )}
             </StyledProjectPlanInfoWrapper>
           </StyledProjectPlanInfo>
-        )}
+        )} */}
 
-        <StyledDescription className="mb-4">
-          <BraftContent>{description}</BraftContent>
-        </StyledDescription>
+        <StyledDescription className="mb-4">{/* <BraftContent>{description}</BraftContent> */}</StyledDescription>
 
         <div>
-          {isExpired ? (
+          {/* {isExpired ? (
             <span>{formatMessage(commonMessages.status.finished)}</span>
           ) : isLimited && !buyableQuantity ? (
             <span>{formatMessage(commonMessages.button.soldOut)}</span>
@@ -149,9 +154,9 @@ const ProjectPlanCard: React.FC<{}> = ({}) => {
                 salePrice={salePrice}
               />
             )
-          ) : null}
+          ) : null} */}
         </div>
-      </div> */}
+      </div>
     </StyledWrapper>
   )
 }
