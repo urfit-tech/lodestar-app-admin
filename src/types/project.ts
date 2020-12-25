@@ -76,7 +76,7 @@ export type ProjectPlanProps = {
   projectId: string
   coverUrl: string | null
   title: string
-  description: string
+  description: string | null
   listPrice: number
   salePrice: number
   soldAt: Date | null
@@ -90,4 +90,10 @@ export type ProjectPlanProps = {
   isLimited: boolean
   publishedAt: Date | null
   autoRenewed: boolean
+}
+
+export type ProjectSortProps = {
+  id: string
+  projectId: string
+  title: string
 }

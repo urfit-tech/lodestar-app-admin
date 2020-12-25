@@ -28,7 +28,7 @@ const ProjectAdminPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()
   const { projectId } = useParams<{ projectId: string }>()
   const [projectKey, setProjectKey] = useQueryParam('tab', StringParam)
-  const { settings } = useApp()
+  const { id: appId, settings } = useApp()
   const { loadingProjectAdmin, projectAdmin, refetchProjectAdmin } = useProjectAdmin(projectId)
 
   return (
