@@ -2,7 +2,7 @@ import { EditOutlined, FileAddOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Skeleton } from 'antd'
 import gql from 'graphql-tag'
-import React, { useRef, useState } from 'react'
+import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
@@ -28,17 +28,12 @@ const ProjectPlanAdminBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ projectId, project, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const [loading, setLoading] = useState(false)
-  const projectPlanAdminModalRef = useRef(null)
-
   const [updatePositions] = useMutation<
     types.UPDATE_PROJECT_PLAN_POSITION_COLLECTION,
     types.UPDATE_PROJECT_PLAN_POSITION_COLLECTIONVariables
   >(UPDATE_PROJECT_PLAN_POSITION_COLLECTION)
 
-  const { loadingProjectSorts, errorProjectSorts, projectSorts, refetchProjectSorts } = useProjectPlanSortCollection(
-    projectId,
-  )
+  const { projectSorts, refetchProjectSorts } = useProjectPlanSortCollection(projectId)
 
   if (!project) {
     return <Skeleton active />
