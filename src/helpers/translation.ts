@@ -683,7 +683,7 @@ export const programMessages = {
     reject: { id: 'program.ui.reject', defaultMessage: '退回案件' },
     approve: { id: 'program.ui.approve', defaultMessage: '審核通過' },
     addUrl: { id: 'program.ui.addUrl', defaultMessage: '新增網址' },
-    sortProgram: { id: 'program.ui.sortProgram', defaultMessage: '課程排序' }
+    sortProgram: { id: 'program.ui.sortProgram', defaultMessage: '課程排序' },
   }),
 }
 
@@ -715,6 +715,11 @@ export const projectMessages = {
     projectCover: { id: 'project.label.projectCover', defaultMessage: '專案封面' },
     projectAbstract: { id: 'project.label.projectAbstract', defaultMessage: '專案摘要' },
     projectContent: { id: 'project.label.projectContent', defaultMessage: '專案內容' },
+    expireAt: { id: 'project.label.expireAt', defaultMessage: '截止日' },
+  }),
+  ui: defineMessages({
+    sortProject: { id: 'project.ui.sortProject', defaultMessage: '方案排序' },
+    editProject: { id: 'project.ui.editProject', defaultMessage: '編輯方案' },
   }),
   text: defineMessages({
     noProject: { id: 'project.text.noProject', defaultMessage: '尚未有任何專案' },

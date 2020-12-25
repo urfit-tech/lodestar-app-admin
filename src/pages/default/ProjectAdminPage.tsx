@@ -27,7 +27,7 @@ const ProjectAdminPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()
   const { projectId } = useParams<{ projectId: string }>()
   const [projectKey, setProjectKey] = useQueryParam('tab', StringParam)
-  const { settings } = useApp()
+  const { id: appId, settings } = useApp()
   const { loadingProjectAdmin, projectAdmin, refetchProjectAdmin } = useProjectAdmin(projectId)
 
   return (
@@ -83,7 +83,7 @@ const ProjectAdminPage: React.FC<{}> = () => {
             <Tabs.TabPane key="salesPlan" tab={formatMessage(commonMessages.label.salesPlan)}>
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(commonMessages.label.salesPlan)}</AdminPaneTitle>
-                <ProjectPlanAdminBlock project={projectAdmin} onRefetch={refetchProjectAdmin} />
+                <ProjectPlanAdminBlock projectId={projectId} project={projectAdmin} onRefetch={refetchProjectAdmin} />
               </div>
             </Tabs.TabPane>
 

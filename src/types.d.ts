@@ -4947,6 +4947,131 @@ export interface UPDATE_PROJECT_INTROVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROJECT_PLAN_SORT_COLLECTION
+// ====================================================
+
+export interface GET_PROJECT_PLAN_SORT_COLLECTION_project_plan {
+  __typename: "project_plan";
+  id: any;
+  project_id: any;
+  title: string;
+}
+
+export interface GET_PROJECT_PLAN_SORT_COLLECTION {
+  /**
+   * fetch data from the table: "project_plan"
+   */
+  project_plan: GET_PROJECT_PLAN_SORT_COLLECTION_project_plan[];
+}
+
+export interface GET_PROJECT_PLAN_SORT_COLLECTIONVariables {
+  projectId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_PLAN_POSITION_COLLECTION
+// ====================================================
+
+export interface UPDATE_PROJECT_PLAN_POSITION_COLLECTION_insert_project_plan {
+  __typename: "project_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_PLAN_POSITION_COLLECTION {
+  /**
+   * insert data into the table: "project_plan"
+   */
+  insert_project_plan: UPDATE_PROJECT_PLAN_POSITION_COLLECTION_insert_project_plan | null;
+}
+
+export interface UPDATE_PROJECT_PLAN_POSITION_COLLECTIONVariables {
+  data: project_plan_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_PLAN_COVER_URL
+// ====================================================
+
+export interface UPDATE_PROJECT_PLAN_COVER_URL_update_project_plan {
+  __typename: "project_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_PLAN_COVER_URL {
+  /**
+   * update data of the table: "project_plan"
+   */
+  update_project_plan: UPDATE_PROJECT_PLAN_COVER_URL_update_project_plan | null;
+}
+
+export interface UPDATE_PROJECT_PLAN_COVER_URLVariables {
+  id: any;
+  coverUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPSERT_PROJECT_PLAN
+// ====================================================
+
+export interface UPSERT_PROJECT_PLAN_insert_project_plan {
+  __typename: "project_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_PROJECT_PLAN {
+  /**
+   * insert data into the table: "project_plan"
+   */
+  insert_project_plan: UPSERT_PROJECT_PLAN_insert_project_plan | null;
+}
+
+export interface UPSERT_PROJECT_PLANVariables {
+  id: any;
+  projectId: any;
+  coverUrl?: string | null;
+  title: string;
+  description: string;
+  listPrice: any;
+  salePrice?: any | null;
+  soldAt?: any | null;
+  discountDownPrice?: any | null;
+  periodAmount?: any | null;
+  periodType?: string | null;
+  isParticipantsVisible?: boolean | null;
+  publishedAt?: any | null;
+  autoRenewed?: boolean | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ORDER_LOG_EXPORT
 // ====================================================
 
@@ -7153,7 +7278,7 @@ export interface GET_PRODUCT_SIMPLE_project_plan_by_pk {
   id: any;
   title: string;
   cover_url: string | null;
-  list_price: any;
+  list_price: any | null;
   sale_price: any | null;
   sold_at: any | null;
   discount_down_price: any;
@@ -10518,8 +10643,8 @@ export interface GET_PROJECT_ADMIN_project_by_pk_project_plans {
   project_id: any;
   cover_url: string | null;
   title: string;
-  description: string;
-  list_price: any;
+  description: string | null;
+  list_price: any | null;
   sale_price: any | null;
   sold_at: any | null;
   discount_down_price: any;
@@ -19867,6 +19992,7 @@ export interface order_log_bool_exp {
   order_discounts?: order_discount_bool_exp | null;
   order_executors?: order_executor_bool_exp | null;
   order_products?: order_product_bool_exp | null;
+  order_status?: order_status_bool_exp | null;
   payment_logs?: payment_log_bool_exp | null;
   payment_model?: jsonb_comparison_exp | null;
   retried_at?: timestamptz_comparison_exp | null;
@@ -20013,6 +20139,7 @@ export interface order_log_order_by {
   order_discounts_aggregate?: order_discount_aggregate_order_by | null;
   order_executors_aggregate?: order_executor_aggregate_order_by | null;
   order_products_aggregate?: order_product_aggregate_order_by | null;
+  order_status?: order_status_order_by | null;
   payment_logs_aggregate?: payment_log_aggregate_order_by | null;
   payment_model?: order_by | null;
   retried_at?: order_by | null;
@@ -20398,6 +20525,33 @@ export interface order_product_var_samp_order_by {
 export interface order_product_variance_order_by {
   accumulated_errors?: order_by | null;
   price?: order_by | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "order_status". All fields are combined with a logical 'AND'.
+ */
+export interface order_status_bool_exp {
+  _and?: (order_status_bool_exp | null)[] | null;
+  _not?: order_status_bool_exp | null;
+  _or?: (order_status_bool_exp | null)[] | null;
+  member_id?: String_comparison_exp | null;
+  order_id?: String_comparison_exp | null;
+  order_log?: order_log_bool_exp | null;
+  order_products?: order_product_bool_exp | null;
+  payment_logs?: payment_log_bool_exp | null;
+  status?: String_comparison_exp | null;
+}
+
+/**
+ * ordering options when selecting data from "order_status"
+ */
+export interface order_status_order_by {
+  member_id?: order_by | null;
+  order_id?: order_by | null;
+  order_log?: order_log_order_by | null;
+  order_products_aggregate?: order_product_aggregate_order_by | null;
+  payment_logs_aggregate?: payment_log_aggregate_order_by | null;
+  status?: order_by | null;
 }
 
 /**
