@@ -368,7 +368,7 @@ const useProgramPreviewCollection = (
             variables: {
               condition: {
                 ...condition,
-                ...(Object.keys(orderBy[0])[0] === 'position'
+                ...(Object.keys(orderBy ? orderBy[0] : {})[0] === 'position'
                   ? { position: { _gt: data?.program.slice(-1)[0]?.position } }
                   : { updated_at: { _lt: data?.program.slice(-1)[0]?.updated_at } }),
               },
