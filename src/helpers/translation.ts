@@ -351,6 +351,7 @@ export const commonMessages = {
     members: { id: 'common.menu.members', defaultMessage: '會員列表' },
     memberCategory: { id: 'common.menu.memberCategory', defaultMessage: '會員分類' },
     memberProperties: { id: 'common.menu.memberProperties', defaultMessage: '自訂欄位' },
+    noteAdmin: {id: 'common.menu.noteAdmin', defaultMessage: '聯絡管理'},
     taskAdmin: { id: 'common.menu.taskAdmin', defaultMessage: '待辦管理' },
     tasks: { id: 'common.menu.tasks', defaultMessage: '待辦清單' },
     taskCategory: { id: 'common.menu.taskCategory', defaultMessage: '待辦分類' },

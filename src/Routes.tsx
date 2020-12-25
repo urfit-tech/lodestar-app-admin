@@ -251,6 +251,13 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     authenticated: true,
   },
 
+  // note
+  note_collection: {
+    path: '/notes',
+    pageName: 'NoteCollectionPage',
+    authenticated: true,
+  },
+
   // task
   task_collection: {
     path: '/tasks',

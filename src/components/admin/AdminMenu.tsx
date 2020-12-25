@@ -303,6 +303,13 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
         </Menu.SubMenu>
       )}
 
+      {enabledModules.member_note && currentUserRole === 'app-owner' && (
+        <Menu.Item key="note_collection">
+          <Icon component={() => <UsersIcon />} />
+          <span>{formatMessage(commonMessages.menu.noteAdmin)}</span>
+        </Menu.Item>
+      )}
+
       {enabledModules.member_task && (permissions.TASK_ADMIN || permissions.TASK_CATEGORY_ADMIN) && (
         <Menu.SubMenu
           key="owner_task_admin"
