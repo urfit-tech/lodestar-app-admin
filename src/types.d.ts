@@ -5254,6 +5254,131 @@ export interface GET_PROJECT_COLLECTIONVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROJECT_PLAN_SORT_COLLECTION
+// ====================================================
+
+export interface GET_PROJECT_PLAN_SORT_COLLECTION_project_plan {
+  __typename: "project_plan";
+  id: any;
+  project_id: any;
+  title: string;
+}
+
+export interface GET_PROJECT_PLAN_SORT_COLLECTION {
+  /**
+   * fetch data from the table: "project_plan"
+   */
+  project_plan: GET_PROJECT_PLAN_SORT_COLLECTION_project_plan[];
+}
+
+export interface GET_PROJECT_PLAN_SORT_COLLECTIONVariables {
+  projectId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_PLAN_POSITION_COLLECTION
+// ====================================================
+
+export interface UPDATE_PROJECT_PLAN_POSITION_COLLECTION_insert_project_plan {
+  __typename: "project_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_PLAN_POSITION_COLLECTION {
+  /**
+   * insert data into the table: "project_plan"
+   */
+  insert_project_plan: UPDATE_PROJECT_PLAN_POSITION_COLLECTION_insert_project_plan | null;
+}
+
+export interface UPDATE_PROJECT_PLAN_POSITION_COLLECTIONVariables {
+  data: project_plan_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_PLAN_COVER_URL
+// ====================================================
+
+export interface UPDATE_PROJECT_PLAN_COVER_URL_update_project_plan {
+  __typename: "project_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_PLAN_COVER_URL {
+  /**
+   * update data of the table: "project_plan"
+   */
+  update_project_plan: UPDATE_PROJECT_PLAN_COVER_URL_update_project_plan | null;
+}
+
+export interface UPDATE_PROJECT_PLAN_COVER_URLVariables {
+  id: any;
+  coverUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPSERT_PROJECT_PLAN
+// ====================================================
+
+export interface UPSERT_PROJECT_PLAN_insert_project_plan {
+  __typename: "project_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPSERT_PROJECT_PLAN {
+  /**
+   * insert data into the table: "project_plan"
+   */
+  insert_project_plan: UPSERT_PROJECT_PLAN_insert_project_plan | null;
+}
+
+export interface UPSERT_PROJECT_PLANVariables {
+  id: any;
+  projectId: any;
+  coverUrl?: string | null;
+  title: string;
+  description: string;
+  listPrice: any;
+  salePrice?: any | null;
+  soldAt?: any | null;
+  discountDownPrice?: any | null;
+  periodAmount?: any | null;
+  periodType?: string | null;
+  isParticipantsVisible?: boolean | null;
+  publishedAt?: any | null;
+  autoRenewed?: boolean | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_ORDER_LOG_EXPORT
 // ====================================================
 
