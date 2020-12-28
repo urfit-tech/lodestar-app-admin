@@ -53,20 +53,6 @@ const OrderExportModal: React.FC = () => {
 
   const [loading, setLoading] = useState(false)
 
-  const productTypeLabel: { [key: string]: string } = {
-    Program: formatMessage(commonMessages.product.program),
-    ProgramPlan: formatMessage(commonMessages.product.programPlan),
-    ProgramContent: formatMessage(commonMessages.product.programContent),
-    ProgramPackagePlan: formatMessage(commonMessages.product.programPackagePlan),
-    ProjectPlan: formatMessage(commonMessages.product.projectPlan),
-    Card: formatMessage(commonMessages.product.card),
-    ActivityTicket: formatMessage(commonMessages.product.activityTicket),
-    MerchandiseSpec: formatMessage(commonMessages.product.merchandiseSpec),
-    PodcastProgram: formatMessage(commonMessages.product.podcastProgram),
-    PodcastPlan: formatMessage(commonMessages.product.podcastPlan),
-    AppointmentPlan: formatMessage(commonMessages.product.appointmentPlan),
-  }
-
   const getOrderLogContent: (
     startedAt: Date,
     endedAt: Date,
@@ -200,6 +186,20 @@ const OrderExportModal: React.FC = () => {
         },
       })
 
+      const productTypeLabel: { [key: string]: string } = {
+        Program: formatMessage(commonMessages.product.program),
+        ProgramPlan: formatMessage(commonMessages.product.programPlan),
+        ProgramContent: formatMessage(commonMessages.product.programContent),
+        ProgramPackagePlan: formatMessage(commonMessages.product.programPackagePlan),
+        ProjectPlan: formatMessage(commonMessages.product.projectPlan),
+        Card: formatMessage(commonMessages.product.card),
+        ActivityTicket: formatMessage(commonMessages.product.activityTicket),
+        MerchandiseSpec: formatMessage(commonMessages.product.merchandiseSpec),
+        PodcastProgram: formatMessage(commonMessages.product.podcastProgram),
+        PodcastPlan: formatMessage(commonMessages.product.podcastPlan),
+        AppointmentPlan: formatMessage(commonMessages.product.appointmentPlan),
+      }
+
       const orderProducts: types.GET_ORDER_PRODUCT_EXPORT['order_product_export'] =
         orderProductExportResult.data?.order_product_export || []
 
@@ -231,7 +231,7 @@ const OrderExportModal: React.FC = () => {
 
       return data
     },
-    [client, enabledModules, formatMessage, productTypeLabel],
+    [client, enabledModules, formatMessage],
   )
 
   const getOrderDiscountContent: (
