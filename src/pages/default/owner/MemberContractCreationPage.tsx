@@ -1,4 +1,4 @@
-import { CloseOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
+import { CloseOutlined, MinusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import {
   Alert,
@@ -13,6 +13,7 @@ import {
   Select,
   Space,
   Tag,
+  Upload,
 } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
@@ -20,16 +21,14 @@ import { sum } from 'lodash'
 import moment from 'moment'
 import { range, uniqBy } from 'ramda'
 import React, { useRef, useState } from 'react'
-import { useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { v4 } from 'uuid'
 import { AdminBlock, AdminBlockTitle } from '../../../components/admin'
-import SingleUploader from '../../../components/form/SingleUploader'
 import DefaultLayout from '../../../components/layout/DefaultLayout'
 import { useApp } from '../../../contexts/AppContext'
-import { currencyFormatter, notEmpty } from '../../../helpers'
-import { commonMessages } from '../../../helpers/translation'
+import { useAuth } from '../../../contexts/AuthContext'
+import { currencyFormatter, handleError, notEmpty, uploadFile } from '../../../helpers'
 import types from '../../../types'
 import { PeriodType } from '../../../types/general'
 import LoadingPage from '../LoadingPage'
@@ -131,8 +130,8 @@ const MemberContractForm: React.FC<{
     }[]
   }
 }> = ({ member }) => {
-  const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
+  const { authToken, apiHost } = useAuth()
   const { id: appId } = useApp()
   const { xuemiSales } = useXuemiSales()
 
@@ -148,8 +147,7 @@ const MemberContractForm: React.FC<{
 
   const [memberContractUrl, setMemberContractUrl] = useState('')
   const [selectedProjectPlanId, setSelectedProjectPlanId] = useState('')
-  const [startedAt, setStartedAt] = useState<Date>(moment().add(1, 'hour').startOf('hour').toDate())
-  const [certificationPath, setCertificationPath] = useState('')
+  const [startedAt, setStartedAt] = useState<Date>(moment().add(1, 'day').startOf('day').toDate())
   const [referralMemberFilter, setReferralMemberFilter] = useState('')
   const [contractProducts, setContractProducts] = useState<
     {
@@ -159,7 +157,9 @@ const MemberContractForm: React.FC<{
   >([])
   const [withCreatorId, setWithCreatorId] = useState(false)
   const [identity, setIdentity] = useState<'normal' | 'student'>('normal')
+  const [certificationPath, setCertificationPath] = useState('')
   const [referralMemberId, setReferralMemberId] = useState('')
+  const [uploading, setUploading] = useState(false)
 
   const { data: dataReferralMembers } = useQuery<
     types.GET_REFERRAL_MEMBER_COLLECTION,
@@ -232,7 +232,7 @@ const MemberContractForm: React.FC<{
     })
   }
 
-  const referralDiscountPrice = referralMemberId ? (identity === 'student' ? 1800 : 2000) * -1 : 0
+  const referralDiscountPrice = referralMemberId ? 2000 * -1 : 0
   if (referralDiscountPrice) {
     orderItems.push({
       id: 'referralDiscount',
@@ -246,7 +246,9 @@ const MemberContractForm: React.FC<{
   }
 
   const studentDiscountPrice =
-    identity === 'student' ? sum(mainProducts.map(selectedProduct => selectedProduct.price)) * -0.1 : 0
+    identity === 'student' && certificationPath
+      ? (sum(mainProducts.map(mainProduct => mainProduct.price)) - referralDiscountPrice * mainProducts.length) * -0.1
+      : 0
   if (studentDiscountPrice) {
     orderItems.push({
       id: 'studentDiscount',
@@ -260,7 +262,9 @@ const MemberContractForm: React.FC<{
   }
 
   const groupDiscountPrice =
-    (sum(mainProducts.map(mainProduct => mainProduct.price)) + studentDiscountPrice + referralDiscountPrice) *
+    (sum(mainProducts.map(mainProduct => mainProduct.price)) +
+      referralDiscountPrice * mainProducts.length +
+      studentDiscountPrice) *
     (mainProducts.length < 2 ? 0 : mainProducts.length === 2 ? -0.1 : mainProducts.length === 3 ? -0.15 : -0.2)
   if (groupDiscountPrice) {
     orderItems.push({
@@ -346,7 +350,10 @@ const MemberContractForm: React.FC<{
 
           let times = 0
           const orderId = moment().format('YYYYMMDDHHmmssSSS') + `${times}`.padStart(2, '0')
-          const projectPlanName = orderItems.filter(orderItem => orderItem.name).join('、')
+          const projectPlanName = orderItems
+            .filter(orderItem => orderItem.name)
+            .map(orderItem => orderItem.name)
+            .join('、')
 
           addMemberContract({
             variables: {
@@ -576,13 +583,24 @@ const MemberContractForm: React.FC<{
             <Radio.Group value={identity} onChange={e => setIdentity(e.target.value)}>
               <Radio value="normal">一般</Radio>
               <Radio value="student">學生</Radio>
-              <SingleUploader
-                uploadText={formatMessage(commonMessages.ui.uploadCertification)}
-                path={`certification/${appId}/student_${member.id}`}
-                onSuccess={() => setCertificationPath(`certification/${appId}/student_${member.id}`)}
-              />
-              <span>{certificationPath}</span>
+
+              <Upload
+                showUploadList={false}
+                customRequest={({ file }) => {
+                  setUploading(true)
+                  uploadFile(`certification/${appId}/student_${member.id}`, file, authToken, apiHost)
+                    .then(() => setCertificationPath(file.name))
+                    .catch(handleError)
+                    .finally(() => setUploading(false))
+                }}
+                className={identity === 'normal' ? 'd-none' : undefined}
+              >
+                <Button icon={<UploadOutlined />} loading={uploading}>
+                  上傳證明
+                </Button>
+              </Upload>
             </Radio.Group>
+            <span className={identity === 'normal' ? 'd-none' : 'ml-3'}>{certificationPath}</span>
           </Form.Item>
         </Descriptions.Item>
         <Descriptions.Item label="介紹人">
@@ -641,7 +659,7 @@ const MemberContractForm: React.FC<{
                 showSearch
                 placeholder="承辦人"
                 style={{ width: '150px' }}
-                filterOption={(input, option) => option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                filterOption={(input, option) => option?.toLowerCase().indexOf(input.toLowerCase()) >= 0}
               >
                 {xuemiSales?.map(member => (
                   <Select.Option key={member.id} value={member.id}>
