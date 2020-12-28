@@ -6953,7 +6953,7 @@ export interface GET_PRODUCT_SIMPLE_project_plan_by_pk {
   id: any;
   title: string;
   cover_url: string | null;
-  list_price: any;
+  list_price: any | null;
   sale_price: any | null;
   sold_at: any | null;
   discount_down_price: any;
@@ -25474,6 +25474,7 @@ export interface project_plan_enrollment_bool_exp {
   _and?: (project_plan_enrollment_bool_exp | null)[] | null;
   _not?: project_plan_enrollment_bool_exp | null;
   _or?: (project_plan_enrollment_bool_exp | null)[] | null;
+  member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   project_plan?: project_plan_bool_exp | null;
   project_plan_id?: uuid_comparison_exp | null;

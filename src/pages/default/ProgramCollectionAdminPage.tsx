@@ -182,6 +182,7 @@ const ProgramCollectionAdminPage: React.FC = () => {
                 condition={tabContent.condition}
                 orderBy={tabContent?.orderBy}
                 withSortingButton={tabContent.withSortingButton}
+                memberId={currentUserRole === 'content-creator' ? currentMemberId : undefined}
                 onReady={count =>
                   count !== counts[tabContent.key] &&
                   setCounts({
@@ -202,8 +203,9 @@ const ProgramCollectionBlock: React.FC<{
   condition: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['condition']
   orderBy?: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['orderBy']
   withSortingButton?: boolean
+  memberId?: string
   onReady?: (count: number) => void
-}> = ({ appId, condition, orderBy, withSortingButton, onReady }) => {
+}> = ({ appId, condition, orderBy, withSortingButton, memberId, onReady }) => {
   const { formatMessage } = useIntl()
   const {
     loadingProgramPreviews,
@@ -212,7 +214,7 @@ const ProgramCollectionBlock: React.FC<{
     programPreviews,
     refetchProgramPreviews,
     loadMorePrograms,
-  } = useProgramPreviewCollection(condition, orderBy)
+  } = useProgramPreviewCollection(condition, orderBy, memberId)
   const [updatePositions] = useMutation<
     types.UPDATE_PROGRAM_POSITION_COLLECTION,
     types.UPDATE_PROGRAM_POSITION_COLLECTIONVariables
@@ -314,51 +316,55 @@ const useProgramPreviewCollection = (
   orderBy: types.GET_PROGRAM_PREVIEW_COLLECTIONVariables['orderBy'] = [
     { updated_at: 'desc_nulls_last' as types.order_by },
   ],
+  memberId?: string,
 ) => {
   const { loading, error, data, refetch, fetchMore } = useQuery<
     types.GET_PROGRAM_PREVIEW_COLLECTION,
     types.GET_PROGRAM_PREVIEW_COLLECTIONVariables
   >(GET_PROGRAM_PREVIEW_COLLECTION, {
     variables: {
-      condition,
+      condition: memberId
+        ? {
+            _and: [condition, { program_roles: { member_id: { _eq: memberId } } }],
+          }
+        : condition,
+      memberId,
       orderBy,
       limit: 10,
     },
   })
 
   const programPreviews: ProgramPreviewProps[] =
-    loading || error || !data
-      ? []
-      : data.program.map(program => {
-          const plan = program.program_plans[0]
+    data?.program.map(program => {
+      const plan = program.program_plans[0]
 
-          return {
-            id: program.id,
-            coverUrl: program.cover_url,
-            title: program.title,
-            abstract: program.abstract,
-            instructors: program.program_roles.map(programRole => ({
-              id: programRole.member?.id || '',
-              avatarUrl: programRole.member?.picture_url || null,
-              name: programRole.member?.name || programRole.member?.username || '',
-            })),
-            isSubscription: program.is_subscription,
-            listPrice: program.is_subscription ? (plan ? plan.list_price : null) : program.list_price,
-            salePrice: program.is_subscription
-              ? plan && plan.sold_at && new Date(plan.sold_at).getTime() > Date.now()
-                ? plan.sale_price
-                : null
-              : program.sold_at && new Date(program.sold_at).getTime() > Date.now()
-              ? program.sale_price
-              : null,
-            periodAmount: program.is_subscription && plan ? 1 : null,
-            periodType: program.is_subscription && plan ? (plan.period_type as ProgramPlanPeriodType) : null,
-            enrollment: program.is_subscription
-              ? sum(program.program_plans.map(plan => plan.program_plan_enrollments_aggregate.aggregate?.count || 0))
-              : program.program_enrollments_aggregate.aggregate?.count || 0,
-            isPrivate: program.is_private,
-          }
-        })
+      return {
+        id: program.id,
+        coverUrl: program.cover_url,
+        title: program.title,
+        abstract: program.abstract,
+        instructors: program.program_roles.map(programRole => ({
+          id: programRole.member?.id || '',
+          avatarUrl: programRole.member?.picture_url || null,
+          name: programRole.member?.name || programRole.member?.username || '',
+        })),
+        isSubscription: program.is_subscription,
+        listPrice: program.is_subscription ? plan?.list_price || null : program.list_price,
+        salePrice: program.is_subscription
+          ? plan?.sold_at && new Date(plan.sold_at).getTime() > Date.now()
+            ? plan.sale_price
+            : null
+          : program.sold_at && new Date(program.sold_at).getTime() > Date.now()
+          ? program.sale_price
+          : null,
+        periodAmount: program.is_subscription && plan ? 1 : null,
+        periodType: program.is_subscription && plan ? (plan.period_type as ProgramPlanPeriodType) : null,
+        enrollment: program.is_subscription
+          ? sum(program.program_plans.map(plan => plan.program_plan_enrollments_aggregate.aggregate?.count || 0))
+          : program.program_enrollments_aggregate.aggregate?.count || 0,
+        isPrivate: program.is_private,
+      }
+    }) || []
 
   const loadMorePrograms =
     (data?.program.length || 0) < (data?.program_aggregate.aggregate?.count || 0)
@@ -422,7 +428,6 @@ const useProgramSortCollection = (condition: types.GET_PROGRAM_PREVIEW_COLLECTIO
     refetchProgramSorts: refetch,
   }
 }
-
 const GET_PROGRAM_PREVIEW_COLLECTION = gql`
   query GET_PROGRAM_PREVIEW_COLLECTION($condition: program_bool_exp!, $orderBy: [program_order_by!], $limit: Int!) {
     program_aggregate(where: $condition) {
