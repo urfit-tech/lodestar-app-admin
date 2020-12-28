@@ -34,6 +34,7 @@ const ProjectIntroForm: React.FC<{
     UPDATE_PROJECT_INTRO,
   )
   const [loading, setLoading] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState()
 
   if (!project) {
     return <Skeleton active />
@@ -46,9 +47,10 @@ const ProjectIntroForm: React.FC<{
       variables: {
         projectId: project.id,
         previewUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}?t=${uploadTime}`,
-        coverUrl: project.coverUrl
-          ? project.coverUrl
-          : `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}?t=${uploadTime}`,
+        coverUrl:
+          project.coverUrl === null
+            ? `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}?t=${uploadTime}`
+            : project.coverUrl,
       },
     })
       .then(() => {
@@ -61,14 +63,15 @@ const ProjectIntroForm: React.FC<{
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
-    console.log(values)
     updateProjectIntro({
       variables: {
         projectId: project.id,
         abstract: values.abstract,
         introduction: values.introduction?.getCurrentContent().hasText() ? values.introduction.toRAW() : null,
-        coverUrl: values.coverUrl,
-        type: values.coverUrl ? 'video' : 'image',
+        coverUrl: values.coverUrl
+          ? values.coverUrl
+          : `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${project.id}?t=${Date.now()}`,
+        cover_type: values.coverUrl ? 'video' : 'image',
       },
     })
       .then(() => {
@@ -87,7 +90,7 @@ const ProjectIntroForm: React.FC<{
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 10 } }}
       initialValues={{
-        coverVideoUrl: project.coverType === 'video' ? project.coverUrl : '',
+        coverVideoUrl: project.coverType === 'video' ? project.previewUrl : project.coverUrl,
         abstract: project.abstract,
         introduction: BraftEditor.createEditorState(project.introduction),
       }}
@@ -147,11 +150,11 @@ const UPDATE_PROJECT_INTRO = gql`
     $abstract: String
     $introduction: String
     $coverUrl: String
-    $type: String
+    $cover_type: String
   ) {
     update_project(
       where: { id: { _eq: $projectId } }
-      _set: { abstract: $abstract, introduction: $introduction, cover_url: $coverUrl, type: $type }
+      _set: { abstract: $abstract, introduction: $introduction, cover_url: $coverUrl, cover_type: $cover_type }
     ) {
       affected_rows
     }

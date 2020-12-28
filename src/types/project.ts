@@ -1,7 +1,7 @@
 import { CategoryProps } from './general'
 
 export type ProjectDataType = 'funding' | 'pre-order' | 'on-sale' | 'modular'
-
+export type ProjectPlanPeriodType = 'D' | 'W' | 'M' | 'Y'
 export type ProjectAdminProps = {
   id: string
   title: string
@@ -37,6 +37,7 @@ export type ProjectPreviewProps = {
   coverUrl: string | null
   previewUrl: string | null
   totalCount: number
+  coverType: string | null
 }
 
 export type ProjectPlanProps = {
@@ -58,9 +59,13 @@ export type ProjectPlanProps = {
   isLimited: boolean
   publishedAt: Date | null
   autoRenewed: boolean
+  projectPlanEnrollment: number
 }
-
 export type ProjectSortProps = {
+  id: string
+  title: string
+}
+export type ProjectPlanSortProps = {
   id: string
   projectId: string
   title: string
