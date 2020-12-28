@@ -120,24 +120,14 @@ const ProductCreationModal: React.FC<
       >
         {withCreatorSelector && (
           <Form.Item
-            label={
-              creatorAppellation
-                ? formatMessage(commonMessages.label.selectCreatorAppellation, {
-                    creatorAppellation: creatorAppellation,
-                  })
-                : formatMessage(commonMessages.label.selectInstructor)
-            }
+            label={creatorAppellation || formatMessage(commonMessages.label.selectInstructor)}
             name="creatorId"
           >
             <ContentCreatorSelector />
           </Form.Item>
         )}
         <Form.Item
-          label={
-            customTitle
-              ? formatMessage(commonMessages.term.customTitle, { customTitle: customTitle })
-              : formatMessage(commonMessages.term.title)
-          }
+          label={customTitle || formatMessage(commonMessages.term.title)}
           name="title"
           rules={[
             {
