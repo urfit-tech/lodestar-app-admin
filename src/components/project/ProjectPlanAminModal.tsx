@@ -103,6 +103,7 @@ const ProjectPlanAdminModal: React.FC<
             soldAt: values.sale?.soldAt || null,
             discountDownPrice: withDiscountDownPrice ? values.discountDownPrice : 0,
             description: values.description.toRAW(),
+            coverUrl: projectPlan?.coverUrl ? projectPlan.coverUrl : null,
           },
         })
           .then(async () => {
@@ -126,7 +127,9 @@ const ProjectPlanAdminModal: React.FC<
               updateProjectPlanCoverUrl({
                 variables: {
                   id: projectPlanId,
-                  coverUrl: `https://${process.env.REACT_APP_S3_BUCKET}/project_covers/${appId}/${projectId}/${projectPlanId}`,
+                  coverUrl: `https://${
+                    process.env.REACT_APP_S3_BUCKET
+                  }/project_covers/${appId}/${projectId}/${projectPlanId}?t=${Date.now()}`,
                 },
               })
             }
@@ -195,7 +198,11 @@ const ProjectPlanAdminModal: React.FC<
         </Form.Item>
 
         <Form.Item label={<span>{formatMessage(projectMessages.label.projectCover)}</span>}>
-          <ImageUploader file={coverImage} onChange={file => setCoverImage(file)} />
+          <ImageUploader
+            file={coverImage}
+            initialCoverUrl={projectPlan ? projectPlan?.coverUrl : null}
+            onChange={file => setCoverImage(file)}
+          />
         </Form.Item>
 
         <Form.Item label={formatMessage(messages.isPublished)} name="isPublished">

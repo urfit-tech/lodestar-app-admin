@@ -1,34 +1,15 @@
-import { Button } from 'antd'
-import { title } from 'process'
+import { Typography } from 'antd'
+import Card, { CardProps } from 'antd/lib/card'
 import React from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { commonMessages } from '../../helpers/translation'
 import EmptyCover from '../../images/default/empty-cover.png'
-import { ProjectPlanProps } from '../../types/project'
+import { ProjectPlanPeriodType, ProjectPlanProps } from '../../types/project'
+import AdminCard from '../admin/AdminCard'
+import PriceLabel from '../common/PriceLabel'
+import { BraftContent } from '../common/StyledBraftEditor'
 
-const messages = defineMessages({
-  limited: { id: 'product.project.text.limited', defaultMessage: '限量' },
-  participants: { id: 'product.project.text.participants', defaultMessage: '參與者' },
-  availableForLimitTime: {
-    id: 'common.label.availableForLimitTime',
-    defaultMessage: '可觀看 {amount} {unit}',
-  },
-})
-
-const StyledButton = styled(Button)`
-  && {
-    margin-top: 20px;
-    width: 100%;
-  }
-`
-const StyledWrapper = styled.div`
-  /* background: white; */
-  background: gray;
-  overflow: hidden;
-  border-radius: 4px;
-  box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.15);
-  transition: box-shadow 0.2s ease-in-out;
-`
 const CoverImage = styled.div<{ src: string }>`
   padding-top: calc(100% / 3);
   background-image: url(${props => props.src});
@@ -41,123 +22,65 @@ const StyledTitle = styled.div`
   font-weight: bold;
   letter-spacing: 0.2px;
 `
-const StyledPeriod = styled.div`
-  color: ${props => props.theme['@primary-color']};
+const ExtraContentBlock = styled.div`
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  padding: 0 24px 24px 24px;
+  text-align: center;
 `
-const StyledDescription = styled.div`
-  color: var(--gray-darker);
-  font-size: 14px;
-  line-height: 1.57;
-  letter-spacing: 0.18px;
-`
-const StyledProjectPlanInfo = styled.div<{ active?: boolean }>`
-  display: inline-block;
-  border-radius: 4px;
-  background: ${props => (props.active ? `${props.theme['@primary-color']}19` : 'var(--gray-lighter)')};
-
-  .wrapper {
-    padding: 10px 0;
-    line-height: 12px;
-
-    div {
-    }
-  }
-`
-const StyledProjectPlanInfoWrapper = styled.div`
-  padding: 10px 0;
-  line-height: 12px;
-`
-const StyledProjectPlanInfoBlock = styled.div<{ active?: boolean }>`
-  display: inline-block;
-  line-height: 1;
-  font-size: 12px;
-  letter-spacing: 0.15px;
-  color: ${props => (props.active ? `${props.theme['@primary-color']}` : 'var(--gray-dark)')};
-  padding: 0 10px;
-
-  &:last-child:not(:first-child) {
-    border-left: 1px solid ${props => (props.active ? `${props.theme['@primary-color']}` : 'var(--gray-dark)')};
+const StyledOnSale = styled.div<{ status?: string }>`
+  ::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0 8px 2px 0;
+    background: ${props => (props.status === 'onSale' ? '#4ed1b3' : 'var(--gray)')};
   }
 `
 
-const ProjectPlanCard: React.FC<{
-  projectId: string
-  projectPlan: ProjectPlanProps
-}> = ({ projectId, projectPlan }) => {
+const ProjectPlanCard: React.FC<
+  {
+    projectPlan: ProjectPlanProps
+  } & CardProps
+> = ({ projectPlan, ...props }) => {
   const { formatMessage } = useIntl()
+  const isOnSale = (projectPlan.soldAt?.getTime() || 0) > Date.now()
 
   return (
-    <StyledWrapper>
-      <CoverImage src={projectPlan.coverUrl || EmptyCover} />
-      <div className="p-4">
-        <StyledTitle className="mb-3">{title}</StyledTitle>
-
-        <div className="mb-3">
-          {/* <PriceLabel
-            variant="full-detail"
-            listPrice={listPrice}
-            salePrice={(soldAt?.getTime() || 0) > Date.now() ? salePrice : undefined}
-            downPrice={isSubscription && discountDownPrice > 0 ? discountDownPrice : undefined}
-            periodAmount={periodAmount}
-            periodType={periodType ? (periodType as PeriodType) : undefined}
-          /> */}
-        </div>
-
-        {/* {!isSubscription && periodType && (
-          <StyledPeriod className="mb-3">
-            {formatMessage(messages.availableForLimitTime, {
-              amount: periodAmount || 1,
-              unit: <ShortenPeriodTypeLabel periodType={periodType as PeriodType} withQuantifier />,
-            })}
-          </StyledPeriod>
-        )} */}
-
-        {/* {(isLimited || isParticipantsVisible) && (
-          <StyledProjectPlanInfo
-            className="mb-4"
-            active={!isExpired && (!isLimited || Boolean(buyableQuantity && buyableQuantity > 0))}
-          >
-            <StyledProjectPlanInfoWrapper>
-              {isParticipantsVisible && (
-                <StyledProjectPlanInfoBlock
-                  active={!isExpired && (!isLimited || Boolean(buyableQuantity && buyableQuantity > 0))}
-                >{`${formatMessage(messages.participants)} ${projectPlanEnrollmentCount}`}</StyledProjectPlanInfoBlock>
-              )}
-            </StyledProjectPlanInfoWrapper>
-          </StyledProjectPlanInfo>
-        )} */}
-
-        <StyledDescription className="mb-4">{/* <BraftContent>{description}</BraftContent> */}</StyledDescription>
-
-        <div>
-          {/* {isExpired ? (
-            <span>{formatMessage(commonMessages.status.finished)}</span>
-          ) : isLimited && !buyableQuantity ? (
-            <span>{formatMessage(commonMessages.button.soldOut)}</span>
-          ) : isEnrolled === false ? (
-            isSubscription ? (
-              <SubscriptionPlanBlock
-                projectPlanId={id}
-                projectTitle={projectTitle}
-                title={title}
-                isPhysical={isPhysical}
-                listPrice={listPrice}
-                salePrice={salePrice}
+    <>
+      <AdminCard variant="projectPlan" cover={<CoverImage src={projectPlan.coverUrl || EmptyCover} />} {...props}>
+        <Card.Meta
+          title={<StyledTitle className="mb-2">{projectPlan.title}</StyledTitle>}
+          description={
+            <>
+              <PriceLabel
+                listPrice={projectPlan.listPrice}
+                salePrice={isOnSale ? projectPlan.salePrice : undefined}
+                downPrice={projectPlan.discountDownPrice || undefined}
+                periodAmount={1}
+                periodType={projectPlan.periodType as ProjectPlanPeriodType}
               />
-            ) : (
-              <PerpetualPlanBlock
-                projectPlanId={id}
-                projectTitle={projectTitle}
-                title={title}
-                isPhysical={isPhysical}
-                listPrice={listPrice}
-                salePrice={salePrice}
-              />
-            )
-          ) : null} */}
-        </div>
-      </div>
-    </StyledWrapper>
+              <Typography.Paragraph ellipsis={{ rows: 2 }} className="mt-4 mb-0">
+                <BraftContent>{projectPlan.description}</BraftContent>
+              </Typography.Paragraph>
+
+              <ExtraContentBlock className="d-flex justify-content-between">
+                <div>
+                  {formatMessage(commonMessages.label.amountParticipants, {
+                    amount: projectPlan.projectPlanEnrollment,
+                  })}
+                </div>
+                {isOnSale ? <StyledOnSale status="onSale">發售中</StyledOnSale> : <StyledOnSale>已停售</StyledOnSale>}
+              </ExtraContentBlock>
+            </>
+          }
+        />
+      </AdminCard>
+    </>
   )
 }
 
