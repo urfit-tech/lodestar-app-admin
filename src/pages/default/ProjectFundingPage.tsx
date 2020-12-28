@@ -44,10 +44,12 @@ const ProjectFundingPage: React.FC<{}> = () => {
                     memberId: creatorId || currentMemberId,
                     type: 'funding',
                   },
-                }).then(({ data }) => {
-                  const projectId = data?.insert_project?.returning[0]?.id
-                  projectId && history.push(`/projects/${projectId}`)
                 })
+                  .then(({ data }) => {
+                    const projectId = data?.insert_project?.returning[0]?.id
+                    projectId && history.push(`/projects/${projectId}`)
+                  })
+                  .catch(err => process.env.NODE_ENV === 'development' && console.error(err))
               }
             />
           </div>

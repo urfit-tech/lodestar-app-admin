@@ -126,7 +126,7 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'ProjectFundingPage',
     authenticated: true,
   },
-  project_pre_orderCollection: {
+  project_pre_order_collection: {
     path: '/project-pre-order',
     pageName: 'ProjectPreOrderPage',
     authenticated: true,

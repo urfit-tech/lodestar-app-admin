@@ -203,7 +203,6 @@ export const commonMessages = {
     video: { id: 'common.label.video', defaultMessage: '影片' },
     caption: { id: 'common.label.caption', defaultMessage: '字幕' },
     title: { id: 'common.term.title', defaultMessage: '名稱' },
-    customTitle: { id: 'common.term.customTitle', defaultMessage: '{customTitle}' },
     category: { id: 'common.term.category', defaultMessage: '分類' },
     tag: { id: 'common.term.tag', defaultMessage: '標籤' },
     startedAt: { id: 'common.term.startedAt', defaultMessage: '開始時間' },
