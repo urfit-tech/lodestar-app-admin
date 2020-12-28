@@ -1,15 +1,47 @@
-import { UserOutlined } from '@ant-design/icons'
+import { SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { DatePicker } from 'antd'
+import { Button, DatePicker, Input, Table, Tag, Typography } from 'antd'
+import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
 import { sum } from 'ramda'
-import React, { useState } from 'react'
-import { useIntl } from 'react-intl'
+import React, { useRef, useState } from 'react'
+import { defineMessages, useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { AdminPageTitle } from '../../components/admin'
+import AdminCard from '../../components/admin/AdminCard'
+import { AvatarImage } from '../../components/common/Image'
 import AdminLayout from '../../components/layout/AdminLayout'
-import { commonMessages } from '../../helpers/translation'
+import { useApp } from '../../contexts/AppContext'
+import { currencyFormatter, handleError } from '../../helpers'
+import { commonMessages, memberMessages } from '../../helpers/translation'
+import { useMutateMemberNote } from '../../hooks/member'
 import types from '../../types'
+
+const messages = defineMessages({
+  memberNoteCreatedAt: { id: 'member.label.memberNoteCreatedAt', defaultMessage: '聯絡時間' },
+  memberNoteAuthor: { id: 'member.label.memberNoteAuthor', defaultMessage: '聯絡者' },
+  memberNoteManager: { id: 'member.label.memberNoteManager', defaultMessage: '承辦人' },
+  memberNoteMember: { id: 'member.label.memberNoteMember', defaultMessage: '學員姓名 / Email' },
+  memberNoteDuration: { id: 'member.label.memberNoteDuration', defaultMessage: '音檔長度' },
+  memberNoteDescription: { id: 'member.label.memberNoteDescription', defaultMessage: '備註' },
+})
+
+const StyledMemberName = styled.div`
+  color: var(--gray-darker);
+  line-height: 1.5;
+  letter-spacing: 0.2px;
+`
+const StyledMemberEmail = styled.div`
+  color: var(--gray-dark);
+  font-size: 12px;
+  letter-spacing: 0.6px;
+`
+const StyledText = styled.div`
+  color: var(--gray-darker);
+  font-weight: bold;
+  letter-spacing: 0.2px;
+`
 
 type FiltersProps = {
   range?: [Moment, Moment]
@@ -19,12 +51,200 @@ type FiltersProps = {
   category?: string
   tag?: string
 }
+type NoteAdminProps = {
+  id: string
+  createdAt: Date
+  author: {
+    id: string
+    name: string
+  }
+  manager: {
+    id: string
+    name: string
+  } | null
+  member: {
+    id: string
+    pictureUrl: string | null
+    name: string
+    email: string
+  } | null
+  memberCategories: {
+    id: string
+    name: string
+  }[]
+  memberTags: string[]
+  consumption: number
+  duration: number
+  audioFilePath: string | null
+  description: string | null
+  metadata: any
+}
 
 const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
-
-  const [filters, setFilters] = useState<FiltersProps>({})
+  const { settings } = useApp()
+  const searchInputRef = useRef<Input | null>(null)
+  const [filters, setFilters] = useState<FiltersProps>({
+    range: [moment().startOf('month'), moment().endOf('month')],
+  })
   const { loadingNotes, notes, loadMoreNotes } = useMemberNotesAdmin(filters)
+  const { updateMemberNote } = useMutateMemberNote()
+  const [updatedDescriptions, setUpdatedDescriptions] = useState<{ [noteID: string]: string }>({})
+  const [loading, setLoading] = useState(false)
+
+  const getColumnSearchProps: (columId: keyof FiltersProps) => ColumnProps<NoteAdminProps> = columnId => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div className="p-2">
+        <Input
+          ref={searchInputRef}
+          value={selectedKeys[0]}
+          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => {
+            confirm()
+            setFilters({
+              ...filters,
+              [columnId]: selectedKeys[0] as string,
+            })
+          }}
+          style={{ width: 188, marginBottom: 8, display: 'block' }}
+        />
+        <div>
+          <Button
+            type="primary"
+            onClick={() => {
+              confirm()
+              setFilters({
+                ...filters,
+                [columnId]: selectedKeys[0] as string,
+              })
+            }}
+            icon={<SearchOutlined />}
+            size="small"
+            className="mr-2"
+            style={{ width: 90 }}
+          >
+            {formatMessage(commonMessages.ui.search)}
+          </Button>
+          <Button
+            onClick={() => {
+              clearFilters && clearFilters()
+              setFilters({
+                ...filters,
+                [columnId]: undefined,
+              })
+            }}
+            size="small"
+            style={{ width: 90 }}
+          >
+            {formatMessage(commonMessages.ui.reset)}
+          </Button>
+        </div>
+      </div>
+    ),
+    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+    onFilterDropdownVisibleChange: visible => visible && setTimeout(() => searchInputRef.current?.select(), 100),
+  })
+
+  const columns: ColumnProps<NoteAdminProps>[] = [
+    {
+      key: 'createdAt',
+      title: formatMessage(messages.memberNoteCreatedAt),
+    },
+    {
+      key: 'author',
+      dataIndex: 'author',
+      title: formatMessage(messages.memberNoteCreatedAt),
+      ...getColumnSearchProps('author'),
+    },
+    {
+      key: 'manager',
+      dataIndex: 'manager',
+      title: formatMessage(messages.memberNoteManager),
+      ...getColumnSearchProps('manager'),
+    },
+    {
+      key: 'member',
+      title: formatMessage(messages.memberNoteMember),
+      ...getColumnSearchProps('member'),
+      render: (text, record, index) =>
+        record.member && (
+          <div className="d-flex align-items-center">
+            <AvatarImage size="36px" src={record.member.pictureUrl} className="flex-shrink-0 mr-2" />
+            <div className="flex-grow-1">
+              <StyledMemberName>{record.member.name}</StyledMemberName>
+              <StyledMemberEmail>{record.member.email}</StyledMemberEmail>
+            </div>
+          </div>
+        ),
+    },
+    {
+      key: 'category',
+      title: formatMessage(commonMessages.term.category),
+      ...getColumnSearchProps('category'),
+      render: (text, record, index) => (
+        <StyledText>{record.memberCategories.map(category => category.name).join(', ')}</StyledText>
+      ),
+    },
+    {
+      key: 'tag',
+      title: formatMessage(commonMessages.term.tag),
+      ...getColumnSearchProps('tag'),
+      render: (text, record, index) => record.memberTags.map(tag => <Tag key={tag}>{tag}</Tag>),
+    },
+    {
+      key: 'consumption',
+      title: formatMessage(commonMessages.label.consumption),
+      render: (text, record, index) => currencyFormatter(record.consumption),
+    },
+    {
+      key: 'duration',
+      title: formatMessage(messages.memberNoteDuration),
+      render: (text, record, index) =>
+        formatMessage(commonMessages.text.minutes, { minutes: Math.round(record.duration / 60) }),
+    },
+    {
+      key: 'audioRecordFile',
+      title: formatMessage(memberMessages.label.audioRecordFile),
+      render: (text, record, index) =>
+        record.metadata?.recordfile ? (
+          <a
+            href={`//${settings['call.server_origin']}/${record.metadata.recordfile}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Button type="primary">{formatMessage(commonMessages.ui.check)}</Button>
+          </a>
+        ) : null,
+    },
+    {
+      key: 'description',
+      title: formatMessage(messages.memberNoteDescription),
+      render: (text, record, index) => (
+        <Typography.Paragraph
+          editable={{
+            autoSize: { maxRows: 5, minRows: 1 },
+            onChange: value =>
+              updateMemberNote({
+                variables: {
+                  memberNoteId: record.id,
+                  description: value,
+                },
+              })
+                .then(() =>
+                  setUpdatedDescriptions({
+                    ...updatedDescriptions,
+                    [record.id]: value,
+                  }),
+                )
+                .catch(handleError),
+          }}
+          className="mb-0"
+        >
+          {updatedDescriptions[record.id] || record.description || ''}
+        </Typography.Paragraph>
+      ),
+    },
+  ]
 
   return (
     <AdminLayout>
@@ -46,6 +266,32 @@ const NoteCollectionPage: React.FC = () => {
         }
         className="mb-4"
       />
+
+      <AdminCard className="mb-5">
+        <Table<NoteAdminProps>
+          columns={columns}
+          rowKey="id"
+          pagination={false}
+          loading={loadingNotes}
+          dataSource={notes}
+        />
+
+        {loadMoreNotes && (
+          <div className="text-center mt-5">
+            <Button
+              loading={loadingNotes || loading}
+              onClick={() => {
+                setLoading(true)
+                loadMoreNotes()
+                  .catch(handleError)
+                  .finally(() => setLoading(false))
+              }}
+            >
+              {formatMessage(commonMessages.ui.showMore)}
+            </Button>
+          </div>
+        )}
+      </AdminCard>
     </AdminLayout>
   )
 }
@@ -61,41 +307,44 @@ const useMemberNotesAdmin = (filters?: FiltersProps) => {
     author: filters?.author
       ? {
           _or: [
-            { name: { _ilike: filters.author } },
-            { username: { _ilike: filters.author } },
-            { email: { _ilike: filters.author } },
+            { name: { _ilike: `%${filters.author}%` } },
+            { username: { _ilike: `%${filters.author}%` } },
+            { email: { _ilike: `%${filters.author}%` } },
           ],
         }
       : undefined,
-    member: {
-      manager: filters?.manager
+    member:
+      filters?.manager || filters?.member || filters?.category || filters?.tag
         ? {
-            _or: [
-              { name: { _ilike: filters.manager } },
-              { username: { _ilike: filters.manager } },
-              { email: { _ilike: filters.manager } },
-            ],
-          }
-        : undefined,
-      _or: filters?.member
-        ? [
-            { name: { _ilike: filters.member } },
-            { username: { _ilike: filters.member } },
-            { email: { _ilike: filters.member } },
-          ]
-        : undefined,
+            manager: filters.manager
+              ? {
+                  _or: [
+                    { name: { _ilike: `%${filters.manager}%` } },
+                    { username: { _ilike: `%${filters.manager}%` } },
+                    { email: { _ilike: `%${filters.manager}%` } },
+                  ],
+                }
+              : undefined,
+            _or: filters.member
+              ? [
+                  { name: { _ilike: `%${filters.member}%` } },
+                  { username: { _ilike: `%${filters.member}%` } },
+                  { email: { _ilike: `%${filters.member}%` } },
+                ]
+              : undefined,
 
-      member_categories: filters?.category
-        ? {
-            category: { name: { _ilike: filters.category } },
+            member_categories: filters.category
+              ? {
+                  category: { name: { _ilike: `%${filters.category}%` } },
+                }
+              : undefined,
+            member_tags: filters.tag
+              ? {
+                  tag_name: { _ilike: `%${filters.tag}%` },
+                }
+              : undefined,
           }
         : undefined,
-      member_tags: filters?.tag
-        ? {
-            tag_name: { _ilike: filters.tag },
-          }
-        : undefined,
-    },
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
     types.MEMBER_NOTES_ADMIN,
@@ -118,7 +367,9 @@ const useMemberNotesAdmin = (filters?: FiltersProps) => {
           }
           member {
             id
+            picture_url
             name
+            username
             email
             manager {
               id
@@ -162,32 +413,7 @@ const useMemberNotesAdmin = (filters?: FiltersProps) => {
     { variables: { condition } },
   )
 
-  const notes: {
-    id: string
-    createdAt: Date
-    author: {
-      id: string
-      name: string
-    }
-    manager: {
-      id: string
-      name: string
-    } | null
-    member: {
-      id: string
-      name: string
-      email: string
-    } | null
-    memberCategories: {
-      id: string
-      name: string
-    }[]
-    memberTags: string[]
-    consumption: number
-    duration: number
-    audioFilePath: string | null
-    description: string | null
-  }[] =
+  const notes: NoteAdminProps[] =
     data?.member_note.map(v => ({
       id: v.id,
       createdAt: new Date(v.created_at),
@@ -198,13 +424,14 @@ const useMemberNotesAdmin = (filters?: FiltersProps) => {
       manager: v.member?.manager
         ? {
             id: v.member.manager.id,
-            name: v.member.manager.name,
+            name: v.member.manager.name || v.member.manager.username,
           }
         : null,
       member: v.member
         ? {
             id: v.member.id,
-            name: v.member.name,
+            pictureUrl: v.member.picture_url,
+            name: v.member.name || v.member.username,
             email: v.member.email,
           }
         : null,
@@ -220,6 +447,7 @@ const useMemberNotesAdmin = (filters?: FiltersProps) => {
       duration: v.duration || 0,
       audioFilePath: v.metadata?.recordfile || null,
       description: v.description,
+      metadata: v.metadata,
     })) || []
 
   const loadMoreNotes = () =>

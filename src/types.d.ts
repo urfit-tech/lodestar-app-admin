@@ -9502,7 +9502,9 @@ export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs {
 export interface MEMBER_NOTES_ADMIN_member_note_member {
   __typename: "member";
   id: string;
+  picture_url: string | null;
   name: string;
+  username: string;
   email: string;
   /**
    * An object relationship

@@ -290,7 +290,7 @@ export const useMutateMemberNote = () => {
     }
   `)
 
-  const [updateMemberNote] = useMutation(gql`
+  const [updateMemberNote] = useMutation<types.UPDATE_MEMBER_NOTE, types.UPDATE_MEMBER_NOTEVariables>(gql`
     mutation UPDATE_MEMBER_NOTE(
       $memberNoteId: String!
       $type: String

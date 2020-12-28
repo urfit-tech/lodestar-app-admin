@@ -337,7 +337,7 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   },
 }
 
-export default () => (
+const Routes: React.FC = () => (
   <Suspense fallback={<LoadingPage></LoadingPage>}>
     <Switch>
       {Object.keys(routesProps).map(routeKey => {
@@ -386,3 +386,5 @@ export default () => (
     </Switch>
   </Suspense>
 )
+
+export default Routes
