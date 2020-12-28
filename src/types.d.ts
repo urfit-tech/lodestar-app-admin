@@ -5165,220 +5165,6 @@ export interface PUBLISH_PROJECTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PROJECT_COLLECTION
-// ====================================================
-
-export interface GET_PROJECT_COLLECTION_project_aggregate_aggregate {
-  __typename: "project_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_PROJECT_COLLECTION_project_aggregate {
-  __typename: "project_aggregate";
-  aggregate: GET_PROJECT_COLLECTION_project_aggregate_aggregate | null;
-}
-
-export interface GET_PROJECT_COLLECTION_project_creator {
-  __typename: "member_public";
-  id: string | null;
-  name: string | null;
-  username: string | null;
-  picture_url: string | null;
-}
-
-export interface GET_PROJECT_COLLECTION_project_project_plans {
-  __typename: "project_plan";
-  id: any;
-}
-
-export interface GET_PROJECT_COLLECTION_project {
-  __typename: "project";
-  id: any;
-  title: string;
-  abstract: string;
-  introduction: string;
-  description: string;
-  position: number;
-  published_at: any | null;
-  target_amount: any;
-  /**
-   * funds / participants
-   */
-  target_unit: string;
-  /**
-   * funding / pre-order / on-sale / modular
-   */
-  type: string;
-  updates: any;
-  created_at: any;
-  expired_at: any | null;
-  comments: any;
-  contents: any;
-  /**
-   * image / video
-   */
-  cover_type: string;
-  cover_url: string;
-  is_participants_visible: boolean;
-  is_countdown_timer_visible: boolean;
-  preview_url: string | null;
-  /**
-   * An object relationship
-   */
-  creator: GET_PROJECT_COLLECTION_project_creator | null;
-  /**
-   * An array relationship
-   */
-  project_plans: GET_PROJECT_COLLECTION_project_project_plans[];
-}
-
-export interface GET_PROJECT_COLLECTION {
-  /**
-   * fetch aggregated fields from the table: "project"
-   */
-  project_aggregate: GET_PROJECT_COLLECTION_project_aggregate;
-  /**
-   * fetch data from the table: "project"
-   */
-  project: GET_PROJECT_COLLECTION_project[];
-}
-
-export interface GET_PROJECT_COLLECTIONVariables {
-  condition: project_bool_exp;
-  limit: number;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PROJECT_PLAN_SORT_COLLECTION
-// ====================================================
-
-export interface GET_PROJECT_PLAN_SORT_COLLECTION_project_plan {
-  __typename: "project_plan";
-  id: any;
-  project_id: any;
-  title: string;
-}
-
-export interface GET_PROJECT_PLAN_SORT_COLLECTION {
-  /**
-   * fetch data from the table: "project_plan"
-   */
-  project_plan: GET_PROJECT_PLAN_SORT_COLLECTION_project_plan[];
-}
-
-export interface GET_PROJECT_PLAN_SORT_COLLECTIONVariables {
-  projectId?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PROJECT_PLAN_POSITION_COLLECTION
-// ====================================================
-
-export interface UPDATE_PROJECT_PLAN_POSITION_COLLECTION_insert_project_plan {
-  __typename: "project_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROJECT_PLAN_POSITION_COLLECTION {
-  /**
-   * insert data into the table: "project_plan"
-   */
-  insert_project_plan: UPDATE_PROJECT_PLAN_POSITION_COLLECTION_insert_project_plan | null;
-}
-
-export interface UPDATE_PROJECT_PLAN_POSITION_COLLECTIONVariables {
-  data: project_plan_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PROJECT_PLAN_COVER_URL
-// ====================================================
-
-export interface UPDATE_PROJECT_PLAN_COVER_URL_update_project_plan {
-  __typename: "project_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROJECT_PLAN_COVER_URL {
-  /**
-   * update data of the table: "project_plan"
-   */
-  update_project_plan: UPDATE_PROJECT_PLAN_COVER_URL_update_project_plan | null;
-}
-
-export interface UPDATE_PROJECT_PLAN_COVER_URLVariables {
-  id: any;
-  coverUrl?: string | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPSERT_PROJECT_PLAN
-// ====================================================
-
-export interface UPSERT_PROJECT_PLAN_insert_project_plan {
-  __typename: "project_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPSERT_PROJECT_PLAN {
-  /**
-   * insert data into the table: "project_plan"
-   */
-  insert_project_plan: UPSERT_PROJECT_PLAN_insert_project_plan | null;
-}
-
-export interface UPSERT_PROJECT_PLANVariables {
-  id: any;
-  projectId: any;
-  coverUrl?: string | null;
-  title: string;
-  description: string;
-  listPrice: any;
-  salePrice?: any | null;
-  soldAt?: any | null;
-  discountDownPrice?: any | null;
-  periodAmount?: any | null;
-  periodType?: string | null;
-  isParticipantsVisible?: boolean | null;
-  publishedAt?: any | null;
-  autoRenewed?: boolean | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_ORDER_LOG_EXPORT
 // ====================================================
 
@@ -10033,6 +9819,159 @@ export interface INSERT_MERCHANDISEVariables {
   isPhysical?: boolean | null;
   isCustomized?: boolean | null;
   isLimited?: boolean | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: MEMBER_NOTES_ADMIN
+// ====================================================
+
+export interface MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate {
+  __typename: "member_note_aggregate_fields";
+  count: number | null;
+}
+
+export interface MEMBER_NOTES_ADMIN_member_note_aggregate {
+  __typename: "member_note_aggregate";
+  aggregate: MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate | null;
+}
+
+export interface MEMBER_NOTES_ADMIN_member_note_author {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+}
+
+export interface MEMBER_NOTES_ADMIN_member_note_member_manager {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+}
+
+export interface MEMBER_NOTES_ADMIN_member_note_member_member_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface MEMBER_NOTES_ADMIN_member_note_member_member_categories {
+  __typename: "member_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: MEMBER_NOTES_ADMIN_member_note_member_member_categories_category;
+}
+
+export interface MEMBER_NOTES_ADMIN_member_note_member_member_tags {
+  __typename: "member_tag";
+  tag_name: string;
+}
+
+export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum {
+  __typename: "order_product_sum_fields";
+  price: any | null;
+}
+
+export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate {
+  __typename: "order_product_aggregate_fields";
+  sum: MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum | null;
+}
+
+export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate {
+  __typename: "order_product_aggregate";
+  aggregate: MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate | null;
+}
+
+export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum {
+  __typename: "order_discount_sum_fields";
+  price: any | null;
+}
+
+export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate {
+  __typename: "order_discount_aggregate_fields";
+  sum: MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum | null;
+}
+
+export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate {
+  __typename: "order_discount_aggregate";
+  aggregate: MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate | null;
+}
+
+export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs {
+  __typename: "order_log";
+  id: string;
+  /**
+   * An aggregated array relationship
+   */
+  order_products_aggregate: MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate;
+  /**
+   * An aggregated array relationship
+   */
+  order_discounts_aggregate: MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate;
+}
+
+export interface MEMBER_NOTES_ADMIN_member_note_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+  /**
+   * An object relationship
+   */
+  manager: MEMBER_NOTES_ADMIN_member_note_member_manager | null;
+  /**
+   * An array relationship
+   */
+  member_categories: MEMBER_NOTES_ADMIN_member_note_member_member_categories[];
+  /**
+   * An array relationship
+   */
+  member_tags: MEMBER_NOTES_ADMIN_member_note_member_member_tags[];
+  /**
+   * An array relationship
+   */
+  order_logs: MEMBER_NOTES_ADMIN_member_note_member_order_logs[];
+}
+
+export interface MEMBER_NOTES_ADMIN_member_note {
+  __typename: "member_note";
+  id: string;
+  created_at: any;
+  /**
+   * An object relationship
+   */
+  author: MEMBER_NOTES_ADMIN_member_note_author;
+  /**
+   * An object relationship
+   */
+  member: MEMBER_NOTES_ADMIN_member_note_member | null;
+  duration: number | null;
+  metadata: any | null;
+  description: string | null;
+}
+
+export interface MEMBER_NOTES_ADMIN {
+  /**
+   * fetch aggregated fields from the table: "member_note"
+   */
+  member_note_aggregate: MEMBER_NOTES_ADMIN_member_note_aggregate;
+  /**
+   * fetch data from the table: "member_note"
+   */
+  member_note: MEMBER_NOTES_ADMIN_member_note[];
+}
+
+export interface MEMBER_NOTES_ADMINVariables {
+  condition?: member_note_bool_exp | null;
 }
 
 /* tslint:disable */

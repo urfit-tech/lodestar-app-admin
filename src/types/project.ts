@@ -61,39 +61,14 @@ export type ProjectPlanProps = {
   autoRenewed: boolean
   projectPlanEnrollment: number
 }
-export type ProjectSortProps = {
-  id: string
-  title: string
-}
+
 export type ProjectPlanSortProps = {
   id: string
   projectId: string
   title: string
 }
 
-export type ProjectPlanProps = {
-  id: string
-  projectId: string
-  coverUrl: string | null
-  title: string
-  description: string | null
-  listPrice: number
-  salePrice: number
-  soldAt: Date | null
-  discountDownPrice: number
-  isSubscription: boolean
-  periodAmount: number | null
-  periodType: string | null
-  position: number | null
-  isParticipantsVisible: boolean
-  isPhysical: boolean
-  isLimited: boolean
-  publishedAt: Date | null
-  autoRenewed: boolean
-}
-
 export type ProjectSortProps = {
   id: string
-  projectId: string
   title: string
 }

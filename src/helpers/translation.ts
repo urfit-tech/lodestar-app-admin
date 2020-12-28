@@ -66,10 +66,6 @@ export const commonMessages = {
     uploadImage: { id: 'common.ui.uploadImage', defaultMessage: '上傳圖片' },
     uploadCertification: { id: 'common.ui.uploadCertification', defaultMessage: '上傳證明' },
     createContract: { id: 'common.ui.createContract', defaultMessage: '建立合約' },
-    createPlan: { id: 'common.ui.createPlan', defaultMessage: '建立方案' },
-    uploadImage: { id: 'common.ui.uploadImage', defaultMessage: '上傳圖片' },
-    uploadCertification: { id: 'common.ui.uploadCertification', defaultMessage: '上傳證明' },
-    createContract: { id: 'common.ui.createContract', defaultMessage: '建立合約' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -356,7 +352,7 @@ export const commonMessages = {
     members: { id: 'common.menu.members', defaultMessage: '會員列表' },
     memberCategory: { id: 'common.menu.memberCategory', defaultMessage: '會員分類' },
     memberProperties: { id: 'common.menu.memberProperties', defaultMessage: '自訂欄位' },
-    noteAdmin: {id: 'common.menu.noteAdmin', defaultMessage: '聯絡管理'},
+    noteAdmin: { id: 'common.menu.noteAdmin', defaultMessage: '聯絡管理' },
     taskAdmin: { id: 'common.menu.taskAdmin', defaultMessage: '待辦管理' },
     tasks: { id: 'common.menu.tasks', defaultMessage: '待辦清單' },
     taskCategory: { id: 'common.menu.taskCategory', defaultMessage: '待辦分類' },
@@ -1001,7 +997,7 @@ export const memberMessages = {
     field: { id: 'member.label.field', defaultMessage: '欄位' },
     fieldVisible: { id: 'member.label.fieldVisible', defaultMessage: '欄位顯示' },
     onlineProgramContract: { id: 'member.label.線上課程服務約款', defaultMessage: '線上課程服務約款' },
-    audioRecordFile: {id: 'member.label.audioRecordFile' , defaultMessage: '音檔紀錄'}, 
+    audioRecordFile: { id: 'member.label.audioRecordFile', defaultMessage: '音檔紀錄' },
   }),
   text: {
     deleteMemberNoteConfirmation: {
