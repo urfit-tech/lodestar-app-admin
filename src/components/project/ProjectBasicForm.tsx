@@ -149,17 +149,7 @@ const ProjectBasicForm: React.FC<{
           >
             <AmountInput unit={targetUnit} />
           </Form.Item>
-          <StyledFormItem
-            name="expiredAt"
-            rules={[
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(projectMessages.label.expireAt),
-                }),
-              },
-            ]}
-          >
+          <StyledFormItem name="expiredAt">
             <DatePicker
               style={{ width: '100%' }}
               format="YYYY-MM-DD HH:mm"
