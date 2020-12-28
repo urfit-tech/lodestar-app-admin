@@ -44,10 +44,11 @@ const StyledMask = styled.div`
 
 const ImageUploader: React.FC<{
   file: File | null
+  initialCoverUrl?: string | null
   onChange?: (file: File) => void
-}> = ({ file, onChange }) => {
+}> = ({ file, initialCoverUrl, onChange }) => {
   const { formatMessage } = useIntl()
-  const [imgSrc, setImgSrc] = useState<string | null>(null)
+  const [imgSrc, setImgSrc] = useState<string | null>(initialCoverUrl || null)
 
   useEffect(() => {
     if (file) {
