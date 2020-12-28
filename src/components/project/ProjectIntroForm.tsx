@@ -34,7 +34,6 @@ const ProjectIntroForm: React.FC<{
     UPDATE_PROJECT_INTRO,
   )
   const [loading, setLoading] = useState(false)
-  const [previewUrl, setPreviewUrl] = useState()
 
   if (!project) {
     return <Skeleton active />
@@ -90,7 +89,7 @@ const ProjectIntroForm: React.FC<{
       labelCol={{ md: { span: 4 } }}
       wrapperCol={{ md: { span: 10 } }}
       initialValues={{
-        coverVideoUrl: project.coverType === 'video' ? project.previewUrl : project.coverUrl,
+        coverUrl: project.coverType === 'video' ? project.coverUrl : null,
         abstract: project.abstract,
         introduction: BraftEditor.createEditorState(project.introduction),
       }}
