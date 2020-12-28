@@ -18,6 +18,7 @@ import { StyledLayoutContent } from '../../components/layout/DefaultLayout'
 import ProjectBasicForm from '../../components/project/ProjectBasicForm'
 import ProjectIntroForm from '../../components/project/ProjectIntroForm'
 import ProjectPlanAdminBlock from '../../components/project/ProjectPlanAdminBlock'
+import ProjectPublishAdminBlock from '../../components/project/ProjectPublishAdminBlock'
 import { useApp } from '../../contexts/AppContext'
 import { commonMessages, projectMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -91,7 +92,7 @@ const ProjectAdminPage: React.FC<{}> = () => {
               <div className="container py-5">
                 <AdminPaneTitle>{formatMessage(commonMessages.label.publishSettings)}</AdminPaneTitle>
                 <AdminBlock>
-                  {/* <ActivityPublishAdminBlock projectAdmin={projectAdmin} onRefetch={refetchprojectAdmin} /> */}
+                  <ProjectPublishAdminBlock type="funding" project={projectAdmin} onRefetch={refetchProjectAdmin} />
                 </AdminBlock>
               </div>
             </Tabs.TabPane>
@@ -184,9 +185,9 @@ const useProjectAdmin = (projectId: string) => {
           targetUnit: data.project_by_pk.target_unit,
           projectType: data.project_by_pk.type as ProjectDataType,
           updates: data.project_by_pk.updates,
-          createdAt: data.project_by_pk.created_at,
-          publishedAt: data.project_by_pk.published_at,
-          expiredAt: data.project_by_pk.expired_at,
+          createdAt: data.project_by_pk.created_at && new Date(data.project_by_pk.created_at),
+          publishedAt: data.project_by_pk.published_at && new Date(data.project_by_pk.published_at),
+          expiredAt: data.project_by_pk.expired_at && new Date(data.project_by_pk.expired_at),
           comments: data.project_by_pk.comments,
           contents: data.project_by_pk.contents,
           coverType: data.project_by_pk.cover_type,
@@ -202,7 +203,7 @@ const useProjectAdmin = (projectId: string) => {
             description: v.description,
             listPrice: v.list_price,
             salePrice: v.sale_price,
-            soldAt: v.sold_at,
+            soldAt: v.sold_at && new Date(v.sold_at),
             discountDownPrice: v.discount_down_price,
             isSubscription: v.is_subscription,
             periodAmount: v.period_amount,
@@ -211,8 +212,9 @@ const useProjectAdmin = (projectId: string) => {
             isParticipantsVisible: v.is_participants_visible,
             isPhysical: v.is_physical,
             isLimited: v.is_limited,
-            publishedAt: v.published_at,
+            publishedAt: v.published_at && new Date(v.published_at),
             autoRenewed: v.auto_renewed,
+            projectPlanEnrollment: v.project_plan_enrollments_aggregate.aggregate?.count || 0,
           })),
           categories: data.project_by_pk.project_categories.map(v => ({ id: v.category.id, name: v.category.name })),
         }

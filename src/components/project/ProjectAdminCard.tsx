@@ -21,6 +21,10 @@ const StyledCover = styled.div<{ src: string }>`
 `
 const StyledDescription = styled.div`
   padding: 1.25rem;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `
 const StyledTitle = styled.div`
   display: -webkit-box;
@@ -49,16 +53,24 @@ const StyledAction = styled.div`
   }
 `
 
-const ProjectAdminCard: React.FC<ProjectPreviewProps & CardProps> = ({ id, coverUrl, title, abstract, totalCount }) => {
+const ProjectAdminCard: React.FC<ProjectPreviewProps & CardProps> = ({
+  id,
+  coverUrl,
+  previewUrl,
+  coverType,
+  title,
+  totalCount,
+}) => {
   const { formatMessage } = useIntl()
 
   return (
     <StyledWrapper>
       <Link to={`/projects/${id}`}>
-        <StyledCover src={coverUrl || EmptyCover} />
-
+        <StyledCover
+          src={coverType === 'image' && previewUrl ? previewUrl : coverUrl !== null ? coverUrl : EmptyCover}
+        />
         <StyledDescription>
-          <StyledTitle className="mb-4">{title}</StyledTitle>
+          <StyledTitle className="mb-0">{title}</StyledTitle>
         </StyledDescription>
       </Link>
 
