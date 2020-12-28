@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import React, { useContext, useState } from 'react'
 import { UserRole } from '../types/member'
 
-type AuthContext = {
+type AuthProps = {
   isAuthenticating: boolean
   isAuthenticated: boolean
   currentUserRole: UserRole
@@ -19,7 +19,7 @@ type AuthContext = {
   logout?: () => Promise<void>
 }
 
-const defaultAuthContext: AuthContext = {
+const defaultAuthContext: AuthProps = {
   isAuthenticating: true,
   isAuthenticated: false,
   currentUserRole: 'anonymous',
@@ -30,7 +30,7 @@ const defaultAuthContext: AuthContext = {
   apiHost: '',
 }
 
-const AuthContext = React.createContext<AuthContext>(defaultAuthContext)
+const AuthContext = React.createContext<AuthProps>(defaultAuthContext)
 
 export const AuthProvider: React.FC<{
   appId: string
