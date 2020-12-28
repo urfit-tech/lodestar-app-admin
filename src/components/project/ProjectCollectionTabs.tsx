@@ -10,14 +10,16 @@ import ProjectCollectionBlock from './ProjectCollectionBlock'
 
 const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ projectType }) => {
   const { formatMessage } = useIntl()
-  const { id: appId } = useApp()
   const { currentMemberId, currentUserRole } = useAuth()
   const [counts, setCounts] = useState<{ [key: string]: number }>({})
+  const { id: appId } = useApp()
 
   const tabContents: {
     key: string
     tab: string
     condition: types.GET_PROJECT_PREVIEW_COLLECTIONVariables['condition']
+    orderBy?: types.GET_PROJECT_PREVIEW_COLLECTIONVariables['orderBy']
+    withSortingButton?: boolean
   }[] = [
     {
       key: 'published',
@@ -25,8 +27,11 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
       condition: {
         type: { _eq: projectType },
         published_at: { _is_null: false },
+        _or: [{ expired_at: { _gt: 'now()' } }, { expired_at: { _is_null: true } }],
         creator_id: { _eq: currentUserRole !== 'app-owner' ? currentMemberId : null },
       },
+      orderBy: [{ position: 'asc' as types.order_by }],
+      withSortingButton: true,
     },
     {
       key: 'draft',
@@ -42,6 +47,7 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
       tab: formatMessage(commonMessages.status.finished),
       condition: {
         type: { _eq: projectType },
+        published_at: { _is_null: false },
         expired_at: { _lt: 'now()' },
         creator_id: { _eq: currentUserRole !== 'app-owner' ? currentMemberId : null },
       },
@@ -57,7 +63,10 @@ const ProjectCollectionTabs: React.FC<{ projectType: ProjectDataType }> = ({ pro
         >
           <ProjectCollectionBlock
             appId={appId}
+            projectType={projectType}
             condition={tabContent.condition}
+            orderBy={tabContent?.orderBy}
+            withSortingButton={tabContent.withSortingButton}
             onReady={count =>
               count !== counts[tabContent.key] &&
               setCounts({
