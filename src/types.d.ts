@@ -26059,6 +26059,7 @@ export interface project_plan_enrollment_bool_exp {
   _and?: (project_plan_enrollment_bool_exp | null)[] | null;
   _not?: project_plan_enrollment_bool_exp | null;
   _or?: (project_plan_enrollment_bool_exp | null)[] | null;
+  member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   project_plan?: project_plan_bool_exp | null;
   project_plan_id?: uuid_comparison_exp | null;
