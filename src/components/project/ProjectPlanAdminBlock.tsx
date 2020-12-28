@@ -8,7 +8,7 @@ import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages, projectMessages } from '../../helpers/translation'
 import types from '../../types'
-import { ProjectAdminProps, ProjectSortProps } from '../../types/project'
+import { ProjectAdminProps, ProjectPlanSortProps } from '../../types/project'
 import { OverlayBlock, OverlayWrapper } from '../admin/PositionAdminLayout'
 import ItemsSortingModal from '../common/ItemsSortingModal'
 import ProjectPlanAdminModal from './ProjectPlanAminModal'
@@ -33,7 +33,7 @@ const ProjectPlanAdminBlock: React.FC<{
     types.UPDATE_PROJECT_PLAN_POSITION_COLLECTIONVariables
   >(UPDATE_PROJECT_PLAN_POSITION_COLLECTION)
 
-  const { projectSorts, refetchProjectSorts } = useProjectPlanSortCollection(projectId)
+  const { projectPlanSorts, refetchProjectPlanSorts } = useProjectPlanSortCollection(projectId)
 
   if (!project) {
     return <Skeleton active />
@@ -52,8 +52,8 @@ const ProjectPlanAdminBlock: React.FC<{
           onRefetch={onRefetch}
         />
         <ItemsSortingModal
-          items={projectSorts}
-          triggerText={formatMessage(projectMessages.ui.sortProject)}
+          items={projectPlanSorts}
+          triggerText={formatMessage(projectMessages.ui.sortProjectPlan)}
           onSubmit={values =>
             updatePositions({
               variables: {
@@ -66,7 +66,7 @@ const ProjectPlanAdminBlock: React.FC<{
               },
             })
               .then(() => {
-                refetchProjectSorts()
+                refetchProjectPlanSorts()
                 onRefetch?.()
               })
               .catch(handleError)
@@ -77,7 +77,7 @@ const ProjectPlanAdminBlock: React.FC<{
         {project.projectPlan.map(projectPlan => (
           <div key={projectPlan.id} className="col-12 col-md-6 col-lg-4 mb-5">
             <OverlayWrapper>
-              <ProjectPlanCard projectId={project.id} projectPlan={projectPlan} />
+              <ProjectPlanCard projectPlan={projectPlan} />
               <OverlayBlock>
                 <div>
                   <ProjectPlanAdminModal
@@ -120,17 +120,17 @@ const useProjectPlanSortCollection = (projectId: string) => {
       },
     },
   )
-  const projectSorts: ProjectSortProps[] =
+  const projectPlanSorts: ProjectPlanSortProps[] =
     data?.project_plan.map(v => ({
       id: v.id,
       projectId: v.project_id,
       title: v.title,
     })) || []
   return {
-    loadingProjectSorts: loading,
-    errorProjectSorts: error,
-    projectSorts,
-    refetchProjectSorts: refetch,
+    loadingProjectPlanSorts: loading,
+    errorProjectPlanSorts: error,
+    projectPlanSorts,
+    refetchProjectPlanSorts: refetch,
   }
 }
 

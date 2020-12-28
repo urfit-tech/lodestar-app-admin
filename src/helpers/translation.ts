@@ -720,7 +720,8 @@ export const projectMessages = {
     expireAt: { id: 'project.label.expireAt', defaultMessage: '截止日' },
   }),
   ui: defineMessages({
-    sortProject: { id: 'project.ui.sortProject', defaultMessage: '方案排序' },
+    sortProject: { id: 'project.ui.sortProject', defaultMessage: '專案排序' },
+    sortProjectPlan: { id: 'project.ui.sortProject', defaultMessage: '方案排序' },
     editProject: { id: 'project.ui.editProject', defaultMessage: '編輯方案' },
   }),
   text: defineMessages({

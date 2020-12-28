@@ -298,7 +298,7 @@ const ProgramCollectionBlock: React.FC<{
             loading={loading}
             onClick={() => {
               setLoading(true)
-              loadMorePrograms().finally(() => setLoading(false))
+              loadMorePrograms()?.finally(() => setLoading(false))
             }}
           >
             {formatMessage(commonMessages.ui.showMore)}
@@ -363,6 +363,7 @@ const useProgramPreviewCollection = (
   const loadMorePrograms =
     (data?.program.length || 0) < (data?.program_aggregate.aggregate?.count || 0)
       ? () =>
+          orderBy &&
           fetchMore({
             variables: {
               condition: {
