@@ -10015,6 +10015,7 @@ export interface GET_REFERRAL_MEMBER_COLLECTION_member {
   __typename: "member";
   id: string;
   name: string;
+  email: string;
 }
 
 export interface GET_REFERRAL_MEMBER_COLLECTION {

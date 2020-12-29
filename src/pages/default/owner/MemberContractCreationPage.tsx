@@ -28,7 +28,7 @@ import { AdminBlock, AdminBlockTitle } from '../../../components/admin'
 import DefaultLayout from '../../../components/layout/DefaultLayout'
 import { useApp } from '../../../contexts/AppContext'
 import { useAuth } from '../../../contexts/AuthContext'
-import { currencyFormatter, handleError, notEmpty, uploadFile } from '../../../helpers'
+import { currencyFormatter, dateFormatter, handleError, notEmpty, uploadFile } from '../../../helpers'
 import types from '../../../types'
 import { PeriodType } from '../../../types/general'
 import LoadingPage from '../LoadingPage'
@@ -165,7 +165,17 @@ const MemberContractForm: React.FC<{
     types.GET_REFERRAL_MEMBER_COLLECTION,
     types.GET_REFERRAL_MEMBER_COLLECTIONVariables
   >(GET_REFERRAL_MEMBER_COLLECTION, {
-    variables: { condition: referralMemberFilter ? { name: { _ilike: `%${referralMemberFilter}%` } } : undefined },
+    variables: {
+      condition: referralMemberFilter
+        ? {
+            _or: [
+              { name: { _ilike: `%${referralMemberFilter}%` } },
+              { username: { _ilike: `%${referralMemberFilter}%` } },
+              { email: { _ilike: `%${referralMemberFilter}%` } },
+            ],
+          }
+        : undefined,
+    },
   })
 
   const selectedProjectPlan = dataProjectPlans?.project_plan.find(v => v.id === selectedProjectPlanId)
@@ -247,7 +257,7 @@ const MemberContractForm: React.FC<{
 
   const studentDiscountPrice =
     identity === 'student' && certificationPath
-      ? (sum(mainProducts.map(mainProduct => mainProduct.price)) - referralDiscountPrice * mainProducts.length) * -0.1
+      ? (sum(mainProducts.map(mainProduct => mainProduct.price)) + referralDiscountPrice * mainProducts.length) * -0.1
       : 0
   if (studentDiscountPrice) {
     orderItems.push({
@@ -310,8 +320,8 @@ const MemberContractForm: React.FC<{
           })) || []),
         ].filter(v => v.member_id && v.ratio)
 
-        if (orderExecutors.length === 0 || sum(orderExecutors.map(v => v.ratio)) !== 1) {
-          message.warn('承辦人填寫錯誤')
+        if (sum(orderExecutors.map(v => v.ratio)) !== 1) {
+          message.warn('承辦人分潤比例加總必須為 1')
           return
         }
 
@@ -365,8 +375,8 @@ const MemberContractForm: React.FC<{
                 orderId,
                 price: totalPrice,
                 coupons,
-                startedAt,
-                endedAt,
+                startedAt: dateFormatter(startedAt),
+                endedAt: endedAt && dateFormatter(endedAt),
                 invoice: {
                   name: member.name,
                   phone: member.phones,
@@ -654,7 +664,7 @@ const MemberContractForm: React.FC<{
         </Descriptions.Item>
         <Descriptions.Item label="承辦人 / 分潤" span={3}>
           <Space align="center" className="d-flex mb-3">
-            <Form.Item name="orderExecutorId" rules={[{ required: true, message: '請填寫承辦人' }]} noStyle>
+            <Form.Item name="orderExecutorId" rules={[{ required: true, message: '請填寫承辦人' }]}>
               <Select
                 showSearch
                 placeholder="承辦人"
@@ -669,54 +679,49 @@ const MemberContractForm: React.FC<{
               </Select>
             </Form.Item>
 
-            <Form.Item name="orderExecutorRatio" noStyle>
+            <Form.Item name="orderExecutorRatio">
               <InputNumber min={0.1} max={1} step={0.1} style={{ width: '60px' }} />
             </Form.Item>
           </Space>
 
           <Form.List name="orderExecutors">
-            {(fields, { add, remove }) => {
-              return (
-                <div>
-                  {fields.map(field => (
-                    <Space key={field.key} align="center" className="d-flex mb-3">
-                      <Form.Item
-                        {...field}
-                        name={[field.name, 'memberId']}
-                        fieldKey={[field.fieldKey, 'memberId']}
-                        noStyle
+            {(fields, { add, remove }) => (
+              <div>
+                {fields.map(field => (
+                  <Space key={field.key} align="center" className="d-flex mb-3">
+                    <Form.Item
+                      {...field}
+                      name={[field.name, 'memberId']}
+                      fieldKey={[field.fieldKey, 'memberId']}
+                      rules={[{ required: true, message: '請填寫承辦人' }]}
+                    >
+                      <Select
+                        showSearch
+                        placeholder="承辦人"
+                        style={{ width: '150px' }}
+                        filterOption={(input, option) => option?.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                       >
-                        <Select
-                          showSearch
-                          placeholder="承辦人"
-                          style={{ width: '150px' }}
-                          filterOption={(input, option) =>
-                            option?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                          }
-                        >
-                          {xuemiSales?.map(member => (
-                            <Select.Option key={member.id} value={member.id}>
-                              {member.name}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                      <Form.Item {...field} name={[field.name, 'ratio']} fieldKey={[field.fieldKey, 'ratio']} noStyle>
-                        <InputNumber min={0.1} max={1} step={0.1} style={{ width: '60px' }} />
-                      </Form.Item>
+                        {xuemiSales?.map(member => (
+                          <Select.Option key={member.id} value={member.id}>
+                            {member.name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                    <Form.Item {...field} name={[field.name, 'ratio']} fieldKey={[field.fieldKey, 'ratio']}>
+                      <InputNumber min={0.1} max={1} step={0.1} style={{ width: '60px' }} />
+                    </Form.Item>
+                    <MinusCircleOutlined className="mb-4" onClick={() => remove(field.name)} />
+                  </Space>
+                ))}
 
-                      <MinusCircleOutlined onClick={() => remove(field.name)} />
-                    </Space>
-                  ))}
-
-                  <Form.Item>
-                    <Button type="dashed" onClick={() => add({ ratio: 0.1 })} block>
-                      <PlusOutlined /> 加入
-                    </Button>
-                  </Form.Item>
-                </div>
-              )
-            }}
+                <Form.Item>
+                  <Button type="dashed" onClick={() => add({ ratio: 0.1 })} block>
+                    <PlusOutlined /> 加入
+                  </Button>
+                </Form.Item>
+              </div>
+            )}
           </Form.List>
         </Descriptions.Item>
       </Descriptions>
@@ -840,7 +845,7 @@ const GET_CONTRACTS = gql`
 `
 const GET_PROJECT_PLANS = gql`
   query GET_PROJECT_PLANS {
-    project_plan(where: { title: { _like: "%私塾方案%" } }) {
+    project_plan(where: { title: { _like: "%私塾方案%" } }, order_by: { position: asc }) {
       id
       period_amount
       period_type
@@ -894,6 +899,7 @@ const GET_REFERRAL_MEMBER_COLLECTION = gql`
     ) {
       id
       name
+      email
     }
   }
 `

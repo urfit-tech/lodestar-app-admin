@@ -328,7 +328,6 @@ const useProgramPreviewCollection = (
             _and: [condition, { program_roles: { member_id: { _eq: memberId } } }],
           }
         : condition,
-      memberId,
       orderBy,
       limit: 10,
     },
