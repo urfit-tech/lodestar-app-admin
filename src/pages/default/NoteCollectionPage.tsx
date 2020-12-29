@@ -13,7 +13,7 @@ import AdminCard from '../../components/admin/AdminCard'
 import { AvatarImage } from '../../components/common/Image'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { useApp } from '../../contexts/AppContext'
-import { currencyFormatter, handleError } from '../../helpers'
+import { currencyFormatter, dateFormatter, handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useMutateMemberNote } from '../../hooks/member'
 import types from '../../types'
@@ -27,6 +27,15 @@ const messages = defineMessages({
   memberNoteDescription: { id: 'member.label.memberNoteDescription', defaultMessage: '備註' },
 })
 
+const TableWrapper = styled.div`
+  overflow-x: auto;
+
+  thead {
+    th {
+      white-space: nowrap;
+    }
+  }
+`
 const StyledMemberName = styled.div`
   color: var(--gray-darker);
   line-height: 1.5;
@@ -37,10 +46,12 @@ const StyledMemberEmail = styled.div`
   font-size: 12px;
   letter-spacing: 0.6px;
 `
-const StyledText = styled.div`
-  color: var(--gray-darker);
-  font-weight: bold;
-  letter-spacing: 0.2px;
+const StyledCategory = styled.div`
+  width: 5rem;
+`
+const StyledDescription = styled(Typography.Paragraph)`
+  width: 10rem;
+  white-space: pre-line;
 `
 
 type FiltersProps = {
@@ -149,17 +160,19 @@ const NoteCollectionPage: React.FC = () => {
     {
       key: 'createdAt',
       title: formatMessage(messages.memberNoteCreatedAt),
+      render: (text, record, index) => dateFormatter(record.createdAt),
+      sorter: (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
     },
     {
       key: 'author',
-      dataIndex: 'author',
-      title: formatMessage(messages.memberNoteCreatedAt),
+      title: formatMessage(messages.memberNoteAuthor),
+      render: (text, record, index) => record.author.name,
       ...getColumnSearchProps('author'),
     },
     {
       key: 'manager',
-      dataIndex: 'manager',
       title: formatMessage(messages.memberNoteManager),
+      render: (text, record, index) => record.manager?.name,
       ...getColumnSearchProps('manager'),
     },
     {
@@ -182,7 +195,7 @@ const NoteCollectionPage: React.FC = () => {
       title: formatMessage(commonMessages.term.category),
       ...getColumnSearchProps('category'),
       render: (text, record, index) => (
-        <StyledText>{record.memberCategories.map(category => category.name).join(', ')}</StyledText>
+        <StyledCategory>{record.memberCategories.map(category => category.name).join(', ')}</StyledCategory>
       ),
     },
     {
@@ -195,12 +208,14 @@ const NoteCollectionPage: React.FC = () => {
       key: 'consumption',
       title: formatMessage(commonMessages.label.consumption),
       render: (text, record, index) => currencyFormatter(record.consumption),
+      sorter: (a, b) => a.consumption - b.consumption,
     },
     {
       key: 'duration',
       title: formatMessage(messages.memberNoteDuration),
       render: (text, record, index) =>
         formatMessage(commonMessages.text.minutes, { minutes: Math.round(record.duration / 60) }),
+      sorter: (a, b) => a.duration - b.duration,
     },
     {
       key: 'audioRecordFile',
@@ -220,7 +235,7 @@ const NoteCollectionPage: React.FC = () => {
       key: 'description',
       title: formatMessage(messages.memberNoteDescription),
       render: (text, record, index) => (
-        <Typography.Paragraph
+        <StyledDescription
           editable={{
             autoSize: { maxRows: 5, minRows: 1 },
             onChange: value =>
@@ -241,7 +256,7 @@ const NoteCollectionPage: React.FC = () => {
           className="mb-0"
         >
           {updatedDescriptions[record.id] || record.description || ''}
-        </Typography.Paragraph>
+        </StyledDescription>
       ),
     },
   ]
@@ -268,13 +283,15 @@ const NoteCollectionPage: React.FC = () => {
       />
 
       <AdminCard className="mb-5">
-        <Table<NoteAdminProps>
-          columns={columns}
-          rowKey="id"
-          pagination={false}
-          loading={loadingNotes}
-          dataSource={notes}
-        />
+        <TableWrapper>
+          <Table<NoteAdminProps>
+            columns={columns}
+            rowKey="id"
+            pagination={false}
+            loading={loadingNotes}
+            dataSource={notes}
+          />
+        </TableWrapper>
 
         {loadMoreNotes && (
           <div className="text-center mt-5">
