@@ -81,6 +81,12 @@ export type ProgramContentBodyType = {
   type: string | null
   description: string | null
   data: any
+  materials: ProgramContentMaterialProps[]
+}
+
+export type ProgramContentMaterialProps = {
+  id: string
+  data: any
 }
 
 export type ProgramPlanProps = {

@@ -226,6 +226,7 @@ export const commonMessages = {
     supportedLanguages: { id: 'common.term.supportedLanguages', defaultMessage: '選擇顯示於哪個語系' },
     tags: { id: 'common.term.tags', defaultMessage: '標籤' },
     memberCategories: { id: 'common.term.memberCategories', defaultMessage: '會員分類' },
+    material: { id: 'common.term.material', defaultMessage: '教材' },
   }),
   text: defineMessages({
     shortDescriptionPlaceholder: { id: 'common.text.shortDescriptionPlaceholder', defaultMessage: '100 字以內' },

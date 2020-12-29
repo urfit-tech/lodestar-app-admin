@@ -209,6 +209,10 @@ export const useProgramContentBody = (programContentId: string) => {
             description
             data
           }
+          program_content_materials {
+            id
+            data
+          }
         }
       }
     `,
@@ -222,12 +226,17 @@ export const useProgramContentBody = (programContentId: string) => {
           type: '',
           description: '',
           data: {},
+          materials: [],
         }
       : {
           id: data.program_content_by_pk.program_content_body.id,
           type: data.program_content_by_pk.program_content_body.type,
           description: data.program_content_by_pk.program_content_body.description,
           data: data.program_content_by_pk.program_content_body.data,
+          materials: data.program_content_by_pk.program_content_materials.map(v => ({
+            id: v.id,
+            data: v.data,
+          })),
         }
 
   return {
