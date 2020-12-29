@@ -3,7 +3,6 @@ import zhTW from 'antd/lib/locale-provider/zh_TW'
 import 'braft-editor/dist/index.css'
 import 'braft-editor/dist/output.css'
 import React from 'react'
-import { hot } from 'react-hot-loader/root'
 import { BrowserRouter, Route } from 'react-router-dom'
 import { ThemeProvider } from 'styled-components'
 import { QueryParamProvider } from 'use-query-params'
@@ -13,11 +12,13 @@ import { AuthProvider } from './contexts/AuthContext'
 import { LanguageProvider } from './contexts/LanguageContext'
 import { useAppAdmin } from './hooks/util'
 import LoadingPage from './pages/default/LoadingPage'
-import Routes from './Routes'
+import Routes, { RouteProps } from './Routes'
 import './styles/default/index.scss'
 import theme from './theme/default.json'
 
-const Application: React.FC = () => {
+const Application: React.FC<{
+  extraRouteProps?: { [routeKey: string]: RouteProps }
+}> = ({ extraRouteProps }) => {
   const appAdmin = useAppAdmin(window.location.host)
 
   if (!appAdmin || !appAdmin.apiHost) {
@@ -33,7 +34,7 @@ const Application: React.FC = () => {
               <LanguageProvider>
                 <ThemeProvider theme={theme}>
                   <ConfigProvider locale={zhTW}>
-                    <Routes />
+                    <Routes extra={extraRouteProps} />
                   </ConfigProvider>
                 </ThemeProvider>
               </LanguageProvider>
@@ -45,4 +46,4 @@ const Application: React.FC = () => {
   )
 }
 
-export default process.env.NODE_ENV === 'development' ? hot(Application) : Application
+export default Application

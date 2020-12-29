@@ -5,9 +5,9 @@ import NotFoundPage from './pages/default/NotFoundPage'
 import LoadablePage from './pages/LoadablePage'
 import { UserRole } from './types/member'
 
-type RouteProps = {
+export type RouteProps = {
   path: string
-  pageName: string
+  pageName: string | JSX.Element
   authenticated: boolean
   allowedUserRole?: UserRole
 }
@@ -337,54 +337,61 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   },
 }
 
-const Routes: React.FC = () => (
-  <Suspense fallback={<LoadingPage></LoadingPage>}>
-    <Switch>
-      {Object.keys(routesProps).map(routeKey => {
-        const routeProps = routesProps[routeKey as keyof typeof routesProps]
-        return (
-          <Route
-            exact
-            key={routeKey}
-            path={routeProps.path}
-            render={props => (
-              <LoadablePage
-                {...props}
-                pageName={routeProps.pageName}
-                authenticated={routeProps.authenticated}
-                allowedUserRole={routeProps.allowedUserRole}
-              />
-            )}
-          />
-        )
-      })}
-      <Route
-        exact
-        path="/admin"
-        render={props => (
-          <Redirect
-            to={{
-              pathname: '/admin/sales',
-              state: { from: props.location },
-            }}
-          />
-        )}
-      />
-      <Route
-        exact
-        path="/studio"
-        render={props => (
-          <Redirect
-            to={{
-              pathname: '/studio/sales',
-              state: { from: props.location },
-            }}
-          />
-        )}
-      />
-      <Route component={NotFoundPage} />
-    </Switch>
-  </Suspense>
-)
+const Routes: React.FC<{ extra?: { [routeKey: string]: RouteProps } }> = ({ extra }) => {
+  const routesMap = { ...routesProps, ...extra }
+  return (
+    <Suspense fallback={<LoadingPage />}>
+      <Switch>
+        {Object.keys(routesMap).map(routeKey => {
+          const routeProps = routesMap[routeKey as keyof typeof routesProps]
+          return (
+            <Route
+              exact
+              key={routeKey}
+              path={routeProps.path}
+              render={props =>
+                typeof routeProps.pageName === 'string' ? (
+                  <LoadablePage
+                    {...props}
+                    pageName={routeProps.pageName}
+                    authenticated={routeProps.authenticated}
+                    allowedUserRole={routeProps.allowedUserRole}
+                  />
+                ) : (
+                  routeProps.pageName
+                )
+              }
+            />
+          )
+        })}
+        <Route
+          exact
+          path="/admin"
+          render={props => (
+            <Redirect
+              to={{
+                pathname: '/admin/sales',
+                state: { from: props.location },
+              }}
+            />
+          )}
+        />
+        <Route
+          exact
+          path="/studio"
+          render={props => (
+            <Redirect
+              to={{
+                pathname: '/studio/sales',
+                state: { from: props.location },
+              }}
+            />
+          )}
+        />
+        <Route component={NotFoundPage} />
+      </Switch>
+    </Suspense>
+  )
+}
 
 export default Routes
