@@ -52,33 +52,33 @@ const ProjectCollectionBlock: React.FC<{
 
   return (
     <>
-      <div className="row py-3">
-        {withSortingButton && (
-          <div className="col-12 text-right">
-            <ItemsSortingModal
-              items={projectSorts}
-              triggerText={formatMessage(projectMessages.ui.sortProject)}
-              onSubmit={values =>
-                updatePositions({
-                  variables: {
-                    data: values.map((value, index) => ({
-                      id: value.id,
-                      title: value.title,
-                      type: projectType,
-                      position: index,
-                      app_id: appId,
-                    })),
-                  },
+      {withSortingButton && (
+        <div className="text-right">
+          <ItemsSortingModal
+            items={projectSorts}
+            triggerText={formatMessage(projectMessages.ui.sortProject)}
+            onSubmit={values =>
+              updatePositions({
+                variables: {
+                  data: values.map((value, index) => ({
+                    id: value.id,
+                    title: value.title,
+                    type: projectType,
+                    position: index,
+                    app_id: appId,
+                  })),
+                },
+              })
+                .then(() => {
+                  refetchProjectSorts()
+                  refetchProject()
                 })
-                  .then(() => {
-                    refetchProjectSorts()
-                    refetchProject()
-                  })
-                  .catch(handleError)
-              }
-            />
-          </div>
-        )}
+                .catch(handleError)
+            }
+          />
+        </div>
+      )}
+      <div className="row py-3">
         {projectPreview.map(project => (
           <div key={project.id} className="col-12 col-md-6 col-lg-4 mb-5">
             <ProjectAdminCard {...project} />

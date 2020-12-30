@@ -41,7 +41,7 @@ const ProjectPlanAdminBlock: React.FC<{
 
   return (
     <>
-      <div className="d-flex justify-content-between" style={{ width: '100%' }}>
+      <div className="d-flex justify-content-between w-100">
         <ProjectPlanAdminModal
           projectId={project.id}
           renderTrigger={({ setVisible }) => (

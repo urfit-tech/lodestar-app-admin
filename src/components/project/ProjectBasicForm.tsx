@@ -31,12 +31,17 @@ const StyledFormItem = styled(Form.Item)`
   }
 `
 
-const AmountInput: React.FC<{ unit?: string; value?: number }> = ({ unit, value }) => {
+const AmountInput: React.FC<{ unit?: string; value?: number; onChange?: (value?: number) => void }> = ({
+  unit,
+  value,
+  onChange,
+}) => {
   const { formatMessage } = useIntl()
   return (
     <InputNumber
       value={value}
       min={0}
+      onChange={v => onChange && onChange(Number(v))}
       parser={value => (value ? value.replace(/\D/g, '') : '')}
       formatter={(value: string | number | undefined) =>
         unit === 'funds'
