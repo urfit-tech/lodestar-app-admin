@@ -7,8 +7,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, errorMessages } from '../../helpers/translation'
 import { AuthState } from '../../types/general'
-import { AuthModalContext, StyledAction, StyledDivider, StyledTitle } from './AuthModal'
-import { FacebookLoginButton, GoogleLoginButton } from './SocialLoginButton'
+import { AuthModalContext, StyledAction, StyledTitle } from './AuthModal'
 
 type FieldProps = {
   username: string
@@ -46,20 +45,6 @@ const RegisterSection: React.FC<{
   return (
     <>
       <StyledTitle>{formatMessage(commonMessages.ui.register)}</StyledTitle>
-
-      {!!process.env.REACT_APP_FACEBOOK_APP_ID && (
-        <div className="mb-3">
-          <FacebookLoginButton />
-        </div>
-      )}
-      {!!process.env.REACT_APP_GOOGLE_CLIENT_ID && (
-        <div className="mb-3">
-          <GoogleLoginButton />
-        </div>
-      )}
-      {(!!process.env.REACT_APP_FACEBOOK_APP_ID || !!process.env.REACT_APP_GOOGLE_CLIENT_ID) && (
-        <StyledDivider>{formatMessage(commonMessages.ui.or)}</StyledDivider>
-      )}
 
       <Form form={form} onFinish={handleRegister}>
         <Form.Item
