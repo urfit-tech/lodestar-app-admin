@@ -5119,20 +5119,7 @@ export interface UPSERT_PROJECT_PLAN {
 }
 
 export interface UPSERT_PROJECT_PLANVariables {
-  id: any;
-  projectId: any;
-  coverUrl?: string | null;
-  title: string;
-  description: string;
-  listPrice: any;
-  salePrice?: any | null;
-  soldAt?: any | null;
-  discountDownPrice?: any | null;
-  periodAmount?: any | null;
-  periodType?: string | null;
-  isParticipantsVisible?: boolean | null;
-  publishedAt?: any | null;
-  autoRenewed?: boolean | null;
+  data: project_plan_insert_input[];
 }
 
 /* tslint:disable */

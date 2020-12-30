@@ -8,7 +8,6 @@ import gql from 'graphql-tag'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { v4 as uuid } from 'uuid'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError, uploadFile } from '../../helpers'
@@ -90,20 +89,24 @@ const ProjectPlanAdminModal: React.FC<
         const values = form.getFieldsValue()
         upsertProjectPlan({
           variables: {
-            id: projectPlan ? projectPlan?.id : uuid(),
-            projectId,
-            title: values.title,
-            publishedAt: values.isPublished ? new Date() : null,
-            isParticipantsVisible: values.isParticipantsVisible,
-            periodAmount: withPeriod ? values.period.amount : null,
-            periodType: withPeriod ? values.period.type : null,
-            autoRenewed: withPeriod ? withAutoRenewed : false,
-            listPrice: values.listPrice,
-            salePrice: values.sale ? values.sale.price : null,
-            soldAt: values.sale?.soldAt || null,
-            discountDownPrice: withDiscountDownPrice ? values.discountDownPrice : 0,
-            description: values.description.toRAW(),
-            coverUrl: projectPlan?.coverUrl ? projectPlan.coverUrl : null,
+            data: [
+              {
+                id: projectPlan?.id,
+                project_id: projectId,
+                title: values.title,
+                published_at: values.isPublished ? new Date() : null,
+                is_participants_visible: values.isParticipantsVisible,
+                period_amount: withPeriod ? values.period.amount : null,
+                period_type: withPeriod ? values.period.type : null,
+                auto_renewed: withPeriod ? withAutoRenewed : false,
+                list_price: values.listPrice,
+                sale_price: values.sale ? values.sale.price : null,
+                sold_at: values.sale?.soldAt || null,
+                discount_down_price: withDiscountDownPrice ? values.discountDownPrice : 0,
+                description: values.description.toRAW(),
+                cover_url: projectPlan?.coverUrl ? projectPlan.coverUrl : null,
+              },
+            ],
           },
         })
           .then(async ({ data }) => {
@@ -297,39 +300,9 @@ const UPDATE_PROJECT_PLAN_COVER_URL = gql`
 `
 
 const UPSERT_PROJECT_PLAN = gql`
-  mutation UPSERT_PROJECT_PLAN(
-    $id: uuid!
-    $projectId: uuid!
-    $coverUrl: String
-    $title: String!
-    $description: String!
-    $listPrice: numeric!
-    $salePrice: numeric
-    $soldAt: timestamptz
-    $discountDownPrice: numeric
-    $periodAmount: numeric
-    $periodType: String
-    $isParticipantsVisible: Boolean
-    $publishedAt: timestamptz
-    $autoRenewed: Boolean
-  ) {
+  mutation UPSERT_PROJECT_PLAN($data: [project_plan_insert_input!]!) {
     insert_project_plan(
-      objects: {
-        id: $id
-        project_id: $projectId
-        cover_url: $coverUrl
-        title: $title
-        description: $description
-        list_price: $listPrice
-        sale_price: $salePrice
-        sold_at: $soldAt
-        discount_down_price: $discountDownPrice
-        period_amount: $periodAmount
-        period_type: $periodType
-        is_participants_visible: $isParticipantsVisible
-        published_at: $publishedAt
-        auto_renewed: $autoRenewed
-      }
+      objects: $data
       on_conflict: {
         constraint: project_plan_pkey
         update_columns: [
