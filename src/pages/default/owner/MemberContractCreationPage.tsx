@@ -276,12 +276,12 @@ const MemberContractForm: React.FC<{
       referralDiscountPrice * mainProducts.length +
       studentDiscountPrice) *
     (mainProducts.length < 2 ? 0 : mainProducts.length === 2 ? -0.1 : mainProducts.length === 3 ? -0.15 : -0.2)
-  if (groupDiscountPrice) {
+  if (Math.ceil(groupDiscountPrice)) {
     orderItems.push({
       id: 'groupDiscount',
       type: 'promotionDiscount',
       name: mainProducts.length === 2 ? '任選兩件折抵' : mainProducts.length === 3 ? '任選三件折抵' : '任選四件折抵',
-      price: groupDiscountPrice,
+      price: Math.ceil(groupDiscountPrice),
       appointments: 0,
       coins: 0,
       amount: 1,
@@ -490,13 +490,11 @@ const MemberContractForm: React.FC<{
               value={selectedProjectPlanId}
               onChange={value => setSelectedProjectPlanId(value)}
             >
-              {dataProjectPlans?.project_plan.map(projectPlan => {
-                return (
-                  <Select.Option key={projectPlan.id} value={projectPlan.id}>
-                    {projectPlan.period_amount} {projectPlan.period_type}
-                  </Select.Option>
-                )
-              })}
+              {dataProjectPlans?.project_plan.map(projectPlan => (
+                <Select.Option key={projectPlan.id} value={projectPlan.id}>
+                  {projectPlan.period_amount} {projectPlan.period_type}
+                </Select.Option>
+              ))}
             </Select>
           </Form.Item>
         </Descriptions.Item>
@@ -886,17 +884,7 @@ const GET_APPOINTMENT_PLAN_CREATORS = gql`
 `
 const GET_REFERRAL_MEMBER_COLLECTION = gql`
   query GET_REFERRAL_MEMBER_COLLECTION($condition: member_bool_exp) {
-    member(
-      where: {
-        _and: [
-          {
-            order_logs: { status: { _eq: "SUCCESS" }, payment_logs: { status: { _eq: "SUCCESS" }, price: { _gt: 0 } } }
-          }
-          $condition
-        ]
-      }
-      limit: 10
-    ) {
+    member(where: { _and: [{ member_contracts: {} }, $condition] }, limit: 10) {
       id
       name
       email
