@@ -11,7 +11,7 @@ import types from '../../types'
 import { ProjectAdminProps, ProjectPlanSortProps } from '../../types/project'
 import { OverlayBlock, OverlayWrapper } from '../admin/PositionAdminLayout'
 import ItemsSortingModal from '../common/ItemsSortingModal'
-import ProjectPlanAdminModal from './ProjectPlanAminModal'
+import ProjectPlanAdminModal from './ProjectPlanAdminModal'
 import ProjectPlanCard from './ProjectPlanCard'
 
 const StyledButton = styled(Button)`

@@ -11,16 +11,18 @@ import MemberSelector from './MemberSelector'
 const ContentCreatorSelector: React.FC<{
   value?: string
   onChange?: (value: string | null) => void
-  withMemberPermission?: string
-}> = ({ value, onChange, withMemberPermission }) => {
+  allowedPermission?: string
+}> = ({ value, onChange, allowedPermission }) => {
   const { formatMessage } = useIntl()
 
-  const condition: types.GET_CONTENT_CREATOR_COLLECTIONVariables['condition'] = {
-    _or: [
-      { role: { _in: ['content-creator', 'app-owner'] } },
-      { member_permissions: { permission_id: { _eq: withMemberPermission } } },
-    ],
-  }
+  const condition: types.GET_CONTENT_CREATOR_COLLECTIONVariables['condition'] = allowedPermission
+    ? {
+        _or: [
+          { role: { _in: ['content-creator', 'app-owner'] } },
+          { member_permissions: { permission_id: { _eq: allowedPermission } } },
+        ],
+      }
+    : { role: { _in: ['content-creator', 'app-owner'] } }
 
   const { loading, error, members } = useContentCreatorCollection(condition)
 

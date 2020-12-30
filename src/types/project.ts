@@ -2,25 +2,15 @@ import { CategoryProps } from './general'
 
 export type ProjectDataType = 'funding' | 'pre-order' | 'on-sale' | 'modular'
 export type ProjectPlanPeriodType = 'D' | 'W' | 'M' | 'Y'
-export type ProjectAdminProps = {
-  id: string
-  title: string
-  abstract: string | null
+export type ProjectAdminProps = ProjectPreviewProps & {
   categories: CategoryProps[]
   introduction: string | null
   description: string | null
   targetAmount: number
   targetUnit: string
-  projectType: ProjectDataType
   updates: string | null
-  createdAt: Date | null
-  publishedAt: Date | null
-  expiredAt: Date | null
   comments: string | null
   contents: string | null
-  coverType: string | null
-  coverUrl: string | null
-  previewUrl: string | null
   isParticipantsVisible: boolean
   isCountdownTimerVisible: boolean
   projectPlan: ProjectPlanProps[]
@@ -36,8 +26,8 @@ export type ProjectPreviewProps = {
   expiredAt: Date | null
   coverUrl: string | null
   previewUrl: string | null
-  totalCount: number
   coverType: string | null
+  totalCount?: number
 }
 
 export type ProjectPlanProps = {

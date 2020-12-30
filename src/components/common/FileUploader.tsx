@@ -1,4 +1,4 @@
-import { UploadOutlined } from '@ant-design/icons'
+import { CloseOutlined, UploadOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
 import React, { useRef } from 'react'
 import { useIntl } from 'react-intl'
@@ -66,10 +66,10 @@ const FileUploader: React.FC<{
         fileList.map(v => (
           <StyledFileItem key={v.name} className="d-flex align-items-center justify-content-between py-1 px-2">
             <div className="flex-grow-1">{v.name}</div>
-            {/* <CloseButton
+            <CloseOutlined
               className="flex-shrink-0 ml-2 pointer-cursor"
               onClick={() => onChange?.(fileList.filter(w => w.name !== v.name))}
-            /> */}
+            />
           </StyledFileItem>
         ))}
     </>
