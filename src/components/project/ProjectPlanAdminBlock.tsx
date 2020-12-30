@@ -50,6 +50,7 @@ const ProjectPlanAdminBlock: React.FC<{
             </Button>
           )}
           onRefetch={onRefetch}
+          onRefetchProjectPlanSorts={refetchProjectPlanSorts}
         />
         <ItemsSortingModal
           items={projectPlanSorts}

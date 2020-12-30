@@ -5098,12 +5098,17 @@ export interface UPDATE_PROJECT_PLAN_COVER_URLVariables {
 // GraphQL mutation operation: UPSERT_PROJECT_PLAN
 // ====================================================
 
+export interface UPSERT_PROJECT_PLAN_insert_project_plan_returning {
+  __typename: "project_plan";
+  id: any;
+}
+
 export interface UPSERT_PROJECT_PLAN_insert_project_plan {
   __typename: "project_plan_mutation_response";
   /**
-   * number of affected rows by the mutation
+   * data of the affected rows by the mutation
    */
-  affected_rows: number;
+  returning: UPSERT_PROJECT_PLAN_insert_project_plan_returning[];
 }
 
 export interface UPSERT_PROJECT_PLAN {

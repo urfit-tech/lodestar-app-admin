@@ -58,8 +58,9 @@ const ProjectPlanAdminModal: React.FC<
     projectId: string
     projectPlan?: ProjectPlanProps
     onRefetch?: () => void
+    onRefetchProjectPlanSorts?: () => void
   }
-> = ({ projectId, projectPlan, onRefetch, ...modalProps }) => {
+> = ({ projectId, projectPlan, onRefetch, onRefetchProjectPlanSorts, ...modalProps }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
@@ -87,10 +88,9 @@ const ProjectPlanAdminModal: React.FC<
       .then(() => {
         setLoading(true)
         const values = form.getFieldsValue()
-        const projectPlanId = projectPlan ? projectPlan.id : uuid()
         upsertProjectPlan({
           variables: {
-            id: projectPlanId,
+            id: projectPlan ? projectPlan?.id : uuid(),
             projectId,
             title: values.title,
             publishedAt: values.isPublished ? new Date() : null,
@@ -106,30 +106,25 @@ const ProjectPlanAdminModal: React.FC<
             coverUrl: projectPlan?.coverUrl ? projectPlan.coverUrl : null,
           },
         })
-          .then(async () => {
+          .then(async ({ data }) => {
+            const id = data?.insert_project_plan?.returning.map(v => v.id)[0]
             if (coverImage) {
               try {
-                await uploadFile(
-                  `project_covers/${appId}/${projectId}/${projectPlanId}`,
-                  coverImage,
-                  authToken,
-                  apiHost,
-                  {
-                    cancelToken: new axios.CancelToken(canceler => {
-                      uploadCanceler.current = canceler
-                    }),
-                  },
-                )
+                await uploadFile(`project_covers/${appId}/${projectId}/${id}`, coverImage, authToken, apiHost, {
+                  cancelToken: new axios.CancelToken(canceler => {
+                    uploadCanceler.current = canceler
+                  }),
+                })
               } catch (error) {
                 process.env.NODE_ENV === 'development' && console.log(error)
                 return error
               }
               updateProjectPlanCoverUrl({
                 variables: {
-                  id: projectPlanId,
+                  id: id,
                   coverUrl: `https://${
                     process.env.REACT_APP_S3_BUCKET
-                  }/project_covers/${appId}/${projectId}/${projectPlanId}?t=${Date.now()}`,
+                  }/project_covers/${appId}/${projectId}/${id}?t=${Date.now()}`,
                 },
               })
             }
@@ -138,6 +133,7 @@ const ProjectPlanAdminModal: React.FC<
             message.success(formatMessage(commonMessages.event.successfullySaved))
             onSuccess()
             onRefetch?.()
+            onRefetchProjectPlanSorts?.()
           })
           .catch(handleError)
           .finally(() => setLoading(false))
@@ -353,7 +349,9 @@ const UPSERT_PROJECT_PLAN = gql`
         ]
       }
     ) {
-      affected_rows
+      returning {
+        id
+      }
     }
   }
 `

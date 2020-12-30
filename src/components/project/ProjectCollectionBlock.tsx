@@ -54,7 +54,7 @@ const ProjectCollectionBlock: React.FC<{
     <>
       <div className="row py-3">
         {withSortingButton && (
-          <div className="d-flex flex-row-reverse text-right">
+          <div className="col-12 text-right">
             <ItemsSortingModal
               items={projectSorts}
               triggerText={formatMessage(projectMessages.ui.sortProject)}
