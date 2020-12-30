@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "lodestar-app-admin": "git+https://<github_token>:x-oauth-basic@github.com/urfit-tech/lodestar-app-admin.git#develop",
+    "lodestar-app-admin": "git+https://5283f1eb2c0cbdec821bd2bc65e18c942c4d51f8:x-oauth-basic@github.com/urfit-tech/lodestar-app-admin.git#develop",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-scripts": "^4.0.1"
