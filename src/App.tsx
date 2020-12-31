@@ -6,6 +6,7 @@ import TermsPtPage from './pages/TermsPtPage'
 const App = () => {
   return (
     <Application
+      appId="xuemi"
       extraRouteProps={{
         terms: {
           path: '/terms',
