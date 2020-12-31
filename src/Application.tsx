@@ -10,15 +10,17 @@ import { ApiProvider } from './contexts/ApiContext'
 import { AppProvider } from './contexts/AppContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { LanguageProvider } from './contexts/LanguageContext'
-import { useAppAdmin } from './hooks/util'
+import { useApiHost, useAppAdmin } from './hooks/util'
 import LoadingPage from './pages/default/LoadingPage'
 import Routes, { RouteProps } from './Routes'
 import './styles/default/index.scss'
 import theme from './theme/default.json'
 
 const Application: React.FC<{
+  appId?: string
   extraRouteProps?: { [routeKey: string]: RouteProps }
-}> = ({ extraRouteProps }) => {
+}> = ({ appId, extraRouteProps }) => {
+  const apiHost = useApiHost(appId || '')
   const appAdmin = useAppAdmin(window.location.host)
 
   if (!appAdmin || !appAdmin.apiHost) {
@@ -28,9 +30,9 @@ const Application: React.FC<{
   return (
     <BrowserRouter>
       <QueryParamProvider ReactRouterRoute={Route}>
-        <AuthProvider appId={appAdmin.appId} apiHost={appAdmin.apiHost}>
+        <AuthProvider appId={appId || appAdmin.appId} apiHost={appId ? apiHost || appAdmin.apiHost : appAdmin.apiHost}>
           <ApiProvider>
-            <AppProvider appId={appAdmin.appId}>
+            <AppProvider appId={appId || appAdmin.appId}>
               <LanguageProvider>
                 <ThemeProvider theme={theme}>
                   <ConfigProvider locale={zhTW}>

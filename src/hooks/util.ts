@@ -57,3 +57,29 @@ export const useAppAdmin = (host: string) => {
 
   return appAdmin
 }
+
+export const useApiHost = (appId: string) => {
+  const [apiHost, setApiHost] = useState<string | null>(null)
+  useEffect(() => {
+    if (apiHost) {
+      return
+    }
+    Axios.post(
+      `${process.env.REACT_APP_GRAPHQL_ENDPOINT}`,
+      {
+        operationName: 'GET_API_HOST',
+        query:
+          'query GET_API_HOST($appId: String!) { app_admin(where: { app_id: { _eq: $appId } }, order_by: { position: asc_nulls_last }, limit: 1) { api_host } }',
+        variables: { appId },
+      },
+    )
+      .then(({ data }) => {
+        setApiHost(`https://${data?.data?.app_admin[0]?.api_host || process.env.REACT_APP_API_HOST || null}`)
+      })
+      .catch(() => {
+        setApiHost(`https://${process.env.REACT_APP_API_HOST || null}`)
+      })
+  }, [apiHost, appId])
+
+  return apiHost
+}
