@@ -73,7 +73,7 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
                   <CouponPlanAdminCard
                     couponPlan={couponPlan}
                     isAvailable={couponPlan.available}
-                    renderDescription={() => (
+                    renderDescription={
                       <CouponPlanDescriptionTabs
                         couponPlanId={couponPlan.id}
                         title={couponPlan.title}
@@ -84,8 +84,8 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
                         scope={couponPlan.scope}
                         productIds={couponPlan.productIds}
                       />
-                    )}
-                    renderCount={() => (
+                    }
+                    renderCount={
                       <StyledCount>
                         {formatMessage(promotionMessages.text.sentUsedCount, {
                           total: couponPlan.count,
@@ -93,8 +93,8 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
                           used: couponPlan.used,
                         })}
                       </StyledCount>
-                    )}
-                    renderEditDropdown={() => (
+                    }
+                    renderEditDropdown={
                       <Dropdown
                         placement="bottomRight"
                         trigger={['click']}
@@ -116,7 +116,7 @@ const CouponPlanCollectionAdminPage: React.FC = () => {
                       >
                         <MoreOutlined />
                       </Dropdown>
-                    )}
+                    }
                   />
                 </div>
               ))}

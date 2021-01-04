@@ -54,7 +54,7 @@ const MemberCouponAdminBlock: React.FC<{
                 <CouponPlanAdminCard
                   isAvailable={v.isAvailable}
                   couponPlan={w}
-                  renderDescription={() => (
+                  renderDescription={
                     <CouponPlanDescriptionScopeBlock
                       constraint={w.constraint}
                       type={w.type}
@@ -62,7 +62,7 @@ const MemberCouponAdminBlock: React.FC<{
                       scope={w.scope}
                       productIds={w.productIds}
                     />
-                  )}
+                  }
                 />
               </div>
             ))}

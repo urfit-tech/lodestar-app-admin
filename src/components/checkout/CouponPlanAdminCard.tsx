@@ -1,5 +1,5 @@
 import { Button, Divider, Modal } from 'antd'
-import React, { useState } from 'react'
+import React, { ReactElement, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { currencyFormatter, dateFormatter } from '../../helpers'
@@ -118,9 +118,9 @@ const CouponPlanAdminCard: React.FC<{
     productIds: string[]
   }
   isAvailable?: boolean
-  renderDescription?: () => React.ReactNode
-  renderCount?: () => React.ReactNode
-  renderEditDropdown?: () => React.ReactNode
+  renderDescription?: ReactElement
+  renderCount?: ReactElement
+  renderEditDropdown?: ReactElement
 }> = ({ couponPlan, isAvailable, renderDescription, renderCount, renderEditDropdown }) => {
   const { formatMessage } = useIntl()
   const [isModalVisible, setIsModalVisible] = useState(false)
@@ -171,13 +171,13 @@ const CouponPlanAdminCard: React.FC<{
         <StyledButton type="link" onClick={() => setIsModalVisible(true)}>
           {formatMessage(commonMessages.ui.detail)}
         </StyledButton>
-        <div className="flex-grow-1">{renderCount?.()}</div>
-        {renderEditDropdown?.()}
+        <div className="flex-grow-1">{renderCount}</div>
+        {renderEditDropdown}
       </div>
 
       <StyledModal visible={isModalVisible} title={null} footer={null} onCancel={() => setIsModalVisible(false)}>
         <StyledModalTitle className="mb-3">{couponPlan.title}</StyledModalTitle>
-        {renderDescription?.()}
+        {renderDescription}
       </StyledModal>
     </StyledAdminCard>
   )
