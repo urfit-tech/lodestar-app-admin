@@ -23,6 +23,7 @@ const messages = defineMessages({
   invoiceSuccess: { id: 'payment.status.invoiceSuccess', defaultMessage: '開立成功' },
   invoiceFailed: { id: 'payment.status.invoiceFailed', defaultMessage: '開立失敗 {errorCode}' },
   invoicePending: { id: 'payment.status.invoicePending', defaultMessage: '未開立電子發票' },
+  orderProductIdFirstSixNo: { id: 'common.label.orderProductIdFirstSixNo', defaultMessage: '產品項目編號前6碼' },
 })
 
 const StyledRangePicker = styled(props => <DatePicker.RangePicker {...props} />)`
@@ -209,6 +210,7 @@ const OrderExportModal: React.FC = () => {
           formatMessage(orderMessages.label.paymentLogPaidAt),
           formatMessage(orderMessages.label.productOwner),
           formatMessage(orderMessages.label.productType),
+          formatMessage(messages.orderProductIdFirstSixNo),
           formatMessage(orderMessages.label.orderProductName),
           formatMessage(orderMessages.label.productQuantity),
           formatMessage(orderMessages.label.productPrice),
@@ -221,6 +223,8 @@ const OrderExportModal: React.FC = () => {
             orderProduct.product_owner || '',
             productTypeLabel[orderProduct.product_id?.split('_')[0] || ''] ||
               formatMessage(commonMessages.product.unknownType),
+            orderProduct.product_id?.split('_')[1]?.slice(0, -(orderProduct.product_id?.split('_')[1].length - 6)) ||
+              '',
             orderProduct.name,
             orderProduct.quantity,
             orderProduct.price,
