@@ -1543,6 +1543,180 @@ export interface GET_PRODUCT_SELECTION_COLLECTION {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_ALL_BRIEF_PRODUCT_COLLECTION
+// ====================================================
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program {
+  __typename: "program";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan_program {
+  __typename: "program";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan {
+  __typename: "program_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  program: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan_program;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket_activity {
+  __typename: "activity";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket {
+  __typename: "activity_ticket";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  activity: GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket_activity;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_program {
+  __typename: "podcast_program";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan {
+  __typename: "podcast_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  creator: GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan_creator | null;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan {
+  __typename: "appointment_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  creator: GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan_creator | null;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec_merchandise {
+  __typename: "merchandise";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec {
+  __typename: "merchandise_spec";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  merchandise: GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec_merchandise;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan_project {
+  __typename: "project";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan {
+  __typename: "project_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  project: GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan_project;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan_program_package {
+  __typename: "program_package";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan {
+  __typename: "program_package_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  program_package: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan_program_package;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_ALL_BRIEF_PRODUCT_COLLECTION_program[];
+  /**
+   * fetch data from the table: "program_plan"
+   */
+  program_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan[];
+  /**
+   * fetch data from the table: "activity_ticket"
+   */
+  activity_ticket: GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket[];
+  /**
+   * fetch data from the table: "podcast_program"
+   */
+  podcast_program: GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_program[];
+  /**
+   * fetch data from the table: "podcast_plan"
+   */
+  podcast_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan[];
+  /**
+   * fetch data from the table: "appointment_plan"
+   */
+  appointment_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan[];
+  /**
+   * fetch data from the table: "merchandise_spec"
+   */
+  merchandise_spec: GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec[];
+  /**
+   * fetch data from the table: "project_plan"
+   */
+  project_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan[];
+  /**
+   * fetch data from the table: "program_package_plan"
+   */
+  program_package_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_ISSUE_STATUS
 // ====================================================
 
@@ -7048,180 +7222,6 @@ export interface ARRANGE_PRODUCT_INVENTORY {
 
 export interface ARRANGE_PRODUCT_INVENTORYVariables {
   data: product_inventory_insert_input;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_ALL_BRIEF_PRODUCT_COLLECTION
-// ====================================================
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program {
-  __typename: "program";
-  id: any;
-  title: string;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan_program {
-  __typename: "program";
-  id: any;
-  title: string;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan {
-  __typename: "program_plan";
-  id: any;
-  title: string;
-  /**
-   * An object relationship
-   */
-  program: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan_program;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket_activity {
-  __typename: "activity";
-  id: any;
-  title: string;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket {
-  __typename: "activity_ticket";
-  id: any;
-  title: string;
-  /**
-   * An object relationship
-   */
-  activity: GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket_activity;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_program {
-  __typename: "podcast_program";
-  id: any;
-  title: string;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan_creator {
-  __typename: "member_public";
-  id: string | null;
-  name: string | null;
-  username: string | null;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan {
-  __typename: "podcast_plan";
-  id: any;
-  title: string;
-  /**
-   * An object relationship
-   */
-  creator: GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan_creator | null;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan_creator {
-  __typename: "member_public";
-  id: string | null;
-  name: string | null;
-  username: string | null;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan {
-  __typename: "appointment_plan";
-  id: any;
-  title: string;
-  /**
-   * An object relationship
-   */
-  creator: GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan_creator | null;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec_merchandise {
-  __typename: "merchandise";
-  id: any;
-  title: string;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec {
-  __typename: "merchandise_spec";
-  id: any;
-  title: string;
-  /**
-   * An object relationship
-   */
-  merchandise: GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec_merchandise;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan_project {
-  __typename: "project";
-  id: any;
-  title: string;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan {
-  __typename: "project_plan";
-  id: any;
-  title: string;
-  /**
-   * An object relationship
-   */
-  project: GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan_project;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan_program_package {
-  __typename: "program_package";
-  id: any;
-  title: string;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan {
-  __typename: "program_package_plan";
-  id: any;
-  title: string;
-  /**
-   * An object relationship
-   */
-  program_package: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan_program_package;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
-  /**
-   * fetch data from the table: "program"
-   */
-  program: GET_ALL_BRIEF_PRODUCT_COLLECTION_program[];
-  /**
-   * fetch data from the table: "program_plan"
-   */
-  program_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan[];
-  /**
-   * fetch data from the table: "activity_ticket"
-   */
-  activity_ticket: GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket[];
-  /**
-   * fetch data from the table: "podcast_program"
-   */
-  podcast_program: GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_program[];
-  /**
-   * fetch data from the table: "podcast_plan"
-   */
-  podcast_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan[];
-  /**
-   * fetch data from the table: "appointment_plan"
-   */
-  appointment_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan[];
-  /**
-   * fetch data from the table: "merchandise_spec"
-   */
-  merchandise_spec: GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec[];
-  /**
-   * fetch data from the table: "project_plan"
-   */
-  project_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan[];
-  /**
-   * fetch data from the table: "program_package_plan"
-   */
-  program_package_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan[];
 }
 
 /* tslint:disable */

@@ -2,7 +2,9 @@ import { SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Button, DatePicker, Input, Table, Tag, Typography } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import Axios from 'axios'
 import gql from 'graphql-tag'
+import md5 from 'md5'
 import moment, { Moment } from 'moment'
 import { sum } from 'ramda'
 import React, { useRef, useState } from 'react'
@@ -14,7 +16,7 @@ import { AvatarImage } from '../../components/common/Image'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { useApp } from '../../contexts/AppContext'
 import { currencyFormatter, dateFormatter, handleError } from '../../helpers'
-import { commonMessages, memberMessages } from '../../helpers/translation'
+import { commonMessages, memberMessages, podcastMessages } from '../../helpers/translation'
 import { useMutateMemberNote } from '../../hooks/member'
 import types from '../../types'
 
@@ -221,15 +223,11 @@ const NoteCollectionPage: React.FC = () => {
       key: 'audioRecordFile',
       title: formatMessage(memberMessages.label.audioRecordFile),
       render: (text, record, index) =>
-        record.metadata?.recordfile ? (
-          <a
-            href={`//${settings['call.server_origin']}/${record.metadata.recordfile}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <Button type="primary">{formatMessage(commonMessages.ui.check)}</Button>
-          </a>
-        ) : null,
+        record.metadata?.recordfile && (
+          <LoadRecordFileButton
+            url={`${settings['call_server.origin']}/coocenter-api/monitor/${record.metadata.recordfile}`}
+          />
+        ),
     },
     {
       key: 'description',
@@ -310,6 +308,66 @@ const NoteCollectionPage: React.FC = () => {
         )}
       </AdminCard>
     </AdminLayout>
+  )
+}
+
+const LoadRecordFileButton: React.FC<{
+  url: string
+}> = ({ url }) => {
+  const { formatMessage } = useIntl()
+  const [isPlaying, setIsPlaying] = useState(false)
+
+  const audioCtx = new window.AudioContext()
+  const buffer = useRef<AudioBuffer | null>(null)
+  const source = useRef<AudioBufferSourceNode | null>(null)
+
+  const loadAudioData = async () => {
+    try {
+      const response = await Axios.get(url, {
+        headers: {
+          Authorization: md5(`xuemi${moment().format('YYYY-MM-DD')}`),
+        },
+        responseType: 'arraybuffer',
+      })
+
+      buffer.current = await audioCtx.decodeAudioData(response.data)
+    } catch (error) {
+      handleError(error)
+    }
+  }
+
+  const handlePlay = async () => {
+    await loadAudioData()
+    if (!buffer.current) {
+      return
+    }
+
+    source.current = audioCtx.createBufferSource()
+    source.current.addEventListener('ended', () => {
+      source.current?.stop(0)
+      setIsPlaying(false)
+    })
+
+    source.current.buffer = buffer.current
+    source.current.connect(audioCtx.destination)
+    source.current.start(0)
+    setIsPlaying(true)
+  }
+
+  return (
+    <Button
+      type="primary"
+      onClick={() => {
+        if (isPlaying) {
+          source.current?.stop(0)
+          setIsPlaying(false)
+        } else {
+          handlePlay()
+        }
+      }}
+    >
+      {isPlaying ? formatMessage(podcastMessages.ui.stop) : formatMessage(podcastMessages.ui.play)}
+    </Button>
   )
 }
 

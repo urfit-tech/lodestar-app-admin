@@ -66,6 +66,7 @@ export const commonMessages = {
     createContract: { id: 'common.ui.createContract', defaultMessage: '建立合約' },
     createPlan: { id: 'common.ui.createPlan', defaultMessage: '建立方案' },
     uploadImage: { id: 'common.ui.uploadImage', defaultMessage: '上傳圖片' },
+    download: { id: 'common.ui.download', defaultMessage: '下載' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -742,6 +743,7 @@ export const podcastMessages = {
     bulkUpload: { id: 'podcast.ui.bulkUpload', defaultMessage: '合併上傳' },
     play: { id: 'podcast.ui.play', defaultMessage: '播放' },
     pause: { id: 'podcast.ui.pause', defaultMessage: '暫停' },
+    stop: { id: 'podcast.ui.stop', defaultMessage: '停止' },
     backward: { id: 'podcast.ui.backward', defaultMessage: '上一首' },
     backwardFiveSecond: { id: 'podcast.ui.backwardFiveSecond', defaultMessage: '前五秒' },
     forward: { id: 'podcast.ui.forward', defaultMessage: '下一首' },
