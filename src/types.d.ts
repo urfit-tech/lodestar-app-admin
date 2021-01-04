@@ -6686,10 +6686,20 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan {
   creator: GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan_creator | null;
 }
 
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise {
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec_merchandise {
   __typename: "merchandise";
   id: any;
   title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec {
+  __typename: "merchandise_spec";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  merchandise: GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec_merchandise;
 }
 
 export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan_project {
@@ -6750,9 +6760,9 @@ export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
    */
   appointment_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan[];
   /**
-   * fetch data from the table: "merchandise"
+   * fetch data from the table: "merchandise_spec"
    */
-  merchandise: GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise[];
+  merchandise_spec: GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec[];
   /**
    * fetch data from the table: "project_plan"
    */
