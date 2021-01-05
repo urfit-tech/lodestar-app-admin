@@ -308,7 +308,7 @@ const ProgramContentAdminModal: React.FC<{
           <Form.Item label={formatMessage(commonMessages.term.material)}>
             <MaterialFileUpload value={materialFiles} onChange={value => setMaterialFiles(value)} />
           </Form.Item>
-          <div>
+          <div className="mb-4">
             {materialFiles?.map(file => (
               <StyledFileItem key={file.name} className="d-flex align-items-center justify-content-between py-1 px-2">
                 <div className="flex-grow-1">{file.name}</div>
