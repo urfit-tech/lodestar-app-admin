@@ -3775,6 +3775,47 @@ export interface DELETE_PROGRAM_CONTENTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_MATERIALS
+// ====================================================
+
+export interface UPDATE_PROGRAM_CONTENT_MATERIALS_delete_program_content_material {
+  __typename: "program_content_material_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_MATERIALS_insert_program_content_material {
+  __typename: "program_content_material_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_MATERIALS {
+  /**
+   * delete data from the table: "program_content_material"
+   */
+  delete_program_content_material: UPDATE_PROGRAM_CONTENT_MATERIALS_delete_program_content_material | null;
+  /**
+   * insert data into the table: "program_content_material"
+   */
+  insert_program_content_material: UPDATE_PROGRAM_CONTENT_MATERIALS_insert_program_content_material | null;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_MATERIALSVariables {
+  programContentId: any;
+  materials: program_content_material_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_CONTENT
 // ====================================================
 
@@ -8691,12 +8732,22 @@ export interface GET_PROGRAM_CONTENT_BODY_program_content_by_pk_program_content_
   data: any | null;
 }
 
+export interface GET_PROGRAM_CONTENT_BODY_program_content_by_pk_program_content_materials {
+  __typename: "program_content_material";
+  id: any;
+  data: any | null;
+}
+
 export interface GET_PROGRAM_CONTENT_BODY_program_content_by_pk {
   __typename: "program_content";
   /**
    * An object relationship
    */
   program_content_body: GET_PROGRAM_CONTENT_BODY_program_content_by_pk_program_content_body;
+  /**
+   * An array relationship
+   */
+  program_content_materials: GET_PROGRAM_CONTENT_BODY_program_content_by_pk_program_content_materials[];
 }
 
 export interface GET_PROGRAM_CONTENT_BODY {
