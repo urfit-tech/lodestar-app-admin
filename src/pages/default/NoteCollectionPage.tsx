@@ -315,7 +315,7 @@ const LoadRecordFileButton: React.FC<{
   url: string
 }> = ({ url }) => {
   const { formatMessage } = useIntl()
-  const [isPlaying, setIsPlaying] = useState(false)
+  const [audioStatus, setAudioStatus] = useState<'loading' | 'playing' | null>(null)
 
   const audioCtx = new window.AudioContext()
   const buffer = useRef<AudioBuffer | null>(null)
@@ -337,6 +337,7 @@ const LoadRecordFileButton: React.FC<{
   }
 
   const handlePlay = async () => {
+    setAudioStatus('loading')
     await loadAudioData()
     if (!buffer.current) {
       return
@@ -345,28 +346,29 @@ const LoadRecordFileButton: React.FC<{
     source.current = audioCtx.createBufferSource()
     source.current.addEventListener('ended', () => {
       source.current?.stop(0)
-      setIsPlaying(false)
+      setAudioStatus(null)
     })
 
     source.current.buffer = buffer.current
     source.current.connect(audioCtx.destination)
     source.current.start(0)
-    setIsPlaying(true)
+    setAudioStatus('playing')
   }
 
   return (
     <Button
       type="primary"
+      loading={audioStatus === 'loading'}
       onClick={() => {
-        if (isPlaying) {
+        if (audioStatus === 'playing') {
           source.current?.stop(0)
-          setIsPlaying(false)
+          setAudioStatus(null)
         } else {
           handlePlay()
         }
       }}
     >
-      {isPlaying ? formatMessage(podcastMessages.ui.stop) : formatMessage(podcastMessages.ui.play)}
+      {audioStatus === 'playing' ? formatMessage(podcastMessages.ui.stop) : formatMessage(podcastMessages.ui.play)}
     </Button>
   )
 }
