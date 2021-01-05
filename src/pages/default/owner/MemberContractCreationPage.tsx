@@ -28,7 +28,7 @@ import { AdminBlock, AdminBlockTitle } from '../../../components/admin'
 import DefaultLayout from '../../../components/layout/DefaultLayout'
 import { useApp } from '../../../contexts/AppContext'
 import { useAuth } from '../../../contexts/AuthContext'
-import { currencyFormatter, dateFormatter, handleError, notEmpty, uploadFile } from '../../../helpers'
+import { currencyFormatter, handleError, notEmpty, uploadFile } from '../../../helpers'
 import types from '../../../types'
 import { PeriodType } from '../../../types/general'
 import LoadingPage from '../LoadingPage'
@@ -375,8 +375,8 @@ const MemberContractForm: React.FC<{
                 orderId,
                 price: totalPrice,
                 coupons,
-                startedAt: dateFormatter(startedAt),
-                endedAt: endedAt && dateFormatter(endedAt),
+                startedAt,
+                endedAt,
                 invoice: {
                   name: member.name,
                   phone: member.phones,
