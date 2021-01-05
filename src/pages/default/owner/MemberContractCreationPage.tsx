@@ -663,14 +663,9 @@ const MemberContractForm: React.FC<{
         <Descriptions.Item label="承辦人 / 分潤" span={3}>
           <Space align="center" className="d-flex mb-3">
             <Form.Item name="orderExecutorId" rules={[{ required: true, message: '請填寫承辦人' }]}>
-              <Select
-                showSearch
-                placeholder="承辦人"
-                style={{ width: '150px' }}
-                filterOption={(input, option) => option?.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-              >
+              <Select<string> showSearch placeholder="承辦人" style={{ width: '150px' }} optionFilterProp="label">
                 {xuemiSales?.map(member => (
-                  <Select.Option key={member.id} value={member.id}>
+                  <Select.Option key={member.id} value={member.id} label={`${member.id} ${member.name}`}>
                     {member.name}
                   </Select.Option>
                 ))}
@@ -693,14 +688,14 @@ const MemberContractForm: React.FC<{
                       fieldKey={[field.fieldKey, 'memberId']}
                       rules={[{ required: true, message: '請填寫承辦人' }]}
                     >
-                      <Select
+                      <Select<string>
                         showSearch
                         placeholder="承辦人"
                         style={{ width: '150px' }}
-                        filterOption={(input, option) => option?.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                        optionFilterProp="label"
                       >
                         {xuemiSales?.map(member => (
-                          <Select.Option key={member.id} value={member.id}>
+                          <Select.Option key={member.id} value={member.id} label={`${member.id} ${member.name}`}>
                             {member.name}
                           </Select.Option>
                         ))}
