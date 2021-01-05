@@ -111,8 +111,8 @@ const ProgramIntroForm: React.FC<{
           onChange={() => handleUpdateCover()}
         />
       </Form.Item>
-      <Form.Item label={formatMessage(programMessages.label.introductionVideo)} name="coverVideoUrl">
-        <VideoInput appId={appId} programId={program.id} />
+      <Form.Item label={formatMessage(commonMessages.label.introductionVideo)} name="coverVideoUrl">
+        <VideoInput appId={appId} productId={program.id} productType="program" />
       </Form.Item>
       <Form.Item label={formatMessage(programMessages.label.programAbstract)} name="abstract">
         <Input.TextArea rows={5} />

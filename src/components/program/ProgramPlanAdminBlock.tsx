@@ -1,16 +1,13 @@
 import { PlusOutlined } from '@ant-design/icons'
 import { Button, Skeleton } from 'antd'
 import React from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
+import { commonMessages } from '../../helpers/translation'
 import { ProgramAdminProps } from '../../types/program'
 import { AdminBlock } from '../admin'
 import ProgramPerpetualPlanAdminCard from './ProgramPerpetualPlanAdminCard'
 import ProgramPlanAdminModal from './ProgramPlanAdminModal'
 import ProgramSubscriptionPlanAdminCard from './ProgramSubscriptionPlanAdminCard'
-
-const messages = defineMessages({
-  createPlan: { id: 'program.ui.createPlan', defaultMessage: '建立方案' },
-})
 
 const ProgramPlanAdminBlock: React.FC<{
   program: ProgramAdminProps | null
@@ -29,7 +26,7 @@ const ProgramPlanAdminBlock: React.FC<{
           programId={program.id}
           renderTrigger={({ setVisible }) => (
             <Button icon={<PlusOutlined />} type="primary" className="mb-4" onClick={() => setVisible(true)}>
-              {formatMessage(messages.createPlan)}
+              {formatMessage(commonMessages.ui.createPlan)}
             </Button>
           )}
           onRefetch={onRefetch}

@@ -1418,6 +1418,10 @@ export interface GET_CONTENT_CREATOR_COLLECTION {
   member: GET_CONTENT_CREATOR_COLLECTION_member[];
 }
 
+export interface GET_CONTENT_CREATOR_COLLECTIONVariables {
+  condition: member_bool_exp;
+}
+
 /* tslint:disable */
 /* eslint-disable */
 // @generated
@@ -4779,6 +4783,412 @@ export interface PUBLISH_PROGRAM_PACKAGE {
 
 export interface PUBLISH_PROGRAM_PACKAGEVariables {
   programPackageId: any;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_BASIC
+// ====================================================
+
+export interface UPDATE_PROJECT_BASIC_update_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_BASIC_delete_project_category {
+  __typename: "project_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_BASIC_insert_project_category {
+  __typename: "project_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_BASIC {
+  /**
+   * update data of the table: "project"
+   */
+  update_project: UPDATE_PROJECT_BASIC_update_project | null;
+  /**
+   * delete data from the table: "project_category"
+   */
+  delete_project_category: UPDATE_PROJECT_BASIC_delete_project_category | null;
+  /**
+   * insert data into the table: "project_category"
+   */
+  insert_project_category: UPDATE_PROJECT_BASIC_insert_project_category | null;
+}
+
+export interface UPDATE_PROJECT_BASICVariables {
+  projectId: any;
+  title?: string | null;
+  projectCategories: project_category_insert_input[];
+  targetUnit?: string | null;
+  targetAmount: any;
+  expiredAt?: any | null;
+  isParticipantsVisible: boolean;
+  isCountdownTimerVisible: boolean;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROJECT_PREVIEW_COLLECTION
+// ====================================================
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_aggregate_aggregate {
+  __typename: "project_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_aggregate {
+  __typename: "project_aggregate";
+  aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_aggregate_aggregate | null;
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_project_plans_project_plan_enrollments_aggregate_aggregate {
+  __typename: "project_plan_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_project_plans_project_plan_enrollments_aggregate {
+  __typename: "project_plan_enrollment_aggregate";
+  aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_project_plans_project_plan_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_project_plans {
+  __typename: "project_plan";
+  id: any;
+  /**
+   * An aggregated array relationship
+   */
+  project_plan_enrollments_aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_project_plans_project_plan_enrollments_aggregate;
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project {
+  __typename: "project";
+  id: any;
+  title: string;
+  abstract: string | null;
+  /**
+   * funding / pre-order / on-sale / modular
+   */
+  type: string;
+  created_at: any;
+  published_at: any | null;
+  expired_at: any | null;
+  cover_url: string | null;
+  preview_url: string | null;
+  creator_id: string | null;
+  position: number;
+  /**
+   * image / video
+   */
+  cover_type: string;
+  /**
+   * An array relationship
+   */
+  project_plans: GET_PROJECT_PREVIEW_COLLECTION_project_project_plans[];
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION {
+  /**
+   * fetch aggregated fields from the table: "project"
+   */
+  project_aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_aggregate;
+  /**
+   * fetch data from the table: "project"
+   */
+  project: GET_PROJECT_PREVIEW_COLLECTION_project[];
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTIONVariables {
+  condition: project_bool_exp;
+  orderBy?: project_order_by[] | null;
+  limit: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROJECT_SORT_COLLECTION
+// ====================================================
+
+export interface GET_PROJECT_SORT_COLLECTION_project {
+  __typename: "project";
+  id: any;
+  title: string;
+  /**
+   * funding / pre-order / on-sale / modular
+   */
+  type: string;
+}
+
+export interface GET_PROJECT_SORT_COLLECTION {
+  /**
+   * fetch data from the table: "project"
+   */
+  project: GET_PROJECT_SORT_COLLECTION_project[];
+}
+
+export interface GET_PROJECT_SORT_COLLECTIONVariables {
+  condition: project_bool_exp;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_POSITION_COLLECTION
+// ====================================================
+
+export interface UPDATE_PROJECT_POSITION_COLLECTION_insert_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_POSITION_COLLECTION {
+  /**
+   * insert data into the table: "project"
+   */
+  insert_project: UPDATE_PROJECT_POSITION_COLLECTION_insert_project | null;
+}
+
+export interface UPDATE_PROJECT_POSITION_COLLECTIONVariables {
+  data: project_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_COVER
+// ====================================================
+
+export interface UPDATE_PROJECT_COVER_update_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_COVER {
+  /**
+   * update data of the table: "project"
+   */
+  update_project: UPDATE_PROJECT_COVER_update_project | null;
+}
+
+export interface UPDATE_PROJECT_COVERVariables {
+  projectId: any;
+  previewUrl?: string | null;
+  coverUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_INTRO
+// ====================================================
+
+export interface UPDATE_PROJECT_INTRO_update_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_INTRO {
+  /**
+   * update data of the table: "project"
+   */
+  update_project: UPDATE_PROJECT_INTRO_update_project | null;
+}
+
+export interface UPDATE_PROJECT_INTROVariables {
+  projectId: any;
+  abstract?: string | null;
+  introduction?: string | null;
+  coverUrl?: string | null;
+  cover_type?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROJECT_PLAN_SORT_COLLECTION
+// ====================================================
+
+export interface GET_PROJECT_PLAN_SORT_COLLECTION_project_plan {
+  __typename: "project_plan";
+  id: any;
+  project_id: any;
+  title: string;
+}
+
+export interface GET_PROJECT_PLAN_SORT_COLLECTION {
+  /**
+   * fetch data from the table: "project_plan"
+   */
+  project_plan: GET_PROJECT_PLAN_SORT_COLLECTION_project_plan[];
+}
+
+export interface GET_PROJECT_PLAN_SORT_COLLECTIONVariables {
+  projectId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_PLAN_POSITION_COLLECTION
+// ====================================================
+
+export interface UPDATE_PROJECT_PLAN_POSITION_COLLECTION_insert_project_plan {
+  __typename: "project_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_PLAN_POSITION_COLLECTION {
+  /**
+   * insert data into the table: "project_plan"
+   */
+  insert_project_plan: UPDATE_PROJECT_PLAN_POSITION_COLLECTION_insert_project_plan | null;
+}
+
+export interface UPDATE_PROJECT_PLAN_POSITION_COLLECTIONVariables {
+  data: project_plan_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_PLAN_COVER_URL
+// ====================================================
+
+export interface UPDATE_PROJECT_PLAN_COVER_URL_update_project_plan {
+  __typename: "project_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_PLAN_COVER_URL {
+  /**
+   * update data of the table: "project_plan"
+   */
+  update_project_plan: UPDATE_PROJECT_PLAN_COVER_URL_update_project_plan | null;
+}
+
+export interface UPDATE_PROJECT_PLAN_COVER_URLVariables {
+  id: any;
+  coverUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPSERT_PROJECT_PLAN
+// ====================================================
+
+export interface UPSERT_PROJECT_PLAN_insert_project_plan_returning {
+  __typename: "project_plan";
+  id: any;
+}
+
+export interface UPSERT_PROJECT_PLAN_insert_project_plan {
+  __typename: "project_plan_mutation_response";
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: UPSERT_PROJECT_PLAN_insert_project_plan_returning[];
+}
+
+export interface UPSERT_PROJECT_PLAN {
+  /**
+   * insert data into the table: "project_plan"
+   */
+  insert_project_plan: UPSERT_PROJECT_PLAN_insert_project_plan | null;
+}
+
+export interface UPSERT_PROJECT_PLANVariables {
+  data: project_plan_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_PROJECT
+// ====================================================
+
+export interface PUBLISH_PROJECT_update_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_PROJECT {
+  /**
+   * update data of the table: "project"
+   */
+  update_project: PUBLISH_PROJECT_update_project | null;
+}
+
+export interface PUBLISH_PROJECTVariables {
+  projectId: any;
   publishedAt?: any | null;
 }
 
@@ -10770,6 +11180,171 @@ export interface INSERT_PROGRAM_PACKAGE {
 export interface INSERT_PROGRAM_PACKAGEVariables {
   title: string;
   appId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROJECT_ADMIN
+// ====================================================
+
+export interface GET_PROJECT_ADMIN_project_by_pk_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+  picture_url: string | null;
+}
+
+export interface GET_PROJECT_ADMIN_project_by_pk_project_plans_project_plan_enrollments_aggregate_aggregate {
+  __typename: "project_plan_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROJECT_ADMIN_project_by_pk_project_plans_project_plan_enrollments_aggregate {
+  __typename: "project_plan_enrollment_aggregate";
+  aggregate: GET_PROJECT_ADMIN_project_by_pk_project_plans_project_plan_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PROJECT_ADMIN_project_by_pk_project_plans {
+  __typename: "project_plan";
+  id: any;
+  project_id: any;
+  cover_url: string | null;
+  title: string;
+  description: string | null;
+  list_price: any | null;
+  sale_price: any | null;
+  sold_at: any | null;
+  discount_down_price: any;
+  is_subscription: boolean;
+  period_amount: any | null;
+  /**
+   * Y / M / W / D
+   */
+  period_type: string | null;
+  position: number | null;
+  is_participants_visible: boolean;
+  is_physical: boolean;
+  is_limited: boolean;
+  published_at: any | null;
+  auto_renewed: boolean;
+  /**
+   * An aggregated array relationship
+   */
+  project_plan_enrollments_aggregate: GET_PROJECT_ADMIN_project_by_pk_project_plans_project_plan_enrollments_aggregate;
+}
+
+export interface GET_PROJECT_ADMIN_project_by_pk_project_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_PROJECT_ADMIN_project_by_pk_project_categories {
+  __typename: "project_category";
+  /**
+   * An object relationship
+   */
+  category: GET_PROJECT_ADMIN_project_by_pk_project_categories_category;
+}
+
+export interface GET_PROJECT_ADMIN_project_by_pk {
+  __typename: "project";
+  id: any;
+  title: string;
+  abstract: string | null;
+  introduction: string | null;
+  description: string | null;
+  target_amount: any | null;
+  /**
+   * funds / participants
+   */
+  target_unit: string;
+  /**
+   * funding / pre-order / on-sale / modular
+   */
+  type: string;
+  updates: any | null;
+  created_at: any;
+  expired_at: any | null;
+  published_at: any | null;
+  comments: any | null;
+  contents: any | null;
+  /**
+   * image / video
+   */
+  cover_type: string;
+  cover_url: string | null;
+  preview_url: string | null;
+  is_participants_visible: boolean;
+  is_countdown_timer_visible: boolean;
+  /**
+   * An object relationship
+   */
+  creator: GET_PROJECT_ADMIN_project_by_pk_creator | null;
+  /**
+   * An array relationship
+   */
+  project_plans: GET_PROJECT_ADMIN_project_by_pk_project_plans[];
+  /**
+   * An array relationship
+   */
+  project_categories: GET_PROJECT_ADMIN_project_by_pk_project_categories[];
+}
+
+export interface GET_PROJECT_ADMIN {
+  /**
+   * fetch data from the table: "project" using primary key columns
+   */
+  project_by_pk: GET_PROJECT_ADMIN_project_by_pk | null;
+}
+
+export interface GET_PROJECT_ADMINVariables {
+  projectId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_PROJECT
+// ====================================================
+
+export interface INSERT_PROJECT_insert_project_returning {
+  __typename: "project";
+  id: any;
+}
+
+export interface INSERT_PROJECT_insert_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_PROJECT_insert_project_returning[];
+}
+
+export interface INSERT_PROJECT {
+  /**
+   * insert data into the table: "project"
+   */
+  insert_project: INSERT_PROJECT_insert_project | null;
+}
+
+export interface INSERT_PROJECTVariables {
+  appId: string;
+  title: string;
+  memberId: string;
+  type: string;
 }
 
 /* tslint:disable */
@@ -25397,11 +25972,35 @@ export interface project_bool_exp {
 }
 
 /**
+ * order by aggregate values of table "project_category"
+ */
+export interface project_category_aggregate_order_by {
+  avg?: project_category_avg_order_by | null;
+  count?: order_by | null;
+  max?: project_category_max_order_by | null;
+  min?: project_category_min_order_by | null;
+  stddev?: project_category_stddev_order_by | null;
+  stddev_pop?: project_category_stddev_pop_order_by | null;
+  stddev_samp?: project_category_stddev_samp_order_by | null;
+  sum?: project_category_sum_order_by | null;
+  var_pop?: project_category_var_pop_order_by | null;
+  var_samp?: project_category_var_samp_order_by | null;
+  variance?: project_category_variance_order_by | null;
+}
+
+/**
  * input type for inserting array relation for remote table "project_category"
  */
 export interface project_category_arr_rel_insert_input {
   data: project_category_insert_input[];
   on_conflict?: project_category_on_conflict | null;
+}
+
+/**
+ * order by avg() on columns of table "project_category"
+ */
+export interface project_category_avg_order_by {
+  position?: order_by | null;
 }
 
 /**
@@ -25432,12 +26031,81 @@ export interface project_category_insert_input {
 }
 
 /**
+ * order by max() on columns of table "project_category"
+ */
+export interface project_category_max_order_by {
+  category_id?: order_by | null;
+  id?: order_by | null;
+  position?: order_by | null;
+  project_id?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "project_category"
+ */
+export interface project_category_min_order_by {
+  category_id?: order_by | null;
+  id?: order_by | null;
+  position?: order_by | null;
+  project_id?: order_by | null;
+}
+
+/**
  * on conflict condition type for table "project_category"
  */
 export interface project_category_on_conflict {
   constraint: project_category_constraint;
   update_columns: project_category_update_column[];
   where?: project_category_bool_exp | null;
+}
+
+/**
+ * order by stddev() on columns of table "project_category"
+ */
+export interface project_category_stddev_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "project_category"
+ */
+export interface project_category_stddev_pop_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "project_category"
+ */
+export interface project_category_stddev_samp_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "project_category"
+ */
+export interface project_category_sum_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "project_category"
+ */
+export interface project_category_var_pop_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "project_category"
+ */
+export interface project_category_var_samp_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "project_category"
+ */
+export interface project_category_variance_order_by {
+  position?: order_by | null;
 }
 
 /**
@@ -25490,11 +26158,73 @@ export interface project_on_conflict {
 }
 
 /**
+ * ordering options when selecting data from "project"
+ */
+export interface project_order_by {
+  abstract?: order_by | null;
+  app_id?: order_by | null;
+  comments?: order_by | null;
+  contents?: order_by | null;
+  cover_type?: order_by | null;
+  cover_url?: order_by | null;
+  created_at?: order_by | null;
+  creator?: member_public_order_by | null;
+  creator_id?: order_by | null;
+  description?: order_by | null;
+  expired_at?: order_by | null;
+  id?: order_by | null;
+  introduction?: order_by | null;
+  is_countdown_timer_visible?: order_by | null;
+  is_participants_visible?: order_by | null;
+  position?: order_by | null;
+  preview_url?: order_by | null;
+  project_categories_aggregate?: project_category_aggregate_order_by | null;
+  project_plans_aggregate?: project_plan_aggregate_order_by | null;
+  project_sales?: project_sales_order_by | null;
+  project_sections_aggregate?: project_section_aggregate_order_by | null;
+  published_at?: order_by | null;
+  target_amount?: order_by | null;
+  target_unit?: order_by | null;
+  template?: order_by | null;
+  title?: order_by | null;
+  type?: order_by | null;
+  updates?: order_by | null;
+}
+
+/**
+ * order by aggregate values of table "project_plan"
+ */
+export interface project_plan_aggregate_order_by {
+  avg?: project_plan_avg_order_by | null;
+  count?: order_by | null;
+  max?: project_plan_max_order_by | null;
+  min?: project_plan_min_order_by | null;
+  stddev?: project_plan_stddev_order_by | null;
+  stddev_pop?: project_plan_stddev_pop_order_by | null;
+  stddev_samp?: project_plan_stddev_samp_order_by | null;
+  sum?: project_plan_sum_order_by | null;
+  var_pop?: project_plan_var_pop_order_by | null;
+  var_samp?: project_plan_var_samp_order_by | null;
+  variance?: project_plan_variance_order_by | null;
+}
+
+/**
  * input type for inserting array relation for remote table "project_plan"
  */
 export interface project_plan_arr_rel_insert_input {
   data: project_plan_insert_input[];
   on_conflict?: project_plan_on_conflict | null;
+}
+
+/**
+ * order by avg() on columns of table "project_plan"
+ */
+export interface project_plan_avg_order_by {
+  discount_down_price?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  position?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**
@@ -25585,12 +26315,131 @@ export interface project_plan_inventory_status_bool_exp {
 }
 
 /**
+ * order by max() on columns of table "project_plan"
+ */
+export interface project_plan_max_order_by {
+  cover_url?: order_by | null;
+  created_at?: order_by | null;
+  deliverables?: order_by | null;
+  description?: order_by | null;
+  discount_down_price?: order_by | null;
+  id?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  period_type?: order_by | null;
+  position?: order_by | null;
+  project_id?: order_by | null;
+  published_at?: order_by | null;
+  sale_price?: order_by | null;
+  sold_at?: order_by | null;
+  title?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "project_plan"
+ */
+export interface project_plan_min_order_by {
+  cover_url?: order_by | null;
+  created_at?: order_by | null;
+  deliverables?: order_by | null;
+  description?: order_by | null;
+  discount_down_price?: order_by | null;
+  id?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  period_type?: order_by | null;
+  position?: order_by | null;
+  project_id?: order_by | null;
+  published_at?: order_by | null;
+  sale_price?: order_by | null;
+  sold_at?: order_by | null;
+  title?: order_by | null;
+}
+
+/**
  * on conflict condition type for table "project_plan"
  */
 export interface project_plan_on_conflict {
   constraint: project_plan_constraint;
   update_columns: project_plan_update_column[];
   where?: project_plan_bool_exp | null;
+}
+
+/**
+ * order by stddev() on columns of table "project_plan"
+ */
+export interface project_plan_stddev_order_by {
+  discount_down_price?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  position?: order_by | null;
+  sale_price?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "project_plan"
+ */
+export interface project_plan_stddev_pop_order_by {
+  discount_down_price?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  position?: order_by | null;
+  sale_price?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "project_plan"
+ */
+export interface project_plan_stddev_samp_order_by {
+  discount_down_price?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  position?: order_by | null;
+  sale_price?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "project_plan"
+ */
+export interface project_plan_sum_order_by {
+  discount_down_price?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  position?: order_by | null;
+  sale_price?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "project_plan"
+ */
+export interface project_plan_var_pop_order_by {
+  discount_down_price?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  position?: order_by | null;
+  sale_price?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "project_plan"
+ */
+export interface project_plan_var_samp_order_by {
+  discount_down_price?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  position?: order_by | null;
+  sale_price?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "project_plan"
+ */
+export interface project_plan_variance_order_by {
+  discount_down_price?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  position?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**
@@ -25606,11 +26455,44 @@ export interface project_sales_bool_exp {
 }
 
 /**
+ * ordering options when selecting data from "project_sales"
+ */
+export interface project_sales_order_by {
+  project?: project_order_by | null;
+  project_id?: order_by | null;
+  total_sales?: order_by | null;
+}
+
+/**
+ * order by aggregate values of table "project_section"
+ */
+export interface project_section_aggregate_order_by {
+  avg?: project_section_avg_order_by | null;
+  count?: order_by | null;
+  max?: project_section_max_order_by | null;
+  min?: project_section_min_order_by | null;
+  stddev?: project_section_stddev_order_by | null;
+  stddev_pop?: project_section_stddev_pop_order_by | null;
+  stddev_samp?: project_section_stddev_samp_order_by | null;
+  sum?: project_section_sum_order_by | null;
+  var_pop?: project_section_var_pop_order_by | null;
+  var_samp?: project_section_var_samp_order_by | null;
+  variance?: project_section_variance_order_by | null;
+}
+
+/**
  * input type for inserting array relation for remote table "project_section"
  */
 export interface project_section_arr_rel_insert_input {
   data: project_section_insert_input[];
   on_conflict?: project_section_on_conflict | null;
+}
+
+/**
+ * order by avg() on columns of table "project_section"
+ */
+export interface project_section_avg_order_by {
+  position?: order_by | null;
 }
 
 /**
@@ -25641,12 +26523,81 @@ export interface project_section_insert_input {
 }
 
 /**
+ * order by max() on columns of table "project_section"
+ */
+export interface project_section_max_order_by {
+  id?: order_by | null;
+  position?: order_by | null;
+  project_id?: order_by | null;
+  type?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "project_section"
+ */
+export interface project_section_min_order_by {
+  id?: order_by | null;
+  position?: order_by | null;
+  project_id?: order_by | null;
+  type?: order_by | null;
+}
+
+/**
  * on conflict condition type for table "project_section"
  */
 export interface project_section_on_conflict {
   constraint: project_section_constraint;
   update_columns: project_section_update_column[];
   where?: project_section_bool_exp | null;
+}
+
+/**
+ * order by stddev() on columns of table "project_section"
+ */
+export interface project_section_stddev_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "project_section"
+ */
+export interface project_section_stddev_pop_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "project_section"
+ */
+export interface project_section_stddev_samp_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "project_section"
+ */
+export interface project_section_sum_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "project_section"
+ */
+export interface project_section_var_pop_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "project_section"
+ */
+export interface project_section_var_samp_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "project_section"
+ */
+export interface project_section_variance_order_by {
+  position?: order_by | null;
 }
 
 /**

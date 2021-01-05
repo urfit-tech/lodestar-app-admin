@@ -64,10 +64,13 @@ export const commonMessages = {
     jumpTo: { id: 'common.ui.jumpTo', defaultMessage: '前往填寫' },
     uploadCertification: { id: 'common.ui.uploadCertification', defaultMessage: '上傳證明' },
     createContract: { id: 'common.ui.createContract', defaultMessage: '建立合約' },
+    createPlan: { id: 'common.ui.createPlan', defaultMessage: '建立方案' },
+    uploadImage: { id: 'common.ui.uploadImage', defaultMessage: '上傳圖片' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
     selectAuthor: { id: 'common.label.selectAuthor', defaultMessage: '選擇作者' },
+    selectCreatorAppellation: { id: 'common.label.selectCreatorAppellation', defaultMessage: '{creatorAppellation}' },
     notMember: { id: 'common.label.notMember', defaultMessage: '還不是會員嗎？' },
     alreadyMember: { id: 'common.label.alreadyMember', defaultMessage: '已經是是會員嗎？' },
     goToLogin: { id: 'common.label.goToLogin', defaultMessage: '前往登入' },
@@ -86,6 +89,7 @@ export const commonMessages = {
     cannotRecover: { id: 'common.label.cannotRecover', defaultMessage: '此動作無法復原' },
     sellingStatus: { id: 'common.label.sellingStatus', defaultMessage: '販售狀態' },
     salePriceEndTime: { id: 'common.label.salePriceEndTime', defaultMessage: '優惠截止日期' },
+    selectEndTime: { id: 'common.label.selectEndTime', defaultMessage: '選擇截止日' },
     outdated: { id: 'common.label.outdated', defaultMessage: '已過期' },
     autoRenewed: { id: 'common.label.autoRenewed', defaultMessage: '自動續訂' },
     period: { id: 'common.label.period', defaultMessage: '方案週期' },
@@ -165,6 +169,8 @@ export const commonMessages = {
     nameAndEmail: { id: 'common.label.nameAndEmail', defaultMessage: '姓名 / Email' },
     languages: { id: 'common.label.languages', defaultMessage: '顯示語系' },
     price: { id: 'common.label.price', defaultMessage: '價格' },
+    funds: { id: 'common.label.funds', defaultMessage: '金額' },
+    participants: { id: 'common.label.participants', defaultMessage: '人數' },
     uploading: { id: 'command.label.uploading', defaultMessage: '上傳中' },
     currentPosition: { id: 'common.label.currentPosition', defaultMessage: '目前排序：{position}' },
     roleType: { id: 'common.label.roleType', defaultMessage: '會員類型' },
@@ -172,6 +178,10 @@ export const commonMessages = {
     date: { id: 'common.label.date', defaultMessage: '日期' },
     podcastSubscription: { id: 'common.label.podcastSubscription', defaultMessage: '訂閱廣播頻道' },
     propertyItem: { id: 'common.label.propertyItem', defaultMessage: '欄位項目' },
+    amountDollar: { id: 'common.label.amountDollar', defaultMessage: '{amount} 元' },
+    amountParticipants: { id: 'common.label.amountParticipants', defaultMessage: '{amount} 人' },
+    introductionVideo: { id: 'common.label.introductionVideo', defaultMessage: '介紹影片' },
+    planTitle: { id: 'common.label.planTitle', defaultMessage: '方案名稱' },
   }),
   term: defineMessages({
     assign: { id: 'common.term.assign', defaultMessage: '指派' },
@@ -193,6 +203,7 @@ export const commonMessages = {
     video: { id: 'common.label.video', defaultMessage: '影片' },
     caption: { id: 'common.label.caption', defaultMessage: '字幕' },
     title: { id: 'common.term.title', defaultMessage: '名稱' },
+    customTitle: { id: 'common.term.customTitle', defaultMessage: '{customTitle}' },
     category: { id: 'common.term.category', defaultMessage: '分類' },
     tag: { id: 'common.term.tag', defaultMessage: '標籤' },
     startedAt: { id: 'common.term.startedAt', defaultMessage: '開始時間' },
@@ -287,6 +298,9 @@ export const commonMessages = {
     notPublished: { id: 'common.status.notPublished', defaultMessage: '尚未發售' },
     selling: { id: 'common.status.selling', defaultMessage: '販售中' },
     soldOut: { id: 'common.status.soldOut', defaultMessage: '已售完' },
+    finished: { id: 'common.status.finished', defaultMessage: '已結束' },
+    visible: { id: 'common.status.visible', defaultMessage: '顯示' },
+    invisible: { id: 'common.status.invisible', defaultMessage: '隱藏' },
   }),
   menu: defineMessages({
     salesAdmin: { id: 'common.menu.salesAdmin', defaultMessage: '銷售管理' },
@@ -298,6 +312,10 @@ export const commonMessages = {
     tempoDelivery: { id: 'common.menu.tempoDelivery', defaultMessage: '節奏交付' },
     programCategory: { id: 'common.menu.programCategory', defaultMessage: '課程分類' },
     programPackageCategory: { id: 'common.menu.programCategory', defaultMessage: '課程組合分類' },
+    projectAdmin: { id: 'common.menu.projectAdmin', defaultMessage: '專案管理' },
+    projectFunding: { id: 'common.menu.projectFunding', defaultMessage: '募資專案' },
+    projectPreOrder: { id: 'common.menu.projectPreOrder', defaultMessage: '預購專案' },
+    projectOnSale: { id: 'common.menu.projectOnSale', defaultMessage: '促銷專案' },
     podcastAdmin: { id: 'common.menu.podcastAdmin', defaultMessage: '音頻廣播' },
     podcastPrograms: { id: 'common.menu.podcastPrograms', defaultMessage: '廣播管理' },
     podcastPlans: { id: 'common.menu.podcastPlans', defaultMessage: '訂閱方案' },
@@ -335,7 +353,7 @@ export const commonMessages = {
     members: { id: 'common.menu.members', defaultMessage: '會員列表' },
     memberCategory: { id: 'common.menu.memberCategory', defaultMessage: '會員分類' },
     memberProperties: { id: 'common.menu.memberProperties', defaultMessage: '自訂欄位' },
-    noteAdmin: {id: 'common.menu.noteAdmin', defaultMessage: '聯絡管理'},
+    noteAdmin: { id: 'common.menu.noteAdmin', defaultMessage: '聯絡管理' },
     taskAdmin: { id: 'common.menu.taskAdmin', defaultMessage: '待辦管理' },
     tasks: { id: 'common.menu.tasks', defaultMessage: '待辦清單' },
     taskCategory: { id: 'common.menu.taskCategory', defaultMessage: '待辦分類' },
@@ -419,7 +437,6 @@ export const activityMessages = {
     threshold: { id: 'activity.ui.threshold', defaultMessage: '最少' },
     createSession: { id: 'activity.ui.createSession', defaultMessage: '建立場次' },
     addTicketPlan: { id: 'activity.ui.addTicketPlan', defaultMessage: '加入票券方案' },
-    createTicketPlan: { id: 'activity.ui.createTicketPlan', defaultMessage: '建立方案' },
   }),
   label: defineMessages({
     showParticipantsNumber: { id: 'activity.label.showParticipantsNumber', defaultMessage: '顯示人數' },
@@ -434,9 +451,6 @@ export const activityMessages = {
 }
 
 export const appointmentMessages = {
-  ui: defineMessages({
-    createPlan: { id: 'appointment.ui.createPlan', defaultMessage: '建立方案' },
-  }),
   term: defineMessages({
     period: { id: 'appointment.term.period', defaultMessage: '時段' },
     planTitle: { id: 'appointment.term.planTitle', defaultMessage: '方案名稱' },
@@ -579,7 +593,6 @@ export const programMessages = {
     selectDeliveryAt: { id: 'program.label.selectDeliveryAt', defaultMessage: '選擇啟用日期' },
     programIntroduction: { id: 'program.label.programIntroduction', defaultMessage: '課程介紹' },
     programCover: { id: 'program.label.programCover', defaultMessage: '課程封面' },
-    introductionVideo: { id: 'program.label.introductionVideo', defaultMessage: '介紹影片' },
     programAbstract: { id: 'program.label.programAbstract', defaultMessage: '課程摘要' },
     programDescription: { id: 'program.label.programDescription', defaultMessage: '課程描述' },
     deleteProgram: { id: 'program.label.deleteProgram', defaultMessage: '刪除課程' },
@@ -674,7 +687,7 @@ export const programMessages = {
     reject: { id: 'program.ui.reject', defaultMessage: '退回案件' },
     approve: { id: 'program.ui.approve', defaultMessage: '審核通過' },
     addUrl: { id: 'program.ui.addUrl', defaultMessage: '新增網址' },
-    sortProgram: { id: 'program.ui.sortProgram', defaultMessage: '課程排序' }
+    sortProgram: { id: 'program.ui.sortProgram', defaultMessage: '課程排序' },
   }),
 }
 
@@ -682,7 +695,6 @@ export const programPackageMessages = {
   ui: defineMessages({
     createProgramPackage: { id: 'programPackage.ui.createProgramPackage', defaultMessage: '建立課程組合' },
     connectProgram: { id: 'programPackage.ui.connectProgram', defaultMessage: '加入課程' },
-    createPlan: { id: 'programPackage.ui.createPlan', defaultMessage: '建立方案' },
     editPlan: { id: 'programPackage.ui.editPlan', defaultMessage: '編輯方案' },
   }),
   label: defineMessages({
@@ -694,7 +706,31 @@ export const programPackageMessages = {
     unpublished: { id: 'programPackage.status.unpublished', defaultMessage: '未發佈' },
   }),
 }
-
+export const projectMessages = {
+  label: defineMessages({
+    projectTitle: { id: 'project.label.projectTitle', defaultMessage: '專案名稱' },
+    sponsor: { id: 'project.label.sponsor', defaultMessage: '發起者' },
+    settings: { id: 'project.label.settings', defaultMessage: '專案設定' },
+    projectIntroduction: { id: 'project.label.projectIntroduction', defaultMessage: '專案介紹' },
+    fundingTerm: { id: 'project.label.fundingTerm', defaultMessage: '募資條件' },
+    participantsAmount: { id: 'project.label.projectCountdownTimer', defaultMessage: '參與人數' },
+    projectCountdownTimer: { id: 'project.label.projectCountdownTimer', defaultMessage: '專案倒數' },
+    unnamedProject: { id: 'project.label.unnamedProject', defaultMessage: '未命名專案' },
+    projectCover: { id: 'project.label.projectCover', defaultMessage: '專案封面' },
+    projectAbstract: { id: 'project.label.projectAbstract', defaultMessage: '專案摘要' },
+    projectContent: { id: 'project.label.projectContent', defaultMessage: '專案內容' },
+    expireAt: { id: 'project.label.expireAt', defaultMessage: '截止日' },
+  }),
+  ui: defineMessages({
+    sortProject: { id: 'project.ui.sortProject', defaultMessage: '專案排序' },
+    sortProjectPlan: { id: 'project.ui.sortProject', defaultMessage: '方案排序' },
+    editProject: { id: 'project.ui.editProject', defaultMessage: '編輯方案' },
+  }),
+  text: defineMessages({
+    noProject: { id: 'project.text.noProject', defaultMessage: '尚未有任何專案' },
+    soldOutProjectCount: { id: 'project.text.soldOutProjectCount', defaultMessage: '已售 {count}' },
+  }),
+}
 export const podcastMessages = {
   ui: defineMessages({
     subscribe: { id: 'podcast.ui.subscribe', defaultMessage: '訂閱頻道' },
@@ -962,7 +998,7 @@ export const memberMessages = {
     field: { id: 'member.label.field', defaultMessage: '欄位' },
     fieldVisible: { id: 'member.label.fieldVisible', defaultMessage: '欄位顯示' },
     onlineProgramContract: { id: 'member.label.線上課程服務約款', defaultMessage: '線上課程服務約款' },
-    audioRecordFile: {id: 'member.label.audioRecordFile' , defaultMessage: '音檔紀錄'}, 
+    audioRecordFile: { id: 'member.label.audioRecordFile', defaultMessage: '音檔紀錄' },
   }),
   text: {
     deleteMemberNoteConfirmation: {

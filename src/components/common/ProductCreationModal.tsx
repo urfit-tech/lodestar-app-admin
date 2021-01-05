@@ -48,8 +48,23 @@ const ProductCreationModal: React.FC<
       isPhysical?: boolean
       isCustomized?: boolean
     }) => Promise<any>
+    allowedPermission?: string
+    creatorAppellation?: string
+    customTitle?: string
+    customTitleDefault?: string
   }
-> = ({ categoryClassType, withCreatorSelector, withProgramType, withMerchandiseType, onCreate, ...props }) => {
+> = ({
+  categoryClassType,
+  withCreatorSelector,
+  withProgramType,
+  withMerchandiseType,
+  onCreate,
+  allowedPermission,
+  creatorAppellation,
+  customTitle,
+  customTitleDefault,
+  ...props
+}) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { currentMemberId } = useAuth()
@@ -84,7 +99,6 @@ const ProductCreationModal: React.FC<
           {formatMessage(commonMessages.ui.create)}
         </Button>
       )}
-      icon={<FileAddOutlined />}
       title={formatMessage(commonMessages.ui.create)}
       cancelText={formatMessage(commonMessages.ui.cancel)}
       okText={formatMessage(commonMessages.ui.create)}
@@ -101,15 +115,19 @@ const ProductCreationModal: React.FC<
           memberId: currentMemberId,
           isSubscription: false,
           merchandiseType: 'general-physical',
+          title: customTitleDefault ? customTitleDefault : '',
         }}
       >
         {withCreatorSelector && (
-          <Form.Item label={formatMessage(commonMessages.label.selectInstructor)} name="creatorId">
-            <ContentCreatorSelector />
+          <Form.Item
+            label={creatorAppellation || formatMessage(commonMessages.label.selectInstructor)}
+            name="creatorId"
+          >
+            <ContentCreatorSelector allowedPermission={allowedPermission} />
           </Form.Item>
         )}
         <Form.Item
-          label={formatMessage(commonMessages.term.title)}
+          label={customTitle || formatMessage(commonMessages.term.title)}
           name="title"
           rules={[
             {
