@@ -225,6 +225,8 @@ const NoteCollectionPage: React.FC = () => {
       render: (text, record, index) =>
         record.metadata?.recordfile && (
           <LoadRecordFileButton
+            memberName={record.member?.name || ''}
+            startTime={record.metadata?.starttime || ''}
             url={`${settings['call_server.origin']}/coocenter-api/monitor/${record.metadata.recordfile}`}
           />
         ),
@@ -312,16 +314,15 @@ const NoteCollectionPage: React.FC = () => {
 }
 
 const LoadRecordFileButton: React.FC<{
+  memberName: string
+  startTime: string
   url: string
-}> = ({ url }) => {
+}> = ({ memberName, startTime, url }) => {
   const { formatMessage } = useIntl()
-  const [audioStatus, setAudioStatus] = useState<'loading' | 'playing' | null>(null)
-
-  const audioCtx = new window.AudioContext()
-  const buffer = useRef<AudioBuffer | null>(null)
-  const source = useRef<AudioBufferSourceNode | null>(null)
+  const [audioUrl, setAudioUrl] = useState<string | null>(null)
 
   const loadAudioData = async () => {
+    setAudioUrl('')
     try {
       const response = await Axios.get(url, {
         headers: {
@@ -330,46 +331,25 @@ const LoadRecordFileButton: React.FC<{
         responseType: 'arraybuffer',
       })
 
-      buffer.current = await audioCtx.decodeAudioData(response.data)
+      const blob = new Blob([response.data], { type: 'audio/wav' })
+      setAudioUrl(window.URL.createObjectURL(blob))
     } catch (error) {
       handleError(error)
+      setAudioUrl(null)
     }
   }
 
-  const handlePlay = async () => {
-    setAudioStatus('loading')
-    await loadAudioData()
-    if (!buffer.current) {
-      return
-    }
-
-    source.current = audioCtx.createBufferSource()
-    source.current.addEventListener('ended', () => {
-      source.current?.stop(0)
-      setAudioStatus(null)
-    })
-
-    source.current.buffer = buffer.current
-    source.current.connect(audioCtx.destination)
-    source.current.start(0)
-    setAudioStatus('playing')
-  }
-
-  return (
-    <Button
-      type="primary"
-      loading={audioStatus === 'loading'}
-      onClick={() => {
-        if (audioStatus === 'playing') {
-          source.current?.stop(0)
-          setAudioStatus(null)
-        } else {
-          handlePlay()
-        }
-      }}
-    >
-      {audioStatus === 'playing' ? formatMessage(podcastMessages.ui.stop) : formatMessage(podcastMessages.ui.play)}
+  return !audioUrl ? (
+    <Button type="primary" loading={typeof audioUrl === 'string'} onClick={() => loadAudioData()}>
+      {formatMessage(podcastMessages.ui.play)}
     </Button>
+  ) : (
+    <div className="d-flex align-items-center">
+      <a href={audioUrl} download={`${memberName}_${startTime.replace(/:/g, '')}.wav`} className="flex-shrink-0 mr-2">
+        <Button type="primary">{formatMessage(commonMessages.ui.download)}</Button>
+      </a>
+      <audio src={audioUrl} controls />
+    </div>
   )
 }
 
