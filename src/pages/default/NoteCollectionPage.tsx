@@ -1,6 +1,6 @@
 import { SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Button, DatePicker, Input, Table, Tag, Typography } from 'antd'
+import { Button, Checkbox, DatePicker, Input, Table, Tag, Typography } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SorterResult } from 'antd/lib/table/interface'
 import Axios from 'axios'
@@ -56,14 +56,19 @@ const StyledDescription = styled(Typography.Paragraph)`
   width: 10rem;
   white-space: pre-line;
 `
+const FilterWrapper = styled.div`
+  padding-top: 0.5rem;
+  max-height: 20rem;
+  overflow: auto;
+`
 
 type FiltersProps = {
   range?: [Moment, Moment]
   author?: string
   manager?: string
   member?: string
-  category?: string
-  tag?: string
+  categories?: string[]
+  tags?: string[]
 }
 type NoteAdminProps = {
   id: string
@@ -104,7 +109,10 @@ const NoteCollectionPage: React.FC = () => {
   const [filters, setFilters] = useState<FiltersProps>({
     range: [moment().startOf('month'), moment().endOf('month')],
   })
-  const { loadingNotes, notes, loadMoreNotes } = useMemberNotesAdmin(orderBy, filters)
+  const { loadingNotes, allMemberCategories, allMemberTags, notes, loadMoreNotes } = useMemberNotesAdmin(
+    orderBy,
+    filters,
+  )
   const { updateMemberNote } = useMutateMemberNote()
   const [updatedNotes, setUpdatedNotes] = useState<{ [noteID: string]: string }>({})
   const [loading, setLoading] = useState(false)
@@ -199,7 +207,32 @@ const NoteCollectionPage: React.FC = () => {
     {
       key: 'category',
       title: formatMessage(commonMessages.term.category),
-      ...getColumnSearchProps('category'),
+      ...getColumnSearchProps('categories'),
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div>
+          <FilterWrapper>
+            <Checkbox.Group
+              value={filters.categories}
+              onChange={value =>
+                value.length
+                  ? setFilters({ ...filters, categories: value as string[] })
+                  : setFilters({ ...filters, categories: undefined })
+              }
+            >
+              {allMemberCategories.map(category => (
+                <Checkbox key={category.id} value={category.id} className="d-block mx-2 mb-2">
+                  {category.name}
+                </Checkbox>
+              ))}
+            </Checkbox.Group>
+          </FilterWrapper>
+          <div className="p-2 text-right">
+            <Button size="small" onClick={() => setFilters({ ...filters, categories: undefined })}>
+              {formatMessage(commonMessages.ui.reset)}
+            </Button>
+          </div>
+        </div>
+      ),
       render: (text, record, index) => (
         <StyledCategory>{record.memberCategories.map(category => category.name).join(', ')}</StyledCategory>
       ),
@@ -207,7 +240,32 @@ const NoteCollectionPage: React.FC = () => {
     {
       key: 'tag',
       title: formatMessage(commonMessages.term.tag),
-      ...getColumnSearchProps('tag'),
+      ...getColumnSearchProps('tags'),
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div>
+          <FilterWrapper>
+            <Checkbox.Group
+              value={filters.tags}
+              onChange={value =>
+                value.length
+                  ? setFilters({ ...filters, tags: value as string[] })
+                  : setFilters({ ...filters, tags: undefined })
+              }
+            >
+              {allMemberTags.map(tag => (
+                <Checkbox key={tag} value={tag} className="d-block mx-2 mb-2">
+                  {tag}
+                </Checkbox>
+              ))}
+            </Checkbox.Group>
+          </FilterWrapper>
+          <div className="p-2 text-right">
+            <Button size="small" onClick={() => setFilters({ ...filters, tags: undefined })}>
+              {formatMessage(commonMessages.ui.reset)}
+            </Button>
+          </div>
+        </div>
+      ),
       render: (text, record, index) => record.memberTags.map(tag => <Tag key={tag}>{tag}</Tag>),
     },
     {
@@ -394,7 +452,7 @@ const useMemberNotesAdmin = (orderBy: types.GET_MEMBER_NOTES_ADMINVariables['ord
         }
       : undefined,
     member:
-      filters?.manager || filters?.member || filters?.category || filters?.tag
+      filters?.manager || filters?.member || filters?.categories || filters?.tags
         ? {
             manager: filters.manager
               ? {
@@ -405,24 +463,21 @@ const useMemberNotesAdmin = (orderBy: types.GET_MEMBER_NOTES_ADMINVariables['ord
                   ],
                 }
               : undefined,
-            _or: filters.member
-              ? [
-                  { name: { _ilike: `%${filters.member}%` } },
-                  { username: { _ilike: `%${filters.member}%` } },
-                  { email: { _ilike: `%${filters.member}%` } },
-                ]
-              : undefined,
-
-            member_categories: filters.category
-              ? {
-                  category: { name: { _ilike: `%${filters.category}%` } },
-                }
-              : undefined,
-            member_tags: filters.tag
-              ? {
-                  tag_name: { _ilike: `%${filters.tag}%` },
-                }
-              : undefined,
+            _or: [
+              ...(filters.member
+                ? [
+                    { name: { _ilike: `%${filters.member}%` } },
+                    { username: { _ilike: `%${filters.member}%` } },
+                    { email: { _ilike: `%${filters.member}%` } },
+                  ]
+                : []),
+              ...(filters.categories?.map(categoryId => ({
+                member_categories: { category_id: { _eq: categoryId } },
+              })) || []),
+              ...(filters.tags?.map(tag => ({
+                member_tags: { tag_name: { _eq: tag } },
+              })) || []),
+            ],
           }
         : undefined,
   }
@@ -432,6 +487,13 @@ const useMemberNotesAdmin = (orderBy: types.GET_MEMBER_NOTES_ADMINVariables['ord
   >(
     gql`
       query GET_MEMBER_NOTES_ADMIN($orderBy: member_note_order_by!, $condition: member_note_bool_exp) {
+        category(where: { member_categories: {} }) {
+          id
+          name
+        }
+        member_tag(distinct_on: tag_name) {
+          tag_name
+        }
         member_note_aggregate(where: $condition) {
           aggregate {
             count
@@ -494,6 +556,16 @@ const useMemberNotesAdmin = (orderBy: types.GET_MEMBER_NOTES_ADMINVariables['ord
     { variables: { condition, orderBy } },
   )
 
+  const allMemberCategories: {
+    id: string
+    name: string
+  }[] =
+    data?.category.map(v => ({
+      id: v.id,
+      name: v.name,
+    })) || []
+  const allMemberTags: string[] = data?.member_tag.map(v => v.tag_name) || []
+
   const notes: NoteAdminProps[] =
     data?.member_note.map(v => ({
       id: v.id,
@@ -551,6 +623,7 @@ const useMemberNotesAdmin = (orderBy: types.GET_MEMBER_NOTES_ADMINVariables['ord
           return prev
         }
         return {
+          ...prev,
           member_note_aggregate: fetchMoreResult.member_note_aggregate,
           member_note: [...prev.member_note, ...fetchMoreResult.member_note],
         }
@@ -560,6 +633,8 @@ const useMemberNotesAdmin = (orderBy: types.GET_MEMBER_NOTES_ADMINVariables['ord
   return {
     loadingNotes: loading,
     errorNotes: error,
+    allMemberCategories,
+    allMemberTags,
     notes,
     refetchNotes: refetch,
     loadMoreNotes: (data?.member_note_aggregate.aggregate?.count || 0) > 10 ? loadMoreNotes : undefined,

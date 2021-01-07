@@ -9885,6 +9885,17 @@ export interface INSERT_MERCHANDISEVariables {
 // GraphQL query operation: GET_MEMBER_NOTES_ADMIN
 // ====================================================
 
+export interface GET_MEMBER_NOTES_ADMIN_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_tag {
+  __typename: "member_tag";
+  tag_name: string;
+}
+
 export interface GET_MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate {
   __typename: "member_note_aggregate_fields";
   count: number | null;
@@ -10016,6 +10027,14 @@ export interface GET_MEMBER_NOTES_ADMIN_member_note {
 }
 
 export interface GET_MEMBER_NOTES_ADMIN {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_MEMBER_NOTES_ADMIN_category[];
+  /**
+   * fetch data from the table: "member_tag"
+   */
+  member_tag: GET_MEMBER_NOTES_ADMIN_member_tag[];
   /**
    * fetch aggregated fields from the table: "member_note"
    */
