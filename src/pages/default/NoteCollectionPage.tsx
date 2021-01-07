@@ -5,7 +5,6 @@ import { ColumnProps } from 'antd/lib/table'
 import { SorterResult } from 'antd/lib/table/interface'
 import Axios from 'axios'
 import gql from 'graphql-tag'
-import md5 from 'md5'
 import moment, { Moment } from 'moment'
 import { sum } from 'ramda'
 import React, { useRef, useState } from 'react'
@@ -16,6 +15,7 @@ import AdminCard from '../../components/admin/AdminCard'
 import { AvatarImage } from '../../components/common/Image'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { useApp } from '../../contexts/AppContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { currencyFormatter, dateFormatter, handleError } from '../../helpers'
 import { commonMessages, memberMessages, podcastMessages } from '../../helpers/translation'
 import { useMutateMemberNote } from '../../hooks/member'
@@ -97,7 +97,6 @@ type NoteAdminProps = {
 
 const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { settings } = useApp()
   const searchInputRef = useRef<Input | null>(null)
   const [orderBy, setOrderBy] = useState<types.GET_MEMBER_NOTES_ADMINVariables['orderBy']>({
     created_at: 'asc' as types.order_by.asc,
@@ -232,7 +231,7 @@ const NoteCollectionPage: React.FC = () => {
           <LoadRecordFileButton
             memberName={record.member?.name || ''}
             startTime={record.metadata?.starttime || ''}
-            url={`${settings['call_server.origin']}/coocenter-api/monitor/${record.metadata.recordfile}`}
+            filePath={record.metadata.recordfile}
           />
         ),
     },
@@ -328,22 +327,34 @@ const NoteCollectionPage: React.FC = () => {
 const LoadRecordFileButton: React.FC<{
   memberName: string
   startTime: string
-  url: string
-}> = ({ memberName, startTime, url }) => {
+  filePath: string
+}> = ({ memberName, startTime, filePath }) => {
   const { formatMessage } = useIntl()
+  const { authToken, apiHost } = useAuth()
+  const { id: appId } = useApp()
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
+
+  if (!authToken || !apiHost || !appId) {
+    return (
+      <Button type="primary" loading>
+        {formatMessage(podcastMessages.ui.play)}
+      </Button>
+    )
+  }
 
   const loadAudioData = async () => {
     setAudioUrl('')
     try {
-      const response = await Axios.get(url, {
-        headers: {
-          Authorization: md5(`xuemi${moment().format('YYYY-MM-DD')}`),
-        },
-        responseType: 'arraybuffer',
-      })
+      const response = await Axios.post(
+        `${apiHost}/call/download-record`,
+        { appId, filePath },
+        { headers: { authorization: `Bearer ${authToken}` } },
+      )
 
-      const blob = new Blob([response.data], { type: 'audio/wav' })
+      const view = new Uint8Array(response.data.result.data)
+      const arrayBuffer = view.buffer
+
+      const blob = new Blob([arrayBuffer], { type: 'audio/wav' })
       setAudioUrl(window.URL.createObjectURL(blob))
     } catch (error) {
       handleError(error)
