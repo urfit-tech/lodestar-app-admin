@@ -58,8 +58,9 @@ const ProjectPlanAdminModal: React.FC<
     projectPlan?: ProjectPlanProps
     onRefetch?: () => void
     onRefetchProjectPlanSorts?: () => void
+    isCreated?: boolean
   }
-> = ({ projectId, projectPlan, onRefetch, onRefetchProjectPlanSorts, ...modalProps }) => {
+> = ({ projectId, projectPlan, onRefetch, onRefetchProjectPlanSorts, isCreated, ...modalProps }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
@@ -138,10 +139,10 @@ const ProjectPlanAdminModal: React.FC<
             onSuccess()
             onRefetch?.()
             onRefetchProjectPlanSorts?.()
+            isCreated && form.resetFields()
           })
           .catch(handleError)
           .finally(() => {
-            form.resetFields()
             setLoading(false)
           })
       })
