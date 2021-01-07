@@ -74,7 +74,11 @@ const ProjectPlanCard: React.FC<
                     amount: projectPlan.projectPlanEnrollment,
                   })}
                 </div>
-                {isOnSale ? <StyledOnSale status="onSale">發售中</StyledOnSale> : <StyledOnSale>已停售</StyledOnSale>}
+                {projectPlan.publishedAt ? (
+                  <StyledOnSale status="onSale">發售中</StyledOnSale>
+                ) : (
+                  <StyledOnSale>已停售</StyledOnSale>
+                )}
               </ExtraContentBlock>
             </>
           }

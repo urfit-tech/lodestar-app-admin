@@ -11,21 +11,21 @@ import AdminPublishBlock, { ChecklistItemProps, PublishEvent, PublishStatus } fr
 const messages = defineMessages({
   notCompleteNotation: {
     id: 'project.text.notCompleteNotation',
-    defaultMessage: '請填寫以下必填資料，填寫完畢即可啟用你的專案',
+    defaultMessage: '請填寫以下必填資料，填寫完畢即可發佈你的專案。',
   },
   unpublishedNotation: {
     id: 'project.text.unpublishedNotation',
-    defaultMessage: '你的專案未啟用，你的所有商品並不會顯示在頁面上。',
+    defaultMessage: '你的專案未發佈，此專案並不會顯示在頁面上。',
   },
   publishedNotation: {
     id: 'project.text.publishedNotation',
-    defaultMessage: '現在你的專案已啟用，你的所有商品會出現在頁面上。',
+    defaultMessage: '現在你的專案已發佈，此專案會出現在頁面上。',
   },
   noTitle: { id: 'project.text.noShopTitle', defaultMessage: '尚未設定專案名稱' },
   noFundingTerm: { id: 'project.text.noSalePlan', defaultMessage: '尚未訂定募資條件' },
   noSalePrice: { id: 'project.text.noShippingDays', defaultMessage: '尚未訂定售價' },
-  activateProject: { id: 'project.ui.activateShop', defaultMessage: '啟用專案' },
-  closeProject: { id: 'project.ui.closeShop', defaultMessage: '關閉專案' },
+  activateProject: { id: 'project.ui.activateShop', defaultMessage: '發佈專案' },
+  closeProject: { id: 'project.ui.closeShop', defaultMessage: '取消發佈' },
 })
 
 const ProjectPublishAdminBlock: React.FC<{
@@ -52,7 +52,7 @@ const ProjectPublishAdminBlock: React.FC<{
     checklist.push({
       id: 'NO_SHIPPING_METHOD',
       text: formatMessage(messages.noFundingTerm),
-      tab: 'shipping-methods',
+      tab: 'settings',
     })
   ;(project.projectPlan.length === 0 || project.projectPlan.some(v => v.listPrice === null)) &&
     checklist.push({

@@ -133,7 +133,7 @@ const useProjectAdmin = (projectId: string) => {
             username
             picture_url
           }
-          project_plans {
+          project_plans(order_by: { position: asc }) {
             id
             project_id
             cover_url

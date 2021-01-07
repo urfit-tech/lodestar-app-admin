@@ -12211,6 +12211,7 @@ export enum member_note_constraint {
  * update columns of table "member_note"
  */
 export enum member_note_update_column {
+  attachment_id = "attachment_id",
   author_id = "author_id",
   created_at = "created_at",
   description = "description",
@@ -18402,6 +18403,7 @@ export interface member_note_bool_exp {
   _and?: (member_note_bool_exp | null)[] | null;
   _not?: member_note_bool_exp | null;
   _or?: (member_note_bool_exp | null)[] | null;
+  attachment_id?: uuid_comparison_exp | null;
   author?: member_bool_exp | null;
   author_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
@@ -18420,6 +18422,7 @@ export interface member_note_bool_exp {
  * input type for inserting data into table "member_note"
  */
 export interface member_note_insert_input {
+  attachment_id?: any | null;
   author?: member_obj_rel_insert_input | null;
   author_id?: string | null;
   created_at?: any | null;
@@ -18438,6 +18441,7 @@ export interface member_note_insert_input {
  * order by max() on columns of table "member_note"
  */
 export interface member_note_max_order_by {
+  attachment_id?: order_by | null;
   author_id?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
@@ -18453,6 +18457,7 @@ export interface member_note_max_order_by {
  * order by min() on columns of table "member_note"
  */
 export interface member_note_min_order_by {
+  attachment_id?: order_by | null;
   author_id?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;

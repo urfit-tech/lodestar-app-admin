@@ -53,22 +53,13 @@ const StyledAction = styled.div`
   }
 `
 
-const ProjectAdminCard: React.FC<ProjectPreviewProps & CardProps> = ({
-  id,
-  coverUrl,
-  previewUrl,
-  coverType,
-  title,
-  totalCount,
-}) => {
+const ProjectAdminCard: React.FC<ProjectPreviewProps & CardProps> = ({ id, previewUrl, title, totalCount }) => {
   const { formatMessage } = useIntl()
 
   return (
     <StyledWrapper>
       <Link to={`/projects/${id}`}>
-        <StyledCover
-          src={coverType === 'image' && previewUrl ? previewUrl : coverUrl !== null ? coverUrl : EmptyCover}
-        />
+        <StyledCover src={previewUrl || EmptyCover} />
         <StyledDescription>
           <StyledTitle className="mb-0">{title}</StyledTitle>
         </StyledDescription>

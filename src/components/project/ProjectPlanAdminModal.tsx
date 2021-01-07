@@ -99,6 +99,7 @@ const ProjectPlanAdminModal: React.FC<
                 period_amount: withPeriod ? values.period.amount : null,
                 period_type: withPeriod ? values.period.type : null,
                 auto_renewed: withPeriod ? withAutoRenewed : false,
+                is_subscription: withPeriod,
                 list_price: values.listPrice,
                 sale_price: values.sale ? values.sale.price : null,
                 sold_at: values.sale?.soldAt || null,
@@ -139,10 +140,14 @@ const ProjectPlanAdminModal: React.FC<
             onRefetchProjectPlanSorts?.()
           })
           .catch(handleError)
-          .finally(() => setLoading(false))
+          .finally(() => {
+            form.resetFields()
+            setLoading(false)
+          })
       })
       .catch(() => {})
   }
+
   return (
     <AdminModal
       title={formatMessage(commonMessages.label.salesPlan)}
@@ -319,6 +324,7 @@ const UPSERT_PROJECT_PLAN = gql`
           is_participants_visible
           published_at
           auto_renewed
+          is_subscription
         ]
       }
     ) {
