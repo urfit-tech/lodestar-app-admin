@@ -2,6 +2,7 @@ import { SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Button, DatePicker, Input, Table, Tag, Typography } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import { SorterResult } from 'antd/lib/table/interface'
 import Axios from 'axios'
 import gql from 'graphql-tag'
 import md5 from 'md5'
@@ -26,7 +27,7 @@ const messages = defineMessages({
   memberNoteManager: { id: 'member.label.memberNoteManager', defaultMessage: '承辦人' },
   memberNoteMember: { id: 'member.label.memberNoteMember', defaultMessage: '學員姓名 / Email' },
   memberNoteDuration: { id: 'member.label.memberNoteDuration', defaultMessage: '音檔長度' },
-  memberNoteDescription: { id: 'member.label.memberNoteDescription', defaultMessage: '備註' },
+  memberNoteNote: { id: 'member.label.memberNoteNote', defaultMessage: '備註' },
 })
 
 const TableWrapper = styled.div`
@@ -91,18 +92,22 @@ type NoteAdminProps = {
   audioFilePath: string | null
   description: string | null
   metadata: any
+  note: string | null
 }
 
 const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { settings } = useApp()
   const searchInputRef = useRef<Input | null>(null)
+  const [orderBy, setOrderBy] = useState<types.GET_MEMBER_NOTES_ADMINVariables['orderBy']>({
+    created_at: 'asc' as types.order_by.asc,
+  })
   const [filters, setFilters] = useState<FiltersProps>({
     range: [moment().startOf('month'), moment().endOf('month')],
   })
-  const { loadingNotes, notes, loadMoreNotes } = useMemberNotesAdmin(filters)
+  const { loadingNotes, notes, loadMoreNotes } = useMemberNotesAdmin(orderBy, filters)
   const { updateMemberNote } = useMutateMemberNote()
-  const [updatedDescriptions, setUpdatedDescriptions] = useState<{ [noteID: string]: string }>({})
+  const [updatedNotes, setUpdatedNotes] = useState<{ [noteID: string]: string }>({})
   const [loading, setLoading] = useState(false)
 
   const getColumnSearchProps: (columId: keyof FiltersProps) => ColumnProps<NoteAdminProps> = columnId => ({
@@ -233,7 +238,7 @@ const NoteCollectionPage: React.FC = () => {
     },
     {
       key: 'description',
-      title: formatMessage(messages.memberNoteDescription),
+      title: formatMessage(messages.memberNoteNote),
       render: (text, record, index) => (
         <StyledDescription
           editable={{
@@ -242,12 +247,12 @@ const NoteCollectionPage: React.FC = () => {
               updateMemberNote({
                 variables: {
                   memberNoteId: record.id,
-                  description: value,
+                  note: value,
                 },
               })
                 .then(() =>
-                  setUpdatedDescriptions({
-                    ...updatedDescriptions,
+                  setUpdatedNotes({
+                    ...updatedNotes,
                     [record.id]: value,
                   }),
                 )
@@ -255,7 +260,7 @@ const NoteCollectionPage: React.FC = () => {
           }}
           className="mb-0"
         >
-          {updatedDescriptions[record.id] || record.description || ''}
+          {updatedNotes[record.id] || record.note || ''}
         </StyledDescription>
       ),
     },
@@ -290,6 +295,13 @@ const NoteCollectionPage: React.FC = () => {
             pagination={false}
             loading={loadingNotes}
             dataSource={notes}
+            onChange={(pagination, filters, sorter) => {
+              const newSorter = sorter as SorterResult<NoteAdminProps>
+              setOrderBy({
+                [newSorter.columnKey === 'duration' ? 'duration' : 'created_at']:
+                  newSorter.order === 'descend' ? ('desc' as types.order_by.desc) : ('asc' as types.order_by.asc),
+              })
+            }}
           />
         </TableWrapper>
 
@@ -353,8 +365,8 @@ const LoadRecordFileButton: React.FC<{
   )
 }
 
-const useMemberNotesAdmin = (filters?: FiltersProps) => {
-  const condition: types.MEMBER_NOTES_ADMINVariables['condition'] = {
+const useMemberNotesAdmin = (orderBy: types.GET_MEMBER_NOTES_ADMINVariables['orderBy'], filters?: FiltersProps) => {
+  const condition: types.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
     created_at: filters?.range
       ? {
           _gte: filters.range[0].toDate(),
@@ -404,17 +416,17 @@ const useMemberNotesAdmin = (filters?: FiltersProps) => {
         : undefined,
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.MEMBER_NOTES_ADMIN,
-    types.MEMBER_NOTES_ADMINVariables
+    types.GET_MEMBER_NOTES_ADMIN,
+    types.GET_MEMBER_NOTES_ADMINVariables
   >(
     gql`
-      query MEMBER_NOTES_ADMIN($condition: member_note_bool_exp) {
+      query GET_MEMBER_NOTES_ADMIN($orderBy: member_note_order_by!, $condition: member_note_bool_exp) {
         member_note_aggregate(where: $condition) {
           aggregate {
             count
           }
         }
-        member_note(where: $condition, order_by: { created_at: desc }, limit: 10) {
+        member_note(where: $condition, order_by: [$orderBy], limit: 10) {
           id
           created_at
           author {
@@ -462,12 +474,13 @@ const useMemberNotesAdmin = (filters?: FiltersProps) => {
             }
           }
           duration
-          metadata
           description
+          metadata
+          note
         }
       }
     `,
-    { variables: { condition } },
+    { variables: { condition, orderBy } },
   )
 
   const notes: NoteAdminProps[] =
@@ -505,14 +518,21 @@ const useMemberNotesAdmin = (filters?: FiltersProps) => {
       audioFilePath: v.metadata?.recordfile || null,
       description: v.description,
       metadata: v.metadata,
+      note: v.note,
     })) || []
 
   const loadMoreNotes = () =>
     fetchMore({
       variables: {
+        orderBy,
         condition: {
           ...condition,
-          created_at: { _lt: data?.member_note.slice(-1)[0]?.created_at },
+          created_at: orderBy.created_at
+            ? { [orderBy.created_at === 'desc' ? '_lt' : '_gt']: data?.member_note.slice(-1)[0]?.created_at }
+            : undefined,
+          duration: orderBy.duration
+            ? { [orderBy.duration === 'desc' ? '_lt' : '_gt']: data?.member_note.slice(-1)[0]?.duration }
+            : undefined,
         },
       },
       updateQuery: (prev, { fetchMoreResult }) => {

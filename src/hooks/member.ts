@@ -266,7 +266,7 @@ export const useMemberAdmin = (memberId: string) => {
 }
 
 export const useMutateMemberNote = () => {
-  const [insertMemberNote] = useMutation(gql`
+  const [insertMemberNote] = useMutation<types.INSERT_MEMBER_NOTE, types.INSERT_MEMBER_NOTEVariables>(gql`
     mutation INSERT_MEMBER_NOTE(
       $memberId: String!
       $authorId: String!
@@ -274,6 +274,7 @@ export const useMutateMemberNote = () => {
       $status: String
       $duration: Int
       $description: String
+      $note: String
     ) {
       insert_member_note_one(
         object: {
@@ -283,6 +284,7 @@ export const useMutateMemberNote = () => {
           status: $status
           duration: $duration
           description: $description
+          note: $note
         }
       ) {
         id
@@ -297,10 +299,11 @@ export const useMutateMemberNote = () => {
       $status: String
       $duration: Int
       $description: String
+      $note: String
     ) {
       update_member_note_by_pk(
         pk_columns: { id: $memberNoteId }
-        _set: { type: $type, status: $status, duration: $duration, description: $description }
+        _set: { type: $type, status: $status, duration: $duration, description: $description, note: $note }
       ) {
         id
       }

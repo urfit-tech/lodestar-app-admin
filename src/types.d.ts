@@ -7923,6 +7923,7 @@ export interface INSERT_MEMBER_NOTEVariables {
   status?: string | null;
   duration?: number | null;
   description?: string | null;
+  note?: string | null;
 }
 
 /* tslint:disable */
@@ -7952,6 +7953,7 @@ export interface UPDATE_MEMBER_NOTEVariables {
   status?: string | null;
   duration?: number | null;
   description?: string | null;
+  note?: string | null;
 }
 
 /* tslint:disable */
@@ -9880,97 +9882,97 @@ export interface INSERT_MERCHANDISEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: MEMBER_NOTES_ADMIN
+// GraphQL query operation: GET_MEMBER_NOTES_ADMIN
 // ====================================================
 
-export interface MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate {
   __typename: "member_note_aggregate_fields";
   count: number | null;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_aggregate {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_aggregate {
   __typename: "member_note_aggregate";
-  aggregate: MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate | null;
+  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate | null;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_author {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_author {
   __typename: "member";
   id: string;
   name: string;
   username: string;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_manager {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_manager {
   __typename: "member";
   id: string;
   name: string;
   username: string;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_member_categories_category {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories_category {
   __typename: "category";
   id: string;
   name: string;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_member_categories {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories {
   __typename: "member_category";
   id: any;
   /**
    * An object relationship
    */
-  category: MEMBER_NOTES_ADMIN_member_note_member_member_categories_category;
+  category: GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories_category;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_member_tags {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_tags {
   __typename: "member_tag";
   tag_name: string;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum {
   __typename: "order_product_sum_fields";
   price: any | null;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate {
   __typename: "order_product_aggregate_fields";
-  sum: MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum | null;
+  sum: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum | null;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate {
   __typename: "order_product_aggregate";
-  aggregate: MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate | null;
+  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate | null;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum {
   __typename: "order_discount_sum_fields";
   price: any | null;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate {
   __typename: "order_discount_aggregate_fields";
-  sum: MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum | null;
+  sum: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum | null;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate {
   __typename: "order_discount_aggregate";
-  aggregate: MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate | null;
+  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate | null;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs {
   __typename: "order_log";
   id: string;
   /**
    * An aggregated array relationship
    */
-  order_products_aggregate: MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate;
+  order_products_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate;
   /**
    * An aggregated array relationship
    */
-  order_discounts_aggregate: MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate;
+  order_discounts_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member {
   __typename: "member";
   id: string;
   picture_url: string | null;
@@ -9980,50 +9982,52 @@ export interface MEMBER_NOTES_ADMIN_member_note_member {
   /**
    * An object relationship
    */
-  manager: MEMBER_NOTES_ADMIN_member_note_member_manager | null;
+  manager: GET_MEMBER_NOTES_ADMIN_member_note_member_manager | null;
   /**
    * An array relationship
    */
-  member_categories: MEMBER_NOTES_ADMIN_member_note_member_member_categories[];
+  member_categories: GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories[];
   /**
    * An array relationship
    */
-  member_tags: MEMBER_NOTES_ADMIN_member_note_member_member_tags[];
+  member_tags: GET_MEMBER_NOTES_ADMIN_member_note_member_member_tags[];
   /**
    * An array relationship
    */
-  order_logs: MEMBER_NOTES_ADMIN_member_note_member_order_logs[];
+  order_logs: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs[];
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note {
+export interface GET_MEMBER_NOTES_ADMIN_member_note {
   __typename: "member_note";
   id: string;
   created_at: any;
   /**
    * An object relationship
    */
-  author: MEMBER_NOTES_ADMIN_member_note_author;
+  author: GET_MEMBER_NOTES_ADMIN_member_note_author;
   /**
    * An object relationship
    */
-  member: MEMBER_NOTES_ADMIN_member_note_member | null;
+  member: GET_MEMBER_NOTES_ADMIN_member_note_member | null;
   duration: number | null;
-  metadata: any | null;
   description: string | null;
+  metadata: any | null;
+  note: string | null;
 }
 
-export interface MEMBER_NOTES_ADMIN {
+export interface GET_MEMBER_NOTES_ADMIN {
   /**
    * fetch aggregated fields from the table: "member_note"
    */
-  member_note_aggregate: MEMBER_NOTES_ADMIN_member_note_aggregate;
+  member_note_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_aggregate;
   /**
    * fetch data from the table: "member_note"
    */
-  member_note: MEMBER_NOTES_ADMIN_member_note[];
+  member_note: GET_MEMBER_NOTES_ADMIN_member_note[];
 }
 
-export interface MEMBER_NOTES_ADMINVariables {
+export interface GET_MEMBER_NOTES_ADMINVariables {
+  orderBy: member_note_order_by;
   condition?: member_note_bool_exp | null;
 }
 
@@ -12211,7 +12215,7 @@ export enum member_note_constraint {
  * update columns of table "member_note"
  */
 export enum member_note_update_column {
-  attachment_id = "attachment_id",
+  attachment_path = "attachment_path",
   author_id = "author_id",
   created_at = "created_at",
   description = "description",
@@ -12219,6 +12223,7 @@ export enum member_note_update_column {
   id = "id",
   member_id = "member_id",
   metadata = "metadata",
+  note = "note",
   status = "status",
   type = "type",
   updated_at = "updated_at",
@@ -18403,7 +18408,7 @@ export interface member_note_bool_exp {
   _and?: (member_note_bool_exp | null)[] | null;
   _not?: member_note_bool_exp | null;
   _or?: (member_note_bool_exp | null)[] | null;
-  attachment_id?: uuid_comparison_exp | null;
+  attachment_path?: String_comparison_exp | null;
   author?: member_bool_exp | null;
   author_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
@@ -18413,6 +18418,7 @@ export interface member_note_bool_exp {
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   metadata?: jsonb_comparison_exp | null;
+  note?: String_comparison_exp | null;
   status?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -18422,7 +18428,7 @@ export interface member_note_bool_exp {
  * input type for inserting data into table "member_note"
  */
 export interface member_note_insert_input {
-  attachment_id?: any | null;
+  attachment_path?: string | null;
   author?: member_obj_rel_insert_input | null;
   author_id?: string | null;
   created_at?: any | null;
@@ -18432,6 +18438,7 @@ export interface member_note_insert_input {
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   metadata?: any | null;
+  note?: string | null;
   status?: string | null;
   type?: string | null;
   updated_at?: any | null;
@@ -18441,13 +18448,14 @@ export interface member_note_insert_input {
  * order by max() on columns of table "member_note"
  */
 export interface member_note_max_order_by {
-  attachment_id?: order_by | null;
+  attachment_path?: order_by | null;
   author_id?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
   duration?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
+  note?: order_by | null;
   status?: order_by | null;
   type?: order_by | null;
   updated_at?: order_by | null;
@@ -18457,13 +18465,14 @@ export interface member_note_max_order_by {
  * order by min() on columns of table "member_note"
  */
 export interface member_note_min_order_by {
-  attachment_id?: order_by | null;
+  attachment_path?: order_by | null;
   author_id?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
   duration?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
+  note?: order_by | null;
   status?: order_by | null;
   type?: order_by | null;
   updated_at?: order_by | null;
@@ -18476,6 +18485,26 @@ export interface member_note_on_conflict {
   constraint: member_note_constraint;
   update_columns: member_note_update_column[];
   where?: member_note_bool_exp | null;
+}
+
+/**
+ * ordering options when selecting data from "member_note"
+ */
+export interface member_note_order_by {
+  attachment_path?: order_by | null;
+  author?: member_order_by | null;
+  author_id?: order_by | null;
+  created_at?: order_by | null;
+  description?: order_by | null;
+  duration?: order_by | null;
+  id?: order_by | null;
+  member?: member_order_by | null;
+  member_id?: order_by | null;
+  metadata?: order_by | null;
+  note?: order_by | null;
+  status?: order_by | null;
+  type?: order_by | null;
+  updated_at?: order_by | null;
 }
 
 /**
