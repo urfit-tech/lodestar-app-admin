@@ -451,35 +451,40 @@ const useMemberNotesAdmin = (orderBy: types.GET_MEMBER_NOTES_ADMINVariables['ord
           ],
         }
       : undefined,
-    member:
-      filters?.manager || filters?.member || filters?.categories || filters?.tags
+    member: {
+      manager: filters?.manager
         ? {
-            manager: filters.manager
-              ? {
-                  _or: [
-                    { name: { _ilike: `%${filters.manager}%` } },
-                    { username: { _ilike: `%${filters.manager}%` } },
-                    { email: { _ilike: `%${filters.manager}%` } },
-                  ],
-                }
-              : undefined,
             _or: [
-              ...(filters.member
-                ? [
-                    { name: { _ilike: `%${filters.member}%` } },
-                    { username: { _ilike: `%${filters.member}%` } },
-                    { email: { _ilike: `%${filters.member}%` } },
-                  ]
-                : []),
-              ...(filters.categories?.map(categoryId => ({
-                member_categories: { category_id: { _eq: categoryId } },
-              })) || []),
-              ...(filters.tags?.map(tag => ({
-                member_tags: { tag_name: { _eq: tag } },
-              })) || []),
+              { name: { _ilike: `%${filters.manager}%` } },
+              { username: { _ilike: `%${filters.manager}%` } },
+              { email: { _ilike: `%${filters.manager}%` } },
             ],
           }
         : undefined,
+      _or: filters?.member
+        ? [
+            { name: { _ilike: `%${filters.member}%` } },
+            { username: { _ilike: `%${filters.member}%` } },
+            { email: { _ilike: `%${filters.member}%` } },
+          ]
+        : undefined,
+      _and: [
+        filters?.categories
+          ? {
+              _or: filters.categories.map(categoryId => ({
+                member_categories: { category_id: { _eq: categoryId } },
+              })),
+            }
+          : null,
+        filters?.tags
+          ? {
+              _or: filters.tags.map(tag => ({
+                member_tags: { tag_name: { _eq: tag } },
+              })),
+            }
+          : null,
+      ],
+    },
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
     types.GET_MEMBER_NOTES_ADMIN,
