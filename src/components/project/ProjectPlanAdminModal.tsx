@@ -140,6 +140,7 @@ const ProjectPlanAdminModal: React.FC<
             onRefetch?.()
             onRefetchProjectPlanSorts?.()
             isCreated && form.resetFields()
+            isCreated && setCoverImage(null)
           })
           .catch(handleError)
           .finally(() => {
