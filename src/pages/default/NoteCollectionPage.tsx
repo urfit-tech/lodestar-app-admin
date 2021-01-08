@@ -104,7 +104,7 @@ const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const searchInputRef = useRef<Input | null>(null)
   const [orderBy, setOrderBy] = useState<types.GET_MEMBER_NOTES_ADMINVariables['orderBy']>({
-    created_at: 'asc' as types.order_by.asc,
+    created_at: 'desc' as types.order_by.desc,
   })
   const [filters, setFilters] = useState<FiltersProps>({
     range: [moment().startOf('month'), moment().endOf('month')],
@@ -356,7 +356,7 @@ const NoteCollectionPage: React.FC = () => {
               const newSorter = sorter as SorterResult<NoteAdminProps>
               setOrderBy({
                 [newSorter.columnKey === 'duration' ? 'duration' : 'created_at']:
-                  newSorter.order === 'descend' ? ('desc' as types.order_by.desc) : ('asc' as types.order_by.asc),
+                  newSorter.order === 'ascend' ? ('asc' as types.order_by.asc) : ('desc' as types.order_by.desc),
               })
             }}
           />
@@ -406,13 +406,13 @@ const LoadRecordFileButton: React.FC<{
       const response = await Axios.post(
         `${apiHost}/call/download-record`,
         { appId, filePath },
-        { headers: { authorization: `Bearer ${authToken}` } },
+        {
+          headers: { authorization: `Bearer ${authToken}` },
+          responseType: 'blob',
+        },
       )
 
-      const view = new Uint8Array(response.data.result.data)
-      const arrayBuffer = view.buffer
-
-      const blob = new Blob([arrayBuffer], { type: 'audio/wav' })
+      const blob = new Blob([response.data], { type: 'audio/wav' })
       setAudioUrl(window.URL.createObjectURL(blob))
     } catch (error) {
       handleError(error)
