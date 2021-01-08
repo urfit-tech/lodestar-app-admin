@@ -100,7 +100,7 @@ const ProjectPlanAdminModal: React.FC<
                 period_amount: withPeriod ? values.period.amount : null,
                 period_type: withPeriod ? values.period.type : null,
                 auto_renewed: withPeriod ? withAutoRenewed : false,
-                is_subscription: withPeriod,
+                is_subscription: withPeriod ? withAutoRenewed : false,
                 list_price: values.listPrice,
                 sale_price: values.sale ? values.sale.price : null,
                 sold_at: values.sale?.soldAt || null,
