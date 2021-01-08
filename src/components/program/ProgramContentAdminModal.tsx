@@ -1,14 +1,17 @@
-import { EditOutlined, MoreOutlined } from '@ant-design/icons'
+import { CloseOutlined, EditOutlined, MoreOutlined, UploadOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, DatePicker, Dropdown, Form, Input, InputNumber, Menu, Modal } from 'antd'
+import { Button, Checkbox, DatePicker, Dropdown, Form, Input, InputNumber, Menu, message, Modal } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import axios, { Canceler } from 'axios'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
-import { handleError } from '../../helpers'
+import { useAuth } from '../../contexts/AuthContext'
+import { handleError, uploadFile } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramContentBodyType, ProgramContentProps, ProgramProps } from '../../types/program'
@@ -30,7 +33,23 @@ const messages = defineMessages({
   duration: { id: 'program.label.duration', defaultMessage: '內容時長（分鐘）' },
   contentContext: { id: 'program.label.contentContext', defaultMessage: '內文' },
   notifyUpdate: { id: 'program.label.notifyUpdate', defaultMessage: '通知內容更新' },
+  uploadMaterial: { id: 'program.ui.uploadMaterial', defaultMessage: '上傳教材' },
 })
+
+const StyledCloseIcon = styled(CloseOutlined)`
+  color: transparent;
+`
+const StyledFileItem = styled.div`
+  color: var(--gray-darker);
+  font-size: 14px;
+
+  :hover {
+    background-color: var(--gray-lighter);
+    ${StyledCloseIcon} {
+      color: var(--gray-darker);
+    }
+  }
+`
 
 type FieldProps = {
   publishedAt: Moment | null
@@ -51,6 +70,7 @@ const ProgramContentAdminModal: React.FC<{
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
+  const { authToken, apiHost } = useAuth()
 
   const [updateProgramContent] = useMutation<types.UPDATE_PROGRAM_CONTENT, types.UPDATE_PROGRAM_CONTENTVariables>(
     UPDATE_PROGRAM_CONTENT,
@@ -63,12 +83,19 @@ const ProgramContentAdminModal: React.FC<{
     DELETE_PROGRAM_CONTENT,
   )
 
+  const [updateProgramContentMaterials] = useMutation<
+    types.UPDATE_PROGRAM_CONTENT_MATERIALS,
+    types.UPDATE_PROGRAM_CONTENT_MATERIALSVariables
+  >(UPDATE_PROGRAM_CONTENT_MATERIALS)
+
   const [visible, setVisible] = useState(false)
   const [isTrial, setIsTrial] = useState(programContent.listPrice === 0)
   const [isPublished, setIsPublished] = useState(!!programContent.publishedAt)
   const [video, setVideo] = useState<any>(programContentBody.data.video || null)
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const uploadCanceler = useRef<Canceler>()
+  const [materialFiles, setMaterialFiles] = useState<File[]>(programContentBody.materials.map(v => v.data) || [])
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
@@ -108,7 +135,46 @@ const ProgramContentAdminModal: React.FC<{
             },
           })
         : null,
+      updateProgramContentMaterials({
+        variables: {
+          programContentId: programContent.id,
+          materials: materialFiles.map(file => ({
+            program_content_id: programContent.id,
+            data: {
+              lastModified: file.lastModified,
+              name: file.name,
+              size: file.size,
+              type: file.type,
+            },
+          })),
+        },
+      }),
     ])
+      .then(async () => {
+        try {
+          const existedFiles: File[] = programContentBody.materials.map(material => material.data).flat()
+
+          for (const file of materialFiles) {
+            if (
+              existedFiles.some(
+                existedFile => existedFile.name === file.name && existedFile.lastModified === file.lastModified,
+              )
+            ) {
+              continue
+            }
+            await uploadFile(`materials/${appId}/${programContent.id}_${file.name}`, file, authToken, apiHost, {
+              cancelToken: new axios.CancelToken(canceler => {
+                uploadCanceler.current = canceler
+              }),
+            })
+          }
+          message.success(formatMessage(commonMessages.event.successfullySaved))
+          onRefetch?.()
+        } catch (error) {
+          process.env.NODE_ENV === 'development' && console.error(error)
+          return error
+        }
+      })
       .then(() => {
         setVisible(false)
         onRefetch?.()
@@ -239,11 +305,65 @@ const ProgramContentAdminModal: React.FC<{
           <Form.Item label={formatMessage(messages.duration)} name="duration">
             <InputNumber />
           </Form.Item>
+          <Form.Item label={formatMessage(commonMessages.term.material)}>
+            <MaterialFileUpload value={materialFiles} onChange={value => setMaterialFiles(value)} />
+          </Form.Item>
+          <div className="mb-4">
+            {materialFiles?.map(file => (
+              <StyledFileItem key={file.name} className="d-flex align-items-center justify-content-between py-1 px-2">
+                <div className="flex-grow-1">{file.name}</div>
+                <StyledCloseIcon
+                  className="flex-shrink-0 ml-2 pointer-cursor"
+                  onClick={() => {
+                    setMaterialFiles(materialFiles.filter(v => v.name !== file.name))
+                  }}
+                />
+              </StyledFileItem>
+            ))}
+          </div>
           <Form.Item label={formatMessage(messages.contentContext)} name="description">
             <AdminBraftEditor />
           </Form.Item>
         </Form>
       </Modal>
+    </>
+  )
+}
+
+const MaterialFileUpload: React.FC<{
+  value?: File[]
+  onChange?: (value: File[]) => void
+}> = ({ value, onChange }) => {
+  const { formatMessage } = useIntl()
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  return (
+    <>
+      <input
+        ref={inputRef}
+        type="file"
+        multiple
+        hidden
+        onChange={e => {
+          if (!e.target.files || !e.target.files.length || !onChange) {
+            return
+          }
+
+          // append new file into input value
+          const files: File[] = value?.slice() || []
+          for (let i = 0; i < e.target.files.length; i++) {
+            const file = e.target.files.item(i)
+            file && !files.some(v => v.name === file.name) && files.push(file)
+          }
+
+          onChange(files)
+          e.target.value = ''
+          e.target.files = null
+        }}
+      />
+
+      <Button icon={<UploadOutlined />} onClick={() => inputRef.current?.click()}>
+        {formatMessage(messages.uploadMaterial)}
+      </Button>
     </>
   )
 }
@@ -303,6 +423,19 @@ const DELETE_PROGRAM_CONTENT = gql`
       affected_rows
     }
     delete_program_content_body(where: { program_contents: { id: { _eq: $programContentId } } }) {
+      affected_rows
+    }
+  }
+`
+const UPDATE_PROGRAM_CONTENT_MATERIALS = gql`
+  mutation UPDATE_PROGRAM_CONTENT_MATERIALS(
+    $programContentId: uuid!
+    $materials: [program_content_material_insert_input!]!
+  ) {
+    delete_program_content_material(where: { program_content_id: { _eq: $programContentId } }) {
+      affected_rows
+    }
+    insert_program_content_material(objects: $materials) {
       affected_rows
     }
   }

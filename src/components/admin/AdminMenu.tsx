@@ -15,6 +15,7 @@ import { ReactComponent as DiscountIcon } from '../../images/icon/discount.svg'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import { ReactComponent as MoneyCircleIcon } from '../../images/icon/money-circle.svg'
 import { ReactComponent as PointIcon } from '../../images/icon/point.svg'
+import { ReactComponent as ProjectIcon } from '../../images/icon/project.svg'
 import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
 import { ReactComponent as UserIcon } from '../../images/icon/user.svg'
 import { ReactComponent as UsersIcon } from '../../images/icon/users.svg'
@@ -46,6 +47,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
       mode="inline"
       defaultOpenKeys={[
         'owner_program_admin',
+        'owner_project_admin',
         'owner_promotion_admin',
         'owner_podcast_admin',
         'owner_appointment_admin',
@@ -113,7 +115,21 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           )}
         </Menu.SubMenu>
       )}
-
+      {enabledModules.project && (
+        <Menu.SubMenu
+          key="owner_project_admin"
+          title={
+            <span>
+              <Icon component={() => <ProjectIcon />} />
+              <span>{formatMessage(commonMessages.menu.projectAdmin)}</span>
+            </span>
+          }
+        >
+          <Menu.Item key="project_funding_collection">{formatMessage(commonMessages.menu.projectFunding)}</Menu.Item>
+          {/* <Menu.Item key="project_pre_order_collection">{formatMessage(commonMessages.menu.projectPreOrder)}</Menu.Item> */}
+          {/* <Menu.Item key="project_on_sale_collection">{formatMessage(commonMessages.menu.projectOnSale)}</Menu.Item> */}
+        </Menu.SubMenu>
+      )}
       {enabledModules.podcast && (currentUserRole === 'app-owner' || currentUserRole === 'content-creator') && (
         <Menu.SubMenu
           key="owner_podcast_admin"

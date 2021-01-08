@@ -209,6 +209,7 @@ const OrderExportModal: React.FC = () => {
           formatMessage(orderMessages.label.paymentLogPaidAt),
           formatMessage(orderMessages.label.productOwner),
           formatMessage(orderMessages.label.productType),
+          formatMessage(commonMessages.label.orderProductId),
           formatMessage(orderMessages.label.orderProductName),
           formatMessage(orderMessages.label.productQuantity),
           formatMessage(orderMessages.label.productPrice),
@@ -221,6 +222,8 @@ const OrderExportModal: React.FC = () => {
             orderProduct.product_owner || '',
             productTypeLabel[orderProduct.product_id?.split('_')[0] || ''] ||
               formatMessage(commonMessages.product.unknownType),
+            orderProduct.product_id?.split('_')[1]?.slice(0, -(orderProduct.product_id?.split('_')[1].length - 6)) ||
+              '',
             orderProduct.name,
             orderProduct.quantity,
             orderProduct.price,

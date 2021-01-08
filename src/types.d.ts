@@ -1418,6 +1418,10 @@ export interface GET_CONTENT_CREATOR_COLLECTION {
   member: GET_CONTENT_CREATOR_COLLECTION_member[];
 }
 
+export interface GET_CONTENT_CREATOR_COLLECTIONVariables {
+  condition: member_bool_exp;
+}
+
 /* tslint:disable */
 /* eslint-disable */
 // @generated
@@ -1531,6 +1535,180 @@ export interface GET_PRODUCT_SELECTION_COLLECTION {
    * fetch data from the table: "card"
    */
   card: GET_PRODUCT_SELECTION_COLLECTION_card[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ALL_BRIEF_PRODUCT_COLLECTION
+// ====================================================
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program {
+  __typename: "program";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan_program {
+  __typename: "program";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan {
+  __typename: "program_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  program: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan_program;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket_activity {
+  __typename: "activity";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket {
+  __typename: "activity_ticket";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  activity: GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket_activity;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_program {
+  __typename: "podcast_program";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan {
+  __typename: "podcast_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  creator: GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan_creator | null;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan {
+  __typename: "appointment_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  creator: GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan_creator | null;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec_merchandise {
+  __typename: "merchandise";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec {
+  __typename: "merchandise_spec";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  merchandise: GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec_merchandise;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan_project {
+  __typename: "project";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan {
+  __typename: "project_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  project: GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan_project;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan_program_package {
+  __typename: "program_package";
+  id: any;
+  title: string;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan {
+  __typename: "program_package_plan";
+  id: any;
+  title: string;
+  /**
+   * An object relationship
+   */
+  program_package: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan_program_package;
+}
+
+export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
+  /**
+   * fetch data from the table: "program"
+   */
+  program: GET_ALL_BRIEF_PRODUCT_COLLECTION_program[];
+  /**
+   * fetch data from the table: "program_plan"
+   */
+  program_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan[];
+  /**
+   * fetch data from the table: "activity_ticket"
+   */
+  activity_ticket: GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket[];
+  /**
+   * fetch data from the table: "podcast_program"
+   */
+  podcast_program: GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_program[];
+  /**
+   * fetch data from the table: "podcast_plan"
+   */
+  podcast_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan[];
+  /**
+   * fetch data from the table: "appointment_plan"
+   */
+  appointment_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan[];
+  /**
+   * fetch data from the table: "merchandise_spec"
+   */
+  merchandise_spec: GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec[];
+  /**
+   * fetch data from the table: "project_plan"
+   */
+  project_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan[];
+  /**
+   * fetch data from the table: "program_package_plan"
+   */
+  program_package_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan[];
 }
 
 /* tslint:disable */
@@ -3775,6 +3953,47 @@ export interface DELETE_PROGRAM_CONTENTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_MATERIALS
+// ====================================================
+
+export interface UPDATE_PROGRAM_CONTENT_MATERIALS_delete_program_content_material {
+  __typename: "program_content_material_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_MATERIALS_insert_program_content_material {
+  __typename: "program_content_material_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_MATERIALS {
+  /**
+   * delete data from the table: "program_content_material"
+   */
+  delete_program_content_material: UPDATE_PROGRAM_CONTENT_MATERIALS_delete_program_content_material | null;
+  /**
+   * insert data into the table: "program_content_material"
+   */
+  insert_program_content_material: UPDATE_PROGRAM_CONTENT_MATERIALS_insert_program_content_material | null;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_MATERIALSVariables {
+  programContentId: any;
+  materials: program_content_material_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_CONTENT
 // ====================================================
 
@@ -4738,6 +4957,412 @@ export interface PUBLISH_PROGRAM_PACKAGE {
 
 export interface PUBLISH_PROGRAM_PACKAGEVariables {
   programPackageId: any;
+  publishedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_BASIC
+// ====================================================
+
+export interface UPDATE_PROJECT_BASIC_update_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_BASIC_delete_project_category {
+  __typename: "project_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_BASIC_insert_project_category {
+  __typename: "project_category_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_BASIC {
+  /**
+   * update data of the table: "project"
+   */
+  update_project: UPDATE_PROJECT_BASIC_update_project | null;
+  /**
+   * delete data from the table: "project_category"
+   */
+  delete_project_category: UPDATE_PROJECT_BASIC_delete_project_category | null;
+  /**
+   * insert data into the table: "project_category"
+   */
+  insert_project_category: UPDATE_PROJECT_BASIC_insert_project_category | null;
+}
+
+export interface UPDATE_PROJECT_BASICVariables {
+  projectId: any;
+  title?: string | null;
+  projectCategories: project_category_insert_input[];
+  targetUnit?: string | null;
+  targetAmount: any;
+  expiredAt?: any | null;
+  isParticipantsVisible: boolean;
+  isCountdownTimerVisible: boolean;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROJECT_PREVIEW_COLLECTION
+// ====================================================
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_aggregate_aggregate {
+  __typename: "project_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_aggregate {
+  __typename: "project_aggregate";
+  aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_aggregate_aggregate | null;
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_project_plans_project_plan_enrollments_aggregate_aggregate {
+  __typename: "project_plan_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_project_plans_project_plan_enrollments_aggregate {
+  __typename: "project_plan_enrollment_aggregate";
+  aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_project_plans_project_plan_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project_project_plans {
+  __typename: "project_plan";
+  id: any;
+  /**
+   * An aggregated array relationship
+   */
+  project_plan_enrollments_aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_project_plans_project_plan_enrollments_aggregate;
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION_project {
+  __typename: "project";
+  id: any;
+  title: string;
+  abstract: string | null;
+  /**
+   * funding / pre-order / on-sale / modular
+   */
+  type: string;
+  created_at: any;
+  published_at: any | null;
+  expired_at: any | null;
+  cover_url: string | null;
+  preview_url: string | null;
+  creator_id: string | null;
+  position: number;
+  /**
+   * image / video
+   */
+  cover_type: string;
+  /**
+   * An array relationship
+   */
+  project_plans: GET_PROJECT_PREVIEW_COLLECTION_project_project_plans[];
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTION {
+  /**
+   * fetch aggregated fields from the table: "project"
+   */
+  project_aggregate: GET_PROJECT_PREVIEW_COLLECTION_project_aggregate;
+  /**
+   * fetch data from the table: "project"
+   */
+  project: GET_PROJECT_PREVIEW_COLLECTION_project[];
+}
+
+export interface GET_PROJECT_PREVIEW_COLLECTIONVariables {
+  condition: project_bool_exp;
+  orderBy?: project_order_by[] | null;
+  limit: number;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROJECT_SORT_COLLECTION
+// ====================================================
+
+export interface GET_PROJECT_SORT_COLLECTION_project {
+  __typename: "project";
+  id: any;
+  title: string;
+  /**
+   * funding / pre-order / on-sale / modular
+   */
+  type: string;
+}
+
+export interface GET_PROJECT_SORT_COLLECTION {
+  /**
+   * fetch data from the table: "project"
+   */
+  project: GET_PROJECT_SORT_COLLECTION_project[];
+}
+
+export interface GET_PROJECT_SORT_COLLECTIONVariables {
+  condition: project_bool_exp;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_POSITION_COLLECTION
+// ====================================================
+
+export interface UPDATE_PROJECT_POSITION_COLLECTION_insert_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_POSITION_COLLECTION {
+  /**
+   * insert data into the table: "project"
+   */
+  insert_project: UPDATE_PROJECT_POSITION_COLLECTION_insert_project | null;
+}
+
+export interface UPDATE_PROJECT_POSITION_COLLECTIONVariables {
+  data: project_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_COVER
+// ====================================================
+
+export interface UPDATE_PROJECT_COVER_update_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_COVER {
+  /**
+   * update data of the table: "project"
+   */
+  update_project: UPDATE_PROJECT_COVER_update_project | null;
+}
+
+export interface UPDATE_PROJECT_COVERVariables {
+  projectId: any;
+  previewUrl?: string | null;
+  coverUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_INTRO
+// ====================================================
+
+export interface UPDATE_PROJECT_INTRO_update_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_INTRO {
+  /**
+   * update data of the table: "project"
+   */
+  update_project: UPDATE_PROJECT_INTRO_update_project | null;
+}
+
+export interface UPDATE_PROJECT_INTROVariables {
+  projectId: any;
+  abstract?: string | null;
+  introduction?: string | null;
+  coverUrl?: string | null;
+  cover_type?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_PROJECT_PLAN_SORT_COLLECTION
+// ====================================================
+
+export interface GET_PROJECT_PLAN_SORT_COLLECTION_project_plan {
+  __typename: "project_plan";
+  id: any;
+  project_id: any;
+  title: string;
+}
+
+export interface GET_PROJECT_PLAN_SORT_COLLECTION {
+  /**
+   * fetch data from the table: "project_plan"
+   */
+  project_plan: GET_PROJECT_PLAN_SORT_COLLECTION_project_plan[];
+}
+
+export interface GET_PROJECT_PLAN_SORT_COLLECTIONVariables {
+  projectId?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_PLAN_POSITION_COLLECTION
+// ====================================================
+
+export interface UPDATE_PROJECT_PLAN_POSITION_COLLECTION_insert_project_plan {
+  __typename: "project_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_PLAN_POSITION_COLLECTION {
+  /**
+   * insert data into the table: "project_plan"
+   */
+  insert_project_plan: UPDATE_PROJECT_PLAN_POSITION_COLLECTION_insert_project_plan | null;
+}
+
+export interface UPDATE_PROJECT_PLAN_POSITION_COLLECTIONVariables {
+  data: project_plan_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROJECT_PLAN_COVER_URL
+// ====================================================
+
+export interface UPDATE_PROJECT_PLAN_COVER_URL_update_project_plan {
+  __typename: "project_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROJECT_PLAN_COVER_URL {
+  /**
+   * update data of the table: "project_plan"
+   */
+  update_project_plan: UPDATE_PROJECT_PLAN_COVER_URL_update_project_plan | null;
+}
+
+export interface UPDATE_PROJECT_PLAN_COVER_URLVariables {
+  id: any;
+  coverUrl?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPSERT_PROJECT_PLAN
+// ====================================================
+
+export interface UPSERT_PROJECT_PLAN_insert_project_plan_returning {
+  __typename: "project_plan";
+  id: any;
+}
+
+export interface UPSERT_PROJECT_PLAN_insert_project_plan {
+  __typename: "project_plan_mutation_response";
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: UPSERT_PROJECT_PLAN_insert_project_plan_returning[];
+}
+
+export interface UPSERT_PROJECT_PLAN {
+  /**
+   * insert data into the table: "project_plan"
+   */
+  insert_project_plan: UPSERT_PROJECT_PLAN_insert_project_plan | null;
+}
+
+export interface UPSERT_PROJECT_PLANVariables {
+  data: project_plan_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: PUBLISH_PROJECT
+// ====================================================
+
+export interface PUBLISH_PROJECT_update_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface PUBLISH_PROJECT {
+  /**
+   * update data of the table: "project"
+   */
+  update_project: PUBLISH_PROJECT_update_project | null;
+}
+
+export interface PUBLISH_PROJECTVariables {
+  projectId: any;
   publishedAt?: any | null;
 }
 
@@ -6605,180 +7230,6 @@ export interface ARRANGE_PRODUCT_INVENTORYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_ALL_BRIEF_PRODUCT_COLLECTION
-// ====================================================
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program {
-  __typename: "program";
-  id: any;
-  title: string;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan_program {
-  __typename: "program";
-  id: any;
-  title: string;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan {
-  __typename: "program_plan";
-  id: any;
-  title: string;
-  /**
-   * An object relationship
-   */
-  program: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan_program;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket_activity {
-  __typename: "activity";
-  id: any;
-  title: string;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket {
-  __typename: "activity_ticket";
-  id: any;
-  title: string;
-  /**
-   * An object relationship
-   */
-  activity: GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket_activity;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_program {
-  __typename: "podcast_program";
-  id: any;
-  title: string;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan_creator {
-  __typename: "member_public";
-  id: string | null;
-  name: string | null;
-  username: string | null;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan {
-  __typename: "podcast_plan";
-  id: any;
-  title: string;
-  /**
-   * An object relationship
-   */
-  creator: GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan_creator | null;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan_creator {
-  __typename: "member_public";
-  id: string | null;
-  name: string | null;
-  username: string | null;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan {
-  __typename: "appointment_plan";
-  id: any;
-  title: string;
-  /**
-   * An object relationship
-   */
-  creator: GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan_creator | null;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec_merchandise {
-  __typename: "merchandise";
-  id: any;
-  title: string;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec {
-  __typename: "merchandise_spec";
-  id: any;
-  title: string;
-  /**
-   * An object relationship
-   */
-  merchandise: GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec_merchandise;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan_project {
-  __typename: "project";
-  id: any;
-  title: string;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan {
-  __typename: "project_plan";
-  id: any;
-  title: string;
-  /**
-   * An object relationship
-   */
-  project: GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan_project;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan_program_package {
-  __typename: "program_package";
-  id: any;
-  title: string;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan {
-  __typename: "program_package_plan";
-  id: any;
-  title: string;
-  /**
-   * An object relationship
-   */
-  program_package: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan_program_package;
-}
-
-export interface GET_ALL_BRIEF_PRODUCT_COLLECTION {
-  /**
-   * fetch data from the table: "program"
-   */
-  program: GET_ALL_BRIEF_PRODUCT_COLLECTION_program[];
-  /**
-   * fetch data from the table: "program_plan"
-   */
-  program_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_plan[];
-  /**
-   * fetch data from the table: "activity_ticket"
-   */
-  activity_ticket: GET_ALL_BRIEF_PRODUCT_COLLECTION_activity_ticket[];
-  /**
-   * fetch data from the table: "podcast_program"
-   */
-  podcast_program: GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_program[];
-  /**
-   * fetch data from the table: "podcast_plan"
-   */
-  podcast_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_podcast_plan[];
-  /**
-   * fetch data from the table: "appointment_plan"
-   */
-  appointment_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_appointment_plan[];
-  /**
-   * fetch data from the table: "merchandise_spec"
-   */
-  merchandise_spec: GET_ALL_BRIEF_PRODUCT_COLLECTION_merchandise_spec[];
-  /**
-   * fetch data from the table: "project_plan"
-   */
-  project_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_project_plan[];
-  /**
-   * fetch data from the table: "program_package_plan"
-   */
-  program_package_plan: GET_ALL_BRIEF_PRODUCT_COLLECTION_program_package_plan[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_PHYSICAL_PRODUCT_ORDER_LOG
 // ====================================================
 
@@ -7472,6 +7923,7 @@ export interface INSERT_MEMBER_NOTEVariables {
   status?: string | null;
   duration?: number | null;
   description?: string | null;
+  note?: string | null;
 }
 
 /* tslint:disable */
@@ -7501,6 +7953,7 @@ export interface UPDATE_MEMBER_NOTEVariables {
   status?: string | null;
   duration?: number | null;
   description?: string | null;
+  note?: string | null;
 }
 
 /* tslint:disable */
@@ -8691,12 +9144,22 @@ export interface GET_PROGRAM_CONTENT_BODY_program_content_by_pk_program_content_
   data: any | null;
 }
 
+export interface GET_PROGRAM_CONTENT_BODY_program_content_by_pk_program_content_materials {
+  __typename: "program_content_material";
+  id: any;
+  data: any | null;
+}
+
 export interface GET_PROGRAM_CONTENT_BODY_program_content_by_pk {
   __typename: "program_content";
   /**
    * An object relationship
    */
   program_content_body: GET_PROGRAM_CONTENT_BODY_program_content_by_pk_program_content_body;
+  /**
+   * An array relationship
+   */
+  program_content_materials: GET_PROGRAM_CONTENT_BODY_program_content_by_pk_program_content_materials[];
 }
 
 export interface GET_PROGRAM_CONTENT_BODY {
@@ -9419,97 +9882,108 @@ export interface INSERT_MERCHANDISEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: MEMBER_NOTES_ADMIN
+// GraphQL query operation: GET_MEMBER_NOTES_ADMIN
 // ====================================================
 
-export interface MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate {
-  __typename: "member_note_aggregate_fields";
-  count: number | null;
-}
-
-export interface MEMBER_NOTES_ADMIN_member_note_aggregate {
-  __typename: "member_note_aggregate";
-  aggregate: MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate | null;
-}
-
-export interface MEMBER_NOTES_ADMIN_member_note_author {
-  __typename: "member";
-  id: string;
-  name: string;
-  username: string;
-}
-
-export interface MEMBER_NOTES_ADMIN_member_note_member_manager {
-  __typename: "member";
-  id: string;
-  name: string;
-  username: string;
-}
-
-export interface MEMBER_NOTES_ADMIN_member_note_member_member_categories_category {
+export interface GET_MEMBER_NOTES_ADMIN_category {
   __typename: "category";
   id: string;
   name: string;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_member_categories {
+export interface GET_MEMBER_NOTES_ADMIN_member_tag {
+  __typename: "member_tag";
+  tag_name: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate {
+  __typename: "member_note_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_aggregate {
+  __typename: "member_note_aggregate";
+  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_author {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_manager {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories {
   __typename: "member_category";
   id: any;
   /**
    * An object relationship
    */
-  category: MEMBER_NOTES_ADMIN_member_note_member_member_categories_category;
+  category: GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories_category;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_member_tags {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_tags {
   __typename: "member_tag";
   tag_name: string;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum {
   __typename: "order_product_sum_fields";
   price: any | null;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate {
   __typename: "order_product_aggregate_fields";
-  sum: MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum | null;
+  sum: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum | null;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate {
   __typename: "order_product_aggregate";
-  aggregate: MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate | null;
+  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate | null;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum {
   __typename: "order_discount_sum_fields";
   price: any | null;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate {
   __typename: "order_discount_aggregate_fields";
-  sum: MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum | null;
+  sum: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum | null;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate {
   __typename: "order_discount_aggregate";
-  aggregate: MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate | null;
+  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate | null;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member_order_logs {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs {
   __typename: "order_log";
   id: string;
   /**
    * An aggregated array relationship
    */
-  order_products_aggregate: MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate;
+  order_products_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate;
   /**
    * An aggregated array relationship
    */
-  order_discounts_aggregate: MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate;
+  order_discounts_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate;
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note_member {
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member {
   __typename: "member";
   id: string;
   picture_url: string | null;
@@ -9519,50 +9993,60 @@ export interface MEMBER_NOTES_ADMIN_member_note_member {
   /**
    * An object relationship
    */
-  manager: MEMBER_NOTES_ADMIN_member_note_member_manager | null;
+  manager: GET_MEMBER_NOTES_ADMIN_member_note_member_manager | null;
   /**
    * An array relationship
    */
-  member_categories: MEMBER_NOTES_ADMIN_member_note_member_member_categories[];
+  member_categories: GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories[];
   /**
    * An array relationship
    */
-  member_tags: MEMBER_NOTES_ADMIN_member_note_member_member_tags[];
+  member_tags: GET_MEMBER_NOTES_ADMIN_member_note_member_member_tags[];
   /**
    * An array relationship
    */
-  order_logs: MEMBER_NOTES_ADMIN_member_note_member_order_logs[];
+  order_logs: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs[];
 }
 
-export interface MEMBER_NOTES_ADMIN_member_note {
+export interface GET_MEMBER_NOTES_ADMIN_member_note {
   __typename: "member_note";
   id: string;
   created_at: any;
   /**
    * An object relationship
    */
-  author: MEMBER_NOTES_ADMIN_member_note_author;
+  author: GET_MEMBER_NOTES_ADMIN_member_note_author;
   /**
    * An object relationship
    */
-  member: MEMBER_NOTES_ADMIN_member_note_member | null;
+  member: GET_MEMBER_NOTES_ADMIN_member_note_member | null;
   duration: number | null;
-  metadata: any | null;
   description: string | null;
+  metadata: any | null;
+  note: string | null;
 }
 
-export interface MEMBER_NOTES_ADMIN {
+export interface GET_MEMBER_NOTES_ADMIN {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_MEMBER_NOTES_ADMIN_category[];
+  /**
+   * fetch data from the table: "member_tag"
+   */
+  member_tag: GET_MEMBER_NOTES_ADMIN_member_tag[];
   /**
    * fetch aggregated fields from the table: "member_note"
    */
-  member_note_aggregate: MEMBER_NOTES_ADMIN_member_note_aggregate;
+  member_note_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_aggregate;
   /**
    * fetch data from the table: "member_note"
    */
-  member_note: MEMBER_NOTES_ADMIN_member_note[];
+  member_note: GET_MEMBER_NOTES_ADMIN_member_note[];
 }
 
-export interface MEMBER_NOTES_ADMINVariables {
+export interface GET_MEMBER_NOTES_ADMINVariables {
+  orderBy: member_note_order_by;
   condition?: member_note_bool_exp | null;
 }
 
@@ -10727,6 +11211,171 @@ export interface INSERT_PROGRAM_PACKAGEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_PROJECT_ADMIN
+// ====================================================
+
+export interface GET_PROJECT_ADMIN_project_by_pk_creator {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+  picture_url: string | null;
+}
+
+export interface GET_PROJECT_ADMIN_project_by_pk_project_plans_project_plan_enrollments_aggregate_aggregate {
+  __typename: "project_plan_enrollment_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_PROJECT_ADMIN_project_by_pk_project_plans_project_plan_enrollments_aggregate {
+  __typename: "project_plan_enrollment_aggregate";
+  aggregate: GET_PROJECT_ADMIN_project_by_pk_project_plans_project_plan_enrollments_aggregate_aggregate | null;
+}
+
+export interface GET_PROJECT_ADMIN_project_by_pk_project_plans {
+  __typename: "project_plan";
+  id: any;
+  project_id: any;
+  cover_url: string | null;
+  title: string;
+  description: string | null;
+  list_price: any | null;
+  sale_price: any | null;
+  sold_at: any | null;
+  discount_down_price: any;
+  is_subscription: boolean;
+  period_amount: any | null;
+  /**
+   * Y / M / W / D
+   */
+  period_type: string | null;
+  position: number | null;
+  is_participants_visible: boolean;
+  is_physical: boolean;
+  is_limited: boolean;
+  published_at: any | null;
+  auto_renewed: boolean;
+  /**
+   * An aggregated array relationship
+   */
+  project_plan_enrollments_aggregate: GET_PROJECT_ADMIN_project_by_pk_project_plans_project_plan_enrollments_aggregate;
+}
+
+export interface GET_PROJECT_ADMIN_project_by_pk_project_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_PROJECT_ADMIN_project_by_pk_project_categories {
+  __typename: "project_category";
+  /**
+   * An object relationship
+   */
+  category: GET_PROJECT_ADMIN_project_by_pk_project_categories_category;
+}
+
+export interface GET_PROJECT_ADMIN_project_by_pk {
+  __typename: "project";
+  id: any;
+  title: string;
+  abstract: string | null;
+  introduction: string | null;
+  description: string | null;
+  target_amount: any | null;
+  /**
+   * funds / participants
+   */
+  target_unit: string;
+  /**
+   * funding / pre-order / on-sale / modular
+   */
+  type: string;
+  updates: any | null;
+  created_at: any;
+  expired_at: any | null;
+  published_at: any | null;
+  comments: any | null;
+  contents: any | null;
+  /**
+   * image / video
+   */
+  cover_type: string;
+  cover_url: string | null;
+  preview_url: string | null;
+  is_participants_visible: boolean;
+  is_countdown_timer_visible: boolean;
+  /**
+   * An object relationship
+   */
+  creator: GET_PROJECT_ADMIN_project_by_pk_creator | null;
+  /**
+   * An array relationship
+   */
+  project_plans: GET_PROJECT_ADMIN_project_by_pk_project_plans[];
+  /**
+   * An array relationship
+   */
+  project_categories: GET_PROJECT_ADMIN_project_by_pk_project_categories[];
+}
+
+export interface GET_PROJECT_ADMIN {
+  /**
+   * fetch data from the table: "project" using primary key columns
+   */
+  project_by_pk: GET_PROJECT_ADMIN_project_by_pk | null;
+}
+
+export interface GET_PROJECT_ADMINVariables {
+  projectId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_PROJECT
+// ====================================================
+
+export interface INSERT_PROJECT_insert_project_returning {
+  __typename: "project";
+  id: any;
+}
+
+export interface INSERT_PROJECT_insert_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_PROJECT_insert_project_returning[];
+}
+
+export interface INSERT_PROJECT {
+  /**
+   * insert data into the table: "project"
+   */
+  insert_project: INSERT_PROJECT_insert_project | null;
+}
+
+export interface INSERT_PROJECTVariables {
+  appId: string;
+  title: string;
+  memberId: string;
+  type: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PODCAST_PROGRAM_AUDIO_DATA
 // ====================================================
 
@@ -11080,6 +11729,25 @@ export enum appointment_schedule_update_column {
   interval_amount = "interval_amount",
   interval_type = "interval_type",
   started_at = "started_at",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "attachment"
+ */
+export enum attachment_constraint {
+  attachment_pkey = "attachment_pkey",
+}
+
+/**
+ * update columns of table "attachment"
+ */
+export enum attachment_update_column {
+  created_at = "created_at",
+  data = "data",
+  id = "id",
+  target = "target",
+  type = "type",
   updated_at = "updated_at",
 }
 
@@ -11585,6 +12253,7 @@ export enum member_note_constraint {
  * update columns of table "member_note"
  */
 export enum member_note_update_column {
+  attachment_id = "attachment_id",
   author_id = "author_id",
   created_at = "created_at",
   description = "description",
@@ -11592,6 +12261,7 @@ export enum member_note_update_column {
   id = "id",
   member_id = "member_id",
   metadata = "metadata",
+  note = "note",
   status = "status",
   type = "type",
   updated_at = "updated_at",
@@ -14973,6 +15643,62 @@ export interface appointment_schedule_variance_order_by {
 }
 
 /**
+ * Boolean expression to filter rows from the table "attachment". All fields are combined with a logical 'AND'.
+ */
+export interface attachment_bool_exp {
+  _and?: (attachment_bool_exp | null)[] | null;
+  _not?: attachment_bool_exp | null;
+  _or?: (attachment_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  data?: jsonb_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  target?: String_comparison_exp | null;
+  type?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "attachment"
+ */
+export interface attachment_insert_input {
+  created_at?: any | null;
+  data?: any | null;
+  id?: any | null;
+  target?: string | null;
+  type?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "attachment"
+ */
+export interface attachment_obj_rel_insert_input {
+  data: attachment_insert_input;
+  on_conflict?: attachment_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "attachment"
+ */
+export interface attachment_on_conflict {
+  constraint: attachment_constraint;
+  update_columns: attachment_update_column[];
+  where?: attachment_bool_exp | null;
+}
+
+/**
+ * ordering options when selecting data from "attachment"
+ */
+export interface attachment_order_by {
+  created_at?: order_by | null;
+  data?: order_by | null;
+  id?: order_by | null;
+  target?: order_by | null;
+  type?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
  * expression to compare columns of type bigint. All fields are combined with logical 'AND'.
  */
 export interface bigint_comparison_exp {
@@ -17776,6 +18502,8 @@ export interface member_note_bool_exp {
   _and?: (member_note_bool_exp | null)[] | null;
   _not?: member_note_bool_exp | null;
   _or?: (member_note_bool_exp | null)[] | null;
+  attachment?: attachment_bool_exp | null;
+  attachment_id?: uuid_comparison_exp | null;
   author?: member_bool_exp | null;
   author_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
@@ -17785,6 +18513,7 @@ export interface member_note_bool_exp {
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   metadata?: jsonb_comparison_exp | null;
+  note?: String_comparison_exp | null;
   status?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -17794,6 +18523,8 @@ export interface member_note_bool_exp {
  * input type for inserting data into table "member_note"
  */
 export interface member_note_insert_input {
+  attachment?: attachment_obj_rel_insert_input | null;
+  attachment_id?: any | null;
   author?: member_obj_rel_insert_input | null;
   author_id?: string | null;
   created_at?: any | null;
@@ -17803,6 +18534,7 @@ export interface member_note_insert_input {
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   metadata?: any | null;
+  note?: string | null;
   status?: string | null;
   type?: string | null;
   updated_at?: any | null;
@@ -17812,12 +18544,14 @@ export interface member_note_insert_input {
  * order by max() on columns of table "member_note"
  */
 export interface member_note_max_order_by {
+  attachment_id?: order_by | null;
   author_id?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
   duration?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
+  note?: order_by | null;
   status?: order_by | null;
   type?: order_by | null;
   updated_at?: order_by | null;
@@ -17827,12 +18561,14 @@ export interface member_note_max_order_by {
  * order by min() on columns of table "member_note"
  */
 export interface member_note_min_order_by {
+  attachment_id?: order_by | null;
   author_id?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
   duration?: order_by | null;
   id?: order_by | null;
   member_id?: order_by | null;
+  note?: order_by | null;
   status?: order_by | null;
   type?: order_by | null;
   updated_at?: order_by | null;
@@ -17845,6 +18581,27 @@ export interface member_note_on_conflict {
   constraint: member_note_constraint;
   update_columns: member_note_update_column[];
   where?: member_note_bool_exp | null;
+}
+
+/**
+ * ordering options when selecting data from "member_note"
+ */
+export interface member_note_order_by {
+  attachment?: attachment_order_by | null;
+  attachment_id?: order_by | null;
+  author?: member_order_by | null;
+  author_id?: order_by | null;
+  created_at?: order_by | null;
+  description?: order_by | null;
+  duration?: order_by | null;
+  id?: order_by | null;
+  member?: member_order_by | null;
+  member_id?: order_by | null;
+  metadata?: order_by | null;
+  note?: order_by | null;
+  status?: order_by | null;
+  type?: order_by | null;
+  updated_at?: order_by | null;
 }
 
 /**
@@ -25346,11 +26103,35 @@ export interface project_bool_exp {
 }
 
 /**
+ * order by aggregate values of table "project_category"
+ */
+export interface project_category_aggregate_order_by {
+  avg?: project_category_avg_order_by | null;
+  count?: order_by | null;
+  max?: project_category_max_order_by | null;
+  min?: project_category_min_order_by | null;
+  stddev?: project_category_stddev_order_by | null;
+  stddev_pop?: project_category_stddev_pop_order_by | null;
+  stddev_samp?: project_category_stddev_samp_order_by | null;
+  sum?: project_category_sum_order_by | null;
+  var_pop?: project_category_var_pop_order_by | null;
+  var_samp?: project_category_var_samp_order_by | null;
+  variance?: project_category_variance_order_by | null;
+}
+
+/**
  * input type for inserting array relation for remote table "project_category"
  */
 export interface project_category_arr_rel_insert_input {
   data: project_category_insert_input[];
   on_conflict?: project_category_on_conflict | null;
+}
+
+/**
+ * order by avg() on columns of table "project_category"
+ */
+export interface project_category_avg_order_by {
+  position?: order_by | null;
 }
 
 /**
@@ -25381,12 +26162,81 @@ export interface project_category_insert_input {
 }
 
 /**
+ * order by max() on columns of table "project_category"
+ */
+export interface project_category_max_order_by {
+  category_id?: order_by | null;
+  id?: order_by | null;
+  position?: order_by | null;
+  project_id?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "project_category"
+ */
+export interface project_category_min_order_by {
+  category_id?: order_by | null;
+  id?: order_by | null;
+  position?: order_by | null;
+  project_id?: order_by | null;
+}
+
+/**
  * on conflict condition type for table "project_category"
  */
 export interface project_category_on_conflict {
   constraint: project_category_constraint;
   update_columns: project_category_update_column[];
   where?: project_category_bool_exp | null;
+}
+
+/**
+ * order by stddev() on columns of table "project_category"
+ */
+export interface project_category_stddev_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "project_category"
+ */
+export interface project_category_stddev_pop_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "project_category"
+ */
+export interface project_category_stddev_samp_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "project_category"
+ */
+export interface project_category_sum_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "project_category"
+ */
+export interface project_category_var_pop_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "project_category"
+ */
+export interface project_category_var_samp_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "project_category"
+ */
+export interface project_category_variance_order_by {
+  position?: order_by | null;
 }
 
 /**
@@ -25439,11 +26289,73 @@ export interface project_on_conflict {
 }
 
 /**
+ * ordering options when selecting data from "project"
+ */
+export interface project_order_by {
+  abstract?: order_by | null;
+  app_id?: order_by | null;
+  comments?: order_by | null;
+  contents?: order_by | null;
+  cover_type?: order_by | null;
+  cover_url?: order_by | null;
+  created_at?: order_by | null;
+  creator?: member_public_order_by | null;
+  creator_id?: order_by | null;
+  description?: order_by | null;
+  expired_at?: order_by | null;
+  id?: order_by | null;
+  introduction?: order_by | null;
+  is_countdown_timer_visible?: order_by | null;
+  is_participants_visible?: order_by | null;
+  position?: order_by | null;
+  preview_url?: order_by | null;
+  project_categories_aggregate?: project_category_aggregate_order_by | null;
+  project_plans_aggregate?: project_plan_aggregate_order_by | null;
+  project_sales?: project_sales_order_by | null;
+  project_sections_aggregate?: project_section_aggregate_order_by | null;
+  published_at?: order_by | null;
+  target_amount?: order_by | null;
+  target_unit?: order_by | null;
+  template?: order_by | null;
+  title?: order_by | null;
+  type?: order_by | null;
+  updates?: order_by | null;
+}
+
+/**
+ * order by aggregate values of table "project_plan"
+ */
+export interface project_plan_aggregate_order_by {
+  avg?: project_plan_avg_order_by | null;
+  count?: order_by | null;
+  max?: project_plan_max_order_by | null;
+  min?: project_plan_min_order_by | null;
+  stddev?: project_plan_stddev_order_by | null;
+  stddev_pop?: project_plan_stddev_pop_order_by | null;
+  stddev_samp?: project_plan_stddev_samp_order_by | null;
+  sum?: project_plan_sum_order_by | null;
+  var_pop?: project_plan_var_pop_order_by | null;
+  var_samp?: project_plan_var_samp_order_by | null;
+  variance?: project_plan_variance_order_by | null;
+}
+
+/**
  * input type for inserting array relation for remote table "project_plan"
  */
 export interface project_plan_arr_rel_insert_input {
   data: project_plan_insert_input[];
   on_conflict?: project_plan_on_conflict | null;
+}
+
+/**
+ * order by avg() on columns of table "project_plan"
+ */
+export interface project_plan_avg_order_by {
+  discount_down_price?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  position?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**
@@ -25534,12 +26446,131 @@ export interface project_plan_inventory_status_bool_exp {
 }
 
 /**
+ * order by max() on columns of table "project_plan"
+ */
+export interface project_plan_max_order_by {
+  cover_url?: order_by | null;
+  created_at?: order_by | null;
+  deliverables?: order_by | null;
+  description?: order_by | null;
+  discount_down_price?: order_by | null;
+  id?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  period_type?: order_by | null;
+  position?: order_by | null;
+  project_id?: order_by | null;
+  published_at?: order_by | null;
+  sale_price?: order_by | null;
+  sold_at?: order_by | null;
+  title?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "project_plan"
+ */
+export interface project_plan_min_order_by {
+  cover_url?: order_by | null;
+  created_at?: order_by | null;
+  deliverables?: order_by | null;
+  description?: order_by | null;
+  discount_down_price?: order_by | null;
+  id?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  period_type?: order_by | null;
+  position?: order_by | null;
+  project_id?: order_by | null;
+  published_at?: order_by | null;
+  sale_price?: order_by | null;
+  sold_at?: order_by | null;
+  title?: order_by | null;
+}
+
+/**
  * on conflict condition type for table "project_plan"
  */
 export interface project_plan_on_conflict {
   constraint: project_plan_constraint;
   update_columns: project_plan_update_column[];
   where?: project_plan_bool_exp | null;
+}
+
+/**
+ * order by stddev() on columns of table "project_plan"
+ */
+export interface project_plan_stddev_order_by {
+  discount_down_price?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  position?: order_by | null;
+  sale_price?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "project_plan"
+ */
+export interface project_plan_stddev_pop_order_by {
+  discount_down_price?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  position?: order_by | null;
+  sale_price?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "project_plan"
+ */
+export interface project_plan_stddev_samp_order_by {
+  discount_down_price?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  position?: order_by | null;
+  sale_price?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "project_plan"
+ */
+export interface project_plan_sum_order_by {
+  discount_down_price?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  position?: order_by | null;
+  sale_price?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "project_plan"
+ */
+export interface project_plan_var_pop_order_by {
+  discount_down_price?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  position?: order_by | null;
+  sale_price?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "project_plan"
+ */
+export interface project_plan_var_samp_order_by {
+  discount_down_price?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  position?: order_by | null;
+  sale_price?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "project_plan"
+ */
+export interface project_plan_variance_order_by {
+  discount_down_price?: order_by | null;
+  list_price?: order_by | null;
+  period_amount?: order_by | null;
+  position?: order_by | null;
+  sale_price?: order_by | null;
 }
 
 /**
@@ -25555,11 +26586,44 @@ export interface project_sales_bool_exp {
 }
 
 /**
+ * ordering options when selecting data from "project_sales"
+ */
+export interface project_sales_order_by {
+  project?: project_order_by | null;
+  project_id?: order_by | null;
+  total_sales?: order_by | null;
+}
+
+/**
+ * order by aggregate values of table "project_section"
+ */
+export interface project_section_aggregate_order_by {
+  avg?: project_section_avg_order_by | null;
+  count?: order_by | null;
+  max?: project_section_max_order_by | null;
+  min?: project_section_min_order_by | null;
+  stddev?: project_section_stddev_order_by | null;
+  stddev_pop?: project_section_stddev_pop_order_by | null;
+  stddev_samp?: project_section_stddev_samp_order_by | null;
+  sum?: project_section_sum_order_by | null;
+  var_pop?: project_section_var_pop_order_by | null;
+  var_samp?: project_section_var_samp_order_by | null;
+  variance?: project_section_variance_order_by | null;
+}
+
+/**
  * input type for inserting array relation for remote table "project_section"
  */
 export interface project_section_arr_rel_insert_input {
   data: project_section_insert_input[];
   on_conflict?: project_section_on_conflict | null;
+}
+
+/**
+ * order by avg() on columns of table "project_section"
+ */
+export interface project_section_avg_order_by {
+  position?: order_by | null;
 }
 
 /**
@@ -25590,12 +26654,81 @@ export interface project_section_insert_input {
 }
 
 /**
+ * order by max() on columns of table "project_section"
+ */
+export interface project_section_max_order_by {
+  id?: order_by | null;
+  position?: order_by | null;
+  project_id?: order_by | null;
+  type?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "project_section"
+ */
+export interface project_section_min_order_by {
+  id?: order_by | null;
+  position?: order_by | null;
+  project_id?: order_by | null;
+  type?: order_by | null;
+}
+
+/**
  * on conflict condition type for table "project_section"
  */
 export interface project_section_on_conflict {
   constraint: project_section_constraint;
   update_columns: project_section_update_column[];
   where?: project_section_bool_exp | null;
+}
+
+/**
+ * order by stddev() on columns of table "project_section"
+ */
+export interface project_section_stddev_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by stddev_pop() on columns of table "project_section"
+ */
+export interface project_section_stddev_pop_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by stddev_samp() on columns of table "project_section"
+ */
+export interface project_section_stddev_samp_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by sum() on columns of table "project_section"
+ */
+export interface project_section_sum_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by var_pop() on columns of table "project_section"
+ */
+export interface project_section_var_pop_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by var_samp() on columns of table "project_section"
+ */
+export interface project_section_var_samp_order_by {
+  position?: order_by | null;
+}
+
+/**
+ * order by variance() on columns of table "project_section"
+ */
+export interface project_section_variance_order_by {
+  position?: order_by | null;
 }
 
 /**

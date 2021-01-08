@@ -11,9 +11,20 @@ import MemberSelector from './MemberSelector'
 const ContentCreatorSelector: React.FC<{
   value?: string
   onChange?: (value: string | null) => void
-}> = ({ value, onChange }) => {
+  allowedPermission?: string
+}> = ({ value, onChange, allowedPermission }) => {
   const { formatMessage } = useIntl()
-  const { loading, error, members } = useContentCreatorCollection()
+
+  const condition: types.GET_CONTENT_CREATOR_COLLECTIONVariables['condition'] = allowedPermission
+    ? {
+        _or: [
+          { role: { _in: ['content-creator', 'app-owner'] } },
+          { member_permissions: { permission_id: { _eq: allowedPermission } } },
+        ],
+      }
+    : { role: { _in: ['content-creator', 'app-owner'] } }
+
+  const { loading, error, members } = useContentCreatorCollection(condition)
 
   if (loading) {
     return <Spin />
@@ -32,11 +43,14 @@ const ContentCreatorSelector: React.FC<{
   )
 }
 
-const useContentCreatorCollection = () => {
-  const { data, loading, error } = useQuery<types.GET_CONTENT_CREATOR_COLLECTION>(
+const useContentCreatorCollection = (condition: types.GET_CONTENT_CREATOR_COLLECTIONVariables['condition']) => {
+  const { data, loading, error } = useQuery<
+    types.GET_CONTENT_CREATOR_COLLECTION,
+    types.GET_CONTENT_CREATOR_COLLECTIONVariables
+  >(
     gql`
-      query GET_CONTENT_CREATOR_COLLECTION {
-        member(where: { role: { _in: ["content-creator", "app-owner"] } }) {
+      query GET_CONTENT_CREATOR_COLLECTION($condition: member_bool_exp!) {
+        member(where: $condition) {
           id
           picture_url
           name
@@ -45,6 +59,9 @@ const useContentCreatorCollection = () => {
         }
       }
     `,
+    {
+      variables: { condition },
+    },
   )
 
   const members: MemberOptionProps[] =

@@ -70,7 +70,7 @@ const MemberAdminPage: React.FC = () => {
   const { loadingMemberAdmin, errorMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
   const { insertMemberNote } = useMutateMemberNote()
 
-  if (loadingMemberAdmin || errorMemberAdmin || !memberAdmin) {
+  if (!currentMemberId || loadingMemberAdmin || errorMemberAdmin || !memberAdmin) {
     return <Skeleton active />
   }
 

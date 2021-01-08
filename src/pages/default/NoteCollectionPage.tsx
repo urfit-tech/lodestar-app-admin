@@ -1,7 +1,9 @@
 import { SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Button, DatePicker, Input, Table, Tag, Typography } from 'antd'
+import { Button, Checkbox, DatePicker, Input, Table, Tag, Typography } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import { SorterResult } from 'antd/lib/table/interface'
+import Axios from 'axios'
 import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
 import { sum } from 'ramda'
@@ -13,8 +15,9 @@ import AdminCard from '../../components/admin/AdminCard'
 import { AvatarImage } from '../../components/common/Image'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { useApp } from '../../contexts/AppContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { currencyFormatter, dateFormatter, handleError } from '../../helpers'
-import { commonMessages, memberMessages } from '../../helpers/translation'
+import { commonMessages, memberMessages, podcastMessages } from '../../helpers/translation'
 import { useMutateMemberNote } from '../../hooks/member'
 import types from '../../types'
 
@@ -24,7 +27,7 @@ const messages = defineMessages({
   memberNoteManager: { id: 'member.label.memberNoteManager', defaultMessage: '承辦人' },
   memberNoteMember: { id: 'member.label.memberNoteMember', defaultMessage: '學員姓名 / Email' },
   memberNoteDuration: { id: 'member.label.memberNoteDuration', defaultMessage: '音檔長度' },
-  memberNoteDescription: { id: 'member.label.memberNoteDescription', defaultMessage: '備註' },
+  memberNoteNote: { id: 'member.label.memberNoteNote', defaultMessage: '備註' },
 })
 
 const TableWrapper = styled.div`
@@ -53,14 +56,19 @@ const StyledDescription = styled(Typography.Paragraph)`
   width: 10rem;
   white-space: pre-line;
 `
+const FilterWrapper = styled.div`
+  padding-top: 0.5rem;
+  max-height: 20rem;
+  overflow: auto;
+`
 
 type FiltersProps = {
   range?: [Moment, Moment]
   author?: string
   manager?: string
   member?: string
-  category?: string
-  tag?: string
+  categories?: string[]
+  tags?: string[]
 }
 type NoteAdminProps = {
   id: string
@@ -89,18 +97,24 @@ type NoteAdminProps = {
   audioFilePath: string | null
   description: string | null
   metadata: any
+  note: string | null
 }
 
 const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
-  const { settings } = useApp()
   const searchInputRef = useRef<Input | null>(null)
+  const [orderBy, setOrderBy] = useState<types.GET_MEMBER_NOTES_ADMINVariables['orderBy']>({
+    created_at: 'desc' as types.order_by.desc,
+  })
   const [filters, setFilters] = useState<FiltersProps>({
     range: [moment().startOf('month'), moment().endOf('month')],
   })
-  const { loadingNotes, notes, loadMoreNotes } = useMemberNotesAdmin(filters)
+  const { loadingNotes, allMemberCategories, allMemberTags, notes, loadMoreNotes } = useMemberNotesAdmin(
+    orderBy,
+    filters,
+  )
   const { updateMemberNote } = useMutateMemberNote()
-  const [updatedDescriptions, setUpdatedDescriptions] = useState<{ [noteID: string]: string }>({})
+  const [updatedNotes, setUpdatedNotes] = useState<{ [noteID: string]: string }>({})
   const [loading, setLoading] = useState(false)
 
   const getColumnSearchProps: (columId: keyof FiltersProps) => ColumnProps<NoteAdminProps> = columnId => ({
@@ -193,7 +207,32 @@ const NoteCollectionPage: React.FC = () => {
     {
       key: 'category',
       title: formatMessage(commonMessages.term.category),
-      ...getColumnSearchProps('category'),
+      ...getColumnSearchProps('categories'),
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div>
+          <FilterWrapper>
+            <Checkbox.Group
+              value={filters.categories}
+              onChange={value =>
+                value.length
+                  ? setFilters({ ...filters, categories: value as string[] })
+                  : setFilters({ ...filters, categories: undefined })
+              }
+            >
+              {allMemberCategories.map(category => (
+                <Checkbox key={category.id} value={category.id} className="d-block mx-2 mb-2">
+                  {category.name}
+                </Checkbox>
+              ))}
+            </Checkbox.Group>
+          </FilterWrapper>
+          <div className="p-2 text-right">
+            <Button size="small" onClick={() => setFilters({ ...filters, categories: undefined })}>
+              {formatMessage(commonMessages.ui.reset)}
+            </Button>
+          </div>
+        </div>
+      ),
       render: (text, record, index) => (
         <StyledCategory>{record.memberCategories.map(category => category.name).join(', ')}</StyledCategory>
       ),
@@ -201,7 +240,32 @@ const NoteCollectionPage: React.FC = () => {
     {
       key: 'tag',
       title: formatMessage(commonMessages.term.tag),
-      ...getColumnSearchProps('tag'),
+      ...getColumnSearchProps('tags'),
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div>
+          <FilterWrapper>
+            <Checkbox.Group
+              value={filters.tags}
+              onChange={value =>
+                value.length
+                  ? setFilters({ ...filters, tags: value as string[] })
+                  : setFilters({ ...filters, tags: undefined })
+              }
+            >
+              {allMemberTags.map(tag => (
+                <Checkbox key={tag} value={tag} className="d-block mx-2 mb-2">
+                  {tag}
+                </Checkbox>
+              ))}
+            </Checkbox.Group>
+          </FilterWrapper>
+          <div className="p-2 text-right">
+            <Button size="small" onClick={() => setFilters({ ...filters, tags: undefined })}>
+              {formatMessage(commonMessages.ui.reset)}
+            </Button>
+          </div>
+        </div>
+      ),
       render: (text, record, index) => record.memberTags.map(tag => <Tag key={tag}>{tag}</Tag>),
     },
     {
@@ -221,19 +285,17 @@ const NoteCollectionPage: React.FC = () => {
       key: 'audioRecordFile',
       title: formatMessage(memberMessages.label.audioRecordFile),
       render: (text, record, index) =>
-        record.metadata?.recordfile ? (
-          <a
-            href={`//${settings['call.server_origin']}/${record.metadata.recordfile}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <Button type="primary">{formatMessage(commonMessages.ui.check)}</Button>
-          </a>
-        ) : null,
+        record.metadata?.recordfile && (
+          <LoadRecordFileButton
+            memberName={record.member?.name || ''}
+            startTime={record.metadata?.starttime || ''}
+            filePath={record.metadata.recordfile}
+          />
+        ),
     },
     {
       key: 'description',
-      title: formatMessage(messages.memberNoteDescription),
+      title: formatMessage(messages.memberNoteNote),
       render: (text, record, index) => (
         <StyledDescription
           editable={{
@@ -242,12 +304,12 @@ const NoteCollectionPage: React.FC = () => {
               updateMemberNote({
                 variables: {
                   memberNoteId: record.id,
-                  description: value,
+                  note: value,
                 },
               })
                 .then(() =>
-                  setUpdatedDescriptions({
-                    ...updatedDescriptions,
+                  setUpdatedNotes({
+                    ...updatedNotes,
                     [record.id]: value,
                   }),
                 )
@@ -255,7 +317,7 @@ const NoteCollectionPage: React.FC = () => {
           }}
           className="mb-0"
         >
-          {updatedDescriptions[record.id] || record.description || ''}
+          {updatedNotes[record.id] || record.note || ''}
         </StyledDescription>
       ),
     },
@@ -290,6 +352,13 @@ const NoteCollectionPage: React.FC = () => {
             pagination={false}
             loading={loadingNotes}
             dataSource={notes}
+            onChange={(pagination, filters, sorter) => {
+              const newSorter = sorter as SorterResult<NoteAdminProps>
+              setOrderBy({
+                [newSorter.columnKey === 'duration' ? 'duration' : 'created_at']:
+                  newSorter.order === 'ascend' ? ('asc' as types.order_by.asc) : ('desc' as types.order_by.desc),
+              })
+            }}
           />
         </TableWrapper>
 
@@ -313,8 +382,60 @@ const NoteCollectionPage: React.FC = () => {
   )
 }
 
-const useMemberNotesAdmin = (filters?: FiltersProps) => {
-  const condition: types.MEMBER_NOTES_ADMINVariables['condition'] = {
+const LoadRecordFileButton: React.FC<{
+  memberName: string
+  startTime: string
+  filePath: string
+}> = ({ memberName, startTime, filePath }) => {
+  const { formatMessage } = useIntl()
+  const { authToken, apiHost } = useAuth()
+  const { id: appId } = useApp()
+  const [audioUrl, setAudioUrl] = useState<string | null>(null)
+
+  if (!authToken || !apiHost || !appId) {
+    return (
+      <Button type="primary" loading>
+        {formatMessage(podcastMessages.ui.play)}
+      </Button>
+    )
+  }
+
+  const loadAudioData = async () => {
+    setAudioUrl('')
+    try {
+      const response = await Axios.post(
+        `${apiHost}/call/download-record`,
+        { appId, filePath },
+        {
+          headers: { authorization: `Bearer ${authToken}` },
+          responseType: 'blob',
+        },
+      )
+
+      const blob = new Blob([response.data], { type: 'audio/wav' })
+      setAudioUrl(window.URL.createObjectURL(blob))
+    } catch (error) {
+      handleError(error)
+      setAudioUrl(null)
+    }
+  }
+
+  return !audioUrl ? (
+    <Button type="primary" loading={typeof audioUrl === 'string'} onClick={() => loadAudioData()}>
+      {formatMessage(podcastMessages.ui.play)}
+    </Button>
+  ) : (
+    <div className="d-flex align-items-center">
+      <a href={audioUrl} download={`${memberName}_${startTime.replace(/:/g, '')}.wav`} className="flex-shrink-0 mr-2">
+        <Button type="primary">{formatMessage(commonMessages.ui.download)}</Button>
+      </a>
+      <audio src={audioUrl} controls />
+    </div>
+  )
+}
+
+const useMemberNotesAdmin = (orderBy: types.GET_MEMBER_NOTES_ADMINVariables['orderBy'], filters?: FiltersProps) => {
+  const condition: types.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
     created_at: filters?.range
       ? {
           _gte: filters.range[0].toDate(),
@@ -330,51 +451,60 @@ const useMemberNotesAdmin = (filters?: FiltersProps) => {
           ],
         }
       : undefined,
-    member:
-      filters?.manager || filters?.member || filters?.category || filters?.tag
+    member: {
+      manager: filters?.manager
         ? {
-            manager: filters.manager
-              ? {
-                  _or: [
-                    { name: { _ilike: `%${filters.manager}%` } },
-                    { username: { _ilike: `%${filters.manager}%` } },
-                    { email: { _ilike: `%${filters.manager}%` } },
-                  ],
-                }
-              : undefined,
-            _or: filters.member
-              ? [
-                  { name: { _ilike: `%${filters.member}%` } },
-                  { username: { _ilike: `%${filters.member}%` } },
-                  { email: { _ilike: `%${filters.member}%` } },
-                ]
-              : undefined,
-
-            member_categories: filters.category
-              ? {
-                  category: { name: { _ilike: `%${filters.category}%` } },
-                }
-              : undefined,
-            member_tags: filters.tag
-              ? {
-                  tag_name: { _ilike: `%${filters.tag}%` },
-                }
-              : undefined,
+            _or: [
+              { name: { _ilike: `%${filters.manager}%` } },
+              { username: { _ilike: `%${filters.manager}%` } },
+              { email: { _ilike: `%${filters.manager}%` } },
+            ],
           }
         : undefined,
+      _or: filters?.member
+        ? [
+            { name: { _ilike: `%${filters.member}%` } },
+            { username: { _ilike: `%${filters.member}%` } },
+            { email: { _ilike: `%${filters.member}%` } },
+          ]
+        : undefined,
+      _and: [
+        filters?.categories
+          ? {
+              _or: filters.categories.map(categoryId => ({
+                member_categories: { category_id: { _eq: categoryId } },
+              })),
+            }
+          : null,
+        filters?.tags
+          ? {
+              _or: filters.tags.map(tag => ({
+                member_tags: { tag_name: { _eq: tag } },
+              })),
+            }
+          : null,
+      ],
+    },
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.MEMBER_NOTES_ADMIN,
-    types.MEMBER_NOTES_ADMINVariables
+    types.GET_MEMBER_NOTES_ADMIN,
+    types.GET_MEMBER_NOTES_ADMINVariables
   >(
     gql`
-      query MEMBER_NOTES_ADMIN($condition: member_note_bool_exp) {
+      query GET_MEMBER_NOTES_ADMIN($orderBy: member_note_order_by!, $condition: member_note_bool_exp) {
+        category(where: { member_categories: {} }) {
+          id
+          name
+        }
+        member_tag(distinct_on: tag_name) {
+          tag_name
+        }
         member_note_aggregate(where: $condition) {
           aggregate {
             count
           }
         }
-        member_note(where: $condition, order_by: { created_at: desc }, limit: 10) {
+        member_note(where: $condition, order_by: [$orderBy], limit: 10) {
           id
           created_at
           author {
@@ -422,13 +552,24 @@ const useMemberNotesAdmin = (filters?: FiltersProps) => {
             }
           }
           duration
-          metadata
           description
+          metadata
+          note
         }
       }
     `,
-    { variables: { condition } },
+    { variables: { condition, orderBy } },
   )
+
+  const allMemberCategories: {
+    id: string
+    name: string
+  }[] =
+    data?.category.map(v => ({
+      id: v.id,
+      name: v.name,
+    })) || []
+  const allMemberTags: string[] = data?.member_tag.map(v => v.tag_name) || []
 
   const notes: NoteAdminProps[] =
     data?.member_note.map(v => ({
@@ -465,14 +606,21 @@ const useMemberNotesAdmin = (filters?: FiltersProps) => {
       audioFilePath: v.metadata?.recordfile || null,
       description: v.description,
       metadata: v.metadata,
+      note: v.note,
     })) || []
 
   const loadMoreNotes = () =>
     fetchMore({
       variables: {
+        orderBy,
         condition: {
           ...condition,
-          created_at: { _lt: data?.member_note.slice(-1)[0]?.created_at },
+          created_at: orderBy.created_at
+            ? { [orderBy.created_at === 'desc' ? '_lt' : '_gt']: data?.member_note.slice(-1)[0]?.created_at }
+            : undefined,
+          duration: orderBy.duration
+            ? { [orderBy.duration === 'desc' ? '_lt' : '_gt']: data?.member_note.slice(-1)[0]?.duration }
+            : undefined,
         },
       },
       updateQuery: (prev, { fetchMoreResult }) => {
@@ -480,6 +628,7 @@ const useMemberNotesAdmin = (filters?: FiltersProps) => {
           return prev
         }
         return {
+          ...prev,
           member_note_aggregate: fetchMoreResult.member_note_aggregate,
           member_note: [...prev.member_note, ...fetchMoreResult.member_note],
         }
@@ -489,6 +638,8 @@ const useMemberNotesAdmin = (filters?: FiltersProps) => {
   return {
     loadingNotes: loading,
     errorNotes: error,
+    allMemberCategories,
+    allMemberTags,
     notes,
     refetchNotes: refetch,
     loadMoreNotes: (data?.member_note_aggregate.aggregate?.count || 0) > 10 ? loadMoreNotes : undefined,

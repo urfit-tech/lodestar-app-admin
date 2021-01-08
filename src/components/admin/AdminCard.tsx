@@ -58,6 +58,25 @@ const AdminCard = styled(Card)<{ variant?: string }>`
         }
       }
     `}
+
+  ${props =>
+    props.variant === 'projectPlan' &&
+    css`
+      overflow: hidden;
+
+      .ant-card-body {
+        height: 18rem;
+      }
+
+      .ant-card-meta {
+        height: 100%;
+      }
+      .ant-typography {
+        p {
+          line-height: 24px;
+        }
+      }
+    `}
 `
 
 export default AdminCard
