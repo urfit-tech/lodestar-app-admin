@@ -7,6 +7,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
+import { useUploadAttachment } from '../../hooks/data'
 import { useMutateMemberNote } from '../../hooks/member'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as CallInIcon } from '../../images/icon/call-in.svg'
@@ -49,6 +50,7 @@ const MemberNoteAdminItem: React.FC<{
 }> = ({ note, memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { updateMemberNote, deleteMemberNote } = useMutateMemberNote()
+  const uploadAttachment = useUploadAttachment()
 
   return (
     <div className="d-flex justify-content-between align-items-center mb-4">
@@ -95,17 +97,33 @@ const MemberNoteAdminItem: React.FC<{
                 renderTrigger={({ setVisible }) => (
                   <div onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</div>
                 )}
-                onSubmit={({ type, status, duration, description }) =>
+                onSubmit={({ type, status, duration, description, attachment }) =>
                   updateMemberNote({
                     variables: {
                       memberNoteId: note.id,
-                      type,
-                      status,
-                      duration,
-                      description,
+                      data: {
+                        type,
+                        status,
+                        duration,
+                        description,
+                      },
                     },
                   })
-                    .then(() => {
+                    .then(async ({ data }) => {
+                      const memberNoteId = data?.update_member_note_by_pk?.id
+                      if (memberNoteId && attachment) {
+                        const attachmentIds = await uploadAttachment('MemberNote', memberNoteId, [attachment])
+                        if (attachmentIds && attachmentIds[0]) {
+                          await updateMemberNote({
+                            variables: {
+                              memberNoteId,
+                              data: {
+                                attachment_id: attachmentIds[0],
+                              },
+                            },
+                          })
+                        }
+                      }
                       message.success(formatMessage(commonMessages.event.successfullyEdited))
                       onRefetch?.()
                     })

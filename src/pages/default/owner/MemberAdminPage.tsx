@@ -29,6 +29,7 @@ import { useApp } from '../../../contexts/AppContext'
 import { useAuth } from '../../../contexts/AuthContext'
 import { currencyFormatter, handleError } from '../../../helpers'
 import { commonMessages, memberMessages, promotionMessages } from '../../../helpers/translation'
+import { useUploadAttachment } from '../../../hooks/data'
 import { useMemberAdmin, useMutateMemberNote } from '../../../hooks/member'
 import DefaultAvatar from '../../../images/default/avatar.svg'
 import { ReactComponent as EmailIcon } from '../../../images/icon/email.svg'
@@ -68,7 +69,8 @@ const MemberAdminPage: React.FC = () => {
   const { currentMemberId, currentUserRole, permissions } = useAuth()
   const { enabledModules, settings } = useApp()
   const { loadingMemberAdmin, errorMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
-  const { insertMemberNote } = useMutateMemberNote()
+  const { insertMemberNote, updateMemberNote } = useMutateMemberNote()
+  const uploadAttachment = useUploadAttachment()
 
   if (!currentMemberId || loadingMemberAdmin || errorMemberAdmin || !memberAdmin) {
     return <Skeleton active />
@@ -183,7 +185,7 @@ const MemberAdminPage: React.FC = () => {
                         {formatMessage(memberMessages.label.createMemberNote)}
                       </Button>
                     )}
-                    onSubmit={({ type, status, duration, description }) =>
+                    onSubmit={({ type, status, duration, description, attachment }) =>
                       insertMemberNote({
                         variables: {
                           memberId: memberAdmin.id,
@@ -194,7 +196,22 @@ const MemberAdminPage: React.FC = () => {
                           description,
                         },
                       })
-                        .then(() => {
+                        .then(async ({ data }) => {
+                          const memberNoteId = data?.insert_member_note_one?.id
+                          if (memberNoteId && attachment) {
+                            const attachmentIds = await uploadAttachment('MemberNote', memberNoteId, [attachment])
+                            if (attachmentIds && attachmentIds[0]) {
+                              await updateMemberNote({
+                                variables: {
+                                  memberNoteId,
+                                  data: {
+                                    attachment_id: attachmentIds[0],
+                                  },
+                                },
+                              })
+                            }
+                          }
+
                           message.success(formatMessage(commonMessages.event.successfullyCreated))
                           refetchMemberAdmin()
                         })

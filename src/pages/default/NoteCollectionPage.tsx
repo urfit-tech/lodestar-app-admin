@@ -304,7 +304,9 @@ const NoteCollectionPage: React.FC = () => {
               updateMemberNote({
                 variables: {
                   memberNoteId: record.id,
-                  note: value,
+                  data: {
+                    note: value,
+                  },
                 },
               })
                 .then(() =>

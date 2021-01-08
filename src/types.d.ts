@@ -7595,6 +7595,39 @@ export interface GET_PRODUCT_SIMPLEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_ATTACHMENT
+// ====================================================
+
+export interface INSERT_ATTACHMENT_insert_attachment_returning {
+  __typename: "attachment";
+  id: any;
+}
+
+export interface INSERT_ATTACHMENT_insert_attachment {
+  __typename: "attachment_mutation_response";
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_ATTACHMENT_insert_attachment_returning[];
+}
+
+export interface INSERT_ATTACHMENT {
+  /**
+   * insert data into the table: "attachment"
+   */
+  insert_attachment: INSERT_ATTACHMENT_insert_attachment | null;
+}
+
+export interface INSERT_ATTACHMENTVariables {
+  attachments: attachment_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER
 // ====================================================
 
@@ -7696,6 +7729,12 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author {
   picture_url: string | null;
 }
 
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_attachment {
+  __typename: "attachment";
+  id: any;
+  data: any | null;
+}
+
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
   __typename: "member_note";
   id: string;
@@ -7714,6 +7753,10 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
    * An object relationship
    */
   author: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author;
+  /**
+   * An object relationship
+   */
+  attachment: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_attachment | null;
 }
 
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_status {
@@ -7949,11 +7992,7 @@ export interface UPDATE_MEMBER_NOTE {
 
 export interface UPDATE_MEMBER_NOTEVariables {
   memberNoteId: string;
-  type?: string | null;
-  status?: string | null;
-  duration?: number | null;
-  description?: string | null;
-  note?: string | null;
+  data: member_note_set_input;
 }
 
 /* tslint:disable */
@@ -11733,6 +11772,25 @@ export enum appointment_schedule_update_column {
 }
 
 /**
+ * unique or primary key constraints on table "attachment"
+ */
+export enum attachment_constraint {
+  attachment_pkey = "attachment_pkey",
+}
+
+/**
+ * update columns of table "attachment"
+ */
+export enum attachment_update_column {
+  created_at = "created_at",
+  data = "data",
+  id = "id",
+  target = "target",
+  type = "type",
+  updated_at = "updated_at",
+}
+
+/**
  * unique or primary key constraints on table "card"
  */
 export enum card_constraint {
@@ -12234,7 +12292,7 @@ export enum member_note_constraint {
  * update columns of table "member_note"
  */
 export enum member_note_update_column {
-  attachment_path = "attachment_path",
+  attachment_id = "attachment_id",
   author_id = "author_id",
   created_at = "created_at",
   description = "description",
@@ -15624,6 +15682,62 @@ export interface appointment_schedule_variance_order_by {
 }
 
 /**
+ * Boolean expression to filter rows from the table "attachment". All fields are combined with a logical 'AND'.
+ */
+export interface attachment_bool_exp {
+  _and?: (attachment_bool_exp | null)[] | null;
+  _not?: attachment_bool_exp | null;
+  _or?: (attachment_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  data?: jsonb_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  target?: String_comparison_exp | null;
+  type?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "attachment"
+ */
+export interface attachment_insert_input {
+  created_at?: any | null;
+  data?: any | null;
+  id?: any | null;
+  target?: string | null;
+  type?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "attachment"
+ */
+export interface attachment_obj_rel_insert_input {
+  data: attachment_insert_input;
+  on_conflict?: attachment_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "attachment"
+ */
+export interface attachment_on_conflict {
+  constraint: attachment_constraint;
+  update_columns: attachment_update_column[];
+  where?: attachment_bool_exp | null;
+}
+
+/**
+ * ordering options when selecting data from "attachment"
+ */
+export interface attachment_order_by {
+  created_at?: order_by | null;
+  data?: order_by | null;
+  id?: order_by | null;
+  target?: order_by | null;
+  type?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
  * expression to compare columns of type bigint. All fields are combined with logical 'AND'.
  */
 export interface bigint_comparison_exp {
@@ -18427,7 +18541,8 @@ export interface member_note_bool_exp {
   _and?: (member_note_bool_exp | null)[] | null;
   _not?: member_note_bool_exp | null;
   _or?: (member_note_bool_exp | null)[] | null;
-  attachment_path?: String_comparison_exp | null;
+  attachment?: attachment_bool_exp | null;
+  attachment_id?: uuid_comparison_exp | null;
   author?: member_bool_exp | null;
   author_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
@@ -18447,7 +18562,8 @@ export interface member_note_bool_exp {
  * input type for inserting data into table "member_note"
  */
 export interface member_note_insert_input {
-  attachment_path?: string | null;
+  attachment?: attachment_obj_rel_insert_input | null;
+  attachment_id?: any | null;
   author?: member_obj_rel_insert_input | null;
   author_id?: string | null;
   created_at?: any | null;
@@ -18467,7 +18583,7 @@ export interface member_note_insert_input {
  * order by max() on columns of table "member_note"
  */
 export interface member_note_max_order_by {
-  attachment_path?: order_by | null;
+  attachment_id?: order_by | null;
   author_id?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
@@ -18484,7 +18600,7 @@ export interface member_note_max_order_by {
  * order by min() on columns of table "member_note"
  */
 export interface member_note_min_order_by {
-  attachment_path?: order_by | null;
+  attachment_id?: order_by | null;
   author_id?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
@@ -18510,7 +18626,8 @@ export interface member_note_on_conflict {
  * ordering options when selecting data from "member_note"
  */
 export interface member_note_order_by {
-  attachment_path?: order_by | null;
+  attachment?: attachment_order_by | null;
+  attachment_id?: order_by | null;
   author?: member_order_by | null;
   author_id?: order_by | null;
   created_at?: order_by | null;
@@ -18524,6 +18641,24 @@ export interface member_note_order_by {
   status?: order_by | null;
   type?: order_by | null;
   updated_at?: order_by | null;
+}
+
+/**
+ * input type for updating data in table "member_note"
+ */
+export interface member_note_set_input {
+  attachment_id?: any | null;
+  author_id?: string | null;
+  created_at?: any | null;
+  description?: string | null;
+  duration?: number | null;
+  id?: string | null;
+  member_id?: string | null;
+  metadata?: any | null;
+  note?: string | null;
+  status?: string | null;
+  type?: string | null;
+  updated_at?: any | null;
 }
 
 /**

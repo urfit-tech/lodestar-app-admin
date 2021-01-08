@@ -109,6 +109,10 @@ export type MemberNoteAdminProps = {
     name: string
     pictureUrl: string | null
   }
+  attachment: {
+    id: string
+    data: any
+  } | null
 }
 
 export type MemberTaskProps = {

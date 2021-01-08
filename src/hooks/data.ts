@@ -3,6 +3,8 @@ import { UploadFile } from 'antd/lib/upload/interface'
 import gql from 'graphql-tag'
 import { useIntl } from 'react-intl'
 import { useApp } from '../contexts/AppContext'
+import { useAuth } from '../contexts/AuthContext'
+import { handleError, uploadFile } from '../helpers'
 import { commonMessages } from '../helpers/translation'
 import types from '../types'
 import { CategoryProps, ClassType, ProductInventoryLogProps, ProductType } from '../types/general'
@@ -617,5 +619,58 @@ export const useSimpleProduct = (
     loading,
     error,
     target,
+  }
+}
+
+export const useUploadAttachment = () => {
+  const { authToken, apiHost } = useAuth()
+  const [insertAttachment] = useMutation<types.INSERT_ATTACHMENT, types.INSERT_ATTACHMENTVariables>(gql`
+    mutation INSERT_ATTACHMENT($attachments: [attachment_insert_input!]!) {
+      insert_attachment(objects: $attachments, on_conflict: { constraint: attachment_pkey, update_columns: [data] }) {
+        returning {
+          id
+        }
+      }
+    }
+  `)
+
+  return async (type: string, target: string, files: File[]) => {
+    const { data } = await insertAttachment({
+      variables: {
+        attachments: files.map(file => ({
+          type,
+          target,
+        })),
+      },
+    })
+
+    const attachmentIds: string[] = data?.insert_attachment?.returning.map(v => v.id) || []
+
+    try {
+      for (let index = 0; files[index]; index++) {
+        const attachmentId = attachmentIds[index]
+        const file = files[index]
+        await uploadFile(`attachment/${attachmentId}`, file, authToken, apiHost)
+        await insertAttachment({
+          variables: {
+            attachments: [
+              {
+                id: attachmentId,
+                data: {
+                  lastModified: file.lastModified,
+                  name: file.name,
+                  type: file.type,
+                  size: file.size,
+                },
+              },
+            ],
+          },
+        })
+      }
+
+      return attachmentIds
+    } catch (error) {
+      handleError(error)
+    }
   }
 }
