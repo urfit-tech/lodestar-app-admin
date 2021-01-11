@@ -29,7 +29,7 @@ const StyledMemberInfo = styled.div`
 type FieldProps = {
   type: MemberNoteAdminProps['type']
   status: string | null
-  duration: number | null
+  duration: number
   description: string
 }
 
@@ -40,7 +40,7 @@ const MemberNoteAdminModal: React.FC<
       name: string
     }
     note?: MemberNoteAdminProps
-    onSubmit?: (values: FieldProps & { attachment: File | null }) => Promise<any>
+    onSubmit?: (values: FieldProps & { attachments: File[] }) => Promise<any>
   }
 > = ({ member, note, onSubmit, ...props }) => {
   const { formatMessage } = useIntl()
@@ -48,24 +48,18 @@ const MemberNoteAdminModal: React.FC<
 
   const [type, setType] = useState(note?.type || '')
   const [status, setStatus] = useState<FieldProps['status']>(note?.status || 'answered')
-  const [attachments, setAttachments] = useState<File[]>(note?.attachment?.data ? [note.attachment.data] : [])
+  const [attachments, setAttachments] = useState<File[]>(note?.attachments.map(attachment => attachment.data) || [])
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const resetModal = () => {
     setType(note?.type || '')
     setStatus(note?.status || 'answered')
-    setAttachments(note?.attachment?.data ? [note.attachment.data] : [])
+    setAttachments(note?.attachments.map(attachment => attachment.data) || [])
     form.resetFields()
   }
 
   const handleSubmit = (onSuccess: () => void) => {
     setIsSubmitting(true)
-
-    const pendingFiles = attachments.filter(
-      attachment =>
-        attachment.name !== note?.attachment?.data?.name &&
-        attachment.lastModified !== note?.attachment?.data?.lastModified,
-    )
 
     form
       .validateFields()
@@ -74,9 +68,9 @@ const MemberNoteAdminModal: React.FC<
         onSubmit?.({
           type: values.type || null,
           status: values.type ? values.status : null,
-          duration: values.duration && moment(values.duration).diff(moment().startOf('day'), 'seconds'),
+          duration: values.duration ? moment(values.duration).diff(moment().startOf('day'), 'seconds') : 0,
           description: values.description,
-          attachment: pendingFiles[0] || null,
+          attachments,
         })
           .then(() => {
             onSuccess()
@@ -127,7 +121,9 @@ const MemberNoteAdminModal: React.FC<
         initialValues={{
           type,
           status,
-          duration: note?.duration && moment(moment().startOf('day').seconds(note.duration), 'HH:mm:ss'),
+          duration: note?.duration
+            ? moment(moment().startOf('day').seconds(note.duration), 'HH:mm:ss')
+            : moment().startOf('day'),
           description: note?.description || '',
         }}
         onValuesChange={(_, values) => {
@@ -163,7 +159,7 @@ const MemberNoteAdminModal: React.FC<
 
           <div className="col-12">
             <Form.Item label={formatMessage(memberMessages.label.attachment)}>
-              <FileUploader fileList={attachments} onChange={files => setAttachments(files)} showUploadList />
+              <FileUploader multiple fileList={attachments} onChange={files => setAttachments(files)} showUploadList />
             </Form.Item>
           </div>
         </div>

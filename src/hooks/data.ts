@@ -622,8 +622,9 @@ export const useSimpleProduct = (
   }
 }
 
-export const useUploadAttachment = () => {
+export const useUploadAttachments = () => {
   const { authToken, apiHost } = useAuth()
+  const { id: appId } = useApp()
   const [insertAttachment] = useMutation<types.INSERT_ATTACHMENT, types.INSERT_ATTACHMENTVariables>(gql`
     mutation INSERT_ATTACHMENT($attachments: [attachment_insert_input!]!) {
       insert_attachment(objects: $attachments, on_conflict: { constraint: attachment_pkey, update_columns: [data] }) {
@@ -637,9 +638,10 @@ export const useUploadAttachment = () => {
   return async (type: string, target: string, files: File[]) => {
     const { data } = await insertAttachment({
       variables: {
-        attachments: files.map(file => ({
+        attachments: files.map(() => ({
           type,
           target,
+          app_id: appId,
         })),
       },
     })
@@ -650,7 +652,7 @@ export const useUploadAttachment = () => {
       for (let index = 0; files[index]; index++) {
         const attachmentId = attachmentIds[index]
         const file = files[index]
-        await uploadFile(`attachment/${attachmentId}`, file, authToken, apiHost)
+        await uploadFile(`attachments/${attachmentId}`, file, authToken, apiHost)
         await insertAttachment({
           variables: {
             attachments: [
@@ -662,6 +664,7 @@ export const useUploadAttachment = () => {
                   type: file.type,
                   size: file.size,
                 },
+                app_id: appId,
               },
             ],
           },

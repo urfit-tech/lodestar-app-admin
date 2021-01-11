@@ -121,9 +121,10 @@ export const useMemberAdmin = (memberId: string) => {
               name
               picture_url
             }
-            attachment {
-              id
+            member_note_attachments {
+              attachment_id
               data
+              options
             }
           }
           coupons {
@@ -230,12 +231,11 @@ export const useMemberAdmin = (memberId: string) => {
               name: v.author.name,
               pictureUrl: v.author.picture_url,
             },
-            attachment: v.attachment?.data
-              ? {
-                  id: v.attachment.id,
-                  data: v.attachment.data,
-                }
-              : null,
+            attachments: v.member_note_attachments.map(u => ({
+              id: u.attachment_id,
+              data: u.data,
+              options: u.options,
+            })),
           })),
           coupons: data.member_by_pk.coupons.map(v => ({
             status: {

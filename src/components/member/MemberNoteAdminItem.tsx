@@ -1,5 +1,7 @@
 import Icon, { MoreOutlined } from '@ant-design/icons'
+import { useMutation } from '@apollo/react-hooks'
 import { Dropdown, Menu, message } from 'antd'
+import gql from 'graphql-tag'
 import moment from 'moment'
 import { contains } from 'ramda'
 import React from 'react'
@@ -7,11 +9,12 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
-import { useUploadAttachment } from '../../hooks/data'
+import { useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote } from '../../hooks/member'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as CallInIcon } from '../../images/icon/call-in.svg'
 import { ReactComponent as CallOutIcon } from '../../images/icon/call-out.svg'
+import types from '../../types'
 import { MemberAdminProps, MemberNoteAdminProps } from '../../types/member'
 import AdminModal from '../admin/AdminModal'
 import { CustomRatioImage } from '../common/Image'
@@ -50,7 +53,10 @@ const MemberNoteAdminItem: React.FC<{
 }> = ({ note, memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const { updateMemberNote, deleteMemberNote } = useMutateMemberNote()
-  const uploadAttachment = useUploadAttachment()
+  const uploadAttachments = useUploadAttachments()
+  const [deleteAttachments] = useMutation<types.DELETE_ATTACHMENTS, types.DELETE_ATTACHMENTSVariables>(
+    DELETE_ATTACHMENTS,
+  )
 
   return (
     <div className="d-flex justify-content-between align-items-center mb-4">
@@ -97,7 +103,7 @@ const MemberNoteAdminItem: React.FC<{
                 renderTrigger={({ setVisible }) => (
                   <div onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</div>
                 )}
-                onSubmit={({ type, status, duration, description, attachment }) =>
+                onSubmit={({ type, status, duration, description, attachments }) =>
                   updateMemberNote({
                     variables: {
                       memberNoteId: note.id,
@@ -111,18 +117,25 @@ const MemberNoteAdminItem: React.FC<{
                   })
                     .then(async ({ data }) => {
                       const memberNoteId = data?.update_member_note_by_pk?.id
-                      if (memberNoteId && attachment) {
-                        const attachmentIds = await uploadAttachment('MemberNote', memberNoteId, [attachment])
-                        if (attachmentIds && attachmentIds[0]) {
-                          await updateMemberNote({
-                            variables: {
-                              memberNoteId,
-                              data: {
-                                attachment_id: attachmentIds[0],
-                              },
-                            },
-                          })
-                        }
+                      const deletedAttachmentIds = note.attachments
+                        .filter(noteAttachment =>
+                          attachments.every(
+                            attachment =>
+                              attachment.name !== noteAttachment.data.name &&
+                              attachment.lastModified !== noteAttachment.data.lastModified,
+                          ),
+                        )
+                        .map(attachment => attachment.id)
+                      const newAttachments = attachments.filter(attachment =>
+                        note.attachments.every(
+                          noteAttachment =>
+                            noteAttachment.data.name !== attachment.name &&
+                            noteAttachment.data.lastModified !== attachment.lastModified,
+                        ),
+                      )
+                      if (memberNoteId && attachments.length) {
+                        await deleteAttachments({ variables: { attachmentIds: deletedAttachmentIds } })
+                        await uploadAttachments('MemberNote', memberNoteId, newAttachments)
                       }
                       message.success(formatMessage(commonMessages.event.successfullyEdited))
                       onRefetch?.()
@@ -162,5 +175,13 @@ const MemberNoteAdminItem: React.FC<{
     </div>
   )
 }
+
+const DELETE_ATTACHMENTS = gql`
+  mutation DELETE_ATTACHMENTS($attachmentIds: [uuid!]!) {
+    update_attachment(where: { id: { _in: $attachmentIds } }, _set: { is_deleted: true }) {
+      affected_rows
+    }
+  }
+`
 
 export default MemberNoteAdminItem
