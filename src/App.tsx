@@ -3,6 +3,8 @@ import React from 'react'
 import './App.scss'
 import MemberCollectionAdminPage from './pages/MemberCollectionAdminPage'
 import MemberNoteAdminPage from './pages/MemberNoteAdminPage'
+import MemberContractPage from './pages/MemberContractPage'
+import TermsPtPage from './pages/TermsPtPage'
 
 const App = () => {
   return (
@@ -18,6 +20,16 @@ const App = () => {
           path: '/admin/members/:memberId/note',
           pageName: <MemberNoteAdminPage />,
           authenticated: true,
+        },
+        member_contract_creation: {
+          path: '/member-contract',
+          pageName: <MemberContractPage />,
+          authenticated: true,
+        },
+        terms: {
+          path: '/terms',
+          pageName: <TermsPtPage />,
+          authenticated: false,
         },
       }}
     />
