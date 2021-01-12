@@ -122,7 +122,7 @@ const NoteCollectionPage: React.FC = () => {
   const { updateMemberNote } = useMutateMemberNote()
   const [updatedNotes, setUpdatedNotes] = useState<{ [noteID: string]: string }>({})
   const [loading, setLoading] = useState(false)
-  const [isDownloading, setIsDownloading] = useState(false)
+  const [downloadingNoteIds, setDownloadingNoteIds] = useState<string[]>([])
 
   const getColumnSearchProps: (columId: keyof FiltersProps) => ColumnProps<NoteAdminProps> = columnId => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -311,9 +311,9 @@ const NoteCollectionPage: React.FC = () => {
         record.attachments.length ? (
           <Button
             type="primary"
-            loading={isDownloading}
+            loading={downloadingNoteIds.includes(record.id)}
             onClick={async () => {
-              setIsDownloading(true)
+              setDownloadingNoteIds(prev => [...prev, record.id])
               let downloadedCount = 0
               record.attachments.forEach(async attachment => {
                 try {
@@ -322,12 +322,12 @@ const NoteCollectionPage: React.FC = () => {
                     await downloadFile(link, attachment.data.name)
                     downloadedCount++
                     if (downloadedCount === record.attachments.length) {
-                      setIsDownloading(false)
+                      setDownloadingNoteIds(prev => prev.filter(v => v !== record.id))
                     }
                   }
                 } catch (error) {
                   handleError(error)
-                  setIsDownloading(false)
+                  setDownloadingNoteIds(prev => prev.filter(v => v !== record.id))
                 }
               })
             }}
