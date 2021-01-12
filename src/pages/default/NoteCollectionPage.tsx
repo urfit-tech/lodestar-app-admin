@@ -16,7 +16,7 @@ import { AvatarImage } from '../../components/common/Image'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { currencyFormatter, dateFormatter, handleError } from '../../helpers'
+import { currencyFormatter, dateFormatter, downloadFile, getFileDownloadableLink, handleError } from '../../helpers'
 import { commonMessages, memberMessages, podcastMessages } from '../../helpers/translation'
 import { useMutateMemberNote } from '../../hooks/member'
 import types from '../../types'
@@ -49,17 +49,16 @@ const StyledMemberEmail = styled.div`
   font-size: 12px;
   letter-spacing: 0.6px;
 `
-const StyledCategory = styled.div`
-  width: 5rem;
-`
 const StyledDescription = styled(Typography.Paragraph)`
-  width: 10rem;
   white-space: pre-line;
 `
 const FilterWrapper = styled.div`
   padding-top: 0.5rem;
   max-height: 20rem;
   overflow: auto;
+`
+const NoWrapText = styled.div`
+  white-space: nowrap;
 `
 
 type FiltersProps = {
@@ -98,10 +97,17 @@ type NoteAdminProps = {
   description: string | null
   metadata: any
   note: string | null
+  attachments: {
+    id: string
+    data: any
+    options: any
+  }[]
 }
 
 const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
+  const { authToken, apiHost } = useAuth()
+
   const searchInputRef = useRef<Input | null>(null)
   const [orderBy, setOrderBy] = useState<types.GET_MEMBER_NOTES_ADMINVariables['orderBy']>({
     created_at: 'desc' as types.order_by.desc,
@@ -116,6 +122,7 @@ const NoteCollectionPage: React.FC = () => {
   const { updateMemberNote } = useMutateMemberNote()
   const [updatedNotes, setUpdatedNotes] = useState<{ [noteID: string]: string }>({})
   const [loading, setLoading] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
 
   const getColumnSearchProps: (columId: keyof FiltersProps) => ColumnProps<NoteAdminProps> = columnId => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -174,19 +181,19 @@ const NoteCollectionPage: React.FC = () => {
     {
       key: 'createdAt',
       title: formatMessage(messages.memberNoteCreatedAt),
-      render: (text, record, index) => dateFormatter(record.createdAt),
+      render: (text, record, index) => <NoWrapText>{dateFormatter(record.createdAt)}</NoWrapText>,
       sorter: (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
     },
     {
       key: 'author',
       title: formatMessage(messages.memberNoteAuthor),
-      render: (text, record, index) => record.author.name,
+      render: (text, record, index) => <div>{record.author.name}</div>,
       ...getColumnSearchProps('author'),
     },
     {
       key: 'manager',
       title: formatMessage(messages.memberNoteManager),
-      render: (text, record, index) => record.manager?.name,
+      render: (text, record, index) => <div>{record.manager?.name}</div>,
       ...getColumnSearchProps('manager'),
     },
     {
@@ -207,6 +214,7 @@ const NoteCollectionPage: React.FC = () => {
     {
       key: 'category',
       title: formatMessage(commonMessages.term.category),
+      width: '10rem',
       ...getColumnSearchProps('categories'),
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div>
@@ -233,13 +241,12 @@ const NoteCollectionPage: React.FC = () => {
           </div>
         </div>
       ),
-      render: (text, record, index) => (
-        <StyledCategory>{record.memberCategories.map(category => category.name).join(', ')}</StyledCategory>
-      ),
+      render: (text, record, index) => <>{record.memberCategories.map(category => category.name).join(', ')}</>,
     },
     {
       key: 'tag',
       title: formatMessage(commonMessages.term.tag),
+      width: '10rem',
       ...getColumnSearchProps('tags'),
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div>
@@ -271,14 +278,17 @@ const NoteCollectionPage: React.FC = () => {
     {
       key: 'consumption',
       title: formatMessage(commonMessages.label.consumption),
-      render: (text, record, index) => currencyFormatter(record.consumption),
+      render: (text, record, index) => <NoWrapText>{currencyFormatter(record.consumption)}</NoWrapText>,
       sorter: (a, b) => a.consumption - b.consumption,
     },
     {
       key: 'duration',
       title: formatMessage(messages.memberNoteDuration),
-      render: (text, record, index) =>
-        formatMessage(commonMessages.text.minutes, { minutes: Math.round(record.duration / 60) }),
+      render: (text, record, index) => (
+        <NoWrapText>
+          {formatMessage(commonMessages.text.minutes, { minutes: Math.round(record.duration / 60) })}
+        </NoWrapText>
+      ),
       sorter: (a, b) => a.duration - b.duration,
     },
     {
@@ -294,8 +304,42 @@ const NoteCollectionPage: React.FC = () => {
         ),
     },
     {
+      key: 'attachments',
+      title: formatMessage(memberMessages.label.attachment),
+      width: '8rem',
+      render: (text, record, index) =>
+        record.attachments.length ? (
+          <Button
+            type="primary"
+            loading={isDownloading}
+            onClick={async () => {
+              setIsDownloading(true)
+              let downloadedCount = 0
+              record.attachments.forEach(async attachment => {
+                try {
+                  const link: string = await getFileDownloadableLink(`attachments/${attachment.id}`, authToken, apiHost)
+                  if (link && attachment.data?.name) {
+                    await downloadFile(link, attachment.data.name)
+                    downloadedCount++
+                    if (downloadedCount === record.attachments.length) {
+                      setIsDownloading(false)
+                    }
+                  }
+                } catch (error) {
+                  handleError(error)
+                  setIsDownloading(false)
+                }
+              })
+            }}
+          >
+            {formatMessage(commonMessages.ui.download)}
+          </Button>
+        ) : null,
+    },
+    {
       key: 'description',
       title: formatMessage(messages.memberNoteNote),
+      width: '15rem',
       render: (text, record, index) => (
         <StyledDescription
           editable={{
@@ -557,6 +601,11 @@ const useMemberNotesAdmin = (orderBy: types.GET_MEMBER_NOTES_ADMINVariables['ord
           description
           metadata
           note
+          member_note_attachments {
+            attachment_id
+            data
+            options
+          }
         }
       }
     `,
@@ -609,6 +658,11 @@ const useMemberNotesAdmin = (orderBy: types.GET_MEMBER_NOTES_ADMINVariables['ord
       description: v.description,
       metadata: v.metadata,
       note: v.note,
+      attachments: v.member_note_attachments.map(u => ({
+        id: u.attachment_id,
+        data: u.data,
+        options: u.options,
+      })),
     })) || []
 
   const loadMoreNotes = () =>

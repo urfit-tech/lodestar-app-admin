@@ -10076,6 +10076,13 @@ export interface GET_MEMBER_NOTES_ADMIN_member_note_member {
   order_logs: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs[];
 }
 
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_note_attachments {
+  __typename: "member_note_attachment";
+  attachment_id: any | null;
+  data: any | null;
+  options: any | null;
+}
+
 export interface GET_MEMBER_NOTES_ADMIN_member_note {
   __typename: "member_note";
   id: string;
@@ -10092,6 +10099,10 @@ export interface GET_MEMBER_NOTES_ADMIN_member_note {
   description: string | null;
   metadata: any | null;
   note: string | null;
+  /**
+   * An array relationship
+   */
+  member_note_attachments: GET_MEMBER_NOTES_ADMIN_member_note_member_note_attachments[];
 }
 
 export interface GET_MEMBER_NOTES_ADMIN {
