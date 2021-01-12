@@ -4,6 +4,7 @@ import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { Redirect } from 'react-router-dom'
 import { AdminPageTitle } from '../../../components/admin'
+import AdminCard from '../../../components/admin/AdminCard'
 import CreatorCollectionAdminTable from '../../../components/creator/CreatorCollectionAdminTable'
 import AdminLayout from '../../../components/layout/AdminLayout'
 import { useApp } from '../../../contexts/AppContext'
@@ -55,7 +56,9 @@ const CreatorCollectionAdminPage: React.FC<{}> = () => {
       <Tabs defaultActiveKey="published">
         {tabContents.map(v => (
           <Tabs.TabPane key={v.key} tab={v.tab}>
-            <CreatorCollectionAdminTable creators={v.creators} onRefetch={refetchCreators} />
+            <AdminCard>
+              <CreatorCollectionAdminTable creators={v.creators} onRefetch={refetchCreators} />
+            </AdminCard>
           </Tabs.TabPane>
         ))}
       </Tabs>
