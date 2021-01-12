@@ -64,7 +64,18 @@ const ProductSelector: React.FC<{
   return (
     <TreeSelect
       value={value}
-      onChange={onChange}
+      onChange={value =>
+        onChange?.(
+          value
+            .map(
+              v =>
+                productSelections
+                  .find(productSelection => productSelection.productType === v)
+                  ?.products.map(product => product.id) || v,
+            )
+            .flat(),
+        )
+      }
       treeData={treeData}
       treeCheckable
       showCheckedStrategy="SHOW_PARENT"
@@ -89,15 +100,6 @@ const useProductSelections = () => {
           title
           published_at
         }
-        # program_plan {
-        #   id
-        #   title
-        #   program {
-        #     id
-        #     title
-        #     published_at
-        #   }
-        # }
         program_package_plan {
           id
           title
