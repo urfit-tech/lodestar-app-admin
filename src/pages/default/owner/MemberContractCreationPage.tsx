@@ -856,7 +856,10 @@ const GET_PROPERTIES = gql`
 `
 const GET_CONTRACT_PRODUCT = gql`
   query GET_CONTRACT_PRODUCT {
-    xuemi_product(order_by: { name: asc }) {
+    xuemi_product(
+      where: { published_at: { _is_null: false } }
+      order_by: [{ position: asc_nulls_last }, { name: asc }]
+    ) {
       id
       name
       price
