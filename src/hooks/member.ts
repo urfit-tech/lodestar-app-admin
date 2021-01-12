@@ -121,6 +121,11 @@ export const useMemberAdmin = (memberId: string) => {
               name
               picture_url
             }
+            member_note_attachments {
+              attachment_id
+              data
+              options
+            }
           }
           coupons {
             id
@@ -226,6 +231,11 @@ export const useMemberAdmin = (memberId: string) => {
               name: v.author.name,
               pictureUrl: v.author.picture_url,
             },
+            attachments: v.member_note_attachments.map(u => ({
+              id: u.attachment_id,
+              data: u.data,
+              options: u.options,
+            })),
           })),
           coupons: data.member_by_pk.coupons.map(v => ({
             status: {
@@ -293,18 +303,8 @@ export const useMutateMemberNote = () => {
   `)
 
   const [updateMemberNote] = useMutation<types.UPDATE_MEMBER_NOTE, types.UPDATE_MEMBER_NOTEVariables>(gql`
-    mutation UPDATE_MEMBER_NOTE(
-      $memberNoteId: String!
-      $type: String
-      $status: String
-      $duration: Int
-      $description: String
-      $note: String
-    ) {
-      update_member_note_by_pk(
-        pk_columns: { id: $memberNoteId }
-        _set: { type: $type, status: $status, duration: $duration, description: $description, note: $note }
-      ) {
+    mutation UPDATE_MEMBER_NOTE($memberNoteId: String!, $data: member_note_set_input!) {
+      update_member_note_by_pk(pk_columns: { id: $memberNoteId }, _set: $data) {
         id
       }
     }
@@ -643,6 +643,7 @@ export const useMemberCollection = (filter?: {
           return prev
         }
         return Object.assign({}, prev, {
+          member_aggregate: fetchMoreResult.member_aggregate,
           member: [...prev.member, ...fetchMoreResult.member],
         })
       },

@@ -76,6 +76,16 @@ export const getFileDownloadableLink = async (key: string, authToken: string | n
   return data.result
 }
 
+export const downloadFile = async (url: string, fileName: string) =>
+  await axios({ url, method: 'GET', responseType: 'blob' }).then((response: any) => {
+    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', fileName)
+    document.body.appendChild(link)
+    link.click()
+  })
+
 export const commaFormatter = (value?: number | string | null) =>
   value !== null && value !== undefined && `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 

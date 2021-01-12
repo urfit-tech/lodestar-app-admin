@@ -2131,6 +2131,34 @@ export interface GET_MEMBER_CONTRACTSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: DELETE_ATTACHMENTS
+// ====================================================
+
+export interface DELETE_ATTACHMENTS_update_attachment {
+  __typename: "attachment_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_ATTACHMENTS {
+  /**
+   * update data of the table: "attachment"
+   */
+  update_attachment: DELETE_ATTACHMENTS_update_attachment | null;
+}
+
+export interface DELETE_ATTACHMENTSVariables {
+  attachmentIds: any[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_ROLE
 // ====================================================
 
@@ -7595,6 +7623,39 @@ export interface GET_PRODUCT_SIMPLEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_ATTACHMENT
+// ====================================================
+
+export interface INSERT_ATTACHMENT_insert_attachment_returning {
+  __typename: "attachment";
+  id: any;
+}
+
+export interface INSERT_ATTACHMENT_insert_attachment {
+  __typename: "attachment_mutation_response";
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_ATTACHMENT_insert_attachment_returning[];
+}
+
+export interface INSERT_ATTACHMENT {
+  /**
+   * insert data into the table: "attachment"
+   */
+  insert_attachment: INSERT_ATTACHMENT_insert_attachment | null;
+}
+
+export interface INSERT_ATTACHMENTVariables {
+  attachments: attachment_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER
 // ====================================================
 
@@ -7696,6 +7757,13 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author {
   picture_url: string | null;
 }
 
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_member_note_attachments {
+  __typename: "member_note_attachment";
+  attachment_id: any | null;
+  data: any | null;
+  options: any | null;
+}
+
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
   __typename: "member_note";
   id: string;
@@ -7707,13 +7775,17 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
    * NULL | answered | missed
    */
   status: string | null;
-  duration: number | null;
+  duration: number;
   description: string | null;
   created_at: any;
   /**
    * An object relationship
    */
   author: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author;
+  /**
+   * An array relationship
+   */
+  member_note_attachments: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_member_note_attachments[];
 }
 
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_status {
@@ -7949,11 +8021,7 @@ export interface UPDATE_MEMBER_NOTE {
 
 export interface UPDATE_MEMBER_NOTEVariables {
   memberNoteId: string;
-  type?: string | null;
-  status?: string | null;
-  duration?: number | null;
-  description?: string | null;
-  note?: string | null;
+  data: member_note_set_input;
 }
 
 /* tslint:disable */
@@ -10008,6 +10076,13 @@ export interface GET_MEMBER_NOTES_ADMIN_member_note_member {
   order_logs: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs[];
 }
 
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_note_attachments {
+  __typename: "member_note_attachment";
+  attachment_id: any | null;
+  data: any | null;
+  options: any | null;
+}
+
 export interface GET_MEMBER_NOTES_ADMIN_member_note {
   __typename: "member_note";
   id: string;
@@ -10020,10 +10095,14 @@ export interface GET_MEMBER_NOTES_ADMIN_member_note {
    * An object relationship
    */
   member: GET_MEMBER_NOTES_ADMIN_member_note_member | null;
-  duration: number | null;
+  duration: number;
   description: string | null;
   metadata: any | null;
   note: string | null;
+  /**
+   * An array relationship
+   */
+  member_note_attachments: GET_MEMBER_NOTES_ADMIN_member_note_member_note_attachments[];
 }
 
 export interface GET_MEMBER_NOTES_ADMIN {
@@ -11743,9 +11822,12 @@ export enum attachment_constraint {
  * update columns of table "attachment"
  */
 export enum attachment_update_column {
+  app_id = "app_id",
   created_at = "created_at",
   data = "data",
   id = "id",
+  is_deleted = "is_deleted",
+  options = "options",
   target = "target",
   type = "type",
   updated_at = "updated_at",
@@ -12231,6 +12313,7 @@ export enum member_contract_update_column {
   agreed_at = "agreed_at",
   agreed_ip = "agreed_ip",
   agreed_options = "agreed_options",
+  author_id = "author_id",
   contract_id = "contract_id",
   ended_at = "ended_at",
   id = "id",
@@ -12253,7 +12336,6 @@ export enum member_note_constraint {
  * update columns of table "member_note"
  */
 export enum member_note_update_column {
-  attachment_id = "attachment_id",
   author_id = "author_id",
   created_at = "created_at",
   description = "description",
@@ -15649,9 +15731,12 @@ export interface attachment_bool_exp {
   _and?: (attachment_bool_exp | null)[] | null;
   _not?: attachment_bool_exp | null;
   _or?: (attachment_bool_exp | null)[] | null;
+  app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   data?: jsonb_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
   target?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -15661,9 +15746,12 @@ export interface attachment_bool_exp {
  * input type for inserting data into table "attachment"
  */
 export interface attachment_insert_input {
+  app_id?: string | null;
   created_at?: any | null;
   data?: any | null;
   id?: any | null;
+  is_deleted?: boolean | null;
+  options?: any | null;
   target?: string | null;
   type?: string | null;
   updated_at?: any | null;
@@ -15684,18 +15772,6 @@ export interface attachment_on_conflict {
   constraint: attachment_constraint;
   update_columns: attachment_update_column[];
   where?: attachment_bool_exp | null;
-}
-
-/**
- * ordering options when selecting data from "attachment"
- */
-export interface attachment_order_by {
-  created_at?: order_by | null;
-  data?: order_by | null;
-  id?: order_by | null;
-  target?: order_by | null;
-  type?: order_by | null;
-  updated_at?: order_by | null;
 }
 
 /**
@@ -18267,6 +18343,7 @@ export interface member_contract_bool_exp {
   agreed_at?: timestamptz_comparison_exp | null;
   agreed_ip?: String_comparison_exp | null;
   agreed_options?: jsonb_comparison_exp | null;
+  author_id?: String_comparison_exp | null;
   contract?: contract_bool_exp | null;
   contract_id?: uuid_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
@@ -18287,6 +18364,7 @@ export interface member_contract_insert_input {
   agreed_at?: any | null;
   agreed_ip?: string | null;
   agreed_options?: any | null;
+  author_id?: string | null;
   contract?: contract_obj_rel_insert_input | null;
   contract_id?: any | null;
   ended_at?: any | null;
@@ -18306,6 +18384,7 @@ export interface member_contract_insert_input {
 export interface member_contract_max_order_by {
   agreed_at?: order_by | null;
   agreed_ip?: order_by | null;
+  author_id?: order_by | null;
   contract_id?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
@@ -18320,6 +18399,7 @@ export interface member_contract_max_order_by {
 export interface member_contract_min_order_by {
   agreed_at?: order_by | null;
   agreed_ip?: order_by | null;
+  author_id?: order_by | null;
   contract_id?: order_by | null;
   ended_at?: order_by | null;
   id?: order_by | null;
@@ -18489,6 +18569,77 @@ export interface member_note_arr_rel_insert_input {
 }
 
 /**
+ * order by aggregate values of table "member_note_attachment"
+ */
+export interface member_note_attachment_aggregate_order_by {
+  count?: order_by | null;
+  max?: member_note_attachment_max_order_by | null;
+  min?: member_note_attachment_min_order_by | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "member_note_attachment"
+ */
+export interface member_note_attachment_arr_rel_insert_input {
+  data: member_note_attachment_insert_input[];
+}
+
+/**
+ * Boolean expression to filter rows from the table "member_note_attachment". All fields are combined with a logical 'AND'.
+ */
+export interface member_note_attachment_bool_exp {
+  _and?: (member_note_attachment_bool_exp | null)[] | null;
+  _not?: member_note_attachment_bool_exp | null;
+  _or?: (member_note_attachment_bool_exp | null)[] | null;
+  app_id?: String_comparison_exp | null;
+  attachment?: attachment_bool_exp | null;
+  attachment_id?: uuid_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  data?: jsonb_comparison_exp | null;
+  member_note?: member_note_bool_exp | null;
+  member_note_id?: String_comparison_exp | null;
+  options?: jsonb_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "member_note_attachment"
+ */
+export interface member_note_attachment_insert_input {
+  app_id?: string | null;
+  attachment?: attachment_obj_rel_insert_input | null;
+  attachment_id?: any | null;
+  created_at?: any | null;
+  data?: any | null;
+  member_note?: member_note_obj_rel_insert_input | null;
+  member_note_id?: string | null;
+  options?: any | null;
+  updated_at?: any | null;
+}
+
+/**
+ * order by max() on columns of table "member_note_attachment"
+ */
+export interface member_note_attachment_max_order_by {
+  app_id?: order_by | null;
+  attachment_id?: order_by | null;
+  created_at?: order_by | null;
+  member_note_id?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
+ * order by min() on columns of table "member_note_attachment"
+ */
+export interface member_note_attachment_min_order_by {
+  app_id?: order_by | null;
+  attachment_id?: order_by | null;
+  created_at?: order_by | null;
+  member_note_id?: order_by | null;
+  updated_at?: order_by | null;
+}
+
+/**
  * order by avg() on columns of table "member_note"
  */
 export interface member_note_avg_order_by {
@@ -18502,8 +18653,6 @@ export interface member_note_bool_exp {
   _and?: (member_note_bool_exp | null)[] | null;
   _not?: member_note_bool_exp | null;
   _or?: (member_note_bool_exp | null)[] | null;
-  attachment?: attachment_bool_exp | null;
-  attachment_id?: uuid_comparison_exp | null;
   author?: member_bool_exp | null;
   author_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
@@ -18512,6 +18661,7 @@ export interface member_note_bool_exp {
   id?: String_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  member_note_attachments?: member_note_attachment_bool_exp | null;
   metadata?: jsonb_comparison_exp | null;
   note?: String_comparison_exp | null;
   status?: String_comparison_exp | null;
@@ -18523,8 +18673,6 @@ export interface member_note_bool_exp {
  * input type for inserting data into table "member_note"
  */
 export interface member_note_insert_input {
-  attachment?: attachment_obj_rel_insert_input | null;
-  attachment_id?: any | null;
   author?: member_obj_rel_insert_input | null;
   author_id?: string | null;
   created_at?: any | null;
@@ -18533,6 +18681,7 @@ export interface member_note_insert_input {
   id?: string | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
+  member_note_attachments?: member_note_attachment_arr_rel_insert_input | null;
   metadata?: any | null;
   note?: string | null;
   status?: string | null;
@@ -18544,7 +18693,6 @@ export interface member_note_insert_input {
  * order by max() on columns of table "member_note"
  */
 export interface member_note_max_order_by {
-  attachment_id?: order_by | null;
   author_id?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
@@ -18561,7 +18709,6 @@ export interface member_note_max_order_by {
  * order by min() on columns of table "member_note"
  */
 export interface member_note_min_order_by {
-  attachment_id?: order_by | null;
   author_id?: order_by | null;
   created_at?: order_by | null;
   description?: order_by | null;
@@ -18572,6 +18719,14 @@ export interface member_note_min_order_by {
   status?: order_by | null;
   type?: order_by | null;
   updated_at?: order_by | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "member_note"
+ */
+export interface member_note_obj_rel_insert_input {
+  data: member_note_insert_input;
+  on_conflict?: member_note_on_conflict | null;
 }
 
 /**
@@ -18587,8 +18742,6 @@ export interface member_note_on_conflict {
  * ordering options when selecting data from "member_note"
  */
 export interface member_note_order_by {
-  attachment?: attachment_order_by | null;
-  attachment_id?: order_by | null;
   author?: member_order_by | null;
   author_id?: order_by | null;
   created_at?: order_by | null;
@@ -18597,11 +18750,29 @@ export interface member_note_order_by {
   id?: order_by | null;
   member?: member_order_by | null;
   member_id?: order_by | null;
+  member_note_attachments_aggregate?: member_note_attachment_aggregate_order_by | null;
   metadata?: order_by | null;
   note?: order_by | null;
   status?: order_by | null;
   type?: order_by | null;
   updated_at?: order_by | null;
+}
+
+/**
+ * input type for updating data in table "member_note"
+ */
+export interface member_note_set_input {
+  author_id?: string | null;
+  created_at?: any | null;
+  description?: string | null;
+  duration?: number | null;
+  id?: string | null;
+  member_id?: string | null;
+  metadata?: any | null;
+  note?: string | null;
+  status?: string | null;
+  type?: string | null;
+  updated_at?: any | null;
 }
 
 /**

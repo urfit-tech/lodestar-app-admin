@@ -1001,6 +1001,7 @@ export const memberMessages = {
     fieldVisible: { id: 'member.label.fieldVisible', defaultMessage: '欄位顯示' },
     onlineProgramContract: { id: 'member.label.線上課程服務約款', defaultMessage: '線上課程服務約款' },
     audioRecordFile: { id: 'member.label.audioRecordFile', defaultMessage: '音檔紀錄' },
+    attachment: { id: 'member.label.attachment', defaultMessage: '通話附件' },
   }),
   text: {
     deleteMemberNoteConfirmation: {
