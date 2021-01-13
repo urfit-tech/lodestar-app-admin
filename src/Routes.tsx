@@ -269,6 +269,47 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'TaskCategoryCollectionPage',
     authenticated: true,
   },
+  // member
+  owner_member: {
+    path: '/admin/members/:memberId',
+    pageName: 'MemberProfileAdminPage',
+    authenticated: true,
+  },
+  owner_member_profile: {
+    path: '/admin/members/:memberId/profile',
+    pageName: 'MemberProfileAdminPage',
+    authenticated: true,
+  },
+  owner_member_note: {
+    path: '/admin/members/:memberId/note',
+    pageName: 'MemberNoteAdminPage',
+    authenticated: true,
+  },
+  owner_member_task: {
+    path: '/admin/members/:memberId/task',
+    pageName: 'MemberTaskAdminPage',
+    authenticated: true,
+  },
+  owner_member_coupon: {
+    path: '/admin/members/:memberId/coupon',
+    pageName: 'MemberCouponAdminPage',
+    authenticated: true,
+  },
+  owner_member_contract: {
+    path: '/admin/members/:memberId/contract',
+    pageName: 'MemberContractAdminPage',
+    authenticated: true,
+  },
+  owner_member_order: {
+    path: '/admin/members/:memberId/order',
+    pageName: 'MemberOrderAdminPage',
+    authenticated: true,
+  },
+  owner_member_permission: {
+    path: '/admin/members/:memberId/permission',
+    pageName: 'MemberPermissionAdminPage',
+    authenticated: true,
+  },
 
   // app owner admin
   owner_sales: {
@@ -290,11 +331,6 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   owner_members: {
     path: '/admin/members',
     pageName: 'owner/MemberCollectionAdminPage',
-    authenticated: true,
-  },
-  owner_member: {
-    path: '/admin/members/:memberId',
-    pageName: 'owner/MemberAdminPage',
     authenticated: true,
   },
   member_contract_creation: {
