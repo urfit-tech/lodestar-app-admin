@@ -9,6 +9,7 @@ import { QueryParamProvider } from 'use-query-params'
 import { ApiProvider } from './contexts/ApiContext'
 import { AppProvider } from './contexts/AppContext'
 import { AuthProvider } from './contexts/AuthContext'
+import { CustomRendererProps, CustomRendererProvider } from './contexts/CustomRendererContext'
 import { LanguageProvider } from './contexts/LanguageContext'
 import { useApiHost, useAppAdmin } from './hooks/util'
 import LoadingPage from './pages/default/LoadingPage'
@@ -19,7 +20,8 @@ import theme from './theme/default.json'
 const Application: React.FC<{
   appId?: string
   extraRouteProps?: { [routeKey: string]: RouteProps }
-}> = ({ appId, extraRouteProps }) => {
+  customRender?: CustomRendererProps
+}> = ({ appId, extraRouteProps, customRender }) => {
   const apiHost = useApiHost(appId || '')
   const appAdmin = useAppAdmin(window.location.host)
 
@@ -36,7 +38,9 @@ const Application: React.FC<{
               <LanguageProvider>
                 <ThemeProvider theme={theme}>
                   <ConfigProvider locale={zhTW}>
-                    <Routes extra={extraRouteProps} />
+                    <CustomRendererProvider renderer={customRender}>
+                      <Routes extra={extraRouteProps} />
+                    </CustomRendererProvider>
                   </ConfigProvider>
                 </ThemeProvider>
               </LanguageProvider>

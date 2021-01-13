@@ -26,8 +26,8 @@ type TabPaneMappingProps = {
   allowedUserRole?: UserRole
   onChange?: (value: string) => void
 }
-export type memberAdminLayoutProps = {
-  tabPanes: TabPaneMappingProps[]
+export type renderMemberAdminLayoutProps = {
+  tabPanes?: TabPaneMappingProps[]
 }
 const StyledSider = styled(Layout.Sider)`
   padding: 2.5rem 2rem;
@@ -77,8 +77,8 @@ const MemberAdminLayout: React.FC<{
   const activeKey = match?.isExact ? 'profile' : location.pathname.replace(match?.url || '', '').substring(1)
 
   // TODO: customizedTabPanes
-  // const { customizedLayout } = useCustomizedData()
-  // const customizedTabPanes = customizedLayout?.['tabPanes']
+  // const { renderMemberAdminLayout } = useCustomRenderer()
+  // const defaultMemberAdminLayout = [.....]
 
   return (
     <>
@@ -198,7 +198,12 @@ const MemberAdminLayout: React.FC<{
               </Tabs.TabPane>
             )}
             {/* TODO: customizedTabPanes
-            {customizedTabPanes?.map(
+              {
+              renderMemberAdminLayout ? 
+              renderMemberAdminLayout(defaultMemberAdminLayout) :
+              defaultMemberAdminLayout.map(item=><div>{items.name}</div>)
+              }
+            { customizedTabPanes?.map(
               customizedTabPane =>
                 (customizedTabPane.permissions?.length
                   ? customizedTabPane.permissions?.some(permission => permissions[permission])
