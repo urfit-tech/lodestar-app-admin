@@ -115,7 +115,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           )}
         </Menu.SubMenu>
       )}
-      {enabledModules.project && (
+      {enabledModules.project && currentUserRole === 'app-owner' && (
         <Menu.SubMenu
           key="owner_project_admin"
           title={
