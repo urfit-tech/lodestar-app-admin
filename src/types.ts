@@ -9,11 +9,11 @@ export type MemberContractProps = {
   }
   startedAt: Date
   endedAt: Date
-  agreedAt: Date
-  revokedAt: Date
+  agreedAt: Date | null
+  revokedAt: Date | null
   approvedAt: Date | null
-  loanCancelAt: Date | null
-  refundApplyAt: Date | null
+  loanCanceledAt: Date | null
+  refundAppliedAt: Date | null
   referralMemberId: string | null
   appointmentCreatorId: string | null
   studentCertification: string | null

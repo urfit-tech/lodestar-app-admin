@@ -34,9 +34,11 @@ export const memberContractMessages = {
     payment: { id: 'memberContract.label.payment', defaultMessage: '付款' },
     installmentPlan: { id: 'memberContract.label.installmentPlan', defaultMessage: '期數' },
     paymentNumber: { id: 'memberContract.label.paymentNumber', defaultMessage: '金流編號' },
-    
+
     note: { id: 'memberContract.label.note', defaultMessage: '備註' },
     executors: { id: 'memberContract.label.executors', defaultMessage: '承辦人' },
+    appointment: { id: 'memberContract.label.appointment', defaultMessage: '諮詢' },
+    price: { id: 'memberContract.label.price', defaultMessage: '金額' },
   }),
   status: defineMessages({
     applyRefund: { id: 'memberContract.status.applyRefund', defaultMessage: '提出退費' },

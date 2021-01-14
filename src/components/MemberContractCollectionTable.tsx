@@ -1,16 +1,13 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
 import { Button, Input, Skeleton, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import gql from 'graphql-tag'
 import { commonMessages } from 'lodestar-app-admin/src/helpers/translation'
 import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { memberContractMessages } from '../helpers/translation'
-import { MemberContractProps } from '../types'
-import types from '../types.d'
+import { useMemberContract } from '../hooks'
 import MemberContractModal from './MemberContractModal'
 
 const StyledFilterButton = styled(Button)`
@@ -21,7 +18,53 @@ const StyledFilterInput = styled(Input)`
   width: 188px;
 `
 
-type DataSourceProps = any
+type ColorType = 'gray' | 'warning' | 'success' | 'error'
+const StyledDot = styled.span<{ color: ColorType }>`
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: ${({ color }) => `var(--${color})`};
+`
+const StyledTime = styled.span`
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  color: var(--gray-dark);
+`
+
+type DataSourceProps = {
+  id: string
+  agreedAt: Date | null
+  revokedAt: Date | null
+  loanCancelAt: Date | null
+  approvedAt: Date | null
+  refundAppliedAt: Date | null
+  status: {
+    color: ColorType
+    text: string
+    time: Date | null
+  }
+  startedAt: Date
+  authorId: string
+  member: {
+    id: string
+    name: string
+    pictureUrl: string | null
+    email: string
+  }
+  price: number | null
+  projectPlanName: string | null
+  paymentMethod: string | null
+  paymentNumber: string | null
+  note: string | null
+  orderExecutors:
+    | {
+        ratio: number
+        memberId: string
+      }[]
+    | null
+  hasStudentCertification: boolean
+}
 
 const MemberContractCollectionTable: React.FC<{
   variant: 'agreed' | 'revoked'
@@ -44,26 +87,43 @@ const MemberContractCollectionTable: React.FC<{
     speciality: null,
   })
 
-  const dataSource: DataSourceProps = memberContracts.map(v => ({
+  const dataSource: DataSourceProps[] = memberContracts.map(v => ({
+    id: v.id,
     agreedAt: v.agreedAt,
     revokedAt: v.revokedAt,
-    status: v.loanCancelAt
+    status: v.loanCanceledAt
       ? {
-          text: formatMessage(memberContractMessages.label.loanCancelAt),
-          time: v.loanCancelAt,
+          color: 'gray',
+          text: formatMessage(commonMessages.ui.cancel),
+          time: v.loanCanceledAt,
         }
       : v.approvedAt
-      ? v.refundApplyAt
-        ? { text: formatMessage(memberContractMessages.label.refundApplyAt), time: v.refundApplyAt }
-        : { text: formatMessage(memberContractMessages.status.approvedApproval), time: v.approvedAt }
-      : { text: formatMessage(memberContractMessages.status.pendingApproval), time: null },
+      ? v.refundAppliedAt
+        ? {
+            color: 'error',
+            text: formatMessage(memberContractMessages.label.refundApplyAt),
+            time: v.refundAppliedAt,
+          }
+        : {
+            color: 'success',
+            text: formatMessage(memberContractMessages.status.approvedApproval),
+            time: v.approvedAt,
+          }
+      : {
+          color: 'warning',
+          text: formatMessage(memberContractMessages.status.pendingApproval),
+          time: v.agreedAt,
+        },
+    loanCancelAt: v.loanCanceledAt,
+    approvedAt: v.approvedAt,
+    refundAppliedAt: v.refundAppliedAt,
     startedAt: v.startedAt,
     authorId: v.authorId,
     member: v.member,
     price: v.price,
     projectPlanName: v.projectPlanName,
-    paymentMethod: v.paymentOptions?.paymentMethod,
-    paymentNumber: v.paymentOptions?.paymentNumber,
+    paymentMethod: v.paymentOptions?.paymentMethod || null,
+    paymentNumber: v.paymentOptions?.paymentNumber || null,
     note: v.note,
     orderExecutors: v.orderExecutors,
     hasStudentCertification: !!v.studentCertification,
@@ -150,24 +210,25 @@ const MemberContractCollectionTable: React.FC<{
             },
           ],
           onFilter: value => true,
-          render: status => (
-            <div className="d-flex align-items-center justify-content-start">
-              <span className="pl-1">
-                {status.text} {status.time}
-              </span>
-            </div>
-          ),
+          render: (status, record) => {
+            console.log(status.time, record.projectPlanName)
+            return (
+              <div className="d-flex flex-row align-items-center">
+                <StyledDot color={status.color} className="mr-2" />
+                <div className="d-flex flex-column">
+                  <div>{status.text}</div>
+                  <StyledTime>{status.time && moment(status.time).format('YYYY-MM-DD')}</StyledTime>
+                </div>
+              </div>
+            )
+          },
         },
     {
       title: formatMessage(memberContractMessages.label.serviceStartedAt),
       dataIndex: 'startedAt',
       key: 'startedAt',
       sorter: (a, b) => 1,
-      render: startedAt => (
-        <div className="d-flex align-items-center justify-content-start">
-          <span className="pl-1">{moment(startedAt).format('YYYY-MM-DD')}</span>
-        </div>
-      ),
+      render: startedAt => <span>{moment(startedAt).format('YYYY-MM-DD HH:MM')}</span>,
     },
     {
       title: formatMessage(memberContractMessages.label.contractCreator),
@@ -212,55 +273,34 @@ const MemberContractCollectionTable: React.FC<{
       ),
     },
     {
-      title: formatMessage(memberContractMessages.label.agreedAt),
+      title: formatMessage(memberContractMessages.label.price),
       dataIndex: 'price',
       key: 'price',
-
-      render: price => (
-        <div className="d-flex align-items-center justify-content-start">
-          <span className="pl-1">{price}</span>
-        </div>
-      ),
+      render: price => <span>NT$ {price.toLocaleString('zh-TW')}</span>,
     },
     {
       title: formatMessage(memberContractMessages.label.product),
       dataIndex: 'projectPlanName',
       key: 'projectPlanName',
-      render: projectPlanName => (
-        <div className="d-flex align-items-center justify-content-start">
-          <span className="pl-1">{projectPlanName}</span>
-        </div>
-      ),
+      render: projectPlanName => <span>{projectPlanName}</span>,
     },
     {
       title: formatMessage(memberContractMessages.label.paymentMethod),
       dataIndex: 'paymentMethod',
       key: 'paymentMethod',
-      render: paymentMethod => (
-        <div className="d-flex align-items-center justify-content-start">
-          <span className="pl-1">{paymentMethod}</span>
-        </div>
-      ),
+      render: paymentMethod => <span>{paymentMethod}</span>,
     },
     {
       title: formatMessage(memberContractMessages.label.paymentNumber),
       dataIndex: 'paymentNumber',
       key: 'paymentNumber',
-      render: paymentNumber => (
-        <div className="d-flex align-items-center justify-content-start">
-          <span className="pl-1">{paymentNumber}</span>
-        </div>
-      ),
+      render: paymentNumber => <span>{paymentNumber}</span>,
     },
     {
       title: formatMessage(memberContractMessages.label.remarks),
       dataIndex: 'note',
       key: 'note',
-      render: note => (
-        <div className="d-flex align-items-center justify-content-start">
-          <span className="pl-1">{note}</span>
-        </div>
-      ),
+      render: note => <span>{note}</span>,
     },
     {
       title: formatMessage(memberContractMessages.label.revenueShare),
@@ -276,12 +316,7 @@ const MemberContractCollectionTable: React.FC<{
       title: formatMessage(memberContractMessages.label.proofOfEnrollment),
       dataIndex: 'hasStudentCertification',
       key: 'hasStudentCertification',
-
-      render: hasStudentCertification => (
-        <div className="d-flex align-items-center justify-content-start">
-          <span className="pl-1">{hasStudentCertification}</span>
-        </div>
-      ),
+      render: hasStudentCertification => <span>{hasStudentCertification ? '有' : '無'}</span>,
     },
   ]
 
@@ -298,6 +333,7 @@ const MemberContractCollectionTable: React.FC<{
   return (
     <>
       <MemberContractModal
+        isRevoked={variant === 'revoked'}
         memberContractId={activeMemberContract.id}
         member={activeMemberContract.invoice}
         purchasedItem={{
@@ -312,12 +348,13 @@ const MemberContractCollectionTable: React.FC<{
         }}
         status={{
           approvedAt: activeMemberContract.approvedAt,
-          loanCancelAt: activeMemberContract.loanCancelAt,
-          refundApplyAt: activeMemberContract.refundApplyAt,
+          loanCancelAt: activeMemberContract.loanCanceledAt,
+          refundApplyAt: activeMemberContract.refundAppliedAt,
         }}
         paymentOptions={activeMemberContract.paymentOptions}
         note={activeMemberContract.note}
         orderExecutors={activeMemberContract.orderExecutors}
+        studentCertification={activeMemberContract.studentCertification}
         renderTrigger={({ setVisible }) => (
           <Table
             columns={columns}
@@ -350,113 +387,6 @@ const MemberContractCollectionTable: React.FC<{
       )}
     </>
   )
-}
-
-const useMemberContract = ({}) => {
-  const condition: types.GET_MEMBER_CONTRACTVariables['condition'] = {}
-  const { loading, data, error, refetch, fetchMore } = useQuery<
-    types.GET_MEMBER_CONTRACT,
-    types.GET_MEMBER_CONTRACTVariables
-  >(
-    gql`
-      query GET_MEMBER_CONTRACT($condition: member_contract_bool_exp, $limit: Int) {
-        member_contract(where: $condition, limit: $limit) {
-          id
-          author_id
-          member {
-            id
-            name
-            picture_url
-            email
-          }
-          started_at
-          ended_at
-          agreed_at
-          revoked_at
-          values
-          options
-        }
-        member_contract_aggregate(where: $condition) {
-          aggregate {
-            count
-          }
-        }
-      }
-    `,
-    {
-      variables: {
-        condition,
-        limit: 5,
-      },
-    },
-  )
-
-  const memberContracts: MemberContractProps[] =
-    loading || error || !data
-      ? []
-      : data.member_contract.map(v => ({
-          id: v.id,
-          authorId: v.author_id,
-          member: {
-            id: v.member.id,
-            name: v.member.name,
-            pictureUrl: v.member.picture_url,
-            email: v.member.email,
-          },
-          startedAt: new Date(v.started_at),
-          endedAt: new Date(v.ended_at),
-          agreedAt: new Date(v.agreed_at),
-          revokedAt: new Date(v.revoked_at),
-          approvedAt: v.options.approvedAt ? new Date(v.options.approved_at) : null,
-          loanCancelAt: v.options.loanCancelAt ? new Date(v.options.loanCancelAt) : null,
-          refundApplyAt: v.options.refundApplyAt ? new Date(v.options.refundApplyAt) : null,
-          referralMemberId: v.options?.referralMemberId || null,
-          appointmentCreatorId: v.options?.appointmentCreatorId || null,
-          studentCertification: v.options?.studentCertification || null,
-          invoice: v.values?.invoice || null,
-          projectPlanName: v.values?.projectPlanName || null,
-          price: v.values?.price || null,
-          coinAmount: v.values?.coinAmount || null,
-          paymentOptions: {
-            paymentMethod: v.values.paymentOptions?.paymentMethod || '',
-            paymentNumber: v.values.paymentOptions?.paymentNumber || '',
-            installmentPlan: v.values.paymentOptions?.installmentPlan || 0,
-          },
-          note: v.options?.note || null,
-          orderExecutors:
-            v.values?.orderExecutors?.map((v: { ratio: number; member_id: string }) => ({
-              ratio: v.ratio,
-              memberId: v.member_id,
-            })) || [],
-          couponCount: v.values?.coupons.length || null,
-        }))
-
-  const loadMoreMemberContracts =
-    (data?.member_contract_aggregate.aggregate?.count || 0) >= memberContracts.length
-      ? () =>
-          fetchMore({
-            variables: {
-              condition: { ...condition, started_at: { _lt: data?.member_contract.slice(-1)[0]?.started_at } },
-              limit: 5,
-            },
-            updateQuery: (prev, { fetchMoreResult }) => {
-              if (!fetchMoreResult) {
-                return prev
-              }
-              return Object.assign({}, prev, {
-                member_contract: [...prev.member_contract, ...fetchMoreResult.member_contract],
-              })
-            },
-          })
-      : undefined
-
-  return {
-    loadingMemberContracts: loading,
-    errorMemberContracts: error,
-    memberContracts,
-    refetchMemberContracts: refetch,
-    loadMoreMemberContracts,
-  }
 }
 
 export default MemberContractCollectionTable
