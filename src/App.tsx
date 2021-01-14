@@ -1,17 +1,23 @@
 import Application from 'lodestar-app-admin/src/Application'
 import React from 'react'
 import './App.scss'
-import TermsPtPage from './pages/TermsPtPage'
+import MemberCollectionAdminPage from './pages/MemberCollectionAdminPage'
+import MemberNoteAdminPage from './pages/MemberNoteAdminPage'
 
 const App = () => {
   return (
     <Application
       appId="xuemi"
       extraRouteProps={{
-        terms: {
-          path: '/terms',
-          pageName: <TermsPtPage />,
-          authenticated: false,
+        owner_members: {
+          path: '/admin/members',
+          pageName: <MemberCollectionAdminPage />,
+          authenticated: true,
+        },
+        owner_member_note: {
+          path: '/admin/members/:memberId/note',
+          pageName: <MemberNoteAdminPage />,
+          authenticated: true,
         },
       }}
     />
