@@ -16,6 +16,7 @@ const MemberExportModal: React.FC<{
     role?: UserRole
     name?: string
     email?: string
+    managerId?: string
   }
 }> = ({ roleSelector, filter }) => {
   const { formatMessage } = useIntl()
