@@ -660,6 +660,162 @@ export const useMemberCollection = (filter?: {
   }
 }
 
+export const useMemberAllCollection = (filter?: {
+  role?: UserRole
+  name?: string
+  email?: string
+  phone?: string
+  category?: string
+  managerName?: string
+  tag?: string
+  properties?: {
+    id: string
+    value?: string
+  }[]
+}) => {
+  const condition: types.GET_MEMBER_COLLECTIONVariables['condition'] = {
+    role: filter?.role ? { _eq: filter.role } : undefined,
+    name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
+    email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
+    manager: filter?.managerName
+      ? {
+          name: { _ilike: `%${filter.managerName}%` },
+        }
+      : undefined,
+    member_phones: filter?.phone
+      ? {
+          phone: { _ilike: `%${filter.phone}%` },
+        }
+      : undefined,
+    member_categories: filter?.category
+      ? {
+          category: {
+            name: {
+              _ilike: `%${filter.category}%`,
+            },
+          },
+        }
+      : undefined,
+    member_tags: filter?.tag
+      ? {
+          tag_name: {
+            _ilike: filter.tag,
+          },
+        }
+      : undefined,
+    member_properties: filter?.properties?.length
+      ? {
+          _and: filter.properties
+            .filter(property => property.value)
+            .map(property => ({
+              property_id: { _eq: property.id },
+              value: { _ilike: `%${property.value}%` },
+            })),
+        }
+      : undefined,
+  }
+
+  const { loading, error, data } = useQuery<types.GET_MEMBER_COLLECTION, types.GET_MEMBER_COLLECTIONVariables>(
+    gql`
+      query GET_MEMBER_COLLECTION($condition: member_bool_exp) {
+        member_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
+        }
+        member(where: $condition, order_by: { created_at: desc_nulls_last }) {
+          id
+          picture_url
+          name
+          username
+          email
+          created_at
+          logined_at
+          role
+          manager {
+            id
+            name
+          }
+          assigned_at
+          member_phones {
+            id
+            phone
+          }
+          member_categories {
+            id
+            category {
+              id
+              name
+            }
+          }
+          member_tags {
+            id
+            tag_name
+          }
+          member_properties {
+            id
+            property_id
+            value
+          }
+          order_logs(where: { status: { _eq: "SUCCESS" } }) {
+            order_products_aggregate {
+              aggregate {
+                sum {
+                  price
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        condition,
+      },
+      context: {
+        important: true,
+      },
+    },
+  )
+
+  const members: MemberInfoProps[] =
+    loading || error || !data
+      ? []
+      : data.member.map(v => ({
+          id: v.id,
+          avatarUrl: v.picture_url,
+          name: v.name || v.username,
+          email: v.email,
+          role: v.role as UserRole,
+          createdAt: v.created_at ? new Date(v.created_at) : null,
+          loginedAt: v.logined_at,
+          manager: v.manager,
+          assignedAt: v.assigned_at,
+          phones: v.member_phones.map(v => v.phone),
+          consumption: sum(
+            v.order_logs.map((orderLog: any) => orderLog.order_products_aggregate.aggregate.sum.price || 0),
+          ),
+          categories: v.member_categories.map(w => ({
+            id: w.category.id,
+            name: w.category.name,
+          })),
+          tags: v.member_tags.map(w => w.tag_name),
+          properties: v.member_properties.reduce((accumulator, currentValue) => {
+            return {
+              ...accumulator,
+              [currentValue.property_id]: currentValue.value,
+            }
+          }, {} as MemberInfoProps['properties']),
+        }))
+
+  return {
+    loadingMembers: loading,
+    errorMembers: error,
+    members,
+  }
+}
+
 export const useMemberSummaryCollection = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_MEMBER_SUMMARY_COLLECTION>(
     gql`

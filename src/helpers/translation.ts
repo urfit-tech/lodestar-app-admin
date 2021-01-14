@@ -183,6 +183,7 @@ export const commonMessages = {
     amountParticipants: { id: 'common.label.amountParticipants', defaultMessage: '{amount} 人' },
     introductionVideo: { id: 'common.label.introductionVideo', defaultMessage: '介紹影片' },
     planTitle: { id: 'common.label.planTitle', defaultMessage: '方案名稱' },
+    memberIdentity:{id:'common.label.memberIdentity',defaultMessage:'會員身份'},
   }),
   term: defineMessages({
     assign: { id: 'common.term.assign', defaultMessage: '指派' },

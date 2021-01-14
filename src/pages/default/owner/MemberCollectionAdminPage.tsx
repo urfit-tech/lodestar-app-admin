@@ -20,7 +20,7 @@ import { ReactComponent as TableIcon } from '../../../images/icon/table.svg'
 import { MemberInfoProps, UserRole } from '../../../types/member'
 
 const StyledDropdown = styled(Dropdown)`
-  width: 240px;
+  width: 100%;
   color: var(--gray-darker);
 `
 const StyledMenuItem = styled(Menu.Item)`
