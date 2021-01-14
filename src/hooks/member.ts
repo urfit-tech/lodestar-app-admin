@@ -495,11 +495,12 @@ export const useMemberCollection = (filter?: {
     role: filter?.role ? { _eq: filter.role } : undefined,
     name: filter?.name ? { _ilike: `%${filter.name}%` } : undefined,
     email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
-    manager:
-    {
-      id: filter?.managerId ? { _eq: filter.managerId } : undefined,
-      name: filter?.managerName ? { _ilike: `%${filter.managerName}%` } : undefined
-    },
+    manager: filter?.managerName
+      ? {
+        name: { _ilike: `%${filter.managerName}%` },
+      }
+      : undefined,
+    manager_id: filter?.managerId ? { _eq: filter.managerId } : undefined,
     member_phones: filter?.phone
       ? {
         phone: { _ilike: `%${filter.phone}%` },
@@ -667,6 +668,7 @@ export const useMemberAllCollection = (filter?: {
   phone?: string
   category?: string
   managerName?: string
+  managerId?: string
   tag?: string
   properties?: {
     id: string
@@ -679,39 +681,40 @@ export const useMemberAllCollection = (filter?: {
     email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
     manager: filter?.managerName
       ? {
-          name: { _ilike: `%${filter.managerName}%` },
-        }
+        name: { _ilike: `%${filter.managerName}%` },
+      }
       : undefined,
+    manager_id: filter?.managerId ? { _eq: filter.managerId } : undefined,
     member_phones: filter?.phone
       ? {
-          phone: { _ilike: `%${filter.phone}%` },
-        }
+        phone: { _ilike: `%${filter.phone}%` },
+      }
       : undefined,
     member_categories: filter?.category
       ? {
-          category: {
-            name: {
-              _ilike: `%${filter.category}%`,
-            },
+        category: {
+          name: {
+            _ilike: `%${filter.category}%`,
           },
-        }
+        },
+      }
       : undefined,
     member_tags: filter?.tag
       ? {
-          tag_name: {
-            _ilike: filter.tag,
-          },
-        }
+        tag_name: {
+          _ilike: filter.tag,
+        },
+      }
       : undefined,
     member_properties: filter?.properties?.length
       ? {
-          _and: filter.properties
-            .filter(property => property.value)
-            .map(property => ({
-              property_id: { _eq: property.id },
-              value: { _ilike: `%${property.value}%` },
-            })),
-        }
+        _and: filter.properties
+          .filter(property => property.value)
+          .map(property => ({
+            property_id: { _eq: property.id },
+            value: { _ilike: `%${property.value}%` },
+          })),
+      }
       : undefined,
   }
 
