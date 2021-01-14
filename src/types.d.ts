@@ -24,8 +24,10 @@ export interface GET_MEMBER_CONTRACT_member_contract {
    */
   member: GET_MEMBER_CONTRACT_member_contract_member;
   started_at: any | null;
+  ended_at: any | null;
   agreed_at: any | null;
   revoked_at: any | null;
+  values: any | null;
   options: any | null;
 }
 
