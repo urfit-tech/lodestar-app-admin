@@ -107,6 +107,7 @@ export type MemberNoteAdminProps = {
   createdAt: Date
   author: {
     id: string
+    role: string
     name: string
     pictureUrl: string | null
   }

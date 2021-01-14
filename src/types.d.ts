@@ -7753,6 +7753,10 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_phones {
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author {
   __typename: "member";
   id: string;
+  /**
+   * app-owner / content-creator
+   */
+  role: string;
   name: string;
   picture_url: string | null;
 }

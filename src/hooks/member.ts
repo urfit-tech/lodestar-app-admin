@@ -118,6 +118,7 @@ export const useMemberAdmin = (memberId: string) => {
             created_at
             author {
               id
+              role
               name
               picture_url
             }
@@ -229,6 +230,7 @@ export const useMemberAdmin = (memberId: string) => {
           createdAt: new Date(v.created_at),
           author: {
             id: v.author.id,
+            role: v.author.role,
             name: v.author.name,
             pictureUrl: v.author.picture_url,
           },
