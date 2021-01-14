@@ -62,6 +62,7 @@ const DefaultLayout: React.FC<{
   noFooter?: boolean
   centeredBox?: boolean
   renderTitle?: () => React.ReactNode
+  renderExtraNav?: () => React.ReactNode
 }> = ({ white, noFooter, centeredBox, renderTitle, children }) => {
   const [visible, setVisible] = useState(false)
 
@@ -84,7 +85,8 @@ const DefaultLayout: React.FC<{
 
 export const DefaultLayoutHeader: React.FC<{
   renderTitle?: () => React.ReactNode
-}> = ({ renderTitle }) => {
+  renderExtraNav?: () => React.ReactNode
+}> = ({ renderTitle, renderExtraNav }) => {
   const { currentMemberId } = useAuth()
   const { enabledModules, id: appId } = useApp()
   const { currentLanguage, setCurrentLanguage } = useContext(LanguageContext)
@@ -115,6 +117,7 @@ export const DefaultLayoutHeader: React.FC<{
       )}
 
       <div className="d-flex align-items-center">
+        {renderExtraNav && renderExtraNav()}
         {enabledModules.locale && (
           <>
             <Dropdown
