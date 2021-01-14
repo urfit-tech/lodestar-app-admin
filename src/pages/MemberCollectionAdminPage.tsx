@@ -20,7 +20,7 @@ import { useIntl } from 'react-intl'
 import styled, { ThemeContext } from 'styled-components'
 
 const StyledDropdown = styled(Dropdown)`
-  width: 240px;
+  width: 100%;
   color: var(--gray-darker);
 `
 const StyledMenuItem = styled(Menu.Item)`
@@ -103,6 +103,7 @@ const MemberCollectionAdminPage: React.FC = () => {
     })),
   ]
   const [visibleColumnIds, setVisibleColumnIds] = useState<string[]>(['email', 'createdAt', 'consumption'])
+
   // get member info
   const [fieldFilter, setFieldFilter] = useState<{
     role?: UserRole
@@ -114,7 +115,6 @@ const MemberCollectionAdminPage: React.FC = () => {
     managerId?: string
     tag?: string
   }>({})
-
   const [propertyFilter, setPropertyFilter] = useState<{
     [propertyId: string]: string | undefined
   }>({})
@@ -126,7 +126,6 @@ const MemberCollectionAdminPage: React.FC = () => {
     })),
     managerId: currentUserRole === 'general-member' ? currentMemberId || '' : undefined,
   })
-
   const [loading, setLoading] = useState(false)
 
   // role selector
