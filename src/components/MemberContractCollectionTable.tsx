@@ -10,7 +10,8 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { memberContractMessages } from '../helpers/translation'
 import { useMemberContract } from '../hooks'
-import MemberContractFilterSelect from './MemberContractFilterSelect'
+import { DateRangeType, StatusType } from '../types'
+import MemberContractFilterSelector from './MemberContractFilterSelector'
 import MemberContractModal from './MemberContractModal'
 import MemberName from './MemberName'
 
@@ -29,7 +30,7 @@ type DataSourceProps = {
     time: Date | null
   }
   startedAt: Date
-  authorId: string
+  authorName: string
   member: {
     id: string
     name: string
@@ -81,22 +82,53 @@ const MemberContractCollectionTable: React.FC<{
   variant: 'agreed' | 'revoked'
 }> = ({ variant }) => {
   const { formatMessage } = useIntl()
-  const [filterCondition, setFilterCondition] = useState()
-  const { loadingMemberContracts, errorMemberContracts, memberContracts, loadMoreMemberContracts } = useMemberContract(
-    variant,
-  ) // TODO: filterCondition + variant
+  const [filter, setFilter] = useState<{
+    authorName: string | null
+    memberNameAndEmail: string | null
+    status: StatusType
+    dateRangeType: DateRangeType
+    startedAt: Date | null
+    endedAt: Date | null
+  }>({
+    authorName: null,
+    memberNameAndEmail: null,
+    status: '',
+    dateRangeType: 'agreed_at',
+    startedAt: moment().startOf('month').toDate(),
+    endedAt: moment().endOf('month').toDate(),
+  })
+  const { loadingMemberContracts, errorMemberContracts, memberContracts, loadMoreMemberContracts } = useMemberContract({
+    ...filter,
+    isRevoked: variant === 'revoked',
+  })
   const [isLoading, setIsLoading] = useState(false)
   const [activeMemberContractId, setActiveMemberContractId] = useState<string | null>(null)
 
-  const [filter, setFilter] = useState<{
-    name: string | null
-    field: string | null
-    speciality: string | null
-  }>({
-    name: null,
-    field: null,
-    speciality: null,
-  })
+  if (loadingMemberContracts && errorMemberContracts) {
+    return <Skeleton />
+  }
+
+  const activeMemberContract = memberContracts.find(v => v.id === activeMemberContractId) || memberContracts[0]
+
+  const select = (
+    <MemberContractFilterSelector
+      isAgreed={variant === 'agreed'}
+      status={filter.status}
+      onSetStatus={status => {
+        setFilter({ ...filter, status })
+      }}
+      dateRangeType={filter.dateRangeType}
+      onSetDateRangeType={dateRangeType => {
+        setFilter({ ...filter, dateRangeType })
+      }}
+      startedAt={filter.startedAt}
+      endedAt={filter.endedAt}
+      onSetRange={({ startedAt, endedAt }) => {
+        setFilter({ ...filter, startedAt, endedAt })
+      }}
+      className="mb-4"
+    />
+  )
 
   const dataSource: DataSourceProps[] = memberContracts.map(v => ({
     id: v.id,
@@ -129,7 +161,7 @@ const MemberContractCollectionTable: React.FC<{
     approvedAt: v.approvedAt,
     refundAppliedAt: v.refundAppliedAt,
     startedAt: v.startedAt,
-    authorId: v.authorId,
+    authorName: v.author.name,
     member: v.member,
     price: v.price,
     projectPlanName: v.projectPlanName,
@@ -140,10 +172,6 @@ const MemberContractCollectionTable: React.FC<{
     hasStudentCertification: !!v.studentCertification,
   }))
 
-  const activeMemberContract = memberContracts.find(v => v.id === activeMemberContractId) || memberContracts[0]
-  const select = <MemberContractFilterSelect className="mb-4" />
-
-  // TODO: extract getColumnSearchProps & column
   const getColumnSearchProps = ({
     onReset,
     onSearch,
@@ -151,28 +179,30 @@ const MemberContractCollectionTable: React.FC<{
     onReset: (clearFilters: any) => void
     onSearch: (selectedKeys?: React.ReactText[], confirm?: () => void) => void
   }): ColumnProps<DataSourceProps> => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-      <div className="p-2">
-        <StyledFilterInput
-          autoFocus
-          value={selectedKeys?.[0]}
-          onChange={e => setSelectedKeys?.(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => onSearch(selectedKeys, confirm)}
-          className="mb-2 d-block"
-        />
-        <StyledFilterButton
-          className="mr-2"
-          type="primary"
-          size="small"
-          onClick={() => onSearch(selectedKeys, confirm)}
-        >
-          {formatMessage(commonMessages.ui.search)}
-        </StyledFilterButton>
-        <StyledFilterButton size="small" onClick={() => onReset(clearFilters)}>
-          {formatMessage(commonMessages.ui.reset)}
-        </StyledFilterButton>
-      </div>
-    ),
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => {
+      return (
+        <div className="p-2">
+          <StyledFilterInput
+            autoFocus
+            value={selectedKeys?.[0]}
+            onChange={e => setSelectedKeys?.(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => onSearch(selectedKeys, confirm)}
+            className="mb-2 d-block"
+          />
+          <StyledFilterButton
+            className="mr-2"
+            type="primary"
+            size="small"
+            onClick={() => onSearch(selectedKeys, confirm)}
+          >
+            {formatMessage(commonMessages.ui.search)}
+          </StyledFilterButton>
+          <StyledFilterButton size="small" onClick={() => onReset(clearFilters)}>
+            {formatMessage(commonMessages.ui.reset)}
+          </StyledFilterButton>
+        </div>
+      )
+    },
     filterIcon: <SearchOutlined />,
   })
 
@@ -194,9 +224,9 @@ const MemberContractCollectionTable: React.FC<{
           dataIndex: 'revokedAt',
           key: 'revokedAt',
           sorter: (a, b) => 1,
-          render: name => (
+          render: revokedAt => (
             <div className="d-flex align-items-center justify-content-start">
-              <span className="pl-1">{name}</span>
+              <span className="pl-1">{moment(revokedAt).format('YYYY-MM-DD')}</span>
             </div>
           ),
         }
@@ -224,7 +254,6 @@ const MemberContractCollectionTable: React.FC<{
           ],
           onFilter: value => true,
           render: (status, record) => {
-            console.log(status.time, record.projectPlanName)
             return (
               <div className="d-flex flex-row align-items-center">
                 <StyledDot color={status.color} className="mr-2" />
@@ -245,20 +274,20 @@ const MemberContractCollectionTable: React.FC<{
     },
     {
       title: formatMessage(memberContractMessages.label.contractCreator),
-      dataIndex: 'authorId',
-      key: 'authorId',
+      dataIndex: 'authorName',
+      key: 'authorName',
       ...getColumnSearchProps({
         onReset: clearFilters => {
           clearFilters()
-          setFilter({ ...filter, name: null })
+          setFilter({ ...filter, authorName: null })
         },
         onSearch: ([searchText] = []) =>
           setFilter({
             ...filter,
-            name: searchText as string,
+            authorName: searchText as string,
           }),
       }),
-      render: authorId => <MemberName memberId={authorId} />,
+      render: authorName => <span>{authorName}</span>,
     },
     {
       title: `${formatMessage(memberContractMessages.label.studentName)} / Email`,
@@ -267,12 +296,12 @@ const MemberContractCollectionTable: React.FC<{
       ...getColumnSearchProps({
         onReset: clearFilters => {
           clearFilters()
-          setFilter({ ...filter, name: null })
+          setFilter({ ...filter, memberNameAndEmail: null })
         },
         onSearch: ([searchText] = []) =>
           setFilter({
             ...filter,
-            name: searchText as string,
+            memberNameAndEmail: searchText as string,
           }),
       }),
       render: member => (
@@ -334,10 +363,6 @@ const MemberContractCollectionTable: React.FC<{
       render: hasStudentCertification => <span>{hasStudentCertification ? '有' : '無'}</span>,
     },
   ]
-
-  if (loadingMemberContracts) {
-    return <Skeleton />
-  }
 
   if (!activeMemberContract) {
     return (

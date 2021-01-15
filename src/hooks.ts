@@ -1,10 +1,50 @@
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
-import { MemberContractProps } from './types'
+import { DateRangeType, MemberContractProps, StatusType } from './types'
 import types from './types.d'
 
-export const useMemberContract = ({}) => {
-  const condition: types.GET_MEMBER_CONTRACTVariables['condition'] = {}
+export const useMemberContract = ({
+  isRevoked,
+  memberNameAndEmail,
+  authorName,
+  status,
+  dateRangeType,
+  startedAt,
+  endedAt,
+}: {
+  isRevoked: boolean
+  memberNameAndEmail: string | null
+  status: StatusType
+  dateRangeType: DateRangeType
+  authorName: string | null
+  startedAt: Date | null
+  endedAt: Date | null
+}) => {
+  const condition: types.GET_MEMBER_CONTRACTVariables['condition'] = {
+    agreed_at: { _is_null: false },
+    revoked_at: { _is_null: !isRevoked },
+    author: { name: { _ilike: authorName && `%${authorName}%` } },
+    _and:
+      status === 'pending-approval'
+        ? [{ _not: { options: { _has_keys_any: ['approvedAt', 'refundAppliedAt', 'loanCanceledAt'] } } }]
+        : status === 'approved-approval'
+        ? [{ options: { _has_key: 'approvedAt' } }, { _not: { options: { _has_key: 'refundAppliedAt' } } }]
+        : status === 'applied-refund'
+        ? [{ options: { _has_keys_all: ['approvedAt', 'refundAppliedAt'] } }]
+        : status === 'canceled-loan'
+        ? [{ options: { _has_key: 'loanCanceledAt' } }]
+        : null,
+    [dateRangeType]: {
+      _gt: startedAt,
+      _lte: endedAt,
+    },
+    member: {
+      _or: [
+        { name: { _ilike: memberNameAndEmail && `%${memberNameAndEmail}%` } },
+        { email: { _ilike: memberNameAndEmail && `%${memberNameAndEmail}%` } },
+      ],
+    },
+  }
   const { loading, data, error, refetch, fetchMore } = useQuery<
     types.GET_MEMBER_CONTRACT,
     types.GET_MEMBER_CONTRACTVariables
@@ -13,7 +53,10 @@ export const useMemberContract = ({}) => {
       query GET_MEMBER_CONTRACT($condition: member_contract_bool_exp, $limit: Int) {
         member_contract(where: $condition, limit: $limit) {
           id
-          author_id
+          author {
+            id
+            name
+          }
           member {
             id
             name
@@ -47,7 +90,10 @@ export const useMemberContract = ({}) => {
       ? []
       : data.member_contract.map(v => ({
           id: v.id,
-          authorId: v.author_id,
+          author: {
+            id: v.author?.id || '',
+            name: v.author?.name || '',
+          },
           member: {
             id: v.member.id,
             name: v.member.name,

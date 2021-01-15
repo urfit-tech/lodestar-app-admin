@@ -1,6 +1,12 @@
+export type StatusType = 'pending-approval' | 'approved-approval' | 'applied-refund' | 'canceled-loan' | ''
+export type DateRangeType = 'agreed_at' | 'started_at' | 'revoked_at'
+
 export type MemberContractProps = {
   id: string
-  authorId: string
+  author: {
+    id: string
+    name: string
+  }
   member: {
     id: string
     name: string
