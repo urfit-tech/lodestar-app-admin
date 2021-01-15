@@ -7,28 +7,29 @@ import { Link, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { useCustomRenderer } from '../../contexts/CustomRendererContext'
 import { currencyFormatter } from '../../helpers'
 import { commonMessages, memberMessages, promotionMessages } from '../../helpers/translation'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as EmailIcon } from '../../images/icon/email.svg'
 import { ReactComponent as PhoneIcon } from '../../images/icon/phone.svg'
 import { routesProps } from '../../Routes'
+import { AppProps } from '../../types/app'
 import { CouponPlanProps } from '../../types/checkout'
 import { MemberAdminProps, UserRole } from '../../types/member'
 import { AdminHeader, AdminHeaderTitle, AdminTabBarWrapper } from '../admin'
 import { CustomRatioImage } from '../common/Image'
 import { StyledLayoutContent } from './DefaultLayout'
 
-type TabPaneMappingProps = {
-  key: string
-  text: string
-  permissions?: string[]
-  allowedUserRole?: UserRole
-  onChange?: (value: string) => void
-}
 export type renderMemberAdminLayoutProps = {
-  tabPanes?: TabPaneMappingProps[]
+  activeKey?: string
+  enabledModules?: AppProps['enabledModules']
+  permissions?: { [key: string]: boolean }
+  currentUserRole?: UserRole
+  defaultTabPanes: (React.ReactElement | boolean | undefined)[]
+  children?: React.ReactNode
 }
+
 const StyledSider = styled(Layout.Sider)`
   padding: 2.5rem 2rem;
 `
@@ -74,11 +75,43 @@ const MemberAdminLayout: React.FC<{
   const { currentUserRole, permissions } = useAuth()
   const { enabledModules, settings } = useApp()
   const { formatMessage } = useIntl()
+  const { renderMemberAdminLayout } = useCustomRenderer()
+
   const activeKey = match?.isExact ? 'profile' : location.pathname.replace(match?.url || '', '').substring(1)
 
-  // TODO: customizedTabPanes
-  // const { renderMemberAdminLayout } = useCustomRenderer()
-  // const defaultMemberAdminLayout = [.....]
+  const defaultTabPanes: renderMemberAdminLayoutProps['defaultTabPanes'] = [
+    <Tabs.TabPane key="profile" tab={formatMessage(memberMessages.label.profile)}>
+      {activeKey === 'profile' && children}
+    </Tabs.TabPane>,
+    enabledModules.member_note && (
+      <Tabs.TabPane key="note" tab={formatMessage(memberMessages.label.note)}>
+        {activeKey === 'note' && children}
+      </Tabs.TabPane>
+    ),
+    enabledModules.member_task && permissions.TASK_ADMIN && (
+      <Tabs.TabPane key="task" tab={formatMessage(memberMessages.label.task)}>
+        {activeKey === 'task' && children}
+      </Tabs.TabPane>
+    ),
+    <Tabs.TabPane key="coupon" tab={formatMessage(promotionMessages.term.coupon)}>
+      {activeKey === 'coupon' && children}
+    </Tabs.TabPane>,
+    enabledModules.contract && (
+      <Tabs.TabPane key="contract" tab={formatMessage(memberMessages.label.contract)}>
+        {activeKey === 'contract' && children}
+      </Tabs.TabPane>
+    ),
+    currentUserRole === 'app-owner' && (
+      <Tabs.TabPane key="order" tab={formatMessage(memberMessages.label.order)}>
+        {activeKey === 'order' && children}
+      </Tabs.TabPane>
+    ),
+    currentUserRole === 'app-owner' && (
+      <Tabs.TabPane key="permission" tab={formatMessage(memberMessages.label.permission)}>
+        {activeKey === 'permission' && children}
+      </Tabs.TabPane>
+    ),
+  ]
 
   return (
     <>
@@ -166,53 +199,16 @@ const MemberAdminLayout: React.FC<{
               </AdminTabBarWrapper>
             )}
           >
-            <Tabs.TabPane key="profile" tab={formatMessage(memberMessages.label.profile)}>
-              {activeKey === 'profile' && children}
-            </Tabs.TabPane>
-            {enabledModules.member_note && (
-              <Tabs.TabPane key="note" tab={formatMessage(memberMessages.label.note)}>
-                {activeKey === 'note' && children}
-              </Tabs.TabPane>
-            )}
-            {enabledModules.member_task && permissions.TASK_ADMIN && (
-              <Tabs.TabPane key="task" tab={formatMessage(memberMessages.label.task)}>
-                {activeKey === 'task' && children}
-              </Tabs.TabPane>
-            )}
-            <Tabs.TabPane key="coupon" tab={formatMessage(promotionMessages.term.coupon)}>
-              {activeKey === 'coupon' && children}
-            </Tabs.TabPane>
-            {enabledModules.contract && (
-              <Tabs.TabPane key="contract" tab={formatMessage(memberMessages.label.contract)}>
-                {activeKey === 'contract' && children}
-              </Tabs.TabPane>
-            )}
-            {currentUserRole === 'app-owner' && (
-              <Tabs.TabPane key="order" tab={formatMessage(memberMessages.label.order)}>
-                {activeKey === 'order' && children}
-              </Tabs.TabPane>
-            )}
-            {currentUserRole === 'app-owner' && (
-              <Tabs.TabPane key="permission" tab={formatMessage(memberMessages.label.permission)}>
-                {activeKey === 'permission' && children}
-              </Tabs.TabPane>
-            )}
-            {/* TODO: customizedTabPanes
-              {
-              renderMemberAdminLayout ? 
-              renderMemberAdminLayout(defaultMemberAdminLayout) :
-              defaultMemberAdminLayout.map(item=><div>{items.name}</div>)
-              }
-            { customizedTabPanes?.map(
-              customizedTabPane =>
-                (customizedTabPane.permissions?.length
-                  ? customizedTabPane.permissions?.some(permission => permissions[permission])
-                  : true) && (
-                  <Tabs.TabPane key={customizedTabPane.key} tab={customizedTabPane.text}>
-                    {activeKey === customizedTabPane.key && children}
-                  </Tabs.TabPane>
-                ),
-            )} */}
+            {renderMemberAdminLayout
+              ? renderMemberAdminLayout({
+                  enabledModules,
+                  permissions,
+                  currentUserRole,
+                  defaultTabPanes,
+                  children,
+                  activeKey,
+                })
+              : defaultTabPanes}
           </Tabs>
         </StyledLayoutContent>
       </Layout>
