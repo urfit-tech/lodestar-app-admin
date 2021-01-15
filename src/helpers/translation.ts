@@ -29,18 +29,22 @@ export const memberContractMessages = {
     servicePeriod: { id: 'memberContract.label.servicePeriod', defaultMessage: '服務期間' },
     approvedAt: { id: 'memberContract.label.approvedAt', defaultMessage: '審核通過日期' },
 
+    approvedApprovalAt: { id: 'memberContract.label.approvedApprovalAt', defaultMessage: '核准時間' },
     loanCancelAt: { id: 'memberContract.label.loanCancelAt', defaultMessage: '取消日期' },
+    refundApply: { id: 'memberContract.label.refundApply', defaultMessage: '提出退費' },
     refundApplyAt: { id: 'memberContract.label.refundApplyAt', defaultMessage: '提出退費日期' },
     payment: { id: 'memberContract.label.payment', defaultMessage: '付款' },
+    
     installmentPlan: { id: 'memberContract.label.installmentPlan', defaultMessage: '期數' },
     paymentNumber: { id: 'memberContract.label.paymentNumber', defaultMessage: '金流編號' },
-
     note: { id: 'memberContract.label.note', defaultMessage: '備註' },
     executors: { id: 'memberContract.label.executors', defaultMessage: '承辦人' },
     appointment: { id: 'memberContract.label.appointment', defaultMessage: '諮詢' },
+    
     price: { id: 'memberContract.label.price', defaultMessage: '金額' },
   }),
   status: defineMessages({
+    all: { id: 'memberContract.status.all', defaultMessage: '所有狀態' },
     applyRefund: { id: 'memberContract.status.applyRefund', defaultMessage: '提出退費' },
     pendingApproval: { id: 'memberContract.status.pendingApproval', defaultMessage: '審核中' },
     approvedApproval: { id: 'memberContract.status.approvedApproval', defaultMessage: '審核通過' },

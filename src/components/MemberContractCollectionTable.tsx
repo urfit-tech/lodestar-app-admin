@@ -1,6 +1,8 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { Button, Input, Skeleton, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
+import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
 import { commonMessages } from 'lodestar-app-admin/src/helpers/translation'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -8,29 +10,11 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { memberContractMessages } from '../helpers/translation'
 import { useMemberContract } from '../hooks'
+import MemberContractFilterSelect from './MemberContractFilterSelect'
 import MemberContractModal from './MemberContractModal'
+import MemberName from './MemberName'
 
-const StyledFilterButton = styled(Button)`
-  height: 36px;
-  width: 90px;
-`
-const StyledFilterInput = styled(Input)`
-  width: 188px;
-`
-
-type ColorType = 'gray' | 'warning' | 'success' | 'error'
-const StyledDot = styled.span<{ color: ColorType }>`
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: ${({ color }) => `var(--${color})`};
-`
-const StyledTime = styled.span`
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.6px;
-  color: var(--gray-dark);
-`
+type ColorType = 'gray' | 'error' | 'warning' | 'success'
 
 type DataSourceProps = {
   id: string
@@ -65,6 +49,33 @@ type DataSourceProps = {
     | null
   hasStudentCertification: boolean
 }
+
+const StyledFilterButton = styled(Button)`
+  height: 36px;
+  width: 90px;
+`
+const StyledFilterInput = styled(Input)`
+  width: 188px;
+`
+const StyledDot = styled.span<{ color: ColorType }>`
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: ${({ color }) => `var(--${color})`};
+`
+const StyledSubText = styled.span`
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  color: var(--gray-dark);
+`
+const StyledExecutor = styled.span`
+  &:nth-child(n + 2) {
+    &:before {
+      content: '/';
+    }
+  }
+`
 
 const MemberContractCollectionTable: React.FC<{
   variant: 'agreed' | 'revoked'
@@ -101,7 +112,7 @@ const MemberContractCollectionTable: React.FC<{
       ? v.refundAppliedAt
         ? {
             color: 'error',
-            text: formatMessage(memberContractMessages.label.refundApplyAt),
+            text: formatMessage(memberContractMessages.label.refundApply),
             time: v.refundAppliedAt,
           }
         : {
@@ -130,6 +141,7 @@ const MemberContractCollectionTable: React.FC<{
   }))
 
   const activeMemberContract = memberContracts.find(v => v.id === activeMemberContractId) || memberContracts[0]
+  const select = <MemberContractFilterSelect className="mb-4" />
 
   // TODO: extract getColumnSearchProps & column
   const getColumnSearchProps = ({
@@ -163,6 +175,7 @@ const MemberContractCollectionTable: React.FC<{
     ),
     filterIcon: <SearchOutlined />,
   })
+
   const columns: ColumnProps<DataSourceProps>[] = [
     {
       title: formatMessage(memberContractMessages.label.agreedAt),
@@ -217,7 +230,7 @@ const MemberContractCollectionTable: React.FC<{
                 <StyledDot color={status.color} className="mr-2" />
                 <div className="d-flex flex-column">
                   <div>{status.text}</div>
-                  <StyledTime>{status.time && moment(status.time).format('YYYY-MM-DD')}</StyledTime>
+                  <StyledSubText>{status.time && moment(status.time).format('YYYY-MM-DD')}</StyledSubText>
                 </div>
               </div>
             )
@@ -245,11 +258,7 @@ const MemberContractCollectionTable: React.FC<{
             name: searchText as string,
           }),
       }),
-      render: authorId => (
-        <div className="d-flex align-items-center justify-content-start">
-          <span className="pl-1">{authorId}</span>
-        </div>
-      ),
+      render: authorId => <MemberName memberId={authorId} />,
     },
     {
       title: `${formatMessage(memberContractMessages.label.studentName)} / Email`,
@@ -267,8 +276,12 @@ const MemberContractCollectionTable: React.FC<{
           }),
       }),
       render: member => (
-        <div className="d-flex align-items-center justify-content-start">
-          <span className="pl-1">{member.name}</span>
+        <div className="d-flex align-items-center">
+          <AvatarImage size="36px" src={member.pictureUrl} shape="circle" className="mr-3" />
+          <div className="d-flex flex-column">
+            <span>{member.name}</span>
+            <StyledSubText>{member.email}</StyledSubText>
+          </div>
         </div>
       ),
     },
@@ -306,11 +319,13 @@ const MemberContractCollectionTable: React.FC<{
       title: formatMessage(memberContractMessages.label.revenueShare),
       dataIndex: 'orderExecutors',
       key: 'orderExecutors',
-      render: orderExecutors => (
-        <div className="d-flex align-items-center justify-content-start">
-          <span className="pl-1">{orderExecutors.memberId}</span>
-        </div>
-      ),
+      render: orderExecutors =>
+        orderExecutors.map((v: { memberId: string; ratio: number }) => (
+          <StyledExecutor>
+            <MemberName memberId={v.memberId} />
+            <span>{v.ratio}</span>
+          </StyledExecutor>
+        )),
     },
     {
       title: formatMessage(memberContractMessages.label.proofOfEnrollment),
@@ -326,65 +341,78 @@ const MemberContractCollectionTable: React.FC<{
 
   if (!activeMemberContract) {
     return (
-      <Table columns={columns} dataSource={dataSource} scroll={{ x: columns.length * 16 * 12 }} pagination={false} />
+      <>
+        {select}
+        <AdminCard>
+          <Table
+            columns={columns}
+            dataSource={dataSource}
+            scroll={{ x: columns.length * 16 * 12 }}
+            pagination={false}
+          />
+        </AdminCard>
+      </>
     )
   }
 
   return (
     <>
-      <MemberContractModal
-        isRevoked={variant === 'revoked'}
-        memberContractId={activeMemberContract.id}
-        member={activeMemberContract.invoice}
-        purchasedItem={{
-          projectPlanName: activeMemberContract.projectPlanName,
-          price: activeMemberContract.price,
-          coinAmount: activeMemberContract.coinAmount,
-          couponCount: activeMemberContract.couponCount,
-          appointmentCreatorId: activeMemberContract.appointmentCreatorId,
-          referralMemberId: activeMemberContract.referralMemberId,
-          startedAt: activeMemberContract.startedAt,
-          endedAt: activeMemberContract.endedAt,
-        }}
-        status={{
-          approvedAt: activeMemberContract.approvedAt,
-          loanCancelAt: activeMemberContract.loanCanceledAt,
-          refundApplyAt: activeMemberContract.refundAppliedAt,
-        }}
-        paymentOptions={activeMemberContract.paymentOptions}
-        note={activeMemberContract.note}
-        orderExecutors={activeMemberContract.orderExecutors}
-        studentCertification={activeMemberContract.studentCertification}
-        renderTrigger={({ setVisible }) => (
-          <Table
-            columns={columns}
-            dataSource={dataSource}
-            scroll={{ x: columns.length * 16 * 12 }}
-            onRow={record => ({
-              onClick: () => {
-                setActiveMemberContractId(record.id)
-                setVisible(true)
-              },
-            })}
-            pagination={false}
-          />
+      {select}
+      <AdminCard>
+        <MemberContractModal
+          isRevoked={variant === 'revoked'}
+          memberContractId={activeMemberContract.id}
+          member={activeMemberContract.invoice}
+          purchasedItem={{
+            projectPlanName: activeMemberContract.projectPlanName,
+            price: activeMemberContract.price,
+            coinAmount: activeMemberContract.coinAmount,
+            couponCount: activeMemberContract.couponCount,
+            appointmentCreatorId: activeMemberContract.appointmentCreatorId,
+            referralMemberId: activeMemberContract.referralMemberId,
+            startedAt: activeMemberContract.startedAt,
+            endedAt: activeMemberContract.endedAt,
+          }}
+          status={{
+            approvedAt: activeMemberContract.approvedAt,
+            loanCancelAt: activeMemberContract.loanCanceledAt,
+            refundApplyAt: activeMemberContract.refundAppliedAt,
+          }}
+          paymentOptions={activeMemberContract.paymentOptions}
+          note={activeMemberContract.note}
+          orderExecutors={activeMemberContract.orderExecutors}
+          studentCertification={activeMemberContract.studentCertification}
+          renderTrigger={({ setVisible }) => (
+            <Table
+              columns={columns}
+              dataSource={dataSource}
+              scroll={{ x: columns.length * 16 * 12 }}
+              onRow={record => ({
+                onClick: () => {
+                  setActiveMemberContractId(record.id)
+                  setVisible(true)
+                },
+              })}
+              pagination={false}
+            />
+          )}
+        />
+        {loadMoreMemberContracts && (
+          <div className="text-center mt-4">
+            <Button
+              loading={isLoading}
+              onClick={() => {
+                setIsLoading(true)
+                loadMoreMemberContracts()
+                  .catch()
+                  .finally(() => setIsLoading(false))
+              }}
+            >
+              {formatMessage(commonMessages.ui.showMore)}
+            </Button>
+          </div>
         )}
-      />
-      {loadMoreMemberContracts && (
-        <div className="text-center mt-4">
-          <Button
-            loading={isLoading}
-            onClick={() => {
-              setIsLoading(true)
-              loadMoreMemberContracts()
-                .catch()
-                .finally(() => setIsLoading(false))
-            }}
-          >
-            {formatMessage(commonMessages.ui.showMore)}
-          </Button>
-        </div>
-      )}
+      </AdminCard>
     </>
   )
 }

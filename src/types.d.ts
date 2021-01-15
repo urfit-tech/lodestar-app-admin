@@ -4,6 +4,32 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_MEMBER_NAME
+// ====================================================
+
+export interface GET_MEMBER_NAME_member_by_pk {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_NAME {
+  /**
+   * fetch data from the table: "member" using primary key columns
+   */
+  member_by_pk: GET_MEMBER_NAME_member_by_pk | null;
+}
+
+export interface GET_MEMBER_NAMEVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER_CONTRACT
 // ====================================================
 

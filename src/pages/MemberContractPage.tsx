@@ -1,7 +1,6 @@
 import Icon from '@ant-design/icons'
 import { Tabs } from 'antd'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
-import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -40,9 +39,7 @@ const MemberContractPage: React.FC = () => {
       <Tabs>
         {tabContents.map(v => (
           <Tabs.TabPane key={v.key} tab={v.tab}>
-            <AdminCard>
-              <MemberContractCollectionTable variant={v.key} />
-            </AdminCard>
+            <MemberContractCollectionTable variant={v.key} />
           </Tabs.TabPane>
         ))}
       </Tabs>
