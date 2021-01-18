@@ -30,12 +30,11 @@ type DataSourceProps = {
     time: Date | null
   }
   startedAt: Date
-  authorName: string
+  authorName: string | null
   member: {
-    id: string
-    name: string
+    name: string | null
     pictureUrl: string | null
-    email: string
+    email: string | null
   }
   price: number | null
   projectPlanName: string | null
@@ -108,12 +107,10 @@ const MemberContractCollectionTable: React.FC<{
     return <Skeleton />
   }
 
-  const activeMemberContract = memberContracts.find(v => v.id === activeMemberContractId) || memberContracts[0]
+  const activeMemberContract = memberContracts.find(v => v.id === activeMemberContractId)
 
   const select = (
     <MemberContractFilterSelector
-      isAgreed={variant === 'agreed'}
-      status={filter.status}
       onSetStatus={status => {
         setFilter({ ...filter, status })
       }}
@@ -161,7 +158,7 @@ const MemberContractCollectionTable: React.FC<{
     approvedAt: v.approvedAt,
     refundAppliedAt: v.refundAppliedAt,
     startedAt: v.startedAt,
-    authorName: v.author.name,
+    authorName: v.authorName,
     member: v.member,
     price: v.price,
     projectPlanName: v.projectPlanName,
@@ -364,49 +361,33 @@ const MemberContractCollectionTable: React.FC<{
     },
   ]
 
-  if (!activeMemberContract) {
-    return (
-      <>
-        {select}
-        <AdminCard>
-          <Table
-            columns={columns}
-            dataSource={dataSource}
-            scroll={{ x: columns.length * 16 * 12 }}
-            pagination={false}
-          />
-        </AdminCard>
-      </>
-    )
-  }
-
   return (
     <>
       {select}
       <AdminCard>
         <MemberContractModal
           isRevoked={variant === 'revoked'}
-          memberContractId={activeMemberContract.id}
-          member={activeMemberContract.invoice}
+          memberContractId={activeMemberContract?.id}
+          member={activeMemberContract?.invoice}
           purchasedItem={{
-            projectPlanName: activeMemberContract.projectPlanName,
-            price: activeMemberContract.price,
-            coinAmount: activeMemberContract.coinAmount,
-            couponCount: activeMemberContract.couponCount,
-            appointmentCreatorId: activeMemberContract.appointmentCreatorId,
-            referralMemberId: activeMemberContract.referralMemberId,
-            startedAt: activeMemberContract.startedAt,
-            endedAt: activeMemberContract.endedAt,
+            projectPlanName: activeMemberContract?.projectPlanName,
+            price: activeMemberContract?.price,
+            coinAmount: activeMemberContract?.coinAmount,
+            couponCount: activeMemberContract?.couponCount,
+            appointmentCreatorName: activeMemberContract?.appointmentCreatorName,
+            referral: activeMemberContract?.referral,
+            startedAt: activeMemberContract?.startedAt,
+            endedAt: activeMemberContract?.endedAt,
           }}
           status={{
-            approvedAt: activeMemberContract.approvedAt,
-            loanCancelAt: activeMemberContract.loanCanceledAt,
-            refundApplyAt: activeMemberContract.refundAppliedAt,
+            approvedAt: activeMemberContract?.approvedAt,
+            loanCancelAt: activeMemberContract?.loanCanceledAt,
+            refundApplyAt: activeMemberContract?.refundAppliedAt,
           }}
-          paymentOptions={activeMemberContract.paymentOptions}
-          note={activeMemberContract.note}
-          orderExecutors={activeMemberContract.orderExecutors}
-          studentCertification={activeMemberContract.studentCertification}
+          paymentOptions={activeMemberContract?.paymentOptions}
+          note={activeMemberContract?.note}
+          orderExecutors={activeMemberContract?.orderExecutors}
+          studentCertification={activeMemberContract?.studentCertification}
           renderTrigger={({ setVisible }) => (
             <Table
               columns={columns}

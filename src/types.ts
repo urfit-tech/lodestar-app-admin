@@ -3,15 +3,11 @@ export type DateRangeType = 'agreed_at' | 'started_at' | 'revoked_at'
 
 export type MemberContractProps = {
   id: string
-  author: {
-    id: string
-    name: string
-  }
+  authorName: string | null
   member: {
-    id: string
-    name: string
+    name: string | null
     pictureUrl: string | null
-    email: string
+    email: string | null
   }
   startedAt: Date
   endedAt: Date
@@ -20,8 +16,11 @@ export type MemberContractProps = {
   approvedAt: Date | null
   loanCanceledAt: Date | null
   refundAppliedAt: Date | null
-  referralMemberId: string | null
-  appointmentCreatorId: string | null
+  referral: {
+    name: string | null
+    email: string | null
+  }
+  appointmentCreatorName: string | null
   studentCertification: string | null
   invoice: {
     name: string

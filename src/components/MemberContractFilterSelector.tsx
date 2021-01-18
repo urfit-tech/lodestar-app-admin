@@ -1,5 +1,4 @@
 import { DatePicker, Select } from 'antd'
-import { commonMessages } from 'lodestar-app-admin/src/helpers/translation'
 import moment from 'moment'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -12,8 +11,6 @@ const StyledSelect = styled(Select)`
 `
 
 const MemberContractFilterSelector: React.FC<{
-  isAgreed: boolean
-  status: StatusType
   dateRangeType: DateRangeType
   startedAt: Date | null
   endedAt: Date | null
@@ -21,35 +18,10 @@ const MemberContractFilterSelector: React.FC<{
   onSetDateRangeType?: (dateType: DateRangeType) => void
   onSetRange?: (time: { startedAt: Date | null; endedAt: Date | null }) => void
   className?: string
-}> = ({
-  isAgreed,
-  status,
-  dateRangeType,
-  startedAt,
-  endedAt,
-  onSetStatus,
-  onSetDateRangeType,
-  onSetRange,
-  className,
-}) => {
+}> = ({ dateRangeType, startedAt, endedAt, onSetStatus, onSetDateRangeType, onSetRange, className }) => {
   const { formatMessage } = useIntl()
   return (
     <div className={className}>
-      {isAgreed && (
-        <StyledSelect className="mr-2" defaultValue={status} onSelect={value => onSetStatus?.(value as StatusType)}>
-          <Select.Option value="">{formatMessage(memberContractMessages.status.all)}</Select.Option>
-          <Select.Option value={'pending-approval'}>
-            {formatMessage(memberContractMessages.status.pendingApproval)}
-          </Select.Option>
-          <Select.Option value={'approved-approval'}>
-            {formatMessage(memberContractMessages.status.approvedApproval)}
-          </Select.Option>
-          <Select.Option value={'applied-refund'}>
-            {formatMessage(memberContractMessages.status.applyRefund)}
-          </Select.Option>
-          <Select.Option value={'canceled-loan'}>{formatMessage(commonMessages.ui.cancel)}</Select.Option>
-        </StyledSelect>
-      )}
       <StyledSelect defaultValue={dateRangeType} onSelect={value => onSetDateRangeType?.(value as DateRangeType)}>
         <Select.Option value={'agreed_at'}>{formatMessage(memberContractMessages.label.agreedAt)}</Select.Option>
         <Select.Option value={'started_at'}>
