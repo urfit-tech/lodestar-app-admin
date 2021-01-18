@@ -1,5 +1,5 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { Button, Input, Skeleton, Table } from 'antd'
+import { Button, Checkbox, Input, Skeleton, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
 import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
@@ -84,16 +84,16 @@ const MemberContractCollectionTable: React.FC<{
   const [filter, setFilter] = useState<{
     authorName: string | null
     memberNameAndEmail: string | null
-    status: StatusType
+    status: StatusType[]
     dateRangeType: DateRangeType
     startedAt: Date | null
     endedAt: Date | null
   }>({
     authorName: null,
     memberNameAndEmail: null,
-    status: '',
+    status: [],
     dateRangeType: 'agreed_at',
-    startedAt: moment().startOf('month').toDate(),
+    startedAt: moment(1997).startOf('month').toDate(),
     endedAt: moment().endOf('month').toDate(),
   })
   const { loadingMemberContracts, errorMemberContracts, memberContracts, loadMoreMemberContracts } = useMemberContract({
@@ -111,9 +111,6 @@ const MemberContractCollectionTable: React.FC<{
 
   const select = (
     <MemberContractFilterSelector
-      onSetStatus={status => {
-        setFilter({ ...filter, status })
-      }}
       dateRangeType={filter.dateRangeType}
       onSetDateRangeType={dateRangeType => {
         setFilter({ ...filter, dateRangeType })
@@ -231,25 +228,45 @@ const MemberContractCollectionTable: React.FC<{
           title: formatMessage(memberContractMessages.label.status),
           dataIndex: 'status',
           key: 'status',
-          filters: [
-            {
-              text: formatMessage(memberContractMessages.status.approvedApproval),
-              value: formatMessage(memberContractMessages.status.approvedApproval),
-            },
-            {
-              text: formatMessage(memberContractMessages.status.applyRefund),
-              value: formatMessage(memberContractMessages.status.applyRefund),
-            },
-            {
-              text: formatMessage(memberContractMessages.status.pendingApproval),
-              value: formatMessage(memberContractMessages.status.pendingApproval),
-            },
-            {
-              text: formatMessage(commonMessages.ui.cancel),
-              value: formatMessage(commonMessages.ui.cancel),
-            },
-          ],
-          onFilter: value => true,
+          filterDropdown: () => {
+            const statuses = [
+              {
+                text: formatMessage(memberContractMessages.status.pendingApproval),
+                value: 'pending',
+              },
+              {
+                text: formatMessage(memberContractMessages.status.approvedApproval),
+                value: 'approved',
+              },
+              {
+                text: formatMessage(memberContractMessages.status.applyRefund),
+                value: 'refund-applied',
+              },
+              {
+                text: formatMessage(commonMessages.ui.cancel),
+                value: 'loan-canceled',
+              },
+            ]
+            return (
+              <div>
+                <Checkbox.Group
+                  value={filter.status}
+                  onChange={value => setFilter({ ...filter, status: value as StatusType[] })}
+                >
+                  {statuses.map(v => (
+                    <Checkbox key={v.value} value={v.value} className="d-block mx-2 mb-2">
+                      {v.text}
+                    </Checkbox>
+                  ))}
+                </Checkbox.Group>
+                <div className="p-2 text-right">
+                  <Button size="small" onClick={() => setFilter({ ...filter, status: [] })}>
+                    {formatMessage(commonMessages.ui.reset)}
+                  </Button>
+                </div>
+              </div>
+            )
+          },
           render: (status, record) => {
             return (
               <div className="d-flex flex-row align-items-center">

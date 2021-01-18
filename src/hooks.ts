@@ -14,37 +14,27 @@ export const useMemberContract = ({
 }: {
   isRevoked: boolean
   memberNameAndEmail: string | null
-  status: StatusType
+  status: StatusType[]
   dateRangeType: DateRangeType
   authorName: string | null
   startedAt: Date | null
   endedAt: Date | null
 }) => {
   const condition: types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['condition'] = {
-    // agreed_at: { _is_null: false },
-    // revoked_at: { _is_null: !isRevoked },
-    // author: { name: { _ilike: authorName && `%${authorName}%` } },
-    // _and:
-    //   status === 'pending-approval'
-    //     ? [{ _not: { options: { _has_keys_any: ['approvedAt', 'refundAppliedAt', 'loanCanceledAt'] } } }]
-    //     : status === 'approved-approval'
-    //     ? [{ options: { _has_key: 'approvedAt' } }, { _not: { options: { _has_key: 'refundAppliedAt' } } }]
-    //     : status === 'applied-refund'
-    //     ? [{ options: { _has_keys_all: ['approvedAt', 'refundAppliedAt'] } }]
-    //     : status === 'canceled-loan'
-    //     ? [{ options: { _has_key: 'loanCanceledAt' } }]
-    //     : null,
-    // [dateRangeType]: {
-    //   _gt: startedAt,
-    //   _lte: endedAt,
-    // },
-    // member: {
-    //   _or: [
-    //     { name: { _ilike: memberNameAndEmail && `%${memberNameAndEmail}%` } },
-    //     { email: { _ilike: memberNameAndEmail && `%${memberNameAndEmail}%` } },
-    //   ],
-    // },
+    agreed_at: { _is_null: false },
+    revoked_at: { _is_null: !isRevoked },
+    author_name: { _ilike: authorName && `%${authorName}%` },
+    [dateRangeType]: {
+      _gt: startedAt,
+      _lte: endedAt,
+    },
+    status: { _in: status.length ? status : undefined },
+    _or: [
+      { member_name: { _ilike: memberNameAndEmail && `%${memberNameAndEmail}%` } },
+      { member_email: { _ilike: memberNameAndEmail && `%${memberNameAndEmail}%` } },
+    ],
   }
+
   const { loading, data, error, refetch, fetchMore } = useQuery<
     types.GET_MEMBER_PRIVATE_TEACH_CONTRACT,
     types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables

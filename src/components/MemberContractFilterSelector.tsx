@@ -22,20 +22,25 @@ const MemberContractFilterSelector: React.FC<{
   const { formatMessage } = useIntl()
   return (
     <div className={className}>
-      <StyledSelect defaultValue={dateRangeType} onSelect={value => onSetDateRangeType?.(value as DateRangeType)}>
+      <StyledSelect
+        defaultValue={dateRangeType}
+        onSelect={value => {
+          onSetDateRangeType?.(value as DateRangeType)
+        }}
+      >
         <Select.Option value={'agreed_at'}>{formatMessage(memberContractMessages.label.agreedAt)}</Select.Option>
         <Select.Option value={'started_at'}>
           {formatMessage(memberContractMessages.label.serviceStartedAt)}
         </Select.Option>
-        {/* <Select.Option value={'approvedAt'}>
+        <Select.Option value={'approved_at'}>
           {formatMessage(memberContractMessages.label.approvedApprovalAt)}
         </Select.Option>
-        <Select.Option value={'refundAppliedAt'}>
+        <Select.Option value={'refund_applied_at'}>
           {formatMessage(memberContractMessages.status.applyRefund)}
         </Select.Option>
-        <Select.Option value={'loanCanceledAt'}>
+        <Select.Option value={'loan_canceled_at'}>
           {formatMessage(memberContractMessages.label.loanCancelAt)}
-        </Select.Option> */}
+        </Select.Option>
         <Select.Option value={'revoked_at'}>{formatMessage(memberContractMessages.label.revokedAt)}</Select.Option>
       </StyledSelect>
       <DatePicker.RangePicker

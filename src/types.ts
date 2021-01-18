@@ -1,4 +1,4 @@
-export type StatusType = 'pending-approval' | 'approved-approval' | 'applied-refund' | 'canceled-loan' | ''
+export type StatusType = 'pending' | 'approved' | 'refund-applied' | 'loan-canceled'
 export type DateRangeType = 'agreed_at' | 'started_at' | 'revoked_at'
 
 export type MemberContractProps = {

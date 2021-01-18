@@ -77,7 +77,7 @@ export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT {
 }
 
 export interface GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables {
-  condition?: member_contract_bool_exp | null;
+  condition?: xuemi_member_private_teach_contract_bool_exp | null;
   limit?: number | null;
 }
 
@@ -3057,6 +3057,38 @@ export interface voucher_status_bool_exp {
   used?: Boolean_comparison_exp | null;
   voucher?: voucher_bool_exp | null;
   voucher_id?: uuid_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "xuemi.member_private_teach_contract". All fields are combined with a logical 'AND'.
+ */
+export interface xuemi_member_private_teach_contract_bool_exp {
+  _and?: (xuemi_member_private_teach_contract_bool_exp | null)[] | null;
+  _not?: xuemi_member_private_teach_contract_bool_exp | null;
+  _or?: (xuemi_member_private_teach_contract_bool_exp | null)[] | null;
+  agreed_at?: timestamptz_comparison_exp | null;
+  appointment_creator_name?: String_comparison_exp | null;
+  approved_at?: String_comparison_exp | null;
+  author_id?: String_comparison_exp | null;
+  author_name?: String_comparison_exp | null;
+  contract_id?: uuid_comparison_exp | null;
+  ended_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  loan_canceled_at?: String_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_email?: String_comparison_exp | null;
+  member_id?: String_comparison_exp | null;
+  member_name?: String_comparison_exp | null;
+  member_picture_url?: String_comparison_exp | null;
+  note?: String_comparison_exp | null;
+  referral_email?: String_comparison_exp | null;
+  referral_name?: String_comparison_exp | null;
+  refund_applied_at?: String_comparison_exp | null;
+  revoked_at?: timestamptz_comparison_exp | null;
+  started_at?: timestamptz_comparison_exp | null;
+  status?: String_comparison_exp | null;
+  student_certification?: String_comparison_exp | null;
+  values?: jsonb_comparison_exp | null;
 }
 
 //==============================================================
