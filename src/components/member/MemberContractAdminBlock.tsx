@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/react-hooks'
-import { Button, Card } from 'antd'
+import { Button, Card, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React from 'react'
@@ -43,7 +43,11 @@ const MemberContractAdminBlock: React.FC<{
   memberId: string
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
-  const { contracts } = useMemberContracts(memberId)
+  const { loadingContracts, errorContracts, contracts } = useMemberContracts(memberId)
+
+  if (loadingContracts || errorContracts || !contracts) {
+    return <Skeleton active />
+  }
 
   return (
     <div className="container">
