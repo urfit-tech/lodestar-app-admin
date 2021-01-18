@@ -91,7 +91,7 @@ const MemberExportModal: React.FC<{
           >
             <Row>
               {options.map(v => (
-                <Col span={8}>
+                <Col span={8} key={v.value}>
                   <Checkbox value={v.value}>{v.label}</Checkbox>
                 </Col>
               ))}
