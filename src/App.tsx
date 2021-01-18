@@ -9,6 +9,7 @@ import { ReactComponent as UserCopyIcon } from './images/icons/user-copy.svg'
 import MemberCollectionAdminPage from './pages/MemberCollectionAdminPage'
 import MemberContractPage from './pages/MemberContractPage'
 import MemberNoteAdminPage from './pages/MemberNoteAdminPage'
+import SalesCallPage from './pages/SalesCallPage'
 import TermsPtPage from './pages/TermsPtPage'
 
 const App = () => {
@@ -81,6 +82,11 @@ const App = () => {
         member_contract_collection: {
           path: '/member-contracts',
           pageName: <MemberContractPage />,
+          authenticated: true,
+        },
+        sales_call: {
+          path: '/sales-call',
+          pageName: <SalesCallPage />,
           authenticated: true,
         },
         terms: {

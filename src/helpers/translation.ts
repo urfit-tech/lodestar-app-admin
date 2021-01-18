@@ -56,3 +56,9 @@ export const memberContractMessages = {
     approvedApproval: { id: 'memberContract.status.approvedApproval', defaultMessage: '審核通過' },
   }),
 }
+
+export const salesMessages = {
+  label: defineMessages({
+    salesCall: { id: 'sales.label.salesCall', defaultMessage: '業務撥打' },
+  }),
+}
