@@ -6544,6 +6544,86 @@ export interface GET_APPOINTMENT_ENROLLMENTSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_ATTEND
+// ====================================================
+
+export interface GET_ATTEND_attend {
+  __typename: "attend";
+  id: any;
+  ended_at: any | null;
+}
+
+export interface GET_ATTEND {
+  /**
+   * fetch data from the table: "attend"
+   */
+  attend: GET_ATTEND_attend[];
+}
+
+export interface GET_ATTENDVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_ATTEND
+// ====================================================
+
+export interface INSERT_ATTEND_insert_attend_one {
+  __typename: "attend";
+  id: any;
+}
+
+export interface INSERT_ATTEND {
+  /**
+   * insert a single row into the table: "attend"
+   */
+  insert_attend_one: INSERT_ATTEND_insert_attend_one | null;
+}
+
+export interface INSERT_ATTENDVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_ATTEND
+// ====================================================
+
+export interface UPDATE_ATTEND_update_attend {
+  __typename: "attend_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_ATTEND {
+  /**
+   * update data of the table: "attend"
+   */
+  update_attend: UPDATE_ATTEND_update_attend | null;
+}
+
+export interface UPDATE_ATTENDVariables {
+  memberId: string;
+  endedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_POST
 // ====================================================
 
@@ -12522,6 +12602,7 @@ export enum member_phone_constraint {
 export enum member_phone_update_column {
   created_at = "created_at",
   id = "id",
+  is_primary = "is_primary",
   member_id = "member_id",
   phone = "phone",
   updated_at = "updated_at",
@@ -18484,6 +18565,7 @@ export interface member_contract_bool_exp {
   agreed_at?: timestamptz_comparison_exp | null;
   agreed_ip?: String_comparison_exp | null;
   agreed_options?: jsonb_comparison_exp | null;
+  author?: member_bool_exp | null;
   author_id?: String_comparison_exp | null;
   contract?: contract_bool_exp | null;
   contract_id?: uuid_comparison_exp | null;
@@ -18505,6 +18587,7 @@ export interface member_contract_insert_input {
   agreed_at?: any | null;
   agreed_ip?: string | null;
   agreed_options?: any | null;
+  author?: member_obj_rel_insert_input | null;
   author_id?: string | null;
   contract?: contract_obj_rel_insert_input | null;
   contract_id?: any | null;
@@ -19200,6 +19283,7 @@ export interface member_phone_bool_exp {
   _or?: (member_phone_bool_exp | null)[] | null;
   created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  is_primary?: Boolean_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   phone?: String_comparison_exp | null;
@@ -19212,6 +19296,7 @@ export interface member_phone_bool_exp {
 export interface member_phone_insert_input {
   created_at?: any | null;
   id?: any | null;
+  is_primary?: boolean | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   phone?: string | null;

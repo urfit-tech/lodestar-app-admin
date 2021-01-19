@@ -8,6 +8,7 @@ import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import LanguageContext from '../../contexts/LanguageContext'
 import settings from '../../settings'
+import AttendButton from '../attend/AttendButton'
 import AuthModal, { AuthModalContext } from '../auth/AuthModal'
 import Footer from '../common/Footer'
 import MemberProfileButton from '../common/MemberProfileButton'
@@ -85,9 +86,8 @@ const DefaultLayout: React.FC<{
 
 export const DefaultLayoutHeader: React.FC<{
   renderTitle?: () => React.ReactNode
-  renderExtraNav?: () => React.ReactNode
-}> = ({ renderTitle, renderExtraNav }) => {
-  const { currentMemberId } = useAuth()
+}> = ({ renderTitle }) => {
+  const { currentMemberId, permissions } = useAuth()
   const { enabledModules, id: appId } = useApp()
   const { currentLanguage, setCurrentLanguage } = useContext(LanguageContext)
 
@@ -117,7 +117,6 @@ export const DefaultLayoutHeader: React.FC<{
       )}
 
       <div className="d-flex align-items-center">
-        {renderExtraNav && renderExtraNav()}
         {enabledModules.locale && (
           <>
             <Dropdown
@@ -161,6 +160,9 @@ export const DefaultLayoutHeader: React.FC<{
             </Dropdown>
             <Divider type="vertical" />
           </>
+        )}
+        {currentMemberId && enabledModules.attend && permissions.MEMBER_ATTENDANT && (
+          <AttendButton memberId={currentMemberId} />
         )}
         {currentMemberId && <NotificationDropdown memberId={currentMemberId} />}
         {currentMemberId && <MemberProfileButton memberId={currentMemberId} />}
