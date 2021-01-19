@@ -1,6 +1,7 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Input, Skeleton, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
+import { SorterResult, SortOrder } from 'antd/lib/table/interface'
 import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
 import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
 import { commonMessages } from 'lodestar-app-admin/src/helpers/translation'
@@ -10,7 +11,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { memberContractMessages } from '../helpers/translation'
 import { useMemberContract } from '../hooks'
-import { DateRangeType, StatusType } from '../types'
+import { DateRangeType, StatusType } from '../types/memberContract'
 import MemberContractFilterSelector from './MemberContractFilterSelector'
 import MemberContractModal from './MemberContractModal'
 import MemberName from './MemberName'
@@ -96,8 +97,18 @@ const MemberContractCollectionTable: React.FC<{
     startedAt: moment(1997).startOf('month').toDate(),
     endedAt: moment().endOf('month').toDate(),
   })
+  const [sortOrder, setSortOrder] = useState<{
+    agreedAt: SortOrder
+    revokedAt: SortOrder
+    startedAt: SortOrder
+  }>({
+    agreedAt: 'descend',
+    revokedAt: null,
+    startedAt: null,
+  })
   const { loadingMemberContracts, errorMemberContracts, memberContracts, loadMoreMemberContracts } = useMemberContract({
     ...filter,
+    sortOrder,
     isRevoked: variant === 'revoked',
   })
   const [isLoading, setIsLoading] = useState(false)
@@ -117,9 +128,7 @@ const MemberContractCollectionTable: React.FC<{
       }}
       startedAt={filter.startedAt}
       endedAt={filter.endedAt}
-      onSetRange={({ startedAt, endedAt }) => {
-        setFilter({ ...filter, startedAt, endedAt })
-      }}
+      onSetRange={({ startedAt, endedAt }) => setFilter({ ...filter, startedAt, endedAt })}
       className="mb-4"
     />
   )
@@ -205,7 +214,7 @@ const MemberContractCollectionTable: React.FC<{
       title: formatMessage(memberContractMessages.label.agreedAt),
       dataIndex: 'agreedAt',
       key: 'agreedAt',
-      sorter: (a, b) => 1,
+      sorter: true,
       render: agreedAt => (
         <div className="d-flex align-items-center justify-content-start">
           <span className="pl-1">{moment(agreedAt).format('YYYY-MM-DD')}</span>
@@ -217,7 +226,7 @@ const MemberContractCollectionTable: React.FC<{
           title: formatMessage(memberContractMessages.label.revokedAt),
           dataIndex: 'revokedAt',
           key: 'revokedAt',
-          sorter: (a, b) => 1,
+          sorter: true,
           render: revokedAt => (
             <div className="d-flex align-items-center justify-content-start">
               <span className="pl-1">{moment(revokedAt).format('YYYY-MM-DD')}</span>
@@ -267,7 +276,7 @@ const MemberContractCollectionTable: React.FC<{
               </div>
             )
           },
-          render: (status, record) => {
+          render: status => {
             return (
               <div className="d-flex flex-row align-items-center">
                 <StyledDot color={status.color} className="mr-2" />
@@ -283,7 +292,7 @@ const MemberContractCollectionTable: React.FC<{
       title: formatMessage(memberContractMessages.label.serviceStartedAt),
       dataIndex: 'startedAt',
       key: 'startedAt',
-      sorter: (a, b) => 1,
+      sorter: true,
       render: startedAt => <span>{moment(startedAt).format('YYYY-MM-DD HH:MM')}</span>,
     },
     {
@@ -406,7 +415,7 @@ const MemberContractCollectionTable: React.FC<{
           orderExecutors={activeMemberContract?.orderExecutors}
           studentCertification={activeMemberContract?.studentCertification}
           renderTrigger={({ setVisible }) => (
-            <Table
+            <Table<DataSourceProps>
               columns={columns}
               dataSource={dataSource}
               scroll={{ x: columns.length * 16 * 12 }}
@@ -416,6 +425,15 @@ const MemberContractCollectionTable: React.FC<{
                   setVisible(true)
                 },
               })}
+              onChange={(pagination, filters, sorter) => {
+                const newSorter = sorter as SorterResult<DataSourceProps>
+                setSortOrder({
+                  agreedAt: null,
+                  revokedAt: null,
+                  startedAt: null,
+                  [newSorter.field as 'agreedAt' | 'revokedAt' | 'startedAt']: newSorter.order || null,
+                })
+              }}
               pagination={false}
             />
           )}

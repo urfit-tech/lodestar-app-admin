@@ -4,7 +4,7 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { memberContractMessages } from '../helpers/translation'
-import { DateRangeType, StatusType } from '../types'
+import { DateRangeType, StatusType } from '../types/memberContract'
 
 const StyledSelect = styled(Select)`
   width: 140px;

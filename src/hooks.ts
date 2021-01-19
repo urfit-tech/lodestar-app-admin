@@ -1,7 +1,8 @@
 import { useQuery } from '@apollo/react-hooks'
+import { SortOrder } from 'antd/lib/table/interface'
 import gql from 'graphql-tag'
-import { DateRangeType, MemberContractProps, StatusType } from './types'
-import types from './types.d'
+import { DateRangeType, MemberContractProps, StatusType } from './types/memberContract'
+import { GET_MEMBER_PRIVATE_TEACH_CONTRACT, GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables, order_by } from './types.d'
 
 export const useMemberContract = ({
   isRevoked,
@@ -11,6 +12,7 @@ export const useMemberContract = ({
   dateRangeType,
   startedAt,
   endedAt,
+  sortOrder,
 }: {
   isRevoked: boolean
   memberNameAndEmail: string | null
@@ -19,8 +21,13 @@ export const useMemberContract = ({
   authorName: string | null
   startedAt: Date | null
   endedAt: Date | null
+  sortOrder: {
+    agreedAt: SortOrder
+    revokedAt: SortOrder
+    startedAt: SortOrder
+  }
 }) => {
-  const condition: types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['condition'] = {
+  const condition: GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['condition'] = {
     agreed_at: { _is_null: false },
     revoked_at: { _is_null: !isRevoked },
     author_name: { _ilike: authorName && `%${authorName}%` },
@@ -35,13 +42,23 @@ export const useMemberContract = ({
     ],
   }
 
+  const orderBy: GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['orderBy'] = {
+    agreed_at: sortOrder.agreedAt && (sortOrder.agreedAt === 'descend' ? order_by.desc : order_by.asc),
+    revoked_at: sortOrder.revokedAt && (sortOrder.revokedAt === 'descend' ? order_by.desc : order_by.asc),
+    started_at: sortOrder.startedAt && (sortOrder.startedAt === 'descend' ? order_by.desc : order_by.asc),
+  }
+
   const { loading, data, error, refetch, fetchMore } = useQuery<
-    types.GET_MEMBER_PRIVATE_TEACH_CONTRACT,
-    types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables
+    GET_MEMBER_PRIVATE_TEACH_CONTRACT,
+    GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables
   >(
     gql`
-      query GET_MEMBER_PRIVATE_TEACH_CONTRACT($condition: xuemi_member_private_teach_contract_bool_exp, $limit: Int) {
-        xuemi_member_private_teach_contract(where: $condition, limit: $limit) {
+      query GET_MEMBER_PRIVATE_TEACH_CONTRACT(
+        $condition: xuemi_member_private_teach_contract_bool_exp
+        $limit: Int
+        $orderBy: [xuemi_member_private_teach_contract_order_by!]
+      ) {
+        xuemi_member_private_teach_contract(where: $condition, limit: $limit, order_by: $orderBy) {
           id
           author_name
           member_name
@@ -71,10 +88,12 @@ export const useMemberContract = ({
     {
       variables: {
         condition,
+        orderBy,
         limit: 10,
       },
     },
   )
+
   const memberContracts: MemberContractProps[] =
     loading || error || !data
       ? []
@@ -118,22 +137,42 @@ export const useMemberContract = ({
         }))
 
   const loadMoreMemberContracts =
-    (data?.xuemi_member_private_teach_contract_aggregate.aggregate?.count || 0) >= memberContracts.length
+    (data?.xuemi_member_private_teach_contract_aggregate.aggregate?.count || 0) >= 10
       ? () =>
           fetchMore({
             variables: {
+              orderBy,
               condition: {
                 ...condition,
-                started_at: { _lt: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.started_at },
+                agreed_at: orderBy.agreed_at
+                  ? {
+                      [orderBy.agreed_at === 'desc' ? '_lt' : '_gt']: data?.xuemi_member_private_teach_contract.slice(
+                        -1,
+                      )[0]?.agreed_at,
+                    }
+                  : { _is_null: false },
+                revoked_at: orderBy.revoked_at
+                  ? {
+                      [orderBy.revoked_at === 'desc' ? '_lt' : '_gt']: data?.xuemi_member_private_teach_contract.slice(
+                        -1,
+                      )[0]?.revoked_at,
+                    }
+                  : { _is_null: !isRevoked },
+                started_at: orderBy.started_at
+                  ? {
+                      [orderBy.started_at === 'desc' ? '_lt' : '_gt']: data?.xuemi_member_private_teach_contract.slice(
+                        -1,
+                      )[0]?.started_at,
+                    }
+                  : undefined,
               },
-              limit: 10,
             },
             updateQuery: (prev, { fetchMoreResult }) => {
               if (!fetchMoreResult) {
                 return prev
               }
               return Object.assign({}, prev, {
-                member_contract: [
+                xuemi_member_private_teach_contract: [
                   ...prev.xuemi_member_private_teach_contract,
                   ...fetchMoreResult.xuemi_member_private_teach_contract,
                 ],
