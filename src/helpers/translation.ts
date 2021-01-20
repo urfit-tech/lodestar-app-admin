@@ -183,7 +183,7 @@ export const commonMessages = {
     amountParticipants: { id: 'common.label.amountParticipants', defaultMessage: '{amount} 人' },
     introductionVideo: { id: 'common.label.introductionVideo', defaultMessage: '介紹影片' },
     planTitle: { id: 'common.label.planTitle', defaultMessage: '方案名稱' },
-    memberIdentity:{id:'common.label.memberIdentity',defaultMessage:'會員身份'},
+    memberIdentity: { id: 'common.label.memberIdentity', defaultMessage: '會員身份' },
   }),
   term: defineMessages({
     assign: { id: 'common.term.assign', defaultMessage: '指派' },
@@ -1170,6 +1170,8 @@ export const permissionMessages = defineMessages({
   MEMBER_STAR_ADMIN: { id: 'permission.MEMBER_STAR_ADMIN', defaultMessage: '檢視星等欄位' },
   MEMBER_CATEGORY_ADMIN: { id: 'permission.MEMBER_CATEGORY_ADMIN', defaultMessage: '所有會員分類功能' },
   MEMBER_MANAGER_ADMIN: { id: 'permission.MEMBER_MANAGER_ADMIN', defaultMessage: '指派承辦人功能' },
+  MEMBER_CONTRACT_INSERT: { id: 'permission.MEMBER_CONTRACT_INSERT', defaultMessage: '建立合約功能' },
+  MEMBER_ATTENDANT: { id: 'permission.MEMBER_ATTENDANT', defaultMessage: '打卡功能' },
 
   // task
   TASK_ADMIN: { id: 'permission.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },
@@ -1177,6 +1179,12 @@ export const permissionMessages = defineMessages({
 
   // app_setting
   APP_SETTING_ADMIN: { id: 'permission.APP_SETTING_ADMIN', defaultMessage: '所有網站管理功能' },
+
+  // project
+  PROJECT_ADMIN: { id: 'permission.PROJECT_ADMIN', defaultMessage: '所有專案功能' },
+  PROJECT_FUNDING_ADMIN: { id: 'permission.PROJECT_ADMIN', defaultMessage: '募資專案功能' },
+  PROJECT_PRE_ORDER_ADMIN: { id: 'permission.PROJECT_ADMIN', defaultMessage: '預購專案功能' },
+  PROJECT_ON_SALE_ADMIN: { id: 'permission.PROJECT_ADMIN', defaultMessage: '促銷專案功能' },
 })
 
 export const codeMessages = defineMessages({

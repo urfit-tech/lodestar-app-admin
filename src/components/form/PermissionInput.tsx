@@ -5,6 +5,7 @@ import { groupBy, uniq } from 'ramda'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { useApp } from '../../contexts/AppContext'
 import { permissionMessages } from '../../helpers/translation'
 import types from '../../types'
 
@@ -24,6 +25,7 @@ const messages = defineMessages({
   memberAdmin: { id: 'permission.label.memberAdmin', defaultMessage: '會員管理' },
   task: { id: 'permission.label.task', defaultMessage: '待辦管理' },
   appAdmin: { id: 'permission.label.appAdmin', defaultMessage: '網站管理' },
+  project: { id: 'permission.label.project', defaultMessage: '專案管理' },
 })
 
 const StyledBlock = styled.div`
@@ -38,6 +40,7 @@ const PermissionInput: React.FC<{
   onChange?: (value: string[]) => void
 }> = ({ fixOptions, value, onChange }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
   const { loadingPermissions, permissions: allPermissions } = usePermissionCollection()
 
   if (loadingPermissions) {
@@ -65,17 +68,19 @@ const PermissionInput: React.FC<{
       </div>
       {Object.keys(permissionGroups).map(groupId => (
         <div key={groupId} className="col-4 mb-3">
-          <PermissionGroup
-            label={
-              messages[groupId as keyof typeof messages]
-                ? formatMessage(messages[groupId as keyof typeof messages])
-                : groupId
-            }
-            options={permissionGroups[groupId].map(permission => permission.id)}
-            fixedOptions={fixOptions}
-            value={value}
-            onChange={onChange}
-          />
+          {groupId === 'project' && !enabledModules.project ? null : (
+            <PermissionGroup
+              label={
+                messages[groupId as keyof typeof messages]
+                  ? formatMessage(messages[groupId as keyof typeof messages])
+                  : groupId
+              }
+              options={permissionGroups[groupId].map(permission => permission.id)}
+              fixedOptions={fixOptions}
+              value={value}
+              onChange={onChange}
+            />
+          )}
         </div>
       ))}
     </div>
@@ -90,6 +95,7 @@ const PermissionGroup: React.FC<{
   onChange?: (value: string[]) => void
 }> = ({ label, options, fixedOptions, value, onChange }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
   const otherValue = value?.filter(v => !options.includes(v)) || []
 
   return (
@@ -108,11 +114,13 @@ const PermissionGroup: React.FC<{
         <Checkbox.Group value={value} onChange={value => onChange && onChange([...otherValue, ...(value as string[])])}>
           {options.map(option => (
             <div key={option}>
-              <Checkbox value={option} disabled={fixedOptions?.includes(option)}>
-                {permissionMessages[option as keyof typeof permissionMessages]
-                  ? formatMessage(permissionMessages[option as keyof typeof permissionMessages])
-                  : option}
-              </Checkbox>
+              {option === 'MEMBER_ATTENDANT' && !enabledModules.attend ? null : (
+                <Checkbox value={option} disabled={fixedOptions?.includes(option)}>
+                  {permissionMessages[option as keyof typeof permissionMessages]
+                    ? formatMessage(permissionMessages[option as keyof typeof permissionMessages])
+                    : option}
+                </Checkbox>
+              )}
             </div>
           ))}
         </Checkbox.Group>
