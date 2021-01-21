@@ -126,7 +126,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           }
         >
           <Menu.Item key="project_funding_collection">{formatMessage(commonMessages.menu.projectFunding)}</Menu.Item>
-          {/* <Menu.Item key="project_pre_order_collection">{formatMessage(commonMessages.menu.projectPreOrder)}</Menu.Item> */}
+          <Menu.Item key="project_pre_order_collection">{formatMessage(commonMessages.menu.projectPreOrder)}</Menu.Item>
           {/* <Menu.Item key="project_on_sale_collection">{formatMessage(commonMessages.menu.projectOnSale)}</Menu.Item> */}
         </Menu.SubMenu>
       )}

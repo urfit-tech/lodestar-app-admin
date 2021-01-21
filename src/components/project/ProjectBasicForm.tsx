@@ -25,9 +25,11 @@ type FieldProps = {
 
 const StyledFormItem = styled(Form.Item)`
   @media (min-width: ${BREAK_POINT}px) {
-    width: calc(100% - 90px - 120px - 12px);
-    position: absolute;
-    right: 0;
+    .funding {
+      width: calc(100% - 90px - 120px - 12px);
+      position: absolute;
+      right: 0;
+    }
   }
 `
 
@@ -82,7 +84,7 @@ const ProjectBasicForm: React.FC<{
           category_id: categoryId,
           position: index,
         })),
-        targetUnit: values.targetUnit,
+        targetUnit: values.targetUnit || 'funds',
         targetAmount: values.targetAmount,
         expiredAt: values.expiredAt,
         isParticipantsVisible: values.isParticipantsVisible,
@@ -124,31 +126,58 @@ const ProjectBasicForm: React.FC<{
       <Form.Item label={formatMessage(commonMessages.term.category)} name="categoryIds">
         <CategorySelector classType="project" />
       </Form.Item>
-      <Form.Item label={formatMessage(projectMessages.label.fundingTerm)}>
-        <Input.Group compact>
-          <Form.Item name="targetUnit" noStyle>
-            <Select style={{ width: '90px' }}>
-              <Select.Option key="funds" value="funds">
-                {formatMessage(commonMessages.label.funds)}
-              </Select.Option>
-              <Select.Option key="participants" value="participants">
-                {formatMessage(commonMessages.label.participants)}
-              </Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="targetAmount"
-            rules={[
-              {
-                required: true,
-                message: formatMessage(errorMessages.form.isRequired, {
-                  field: formatMessage(projectMessages.label.fundingTerm),
-                }),
-              },
-            ]}
-          >
-            <AmountInput unit={targetUnit} />
-          </Form.Item>
+      {project.projectType === 'funding' && (
+        <Form.Item label={formatMessage(projectMessages.label.fundingTerm)}>
+          <Input.Group compact>
+            <Form.Item name="targetUnit" noStyle>
+              <Select style={{ width: '90px' }}>
+                <Select.Option key="funds" value="funds">
+                  {formatMessage(commonMessages.label.funds)}
+                </Select.Option>
+                <Select.Option key="participants" value="participants">
+                  {formatMessage(commonMessages.label.participants)}
+                </Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="targetAmount"
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(errorMessages.form.isRequired, {
+                    field: formatMessage(projectMessages.label.fundingTerm),
+                  }),
+                },
+              ]}
+            >
+              <AmountInput unit={targetUnit} />
+            </Form.Item>
+            <StyledFormItem
+              className="funding"
+              name="expiredAt"
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(errorMessages.form.isRequired, {
+                    field: formatMessage(projectMessages.label.expireAt),
+                  }),
+                },
+              ]}
+            >
+              <DatePicker
+                style={{ width: '100%' }}
+                format="YYYY-MM-DD HH:mm"
+                showTime={{ format: 'HH:mm', defaultValue: moment('23:59:00', 'HH:mm:ss') }}
+                showToday={false}
+                placeholder={formatMessage(commonMessages.label.selectEndTime)}
+                disabledDate={current => current && current < moment().endOf('day')}
+              />
+            </StyledFormItem>
+          </Input.Group>
+        </Form.Item>
+      )}
+      {project.projectType === 'pre-order' && (
+        <Form.Item label={formatMessage(projectMessages.label.expireAt)}>
           <StyledFormItem
             name="expiredAt"
             rules={[
@@ -169,8 +198,8 @@ const ProjectBasicForm: React.FC<{
               disabledDate={current => current && current < moment().endOf('day')}
             />
           </StyledFormItem>
-        </Input.Group>
-      </Form.Item>
+        </Form.Item>
+      )}
       <Form.Item label={formatMessage(projectMessages.label.participantsAmount)} name="isParticipantsVisible">
         <Radio.Group>
           <Radio value={true}>{formatMessage(commonMessages.status.visible)}</Radio>
@@ -202,7 +231,7 @@ const UPDATE_PROJECT_BASIC = gql`
     $title: String
     $projectCategories: [project_category_insert_input!]!
     $targetUnit: String
-    $targetAmount: numeric!
+    $targetAmount: numeric
     $expiredAt: timestamptz
     $isParticipantsVisible: Boolean!
     $isCountdownTimerVisible: Boolean!
