@@ -69,7 +69,7 @@ const ProgramContentAdminModal: React.FC<{
 }> = ({ program, programContent, programContentBody, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { id: appId } = useApp()
+  const { id: appId, enabledModules } = useApp()
   const { authToken, apiHost } = useAuth()
 
   const [updateProgramContent] = useMutation<types.UPDATE_PROGRAM_CONTENT, types.UPDATE_PROGRAM_CONTENTVariables>(
@@ -305,22 +305,29 @@ const ProgramContentAdminModal: React.FC<{
           <Form.Item label={formatMessage(messages.duration)} name="duration">
             <InputNumber />
           </Form.Item>
-          <Form.Item label={formatMessage(commonMessages.term.material)}>
-            <MaterialFileUpload value={materialFiles} onChange={value => setMaterialFiles(value)} />
-          </Form.Item>
-          <div className="mb-4">
-            {materialFiles?.map(file => (
-              <StyledFileItem key={file.name} className="d-flex align-items-center justify-content-between py-1 px-2">
-                <div className="flex-grow-1">{file.name}</div>
-                <StyledCloseIcon
-                  className="flex-shrink-0 ml-2 pointer-cursor"
-                  onClick={() => {
-                    setMaterialFiles(materialFiles.filter(v => v.name !== file.name))
-                  }}
-                />
-              </StyledFileItem>
-            ))}
-          </div>
+          {enabledModules.program_content_material && (
+            <>
+              <Form.Item label={formatMessage(commonMessages.term.material)}>
+                <MaterialFileUpload value={materialFiles} onChange={value => setMaterialFiles(value)} />
+              </Form.Item>
+              <div className="mb-4">
+                {materialFiles?.map(file => (
+                  <StyledFileItem
+                    key={file.name}
+                    className="d-flex align-items-center justify-content-between py-1 px-2"
+                  >
+                    <div className="flex-grow-1">{file.name}</div>
+                    <StyledCloseIcon
+                      className="flex-shrink-0 ml-2 pointer-cursor"
+                      onClick={() => {
+                        setMaterialFiles(materialFiles.filter(v => v.name !== file.name))
+                      }}
+                    />
+                  </StyledFileItem>
+                ))}
+              </div>
+            </>
+          )}
           <Form.Item label={formatMessage(messages.contentContext)} name="description">
             <AdminBraftEditor />
           </Form.Item>

@@ -26,6 +26,7 @@ export type Module =
   | 'podcast_recording'
   | 'point'
   | 'program_package'
+  | 'program_content_material'
   | 'project'
   | 'qrcode'
   | 'search'
