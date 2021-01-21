@@ -147,6 +147,7 @@ const MemberContractForm: React.FC<{
 
   const [memberContractUrl, setMemberContractUrl] = useState('')
   const [selectedProjectPlanId, setSelectedProjectPlanId] = useState('')
+  const [selectedGiftDays, setSelectedGiftDays] = useState('')
   const [startedAt, setStartedAt] = useState<Date>(moment().add(1, 'day').startOf('day').toDate())
   const [referralMemberFilter, setReferralMemberFilter] = useState('')
   const [contractProducts, setContractProducts] = useState<
@@ -182,6 +183,7 @@ const MemberContractForm: React.FC<{
   const endedAt = selectedProjectPlan
     ? moment(startedAt)
         .add(selectedProjectPlan.period_amount, selectedProjectPlan.period_type as PeriodType)
+        .add(selectedGiftDays, 'days')
         .toDate()
     : null
 
@@ -497,6 +499,18 @@ const MemberContractForm: React.FC<{
               ))}
             </Select>
           </Form.Item>
+          <div className="d-flex align-items-center mt-2">
+            <div>加贈：</div>
+            <Form.Item className="mb-0" name="selectedGiftDays">
+              <Select<string> style={{ width: 100 }} value={selectedGiftDays} onChange={setSelectedGiftDays}>
+                {[0, 7, 14].map(value => (
+                  <Select.Option key={value} value={value}>
+                    {value}天
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </div>
         </Descriptions.Item>
         <Descriptions.Item label="服務開始日">
           <DatePicker
