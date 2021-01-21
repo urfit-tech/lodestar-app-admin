@@ -1,6 +1,4 @@
 import Icon from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
-import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -11,15 +9,15 @@ import ProjectCollectionTabs from '../../components/project/ProjectCollectionTab
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, projectMessages } from '../../helpers/translation'
+import { useProject } from '../../hooks/project'
 import { ReactComponent as ProjectIcon } from '../../images/icon/project.svg'
-import types from '../../types'
 
 const ProjectFundingPage: React.FC<{}> = () => {
   const { formatMessage } = useIntl()
   const history = useHistory()
   const { currentMemberId, currentUserRole } = useAuth()
   const { id: appId } = useApp()
-  const [createProject] = useMutation<types.INSERT_PROJECT, types.INSERT_PROJECTVariables>(INSERT_PROJECT)
+  const { insertProject } = useProject()
 
   return (
     <AdminLayout>
@@ -37,7 +35,7 @@ const ProjectFundingPage: React.FC<{}> = () => {
               customTitle={formatMessage(projectMessages.label.projectTitle)}
               customTitleDefault={formatMessage(projectMessages.label.unnamedProject)}
               onCreate={({ title, creatorId }) =>
-                createProject({
+                insertProject({
                   variables: {
                     appId,
                     title,
@@ -59,14 +57,5 @@ const ProjectFundingPage: React.FC<{}> = () => {
     </AdminLayout>
   )
 }
-const INSERT_PROJECT = gql`
-  mutation INSERT_PROJECT($appId: String!, $title: String!, $memberId: String!, $type: String!) {
-    insert_project(objects: { app_id: $appId, title: $title, creator_id: $memberId, type: $type }) {
-      affected_rows
-      returning {
-        id
-      }
-    }
-  }
-`
+
 export default ProjectFundingPage

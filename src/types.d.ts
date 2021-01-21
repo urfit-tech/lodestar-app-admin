@@ -5041,7 +5041,7 @@ export interface UPDATE_PROJECT_BASICVariables {
   title?: string | null;
   projectCategories: project_category_insert_input[];
   targetUnit?: string | null;
-  targetAmount: any;
+  targetAmount?: any | null;
   expiredAt?: any | null;
   isParticipantsVisible: boolean;
   isCountdownTimerVisible: boolean;
@@ -9979,6 +9979,46 @@ export interface GET_PROGRAM_PACKAGEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: INSERT_PROJECT
+// ====================================================
+
+export interface INSERT_PROJECT_insert_project_returning {
+  __typename: "project";
+  id: any;
+}
+
+export interface INSERT_PROJECT_insert_project {
+  __typename: "project_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+  /**
+   * data of the affected rows by the mutation
+   */
+  returning: INSERT_PROJECT_insert_project_returning[];
+}
+
+export interface INSERT_PROJECT {
+  /**
+   * insert data into the table: "project"
+   */
+  insert_project: INSERT_PROJECT_insert_project | null;
+}
+
+export interface INSERT_PROJECTVariables {
+  appId: string;
+  title: string;
+  memberId: string;
+  type: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: INSERT_ACTIVITY
 // ====================================================
 
@@ -11628,46 +11668,6 @@ export interface GET_PROJECT_ADMIN {
 
 export interface GET_PROJECT_ADMINVariables {
   projectId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_PROJECT
-// ====================================================
-
-export interface INSERT_PROJECT_insert_project_returning {
-  __typename: "project";
-  id: any;
-}
-
-export interface INSERT_PROJECT_insert_project {
-  __typename: "project_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-  /**
-   * data of the affected rows by the mutation
-   */
-  returning: INSERT_PROJECT_insert_project_returning[];
-}
-
-export interface INSERT_PROJECT {
-  /**
-   * insert data into the table: "project"
-   */
-  insert_project: INSERT_PROJECT_insert_project | null;
-}
-
-export interface INSERT_PROJECTVariables {
-  appId: string;
-  title: string;
-  memberId: string;
-  type: string;
 }
 
 /* tslint:disable */
