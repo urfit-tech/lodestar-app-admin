@@ -2,7 +2,12 @@ import { useQuery } from '@apollo/react-hooks'
 import { SortOrder } from 'antd/lib/table/interface'
 import gql from 'graphql-tag'
 import { DateRangeType, MemberContractProps, StatusType } from './types/memberContract'
-import { GET_MEMBER_PRIVATE_TEACH_CONTRACT, GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables, order_by } from './types.d'
+import {
+  GET_MEMBER_PRIVATE_TEACH_CONTRACT,
+  GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables,
+  GET_SALE_COLLECTION,
+  order_by,
+} from './types.d'
 
 export const useMemberContract = ({
   isRevoked,
@@ -43,11 +48,9 @@ export const useMemberContract = ({
   }
 
   const orderBy: GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['orderBy'] = [
-    {
-      agreed_at: sortOrder.agreedAt && (sortOrder.agreedAt === 'descend' ? order_by.desc : order_by.asc),
-      revoked_at: sortOrder.revokedAt && (sortOrder.revokedAt === 'descend' ? order_by.desc : order_by.asc),
-      started_at: sortOrder.startedAt && (sortOrder.startedAt === 'descend' ? order_by.desc : order_by.asc),
-    },
+    { agreed_at: sortOrder.agreedAt && (sortOrder.agreedAt === 'descend' ? order_by.desc : order_by.asc) },
+    { revoked_at: sortOrder.revokedAt && (sortOrder.revokedAt === 'descend' ? order_by.desc : order_by.asc) },
+    { started_at: sortOrder.startedAt && (sortOrder.startedAt === 'descend' ? order_by.desc : order_by.asc) },
   ]
 
   const { loading, data, error, refetch, fetchMore } = useQuery<
@@ -146,23 +149,23 @@ export const useMemberContract = ({
               orderBy,
               condition: {
                 ...condition,
-                agreed_at: orderBy[0].agreed_at
+                agreed_at: sortOrder.agreedAt
                   ? {
-                      [orderBy[0].agreed_at === 'desc'
+                      [sortOrder.agreedAt === 'descend'
                         ? '_lt'
                         : '_gt']: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.agreed_at,
                     }
                   : { _is_null: false },
-                revoked_at: orderBy[0].revoked_at
+                revoked_at: sortOrder.revokedAt
                   ? {
-                      [orderBy[0].revoked_at === 'desc'
+                      [sortOrder.revokedAt === 'descend'
                         ? '_lt'
                         : '_gt']: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.revoked_at,
                     }
                   : { _is_null: !isRevoked },
-                started_at: orderBy[0].started_at
+                started_at: sortOrder.startedAt
                   ? {
-                      [orderBy[0].started_at === 'desc'
+                      [sortOrder.startedAt === 'descend'
                         ? '_lt'
                         : '_gt']: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.started_at,
                     }
@@ -189,5 +192,36 @@ export const useMemberContract = ({
     memberContracts,
     refetchMemberContracts: refetch,
     loadMoreMemberContracts,
+  }
+}
+
+export const useXuemiSales = () => {
+  const { loading, error, data, refetch } = useQuery<GET_SALE_COLLECTION>(
+    gql`
+      query GET_SALE_COLLECTION {
+        xuemi_sales {
+          member {
+            id
+            name
+            username
+          }
+        }
+      }
+    `,
+  )
+
+  const xuemiSales =
+    data?.xuemi_sales
+      ?.map(v => ({
+        id: v.member?.id || '',
+        name: v.member?.name || v.member?.username || '',
+      }))
+      .filter(v => v.id && v.name) || []
+
+  return {
+    loading,
+    error,
+    xuemiSales,
+    refetch,
   }
 }

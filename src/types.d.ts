@@ -87,6 +87,37 @@ export interface GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
+// ====================================================
+// GraphQL query operation: GET_SALE_COLLECTION
+// ====================================================
+
+export interface GET_SALE_COLLECTION_xuemi_sales_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+}
+
+export interface GET_SALE_COLLECTION_xuemi_sales {
+  __typename: "xuemi_sales";
+  /**
+   * An object relationship
+   */
+  member: GET_SALE_COLLECTION_xuemi_sales_member | null;
+}
+
+export interface GET_SALE_COLLECTION {
+  /**
+   * fetch data from the table: "xuemi.sales"
+   */
+  xuemi_sales: GET_SALE_COLLECTION_xuemi_sales[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
 //==============================================================
 // START Enums and Input Objects
 //==============================================================

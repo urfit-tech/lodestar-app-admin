@@ -2,8 +2,8 @@ import Application from 'lodestar-app-admin/src/Application'
 import React from 'react'
 import './App.scss'
 import MemberCollectionAdminPage from './pages/MemberCollectionAdminPage'
-import MemberNoteAdminPage from './pages/MemberNoteAdminPage'
 import MemberContractPage from './pages/MemberContractPage'
+import MemberNoteAdminPage from './pages/MemberNoteAdminPage'
 import TermsPtPage from './pages/TermsPtPage'
 
 const App = () => {
@@ -22,7 +22,7 @@ const App = () => {
           authenticated: true,
         },
         member_contract_creation: {
-          path: '/member-contract',
+          path: '/member-contracts',
           pageName: <MemberContractPage />,
           authenticated: true,
         },

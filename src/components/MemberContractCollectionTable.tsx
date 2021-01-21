@@ -407,8 +407,8 @@ const MemberContractCollectionTable: React.FC<{
           }}
           status={{
             approvedAt: activeMemberContract?.approvedAt,
-            loanCancelAt: activeMemberContract?.loanCanceledAt,
-            refundApplyAt: activeMemberContract?.refundAppliedAt,
+            loanCanceledAt: activeMemberContract?.loanCanceledAt,
+            refundAppliedAt: activeMemberContract?.refundAppliedAt,
           }}
           paymentOptions={activeMemberContract?.paymentOptions}
           note={activeMemberContract?.note}
