@@ -23,7 +23,7 @@ const ProjectPreOrderPage: React.FC<{}> = () => {
     <AdminLayout>
       <AdminPageTitle className="mb-4">
         <Icon component={() => <ProjectIcon />} className="mr-3" />
-        <span>{formatMessage(commonMessages.menu.projectFunding)}</span>
+        <span>{formatMessage(commonMessages.menu.projectPreOrder)}</span>
       </AdminPageTitle>
       {currentMemberId && (
         <div className="row mb-5">
