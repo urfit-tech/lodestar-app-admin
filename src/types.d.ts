@@ -79,7 +79,7 @@ export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT {
 export interface GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables {
   condition?: xuemi_member_private_teach_contract_bool_exp | null;
   limit?: number | null;
-  orderBy?: xuemi_member_private_teach_contract_order_by | null;
+  orderBy?: xuemi_member_private_teach_contract_order_by[] | null;
 }
 
 /* tslint:disable */
@@ -2655,6 +2655,7 @@ export interface member_note_bool_exp {
   member_note_attachments?: member_note_attachment_bool_exp | null;
   metadata?: jsonb_comparison_exp | null;
   note?: String_comparison_exp | null;
+  rejected_at?: timestamptz_comparison_exp | null;
   status?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -2671,6 +2672,7 @@ export interface member_note_max_order_by {
   id?: order_by | null;
   member_id?: order_by | null;
   note?: order_by | null;
+  rejected_at?: order_by | null;
   status?: order_by | null;
   type?: order_by | null;
   updated_at?: order_by | null;
@@ -2687,6 +2689,7 @@ export interface member_note_min_order_by {
   id?: order_by | null;
   member_id?: order_by | null;
   note?: order_by | null;
+  rejected_at?: order_by | null;
   status?: order_by | null;
   type?: order_by | null;
   updated_at?: order_by | null;

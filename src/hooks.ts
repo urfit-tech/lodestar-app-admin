@@ -42,11 +42,13 @@ export const useMemberContract = ({
     ],
   }
 
-  const orderBy: GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['orderBy'] = {
-    agreed_at: sortOrder.agreedAt && (sortOrder.agreedAt === 'descend' ? order_by.desc : order_by.asc),
-    revoked_at: sortOrder.revokedAt && (sortOrder.revokedAt === 'descend' ? order_by.desc : order_by.asc),
-    started_at: sortOrder.startedAt && (sortOrder.startedAt === 'descend' ? order_by.desc : order_by.asc),
-  }
+  const orderBy: GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['orderBy'] = [
+    {
+      agreed_at: sortOrder.agreedAt && (sortOrder.agreedAt === 'descend' ? order_by.desc : order_by.asc),
+      revoked_at: sortOrder.revokedAt && (sortOrder.revokedAt === 'descend' ? order_by.desc : order_by.asc),
+      started_at: sortOrder.startedAt && (sortOrder.startedAt === 'descend' ? order_by.desc : order_by.asc),
+    },
+  ]
 
   const { loading, data, error, refetch, fetchMore } = useQuery<
     GET_MEMBER_PRIVATE_TEACH_CONTRACT,
@@ -144,25 +146,25 @@ export const useMemberContract = ({
               orderBy,
               condition: {
                 ...condition,
-                agreed_at: orderBy.agreed_at
+                agreed_at: orderBy[0].agreed_at
                   ? {
-                      [orderBy.agreed_at === 'desc' ? '_lt' : '_gt']: data?.xuemi_member_private_teach_contract.slice(
-                        -1,
-                      )[0]?.agreed_at,
+                      [orderBy[0].agreed_at === 'desc'
+                        ? '_lt'
+                        : '_gt']: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.agreed_at,
                     }
                   : { _is_null: false },
-                revoked_at: orderBy.revoked_at
+                revoked_at: orderBy[0].revoked_at
                   ? {
-                      [orderBy.revoked_at === 'desc' ? '_lt' : '_gt']: data?.xuemi_member_private_teach_contract.slice(
-                        -1,
-                      )[0]?.revoked_at,
+                      [orderBy[0].revoked_at === 'desc'
+                        ? '_lt'
+                        : '_gt']: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.revoked_at,
                     }
                   : { _is_null: !isRevoked },
-                started_at: orderBy.started_at
+                started_at: orderBy[0].started_at
                   ? {
-                      [orderBy.started_at === 'desc' ? '_lt' : '_gt']: data?.xuemi_member_private_teach_contract.slice(
-                        -1,
-                      )[0]?.started_at,
+                      [orderBy[0].started_at === 'desc'
+                        ? '_lt'
+                        : '_gt']: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.started_at,
                     }
                   : undefined,
               },
