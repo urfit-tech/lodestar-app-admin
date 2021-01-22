@@ -1,16 +1,18 @@
 import Icon from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Divider, Progress, Skeleton, Switch, Tabs, Tooltip } from 'antd'
+import { Button, Divider, Form, Input, Progress, Radio, Select, Skeleton, Switch, Tabs, Tooltip } from 'antd'
+import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
-import { AdminBlock, AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
+import { AdminBlock, AdminBlockTitle, AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
 import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { currencyFormatter } from 'lodestar-app-admin/src/helpers'
+import { commonMessages, errorMessages } from 'lodestar-app-admin/src/helpers/translation'
 import { ReactComponent as PhoneIcon } from 'lodestar-app-admin/src/images/icon/phone.svg'
 import moment from 'moment'
 import { sum } from 'ramda'
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -37,6 +39,23 @@ const StyledProgress = styled(Progress)`
   display: inline-block;
   width: 12rem;
 `
+const AssignedMemberName = styled.div`
+  color: var(--gray-darker);
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1.3;
+  letter-spacing: 0.77px;
+`
+const AssignedMemberEmail = styled.div`
+  color: var(--gray-dark);
+  font-size: 14px;
+  letter-spacing: 0.4px;
+`
+const StyledLabel = styled.div`
+  color: var(--gray-darker);
+  font-weight: bold;
+  letter-spacing: 0.2px;
+`
 
 const SalesCallPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -53,7 +72,9 @@ const SalesCallPage: React.FC = () => {
       {currentMemberId && <SalesSummary salesId={currentMemberId} />}
 
       <Tabs activeKey={activeKey || 'potentials'} onChange={key => setActiveKey(key)}>
-        <Tabs.TabPane key="potentials" tab={formatMessage(salesMessages.label.potentials)}></Tabs.TabPane>
+        <Tabs.TabPane key="potentials" tab={formatMessage(salesMessages.label.potentials)}>
+          {currentMemberId && <AssignedMemberContactBlock salesId={currentMemberId} />}
+        </Tabs.TabPane>
         <Tabs.TabPane key="keep-in-touch" tab={formatMessage(salesMessages.label.keepInTouch)}></Tabs.TabPane>
         <Tabs.TabPane key="deals" tab={formatMessage(salesMessages.label.deals)}></Tabs.TabPane>
         <Tabs.TabPane key="revoked" tab={formatMessage(salesMessages.label.revoked)} disabled></Tabs.TabPane>
@@ -67,14 +88,14 @@ const SalesSummary: React.FC<{
   salesId: string
 }> = ({ salesId }) => {
   const { formatMessage } = useIntl()
-  const { loadingSalesSummary, salesSummary } = useSalesSummary(salesId)
+  const { loadingSalesSummary, errorSalesSummary, salesSummary } = useSalesSummary(salesId)
 
   if (loadingSalesSummary) {
     return <Skeleton active />
   }
 
-  if (!salesSummary) {
-    return null
+  if (errorSalesSummary || !salesSummary) {
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
   const newAssignedRate =
@@ -133,6 +154,146 @@ const SalesSummary: React.FC<{
           <Switch disabled />
         </div>
       </div>
+    </AdminBlock>
+  )
+}
+
+type memberNoteFieldProps = {
+  status: 'not-answered' | 'rejected' | 'willing'
+  description: string
+}
+const propertyNames = [
+  '性別',
+  '縣市',
+  '有意願領域',
+  '是否在職',
+  '是否為相關職務',
+  '學生程度',
+  '學習動機',
+  '每月學習預算',
+  '有沒有上過其他課程',
+  '是否有轉職意願',
+]
+type memberPropertyFieldProps = {
+  [PropertyName: string]: string
+}
+
+const AssignedMemberContactBlock: React.FC<{
+  salesId: string
+}> = ({ salesId }) => {
+  const { formatMessage } = useIntl()
+  const { loadingAssignedMember, errorAssignedMember, assignedMember } = useFirstAssignedMember(salesId)
+  const [selectedPhone, setSelectedPhone] = useState('')
+  const [memberNoteForm] = useForm<memberNoteFieldProps>()
+  const [memberPropertyForm] = useForm<memberPropertyFieldProps>()
+  const [memberNoteStatus, setMemberNoteStatus] = useState<memberNoteFieldProps['status']>('not-answered')
+  const customPhoneInputRef = useRef<Input | null>(null)
+
+  if (loadingAssignedMember) {
+    return <Skeleton active />
+  }
+
+  if (errorAssignedMember || !assignedMember) {
+    return <div>{formatMessage(errorMessages.data.fetch)}</div>
+  }
+
+  return (
+    <AdminBlock>
+      <div className="row">
+        <div className="col-5">
+          <AssignedMemberName className="mb-2">{assignedMember.name}</AssignedMemberName>
+          <AssignedMemberEmail>{assignedMember.email}</AssignedMemberEmail>
+        </div>
+        <div className="col-7">
+          <div>
+            {formatMessage(salesMessages.text.memberCategories, {
+              categories: assignedMember.categories.map(category => category.name).join(','),
+            })}
+          </div>
+          <div>素材：{assignedMember.properties.find(property => property.name === '廣告素材')?.value}</div>
+          <div>
+            填單日期：
+            {assignedMember.properties
+              .find(property => property.name === '填單日期')
+              ?.value.split(',')
+              .map(date => moment(date).format('YYYY-MM-DD'))}
+          </div>
+        </div>
+      </div>
+      <Divider />
+      <div className="row">
+        <div className="col-5">
+          <AdminBlockTitle className="mb-4">聯絡紀錄</AdminBlockTitle>
+          <StyledLabel className="mb-3">選取主要電話</StyledLabel>
+          <Radio.Group value={selectedPhone} onChange={e => setSelectedPhone(e.target.value)} className="mb-5">
+            {assignedMember.phones.map(phone => (
+              <Radio key={phone} value={phone} className="d-block mb-3">
+                {phone}
+              </Radio>
+            ))}
+            <Radio value="custom-phone" className="d-flex align-items-center">
+              <div className="d-flex align-items-center">
+                <div className="mr-2">新增其他號碼</div>
+                {selectedPhone === 'custom-phone' && (
+                  <div className="flex-grow-1">
+                    <Input ref={customPhoneInputRef} />
+                  </div>
+                )}
+              </div>
+            </Radio>
+          </Radio.Group>
+
+          <Form
+            form={memberNoteForm}
+            layout="vertical"
+            initialValues={{
+              status: 'not-answered',
+            }}
+            onValuesChange={(_, values) => {
+              setMemberNoteStatus(values.status)
+            }}
+          >
+            <Form.Item name="status" label={<StyledLabel className="mb-3">通話狀態</StyledLabel>}>
+              <Select>
+                <Select.Option value="not-answered">一接就掛/未接</Select.Option>
+                <Select.Option value="rejected">拒絕</Select.Option>
+                <Select.Option value="willing">有意願再聊</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item name="description" label={<StyledLabel className="mb-3">本次聯絡備註</StyledLabel>}>
+              <Input.TextArea />
+            </Form.Item>
+          </Form>
+        </div>
+        <div className="col-7">
+          <Form
+            form={memberPropertyForm}
+            colon={false}
+            labelAlign="left"
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 16 }}
+            initialValues={{
+              ...propertyNames.reduce(
+                (accumulator, propertyName) => ({
+                  ...accumulator,
+                  [propertyName]:
+                    assignedMember.properties.find(property => property.name === propertyName)?.value || '',
+                }),
+                {} as { [PropertyName: string]: string },
+              ),
+            }}
+          >
+            {propertyNames.map(propertyName => (
+              <Form.Item key={propertyName} name={propertyName} label={propertyName}>
+                <Input />
+              </Form.Item>
+            ))}
+          </Form>
+        </div>
+      </div>
+      <Button type="primary" block>
+        {formatMessage(commonMessages.ui.save)}
+      </Button>
     </AdminBlock>
   )
 }
@@ -290,7 +451,7 @@ const useFirstAssignedMember = (salesId: string) => {
     { variables: { salesId } },
   )
 
-  const assignedMember = data?.member[0]
+  const assignedMember = data?.member?.[0]
     ? {
         id: data.member[0].id,
         email: data.member[0].email,

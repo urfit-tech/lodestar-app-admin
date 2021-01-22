@@ -75,5 +75,6 @@ export const salesMessages = {
     assignedMembersToday: { id: 'sales.text.assignedMembersToday', defaultMessage: '今日名單派發：{amount}' },
     assignedMembersNewRate: { id: 'sales.text.assignedMembersNewRate', defaultMessage: '名單新舊佔比：' },
     assignedMembersDetail: { id: 'sales.text.assignedMembersDetail', defaultMessage: '新 {new}% / 舊 {old}%' },
+    memberCategories: { id: 'sales.text.memberCategories', defaultMessage: '會員分類：{categories}' },
   }),
 }
