@@ -20,7 +20,7 @@ import { ReactComponent as ProjectIcon } from '../../images/icon/project.svg'
 import { ReactComponent as ShopIcon } from '../../images/icon/shop.svg'
 import { ReactComponent as UserIcon } from '../../images/icon/user.svg'
 import { ReactComponent as UsersIcon } from '../../images/icon/users.svg'
-import { routesProps } from '../../Routes'
+import { routesMap } from '../../Routes'
 
 export const StyledMenu = styled(Menu)`
   && {
@@ -361,7 +361,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
   const handleClick: MenuClickEventHandler = ({ key, item }) => {
     if (typeof key === 'string' && key.startsWith('_blank')) {
     } else {
-      const route = routesProps[key]
+      const route = routesMap[key]
       route ? history.push(route.path) : alert(formatMessage(errorMessages.route.notFound))
     }
   }

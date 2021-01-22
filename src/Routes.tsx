@@ -388,8 +388,10 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
   },
 }
 
+export let routesMap = { ...routesProps }
+
 const Routes: React.FC<{ extra?: { [routeKey: string]: RouteProps } }> = ({ extra }) => {
-  const routesMap = { ...routesProps, ...extra }
+  routesMap = { ...routesMap, ...extra }
   return (
     <Suspense fallback={<LoadingPage />}>
       <Switch>
