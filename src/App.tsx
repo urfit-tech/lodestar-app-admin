@@ -16,7 +16,7 @@ const App = () => {
     <Application
       appId="xuemi"
       customRender={{
-        renderAdminMenu: ({ menuItems, handleClick: onClick }) => {
+        renderAdminMenu: ({ menuItems, onClick }) => {
           return (
             <StyledMenu
               mode="inline"
