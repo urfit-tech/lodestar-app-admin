@@ -1,11 +1,11 @@
+import { MenuClickEventHandler } from 'rc-menu/lib/interface'
 import React, { useContext } from 'react'
 import { renderMemberAdminLayoutProps } from '../components/layout/MemberAdminLayout'
-import { MenuClickEventHandler } from 'rc-menu/lib/interface'
 
 export type CustomRendererProps = {
   renderMemberAdminLayout?: (props: renderMemberAdminLayoutProps) => React.ReactElement
   renderAdminMenu?: (props: {
-    handleClick: MenuClickEventHandler
+    onClick: MenuClickEventHandler
     menuItems: {
       permissionIsAllowed: boolean
       icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>

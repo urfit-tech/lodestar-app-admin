@@ -368,7 +368,7 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
 
   return (
     <>
-      {renderAdminMenu?.({ menuItems: defaultMenuItems, handleClick }) || (
+      {renderAdminMenu?.({ menuItems: defaultMenuItems, onClick: handleClick }) || (
         <StyledMenu
           {...menuProps}
           mode="inline"
