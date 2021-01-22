@@ -433,6 +433,7 @@ const MemberContractCollectionTable: React.FC<{
                   setVisible(true)
                 },
               })}
+              rowClassName={() => 'cursor-pointer'}
               onChange={(pagination, filters, sorter) => {
                 const newSorter = sorter as SorterResult<DataSourceProps>
                 setSortOrder({
