@@ -1,13 +1,17 @@
-import Icon, { DownloadOutlined, MinusCircleOutlined } from '@ant-design/icons'
+import Icon, { DownloadOutlined, MinusCircleOutlined, UploadOutlined } from '@ant-design/icons'
 import { Button, Col, DatePicker, Form, Input, InputNumber, Row, Select } from 'antd'
 import AdminModal, { AdminModalProps } from 'lodestar-app-admin/src/components/admin/AdminModal'
+import FileUploader from 'lodestar-app-admin/src/components/common/FileUploader'
+import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
+import { downloadFile, getFileDownloadableLink, handleError, uploadFile } from 'lodestar-app-admin/src/helpers'
 import { commonMessages, memberMessages, orderMessages } from 'lodestar-app-admin/src/helpers/translation'
 import moment from 'moment'
-import React from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
 import { memberContractMessages } from '../helpers/translation'
-import { useXuemiSales } from '../hooks'
+import { useMutateMemberContract, useXuemiSales } from '../hooks'
 import { ReactComponent as PlusIcon } from '../images/icons/plus.svg'
 import MemberName from './MemberName'
 
@@ -53,6 +57,7 @@ const StyledAddButton = styled(Button)`
 type MemberContractModalProps = {
   isRevoked: boolean
   memberContractId?: string
+  memberId?: string | null
   member?: {
     name: string
     email: string
@@ -89,10 +94,12 @@ type MemberContractModalProps = {
       }[]
     | null
   studentCertification?: string | null
+  onRefetch: () => void
 } & AdminModalProps
 
 const MemberContractModal: React.FC<MemberContractModalProps> = ({
   memberContractId,
+  memberId,
   member,
   purchasedItem,
   isRevoked,
@@ -101,11 +108,69 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   note,
   orderExecutors,
   studentCertification,
+  onRefetch,
   ...props
 }) => {
   const { formatMessage } = useIntl()
+  const { authToken, apiHost } = useAuth()
+  const { id: appId } = useApp()
   const [form] = Form.useForm()
   const { xuemiSales } = useXuemiSales()
+  const [certification, setCertification] = useState<File[]>([])
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const updateMemberContract = useMutateMemberContract()
+  console.log('render', certification)
+
+  const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
+    form
+      .validateFields()
+      .then(() => {
+        setIsLoading(true)
+        if (certification.length) {
+          return uploadFile(`certification/${appId}/student_${memberId}`, certification[0], authToken, apiHost)
+        }
+      })
+      .then(() => {
+        const {
+          approvedAt,
+          loanCanceledAt,
+          refundAppliedAt,
+          paymentMethod,
+          paymentNumber,
+          installmentPlan,
+          note,
+          orderExecutors,
+        } = form.getFieldsValue()
+
+        return updateMemberContract({
+          variables: {
+            memberContractId,
+            values: {
+              paymentOptions: {
+                paymentMethod,
+                paymentNumber,
+                installmentPlan,
+              },
+              orderExecutors,
+            },
+            options: {
+              approvedAt,
+              loanCanceledAt,
+              refundAppliedAt,
+              note,
+              studentCertification: certification[0]?.name || studentCertification,
+            },
+          },
+        })
+      })
+      .then(() => {
+        setCertification([])
+        setVisible(false)
+        onRefetch()
+      })
+      .catch(err => handleError(err))
+      .finally(() => setIsLoading(false))
+  }
 
   let sheet
   if (isRevoked) {
@@ -153,7 +218,25 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
           ))}
         </div>
         <StyledAreaTitle>{formatMessage(memberContractMessages.label.proofOfEnrollment)}</StyledAreaTitle>
-        {studentCertification}
+        {studentCertification && (
+          <Button
+            icon={<DownloadOutlined />}
+            onClick={async () => {
+              try {
+                const link = await getFileDownloadableLink(
+                  `certification/${appId}/student_${memberId}`,
+                  authToken,
+                  apiHost,
+                )
+                await downloadFile(link, studentCertification || '')
+              } catch (error) {
+                handleError(error)
+              }
+            }}
+          >
+            {formatMessage(memberContractMessages.ui.downloadProofOfEnrollment)}
+          </Button>
+        )}
       </>
     )
   } else {
@@ -245,9 +328,9 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
             {(orderExecutors, { add, remove }) => (
               <div>
                 {orderExecutors.map(field => (
-                  <div key={field.key} className="d-flex align-items-center mb-3">
+                  <div key={field.key} className="d-flex align-items-center">
                     <Form.Item
-                      className="mb-0 mr-3"
+                      className="mr-3"
                       {...field}
                       name={[field.name, 'memberId']}
                       fieldKey={[field.fieldKey, 'memberId']}
@@ -268,7 +351,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                     </Form.Item>
 
                     <Form.Item
-                      className="mb-0 mr-3"
+                      className="mr-3"
                       {...field}
                       name={[field.name, 'ratio']}
                       fieldKey={[field.fieldKey, 'ratio']}
@@ -276,7 +359,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                       <InputNumber min={0.1} max={1} step={0.1} style={{ width: '60px' }} />
                     </Form.Item>
 
-                    <MinusCircleOutlined onClick={() => remove(field.name)} />
+                    <MinusCircleOutlined className="mb-3" onClick={() => remove(field.name)} />
                   </div>
                 ))}
 
@@ -292,9 +375,32 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
         </Form>
 
         <StyledAreaTitle>{formatMessage(memberContractMessages.label.proofOfEnrollment)}</StyledAreaTitle>
-        <Button icon={<DownloadOutlined />}>
-          {formatMessage(memberContractMessages.ui.downloadProofOfEnrollment)}
-        </Button>
+        {studentCertification && !certification.length && (
+          <Button
+            className="mr-3"
+            icon={<DownloadOutlined />}
+            onClick={async () => {
+              const link = await getFileDownloadableLink(
+                `certification/${appId}/student_${memberId}`,
+                authToken,
+                apiHost,
+              )
+              downloadFile(link, studentCertification || '')
+            }}
+          >
+            {formatMessage(memberContractMessages.ui.downloadProofOfEnrollment)}
+          </Button>
+        )}
+        <FileUploader
+          fileList={certification}
+          onChange={files => setCertification(files)}
+          showUploadList
+          renderTrigger={({ onClick }) => (
+            <Button icon={<UploadOutlined />} onClick={onClick}>
+              {formatMessage(memberContractMessages.ui.reupload)}
+            </Button>
+          )}
+        />
       </>
     )
   }
@@ -303,15 +409,24 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
     <AdminModal
       title={formatMessage(memberContractMessages.menu.memberContracts)}
       width={688}
-      {...props}
-      onOk={
-        !isRevoked
-          ? () => {
-              form.validateFields()
-              console.log(form.getFieldValue([]))
+      footer={[]}
+      renderFooter={
+        isRevoked
+          ? undefined
+          : ({ setVisible }) => {
+              return (
+                <div className="mt-3">
+                  <Button className="mr-2" onClick={() => setVisible(false)}>
+                    {formatMessage(commonMessages.ui.cancel)}
+                  </Button>
+                  <Button type="primary" onClick={() => handleSubmit(setVisible)} loading={isLoading}>
+                    {formatMessage(commonMessages.ui.save)}
+                  </Button>
+                </div>
+              )
             }
-          : undefined
       }
+      {...props}
     >
       <div className="row mb-4">
         <div className="col-4 row">

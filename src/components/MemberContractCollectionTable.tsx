@@ -94,7 +94,7 @@ const MemberContractCollectionTable: React.FC<{
     memberNameAndEmail: null,
     status: [],
     dateRangeType: 'agreed_at',
-    startedAt: moment(1997).startOf('month').toDate(),
+    startedAt: moment().startOf('month').toDate(),
     endedAt: moment().endOf('month').toDate(),
   })
   const [sortOrder, setSortOrder] = useState<{
@@ -106,7 +106,13 @@ const MemberContractCollectionTable: React.FC<{
     revokedAt: null,
     startedAt: null,
   })
-  const { loadingMemberContracts, errorMemberContracts, memberContracts, loadMoreMemberContracts } = useMemberContract({
+  const {
+    loadingMemberContracts,
+    errorMemberContracts,
+    memberContracts,
+    loadMoreMemberContracts,
+    refetchMemberContracts,
+  } = useMemberContract({
     ...filter,
     sortOrder,
     isRevoked: variant === 'revoked',
@@ -394,6 +400,7 @@ const MemberContractCollectionTable: React.FC<{
         <MemberContractModal
           isRevoked={variant === 'revoked'}
           memberContractId={activeMemberContract?.id}
+          memberId={activeMemberContract?.member.id}
           member={activeMemberContract?.invoice}
           purchasedItem={{
             projectPlanName: activeMemberContract?.projectPlanName,
@@ -414,6 +421,7 @@ const MemberContractCollectionTable: React.FC<{
           note={activeMemberContract?.note}
           orderExecutors={activeMemberContract?.orderExecutors}
           studentCertification={activeMemberContract?.studentCertification}
+          onRefetch={refetchMemberContracts}
           renderTrigger={({ setVisible }) => (
             <Table<DataSourceProps>
               columns={columns}

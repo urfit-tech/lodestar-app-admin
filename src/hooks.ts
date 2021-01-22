@@ -1,13 +1,13 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import { SortOrder } from 'antd/lib/table/interface'
 import gql from 'graphql-tag'
-import { DateRangeType, MemberContractProps, StatusType } from './types/memberContract'
 import {
   GET_MEMBER_PRIVATE_TEACH_CONTRACT,
   GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables,
   GET_SALE_COLLECTION,
   order_by,
 } from './types.d'
+import { DateRangeType, MemberContractProps, StatusType } from './types/memberContract'
 
 export const useMemberContract = ({
   isRevoked,
@@ -66,6 +66,7 @@ export const useMemberContract = ({
         xuemi_member_private_teach_contract(where: $condition, limit: $limit, order_by: $orderBy) {
           id
           author_name
+          member_id
           member_name
           member_picture_url
           member_email
@@ -106,6 +107,7 @@ export const useMemberContract = ({
           id: v.id,
           authorName: v.author_name,
           member: {
+            id: v.member_id,
             name: v.member_name,
             pictureUrl: v.member_picture_url,
             email: v.member_email,
@@ -134,9 +136,9 @@ export const useMemberContract = ({
           },
           note: v.note,
           orderExecutors:
-            v.values?.orderExecutors?.map((v: { ratio: number; member_id: string }) => ({
+            v.values?.orderExecutors?.map((v: { ratio: number; memberId: string }) => ({
               ratio: v.ratio,
-              memberId: v.member_id,
+              memberId: v.memberId,
             })) || [],
           couponCount: v.values?.coupons.length || null,
         }))
@@ -193,6 +195,20 @@ export const useMemberContract = ({
     refetchMemberContracts: refetch,
     loadMoreMemberContracts,
   }
+}
+
+export const useMutateMemberContract = () => {
+  const [updateMemberContract] = useMutation(gql`
+    mutation UPDATE_MEMBER_CONTRACT($memberContractId: uuid!, $options: jsonb!, $values: jsonb!) {
+      update_member_contract_by_pk(
+        pk_columns: { id: $memberContractId }
+        _append: { options: $options, values: $values }
+      ) {
+        id
+      }
+    }
+  `)
+  return updateMemberContract
 }
 
 export const useXuemiSales = () => {

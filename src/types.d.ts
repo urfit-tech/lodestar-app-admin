@@ -37,6 +37,7 @@ export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_co
   __typename: "xuemi_member_private_teach_contract";
   id: any | null;
   author_name: string | null;
+  member_id: string | null;
   member_name: string | null;
   member_picture_url: string | null;
   member_email: string | null;
@@ -80,6 +81,33 @@ export interface GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables {
   condition?: xuemi_member_private_teach_contract_bool_exp | null;
   limit?: number | null;
   orderBy?: xuemi_member_private_teach_contract_order_by[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_CONTRACT
+// ====================================================
+
+export interface UPDATE_MEMBER_CONTRACT_update_member_contract_by_pk {
+  __typename: "member_contract";
+  id: any;
+}
+
+export interface UPDATE_MEMBER_CONTRACT {
+  /**
+   * update single row of the table: "member_contract"
+   */
+  update_member_contract_by_pk: UPDATE_MEMBER_CONTRACT_update_member_contract_by_pk | null;
+}
+
+export interface UPDATE_MEMBER_CONTRACTVariables {
+  memberContractId: any;
+  options: any;
+  values: any;
 }
 
 /* tslint:disable */

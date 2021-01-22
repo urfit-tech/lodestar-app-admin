@@ -7,6 +7,7 @@ export const memberContractMessages = {
   ui: defineMessages({
     join: { id: 'memberContract.ui.join', defaultMessage: '加入' },
     downloadProofOfEnrollment: { id: 'memberContract.ui.downloadProofOfEnrollment', defaultMessage: '下載證明' },
+    reupload: { id: 'memberContract.reupload', defaultMessage: '重新上傳' },
   }),
   label: defineMessages({
     agreedAt: { id: 'memberContract.label.agreedAt', defaultMessage: '簽署日期' },
