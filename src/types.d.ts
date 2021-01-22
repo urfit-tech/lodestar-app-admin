@@ -146,6 +146,202 @@ export interface GET_SALE_COLLECTION {
 // @generated
 // This file was automatically generated and should not be edited.
 
+// ====================================================
+// GraphQL query operation: GET_SALES_SUMMARY
+// ====================================================
+
+export interface GET_SALES_SUMMARY_member_by_pk {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+}
+
+export interface GET_SALES_SUMMARY_order_executor_sharing {
+  __typename: "order_executor_sharing";
+  order_executor_id: any | null;
+  total_price: any | null;
+  ratio: any | null;
+}
+
+export interface GET_SALES_SUMMARY_member_contract_aggregate_aggregate {
+  __typename: "member_contract_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_SALES_SUMMARY_member_contract_aggregate {
+  __typename: "member_contract_aggregate";
+  aggregate: GET_SALES_SUMMARY_member_contract_aggregate_aggregate | null;
+}
+
+export interface GET_SALES_SUMMARY_member_note_aggregate_aggregate_sum {
+  __typename: "member_note_sum_fields";
+  duration: number | null;
+}
+
+export interface GET_SALES_SUMMARY_member_note_aggregate_aggregate {
+  __typename: "member_note_aggregate_fields";
+  count: number | null;
+  sum: GET_SALES_SUMMARY_member_note_aggregate_aggregate_sum | null;
+}
+
+export interface GET_SALES_SUMMARY_member_note_aggregate {
+  __typename: "member_note_aggregate";
+  aggregate: GET_SALES_SUMMARY_member_note_aggregate_aggregate | null;
+}
+
+export interface GET_SALES_SUMMARY_assigned_members_today_aggregate {
+  __typename: "member_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_SALES_SUMMARY_assigned_members_today {
+  __typename: "member_aggregate";
+  aggregate: GET_SALES_SUMMARY_assigned_members_today_aggregate | null;
+}
+
+export interface GET_SALES_SUMMARY_assigned_members_last_two_weeks_aggregate {
+  __typename: "member_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_SALES_SUMMARY_assigned_members_last_two_weeks {
+  __typename: "member_aggregate";
+  aggregate: GET_SALES_SUMMARY_assigned_members_last_two_weeks_aggregate | null;
+}
+
+export interface GET_SALES_SUMMARY_assigned_members_last_three_months_aggregate {
+  __typename: "member_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_SALES_SUMMARY_assigned_members_last_three_months {
+  __typename: "member_aggregate";
+  aggregate: GET_SALES_SUMMARY_assigned_members_last_three_months_aggregate | null;
+}
+
+export interface GET_SALES_SUMMARY {
+  /**
+   * fetch data from the table: "member" using primary key columns
+   */
+  member_by_pk: GET_SALES_SUMMARY_member_by_pk | null;
+  /**
+   * fetch data from the table: "order_executor_sharing"
+   */
+  order_executor_sharing: GET_SALES_SUMMARY_order_executor_sharing[];
+  /**
+   * fetch aggregated fields from the table: "member_contract"
+   */
+  member_contract_aggregate: GET_SALES_SUMMARY_member_contract_aggregate;
+  /**
+   * fetch aggregated fields from the table: "member_note"
+   */
+  member_note_aggregate: GET_SALES_SUMMARY_member_note_aggregate;
+  /**
+   * fetch aggregated fields from the table: "member"
+   */
+  assigned_members_today: GET_SALES_SUMMARY_assigned_members_today;
+  /**
+   * fetch aggregated fields from the table: "member"
+   */
+  assigned_members_last_two_weeks: GET_SALES_SUMMARY_assigned_members_last_two_weeks;
+  /**
+   * fetch aggregated fields from the table: "member"
+   */
+  assigned_members_last_three_months: GET_SALES_SUMMARY_assigned_members_last_three_months;
+}
+
+export interface GET_SALES_SUMMARYVariables {
+  salesId: string;
+  startOfToday: any;
+  startOfMonth: any;
+  startOfTwoWeeks: any;
+  startOfThreeMonths: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_FIRST_ASSIGNED_MEMBER
+// ====================================================
+
+export interface GET_FIRST_ASSIGNED_MEMBER_member_member_phones {
+  __typename: "member_phone";
+  id: any;
+  phone: string;
+}
+
+export interface GET_FIRST_ASSIGNED_MEMBER_member_member_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_FIRST_ASSIGNED_MEMBER_member_member_categories {
+  __typename: "member_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_FIRST_ASSIGNED_MEMBER_member_member_categories_category;
+}
+
+export interface GET_FIRST_ASSIGNED_MEMBER_member_member_properties_property {
+  __typename: "property";
+  id: any;
+  name: string;
+}
+
+export interface GET_FIRST_ASSIGNED_MEMBER_member_member_properties {
+  __typename: "member_property";
+  id: any;
+  /**
+   * An object relationship
+   */
+  property: GET_FIRST_ASSIGNED_MEMBER_member_member_properties_property;
+  value: string;
+}
+
+export interface GET_FIRST_ASSIGNED_MEMBER_member {
+  __typename: "member";
+  id: string;
+  email: string;
+  name: string;
+  username: string;
+  /**
+   * An array relationship
+   */
+  member_phones: GET_FIRST_ASSIGNED_MEMBER_member_member_phones[];
+  /**
+   * An array relationship
+   */
+  member_categories: GET_FIRST_ASSIGNED_MEMBER_member_member_categories[];
+  /**
+   * An array relationship
+   */
+  member_properties: GET_FIRST_ASSIGNED_MEMBER_member_member_properties[];
+}
+
+export interface GET_FIRST_ASSIGNED_MEMBER {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_FIRST_ASSIGNED_MEMBER_member[];
+}
+
+export interface GET_FIRST_ASSIGNED_MEMBERVariables {
+  salesId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
 //==============================================================
 // START Enums and Input Objects
 //==============================================================
@@ -6779,7 +6975,12 @@ export interface xuemi_member_private_teach_contract_bool_exp {
   author_name?: String_comparison_exp | null;
   contract_id?: uuid_comparison_exp | null;
   ended_at?: timestamptz_comparison_exp | null;
+  first_fill_in_date?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
+  last_ad_material?: String_comparison_exp | null;
+  last_ad_package?: String_comparison_exp | null;
+  last_fill_in_date?: String_comparison_exp | null;
+  last_marketing_activity?: String_comparison_exp | null;
   loan_canceled_at?: String_comparison_exp | null;
   member?: member_bool_exp | null;
   member_email?: String_comparison_exp | null;
@@ -6808,7 +7009,12 @@ export interface xuemi_member_private_teach_contract_order_by {
   author_name?: order_by | null;
   contract_id?: order_by | null;
   ended_at?: order_by | null;
+  first_fill_in_date?: order_by | null;
   id?: order_by | null;
+  last_ad_material?: order_by | null;
+  last_ad_package?: order_by | null;
+  last_fill_in_date?: order_by | null;
+  last_marketing_activity?: order_by | null;
   loan_canceled_at?: order_by | null;
   member?: member_order_by | null;
   member_email?: order_by | null;
