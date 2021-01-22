@@ -119,7 +119,6 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   const [certification, setCertification] = useState<File[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const updateMemberContract = useMutateMemberContract()
-  console.log('render', certification)
 
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     form
@@ -242,37 +241,30 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   } else {
     sheet = (
       <>
-        <Form
-          form={form}
-          colon={false}
-          initialValues={{
-            approvedAt: status.approvedAt ? moment(status.approvedAt) : null,
-            loanCanceledAt: status.loanCanceledAt ? moment(status.loanCanceledAt) : null,
-            refundAppliedAt: status.refundAppliedAt ? moment(status.refundAppliedAt) : null,
-            note,
-            paymentMethod: paymentOptions?.paymentMethod,
-            installmentPlan: paymentOptions?.installmentPlan,
-            paymentNumber: paymentOptions?.paymentNumber,
-            orderExecutors,
-          }}
-        >
+        <Form form={form} colon={false} preserve={false}>
           <StyledAreaTitle>{formatMessage(memberMessages.label.status)}</StyledAreaTitle>
           <StyledRow className="mb-3">
             <Col span={8} className="pr-3">
               <span>{formatMessage(memberContractMessages.label.approvedAt)}</span>
-              <Form.Item name="approvedAt">
+              <Form.Item name="approvedAt" initialValue={status.approvedAt ? moment(status.approvedAt) : null}>
                 <StyledDatePicker format={'YYYY-MM-DD'} />
               </Form.Item>
             </Col>
             <Col span={8} className="pr-3">
               <span>{formatMessage(memberContractMessages.label.loanCancelAt)}</span>
-              <Form.Item name="loanCanceledAt">
+              <Form.Item
+                name="loanCanceledAt"
+                initialValue={status.loanCanceledAt ? moment(status.loanCanceledAt) : null}
+              >
                 <StyledDatePicker format={'YYYY-MM-DD'} />
               </Form.Item>
             </Col>
             <Col span={8}>
               <span>{formatMessage(memberContractMessages.label.refundApplyAt)}</span>
-              <Form.Item name="refundAppliedAt">
+              <Form.Item
+                name="refundAppliedAt"
+                initialValue={status.refundAppliedAt ? moment(status.refundAppliedAt) : null}
+              >
                 <StyledDatePicker format="YYYY-MM-DD" />
               </Form.Item>
             </Col>
@@ -282,7 +274,11 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
           <StyledRow className="mb-3">
             <Col span={8} className="pr-3">
               <span>{formatMessage(memberContractMessages.label.paymentMethod)}</span>
-              <Form.Item name="paymentMethod" rules={[{ required: true, message: '請選擇付款方式' }]}>
+              <Form.Item
+                name="paymentMethod"
+                rules={[{ required: true, message: '請選擇付款方式' }]}
+                initialValue={paymentOptions?.paymentMethod || null}
+              >
                 <StyledSelect>
                   {['藍新', '歐付寶', '富比世', '新仲信', '舊仲信', '匯款', '現金', '裕富'].map((payment: string) => (
                     <Select.Option key={payment} value={payment}>
@@ -294,7 +290,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
             </Col>
             <Col span={5} className="pr-3">
               <span>{formatMessage(memberContractMessages.label.installmentPlan)}</span>
-              <Form.Item name="installmentPlan">
+              <Form.Item name="installmentPlan" initialValue={paymentOptions?.installmentPlan}>
                 <StyledSelect>
                   {[1, 3, 6, 8, 9, 12, 18, 24, 30].map((installmentPlan: number) => (
                     <Select.Option key={installmentPlan} value={installmentPlan}>
@@ -306,7 +302,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
             </Col>
             <Col span={8}>
               <span>{formatMessage(memberContractMessages.label.paymentNumber)}</span>
-              <Form.Item name="paymentNumber">
+              <Form.Item name="paymentNumber" initialValue={paymentOptions?.paymentNumber}>
                 <Input />
               </Form.Item>
             </Col>
@@ -315,7 +311,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
           <StyledAreaTitle>{formatMessage(memberContractMessages.label.note)}</StyledAreaTitle>
           <StyledRow className="mb-3">
             <Col span={24}>
-              <Form.Item name="note">
+              <Form.Item name="note" initialValue={note}>
                 <Input.TextArea>{note}</Input.TextArea>
               </Form.Item>
             </Col>
@@ -324,7 +320,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
           <StyledAreaTitle>{formatMessage(memberContractMessages.label.revenueShare)}</StyledAreaTitle>
           {formatMessage(memberMessages.label.manager)}
 
-          <Form.List name="orderExecutors">
+          <Form.List name="orderExecutors" initialValue={orderExecutors || undefined}>
             {(orderExecutors, { add, remove }) => (
               <div>
                 {orderExecutors.map(field => (
