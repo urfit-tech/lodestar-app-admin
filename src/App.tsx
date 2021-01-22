@@ -17,23 +17,24 @@ const App = () => {
       appId="xuemi"
       customRender={{
         renderAdminMenu: ({ menuItems, onClick }) => {
+          const customMenuItems = [
+            ...menuItems.slice(0, 14),
+            {
+              permissionIsAllowed: true,
+              key: 'member_contract_collection',
+              icon: () => <UserCopyIcon />,
+              name: '合約資料管理',
+              subMenuItems: undefined,
+            },
+            ...menuItems.slice(14),
+          ]
           return (
             <StyledMenu
               mode="inline"
-              defaultOpenKeys={menuItems.filter(v => !isEmpty(v.subMenuItems)).map(v => v.key)}
+              defaultOpenKeys={customMenuItems.filter(v => !isEmpty(v.subMenuItems)).map(v => v.key)}
               onClick={onClick}
             >
-              {[
-                ...menuItems.slice(0, 14),
-                {
-                  permissionIsAllowed: true,
-                  key: 'member_contract_collection',
-                  icon: () => <UserCopyIcon />,
-                  name: '合約資料管理',
-                  subMenuItems: undefined,
-                },
-                ...menuItems.slice(15),
-              ]
+              {customMenuItems
                 .filter(v => v.permissionIsAllowed)
                 .map(v => {
                   if (v.subMenuItems) {
