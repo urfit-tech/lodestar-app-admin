@@ -60,5 +60,20 @@ export const memberContractMessages = {
 export const salesMessages = {
   label: defineMessages({
     salesCall: { id: 'sales.label.salesCall', defaultMessage: '業務撥打' },
+    autoStartCalls: { id: 'sales.label.autoStartCalls', defaultMessage: '自動撥號' },
+    potentials: { id: 'sales.label.potentials', defaultMessage: '待開發' },
+    keepInTouch: { id: 'sales.label.keepInTouch', defaultMessage: '開發中' },
+    deals: { id: 'sales.label.deals', defaultMessage: '已成交' },
+    revoked: { id: 'sales.label.revoked', defaultMessage: '已退款' },
+    rejected: { id: 'sales.label.rejected', defaultMessage: '已拒絕' },
+  }),
+  text: defineMessages({
+    totalSharingOfThisMonth: { id: 'sales.text.totalSharingOfThisMonth', defaultMessage: '本月業績：{amount}' },
+    totalContractsOfThisMonth: { id: 'sales.text.totalContractsOfThisMonth', defaultMessage: '本月成交：{amount} 位' },
+    totalDurationToday: { id: 'sales.text.totalDurationToday', defaultMessage: '今日通時：{minutes} 分鐘' },
+    totalCallsToday: { id: 'sales.text.totalCallsToday', defaultMessage: '今日通次：{amount} 次' },
+    assignedMembersToday: { id: 'sales.text.assignedMembersToday', defaultMessage: '今日名單派發：{amount}' },
+    assignedMembersNewRate: { id: 'sales.text.assignedMembersNewRate', defaultMessage: '名單新舊佔比：' },
+    assignedMembersDetail: { id: 'sales.text.assignedMembersDetail', defaultMessage: '新 {new}% / 舊 {old}%' },
   }),
 }

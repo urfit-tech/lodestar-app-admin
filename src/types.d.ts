@@ -156,6 +156,7 @@ export interface GET_SALES_SUMMARY_member_by_pk {
   picture_url: string | null;
   name: string;
   username: string;
+  email: string;
 }
 
 export interface GET_SALES_SUMMARY_order_executor_sharing {
