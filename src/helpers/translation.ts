@@ -67,14 +67,4 @@ export const salesMessages = {
     revoked: { id: 'sales.label.revoked', defaultMessage: '已退款' },
     rejected: { id: 'sales.label.rejected', defaultMessage: '已拒絕' },
   }),
-  text: defineMessages({
-    totalSharingOfThisMonth: { id: 'sales.text.totalSharingOfThisMonth', defaultMessage: '本月業績：{amount}' },
-    totalContractsOfThisMonth: { id: 'sales.text.totalContractsOfThisMonth', defaultMessage: '本月成交：{amount} 位' },
-    totalDurationToday: { id: 'sales.text.totalDurationToday', defaultMessage: '今日通時：{minutes} 分鐘' },
-    totalCallsToday: { id: 'sales.text.totalCallsToday', defaultMessage: '今日通次：{amount} 次' },
-    assignedMembersToday: { id: 'sales.text.assignedMembersToday', defaultMessage: '今日名單派發：{amount}' },
-    assignedMembersNewRate: { id: 'sales.text.assignedMembersNewRate', defaultMessage: '名單新舊佔比：' },
-    assignedMembersDetail: { id: 'sales.text.assignedMembersDetail', defaultMessage: '新 {new}% / 舊 {old}%' },
-    memberCategories: { id: 'sales.text.memberCategories', defaultMessage: '會員分類：{categories}' },
-  }),
 }

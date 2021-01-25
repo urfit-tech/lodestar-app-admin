@@ -150,6 +150,12 @@ export interface GET_SALE_COLLECTION {
 // GraphQL query operation: GET_SALES_SUMMARY
 // ====================================================
 
+export interface GET_SALES_SUMMARY_member_by_pk_member_properties {
+  __typename: "member_property";
+  id: any;
+  value: string;
+}
+
 export interface GET_SALES_SUMMARY_member_by_pk {
   __typename: "member";
   id: string;
@@ -157,6 +163,10 @@ export interface GET_SALES_SUMMARY_member_by_pk {
   name: string;
   username: string;
   email: string;
+  /**
+   * An array relationship
+   */
+  member_properties: GET_SALES_SUMMARY_member_by_pk_member_properties[];
 }
 
 export interface GET_SALES_SUMMARY_order_executor_sharing {
@@ -270,6 +280,21 @@ export interface GET_SALES_SUMMARYVariables {
 // GraphQL query operation: GET_FIRST_ASSIGNED_MEMBER
 // ====================================================
 
+export interface GET_FIRST_ASSIGNED_MEMBER_member_by_pk_member_properties {
+  __typename: "member_property";
+  id: any;
+  value: string;
+}
+
+export interface GET_FIRST_ASSIGNED_MEMBER_member_by_pk {
+  __typename: "member";
+  id: string;
+  /**
+   * An array relationship
+   */
+  member_properties: GET_FIRST_ASSIGNED_MEMBER_member_by_pk_member_properties[];
+}
+
 export interface GET_FIRST_ASSIGNED_MEMBER_member_member_phones {
   __typename: "member_phone";
   id: any;
@@ -328,6 +353,10 @@ export interface GET_FIRST_ASSIGNED_MEMBER_member {
 }
 
 export interface GET_FIRST_ASSIGNED_MEMBER {
+  /**
+   * fetch data from the table: "member" using primary key columns
+   */
+  member_by_pk: GET_FIRST_ASSIGNED_MEMBER_member_by_pk | null;
   /**
    * fetch data from the table: "member"
    */

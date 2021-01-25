@@ -1,18 +1,35 @@
 import Icon from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Button, Divider, Form, Input, Progress, Radio, Select, Skeleton, Switch, Tabs, Tooltip } from 'antd'
+import {
+  Button,
+  Divider,
+  Form,
+  Input,
+  message,
+  Progress,
+  Radio,
+  Select,
+  Skeleton,
+  Switch,
+  Tabs,
+  TimePicker,
+  Tooltip,
+} from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import axios from 'axios'
 import gql from 'graphql-tag'
 import { AdminBlock, AdminBlockTitle, AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
 import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
+import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { currencyFormatter } from 'lodestar-app-admin/src/helpers'
 import { commonMessages, errorMessages } from 'lodestar-app-admin/src/helpers/translation'
+import { ReactComponent as CallOutIcon } from 'lodestar-app-admin/src/images/icon/call-out.svg'
 import { ReactComponent as PhoneIcon } from 'lodestar-app-admin/src/images/icon/phone.svg'
 import moment from 'moment'
 import { sum } from 'ramda'
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -55,6 +72,12 @@ const StyledLabel = styled.div`
   color: var(--gray-darker);
   font-weight: bold;
   letter-spacing: 0.2px;
+`
+const StyledButton = styled(Button)<{ iconSize?: string }>`
+  padding: 0 1rem;
+  height: 36px;
+  line-height: 1;
+  font-size: ${props => props.iconSize};
 `
 
 const SalesCallPage: React.FC = () => {
@@ -105,9 +128,9 @@ const SalesSummary: React.FC<{
   const oldAssignedRate = salesSummary && salesSummary.assignedMembersAll ? 100 - newAssignedRate : 0
 
   return (
-    <AdminBlock>
+    <AdminBlock className="p-4">
       <div className="d-flex align-items-center">
-        <div className="d-flex align-items-center flex-grow-1">
+        <div className="d-flex align-items-center justify-content-start flex-grow-1">
           <AvatarImage size="44px" src={salesSummary.sales?.picture_url} className="mr-2" />
           <div>
             <MemberName>{salesSummary.sales?.name}</MemberName>
@@ -116,36 +139,19 @@ const SalesSummary: React.FC<{
         </div>
 
         <StyledMetrics className="flex-shrink-0 mr-4">
-          {formatMessage(salesMessages.text.totalSharingOfThisMonth, {
-            amount: currencyFormatter(salesSummary.sharingOfMonth),
-          })}
+          本月業績：{currencyFormatter(salesSummary.sharingOfMonth)}
         </StyledMetrics>
-        <StyledMetrics className="flex-shrink-0">
-          {formatMessage(salesMessages.text.totalContractsOfThisMonth, {
-            amount: salesSummary.contractsOfMonth,
-          })}
-        </StyledMetrics>
+        <StyledMetrics className="flex-shrink-0">本月成交：{salesSummary.contractsOfMonth}</StyledMetrics>
       </div>
       <Divider />
 
       <div className="d-flex align-items-center">
-        <div className="mr-3">
-          {formatMessage(salesMessages.text.totalDurationToday, { minutes: salesSummary.totalDuration })}
-        </div>
-        <div className="mr-3">
-          {formatMessage(salesMessages.text.totalCallsToday, { amount: salesSummary.totalNotes })}
-        </div>
-        <div className="mr-3">
-          {formatMessage(salesMessages.text.assignedMembersToday, { amount: salesSummary.assignedMembersToday })}
-        </div>
+        <div className="mr-3">今日通時：{salesSummary.totalDuration}</div>
+        <div className="mr-3">今日通次：{salesSummary.totalNotes}</div>
+        <div className="mr-3">今日有效名單：{salesSummary.assignedMembersToday}</div>
         <div className="mr-3 flex-grow-1">
-          <span className="mr-2">{formatMessage(salesMessages.text.assignedMembersNewRate)}</span>
-          <Tooltip
-            title={formatMessage(salesMessages.text.assignedMembersDetail, {
-              new: newAssignedRate,
-              old: oldAssignedRate,
-            })}
-          >
+          <span className="mr-2">名單新舊佔比</span>
+          <Tooltip title={`新 ${newAssignedRate}% / 舊 ${oldAssignedRate}%`}>
             <StyledProgress percent={100} showInfo={false} success={{ percent: newAssignedRate }} />
           </Tooltip>
         </div>
@@ -162,32 +168,38 @@ type memberNoteFieldProps = {
   status: 'not-answered' | 'rejected' | 'willing'
   description: string
 }
-const propertyNames = [
-  '性別',
-  '縣市',
-  '有意願領域',
-  '是否在職',
-  '是否為相關職務',
-  '學生程度',
-  '學習動機',
-  '每月學習預算',
-  '有沒有上過其他課程',
-  '是否有轉職意願',
-]
 type memberPropertyFieldProps = {
   [PropertyName: string]: string
 }
+const propertyFields: {
+  name: string
+  required?: boolean
+}[] = [
+  { name: '性別', required: true },
+  { name: '縣市' },
+  { name: '有意願領域', required: true },
+  { name: '是否在職', required: true },
+  { name: '是否為相關職務' },
+  { name: '學生程度', required: true },
+  { name: '學習動機' },
+  { name: '每月學習預算' },
+  { name: '有沒有上過其他課程' },
+  { name: '是否有轉職意願', required: true },
+]
 
 const AssignedMemberContactBlock: React.FC<{
   salesId: string
 }> = ({ salesId }) => {
   const { formatMessage } = useIntl()
-  const { loadingAssignedMember, errorAssignedMember, assignedMember } = useFirstAssignedMember(salesId)
-  const [selectedPhone, setSelectedPhone] = useState('')
+  const { apiHost, authToken } = useAuth()
+  const { id: appId } = useApp()
+  const { loadingAssignedMember, errorAssignedMember, sales, assignedMember } = useFirstAssignedMember(salesId)
   const [memberNoteForm] = useForm<memberNoteFieldProps>()
   const [memberPropertyForm] = useForm<memberPropertyFieldProps>()
+  const [selectedPhone, setSelectedPhone] = useState('')
+  const [disabledPhones, setDisabledPhones] = useState<string[]>([])
+  const [customPhone, setCustomPhone] = useState('')
   const [memberNoteStatus, setMemberNoteStatus] = useState<memberNoteFieldProps['status']>('not-answered')
-  const customPhoneInputRef = useRef<Input | null>(null)
 
   if (loadingAssignedMember) {
     return <Skeleton active />
@@ -197,20 +209,62 @@ const AssignedMemberContactBlock: React.FC<{
     return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
+  const withDurationInput = !sales?.telephone.startsWith('8')
+  const primaryPhoneNumber = selectedPhone === 'custom-phone' ? customPhone : selectedPhone
+
+  const handleSubmit = () => {}
+
+  const handleCall = async (phone: string) => {
+    if (!window.confirm(`撥打號碼：${phone}`)) {
+      return
+    }
+
+    await axios
+      .post(
+        `//${apiHost}/call`,
+        {
+          appId,
+          callFrom: sales?.telephone,
+          callTo: phone,
+        },
+        {
+          headers: { authorization: `Bearer ${authToken}` },
+        },
+      )
+      .then(({ data: { code } }) => {
+        if (code === 'SUCCESS') {
+          message.success('話機連結成功')
+        } else {
+          message.error('電話錯誤')
+        }
+      })
+      .catch(error => {
+        process.env.NODE_ENV === 'development' && console.error(error)
+        message.error('連線異常，請再嘗試')
+      })
+  }
+
   return (
-    <AdminBlock>
+    <AdminBlock className="p-4">
       <div className="row">
         <div className="col-5">
           <AssignedMemberName className="mb-2">{assignedMember.name}</AssignedMemberName>
           <AssignedMemberEmail>{assignedMember.email}</AssignedMemberEmail>
         </div>
         <div className="col-7">
+          <div>會員分類：{assignedMember.categories.map(category => category.name).join(',')}</div>
           <div>
-            {formatMessage(salesMessages.text.memberCategories, {
-              categories: assignedMember.categories.map(category => category.name).join(','),
-            })}
+            <span className="mr-2">
+              素材：{assignedMember.properties.find(property => property.name === '廣告素材')?.value}
+            </span>
+            <a
+              href="https://docs.google.com/presentation/d/1JA-ucGIoMpSzCh5nBW5IpSBf_QsqnY3W1c9-U5Xnk1c/edit?usp=sharing"
+              target="_blank"
+              rel="noreferrer"
+            >
+              查看
+            </a>
           </div>
-          <div>素材：{assignedMember.properties.find(property => property.name === '廣告素材')?.value}</div>
           <div>
             填單日期：
             {assignedMember.properties
@@ -226,17 +280,46 @@ const AssignedMemberContactBlock: React.FC<{
           <AdminBlockTitle className="mb-4">聯絡紀錄</AdminBlockTitle>
           <StyledLabel className="mb-3">選取主要電話</StyledLabel>
           <Radio.Group value={selectedPhone} onChange={e => setSelectedPhone(e.target.value)} className="mb-5">
-            {assignedMember.phones.map(phone => (
-              <Radio key={phone} value={phone} className="d-block mb-3">
-                {phone}
-              </Radio>
-            ))}
+            {assignedMember.phones.map(phone => {
+              const isDisabled = disabledPhones.includes(phone)
+
+              return (
+                <Radio key={phone} value={phone} className="d-flex align-items-center mb-3">
+                  <div className="d-flex align-items-center">
+                    <div className="mr-2">{phone}</div>
+                    <StyledButton
+                      type="primary"
+                      disabled={isDisabled}
+                      className="mr-2"
+                      iconSize="20px"
+                      onClick={() => handleCall(phone)}
+                    >
+                      <CallOutIcon />
+                    </StyledButton>
+                    <StyledButton
+                      size="small"
+                      onClick={() => {
+                        setSelectedPhone('')
+                        isDisabled
+                          ? setDisabledPhones(disabledPhones.filter(disabledPhone => disabledPhone !== phone))
+                          : setDisabledPhones([...disabledPhones, phone])
+                      }}
+                    >
+                      {isDisabled ? '恢復' : '無效'}
+                    </StyledButton>
+                  </div>
+                </Radio>
+              )
+            })}
             <Radio value="custom-phone" className="d-flex align-items-center">
               <div className="d-flex align-items-center">
                 <div className="mr-2">新增其他號碼</div>
                 {selectedPhone === 'custom-phone' && (
                   <div className="flex-grow-1">
-                    <Input ref={customPhoneInputRef} />
+                    <Input
+                      value={customPhone}
+                      onChange={e => setCustomPhone(e.target.value.replace(/[^\d+\-()]/g, ''))}
+                    />
                   </div>
                 )}
               </div>
@@ -248,20 +331,32 @@ const AssignedMemberContactBlock: React.FC<{
             layout="vertical"
             initialValues={{
               status: 'not-answered',
+              duration: moment('00:00:00', 'HH:mm:ss'),
             }}
             onValuesChange={(_, values) => {
               setMemberNoteStatus(values.status)
             }}
           >
-            <Form.Item name="status" label={<StyledLabel className="mb-3">通話狀態</StyledLabel>}>
-              <Select>
+            <Form.Item name="status" label={<StyledLabel>通話狀態</StyledLabel>}>
+              <Select disabled={!primaryPhoneNumber}>
                 <Select.Option value="not-answered">一接就掛/未接</Select.Option>
                 <Select.Option value="rejected">拒絕</Select.Option>
                 <Select.Option value="willing">有意願再聊</Select.Option>
               </Select>
             </Form.Item>
-            <Form.Item name="description" label={<StyledLabel className="mb-3">本次聯絡備註</StyledLabel>}>
-              <Input.TextArea />
+            <Form.Item
+              name="duration"
+              label={<StyledLabel>通時</StyledLabel>}
+              className={withDurationInput ? '' : 'd-none'}
+            >
+              <TimePicker showNow={false} disabled={!primaryPhoneNumber} />
+            </Form.Item>
+            <Form.Item
+              name="description"
+              label={<StyledLabel>本次聯絡備註</StyledLabel>}
+              required={memberNoteStatus !== 'not-answered'}
+            >
+              <Input.TextArea disabled={!primaryPhoneNumber} />
             </Form.Item>
           </Form>
         </div>
@@ -273,25 +368,32 @@ const AssignedMemberContactBlock: React.FC<{
             labelCol={{ span: 8 }}
             wrapperCol={{ span: 16 }}
             initialValues={{
-              ...propertyNames.reduce(
-                (accumulator, propertyName) => ({
-                  ...accumulator,
-                  [propertyName]:
-                    assignedMember.properties.find(property => property.name === propertyName)?.value || '',
-                }),
-                {} as { [PropertyName: string]: string },
-              ),
+              ...propertyFields
+                .map(propertyField => propertyField.name)
+                .reduce(
+                  (accumulator, propertyName) => ({
+                    ...accumulator,
+                    [propertyName]:
+                      assignedMember.properties.find(property => property.name === propertyName)?.value || '',
+                  }),
+                  {} as { [PropertyName: string]: string },
+                ),
             }}
           >
-            {propertyNames.map(propertyName => (
-              <Form.Item key={propertyName} name={propertyName} label={propertyName}>
-                <Input />
+            {propertyFields.map(propertyField => (
+              <Form.Item
+                key={propertyField.name}
+                name={propertyField.name}
+                label={propertyField.name}
+                required={memberNoteStatus === 'willing' && propertyField.required}
+              >
+                <Input disabled={!primaryPhoneNumber} />
               </Form.Item>
             ))}
           </Form>
         </div>
       </div>
-      <Button type="primary" block>
+      <Button type="primary" block onClick={() => handleSubmit()}>
         {formatMessage(commonMessages.ui.save)}
       </Button>
     </AdminBlock>
@@ -314,6 +416,10 @@ const useSalesSummary = (salesId: string) => {
           name
           username
           email
+          member_properties(where: { property: { name: { _eq: "分機號碼" } } }) {
+            id
+            value
+          }
         }
         order_executor_sharing(where: { executor_id: { _eq: $salesId }, created_at: { _gte: $startOfMonth } }) {
           order_executor_id
@@ -385,6 +491,7 @@ const useSalesSummary = (salesId: string) => {
               picture_url: data.member_by_pk.picture_url,
               name: data.member_by_pk.name || data.member_by_pk.username,
               email: data.member_by_pk.email,
+              telephone: data.member_by_pk.member_properties[0]?.value || '',
             }
           : null,
         sharingOfMonth: sum(
@@ -414,6 +521,13 @@ const useFirstAssignedMember = (salesId: string) => {
   >(
     gql`
       query GET_FIRST_ASSIGNED_MEMBER($salesId: String!) {
+        member_by_pk(id: $salesId) {
+          id
+          member_properties(where: { property: { name: { _eq: "分機號碼" } } }) {
+            id
+            value
+          }
+        }
         member(
           where: {
             manager_id: { _eq: $salesId }
@@ -451,6 +565,12 @@ const useFirstAssignedMember = (salesId: string) => {
     { variables: { salesId } },
   )
 
+  const sales = data?.member_by_pk
+    ? {
+        id: data.member_by_pk.id,
+        telephone: data.member_by_pk.member_properties[0]?.value || '',
+      }
+    : null
   const assignedMember = data?.member?.[0]
     ? {
         id: data.member[0].id,
@@ -472,6 +592,7 @@ const useFirstAssignedMember = (salesId: string) => {
   return {
     loadingAssignedMember: loading,
     errorAssignedMember: error,
+    sales,
     assignedMember,
     refetchAssignedMember: refetch,
   }
