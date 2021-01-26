@@ -514,6 +514,18 @@ export interface UPDATE_MEMBER_PROPERTIESVariables {
 // GraphQL query operation: GET_SALES_CALL_MEMBER
 // ====================================================
 
+export interface GET_SALES_CALL_MEMBER_member_member_phones {
+  __typename: "member_phone";
+  id: any;
+  phone: string;
+}
+
+export interface GET_SALES_CALL_MEMBER_member_member_notes {
+  __typename: "member_note";
+  id: string;
+  created_at: any;
+}
+
 export interface GET_SALES_CALL_MEMBER_member_member_categories_category {
   __typename: "category";
   name: string;
@@ -528,12 +540,6 @@ export interface GET_SALES_CALL_MEMBER_member_member_categories {
   category: GET_SALES_CALL_MEMBER_member_member_categories_category;
 }
 
-export interface GET_SALES_CALL_MEMBER_member_member_phones {
-  __typename: "member_phone";
-  id: any;
-  phone: string;
-}
-
 export interface GET_SALES_CALL_MEMBER_member_member_contracts {
   __typename: "member_contract";
   id: any;
@@ -544,14 +550,20 @@ export interface GET_SALES_CALL_MEMBER_member_member_contracts {
 export interface GET_SALES_CALL_MEMBER_member {
   __typename: "member";
   id: string;
-  /**
-   * An array relationship
-   */
-  member_categories: GET_SALES_CALL_MEMBER_member_member_categories[];
+  name: string;
+  email: string;
   /**
    * An array relationship
    */
   member_phones: GET_SALES_CALL_MEMBER_member_member_phones[];
+  /**
+   * An array relationship
+   */
+  member_notes: GET_SALES_CALL_MEMBER_member_member_notes[];
+  /**
+   * An array relationship
+   */
+  member_categories: GET_SALES_CALL_MEMBER_member_member_categories[];
   /**
    * An array relationship
    */
@@ -567,6 +579,8 @@ export interface GET_SALES_CALL_MEMBER {
 
 export interface GET_SALES_CALL_MEMBERVariables {
   condition: member_bool_exp;
+  hasContacted: boolean;
+  hasTransacted: boolean;
 }
 
 /* tslint:disable */

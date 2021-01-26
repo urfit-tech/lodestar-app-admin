@@ -5,6 +5,8 @@ import {
   GET_MEMBER_PRIVATE_TEACH_CONTRACT,
   GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables,
   GET_SALE_COLLECTION,
+  GET_SALES_CALL_MEMBER,
+  GET_SALES_CALL_MEMBERVariables,
   order_by,
 } from './types.d'
 import { DateRangeType, MemberContractProps, StatusType } from './types/memberContract'
@@ -104,88 +106,88 @@ export const useMemberContract = ({
     loading || error || !data
       ? []
       : data.xuemi_member_private_teach_contract.map(v => ({
-          id: v.id,
-          authorName: v.author_name,
-          member: {
-            id: v.member_id,
-            name: v.member_name,
-            pictureUrl: v.member_picture_url,
-            email: v.member_email,
-          },
-          startedAt: new Date(v.started_at),
-          endedAt: new Date(v.ended_at),
-          agreedAt: v.agreed_at ? new Date(v.agreed_at) : null,
-          revokedAt: v.revoked_at ? new Date(v.revoked_at) : null,
-          approvedAt: v.approved_at ? new Date(v.approved_at) : null,
-          loanCanceledAt: v.loan_canceled_at ? new Date(v.loan_canceled_at) : null,
-          refundAppliedAt: v.refund_applied_at ? new Date(v.refund_applied_at) : null,
-          referral: {
-            name: v.referral_name,
-            email: v.referral_email,
-          },
-          appointmentCreatorName: v.appointment_creator_name,
-          studentCertification: v.student_certification || null,
-          invoice: v.values?.invoice || null,
-          projectPlanName: v.values?.projectPlanName || null,
-          price: v.values?.price || null,
-          coinAmount: v.values?.coinAmount || null,
-          paymentOptions: {
-            paymentMethod: v.values.paymentOptions?.paymentMethod || '',
-            paymentNumber: v.values.paymentOptions?.paymentNumber || '',
-            installmentPlan: v.values.paymentOptions?.installmentPlan || 0,
-          },
-          note: v.note,
-          orderExecutors:
-            v.values?.orderExecutors?.map((v: { ratio: number; memberId: string }) => ({
-              ratio: v.ratio,
-              memberId: v.memberId,
-            })) || [],
-          couponCount: v.values?.coupons.length || null,
-        }))
+        id: v.id,
+        authorName: v.author_name,
+        member: {
+          id: v.member_id,
+          name: v.member_name,
+          pictureUrl: v.member_picture_url,
+          email: v.member_email,
+        },
+        startedAt: new Date(v.started_at),
+        endedAt: new Date(v.ended_at),
+        agreedAt: v.agreed_at ? new Date(v.agreed_at) : null,
+        revokedAt: v.revoked_at ? new Date(v.revoked_at) : null,
+        approvedAt: v.approved_at ? new Date(v.approved_at) : null,
+        loanCanceledAt: v.loan_canceled_at ? new Date(v.loan_canceled_at) : null,
+        refundAppliedAt: v.refund_applied_at ? new Date(v.refund_applied_at) : null,
+        referral: {
+          name: v.referral_name,
+          email: v.referral_email,
+        },
+        appointmentCreatorName: v.appointment_creator_name,
+        studentCertification: v.student_certification || null,
+        invoice: v.values?.invoice || null,
+        projectPlanName: v.values?.projectPlanName || null,
+        price: v.values?.price || null,
+        coinAmount: v.values?.coinAmount || null,
+        paymentOptions: {
+          paymentMethod: v.values.paymentOptions?.paymentMethod || '',
+          paymentNumber: v.values.paymentOptions?.paymentNumber || '',
+          installmentPlan: v.values.paymentOptions?.installmentPlan || 0,
+        },
+        note: v.note,
+        orderExecutors:
+          v.values?.orderExecutors?.map((v: { ratio: number; memberId: string }) => ({
+            ratio: v.ratio,
+            memberId: v.memberId,
+          })) || [],
+        couponCount: v.values?.coupons.length || null,
+      }))
 
   const loadMoreMemberContracts =
     (data?.xuemi_member_private_teach_contract_aggregate.aggregate?.count || 0) >= 10
       ? () =>
-          fetchMore({
-            variables: {
-              orderBy,
-              condition: {
-                ...condition,
-                agreed_at: sortOrder.agreedAt
-                  ? {
-                      [sortOrder.agreedAt === 'descend'
-                        ? '_lt'
-                        : '_gt']: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.agreed_at,
-                    }
-                  : { _is_null: false },
-                revoked_at: sortOrder.revokedAt
-                  ? {
-                      [sortOrder.revokedAt === 'descend'
-                        ? '_lt'
-                        : '_gt']: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.revoked_at,
-                    }
-                  : { _is_null: !isRevoked },
-                started_at: sortOrder.startedAt
-                  ? {
-                      [sortOrder.startedAt === 'descend'
-                        ? '_lt'
-                        : '_gt']: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.started_at,
-                    }
-                  : undefined,
-              },
+        fetchMore({
+          variables: {
+            orderBy,
+            condition: {
+              ...condition,
+              agreed_at: sortOrder.agreedAt
+                ? {
+                  [sortOrder.agreedAt === 'descend'
+                    ? '_lt'
+                    : '_gt']: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.agreed_at,
+                }
+                : { _is_null: false },
+              revoked_at: sortOrder.revokedAt
+                ? {
+                  [sortOrder.revokedAt === 'descend'
+                    ? '_lt'
+                    : '_gt']: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.revoked_at,
+                }
+                : { _is_null: !isRevoked },
+              started_at: sortOrder.startedAt
+                ? {
+                  [sortOrder.startedAt === 'descend'
+                    ? '_lt'
+                    : '_gt']: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.started_at,
+                }
+                : undefined,
             },
-            updateQuery: (prev, { fetchMoreResult }) => {
-              if (!fetchMoreResult) {
-                return prev
-              }
-              return Object.assign({}, prev, {
-                xuemi_member_private_teach_contract: [
-                  ...prev.xuemi_member_private_teach_contract,
-                  ...fetchMoreResult.xuemi_member_private_teach_contract,
-                ],
-              })
-            },
-          })
+          },
+          updateQuery: (prev, { fetchMoreResult }) => {
+            if (!fetchMoreResult) {
+              return prev
+            }
+            return Object.assign({}, prev, {
+              xuemi_member_private_teach_contract: [
+                ...prev.xuemi_member_private_teach_contract,
+                ...fetchMoreResult.xuemi_member_private_teach_contract,
+              ],
+            })
+          },
+        })
       : undefined
 
   return {
@@ -239,5 +241,99 @@ export const useXuemiSales = () => {
     error,
     xuemiSales,
     refetch,
+  }
+}
+
+export const useSalesCallMember = ({ salesId, status }: {
+  salesId: string
+  status: 'contacted' | 'transacted'
+}) => {
+
+  const condition = status === 'contacted' ? {
+    manager_id: { _eq: salesId },
+    member_notes: {
+      author_id: { _eq: salesId },
+      type: { _eq: 'outbound' },
+      status: { _eq: "answered" },
+      rejected_at: { _is_null: true },
+    },
+    _not: {
+      member_contracts: {
+        _or: [{ agreed_at: { _is_null: false } }, { revoked_at: { _is_null: false } }]
+      }
+    }
+  } : status === 'transacted' ? {
+    manager_id: { _eq: salesId },
+    member_contracts: {
+      agreed_at: { _is_null: false },
+      revoked_at: { _is_null: true }
+    }
+  } : {}
+  const { loading, data, error, refetch } = useQuery<GET_SALES_CALL_MEMBER, GET_SALES_CALL_MEMBERVariables>(gql`
+    query GET_SALES_CALL_MEMBER($condition: member_bool_exp!, $hasContacted: Boolean!, $hasTransacted: Boolean!) {
+      member(where: $condition) {
+        id
+        name
+        email
+        member_phones {
+          id
+          phone
+        }
+        member_notes(limit: 1, order_by: {created_at: desc}) @include(if: $hasContacted) {
+          id
+          created_at
+        }
+        member_categories @include(if: $hasContacted) {
+          id
+          category {
+            name
+          }
+        }
+        member_contracts @include(if: $hasTransacted) {
+          id
+          values
+          ended_at
+        }
+      }
+    }
+  `, {
+    variables: {
+      condition,
+      hasContacted: status === 'contacted',
+      hasTransacted: status === 'transacted'
+    }
+  })
+
+  const members: {
+    id: string
+    name: string
+    email: string
+    phones: string[]
+    categoryNames?: string[]
+    lastContactAt?: Date
+    contracts?: {
+      projectPlanName: string
+      endedAt: Date
+    }[]
+  }[] = loading || error || !data ? [] : data.member.map(v => (
+    {
+      id: v.id,
+      name: v.name,
+      email: v.email,
+      phones: v.member_phones.map(w => w.phone),
+      categoryNames: v.member_categories?.map(w => w.category.name),
+      lastContactAt: v.member_notes?.[0]?.created_at,
+      contracts: v.member_contracts?.map(w => ({
+        projectPlanName: w.values.projectPlanName,
+        endedAt: new Date(w.ended_at)
+      }))
+    }
+  ))
+
+  return {
+    loadingMembers: loading,
+    members,
+    errorMembers: error,
+    refetchMembers: refetch
   }
 }

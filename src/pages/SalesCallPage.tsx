@@ -11,7 +11,6 @@ import {
   Select,
   Skeleton,
   Switch,
-  Table,
   Tabs,
   TimePicker,
   Tooltip
@@ -20,7 +19,6 @@ import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
 import gql from 'graphql-tag'
 import { AdminBlock, AdminBlockTitle, AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
-import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
 import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
 import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
@@ -35,6 +33,8 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
+import SalesCallContactedMemberBlock from '../components/salesCall/SalesCallContactedMemberBlock'
+import SalesCallTransactedMemberBlock from '../components/salesCall/SalesCallTransactedMemberBlock'
 import { salesMessages } from '../helpers/translation'
 import types from '../types'
 
@@ -81,21 +81,6 @@ const StyledButton = styled(Button) <{ $iconSize?: string }>`
   line-height: 1;
   font-size: ${props => props.$iconSize};
 `
-
-const SalesCallContactedMemberBlock: React.FC<{ salesId: string }> = ({ salesId }) => {
-  const { loadingMember, errorMember, } = useSalesCallMember({ status: 'contacted', salesId })
-
-  return <AdminCard>
-    <Table />
-  </AdminCard>
-}
-
-const SalesCallTransactedMemberBlock: React.FC<{ salesId: string }> = ({ salesId }) => {
-  const { loadingMember } = useSalesCallMember({ status: 'transacted', salesId })
-  return <AdminCard>
-    <Table />
-  </AdminCard>
-}
 
 const SalesCallPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -825,74 +810,3 @@ const UPDATE_MEMBER_PROPERTIES = gql`
 `
 
 export default SalesCallPage
-
-const useSalesCallMember = ({ salesId, status }: {
-  salesId: string
-  status: 'contacted' | 'transacted'
-}) => {
-  const condition = status === 'contacted' ? {
-    manager_id: { _eq: salesId },
-    member_note: {
-      author_id: { _eq: salesId },
-      type: { _eq: 'outbound' },
-      status: { _eq: "answered" },
-      rejected_at: { _is_null: true },
-    },
-    _not: {
-
-    }
-  } : status === 'transacted' ? {} : {}
-  const { loading, data, error, refetch } = useQuery<types.GET_SALES_CALL_MEMBER, types.GET_SALES_CALL_MEMBERVariables>(gql`
-    query GET_SALES_CALL_MEMBER($condition: member_bool_exp!) {
-      member { # should add condition
-        id
-        member_categories {
-          id
-          category {
-            name
-          }
-        }
-        member_phones {
-          id
-          phone
-        }
-        member_contracts {
-          id
-          values
-          ended_at
-        }
-      }
-    }
-  `, {
-    variables: {
-      condition
-    }
-  })
-
-  const members: {
-    id: string
-    categoryNames: string[]
-    phones: string[]
-    contracts: {
-      projectPlanName: string
-      endedAt: Date
-    }[]
-  }[] = loading || error || !data ? [] : data.member.map(v => (
-    {
-      id: v.id,
-      categoryNames: v.member_categories.map(w => w.category.name),
-      phones: v.member_phones.map(w => w.phone),
-      contracts: v.member_contracts.map(w => ({
-        projectPlanName: w.values.projectPlanName,
-        endedAt: new Date(w.ended_at)
-      }))
-    }
-  ))
-
-  return {
-    loadingMember: loading,
-    members,
-    errorMember: error,
-    refetchMember: refetch
-  }
-}
