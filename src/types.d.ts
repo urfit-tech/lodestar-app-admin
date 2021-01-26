@@ -510,6 +510,70 @@ export interface UPDATE_MEMBER_PROPERTIESVariables {
 // @generated
 // This file was automatically generated and should not be edited.
 
+// ====================================================
+// GraphQL query operation: GET_SALES_CALL_MEMBER
+// ====================================================
+
+export interface GET_SALES_CALL_MEMBER_member_member_categories_category {
+  __typename: "category";
+  name: string;
+}
+
+export interface GET_SALES_CALL_MEMBER_member_member_categories {
+  __typename: "member_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_SALES_CALL_MEMBER_member_member_categories_category;
+}
+
+export interface GET_SALES_CALL_MEMBER_member_member_phones {
+  __typename: "member_phone";
+  id: any;
+  phone: string;
+}
+
+export interface GET_SALES_CALL_MEMBER_member_member_contracts {
+  __typename: "member_contract";
+  id: any;
+  values: any | null;
+  ended_at: any | null;
+}
+
+export interface GET_SALES_CALL_MEMBER_member {
+  __typename: "member";
+  id: string;
+  /**
+   * An array relationship
+   */
+  member_categories: GET_SALES_CALL_MEMBER_member_member_categories[];
+  /**
+   * An array relationship
+   */
+  member_phones: GET_SALES_CALL_MEMBER_member_member_phones[];
+  /**
+   * An array relationship
+   */
+  member_contracts: GET_SALES_CALL_MEMBER_member_member_contracts[];
+}
+
+export interface GET_SALES_CALL_MEMBER {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_SALES_CALL_MEMBER_member[];
+}
+
+export interface GET_SALES_CALL_MEMBERVariables {
+  condition: member_bool_exp;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
 //==============================================================
 // START Enums and Input Objects
 //==============================================================

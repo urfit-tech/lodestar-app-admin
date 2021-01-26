@@ -11,14 +11,16 @@ import {
   Select,
   Skeleton,
   Switch,
+  Table,
   Tabs,
   TimePicker,
-  Tooltip,
+  Tooltip
 } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
 import gql from 'graphql-tag'
 import { AdminBlock, AdminBlockTitle, AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
+import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
 import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
 import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
@@ -73,12 +75,27 @@ const StyledLabel = styled.div`
   font-weight: bold;
   letter-spacing: 0.2px;
 `
-const StyledButton = styled(Button)<{ $iconSize?: string }>`
+const StyledButton = styled(Button) <{ $iconSize?: string }>`
   padding: 0 1rem;
   height: 36px;
   line-height: 1;
   font-size: ${props => props.$iconSize};
 `
+
+const SalesCallContactedMemberBlock: React.FC<{ salesId: string }> = ({ salesId }) => {
+  const { loadingMember, errorMember, } = useSalesCallMember({ status: 'contacted', salesId })
+
+  return <AdminCard>
+    <Table />
+  </AdminCard>
+}
+
+const SalesCallTransactedMemberBlock: React.FC<{ salesId: string }> = ({ salesId }) => {
+  const { loadingMember } = useSalesCallMember({ status: 'transacted', salesId })
+  return <AdminCard>
+    <Table />
+  </AdminCard>
+}
 
 const SalesCallPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -98,8 +115,12 @@ const SalesCallPage: React.FC = () => {
         <Tabs.TabPane key="potentials" tab={formatMessage(salesMessages.label.potentials)}>
           {currentMemberId && <AssignedMemberContactBlock salesId={currentMemberId} />}
         </Tabs.TabPane>
-        <Tabs.TabPane key="keep-in-touch" tab={formatMessage(salesMessages.label.keepInTouch)}></Tabs.TabPane>
-        <Tabs.TabPane key="deals" tab={formatMessage(salesMessages.label.deals)}></Tabs.TabPane>
+        <Tabs.TabPane key="keep-in-touch" tab={formatMessage(salesMessages.label.keepInTouch)}>
+          {currentMemberId && <SalesCallContactedMemberBlock salesId={currentMemberId} />}
+        </Tabs.TabPane>
+        <Tabs.TabPane key="deals" tab={formatMessage(salesMessages.label.deals)}>
+          {currentMemberId && <SalesCallTransactedMemberBlock salesId={currentMemberId} />}
+        </Tabs.TabPane>
         <Tabs.TabPane key="revoked" tab={formatMessage(salesMessages.label.revoked)} disabled></Tabs.TabPane>
         <Tabs.TabPane key="rejected" tab={formatMessage(salesMessages.label.rejected)} disabled></Tabs.TabPane>
       </Tabs>
@@ -179,17 +200,17 @@ const propertyFields: {
   name: string
   required?: boolean
 }[] = [
-  { name: '性別', required: true },
-  { name: '縣市' },
-  { name: '有意願領域', required: true },
-  { name: '是否在職', required: true },
-  { name: '是否為相關職務' },
-  { name: '學生程度', required: true },
-  { name: '學習動機' },
-  { name: '每月學習預算' },
-  { name: '有沒有上過其他課程' },
-  { name: '是否有轉職意願', required: true },
-]
+    { name: '性別', required: true },
+    { name: '縣市' },
+    { name: '有意願領域', required: true },
+    { name: '是否在職', required: true },
+    { name: '是否為相關職務' },
+    { name: '學生程度', required: true },
+    { name: '學習動機' },
+    { name: '每月學習預算' },
+    { name: '有沒有上過其他課程' },
+    { name: '是否有轉職意願', required: true },
+  ]
 
 const AssignedMemberContactBlock: React.FC<{
   salesId: string
@@ -301,10 +322,10 @@ const AssignedMemberContactBlock: React.FC<{
             })),
             selectedPhone === 'custom-phone'
               ? {
-                  member_id: assignedMember.id,
-                  phone: primaryPhoneNumber,
-                  is_primary: true,
-                }
+                member_id: assignedMember.id,
+                phone: primaryPhoneNumber,
+                is_primary: true,
+              }
               : undefined,
           ].filter(notEmpty),
         },
@@ -537,8 +558,8 @@ const AssignedMemberContactBlock: React.FC<{
                       ))}
                     </Select>
                   ) : (
-                    <Input disabled={!primaryPhoneNumber} />
-                  )}
+                      <Input disabled={!primaryPhoneNumber} />
+                    )}
                 </Form.Item>
               )
             })}
@@ -637,25 +658,25 @@ const useSalesSummary = (salesId: string) => {
 
   const salesSummary = data
     ? {
-        sales: data.member_by_pk
-          ? {
-              id: data.member_by_pk.id,
-              picture_url: data.member_by_pk.picture_url,
-              name: data.member_by_pk.name || data.member_by_pk.username,
-              email: data.member_by_pk.email,
-              telephone: data.member_by_pk.member_properties[0]?.value || '',
-            }
-          : null,
-        sharingOfMonth: sum(
-          data.order_executor_sharing.map(sharing => Math.floor(sharing.total_price * sharing.ratio)),
-        ),
-        contractsOfMonth: data.member_contract_aggregate.aggregate?.count || 0,
-        totalDuration: data.member_note_aggregate.aggregate?.sum?.duration || 0,
-        totalNotes: data.member_note_aggregate.aggregate?.count || 0,
-        assignedMembersToday: data.assigned_members_today.aggregate?.count || 0,
-        assignedMembersNew: data.assigned_members_last_two_weeks.aggregate?.count || 0,
-        assignedMembersAll: data.assigned_members_last_three_months.aggregate?.count || 0,
-      }
+      sales: data.member_by_pk
+        ? {
+          id: data.member_by_pk.id,
+          picture_url: data.member_by_pk.picture_url,
+          name: data.member_by_pk.name || data.member_by_pk.username,
+          email: data.member_by_pk.email,
+          telephone: data.member_by_pk.member_properties[0]?.value || '',
+        }
+        : null,
+      sharingOfMonth: sum(
+        data.order_executor_sharing.map(sharing => Math.floor(sharing.total_price * sharing.ratio)),
+      ),
+      contractsOfMonth: data.member_contract_aggregate.aggregate?.count || 0,
+      totalDuration: data.member_note_aggregate.aggregate?.sum?.duration || 0,
+      totalNotes: data.member_note_aggregate.aggregate?.count || 0,
+      assignedMembersToday: data.assigned_members_today.aggregate?.count || 0,
+      assignedMembersNew: data.assigned_members_last_two_weeks.aggregate?.count || 0,
+      assignedMembersAll: data.assigned_members_last_three_months.aggregate?.count || 0,
+    }
     : null
 
   return {
@@ -725,9 +746,9 @@ const useFirstAssignedMember = (salesId: string) => {
 
   const sales = data?.member_by_pk
     ? {
-        id: data.member_by_pk.id,
-        telephone: data.member_by_pk.member_properties[0]?.value || '',
-      }
+      id: data.member_by_pk.id,
+      telephone: data.member_by_pk.member_properties[0]?.value || '',
+    }
     : null
   const properties =
     data?.property.map(property => ({
@@ -737,20 +758,20 @@ const useFirstAssignedMember = (salesId: string) => {
     })) || []
   const assignedMember = data?.member?.[0]
     ? {
-        id: data.member[0].id,
-        email: data.member[0].email,
-        name: data.member[0].name || data.member[0].username,
-        phones: data.member[0].member_phones.map(v => v.phone),
-        categories: data.member[0].member_categories.map(v => ({
-          id: v.category.id,
-          name: v.category.name,
-        })),
-        properties: data.member[0].member_properties.map(v => ({
-          id: v.property.id,
-          name: v.property.name,
-          value: v.value,
-        })),
-      }
+      id: data.member[0].id,
+      email: data.member[0].email,
+      name: data.member[0].name || data.member[0].username,
+      phones: data.member[0].member_phones.map(v => v.phone),
+      categories: data.member[0].member_categories.map(v => ({
+        id: v.category.id,
+        name: v.category.name,
+      })),
+      properties: data.member[0].member_properties.map(v => ({
+        id: v.property.id,
+        name: v.property.name,
+        value: v.value,
+      })),
+    }
     : null
 
   return {
@@ -804,3 +825,74 @@ const UPDATE_MEMBER_PROPERTIES = gql`
 `
 
 export default SalesCallPage
+
+const useSalesCallMember = ({ salesId, status }: {
+  salesId: string
+  status: 'contacted' | 'transacted'
+}) => {
+  const condition = status === 'contacted' ? {
+    manager_id: { _eq: salesId },
+    member_note: {
+      author_id: { _eq: salesId },
+      type: { _eq: 'outbound' },
+      status: { _eq: "answered" },
+      rejected_at: { _is_null: true },
+    },
+    _not: {
+
+    }
+  } : status === 'transacted' ? {} : {}
+  const { loading, data, error, refetch } = useQuery<types.GET_SALES_CALL_MEMBER, types.GET_SALES_CALL_MEMBERVariables>(gql`
+    query GET_SALES_CALL_MEMBER($condition: member_bool_exp!) {
+      member { # should add condition
+        id
+        member_categories {
+          id
+          category {
+            name
+          }
+        }
+        member_phones {
+          id
+          phone
+        }
+        member_contracts {
+          id
+          values
+          ended_at
+        }
+      }
+    }
+  `, {
+    variables: {
+      condition
+    }
+  })
+
+  const members: {
+    id: string
+    categoryNames: string[]
+    phones: string[]
+    contracts: {
+      projectPlanName: string
+      endedAt: Date
+    }[]
+  }[] = loading || error || !data ? [] : data.member.map(v => (
+    {
+      id: v.id,
+      categoryNames: v.member_categories.map(w => w.category.name),
+      phones: v.member_phones.map(w => w.phone),
+      contracts: v.member_contracts.map(w => ({
+        projectPlanName: w.values.projectPlanName,
+        endedAt: new Date(w.ended_at)
+      }))
+    }
+  ))
+
+  return {
+    loadingMember: loading,
+    members,
+    errorMember: error,
+    refetchMember: refetch
+  }
+}
