@@ -1,5 +1,5 @@
 import Icon from '@ant-design/icons'
-import { useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import {
   Button,
   Divider,
@@ -23,11 +23,11 @@ import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
 import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
-import { currencyFormatter } from 'lodestar-app-admin/src/helpers'
+import { currencyFormatter, handleError, notEmpty } from 'lodestar-app-admin/src/helpers'
 import { commonMessages, errorMessages } from 'lodestar-app-admin/src/helpers/translation'
 import { ReactComponent as CallOutIcon } from 'lodestar-app-admin/src/images/icon/call-out.svg'
 import { ReactComponent as PhoneIcon } from 'lodestar-app-admin/src/images/icon/phone.svg'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import { sum } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
@@ -73,11 +73,11 @@ const StyledLabel = styled.div`
   font-weight: bold;
   letter-spacing: 0.2px;
 `
-const StyledButton = styled(Button)<{ iconSize?: string }>`
+const StyledButton = styled(Button)<{ $iconSize?: string }>`
   padding: 0 1rem;
   height: 36px;
   line-height: 1;
-  font-size: ${props => props.iconSize};
+  font-size: ${props => props.$iconSize};
 `
 
 const SalesCallPage: React.FC = () => {
@@ -166,6 +166,7 @@ const SalesSummary: React.FC<{
 
 type memberNoteFieldProps = {
   status: 'not-answered' | 'rejected' | 'willing'
+  duration: Moment
   description: string
 }
 type memberPropertyFieldProps = {
@@ -189,16 +190,34 @@ const propertyFields: {
 
 const AssignedMemberContactBlock: React.FC<{
   salesId: string
-}> = ({ salesId }) => {
+  onFinished?: () => void
+}> = ({ salesId, onFinished }) => {
   const { formatMessage } = useIntl()
   const { apiHost, authToken } = useAuth()
   const { id: appId } = useApp()
-  const { loadingAssignedMember, errorAssignedMember, sales, assignedMember } = useFirstAssignedMember(salesId)
+
   const [memberNoteForm] = useForm<memberNoteFieldProps>()
   const [memberPropertyForm] = useForm<memberPropertyFieldProps>()
+
+  const { loadingAssignedMember, errorAssignedMember, sales, properties, assignedMember } = useFirstAssignedMember(
+    salesId,
+  )
+  const [markInvalidMember] = useMutation<types.MARK_INVALID_MEMBER, types.MARK_INVALID_MEMBERVariables>(
+    MARK_INVALID_MEMBER,
+  )
+  const [updateMemberPhone] = useMutation<types.UPDATE_MEMBER_PHONE, types.UPDATE_MEMBER_PHONEVariables>(
+    UPDATE_MEMBER_PHONE,
+  )
+  const [insertMemberNote] = useMutation<types.INSERT_MEMBER_NOTE, types.INSERT_MEMBER_NOTEVariables>(
+    INSERT_MEMBER_NOTE,
+  )
+  const [updateMemberProperties] = useMutation<types.UPDATE_MEMBER_PROPERTIES, types.UPDATE_MEMBER_PROPERTIESVariables>(
+    UPDATE_MEMBER_PROPERTIES,
+  )
+
   const [selectedPhone, setSelectedPhone] = useState('')
   const [disabledPhones, setDisabledPhones] = useState<string[]>([])
-  const [customPhone, setCustomPhone] = useState('')
+  const [customPhoneNumber, setCustomPhoneNumber] = useState('')
   const [memberNoteStatus, setMemberNoteStatus] = useState<memberNoteFieldProps['status']>('not-answered')
 
   if (loadingAssignedMember) {
@@ -210,16 +229,97 @@ const AssignedMemberContactBlock: React.FC<{
   }
 
   const withDurationInput = !sales?.telephone.startsWith('8')
-  const primaryPhoneNumber = selectedPhone === 'custom-phone' ? customPhone : selectedPhone
+  const primaryPhoneNumber = selectedPhone === 'custom-phone' ? customPhoneNumber : selectedPhone
 
-  const handleSubmit = () => {}
+  const handleSubmit = async () => {
+    if (!primaryPhoneNumber) {
+      if (assignedMember.phones.every(phone => disabledPhones.includes(phone))) {
+        await markInvalidMember({
+          variables: {
+            memberId: assignedMember.id,
+          },
+        }).catch(handleError)
+        onFinished?.()
+        return
+      }
+
+      message.error('請選取主要電話')
+      return
+    }
+
+    try {
+      await memberNoteForm.validateFields()
+      await memberPropertyForm.validateFields()
+    } catch (error) {
+      process.env.NODE_ENV === 'development' && console.error(error)
+      message.error('請確實填寫必填欄位')
+      return
+    }
+
+    const noteValues = memberNoteForm.getFieldsValue()
+    const propertyValues = memberPropertyForm.getFieldsValue()
+
+    try {
+      await updateMemberPhone({
+        variables: {
+          data: [
+            ...assignedMember.phones.map(phone => ({
+              member_id: assignedMember.id,
+              phone,
+              is_primary: phone === primaryPhoneNumber,
+              is_valid: disabledPhones.includes(phone),
+            })),
+            selectedPhone === 'custom-phone'
+              ? {
+                  member_id: assignedMember.id,
+                  phone: primaryPhoneNumber,
+                  is_primary: true,
+                }
+              : undefined,
+          ].filter(notEmpty),
+        },
+      })
+
+      await insertMemberNote({
+        variables: {
+          data: {
+            member_id: assignedMember.id,
+            author_id: salesId,
+            type: 'outbound',
+            status: memberNoteStatus === 'not-answered' ? 'missed' : 'answered',
+            duration: withDurationInput
+              ? noteValues.duration.hour() * 3600 + noteValues.duration.minute() * 60 + noteValues.duration.second()
+              : 0,
+            description: noteValues.description,
+            rejected_at: memberNoteStatus === 'rejected' ? new Date() : undefined,
+          },
+        },
+      })
+
+      await updateMemberProperties({
+        variables: {
+          data: properties
+            .filter(property => propertyValues[property.id])
+            .map(property => ({
+              member_id: assignedMember.id,
+              property_id: property.id,
+              value: propertyValues[property.id],
+            })),
+        },
+      })
+
+      onFinished?.()
+    } catch (error) {
+      handleError(error)
+    }
+  }
 
   const handleCall = async (phone: string) => {
     if (!window.confirm(`撥打號碼：${phone}`)) {
       return
     }
 
-    await axios
+    axios
       .post(
         `//${apiHost}/call`,
         {
@@ -279,19 +379,31 @@ const AssignedMemberContactBlock: React.FC<{
         <div className="col-5">
           <AdminBlockTitle className="mb-4">聯絡紀錄</AdminBlockTitle>
           <StyledLabel className="mb-3">選取主要電話</StyledLabel>
-          <Radio.Group value={selectedPhone} onChange={e => setSelectedPhone(e.target.value)} className="mb-5">
+          <Radio.Group
+            value={selectedPhone}
+            onChange={e => {
+              setSelectedPhone(e.target.value)
+              setCustomPhoneNumber('')
+            }}
+            className="mb-5"
+          >
             {assignedMember.phones.map(phone => {
               const isDisabled = disabledPhones.includes(phone)
 
               return (
-                <Radio key={phone} value={phone} className="d-flex align-items-center mb-3">
+                <Radio
+                  key={phone}
+                  value={phone}
+                  disabled={disabledPhones.includes(phone)}
+                  className="d-flex align-items-center mb-3"
+                >
                   <div className="d-flex align-items-center">
                     <div className="mr-2">{phone}</div>
                     <StyledButton
                       type="primary"
                       disabled={isDisabled}
                       className="mr-2"
-                      iconSize="20px"
+                      $iconSize="20px"
                       onClick={() => handleCall(phone)}
                     >
                       <CallOutIcon />
@@ -317,8 +429,8 @@ const AssignedMemberContactBlock: React.FC<{
                 {selectedPhone === 'custom-phone' && (
                   <div className="flex-grow-1">
                     <Input
-                      value={customPhone}
-                      onChange={e => setCustomPhone(e.target.value.replace(/[^\d+\-()]/g, ''))}
+                      value={customPhoneNumber}
+                      onChange={e => setCustomPhoneNumber(e.target.value.replace(/[^\d+\-()]/g, ''))}
                     />
                   </div>
                 )}
@@ -354,7 +466,7 @@ const AssignedMemberContactBlock: React.FC<{
             <Form.Item
               name="description"
               label={<StyledLabel>本次聯絡備註</StyledLabel>}
-              required={memberNoteStatus !== 'not-answered'}
+              rules={[{ required: memberNoteStatus !== 'not-answered' }]}
             >
               <Input.TextArea disabled={!primaryPhoneNumber} />
             </Form.Item>
@@ -368,28 +480,42 @@ const AssignedMemberContactBlock: React.FC<{
             labelCol={{ span: 8 }}
             wrapperCol={{ span: 16 }}
             initialValues={{
-              ...propertyFields
-                .map(propertyField => propertyField.name)
-                .reduce(
-                  (accumulator, propertyName) => ({
-                    ...accumulator,
-                    [propertyName]:
-                      assignedMember.properties.find(property => property.name === propertyName)?.value || '',
-                  }),
-                  {} as { [PropertyName: string]: string },
-                ),
+              ...assignedMember.properties.reduce(
+                (accumulator, property) => ({
+                  ...accumulator,
+                  [property.id]: property.value,
+                }),
+                {} as { [PropertyID: string]: string },
+              ),
             }}
           >
-            {propertyFields.map(propertyField => (
-              <Form.Item
-                key={propertyField.name}
-                name={propertyField.name}
-                label={propertyField.name}
-                required={memberNoteStatus === 'willing' && propertyField.required}
-              >
-                <Input disabled={!primaryPhoneNumber} />
-              </Form.Item>
-            ))}
+            {propertyFields.map(propertyField => {
+              const property = properties.find(property => property.name === propertyField.name)
+              if (!property) {
+                return null
+              }
+
+              return (
+                <Form.Item
+                  key={property.id}
+                  name={property.id}
+                  label={property.name}
+                  rules={[{ required: memberNoteStatus === 'willing' && propertyField.required }]}
+                >
+                  {property.options ? (
+                    <Select disabled={!primaryPhoneNumber}>
+                      {property.options.map(option => (
+                        <Select.Option key={option} value={option}>
+                          {option}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  ) : (
+                    <Input disabled={!primaryPhoneNumber} />
+                  )}
+                </Form.Item>
+              )
+            })}
           </Form>
         </div>
       </div>
@@ -520,13 +646,18 @@ const useFirstAssignedMember = (salesId: string) => {
     types.GET_FIRST_ASSIGNED_MEMBERVariables
   >(
     gql`
-      query GET_FIRST_ASSIGNED_MEMBER($salesId: String!) {
+      query GET_FIRST_ASSIGNED_MEMBER($salesId: String!, $selectedProperties: [String!]!) {
         member_by_pk(id: $salesId) {
           id
           member_properties(where: { property: { name: { _eq: "分機號碼" } } }) {
             id
             value
           }
+        }
+        property(where: { name: { _in: $selectedProperties } }) {
+          id
+          name
+          placeholder
         }
         member(
           where: {
@@ -562,7 +693,7 @@ const useFirstAssignedMember = (salesId: string) => {
         }
       }
     `,
-    { variables: { salesId } },
+    { variables: { salesId, selectedProperties: propertyFields.map(field => field.name) } },
   )
 
   const sales = data?.member_by_pk
@@ -571,6 +702,12 @@ const useFirstAssignedMember = (salesId: string) => {
         telephone: data.member_by_pk.member_properties[0]?.value || '',
       }
     : null
+  const properties =
+    data?.property.map(property => ({
+      id: property.id,
+      name: property.name,
+      options: property.placeholder ? property.placeholder.replace(/^\(|\)$/g, '').split('/') : null,
+    })) || []
   const assignedMember = data?.member?.[0]
     ? {
         id: data.member[0].id,
@@ -593,9 +730,50 @@ const useFirstAssignedMember = (salesId: string) => {
     loadingAssignedMember: loading,
     errorAssignedMember: error,
     sales,
+    properties,
     assignedMember,
     refetchAssignedMember: refetch,
   }
 }
+
+const UPDATE_MEMBER_PHONE = gql`
+  mutation UPDATE_MEMBER_PHONE($data: [member_phone_insert_input!]!) {
+    insert_member_phone(
+      objects: $data
+      on_conflict: { constraint: member_phone_member_id_phone_key, update_columns: [is_primary, is_valid] }
+    ) {
+      affected_rows
+    }
+  }
+`
+const MARK_INVALID_MEMBER = gql`
+  mutation MARK_INVALID_MEMBER($memberId: String!) {
+    update_member(where: { id: { _eq: $memberId } }, _set: { manager_id: null }) {
+      affected_rows
+    }
+    update_member_phone(where: { member_id: { _eq: $memberId } }, _set: { is_valid: false }) {
+      affected_rows
+    }
+  }
+`
+const INSERT_MEMBER_NOTE = gql`
+  mutation INSERT_MEMBER_NOTE($data: member_note_insert_input!) {
+    insert_member_note_one(object: $data) {
+      id
+    }
+  }
+`
+const UPDATE_MEMBER_PROPERTIES = gql`
+  mutation UPDATE_MEMBER_PROPERTIES($data: [member_property_insert_input!]!) {
+    insert_member_property(
+      objects: $data
+      on_conflict: { constraint: member_property_member_id_property_id_key, update_columns: [value] }
+    ) {
+      returning {
+        id
+      }
+    }
+  }
+`
 
 export default SalesCallPage
