@@ -5,6 +5,7 @@ export type MemberContractProps = {
   id: string
   authorName: string | null
   member: {
+    id: string | null
     name: string | null
     pictureUrl: string | null
     email: string | null

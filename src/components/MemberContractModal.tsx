@@ -1,11 +1,18 @@
-import { DatePicker, Input, InputNumber, Select } from 'antd'
+import Icon, { DownloadOutlined, MinusCircleOutlined, UploadOutlined } from '@ant-design/icons'
+import { Button, Col, DatePicker, Form, Input, InputNumber, Row, Select } from 'antd'
 import AdminModal, { AdminModalProps } from 'lodestar-app-admin/src/components/admin/AdminModal'
+import FileUploader from 'lodestar-app-admin/src/components/common/FileUploader'
+import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
+import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
+import { downloadFile, getFileDownloadableLink, handleError, uploadFile } from 'lodestar-app-admin/src/helpers'
 import { commonMessages, memberMessages, orderMessages } from 'lodestar-app-admin/src/helpers/translation'
 import moment from 'moment'
-import React from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import { memberContractMessages } from '../helpers/translation'
+import { useMutateMemberContract, useXuemiSales } from '../hooks'
+import { ReactComponent as PlusIcon } from '../images/icons/plus.svg'
 import MemberName from './MemberName'
 
 const StyledAreaTitle = styled.h3`
@@ -30,50 +37,69 @@ const StyledSubText = styled.div`
   color: var(--gray-dark);
   font-family: NotoSansCJKtc;
 `
+const FullWidthMixin = css`
+  width: 100%;
+`
+const StyledDatePicker = styled(DatePicker)`
+  ${FullWidthMixin}
+`
+const StyledRow = styled(Row)`
+  ${FullWidthMixin}
+`
+const StyledSelect = styled(Select)`
+  ${FullWidthMixin}
+`
+const StyledAddButton = styled(Button)`
+  padding: 0;
+  color: ${props => props.theme['@primary-color']};
+`
 
-const MemberContractModal: React.FC<
-  {
-    isRevoked: boolean
-    memberContractId?: string
-    member?: {
-      name: string
-      email: string
-      phone: string
-    } | null
-    purchasedItem: {
-      startedAt?: Date
-      endedAt?: Date
-      projectPlanName?: string | null
-      price?: number | null
-      coinAmount?: number | null
-      couponCount?: number | null
-      appointmentCreatorName?: string | null
-      referral?: {
-        name: string | null
-        email: string | null
-      }
+type MemberContractModalProps = {
+  isRevoked: boolean
+  memberContractId?: string
+  memberId?: string | null
+  member?: {
+    name: string
+    email: string
+    phone: string
+  } | null
+  purchasedItem: {
+    startedAt?: Date
+    endedAt?: Date
+    projectPlanName?: string | null
+    price?: number | null
+    coinAmount?: number | null
+    couponCount?: number | null
+    appointmentCreatorName?: string | null
+    referral?: {
+      name: string | null
+      email: string | null
     }
-    status: {
-      approvedAt?: Date | null
-      loanCancelAt?: Date | null
-      refundApplyAt?: Date | null
-    }
-    paymentOptions?: {
-      paymentMethod: string
-      paymentNumber: string
-      installmentPlan: number
-    } | null
-    note?: string | null
-    orderExecutors?:
-      | {
-          memberId: string
-          ratio: number
-        }[]
-      | null
-    studentCertification?: string | null
-  } & AdminModalProps
-> = ({
+  }
+  status: {
+    approvedAt?: Date | null
+    loanCanceledAt?: Date | null
+    refundAppliedAt?: Date | null
+  }
+  paymentOptions?: {
+    paymentMethod: string
+    paymentNumber: string
+    installmentPlan: number
+  } | null
+  note?: string | null
+  orderExecutors?:
+    | {
+        memberId: string
+        ratio: number
+      }[]
+    | null
+  studentCertification?: string | null
+  onRefetch: () => void
+} & AdminModalProps
+
+const MemberContractModal: React.FC<MemberContractModalProps> = ({
   memberContractId,
+  memberId,
   member,
   purchasedItem,
   isRevoked,
@@ -82,24 +108,86 @@ const MemberContractModal: React.FC<
   note,
   orderExecutors,
   studentCertification,
+  onRefetch,
   ...props
 }) => {
   const { formatMessage } = useIntl()
+  const { authToken, apiHost } = useAuth()
+  const { id: appId } = useApp()
+  const [form] = Form.useForm()
+  const { xuemiSales } = useXuemiSales()
+  const [certification, setCertification] = useState<File[]>([])
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const updateMemberContract = useMutateMemberContract()
 
-  let form
+  const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
+    form
+      .validateFields()
+      .then(() => {
+        setIsLoading(true)
+        if (certification.length) {
+          return uploadFile(`certification/${appId}/student_${memberId}`, certification[0], authToken, apiHost)
+        }
+      })
+      .then(() => {
+        const {
+          approvedAt,
+          loanCanceledAt,
+          refundAppliedAt,
+          paymentMethod,
+          paymentNumber,
+          installmentPlan,
+          note,
+          orderExecutors,
+        } = form.getFieldsValue()
+
+        return updateMemberContract({
+          variables: {
+            memberContractId,
+            values: {
+              paymentOptions: {
+                paymentMethod,
+                paymentNumber,
+                installmentPlan,
+              },
+              orderExecutors,
+            },
+            options: {
+              approvedAt,
+              loanCanceledAt,
+              refundAppliedAt,
+              note,
+              studentCertification: certification[0]?.name || studentCertification,
+            },
+          },
+        })
+      })
+      .then(() => {
+        setCertification([])
+        setVisible(false)
+        onRefetch()
+      })
+      .catch(err => handleError(err))
+      .finally(() => setIsLoading(false))
+  }
+
+  let sheet
   if (isRevoked) {
-    form = (
+    sheet = (
       <>
         <StyledAreaTitle>{formatMessage(memberMessages.label.status)}</StyledAreaTitle>
         <div className="row mb-4">
           <div className="col-12">
-            {formatMessage(memberContractMessages.label.approvedAt)}：{status.approvedAt}
+            {formatMessage(memberContractMessages.label.approvedAt)}：
+            {status.approvedAt ? moment(status.approvedAt).format('YYYY-MM-DD') : undefined}
           </div>
           <div className="col-12">
-            {formatMessage(memberContractMessages.label.loanCancelAt)}：{status.loanCancelAt}
+            {formatMessage(memberContractMessages.label.loanCancelAt)}：
+            {status.loanCanceledAt ? moment(status.loanCanceledAt).format('YYYY-MM-DD') : undefined}
           </div>
           <div className="col-12">
-            {formatMessage(memberContractMessages.label.refundApplyAt)}：{status.refundApplyAt}
+            {formatMessage(memberContractMessages.label.refundApplyAt)}：
+            {status.refundAppliedAt ? moment(status.refundAppliedAt).format('YYYY-MM-DD') : undefined}
           </div>
         </div>
 
@@ -129,81 +217,213 @@ const MemberContractModal: React.FC<
           ))}
         </div>
         <StyledAreaTitle>{formatMessage(memberContractMessages.label.proofOfEnrollment)}</StyledAreaTitle>
-        {studentCertification}
+        {studentCertification && (
+          <Button
+            icon={<DownloadOutlined />}
+            onClick={async () => {
+              try {
+                const link = await getFileDownloadableLink(
+                  `certification/${appId}/student_${memberId}`,
+                  authToken,
+                  apiHost,
+                )
+                await downloadFile(link, studentCertification || '')
+              } catch (error) {
+                handleError(error)
+              }
+            }}
+          >
+            {formatMessage(memberContractMessages.ui.downloadProofOfEnrollment)}
+          </Button>
+        )}
       </>
     )
   } else {
-    form = (
+    sheet = (
       <>
-        <StyledAreaTitle>{formatMessage(memberMessages.label.status)}</StyledAreaTitle>
-        <div className="row">
-          <div className="col-4">
-            {formatMessage(memberContractMessages.label.approvedAt)}
-            <DatePicker
-              defaultValue={status.approvedAt ? moment(status.approvedAt, 'YYYY-MM-DD') : undefined}
-              format={'YYYY-MM-DD'}
-            />
-          </div>
+        <Form form={form} colon={false} preserve={false}>
+          <StyledAreaTitle>{formatMessage(memberMessages.label.status)}</StyledAreaTitle>
+          <StyledRow className="mb-3">
+            <Col span={8} className="pr-3">
+              <span>{formatMessage(memberContractMessages.label.approvedAt)}</span>
+              <Form.Item name="approvedAt" initialValue={status.approvedAt ? moment(status.approvedAt) : null}>
+                <StyledDatePicker format={'YYYY-MM-DD'} />
+              </Form.Item>
+            </Col>
+            <Col span={8} className="pr-3">
+              <span>{formatMessage(memberContractMessages.label.loanCancelAt)}</span>
+              <Form.Item
+                name="loanCanceledAt"
+                initialValue={status.loanCanceledAt ? moment(status.loanCanceledAt) : null}
+              >
+                <StyledDatePicker format={'YYYY-MM-DD'} />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <span>{formatMessage(memberContractMessages.label.refundApplyAt)}</span>
+              <Form.Item
+                name="refundAppliedAt"
+                initialValue={status.refundAppliedAt ? moment(status.refundAppliedAt) : null}
+              >
+                <StyledDatePicker format="YYYY-MM-DD" />
+              </Form.Item>
+            </Col>
+          </StyledRow>
 
-          <div className="col-4">
-            {formatMessage(memberContractMessages.label.loanCancelAt)}：{status.loanCancelAt}
-            <DatePicker
-              defaultValue={status.loanCancelAt ? moment(status.loanCancelAt, 'YYYY-MM-DD') : undefined}
-              format={'YYYY-MM-DD'}
-            />
-          </div>
+          <StyledAreaTitle>{formatMessage(memberContractMessages.label.payment)}</StyledAreaTitle>
+          <StyledRow className="mb-3">
+            <Col span={8} className="pr-3">
+              <span>{formatMessage(memberContractMessages.label.paymentMethod)}</span>
+              <Form.Item
+                name="paymentMethod"
+                rules={[{ required: true, message: '請選擇付款方式' }]}
+                initialValue={paymentOptions?.paymentMethod || null}
+              >
+                <StyledSelect>
+                  {['藍新', '歐付寶', '富比世', '新仲信', '舊仲信', '匯款', '現金', '裕富'].map((payment: string) => (
+                    <Select.Option key={payment} value={payment}>
+                      {payment}
+                    </Select.Option>
+                  ))}
+                </StyledSelect>
+              </Form.Item>
+            </Col>
+            <Col span={5} className="pr-3">
+              <span>{formatMessage(memberContractMessages.label.installmentPlan)}</span>
+              <Form.Item name="installmentPlan" initialValue={paymentOptions?.installmentPlan}>
+                <StyledSelect>
+                  {[1, 3, 6, 8, 9, 12, 18, 24, 30].map((installmentPlan: number) => (
+                    <Select.Option key={installmentPlan} value={installmentPlan}>
+                      {installmentPlan}
+                    </Select.Option>
+                  ))}
+                </StyledSelect>
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <span>{formatMessage(memberContractMessages.label.paymentNumber)}</span>
+              <Form.Item name="paymentNumber" initialValue={paymentOptions?.paymentNumber}>
+                <Input />
+              </Form.Item>
+            </Col>
+          </StyledRow>
 
-          <div className="col-4">
-            {formatMessage(memberContractMessages.label.refundApplyAt)}：{status.refundApplyAt}
-            <DatePicker
-              defaultValue={status.refundApplyAt ? moment(status.refundApplyAt, 'YYYY-MM-DD') : undefined}
-              format={'YYYY-MM-DD'}
-            />
-          </div>
-        </div>
+          <StyledAreaTitle>{formatMessage(memberContractMessages.label.note)}</StyledAreaTitle>
+          <StyledRow className="mb-3">
+            <Col span={24}>
+              <Form.Item name="note" initialValue={note}>
+                <Input.TextArea>{note}</Input.TextArea>
+              </Form.Item>
+            </Col>
+          </StyledRow>
 
-        <StyledAreaTitle>{formatMessage(memberContractMessages.label.payment)}</StyledAreaTitle>
-        <div className="row">
-          <div className="col-4">
-            {formatMessage(memberContractMessages.label.paymentMethod)}
-            <div>{paymentOptions?.paymentMethod}</div>
-          </div>
-          <div className="col-3">
-            {formatMessage(memberContractMessages.label.installmentPlan)}
-            {/* <InputNumber>{paymentOptions?.installmentPlan}</InputNumber> */}
-          </div>
-          <div className="col-4">
-            {formatMessage(memberContractMessages.label.paymentNumber)}
-            {/* <Input>{paymentOptions?.paymentNumber || ''}</Input> */}
-          </div>
-        </div>
-        <StyledAreaTitle>{formatMessage(memberMessages.label.note)}</StyledAreaTitle>
-        <div className="row">
-          <div className="col-12">
-            <Input.TextArea>{note}</Input.TextArea>
-          </div>
-        </div>
-        <StyledAreaTitle>{formatMessage(memberContractMessages.label.revenueShare)}</StyledAreaTitle>
-        {formatMessage(memberMessages.label.manager)}
-        {orderExecutors?.map(v => (
-          <div className="row">
-            <div className="col-4">
-              <Select defaultValue={v.memberId}></Select>
-            </div>
-            <div className="col-3">
-              <InputNumber defaultValue={v.ratio}>{v.ratio}</InputNumber>
-            </div>
-          </div>
-        ))}
+          <StyledAreaTitle>{formatMessage(memberContractMessages.label.revenueShare)}</StyledAreaTitle>
+          {formatMessage(memberMessages.label.manager)}
+
+          <Form.List name="orderExecutors" initialValue={orderExecutors || undefined}>
+            {(orderExecutors, { add, remove }) => (
+              <div>
+                {orderExecutors.map(field => (
+                  <div key={field.key} className="d-flex align-items-center">
+                    <Form.Item
+                      className="mr-3"
+                      {...field}
+                      name={[field.name, 'memberId']}
+                      fieldKey={[field.fieldKey, 'memberId']}
+                      rules={[{ required: true, message: '請填寫承辦人' }]}
+                    >
+                      <Select<string>
+                        showSearch
+                        placeholder="承辦人"
+                        style={{ width: '150px' }}
+                        optionFilterProp="label"
+                      >
+                        {xuemiSales?.map(member => (
+                          <Select.Option key={member.id} value={member.id} label={`${member.id} ${member.name}`}>
+                            {member.name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+
+                    <Form.Item
+                      className="mr-3"
+                      {...field}
+                      name={[field.name, 'ratio']}
+                      fieldKey={[field.fieldKey, 'ratio']}
+                    >
+                      <InputNumber min={0.1} max={1} step={0.1} style={{ width: '60px' }} />
+                    </Form.Item>
+
+                    <MinusCircleOutlined className="mb-3" onClick={() => remove(field.name)} />
+                  </div>
+                ))}
+
+                <Form.Item>
+                  <StyledAddButton type="link" onClick={() => add({ ratio: 0.1 })}>
+                    <Icon component={() => <PlusIcon />} className="mr-2" />
+                    <span>{formatMessage(memberContractMessages.ui.join)}</span>
+                  </StyledAddButton>
+                </Form.Item>
+              </div>
+            )}
+          </Form.List>
+        </Form>
 
         <StyledAreaTitle>{formatMessage(memberContractMessages.label.proofOfEnrollment)}</StyledAreaTitle>
-        {studentCertification}
+        {studentCertification && !certification.length && (
+          <Button
+            className="mr-3"
+            icon={<DownloadOutlined />}
+            onClick={async () => {
+              const link = await getFileDownloadableLink(
+                `certification/${appId}/student_${memberId}`,
+                authToken,
+                apiHost,
+              )
+              downloadFile(link, studentCertification || '')
+            }}
+          >
+            {formatMessage(memberContractMessages.ui.downloadProofOfEnrollment)}
+          </Button>
+        )}
+        <FileUploader
+          fileList={certification}
+          onChange={files => setCertification(files)}
+          showUploadList
+          renderTrigger={({ onClick }) => (
+            <Button icon={<UploadOutlined />} onClick={onClick}>
+              {formatMessage(memberContractMessages.ui.reupload)}
+            </Button>
+          )}
+        />
       </>
     )
   }
 
   return (
-    <AdminModal title={formatMessage(memberContractMessages.menu.memberContracts)} width={688} {...props}>
+    <AdminModal
+      title={formatMessage(memberContractMessages.menu.memberContracts)}
+      width={688}
+      footer={[]}
+      renderFooter={
+        isRevoked
+          ? undefined
+          : ({ setVisible }) => {
+              return (
+                <div className="mt-3">
+                  <Button className="mr-2" onClick={() => setVisible(false)}>
+                    {formatMessage(commonMessages.ui.cancel)}
+                  </Button>
+                  <Button type="primary" onClick={() => handleSubmit(setVisible)} loading={isLoading}>
+                    {formatMessage(commonMessages.ui.save)}
+                  </Button>
+                </div>
+              )
+            }
+      }
+      {...props}
+    >
       <div className="row mb-4">
         <div className="col-4 row">
           <div className="col-12 mb-4">
@@ -235,9 +455,11 @@ const MemberContractModal: React.FC<
               {formatMessage(memberContractMessages.label.appointment)}：{purchasedItem.couponCount}
             </span>
           </StyledText>
-          <StyledText className="mb-2">
-            {formatMessage(memberContractMessages.label.appointmentCreator)}：{purchasedItem.appointmentCreatorName}
-          </StyledText>
+          {purchasedItem.appointmentCreatorName && (
+            <StyledText className="mb-2">
+              {formatMessage(memberContractMessages.label.appointmentCreator)}：{purchasedItem.appointmentCreatorName}
+            </StyledText>
+          )}
           <StyledText className="mb-2">
             {formatMessage(memberContractMessages.label.referralMember)}：{purchasedItem.referral?.name}(
             {purchasedItem.referral?.email})
@@ -250,7 +472,7 @@ const MemberContractModal: React.FC<
           </StyledText>
         </div>
       </div>
-      {form}
+      {sheet}
     </AdminModal>
   )
 }

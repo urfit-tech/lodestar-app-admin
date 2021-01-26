@@ -4,6 +4,11 @@ export const memberContractMessages = {
   menu: defineMessages({
     memberContracts: { id: 'common.menu.memberContracts', defaultMessage: '合約資料管理' },
   }),
+  ui: defineMessages({
+    join: { id: 'memberContract.ui.join', defaultMessage: '加入' },
+    downloadProofOfEnrollment: { id: 'memberContract.ui.downloadProofOfEnrollment', defaultMessage: '下載證明' },
+    reupload: { id: 'memberContract.reupload', defaultMessage: '重新上傳' },
+  }),
   label: defineMessages({
     agreedAt: { id: 'memberContract.label.agreedAt', defaultMessage: '簽署日期' },
     revokedAt: { id: 'memberContract.label.revokedAt', defaultMessage: '解約日期' },
@@ -40,7 +45,7 @@ export const memberContractMessages = {
     note: { id: 'memberContract.label.note', defaultMessage: '備註' },
     executors: { id: 'memberContract.label.executors', defaultMessage: '承辦人' },
     appointment: { id: 'memberContract.label.appointment', defaultMessage: '諮詢' },
-    
+
     price: { id: 'memberContract.label.price', defaultMessage: '金額' },
     coins: { id: 'memberContract.label.coins', defaultMessage: '代幣' },
   }),
