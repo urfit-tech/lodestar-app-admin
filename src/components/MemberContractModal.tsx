@@ -216,25 +216,28 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
             </div>
           ))}
         </div>
-        <StyledAreaTitle>{formatMessage(memberContractMessages.label.proofOfEnrollment)}</StyledAreaTitle>
+
         {studentCertification && (
-          <Button
-            icon={<DownloadOutlined />}
-            onClick={async () => {
-              try {
-                const link = await getFileDownloadableLink(
-                  `certification/${appId}/student_${memberId}`,
-                  authToken,
-                  apiHost,
-                )
-                await downloadFile(link, studentCertification || '')
-              } catch (error) {
-                handleError(error)
-              }
-            }}
-          >
-            {formatMessage(memberContractMessages.ui.downloadProofOfEnrollment)}
-          </Button>
+          <>
+            <StyledAreaTitle>{formatMessage(memberContractMessages.label.proofOfEnrollment)}</StyledAreaTitle>
+            <Button
+              icon={<DownloadOutlined />}
+              onClick={async () => {
+                try {
+                  const link = await getFileDownloadableLink(
+                    `certification/${appId}/student_${memberId}`,
+                    authToken,
+                    apiHost,
+                  )
+                  await downloadFile(link, studentCertification || '')
+                } catch (error) {
+                  handleError(error)
+                }
+              }}
+            >
+              {formatMessage(memberContractMessages.ui.downloadProofOfEnrollment)}
+            </Button>
+          </>
         )}
       </>
     )
