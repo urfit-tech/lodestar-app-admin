@@ -29,7 +29,7 @@ import { ReactComponent as CallOutIcon } from 'lodestar-app-admin/src/images/ico
 import { ReactComponent as PhoneIcon } from 'lodestar-app-admin/src/images/icon/phone.svg'
 import moment, { Moment } from 'moment'
 import { sum } from 'ramda'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -41,7 +41,7 @@ const MemberName = styled.div`
   font-weight: bold;
   letter-spacing: 0.2px;
 `
-const MemberEmail = styled.div`
+const MemberDescription = styled.div`
   color: var(--gray-dark);
   font-size: 12px;
   letter-spacing: 0.6px;
@@ -134,7 +134,10 @@ const SalesSummary: React.FC<{
           <AvatarImage size="44px" src={salesSummary.sales?.picture_url} className="mr-2" />
           <div>
             <MemberName>{salesSummary.sales?.name}</MemberName>
-            <MemberEmail>{salesSummary.sales?.email}</MemberEmail>
+            <MemberDescription>
+              <span className="mr-2">{salesSummary.sales?.email}</span>
+              <span>分機號碼：{salesSummary.sales?.telephone}</span>
+            </MemberDescription>
           </div>
         </div>
 
@@ -146,11 +149,11 @@ const SalesSummary: React.FC<{
       <Divider />
 
       <div className="d-flex align-items-center">
-        <div className="mr-3">今日通時：{salesSummary.totalDuration}</div>
-        <div className="mr-3">今日通次：{salesSummary.totalNotes}</div>
+        <div className="mr-3">今日通時：{Math.ceil(salesSummary.totalDuration / 60)} 分鐘</div>
+        <div className="mr-3">今日通次：{salesSummary.totalNotes} 次</div>
         <div className="mr-3">今日有效名單：{salesSummary.assignedMembersToday}</div>
         <div className="mr-3 flex-grow-1">
-          <span className="mr-2">名單新舊佔比</span>
+          <span className="mr-2">名單新舊佔比：</span>
           <Tooltip title={`新 ${newAssignedRate}% / 舊 ${oldAssignedRate}%`}>
             <StyledProgress percent={100} showInfo={false} success={{ percent: newAssignedRate }} />
           </Tooltip>
@@ -190,8 +193,7 @@ const propertyFields: {
 
 const AssignedMemberContactBlock: React.FC<{
   salesId: string
-  onFinished?: () => void
-}> = ({ salesId, onFinished }) => {
+}> = ({ salesId }) => {
   const { formatMessage } = useIntl()
   const { apiHost, authToken } = useAuth()
   const { id: appId } = useApp()
@@ -199,9 +201,14 @@ const AssignedMemberContactBlock: React.FC<{
   const [memberNoteForm] = useForm<memberNoteFieldProps>()
   const [memberPropertyForm] = useForm<memberPropertyFieldProps>()
 
-  const { loadingAssignedMember, errorAssignedMember, sales, properties, assignedMember } = useFirstAssignedMember(
-    salesId,
-  )
+  const {
+    loadingAssignedMember,
+    errorAssignedMember,
+    sales,
+    properties,
+    assignedMember,
+    refetchAssignedMember,
+  } = useFirstAssignedMember(salesId)
   const [markInvalidMember] = useMutation<types.MARK_INVALID_MEMBER, types.MARK_INVALID_MEMBERVariables>(
     MARK_INVALID_MEMBER,
   )
@@ -219,6 +226,25 @@ const AssignedMemberContactBlock: React.FC<{
   const [disabledPhones, setDisabledPhones] = useState<string[]>([])
   const [customPhoneNumber, setCustomPhoneNumber] = useState('')
   const [memberNoteStatus, setMemberNoteStatus] = useState<memberNoteFieldProps['status']>('not-answered')
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (!assignedMember) {
+      return
+    }
+
+    memberNoteForm.resetFields()
+    memberPropertyForm.resetFields()
+    memberPropertyForm.setFieldsValue(
+      assignedMember.properties.reduce(
+        (accumulator, property) => ({
+          ...accumulator,
+          [property.id]: property.value,
+        }),
+        {} as { [PropertyID: string]: string },
+      ),
+    )
+  }, [assignedMember, memberNoteForm, memberPropertyForm])
 
   if (loadingAssignedMember) {
     return <Skeleton active />
@@ -234,12 +260,14 @@ const AssignedMemberContactBlock: React.FC<{
   const handleSubmit = async () => {
     if (!primaryPhoneNumber) {
       if (assignedMember.phones.every(phone => disabledPhones.includes(phone))) {
+        setLoading(true)
         await markInvalidMember({
           variables: {
             memberId: assignedMember.id,
           },
         }).catch(handleError)
-        onFinished?.()
+        refetchAssignedMember()
+        setLoading(false)
         return
       }
 
@@ -247,12 +275,14 @@ const AssignedMemberContactBlock: React.FC<{
       return
     }
 
+    setLoading(true)
     try {
       await memberNoteForm.validateFields()
       await memberPropertyForm.validateFields()
     } catch (error) {
       process.env.NODE_ENV === 'development' && console.error(error)
       message.error('請確實填寫必填欄位')
+      setLoading(false)
       return
     }
 
@@ -308,10 +338,12 @@ const AssignedMemberContactBlock: React.FC<{
         },
       })
 
-      onFinished?.()
+      message.success('儲存成功')
+      refetchAssignedMember()
     } catch (error) {
       handleError(error)
     }
+    setLoading(false)
   }
 
   const handleCall = async (phone: string) => {
@@ -346,7 +378,7 @@ const AssignedMemberContactBlock: React.FC<{
 
   return (
     <AdminBlock className="p-4">
-      <div className="row">
+      <div className="row mb-4">
         <div className="col-5">
           <AssignedMemberName className="mb-2">{assignedMember.name}</AssignedMemberName>
           <AssignedMemberEmail>{assignedMember.email}</AssignedMemberEmail>
@@ -466,7 +498,7 @@ const AssignedMemberContactBlock: React.FC<{
             <Form.Item
               name="description"
               label={<StyledLabel>本次聯絡備註</StyledLabel>}
-              rules={[{ required: memberNoteStatus !== 'not-answered' }]}
+              rules={[{ required: memberNoteStatus !== 'not-answered', message: '請填寫備註' }]}
             >
               <Input.TextArea disabled={!primaryPhoneNumber} />
             </Form.Item>
@@ -479,15 +511,6 @@ const AssignedMemberContactBlock: React.FC<{
             labelAlign="left"
             labelCol={{ span: 8 }}
             wrapperCol={{ span: 16 }}
-            initialValues={{
-              ...assignedMember.properties.reduce(
-                (accumulator, property) => ({
-                  ...accumulator,
-                  [property.id]: property.value,
-                }),
-                {} as { [PropertyID: string]: string },
-              ),
-            }}
           >
             {propertyFields.map(propertyField => {
               const property = properties.find(property => property.name === propertyField.name)
@@ -519,7 +542,7 @@ const AssignedMemberContactBlock: React.FC<{
           </Form>
         </div>
       </div>
-      <Button type="primary" block onClick={() => handleSubmit()}>
+      <Button type="primary" loading={loading} block onClick={() => handleSubmit()}>
         {formatMessage(commonMessages.ui.save)}
       </Button>
     </AdminBlock>
@@ -666,6 +689,7 @@ const useFirstAssignedMember = (salesId: string) => {
             _not: { member_notes: { author_id: { _eq: $salesId } } }
           }
           order_by: [{ assigned_at: asc }]
+          limit: 1
         ) {
           id
           email
