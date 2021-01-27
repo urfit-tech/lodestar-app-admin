@@ -88,11 +88,11 @@ type MemberContractModalProps = {
   } | null
   note?: string | null
   orderExecutors?:
-    | {
-        memberId: string
-        ratio: number
-      }[]
-    | null
+  | {
+    memberId: string
+    ratio: number
+  }[]
+  | null
   studentCertification?: string | null
   onRefetch: () => void
 } & AdminModalProps
@@ -373,33 +373,44 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
           </Form.List>
         </Form>
 
-        <StyledAreaTitle>{formatMessage(memberContractMessages.label.proofOfEnrollment)}</StyledAreaTitle>
-        {studentCertification && !certification.length && (
-          <Button
-            className="mr-3"
-            icon={<DownloadOutlined />}
-            onClick={async () => {
-              const link = await getFileDownloadableLink(
-                `certification/${appId}/student_${memberId}`,
-                authToken,
-                apiHost,
-              )
-              downloadFile(link, studentCertification || '')
-            }}
-          >
-            {formatMessage(memberContractMessages.ui.downloadProofOfEnrollment)}
-          </Button>
+
+        {studentCertification && (
+          <>
+            <StyledAreaTitle>{formatMessage(memberContractMessages.label.proofOfEnrollment)}</StyledAreaTitle>
+
+            <FileUploader
+              fileList={certification}
+              onChange={files => setCertification(files)}
+              showUploadList
+              renderTrigger={({ onClick }) => (
+                <Button icon={<UploadOutlined />} onClick={onClick}>
+                  {formatMessage(memberContractMessages.ui.reupload)}
+                </Button>
+              )}
+            />
+
+            {!certification.length && (
+              <>
+                <Button
+                  className="ml-3"
+                  icon={<DownloadOutlined />}
+                  onClick={async () => {
+                    const link = await getFileDownloadableLink(
+                      `certification/${appId}/student_${memberId}`,
+                      authToken,
+                      apiHost,
+                    )
+                    downloadFile(link, studentCertification || '')
+                  }}
+                >
+                  {formatMessage(memberContractMessages.ui.downloadProofOfEnrollment)}
+                </Button>
+                <StyledText className="py-1 px-2">{studentCertification}</StyledText>
+              </>
+            )}
+          </>
         )}
-        <FileUploader
-          fileList={certification}
-          onChange={files => setCertification(files)}
-          showUploadList
-          renderTrigger={({ onClick }) => (
-            <Button icon={<UploadOutlined />} onClick={onClick}>
-              {formatMessage(memberContractMessages.ui.reupload)}
-            </Button>
-          )}
-        />
+
       </>
     )
   }
@@ -413,17 +424,17 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
         isRevoked
           ? undefined
           : ({ setVisible }) => {
-              return (
-                <div className="mt-3">
-                  <Button className="mr-2" onClick={() => setVisible(false)}>
-                    {formatMessage(commonMessages.ui.cancel)}
-                  </Button>
-                  <Button type="primary" onClick={() => handleSubmit(setVisible)} loading={isLoading}>
-                    {formatMessage(commonMessages.ui.save)}
-                  </Button>
-                </div>
-              )
-            }
+            return (
+              <div className="mt-3">
+                <Button className="mr-2" onClick={() => setVisible(false)}>
+                  {formatMessage(commonMessages.ui.cancel)}
+                </Button>
+                <Button type="primary" onClick={() => handleSubmit(setVisible)} loading={isLoading}>
+                  {formatMessage(commonMessages.ui.save)}
+                </Button>
+              </div>
+            )
+          }
       }
       {...props}
     >
