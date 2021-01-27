@@ -1,4 +1,4 @@
-import { Icon as LegacyIcon } from '@ant-design/compatible'
+import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Tag, Typography } from 'antd'
 import gql from 'graphql-tag'
@@ -66,15 +66,28 @@ const ProgramContentAdminItem: React.FC<{
               {dateFormatter(programContent.publishedAt)}
             </StyledDescriptions>
           )
-        ) : (
-          <LegacyIcon
-            type={programContent.publishedAt ? 'eye' : 'eye-invisible'}
+        ) : programContent.publishedAt ? (
+          <EyeOutlined
             className="mr-3"
             onClick={() =>
               updateProgramContent({
                 variables: {
                   programContentId: programContent.id,
-                  publishedAt: programContent.publishedAt ? undefined : new Date(),
+                  publishedAt: undefined,
+                },
+              })
+                .then(() => onRefetch?.())
+                .catch(handleError)
+            }
+          />
+        ) : (
+          <EyeInvisibleOutlined
+            className="mr-3"
+            onClick={() =>
+              updateProgramContent({
+                variables: {
+                  programContentId: programContent.id,
+                  publishedAt: new Date(),
                 },
               })
                 .then(() => onRefetch?.())
