@@ -2,6 +2,7 @@ import Icon from '@ant-design/icons'
 import { Menu } from 'antd'
 import Application from 'lodestar-app-admin/src/Application'
 import { StyledMenu } from 'lodestar-app-admin/src/components/admin/AdminMenu'
+import { ReactComponent as PhoneIcon } from 'lodestar-app-admin/src/images/icon/phone.svg'
 import { isEmpty } from 'ramda'
 import React from 'react'
 import './App.scss'
@@ -25,7 +26,19 @@ const App = () => {
               key: 'member_contract_collection',
               icon: () => <UserCopyIcon />,
               name: '合約資料管理',
-              subMenuItems: undefined,
+            },
+            {
+              permissionIsAllowed: true,
+              key: 'sales_call_admin',
+              icon: () => <PhoneIcon />,
+              name: '業務專區',
+              subMenuItems: [
+                {
+                  permissionIsAllowed: true,
+                  key: 'sales_call',
+                  name: '業務撥打',
+                },
+              ],
             },
             ...menuItems.slice(14),
           ]
