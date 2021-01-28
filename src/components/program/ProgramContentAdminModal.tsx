@@ -2,6 +2,8 @@ import { CloseOutlined, EditOutlined, MoreOutlined, UploadOutlined } from '@ant-
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, DatePicker, Dropdown, Form, Input, InputNumber, Menu, message, Modal } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import { UploadChangeParam } from 'antd/lib/upload'
+import { UploadFile } from 'antd/lib/upload/interface'
 import axios, { Canceler } from 'axios'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
@@ -11,7 +13,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { handleError, uploadFile } from '../../helpers'
+import { getFileDuration, handleError, uploadFile } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProgramContentBodyType, ProgramContentProps, ProgramProps } from '../../types/program'
@@ -94,8 +96,20 @@ const ProgramContentAdminModal: React.FC<{
   const [video, setVideo] = useState<any>(programContentBody.data.video || null)
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [realDuration, setRealDuration] = useState(0)
   const uploadCanceler = useRef<Canceler>()
   const [materialFiles, setMaterialFiles] = useState<File[]>(programContentBody.materials.map(v => v.data) || [])
+
+  const handleUploadVideo = async (info: UploadChangeParam<UploadFile>) => {
+    const file = info.file.originFileObj as File
+    if (file == null) {
+      console.warn('File is null')
+    }
+    const duration = Math.ceil(await getFileDuration(file))
+    setRealDuration(duration)
+    form.setFields([{ name: 'duration', value: Math.ceil(duration / 60 || 0) }])
+    setUploading(false)
+  }
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
@@ -113,7 +127,7 @@ const ProgramContentAdminModal: React.FC<{
             : null,
           title: values.title,
           description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
-          duration: values.duration && values.duration * 60,
+          duration: realDuration,
           type: video ? 'video' : null,
           data: {
             video: video || null,
@@ -207,7 +221,7 @@ const ProgramContentAdminModal: React.FC<{
             isNotifyUpdate: programContent.isNotifyUpdate,
             title: programContent.title,
             planIds: programContent.programPlans?.map(programPlan => programPlan.id) || [],
-            duration: (programContent.duration || 0) / 60,
+            duration: Math.ceil((programContent.duration || 0) / 60),
             video: programContentBody.data.video,
             texttrack: programContentBody.data.texttrack,
             description: BraftEditor.createEditorState(programContentBody.description),
@@ -285,7 +299,7 @@ const ProgramContentAdminModal: React.FC<{
               uploadText={formatMessage(messages.uploadVideo)}
               path={`videos/${appId}/${programContentBody.id}`}
               onUploading={() => setUploading(true)}
-              onSuccess={() => setUploading(false)}
+              onSuccess={handleUploadVideo}
               onError={() => setUploading(false)}
               onCancel={() => setUploading(false)}
             />

@@ -2,31 +2,6 @@ import { AudioContext, OfflineAudioContext } from 'standardized-audio-context'
 import toWav from 'audiobuffer-to-wav'
 const lamejs = require('lamejs')
 
-export function getAudioDuration(blob: Blob): Promise<number> {
-  return new Promise((resolve, reject) => {
-    const aud = document.createElement('audio')
-    aud.src = URL.createObjectURL(blob)
-
-    aud.onloadedmetadata = function () {
-      // handle chrome's bug
-      if (aud.duration === Infinity) {
-        // set it to bigger than the actual duration
-        aud.currentTime = 1e101
-        aud.ontimeupdate = function () {
-          this.ontimeupdate = () => {
-            return
-          }
-          aud.currentTime = 0
-
-          resolve(aud.duration)
-        }
-      } else {
-        resolve(aud.duration)
-      }
-    }
-  })
-}
-
 /**
  * detect if a file is an audio.
  * @param {File} file

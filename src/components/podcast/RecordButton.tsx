@@ -6,8 +6,7 @@ import mpegEncoder from 'audio-recorder-polyfill/mpeg-encoder'
 import NoSleep from 'nosleep.js'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { durationFormatter } from '../../helpers'
-import { getAudioDuration } from '../../helpers/audio'
+import { durationFormatter, getFileDuration } from '../../helpers'
 import { useInterval } from '../../hooks/util'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import { ReactComponent as StopCircleIcon } from '../../images/icon/stop-circle.svg'
@@ -70,7 +69,7 @@ const RecordButton: React.FC<
 
     const blob: Blob = e.data
     if (onGetAudio) {
-      getAudioDuration(blob).then(duration => {
+      getFileDuration(blob).then(duration => {
         onGetAudio(blob, duration)
       })
     }

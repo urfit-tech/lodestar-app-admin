@@ -13,8 +13,14 @@ import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { durationFormatter, durationFormatToSeconds, handleError, isiPhoneChrome, isWebview } from '../../helpers'
-import { getAudioDuration } from '../../helpers/audio'
+import {
+  durationFormatter,
+  durationFormatToSeconds,
+  getFileDuration,
+  handleError,
+  isiPhoneChrome,
+  isWebview,
+} from '../../helpers'
 import { commonMessages, podcastMessages } from '../../helpers/translation'
 import { ReactComponent as MicrophoneIcon } from '../../images/icon/microphone.svg'
 import { appendPodcastProgramAudio, deletePodcastProgramAudio } from '../../pages/default/RecordingPageHelpers'
@@ -82,7 +88,7 @@ const PodcastProgramContentForm: React.FC<{
     const key = `audios/${appId}/${podcastProgramAdmin.id}/${uploadAudioBase}.mp3`
     setUploadAudioBase(uuid())
 
-    const duration = await getAudioDuration(file)
+    const duration = await getFileDuration(file)
     const totalDurationSecond = podcastProgramAdmin.audios.reduce((sum, audio) => (sum += audio.duration), 0)
     const totalDuration = Math.ceil((duration + totalDurationSecond) / 60 || 0)
 

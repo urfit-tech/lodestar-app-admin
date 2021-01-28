@@ -212,3 +212,28 @@ export const isWebview = () => {
   var regex = new RegExp(`(${rules.join('|')})`, 'ig')
   return Boolean(useragent.match(regex))
 }
+
+export const getFileDuration = (blob: Blob): Promise<number> => {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video')
+    video.src = URL.createObjectURL(blob)
+
+    video.onloadedmetadata = function () {
+      // handle chrome's bug
+      if (video.duration === Infinity) {
+        // set it to bigger than the actual duration
+        video.currentTime = 1e101
+        video.ontimeupdate = function () {
+          this.ontimeupdate = () => {
+            return
+          }
+          video.currentTime = 0
+
+          resolve(video.duration)
+        }
+      } else {
+        resolve(video.duration)
+      }
+    }
+  })
+}
