@@ -249,7 +249,9 @@ export const useSalesCallMember = ({ salesId, status }: {
   status: 'contacted' | 'transacted'
 }) => {
 
-  const condition = status === 'contacted' ? {
+  const [hasContacted, hasTransacted] = [status === 'contacted', status === 'transacted']
+
+  const condition = hasContacted ? {
     manager_id: { _eq: salesId },
     member_notes: {
       author_id: { _eq: salesId },
@@ -262,13 +264,14 @@ export const useSalesCallMember = ({ salesId, status }: {
         _or: [{ agreed_at: { _is_null: false } }, { revoked_at: { _is_null: false } }]
       }
     }
-  } : status === 'transacted' ? {
+  } : hasTransacted ? {
     manager_id: { _eq: salesId },
     member_contracts: {
       agreed_at: { _is_null: false },
       revoked_at: { _is_null: true }
     }
   } : {}
+
   const { loading, data, error, refetch } = useQuery<GET_SALES_CALL_MEMBER, GET_SALES_CALL_MEMBERVariables>(gql`
     query GET_SALES_CALL_MEMBER($condition: member_bool_exp!, $hasContacted: Boolean!, $hasTransacted: Boolean!) {
       member(where: $condition) {
@@ -299,8 +302,8 @@ export const useSalesCallMember = ({ salesId, status }: {
   `, {
     variables: {
       condition,
-      hasContacted: status === 'contacted',
-      hasTransacted: status === 'transacted'
+      hasContacted,
+      hasTransacted
     }
   })
 
