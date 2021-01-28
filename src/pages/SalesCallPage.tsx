@@ -29,7 +29,7 @@ import { ReactComponent as CallOutIcon } from 'lodestar-app-admin/src/images/ico
 import { ReactComponent as PhoneIcon } from 'lodestar-app-admin/src/images/icon/phone.svg'
 import moment, { Moment } from 'moment'
 import { sum } from 'ramda'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
@@ -228,24 +228,6 @@ const AssignedMemberContactBlock: React.FC<{
   const [memberNoteStatus, setMemberNoteStatus] = useState<memberNoteFieldProps['status']>('not-answered')
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    if (!assignedMember) {
-      return
-    }
-
-    memberNoteForm.resetFields()
-    memberPropertyForm.resetFields()
-    memberPropertyForm.setFieldsValue(
-      assignedMember.properties.reduce(
-        (accumulator, property) => ({
-          ...accumulator,
-          [property.id]: property.value,
-        }),
-        {} as { [PropertyID: string]: string },
-      ),
-    )
-  }, [assignedMember, memberNoteForm, memberPropertyForm])
-
   if (loadingAssignedMember) {
     return <Skeleton active />
   }
@@ -257,6 +239,25 @@ const AssignedMemberContactBlock: React.FC<{
   const withDurationInput = !sales?.telephone.startsWith('8')
   const primaryPhoneNumber = selectedPhone === 'custom-phone' ? customPhoneNumber : selectedPhone
 
+  const resetForms = async () => {
+    memberNoteForm.resetFields()
+    setSelectedPhone('')
+    setDisabledPhones([])
+    setMemberNoteStatus('not-answered')
+    refetchAssignedMember().then(({ data }) => {
+      memberPropertyForm.setFieldsValue(
+        properties.reduce(
+          (accumulator, property) => ({
+            ...accumulator,
+            [property.id]: data.member[0]?.member_properties.find(v => v.property.id === property.id)?.value || '',
+          }),
+          {} as { [PropertyID: string]: string },
+        ),
+      )
+    })
+    message.success('儲存成功')
+  }
+
   const handleSubmit = async () => {
     if (!primaryPhoneNumber) {
       if (assignedMember.phones.every(phone => disabledPhones.includes(phone))) {
@@ -266,8 +267,8 @@ const AssignedMemberContactBlock: React.FC<{
             memberId: assignedMember.id,
           },
         }).catch(handleError)
-        refetchAssignedMember()
         setLoading(false)
+        resetForms()
         return
       }
 
@@ -286,10 +287,9 @@ const AssignedMemberContactBlock: React.FC<{
       return
     }
 
-    const noteValues = memberNoteForm.getFieldsValue()
-    const propertyValues = memberPropertyForm.getFieldsValue()
-
     try {
+      const noteValues = memberNoteForm.getFieldsValue()
+      const propertyValues = memberPropertyForm.getFieldsValue()
       await updateMemberPhone({
         variables: {
           data: [
@@ -309,7 +309,6 @@ const AssignedMemberContactBlock: React.FC<{
           ].filter(notEmpty),
         },
       })
-
       await insertMemberNote({
         variables: {
           data: {
@@ -325,7 +324,6 @@ const AssignedMemberContactBlock: React.FC<{
           },
         },
       })
-
       await updateMemberProperties({
         variables: {
           data: properties
@@ -337,9 +335,7 @@ const AssignedMemberContactBlock: React.FC<{
             })),
         },
       })
-
-      message.success('儲存成功')
-      refetchAssignedMember()
+      resetForms()
     } catch (error) {
       handleError(error)
     }
@@ -378,7 +374,7 @@ const AssignedMemberContactBlock: React.FC<{
 
   return (
     <AdminBlock className="p-4">
-      <div className="row mb-4">
+      <div className="row">
         <div className="col-5">
           <AssignedMemberName className="mb-2">{assignedMember.name}</AssignedMemberName>
           <AssignedMemberEmail>{assignedMember.email}</AssignedMemberEmail>
@@ -407,7 +403,7 @@ const AssignedMemberContactBlock: React.FC<{
         </div>
       </div>
       <Divider />
-      <div className="row">
+      <div className="row mb-4">
         <div className="col-5">
           <AdminBlockTitle className="mb-4">聯絡紀錄</AdminBlockTitle>
           <StyledLabel className="mb-3">選取主要電話</StyledLabel>
@@ -511,6 +507,13 @@ const AssignedMemberContactBlock: React.FC<{
             labelAlign="left"
             labelCol={{ span: 8 }}
             wrapperCol={{ span: 16 }}
+            initialValues={assignedMember.properties.reduce(
+              (accumulator, property) => ({
+                ...accumulator,
+                [property.id]: property.value,
+              }),
+              {} as { [PropertyID: string]: string },
+            )}
           >
             {propertyFields.map(propertyField => {
               const property = properties.find(property => property.name === propertyField.name)
