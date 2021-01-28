@@ -13,10 +13,9 @@ import {
   Switch,
   Tabs,
   TimePicker,
-  Tooltip
+  Tooltip,
 } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import axios from 'axios'
 import gql from 'graphql-tag'
 import { AdminBlock, AdminBlockTitle, AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
 import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
@@ -35,6 +34,7 @@ import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import SalesCallContactedMemberBlock from '../components/salesCall/SalesCallContactedMemberBlock'
 import SalesCallTransactedMemberBlock from '../components/salesCall/SalesCallTransactedMemberBlock'
+import { call } from '../helpers'
 import { salesMessages } from '../helpers/translation'
 import types from '../types'
 
@@ -75,7 +75,7 @@ const StyledLabel = styled.div`
   font-weight: bold;
   letter-spacing: 0.2px;
 `
-const StyledButton = styled(Button) <{ $iconSize?: string }>`
+const StyledButton = styled(Button)<{ $iconSize?: string }>`
   padding: 0 1rem;
   height: 36px;
   line-height: 1;
@@ -185,21 +185,19 @@ const propertyFields: {
   name: string
   required?: boolean
 }[] = [
-    { name: '性別', required: true },
-    { name: '縣市' },
-    { name: '有意願領域', required: true },
-    { name: '是否在職', required: true },
-    { name: '是否為相關職務' },
-    { name: '學生程度', required: true },
-    { name: '學習動機' },
-    { name: '每月學習預算' },
-    { name: '有沒有上過其他課程' },
-    { name: '是否有轉職意願', required: true },
-  ]
+  { name: '性別', required: true },
+  { name: '縣市' },
+  { name: '有意願領域', required: true },
+  { name: '是否在職', required: true },
+  { name: '是否為相關職務' },
+  { name: '學生程度', required: true },
+  { name: '學習動機' },
+  { name: '每月學習預算' },
+  { name: '有沒有上過其他課程' },
+  { name: '是否有轉職意願', required: true },
+]
 
-const AssignedMemberContactBlock: React.FC<{
-  salesId: string
-}> = ({ salesId }) => {
+const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) => {
   const { formatMessage } = useIntl()
   const { apiHost, authToken } = useAuth()
   const { id: appId } = useApp()
@@ -307,10 +305,10 @@ const AssignedMemberContactBlock: React.FC<{
             })),
             selectedPhone === 'custom-phone'
               ? {
-                member_id: assignedMember.id,
-                phone: primaryPhoneNumber,
-                is_primary: true,
-              }
+                  member_id: assignedMember.id,
+                  phone: primaryPhoneNumber,
+                  is_primary: true,
+                }
               : undefined,
           ].filter(notEmpty),
         },
@@ -346,36 +344,6 @@ const AssignedMemberContactBlock: React.FC<{
       handleError(error)
     }
     setLoading(false)
-  }
-
-  const handleCall = async (phone: string) => {
-    if (!window.confirm(`撥打號碼：${phone}`)) {
-      return
-    }
-
-    axios
-      .post(
-        `//${apiHost}/call`,
-        {
-          appId,
-          callFrom: sales?.telephone,
-          callTo: phone,
-        },
-        {
-          headers: { authorization: `Bearer ${authToken}` },
-        },
-      )
-      .then(({ data: { code } }) => {
-        if (code === 'SUCCESS') {
-          message.success('話機連結成功')
-        } else {
-          message.error('電話錯誤')
-        }
-      })
-      .catch(error => {
-        process.env.NODE_ENV === 'development' && console.error(error)
-        message.error('連線異常，請再嘗試')
-      })
   }
 
   return (
@@ -438,7 +406,15 @@ const AssignedMemberContactBlock: React.FC<{
                       disabled={isDisabled}
                       className="mr-2"
                       $iconSize="20px"
-                      onClick={() => handleCall(phone)}
+                      onClick={() =>
+                        call({
+                          appId,
+                          apiHost,
+                          authToken,
+                          phone,
+                          salesTelephone: sales?.telephone || '',
+                        })
+                      }
                     >
                       <CallOutIcon />
                     </StyledButton>
@@ -543,8 +519,8 @@ const AssignedMemberContactBlock: React.FC<{
                       ))}
                     </Select>
                   ) : (
-                      <Input disabled={!primaryPhoneNumber} />
-                    )}
+                    <Input disabled={!primaryPhoneNumber} />
+                  )}
                 </Form.Item>
               )
             })}
@@ -643,25 +619,25 @@ const useSalesSummary = (salesId: string) => {
 
   const salesSummary = data
     ? {
-      sales: data.member_by_pk
-        ? {
-          id: data.member_by_pk.id,
-          picture_url: data.member_by_pk.picture_url,
-          name: data.member_by_pk.name || data.member_by_pk.username,
-          email: data.member_by_pk.email,
-          telephone: data.member_by_pk.member_properties[0]?.value || '',
-        }
-        : null,
-      sharingOfMonth: sum(
-        data.order_executor_sharing.map(sharing => Math.floor(sharing.total_price * sharing.ratio)),
-      ),
-      contractsOfMonth: data.member_contract_aggregate.aggregate?.count || 0,
-      totalDuration: data.member_note_aggregate.aggregate?.sum?.duration || 0,
-      totalNotes: data.member_note_aggregate.aggregate?.count || 0,
-      assignedMembersToday: data.assigned_members_today.aggregate?.count || 0,
-      assignedMembersNew: data.assigned_members_last_two_weeks.aggregate?.count || 0,
-      assignedMembersAll: data.assigned_members_last_three_months.aggregate?.count || 0,
-    }
+        sales: data.member_by_pk
+          ? {
+              id: data.member_by_pk.id,
+              picture_url: data.member_by_pk.picture_url,
+              name: data.member_by_pk.name || data.member_by_pk.username,
+              email: data.member_by_pk.email,
+              telephone: data.member_by_pk.member_properties[0]?.value || '',
+            }
+          : null,
+        sharingOfMonth: sum(
+          data.order_executor_sharing.map(sharing => Math.floor(sharing.total_price * sharing.ratio)),
+        ),
+        contractsOfMonth: data.member_contract_aggregate.aggregate?.count || 0,
+        totalDuration: data.member_note_aggregate.aggregate?.sum?.duration || 0,
+        totalNotes: data.member_note_aggregate.aggregate?.count || 0,
+        assignedMembersToday: data.assigned_members_today.aggregate?.count || 0,
+        assignedMembersNew: data.assigned_members_last_two_weeks.aggregate?.count || 0,
+        assignedMembersAll: data.assigned_members_last_three_months.aggregate?.count || 0,
+      }
     : null
 
   return {
@@ -672,7 +648,7 @@ const useSalesSummary = (salesId: string) => {
   }
 }
 
-const useFirstAssignedMember = (salesId: string) => {
+export const useFirstAssignedMember = (salesId: string) => {
   const { loading, error, data, refetch } = useQuery<
     types.GET_FIRST_ASSIGNED_MEMBER,
     types.GET_FIRST_ASSIGNED_MEMBERVariables
@@ -731,9 +707,9 @@ const useFirstAssignedMember = (salesId: string) => {
 
   const sales = data?.member_by_pk
     ? {
-      id: data.member_by_pk.id,
-      telephone: data.member_by_pk.member_properties[0]?.value || '',
-    }
+        id: data.member_by_pk.id,
+        telephone: data.member_by_pk.member_properties[0]?.value || '',
+      }
     : null
   const properties =
     data?.property.map(property => ({
@@ -743,20 +719,20 @@ const useFirstAssignedMember = (salesId: string) => {
     })) || []
   const assignedMember = data?.member?.[0]
     ? {
-      id: data.member[0].id,
-      email: data.member[0].email,
-      name: data.member[0].name || data.member[0].username,
-      phones: data.member[0].member_phones.map(v => v.phone),
-      categories: data.member[0].member_categories.map(v => ({
-        id: v.category.id,
-        name: v.category.name,
-      })),
-      properties: data.member[0].member_properties.map(v => ({
-        id: v.property.id,
-        name: v.property.name,
-        value: v.value,
-      })),
-    }
+        id: data.member[0].id,
+        email: data.member[0].email,
+        name: data.member[0].name || data.member[0].username,
+        phones: data.member[0].member_phones.map(v => v.phone),
+        categories: data.member[0].member_categories.map(v => ({
+          id: v.category.id,
+          name: v.category.name,
+        })),
+        properties: data.member[0].member_properties.map(v => ({
+          id: v.property.id,
+          name: v.property.name,
+          value: v.value,
+        })),
+      }
     : null
 
   return {
