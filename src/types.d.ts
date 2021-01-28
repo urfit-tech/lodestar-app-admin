@@ -10886,6 +10886,7 @@ export interface ADD_MEMBER_CONTRACT {
 
 export interface ADD_MEMBER_CONTRACTVariables {
   memberId: string;
+  authorId: string;
   contractId: any;
   startedAt: any;
   endedAt: any;
@@ -12565,6 +12566,7 @@ export enum member_note_update_column {
   member_id = "member_id",
   metadata = "metadata",
   note = "note",
+  rejected_at = "rejected_at",
   status = "status",
   type = "type",
   updated_at = "updated_at",
@@ -12603,6 +12605,7 @@ export enum member_phone_update_column {
   created_at = "created_at",
   id = "id",
   is_primary = "is_primary",
+  is_valid = "is_valid",
   member_id = "member_id",
   phone = "phone",
   updated_at = "updated_at",
@@ -18888,6 +18891,7 @@ export interface member_note_bool_exp {
   member_note_attachments?: member_note_attachment_bool_exp | null;
   metadata?: jsonb_comparison_exp | null;
   note?: String_comparison_exp | null;
+  rejected_at?: timestamptz_comparison_exp | null;
   status?: String_comparison_exp | null;
   type?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -18908,6 +18912,7 @@ export interface member_note_insert_input {
   member_note_attachments?: member_note_attachment_arr_rel_insert_input | null;
   metadata?: any | null;
   note?: string | null;
+  rejected_at?: any | null;
   status?: string | null;
   type?: string | null;
   updated_at?: any | null;
@@ -18924,6 +18929,7 @@ export interface member_note_max_order_by {
   id?: order_by | null;
   member_id?: order_by | null;
   note?: order_by | null;
+  rejected_at?: order_by | null;
   status?: order_by | null;
   type?: order_by | null;
   updated_at?: order_by | null;
@@ -18940,6 +18946,7 @@ export interface member_note_min_order_by {
   id?: order_by | null;
   member_id?: order_by | null;
   note?: order_by | null;
+  rejected_at?: order_by | null;
   status?: order_by | null;
   type?: order_by | null;
   updated_at?: order_by | null;
@@ -18977,6 +18984,7 @@ export interface member_note_order_by {
   member_note_attachments_aggregate?: member_note_attachment_aggregate_order_by | null;
   metadata?: order_by | null;
   note?: order_by | null;
+  rejected_at?: order_by | null;
   status?: order_by | null;
   type?: order_by | null;
   updated_at?: order_by | null;
@@ -18994,6 +19002,7 @@ export interface member_note_set_input {
   member_id?: string | null;
   metadata?: any | null;
   note?: string | null;
+  rejected_at?: any | null;
   status?: string | null;
   type?: string | null;
   updated_at?: any | null;
@@ -19284,6 +19293,7 @@ export interface member_phone_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   is_primary?: Boolean_comparison_exp | null;
+  is_valid?: Boolean_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   phone?: String_comparison_exp | null;
@@ -19297,6 +19307,7 @@ export interface member_phone_insert_input {
   created_at?: any | null;
   id?: any | null;
   is_primary?: boolean | null;
+  is_valid?: boolean | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   phone?: string | null;

@@ -131,7 +131,7 @@ const MemberContractForm: React.FC<{
   }
 }> = ({ member }) => {
   const [form] = useForm<FieldProps>()
-  const { authToken, apiHost } = useAuth()
+  const { authToken, apiHost, currentMemberId } = useAuth()
   const { id: appId } = useApp()
   const { xuemiSales } = useXuemiSales()
 
@@ -380,6 +380,7 @@ const MemberContractForm: React.FC<{
         contractId: values.contractId,
         startedAt,
         endedAt,
+        authorId: currentMemberId || '',
         values: {
           orderId,
           price: totalPrice,
@@ -908,6 +909,7 @@ const GET_REFERRAL_MEMBER_COLLECTION = gql`
 const ADD_MEMBER_CONTRACT = gql`
   mutation ADD_MEMBER_CONTRACT(
     $memberId: String!
+    $authorId: String!
     $contractId: uuid!
     $startedAt: timestamptz!
     $endedAt: timestamptz!
@@ -918,6 +920,7 @@ const ADD_MEMBER_CONTRACT = gql`
       object: {
         member_id: $memberId
         contract_id: $contractId
+        author_id: $authorId
         started_at: $startedAt
         ended_at: $endedAt
         values: $values
