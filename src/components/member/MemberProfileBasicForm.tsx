@@ -58,7 +58,7 @@ const MemberProfileBasicForm: React.FC<{
               member_id: memberAdmin.id,
               phone,
             })),
-        managerId: values.managerId || null,
+        managerId: values.managerId || memberAdmin.manager?.id,
         assignedAt: values.managerId ? new Date() : null,
         tags: values.tags.map((tag: string) => ({
           name: tag,
