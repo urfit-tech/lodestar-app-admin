@@ -297,125 +297,127 @@ const MemberContractForm: React.FC<{
       message.warning('學員資料請填寫完整')
       return
     }
+    if (identity === 'student' && !certificationPath) {
+      message.warn('需上傳證明')
+      return
+    }
 
-    form
-      .validateFields()
-      .then(() => {
-        const values = form.getFieldsValue()
+    try {
+      await form.validateFields()
+    } catch (error) {
+      process.env.NODE_ENV === 'development' && console.error(error)
+    }
 
-        if (identity === 'student' && !certificationPath) {
-          message.warn('需上傳證明')
-          return
-        }
+    const values = form.getFieldsValue()
 
-        const orderExecutors: {
-          member_id: string
-          ratio: number
-        }[] = [
-          {
-            member_id: values.orderExecutorId || '',
-            ratio: values.orderExecutorRatio,
-          },
-          ...(values.orderExecutors?.map(orderExecutor => ({
-            member_id: orderExecutor.memberId || '',
-            ratio: orderExecutor.ratio || 0,
-          })) || []),
-        ].filter(v => v.member_id && v.ratio)
+    const orderExecutors: {
+      member_id: string
+      ratio: number
+    }[] = [
+      {
+        member_id: values.orderExecutorId || '',
+        ratio: values.orderExecutorRatio,
+      },
+      ...(values.orderExecutors?.map(orderExecutor => ({
+        member_id: orderExecutor.memberId || '',
+        ratio: orderExecutor.ratio || 0,
+      })) || []),
+    ].filter(v => v.member_id && v.ratio)
 
-        if (sum(orderExecutors.map(v => v.ratio)) !== 1) {
-          message.warn('承辦人分潤比例加總必須為 1')
-          return
-        }
+    if (sum(orderExecutors.map(v => v.ratio)) !== 1) {
+      message.warn('承辦人分潤比例加總必須為 1')
+      return
+    }
 
-        if (window.confirm('請確認合約是否正確？')) {
-          // generate coupons
-          const couponPlanId = v4()
-          const coupons = range(0, totalAppointments).map(v => {
-            return {
-              member_id: member?.id,
-              coupon_code: {
-                data: {
-                  code: moment().format('x') + v,
-                  count: 1,
-                  remaining: 0,
-                  app_id: 'xuemi',
-                  coupon_plan: {
-                    on_conflict: {
-                      constraint: 'coupon_plan_pkey',
-                      update_columns: ['title'],
-                    },
-                    data: {
-                      id: couponPlanId,
-                      type: 2,
-                      amount: 100,
-                      title: `學米諮詢券`,
-                      description: `學員編號：${member?.id}, 合約編號：${values.contractId}`,
-                      started_at: startedAt,
-                      ended_at: endedAt,
-                      scope: ['AppointmentPlan'],
-                    },
+    if (!window.confirm('請確認合約是否正確？')) {
+      return
+    }
+
+    // generate coupons
+    const couponPlanId = v4()
+    const coupons = range(0, totalAppointments).map((v, index) => ({
+      member_id: member.id,
+      coupon_code: {
+        data: {
+          code: moment().format('x') + v,
+          count: 1,
+          remaining: 0,
+          app_id: 'xuemi',
+          coupon_plan_id: index !== 0 ? couponPlanId : undefined,
+          coupon_plan:
+            index === 0
+              ? {
+                  on_conflict: {
+                    constraint: 'coupon_plan_pkey',
+                    update_columns: ['title'],
                   },
-                },
-              },
-            }
-          })
+                  data: {
+                    id: couponPlanId,
+                    type: 2,
+                    amount: 100,
+                    title: `學米諮詢券`,
+                    description: `學員編號：${member.id}, 合約編號：${values.contractId}`,
+                    started_at: startedAt,
+                    ended_at: endedAt,
+                    scope: ['AppointmentPlan'],
+                  },
+                }
+              : undefined,
+        },
+      },
+    }))
 
-          let times = 0
-          const orderId = moment().format('YYYYMMDDHHmmssSSS') + `${times}`.padStart(2, '0')
-          const projectPlanName = orderItems
-            .filter(orderItem => orderItem.name)
-            .map(orderItem => orderItem.name)
-            .join('、')
+    let times = 0
+    const orderId = moment().format('YYYYMMDDHHmmssSSS') + `${times}`.padStart(2, '0')
+    const projectPlanName = orderItems
+      .filter(orderItem => orderItem.name)
+      .map(orderItem => orderItem.name)
+      .join('、')
 
-          addMemberContract({
-            variables: {
-              memberId: member.id,
-              contractId: values.contractId,
-              startedAt,
-              endedAt,
-              values: {
-                orderId,
-                price: totalPrice,
-                coupons,
-                startedAt,
-                endedAt,
-                invoice: {
-                  name: member.name,
-                  phone: member.phones,
-                  email: member.email,
-                },
-                cardName: '學米 VIP 會員卡',
-                coinName: projectPlanName,
-                memberId: member.id,
-                paymentNo: moment().format('YYYYMMDDHHmmss'),
-                coinAmount: totalCoins,
-                projectPlanName,
-                projectPlanProductId: `ProjectPlan_${selectedProjectPlanId}`,
-                orderExecutors,
-                paymentOptions: {
-                  paymentMethod: values.paymentMethod,
-                  installmentPlan: values.installmentPlan,
-                  paymentNumber: values.paymentNumber,
-                },
-              },
-              options: {
-                appointmentCreatorId: withCreatorId ? values.creatorId : null,
-                studentCertification: identity === 'student' ? certificationPath : null,
-                referralMemberId,
-              },
-            },
-          })
-            .then(({ data }) => {
-              const contractId = data?.insert_member_contract_one?.id
-              setMemberContractUrl(`https://www.xuemi.co/members/${member.id}/contracts/${contractId}`)
-              message.success('成功產生合約')
-            })
-            .catch(err => message.error(`產生合約失敗，請確認資料是否正確。錯誤代碼：${err}`))
-        }
+    addMemberContract({
+      variables: {
+        memberId: member.id,
+        contractId: values.contractId,
+        startedAt,
+        endedAt,
+        values: {
+          orderId,
+          price: totalPrice,
+          coupons,
+          startedAt,
+          endedAt,
+          invoice: {
+            name: member.name,
+            phone: member.phones,
+            email: member.email,
+          },
+          cardName: '學米 VIP 會員卡',
+          coinName: projectPlanName,
+          memberId: member.id,
+          paymentNo: moment().format('YYYYMMDDHHmmss'),
+          coinAmount: totalCoins,
+          projectPlanName,
+          projectPlanProductId: `ProjectPlan_${selectedProjectPlanId}`,
+          orderExecutors,
+          paymentOptions: {
+            paymentMethod: values.paymentMethod,
+            installmentPlan: values.installmentPlan,
+            paymentNumber: values.paymentNumber,
+          },
+        },
+        options: {
+          appointmentCreatorId: withCreatorId ? values.creatorId : null,
+          studentCertification: identity === 'student' ? certificationPath : null,
+          referralMemberId,
+        },
+      },
+    })
+      .then(({ data }) => {
+        const contractId = data?.insert_member_contract_one?.id
+        setMemberContractUrl(`https://www.xuemi.co/members/${member.id}/contracts/${contractId}`)
+        message.success('成功產生合約')
       })
-      .catch(error => {
-        process.env.NODE_ENV === 'development' && console.error(error)
-      })
+      .catch(err => message.error(`產生合約失敗，請確認資料是否正確。錯誤代碼：${err}`))
   }
 
   return (
