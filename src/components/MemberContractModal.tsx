@@ -209,9 +209,9 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
         </div>
         <StyledAreaTitle>{formatMessage(memberContractMessages.label.revenueShare)}</StyledAreaTitle>
         <div className="mb-4">
-          {orderExecutors?.map(v => (
-            <div key={v.memberId}>
-              <MemberName memberId={v.memberId} />
+          {orderExecutors?.map((v, index) => (
+            <div key={index}>
+              {v.memberId && <MemberName memberId={v.memberId} />}
               <span className="ml-2">{v.ratio}</span>
             </div>
           ))}

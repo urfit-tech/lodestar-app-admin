@@ -33,6 +33,23 @@ export interface GET_MEMBER_NAMEVariables {
 // GraphQL query operation: GET_MEMBER_PRIVATE_TEACH_CONTRACT
 // ====================================================
 
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_contract_member_manager {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_contract_member {
+  __typename: "member";
+  id: string;
+  created_at: any | null;
+  /**
+   * An object relationship
+   */
+  manager: GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_contract_member_manager | null;
+}
+
 export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_contract {
   __typename: "xuemi_member_private_teach_contract";
   id: any | null;
@@ -54,6 +71,15 @@ export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_co
   student_certification: string | null;
   note: string | null;
   values: any | null;
+  /**
+   * An object relationship
+   */
+  member: GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_contract_member | null;
+  last_marketing_activity: string | null;
+  last_ad_package: string | null;
+  last_ad_material: string | null;
+  first_fill_in_date: string | null;
+  last_fill_in_date: string | null;
 }
 
 export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_contract_aggregate_aggregate {
@@ -139,6 +165,84 @@ export interface GET_SALE_COLLECTION {
    * fetch data from the table: "xuemi.sales"
    */
   xuemi_sales: GET_SALE_COLLECTION_xuemi_sales[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SALES_CALL_MEMBER
+// ====================================================
+
+export interface GET_SALES_CALL_MEMBER_member_member_phones {
+  __typename: "member_phone";
+  id: any;
+  phone: string;
+}
+
+export interface GET_SALES_CALL_MEMBER_member_member_notes {
+  __typename: "member_note";
+  id: string;
+  created_at: any;
+}
+
+export interface GET_SALES_CALL_MEMBER_member_member_categories_category {
+  __typename: "category";
+  name: string;
+}
+
+export interface GET_SALES_CALL_MEMBER_member_member_categories {
+  __typename: "member_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_SALES_CALL_MEMBER_member_member_categories_category;
+}
+
+export interface GET_SALES_CALL_MEMBER_member_member_contracts {
+  __typename: "member_contract";
+  id: any;
+  values: any | null;
+  ended_at: any | null;
+}
+
+export interface GET_SALES_CALL_MEMBER_member {
+  __typename: "member";
+  id: string;
+  name: string;
+  email: string;
+  /**
+   * An array relationship
+   */
+  member_phones: GET_SALES_CALL_MEMBER_member_member_phones[];
+  /**
+   * An array relationship
+   */
+  member_notes: GET_SALES_CALL_MEMBER_member_member_notes[];
+  /**
+   * An array relationship
+   */
+  member_categories: GET_SALES_CALL_MEMBER_member_member_categories[];
+  /**
+   * An array relationship
+   */
+  member_contracts: GET_SALES_CALL_MEMBER_member_member_contracts[];
+}
+
+export interface GET_SALES_CALL_MEMBER {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_SALES_CALL_MEMBER_member[];
+}
+
+export interface GET_SALES_CALL_MEMBERVariables {
+  condition: member_bool_exp;
+  hasContacted: boolean;
+  hasTransacted: boolean;
 }
 
 /* tslint:disable */
@@ -503,84 +607,6 @@ export interface UPDATE_MEMBER_PROPERTIES {
 
 export interface UPDATE_MEMBER_PROPERTIESVariables {
   data: member_property_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_SALES_CALL_MEMBER
-// ====================================================
-
-export interface GET_SALES_CALL_MEMBER_member_member_phones {
-  __typename: "member_phone";
-  id: any;
-  phone: string;
-}
-
-export interface GET_SALES_CALL_MEMBER_member_member_notes {
-  __typename: "member_note";
-  id: string;
-  created_at: any;
-}
-
-export interface GET_SALES_CALL_MEMBER_member_member_categories_category {
-  __typename: "category";
-  name: string;
-}
-
-export interface GET_SALES_CALL_MEMBER_member_member_categories {
-  __typename: "member_category";
-  id: any;
-  /**
-   * An object relationship
-   */
-  category: GET_SALES_CALL_MEMBER_member_member_categories_category;
-}
-
-export interface GET_SALES_CALL_MEMBER_member_member_contracts {
-  __typename: "member_contract";
-  id: any;
-  values: any | null;
-  ended_at: any | null;
-}
-
-export interface GET_SALES_CALL_MEMBER_member {
-  __typename: "member";
-  id: string;
-  name: string;
-  email: string;
-  /**
-   * An array relationship
-   */
-  member_phones: GET_SALES_CALL_MEMBER_member_member_phones[];
-  /**
-   * An array relationship
-   */
-  member_notes: GET_SALES_CALL_MEMBER_member_member_notes[];
-  /**
-   * An array relationship
-   */
-  member_categories: GET_SALES_CALL_MEMBER_member_member_categories[];
-  /**
-   * An array relationship
-   */
-  member_contracts: GET_SALES_CALL_MEMBER_member_member_contracts[];
-}
-
-export interface GET_SALES_CALL_MEMBER {
-  /**
-   * fetch data from the table: "member"
-   */
-  member: GET_SALES_CALL_MEMBER_member[];
-}
-
-export interface GET_SALES_CALL_MEMBERVariables {
-  condition: member_bool_exp;
-  hasContacted: boolean;
-  hasTransacted: boolean;
 }
 
 /* tslint:disable */

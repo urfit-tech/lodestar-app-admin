@@ -13,8 +13,8 @@ const StyledButton = styled(Button)`
 `
 const StyledOverlay = styled.div`
   padding: 1rem;
-  max-width: 20rem;
-  max-height: 20rem;
+  width: 20rem;
+  max-height: 25rem;
   overflow: auto;
   background: white;
   border-radius: 4px;
@@ -37,9 +37,9 @@ const MemberContractFieldSelector: React.FC<{
       title: '學生資料',
       key: 'member_data',
       children: [
-        { title: '學生姓名/Email', key: 'memberNameEmail' },
+        { title: '學生姓名/Email', key: 'member' },
         { title: '學生證明', key: 'studentCertification' },
-        { title: '承辦人', key: 'manager' },
+        { title: '承辦人', key: 'managerName' },
       ],
     },
     {
@@ -48,10 +48,10 @@ const MemberContractFieldSelector: React.FC<{
       children: [
         { title: '合約編號', key: 'contractId' },
         { title: '服務開始', key: 'startedAt' },
-        { title: '合約建立者', key: 'author' },
-        { title: '金額', key: 'amount' },
-        { title: '產品', key: 'products' },
-        { title: '備註', key: 'description' },
+        { title: '合約建立者', key: 'authorName' },
+        { title: '金額', key: 'price' },
+        { title: '產品', key: 'projectPlanName' },
+        { title: '備註', key: 'note' },
         { title: '成交聯絡紀錄', key: 'memberNotes' },
       ],
     },
@@ -72,6 +72,7 @@ const MemberContractFieldSelector: React.FC<{
         { title: '付款方式', key: 'paymentMethod' },
         { title: '期數', key: 'installmentPlan' },
         { title: '金流編號', key: 'paymentNumber' },
+        { title: '業務分潤', key: 'orderExecutors' },
       ],
     },
     {
@@ -79,11 +80,11 @@ const MemberContractFieldSelector: React.FC<{
       key: 'marketing_related',
       children: [
         { title: '最後填單行銷活動', key: 'lastActivity' },
-        { title: '最後填單廣告組合', key: 'lastCollection' },
-        { title: '最後填單廣告素材', key: 'lastMaterial' },
+        { title: '最後填單廣告組合', key: 'lastAdPackage' },
+        { title: '最後填單廣告素材', key: 'lastAdMaterial' },
         { title: '會員建立日期', key: 'memberCreatedAt' },
-        { title: '首次填單日期', key: 'firstSubmit' },
-        { title: '最後填單日期', key: 'lastSubmit' },
+        { title: '首次填單日期', key: 'firstFilledAt' },
+        { title: '最後填單日期', key: 'lastFilledAt' },
       ],
     },
   ]

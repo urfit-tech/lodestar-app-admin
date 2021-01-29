@@ -9,6 +9,7 @@ export type MemberContractProps = {
     name: string | null
     pictureUrl: string | null
     email: string | null
+    createdAt: Date | null
   }
   startedAt: Date
   endedAt: Date
@@ -44,4 +45,13 @@ export type MemberContractProps = {
       }[]
     | null
   couponCount: number | null
+  manager: {
+    id: string
+    name: string
+  } | null
+  lastActivity: string | null
+  lastAdPackage: string | null
+  lastAdMaterial: string | null
+  firstFilledAt: string | null
+  lastFilledAt: string | null
 }
