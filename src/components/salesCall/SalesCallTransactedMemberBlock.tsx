@@ -126,7 +126,7 @@ const SalesCallTransactedMemberBlock: React.FC<{ salesId: string }> = ({ salesId
           {
             title: formatMessage(salesMessages.label.tel),
             dataIndex: 'phones',
-            render: phones => phones.map((v: string) => <address>{v}</address>),
+            render: phones => phones.map((v: string) => <address className="m-0">{v}</address>),
             ...getColumnSearchProps((value?: string) =>
               setFilters({
                 ...filters,
