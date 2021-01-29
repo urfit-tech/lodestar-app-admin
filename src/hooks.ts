@@ -11,7 +11,7 @@ import {
 } from './types.d'
 import { DateRangeType, MemberContractProps, StatusType } from './types/memberContract'
 
-export const useMemberContract = ({
+export const useMemberContractCollection = ({
   isRevoked,
   memberNameAndEmail,
   authorName,

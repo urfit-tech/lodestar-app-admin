@@ -1,6 +1,7 @@
 {
   "cSpell.words": [
     "antd",
+    "ilike",
     "timestamptz"
   ],
   "typescript.tsdk": "node_modules/typescript/lib"

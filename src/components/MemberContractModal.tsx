@@ -88,11 +88,11 @@ type MemberContractModalProps = {
   } | null
   note?: string | null
   orderExecutors?:
-  | {
-    memberId: string
-    ratio: number
-  }[]
-  | null
+    | {
+        memberId: string
+        ratio: number
+      }[]
+    | null
   studentCertification?: string | null
   onRefetch: () => void
 } & AdminModalProps
@@ -210,7 +210,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
         <StyledAreaTitle>{formatMessage(memberContractMessages.label.revenueShare)}</StyledAreaTitle>
         <div className="mb-4">
           {orderExecutors?.map(v => (
-            <div>
+            <div key={v.memberId}>
               <MemberName memberId={v.memberId} />
               <span className="ml-2">{v.ratio}</span>
             </div>
@@ -373,7 +373,6 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
           </Form.List>
         </Form>
 
-
         {studentCertification && (
           <>
             <StyledAreaTitle>{formatMessage(memberContractMessages.label.proofOfEnrollment)}</StyledAreaTitle>
@@ -410,7 +409,6 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
             )}
           </>
         )}
-
       </>
     )
   }
@@ -424,17 +422,17 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
         isRevoked
           ? undefined
           : ({ setVisible }) => {
-            return (
-              <div className="mt-3">
-                <Button className="mr-2" onClick={() => setVisible(false)}>
-                  {formatMessage(commonMessages.ui.cancel)}
-                </Button>
-                <Button type="primary" onClick={() => handleSubmit(setVisible)} loading={isLoading}>
-                  {formatMessage(commonMessages.ui.save)}
-                </Button>
-              </div>
-            )
-          }
+              return (
+                <div className="mt-3">
+                  <Button className="mr-2" onClick={() => setVisible(false)}>
+                    {formatMessage(commonMessages.ui.cancel)}
+                  </Button>
+                  <Button type="primary" onClick={() => handleSubmit(setVisible)} loading={isLoading}>
+                    {formatMessage(commonMessages.ui.save)}
+                  </Button>
+                </div>
+              )
+            }
       }
       {...props}
     >
@@ -445,7 +443,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
             <StyledAreaTitle>{member?.name}</StyledAreaTitle>
             <StyledSubText className="mb-1">{member?.email}</StyledSubText>
             {member?.phone.split(',').map(v => (
-              <StyledSubText>{v}</StyledSubText>
+              <StyledSubText key={v}>{v}</StyledSubText>
             ))}
           </div>
           <div className="col-12">

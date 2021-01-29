@@ -10,8 +10,9 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { memberContractMessages } from '../helpers/translation'
-import { useMemberContract } from '../hooks'
+import { useMemberContractCollection } from '../hooks'
 import { DateRangeType, StatusType } from '../types/memberContract'
+import MemberContractFieldSelector from './MemberContractFieldSelector'
 import MemberContractFilterSelector from './MemberContractFilterSelector'
 import MemberContractModal from './MemberContractModal'
 import MemberName from './MemberName'
@@ -112,32 +113,20 @@ const MemberContractCollectionTable: React.FC<{
     memberContracts,
     loadMoreMemberContracts,
     refetchMemberContracts,
-  } = useMemberContract({
+  } = useMemberContractCollection({
     ...filter,
     sortOrder,
     isRevoked: variant === 'revoked',
   })
   const [isLoading, setIsLoading] = useState(false)
   const [activeMemberContractId, setActiveMemberContractId] = useState<string | null>(null)
+  const [visibleFields, setVisibleFields] = useState<string[]>([])
 
   if (loadingMemberContracts && errorMemberContracts) {
     return <Skeleton />
   }
 
   const activeMemberContract = memberContracts.find(v => v.id === activeMemberContractId)
-
-  const select = (
-    <MemberContractFilterSelector
-      dateRangeType={filter.dateRangeType}
-      onSetDateRangeType={dateRangeType => {
-        setFilter({ ...filter, dateRangeType })
-      }}
-      startedAt={filter.startedAt}
-      endedAt={filter.endedAt}
-      onSetRange={({ startedAt, endedAt }) => setFilter({ ...filter, startedAt, endedAt })}
-      className="mb-4"
-    />
-  )
 
   const dataSource: DataSourceProps[] = memberContracts.map(v => ({
     id: v.id,
@@ -395,7 +384,19 @@ const MemberContractCollectionTable: React.FC<{
 
   return (
     <>
-      {select}
+      <div className="d-flex align-items-center justify-content-between mb-4">
+        <MemberContractFilterSelector
+          dateRangeType={filter.dateRangeType}
+          onSetDateRangeType={dateRangeType => {
+            setFilter({ ...filter, dateRangeType })
+          }}
+          startedAt={filter.startedAt}
+          endedAt={filter.endedAt}
+          onSetRange={({ startedAt, endedAt }) => setFilter({ ...filter, startedAt, endedAt })}
+        />
+        <MemberContractFieldSelector value={visibleFields} onChange={value => setVisibleFields(value)} />
+      </div>
+
       <AdminCard>
         <MemberContractModal
           isRevoked={variant === 'revoked'}
@@ -427,13 +428,14 @@ const MemberContractCollectionTable: React.FC<{
               columns={columns}
               dataSource={dataSource}
               scroll={{ x: columns.length * 16 * 12 }}
+              rowKey={row => row.id}
+              rowClassName="cursor-pointer"
               onRow={record => ({
                 onClick: () => {
                   setActiveMemberContractId(record.id)
                   setVisible(true)
                 },
               })}
-              rowClassName={() => 'cursor-pointer'}
               onChange={(pagination, filters, sorter) => {
                 const newSorter = sorter as SorterResult<DataSourceProps>
                 setSortOrder({

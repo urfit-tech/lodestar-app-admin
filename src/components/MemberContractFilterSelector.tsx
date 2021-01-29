@@ -17,11 +17,10 @@ const MemberContractFilterSelector: React.FC<{
   onSetStatus?: (status: StatusType) => void
   onSetDateRangeType?: (dateType: DateRangeType) => void
   onSetRange?: (time: { startedAt: Date | null; endedAt: Date | null }) => void
-  className?: string
-}> = ({ dateRangeType, startedAt, endedAt, onSetStatus, onSetDateRangeType, onSetRange, className }) => {
+}> = ({ dateRangeType, startedAt, endedAt, onSetStatus, onSetDateRangeType, onSetRange }) => {
   const { formatMessage } = useIntl()
   return (
-    <div className={className}>
+    <div>
       <StyledSelect
         defaultValue={dateRangeType}
         onSelect={value => {
@@ -43,6 +42,7 @@ const MemberContractFilterSelector: React.FC<{
         </Select.Option>
         <Select.Option value={'revoked_at'}>{formatMessage(memberContractMessages.label.revokedAt)}</Select.Option>
       </StyledSelect>
+
       <DatePicker.RangePicker
         defaultValue={[moment(startedAt), moment(endedAt)]}
         onChange={time => {
