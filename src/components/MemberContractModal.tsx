@@ -112,7 +112,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   ...props
 }) => {
   const { formatMessage } = useIntl()
-  const { authToken, apiHost } = useAuth()
+  const { authToken, apiHost, currentUserRole } = useAuth()
   const { id: appId } = useApp()
   const [form] = Form.useForm()
   const { xuemiSales } = useXuemiSales()
@@ -171,6 +171,16 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
       .finally(() => setIsLoading(false))
   }
 
+  const inputEditPermissions = {
+    approvedAt: true,
+    loanCanceledAt: true,
+    refundAppliedAt: true,
+    paymentMethod: currentUserRole === 'general-member' ? false : true,
+    paymentNumber: true,
+    note: true,
+    installmentPlan: currentUserRole === 'general-member' ? false : true,
+    orderExecutors: true,
+  }
   let sheet
   if (isRevoked) {
     sheet = (
@@ -250,7 +260,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
             <Col span={8} className="pr-3">
               <span>{formatMessage(memberContractMessages.label.approvedAt)}</span>
               <Form.Item name="approvedAt" initialValue={status.approvedAt ? moment(status.approvedAt) : null}>
-                <StyledDatePicker format={'YYYY-MM-DD'} />
+                <StyledDatePicker disabled={!inputEditPermissions?.['approvedAt']} format={'YYYY-MM-DD'} />
               </Form.Item>
             </Col>
             <Col span={8} className="pr-3">
@@ -259,7 +269,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                 name="loanCanceledAt"
                 initialValue={status.loanCanceledAt ? moment(status.loanCanceledAt) : null}
               >
-                <StyledDatePicker format={'YYYY-MM-DD'} />
+                <StyledDatePicker disabled={!inputEditPermissions?.['loanCanceledAt']} format={'YYYY-MM-DD'} />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -268,7 +278,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                 name="refundAppliedAt"
                 initialValue={status.refundAppliedAt ? moment(status.refundAppliedAt) : null}
               >
-                <StyledDatePicker format="YYYY-MM-DD" />
+                <StyledDatePicker disabled={!inputEditPermissions?.['refundAppliedAt']} format="YYYY-MM-DD" />
               </Form.Item>
             </Col>
           </StyledRow>
@@ -282,7 +292,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                 rules={[{ required: true, message: '請選擇付款方式' }]}
                 initialValue={paymentOptions?.paymentMethod || null}
               >
-                <StyledSelect>
+                <StyledSelect disabled={!inputEditPermissions?.['paymentMethod']}>
                   {['藍新', '歐付寶', '富比世', '新仲信', '舊仲信', '匯款', '現金', '裕富'].map((payment: string) => (
                     <Select.Option key={payment} value={payment}>
                       {payment}
@@ -294,7 +304,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
             <Col span={5} className="pr-3">
               <span>{formatMessage(memberContractMessages.label.installmentPlan)}</span>
               <Form.Item name="installmentPlan" initialValue={paymentOptions?.installmentPlan}>
-                <StyledSelect>
+                <StyledSelect disabled={!inputEditPermissions?.['installmentPlan']}>
                   {[1, 3, 6, 8, 9, 12, 18, 24, 30].map((installmentPlan: number) => (
                     <Select.Option key={installmentPlan} value={installmentPlan}>
                       {installmentPlan}
@@ -306,7 +316,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
             <Col span={8}>
               <span>{formatMessage(memberContractMessages.label.paymentNumber)}</span>
               <Form.Item name="paymentNumber" initialValue={paymentOptions?.paymentNumber}>
-                <Input />
+                <Input disabled={!inputEditPermissions?.['paymentNumber']} />
               </Form.Item>
             </Col>
           </StyledRow>
@@ -315,7 +325,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
           <StyledRow className="mb-3">
             <Col span={24}>
               <Form.Item name="note" initialValue={note}>
-                <Input.TextArea>{note}</Input.TextArea>
+                <Input.TextArea disabled={!inputEditPermissions?.['note']}>{note}</Input.TextArea>
               </Form.Item>
             </Col>
           </StyledRow>
@@ -340,6 +350,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                         placeholder="承辦人"
                         style={{ width: '150px' }}
                         optionFilterProp="label"
+                        disabled={!inputEditPermissions?.['orderExecutors']}
                       >
                         {xuemiSales?.map(member => (
                           <Select.Option key={member.id} value={member.id} label={`${member.id} ${member.name}`}>
@@ -355,7 +366,13 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                       name={[field.name, 'ratio']}
                       fieldKey={[field.fieldKey, 'ratio']}
                     >
-                      <InputNumber min={0.1} max={1} step={0.1} style={{ width: '60px' }} />
+                      <InputNumber
+                        disabled={!inputEditPermissions?.['orderExecutors']}
+                        min={0.1}
+                        max={1}
+                        step={0.1}
+                        style={{ width: '60px' }}
+                      />
                     </Form.Item>
 
                     <MinusCircleOutlined className="mb-3" onClick={() => remove(field.name)} />
@@ -363,7 +380,11 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                 ))}
 
                 <Form.Item>
-                  <StyledAddButton type="link" onClick={() => add({ ratio: 0.1 })}>
+                  <StyledAddButton
+                    disabled={!inputEditPermissions?.['orderExecutors']}
+                    type="link"
+                    onClick={() => add({ ratio: 0.1 })}
+                  >
                     <Icon component={() => <PlusIcon />} className="mr-2" />
                     <span>{formatMessage(memberContractMessages.ui.join)}</span>
                   </StyledAddButton>

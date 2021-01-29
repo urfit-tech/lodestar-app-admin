@@ -15,6 +15,7 @@ export const useMemberContractCollection = ({
   isRevoked,
   memberNameAndEmail,
   authorName,
+  authorId,
   status,
   dateRangeType,
   startedAt,
@@ -26,6 +27,7 @@ export const useMemberContractCollection = ({
   status: StatusType[]
   dateRangeType: DateRangeType
   authorName: string | null
+  authorId?: string | null
   startedAt: Date | null
   endedAt: Date | null
   sortOrder: {
@@ -38,6 +40,7 @@ export const useMemberContractCollection = ({
     agreed_at: { _is_null: false },
     revoked_at: { _is_null: !isRevoked },
     author_name: { _ilike: authorName && `%${authorName}%` },
+    author_id: authorId ? { _eq: authorId } : undefined,
     [dateRangeType]: {
       _gt: startedAt,
       _lte: endedAt,

@@ -4,6 +4,7 @@ import { ColumnProps } from 'antd/lib/table'
 import { SorterResult, SortOrder } from 'antd/lib/table/interface'
 import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
 import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
+import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { commonMessages } from 'lodestar-app-admin/src/helpers/translation'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -48,6 +49,7 @@ const MemberContractCollectionTable: React.FC<{
   variant: 'agreed' | 'revoked'
 }> = ({ variant }) => {
   const { formatMessage } = useIntl()
+  const { currentMemberId, currentUserRole } = useAuth()
   const [filter, setFilter] = useState<{
     authorName: string | null
     memberNameAndEmail: string | null
@@ -82,6 +84,7 @@ const MemberContractCollectionTable: React.FC<{
     ...filter,
     sortOrder,
     isRevoked: variant === 'revoked',
+    authorId: currentUserRole === 'general-member' ? currentMemberId : null,
   })
   const [isLoading, setIsLoading] = useState(false)
   const [activeMemberContractId, setActiveMemberContractId] = useState<string | null>(null)
