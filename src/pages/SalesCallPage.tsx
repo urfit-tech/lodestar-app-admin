@@ -157,7 +157,7 @@ const SalesSummary: React.FC<{
       <div className="d-flex align-items-center">
         <div className="mr-3">今日通時：{Math.ceil(salesSummary.totalDuration / 60)} 分鐘</div>
         <div className="mr-3">今日通次：{salesSummary.totalNotes} 次</div>
-        <div className="mr-3">今日有效名單：{salesSummary.assignedMembersToday}</div>
+        <div className="mr-3">今日名單派發：{salesSummary.assignedMembersToday}</div>
         <div className="mr-3 flex-grow-1">
           <span className="mr-2">名單新舊佔比：</span>
           <Tooltip title={`新 ${newAssignedRate}% / 舊 ${oldAssignedRate}%`}>
@@ -354,7 +354,7 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
           <AssignedMemberEmail>{assignedMember.email}</AssignedMemberEmail>
         </div>
         <div className="col-7">
-          <div>會員分類：{assignedMember.categories.map(category => category.name).join(',')}</div>
+          <div>會員分類：{assignedMember.categories.map(category => category.name).join(', ')}</div>
           <div>
             <span className="mr-2">
               素材：{assignedMember.properties.find(property => property.name === '廣告素材')?.value}
@@ -372,7 +372,8 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
             {assignedMember.properties
               .find(property => property.name === '填單日期')
               ?.value.split(',')
-              .map(date => moment(date).format('YYYY-MM-DD'))}
+              .map(date => moment(date).format('YYYY-MM-DD'))
+              .join(', ')}
           </div>
         </div>
       </div>
@@ -427,7 +428,7 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
                           : setDisabledPhones([...disabledPhones, phone])
                       }}
                     >
-                      {isDisabled ? '恢復' : '無效'}
+                      {isDisabled ? '恢復' : '空號'}
                     </StyledButton>
                   </div>
                 </Radio>
@@ -461,17 +462,17 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
           >
             <Form.Item name="status" label={<StyledLabel>通話狀態</StyledLabel>}>
               <Select disabled={!primaryPhoneNumber}>
-                <Select.Option value="not-answered">一接就掛/未接</Select.Option>
-                <Select.Option value="rejected">拒絕</Select.Option>
+                <Select.Option value="not-answered">未接</Select.Option>
+                <Select.Option value="rejected">拒絕/一接就掛</Select.Option>
                 <Select.Option value="willing">有意願再聊</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item
               name="duration"
-              label={<StyledLabel>通時</StyledLabel>}
+              label={<StyledLabel>通時（時：分：秒）</StyledLabel>}
               className={withDurationInput ? '' : 'd-none'}
             >
-              <TimePicker showNow={false} disabled={!primaryPhoneNumber} />
+              <TimePicker showNow={false} disabled={!primaryPhoneNumber || memberNoteStatus === 'not-answered'} />
             </Form.Item>
             <Form.Item
               name="description"
