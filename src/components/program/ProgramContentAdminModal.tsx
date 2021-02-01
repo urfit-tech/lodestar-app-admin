@@ -13,7 +13,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { getFileDuration, handleError, uploadFile } from '../../helpers'
-import { commonMessages } from '../../helpers/translation'
+import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateProgramContent } from '../../hooks/program'
 import types from '../../types'
 import { ProgramContentBodyType, ProgramContentProps, ProgramProps } from '../../types/program'
@@ -23,19 +23,12 @@ import SingleUploader from '../form/SingleUploader'
 import ProgramPlanSelector from './ProgramPlanSelector'
 
 const messages = defineMessages({
-  show: { id: 'program.ui.show', defaultMessage: '顯示' },
-  deleteContentWarning: {
-    id: 'program.text.deleteContentWarning',
-    defaultMessage: '你確定要刪除此內容？此動作無法還原',
-  },
-  deleteContent: { id: 'program.ui.deleteContent', defaultMessage: '刪除內容' },
   contentTitle: { id: 'program.label.contentTitle', defaultMessage: '標題' },
   contentPlan: { id: 'program.label.contentPlan', defaultMessage: '適用方案' },
   uploadVideo: { id: 'program.ui.uploadVideo', defaultMessage: '上傳影片' },
   uploadCaption: { id: 'program.ui.uploadCaption', defaultMessage: '上傳字幕' },
   duration: { id: 'program.label.duration', defaultMessage: '內容時長（分鐘）' },
   contentContext: { id: 'program.label.contentContext', defaultMessage: '內文' },
-  notifyUpdate: { id: 'program.label.notifyUpdate', defaultMessage: '通知內容更新' },
   uploadMaterial: { id: 'program.ui.uploadMaterial', defaultMessage: '上傳教材' },
 })
 
@@ -224,7 +217,7 @@ const ProgramContentAdminModal: React.FC<{
               </Checkbox>
 
               <Checkbox checked={isPublished} onChange={e => setIsPublished(e.target.checked)}>
-                {formatMessage(messages.show)}
+                {formatMessage(programMessages.label.show)}
               </Checkbox>
 
               {program.isSubscription && isPublished && (
@@ -237,7 +230,7 @@ const ProgramContentAdminModal: React.FC<{
               )}
 
               <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
-                <Checkbox>{formatMessage(messages.notifyUpdate)}</Checkbox>
+                <Checkbox>{formatMessage(programMessages.label.notifyUpdate)}</Checkbox>
               </Form.Item>
             </div>
 
@@ -255,13 +248,13 @@ const ProgramContentAdminModal: React.FC<{
                   <Menu>
                     <Menu.Item
                       onClick={() =>
-                        window.confirm(formatMessage(messages.deleteContentWarning)) &&
+                        window.confirm(formatMessage(programMessages.text.deleteContentWarning)) &&
                         deleteProgramContent({
                           variables: { programContentId: programContent.id },
                         }).then(() => onRefetch?.())
                       }
                     >
-                      {formatMessage(messages.deleteContent)}
+                      {formatMessage(programMessages.ui.deleteContent)}
                     </Menu.Item>
                   </Menu>
                 }

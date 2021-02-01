@@ -614,6 +614,14 @@ export const programMessages = {
     code: { id: 'program.label.code', defaultMessage: '設定網址' },
     note: { id: 'program.label.note', defaultMessage: '用途備註' },
     practice: { id: 'program.label.practice', defaultMessage: '作業練習' },
+    show: { id: 'program.label.show', defaultMessage: '顯示' },
+    availableToGoBack: { id: 'program.label.availableToGoBack', defaultMessage: '可返回前題' },
+    availableToRetry: { id: 'program.label.availableToRetry', defaultMessage: '可重新測驗' },
+    notifyUpdate: { id: 'program.label.notifyUpdate', defaultMessage: '通知內容更新' },
+    exercise: { id: 'program.label.exercise', defaultMessage: '課後測驗' },
+    baseline: { id: 'program.label.baseline', defaultMessage: '及格分數' },
+    points: { id: 'program.label.points', defaultMessage: '單題分數' },
+    option: { id: 'program.label.option', defaultMessage: '選項' },
   }),
   text: defineMessages({
     searchProgramTitle: { id: 'program.text.searchProgramTitle', defaultMessage: '搜尋課程名稱' },
@@ -682,6 +690,10 @@ export const programMessages = {
     duplicatedCodesWarning: { id: 'program.text.duplicatedCodesWarning', defaultMessage: '推廣網址不可重複' },
     practicePrivateTips: { id: 'program.text.practicePrivateTips', defaultMessage: '勾選後學員將只能看到自己的作品' },
     practiceFileSizeTips: { id: 'program.text.practiceFileSizeTips', defaultMessage: '單檔案大小不超過 5GB' },
+    deleteContentWarning: {
+      id: 'program.text.deleteContentWarning',
+      defaultMessage: '你確定要刪除此內容？此動作無法還原',
+    },
   }),
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
@@ -695,6 +707,9 @@ export const programMessages = {
     approve: { id: 'program.ui.approve', defaultMessage: '審核通過' },
     addUrl: { id: 'program.ui.addUrl', defaultMessage: '新增網址' },
     sortProgram: { id: 'program.ui.sortProgram', defaultMessage: '課程排序' },
+    deleteContent: { id: 'program.ui.deleteContent', defaultMessage: '刪除內容' },
+    sortContents: { id: 'program.ui.sortContents', defaultMessage: '排序內容' },
+    createExerciseProblem: { id: 'program.ui.createExerciseProblem', defaultMessage: '新增題目' },
   }),
 }
 
