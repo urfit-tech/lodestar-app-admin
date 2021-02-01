@@ -241,6 +241,7 @@ export interface GET_SALES_CALL_MEMBER {
 
 export interface GET_SALES_CALL_MEMBERVariables {
   condition: member_bool_exp;
+  orderBy?: member_order_by[] | null;
   hasContacted: boolean;
   hasTransacted: boolean;
 }
@@ -781,6 +782,7 @@ export enum app_constraint {
  * unique or primary key constraints on table "app_module"
  */
 export enum app_module_constraint {
+  app_module_app_id_module_id_key = "app_module_app_id_module_id_key",
   app_module_pkey = "app_module_pkey",
 }
 

@@ -17,12 +17,33 @@ import { salesMessages } from '../../helpers/translation'
 import { useSalesCallMember } from '../../hooks'
 import { useFirstAssignedMember } from '../../pages/SalesCallPage'
 
+const messages = {
+  salesCallNotice: { id: 'sales.content.salesCallNotice', defaultMessage: '開發中名單勿滯留過久，否則將影響名單派發' },
+}
+
 const StyledButton = styled(Button)`
   display: flex;
   justify-content: center;
   border-radius: 4px;
   width: 56px;
   height: 36px;
+`
+
+const StyledAdminCard = styled(AdminCard)`
+  position: relative;
+`
+
+const StyledNotice = styled.span`
+  :before {
+    margin-right: 4px;
+    content: '*';
+    color: red;
+    vertical-align: middle;
+  }
+  position: absolute;
+  font-size: 12px;
+  bottom: 44px;
+  line-height: 1;
 `
 
 type RecordProps = {
@@ -99,6 +120,9 @@ const SalesCallContactedMemberBlock: React.FC<{ salesId: string }> = ({ salesId 
         (!filters.email || v.email.includes(filters.email)) &&
         (!filters.phone || v.phones.some(v => v.includes(filters.phone || ''))),
     )
+    .sort((a, b) =>
+      a.firstContactAt && b.firstContactAt ? b.firstContactAt.getTime() - a.firstContactAt.getTime() : 1,
+    )
     .map(v => ({
       categoryNames: v.categoryNames || [],
       studentName: v.name,
@@ -109,7 +133,7 @@ const SalesCallContactedMemberBlock: React.FC<{ salesId: string }> = ({ salesId 
     }))
 
   return (
-    <AdminCard>
+    <StyledAdminCard>
       <Table<RecordProps>
         loading={loadingMembers}
         rowClassName={() => 'cursor-pointer'}
@@ -184,7 +208,8 @@ const SalesCallContactedMemberBlock: React.FC<{ salesId: string }> = ({ salesId 
         ]}
         dataSource={dataSource}
       />
-    </AdminCard>
+      <StyledNotice>{formatMessage(messages.salesCallNotice)}</StyledNotice>
+    </StyledAdminCard>
   )
 }
 

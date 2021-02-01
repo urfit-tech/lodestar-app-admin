@@ -301,10 +301,27 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
       }
     : {}
 
+  const orderBy = hasTransacted
+    ? [
+        {
+          member_contracts_aggregate: {
+            max: {
+              agreed_at: order_by.desc,
+            },
+          },
+        },
+      ]
+    : []
+
   const { loading, data, error, refetch } = useQuery<GET_SALES_CALL_MEMBER, GET_SALES_CALL_MEMBERVariables>(
     gql`
-      query GET_SALES_CALL_MEMBER($condition: member_bool_exp!, $hasContacted: Boolean!, $hasTransacted: Boolean!) {
-        member(where: $condition) {
+      query GET_SALES_CALL_MEMBER(
+        $condition: member_bool_exp!
+        $orderBy: [member_order_by!]
+        $hasContacted: Boolean!
+        $hasTransacted: Boolean!
+      ) {
+        member(where: $condition, order_by: $orderBy) {
           id
           name
           email
@@ -312,7 +329,10 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
             id
             phone
           }
-          member_notes(limit: 1, order_by: { created_at: desc }) @include(if: $hasContacted) {
+          member_notes(
+            where: { type: { _eq: "outbound" }, status: { _eq: "answered" }, rejected_at: { _is_null: true } }
+            order_by: { created_at: desc }
+          ) @include(if: $hasContacted) {
             id
             created_at
           }
@@ -322,7 +342,8 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
               name
             }
           }
-          member_contracts @include(if: $hasTransacted) {
+          member_contracts(where: { agreed_at: { _is_null: false }, revoked_at: { _is_null: true } })
+            @include(if: $hasTransacted) {
             id
             values
             ended_at
@@ -333,6 +354,7 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
     {
       variables: {
         condition,
+        orderBy,
         hasContacted,
         hasTransacted,
       },
@@ -345,7 +367,8 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
     email: string
     phones: string[]
     categoryNames?: string[]
-    lastContactAt?: Date
+    firstContactAt: Date | null
+    lastContactAt: Date | null
     contracts?: {
       projectPlanName: string
       endedAt: Date
@@ -359,7 +382,10 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
           email: v.email,
           phones: v.member_phones.map(w => w.phone),
           categoryNames: v.member_categories?.map(w => w.category.name),
-          lastContactAt: v.member_notes?.[0]?.created_at,
+          firstContactAt: v.member_notes?.slice(-1)[0]?.created_at
+            ? new Date(v.member_notes?.slice(-1)[0]?.created_at)
+            : null,
+          lastContactAt: v.member_notes?.[0]?.created_at ? new Date(v.member_notes?.slice(-1)[0]?.created_at) : null,
           contracts: v.member_contracts?.map(w => ({
             projectPlanName: w.values.projectPlanName,
             endedAt: new Date(w.ended_at),
