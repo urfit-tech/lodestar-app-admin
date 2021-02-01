@@ -1,4 +1,4 @@
-import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons'
+import { EyeInvisibleOutlined, EyeOutlined, FileTextOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Tag, Typography } from 'antd'
 import gql from 'graphql-tag'
@@ -8,6 +8,8 @@ import styled from 'styled-components'
 import { dateFormatter, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useProgramContentBody } from '../../hooks/program'
+import { ReactComponent as PracticeIcon } from '../../images/icon/homework.svg'
+import { ReactComponent as VideoIcon } from '../../images/icon/video.svg'
 import types from '../../types'
 import { ProgramAdminProps, ProgramContentProps } from '../../types/program'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
@@ -16,6 +18,7 @@ const StyledTitle = styled.div`
   font-size: 14px;
 `
 const StyledDescriptions = styled(Typography.Text)`
+  clear: right;
   font-size: 12px;
 `
 const StyledTag = styled(Tag)`
@@ -45,7 +48,16 @@ const ProgramContentAdminItem: React.FC<{
   return (
     <div className="d-flex align-items-center justify-content-between p-3" style={{ background: '#f7f8f8' }}>
       <div>
-        <StyledTitle>{programContent.title}</StyledTitle>
+        <div className="d-flex">
+          <div className="d-flex justify-content-center align-items-center mr-3">
+            {(programContent.programContentType && programContent.programContentType === 'text' && (
+              <FileTextOutlined />
+            )) ||
+              (programContent.programContentType === 'video' && <VideoIcon />) ||
+              (programContent.programContentType === 'practice' && <PracticeIcon />)}
+          </div>
+          <StyledTitle>{programContent.title}</StyledTitle>
+        </div>
         {showPlans && (
           <StyledDescriptions type="secondary">
             {formatMessage(messages.programContentPlans)}

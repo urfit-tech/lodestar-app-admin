@@ -4,6 +4,8 @@ import { Button, Dropdown, Menu, Typography } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
+import styled from 'styled-components'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import types from '../../types'
 import { ProgramAdminProps, ProgramContentSectionProps } from '../../types/program'
@@ -17,7 +19,20 @@ const messages = defineMessages({
   },
   deleteSection: { id: 'program.ui.deleteSection', defaultMessage: '刪除區塊' },
   createContent: { id: 'program.ui.createContent', defaultMessage: '新增內容' },
+  programContent: { id: 'program.ui.programContent', defaultMessage: '課程內容' },
+  programPractice: { id: 'program.ui.practiceContent', defaultMessage: '作業練習' },
+  programExercise: { id: 'program.ui.programExercise', defaultMessage: '隨堂測驗' },
 })
+
+const StyledMenuItem = styled(Menu.Item)`
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.71;
+  letter-spacing: 0.4px;
+  :hover {
+    color: ${props => props.theme['@primary-color']};
+  }
+`
 
 const ProgramContentSectionAdminCard: React.FC<{
   program: ProgramAdminProps
@@ -25,6 +40,7 @@ const ProgramContentSectionAdminCard: React.FC<{
   onRefetch?: () => void
 }> = ({ program, programContentSection, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
   const [createProgramContent] = useMutation<types.INSERT_PROGRAM_CONTENT, types.INSERT_PROGRAM_CONTENTVariables>(
     INSERT_PROGRAM_CONTENT,
   )
@@ -90,25 +106,54 @@ const ProgramContentSectionAdminCard: React.FC<{
           />
         </div>
       ))}
-
-      <Button
-        type="link"
-        icon={<PlusOutlined />}
-        onClick={() =>
-          createProgramContent({
-            variables: {
-              programContentSectionId: programContentSection.id,
-              title: 'untitled',
-              position: programContentSection.programContents.length,
-              publishedAt: program && program.publishedAt ? undefined : new Date(),
-            },
-          })
-            .then(() => onRefetch?.())
-            .catch(handleError)
+      <Dropdown
+        overlay={
+          <Menu>
+            <StyledMenuItem
+              onClick={() =>
+                createProgramContent({
+                  variables: {
+                    programContentSectionId: programContentSection.id,
+                    title: 'untitled',
+                    position: programContentSection.programContents.length,
+                    publishedAt: program && program.publishedAt ? undefined : new Date(),
+                    programContentType: 'text',
+                  },
+                })
+                  .then(() => onRefetch?.())
+                  .catch(handleError)
+              }
+            >
+              {formatMessage(messages.programContent)}
+            </StyledMenuItem>
+            {enabledModules.practice && (
+              <StyledMenuItem
+                onClick={() =>
+                  createProgramContent({
+                    variables: {
+                      programContentSectionId: programContentSection.id,
+                      title: 'untitled',
+                      position: programContentSection.programContents.length,
+                      publishedAt: program && program.publishedAt ? undefined : new Date(),
+                      programContentType: 'practice',
+                    },
+                  })
+                    .then(() => onRefetch?.())
+                    .catch(handleError)
+                }
+              >
+                {formatMessage(messages.programPractice)}
+              </StyledMenuItem>
+            )}
+            {enabledModules.exercise && <StyledMenuItem>{formatMessage(messages.programExercise)}</StyledMenuItem>}
+          </Menu>
         }
+        placement="topCenter"
       >
-        {formatMessage(messages.createContent)}
-      </Button>
+        <Button type="link" icon={<PlusOutlined />}>
+          {formatMessage(messages.createContent)}
+        </Button>
+      </Dropdown>
     </AdminBlock>
   )
 }
@@ -119,13 +164,14 @@ const INSERT_PROGRAM_CONTENT = gql`
     $title: String!
     $position: Int!
     $publishedAt: timestamptz
+    $programContentType: String!
   ) {
     insert_program_content(
       objects: {
         content_section_id: $programContentSectionId
         title: $title
         position: $position
-        program_content_body: { data: { type: "text", data: {} } }
+        program_content_body: { data: { type: $programContentType, data: {} } }
         published_at: $publishedAt
       }
     ) {

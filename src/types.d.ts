@@ -4077,6 +4077,7 @@ export interface INSERT_PROGRAM_CONTENTVariables {
   title: string;
   position: number;
   publishedAt?: any | null;
+  programContentType: string;
 }
 
 /* tslint:disable */
