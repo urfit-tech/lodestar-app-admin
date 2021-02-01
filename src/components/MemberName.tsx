@@ -13,9 +13,7 @@ const MemberName: React.FC<{ memberId: string }> = ({ memberId }) => {
         }
       }
     `,
-    {
-      variables: { memberId },
-    },
+    { variables: { memberId } },
   )
 
   return <span>{data?.member_by_pk?.name}</span>

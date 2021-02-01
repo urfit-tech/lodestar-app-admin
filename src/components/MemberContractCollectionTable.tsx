@@ -5,6 +5,7 @@ import { SorterResult, SortOrder } from 'antd/lib/table/interface'
 import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
 import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
+import { currencyFormatter } from 'lodestar-app-admin/src/helpers'
 import { commonMessages } from 'lodestar-app-admin/src/helpers/translation'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -39,8 +40,10 @@ const StyledSubText = styled.div`
   letter-spacing: 0.6px;
   color: var(--gray-dark);
 `
-const NowrapText = styled.div`
-  white-space: nowrap;
+const TableWrapper = styled.div`
+  .ant-table-cell {
+    white-space: nowrap;
+  }
 `
 
 const fixedColumnKeys = ['agreedAt', 'revokedAt']
@@ -144,22 +147,22 @@ const MemberContractCollectionTable: React.FC<{
 
   const columns: ColumnProps<MemberContractProps>[] = [
     {
-      title: <NowrapText>{formatMessage(memberContractMessages.label.agreedAt)}</NowrapText>,
+      title: formatMessage(memberContractMessages.label.agreedAt),
       dataIndex: 'agreedAt',
       key: 'agreedAt',
       sorter: true,
-      render: agreedAt => <NowrapText>{moment(agreedAt).format('YYYY-MM-DD')}</NowrapText>,
+      render: agreedAt => moment(agreedAt).format('YYYY-MM-DD'),
     },
     variant === 'revoked'
       ? {
-          title: <NowrapText>{formatMessage(memberContractMessages.label.revokedAt)}</NowrapText>,
+          title: formatMessage(memberContractMessages.label.revokedAt),
           dataIndex: 'revokedAt',
           key: 'revokedAt',
           sorter: true,
-          render: revokedAt => <NowrapText>{moment(revokedAt).format('YYYY-MM-DD')}</NowrapText>,
+          render: revokedAt => moment(revokedAt).format('YYYY-MM-DD'),
         }
       : {
-          title: <NowrapText>{formatMessage(memberContractMessages.label.status)}</NowrapText>,
+          title: formatMessage(memberContractMessages.label.status),
           key: 'status',
           filterDropdown: () => {
             const statuses = [
@@ -240,30 +243,26 @@ const MemberContractCollectionTable: React.FC<{
           },
         },
     {
-      title: <NowrapText>審核通過日期</NowrapText>,
+      title: '審核通過日期',
       key: 'approvedAt',
-      render: (text, record, index) => (
-        <NowrapText>{record.approvedAt ? moment(record.approvedAt).format('YYYY-MM-DD') : ''}</NowrapText>
-      ),
+      render: (text, record, index) => (record.approvedAt ? moment(record.approvedAt).format('YYYY-MM-DD') : ''),
     },
     {
-      title: <NowrapText>取消日期</NowrapText>,
+      title: '取消日期',
       key: 'loanCanceledAt',
-      render: (text, record, index) => (
-        <NowrapText>{record.loanCanceledAt ? moment(record.loanCanceledAt).format('YYYY-MM-DD') : ''}</NowrapText>
-      ),
+      render: (text, record, index) =>
+        record.loanCanceledAt ? moment(record.loanCanceledAt).format('YYYY-MM-DD') : '',
     },
     {
-      title: <NowrapText>提出退費日期</NowrapText>,
+      title: '提出退費日期',
       key: 'refundAppliedAt',
-      render: (text, record, index) => (
-        <NowrapText>{record.refundAppliedAt ? moment(record.refundAppliedAt).format('YYYY-MM-DD') : ''}</NowrapText>
-      ),
+      render: (text, record, index) =>
+        record.refundAppliedAt ? moment(record.refundAppliedAt).format('YYYY-MM-DD') : '',
     },
 
     // member
     {
-      title: <NowrapText>{`${formatMessage(memberContractMessages.label.studentName)} / Email`}</NowrapText>,
+      title: `${formatMessage(memberContractMessages.label.studentName)} / Email`,
       dataIndex: 'member',
       key: 'member',
       ...getColumnSearchProps({
@@ -288,34 +287,33 @@ const MemberContractCollectionTable: React.FC<{
       ),
     },
     {
-      title: <NowrapText>{formatMessage(memberContractMessages.label.proofOfEnrollment)}</NowrapText>,
+      title: formatMessage(memberContractMessages.label.proofOfEnrollment),
       dataIndex: 'studentCertification',
       key: 'studentCertification',
-      render: studentCertification => <NowrapText>{studentCertification ? '有' : '無'}</NowrapText>,
+      render: studentCertification => (studentCertification ? '有' : '無'),
     },
     {
-      title: <NowrapText>承辦人</NowrapText>,
+      title: '承辦人',
       dataIndex: 'managerName',
       key: 'managerName',
-      render: (text, record, index) => <NowrapText>{record.manager?.name || ''}</NowrapText>,
+      render: (text, record, index) => record.manager?.name || '',
     },
 
     // contract
     {
-      title: <NowrapText>合約編號</NowrapText>,
+      title: '合約編號',
       dataIndex: 'id',
       key: 'contractId',
-      render: text => <NowrapText>{text}</NowrapText>,
     },
     {
-      title: <NowrapText>{formatMessage(memberContractMessages.label.serviceStartedAt)}</NowrapText>,
+      title: formatMessage(memberContractMessages.label.serviceStartedAt),
       dataIndex: 'startedAt',
       key: 'startedAt',
       sorter: true,
-      render: startedAt => <NowrapText>{moment(startedAt).format('YYYY-MM-DD HH:MM')}</NowrapText>,
+      render: startedAt => moment(startedAt).format('YYYY-MM-DD HH:MM'),
     },
     {
-      title: <NowrapText>{formatMessage(memberContractMessages.label.contractCreator)}</NowrapText>,
+      title: formatMessage(memberContractMessages.label.contractCreator),
       dataIndex: 'authorName',
       key: 'authorName',
       ...getColumnSearchProps({
@@ -329,97 +327,83 @@ const MemberContractCollectionTable: React.FC<{
             authorName: searchText as string,
           }),
       }),
-      render: authorName => <NowrapText>{authorName}</NowrapText>,
     },
     {
-      title: <NowrapText>{formatMessage(memberContractMessages.label.price)}</NowrapText>,
+      title: formatMessage(memberContractMessages.label.price),
       dataIndex: 'price',
       key: 'price',
-      render: price => <NowrapText>NT$ {price.toLocaleString('zh-TW')}</NowrapText>,
+      render: price => currencyFormatter(price),
     },
     {
-      title: <NowrapText>{formatMessage(memberContractMessages.label.product)}</NowrapText>,
+      title: formatMessage(memberContractMessages.label.product),
       dataIndex: 'projectPlanName',
       key: 'projectPlanName',
-      render: projectPlanName => <NowrapText>{projectPlanName}</NowrapText>,
     },
     {
-      title: <NowrapText>{formatMessage(memberContractMessages.label.remarks)}</NowrapText>,
+      title: formatMessage(memberContractMessages.label.remarks),
       dataIndex: 'note',
       key: 'note',
-      render: note => <NowrapText>{note}</NowrapText>,
-    },
-    {
-      title: <NowrapText>成交聯絡記錄</NowrapText>,
-      key: 'memberNotes',
-      render: (text, record, index) => <NowrapText></NowrapText>,
     },
 
     // payment
     {
-      title: <NowrapText>{formatMessage(memberContractMessages.label.paymentMethod)}</NowrapText>,
+      title: formatMessage(memberContractMessages.label.paymentMethod),
       key: 'paymentMethod',
-      render: (text, record, index) => <NowrapText>{record.paymentOptions?.paymentMethod}</NowrapText>,
+      render: (text, record, index) => record.paymentOptions?.paymentMethod,
     },
     {
-      title: <NowrapText>期數</NowrapText>,
+      title: '期數',
       key: 'installmentPlan',
-      render: (text, record, index) => <NowrapText>{record.paymentOptions?.installmentPlan}</NowrapText>,
+      render: (text, record, index) => record.paymentOptions?.installmentPlan,
     },
     {
-      title: <NowrapText>{formatMessage(memberContractMessages.label.paymentNumber)}</NowrapText>,
+      title: formatMessage(memberContractMessages.label.paymentNumber),
       key: 'paymentNumber',
-      render: (text, record, index) => <NowrapText>{record.paymentOptions?.paymentNumber}</NowrapText>,
+      render: (text, record, index) => record.paymentOptions?.paymentNumber,
     },
     {
-      title: <NowrapText>{formatMessage(memberContractMessages.label.revenueShare)}</NowrapText>,
+      title: formatMessage(memberContractMessages.label.revenueShare),
       dataIndex: 'orderExecutors',
       key: 'orderExecutors',
       render: (text, record, index) =>
         record.orderExecutors?.map(({ memberId, ratio }, index) => (
-          <NowrapText key={index}>
-            <MemberName memberId={memberId} /> <span>{Math.floor(ratio * 100)}%</span>
-          </NowrapText>
+          <div>
+            <MemberName key={index} memberId={memberId} />
+            <span className="ml-2">{Math.floor(ratio * 100)}%</span>
+          </div>
         )),
     },
 
     // marketing
     {
-      title: <NowrapText>最後填單行銷活動</NowrapText>,
+      title: '最後填單行銷活動',
       dataIndex: 'lastActivity',
       key: 'lastActivity',
-      render: text => <NowrapText>{text}</NowrapText>,
     },
     {
-      title: <NowrapText>最後填單廣告組合</NowrapText>,
+      title: '最後填單廣告組合',
       dataIndex: 'lastAdPackage',
       key: 'lastAdPackage',
-      render: text => <NowrapText>{text}</NowrapText>,
     },
     {
-      title: <NowrapText>最後填單廣告素材</NowrapText>,
+      title: '最後填單廣告素材',
       dataIndex: 'lastAdMaterial',
       key: 'lastAdMaterial',
-      render: text => <NowrapText>{text}</NowrapText>,
     },
     {
-      title: <NowrapText>會員建立日期</NowrapText>,
+      title: '會員建立日期',
       key: 'memberCreatedAt',
-      render: (text, record, index) => (
-        <NowrapText>{moment(record.member.createdAt).format('YYYY-MM-DD HH:MM')}</NowrapText>
-      ),
+      render: (text, record, index) => moment(record.member.createdAt).format('YYYY-MM-DD HH:MM'),
     },
     {
-      title: <NowrapText>首次填單日期</NowrapText>,
+      title: '首次填單日期',
       dataIndex: 'firstFilledAt',
       key: 'firstFilledAt',
-      render: text => <NowrapText>{text}</NowrapText>,
     },
     {
-      title: <NowrapText>最後填單日期</NowrapText>,
+      title: '最後填單日期',
       dataIndex: 'lastFilledAt',
       key: 'lastFilledAt',
-      render: text => <NowrapText>{text}</NowrapText>,
     },
   ]
 
@@ -465,33 +449,34 @@ const MemberContractCollectionTable: React.FC<{
           studentCertification={activeMemberContract?.studentCertification}
           onRefetch={refetchMemberContracts}
           renderTrigger={({ setVisible }) => (
-            <Table<MemberContractProps>
-              columns={columns.filter(
-                column =>
-                  fixedColumnKeys.includes(column.key as string) || visibleFields.includes(column.key as string),
-              )}
-              dataSource={memberContracts}
-              // scroll={{ x: columns.length * 16 * 12 }}
-              scroll={{ x: true }}
-              rowKey={row => row.id}
-              rowClassName="cursor-pointer"
-              onRow={record => ({
-                onClick: () => {
-                  setActiveMemberContractId(record.id)
-                  setVisible(true)
-                },
-              })}
-              onChange={(pagination, filters, sorter) => {
-                const newSorter = sorter as SorterResult<MemberContractProps>
-                setSortOrder({
-                  agreedAt: null,
-                  revokedAt: null,
-                  startedAt: null,
-                  [newSorter.field as 'agreedAt' | 'revokedAt' | 'startedAt']: newSorter.order || null,
-                })
-              }}
-              pagination={false}
-            />
+            <TableWrapper>
+              <Table<MemberContractProps>
+                columns={columns.filter(
+                  column =>
+                    fixedColumnKeys.includes(column.key as string) || visibleFields.includes(column.key as string),
+                )}
+                dataSource={memberContracts}
+                scroll={{ x: true }}
+                rowKey={row => row.id}
+                rowClassName="cursor-pointer"
+                onRow={record => ({
+                  onClick: () => {
+                    setActiveMemberContractId(record.id)
+                    setVisible(true)
+                  },
+                })}
+                onChange={(pagination, filters, sorter) => {
+                  const newSorter = sorter as SorterResult<MemberContractProps>
+                  setSortOrder({
+                    agreedAt: null,
+                    revokedAt: null,
+                    startedAt: null,
+                    [newSorter.field as 'agreedAt' | 'revokedAt' | 'startedAt']: newSorter.order || null,
+                  })
+                }}
+                pagination={false}
+              />
+            </TableWrapper>
           )}
         />
 

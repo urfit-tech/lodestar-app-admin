@@ -52,7 +52,7 @@ const MemberContractFieldSelector: React.FC<{
         { title: '金額', key: 'price' },
         { title: '產品', key: 'projectPlanName' },
         { title: '備註', key: 'note' },
-        { title: '成交聯絡紀錄', key: 'memberNotes' },
+        // { title: '成交聯絡紀錄', key: 'memberNotes' },
       ],
     },
     {
