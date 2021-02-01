@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
 import { useEffect, useState } from 'react'
@@ -463,3 +463,61 @@ const GET_PROGRAM_PROGRESS = gql`
     }
   }
 `
+
+export const useProgramContent = () => {
+  const [updateProgramContent] = useMutation<types.UPDATE_PROGRAM_CONTENT, types.UPDATE_PROGRAM_CONTENTVariables>(
+    gql`
+      mutation UPDATE_PROGRAM_CONTENT(
+        $programContentId: uuid!
+        $title: String
+        $description: String
+        $type: String
+        $data: jsonb
+        $price: numeric
+        $publishedAt: timestamptz
+        $duration: numeric
+        $isNotifyUpdate: Boolean
+        $notifiedAt: timestamptz
+      ) {
+        update_program_content(
+          where: { id: { _eq: $programContentId } }
+          _set: {
+            title: $title
+            duration: $duration
+            list_price: $price
+            sale_price: $price
+            published_at: $publishedAt
+            is_notify_update: $isNotifyUpdate
+            notified_at: $notifiedAt
+          }
+        ) {
+          affected_rows
+        }
+        update_program_content_body(
+          where: { program_contents: { id: { _eq: $programContentId } } }
+          _set: { description: $description, type: $type }
+          _append: { data: $data }
+        ) {
+          affected_rows
+        }
+      }
+    `,
+  )
+  const [deleteProgramContent] = useMutation<types.DELETE_PROGRAM_CONTENT, types.DELETE_PROGRAM_CONTENTVariables>(
+    gql`
+      mutation DELETE_PROGRAM_CONTENT($programContentId: uuid!) {
+        delete_program_content_progress(where: { program_content_id: { _eq: $programContentId } }) {
+          affected_rows
+        }
+        delete_program_content_body(where: { program_contents: { id: { _eq: $programContentId } } }) {
+          affected_rows
+        }
+      }
+    `,
+  )
+
+  return {
+    updateProgramContent,
+    deleteProgramContent,
+  }
+}
