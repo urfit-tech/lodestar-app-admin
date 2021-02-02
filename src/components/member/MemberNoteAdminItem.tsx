@@ -1,7 +1,5 @@
 import Icon, { MoreOutlined } from '@ant-design/icons'
-import { useMutation } from '@apollo/react-hooks'
 import { Dropdown, Menu, message } from 'antd'
-import gql from 'graphql-tag'
 import moment from 'moment'
 import { contains } from 'ramda'
 import React from 'react'
@@ -9,12 +7,11 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
-import { useUploadAttachments } from '../../hooks/data'
+import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
 import { useMutateMemberNote } from '../../hooks/member'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as CallInIcon } from '../../images/icon/call-in.svg'
 import { ReactComponent as CallOutIcon } from '../../images/icon/call-out.svg'
-import types from '../../types'
 import { MemberAdminProps, MemberNoteAdminProps } from '../../types/member'
 import AdminModal from '../admin/AdminModal'
 import { CustomRatioImage } from '../common/Image'
@@ -54,9 +51,7 @@ const MemberNoteAdminItem: React.FC<{
   const { formatMessage } = useIntl()
   const { updateMemberNote, deleteMemberNote } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
-  const [deleteAttachments] = useMutation<types.DELETE_ATTACHMENTS, types.DELETE_ATTACHMENTSVariables>(
-    DELETE_ATTACHMENTS,
-  )
+  const { deleteAttachments } = useMutateAttachment()
 
   return (
     <div className="d-flex justify-content-between align-items-center mb-4">
@@ -175,13 +170,5 @@ const MemberNoteAdminItem: React.FC<{
     </div>
   )
 }
-
-const DELETE_ATTACHMENTS = gql`
-  mutation DELETE_ATTACHMENTS($attachmentIds: [uuid!]!) {
-    update_attachment(where: { id: { _in: $attachmentIds } }, _set: { is_deleted: true }) {
-      affected_rows
-    }
-  }
-`
 
 export default MemberNoteAdminItem

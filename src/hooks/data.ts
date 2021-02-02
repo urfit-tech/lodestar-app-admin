@@ -677,3 +677,15 @@ export const useUploadAttachments = () => {
     }
   }
 }
+
+export const useMutateAttachment = () => {
+  const [deleteAttachments] = useMutation<types.DELETE_ATTACHMENTS, types.DELETE_ATTACHMENTSVariables>(gql`
+    mutation DELETE_ATTACHMENTS($attachmentIds: [uuid!]!) {
+      update_attachment(where: { id: { _in: $attachmentIds } }, _set: { is_deleted: true }) {
+        affected_rows
+      }
+    }
+  `)
+
+  return { deleteAttachments }
+}
