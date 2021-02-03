@@ -78,7 +78,6 @@ const SalesCallContactedMemberBlock: React.FC<{ salesId: string }> = ({ salesId 
           value={selectedKeys[0]}
           onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
           onPressEnter={() => {
-            confirm()
             onSetFilter(selectedKeys[0] as string)
           }}
           style={{ width: 188, marginBottom: 8, display: 'block' }}
@@ -87,7 +86,6 @@ const SalesCallContactedMemberBlock: React.FC<{ salesId: string }> = ({ salesId 
           <Button
             type="primary"
             onClick={() => {
-              confirm()
               onSetFilter(selectedKeys[0] as string)
             }}
             icon={<SearchOutlined />}

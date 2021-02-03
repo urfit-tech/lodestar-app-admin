@@ -196,7 +196,6 @@ const MemberCollectionAdminPage: React.FC = () => {
           value={selectedKeys[0]}
           onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
           onPressEnter={() => {
-            confirm()
             setFilter(columnId, selectedKeys[0] as string, isProperty)
           }}
           style={{ width: 188, marginBottom: 8, display: 'block' }}
@@ -205,7 +204,6 @@ const MemberCollectionAdminPage: React.FC = () => {
           <Button
             type="primary"
             onClick={() => {
-              confirm()
               setFilter(columnId, selectedKeys[0] as string, isProperty)
             }}
             icon={<SearchOutlined />}

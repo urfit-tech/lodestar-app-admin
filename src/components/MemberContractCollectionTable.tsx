@@ -116,7 +116,7 @@ const MemberContractCollectionTable: React.FC<{
     onSearch,
   }: {
     onReset: (clearFilters: any) => void
-    onSearch: (selectedKeys?: React.ReactText[], confirm?: () => void) => void
+    onSearch: (selectedKeys?: React.ReactText[], confirm?: (param: any) => void) => void
   }): ColumnProps<MemberContractProps> => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => {
       return (
