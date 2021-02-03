@@ -1172,6 +1172,7 @@ export const permissionMessages = defineMessages({
   MEMBER_MANAGER_ADMIN: { id: 'permission.MEMBER_MANAGER_ADMIN', defaultMessage: '指派承辦人功能' },
   MEMBER_CONTRACT_INSERT: { id: 'permission.MEMBER_CONTRACT_INSERT', defaultMessage: '建立合約功能' },
   MEMBER_ATTENDANT: { id: 'permission.MEMBER_ATTENDANT', defaultMessage: '打卡功能' },
+  VIEW_ALL_MEMBER_NOTE: { id: 'permission.VIEW_ALL_MEMBER_NOTE', defaultMessage: '查看所有聯絡記錄' },
 
   // task
   TASK_ADMIN: { id: 'permission.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },

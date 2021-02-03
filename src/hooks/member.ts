@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { sum } from 'ramda'
+import { useAuth } from '../contexts/AuthContext'
 import { commonMessages } from '../helpers/translation'
 import types from '../types'
 import { CouponPlanProps } from '../types/checkout'
@@ -75,12 +76,13 @@ export const useMember = (memberId: string) => {
 }
 
 export const useMemberAdmin = (memberId: string) => {
+  const { currentMemberId, permissions } = useAuth()
   const { loading, error, data, refetch } = useQuery<
     types.GET_MEMBER_DESCRIPTION,
     types.GET_MEMBER_DESCRIPTIONVariables
   >(
     gql`
-      query GET_MEMBER_DESCRIPTION($memberId: String!) {
+      query GET_MEMBER_DESCRIPTION($memberId: String!, $authorId: String) {
         member_by_pk(id: $memberId) {
           id
           picture_url
@@ -109,7 +111,7 @@ export const useMemberAdmin = (memberId: string) => {
             id
             phone
           }
-          member_notes(order_by: { created_at: desc }) {
+          member_notes(where: { author_id: { _eq: $authorId } }, order_by: { created_at: desc }) {
             id
             type
             status
@@ -182,93 +184,98 @@ export const useMemberAdmin = (memberId: string) => {
         }
       }
     `,
-    { variables: { memberId } },
+    {
+      variables: {
+        memberId,
+        authorId: permissions.VIEW_ALL_MEMBER_NOTE ? undefined : currentMemberId || '',
+      },
+    },
   )
 
   const memberAdmin:
     | (MemberAdminProps & {
-      coupons: {
-        status: {
-          outdated: boolean
-          used: boolean
-        }
-        couponPlan: CouponPlanProps & {
-          productIds: string[]
-        }
-      }[]
-    })
+        coupons: {
+          status: {
+            outdated: boolean
+            used: boolean
+          }
+          couponPlan: CouponPlanProps & {
+            productIds: string[]
+          }
+        }[]
+      })
     | null =
     loading || error || !data || !data.member_by_pk
       ? null
       : {
-        id: data.member_by_pk.id,
-        avatarUrl: data.member_by_pk.picture_url,
-        username: data.member_by_pk.username,
-        name: data.member_by_pk.name,
-        email: data.member_by_pk.email,
-        role: data.member_by_pk.role as UserRole,
-        createdAt: new Date(data.member_by_pk.created_at),
-        loginedAt: data.member_by_pk.logined_at && new Date(data.member_by_pk.logined_at),
-        assignedAt: data.member_by_pk.assigned_at && new Date(data.member_by_pk.assigned_at),
-        manager: data.member_by_pk.manager
-          ? {
-            id: data.member_by_pk.manager.id,
-            email: data.member_by_pk.manager.email,
-            name: data.member_by_pk.manager.name,
-            avatarUrl: data.member_by_pk.manager.picture_url,
-          }
-          : null,
-        tags: data.member_by_pk.member_tags.map(v => v.tag_name),
-        specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
-        phones: data.member_by_pk.member_phones.map(v => v.phone).filter(v => v),
-        notes: data.member_by_pk.member_notes.map(v => ({
-          id: v.id,
-          type: v.type as MemberNoteAdminProps['type'],
-          status: v.status,
-          duration: v.duration,
-          description: v.description,
-          createdAt: new Date(v.created_at),
-          author: {
-            id: v.author.id,
-            role: v.author.role,
-            name: v.author.name,
-            pictureUrl: v.author.picture_url,
-          },
-          attachments: v.member_note_attachments.map(u => ({
-            id: u.attachment_id,
-            data: u.data,
-            options: u.options,
+          id: data.member_by_pk.id,
+          avatarUrl: data.member_by_pk.picture_url,
+          username: data.member_by_pk.username,
+          name: data.member_by_pk.name,
+          email: data.member_by_pk.email,
+          role: data.member_by_pk.role as UserRole,
+          createdAt: new Date(data.member_by_pk.created_at),
+          loginedAt: data.member_by_pk.logined_at && new Date(data.member_by_pk.logined_at),
+          assignedAt: data.member_by_pk.assigned_at && new Date(data.member_by_pk.assigned_at),
+          manager: data.member_by_pk.manager
+            ? {
+                id: data.member_by_pk.manager.id,
+                email: data.member_by_pk.manager.email,
+                name: data.member_by_pk.manager.name,
+                avatarUrl: data.member_by_pk.manager.picture_url,
+              }
+            : null,
+          tags: data.member_by_pk.member_tags.map(v => v.tag_name),
+          specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
+          phones: data.member_by_pk.member_phones.map(v => v.phone).filter(v => v),
+          notes: data.member_by_pk.member_notes.map(v => ({
+            id: v.id,
+            type: v.type as MemberNoteAdminProps['type'],
+            status: v.status,
+            duration: v.duration,
+            description: v.description,
+            createdAt: new Date(v.created_at),
+            author: {
+              id: v.author.id,
+              role: v.author.role,
+              name: v.author.name,
+              pictureUrl: v.author.picture_url,
+            },
+            attachments: v.member_note_attachments.map(u => ({
+              id: u.attachment_id,
+              data: u.data,
+              options: u.options,
+            })),
           })),
-        })),
-        coupons: data.member_by_pk.coupons.map(v => ({
-          status: {
-            outdated: !!v.status?.outdated,
-            used: !!v.status?.used,
-          },
-          couponPlan: {
-            id: v.coupon_code.coupon_plan.id,
-            title: v.coupon_code.coupon_plan.title,
-            description: v.coupon_code.coupon_plan.description,
-            scope: v.coupon_code.coupon_plan.scope,
-            type:
-              v.coupon_code.coupon_plan.type === 1 ? 'cash' : v.coupon_code.coupon_plan.type === 2 ? 'percent' : null,
-            amount: v.coupon_code.coupon_plan.amount,
-            constraint: v.coupon_code.coupon_plan.constraint,
-            startedAt: v.coupon_code.coupon_plan.started_at ? new Date(v.coupon_code.coupon_plan.started_at) : null,
-            endedAt: v.coupon_code.coupon_plan.ended_at ? new Date(v.coupon_code.coupon_plan.ended_at) : null,
-            productIds: v.coupon_code.coupon_plan.coupon_plan_products.map(v => v.product_id),
-          },
-        })),
-        permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission_id),
-        consumption: sum(
-          data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
-        ),
-        coins: data.member_by_pk.coin_logs_aggregate.aggregate?.sum?.amount || 0,
-        categories: data.member_by_pk.member_categories.map(v => ({
-          id: v.category.id,
-          name: v.category.name,
-        })),
-      }
+          coupons: data.member_by_pk.coupons.map(v => ({
+            status: {
+              outdated: !!v.status?.outdated,
+              used: !!v.status?.used,
+            },
+            couponPlan: {
+              id: v.coupon_code.coupon_plan.id,
+              title: v.coupon_code.coupon_plan.title,
+              description: v.coupon_code.coupon_plan.description,
+              scope: v.coupon_code.coupon_plan.scope,
+              type:
+                v.coupon_code.coupon_plan.type === 1 ? 'cash' : v.coupon_code.coupon_plan.type === 2 ? 'percent' : null,
+              amount: v.coupon_code.coupon_plan.amount,
+              constraint: v.coupon_code.coupon_plan.constraint,
+              startedAt: v.coupon_code.coupon_plan.started_at ? new Date(v.coupon_code.coupon_plan.started_at) : null,
+              endedAt: v.coupon_code.coupon_plan.ended_at ? new Date(v.coupon_code.coupon_plan.ended_at) : null,
+              productIds: v.coupon_code.coupon_plan.coupon_plan_products.map(v => v.product_id),
+            },
+          })),
+          permissionIds: data.member_by_pk.member_permission_extras.map(v => v.permission_id),
+          consumption: sum(
+            data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
+          ),
+          coins: data.member_by_pk.coin_logs_aggregate.aggregate?.sum?.amount || 0,
+          categories: data.member_by_pk.member_categories.map(v => ({
+            id: v.category.id,
+            name: v.category.name,
+          })),
+        }
 
   return {
     loadingMemberAdmin: loading,
@@ -499,40 +506,40 @@ export const useMemberCollection = (filter?: {
     email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
     manager: filter?.managerName
       ? {
-        name: { _ilike: `%${filter.managerName}%` },
-      }
+          name: { _ilike: `%${filter.managerName}%` },
+        }
       : undefined,
     manager_id: filter?.managerId ? { _eq: filter.managerId } : undefined,
     member_phones: filter?.phone
       ? {
-        phone: { _ilike: `%${filter.phone}%` },
-      }
+          phone: { _ilike: `%${filter.phone}%` },
+        }
       : undefined,
     member_categories: filter?.category
       ? {
-        category: {
-          name: {
-            _ilike: `%${filter.category}%`,
+          category: {
+            name: {
+              _ilike: `%${filter.category}%`,
+            },
           },
-        },
-      }
+        }
       : undefined,
     member_tags: filter?.tag
       ? {
-        tag_name: {
-          _ilike: filter.tag,
-        },
-      }
+          tag_name: {
+            _ilike: filter.tag,
+          },
+        }
       : undefined,
     member_properties: filter?.properties?.length
       ? {
-        _and: filter.properties
-          .filter(property => property.value)
-          .map(property => ({
-            property_id: { _eq: property.id },
-            value: { _ilike: `%${property.value}%` },
-          })),
-      }
+          _and: filter.properties
+            .filter(property => property.value)
+            .map(property => ({
+              property_id: { _eq: property.id },
+              value: { _ilike: `%${property.value}%` },
+            })),
+        }
       : undefined,
   }
 
@@ -683,40 +690,40 @@ export const useMemberAllCollection = (filter?: {
     email: filter?.email ? { _ilike: `%${filter.email}%` } : undefined,
     manager: filter?.managerName
       ? {
-        name: { _ilike: `%${filter.managerName}%` },
-      }
+          name: { _ilike: `%${filter.managerName}%` },
+        }
       : undefined,
     manager_id: filter?.managerId ? { _eq: filter.managerId } : undefined,
     member_phones: filter?.phone
       ? {
-        phone: { _ilike: `%${filter.phone}%` },
-      }
+          phone: { _ilike: `%${filter.phone}%` },
+        }
       : undefined,
     member_categories: filter?.category
       ? {
-        category: {
-          name: {
-            _ilike: `%${filter.category}%`,
+          category: {
+            name: {
+              _ilike: `%${filter.category}%`,
+            },
           },
-        },
-      }
+        }
       : undefined,
     member_tags: filter?.tag
       ? {
-        tag_name: {
-          _ilike: filter.tag,
-        },
-      }
+          tag_name: {
+            _ilike: filter.tag,
+          },
+        }
       : undefined,
     member_properties: filter?.properties?.length
       ? {
-        _and: filter.properties
-          .filter(property => property.value)
-          .map(property => ({
-            property_id: { _eq: property.id },
-            value: { _ilike: `%${property.value}%` },
-          })),
-      }
+          _and: filter.properties
+            .filter(property => property.value)
+            .map(property => ({
+              property_id: { _eq: property.id },
+              value: { _ilike: `%${property.value}%` },
+            })),
+        }
       : undefined,
   }
 
