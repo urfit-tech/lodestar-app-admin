@@ -1,11 +1,17 @@
 import { message } from 'antd'
 import axios from 'axios'
 
-export const call = async ({ appId, apiHost, authToken, phone, salesTelephone }: {
-  appId: string,
-  apiHost: string,
-  authToken: string | null,
-  phone: string,
+export const call = async ({
+  appId,
+  apiHost,
+  authToken,
+  phone,
+  salesTelephone,
+}: {
+  appId: string
+  apiHost: string
+  authToken: string | null
+  phone: string
   salesTelephone: string
 }) => {
   if (!window.confirm(`撥打號碼：${phone}`)) {
@@ -14,7 +20,7 @@ export const call = async ({ appId, apiHost, authToken, phone, salesTelephone }:
 
   axios
     .post(
-      `//${apiHost}/call`,
+      `${apiHost}/call`,
       {
         appId,
         callFrom: salesTelephone,
