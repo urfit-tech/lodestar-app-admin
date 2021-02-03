@@ -17,7 +17,7 @@ import { useParams } from 'react-router-dom'
 const MemberProfileAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { memberId } = useParams<{ memberId: string }>()
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { currentMemberId } = useAuth()
   const { loadingMemberAdmin, errorMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
   const { insertMemberNote } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
@@ -60,35 +60,14 @@ const MemberProfileAdminPage: React.FC = () => {
           }
         />
         <AdminBlock className="mt-4">
-          {isEmpty(
-            memberAdmin.notes.filter(note =>
-              currentUserRole === 'general-member'
-                ? note.author.role === 'general-member'
-                  ? note.author.id === currentMemberId
-                  : true
-                : true,
-            ),
-          ) ? (
+          {isEmpty(memberAdmin.notes) ? (
             <StyledEmptyBlock>
               <span>{formatMessage(memberMessages.text.noMemberNote)}</span>
             </StyledEmptyBlock>
           ) : (
-            memberAdmin.notes
-              .filter(note =>
-                currentUserRole === 'general-member'
-                  ? note.author.role === 'general-member'
-                    ? note.author.id === currentMemberId
-                    : true
-                  : true,
-              )
-              .map(note => (
-                <MemberNoteAdminItem
-                  key={note.id}
-                  note={note}
-                  memberAdmin={memberAdmin}
-                  onRefetch={refetchMemberAdmin}
-                />
-              ))
+            memberAdmin.notes.map(note => (
+              <MemberNoteAdminItem key={note.id} note={note} memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
+            ))
           )}
         </AdminBlock>
       </div>

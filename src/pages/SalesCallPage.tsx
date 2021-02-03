@@ -123,8 +123,12 @@ const SalesSummary: React.FC<{
     return <Skeleton active />
   }
 
-  if (errorSalesSummary || !salesSummary) {
+  if (errorSalesSummary) {
     return <div>{formatMessage(errorMessages.data.fetch)}</div>
+  }
+
+  if (!salesSummary) {
+    return <div>目前無待開發名單</div>
   }
 
   const newAssignedRate =
@@ -156,7 +160,7 @@ const SalesSummary: React.FC<{
 
       <div className="d-flex align-items-center">
         <div className="mr-3">今日通時：{Math.ceil(salesSummary.totalDuration / 60)} 分鐘</div>
-        <div className="mr-3">今日通次：{salesSummary.totalNotes} 次</div>
+        <div className="mr-3">今日接通：{salesSummary.totalNotes} 次</div>
         <div className="mr-3">今日名單派發：{salesSummary.assignedMembersToday}</div>
         <div className="mr-3 flex-grow-1">
           <span className="mr-2">名單新舊佔比：</span>
