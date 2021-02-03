@@ -1,4 +1,4 @@
-import { CloseOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons'
+import { EditOutlined, MoreOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, DatePicker, Dropdown, Form, Input, InputNumber, Menu, message, Modal } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
@@ -10,12 +10,11 @@ import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { getFileDuration, handleError, uploadFile } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
-import { useProgramContent } from '../../hooks/program'
+import { useMutateProgramContent } from '../../hooks/program'
 import types from '../../types'
 import { ProgramContentBodyType, ProgramContentProps, ProgramProps } from '../../types/program'
 import FileUploader from '../common/FileUploader'
@@ -40,21 +39,6 @@ const messages = defineMessages({
   uploadMaterial: { id: 'program.ui.uploadMaterial', defaultMessage: '上傳教材' },
 })
 
-const StyledCloseIcon = styled(CloseOutlined)`
-  color: transparent;
-`
-const StyledFileItem = styled.div`
-  color: var(--gray-darker);
-  font-size: 14px;
-
-  :hover {
-    background-color: var(--gray-lighter);
-    ${StyledCloseIcon} {
-      color: var(--gray-darker);
-    }
-  }
-`
-
 type FieldProps = {
   publishedAt: Moment | null
   isNotifyUpdate: boolean
@@ -75,7 +59,7 @@ const ProgramContentAdminModal: React.FC<{
   const [form] = useForm<FieldProps>()
   const { id: appId, enabledModules } = useApp()
   const { authToken, apiHost } = useAuth()
-  const { updateProgramContent, deleteProgramContent } = useProgramContent()
+  const { updateProgramContent, deleteProgramContent } = useMutateProgramContent()
 
   const [updateProgramContentPlan] = useMutation<
     types.UPDATE_PROGRAM_CONTENT_PLAN,

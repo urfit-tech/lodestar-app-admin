@@ -2158,34 +2158,6 @@ export interface GET_MEMBER_CONTRACTSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: DELETE_ATTACHMENTS
-// ====================================================
-
-export interface DELETE_ATTACHMENTS_update_attachment {
-  __typename: "attachment_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_ATTACHMENTS {
-  /**
-   * update data of the table: "attachment"
-   */
-  update_attachment: DELETE_ATTACHMENTS_update_attachment | null;
-}
-
-export interface DELETE_ATTACHMENTSVariables {
-  attachmentIds: any[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_MEMBER_ROLE
 // ====================================================
 
@@ -3878,55 +3850,6 @@ export interface PUBLISH_PROGRAM_CONTENTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_CONTENT
-// ====================================================
-
-export interface UPDATE_PROGRAM_CONTENT_update_program_content {
-  __typename: "program_content_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_CONTENT_update_program_content_body {
-  __typename: "program_content_body_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_CONTENT {
-  /**
-   * update data of the table: "program_content"
-   */
-  update_program_content: UPDATE_PROGRAM_CONTENT_update_program_content | null;
-  /**
-   * update data of the table: "program_content_body"
-   */
-  update_program_content_body: UPDATE_PROGRAM_CONTENT_update_program_content_body | null;
-}
-
-export interface UPDATE_PROGRAM_CONTENTVariables {
-  programContentId: any;
-  title?: string | null;
-  description?: string | null;
-  type?: string | null;
-  data?: any | null;
-  price?: any | null;
-  publishedAt?: any | null;
-  duration?: any | null;
-  isNotifyUpdate?: boolean | null;
-  notifiedAt?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_PLAN
 // ====================================================
 
@@ -3960,46 +3883,6 @@ export interface UPDATE_PROGRAM_CONTENT_PLAN {
 export interface UPDATE_PROGRAM_CONTENT_PLANVariables {
   programContentId: any;
   programContentPlans: program_content_plan_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_PROGRAM_CONTENT
-// ====================================================
-
-export interface DELETE_PROGRAM_CONTENT_delete_program_content_progress {
-  __typename: "program_content_progress_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PROGRAM_CONTENT_delete_program_content_body {
-  __typename: "program_content_body_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PROGRAM_CONTENT {
-  /**
-   * delete data from the table: "program_content_progress"
-   */
-  delete_program_content_progress: DELETE_PROGRAM_CONTENT_delete_program_content_progress | null;
-  /**
-   * delete data from the table: "program_content_body"
-   */
-  delete_program_content_body: DELETE_PROGRAM_CONTENT_delete_program_content_body | null;
-}
-
-export interface DELETE_PROGRAM_CONTENTVariables {
-  programContentId: any;
 }
 
 /* tslint:disable */
@@ -7764,6 +7647,34 @@ export interface INSERT_ATTACHMENTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: DELETE_ATTACHMENTS
+// ====================================================
+
+export interface DELETE_ATTACHMENTS_update_attachment {
+  __typename: "attachment_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_ATTACHMENTS {
+  /**
+   * update data of the table: "attachment"
+   */
+  update_attachment: DELETE_ATTACHMENTS_update_attachment | null;
+}
+
+export interface DELETE_ATTACHMENTSVariables {
+  attachmentIds: any[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER
 // ====================================================
 
@@ -9273,6 +9184,13 @@ export interface GET_PROGRAM_program_by_pk_program_content_sections_program_cont
   program_plan: GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_plans_program_plan;
 }
 
+export interface GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_attachments {
+  __typename: "program_content_attachment";
+  attachment_id: any | null;
+  data: any | null;
+  options: any | null;
+}
+
 export interface GET_PROGRAM_program_by_pk_program_content_sections_program_contents {
   __typename: "program_content";
   id: any;
@@ -9285,6 +9203,7 @@ export interface GET_PROGRAM_program_by_pk_program_content_sections_program_cont
   duration: any | null;
   is_notify_update: boolean;
   notified_at: any | null;
+  metadata: any | null;
   /**
    * An object relationship
    */
@@ -9293,6 +9212,10 @@ export interface GET_PROGRAM_program_by_pk_program_content_sections_program_cont
    * An array relationship
    */
   program_content_plans: GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_plans[];
+  /**
+   * An array relationship
+   */
+  program_content_attachments: GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_attachments[];
 }
 
 export interface GET_PROGRAM_program_by_pk_program_content_sections {
@@ -9660,6 +9583,142 @@ export interface GET_PROGRAM_PROGRESS {
 export interface GET_PROGRAM_PROGRESSVariables {
   programId?: any | null;
   offset?: number | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_CONTENT
+// ====================================================
+
+export interface UPDATE_PROGRAM_CONTENT_update_program_content {
+  __typename: "program_content_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_update_program_content_body {
+  __typename: "program_content_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT {
+  /**
+   * update data of the table: "program_content"
+   */
+  update_program_content: UPDATE_PROGRAM_CONTENT_update_program_content | null;
+  /**
+   * update data of the table: "program_content_body"
+   */
+  update_program_content_body: UPDATE_PROGRAM_CONTENT_update_program_content_body | null;
+}
+
+export interface UPDATE_PROGRAM_CONTENTVariables {
+  programContentId: any;
+  title?: string | null;
+  description?: string | null;
+  type?: string | null;
+  data?: any | null;
+  price?: any | null;
+  publishedAt?: any | null;
+  duration?: any | null;
+  isNotifyUpdate?: boolean | null;
+  notifiedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_PRACTICE
+// ====================================================
+
+export interface UPDATE_PROGRAM_CONTENT_PRACTICE_update_program_content {
+  __typename: "program_content_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_PRACTICE_update_program_content_body {
+  __typename: "program_content_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_PRACTICE {
+  /**
+   * update data of the table: "program_content"
+   */
+  update_program_content: UPDATE_PROGRAM_CONTENT_PRACTICE_update_program_content | null;
+  /**
+   * update data of the table: "program_content_body"
+   */
+  update_program_content_body: UPDATE_PROGRAM_CONTENT_PRACTICE_update_program_content_body | null;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_PRACTICEVariables {
+  programContentId: any;
+  title?: string | null;
+  description?: string | null;
+  publishedAt?: any | null;
+  duration?: any | null;
+  isNotifyUpdate?: boolean | null;
+  notifiedAt?: any | null;
+  metadata?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_PROGRAM_CONTENT
+// ====================================================
+
+export interface DELETE_PROGRAM_CONTENT_delete_program_content_progress {
+  __typename: "program_content_progress_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CONTENT_delete_program_content_body {
+  __typename: "program_content_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_PROGRAM_CONTENT {
+  /**
+   * delete data from the table: "program_content_progress"
+   */
+  delete_program_content_progress: DELETE_PROGRAM_CONTENT_delete_program_content_progress | null;
+  /**
+   * delete data from the table: "program_content_body"
+   */
+  delete_program_content_body: DELETE_PROGRAM_CONTENT_delete_program_content_body | null;
+}
+
+export interface DELETE_PROGRAM_CONTENTVariables {
+  programContentId: any;
 }
 
 /* tslint:disable */

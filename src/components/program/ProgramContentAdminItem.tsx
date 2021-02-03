@@ -13,6 +13,7 @@ import { ReactComponent as VideoIcon } from '../../images/icon/video.svg'
 import types from '../../types'
 import { ProgramAdminProps, ProgramContentProps } from '../../types/program'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
+import ProgramContentPracticeAdminModal from './ProgramContentPracticeAdminModal'
 
 const StyledTitle = styled.div`
   font-size: 14px;
@@ -24,9 +25,18 @@ const StyledDescriptions = styled(Typography.Text)`
 const StyledTag = styled(Tag)`
   && {
     border: none;
+    color: #fff;
+    border-radius: 4px;
+    letter-spacing: 0.58px;
+    font-weight: 500;
   }
 `
-
+const StyledTrialTag = styled(StyledTag)`
+  background: #ffbe1e;
+`
+const StyledPrivateTag = styled(StyledTag)`
+  background: var(--gray-darker);
+`
 const messages = defineMessages({
   programContentPlans: { id: 'program.text.programContentPlans', defaultMessage: '方案：' },
 })
@@ -51,7 +61,7 @@ const ProgramContentAdminItem: React.FC<{
         <div className="d-flex">
           <div className="d-flex justify-content-center align-items-center mr-3">
             {(programContent.programContentType && programContent.programContentType === 'text' && (
-              <FileTextOutlined />
+              <FileTextOutlined style={{ color: '#9B9B9B' }} />
             )) ||
               (programContent.programContentType === 'video' && <VideoIcon />) ||
               (programContent.programContentType === 'practice' && <PracticeIcon />)}
@@ -70,7 +80,10 @@ const ProgramContentAdminItem: React.FC<{
 
       <div className="d-flex align-items-center">
         {programContent.listPrice === 0 && (
-          <StyledTag className="mr-3">{formatMessage(commonMessages.ui.trial)}</StyledTag>
+          <StyledTrialTag className="mr-3">{formatMessage(commonMessages.ui.trial)}</StyledTrialTag>
+        )}
+        {programContent.metadata?.private && (
+          <StyledPrivateTag className="mr-3">{formatMessage(commonMessages.ui.private)}</StyledPrivateTag>
         )}
         {program && program.isSubscription ? (
           programContent.publishedAt && (
@@ -107,7 +120,9 @@ const ProgramContentAdminItem: React.FC<{
             }
           />
         )}
-        {!loadingProgramContentBody && (
+        {(!loadingProgramContentBody && programContent.programContentType === 'text') ||
+        programContent.programContentType === 'video' ||
+        programContent.programContentType === null ? (
           <ProgramContentAdminModal
             program={program}
             programContent={programContent}
@@ -117,7 +132,17 @@ const ProgramContentAdminItem: React.FC<{
               onRefetch?.()
             }}
           />
-        )}
+        ) : programContent.programContentType === 'practice' ? (
+          <ProgramContentPracticeAdminModal
+            program={program}
+            programContent={programContent}
+            programContentBody={programContentBody}
+            onRefetch={() => {
+              refetchProgramContentBody()
+              onRefetch?.()
+            }}
+          />
+        ) : null}
       </div>
     </div>
   )

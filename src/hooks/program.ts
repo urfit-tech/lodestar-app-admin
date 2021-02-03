@@ -41,6 +41,7 @@ export const useProgram = (programId: string) => {
               duration
               is_notify_update
               notified_at
+              metadata
               program_content_type {
                 id
                 type
@@ -51,6 +52,11 @@ export const useProgram = (programId: string) => {
                   id
                   title
                 }
+              }
+              program_content_attachments {
+                attachment_id
+                data
+                options
               }
             }
           }
@@ -143,6 +149,12 @@ export const useProgram = (programId: string) => {
               programPlans: programContent.program_content_plans.map(programContentPlan => ({
                 id: programContentPlan.program_plan.id,
                 title: programContentPlan.program_plan.title,
+              })),
+              metadata: programContent.metadata,
+              attachments: programContent.program_content_attachments.map(v => ({
+                id: v.attachment_id,
+                data: v.data,
+                options: v.options,
               })),
             })),
           })),
@@ -464,7 +476,7 @@ const GET_PROGRAM_PROGRESS = gql`
   }
 `
 
-export const useProgramContent = () => {
+export const useMutateProgramContent = () => {
   const [updateProgramContent] = useMutation<types.UPDATE_PROGRAM_CONTENT, types.UPDATE_PROGRAM_CONTENTVariables>(
     gql`
       mutation UPDATE_PROGRAM_CONTENT(
@@ -503,6 +515,45 @@ export const useProgramContent = () => {
       }
     `,
   )
+
+  const [updateProgramContentPractice] = useMutation<
+    types.UPDATE_PROGRAM_CONTENT_PRACTICE,
+    types.UPDATE_PROGRAM_CONTENT_PRACTICEVariables
+  >(
+    gql`
+      mutation UPDATE_PROGRAM_CONTENT_PRACTICE(
+        $programContentId: uuid!
+        $title: String
+        $description: String
+        $publishedAt: timestamptz
+        $duration: numeric
+        $isNotifyUpdate: Boolean
+        $notifiedAt: timestamptz
+        $metadata: jsonb
+      ) {
+        update_program_content(
+          where: { id: { _eq: $programContentId } }
+          _set: {
+            title: $title
+            duration: $duration
+            published_at: $publishedAt
+            is_notify_update: $isNotifyUpdate
+            notified_at: $notifiedAt
+            metadata: $metadata
+          }
+        ) {
+          affected_rows
+        }
+        update_program_content_body(
+          where: { program_contents: { id: { _eq: $programContentId } } }
+          _set: { description: $description }
+        ) {
+          affected_rows
+        }
+      }
+    `,
+  )
+
   const [deleteProgramContent] = useMutation<types.DELETE_PROGRAM_CONTENT, types.DELETE_PROGRAM_CONTENTVariables>(
     gql`
       mutation DELETE_PROGRAM_CONTENT($programContentId: uuid!) {
@@ -518,6 +569,7 @@ export const useProgramContent = () => {
 
   return {
     updateProgramContent,
+    updateProgramContentPractice,
     deleteProgramContent,
   }
 }

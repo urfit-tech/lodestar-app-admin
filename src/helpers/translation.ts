@@ -67,6 +67,7 @@ export const commonMessages = {
     createPlan: { id: 'common.ui.createPlan', defaultMessage: '建立方案' },
     uploadImage: { id: 'common.ui.uploadImage', defaultMessage: '上傳圖片' },
     download: { id: 'common.ui.download', defaultMessage: '下載' },
+    private: { id: 'common.ui.private', defaultMessage: '私密' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -611,6 +612,7 @@ export const programMessages = {
     sharingCode: { id: 'program.label.sharingCode', defaultMessage: '推廣網址' },
     code: { id: 'program.label.code', defaultMessage: '設定網址' },
     note: { id: 'program.label.note', defaultMessage: '用途備註' },
+    practice: { id: 'program.label.practice', defaultMessage: '作業練習' },
   }),
   text: defineMessages({
     searchProgramTitle: { id: 'program.text.searchProgramTitle', defaultMessage: '搜尋課程名稱' },
@@ -677,6 +679,8 @@ export const programMessages = {
     },
     codeIsRequired: { id: 'program.text.codeIsRequired', defaultMessage: '未填寫設定網址' },
     duplicatedCodesWarning: { id: 'program.text.duplicatedCodesWarning', defaultMessage: '推廣網址不可重複' },
+    practicePrivateTips: { id: 'program.text.practicePrivateTips', defaultMessage: '勾選後學員將只能看到自己的作品' },
+    practiceFileSizeTips: { id: 'program.text.practiceFileSizeTips', defaultMessage: '單檔案大小不超過 5GB' },
   }),
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
