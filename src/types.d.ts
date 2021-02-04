@@ -2107,7 +2107,7 @@ export interface UPDATE_MEMBER_REJECTED_AT {
 
 export interface UPDATE_MEMBER_REJECTED_ATVariables {
   id: string;
-  rejectedAt?: any | null;
+  metadata?: any | null;
 }
 
 /* tslint:disable */
@@ -8024,6 +8024,7 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk {
   created_at: any | null;
   logined_at: any | null;
   assigned_at: any | null;
+  metadata: any;
   /**
    * An object relationship
    */

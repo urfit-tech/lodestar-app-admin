@@ -88,6 +88,7 @@ export type MemberAdminProps = {
   notes: MemberNoteAdminProps[]
   permissionIds: string[]
 
+  rejectedAt?: Date
   consumption?: number
   coins?: number
 }

@@ -10,7 +10,7 @@ import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useCustomRenderer } from '../../contexts/CustomRendererContext'
-import { currencyFormatter } from '../../helpers'
+import { currencyFormatter, handleError } from '../../helpers'
 import { commonMessages, memberMessages, promotionMessages } from '../../helpers/translation'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as EmailIcon } from '../../images/icon/email.svg'
@@ -71,7 +71,8 @@ const MemberAdminLayout: React.FC<{
       }
     }[]
   }
-}> = ({ member, children }) => {
+  onRefetch: () => void
+}> = ({ member, onRefetch, children }) => {
   const history = useHistory()
   const location = useLocation()
   const match = useRouteMatch(routesProps.owner_member.path)
@@ -83,8 +84,8 @@ const MemberAdminLayout: React.FC<{
     types.UPDATE_MEMBER_REJECTED_AT,
     types.UPDATE_MEMBER_REJECTED_ATVariables
   >(gql`
-    mutation UPDATE_MEMBER_REJECTED_AT($id: String!, $rejectedAt: jsonb) {
-      update_member_by_pk(pk_columns: { id: $id }, _append: { metadata: $rejectedAt }) {
+    mutation UPDATE_MEMBER_REJECTED_AT($id: String!, $metadata: jsonb) {
+      update_member_by_pk(pk_columns: { id: $id }, _append: { metadata: $metadata }) {
         id
       }
     }
@@ -199,13 +200,17 @@ const MemberAdminLayout: React.FC<{
 
           <Divider className="my-4" />
 
-          {renderMemberAdminLayout?.sider?.(() =>
-            insertMemberRejectedAt({
-              variables: {
-                id: currentMemberId || '',
-                rejectedAt: { rejectedAt: new Date() },
-              },
-            }),
+          {renderMemberAdminLayout?.sider?.(
+            member.rejectedAt ||
+              (() =>
+                insertMemberRejectedAt({
+                  variables: {
+                    id: currentMemberId || '',
+                    metadata: { rejectedAt: new Date() },
+                  },
+                })
+                  .then(() => onRefetch)
+                  .catch(handleError)),
           )}
         </StyledSider>
 
