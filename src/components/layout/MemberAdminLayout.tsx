@@ -1,5 +1,7 @@
 import Icon, { CloseOutlined } from '@ant-design/icons'
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Layout, Tabs } from 'antd'
+import gql from 'graphql-tag'
 import moment from 'moment'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -14,6 +16,7 @@ import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as EmailIcon } from '../../images/icon/email.svg'
 import { ReactComponent as PhoneIcon } from '../../images/icon/phone.svg'
 import { routesProps } from '../../Routes'
+import types from '../../types'
 import { AppProps } from '../../types/app'
 import { CouponPlanProps } from '../../types/checkout'
 import { MemberAdminProps, UserRole } from '../../types/member'
@@ -72,10 +75,20 @@ const MemberAdminLayout: React.FC<{
   const history = useHistory()
   const location = useLocation()
   const match = useRouteMatch(routesProps.owner_member.path)
-  const { currentUserRole, permissions } = useAuth()
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
   const { enabledModules, settings } = useApp()
   const { formatMessage } = useIntl()
   const { renderMemberAdminLayout } = useCustomRenderer()
+  const [insertMemberRejectedAt] = useMutation<
+    types.UPDATE_MEMBER_REJECTED_AT,
+    types.UPDATE_MEMBER_REJECTED_ATVariables
+  >(gql`
+    mutation UPDATE_MEMBER_REJECTED_AT($id: String!, $rejectedAt: jsonb) {
+      update_member_by_pk(pk_columns: { id: $id }, _append: { metadata: $rejectedAt }) {
+        id
+      }
+    }
+  `)
 
   const activeKey = match?.isExact ? 'profile' : location.pathname.replace(match?.url || '', '').substring(1)
 
@@ -186,7 +199,14 @@ const MemberAdminLayout: React.FC<{
 
           <Divider className="my-4" />
 
-          {renderMemberAdminLayout?.sider?.()}
+          {renderMemberAdminLayout?.sider?.(() =>
+            insertMemberRejectedAt({
+              variables: {
+                id: currentMemberId || '',
+                rejectedAt: { rejectedAt: new Date() },
+              },
+            }),
+          )}
         </StyledSider>
 
         <StyledLayoutContent variant="gray">

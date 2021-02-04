@@ -4,7 +4,7 @@ import { renderMemberAdminLayoutProps } from '../components/layout/MemberAdminLa
 
 export type CustomRendererProps = {
   renderMemberAdminLayout?: {
-    sider?: () => React.ReactNode
+    sider?: (props: () => void) => React.ReactNode
     content?: (props: renderMemberAdminLayoutProps) => React.ReactElement
   }
   renderAdminMenu?: (props: {

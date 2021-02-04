@@ -2090,6 +2090,32 @@ export interface UPDATE_ISSUE_REPLYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_REJECTED_AT
+// ====================================================
+
+export interface UPDATE_MEMBER_REJECTED_AT_update_member_by_pk {
+  __typename: "member";
+  id: string;
+}
+
+export interface UPDATE_MEMBER_REJECTED_AT {
+  /**
+   * update single row of the table: "member"
+   */
+  update_member_by_pk: UPDATE_MEMBER_REJECTED_AT_update_member_by_pk | null;
+}
+
+export interface UPDATE_MEMBER_REJECTED_ATVariables {
+  id: string;
+  rejectedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER_CONTRACTS
 // ====================================================
 
@@ -12395,7 +12421,6 @@ export enum exercise_question_choice_update_column {
   id = "id",
   is_correct = "is_correct",
   position = "position",
-  title = "title",
   updated_at = "updated_at",
 }
 
@@ -12410,13 +12435,13 @@ export enum exercise_question_constraint {
  * update columns of table "exercise_question"
  */
 export enum exercise_question_update_column {
+  answer_description = "answer_description",
   created_at = "created_at",
   description = "description",
   id = "id",
   points = "points",
   position = "position",
   program_content_id = "program_content_id",
-  title = "title",
   updated_at = "updated_at",
 }
 
@@ -13584,14 +13609,34 @@ export enum practice_constraint {
 }
 
 /**
+ * unique or primary key constraints on table "practice_reaction"
+ */
+export enum practice_reaction_constraint {
+  practice_reaction_pkey = "practice_reaction_pkey",
+}
+
+/**
+ * update columns of table "practice_reaction"
+ */
+export enum practice_reaction_update_column {
+  created_at = "created_at",
+  id = "id",
+  member_id = "member_id",
+  practice_id = "practice_id",
+}
+
+/**
  * update columns of table "practice"
  */
 export enum practice_update_column {
+  cover_url = "cover_url",
   created_at = "created_at",
+  description = "description",
   id = "id",
   issue_id = "issue_id",
   member_id = "member_id",
   program_content_id = "program_content_id",
+  title = "title",
   updated_at = "updated_at",
 }
 
@@ -17774,6 +17819,7 @@ export interface exercise_question_bool_exp {
   _and?: (exercise_question_bool_exp | null)[] | null;
   _not?: exercise_question_bool_exp | null;
   _or?: (exercise_question_bool_exp | null)[] | null;
+  answer_description?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   exercise_question_choices?: exercise_question_choice_bool_exp | null;
@@ -17782,7 +17828,6 @@ export interface exercise_question_bool_exp {
   position?: Int_comparison_exp | null;
   program_content?: program_content_bool_exp | null;
   program_content_id?: uuid_comparison_exp | null;
-  title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
 
@@ -17808,7 +17853,6 @@ export interface exercise_question_choice_bool_exp {
   id?: uuid_comparison_exp | null;
   is_correct?: Boolean_comparison_exp | null;
   position?: Int_comparison_exp | null;
-  title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
 
@@ -17823,7 +17867,6 @@ export interface exercise_question_choice_insert_input {
   id?: any | null;
   is_correct?: boolean | null;
   position?: number | null;
-  title?: string | null;
   updated_at?: any | null;
 }
 
@@ -17840,6 +17883,7 @@ export interface exercise_question_choice_on_conflict {
  * input type for inserting data into table "exercise_question"
  */
 export interface exercise_question_insert_input {
+  answer_description?: string | null;
   created_at?: any | null;
   description?: string | null;
   exercise_question_choices?: exercise_question_choice_arr_rel_insert_input | null;
@@ -17848,7 +17892,6 @@ export interface exercise_question_insert_input {
   position?: number | null;
   program_content?: program_content_obj_rel_insert_input | null;
   program_content_id?: any | null;
-  title?: string | null;
   updated_at?: any | null;
 }
 
@@ -23937,14 +23980,18 @@ export interface practice_bool_exp {
   _not?: practice_bool_exp | null;
   _or?: (practice_bool_exp | null)[] | null;
   attachments?: practice_attachment_bool_exp | null;
+  cover_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
   issue?: issue_bool_exp | null;
   issue_id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  practice_reactions?: practice_reaction_bool_exp | null;
   program_content?: program_content_bool_exp | null;
   program_content_id?: uuid_comparison_exp | null;
+  title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
 
@@ -23953,14 +24000,18 @@ export interface practice_bool_exp {
  */
 export interface practice_insert_input {
   attachments?: practice_attachment_arr_rel_insert_input | null;
+  cover_url?: string | null;
   created_at?: any | null;
+  description?: string | null;
   id?: any | null;
   issue?: issue_obj_rel_insert_input | null;
   issue_id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
+  practice_reactions?: practice_reaction_arr_rel_insert_input | null;
   program_content?: program_content_obj_rel_insert_input | null;
   program_content_id?: any | null;
+  title?: string | null;
   updated_at?: any | null;
 }
 
@@ -23979,6 +24030,50 @@ export interface practice_on_conflict {
   constraint: practice_constraint;
   update_columns: practice_update_column[];
   where?: practice_bool_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "practice_reaction"
+ */
+export interface practice_reaction_arr_rel_insert_input {
+  data: practice_reaction_insert_input[];
+  on_conflict?: practice_reaction_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "practice_reaction". All fields are combined with a logical 'AND'.
+ */
+export interface practice_reaction_bool_exp {
+  _and?: (practice_reaction_bool_exp | null)[] | null;
+  _not?: practice_reaction_bool_exp | null;
+  _or?: (practice_reaction_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  practice?: practice_bool_exp | null;
+  practice_id?: uuid_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "practice_reaction"
+ */
+export interface practice_reaction_insert_input {
+  created_at?: any | null;
+  id?: any | null;
+  member?: member_obj_rel_insert_input | null;
+  member_id?: string | null;
+  practice?: practice_obj_rel_insert_input | null;
+  practice_id?: any | null;
+}
+
+/**
+ * on conflict condition type for table "practice_reaction"
+ */
+export interface practice_reaction_on_conflict {
+  constraint: practice_reaction_constraint;
+  update_columns: practice_reaction_update_column[];
+  where?: practice_reaction_bool_exp | null;
 }
 
 /**
