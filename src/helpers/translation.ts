@@ -364,6 +364,7 @@ export const commonMessages = {
     creatorSettings: { id: 'common.menu.creatorSettings', defaultMessage: '創作者設定' },
     memberSettings: { id: 'common.menu.creatorSettings', defaultMessage: '個人設定' },
     appAdmin: { id: 'common.menu.appAdmin', defaultMessage: '網站管理' },
+    practice: { id: 'common.menu.practice', defaultMessage: '作業管理' },
   }),
   product: defineMessages({
     program: { id: 'common.product.program', defaultMessage: '單次課程' },
@@ -694,6 +695,16 @@ export const programMessages = {
     approve: { id: 'program.ui.approve', defaultMessage: '審核通過' },
     addUrl: { id: 'program.ui.addUrl', defaultMessage: '新增網址' },
     sortProgram: { id: 'program.ui.sortProgram', defaultMessage: '課程排序' },
+  }),
+}
+
+export const practiceMessages = {
+  status: defineMessages({
+    reviewed: { id: 'practice.status.reviewed', defaultMessage: '已點評' },
+    unreviewed: { id: 'practice.status.unreviewed', defaultMessage: '未點評' },
+  }),
+  text: defineMessages({
+    searchPractice: { id: 'practice.text.searchPractice', defaultMessage: '搜尋標題或學員名稱' },
   }),
 }
 
