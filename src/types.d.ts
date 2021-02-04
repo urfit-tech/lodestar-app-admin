@@ -2090,33 +2090,6 @@ export interface UPDATE_ISSUE_REPLYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: INSERT_MEMBER_NOTE_REJECTED_AT
-// ====================================================
-
-export interface INSERT_MEMBER_NOTE_REJECTED_AT_insert_member_note_one {
-  __typename: "member_note";
-  id: string;
-}
-
-export interface INSERT_MEMBER_NOTE_REJECTED_AT {
-  /**
-   * insert a single row into the table: "member_note"
-   */
-  insert_member_note_one: INSERT_MEMBER_NOTE_REJECTED_AT_insert_member_note_one | null;
-}
-
-export interface INSERT_MEMBER_NOTE_REJECTED_ATVariables {
-  memberId: string;
-  authorId: string;
-  rejectedAt: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_MEMBER_CONTRACTS
 // ====================================================
 
@@ -2150,6 +2123,34 @@ export interface GET_MEMBER_CONTRACTS {
 
 export interface GET_MEMBER_CONTRACTSVariables {
   memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: DELETE_ATTACHMENTS
+// ====================================================
+
+export interface DELETE_ATTACHMENTS_update_attachment {
+  __typename: "attachment_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface DELETE_ATTACHMENTS {
+  /**
+   * update data of the table: "attachment"
+   */
+  update_attachment: DELETE_ATTACHMENTS_update_attachment | null;
+}
+
+export interface DELETE_ATTACHMENTSVariables {
+  attachmentIds: any[];
 }
 
 /* tslint:disable */
@@ -3727,27 +3728,88 @@ export interface PUBLISH_PODCAST_PROGRAMVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PRACTICE_STATUS
+// GraphQL query operation: GET_EXERCISE
 // ====================================================
 
-export interface UPDATE_PRACTICE_STATUS_update_practice {
-  __typename: "practice_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
+export interface GET_EXERCISE_program_content_by_pk_exercise_questions_aggregate_aggregate_max {
+  __typename: "exercise_question_max_fields";
+  position: number | null;
 }
 
-export interface UPDATE_PRACTICE_STATUS {
-  /**
-   * update data of the table: "practice"
-   */
-  update_practice: UPDATE_PRACTICE_STATUS_update_practice | null;
+export interface GET_EXERCISE_program_content_by_pk_exercise_questions_aggregate_aggregate {
+  __typename: "exercise_question_aggregate_fields";
+  max: GET_EXERCISE_program_content_by_pk_exercise_questions_aggregate_aggregate_max | null;
 }
 
-export interface UPDATE_PRACTICE_STATUSVariables {
-  practiceId: any;
-  reviewedAt?: any | null;
+export interface GET_EXERCISE_program_content_by_pk_exercise_questions_aggregate {
+  __typename: "exercise_question_aggregate";
+  aggregate: GET_EXERCISE_program_content_by_pk_exercise_questions_aggregate_aggregate | null;
+}
+
+export interface GET_EXERCISE_program_content_by_pk_exercise_questions_exercise_question_choices_aggregate_aggregate_max {
+  __typename: "exercise_question_choice_max_fields";
+  position: number | null;
+}
+
+export interface GET_EXERCISE_program_content_by_pk_exercise_questions_exercise_question_choices_aggregate_aggregate {
+  __typename: "exercise_question_choice_aggregate_fields";
+  max: GET_EXERCISE_program_content_by_pk_exercise_questions_exercise_question_choices_aggregate_aggregate_max | null;
+}
+
+export interface GET_EXERCISE_program_content_by_pk_exercise_questions_exercise_question_choices_aggregate {
+  __typename: "exercise_question_choice_aggregate";
+  aggregate: GET_EXERCISE_program_content_by_pk_exercise_questions_exercise_question_choices_aggregate_aggregate | null;
+}
+
+export interface GET_EXERCISE_program_content_by_pk_exercise_questions_exercise_question_choices {
+  __typename: "exercise_question_choice";
+  id: any;
+  description: string | null;
+  is_correct: boolean;
+}
+
+export interface GET_EXERCISE_program_content_by_pk_exercise_questions {
+  __typename: "exercise_question";
+  id: any;
+  points: any;
+  description: string | null;
+  answer_description: string | null;
+  /**
+   * An aggregated array relationship
+   */
+  exercise_question_choices_aggregate: GET_EXERCISE_program_content_by_pk_exercise_questions_exercise_question_choices_aggregate;
+  /**
+   * An array relationship
+   */
+  exercise_question_choices: GET_EXERCISE_program_content_by_pk_exercise_questions_exercise_question_choices[];
+}
+
+export interface GET_EXERCISE_program_content_by_pk {
+  __typename: "program_content";
+  id: any;
+  list_price: any | null;
+  published_at: any | null;
+  is_notify_update: boolean;
+  metadata: any | null;
+  /**
+   * An aggregated array relationship
+   */
+  exercise_questions_aggregate: GET_EXERCISE_program_content_by_pk_exercise_questions_aggregate;
+  /**
+   * An array relationship
+   */
+  exercise_questions: GET_EXERCISE_program_content_by_pk_exercise_questions[];
+}
+
+export interface GET_EXERCISE {
+  /**
+   * fetch data from the table: "program_content" using primary key columns
+   */
+  program_content_by_pk: GET_EXERCISE_program_content_by_pk | null;
+}
+
+export interface GET_EXERCISEVariables {
+  programContentId: any;
 }
 
 /* tslint:disable */
@@ -3756,86 +3818,61 @@ export interface UPDATE_PRACTICE_STATUSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: INSERT_PRACTICE_REACTION
+// GraphQL mutation operation: UPDATE_EXERCISE
 // ====================================================
 
-export interface INSERT_PRACTICE_REACTION_insert_practice_reaction {
-  __typename: "practice_reaction_mutation_response";
+export interface UPDATE_EXERCISE_insert_program_content_one {
+  __typename: "program_content";
+  id: any;
+}
+
+export interface UPDATE_EXERCISE_delete_exercise_question_choice {
+  __typename: "exercise_question_choice_mutation_response";
   /**
    * number of affected rows by the mutation
    */
   affected_rows: number;
 }
 
-export interface INSERT_PRACTICE_REACTION {
-  /**
-   * insert data into the table: "practice_reaction"
-   */
-  insert_practice_reaction: INSERT_PRACTICE_REACTION_insert_practice_reaction | null;
-}
-
-export interface INSERT_PRACTICE_REACTIONVariables {
-  memberId: string;
-  practiceId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_PRACTICE_REACTION
-// ====================================================
-
-export interface DELETE_PRACTICE_REACTION_delete_practice_reaction {
-  __typename: "practice_reaction_mutation_response";
+export interface UPDATE_EXERCISE_delete_exercise_question {
+  __typename: "exercise_question_mutation_response";
   /**
    * number of affected rows by the mutation
    */
   affected_rows: number;
 }
 
-export interface DELETE_PRACTICE_REACTION {
+export interface UPDATE_EXERCISE_insert_exercise_question {
+  __typename: "exercise_question_mutation_response";
   /**
-   * delete data from the table: "practice_reaction"
+   * number of affected rows by the mutation
    */
-  delete_practice_reaction: DELETE_PRACTICE_REACTION_delete_practice_reaction | null;
+  affected_rows: number;
 }
 
-export interface DELETE_PRACTICE_REACTIONVariables {
-  memberId: string;
-  practiceId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_PRACTICE_ISSUE_AMOUNT
-// ====================================================
-
-export interface GET_PRACTICE_ISSUE_AMOUNT_issue_aggregate_aggregate {
-  __typename: "issue_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_PRACTICE_ISSUE_AMOUNT_issue_aggregate {
-  __typename: "issue_aggregate";
-  aggregate: GET_PRACTICE_ISSUE_AMOUNT_issue_aggregate_aggregate | null;
-}
-
-export interface GET_PRACTICE_ISSUE_AMOUNT {
+export interface UPDATE_EXERCISE {
   /**
-   * fetch aggregated fields from the table: "issue"
+   * insert a single row into the table: "program_content"
    */
-  issue_aggregate: GET_PRACTICE_ISSUE_AMOUNT_issue_aggregate;
+  insert_program_content_one: UPDATE_EXERCISE_insert_program_content_one | null;
+  /**
+   * delete data from the table: "exercise_question_choice"
+   */
+  delete_exercise_question_choice: UPDATE_EXERCISE_delete_exercise_question_choice | null;
+  /**
+   * delete data from the table: "exercise_question"
+   */
+  delete_exercise_question: UPDATE_EXERCISE_delete_exercise_question | null;
+  /**
+   * insert data into the table: "exercise_question"
+   */
+  insert_exercise_question: UPDATE_EXERCISE_insert_exercise_question | null;
 }
 
-export interface GET_PRACTICE_ISSUE_AMOUNTVariables {
-  threadIdLike?: string | null;
+export interface UPDATE_EXERCISEVariables {
+  programContentId: any;
+  programContent: program_content_insert_input;
+  questions: exercise_question_insert_input[];
 }
 
 /* tslint:disable */
@@ -3967,6 +4004,55 @@ export interface PUBLISH_PROGRAM_CONTENTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_PROGRAM_CONTENT
+// ====================================================
+
+export interface UPDATE_PROGRAM_CONTENT_update_program_content {
+  __typename: "program_content_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT_update_program_content_body {
+  __typename: "program_content_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_PROGRAM_CONTENT {
+  /**
+   * update data of the table: "program_content"
+   */
+  update_program_content: UPDATE_PROGRAM_CONTENT_update_program_content | null;
+  /**
+   * update data of the table: "program_content_body"
+   */
+  update_program_content_body: UPDATE_PROGRAM_CONTENT_update_program_content_body | null;
+}
+
+export interface UPDATE_PROGRAM_CONTENTVariables {
+  programContentId: any;
+  title?: string | null;
+  description?: string | null;
+  type?: string | null;
+  data?: any | null;
+  price?: any | null;
+  publishedAt?: any | null;
+  duration?: any | null;
+  isNotifyUpdate?: boolean | null;
+  notifiedAt?: any | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_CONTENT_PLAN
 // ====================================================
 
@@ -4049,93 +4135,6 @@ export interface UPDATE_PROGRAM_CONTENT_MATERIALSVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_PRACTICE
-// ====================================================
-
-export interface UPDATE_PRACTICE_update_program_content {
-  __typename: "program_content_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PRACTICE_update_program_content_body {
-  __typename: "program_content_body_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PRACTICE {
-  /**
-   * update data of the table: "program_content"
-   */
-  update_program_content: UPDATE_PRACTICE_update_program_content | null;
-  /**
-   * update data of the table: "program_content_body"
-   */
-  update_program_content_body: UPDATE_PRACTICE_update_program_content_body | null;
-}
-
-export interface UPDATE_PRACTICEVariables {
-  programContentId: any;
-  title?: string | null;
-  description?: string | null;
-  publishedAt?: any | null;
-  duration?: any | null;
-  isNotifyUpdate?: boolean | null;
-  notifiedAt?: any | null;
-  metadata?: any | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: DELETE_PRACTICE
-// ====================================================
-
-export interface DELETE_PRACTICE_delete_practice {
-  __typename: "practice_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PRACTICE_delete_program_content_body {
-  __typename: "program_content_body_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_PRACTICE {
-  /**
-   * delete data from the table: "practice"
-   */
-  delete_practice: DELETE_PRACTICE_delete_practice | null;
-  /**
-   * delete data from the table: "program_content_body"
-   */
-  delete_program_content_body: DELETE_PRACTICE_delete_program_content_body | null;
-}
-
-export interface DELETE_PRACTICEVariables {
-  programContentId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: INSERT_PROGRAM_CONTENT
 // ====================================================
 
@@ -4164,7 +4163,6 @@ export interface INSERT_PROGRAM_CONTENTVariables {
   title: string;
   position: number;
   publishedAt?: any | null;
-  programContentType: string;
 }
 
 /* tslint:disable */
@@ -7054,6 +7052,42 @@ export interface GET_COUPON__CODE_COLLECTIONVariables {
 // GraphQL query operation: GET_VOUCHER_PLAN_COLLECTION
 // ====================================================
 
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_vouchers_member {
+  __typename: "member";
+  id: string;
+  email: string;
+}
+
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_vouchers_status {
+  __typename: "voucher_status";
+  used: boolean | null;
+}
+
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_vouchers {
+  __typename: "voucher";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_vouchers_member;
+  /**
+   * An object relationship
+   */
+  status: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_vouchers_status | null;
+}
+
+export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes {
+  __typename: "voucher_code";
+  id: any;
+  code: string;
+  count: number;
+  remaining: number;
+  /**
+   * An array relationship
+   */
+  vouchers: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_vouchers[];
+}
+
 export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate_sum {
   __typename: "voucher_code_sum_fields";
   count: number | null;
@@ -7085,6 +7119,10 @@ export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan {
   ended_at: any | null;
   product_quantity_limit: number;
   /**
+   * An array relationship
+   */
+  voucher_codes: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes[];
+  /**
    * An aggregated array relationship
    */
   voucher_codes_aggregate: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate;
@@ -7099,62 +7137,6 @@ export interface GET_VOUCHER_PLAN_COLLECTION {
    * fetch data from the table: "voucher_plan"
    */
   voucher_plan: GET_VOUCHER_PLAN_COLLECTION_voucher_plan[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_VOUCHER_CODE
-// ====================================================
-
-export interface GET_VOUCHER_CODE_voucher_code_vouchers_member {
-  __typename: "member";
-  id: string;
-  email: string;
-}
-
-export interface GET_VOUCHER_CODE_voucher_code_vouchers_status {
-  __typename: "voucher_status";
-  used: boolean | null;
-}
-
-export interface GET_VOUCHER_CODE_voucher_code_vouchers {
-  __typename: "voucher";
-  id: any;
-  /**
-   * An object relationship
-   */
-  member: GET_VOUCHER_CODE_voucher_code_vouchers_member;
-  /**
-   * An object relationship
-   */
-  status: GET_VOUCHER_CODE_voucher_code_vouchers_status | null;
-}
-
-export interface GET_VOUCHER_CODE_voucher_code {
-  __typename: "voucher_code";
-  id: any;
-  code: string;
-  count: number;
-  remaining: number;
-  /**
-   * An array relationship
-   */
-  vouchers: GET_VOUCHER_CODE_voucher_code_vouchers[];
-}
-
-export interface GET_VOUCHER_CODE {
-  /**
-   * fetch data from the table: "voucher_code"
-   */
-  voucher_code: GET_VOUCHER_CODE_voucher_code[];
-}
-
-export interface GET_VOUCHER_CODEVariables {
-  voucherPlanId: any;
 }
 
 /* tslint:disable */
@@ -7867,34 +7849,6 @@ export interface INSERT_ATTACHMENTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: DELETE_ATTACHMENTS
-// ====================================================
-
-export interface DELETE_ATTACHMENTS_update_attachment {
-  __typename: "attachment_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface DELETE_ATTACHMENTS {
-  /**
-   * update data of the table: "attachment"
-   */
-  update_attachment: DELETE_ATTACHMENTS_update_attachment | null;
-}
-
-export interface DELETE_ATTACHMENTSVariables {
-  attachmentIds: any[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_MEMBER
 // ====================================================
 
@@ -8021,7 +7975,6 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
   duration: number;
   description: string | null;
   created_at: any;
-  rejected_at: any | null;
   /**
    * An object relationship
    */
@@ -8209,7 +8162,6 @@ export interface GET_MEMBER_DESCRIPTION {
 
 export interface GET_MEMBER_DESCRIPTIONVariables {
   memberId: string;
-  authorId?: string | null;
 }
 
 /* tslint:disable */
@@ -9404,13 +9356,6 @@ export interface GET_PROGRAM_program_by_pk_program_content_sections_program_cont
   program_plan: GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_plans_program_plan;
 }
 
-export interface GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_attachments {
-  __typename: "program_content_attachment";
-  attachment_id: any | null;
-  data: any | null;
-  options: any | null;
-}
-
 export interface GET_PROGRAM_program_by_pk_program_content_sections_program_contents {
   __typename: "program_content";
   id: any;
@@ -9423,7 +9368,7 @@ export interface GET_PROGRAM_program_by_pk_program_content_sections_program_cont
   duration: any | null;
   is_notify_update: boolean;
   notified_at: any | null;
-  metadata: any | null;
+  content_type: string | null;
   /**
    * An object relationship
    */
@@ -9432,10 +9377,6 @@ export interface GET_PROGRAM_program_by_pk_program_content_sections_program_cont
    * An array relationship
    */
   program_content_plans: GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_plans[];
-  /**
-   * An array relationship
-   */
-  program_content_attachments: GET_PROGRAM_program_by_pk_program_content_sections_program_contents_program_content_attachments[];
 }
 
 export interface GET_PROGRAM_program_by_pk_program_content_sections {
@@ -9803,55 +9744,6 @@ export interface GET_PROGRAM_PROGRESS {
 export interface GET_PROGRAM_PROGRESSVariables {
   programId?: any | null;
   offset?: number | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_PROGRAM_CONTENT
-// ====================================================
-
-export interface UPDATE_PROGRAM_CONTENT_update_program_content {
-  __typename: "program_content_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_CONTENT_update_program_content_body {
-  __typename: "program_content_body_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_PROGRAM_CONTENT {
-  /**
-   * update data of the table: "program_content"
-   */
-  update_program_content: UPDATE_PROGRAM_CONTENT_update_program_content | null;
-  /**
-   * update data of the table: "program_content_body"
-   */
-  update_program_content_body: UPDATE_PROGRAM_CONTENT_update_program_content_body | null;
-}
-
-export interface UPDATE_PROGRAM_CONTENTVariables {
-  programContentId: any;
-  title?: string | null;
-  description?: string | null;
-  type?: string | null;
-  data?: any | null;
-  price?: any | null;
-  publishedAt?: any | null;
-  duration?: any | null;
-  isNotifyUpdate?: boolean | null;
-  notifiedAt?: any | null;
 }
 
 /* tslint:disable */
@@ -11466,95 +11358,6 @@ export interface CREATE_PODCAST_PROGRAMVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_PRACTICE_PREVIEW_COLLECTION
-// ====================================================
-
-export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_member {
-  __typename: "member";
-  id: string;
-  username: string;
-  picture_url: string | null;
-}
-
-export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content_program_content_section_program_program_roles {
-  __typename: "program_role";
-  /**
-   * instructor / assistant 
-   */
-  name: string;
-  id: any;
-}
-
-export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content_program_content_section_program {
-  __typename: "program";
-  /**
-   * An array relationship
-   */
-  program_roles: GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content_program_content_section_program_program_roles[];
-}
-
-export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content_program_content_section {
-  __typename: "program_content_section";
-  /**
-   * An object relationship
-   */
-  program: GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content_program_content_section_program;
-}
-
-export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content {
-  __typename: "program_content";
-  /**
-   * An object relationship
-   */
-  program_content_section: GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content_program_content_section;
-}
-
-export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_practice_reactions {
-  __typename: "practice_reaction";
-  member_id: string;
-}
-
-export interface GET_PRACTICE_PREVIEW_COLLECTION_practice {
-  __typename: "practice";
-  id: any;
-  title: string;
-  cover_url: string | null;
-  created_at: any;
-  reviewed_at: any | null;
-  /**
-   * An object relationship
-   */
-  member: GET_PRACTICE_PREVIEW_COLLECTION_practice_member;
-  /**
-   * An object relationship
-   */
-  program_content: GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content;
-  /**
-   * An array relationship
-   */
-  practice_reactions: GET_PRACTICE_PREVIEW_COLLECTION_practice_practice_reactions[];
-}
-
-export interface GET_PRACTICE_PREVIEW_COLLECTION {
-  /**
-   * fetch data from the table: "practice"
-   */
-  practice: GET_PRACTICE_PREVIEW_COLLECTION_practice[];
-}
-
-export interface GET_PRACTICE_PREVIEW_COLLECTIONVariables {
-  title?: string | null;
-  memberName?: string | null;
-  programId?: any | null;
-  unreviewed?: boolean | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_PROGRAM_PREVIEW_COLLECTION
 // ====================================================
 
@@ -12726,6 +12529,48 @@ export enum currency_update_column {
   label = "label",
   name = "name",
   unit = "unit",
+}
+
+/**
+ * unique or primary key constraints on table "exercise_question_choice"
+ */
+export enum exercise_question_choice_constraint {
+  exercise_problem_options_pkey = "exercise_problem_options_pkey",
+}
+
+/**
+ * update columns of table "exercise_question_choice"
+ */
+export enum exercise_question_choice_update_column {
+  created_at = "created_at",
+  description = "description",
+  exercise_question_id = "exercise_question_id",
+  id = "id",
+  is_correct = "is_correct",
+  position = "position",
+  title = "title",
+  updated_at = "updated_at",
+}
+
+/**
+ * unique or primary key constraints on table "exercise_question"
+ */
+export enum exercise_question_constraint {
+  exercise_problem_pkey = "exercise_problem_pkey",
+}
+
+/**
+ * update columns of table "exercise_question"
+ */
+export enum exercise_question_update_column {
+  answer_description = "answer_description",
+  created_at = "created_at",
+  description = "description",
+  id = "id",
+  points = "points",
+  position = "position",
+  program_content_id = "program_content_id",
+  updated_at = "updated_at",
 }
 
 /**
@@ -13916,10 +13761,9 @@ export enum practice_update_column {
   created_at = "created_at",
   description = "description",
   id = "id",
-  is_deleted = "is_deleted",
+  issue_id = "issue_id",
   member_id = "member_id",
   program_content_id = "program_content_id",
-  reviewed_at = "reviewed_at",
   title = "title",
   updated_at = "updated_at",
 }
@@ -18089,6 +17933,116 @@ export interface currency_order_by {
 }
 
 /**
+ * input type for inserting array relation for remote table "exercise_question"
+ */
+export interface exercise_question_arr_rel_insert_input {
+  data: exercise_question_insert_input[];
+  on_conflict?: exercise_question_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "exercise_question". All fields are combined with a logical 'AND'.
+ */
+export interface exercise_question_bool_exp {
+  _and?: (exercise_question_bool_exp | null)[] | null;
+  _not?: exercise_question_bool_exp | null;
+  _or?: (exercise_question_bool_exp | null)[] | null;
+  answer_description?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  exercise_question_choices?: exercise_question_choice_bool_exp | null;
+  id?: uuid_comparison_exp | null;
+  points?: numeric_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  program_content?: program_content_bool_exp | null;
+  program_content_id?: uuid_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting array relation for remote table "exercise_question_choice"
+ */
+export interface exercise_question_choice_arr_rel_insert_input {
+  data: exercise_question_choice_insert_input[];
+  on_conflict?: exercise_question_choice_on_conflict | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "exercise_question_choice". All fields are combined with a logical 'AND'.
+ */
+export interface exercise_question_choice_bool_exp {
+  _and?: (exercise_question_choice_bool_exp | null)[] | null;
+  _not?: exercise_question_choice_bool_exp | null;
+  _or?: (exercise_question_choice_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  description?: String_comparison_exp | null;
+  exercise_question?: exercise_question_bool_exp | null;
+  exercise_question_id?: uuid_comparison_exp | null;
+  id?: uuid_comparison_exp | null;
+  is_correct?: Boolean_comparison_exp | null;
+  position?: Int_comparison_exp | null;
+  title?: String_comparison_exp | null;
+  updated_at?: timestamptz_comparison_exp | null;
+}
+
+/**
+ * input type for inserting data into table "exercise_question_choice"
+ */
+export interface exercise_question_choice_insert_input {
+  created_at?: any | null;
+  description?: string | null;
+  exercise_question?: exercise_question_obj_rel_insert_input | null;
+  exercise_question_id?: any | null;
+  id?: any | null;
+  is_correct?: boolean | null;
+  position?: number | null;
+  title?: string | null;
+  updated_at?: any | null;
+}
+
+/**
+ * on conflict condition type for table "exercise_question_choice"
+ */
+export interface exercise_question_choice_on_conflict {
+  constraint: exercise_question_choice_constraint;
+  update_columns: exercise_question_choice_update_column[];
+  where?: exercise_question_choice_bool_exp | null;
+}
+
+/**
+ * input type for inserting data into table "exercise_question"
+ */
+export interface exercise_question_insert_input {
+  answer_description?: string | null;
+  created_at?: any | null;
+  description?: string | null;
+  exercise_question_choices?: exercise_question_choice_arr_rel_insert_input | null;
+  id?: any | null;
+  points?: any | null;
+  position?: number | null;
+  program_content?: program_content_obj_rel_insert_input | null;
+  program_content_id?: any | null;
+  updated_at?: any | null;
+}
+
+/**
+ * input type for inserting object relation for remote table "exercise_question"
+ */
+export interface exercise_question_obj_rel_insert_input {
+  data: exercise_question_insert_input;
+  on_conflict?: exercise_question_on_conflict | null;
+}
+
+/**
+ * on conflict condition type for table "exercise_question"
+ */
+export interface exercise_question_on_conflict {
+  constraint: exercise_question_constraint;
+  update_columns: exercise_question_update_column[];
+  where?: exercise_question_bool_exp | null;
+}
+
+/**
  * order by aggregate values of table "issue"
  */
 export interface issue_aggregate_order_by {
@@ -19828,7 +19782,6 @@ export interface member_public_bool_exp {
   abstract?: String_comparison_exp | null;
   app_id?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
-  email?: String_comparison_exp | null;
   id?: String_comparison_exp | null;
   member_specialities?: member_speciality_bool_exp | null;
   metadata?: jsonb_comparison_exp | null;
@@ -19849,7 +19802,6 @@ export interface member_public_order_by {
   abstract?: order_by | null;
   app_id?: order_by | null;
   description?: order_by | null;
-  email?: order_by | null;
   id?: order_by | null;
   member_specialities_aggregate?: member_speciality_aggregate_order_by | null;
   metadata?: order_by | null;
@@ -24162,13 +24114,13 @@ export interface practice_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
-  is_deleted?: Boolean_comparison_exp | null;
+  issue?: issue_bool_exp | null;
+  issue_id?: uuid_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   practice_reactions?: practice_reaction_bool_exp | null;
   program_content?: program_content_bool_exp | null;
   program_content_id?: uuid_comparison_exp | null;
-  reviewed_at?: timestamptz_comparison_exp | null;
   title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -24182,13 +24134,13 @@ export interface practice_insert_input {
   created_at?: any | null;
   description?: string | null;
   id?: any | null;
-  is_deleted?: boolean | null;
+  issue?: issue_obj_rel_insert_input | null;
+  issue_id?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   practice_reactions?: practice_reaction_arr_rel_insert_input | null;
   program_content?: program_content_obj_rel_insert_input | null;
   program_content_id?: any | null;
-  reviewed_at?: any | null;
   title?: string | null;
   updated_at?: any | null;
 }
@@ -25072,6 +25024,7 @@ export interface program_content_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   duration?: numeric_comparison_exp | null;
   enrollments?: program_content_enrollment_bool_exp | null;
+  exercise_questions?: exercise_question_bool_exp | null;
   id?: uuid_comparison_exp | null;
   is_notify_update?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
@@ -25144,6 +25097,7 @@ export interface program_content_insert_input {
   content_type?: string | null;
   created_at?: any | null;
   duration?: any | null;
+  exercise_questions?: exercise_question_arr_rel_insert_input | null;
   id?: any | null;
   is_notify_update?: boolean | null;
   list_price?: any | null;

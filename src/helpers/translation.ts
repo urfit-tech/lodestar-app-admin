@@ -621,7 +621,10 @@ export const programMessages = {
     exercise: { id: 'program.label.exercise', defaultMessage: '課後測驗' },
     baseline: { id: 'program.label.baseline', defaultMessage: '及格分數' },
     points: { id: 'program.label.points', defaultMessage: '單題分數' },
-    option: { id: 'program.label.option', defaultMessage: '選項' },
+    question: { id: 'program.label.question', defaultMessage: '題目' },
+    choice: { id: 'program.label.choice', defaultMessage: '選項' },
+    isCorrectAnswer: { id: 'program.label.isCorrectAnswer', defaultMessage: '此為正確解答' },
+    answerDescription: { id: 'program.label.answerDescription', defaultMessage: '解答說明' },
   }),
   text: defineMessages({
     searchProgramTitle: { id: 'program.text.searchProgramTitle', defaultMessage: '搜尋課程名稱' },
@@ -709,7 +712,8 @@ export const programMessages = {
     sortProgram: { id: 'program.ui.sortProgram', defaultMessage: '課程排序' },
     deleteContent: { id: 'program.ui.deleteContent', defaultMessage: '刪除內容' },
     sortContents: { id: 'program.ui.sortContents', defaultMessage: '排序內容' },
-    createExerciseProblem: { id: 'program.ui.createExerciseProblem', defaultMessage: '新增題目' },
+    createExerciseQuestion: { id: 'program.ui.createExerciseQuestion', defaultMessage: '新增題目' },
+    createExerciseChoice: { id: 'program.ui.createExerciseChoice', defaultMessage: '新增選項' },
   }),
 }
 
