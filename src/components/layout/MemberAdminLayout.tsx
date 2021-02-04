@@ -185,6 +185,8 @@ const MemberAdminLayout: React.FC<{
           </StyledDescription>
 
           <Divider className="my-4" />
+
+          {renderMemberAdminLayout?.sider?.()}
         </StyledSider>
 
         <StyledLayoutContent variant="gray">
@@ -200,7 +202,7 @@ const MemberAdminLayout: React.FC<{
             )}
           >
             {renderMemberAdminLayout
-              ? renderMemberAdminLayout({
+              ? renderMemberAdminLayout.content?.({
                   enabledModules,
                   permissions,
                   currentUserRole,
