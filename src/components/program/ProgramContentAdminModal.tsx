@@ -127,7 +127,8 @@ const ProgramContentAdminModal: React.FC<{
             : null,
           title: values.title,
           description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
-          duration: realDuration,
+          duration:
+            realDuration !== 0 ? realDuration : values.duration !== 0 ? values.duration * 60 : programContent.duration,
           type: video ? 'video' : null,
           data: {
             video: video || null,
@@ -317,7 +318,7 @@ const ProgramContentAdminModal: React.FC<{
             </Form.Item>
           )}
           <Form.Item label={formatMessage(messages.duration)} name="duration">
-            <InputNumber />
+            <InputNumber min={0} />
           </Form.Item>
           {enabledModules.program_content_material && (
             <>
