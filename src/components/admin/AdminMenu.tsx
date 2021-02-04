@@ -82,6 +82,11 @@ const AdminMenu: React.FC<MenuProps> = ({ children, ...menuProps }) => {
           name: formatMessage(commonMessages.menu.programIssues),
         },
         {
+          permissionIsAllowed: permissions.PRACTICE_ADMIN,
+          key: 'practice_collection',
+          name: formatMessage(commonMessages.menu.practice),
+        },
+        {
           permissionIsAllowed: !!enabledModules.program_package && permissions.PROGRAM_PACKAGE_ADMIN,
           key: 'program_package_collection',
           name: formatMessage(commonMessages.menu.programPackage),
