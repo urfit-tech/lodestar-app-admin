@@ -128,7 +128,11 @@ const ProgramContentAdminModal: React.FC<{
           title: values.title,
           description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
           duration:
-            realDuration !== 0 ? realDuration : values.duration !== 0 ? values.duration * 60 : programContent.duration,
+            realDuration !== 0
+              ? realDuration
+              : values.duration !== Math.ceil((programContent.duration || 0) / 60)
+              ? values.duration * 60
+              : programContent.duration,
           type: video ? 'video' : null,
           data: {
             video: video || null,
