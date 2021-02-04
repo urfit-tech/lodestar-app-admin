@@ -201,16 +201,14 @@ const MemberAdminLayout: React.FC<{
               </AdminTabBarWrapper>
             )}
           >
-            {renderMemberAdminLayout
-              ? renderMemberAdminLayout.content?.({
-                  enabledModules,
-                  permissions,
-                  currentUserRole,
-                  defaultTabPanes,
-                  children,
-                  activeKey,
-                })
-              : defaultTabPanes}
+            {renderMemberAdminLayout?.content?.({
+              enabledModules,
+              permissions,
+              currentUserRole,
+              defaultTabPanes,
+              children,
+              activeKey,
+            }) || defaultTabPanes}
           </Tabs>
         </StyledLayoutContent>
       </Layout>
