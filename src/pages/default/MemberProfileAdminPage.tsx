@@ -21,7 +21,7 @@ const MemberProfileAdminPage: React.FC = () => {
   }
 
   return (
-    <MemberAdminLayout member={memberAdmin}>
+    <MemberAdminLayout member={memberAdmin} onRefetch={refetchMemberAdmin}>
       <div className="p-5">
         <AdminBlock>
           <AdminBlockTitle>{formatMessage(memberMessages.label.basic)}</AdminBlockTitle>

@@ -14,7 +14,7 @@ const MemberProfileAdminPage: React.FC = () => {
   }
 
   return (
-    <MemberAdminLayout member={memberAdmin}>
+    <MemberAdminLayout member={memberAdmin} onRefetch={refetchMemberAdmin}>
       <div className="p-5">
         <AdminBlock>
           <MemberPermissionForm memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />

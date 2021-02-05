@@ -118,6 +118,7 @@ export const useMemberAdmin = (memberId: string) => {
             duration
             description
             created_at
+            rejected_at
             author {
               id
               role
@@ -235,6 +236,7 @@ export const useMemberAdmin = (memberId: string) => {
             duration: v.duration,
             description: v.description,
             createdAt: new Date(v.created_at),
+            rejectedAt: v.rejected_at ? new Date(v.rejected_at) : null,
             author: {
               id: v.author.id,
               role: v.author.role,

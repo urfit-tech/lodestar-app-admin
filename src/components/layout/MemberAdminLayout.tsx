@@ -1,5 +1,7 @@
 import Icon, { CloseOutlined } from '@ant-design/icons'
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Layout, Tabs } from 'antd'
+import gql from 'graphql-tag'
 import moment from 'moment'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -8,12 +10,13 @@ import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useCustomRenderer } from '../../contexts/CustomRendererContext'
-import { currencyFormatter } from '../../helpers'
+import { currencyFormatter, handleError } from '../../helpers'
 import { commonMessages, memberMessages, promotionMessages } from '../../helpers/translation'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as EmailIcon } from '../../images/icon/email.svg'
 import { ReactComponent as PhoneIcon } from '../../images/icon/phone.svg'
 import { routesProps } from '../../Routes'
+import types from '../../types'
 import { AppProps } from '../../types/app'
 import { CouponPlanProps } from '../../types/checkout'
 import { MemberAdminProps, UserRole } from '../../types/member'
@@ -68,14 +71,33 @@ const MemberAdminLayout: React.FC<{
       }
     }[]
   }
-}> = ({ member, children }) => {
+  onRefetch: () => void
+}> = ({ member, onRefetch, children }) => {
   const history = useHistory()
   const location = useLocation()
   const match = useRouteMatch(routesProps.owner_member.path)
-  const { currentUserRole, permissions } = useAuth()
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
   const { enabledModules, settings } = useApp()
   const { formatMessage } = useIntl()
   const { renderMemberAdminLayout } = useCustomRenderer()
+  const [insertMemberNoteRejectedAt] = useMutation<
+    types.INSERT_MEMBER_NOTE_REJECTED_AT,
+    types.INSERT_MEMBER_NOTE_REJECTED_ATVariables
+  >(gql`
+    mutation INSERT_MEMBER_NOTE_REJECTED_AT($memberId: String!, $authorId: String!, $rejectedAt: timestamptz!) {
+      insert_member_note_one(
+        object: {
+          member_id: $memberId
+          author_id: $authorId
+          rejected_at: $rejectedAt
+          type: "outbound"
+          status: "answered"
+        }
+      ) {
+        id
+      }
+    }
+  `)
 
   const activeKey = match?.isExact ? 'profile' : location.pathname.replace(match?.url || '', '').substring(1)
 
@@ -185,6 +207,29 @@ const MemberAdminLayout: React.FC<{
           </StyledDescription>
 
           <Divider className="my-4" />
+
+          {renderMemberAdminLayout?.sider?.({
+            firstRejectedMemberNote:
+              member.notes
+                .filter(v => v.rejectedAt)
+                .map(v => ({
+                  authorName: v.author.name,
+                  rejectedAt: v.rejectedAt as Date,
+                }))
+                .sort((a, b) => a.rejectedAt.getTime() - b.rejectedAt.getTime())[0] || null,
+            insertMemberRejectedAt: () =>
+              insertMemberNoteRejectedAt({
+                variables: {
+                  memberId: member.id,
+                  authorId: currentMemberId || '',
+                  rejectedAt: new Date(),
+                },
+              })
+                .then(() => {
+                  onRefetch()
+                })
+                .catch(handleError),
+          })}
         </StyledSider>
 
         <StyledLayoutContent variant="gray">
@@ -199,16 +244,14 @@ const MemberAdminLayout: React.FC<{
               </AdminTabBarWrapper>
             )}
           >
-            {renderMemberAdminLayout
-              ? renderMemberAdminLayout({
-                  enabledModules,
-                  permissions,
-                  currentUserRole,
-                  defaultTabPanes,
-                  children,
-                  activeKey,
-                })
-              : defaultTabPanes}
+            {renderMemberAdminLayout?.content?.({
+              enabledModules,
+              permissions,
+              currentUserRole,
+              defaultTabPanes,
+              children,
+              activeKey,
+            }) || defaultTabPanes}
           </Tabs>
         </StyledLayoutContent>
       </Layout>

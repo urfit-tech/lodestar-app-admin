@@ -7,14 +7,14 @@ import { useMemberAdmin } from '../../hooks/member'
 
 const MemberProfileAdminPage: React.FC = () => {
   const { memberId } = useParams<{ memberId: string }>()
-  const { loadingMemberAdmin, errorMemberAdmin, memberAdmin } = useMemberAdmin(memberId)
+  const { loadingMemberAdmin, errorMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
 
   if (loadingMemberAdmin || errorMemberAdmin || !memberAdmin) {
     return <Skeleton active />
   }
 
   return (
-    <MemberAdminLayout member={memberAdmin}>
+    <MemberAdminLayout member={memberAdmin} onRefetch={refetchMemberAdmin}>
       <div className="p-5">
         <MemberCouponAdminBlock coupons={memberAdmin.coupons} />
       </div>

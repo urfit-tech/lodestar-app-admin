@@ -3,7 +3,16 @@ import React, { useContext } from 'react'
 import { renderMemberAdminLayoutProps } from '../components/layout/MemberAdminLayout'
 
 export type CustomRendererProps = {
-  renderMemberAdminLayout?: (props: renderMemberAdminLayoutProps) => React.ReactElement
+  renderMemberAdminLayout?: {
+    sider?: (props: {
+      firstRejectedMemberNote: {
+        authorName: string
+        rejectedAt: Date | null
+      } | null
+      insertMemberRejectedAt: () => void
+    }) => React.ReactNode
+    content?: (props: renderMemberAdminLayoutProps) => React.ReactElement
+  }
   renderAdminMenu?: (props: {
     onClick: MenuClickEventHandler
     menuItems: {
