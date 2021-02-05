@@ -697,6 +697,14 @@ export const programMessages = {
       id: 'program.text.deleteContentWarning',
       defaultMessage: '你確定要刪除此內容？此動作無法還原',
     },
+    deleteQuestionDescription: {
+      id: 'program.text.deleteQuestionDescription',
+      defaultMessage: '題目刪除即不可恢復，確定要刪除嗎？',
+    },
+    deleteChoiceDescription: {
+      id: 'program.text.deleteChoiceDescription',
+      defaultMessage: '選項刪除即不可恢復，確定要刪除嗎？',
+    },
   }),
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
@@ -714,6 +722,8 @@ export const programMessages = {
     sortContents: { id: 'program.ui.sortContents', defaultMessage: '排序內容' },
     createExerciseQuestion: { id: 'program.ui.createExerciseQuestion', defaultMessage: '新增題目' },
     createExerciseChoice: { id: 'program.ui.createExerciseChoice', defaultMessage: '新增選項' },
+    deleteQuestion: { id: 'program.ui.deleteQuestion', defaultMessage: '刪除題目' },
+    deleteChoice: { id: 'program.ui.deleteChoice', defaultMessage: '刪除選項' },
   }),
 }
 

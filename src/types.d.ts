@@ -3731,59 +3731,6 @@ export interface PUBLISH_PODCAST_PROGRAMVariables {
 // GraphQL query operation: GET_EXERCISE
 // ====================================================
 
-export interface GET_EXERCISE_program_content_by_pk_exercise_questions_aggregate_aggregate_max {
-  __typename: "exercise_question_max_fields";
-  position: number | null;
-}
-
-export interface GET_EXERCISE_program_content_by_pk_exercise_questions_aggregate_aggregate {
-  __typename: "exercise_question_aggregate_fields";
-  max: GET_EXERCISE_program_content_by_pk_exercise_questions_aggregate_aggregate_max | null;
-}
-
-export interface GET_EXERCISE_program_content_by_pk_exercise_questions_aggregate {
-  __typename: "exercise_question_aggregate";
-  aggregate: GET_EXERCISE_program_content_by_pk_exercise_questions_aggregate_aggregate | null;
-}
-
-export interface GET_EXERCISE_program_content_by_pk_exercise_questions_exercise_question_choices_aggregate_aggregate_max {
-  __typename: "exercise_question_choice_max_fields";
-  position: number | null;
-}
-
-export interface GET_EXERCISE_program_content_by_pk_exercise_questions_exercise_question_choices_aggregate_aggregate {
-  __typename: "exercise_question_choice_aggregate_fields";
-  max: GET_EXERCISE_program_content_by_pk_exercise_questions_exercise_question_choices_aggregate_aggregate_max | null;
-}
-
-export interface GET_EXERCISE_program_content_by_pk_exercise_questions_exercise_question_choices_aggregate {
-  __typename: "exercise_question_choice_aggregate";
-  aggregate: GET_EXERCISE_program_content_by_pk_exercise_questions_exercise_question_choices_aggregate_aggregate | null;
-}
-
-export interface GET_EXERCISE_program_content_by_pk_exercise_questions_exercise_question_choices {
-  __typename: "exercise_question_choice";
-  id: any;
-  description: string | null;
-  is_correct: boolean;
-}
-
-export interface GET_EXERCISE_program_content_by_pk_exercise_questions {
-  __typename: "exercise_question";
-  id: any;
-  points: any;
-  description: string | null;
-  answer_description: string | null;
-  /**
-   * An aggregated array relationship
-   */
-  exercise_question_choices_aggregate: GET_EXERCISE_program_content_by_pk_exercise_questions_exercise_question_choices_aggregate;
-  /**
-   * An array relationship
-   */
-  exercise_question_choices: GET_EXERCISE_program_content_by_pk_exercise_questions_exercise_question_choices[];
-}
-
 export interface GET_EXERCISE_program_content_by_pk {
   __typename: "program_content";
   id: any;
@@ -3791,14 +3738,6 @@ export interface GET_EXERCISE_program_content_by_pk {
   published_at: any | null;
   is_notify_update: boolean;
   metadata: any | null;
-  /**
-   * An aggregated array relationship
-   */
-  exercise_questions_aggregate: GET_EXERCISE_program_content_by_pk_exercise_questions_aggregate;
-  /**
-   * An array relationship
-   */
-  exercise_questions: GET_EXERCISE_program_content_by_pk_exercise_questions[];
 }
 
 export interface GET_EXERCISE {
@@ -3821,29 +3760,8 @@ export interface GET_EXERCISEVariables {
 // GraphQL mutation operation: UPDATE_EXERCISE
 // ====================================================
 
-export interface UPDATE_EXERCISE_insert_program_content_one {
-  __typename: "program_content";
-  id: any;
-}
-
-export interface UPDATE_EXERCISE_delete_exercise_question_choice {
-  __typename: "exercise_question_choice_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_EXERCISE_delete_exercise_question {
-  __typename: "exercise_question_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_EXERCISE_insert_exercise_question {
-  __typename: "exercise_question_mutation_response";
+export interface UPDATE_EXERCISE_update_program_content {
+  __typename: "program_content_mutation_response";
   /**
    * number of affected rows by the mutation
    */
@@ -3852,27 +3770,14 @@ export interface UPDATE_EXERCISE_insert_exercise_question {
 
 export interface UPDATE_EXERCISE {
   /**
-   * insert a single row into the table: "program_content"
+   * update data of the table: "program_content"
    */
-  insert_program_content_one: UPDATE_EXERCISE_insert_program_content_one | null;
-  /**
-   * delete data from the table: "exercise_question_choice"
-   */
-  delete_exercise_question_choice: UPDATE_EXERCISE_delete_exercise_question_choice | null;
-  /**
-   * delete data from the table: "exercise_question"
-   */
-  delete_exercise_question: UPDATE_EXERCISE_delete_exercise_question | null;
-  /**
-   * insert data into the table: "exercise_question"
-   */
-  insert_exercise_question: UPDATE_EXERCISE_insert_exercise_question | null;
+  update_program_content: UPDATE_EXERCISE_update_program_content | null;
 }
 
 export interface UPDATE_EXERCISEVariables {
   programContentId: any;
-  programContent: program_content_insert_input;
-  questions: exercise_question_insert_input[];
+  data: program_content_set_input;
 }
 
 /* tslint:disable */
@@ -12532,48 +12437,6 @@ export enum currency_update_column {
 }
 
 /**
- * unique or primary key constraints on table "exercise_question_choice"
- */
-export enum exercise_question_choice_constraint {
-  exercise_problem_options_pkey = "exercise_problem_options_pkey",
-}
-
-/**
- * update columns of table "exercise_question_choice"
- */
-export enum exercise_question_choice_update_column {
-  created_at = "created_at",
-  description = "description",
-  exercise_question_id = "exercise_question_id",
-  id = "id",
-  is_correct = "is_correct",
-  position = "position",
-  title = "title",
-  updated_at = "updated_at",
-}
-
-/**
- * unique or primary key constraints on table "exercise_question"
- */
-export enum exercise_question_constraint {
-  exercise_problem_pkey = "exercise_problem_pkey",
-}
-
-/**
- * update columns of table "exercise_question"
- */
-export enum exercise_question_update_column {
-  answer_description = "answer_description",
-  created_at = "created_at",
-  description = "description",
-  id = "id",
-  points = "points",
-  position = "position",
-  program_content_id = "program_content_id",
-  updated_at = "updated_at",
-}
-
-/**
  * unique or primary key constraints on table "issue"
  */
 export enum issue_constraint {
@@ -13761,9 +13624,10 @@ export enum practice_update_column {
   created_at = "created_at",
   description = "description",
   id = "id",
-  issue_id = "issue_id",
+  is_deleted = "is_deleted",
   member_id = "member_id",
   program_content_id = "program_content_id",
+  reviewed_at = "reviewed_at",
   title = "title",
   updated_at = "updated_at",
 }
@@ -17930,116 +17794,6 @@ export interface currency_order_by {
   order_products_aggregate?: order_product_aggregate_order_by | null;
   program_plans_aggregate?: program_plan_aggregate_order_by | null;
   unit?: order_by | null;
-}
-
-/**
- * input type for inserting array relation for remote table "exercise_question"
- */
-export interface exercise_question_arr_rel_insert_input {
-  data: exercise_question_insert_input[];
-  on_conflict?: exercise_question_on_conflict | null;
-}
-
-/**
- * Boolean expression to filter rows from the table "exercise_question". All fields are combined with a logical 'AND'.
- */
-export interface exercise_question_bool_exp {
-  _and?: (exercise_question_bool_exp | null)[] | null;
-  _not?: exercise_question_bool_exp | null;
-  _or?: (exercise_question_bool_exp | null)[] | null;
-  answer_description?: String_comparison_exp | null;
-  created_at?: timestamptz_comparison_exp | null;
-  description?: String_comparison_exp | null;
-  exercise_question_choices?: exercise_question_choice_bool_exp | null;
-  id?: uuid_comparison_exp | null;
-  points?: numeric_comparison_exp | null;
-  position?: Int_comparison_exp | null;
-  program_content?: program_content_bool_exp | null;
-  program_content_id?: uuid_comparison_exp | null;
-  updated_at?: timestamptz_comparison_exp | null;
-}
-
-/**
- * input type for inserting array relation for remote table "exercise_question_choice"
- */
-export interface exercise_question_choice_arr_rel_insert_input {
-  data: exercise_question_choice_insert_input[];
-  on_conflict?: exercise_question_choice_on_conflict | null;
-}
-
-/**
- * Boolean expression to filter rows from the table "exercise_question_choice". All fields are combined with a logical 'AND'.
- */
-export interface exercise_question_choice_bool_exp {
-  _and?: (exercise_question_choice_bool_exp | null)[] | null;
-  _not?: exercise_question_choice_bool_exp | null;
-  _or?: (exercise_question_choice_bool_exp | null)[] | null;
-  created_at?: timestamptz_comparison_exp | null;
-  description?: String_comparison_exp | null;
-  exercise_question?: exercise_question_bool_exp | null;
-  exercise_question_id?: uuid_comparison_exp | null;
-  id?: uuid_comparison_exp | null;
-  is_correct?: Boolean_comparison_exp | null;
-  position?: Int_comparison_exp | null;
-  title?: String_comparison_exp | null;
-  updated_at?: timestamptz_comparison_exp | null;
-}
-
-/**
- * input type for inserting data into table "exercise_question_choice"
- */
-export interface exercise_question_choice_insert_input {
-  created_at?: any | null;
-  description?: string | null;
-  exercise_question?: exercise_question_obj_rel_insert_input | null;
-  exercise_question_id?: any | null;
-  id?: any | null;
-  is_correct?: boolean | null;
-  position?: number | null;
-  title?: string | null;
-  updated_at?: any | null;
-}
-
-/**
- * on conflict condition type for table "exercise_question_choice"
- */
-export interface exercise_question_choice_on_conflict {
-  constraint: exercise_question_choice_constraint;
-  update_columns: exercise_question_choice_update_column[];
-  where?: exercise_question_choice_bool_exp | null;
-}
-
-/**
- * input type for inserting data into table "exercise_question"
- */
-export interface exercise_question_insert_input {
-  answer_description?: string | null;
-  created_at?: any | null;
-  description?: string | null;
-  exercise_question_choices?: exercise_question_choice_arr_rel_insert_input | null;
-  id?: any | null;
-  points?: any | null;
-  position?: number | null;
-  program_content?: program_content_obj_rel_insert_input | null;
-  program_content_id?: any | null;
-  updated_at?: any | null;
-}
-
-/**
- * input type for inserting object relation for remote table "exercise_question"
- */
-export interface exercise_question_obj_rel_insert_input {
-  data: exercise_question_insert_input;
-  on_conflict?: exercise_question_on_conflict | null;
-}
-
-/**
- * on conflict condition type for table "exercise_question"
- */
-export interface exercise_question_on_conflict {
-  constraint: exercise_question_constraint;
-  update_columns: exercise_question_update_column[];
-  where?: exercise_question_bool_exp | null;
 }
 
 /**
@@ -24114,13 +23868,13 @@ export interface practice_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
-  issue?: issue_bool_exp | null;
-  issue_id?: uuid_comparison_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   practice_reactions?: practice_reaction_bool_exp | null;
   program_content?: program_content_bool_exp | null;
   program_content_id?: uuid_comparison_exp | null;
+  reviewed_at?: timestamptz_comparison_exp | null;
   title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -24134,13 +23888,13 @@ export interface practice_insert_input {
   created_at?: any | null;
   description?: string | null;
   id?: any | null;
-  issue?: issue_obj_rel_insert_input | null;
-  issue_id?: any | null;
+  is_deleted?: boolean | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   practice_reactions?: practice_reaction_arr_rel_insert_input | null;
   program_content?: program_content_obj_rel_insert_input | null;
   program_content_id?: any | null;
+  reviewed_at?: any | null;
   title?: string | null;
   updated_at?: any | null;
 }
@@ -25024,7 +24778,6 @@ export interface program_content_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   duration?: numeric_comparison_exp | null;
   enrollments?: program_content_enrollment_bool_exp | null;
-  exercise_questions?: exercise_question_bool_exp | null;
   id?: uuid_comparison_exp | null;
   is_notify_update?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
@@ -25097,7 +24850,6 @@ export interface program_content_insert_input {
   content_type?: string | null;
   created_at?: any | null;
   duration?: any | null;
-  exercise_questions?: exercise_question_arr_rel_insert_input | null;
   id?: any | null;
   is_notify_update?: boolean | null;
   list_price?: any | null;
@@ -25654,6 +25406,28 @@ export interface program_content_section_var_samp_order_by {
  */
 export interface program_content_section_variance_order_by {
   position?: order_by | null;
+}
+
+/**
+ * input type for updating data in table "program_content"
+ */
+export interface program_content_set_input {
+  abstract?: string | null;
+  content_body_id?: any | null;
+  content_section_id?: any | null;
+  content_type?: string | null;
+  created_at?: any | null;
+  duration?: any | null;
+  id?: any | null;
+  is_notify_update?: boolean | null;
+  list_price?: any | null;
+  metadata?: any | null;
+  notified_at?: any | null;
+  position?: number | null;
+  published_at?: any | null;
+  sale_price?: any | null;
+  sold_at?: any | null;
+  title?: string | null;
 }
 
 /**

@@ -5,8 +5,10 @@ import { clone } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { programMessages } from '../../helpers/translation'
+import { v4 as uuidV4 } from 'uuid'
+import { commonMessages, programMessages } from '../../helpers/translation'
 import { ReactComponent as AngleRightIcon } from '../../images/icon/angle-right.svg'
+import AdminModal from '../admin/AdminModal'
 import AdminBraftEditor from './AdminBraftEditor'
 
 const StyledTitle = styled.div`
@@ -47,16 +49,15 @@ const StyledEditorWrapper = styled.div`
 `
 
 export type QuestionProps = {
-  id?: string
+  id: string
   points: number
   description: string | null
   answerDescription: string | null
-  maxChoicePosition?: number
   choices: ChoiceProps[]
 }
 
 export type ChoiceProps = {
-  id?: string
+  id: string
   description: string | null
   isCorrect: boolean
 }
@@ -76,18 +77,28 @@ const QuestionInput: React.FC<{
 
   return (
     <QuestionBlock variant={isCollapsed ? 'collapsed' : undefined}>
-      <div className="d-flex align-items-center justify-content-between mb-4">
-        <StyledTitle>
+      <div className="d-flex align-items-center mb-4 cursor-pointer">
+        <StyledTitle className="flex-grow-1" onClick={() => setIsCollapsed(!isCollapsed)}>
           {formatMessage(programMessages.label.question)} {index + 1}
         </StyledTitle>
-        <div className="d-flex align-items-center">
+        <div className="flex-shrink-0 d-flex align-items-center">
           {!isCollapsed && (
-            <StyledAction
-              component={() => <DeleteOutlined />}
-              variant="primary"
-              className="mr-3"
-              onClick={() => onRemove?.()}
-            />
+            <AdminModal
+              renderTrigger={({ setVisible }) => (
+                <StyledAction
+                  component={() => <DeleteOutlined />}
+                  variant="primary"
+                  className="mr-3"
+                  onClick={() => setVisible(true)}
+                />
+              )}
+              title={formatMessage(programMessages.ui.deleteQuestion)}
+              okText={formatMessage(commonMessages.ui.delete)}
+              cancelText={formatMessage(commonMessages.ui.back)}
+              onOk={() => onRemove?.()}
+            >
+              {formatMessage(programMessages.text.deleteQuestionDescription)}
+            </AdminModal>
           )}
           <StyledAction
             component={() => <AngleRightIcon />}
@@ -139,7 +150,7 @@ const QuestionInput: React.FC<{
           onRemove={() =>
             onChange?.({
               ...value,
-              choices: value.choices.filter((_, i) => i !== index),
+              choices: value.choices.filter(c => c.id !== choice.id),
             })
           }
         />
@@ -155,6 +166,7 @@ const QuestionInput: React.FC<{
             choices: [
               ...value.choices,
               {
+                id: uuidV4(),
                 description: null,
                 isCorrect: false,
               },
@@ -199,7 +211,17 @@ const ChoiceInput: React.FC<{
         <StyledTitle>
           {formatMessage(programMessages.label.choice)} {index + 1}
         </StyledTitle>
-        <StyledAction component={() => <DeleteOutlined />} onClick={() => onRemove?.()} />
+        <AdminModal
+          renderTrigger={({ setVisible }) => (
+            <StyledAction component={() => <DeleteOutlined />} onClick={() => setVisible(true)} />
+          )}
+          title={formatMessage(programMessages.ui.deleteQuestion)}
+          okText={formatMessage(commonMessages.ui.delete)}
+          cancelText={formatMessage(commonMessages.ui.back)}
+          onOk={() => onRemove?.()}
+        >
+          {formatMessage(programMessages.text.deleteQuestionDescription)}
+        </AdminModal>
       </div>
 
       <Form.Item>
