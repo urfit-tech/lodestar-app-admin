@@ -128,7 +128,7 @@ const SalesSummary: React.FC<{
   }
 
   if (!salesSummary) {
-    return <div>目前無待開發名單</div>
+    return <div>讀取錯誤</div>
   }
 
   const score = 10 + salesSummary.contractsLastMonth * 1 + salesSummary.contractsThisMonth * 2
@@ -237,8 +237,12 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
     return <Skeleton active />
   }
 
-  if (errorAssignedMember || !assignedMember) {
+  if (errorAssignedMember) {
     return <div>{formatMessage(errorMessages.data.fetch)}</div>
+  }
+
+  if (!assignedMember) {
+    return <div>目前無待開發名單</div>
   }
 
   const withDurationInput = !sales?.telephone.startsWith('8')
