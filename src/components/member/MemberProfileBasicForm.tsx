@@ -19,9 +19,9 @@ import TagSelector from '../form/TagSelector'
 type FieldProps = {
   name: string
   phones: string[]
-  tags: string[]
   categoryIds: string[]
-  managerId: string
+  tags?: string[]
+  managerId?: string
 }
 
 const MemberProfileBasicForm: React.FC<{
@@ -30,7 +30,7 @@ const MemberProfileBasicForm: React.FC<{
 }> = ({ memberAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
-  const { permissions } = useAuth()
+  const { currentUserRole, permissions } = useAuth()
   const { enabledModules } = useApp()
   const [updateMemberProfileBasic] = useMutation<
     types.UPDATE_MEMBER_PROFILE_BASIC,
@@ -44,6 +44,7 @@ const MemberProfileBasicForm: React.FC<{
 
   const handleSubmit = (values: FieldProps) => {
     setLoading(true)
+
     updateMemberProfileBasic({
       variables: {
         name: values?.name || memberAdmin.name,
@@ -61,11 +62,11 @@ const MemberProfileBasicForm: React.FC<{
             })),
         managerId: values.managerId || memberAdmin.manager?.id,
         assignedAt: values.managerId ? new Date() : null,
-        tags: values.tags.map((tag: string) => ({
+        tags: values.tags?.map((tag: string) => ({
           name: tag,
           type: '',
         })),
-        memberTags: values.tags.map((tag: string) => ({
+        memberTags: values.tags?.map((tag: string) => ({
           member_id: memberAdmin.id,
           tag_name: tag,
         })),
@@ -134,7 +135,7 @@ const MemberProfileBasicForm: React.FC<{
       <Form.Item label={formatMessage(commonMessages.term.memberCategories)} name="categoryIds">
         <CategorySelector classType="member" />
       </Form.Item>
-      {includes(memberAdmin.role, ['app-owner', 'content-creator']) && (
+      {includes(currentUserRole, ['app-owner', 'content-creator']) && (
         <Form.Item label={formatMessage(commonMessages.term.tags)} name="tags">
           <TagSelector />
         </Form.Item>
@@ -180,8 +181,8 @@ const UPDATE_MEMBER_PROFILE_BASIC = gql`
     $memberId: String!
     $managerId: String
     $assignedAt: timestamptz
-    $tags: [tag_insert_input!]!
-    $memberTags: [member_tag_insert_input!]!
+    $tags: [tag_insert_input!]
+    $memberTags: [member_tag_insert_input!]
     $phones: [member_phone_insert_input!]!
     $memberCategories: [member_category_insert_input!]!
   ) {

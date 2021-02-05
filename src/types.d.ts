@@ -2370,8 +2370,8 @@ export interface UPDATE_MEMBER_PROFILE_BASICVariables {
   memberId: string;
   managerId?: string | null;
   assignedAt?: any | null;
-  tags: tag_insert_input[];
-  memberTags: member_tag_insert_input[];
+  tags?: tag_insert_input[] | null;
+  memberTags?: member_tag_insert_input[] | null;
   phones: member_phone_insert_input[];
   memberCategories: member_category_insert_input[];
 }
@@ -12417,47 +12417,6 @@ export enum currency_update_column {
 }
 
 /**
- * unique or primary key constraints on table "exercise_question_choice"
- */
-export enum exercise_question_choice_constraint {
-  exercise_problem_options_pkey = "exercise_problem_options_pkey",
-}
-
-/**
- * update columns of table "exercise_question_choice"
- */
-export enum exercise_question_choice_update_column {
-  created_at = "created_at",
-  description = "description",
-  exercise_question_id = "exercise_question_id",
-  id = "id",
-  is_correct = "is_correct",
-  position = "position",
-  updated_at = "updated_at",
-}
-
-/**
- * unique or primary key constraints on table "exercise_question"
- */
-export enum exercise_question_constraint {
-  exercise_problem_pkey = "exercise_problem_pkey",
-}
-
-/**
- * update columns of table "exercise_question"
- */
-export enum exercise_question_update_column {
-  answer_description = "answer_description",
-  created_at = "created_at",
-  description = "description",
-  id = "id",
-  points = "points",
-  position = "position",
-  program_content_id = "program_content_id",
-  updated_at = "updated_at",
-}
-
-/**
  * unique or primary key constraints on table "issue"
  */
 export enum issue_constraint {
@@ -17815,114 +17774,6 @@ export interface currency_order_by {
   order_products_aggregate?: order_product_aggregate_order_by | null;
   program_plans_aggregate?: program_plan_aggregate_order_by | null;
   unit?: order_by | null;
-}
-
-/**
- * input type for inserting array relation for remote table "exercise_question"
- */
-export interface exercise_question_arr_rel_insert_input {
-  data: exercise_question_insert_input[];
-  on_conflict?: exercise_question_on_conflict | null;
-}
-
-/**
- * Boolean expression to filter rows from the table "exercise_question". All fields are combined with a logical 'AND'.
- */
-export interface exercise_question_bool_exp {
-  _and?: (exercise_question_bool_exp | null)[] | null;
-  _not?: exercise_question_bool_exp | null;
-  _or?: (exercise_question_bool_exp | null)[] | null;
-  answer_description?: String_comparison_exp | null;
-  created_at?: timestamptz_comparison_exp | null;
-  description?: String_comparison_exp | null;
-  exercise_question_choices?: exercise_question_choice_bool_exp | null;
-  id?: uuid_comparison_exp | null;
-  points?: numeric_comparison_exp | null;
-  position?: Int_comparison_exp | null;
-  program_content?: program_content_bool_exp | null;
-  program_content_id?: uuid_comparison_exp | null;
-  updated_at?: timestamptz_comparison_exp | null;
-}
-
-/**
- * input type for inserting array relation for remote table "exercise_question_choice"
- */
-export interface exercise_question_choice_arr_rel_insert_input {
-  data: exercise_question_choice_insert_input[];
-  on_conflict?: exercise_question_choice_on_conflict | null;
-}
-
-/**
- * Boolean expression to filter rows from the table "exercise_question_choice". All fields are combined with a logical 'AND'.
- */
-export interface exercise_question_choice_bool_exp {
-  _and?: (exercise_question_choice_bool_exp | null)[] | null;
-  _not?: exercise_question_choice_bool_exp | null;
-  _or?: (exercise_question_choice_bool_exp | null)[] | null;
-  created_at?: timestamptz_comparison_exp | null;
-  description?: String_comparison_exp | null;
-  exercise_question?: exercise_question_bool_exp | null;
-  exercise_question_id?: uuid_comparison_exp | null;
-  id?: uuid_comparison_exp | null;
-  is_correct?: Boolean_comparison_exp | null;
-  position?: Int_comparison_exp | null;
-  updated_at?: timestamptz_comparison_exp | null;
-}
-
-/**
- * input type for inserting data into table "exercise_question_choice"
- */
-export interface exercise_question_choice_insert_input {
-  created_at?: any | null;
-  description?: string | null;
-  exercise_question?: exercise_question_obj_rel_insert_input | null;
-  exercise_question_id?: any | null;
-  id?: any | null;
-  is_correct?: boolean | null;
-  position?: number | null;
-  updated_at?: any | null;
-}
-
-/**
- * on conflict condition type for table "exercise_question_choice"
- */
-export interface exercise_question_choice_on_conflict {
-  constraint: exercise_question_choice_constraint;
-  update_columns: exercise_question_choice_update_column[];
-  where?: exercise_question_choice_bool_exp | null;
-}
-
-/**
- * input type for inserting data into table "exercise_question"
- */
-export interface exercise_question_insert_input {
-  answer_description?: string | null;
-  created_at?: any | null;
-  description?: string | null;
-  exercise_question_choices?: exercise_question_choice_arr_rel_insert_input | null;
-  id?: any | null;
-  points?: any | null;
-  position?: number | null;
-  program_content?: program_content_obj_rel_insert_input | null;
-  program_content_id?: any | null;
-  updated_at?: any | null;
-}
-
-/**
- * input type for inserting object relation for remote table "exercise_question"
- */
-export interface exercise_question_obj_rel_insert_input {
-  data: exercise_question_insert_input;
-  on_conflict?: exercise_question_on_conflict | null;
-}
-
-/**
- * on conflict condition type for table "exercise_question"
- */
-export interface exercise_question_on_conflict {
-  constraint: exercise_question_constraint;
-  update_columns: exercise_question_update_column[];
-  where?: exercise_question_bool_exp | null;
 }
 
 /**
@@ -24907,7 +24758,6 @@ export interface program_content_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   duration?: numeric_comparison_exp | null;
   enrollments?: program_content_enrollment_bool_exp | null;
-  exercise_questions?: exercise_question_bool_exp | null;
   id?: uuid_comparison_exp | null;
   is_notify_update?: Boolean_comparison_exp | null;
   list_price?: numeric_comparison_exp | null;
@@ -24980,7 +24830,6 @@ export interface program_content_insert_input {
   content_type?: string | null;
   created_at?: any | null;
   duration?: any | null;
-  exercise_questions?: exercise_question_arr_rel_insert_input | null;
   id?: any | null;
   is_notify_update?: boolean | null;
   list_price?: any | null;
