@@ -181,8 +181,8 @@ const UPDATE_MEMBER_PROFILE_BASIC = gql`
     $memberId: String!
     $managerId: String
     $assignedAt: timestamptz
-    $tags: [tag_insert_input!]
-    $memberTags: [member_tag_insert_input!]
+    $tags: [tag_insert_input!]!
+    $memberTags: [member_tag_insert_input!]!
     $phones: [member_phone_insert_input!]!
     $memberCategories: [member_category_insert_input!]!
   ) {
