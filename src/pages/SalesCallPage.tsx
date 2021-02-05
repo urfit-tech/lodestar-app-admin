@@ -131,11 +131,8 @@ const SalesSummary: React.FC<{
     return <div>目前無待開發名單</div>
   }
 
-  const newAssignedRate =
-    salesSummary && salesSummary.assignedMembersAll
-      ? Math.round((salesSummary.assignedMembersNew * 100) / salesSummary.assignedMembersAll)
-      : 0
-  const oldAssignedRate = salesSummary && salesSummary.assignedMembersAll ? 100 - newAssignedRate : 0
+  const score = 10 + salesSummary.contractsLastMonth * 1 + salesSummary.contractsThisMonth * 2
+  const newAssignedRate = score > 70 ? 70 : score
 
   return (
     <AdminBlock className="p-4">
@@ -154,7 +151,7 @@ const SalesSummary: React.FC<{
         <StyledMetrics className="flex-shrink-0 mr-4">
           本月業績：{currencyFormatter(salesSummary.sharingOfMonth)}
         </StyledMetrics>
-        <StyledMetrics className="flex-shrink-0">本月成交：{salesSummary.contractsOfMonth}</StyledMetrics>
+        <StyledMetrics className="flex-shrink-0">本月成交：{salesSummary.contractsThisMonth}</StyledMetrics>
       </div>
       <Divider />
 
@@ -164,7 +161,7 @@ const SalesSummary: React.FC<{
         <div className="mr-3">今日名單派發：{salesSummary.assignedMembersToday}</div>
         <div className="mr-3 flex-grow-1">
           <span className="mr-2">名單新舊佔比：</span>
-          <Tooltip title={`新 ${newAssignedRate}% / 舊 ${oldAssignedRate}%`}>
+          <Tooltip title={`新 ${newAssignedRate}% / 舊 ${100 - newAssignedRate}%`}>
             <StyledProgress percent={100} showInfo={false} success={{ percent: newAssignedRate }} />
           </Tooltip>
         </div>
@@ -546,8 +543,7 @@ const useSalesSummary = (salesId: string) => {
         $salesId: String!
         $startOfToday: timestamptz!
         $startOfMonth: timestamptz!
-        $startOfTwoWeeks: timestamptz!
-        $startOfThreeMonths: timestamptz!
+        $startOfLastMonth: timestamptz!
       ) {
         member_by_pk(id: $salesId) {
           id
@@ -565,8 +561,19 @@ const useSalesSummary = (salesId: string) => {
           total_price
           ratio
         }
-        member_contract_aggregate(
+        contracts_this_month: member_contract_aggregate(
           where: { author_id: { _eq: $salesId }, agreed_at: { _gte: $startOfMonth }, revoked_at: { _is_null: true } }
+        ) {
+          aggregate {
+            count
+          }
+        }
+        contracts_last_month: member_contract_aggregate(
+          where: {
+            author_id: { _eq: $salesId }
+            agreed_at: { _gte: $startOfLastMonth }
+            revoked_at: { _is_null: true }
+          }
         ) {
           aggregate {
             count
@@ -595,20 +602,6 @@ const useSalesSummary = (salesId: string) => {
             count
           }
         }
-        assigned_members_last_two_weeks: member_aggregate(
-          where: { manager_id: { _eq: $salesId }, assigned_at: { _gte: $startOfTwoWeeks } }
-        ) {
-          aggregate {
-            count
-          }
-        }
-        assigned_members_last_three_months: member_aggregate(
-          where: { manager_id: { _eq: $salesId }, assigned_at: { _gte: $startOfThreeMonths } }
-        ) {
-          aggregate {
-            count
-          }
-        }
       }
     `,
     {
@@ -616,8 +609,7 @@ const useSalesSummary = (salesId: string) => {
         salesId,
         startOfToday: moment().startOf('day').toDate(),
         startOfMonth: moment().startOf('month').toDate(),
-        startOfTwoWeeks: moment().subtract(2, 'weeks').startOf('day').toDate(),
-        startOfThreeMonths: moment().subtract(3, 'months').startOf('day').toDate(),
+        startOfLastMonth: moment().subtract(1, 'month').startOf('month').toDate(),
       },
     },
   )
@@ -636,12 +628,11 @@ const useSalesSummary = (salesId: string) => {
         sharingOfMonth: sum(
           data.order_executor_sharing.map(sharing => Math.floor(sharing.total_price * sharing.ratio)),
         ),
-        contractsOfMonth: data.member_contract_aggregate.aggregate?.count || 0,
+        contractsThisMonth: data.contracts_this_month?.aggregate?.count || 0,
+        contractsLastMonth: data.contracts_last_month?.aggregate?.count || 0,
         totalDuration: data.member_note_aggregate.aggregate?.sum?.duration || 0,
         totalNotes: data.member_note_aggregate.aggregate?.count || 0,
         assignedMembersToday: data.assigned_members_today.aggregate?.count || 0,
-        assignedMembersNew: data.assigned_members_last_two_weeks.aggregate?.count || 0,
-        assignedMembersAll: data.assigned_members_last_three_months.aggregate?.count || 0,
       }
     : null
 
