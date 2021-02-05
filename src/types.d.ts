@@ -2370,8 +2370,8 @@ export interface UPDATE_MEMBER_PROFILE_BASICVariables {
   memberId: string;
   managerId?: string | null;
   assignedAt?: any | null;
-  tags?: tag_insert_input[] | null;
-  memberTags?: member_tag_insert_input[] | null;
+  tags: tag_insert_input[];
+  memberTags: member_tag_insert_input[];
   phones: member_phone_insert_input[];
   memberCategories: member_category_insert_input[];
 }
@@ -7857,12 +7857,6 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_phones {
   phone: string;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_member {
-  __typename: "member";
-  id: string;
-  name: string;
-}
-
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author {
   __typename: "member";
   id: string;
@@ -7896,10 +7890,6 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
   description: string | null;
   created_at: any;
   rejected_at: any | null;
-  /**
-   * An object relationship
-   */
-  member: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_member | null;
   /**
    * An object relationship
    */
