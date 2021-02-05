@@ -38,8 +38,8 @@ const App = () => {
               return (
                 <StyledText className="pt-3">
                   <div>
-                    {firstRejectedMemberNote.memberName} 於{' '}
-                    {moment(firstRejectedMemberNote.rejectedAt).format('YYYY-MM-DD hh:mm')}
+                    {firstRejectedMemberNote.authorName} 於{' '}
+                    {moment(firstRejectedMemberNote.rejectedAt).format('YYYY-MM-DD HH:mm')}
                   </div>
                   <div>更改狀態為拒絕</div>
                 </StyledText>
