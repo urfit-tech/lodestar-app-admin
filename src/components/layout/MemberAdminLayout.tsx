@@ -85,7 +85,15 @@ const MemberAdminLayout: React.FC<{
     types.INSERT_MEMBER_NOTE_REJECTED_ATVariables
   >(gql`
     mutation INSERT_MEMBER_NOTE_REJECTED_AT($memberId: String!, $authorId: String!, $rejectedAt: timestamptz!) {
-      insert_member_note_one(object: { member_id: $memberId, author_id: $authorId, rejected_at: $rejectedAt }) {
+      insert_member_note_one(
+        object: {
+          member_id: $memberId
+          author_id: $authorId
+          rejected_at: $rejectedAt
+          type: "outbound"
+          status: "answered"
+        }
+      ) {
         id
       }
     }
