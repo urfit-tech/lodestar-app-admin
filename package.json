@@ -9,6 +9,7 @@
     "react-scripts": "^4.0.1"
   },
   "scripts": {
+    "postinstall": "yarn upgrade lodestar-app-admin",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "react-app-rewired start",
     "build": "CI=false react-app-rewired build",
