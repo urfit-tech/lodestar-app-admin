@@ -283,12 +283,18 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
           author_id: { _eq: salesId },
           type: { _eq: 'outbound' },
           status: { _eq: 'answered' },
-          rejected_at: { _is_null: true },
         },
         _not: {
-          member_contracts: {
-            _or: [{ agreed_at: { _is_null: false } }, { revoked_at: { _is_null: false } }],
-          },
+          _or: [
+            {
+              member_notes: { rejected_at: { _is_null: false } },
+            },
+            {
+              member_contracts: {
+                _or: [{ agreed_at: { _is_null: false } }, { revoked_at: { _is_null: false } }],
+              },
+            },
+          ],
         },
       }
     : hasTransacted
