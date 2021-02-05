@@ -126,7 +126,7 @@ const MemberAdminLayout: React.FC<{
       </Tabs.TabPane>
     ),
   ]
-  console.log(member.notes)
+
   return (
     <>
       <AdminHeader>
@@ -205,7 +205,7 @@ const MemberAdminLayout: React.FC<{
               member.notes
                 .filter(v => v.rejectedAt)
                 .map(v => ({
-                  memberName: v.memberName,
+                  authorName: v.author.name,
                   rejectedAt: v.rejectedAt as Date,
                 }))
                 .sort((a, b) => a.rejectedAt.getTime() - b.rejectedAt.getTime())[0] || null,

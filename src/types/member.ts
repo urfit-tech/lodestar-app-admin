@@ -105,7 +105,6 @@ export type MemberNoteAdminProps = {
   duration: number | null
   description: string | null
   createdAt: Date
-  memberName: string
   rejectedAt: Date | null
   author: {
     id: string

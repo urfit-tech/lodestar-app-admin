@@ -6,7 +6,7 @@ export type CustomRendererProps = {
   renderMemberAdminLayout?: {
     sider?: (props: {
       firstRejectedMemberNote: {
-        memberName: string
+        authorName: string
         rejectedAt: Date | null
       } | null
       insertMemberRejectedAt: () => void
