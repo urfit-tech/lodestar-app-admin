@@ -93,7 +93,6 @@ export const useMemberAdmin = (memberId: string) => {
           created_at
           logined_at
           assigned_at
-          metadata
           manager {
             id
             email
@@ -119,6 +118,11 @@ export const useMemberAdmin = (memberId: string) => {
             duration
             description
             created_at
+            rejected_at
+            member {
+              id
+              name
+            }
             author {
               id
               role
@@ -236,6 +240,8 @@ export const useMemberAdmin = (memberId: string) => {
             duration: v.duration,
             description: v.description,
             createdAt: new Date(v.created_at),
+            rejectedAt: new Date(v.rejected_at),
+            memberName: v.member?.name || '',
             author: {
               id: v.author.id,
               role: v.author.role,
@@ -271,7 +277,6 @@ export const useMemberAdmin = (memberId: string) => {
           consumption: sum(
             data.member_by_pk.order_logs.map(orderLog => orderLog.order_products_aggregate.aggregate?.sum?.price || 0),
           ),
-          rejectedAt: data.member_by_pk.metadata?.rejectedAt,
           coins: data.member_by_pk.coin_logs_aggregate.aggregate?.sum?.amount || 0,
           categories: data.member_by_pk.member_categories.map(v => ({
             id: v.category.id,

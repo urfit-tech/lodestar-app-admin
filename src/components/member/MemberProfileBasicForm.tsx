@@ -3,6 +3,7 @@ import { Button, Form, Input, message, Skeleton } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import moment from 'moment'
+import { includes } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
@@ -133,9 +134,11 @@ const MemberProfileBasicForm: React.FC<{
       <Form.Item label={formatMessage(commonMessages.term.memberCategories)} name="categoryIds">
         <CategorySelector classType="member" />
       </Form.Item>
-      <Form.Item label={formatMessage(commonMessages.term.tags)} name="tags">
-        <TagSelector />
-      </Form.Item>
+      {includes(memberAdmin.role, ['app-owner', 'content-creator']) && (
+        <Form.Item label={formatMessage(commonMessages.term.tags)} name="tags">
+          <TagSelector />
+        </Form.Item>
+      )}
 
       <Form.Item wrapperCol={{ md: { offset: 4 } }}>
         <Button className="mr-2" onClick={() => form.resetFields()}>

@@ -2090,24 +2090,25 @@ export interface UPDATE_ISSUE_REPLYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: UPDATE_MEMBER_REJECTED_AT
+// GraphQL mutation operation: INSERT_MEMBER_NOTE_REJECTED_AT
 // ====================================================
 
-export interface UPDATE_MEMBER_REJECTED_AT_update_member_by_pk {
-  __typename: "member";
+export interface INSERT_MEMBER_NOTE_REJECTED_AT_insert_member_note_one {
+  __typename: "member_note";
   id: string;
 }
 
-export interface UPDATE_MEMBER_REJECTED_AT {
+export interface INSERT_MEMBER_NOTE_REJECTED_AT {
   /**
-   * update single row of the table: "member"
+   * insert a single row into the table: "member_note"
    */
-  update_member_by_pk: UPDATE_MEMBER_REJECTED_AT_update_member_by_pk | null;
+  insert_member_note_one: INSERT_MEMBER_NOTE_REJECTED_AT_insert_member_note_one | null;
 }
 
-export interface UPDATE_MEMBER_REJECTED_ATVariables {
-  id: string;
-  metadata?: any | null;
+export interface INSERT_MEMBER_NOTE_REJECTED_ATVariables {
+  memberId: string;
+  authorId: string;
+  rejectedAt: any;
 }
 
 /* tslint:disable */
@@ -7856,6 +7857,12 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_phones {
   phone: string;
 }
 
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_member {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author {
   __typename: "member";
   id: string;
@@ -7888,6 +7895,11 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
   duration: number;
   description: string | null;
   created_at: any;
+  rejected_at: any | null;
+  /**
+   * An object relationship
+   */
+  member: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_member | null;
   /**
    * An object relationship
    */
@@ -8024,7 +8036,6 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk {
   created_at: any | null;
   logined_at: any | null;
   assigned_at: any | null;
-  metadata: any;
   /**
    * An object relationship
    */
@@ -13634,9 +13645,10 @@ export enum practice_update_column {
   created_at = "created_at",
   description = "description",
   id = "id",
-  issue_id = "issue_id",
+  is_deleted = "is_deleted",
   member_id = "member_id",
   program_content_id = "program_content_id",
+  reviewed_at = "reviewed_at",
   title = "title",
   updated_at = "updated_at",
 }
@@ -23985,13 +23997,13 @@ export interface practice_bool_exp {
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   id?: uuid_comparison_exp | null;
-  issue?: issue_bool_exp | null;
-  issue_id?: uuid_comparison_exp | null;
+  is_deleted?: Boolean_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   practice_reactions?: practice_reaction_bool_exp | null;
   program_content?: program_content_bool_exp | null;
   program_content_id?: uuid_comparison_exp | null;
+  reviewed_at?: timestamptz_comparison_exp | null;
   title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
@@ -24005,13 +24017,13 @@ export interface practice_insert_input {
   created_at?: any | null;
   description?: string | null;
   id?: any | null;
-  issue?: issue_obj_rel_insert_input | null;
-  issue_id?: any | null;
+  is_deleted?: boolean | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   practice_reactions?: practice_reaction_arr_rel_insert_input | null;
   program_content?: program_content_obj_rel_insert_input | null;
   program_content_id?: any | null;
+  reviewed_at?: any | null;
   title?: string | null;
   updated_at?: any | null;
 }

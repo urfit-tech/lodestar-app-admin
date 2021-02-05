@@ -80,12 +80,12 @@ const MemberAdminLayout: React.FC<{
   const { enabledModules, settings } = useApp()
   const { formatMessage } = useIntl()
   const { renderMemberAdminLayout } = useCustomRenderer()
-  const [insertMemberRejectedAt] = useMutation<
-    types.UPDATE_MEMBER_REJECTED_AT,
-    types.UPDATE_MEMBER_REJECTED_ATVariables
+  const [insertMemberNoteRejectedAt] = useMutation<
+    types.INSERT_MEMBER_NOTE_REJECTED_AT,
+    types.INSERT_MEMBER_NOTE_REJECTED_ATVariables
   >(gql`
-    mutation UPDATE_MEMBER_REJECTED_AT($id: String!, $metadata: jsonb) {
-      update_member_by_pk(pk_columns: { id: $id }, _append: { metadata: $metadata }) {
+    mutation INSERT_MEMBER_NOTE_REJECTED_AT($memberId: String!, $authorId: String!, $rejectedAt: timestamptz!) {
+      insert_member_note_one(object: { member_id: $memberId, author_id: $authorId, rejected_at: $rejectedAt }) {
         id
       }
     }
@@ -200,18 +200,26 @@ const MemberAdminLayout: React.FC<{
 
           <Divider className="my-4" />
 
-          {renderMemberAdminLayout?.sider?.(
-            member.rejectedAt ||
-              (() =>
-                insertMemberRejectedAt({
-                  variables: {
-                    id: currentMemberId || '',
-                    metadata: { rejectedAt: new Date() },
-                  },
-                })
-                  .then(() => onRefetch)
-                  .catch(handleError)),
-          )}
+          {renderMemberAdminLayout?.sider?.({
+            firstRejectedMemberNote:
+              member.notes
+                .filter(v => v.rejectedAt)
+                .map(v => ({
+                  memberName: v.memberName,
+                  rejectedAt: v.rejectedAt as Date,
+                }))
+                .sort((a, b) => a.rejectedAt.getTime() - b.rejectedAt.getTime())[0] || null,
+            insertMemberRejectedAt: () =>
+              insertMemberNoteRejectedAt({
+                variables: {
+                  memberId: member.id,
+                  authorId: currentMemberId || '',
+                  rejectedAt: new Date(),
+                },
+              })
+                .then(() => onRefetch)
+                .catch(handleError),
+          })}
         </StyledSider>
 
         <StyledLayoutContent variant="gray">
