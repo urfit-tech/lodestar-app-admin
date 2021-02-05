@@ -240,7 +240,7 @@ export const useMemberAdmin = (memberId: string) => {
             duration: v.duration,
             description: v.description,
             createdAt: new Date(v.created_at),
-            rejectedAt: new Date(v.rejected_at),
+            rejectedAt: v.rejected_at ? new Date(v.rejected_at) : null,
             memberName: v.member?.name || '',
             author: {
               id: v.author.id,
