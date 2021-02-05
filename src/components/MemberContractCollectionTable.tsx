@@ -1,7 +1,7 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Input, Skeleton, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import { SorterResult, SortOrder } from 'antd/lib/table/interface'
+import { FilterConfirmProps, SorterResult, SortOrder } from 'antd/lib/table/interface'
 import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
 import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
@@ -116,7 +116,7 @@ const MemberContractCollectionTable: React.FC<{
     onSearch,
   }: {
     onReset: (clearFilters: any) => void
-    onSearch: (selectedKeys?: React.ReactText[], confirm?: (param: any) => void) => void
+    onSearch: (selectedKeys?: React.ReactText[], confirm?: (param: FilterConfirmProps) => void) => void
   }): ColumnProps<MemberContractProps> => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => {
       return (

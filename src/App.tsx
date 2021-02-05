@@ -1,10 +1,13 @@
 import Icon from '@ant-design/icons'
-import { Menu } from 'antd'
+import { Button, Menu } from 'antd'
 import Application from 'lodestar-app-admin/src/Application'
 import { StyledMenu } from 'lodestar-app-admin/src/components/admin/AdminMenu'
+import AdminModal from 'lodestar-app-admin/src/components/admin/AdminModal'
 import { ReactComponent as PhoneIcon } from 'lodestar-app-admin/src/images/icon/phone.svg'
+import moment from 'moment'
 import { isEmpty } from 'ramda'
 import React from 'react'
+import styled from 'styled-components'
 import './App.scss'
 import { ReactComponent as UserCopyIcon } from './images/icons/user-copy.svg'
 import MemberCollectionAdminPage from './pages/MemberCollectionAdminPage'
@@ -13,11 +16,66 @@ import MemberNoteAdminPage from './pages/MemberNoteAdminPage'
 import SalesCallPage from './pages/SalesCallPage'
 import TermsPtPage from './pages/TermsPtPage'
 
+const StyledButton = styled(Button)`
+  width: 100%;
+`
+const StyledText = styled.span`
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-align: center;
+  color: var(--gray-dark);
+`
+
 const App = () => {
   return (
     <Application
       appId="xuemi"
       customRender={{
+        renderMemberAdminLayout: {
+          sider: ({ firstRejectedMemberNote, insertMemberRejectedAt }) => {
+            if (firstRejectedMemberNote?.rejectedAt) {
+              return (
+                <StyledText className="pt-3">
+                  <div>
+                    {firstRejectedMemberNote.authorName} 於{' '}
+                    {moment(firstRejectedMemberNote.rejectedAt).format('YYYY-MM-DD HH:mm')}
+                  </div>
+                  <div>更改狀態為拒絕</div>
+                </StyledText>
+              )
+            }
+
+            return (
+              <AdminModal
+                title="要更改狀態為已拒絕嗎？"
+                renderTrigger={({ setVisible }) => (
+                  <StyledButton onClick={() => setVisible(true)}>學員拒絕</StyledButton>
+                )}
+                footer={null}
+                renderFooter={({ setVisible }) => (
+                  <div>
+                    <Button className="mr-2" onClick={() => setVisible(false)}>
+                      返回
+                    </Button>
+                    <Button
+                      className="mr-2"
+                      type="primary"
+                      onClick={() => {
+                        insertMemberRejectedAt()
+                        setVisible(false)
+                      }}
+                    >
+                      更改
+                    </Button>
+                  </div>
+                )}
+              >
+                <div className="mb-3">學員將從「開發中」的名單內抽離。</div>
+              </AdminModal>
+            )
+          },
+        },
         renderAdminMenu: ({ menuItems, onClick }) => {
           const customMenuItems = [
             ...menuItems.slice(0, 14),
