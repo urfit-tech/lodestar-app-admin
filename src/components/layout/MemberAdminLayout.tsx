@@ -219,7 +219,6 @@ const MemberAdminLayout: React.FC<{
               })
                 .then(() => {
                   onRefetch()
-                  alert('bye')
                 })
                 .catch(handleError),
           })}
