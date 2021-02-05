@@ -126,7 +126,7 @@ const MemberAdminLayout: React.FC<{
       </Tabs.TabPane>
     ),
   ]
-
+  console.log(member.notes)
   return (
     <>
       <AdminHeader>
@@ -217,7 +217,10 @@ const MemberAdminLayout: React.FC<{
                   rejectedAt: new Date(),
                 },
               })
-                .then(() => onRefetch)
+                .then(() => {
+                  onRefetch()
+                  alert('bye')
+                })
                 .catch(handleError),
           })}
         </StyledSider>
