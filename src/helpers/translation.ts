@@ -705,6 +705,7 @@ export const practiceMessages = {
   }),
   text: defineMessages({
     searchPractice: { id: 'practice.text.searchPractice', defaultMessage: '搜尋標題或學員名稱' },
+    emptyPractice: { id: 'practice.text.emptyPractice', defaultMessage: '尚未有任何作業' },
   }),
 }
 
