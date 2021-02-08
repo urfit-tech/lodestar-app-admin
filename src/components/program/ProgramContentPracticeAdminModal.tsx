@@ -1,8 +1,10 @@
 import { EditOutlined, MoreOutlined, QuestionCircleFilled } from '@ant-design/icons'
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, Dropdown, Form, Input, InputNumber, Menu, message, Modal, Tooltip } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
 import BraftEditor, { EditorState } from 'braft-editor'
+import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -13,9 +15,9 @@ import { useAuth } from '../../contexts/AuthContext'
 import { handleError, uploadFile } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
-import { useMutateProgramContent } from '../../hooks/program'
 import { ReactComponent as StarGrayIcon } from '../../images/icon/star-gray.svg'
 import { ReactComponent as StarIcon } from '../../images/icon/star.svg'
+import types from '../../types'
 import { ProgramContentBodyType, ProgramContentProps, ProgramProps } from '../../types/program'
 import { StyledTips } from '../admin'
 import FileUploader from '../common/FileUploader'
@@ -80,8 +82,6 @@ const ProgramContentPracticeAdminModal: React.FC<{
   const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
   const { authToken, apiHost } = useAuth()
-  const { updateProgramContentPractice, deleteProgramContent } = useMutateProgramContent()
-  const { deleteAttachments } = useMutateAttachment()
   const [visible, setVisible] = useState(false)
   const [isPublished, setIsPublished] = useState(!!programContent.publishedAt)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -89,7 +89,11 @@ const ProgramContentPracticeAdminModal: React.FC<{
   const [difficulty, setDifficulty] = useState(programContent.metadata?.difficulty || 1)
   const uploadCanceler = useRef<Canceler>()
   const [attachments, setAttachments] = useState<File[]>(programContent.attachments.map(v => v.data) || [])
+
   const uploadAttachments = useUploadAttachments()
+  const { deleteAttachments } = useMutateAttachment()
+  const [updatePractice] = useMutation<types.UPDATE_PRACTICE, types.UPDATE_PRACTICEVariables>(UPDATE_PRACTICE)
+  const [deletePractice] = useMutation<types.DELETE_PRACTICE, types.DELETE_PRACTICEVariables>(DELETE_PRACTICE)
 
   const resetModal = () => {
     setDifficulty(programContent.metadata?.difficulty || 1)
@@ -100,7 +104,7 @@ const ProgramContentPracticeAdminModal: React.FC<{
   const handleSubmit = (values: FieldProps) => {
     setIsSubmitting(true)
     Promise.all([
-      updateProgramContentPractice({
+      updatePractice({
         variables: {
           programContentId: programContent.id,
           publishedAt: program.isSubscription
@@ -250,7 +254,7 @@ const ProgramContentPracticeAdminModal: React.FC<{
                     <Menu.Item
                       onClick={() =>
                         window.confirm(formatMessage(messages.deleteContentWarning)) &&
-                        deleteProgramContent({
+                        deletePractice({
                           variables: { programContentId: programContent.id },
                         }).then(() => onRefetch?.())
                       }
@@ -311,5 +315,49 @@ const ProgramContentPracticeAdminModal: React.FC<{
     </>
   )
 }
+
+const UPDATE_PRACTICE = gql`
+  mutation UPDATE_PRACTICE(
+    $programContentId: uuid!
+    $title: String
+    $description: String
+    $publishedAt: timestamptz
+    $duration: numeric
+    $isNotifyUpdate: Boolean
+    $notifiedAt: timestamptz
+    $metadata: jsonb
+  ) {
+    update_program_content(
+      where: { id: { _eq: $programContentId } }
+      _set: {
+        title: $title
+        duration: $duration
+        published_at: $publishedAt
+        is_notify_update: $isNotifyUpdate
+        notified_at: $notifiedAt
+        metadata: $metadata
+      }
+    ) {
+      affected_rows
+    }
+    update_program_content_body(
+      where: { program_contents: { id: { _eq: $programContentId } } }
+      _set: { description: $description }
+    ) {
+      affected_rows
+    }
+  }
+`
+
+const DELETE_PRACTICE = gql`
+  mutation DELETE_PRACTICE($programContentId: uuid!) {
+    delete_practice(where: { program_content_id: { _eq: $programContentId } }) {
+      affected_rows
+    }
+    delete_program_content_body(where: { program_contents: { id: { _eq: $programContentId } } }) {
+      affected_rows
+    }
+  }
+`
 
 export default ProgramContentPracticeAdminModal
