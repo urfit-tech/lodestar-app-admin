@@ -60,11 +60,13 @@ const ProgramContentAdminItem: React.FC<{
       <div>
         <div className="d-flex">
           <div className="d-flex justify-content-center align-items-center mr-3">
-            {(programContent.programContentType && programContent.programContentType === 'text' && (
+            {programContent.programContentType && programContent.programContentType === 'text' ? (
               <FileTextOutlined style={{ color: '#9B9B9B' }} />
-            )) ||
-              (programContent.programContentType === 'video' && <VideoIcon />) ||
-              (programContent.programContentType === 'practice' && <PracticeIcon />)}
+            ) : programContent.programContentType === 'video' ? (
+              <VideoIcon />
+            ) : programContent.programContentType === 'practice' ? (
+              <PracticeIcon />
+            ) : null}
           </div>
           <StyledTitle>{programContent.title}</StyledTitle>
         </div>
@@ -134,7 +136,6 @@ const ProgramContentAdminItem: React.FC<{
           />
         ) : programContent.programContentType === 'practice' ? (
           <ProgramContentPracticeAdminModal
-            program={program}
             programContent={programContent}
             programContentBody={programContentBody}
             onRefetch={() => {

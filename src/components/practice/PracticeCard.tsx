@@ -169,144 +169,142 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
   }, [currentMemberId, reactedMemberIds])
 
   return (
-    <>
-      <StyledAdminCard className="mb-3" {...props}>
-        <Responsive.Default>
+    <StyledAdminCard className="mb-3" {...props}>
+      <Responsive.Default>
+        <div
+          style={{ cursor: 'pointer' }}
+          onClick={() => {
+            window.open(practiceUrl, '_blank')
+          }}
+        >
+          <StyledCover src={coverUrl || EmptyCover} />
+
+          <StyledTitle ellipsis={{ rows: 2 }}>{title}</StyledTitle>
+          <StyledCreatedAt>
+            <CalendarOutlined className="mr-2" />
+            <span>{dateFormatter(createdAt, 'YYYY-MM-DD')}</span>
+          </StyledCreatedAt>
+        </div>
+
+        <div className="d-flex justify-content-between algin-items-center mb-3">
+          <div className="d-flex justify-content-center algin-items-center">
+            {<AvatarImage className="mr-2" src={memberUrl || DefaultAvatar} size="28px" />}
+            <StyledName>{memberName}</StyledName>
+          </div>
+          <div className="d-flex justify-content-center algin-items-center">
+            <StyledCommentIcon>
+              <CommentAltLinesIcon className="mr-2" />
+              <div>{practiceAmount && practiceAmount}</div>
+            </StyledCommentIcon>
+            <StyledHeartIcon
+              reacted={reacted}
+              onClick={() => {
+                toggleReaction(reacted)
+              }}
+            >
+              {reacted ? <HeartFilled className="mr-2" /> : <HeartOutlined className="mr-2" />}
+              <div>{reactedMemberIds.length}</div>
+            </StyledHeartIcon>
+          </div>
+        </div>
+
+        {currentUserRole === 'app-owner' ||
+        roles
+          .filter(role => role?.id === currentMemberId)
+          .some(role => role.name === 'instructor' || role.name === 'assistant') ? (
+          <StyledCheckboxWrapper>
+            <Checkbox
+              checked={reviewed}
+              onChange={e => {
+                const updatedReviewed = e.target.checked
+                updatedPracticeStatus({
+                  variables: {
+                    practiceId: id,
+                    reviewedAt: updatedReviewed ? new Date() : null,
+                  },
+                }).then(() => {
+                  setReviewed(updatedReviewed)
+                  onRefetch?.()
+                })
+              }}
+            >
+              {isReviewed
+                ? formatMessage(practiceMessages.status.reviewed)
+                : formatMessage(practiceMessages.status.unreviewed)}
+            </Checkbox>
+          </StyledCheckboxWrapper>
+        ) : null}
+      </Responsive.Default>
+
+      <Responsive.Desktop>
+        <div className="d-flex col-12">
           <div
-            style={{ cursor: 'pointer' }}
+            className="d-flex col-9 p-0"
             onClick={() => {
               window.open(practiceUrl, '_blank')
             }}
+            style={{ cursor: 'pointer' }}
           >
             <StyledCover src={coverUrl || EmptyCover} />
+            <div className="col-5 p-0">
+              <StyledDesktopTitle>{title}</StyledDesktopTitle>
+              <StyledCreatedAt>
+                <CalendarOutlined className="mr-2" />
+                <span>{dateFormatter(createdAt, 'YYYY-MM-DD')}</span>
+              </StyledCreatedAt>
+            </div>
 
-            <StyledTitle ellipsis={{ rows: 2 }}>{title}</StyledTitle>
-            <StyledCreatedAt>
-              <CalendarOutlined className="mr-2" />
-              <span>{dateFormatter(createdAt, 'YYYY-MM-DD')}</span>
-            </StyledCreatedAt>
-          </div>
-
-          <div className="d-flex justify-content-between algin-items-center mb-3">
-            <div className="d-flex justify-content-center algin-items-center">
+            <div className="d-flex algin-items-center col-2 m-auto p-0" title={memberName}>
               {<AvatarImage className="mr-2" src={memberUrl || DefaultAvatar} size="28px" />}
               <StyledName>{memberName}</StyledName>
             </div>
-            <div className="d-flex justify-content-center algin-items-center">
-              <StyledCommentIcon>
-                <CommentAltLinesIcon className="mr-2" />
-                <div>{practiceAmount && practiceAmount}</div>
-              </StyledCommentIcon>
-              <StyledHeartIcon
-                reacted={reacted}
-                onClick={() => {
-                  toggleReaction(reacted)
-                }}
-              >
-                {reacted ? <HeartFilled className="mr-2" /> : <HeartOutlined className="mr-2" />}
-                <div>{reactedMemberIds.length}</div>
-              </StyledHeartIcon>
-            </div>
           </div>
+          <div className="d-flex col-3">
+            <StyledCommentIcon>
+              <CommentAltLinesIcon className="mr-2" />
+              <div>{practiceAmount && practiceAmount}</div>
+            </StyledCommentIcon>
 
-          {currentUserRole === 'app-owner' ||
-          roles
-            .filter(role => role?.id === currentMemberId)
-            .some(role => role.name === 'instructor' || role.name === 'assistant') ? (
-            <StyledCheckboxWrapper>
-              <Checkbox
-                checked={reviewed}
-                onChange={e => {
-                  const updatedReviewed = e.target.checked
-                  updatedPracticeStatus({
-                    variables: {
-                      practiceId: id,
-                      reviewedAt: updatedReviewed ? new Date() : null,
-                    },
-                  }).then(() => {
-                    setReviewed(updatedReviewed)
-                    onRefetch?.()
-                  })
-                }}
-              >
-                {isReviewed
-                  ? formatMessage(practiceMessages.status.reviewed)
-                  : formatMessage(practiceMessages.status.unreviewed)}
-              </Checkbox>
-            </StyledCheckboxWrapper>
-          ) : null}
-        </Responsive.Default>
-
-        <Responsive.Desktop>
-          <div className="d-flex col-12">
-            <div
-              className="d-flex col-9 p-0"
-              onClick={() => {
-                window.open(practiceUrl, '_blank')
+            <StyledHeartIcon
+              reacted={reacted}
+              onClick={e => {
+                toggleReaction(reacted)
               }}
-              style={{ cursor: 'pointer' }}
             >
-              <StyledCover src={coverUrl || EmptyCover} />
-              <div className="col-5 p-0">
-                <StyledDesktopTitle>{title}</StyledDesktopTitle>
-                <StyledCreatedAt>
-                  <CalendarOutlined className="mr-2" />
-                  <span>{dateFormatter(createdAt, 'YYYY-MM-DD')}</span>
-                </StyledCreatedAt>
-              </div>
+              {reacted ? <HeartFilled className="mr-2" /> : <HeartOutlined className="mr-2" />}
+              <div>{reactedMemberIds.length}</div>
+            </StyledHeartIcon>
 
-              <div className="d-flex algin-items-center col-2 m-auto p-0" title={memberName}>
-                {<AvatarImage className="mr-2" src={memberUrl || DefaultAvatar} size="28px" />}
-                <StyledName>{memberName}</StyledName>
-              </div>
-            </div>
-            <div className="d-flex col-3">
-              <StyledCommentIcon>
-                <CommentAltLinesIcon className="mr-2" />
-                <div>{practiceAmount && practiceAmount}</div>
-              </StyledCommentIcon>
-
-              <StyledHeartIcon
-                reacted={reacted}
-                onClick={e => {
-                  toggleReaction(reacted)
-                }}
-              >
-                {reacted ? <HeartFilled className="mr-2" /> : <HeartOutlined className="mr-2" />}
-                <div>{reactedMemberIds.length}</div>
-              </StyledHeartIcon>
-
-              {currentUserRole === 'app-owner' ||
-              roles
-                .filter(role => role?.id === currentMemberId)
-                .some(role => role.name === 'instructor' || role.name === 'assistant') ? (
-                <StyledCheckboxWrapper className="d-flex m-auto">
-                  <Checkbox
-                    checked={reviewed}
-                    onChange={e => {
-                      const updatedReviewed = e.target.checked
-                      updatedPracticeStatus({
-                        variables: {
-                          practiceId: id,
-                          reviewedAt: updatedReviewed ? new Date() : null,
-                        },
-                      }).then(() => {
-                        setReviewed(updatedReviewed)
-                        onRefetch?.()
-                      })
-                    }}
-                  >
-                    {isReviewed
-                      ? formatMessage(practiceMessages.status.reviewed)
-                      : formatMessage(practiceMessages.status.unreviewed)}
-                  </Checkbox>
-                </StyledCheckboxWrapper>
-              ) : null}
-            </div>
+            {currentUserRole === 'app-owner' ||
+            roles
+              .filter(role => role?.id === currentMemberId)
+              .some(role => role.name === 'instructor' || role.name === 'assistant') ? (
+              <StyledCheckboxWrapper className="d-flex m-auto">
+                <Checkbox
+                  checked={reviewed}
+                  onChange={e => {
+                    const updatedReviewed = e.target.checked
+                    updatedPracticeStatus({
+                      variables: {
+                        practiceId: id,
+                        reviewedAt: updatedReviewed ? new Date() : null,
+                      },
+                    }).then(() => {
+                      setReviewed(updatedReviewed)
+                      onRefetch?.()
+                    })
+                  }}
+                >
+                  {isReviewed
+                    ? formatMessage(practiceMessages.status.reviewed)
+                    : formatMessage(practiceMessages.status.unreviewed)}
+                </Checkbox>
+              </StyledCheckboxWrapper>
+            ) : null}
           </div>
-        </Responsive.Desktop>
-      </StyledAdminCard>
-    </>
+        </div>
+      </Responsive.Desktop>
+    </StyledAdminCard>
   )
 }
 

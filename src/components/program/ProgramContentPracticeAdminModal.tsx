@@ -5,22 +5,20 @@ import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
-import moment, { Moment } from 'moment'
+import { Moment } from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import ReactStars from 'react-star-rating-component'
 import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { handleError, uploadFile } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
-import { ReactComponent as StarGrayIcon } from '../../images/icon/star-gray.svg'
-import { ReactComponent as StarIcon } from '../../images/icon/star.svg'
 import types from '../../types'
-import { ProgramContentBodyType, ProgramContentProps, ProgramProps } from '../../types/program'
+import { ProgramContentBodyType, ProgramContentProps } from '../../types/program'
 import { StyledTips } from '../admin'
 import FileUploader from '../common/FileUploader'
+import RatingInput from '../common/RatingInput'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 
 const messages = defineMessages({
@@ -50,14 +48,7 @@ const StyledLabel = styled.div`
   letter-spacing: 0.2px;
   color: var(--gray-darker);
 `
-const ReactStarsWrapper = styled(ReactStars)`
-  margin-bottom: 24px;
-  svg {
-    width: 24px;
-    height: 24px;
-    margin-right: 4px;
-  }
-`
+
 const StyledPracticeFileSizeTips = styled(StyledTips)`
   font-size: 14px;
   letter-spacing: 0.8px;
@@ -73,33 +64,55 @@ type FieldProps = {
 }
 
 const ProgramContentPracticeAdminModal: React.FC<{
-  program: ProgramProps
   programContent: ProgramContentProps
   programContentBody: ProgramContentBodyType
   onRefetch?: () => void
-}> = ({ program, programContent, programContentBody, onRefetch }) => {
+}> = ({ programContent, programContentBody, onRefetch }) => {
+  const [visible, setVisible] = useState(false)
+
+  return (
+    <>
+      <EditOutlined onClick={() => setVisible(true)} />
+
+      <Modal
+        width="70vw"
+        footer={null}
+        maskStyle={{ background: 'rgba(255, 255, 255, 0.8)' }}
+        maskClosable={false}
+        closable={false}
+        visible={visible}
+      >
+        <PracticeForm
+          programContent={programContent}
+          programContentBody={programContentBody}
+          onRefetch={() => onRefetch?.()}
+          onCancel={() => setVisible(false)}
+        />
+      </Modal>
+    </>
+  )
+}
+
+const PracticeForm: React.FC<{
+  programContent: ProgramContentProps
+  programContentBody: ProgramContentBodyType
+  onRefetch?: () => void
+  onCancel?: () => void
+}> = ({ programContent, programContentBody, onRefetch, onCancel }) => {
   const { formatMessage } = useIntl()
-  const [form] = useForm<FieldProps>()
   const { id: appId } = useApp()
   const { authToken, apiHost } = useAuth()
-  const [visible, setVisible] = useState(false)
-  const [isPublished, setIsPublished] = useState(!!programContent.publishedAt)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isPracticePrivate, setIsPracticePrivate] = useState(!!programContent.metadata?.private)
+  const [form] = useForm<FieldProps>()
   const [difficulty, setDifficulty] = useState(programContent.metadata?.difficulty || 1)
   const uploadCanceler = useRef<Canceler>()
   const [attachments, setAttachments] = useState<File[]>(programContent.attachments.map(v => v.data) || [])
 
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isPublished, setIsPublished] = useState(!!programContent.publishedAt)
   const uploadAttachments = useUploadAttachments()
   const { deleteAttachments } = useMutateAttachment()
   const [updatePractice] = useMutation<types.UPDATE_PRACTICE, types.UPDATE_PRACTICEVariables>(UPDATE_PRACTICE)
   const [deletePractice] = useMutation<types.DELETE_PRACTICE, types.DELETE_PRACTICEVariables>(DELETE_PRACTICE)
-
-  const resetModal = () => {
-    setDifficulty(programContent.metadata?.difficulty || 1)
-    setAttachments(programContent.attachments.map(v => v.data) || [])
-    form.resetFields()
-  }
 
   const handleSubmit = (values: FieldProps) => {
     setIsSubmitting(true)
@@ -107,26 +120,19 @@ const ProgramContentPracticeAdminModal: React.FC<{
       updatePractice({
         variables: {
           programContentId: programContent.id,
-          publishedAt: program.isSubscription
-            ? values.publishedAt
-              ? values.publishedAt || new Date()
-              : null
-            : isPublished
-            ? new Date()
-            : null,
+          publishedAt: values.publishedAt ? new Date() : null,
           title: values.title,
           description: values.description?.getCurrentContent().hasText() ? values.description.toRAW() : null,
           duration: values.estimatedTime,
           isNotifyUpdate: values.isNotifyUpdate,
           notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
-          metadata: { ...programContent.metadata, difficulty: difficulty, private: isPracticePrivate },
+          metadata: { ...programContent.metadata, difficulty: difficulty, private: values.isPracticePrivate },
         },
       }),
     ])
       .then(async () => {
         try {
           const existedFiles: File[] = programContentBody.materials.map(material => material.data).flat()
-
           for (const file of attachments) {
             if (
               existedFiles.some(
@@ -170,9 +176,8 @@ const ProgramContentPracticeAdminModal: React.FC<{
         }
       })
       .then(() => {
-        setVisible(false)
+        onCancel?.()
         onRefetch?.()
-        resetModal()
       })
       .catch(handleError)
       .finally(() => setIsSubmitting(false))
@@ -183,139 +188,120 @@ const ProgramContentPracticeAdminModal: React.FC<{
   }, [programContent.publishedAt])
 
   return (
-    <>
-      <EditOutlined onClick={() => setVisible(true)} />
-
-      <Modal
-        width="70vw"
-        footer={null}
-        maskStyle={{ background: 'rgba(255, 255, 255, 0.8)' }}
-        maskClosable={false}
-        closable={false}
-        visible={visible}
-      >
-        <Form
-          form={form}
-          layout="vertical"
-          initialValues={{
-            publishedAt: programContent.publishedAt ? moment(programContent.publishedAt) : moment().startOf('minute'),
-            isPracticePrivate: isPracticePrivate,
-            isNotifyUpdate: programContent.isNotifyUpdate,
-            title: programContent.title,
-            estimatedTime: programContent.duration,
-            description: BraftEditor.createEditorState(programContentBody.description),
-          }}
-          onFinish={handleSubmit}
-        >
-          <div className="d-flex align-items-center justify-content-between mb-4">
-            <div className="d-flex align-items-center">
-              <Checkbox checked={isPublished} onChange={e => setIsPublished(e.target.checked)} className="mr-3">
-                {formatMessage(messages.show)}
-              </Checkbox>
-
-              <Checkbox
-                checked={isPracticePrivate}
-                onChange={e => setIsPracticePrivate(e.target.checked)}
-                className="mr-3"
-              >
-                {formatMessage(messages.displayPrivate)}
-                <Tooltip
-                  placement="bottom"
-                  title={<StyledTips>{formatMessage(programMessages.text.practicePrivateTips)}</StyledTips>}
-                >
-                  <QuestionCircleFilled className="ml-1" />
-                </Tooltip>
-              </Checkbox>
-
-              <Form.Item name="isNotifyUpdate" valuePropName="checked" className="mb-0">
-                <Checkbox>{formatMessage(messages.notifyUpdate)}</Checkbox>
-              </Form.Item>
-            </div>
-
-            <div>
-              <Button
-                disabled={isSubmitting}
-                onClick={() => {
-                  setVisible(false)
-                  resetModal()
-                }}
-                className="mr-2"
-              >
-                {formatMessage(commonMessages.ui.cancel)}
-              </Button>
-              <Button type="primary" htmlType="submit" loading={isSubmitting} className="mr-2">
-                {formatMessage(commonMessages.ui.save)}
-              </Button>
-              <Dropdown
-                trigger={['click']}
-                placement="bottomRight"
-                overlay={
-                  <Menu>
-                    <Menu.Item
-                      onClick={() =>
-                        window.confirm(formatMessage(messages.deleteContentWarning)) &&
-                        deletePractice({
-                          variables: { programContentId: programContent.id },
-                        }).then(() => onRefetch?.())
-                      }
-                    >
-                      {formatMessage(messages.deleteContent)}
-                    </Menu.Item>
-                  </Menu>
-                }
-              >
-                <MoreOutlined />
-              </Dropdown>
-            </div>
-          </div>
-
-          <StyledTitle className="mb-3">{formatMessage(programMessages.label.practice)}</StyledTitle>
-
-          <Form.Item label={formatMessage(messages.contentTitle)} name="title">
-            <Input />
+    <Form
+      form={form}
+      layout="vertical"
+      initialValues={{
+        publishedAt: isPublished,
+        isPracticePrivate: programContent.metadata && programContent.metadata.private,
+        isNotifyUpdate: programContent.isNotifyUpdate,
+        title: programContent.title,
+        estimatedTime: programContent.duration,
+        description: BraftEditor.createEditorState(programContentBody.description),
+      }}
+      onFinish={handleSubmit}
+      onValuesChange={(_, values) => {
+        setIsPublished(!!values.publishedAt)
+      }}
+    >
+      <div className="d-flex align-items-center justify-content-between mb-4">
+        <div className="d-flex align-items-center">
+          <Form.Item name="publishedAt" valuePropName="checked" className="mr-3">
+            <Checkbox>{formatMessage(messages.show)}</Checkbox>
           </Form.Item>
 
-          <div>
-            <StyledLabel className="mb-2">{formatMessage(messages.difficulty)}</StyledLabel>
-            <ReactStarsWrapper
-              name="difficulty"
-              value={difficulty}
-              onStarClick={(rating: React.SetStateAction<number>) => setDifficulty(rating)}
-              renderStarIcon={(nextValue, prevValue) => (nextValue > prevValue ? <StarGrayIcon /> : <StarIcon />)}
-            />
-          </div>
-          <Form.Item label={formatMessage(messages.estimatedTime)} name="estimatedTime">
-            <InputNumber min={0} />
+          <Form.Item name="isPracticePrivate" valuePropName="checked" className="mr-3">
+            <Checkbox>
+              {formatMessage(messages.displayPrivate)}
+              <Tooltip
+                placement="bottom"
+                title={<StyledTips>{formatMessage(programMessages.text.practicePrivateTips)}</StyledTips>}
+              >
+                <QuestionCircleFilled className="ml-1" />
+              </Tooltip>
+            </Checkbox>
           </Form.Item>
-          <Form.Item
-            label={
-              <span>
-                {formatMessage(messages.uploadExample)}
-                <Tooltip
-                  placement="top"
-                  title={
-                    <StyledPracticeFileSizeTips>
-                      {formatMessage(programMessages.text.practiceFileSizeTips)}
-                    </StyledPracticeFileSizeTips>
+
+          <Form.Item name="isNotifyUpdate" valuePropName="checked">
+            <Checkbox>{formatMessage(messages.notifyUpdate)}</Checkbox>
+          </Form.Item>
+        </div>
+
+        <div>
+          <Button
+            disabled={isSubmitting}
+            onClick={() => {
+              onCancel?.()
+            }}
+            className="mr-2"
+          >
+            {formatMessage(commonMessages.ui.cancel)}
+          </Button>
+          <Button type="primary" htmlType="submit" loading={isSubmitting} className="mr-2">
+            {formatMessage(commonMessages.ui.save)}
+          </Button>
+          <Dropdown
+            trigger={['click']}
+            placement="bottomRight"
+            overlay={
+              <Menu>
+                <Menu.Item
+                  onClick={() =>
+                    window.confirm(formatMessage(messages.deleteContentWarning)) &&
+                    deletePractice({
+                      variables: { programContentId: programContent.id },
+                    }).then(() => onRefetch?.())
                   }
                 >
-                  <QuestionCircleFilled className="ml-1" />
-                </Tooltip>
-              </span>
+                  {formatMessage(messages.deleteContent)}
+                </Menu.Item>
+              </Menu>
             }
-            name="practiceFiles"
           >
-            <FileUploader multiple showUploadList fileList={attachments} onChange={files => setAttachments(files)} />
-          </Form.Item>
-          <Form.Item label={<span>{formatMessage(messages.description)}</span>} name="description">
-            <AdminBraftEditor />
-          </Form.Item>
-        </Form>
-      </Modal>
-    </>
+            <MoreOutlined />
+          </Dropdown>
+        </div>
+      </div>
+
+      <StyledTitle className="mb-3">{formatMessage(programMessages.label.practice)}</StyledTitle>
+
+      <Form.Item label={formatMessage(messages.contentTitle)} name="title">
+        <Input />
+      </Form.Item>
+
+      <div>
+        <StyledLabel className="mb-2">{formatMessage(messages.difficulty)}</StyledLabel>
+        <RatingInput size="24px" name="difficulty" value={difficulty} setValue={setDifficulty} />
+      </div>
+      <Form.Item label={formatMessage(messages.estimatedTime)} name="estimatedTime">
+        <InputNumber min={0} />
+      </Form.Item>
+      <Form.Item
+        label={
+          <span>
+            {formatMessage(messages.uploadExample)}
+            <Tooltip
+              placement="top"
+              title={
+                <StyledPracticeFileSizeTips>
+                  {formatMessage(programMessages.text.practiceFileSizeTips)}
+                </StyledPracticeFileSizeTips>
+              }
+            >
+              <QuestionCircleFilled className="ml-1" />
+            </Tooltip>
+          </span>
+        }
+        name="practiceFiles"
+      >
+        <FileUploader multiple showUploadList fileList={attachments} onChange={files => setAttachments(files)} />
+      </Form.Item>
+      <Form.Item label={<span>{formatMessage(messages.description)}</span>} name="description">
+        <AdminBraftEditor />
+      </Form.Item>
+    </Form>
   )
 }
-
 const UPDATE_PRACTICE = gql`
   mutation UPDATE_PRACTICE(
     $programContentId: uuid!
