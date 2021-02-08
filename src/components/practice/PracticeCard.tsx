@@ -269,7 +269,6 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
               <StyledHeartIcon
                 reacted={reacted}
                 onClick={e => {
-                  e.stopPropagation()
                   toggleReaction(reacted)
                 }}
               >
@@ -285,7 +284,6 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
                   <Checkbox
                     checked={reviewed}
                     onChange={e => {
-                      e.stopPropagation()
                       const updatedReviewed = e.target.checked
                       updatedPracticeStatus({
                         variables: {
