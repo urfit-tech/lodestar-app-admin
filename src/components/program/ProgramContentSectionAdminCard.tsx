@@ -21,7 +21,6 @@ const messages = defineMessages({
   createContent: { id: 'program.ui.createContent', defaultMessage: '新增內容' },
   programContent: { id: 'program.ui.programContent', defaultMessage: '課程內容' },
   programPractice: { id: 'program.ui.practiceContent', defaultMessage: '作業練習' },
-  programExercise: { id: 'program.ui.programExercise', defaultMessage: '隨堂測驗' },
 })
 
 const StyledMenuItem = styled(Menu.Item)`
@@ -145,7 +144,6 @@ const ProgramContentSectionAdminCard: React.FC<{
                 {formatMessage(messages.programPractice)}
               </StyledMenuItem>
             )}
-            {enabledModules.exercise && <StyledMenuItem>{formatMessage(messages.programExercise)}</StyledMenuItem>}
           </Menu>
         }
         placement="topCenter"
