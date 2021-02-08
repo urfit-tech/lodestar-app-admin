@@ -139,7 +139,7 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
   const [deletePracticeReaction] = useMutation<types.DELETE_PRACTICE_REACTION, types.DELETE_PRACTICE_REACTIONVariables>(
     DELETE_PRACTICE_REACTION,
   )
-  const { loading, error, practiceAmount, refetch } = usePracticeIssueAmount(id)
+  const { practiceAmount } = usePracticeIssueAmount(id)
 
   const practiceUrl = `https://${settings['host']}/practices/${id}`
 
