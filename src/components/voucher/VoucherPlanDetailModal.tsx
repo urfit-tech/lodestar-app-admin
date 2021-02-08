@@ -5,7 +5,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { downloadCSV, toCSV } from '../../helpers'
 import { commonMessages, promotionMessages } from '../../helpers/translation'
-import { VoucherCodeProps, VoucherProps } from '../../types/checkout'
+import { useVoucherCode } from '../../hooks/checkout'
 
 const StyledTriggerText = styled.span`
   color: ${props => props.theme['@primary-color']};
@@ -24,12 +24,29 @@ const StyledVoucherCode = styled.div<{ isFinished: boolean }>`
 `
 
 type VoucherPlanDetailModalProps = {
+  id: string
   title: string
-  voucherCodes: (VoucherCodeProps & { vouchers: (VoucherProps & { member: { email: string } })[] })[]
 }
-const VoucherPlanDetailModal: React.FC<VoucherPlanDetailModalProps> = ({ title, voucherCodes }) => {
+const VoucherPlanDetailModal: React.FC<VoucherPlanDetailModalProps> = ({ id, title }) => {
   const { formatMessage } = useIntl()
   const [visible, setVisible] = useState(false)
+
+  return (
+    <>
+      <StyledTriggerText className="mr-4" onClick={() => setVisible(true)}>
+        {formatMessage(commonMessages.ui.detail)}
+      </StyledTriggerText>
+
+      <Modal centered destroyOnClose footer={null} visible={visible} onCancel={() => setVisible(false)}>
+        <VoucherPlanDetailBlock title={title} voucherPlanId={id} />
+      </Modal>
+    </>
+  )
+}
+
+const VoucherPlanDetailBlock: React.FC<{ title: string; voucherPlanId: string }> = ({ title, voucherPlanId }) => {
+  const { formatMessage } = useIntl()
+  const { loadingVoucherCodes, errorVoucherCodes, voucherCodes } = useVoucherCode(voucherPlanId)
   const [activeKey, setActiveKey] = useState('codes')
 
   const exportCodes = () => {
@@ -39,7 +56,7 @@ const VoucherPlanDetailModal: React.FC<VoucherPlanDetailModalProps> = ({ title, 
 
     voucherCodes.forEach(voucherCode => {
       voucherCode.vouchers.forEach(voucher => {
-        data.push([voucherCode.code, voucher.used ? 'v' : '', voucher.member.email || ''])
+        data.push([voucherCode.code, voucher.used ? 'v' : '', voucher.memberEmail])
       })
 
       if (voucherCode.remaining) {
@@ -54,36 +71,37 @@ const VoucherPlanDetailModal: React.FC<VoucherPlanDetailModalProps> = ({ title, 
 
   return (
     <>
-      <StyledTriggerText className="mr-4" onClick={() => setVisible(true)}>
-        {formatMessage(commonMessages.ui.detail)}
-      </StyledTriggerText>
+      <StyledTitle className="mb-4">{title}</StyledTitle>
 
-      <Modal centered destroyOnClose footer={null} visible={visible} onCancel={() => setVisible(false)}>
-        <StyledTitle className="mb-4">{title}</StyledTitle>
-        <Button type="primary" icon={<DownloadOutlined />} className="mb-4" onClick={() => exportCodes()}>
-          {formatMessage(promotionMessages.ui.exportCodes)}
-        </Button>
+      <Button
+        type="primary"
+        icon={<DownloadOutlined />}
+        className="mb-4"
+        onClick={exportCodes}
+        loading={!!(loadingVoucherCodes || errorVoucherCodes)}
+      >
+        {formatMessage(promotionMessages.ui.exportCodes)}
+      </Button>
 
-        <Tabs activeKey={activeKey} onChange={key => setActiveKey(key)}>
-          <Tabs.TabPane key="codes" tab={formatMessage(promotionMessages.term.voucherCode)} className="pt-4">
-            {voucherCodes.map(voucherCode => (
-              <StyledVoucherCode
-                key={voucherCode.code}
-                className="d-flex justify-content-between mb-2"
-                isFinished={voucherCode.used === voucherCode.count}
-              >
-                <code>{voucherCode.code}</code>
-                <div>
-                  {formatMessage(promotionMessages.text.exchangedCount, {
-                    exchanged: voucherCode.used,
-                    total: voucherCode.count,
-                  })}
-                </div>
-              </StyledVoucherCode>
-            ))}
-          </Tabs.TabPane>
-        </Tabs>
-      </Modal>
+      <Tabs activeKey={activeKey} onChange={key => setActiveKey(key)}>
+        <Tabs.TabPane key="codes" tab={formatMessage(promotionMessages.term.voucherCode)} className="pt-4">
+          {voucherCodes.map(voucherCode => (
+            <StyledVoucherCode
+              key={voucherCode.code}
+              className="d-flex justify-content-between mb-2"
+              isFinished={voucherCode.used === voucherCode.count}
+            >
+              <code>{voucherCode.code}</code>
+              <div>
+                {formatMessage(promotionMessages.text.exchangedCount, {
+                  exchanged: voucherCode.count - voucherCode.remaining,
+                  total: voucherCode.count,
+                })}
+              </div>
+            </StyledVoucherCode>
+          ))}
+        </Tabs.TabPane>
+      </Tabs>
     </>
   )
 }

@@ -169,9 +169,7 @@ export const useCouponCodeCollection = (couponPlanId: string) => {
 
 export const useVoucherPlanCollection = () => {
   const { loading, error, data, refetch } = useQuery<types.GET_VOUCHER_PLAN_COLLECTION>(GET_VOUCHER_PLAN_COLLECTION)
-  const voucherPlanCollection: (VoucherPlanProps & {
-    voucherCodes: (VoucherCodeProps & { vouchers: (VoucherProps & { member: { email: string } })[] })[]
-  })[] =
+  const voucherPlanCollection: VoucherPlanProps[] =
     loading || error || !data
       ? []
       : reverse(data.voucher_plan).map(voucherPlan => {
@@ -194,19 +192,6 @@ export const useVoucherPlanCollection = () => {
             count: count,
             remaining,
             productIds: voucherPlan.voucher_plan_products.map(product => product.product_id),
-            voucherCodes: voucherPlan.voucher_codes.map(voucherCode => ({
-              id: voucherCode.id,
-              code: voucherCode.code,
-              count: voucherCode.count,
-              remaining: voucherCode.remaining,
-              vouchers: voucherCode.vouchers.map(voucher => ({
-                id: voucher.id,
-                member: {
-                  email: voucher.member?.email || '',
-                },
-                used: !!voucher.status?.used,
-              })),
-            })),
           }
         })
 
@@ -215,6 +200,37 @@ export const useVoucherPlanCollection = () => {
     error,
     voucherPlanCollection,
     refetch,
+  }
+}
+
+export const useVoucherCode = (voucherPlanId: string) => {
+  const { loading, error, data, refetch } = useQuery<types.GET_VOUCHER_CODE, types.GET_VOUCHER_CODEVariables>(
+    GET_VOUCHER_CODE,
+    {
+      variables: {
+        voucherPlanId,
+      },
+    },
+  )
+
+  const voucherCodes: (VoucherCodeProps & { vouchers: (VoucherProps & { memberEmail: string })[] })[] =
+    data?.voucher_code.map(voucherCode => ({
+      id: voucherCode.id,
+      code: voucherCode.code,
+      count: voucherCode.count,
+      remaining: voucherCode.remaining,
+      vouchers: voucherCode.vouchers.map(voucher => ({
+        id: voucher.id,
+        memberEmail: voucher.member?.email || '',
+        used: !!voucher.status?.used,
+      })),
+    })) || []
+
+  return {
+    loadingVoucherCodes: loading,
+    errorVoucherCodes: error,
+    voucherCodes,
+    refetchVoucherCodes: refetch,
   }
 }
 
@@ -227,22 +243,7 @@ const GET_VOUCHER_PLAN_COLLECTION = gql`
       started_at
       ended_at
       product_quantity_limit
-      voucher_codes {
-        id
-        code
-        count
-        remaining
-        vouchers {
-          id
-          member {
-            id
-            email
-          }
-          status {
-            used
-          }
-        }
-      }
+
       voucher_codes_aggregate {
         aggregate {
           sum {
@@ -254,6 +255,27 @@ const GET_VOUCHER_PLAN_COLLECTION = gql`
       voucher_plan_products {
         id
         product_id
+      }
+    }
+  }
+`
+
+const GET_VOUCHER_CODE = gql`
+  query GET_VOUCHER_CODE($voucherPlanId: uuid!) {
+    voucher_code(where: { voucher_plan: { id: { _eq: $voucherPlanId } } }) {
+      id
+      code
+      count
+      remaining
+      vouchers {
+        id
+        member {
+          id
+          email
+        }
+        status {
+          used
+        }
       }
     }
   }

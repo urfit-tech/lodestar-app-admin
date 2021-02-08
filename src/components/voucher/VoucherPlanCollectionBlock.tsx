@@ -70,13 +70,7 @@ const VoucherPlanCollectionBlock: React.FC = () => {
       ...voucherPlan,
       action: (
         <>
-          <VoucherPlanDetailModal
-            title={voucherPlan.title}
-            voucherCodes={voucherPlan.voucherCodes.map(voucherCode => ({
-              ...voucherCode,
-              used: voucherCode.count - voucherCode.remaining,
-            }))}
-          />
+          <VoucherPlanDetailModal id={voucherPlan.id} title={voucherPlan.title} />
 
           <div className="flex-grow-1">
             {formatMessage(promotionMessages.text.exchangedCount, {

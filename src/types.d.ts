@@ -6966,42 +6966,6 @@ export interface GET_COUPON__CODE_COLLECTIONVariables {
 // GraphQL query operation: GET_VOUCHER_PLAN_COLLECTION
 // ====================================================
 
-export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_vouchers_member {
-  __typename: "member";
-  id: string;
-  email: string;
-}
-
-export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_vouchers_status {
-  __typename: "voucher_status";
-  used: boolean | null;
-}
-
-export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_vouchers {
-  __typename: "voucher";
-  id: any;
-  /**
-   * An object relationship
-   */
-  member: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_vouchers_member;
-  /**
-   * An object relationship
-   */
-  status: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_vouchers_status | null;
-}
-
-export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes {
-  __typename: "voucher_code";
-  id: any;
-  code: string;
-  count: number;
-  remaining: number;
-  /**
-   * An array relationship
-   */
-  vouchers: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_vouchers[];
-}
-
 export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate_aggregate_sum {
   __typename: "voucher_code_sum_fields";
   count: number | null;
@@ -7033,10 +6997,6 @@ export interface GET_VOUCHER_PLAN_COLLECTION_voucher_plan {
   ended_at: any | null;
   product_quantity_limit: number;
   /**
-   * An array relationship
-   */
-  voucher_codes: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes[];
-  /**
    * An aggregated array relationship
    */
   voucher_codes_aggregate: GET_VOUCHER_PLAN_COLLECTION_voucher_plan_voucher_codes_aggregate;
@@ -7051,6 +7011,62 @@ export interface GET_VOUCHER_PLAN_COLLECTION {
    * fetch data from the table: "voucher_plan"
    */
   voucher_plan: GET_VOUCHER_PLAN_COLLECTION_voucher_plan[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_VOUCHER_CODE
+// ====================================================
+
+export interface GET_VOUCHER_CODE_voucher_code_vouchers_member {
+  __typename: "member";
+  id: string;
+  email: string;
+}
+
+export interface GET_VOUCHER_CODE_voucher_code_vouchers_status {
+  __typename: "voucher_status";
+  used: boolean | null;
+}
+
+export interface GET_VOUCHER_CODE_voucher_code_vouchers {
+  __typename: "voucher";
+  id: any;
+  /**
+   * An object relationship
+   */
+  member: GET_VOUCHER_CODE_voucher_code_vouchers_member;
+  /**
+   * An object relationship
+   */
+  status: GET_VOUCHER_CODE_voucher_code_vouchers_status | null;
+}
+
+export interface GET_VOUCHER_CODE_voucher_code {
+  __typename: "voucher_code";
+  id: any;
+  code: string;
+  count: number;
+  remaining: number;
+  /**
+   * An array relationship
+   */
+  vouchers: GET_VOUCHER_CODE_voucher_code_vouchers[];
+}
+
+export interface GET_VOUCHER_CODE {
+  /**
+   * fetch data from the table: "voucher_code"
+   */
+  voucher_code: GET_VOUCHER_CODE_voucher_code[];
+}
+
+export interface GET_VOUCHER_CODEVariables {
+  voucherPlanId: any;
 }
 
 /* tslint:disable */
@@ -19506,6 +19522,7 @@ export interface member_public_bool_exp {
   abstract?: String_comparison_exp | null;
   app_id?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
+  email?: String_comparison_exp | null;
   id?: String_comparison_exp | null;
   member_specialities?: member_speciality_bool_exp | null;
   metadata?: jsonb_comparison_exp | null;
@@ -19526,6 +19543,7 @@ export interface member_public_order_by {
   abstract?: order_by | null;
   app_id?: order_by | null;
   description?: order_by | null;
+  email?: order_by | null;
   id?: order_by | null;
   member_specialities_aggregate?: member_speciality_aggregate_order_by | null;
   metadata?: order_by | null;
