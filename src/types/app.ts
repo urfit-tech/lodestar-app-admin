@@ -36,6 +36,7 @@ export type Module =
   | 'voucher'
   | 'attend'
   | 'practice'
+  | 'exercise'
 
 export type Currency = {
   name: string
