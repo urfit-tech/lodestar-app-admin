@@ -273,6 +273,20 @@ export const useXuemiSales = () => {
   }
 }
 
+export type SalesCallMemberProps = {
+  id: string
+  name: string
+  email: string
+  phones: string[]
+  categoryNames?: string[]
+  firstContactAt: Date | null
+  lastContactAt: Date | null
+  contracts?: {
+    projectPlanName: string
+    endedAt: Date
+  }[]
+}
+
 export const useSalesCallMember = ({ salesId, status }: { salesId: string; status: 'contacted' | 'transacted' }) => {
   const [hasContacted, hasTransacted] = [status === 'contacted', status === 'transacted']
 
@@ -367,19 +381,7 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
     },
   )
 
-  const members: {
-    id: string
-    name: string
-    email: string
-    phones: string[]
-    categoryNames?: string[]
-    firstContactAt: Date | null
-    lastContactAt: Date | null
-    contracts?: {
-      projectPlanName: string
-      endedAt: Date
-    }[]
-  }[] =
+  const members: SalesCallMemberProps[] =
     loading || error || !data
       ? []
       : data.member.map(v => ({

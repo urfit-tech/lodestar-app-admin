@@ -14,7 +14,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { call } from '../../helpers'
 import { salesMessages } from '../../helpers/translation'
-import { useSalesCallMember } from '../../hooks'
+import { SalesCallMemberProps } from '../../hooks'
 import { useFirstAssignedMember } from '../../pages/SalesCallPage'
 
 const messages = {
@@ -55,8 +55,10 @@ type RecordProps = {
   memberId: string
 }
 
-const SalesCallContactedMemberBlock: React.FC<{ salesId: string }> = ({ salesId }) => {
-  const { loadingMembers, members } = useSalesCallMember({ status: 'contacted', salesId })
+const SalesCallContactedMemberBlock: React.FC<{
+  salesId: string
+  members: SalesCallMemberProps[]
+}> = ({ salesId, members }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { apiHost, authToken } = useAuth()
@@ -124,6 +126,7 @@ const SalesCallContactedMemberBlock: React.FC<{ salesId: string }> = ({ salesId 
       a.firstContactAt && b.firstContactAt ? b.firstContactAt.getTime() - a.firstContactAt.getTime() : 1,
     )
     .map(v => ({
+      key: v.id,
       categoryNames: v.categoryNames || [],
       studentName: v.name,
       phones: v.phones,
@@ -135,17 +138,18 @@ const SalesCallContactedMemberBlock: React.FC<{ salesId: string }> = ({ salesId 
   return (
     <StyledAdminCard>
       <Table<RecordProps>
-        loading={loadingMembers}
-        rowClassName={() => 'cursor-pointer'}
+        rowKey="memberId"
         columns={[
           {
-            title: formatMessage(commonMessages.term.category),
+            key: 'categoryNames',
             dataIndex: 'categoryNames',
+            title: formatMessage(commonMessages.term.category),
             render: categoryNames => categoryNames.map((v: string) => <div>{v}</div>),
           },
           {
-            title: formatMessage(salesMessages.label.studentName),
+            key: 'studentName',
             dataIndex: 'studentName',
+            title: formatMessage(salesMessages.label.studentName),
             ...getColumnSearchProps((value?: string) =>
               setFilters({
                 ...filters,
@@ -154,8 +158,9 @@ const SalesCallContactedMemberBlock: React.FC<{ salesId: string }> = ({ salesId 
             ),
           },
           {
-            title: formatMessage(salesMessages.label.tel),
+            key: 'phones',
             dataIndex: 'phones',
+            title: formatMessage(salesMessages.label.tel),
             render: phones => phones.map((v: string) => <address className="m-0">{v}</address>),
             ...getColumnSearchProps((value?: string) =>
               setFilters({
@@ -165,8 +170,9 @@ const SalesCallContactedMemberBlock: React.FC<{ salesId: string }> = ({ salesId 
             ),
           },
           {
-            title: 'Email',
+            key: 'email',
             dataIndex: 'email',
+            title: 'Email',
             ...getColumnSearchProps((value?: string) =>
               setFilters({
                 ...filters,
@@ -175,12 +181,15 @@ const SalesCallContactedMemberBlock: React.FC<{ salesId: string }> = ({ salesId 
             ),
           },
           {
-            title: formatMessage(salesMessages.label.lastContactAt),
+            key: 'lastContactAt',
             dataIndex: 'lastContactAt',
+            title: formatMessage(salesMessages.label.lastContactAt),
             render: lastContactAt => <time>{moment(lastContactAt).format('YYYY-MM-DD HH:mm')}</time>,
           },
           {
+            key: 'memberId',
             dataIndex: 'memberId',
+            title: 'id',
             render: (memberId, record) => (
               <div className="d-flex flex-row justify-content-end">
                 <a href={`admin/members/${memberId}`} target="_blank" rel="noreferrer">
