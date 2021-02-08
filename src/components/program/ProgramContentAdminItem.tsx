@@ -5,7 +5,6 @@ import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { useApp } from '../../contexts/AppContext'
 import { dateFormatter, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useProgramContentBody } from '../../hooks/program'
@@ -50,7 +49,6 @@ const ProgramContentAdminItem: React.FC<{
   onRefetch?: () => void
 }> = ({ showPlans, programContent, program, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { enabledModules } = useApp()
   const [updateProgramContent] = useMutation<types.PUBLISH_PROGRAM_CONTENT, types.PUBLISH_PROGRAM_CONTENTVariables>(
     PUBLISH_PROGRAM_CONTENT,
   )
@@ -135,7 +133,7 @@ const ProgramContentAdminItem: React.FC<{
             }}
           />
         ) : programContent.programContentType === 'exercise' ? (
-          <ExerciseAdminModal program={program} programContent={programContent} onRefetch={() => onRefetch?.()} />
+          <ExerciseAdminModal program={program} programContentId={programContent.id} />
         ) : (
           <ProgramContentAdminModal
             program={program}

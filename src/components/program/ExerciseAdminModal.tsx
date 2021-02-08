@@ -1,6 +1,6 @@
 import { EditOutlined, MoreOutlined, PlusOutlined } from '@ant-design/icons'
 import { useMutation, useQuery } from '@apollo/react-hooks'
-import { Button, Checkbox, Divider, Dropdown, Form, InputNumber, Menu, message, Modal } from 'antd'
+import { Button, Checkbox, Divider, Dropdown, Form, Input, InputNumber, Menu, message, Modal } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import { clone, sum } from 'ramda'
@@ -11,8 +11,7 @@ import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateProgramContent } from '../../hooks/program'
 import types from '../../types'
-import { ProgramContentProps, ProgramProps } from '../../types/program'
-import { AdminPageTitle } from '../admin'
+import { ProgramProps } from '../../types/program'
 import QuestionInput, { QuestionProps } from '../form/QuestionInput'
 
 type FieldProps = {
@@ -21,11 +20,13 @@ type FieldProps = {
   isAvailableToGoBack: boolean
   isAvailableToRetry: boolean
   isNotifyUpdate: boolean
+  title: string
   baseline: number
 }
 
 type ExerciseProps = {
   id: string
+  title: string
   listPrice: number | null
   publishedAt: Date | null
   isNotifyUpdate: boolean
@@ -34,10 +35,9 @@ type ExerciseProps = {
 
 const ExerciseAdminModal: React.FC<{
   program: ProgramProps
-  programContent: ProgramContentProps
-  onRefetch?: () => void
-}> = ({ programContent, onRefetch }) => {
-  const { loadingExercise, errorExercise, exercise, refetchExercise } = useExercise(programContent.id)
+  programContentId: string
+}> = ({ programContentId }) => {
+  const { loadingExercise, errorExercise, exercise, refetchExercise } = useExercise(programContentId)
   const [visible, setVisible] = useState(false)
 
   if (loadingExercise || errorExercise || !exercise) {
@@ -57,7 +57,7 @@ const ExerciseAdminModal: React.FC<{
         visible={visible}
       >
         <ExerciseAdminForm
-          programContentId={programContent.id}
+          programContentId={programContentId}
           exercise={exercise}
           onCancel={() => setVisible(false)}
           onRefetch={() => refetchExercise()}
@@ -91,6 +91,7 @@ const ExerciseAdminForm: React.FC<{
           list_price: values.isTrial ? 0 : null,
           published_at: values.isVisible ? new Date() : null,
           is_notify_update: values.isNotifyUpdate,
+          title: values.title,
           metadata: {
             isAvailableToGoBack: values.isAvailableToGoBack,
             isAvailableToRetry: values.isAvailableToRetry,
@@ -118,12 +119,10 @@ const ExerciseAdminForm: React.FC<{
         isAvailableToGoBack: exercise.metadata?.isAvailableToGoBack,
         isAvailableToRetry: exercise.metadata?.isAvailableToRetry,
         isNotifyUpdate: exercise.isNotifyUpdate,
+        title: exercise.title,
         baseline: exercise.metadata?.baseline || 0,
       }}
       onFinish={handleSubmit}
-      onValuesChange={(_, values) => {
-        console.log(values)
-      }}
     >
       <div className="d-flex align-items-center justify-content-between mb-4">
         <div>
@@ -165,7 +164,9 @@ const ExerciseAdminForm: React.FC<{
         </div>
       </div>
 
-      <AdminPageTitle className="mb-4">{formatMessage(programMessages.label.exercise)}</AdminPageTitle>
+      <Form.Item name="title" label={formatMessage(programMessages.label.exerciseTitle)}>
+        <Input />
+      </Form.Item>
 
       <div className="d-flex align-items-center">
         <Form.Item name="baseline" label={formatMessage(programMessages.label.baseline)}>
@@ -218,6 +219,7 @@ const useExercise = (programContentId: string) => {
       query GET_EXERCISE($programContentId: uuid!) {
         program_content_by_pk(id: $programContentId) {
           id
+          title
           list_price
           published_at
           is_notify_update
@@ -231,6 +233,7 @@ const useExercise = (programContentId: string) => {
   const exercise: ExerciseProps | null = data?.program_content_by_pk
     ? {
         id: data.program_content_by_pk.id,
+        title: data.program_content_by_pk.title,
         listPrice: data.program_content_by_pk.list_price,
         publishedAt: data.program_content_by_pk.published_at,
         isNotifyUpdate: data.program_content_by_pk.is_notify_update,

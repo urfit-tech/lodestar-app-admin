@@ -625,6 +625,7 @@ export const programMessages = {
     choice: { id: 'program.label.choice', defaultMessage: '選項' },
     isCorrectAnswer: { id: 'program.label.isCorrectAnswer', defaultMessage: '此為正確解答' },
     answerDescription: { id: 'program.label.answerDescription', defaultMessage: '解答說明' },
+    exerciseTitle: { id: 'program.label.exerciseTitle', defaultMessage: '標題' },
   }),
   text: defineMessages({
     searchProgramTitle: { id: 'program.text.searchProgramTitle', defaultMessage: '搜尋課程名稱' },
