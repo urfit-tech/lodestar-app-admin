@@ -114,7 +114,7 @@ const ProgramContentAdminModal: React.FC<{
               : values.duration !== Math.ceil((programContent.duration || 0) / 60)
               ? values.duration * 60
               : programContent.duration,
-          type: video ? 'video' : null,
+          type: video ? 'video' : 'text',
           data: {
             video: video || null,
             texttrack: values.texttrack || null,
