@@ -15,16 +15,16 @@ const RatingInput: React.FC<{
   size?: string
   pitch?: string
   name: string
-  value: number
-  setValue: (value: React.SetStateAction<number>) => void
-}> = ({ size, pitch, name, value, setValue }) => {
+  value?: number
+  onChange?: (value: number) => void
+}> = ({ size, pitch, name, value, onChange }) => {
   return (
     <ReactStarsWrapper
       size={size}
       pitch={pitch}
       name={name}
-      value={value}
-      onStarClick={rating => setValue(rating)}
+      value={value || 1}
+      onStarClick={rating => onChange?.(rating)}
       renderStarIcon={(nextValue, prevValue) => (nextValue > prevValue ? <StarGrayIcon /> : <StarIcon />)}
     />
   )

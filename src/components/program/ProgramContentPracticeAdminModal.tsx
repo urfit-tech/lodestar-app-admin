@@ -42,12 +42,6 @@ const StyledTitle = styled.div`
   color: var(--gray-darker);
   letter-spacing: 0.2px;
 `
-const StyledLabel = styled.div`
-  line-height: 1.5;
-  letter-spacing: 0.2px;
-  color: var(--gray-darker);
-`
-
 const StyledPracticeFileSizeTips = styled(StyledTips)`
   font-size: 14px;
   letter-spacing: 0.8px;
@@ -60,6 +54,7 @@ type FieldProps = {
   estimatedTime: number
   description: EditorState
   isPracticePrivate: boolean
+  difficulty: number
 }
 
 const ProgramContentPracticeAdminModal: React.FC<{
@@ -102,7 +97,6 @@ const PracticeForm: React.FC<{
   const { id: appId } = useApp()
   const { authToken, apiHost } = useAuth()
   const [form] = useForm<FieldProps>()
-  const [difficulty, setDifficulty] = useState(programContent.metadata?.difficulty || 1)
   const uploadCanceler = useRef<Canceler>()
   const [attachments, setAttachments] = useState<File[]>(programContent.attachments.map(v => v.data) || [])
 
@@ -124,7 +118,7 @@ const PracticeForm: React.FC<{
           duration: values.estimatedTime,
           isNotifyUpdate: values.isNotifyUpdate,
           notifiedAt: values.isNotifyUpdate ? new Date() : programContent?.notifiedAt,
-          metadata: { ...programContent.metadata, difficulty: difficulty, private: values.isPracticePrivate },
+          metadata: { ...programContent.metadata, difficulty: values.difficulty, private: values.isPracticePrivate },
         },
       }),
     ])
@@ -196,9 +190,9 @@ const PracticeForm: React.FC<{
         title: programContent.title,
         estimatedTime: programContent.duration,
         description: BraftEditor.createEditorState(programContentBody.description),
+        difficulty: programContent.metadata?.difficulty || 1,
       }}
       onFinish={handleSubmit}
-      onValuesChange={(_, values) => form.setFieldsValue({ publishedAt: values.publishedAt })}
     >
       <div className="d-flex align-items-center justify-content-between mb-4">
         <div className="d-flex align-items-center">
@@ -228,6 +222,7 @@ const PracticeForm: React.FC<{
             disabled={isSubmitting}
             onClick={() => {
               onCancel?.()
+              form.resetFields()
             }}
             className="mr-2"
           >
@@ -265,10 +260,9 @@ const PracticeForm: React.FC<{
         <Input />
       </Form.Item>
 
-      <div>
-        <StyledLabel className="mb-2">{formatMessage(messages.difficulty)}</StyledLabel>
-        <RatingInput size="24px" name="difficulty" value={difficulty} setValue={setDifficulty} />
-      </div>
+      <Form.Item label={formatMessage(messages.difficulty)} name="difficulty">
+        <RatingInput size="24px" name="difficulty" />
+      </Form.Item>
       <Form.Item label={formatMessage(messages.estimatedTime)} name="estimatedTime">
         <InputNumber min={0} />
       </Form.Item>
