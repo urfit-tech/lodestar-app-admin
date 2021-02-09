@@ -3,7 +3,6 @@ import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { useApp } from '../../contexts/AppContext'
 import { commonMessages } from '../../helpers/translation'
 import types from '../../types'
 import { ProjectAdminProps, ProjectDataType } from '../../types/project'
@@ -35,7 +34,6 @@ const ProjectPublishAdminBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ project, type, onRefetch }) => {
   const { formatMessage } = useIntl()
-  const { enabledModules } = useApp()
   const [publishProject] = useMutation<types.PUBLISH_PROJECT, types.PUBLISH_PROJECTVariables>(PUBLISH_PROJECT)
 
   if (!project) {

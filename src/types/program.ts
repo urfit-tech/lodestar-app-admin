@@ -74,6 +74,12 @@ export type ProgramContentProps = {
     id: string
     title: string | null
   }[]
+  metadata: any
+  attachments: {
+    id: string
+    data: any
+    options: any
+  }[]
 }
 
 export type ProgramContentBodyType = {

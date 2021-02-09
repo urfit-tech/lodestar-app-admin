@@ -1,4 +1,4 @@
-import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons'
+import { EyeInvisibleOutlined, EyeOutlined, FileTextOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Tag, Typography } from 'antd'
 import gql from 'graphql-tag'
@@ -8,22 +8,35 @@ import styled from 'styled-components'
 import { dateFormatter, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useProgramContentBody } from '../../hooks/program'
+import { ReactComponent as PracticeIcon } from '../../images/icon/homework.svg'
+import { ReactComponent as VideoIcon } from '../../images/icon/video.svg'
 import types from '../../types'
 import { ProgramAdminProps, ProgramContentProps } from '../../types/program'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
+import ProgramContentPracticeAdminModal from './ProgramContentPracticeAdminModal'
 
 const StyledTitle = styled.div`
   font-size: 14px;
 `
 const StyledDescriptions = styled(Typography.Text)`
+  clear: right;
   font-size: 12px;
 `
 const StyledTag = styled(Tag)`
   && {
     border: none;
+    color: #fff;
+    border-radius: 4px;
+    letter-spacing: 0.58px;
+    font-weight: 500;
   }
 `
-
+const StyledTrialTag = styled(StyledTag)`
+  background: #ffbe1e;
+`
+const StyledPrivateTag = styled(StyledTag)`
+  background: var(--gray-darker);
+`
 const messages = defineMessages({
   programContentPlans: { id: 'program.text.programContentPlans', defaultMessage: '方案：' },
 })
@@ -45,7 +58,18 @@ const ProgramContentAdminItem: React.FC<{
   return (
     <div className="d-flex align-items-center justify-content-between p-3" style={{ background: '#f7f8f8' }}>
       <div>
-        <StyledTitle>{programContent.title}</StyledTitle>
+        <div className="d-flex">
+          <div className="d-flex justify-content-center align-items-center mr-3">
+            {programContent.programContentType && programContent.programContentType === 'text' ? (
+              <FileTextOutlined style={{ color: '#9B9B9B' }} />
+            ) : programContent.programContentType === 'video' ? (
+              <VideoIcon />
+            ) : programContent.programContentType === 'practice' ? (
+              <PracticeIcon />
+            ) : null}
+          </div>
+          <StyledTitle>{programContent.title}</StyledTitle>
+        </div>
         {showPlans && (
           <StyledDescriptions type="secondary">
             {formatMessage(messages.programContentPlans)}
@@ -58,7 +82,10 @@ const ProgramContentAdminItem: React.FC<{
 
       <div className="d-flex align-items-center">
         {programContent.listPrice === 0 && (
-          <StyledTag className="mr-3">{formatMessage(commonMessages.ui.trial)}</StyledTag>
+          <StyledTrialTag className="mr-3">{formatMessage(commonMessages.ui.trial)}</StyledTrialTag>
+        )}
+        {programContent.metadata?.private && (
+          <StyledPrivateTag className="mr-3">{formatMessage(commonMessages.ui.private)}</StyledPrivateTag>
         )}
         {program && program.isSubscription ? (
           programContent.publishedAt && (
@@ -95,7 +122,9 @@ const ProgramContentAdminItem: React.FC<{
             }
           />
         )}
-        {!loadingProgramContentBody && (
+        {(!loadingProgramContentBody && programContent.programContentType === 'text') ||
+        programContent.programContentType === 'video' ||
+        programContent.programContentType === null ? (
           <ProgramContentAdminModal
             program={program}
             programContent={programContent}
@@ -105,7 +134,16 @@ const ProgramContentAdminItem: React.FC<{
               onRefetch?.()
             }}
           />
-        )}
+        ) : programContent.programContentType === 'practice' ? (
+          <ProgramContentPracticeAdminModal
+            programContent={programContent}
+            programContentBody={programContentBody}
+            onRefetch={() => {
+              refetchProgramContentBody()
+              onRefetch?.()
+            }}
+          />
+        ) : null}
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-import { CloseOutlined, EditOutlined, MoreOutlined, UploadOutlined } from '@ant-design/icons'
+import { EditOutlined, MoreOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, DatePicker, Dropdown, Form, Input, InputNumber, Menu, message, Modal } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
@@ -10,13 +10,14 @@ import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { getFileDuration, handleError, uploadFile } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
+import { useMutateProgramContent } from '../../hooks/program'
 import types from '../../types'
 import { ProgramContentBodyType, ProgramContentProps, ProgramProps } from '../../types/program'
+import FileUploader from '../common/FileUploader'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import SingleUploader from '../form/SingleUploader'
 import ProgramPlanSelector from './ProgramPlanSelector'
@@ -38,21 +39,6 @@ const messages = defineMessages({
   uploadMaterial: { id: 'program.ui.uploadMaterial', defaultMessage: '上傳教材' },
 })
 
-const StyledCloseIcon = styled(CloseOutlined)`
-  color: transparent;
-`
-const StyledFileItem = styled.div`
-  color: var(--gray-darker);
-  font-size: 14px;
-
-  :hover {
-    background-color: var(--gray-lighter);
-    ${StyledCloseIcon} {
-      color: var(--gray-darker);
-    }
-  }
-`
-
 type FieldProps = {
   publishedAt: Moment | null
   isNotifyUpdate: boolean
@@ -73,17 +59,12 @@ const ProgramContentAdminModal: React.FC<{
   const [form] = useForm<FieldProps>()
   const { id: appId, enabledModules } = useApp()
   const { authToken, apiHost } = useAuth()
+  const { updateProgramContent, deleteProgramContent } = useMutateProgramContent()
 
-  const [updateProgramContent] = useMutation<types.UPDATE_PROGRAM_CONTENT, types.UPDATE_PROGRAM_CONTENTVariables>(
-    UPDATE_PROGRAM_CONTENT,
-  )
   const [updateProgramContentPlan] = useMutation<
     types.UPDATE_PROGRAM_CONTENT_PLAN,
     types.UPDATE_PROGRAM_CONTENT_PLANVariables
   >(UPDATE_PROGRAM_CONTENT_PLAN)
-  const [deleteProgramContent] = useMutation<types.DELETE_PROGRAM_CONTENT, types.DELETE_PROGRAM_CONTENTVariables>(
-    DELETE_PROGRAM_CONTENT,
-  )
 
   const [updateProgramContentMaterials] = useMutation<
     types.UPDATE_PROGRAM_CONTENT_MATERIALS,
@@ -133,7 +114,7 @@ const ProgramContentAdminModal: React.FC<{
               : values.duration !== Math.ceil((programContent.duration || 0) / 60)
               ? values.duration * 60
               : programContent.duration,
-          type: video ? 'video' : null,
+          type: video ? 'video' : 'text',
           data: {
             video: video || null,
             texttrack: values.texttrack || null,
@@ -325,27 +306,14 @@ const ProgramContentAdminModal: React.FC<{
             <InputNumber min={0} />
           </Form.Item>
           {enabledModules.program_content_material && (
-            <>
-              <Form.Item label={formatMessage(commonMessages.term.material)}>
-                <MaterialFileUpload value={materialFiles} onChange={value => setMaterialFiles(value)} />
-              </Form.Item>
-              <div className="mb-4">
-                {materialFiles?.map(file => (
-                  <StyledFileItem
-                    key={file.name}
-                    className="d-flex align-items-center justify-content-between py-1 px-2"
-                  >
-                    <div className="flex-grow-1">{file.name}</div>
-                    <StyledCloseIcon
-                      className="flex-shrink-0 ml-2 pointer-cursor"
-                      onClick={() => {
-                        setMaterialFiles(materialFiles.filter(v => v.name !== file.name))
-                      }}
-                    />
-                  </StyledFileItem>
-                ))}
-              </div>
-            </>
+            <Form.Item label={formatMessage(commonMessages.term.material)}>
+              <FileUploader
+                multiple
+                showUploadList
+                fileList={materialFiles}
+                onChange={files => setMaterialFiles(files)}
+              />
+            </Form.Item>
           )}
           <Form.Item label={formatMessage(messages.contentContext)} name="description">
             <AdminBraftEditor />
@@ -356,80 +324,6 @@ const ProgramContentAdminModal: React.FC<{
   )
 }
 
-const MaterialFileUpload: React.FC<{
-  value?: File[]
-  onChange?: (value: File[]) => void
-}> = ({ value, onChange }) => {
-  const { formatMessage } = useIntl()
-  const inputRef = useRef<HTMLInputElement | null>(null)
-  return (
-    <>
-      <input
-        ref={inputRef}
-        type="file"
-        multiple
-        hidden
-        onChange={e => {
-          if (!e.target.files || !e.target.files.length || !onChange) {
-            return
-          }
-
-          // append new file into input value
-          const files: File[] = value?.slice() || []
-          for (let i = 0; i < e.target.files.length; i++) {
-            const file = e.target.files.item(i)
-            file && !files.some(v => v.name === file.name) && files.push(file)
-          }
-
-          onChange(files)
-          e.target.value = ''
-          e.target.files = null
-        }}
-      />
-
-      <Button icon={<UploadOutlined />} onClick={() => inputRef.current?.click()}>
-        {formatMessage(messages.uploadMaterial)}
-      </Button>
-    </>
-  )
-}
-
-const UPDATE_PROGRAM_CONTENT = gql`
-  mutation UPDATE_PROGRAM_CONTENT(
-    $programContentId: uuid!
-    $title: String
-    $description: String
-    $type: String
-    $data: jsonb
-    $price: numeric
-    $publishedAt: timestamptz
-    $duration: numeric
-    $isNotifyUpdate: Boolean
-    $notifiedAt: timestamptz
-  ) {
-    update_program_content(
-      where: { id: { _eq: $programContentId } }
-      _set: {
-        title: $title
-        duration: $duration
-        list_price: $price
-        sale_price: $price
-        published_at: $publishedAt
-        is_notify_update: $isNotifyUpdate
-        notified_at: $notifiedAt
-      }
-    ) {
-      affected_rows
-    }
-    update_program_content_body(
-      where: { program_contents: { id: { _eq: $programContentId } } }
-      _set: { description: $description, type: $type }
-      _append: { data: $data }
-    ) {
-      affected_rows
-    }
-  }
-`
 const UPDATE_PROGRAM_CONTENT_PLAN = gql`
   mutation UPDATE_PROGRAM_CONTENT_PLAN(
     $programContentId: uuid!
@@ -439,16 +333,6 @@ const UPDATE_PROGRAM_CONTENT_PLAN = gql`
       affected_rows
     }
     insert_program_content_plan(objects: $programContentPlans) {
-      affected_rows
-    }
-  }
-`
-const DELETE_PROGRAM_CONTENT = gql`
-  mutation DELETE_PROGRAM_CONTENT($programContentId: uuid!) {
-    delete_program_content_progress(where: { program_content_id: { _eq: $programContentId } }) {
-      affected_rows
-    }
-    delete_program_content_body(where: { program_contents: { id: { _eq: $programContentId } } }) {
       affected_rows
     }
   }

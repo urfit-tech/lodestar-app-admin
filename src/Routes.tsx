@@ -85,6 +85,11 @@ export const routesProps: { [routeKey: string]: RouteProps } = {
     pageName: 'ProgramIssueCollectionAdminPage',
     authenticated: true,
   },
+  practice_collection: {
+    path: '/practices',
+    pageName: 'PracticeCollectionAdminPage',
+    authenticated: true,
+  },
   program_package_collection: {
     path: '/program-packages',
     pageName: 'ProgramPackageCollectionAdminPage',
