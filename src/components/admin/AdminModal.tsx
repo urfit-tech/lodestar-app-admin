@@ -54,7 +54,7 @@ const AdminModal: React.FC<AdminModalProps> = ({
 
   return (
     <>
-      {renderTrigger && renderTrigger({ setVisible })}
+      {renderTrigger?.({ setVisible })}
 
       <StyledModal
         title={null}
@@ -62,7 +62,7 @@ const AdminModal: React.FC<AdminModalProps> = ({
         destroyOnClose
         visible={visible}
         onCancel={e => {
-          onCancel && onCancel(e)
+          onCancel?.(e)
           setVisible(false)
         }}
         {...ModalProps}
@@ -70,7 +70,6 @@ const AdminModal: React.FC<AdminModalProps> = ({
         {icon && <StyledIcon>{icon}</StyledIcon>}
         {title && <StyledTitle>{title}</StyledTitle>}
         {children}
-
         {renderFooter && <div className="text-right">{renderFooter({ setVisible })}</div>}
       </StyledModal>
     </>

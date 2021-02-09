@@ -108,7 +108,8 @@ const AdminBraftEditor: React.FC<{
   variant?: AdminBraftVariant
   value?: EditorState
   onChange?: (editorState: EditorState) => void
-}> = ({ variant, value, onChange }) => {
+  onBlur?: () => void
+}> = ({ variant, value, onChange, onBlur }) => {
   const { id: appId } = useApp()
   const { authToken, apiHost } = useAuth()
 
@@ -116,6 +117,7 @@ const AdminBraftEditor: React.FC<{
     <StyledBraftEditor
       value={value}
       onChange={onChange}
+      onBlur={onBlur}
       contentClassName={variant === 'short' ? 'short-bf-content' : undefined}
       language={braftLanguageFn}
       controls={controls[variant || 'default']}

@@ -3844,6 +3844,49 @@ export interface GET_PRACTICE_ISSUE_AMOUNTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_EXERCISE
+// ====================================================
+
+export interface UPDATE_EXERCISE_update_program_content {
+  __typename: "program_content_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_EXERCISE_update_program_content_body {
+  __typename: "program_content_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_EXERCISE {
+  /**
+   * update data of the table: "program_content"
+   */
+  update_program_content: UPDATE_EXERCISE_update_program_content | null;
+  /**
+   * update data of the table: "program_content_body"
+   */
+  update_program_content_body: UPDATE_EXERCISE_update_program_content_body | null;
+}
+
+export interface UPDATE_EXERCISEVariables {
+  programContentId: any;
+  content: program_content_set_input;
+  programContentBodyId: any;
+  body: program_content_body_set_input;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_BASIC
 // ====================================================
 
@@ -25059,6 +25102,16 @@ export interface program_content_body_on_conflict {
 }
 
 /**
+ * input type for updating data in table "program_content_body"
+ */
+export interface program_content_body_set_input {
+  data?: any | null;
+  description?: string | null;
+  id?: any | null;
+  type?: string | null;
+}
+
+/**
  * Boolean expression to filter rows from the table "program_content". All fields are combined with a logical 'AND'.
  */
 export interface program_content_bool_exp {
@@ -25700,6 +25753,28 @@ export interface program_content_section_var_samp_order_by {
  */
 export interface program_content_section_variance_order_by {
   position?: order_by | null;
+}
+
+/**
+ * input type for updating data in table "program_content"
+ */
+export interface program_content_set_input {
+  abstract?: string | null;
+  content_body_id?: any | null;
+  content_section_id?: any | null;
+  content_type?: string | null;
+  created_at?: any | null;
+  duration?: any | null;
+  id?: any | null;
+  is_notify_update?: boolean | null;
+  list_price?: any | null;
+  metadata?: any | null;
+  notified_at?: any | null;
+  position?: number | null;
+  published_at?: any | null;
+  sale_price?: any | null;
+  sold_at?: any | null;
+  title?: string | null;
 }
 
 /**
