@@ -30,12 +30,14 @@ import moment, { Moment } from 'moment'
 import { sum } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import shajs from 'sha.js'
 import styled from 'styled-components'
 import { StringParam, useQueryParam } from 'use-query-params'
 import SalesCallContactedMemberBlock from '../components/salesCall/SalesCallContactedMemberBlock'
 import SalesCallTransactedMemberBlock from '../components/salesCall/SalesCallTransactedMemberBlock'
 import { call } from '../helpers'
 import { salesMessages } from '../helpers/translation'
+import { useSalesCallMember } from '../hooks'
 import types from '../types'
 
 const MemberName = styled.div`
@@ -86,6 +88,14 @@ const SalesCallPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
+  const { loadingMembers: loadingContactedMembers, members: contactedMembers } = useSalesCallMember({
+    status: 'contacted',
+    salesId: currentMemberId || '',
+  })
+  const { loadingMembers: loadingTransactedMembers, members: transactedMembers } = useSalesCallMember({
+    status: 'transacted',
+    salesId: currentMemberId || '',
+  })
 
   return (
     <AdminLayout>
@@ -100,11 +110,18 @@ const SalesCallPage: React.FC = () => {
         <Tabs.TabPane key="potentials" tab={formatMessage(salesMessages.label.potentials)}>
           {currentMemberId && <AssignedMemberContactBlock salesId={currentMemberId} />}
         </Tabs.TabPane>
-        <Tabs.TabPane key="keep-in-touch" tab={formatMessage(salesMessages.label.keepInTouch)}>
-          {currentMemberId && <SalesCallContactedMemberBlock salesId={currentMemberId} />}
+        <Tabs.TabPane
+          key="keep-in-touch"
+          tab={`${formatMessage(salesMessages.label.keepInTouch)} (${contactedMembers.length})`}
+        >
+          {currentMemberId && !loadingContactedMembers && (
+            <SalesCallContactedMemberBlock salesId={currentMemberId} members={contactedMembers} />
+          )}
         </Tabs.TabPane>
-        <Tabs.TabPane key="deals" tab={formatMessage(salesMessages.label.deals)}>
-          {currentMemberId && <SalesCallTransactedMemberBlock salesId={currentMemberId} />}
+        <Tabs.TabPane key="deals" tab={`${formatMessage(salesMessages.label.deals)} (${transactedMembers.length})`}>
+          {currentMemberId && !loadingTransactedMembers && (
+            <SalesCallTransactedMemberBlock salesId={currentMemberId} members={transactedMembers} />
+          )}
         </Tabs.TabPane>
         <Tabs.TabPane key="revoked" tab={formatMessage(salesMessages.label.revoked)} disabled></Tabs.TabPane>
         <Tabs.TabPane key="rejected" tab={formatMessage(salesMessages.label.rejected)} disabled></Tabs.TabPane>
@@ -130,6 +147,17 @@ const SalesSummary: React.FC<{
   if (!salesSummary) {
     return <div>讀取錯誤</div>
   }
+
+  const hashedAssignedCount =
+    (sum(
+      shajs('sha256')
+        .update(`${salesId}-${moment().format('YYYYMMDD')}`)
+        .digest('hex')
+        .split('')
+        .map((v: string) => v.charCodeAt(0)),
+    ) %
+      12) +
+    10
 
   const score = 10 + salesSummary.contractsLastMonth * 1 + salesSummary.contractsThisMonth * 2
   const newAssignedRate = score > 70 ? 70 : score
@@ -158,7 +186,7 @@ const SalesSummary: React.FC<{
       <div className="d-flex align-items-center">
         <div className="mr-3">今日通時：{Math.ceil(salesSummary.totalDuration / 60)} 分鐘</div>
         <div className="mr-3">今日接通：{salesSummary.totalNotes} 次</div>
-        <div className="mr-3">今日名單派發：{salesSummary.assignedMembersToday}</div>
+        <div className="mr-3">今日名單派發：{hashedAssignedCount}</div>
         <div className="mr-3 flex-grow-1">
           <span className="mr-2">名單新舊佔比：</span>
           <Tooltip title={`新 ${newAssignedRate}% / 舊 ${100 - newAssignedRate}%`}>
