@@ -1,18 +1,26 @@
 import { EditOutlined, MoreOutlined, PlusOutlined } from '@ant-design/icons'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/react-hooks'
 import { Button, Checkbox, Divider, Dropdown, Form, Input, InputNumber, Menu, message, Modal } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import gql from 'graphql-tag'
 import { clone, sum } from 'ramda'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
+import styled from 'styled-components'
 import { v4 as uuidV4 } from 'uuid'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateProgramContent } from '../../hooks/program'
 import types from '../../types'
-import { ProgramProps } from '../../types/program'
+import { ProgramContentBodyProps, ProgramContentProps } from '../../types/program'
 import QuestionInput, { QuestionProps } from '../form/QuestionInput'
+
+const StyledTitle = styled.div`
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--gray-darker);
+  letter-spacing: 0.2px;
+`
 
 type FieldProps = {
   isTrial: boolean
@@ -24,25 +32,12 @@ type FieldProps = {
   baseline: number
 }
 
-type ExerciseProps = {
-  id: string
-  title: string
-  listPrice: number | null
-  publishedAt: Date | null
-  isNotifyUpdate: boolean
-  metadata: any
-}
-
 const ExerciseAdminModal: React.FC<{
-  program: ProgramProps
-  programContentId: string
-}> = ({ programContentId }) => {
-  const { loadingExercise, errorExercise, exercise, refetchExercise } = useExercise(programContentId)
+  programContent: ProgramContentProps
+  programContentBody: ProgramContentBodyProps
+  onRefetch?: () => void
+}> = ({ programContent, programContentBody, onRefetch }) => {
   const [visible, setVisible] = useState(false)
-
-  if (loadingExercise || errorExercise || !exercise) {
-    return null
-  }
 
   return (
     <>
@@ -57,10 +52,10 @@ const ExerciseAdminModal: React.FC<{
         visible={visible}
       >
         <ExerciseAdminForm
-          programContentId={programContentId}
-          exercise={exercise}
+          programContent={programContent}
+          programContentBody={programContentBody}
           onCancel={() => setVisible(false)}
-          onRefetch={() => refetchExercise()}
+          onRefetch={() => onRefetch?.()}
         />
       </Modal>
     </>
@@ -68,26 +63,27 @@ const ExerciseAdminModal: React.FC<{
 }
 
 const ExerciseAdminForm: React.FC<{
-  programContentId: string
-  exercise: ExerciseProps
+  programContent: ProgramContentProps
+  programContentBody: ProgramContentBodyProps
   onCancel?: () => void
   onRefetch?: () => void
-}> = ({ programContentId, exercise, onCancel, onRefetch }) => {
+}> = ({ programContent, programContentBody, onCancel, onRefetch }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
   const { deleteProgramContent } = useMutateProgramContent()
   const [updateExercise] = useMutation<types.UPDATE_EXERCISE, types.UPDATE_EXERCISEVariables>(UPDATE_EXERCISE)
 
   const [loading, setLoading] = useState(false)
-  const [questions, setQuestions] = useState<QuestionProps[]>(exercise?.metadata?.questions || [])
+  const [questions, setQuestions] = useState<QuestionProps[]>(programContentBody.data?.questions || [])
 
   const totalPoints = sum(questions.map(question => question.points))
   const handleSubmit = async (values: FieldProps) => {
     setLoading(true)
     updateExercise({
       variables: {
-        programContentId,
-        data: {
+        programContentId: programContent.id,
+        programContentBodyId: programContentBody.id,
+        content: {
           list_price: values.isTrial ? 0 : null,
           published_at: values.isVisible ? new Date() : null,
           is_notify_update: values.isNotifyUpdate,
@@ -96,8 +92,10 @@ const ExerciseAdminForm: React.FC<{
             isAvailableToGoBack: values.isAvailableToGoBack,
             isAvailableToRetry: values.isAvailableToRetry,
             baseline: values.baseline || 0,
-            questions,
           },
+        },
+        body: {
+          data: { questions },
         },
       },
     })
@@ -109,31 +107,52 @@ const ExerciseAdminForm: React.FC<{
       .finally(() => setLoading(false))
   }
 
+  useEffect(() => {
+    form.setFieldsValue({ isVisible: !!programContent.publishedAt })
+  }, [form, programContent.publishedAt])
+
   return (
     <Form
       form={form}
       layout="vertical"
       initialValues={{
-        isTrial: exercise.listPrice === 0,
-        isVisible: !!exercise.publishedAt,
-        isAvailableToGoBack: exercise.metadata?.isAvailableToGoBack,
-        isAvailableToRetry: exercise.metadata?.isAvailableToRetry,
-        isNotifyUpdate: exercise.isNotifyUpdate,
-        title: exercise.title,
-        baseline: exercise.metadata?.baseline || 0,
+        isTrial: programContent.listPrice === 0,
+        isVisible: !!programContent.publishedAt,
+        isAvailableToGoBack: programContent.metadata?.isAvailableToGoBack,
+        isAvailableToRetry: programContent.metadata?.isAvailableToRetry,
+        isNotifyUpdate: programContent.isNotifyUpdate,
+        title: programContent.title,
+        baseline: programContent.metadata?.baseline || 0,
       }}
       onFinish={handleSubmit}
     >
       <div className="d-flex align-items-center justify-content-between mb-4">
         <div>
-          <Checkbox className="mr-2">{formatMessage(commonMessages.ui.trial)}</Checkbox>
-          <Checkbox className="mr-2">{formatMessage(programMessages.label.show)}</Checkbox>
-          <Checkbox className="mr-2">{formatMessage(programMessages.label.availableToGoBack)}</Checkbox>
-          <Checkbox className="mr-2">{formatMessage(programMessages.label.availableToRetry)}</Checkbox>
-          <Checkbox className="mr-2">{formatMessage(programMessages.label.notifyUpdate)}</Checkbox>
+          <Form.Item name="isTrial" valuePropName="checked" noStyle>
+            <Checkbox className="mr-2">{formatMessage(commonMessages.ui.trial)}</Checkbox>
+          </Form.Item>
+          <Form.Item name="isVisible" valuePropName="checked" noStyle>
+            <Checkbox className="mr-2">{formatMessage(programMessages.label.show)}</Checkbox>
+          </Form.Item>
+          <Form.Item name="isAvailableToGoBack" valuePropName="checked" noStyle>
+            <Checkbox className="mr-2">{formatMessage(programMessages.label.availableToGoBack)}</Checkbox>
+          </Form.Item>
+          <Form.Item name="isAvailableToRetry" valuePropName="checked" noStyle>
+            <Checkbox className="mr-2">{formatMessage(programMessages.label.availableToRetry)}</Checkbox>
+          </Form.Item>
+          <Form.Item name="isNotifyUpdate" valuePropName="checked" noStyle>
+            <Checkbox className="mr-2">{formatMessage(programMessages.label.notifyUpdate)}</Checkbox>
+          </Form.Item>
         </div>
         <div>
-          <Button disabled={loading} onClick={() => onCancel?.()} className="mr-2">
+          <Button
+            disabled={loading}
+            onClick={() => {
+              onCancel?.()
+              form.resetFields()
+            }}
+            className="mr-2"
+          >
             {formatMessage(commonMessages.ui.cancel)}
           </Button>
           <Button type="primary" htmlType="submit" loading={loading} className="mr-2">
@@ -148,7 +167,7 @@ const ExerciseAdminForm: React.FC<{
                   onClick={() =>
                     window.confirm(formatMessage(programMessages.text.deleteContentWarning)) &&
                     deleteProgramContent({
-                      variables: { programContentId: programContentId },
+                      variables: { programContentId: programContent.id },
                     })
                       .then(() => onRefetch?.())
                       .catch(handleError)
@@ -163,6 +182,8 @@ const ExerciseAdminForm: React.FC<{
           </Dropdown>
         </div>
       </div>
+
+      <StyledTitle className="mb-3">{formatMessage(programMessages.label.exercise)}</StyledTitle>
 
       <Form.Item name="title" label={formatMessage(programMessages.label.exerciseTitle)}>
         <Input />
@@ -213,45 +234,17 @@ const ExerciseAdminForm: React.FC<{
   )
 }
 
-const useExercise = (programContentId: string) => {
-  const { loading, error, data, refetch } = useQuery<types.GET_EXERCISE, types.GET_EXERCISEVariables>(
-    gql`
-      query GET_EXERCISE($programContentId: uuid!) {
-        program_content_by_pk(id: $programContentId) {
-          id
-          title
-          list_price
-          published_at
-          is_notify_update
-          metadata
-        }
-      }
-    `,
-    { variables: { programContentId } },
-  )
-
-  const exercise: ExerciseProps | null = data?.program_content_by_pk
-    ? {
-        id: data.program_content_by_pk.id,
-        title: data.program_content_by_pk.title,
-        listPrice: data.program_content_by_pk.list_price,
-        publishedAt: data.program_content_by_pk.published_at,
-        isNotifyUpdate: data.program_content_by_pk.is_notify_update,
-        metadata: data.program_content_by_pk.metadata,
-      }
-    : null
-
-  return {
-    loadingExercise: loading,
-    errorExercise: error,
-    exercise,
-    refetchExercise: refetch,
-  }
-}
-
 const UPDATE_EXERCISE = gql`
-  mutation UPDATE_EXERCISE($programContentId: uuid!, $data: program_content_set_input!) {
-    update_program_content(where: { id: { _eq: $programContentId } }, _set: $data) {
+  mutation UPDATE_EXERCISE(
+    $programContentId: uuid!
+    $content: program_content_set_input!
+    $programContentBodyId: uuid!
+    $body: program_content_body_set_input!
+  ) {
+    update_program_content(where: { id: { _eq: $programContentId } }, _set: $content) {
+      affected_rows
+    }
+    update_program_content_body(where: { id: { _eq: $programContentBodyId } }, _set: $body) {
       affected_rows
     }
   }

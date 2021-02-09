@@ -4,7 +4,7 @@ import { sum } from 'ramda'
 import { useEffect, useState } from 'react'
 import { useApp } from '../contexts/AppContext'
 import types from '../types'
-import { ProgramAdminProps, ProgramApprovalProps, ProgramContentBodyType, ProgramRoleName } from '../types/program'
+import { ProgramAdminProps, ProgramApprovalProps, ProgramContentBodyProps, ProgramRoleName } from '../types/program'
 
 export const useProgram = (programId: string) => {
   const { loading, data, error, refetch } = useQuery<types.GET_PROGRAM, types.GET_PROGRAMVariables>(
@@ -231,7 +231,7 @@ export const useProgramContentBody = (programContentId: string) => {
     { variables: { programContentId } },
   )
 
-  const programContentBody: ProgramContentBodyType =
+  const programContentBody: ProgramContentBodyProps =
     loading || error || !data || !data.program_content_by_pk
       ? {
           id: '',

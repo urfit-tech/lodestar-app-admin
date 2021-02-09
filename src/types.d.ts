@@ -3844,36 +3844,6 @@ export interface GET_PRACTICE_ISSUE_AMOUNTVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_EXERCISE
-// ====================================================
-
-export interface GET_EXERCISE_program_content_by_pk {
-  __typename: "program_content";
-  id: any;
-  title: string;
-  list_price: any | null;
-  published_at: any | null;
-  is_notify_update: boolean;
-  metadata: any | null;
-}
-
-export interface GET_EXERCISE {
-  /**
-   * fetch data from the table: "program_content" using primary key columns
-   */
-  program_content_by_pk: GET_EXERCISE_program_content_by_pk | null;
-}
-
-export interface GET_EXERCISEVariables {
-  programContentId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL mutation operation: UPDATE_EXERCISE
 // ====================================================
 
@@ -3885,16 +3855,30 @@ export interface UPDATE_EXERCISE_update_program_content {
   affected_rows: number;
 }
 
+export interface UPDATE_EXERCISE_update_program_content_body {
+  __typename: "program_content_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
 export interface UPDATE_EXERCISE {
   /**
    * update data of the table: "program_content"
    */
   update_program_content: UPDATE_EXERCISE_update_program_content | null;
+  /**
+   * update data of the table: "program_content_body"
+   */
+  update_program_content_body: UPDATE_EXERCISE_update_program_content_body | null;
 }
 
 export interface UPDATE_EXERCISEVariables {
   programContentId: any;
-  data: program_content_set_input;
+  content: program_content_set_input;
+  programContentBodyId: any;
+  body: program_content_body_set_input;
 }
 
 /* tslint:disable */
@@ -25115,6 +25099,16 @@ export interface program_content_body_on_conflict {
   constraint: program_content_body_constraint;
   update_columns: program_content_body_update_column[];
   where?: program_content_body_bool_exp | null;
+}
+
+/**
+ * input type for updating data in table "program_content_body"
+ */
+export interface program_content_body_set_input {
+  data?: any | null;
+  description?: string | null;
+  id?: any | null;
+  type?: string | null;
 }
 
 /**

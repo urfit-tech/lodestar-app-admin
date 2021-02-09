@@ -1,4 +1,4 @@
-import { EyeInvisibleOutlined, EyeOutlined, FileTextOutlined } from '@ant-design/icons'
+import Icon, { EyeInvisibleOutlined, EyeOutlined, FileTextOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Tag, Typography } from 'antd'
 import gql from 'graphql-tag'
@@ -9,6 +9,7 @@ import { dateFormatter, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useProgramContentBody } from '../../hooks/program'
 import { ReactComponent as PracticeIcon } from '../../images/icon/homework.svg'
+import { ReactComponent as QuizIcon } from '../../images/icon/quiz.svg'
 import { ReactComponent as VideoIcon } from '../../images/icon/video.svg'
 import types from '../../types'
 import { ProgramAdminProps, ProgramContentProps } from '../../types/program'
@@ -16,6 +17,9 @@ import ExerciseAdminModal from './ExerciseAdminModal'
 import ProgramContentAdminModal from './ProgramContentAdminModal'
 import ProgramContentPracticeAdminModal from './ProgramContentPracticeAdminModal'
 
+const StyledIcon = styled(Icon)`
+  color: #9b9b9b;
+`
 const StyledTitle = styled.div`
   font-size: 14px;
 `
@@ -61,13 +65,19 @@ const ProgramContentAdminItem: React.FC<{
       <div>
         <div className="d-flex">
           <div className="d-flex justify-content-center align-items-center mr-3">
-            {programContent.programContentType && programContent.programContentType === 'text' ? (
-              <FileTextOutlined style={{ color: '#9B9B9B' }} />
-            ) : programContent.programContentType === 'video' ? (
-              <VideoIcon />
-            ) : programContent.programContentType === 'practice' ? (
-              <PracticeIcon />
-            ) : null}
+            <StyledIcon
+              component={() =>
+                programContent.programContentType && programContent.programContentType === 'text' ? (
+                  <FileTextOutlined />
+                ) : programContent.programContentType === 'video' ? (
+                  <VideoIcon />
+                ) : programContent.programContentType === 'practice' ? (
+                  <PracticeIcon />
+                ) : programContent.programContentType === 'exercise' ? (
+                  <QuizIcon />
+                ) : null
+              }
+            />
           </div>
           <StyledTitle>{programContent.title}</StyledTitle>
         </div>
@@ -101,7 +111,7 @@ const ProgramContentAdminItem: React.FC<{
               updateProgramContent({
                 variables: {
                   programContentId: programContent.id,
-                  publishedAt: undefined,
+                  publishedAt: null,
                 },
               })
                 .then(() => onRefetch?.())
@@ -133,7 +143,14 @@ const ProgramContentAdminItem: React.FC<{
             }}
           />
         ) : programContent.programContentType === 'exercise' ? (
-          <ExerciseAdminModal program={program} programContentId={programContent.id} />
+          <ExerciseAdminModal
+            programContent={programContent}
+            programContentBody={programContentBody}
+            onRefetch={() => {
+              refetchProgramContentBody()
+              onRefetch?.()
+            }}
+          />
         ) : (
           <ProgramContentAdminModal
             program={program}

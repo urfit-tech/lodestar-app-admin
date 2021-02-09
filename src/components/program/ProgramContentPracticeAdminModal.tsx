@@ -14,7 +14,7 @@ import { handleError, uploadFile } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateAttachment, useUploadAttachments } from '../../hooks/data'
 import types from '../../types'
-import { ProgramContentBodyType, ProgramContentProps } from '../../types/program'
+import { ProgramContentBodyProps, ProgramContentProps } from '../../types/program'
 import { StyledTips } from '../admin'
 import FileUploader from '../common/FileUploader'
 import RatingInput from '../common/RatingInput'
@@ -59,7 +59,7 @@ type FieldProps = {
 
 const ProgramContentPracticeAdminModal: React.FC<{
   programContent: ProgramContentProps
-  programContentBody: ProgramContentBodyType
+  programContentBody: ProgramContentBodyProps
   onRefetch?: () => void
 }> = ({ programContent, programContentBody, onRefetch }) => {
   const [visible, setVisible] = useState(false)
@@ -89,7 +89,7 @@ const ProgramContentPracticeAdminModal: React.FC<{
 
 const PracticeForm: React.FC<{
   programContent: ProgramContentProps
-  programContentBody: ProgramContentBodyType
+  programContentBody: ProgramContentBodyProps
   onRefetch?: () => void
   onCancel?: () => void
 }> = ({ programContent, programContentBody, onRefetch, onCancel }) => {

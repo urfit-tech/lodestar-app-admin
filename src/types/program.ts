@@ -82,7 +82,7 @@ export type ProgramContentProps = {
   }[]
 }
 
-export type ProgramContentBodyType = {
+export type ProgramContentBodyProps = {
   id: string
   type: string | null
   description: string | null

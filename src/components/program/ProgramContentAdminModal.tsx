@@ -16,7 +16,7 @@ import { getFileDuration, handleError, uploadFile } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateProgramContent } from '../../hooks/program'
 import types from '../../types'
-import { ProgramContentBodyType, ProgramContentProps, ProgramProps } from '../../types/program'
+import { ProgramContentBodyProps, ProgramContentProps, ProgramProps } from '../../types/program'
 import FileUploader from '../common/FileUploader'
 import AdminBraftEditor from '../form/AdminBraftEditor'
 import SingleUploader from '../form/SingleUploader'
@@ -45,7 +45,7 @@ type FieldProps = {
 const ProgramContentAdminModal: React.FC<{
   program: ProgramProps
   programContent: ProgramContentProps
-  programContentBody: ProgramContentBodyType
+  programContentBody: ProgramContentBodyProps
   onRefetch?: () => void
 }> = ({ program, programContent, programContentBody, onRefetch }) => {
   const { formatMessage } = useIntl()
