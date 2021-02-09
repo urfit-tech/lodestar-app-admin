@@ -5,7 +5,6 @@ import { useForm } from 'antd/lib/form/Form'
 import axios, { Canceler } from 'axios'
 import BraftEditor, { EditorState } from 'braft-editor'
 import gql from 'graphql-tag'
-import { Moment } from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -55,7 +54,7 @@ const StyledPracticeFileSizeTips = styled(StyledTips)`
 `
 
 type FieldProps = {
-  publishedAt: Moment | null
+  publishedAt: boolean
   isNotifyUpdate: boolean
   title: string
   estimatedTime: number
@@ -108,7 +107,6 @@ const PracticeForm: React.FC<{
   const [attachments, setAttachments] = useState<File[]>(programContent.attachments.map(v => v.data) || [])
 
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isPublished, setIsPublished] = useState(!!programContent.publishedAt)
   const uploadAttachments = useUploadAttachments()
   const { deleteAttachments } = useMutateAttachment()
   const [updatePractice] = useMutation<types.UPDATE_PRACTICE, types.UPDATE_PRACTICEVariables>(UPDATE_PRACTICE)
@@ -184,15 +182,15 @@ const PracticeForm: React.FC<{
   }
 
   useEffect(() => {
-    setIsPublished(!!programContent.publishedAt)
-  }, [programContent.publishedAt])
+    form.setFieldsValue({ publishedAt: !!programContent.publishedAt })
+  }, [form, programContent.publishedAt])
 
   return (
     <Form
       form={form}
       layout="vertical"
       initialValues={{
-        publishedAt: isPublished,
+        publishedAt: !!programContent.publishedAt,
         isPracticePrivate: programContent.metadata && programContent.metadata.private,
         isNotifyUpdate: programContent.isNotifyUpdate,
         title: programContent.title,
@@ -200,9 +198,7 @@ const PracticeForm: React.FC<{
         description: BraftEditor.createEditorState(programContentBody.description),
       }}
       onFinish={handleSubmit}
-      onValuesChange={(_, values) => {
-        setIsPublished(!!values.publishedAt)
-      }}
+      onValuesChange={(_, values) => form.setFieldsValue({ publishedAt: values.publishedAt })}
     >
       <div className="d-flex align-items-center justify-content-between mb-4">
         <div className="d-flex align-items-center">
