@@ -62,11 +62,11 @@ const MemberProfileBasicForm: React.FC<{
             })),
         managerId: values.managerId || memberAdmin.manager?.id,
         assignedAt: values.managerId ? new Date() : null,
-        tags: (values.tags || memberAdmin.tags).map((tag: string) => ({
+        tags: (values.tags || memberAdmin.tags).map(tag => ({
           name: tag,
           type: '',
         })),
-        memberTags: (values.tags || memberAdmin.tags).map((tag: string) => ({
+        memberTags: (values.tags || memberAdmin.tags).map(tag => ({
           member_id: memberAdmin.id,
           tag_name: tag,
         })),
