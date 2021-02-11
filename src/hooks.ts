@@ -1,7 +1,10 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import { SortOrder } from 'antd/lib/table/interface'
 import gql from 'graphql-tag'
+import { memberPropertyFields } from './helpers'
 import {
+  GET_FIRST_ASSIGNED_MEMBER,
+  GET_FIRST_ASSIGNED_MEMBERVariables,
   GET_MEMBER_PRIVATE_TEACH_CONTRACT,
   GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables,
   GET_SALES_CALL_MEMBER,
@@ -405,5 +408,99 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
     members,
     errorMembers: error,
     refetchMembers: refetch,
+  }
+}
+
+export const useFirstAssignedMember = (salesId: string) => {
+  const { loading, error, data, refetch } = useQuery<GET_FIRST_ASSIGNED_MEMBER, GET_FIRST_ASSIGNED_MEMBERVariables>(
+    gql`
+      query GET_FIRST_ASSIGNED_MEMBER($salesId: String!, $selectedProperties: [String!]!) {
+        member_by_pk(id: $salesId) {
+          id
+          member_properties(where: { property: { name: { _eq: "分機號碼" } } }) {
+            id
+            value
+          }
+        }
+        property(where: { name: { _in: $selectedProperties } }) {
+          id
+          name
+          placeholder
+        }
+        member(
+          where: {
+            manager_id: { _eq: $salesId }
+            assigned_at: { _is_null: false }
+            _not: { member_notes: { author_id: { _eq: $salesId } } }
+          }
+          order_by: [{ assigned_at: asc }]
+          limit: 1
+        ) {
+          id
+          email
+          name
+          username
+          member_phones {
+            id
+            phone
+          }
+          member_categories {
+            id
+            category {
+              id
+              name
+            }
+          }
+          member_properties {
+            id
+            property {
+              id
+              name
+            }
+            value
+          }
+        }
+      }
+    `,
+    { variables: { salesId, selectedProperties: memberPropertyFields.map(field => field.name) } },
+  )
+
+  const sales = data?.member_by_pk
+    ? {
+        id: data.member_by_pk.id,
+        telephone: data.member_by_pk.member_properties[0]?.value || '',
+      }
+    : null
+  const properties =
+    data?.property.map(property => ({
+      id: property.id,
+      name: property.name,
+      options: property.placeholder ? property.placeholder.replace(/^\(|\)$/g, '').split('/') : null,
+    })) || []
+  const assignedMember = data?.member?.[0]
+    ? {
+        id: data.member[0].id,
+        email: data.member[0].email,
+        name: data.member[0].name || data.member[0].username,
+        phones: data.member[0].member_phones.map(v => v.phone),
+        categories: data.member[0].member_categories.map(v => ({
+          id: v.category.id,
+          name: v.category.name,
+        })),
+        properties: data.member[0].member_properties.map(v => ({
+          id: v.property.id,
+          name: v.property.name,
+          value: v.value,
+        })),
+      }
+    : null
+
+  return {
+    loadingAssignedMember: loading,
+    errorAssignedMember: error,
+    sales,
+    properties,
+    assignedMember,
+    refetchAssignedMember: refetch,
   }
 }

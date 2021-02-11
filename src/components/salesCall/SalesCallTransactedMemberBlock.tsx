@@ -13,8 +13,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { call } from '../../helpers'
 import { salesMessages } from '../../helpers/translation'
-import { SalesCallMemberProps } from '../../hooks'
-import { useFirstAssignedMember } from '../../pages/SalesCallPage'
+import { SalesCallMemberProps, useFirstAssignedMember } from '../../hooks'
 
 const StyledButton = styled(Button)`
   display: flex;

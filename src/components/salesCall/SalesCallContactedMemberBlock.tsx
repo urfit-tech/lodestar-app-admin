@@ -14,8 +14,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { call } from '../../helpers'
 import { salesMessages } from '../../helpers/translation'
-import { SalesCallMemberProps } from '../../hooks'
-import { useFirstAssignedMember } from '../../pages/SalesCallPage'
+import { SalesCallMemberProps, useFirstAssignedMember } from '../../hooks'
 
 const messages = {
   salesCallNotice: { id: 'sales.content.salesCallNotice', defaultMessage: '開發中名單勿滯留過久，否則將影響名單派發' },
