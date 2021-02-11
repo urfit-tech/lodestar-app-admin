@@ -2,16 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { SortOrder } from 'antd/lib/table/interface'
 import gql from 'graphql-tag'
 import { memberPropertyFields } from './helpers'
-import {
-  GET_FIRST_ASSIGNED_MEMBER,
-  GET_FIRST_ASSIGNED_MEMBERVariables,
-  GET_MEMBER_PRIVATE_TEACH_CONTRACT,
-  GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables,
-  GET_SALES_CALL_MEMBER,
-  GET_SALES_CALL_MEMBERVariables,
-  GET_SALE_COLLECTION,
-  order_by,
-} from './types.d'
+import * as types from './types.d'
 import { DateRangeType, MemberContractProps, StatusType } from './types/memberContract'
 
 export const useMemberContractCollection = ({
@@ -39,7 +30,7 @@ export const useMemberContractCollection = ({
     startedAt: SortOrder
   }
 }) => {
-  const condition: GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['condition'] = {
+  const condition: types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['condition'] = {
     agreed_at: { _is_null: false },
     revoked_at: { _is_null: !isRevoked },
     author_name: { _ilike: authorName && `%${authorName}%` },
@@ -55,15 +46,19 @@ export const useMemberContractCollection = ({
     ],
   }
 
-  const orderBy: GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['orderBy'] = [
-    { agreed_at: sortOrder.agreedAt && (sortOrder.agreedAt === 'descend' ? order_by.desc : order_by.asc) },
-    { revoked_at: sortOrder.revokedAt && (sortOrder.revokedAt === 'descend' ? order_by.desc : order_by.asc) },
-    { started_at: sortOrder.startedAt && (sortOrder.startedAt === 'descend' ? order_by.desc : order_by.asc) },
+  const orderBy: types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['orderBy'] = [
+    { agreed_at: sortOrder.agreedAt && (sortOrder.agreedAt === 'descend' ? types.order_by.desc : types.order_by.asc) },
+    {
+      revoked_at: sortOrder.revokedAt && (sortOrder.revokedAt === 'descend' ? types.order_by.desc : types.order_by.asc),
+    },
+    {
+      started_at: sortOrder.startedAt && (sortOrder.startedAt === 'descend' ? types.order_by.desc : types.order_by.asc),
+    },
   ]
 
   const { loading, data, error, refetch, fetchMore } = useQuery<
-    GET_MEMBER_PRIVATE_TEACH_CONTRACT,
-    GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables
+    types.GET_MEMBER_PRIVATE_TEACH_CONTRACT,
+    types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables
   >(
     gql`
       query GET_MEMBER_PRIVATE_TEACH_CONTRACT(
@@ -246,7 +241,7 @@ export const useMutateMemberContract = () => {
 }
 
 export const useXuemiSales = () => {
-  const { loading, error, data, refetch } = useQuery<GET_SALE_COLLECTION>(
+  const { loading, error, data, refetch } = useQuery<types.GET_SALE_COLLECTION>(
     gql`
       query GET_SALE_COLLECTION {
         xuemi_sales {
@@ -329,14 +324,14 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
         {
           member_contracts_aggregate: {
             max: {
-              agreed_at: order_by.desc,
+              agreed_at: types.order_by.desc,
             },
           },
         },
       ]
     : []
 
-  const { loading, data, error, refetch } = useQuery<GET_SALES_CALL_MEMBER, GET_SALES_CALL_MEMBERVariables>(
+  const { loading, data, error, refetch } = useQuery<types.GET_SALES_CALL_MEMBER, types.GET_SALES_CALL_MEMBERVariables>(
     gql`
       query GET_SALES_CALL_MEMBER(
         $condition: member_bool_exp!
@@ -411,8 +406,11 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
   }
 }
 
-export const useFirstAssignedMember = (salesId: string) => {
-  const { loading, error, data, refetch } = useQuery<GET_FIRST_ASSIGNED_MEMBER, GET_FIRST_ASSIGNED_MEMBERVariables>(
+export const useCurrentLead = (salesId: string) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_FIRST_ASSIGNED_MEMBER,
+    types.GET_FIRST_ASSIGNED_MEMBERVariables
+  >(
     gql`
       query GET_FIRST_ASSIGNED_MEMBER($salesId: String!, $selectedProperties: [String!]!) {
         member_by_pk(id: $salesId) {
@@ -495,7 +493,58 @@ export const useFirstAssignedMember = (salesId: string) => {
       }
     : null
 
+  const [markInvalidMember] = useMutation<types.MARK_INVALID_MEMBER, types.MARK_INVALID_MEMBERVariables>(
+    MARK_INVALID_MEMBER,
+  )
+  const [updateMemberPhones] = useMutation<types.UPDATE_MEMBER_PHONE, types.UPDATE_MEMBER_PHONEVariables>(
+    UPDATE_MEMBER_PHONE,
+  )
+  const [insertMemberNote] = useMutation<types.INSERT_MEMBER_NOTE, types.INSERT_MEMBER_NOTEVariables>(
+    INSERT_MEMBER_NOTE,
+  )
+  const [updateMemberProperties] = useMutation<types.UPDATE_MEMBER_PROPERTIES, types.UPDATE_MEMBER_PROPERTIESVariables>(
+    UPDATE_MEMBER_PROPERTIES,
+  )
   return {
+    markInvalid: async () => assignedMember && markInvalidMember({ variables: { memberId: assignedMember.id } }),
+    insertNote: async (memberNote: { status: string; duration: number; description: string }) =>
+      assignedMember &&
+      insertMemberNote({
+        variables: {
+          data: {
+            member_id: assignedMember.id,
+            author_id: salesId,
+            type: 'outbound',
+            status: memberNote.status,
+            duration: memberNote.duration,
+            description: memberNote.description,
+            rejected_at: memberNote.status === 'rejected' ? new Date() : undefined,
+          },
+        },
+      }),
+    updatePhones: async (memberPhones: Array<{ phone: string; isPrimary: boolean; isValid?: boolean }>) =>
+      assignedMember &&
+      updateMemberPhones({
+        variables: {
+          data: memberPhones.map(memberPhone => ({
+            member_id: assignedMember.id,
+            phone: memberPhone.phone,
+            is_primary: memberPhone.isPrimary,
+            is_valid: memberPhone.isValid,
+          })),
+        },
+      }),
+    updateProperties: async (memberProperties: Array<{ propertyId: string; value: string }>) =>
+      assignedMember &&
+      updateMemberProperties({
+        variables: {
+          data: memberProperties.map(memberProperty => ({
+            member_id: assignedMember.id,
+            property_id: memberProperty.propertyId,
+            value: memberProperty.value,
+          })),
+        },
+      }),
     loadingAssignedMember: loading,
     errorAssignedMember: error,
     sales,
@@ -504,3 +553,43 @@ export const useFirstAssignedMember = (salesId: string) => {
     refetchAssignedMember: refetch,
   }
 }
+
+const UPDATE_MEMBER_PHONE = gql`
+  mutation UPDATE_MEMBER_PHONE($data: [member_phone_insert_input!]!) {
+    insert_member_phone(
+      objects: $data
+      on_conflict: { constraint: member_phone_member_id_phone_key, update_columns: [is_primary, is_valid] }
+    ) {
+      affected_rows
+    }
+  }
+`
+const MARK_INVALID_MEMBER = gql`
+  mutation MARK_INVALID_MEMBER($memberId: String!) {
+    update_member(where: { id: { _eq: $memberId } }, _set: { manager_id: null }) {
+      affected_rows
+    }
+    update_member_phone(where: { member_id: { _eq: $memberId } }, _set: { is_valid: false }) {
+      affected_rows
+    }
+  }
+`
+const INSERT_MEMBER_NOTE = gql`
+  mutation INSERT_MEMBER_NOTE($data: member_note_insert_input!) {
+    insert_member_note_one(object: $data) {
+      id
+    }
+  }
+`
+const UPDATE_MEMBER_PROPERTIES = gql`
+  mutation UPDATE_MEMBER_PROPERTIES($data: [member_property_insert_input!]!) {
+    insert_member_property(
+      objects: $data
+      on_conflict: { constraint: member_property_member_id_property_id_key, update_columns: [value] }
+    ) {
+      returning {
+        id
+      }
+    }
+  }
+`

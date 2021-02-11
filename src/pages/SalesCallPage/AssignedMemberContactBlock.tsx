@@ -1,7 +1,5 @@
-import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Form, Input, message, Radio, Select, Skeleton, TimePicker } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import gql from 'graphql-tag'
 import { AdminBlock, AdminBlockTitle } from 'lodestar-app-admin/src/components/admin'
 import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
@@ -13,8 +11,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { call, memberPropertyFields } from '../../helpers'
-import { useFirstAssignedMember } from '../../hooks'
-import types from '../../types'
+import { useCurrentLead } from '../../hooks'
 
 const AssignedMemberName = styled.div`
   color: var(--gray-darker);
@@ -64,19 +61,11 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
     properties,
     assignedMember,
     refetchAssignedMember,
-  } = useFirstAssignedMember(salesId)
-  const [markInvalidMember] = useMutation<types.MARK_INVALID_MEMBER, types.MARK_INVALID_MEMBERVariables>(
-    MARK_INVALID_MEMBER,
-  )
-  const [updateMemberPhone] = useMutation<types.UPDATE_MEMBER_PHONE, types.UPDATE_MEMBER_PHONEVariables>(
-    UPDATE_MEMBER_PHONE,
-  )
-  const [insertMemberNote] = useMutation<types.INSERT_MEMBER_NOTE, types.INSERT_MEMBER_NOTEVariables>(
-    INSERT_MEMBER_NOTE,
-  )
-  const [updateMemberProperties] = useMutation<types.UPDATE_MEMBER_PROPERTIES, types.UPDATE_MEMBER_PROPERTIESVariables>(
-    UPDATE_MEMBER_PROPERTIES,
-  )
+    updatePhones,
+    insertNote,
+    updateProperties,
+    markInvalid,
+  } = useCurrentLead(salesId)
 
   const [selectedPhone, setSelectedPhone] = useState('')
   const [disabledPhones, setDisabledPhones] = useState<string[]>([])
@@ -122,11 +111,7 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
     if (!primaryPhoneNumber) {
       if (assignedMember.phones.every(phone => disabledPhones.includes(phone))) {
         setLoading(true)
-        await markInvalidMember({
-          variables: {
-            memberId: assignedMember.id,
-          },
-        }).catch(handleError)
+        await markInvalid().catch(handleError)
         setLoading(false)
         resetForms()
         return
@@ -150,51 +135,36 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
     try {
       const noteValues = memberNoteForm.getFieldsValue()
       const propertyValues = memberPropertyForm.getFieldsValue()
-      await updateMemberPhone({
-        variables: {
-          data: [
-            ...assignedMember.phones.map(phone => ({
-              member_id: assignedMember.id,
-              phone,
-              is_primary: phone === primaryPhoneNumber,
-              is_valid: disabledPhones.includes(phone),
-            })),
-            selectedPhone === 'custom-phone'
-              ? {
-                  member_id: assignedMember.id,
-                  phone: primaryPhoneNumber,
-                  is_primary: true,
-                }
-              : undefined,
-          ].filter(notEmpty),
-        },
+      await updatePhones(
+        [
+          ...assignedMember.phones.map(phone => ({
+            phone,
+            isPrimary: phone === primaryPhoneNumber,
+            isValid: disabledPhones.includes(phone),
+          })),
+          selectedPhone === 'custom-phone'
+            ? {
+                phone: primaryPhoneNumber,
+                isPrimary: true,
+              }
+            : undefined,
+        ].filter(notEmpty),
+      )
+      await insertNote({
+        status: memberNoteStatus === 'not-answered' ? 'missed' : 'answered',
+        duration: withDurationInput
+          ? noteValues.duration.hour() * 3600 + noteValues.duration.minute() * 60 + noteValues.duration.second()
+          : 0,
+        description: noteValues.description,
       })
-      await insertMemberNote({
-        variables: {
-          data: {
-            member_id: assignedMember.id,
-            author_id: salesId,
-            type: 'outbound',
-            status: memberNoteStatus === 'not-answered' ? 'missed' : 'answered',
-            duration: withDurationInput
-              ? noteValues.duration.hour() * 3600 + noteValues.duration.minute() * 60 + noteValues.duration.second()
-              : 0,
-            description: noteValues.description,
-            rejected_at: memberNoteStatus === 'rejected' ? new Date() : undefined,
-          },
-        },
-      })
-      await updateMemberProperties({
-        variables: {
-          data: properties
-            .filter(property => propertyValues[property.id])
-            .map(property => ({
-              member_id: assignedMember.id,
-              property_id: property.id,
-              value: propertyValues[property.id],
-            })),
-        },
-      })
+      await updateProperties(
+        properties
+          .filter(property => propertyValues[property.id])
+          .map(property => ({
+            propertyId: property.id,
+            value: propertyValues[property.id],
+          })),
+      )
       resetForms()
     } catch (error) {
       handleError(error)
@@ -390,45 +360,5 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
     </AdminBlock>
   )
 }
-
-const UPDATE_MEMBER_PHONE = gql`
-  mutation UPDATE_MEMBER_PHONE($data: [member_phone_insert_input!]!) {
-    insert_member_phone(
-      objects: $data
-      on_conflict: { constraint: member_phone_member_id_phone_key, update_columns: [is_primary, is_valid] }
-    ) {
-      affected_rows
-    }
-  }
-`
-const MARK_INVALID_MEMBER = gql`
-  mutation MARK_INVALID_MEMBER($memberId: String!) {
-    update_member(where: { id: { _eq: $memberId } }, _set: { manager_id: null }) {
-      affected_rows
-    }
-    update_member_phone(where: { member_id: { _eq: $memberId } }, _set: { is_valid: false }) {
-      affected_rows
-    }
-  }
-`
-const INSERT_MEMBER_NOTE = gql`
-  mutation INSERT_MEMBER_NOTE($data: member_note_insert_input!) {
-    insert_member_note_one(object: $data) {
-      id
-    }
-  }
-`
-const UPDATE_MEMBER_PROPERTIES = gql`
-  mutation UPDATE_MEMBER_PROPERTIES($data: [member_property_insert_input!]!) {
-    insert_member_property(
-      objects: $data
-      on_conflict: { constraint: member_property_member_id_property_id_key, update_columns: [value] }
-    ) {
-      returning {
-        id
-      }
-    }
-  }
-`
 
 export default AssignedMemberContactBlock
