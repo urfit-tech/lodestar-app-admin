@@ -11,13 +11,13 @@ import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { memberContractMessages } from '../helpers/translation'
-import { useMemberContractCollection } from '../hooks'
-import { DateRangeType, MemberContractProps, StatusType } from '../types/memberContract'
+import { memberContractMessages } from '../../helpers/translation'
+import { useMemberContractCollection } from '../../hooks'
+import { DateRangeType, MemberContractProps, StatusType } from '../../types/memberContract'
+import MemberNameLabel from '../common/MemberNameLabel'
 import MemberContractFieldSelector from './MemberContractFieldSelector'
 import MemberContractFilterSelector from './MemberContractFilterSelector'
 import MemberContractModal from './MemberContractModal'
-import MemberName from './MemberName'
 
 type ColorType = 'gray' | 'error' | 'warning' | 'success'
 
@@ -368,7 +368,7 @@ const MemberContractCollectionTable: React.FC<{
       render: (text, record, index) =>
         record.orderExecutors?.map(({ memberId, ratio }, index) => (
           <div>
-            <MemberName key={index} memberId={memberId} />
+            <MemberNameLabel key={index} memberId={memberId} />
             <span className="ml-2">{Math.floor(ratio * 100)}%</span>
           </div>
         )),

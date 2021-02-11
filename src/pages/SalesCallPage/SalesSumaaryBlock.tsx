@@ -14,7 +14,7 @@ import styled from 'styled-components'
 import { salesMessages } from '../../helpers/translation'
 import types from '../../types'
 
-const MemberName = styled.div`
+const MemberNameLabel = styled.div`
   color: var(--gray-darker);
   font-weight: bold;
   letter-spacing: 0.2px;
@@ -73,7 +73,7 @@ const SalesSummaryBlock: React.FC<{
         <div className="d-flex align-items-center justify-content-start flex-grow-1">
           <AvatarImage size="44px" src={salesSummary.sales?.picture_url} className="mr-2" />
           <div>
-            <MemberName>{salesSummary.sales?.name}</MemberName>
+            <MemberNameLabel>{salesSummary.sales?.name}</MemberNameLabel>
             <MemberDescription>
               <span className="mr-2">{salesSummary.sales?.email}</span>
               <span>分機號碼：{salesSummary.sales?.telephone}</span>

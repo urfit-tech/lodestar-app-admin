@@ -5,7 +5,7 @@ import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import MemberContractCollectionTable from '../components/MemberContractCollectionTable'
+import MemberContractCollectionTable from '../components/memberContract/MemberContractCollectionTable'
 import { memberContractMessages } from '../helpers/translation'
 import { ReactComponent as UserCopyIcon } from '../images/icons/user-copy.svg'
 
