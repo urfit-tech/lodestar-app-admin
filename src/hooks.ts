@@ -1,6 +1,9 @@
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { product } from 'ramda'
+import { useMutation, useQuery, useApolloClient } from '@apollo/react-hooks'
 import { SortOrder } from 'antd/lib/table/interface'
+import { Chance } from 'chance'
 import gql from 'graphql-tag'
+import { useEffect, useMemo } from 'react'
 import { memberPropertyFields } from './helpers'
 import * as types from './types.d'
 import { DateRangeType, MemberContractProps, StatusType } from './types/memberContract'
@@ -406,7 +409,8 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
   }
 }
 
-export const useCurrentLead = (salesId: string) => {
+export const useLead = (salesId: string) => {
+  const apolloClient = useApolloClient()
   const { loading, error, data, refetch } = useQuery<
     types.GET_FIRST_ASSIGNED_MEMBER,
     types.GET_FIRST_ASSIGNED_MEMBERVariables
@@ -415,6 +419,7 @@ export const useCurrentLead = (salesId: string) => {
       query GET_FIRST_ASSIGNED_MEMBER($salesId: String!, $selectedProperties: [String!]!) {
         member_by_pk(id: $salesId) {
           id
+          metadata
           member_properties(where: { property: { name: { _eq: "分機號碼" } } }) {
             id
             value
@@ -463,35 +468,44 @@ export const useCurrentLead = (salesId: string) => {
     { variables: { salesId, selectedProperties: memberPropertyFields.map(field => field.name) } },
   )
 
-  const sales = data?.member_by_pk
-    ? {
-        id: data.member_by_pk.id,
-        telephone: data.member_by_pk.member_properties[0]?.value || '',
-      }
-    : null
+  const sales = useMemo(
+    () =>
+      data?.member_by_pk
+        ? {
+            id: data.member_by_pk.id,
+            telephone: data.member_by_pk.member_properties[0]?.value || '',
+            metadata: data.member_by_pk.metadata || {},
+          }
+        : null,
+    [data?.member_by_pk],
+  )
   const properties =
     data?.property.map(property => ({
       id: property.id,
       name: property.name,
       options: property.placeholder ? property.placeholder.replace(/^\(|\)$/g, '').split('/') : null,
     })) || []
-  const assignedMember = data?.member?.[0]
-    ? {
-        id: data.member[0].id,
-        email: data.member[0].email,
-        name: data.member[0].name || data.member[0].username,
-        phones: data.member[0].member_phones.map(v => v.phone),
-        categories: data.member[0].member_categories.map(v => ({
-          id: v.category.id,
-          name: v.category.name,
-        })),
-        properties: data.member[0].member_properties.map(v => ({
-          id: v.property.id,
-          name: v.property.name,
-          value: v.value,
-        })),
-      }
-    : null
+  const currentLead = useMemo(
+    () =>
+      data?.member?.[0]
+        ? {
+            id: data.member[0].id,
+            email: data.member[0].email,
+            name: data.member[0].name || data.member[0].username,
+            phones: data.member[0].member_phones.map(v => v.phone),
+            categories: data.member[0].member_categories.map(v => ({
+              id: v.category.id,
+              name: v.category.name,
+            })),
+            properties: data.member[0].member_properties.map(v => ({
+              id: v.property.id,
+              name: v.property.name,
+              value: v.value,
+            })),
+          }
+        : null,
+    [data?.member],
+  )
 
   const [markInvalidMember] = useMutation<types.MARK_INVALID_MEMBER, types.MARK_INVALID_MEMBERVariables>(
     MARK_INVALID_MEMBER,
@@ -505,14 +519,101 @@ export const useCurrentLead = (salesId: string) => {
   const [updateMemberProperties] = useMutation<types.UPDATE_MEMBER_PROPERTIES, types.UPDATE_MEMBER_PROPERTIESVariables>(
     UPDATE_MEMBER_PROPERTIES,
   )
+
+  useEffect(() => {
+    // request new lead if there is no current lead
+    if (!sales || currentLead) return
+    const odds = Number(sales?.metadata?.assignment?.odds) || 10
+    const requestLeads = async (odds: number) => {
+      const chance = new Chance()
+      const categoriesRate: { [categoryName: string]: number } = sales?.metadata?.assignment?.categories || {}
+      const firstHandVariables = {
+        where: { member_note_count: { _eq: 0 } },
+        orderBy: { created_at: 'desc' },
+      }
+      const secondHandVariables = {
+        where: { member_note_count: { _gt: 0 } },
+        orderBy: { lead_score: 'asc' },
+      }
+      const { data } = await apolloClient.query<types.GET_LEADS>({
+        query: gql`
+          query GET_LEADS($where: xuemi_lead_bool_exp, $orderBy: [xuemi_lead_order_by!]) {
+            xuemi_lead(where: $where, order_by: $orderBy) {
+              member {
+                id
+                member_categories {
+                  category {
+                    name
+                  }
+                }
+              }
+            }
+          }
+        `,
+        variables: chance.weighted([firstHandVariables, secondHandVariables], [odds, 100 - odds]),
+      })
+      const leads = []
+      for (const lead of data.xuemi_lead) {
+        if (lead.member) {
+          const categoryRates =
+            lead.member.member_categories.length > 0
+              ? lead.member.member_categories.map(v => categoriesRate[v.category.name])
+              : [categoriesRate[''] || 0]
+          leads.push({
+            memberId: lead.member.id,
+            rate: 1 - product(categoryRates.map(rate => 1 - rate)),
+          })
+        }
+      }
+      return leads
+    }
+    const assignLeads = async (leads: { memberId: string; rate: number }[]) => {
+      for (const lead of leads) {
+        if (lead.rate >= Math.random()) {
+          const { data } = await apolloClient.mutate<types.UPDATE_MEMBER_MANAGER, types.UPDATE_MEMBER_MANAGERVariables>(
+            {
+              mutation: gql`
+                mutation UPDATE_MEMBER_MANAGER($memberId: String!, $managerId: String!, $assignedAt: timestamptz!) {
+                  update_member(
+                    where: { id: { _eq: $memberId }, manager_id: { _is_null: true } }
+                    _set: { manager_id: $managerId, assigned_at: $assignedAt }
+                  ) {
+                    affected_rows
+                  }
+                }
+              `,
+              variables: {
+                memberId: lead.memberId,
+                managerId: salesId,
+                assignedAt: new Date(),
+              },
+            },
+          )
+          if (data?.update_member?.affected_rows || 0) {
+            break
+          }
+        }
+      }
+    }
+    requestLeads(odds)
+      .then(assignLeads)
+      .then(() => refetch())
+  }, [currentLead, sales, refetch, apolloClient, salesId])
+
   return {
-    markInvalid: async () => assignedMember && markInvalidMember({ variables: { memberId: assignedMember.id } }),
+    loadingCurrentLead: loading,
+    errorCurrentLead: error,
+    sales,
+    properties,
+    currentLead,
+    refetchCurrentLead: refetch,
+    markInvalid: async () => currentLead && markInvalidMember({ variables: { memberId: currentLead.id } }),
     insertNote: async (memberNote: { status: string; duration: number; description: string }) =>
-      assignedMember &&
+      currentLead &&
       insertMemberNote({
         variables: {
           data: {
-            member_id: assignedMember.id,
+            member_id: currentLead.id,
             author_id: salesId,
             type: 'outbound',
             status: memberNote.status,
@@ -523,11 +624,11 @@ export const useCurrentLead = (salesId: string) => {
         },
       }),
     updatePhones: async (memberPhones: Array<{ phone: string; isPrimary: boolean; isValid?: boolean }>) =>
-      assignedMember &&
+      currentLead &&
       updateMemberPhones({
         variables: {
           data: memberPhones.map(memberPhone => ({
-            member_id: assignedMember.id,
+            member_id: currentLead.id,
             phone: memberPhone.phone,
             is_primary: memberPhone.isPrimary,
             is_valid: memberPhone.isValid,
@@ -535,22 +636,16 @@ export const useCurrentLead = (salesId: string) => {
         },
       }),
     updateProperties: async (memberProperties: Array<{ propertyId: string; value: string }>) =>
-      assignedMember &&
+      currentLead &&
       updateMemberProperties({
         variables: {
           data: memberProperties.map(memberProperty => ({
-            member_id: assignedMember.id,
+            member_id: currentLead.id,
             property_id: memberProperty.propertyId,
             value: memberProperty.value,
           })),
         },
       }),
-    loadingAssignedMember: loading,
-    errorAssignedMember: error,
-    sales,
-    properties,
-    assignedMember,
-    refetchAssignedMember: refetch,
   }
 }
 

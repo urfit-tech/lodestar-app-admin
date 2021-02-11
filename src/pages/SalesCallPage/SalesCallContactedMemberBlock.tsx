@@ -14,7 +14,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { call } from '../../helpers'
 import { salesMessages } from '../../helpers/translation'
-import { SalesCallMemberProps, useCurrentLead } from '../../hooks'
+import { SalesCallMemberProps, useLead } from '../../hooks'
 
 const messages = {
   salesCallNotice: { id: 'sales.content.salesCallNotice', defaultMessage: '開發中名單勿滯留過久，否則將影響名單派發' },
@@ -61,7 +61,7 @@ const SalesCallContactedMemberBlock: React.FC<{
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { apiHost, authToken } = useAuth()
-  const { sales } = useCurrentLead(salesId)
+  const { sales } = useLead(salesId)
   const [filters, setFilters] = useState<{
     studentName?: string
     phone?: string

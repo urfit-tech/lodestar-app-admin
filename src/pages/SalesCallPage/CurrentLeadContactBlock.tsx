@@ -11,16 +11,16 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { call, memberPropertyFields } from '../../helpers'
-import { useCurrentLead } from '../../hooks'
+import { useLead } from '../../hooks'
 
-const AssignedMemberName = styled.div`
+const CurrentLeadName = styled.div`
   color: var(--gray-darker);
   font-size: 20px;
   font-weight: bold;
   line-height: 1.3;
   letter-spacing: 0.77px;
 `
-const AssignedMemberEmail = styled.div`
+const CurrentLeadEmail = styled.div`
   color: var(--gray-dark);
   font-size: 14px;
   letter-spacing: 0.4px;
@@ -46,7 +46,7 @@ type memberPropertyFieldProps = {
   [PropertyName: string]: string
 }
 
-const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) => {
+const CurrentLeadContactBlock: React.FC<{ salesId: string }> = ({ salesId }) => {
   const { formatMessage } = useIntl()
   const { apiHost, authToken } = useAuth()
   const { id: appId } = useApp()
@@ -55,17 +55,17 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
   const [memberPropertyForm] = useForm<memberPropertyFieldProps>()
 
   const {
-    loadingAssignedMember,
-    errorAssignedMember,
+    loadingCurrentLead,
+    errorCurrentLead,
     sales,
     properties,
-    assignedMember,
-    refetchAssignedMember,
+    currentLead,
+    refetchCurrentLead,
     updatePhones,
     insertNote,
     updateProperties,
     markInvalid,
-  } = useCurrentLead(salesId)
+  } = useLead(salesId)
 
   const [selectedPhone, setSelectedPhone] = useState('')
   const [disabledPhones, setDisabledPhones] = useState<string[]>([])
@@ -73,16 +73,16 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
   const [memberNoteStatus, setMemberNoteStatus] = useState<memberNoteFieldProps['status']>('not-answered')
   const [loading, setLoading] = useState(false)
 
-  if (loadingAssignedMember) {
+  if (loadingCurrentLead) {
     return <Skeleton active />
   }
 
-  if (errorAssignedMember) {
+  if (errorCurrentLead) {
     return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
-  if (!assignedMember) {
-    return <div>目前無待開發名單</div>
+  if (!currentLead) {
+    return <div>等待新名單中...</div>
   }
 
   const withDurationInput = !sales?.telephone.startsWith('8')
@@ -93,7 +93,7 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
     setSelectedPhone('')
     setDisabledPhones([])
     setMemberNoteStatus('not-answered')
-    refetchAssignedMember().then(({ data }) => {
+    refetchCurrentLead().then(({ data }) => {
       memberPropertyForm.setFieldsValue(
         properties.reduce(
           (accumulator, property) => ({
@@ -109,7 +109,7 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
 
   const handleSubmit = async () => {
     if (!primaryPhoneNumber) {
-      if (assignedMember.phones.every(phone => disabledPhones.includes(phone))) {
+      if (currentLead.phones.every(phone => disabledPhones.includes(phone))) {
         setLoading(true)
         await markInvalid().catch(handleError)
         setLoading(false)
@@ -137,7 +137,7 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
       const propertyValues = memberPropertyForm.getFieldsValue()
       await updatePhones(
         [
-          ...assignedMember.phones.map(phone => ({
+          ...currentLead.phones.map(phone => ({
             phone,
             isPrimary: phone === primaryPhoneNumber,
             isValid: disabledPhones.includes(phone),
@@ -176,14 +176,14 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
     <AdminBlock className="p-4">
       <div className="row">
         <div className="col-5">
-          <AssignedMemberName className="mb-2">{assignedMember.name}</AssignedMemberName>
-          <AssignedMemberEmail>{assignedMember.email}</AssignedMemberEmail>
+          <CurrentLeadName className="mb-2">{currentLead.name}</CurrentLeadName>
+          <CurrentLeadEmail>{currentLead.email}</CurrentLeadEmail>
         </div>
         <div className="col-7">
-          <div>會員分類：{assignedMember.categories.map(category => category.name).join(', ')}</div>
+          <div>會員分類：{currentLead.categories.map(category => category.name).join(', ')}</div>
           <div>
             <span className="mr-2">
-              素材：{assignedMember.properties.find(property => property.name === '廣告素材')?.value}
+              素材：{currentLead.properties.find(property => property.name === '廣告素材')?.value}
             </span>
             <a
               href="https://docs.google.com/presentation/d/1JA-ucGIoMpSzCh5nBW5IpSBf_QsqnY3W1c9-U5Xnk1c/edit?usp=sharing"
@@ -195,7 +195,7 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
           </div>
           <div>
             填單日期：
-            {assignedMember.properties
+            {currentLead.properties
               .find(property => property.name === '填單日期')
               ?.value.split(',')
               .map(date => moment(date).format('YYYY-MM-DD'))
@@ -216,7 +216,7 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
             }}
             className="mb-5"
           >
-            {assignedMember.phones.map(phone => {
+            {currentLead.phones.map(phone => {
               const isDisabled = disabledPhones.includes(phone)
 
               return (
@@ -316,7 +316,7 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
             labelAlign="left"
             labelCol={{ span: 8 }}
             wrapperCol={{ span: 16 }}
-            initialValues={assignedMember.properties.reduce(
+            initialValues={currentLead.properties.reduce(
               (accumulator, property) => ({
                 ...accumulator,
                 [property.id]: property.value,
@@ -361,4 +361,4 @@ const AssignedMemberContactBlock: React.FC<{ salesId: string }> = ({ salesId }) 
   )
 }
 
-export default AssignedMemberContactBlock
+export default CurrentLeadContactBlock

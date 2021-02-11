@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "chance": "^1.1.7",
     "lodestar-app-admin": "git+https://5283f1eb2c0cbdec821bd2bc65e18c942c4d51f8:x-oauth-basic@github.com/urfit-tech/lodestar-app-admin.git#develop",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
@@ -61,6 +62,7 @@
     "@hot-loader/react-dom": "^17.0.1",
     "@types/audiobuffer-to-wav": "^1.0.0",
     "@types/braft-editor": "^2.2.0",
+    "@types/chance": "^1.1.1",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/lodash": "^4.14.162",
     "@types/moment-timezone": "^0.5.13",

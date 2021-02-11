@@ -7,12 +7,12 @@ import { ReactComponent as PhoneIcon } from 'lodestar-app-admin/src/images/icon/
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { StringParam, useQueryParam } from 'use-query-params'
-import SalesCallContactedMemberBlock from '../../components/salesCall/SalesCallContactedMemberBlock'
-import SalesCallTransactedMemberBlock from '../../components/salesCall/SalesCallTransactedMemberBlock'
 import { salesMessages } from '../../helpers/translation'
 import { useSalesCallMember } from '../../hooks'
-import AssignedMemberContactBlock from './AssignedMemberContactBlock'
-import SalesSummaryBlock from './SalesSumaaryBlock'
+import CurrentLeadContactBlock from './CurrentLeadContactBlock'
+import SalesCallContactedMemberBlock from './SalesCallContactedMemberBlock'
+import SalesCallTransactedMemberBlock from './SalesCallTransactedMemberBlock'
+import SalesSummaryBlock from './SalesSummaryBlock'
 
 const SalesCallPage: React.FC = () => {
   const { formatMessage } = useIntl()
@@ -38,7 +38,7 @@ const SalesCallPage: React.FC = () => {
 
       <Tabs activeKey={activeKey || 'potentials'} onChange={key => setActiveKey(key)}>
         <Tabs.TabPane key="potentials" tab={formatMessage(salesMessages.label.potentials)}>
-          {currentMemberId && <AssignedMemberContactBlock salesId={currentMemberId} />}
+          {currentMemberId && <CurrentLeadContactBlock salesId={currentMemberId} />}
         </Tabs.TabPane>
         <Tabs.TabPane
           key="keep-in-touch"

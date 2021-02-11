@@ -252,121 +252,6 @@ export interface GET_SALES_CALL_MEMBERVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_SALES_SUMMARY
-// ====================================================
-
-export interface GET_SALES_SUMMARY_member_by_pk_member_properties {
-  __typename: "member_property";
-  id: any;
-  value: string;
-}
-
-export interface GET_SALES_SUMMARY_member_by_pk {
-  __typename: "member";
-  id: string;
-  picture_url: string | null;
-  name: string;
-  username: string;
-  email: string;
-  /**
-   * An array relationship
-   */
-  member_properties: GET_SALES_SUMMARY_member_by_pk_member_properties[];
-}
-
-export interface GET_SALES_SUMMARY_order_executor_sharing {
-  __typename: "order_executor_sharing";
-  order_executor_id: any | null;
-  total_price: any | null;
-  ratio: any | null;
-}
-
-export interface GET_SALES_SUMMARY_contracts_this_month_aggregate {
-  __typename: "member_contract_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_SALES_SUMMARY_contracts_this_month {
-  __typename: "member_contract_aggregate";
-  aggregate: GET_SALES_SUMMARY_contracts_this_month_aggregate | null;
-}
-
-export interface GET_SALES_SUMMARY_contracts_last_month_aggregate {
-  __typename: "member_contract_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_SALES_SUMMARY_contracts_last_month {
-  __typename: "member_contract_aggregate";
-  aggregate: GET_SALES_SUMMARY_contracts_last_month_aggregate | null;
-}
-
-export interface GET_SALES_SUMMARY_member_note_aggregate_aggregate_sum {
-  __typename: "member_note_sum_fields";
-  duration: number | null;
-}
-
-export interface GET_SALES_SUMMARY_member_note_aggregate_aggregate {
-  __typename: "member_note_aggregate_fields";
-  count: number | null;
-  sum: GET_SALES_SUMMARY_member_note_aggregate_aggregate_sum | null;
-}
-
-export interface GET_SALES_SUMMARY_member_note_aggregate {
-  __typename: "member_note_aggregate";
-  aggregate: GET_SALES_SUMMARY_member_note_aggregate_aggregate | null;
-}
-
-export interface GET_SALES_SUMMARY_assigned_members_today_aggregate {
-  __typename: "member_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_SALES_SUMMARY_assigned_members_today {
-  __typename: "member_aggregate";
-  aggregate: GET_SALES_SUMMARY_assigned_members_today_aggregate | null;
-}
-
-export interface GET_SALES_SUMMARY {
-  /**
-   * fetch data from the table: "member" using primary key columns
-   */
-  member_by_pk: GET_SALES_SUMMARY_member_by_pk | null;
-  /**
-   * fetch data from the table: "order_executor_sharing"
-   */
-  order_executor_sharing: GET_SALES_SUMMARY_order_executor_sharing[];
-  /**
-   * fetch aggregated fields from the table: "member_contract"
-   */
-  contracts_this_month: GET_SALES_SUMMARY_contracts_this_month;
-  /**
-   * fetch aggregated fields from the table: "member_contract"
-   */
-  contracts_last_month: GET_SALES_SUMMARY_contracts_last_month;
-  /**
-   * fetch aggregated fields from the table: "member_note"
-   */
-  member_note_aggregate: GET_SALES_SUMMARY_member_note_aggregate;
-  /**
-   * fetch aggregated fields from the table: "member"
-   */
-  assigned_members_today: GET_SALES_SUMMARY_assigned_members_today;
-}
-
-export interface GET_SALES_SUMMARYVariables {
-  salesId: string;
-  startOfToday: any;
-  startOfMonth: any;
-  startOfLastMonth: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_FIRST_ASSIGNED_MEMBER
 // ====================================================
 
@@ -379,6 +264,7 @@ export interface GET_FIRST_ASSIGNED_MEMBER_member_by_pk_member_properties {
 export interface GET_FIRST_ASSIGNED_MEMBER_member_by_pk {
   __typename: "member";
   id: string;
+  metadata: any;
   /**
    * An array relationship
    */
@@ -467,6 +353,87 @@ export interface GET_FIRST_ASSIGNED_MEMBER {
 export interface GET_FIRST_ASSIGNED_MEMBERVariables {
   salesId: string;
   selectedProperties: string[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_LEADS
+// ====================================================
+
+export interface GET_LEADS_xuemi_lead_member_member_categories_category {
+  __typename: "category";
+  name: string;
+}
+
+export interface GET_LEADS_xuemi_lead_member_member_categories {
+  __typename: "member_category";
+  /**
+   * An object relationship
+   */
+  category: GET_LEADS_xuemi_lead_member_member_categories_category;
+}
+
+export interface GET_LEADS_xuemi_lead_member {
+  __typename: "member";
+  id: string;
+  /**
+   * An array relationship
+   */
+  member_categories: GET_LEADS_xuemi_lead_member_member_categories[];
+}
+
+export interface GET_LEADS_xuemi_lead {
+  __typename: "xuemi_lead";
+  /**
+   * An object relationship
+   */
+  member: GET_LEADS_xuemi_lead_member | null;
+}
+
+export interface GET_LEADS {
+  /**
+   * fetch data from the table: "xuemi.lead"
+   */
+  xuemi_lead: GET_LEADS_xuemi_lead[];
+}
+
+export interface GET_LEADSVariables {
+  where?: xuemi_lead_bool_exp | null;
+  orderBy?: xuemi_lead_order_by[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_MEMBER_MANAGER
+// ====================================================
+
+export interface UPDATE_MEMBER_MANAGER_update_member {
+  __typename: "member_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_MEMBER_MANAGER {
+  /**
+   * update data of the table: "member"
+   */
+  update_member: UPDATE_MEMBER_MANAGER_update_member | null;
+}
+
+export interface UPDATE_MEMBER_MANAGERVariables {
+  memberId: string;
+  managerId: string;
+  assignedAt: any;
 }
 
 /* tslint:disable */
@@ -593,6 +560,121 @@ export interface UPDATE_MEMBER_PROPERTIES {
 
 export interface UPDATE_MEMBER_PROPERTIESVariables {
   data: member_property_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SALES_SUMMARY
+// ====================================================
+
+export interface GET_SALES_SUMMARY_member_by_pk_member_properties {
+  __typename: "member_property";
+  id: any;
+  value: string;
+}
+
+export interface GET_SALES_SUMMARY_member_by_pk {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+  /**
+   * An array relationship
+   */
+  member_properties: GET_SALES_SUMMARY_member_by_pk_member_properties[];
+}
+
+export interface GET_SALES_SUMMARY_order_executor_sharing {
+  __typename: "order_executor_sharing";
+  order_executor_id: any | null;
+  total_price: any | null;
+  ratio: any | null;
+}
+
+export interface GET_SALES_SUMMARY_contracts_this_month_aggregate {
+  __typename: "member_contract_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_SALES_SUMMARY_contracts_this_month {
+  __typename: "member_contract_aggregate";
+  aggregate: GET_SALES_SUMMARY_contracts_this_month_aggregate | null;
+}
+
+export interface GET_SALES_SUMMARY_contracts_last_month_aggregate {
+  __typename: "member_contract_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_SALES_SUMMARY_contracts_last_month {
+  __typename: "member_contract_aggregate";
+  aggregate: GET_SALES_SUMMARY_contracts_last_month_aggregate | null;
+}
+
+export interface GET_SALES_SUMMARY_member_note_aggregate_aggregate_sum {
+  __typename: "member_note_sum_fields";
+  duration: number | null;
+}
+
+export interface GET_SALES_SUMMARY_member_note_aggregate_aggregate {
+  __typename: "member_note_aggregate_fields";
+  count: number | null;
+  sum: GET_SALES_SUMMARY_member_note_aggregate_aggregate_sum | null;
+}
+
+export interface GET_SALES_SUMMARY_member_note_aggregate {
+  __typename: "member_note_aggregate";
+  aggregate: GET_SALES_SUMMARY_member_note_aggregate_aggregate | null;
+}
+
+export interface GET_SALES_SUMMARY_assigned_members_today_aggregate {
+  __typename: "member_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_SALES_SUMMARY_assigned_members_today {
+  __typename: "member_aggregate";
+  aggregate: GET_SALES_SUMMARY_assigned_members_today_aggregate | null;
+}
+
+export interface GET_SALES_SUMMARY {
+  /**
+   * fetch data from the table: "member" using primary key columns
+   */
+  member_by_pk: GET_SALES_SUMMARY_member_by_pk | null;
+  /**
+   * fetch data from the table: "order_executor_sharing"
+   */
+  order_executor_sharing: GET_SALES_SUMMARY_order_executor_sharing[];
+  /**
+   * fetch aggregated fields from the table: "member_contract"
+   */
+  contracts_this_month: GET_SALES_SUMMARY_contracts_this_month;
+  /**
+   * fetch aggregated fields from the table: "member_contract"
+   */
+  contracts_last_month: GET_SALES_SUMMARY_contracts_last_month;
+  /**
+   * fetch aggregated fields from the table: "member_note"
+   */
+  member_note_aggregate: GET_SALES_SUMMARY_member_note_aggregate;
+  /**
+   * fetch aggregated fields from the table: "member"
+   */
+  assigned_members_today: GET_SALES_SUMMARY_assigned_members_today;
+}
+
+export interface GET_SALES_SUMMARYVariables {
+  salesId: string;
+  startOfToday: any;
+  startOfMonth: any;
+  startOfLastMonth: any;
 }
 
 /* tslint:disable */
@@ -7691,6 +7773,7 @@ export interface member_public_bool_exp {
   abstract?: String_comparison_exp | null;
   app_id?: String_comparison_exp | null;
   description?: String_comparison_exp | null;
+  email?: String_comparison_exp | null;
   id?: String_comparison_exp | null;
   member_specialities?: member_speciality_bool_exp | null;
   metadata?: jsonb_comparison_exp | null;
@@ -14246,6 +14329,31 @@ export interface voucher_status_bool_exp {
   used?: Boolean_comparison_exp | null;
   voucher?: voucher_bool_exp | null;
   voucher_id?: uuid_comparison_exp | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "xuemi.lead". All fields are combined with a logical 'AND'.
+ */
+export interface xuemi_lead_bool_exp {
+  _and?: (xuemi_lead_bool_exp | null)[] | null;
+  _not?: xuemi_lead_bool_exp | null;
+  _or?: (xuemi_lead_bool_exp | null)[] | null;
+  created_at?: timestamptz_comparison_exp | null;
+  lead_score?: bigint_comparison_exp | null;
+  member?: member_bool_exp | null;
+  member_id?: String_comparison_exp | null;
+  member_note_count?: bigint_comparison_exp | null;
+}
+
+/**
+ * ordering options when selecting data from "xuemi.lead"
+ */
+export interface xuemi_lead_order_by {
+  created_at?: order_by | null;
+  lead_score?: order_by | null;
+  member?: member_order_by | null;
+  member_id?: order_by | null;
+  member_note_count?: order_by | null;
 }
 
 /**

@@ -13,7 +13,7 @@ import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { call } from '../../helpers'
 import { salesMessages } from '../../helpers/translation'
-import { SalesCallMemberProps, useCurrentLead } from '../../hooks'
+import { SalesCallMemberProps, useLead } from '../../hooks'
 
 const StyledButton = styled(Button)`
   display: flex;
@@ -38,7 +38,7 @@ const SalesCallTransactedMemberBlock: React.FC<{
 }> = ({ salesId, members }) => {
   const { id: appId } = useApp()
   const { apiHost, authToken } = useAuth()
-  const { sales } = useCurrentLead(salesId)
+  const { sales } = useLead(salesId)
   const { formatMessage } = useIntl()
   const [filters, setFilters] = useState<{
     studentName?: string
