@@ -146,7 +146,7 @@ const useProductOwnerOrders = (memberId: string) => {
         order_product(
           where: {
             order_log: {
-              status: { _eq: "SUCCESS" }
+              order_status: { status: { _eq: "SUCCESS" } }
               order_products: { product: { product_owner: { member_id: { _eq: $memberId } } } }
             }
           }

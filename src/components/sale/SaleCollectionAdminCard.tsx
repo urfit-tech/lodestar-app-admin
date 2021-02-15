@@ -331,7 +331,7 @@ const useOrderLog = (filters?: {
   memberId?: string
 }) => {
   const condition: types.GET_ORDERSVariables['condition'] = {
-    status: { _in: filters?.statuses ? filters.statuses : undefined },
+    order_status: { status: { _in: filters?.statuses ? filters.statuses : undefined } },
     id: { _ilike: filters?.orderId ? `%${filters.orderId}%` : undefined },
     member: {
       id: {
@@ -394,7 +394,7 @@ const useOrderLog = (filters?: {
       : data.order_log.map(v => ({
           id: v.id,
           createdAt: v.created_at,
-          status: v.status,
+          status: v.order_status?.status || 'UNKNOWN',
           shipping: v.shipping,
           name: v.member.name,
           email: v.member.email,
@@ -450,7 +450,9 @@ const GET_ORDERS = gql`
     order_log(where: $condition, order_by: { created_at: desc }, limit: $limit) {
       id
       created_at
-      status
+      order_status {
+        status
+      }
       shipping
       expired_at
       member {

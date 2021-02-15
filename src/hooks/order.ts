@@ -3,9 +3,9 @@ import gql from 'graphql-tag'
 import types from '../types'
 
 export const useOrderStatuses = () => {
-  const { loading, error, data } = useQuery<types.GET_ORDER_LOG_STATUS>(gql`
-    query GET_ORDER_LOG_STATUS {
-      order_log(distinct_on: status) {
+  const { loading, error, data } = useQuery<types.GET_ORDER_STATUS>(gql`
+    query GET_ORDER_STATUS {
+      order_status(distinct_on: status) {
         status
       }
     }
@@ -14,7 +14,6 @@ export const useOrderStatuses = () => {
   return {
     loading,
     error,
-    data: data?.order_log?.map(log => log.status) || [],
+    data: data?.order_status?.map(v => v.status || 'UNKNOWN') || [],
   }
 }
-
