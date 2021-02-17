@@ -114,7 +114,14 @@ const useMemberPropertyCollection = (memberId: string) => {
         }
       }
     `,
-    { variables: { memberId } },
+    {
+      variables: {
+        memberId,
+      },
+      context: {
+        important: true,
+      },
+    },
   )
 
   const memberProperties: MemberPropertyProps[] =

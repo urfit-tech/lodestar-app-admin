@@ -44,7 +44,15 @@ export const useCategory = (classType: ClassType) => {
         }
       }
     `,
-    { variables: { appId, classType } },
+    {
+      variables: {
+        appId,
+        classType,
+      },
+      context: {
+        important: true,
+      },
+    },
   )
 
   const categories: (CategoryProps & {
