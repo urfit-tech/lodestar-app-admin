@@ -11594,8 +11594,7 @@ export interface GET_PRACTICE_PREVIEW_COLLECTION {
 }
 
 export interface GET_PRACTICE_PREVIEW_COLLECTIONVariables {
-  title?: string | null;
-  memberName?: string | null;
+  searchText?: string | null;
   programId?: any | null;
   unreviewed?: boolean | null;
 }
@@ -13493,6 +13492,7 @@ export enum order_log_constraint {
  * update columns of table "order_log"
  */
 export enum order_log_update_column {
+  auto_renewed_at = "auto_renewed_at",
   created_at = "created_at",
   deliver_message = "deliver_message",
   delivered_at = "delivered_at",
@@ -22107,6 +22107,7 @@ export interface order_log_bool_exp {
   _and?: (order_log_bool_exp | null)[] | null;
   _not?: order_log_bool_exp | null;
   _or?: (order_log_bool_exp | null)[] | null;
+  auto_renewed_at?: timestamptz_comparison_exp | null;
   coupon?: coupon_bool_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   deliver_message?: String_comparison_exp | null;
@@ -22166,6 +22167,7 @@ export interface order_log_export_bool_exp {
  * input type for inserting data into table "order_log"
  */
 export interface order_log_insert_input {
+  auto_renewed_at?: any | null;
   coupon?: coupon_obj_rel_insert_input | null;
   created_at?: any | null;
   deliver_message?: string | null;
@@ -22195,6 +22197,7 @@ export interface order_log_insert_input {
  * order by max() on columns of table "order_log"
  */
 export interface order_log_max_order_by {
+  auto_renewed_at?: order_by | null;
   created_at?: order_by | null;
   deliver_message?: order_by | null;
   delivered_at?: order_by | null;
@@ -22214,6 +22217,7 @@ export interface order_log_max_order_by {
  * order by min() on columns of table "order_log"
  */
 export interface order_log_min_order_by {
+  auto_renewed_at?: order_by | null;
   created_at?: order_by | null;
   deliver_message?: order_by | null;
   delivered_at?: order_by | null;
@@ -22250,6 +22254,7 @@ export interface order_log_on_conflict {
  * ordering options when selecting data from "order_log"
  */
 export interface order_log_order_by {
+  auto_renewed_at?: order_by | null;
   coupon?: coupon_order_by | null;
   created_at?: order_by | null;
   deliver_message?: order_by | null;

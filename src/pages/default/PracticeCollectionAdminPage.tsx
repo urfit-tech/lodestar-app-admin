@@ -116,8 +116,7 @@ const usePracticePreviewCollection = (selectedProgramId: string, searchText: str
     types.GET_PRACTICE_PREVIEW_COLLECTIONVariables
   >(GET_PRACTICE_PREVIEW_COLLECTION, {
     variables: {
-      title: searchText ? `%${searchText}%` : undefined,
-      memberName: searchText ? `%${searchText}%` : undefined,
+      searchText: searchText ? `%${searchText}%` : undefined,
       programId: selectedProgramId === 'all' ? undefined : selectedProgramId,
       unreviewed,
     },
@@ -158,13 +157,11 @@ const usePracticePreviewCollection = (selectedProgramId: string, searchText: str
 }
 
 const GET_PRACTICE_PREVIEW_COLLECTION = gql`
-  query GET_PRACTICE_PREVIEW_COLLECTION($title: String, $memberName: String, $programId: uuid, $unreviewed: Boolean) {
+  query GET_PRACTICE_PREVIEW_COLLECTION($searchText: String, $programId: uuid, $unreviewed: Boolean) {
     practice(
       where: {
-        program_content: {
-          program_content_section: { program_id: { _eq: $programId }, program: { _or: { title: { _like: $title } } } }
-        }
-        member: { _or: { username: { _like: $memberName } } }
+        _or: [{ member: { username: { _like: $searchText } } }, { title: { _like: $searchText } }]
+        program_content: { program_content_section: { program_id: { _eq: $programId } } }
         reviewed_at: { _is_null: $unreviewed }
         is_deleted: { _eq: false }
       }
