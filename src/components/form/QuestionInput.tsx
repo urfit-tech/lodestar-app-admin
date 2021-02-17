@@ -115,7 +115,7 @@ const QuestionInput: React.FC<{
           onChange={v =>
             onChange?.({
               ...value,
-              points: typeof v === 'string' ? parseInt(v) : Math.floor(v || 0),
+              points: typeof v === 'string' ? parseFloat(v) : v || 0,
             })
           }
         />
@@ -215,12 +215,12 @@ const ChoiceInput: React.FC<{
           renderTrigger={({ setVisible }) => (
             <StyledAction component={() => <DeleteOutlined />} onClick={() => setVisible(true)} />
           )}
-          title={formatMessage(programMessages.ui.deleteQuestion)}
+          title={formatMessage(programMessages.ui.deleteChoice)}
           okText={formatMessage(commonMessages.ui.delete)}
           cancelText={formatMessage(commonMessages.ui.back)}
           onOk={() => onRemove?.()}
         >
-          {formatMessage(programMessages.text.deleteQuestionDescription)}
+          {formatMessage(programMessages.text.deleteChoiceDescription)}
         </AdminModal>
       </div>
 

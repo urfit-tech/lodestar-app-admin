@@ -55,7 +55,10 @@ const ExerciseAdminModal: React.FC<{
           programContent={programContent}
           programContentBody={programContentBody}
           onCancel={() => setVisible(false)}
-          onRefetch={() => onRefetch?.()}
+          onRefetch={() => {
+            onRefetch?.()
+            setVisible(false)
+          }}
         />
       </Modal>
     </>
