@@ -50,7 +50,7 @@ const StyledEditorWrapper = styled.div`
 
 export type QuestionProps = {
   id: string
-  points: number
+  score: number
   description: string | null
   answerDescription: string | null
   choices: ChoiceProps[]
@@ -109,13 +109,13 @@ const QuestionInput: React.FC<{
         </div>
       </div>
 
-      <Form.Item label={formatMessage(programMessages.label.points)}>
+      <Form.Item label={formatMessage(programMessages.label.score)}>
         <InputNumber
-          value={value?.points}
+          value={value?.score}
           onChange={v =>
             onChange?.({
               ...value,
-              points: typeof v === 'string' ? parseFloat(v) : v || 0,
+              score: typeof v === 'string' ? parseFloat(v) : v || 0,
             })
           }
         />

@@ -29,7 +29,7 @@ type FieldProps = {
   isAvailableToRetry: boolean
   isNotifyUpdate: boolean
   title: string
-  baseline: number
+  passingScore: number
 }
 
 const ExerciseAdminModal: React.FC<{
@@ -79,7 +79,7 @@ const ExerciseAdminForm: React.FC<{
   const [loading, setLoading] = useState(false)
   const [questions, setQuestions] = useState<QuestionProps[]>(programContentBody.data?.questions || [])
 
-  const totalPoints = sum(questions.map(question => question.points))
+  const totalScore = sum(questions.map(question => question.score))
   const handleSubmit = async (values: FieldProps) => {
     setLoading(true)
     updateExercise({
@@ -94,7 +94,7 @@ const ExerciseAdminForm: React.FC<{
           metadata: {
             isAvailableToGoBack: values.isAvailableToGoBack,
             isAvailableToRetry: values.isAvailableToRetry,
-            baseline: values.baseline || 0,
+            passingScore: values.passingScore || 0,
           },
         },
         body: {
@@ -125,7 +125,7 @@ const ExerciseAdminForm: React.FC<{
         isAvailableToRetry: programContent.metadata?.isAvailableToRetry,
         isNotifyUpdate: programContent.isNotifyUpdate,
         title: programContent.title,
-        baseline: programContent.metadata?.baseline || 0,
+        passingScore: programContent.metadata?.passingScore || 0,
       }}
       onFinish={handleSubmit}
     >
@@ -193,10 +193,10 @@ const ExerciseAdminForm: React.FC<{
       </Form.Item>
 
       <div className="d-flex align-items-center">
-        <Form.Item name="baseline" label={formatMessage(programMessages.label.baseline)}>
-          <InputNumber min={0} max={totalPoints} />
+        <Form.Item name="passingScore" label={formatMessage(programMessages.label.passingScore)}>
+          <InputNumber min={0} max={totalScore} />
         </Form.Item>
-        <span className="ml-2 mt-3">/ {totalPoints}</span>
+        <span className="ml-2 mt-3">/ {totalScore}</span>
       </div>
 
       {questions.map((question, index) => (
@@ -222,7 +222,7 @@ const ExerciseAdminForm: React.FC<{
               ...questions,
               {
                 id: uuidV4(),
-                points: 0,
+                score: 0,
                 description: null,
                 answerDescription: null,
                 choices: [],
