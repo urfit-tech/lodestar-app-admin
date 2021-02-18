@@ -5583,6 +5583,7 @@ export interface GET_ORDER_LOG_EXPORT_order_log_export {
   order_discounts: string | null;
   order_discount_total_price: any | null;
   order_executors: string | null;
+  referrer_email: string | null;
 }
 
 export interface GET_ORDER_LOG_EXPORT {
@@ -5617,6 +5618,7 @@ export interface GET_ORDER_PRODUCT_EXPORT_order_product_export {
   product_owner: string | null;
   paid_at: any | null;
   product_id: string | null;
+  referrer_email: string | null;
 }
 
 export interface GET_ORDER_PRODUCT_EXPORT {
@@ -22157,6 +22159,7 @@ export interface order_log_export_bool_exp {
   paid_at?: String_comparison_exp | null;
   payment_no?: String_comparison_exp | null;
   payment_options?: String_comparison_exp | null;
+  referrer_email?: String_comparison_exp | null;
   sharing_codes?: String_comparison_exp | null;
   sharing_notes?: String_comparison_exp | null;
   status?: String_comparison_exp | null;
@@ -22424,6 +22427,7 @@ export interface order_product_export_bool_exp {
   product_id?: String_comparison_exp | null;
   product_owner?: String_comparison_exp | null;
   quantity?: Int_comparison_exp | null;
+  referrer_email?: String_comparison_exp | null;
 }
 
 /**
@@ -24800,7 +24804,6 @@ export interface practice_bool_exp {
   _and?: (practice_bool_exp | null)[] | null;
   _not?: practice_bool_exp | null;
   _or?: (practice_bool_exp | null)[] | null;
-  attachments?: practice_attachment_bool_exp | null;
   cover_url?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
@@ -24808,6 +24811,7 @@ export interface practice_bool_exp {
   is_deleted?: Boolean_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
+  practice_attachments?: practice_attachment_bool_exp | null;
   practice_reactions?: practice_reaction_bool_exp | null;
   program_content?: program_content_bool_exp | null;
   program_content_id?: uuid_comparison_exp | null;
@@ -24820,7 +24824,6 @@ export interface practice_bool_exp {
  * input type for inserting data into table "practice"
  */
 export interface practice_insert_input {
-  attachments?: practice_attachment_arr_rel_insert_input | null;
   cover_url?: string | null;
   created_at?: any | null;
   description?: string | null;
@@ -24828,6 +24831,7 @@ export interface practice_insert_input {
   is_deleted?: boolean | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
+  practice_attachments?: practice_attachment_arr_rel_insert_input | null;
   practice_reactions?: practice_reaction_arr_rel_insert_input | null;
   program_content?: program_content_obj_rel_insert_input | null;
   program_content_id?: any | null;

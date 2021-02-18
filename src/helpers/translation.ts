@@ -1076,6 +1076,7 @@ export const orderMessages = {
     orderLogUpdatedAt: { id: 'order.label.orderLogUpdatedAt', defaultMessage: '訂單更新時間' },
     orderLogTotalPrice: { id: 'order.label.orderLogTotalPrice', defaultMessage: '訂單總額' },
     orderLogExecutor: { id: 'order.label.orderLogExecutor', defaultMessage: '承辦人與分潤' },
+    referrer: { id: 'order.label.referrer', defaultMessage: '推薦人' },
     // order product
     orderProductName: { id: 'order.label.orderProductName', defaultMessage: '項目名稱' },
     orderProductCount: { id: 'order.label.orderProductCount', defaultMessage: '項目總數' },

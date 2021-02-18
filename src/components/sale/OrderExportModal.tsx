@@ -6,7 +6,6 @@ import gql from 'graphql-tag'
 import moment, { Moment } from 'moment'
 import React, { useCallback, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import styled from 'styled-components'
 import { useApp } from '../../contexts/AppContext'
 import { dateFormatter, downloadCSV, toCSV } from '../../helpers'
 import { commonMessages, errorMessages, orderMessages } from '../../helpers/translation'
@@ -24,20 +23,6 @@ const messages = defineMessages({
   invoiceFailed: { id: 'payment.status.invoiceFailed', defaultMessage: '開立失敗 {errorCode}' },
   invoicePending: { id: 'payment.status.invoicePending', defaultMessage: '未開立電子發票' },
 })
-
-const StyledRangePicker = styled(props => <DatePicker.RangePicker {...props} />)`
-  input {
-    width: 38%;
-    text-align: left;
-    &:placeholder-shown {
-      text-align: left;
-    }
-  }
-  .ant-calendar-range-picker-separator {
-    min-width: 32px;
-    vertical-align: unset;
-  }
-`
 
 type FieldProps = {
   timeRange: [Moment, Moment]
@@ -95,6 +80,7 @@ const OrderExportModal: React.FC = () => {
           formatMessage(orderMessages.label.paymentLogDetails),
           enabledModules.sharing_code ? formatMessage(orderMessages.label.sharingCode) : undefined,
           enabledModules.sharing_code ? formatMessage(orderMessages.label.sharingNote) : undefined,
+          enabledModules.referrer ? formatMessage(orderMessages.label.referrer) : undefined,
           enabledModules.member_assignment ? formatMessage(orderMessages.label.orderLogExecutor) : undefined,
           formatMessage(orderMessages.label.invoiceName),
           formatMessage(orderMessages.label.invoiceEmail),
@@ -135,6 +121,7 @@ const OrderExportModal: React.FC = () => {
               orderLog.payment_options?.split('\\n').join('\n') || '',
               enabledModules.sharing_code ? orderLog.sharing_codes?.split('\\n').join('\n') || '' : undefined,
               enabledModules.sharing_code ? orderLog.sharing_notes?.split('\\n').join('\n') || '' : undefined,
+              enabledModules.referrer ? orderLog.referrer_email || '' : undefined,
               enabledModules.member_assignment ? orderLog.order_executors?.split('\\n').join('\n') || '' : undefined,
               orderLog.invoice?.name || '',
               orderLog.invoice?.email || '',
@@ -216,6 +203,7 @@ const OrderExportModal: React.FC = () => {
           formatMessage(orderMessages.label.productQuantity),
           formatMessage(orderMessages.label.productPrice),
           enabledModules.sharing_code ? formatMessage(orderMessages.label.sharingCode) : undefined,
+          enabledModules.referrer ? formatMessage(orderMessages.label.referrer) : undefined,
         ].filter(v => typeof v !== 'undefined'),
         ...orderProducts.map(orderProduct =>
           [
@@ -230,6 +218,7 @@ const OrderExportModal: React.FC = () => {
             orderProduct.quantity,
             orderProduct.price,
             enabledModules.sharing_code ? orderProduct.options?.sharingCode || '' : undefined,
+            enabledModules.referrer ? orderProduct.referrer_email || '' : undefined,
           ].filter(v => typeof v !== 'undefined'),
         ),
       ]
@@ -448,6 +437,7 @@ const OrderExportModal: React.FC = () => {
       <Form
         form={form}
         colon={false}
+        layout="vertical"
         hideRequiredMark
         initialValues={{
           orderStatuses: [],
@@ -465,8 +455,7 @@ const OrderExportModal: React.FC = () => {
             },
           ]}
         >
-          <StyledRangePicker
-            style={{ width: '100%' }}
+          <DatePicker.RangePicker
             format="YYYY-MM-DD HH:mm:ss"
             showTime={{
               format: 'YYYY-MM-DD HH:mm:ss',
@@ -522,6 +511,7 @@ const GET_ORDER_LOG_EXPORT = gql`
       order_discounts
       order_discount_total_price
       order_executors
+      referrer_email
     }
   }
 `
@@ -538,6 +528,7 @@ const GET_ORDER_PRODUCT_EXPORT = gql`
       product_owner
       paid_at
       product_id
+      referrer_email
     }
   }
 `
