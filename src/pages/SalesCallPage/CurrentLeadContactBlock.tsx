@@ -198,7 +198,8 @@ const CurrentLeadContactBlock: React.FC<{ salesId: string }> = ({ salesId }) => 
             {currentLead.properties
               .find(property => property.name === '填單日期')
               ?.value.split(',')
-              .map(date => moment(date).format('YYYY-MM-DD'))
+              .filter(date => moment(date).isValid())
+              .map(date => moment(date).fromNow())
               .join(', ')}
           </div>
         </div>
