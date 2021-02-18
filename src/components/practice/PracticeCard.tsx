@@ -237,7 +237,7 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
       </Responsive.Default>
 
       <Responsive.Desktop>
-        <div className="d-flex col-12">
+        <div className="d-flex col-12 p-0">
           <div
             className="d-flex col-9 p-0"
             onClick={() => {
@@ -259,7 +259,7 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
               <StyledName>{memberName}</StyledName>
             </div>
           </div>
-          <div className="d-flex col-3">
+          <div className="d-flex col-3 p-0">
             <StyledCommentIcon>
               <CommentAltLinesIcon className="mr-2" />
               <div>{practiceAmount && practiceAmount}</div>

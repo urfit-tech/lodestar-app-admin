@@ -62,8 +62,6 @@ const PracticeCollectionAdminPage: React.FC = () => {
         <AllPracticeCollectionBlock
           selectedProgramId={selectedProgramId}
           selectedStatus={selectedStatus}
-          currentMemberId={currentMemberId}
-          currentUserRole={currentUserRole}
           searchText={searchText}
         />
       )}
@@ -74,10 +72,8 @@ const PracticeCollectionAdminPage: React.FC = () => {
 const AllPracticeCollectionBlock: React.FC<{
   selectedProgramId: string
   selectedStatus: string
-  currentMemberId: string
-  currentUserRole: string
   searchText: string
-}> = ({ selectedProgramId, selectedStatus, currentMemberId, currentUserRole, searchText }) => {
+}> = ({ selectedProgramId, selectedStatus, searchText }) => {
   const { formatMessage } = useIntl()
 
   let unreviewed: boolean | undefined
