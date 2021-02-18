@@ -7,7 +7,7 @@ import gql from 'graphql-tag'
 import { clone, sum } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import { v4 as uuidV4 } from 'uuid'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
@@ -33,6 +33,26 @@ type FieldProps = {
   passingScore: number
 }
 
+const StyledModal = styled(Modal)<{ isFullWidth?: boolean }>`
+  && {
+    ${props =>
+      props.isFullWidth &&
+      css`
+        &.ant-modal {
+          top: 0;
+          width: 100%;
+          max-width: 100%;
+          padding-bottom: 0;
+        }
+        > .ant-modal-content > .ant-modal-body {
+          max-width: 960px;
+          min-height: 100vh;
+          margin: 0 auto;
+        }
+      `}
+  }
+`
+
 const ExerciseAdminModal: React.FC<{
   programContent: ProgramContentProps
   programContentBody: ProgramContentBodyProps
@@ -44,8 +64,9 @@ const ExerciseAdminModal: React.FC<{
     <>
       <EditOutlined onClick={() => setVisible(true)} />
 
-      <Modal
-        width="70vw"
+      <StyledModal
+        isFullWidth
+        width="100vw"
         footer={null}
         maskStyle={{ background: 'rgba(255, 255, 255, 0.8)' }}
         maskClosable={false}
@@ -61,7 +82,7 @@ const ExerciseAdminModal: React.FC<{
             setVisible(false)
           }}
         />
-      </Modal>
+      </StyledModal>
     </>
   )
 }
