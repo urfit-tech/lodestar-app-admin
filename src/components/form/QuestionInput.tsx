@@ -1,7 +1,6 @@
 import Icon, { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Form, InputNumber } from 'antd'
 import BraftEditor, { EditorState } from 'braft-editor'
-import { clone } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -50,9 +49,10 @@ const StyledEditorWrapper = styled.div`
 
 export type QuestionProps = {
   id: string
-  score: number
+  points: number
   description: string | null
   answerDescription: string | null
+  isMultipleAnswers: boolean
   choices: ChoiceProps[]
 }
 
@@ -109,16 +109,30 @@ const QuestionInput: React.FC<{
         </div>
       </div>
 
-      <Form.Item label={formatMessage(programMessages.label.score)}>
+      <Form.Item label={formatMessage(programMessages.label.points)}>
         <InputNumber
-          value={value?.score}
+          min={0}
+          value={value?.points}
           onChange={v =>
             onChange?.({
               ...value,
-              score: typeof v === 'string' ? parseFloat(v) : v || 0,
+              points: typeof v === 'string' ? parseFloat(v) : v || 0,
             })
           }
         />
+      </Form.Item>
+
+      <Form.Item>
+        <Checkbox
+          onChange={e =>
+            onChange?.({
+              ...value,
+              isMultipleAnswers: e.target.checked,
+            })
+          }
+        >
+          {formatMessage(programMessages.label.allowMultipleAnswers)}
+        </Checkbox>
       </Form.Item>
 
       <Form.Item label={formatMessage(programMessages.label.question)}>
@@ -143,9 +157,23 @@ const QuestionInput: React.FC<{
           index={index}
           value={choice}
           onChange={newChoice => {
-            const newQuestion = clone(value)
-            newQuestion.choices.splice(index, 1, newChoice)
-            onChange?.(newQuestion)
+            const newChoices = value.choices.map(v => {
+              if (v.id === newChoice.id) {
+                return newChoice
+              }
+              if (!value.isMultipleAnswers && newChoice.isCorrect) {
+                return {
+                  ...v,
+                  isCorrect: false,
+                }
+              }
+              return v
+            })
+
+            onChange?.({
+              ...value,
+              choices: newChoices,
+            })
           }}
           onRemove={() =>
             onChange?.({

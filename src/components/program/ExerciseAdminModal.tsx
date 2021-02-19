@@ -79,7 +79,7 @@ const ExerciseAdminForm: React.FC<{
   const [loading, setLoading] = useState(false)
   const [questions, setQuestions] = useState<QuestionProps[]>(programContentBody.data?.questions || [])
 
-  const totalScore = sum(questions.map(question => question.score))
+  const totalPoints = sum(questions.map(question => question.points || 0))
   const handleSubmit = async (values: FieldProps) => {
     setLoading(true)
     updateExercise({
@@ -194,9 +194,9 @@ const ExerciseAdminForm: React.FC<{
 
       <div className="d-flex align-items-center">
         <Form.Item name="passingScore" label={formatMessage(programMessages.label.passingScore)}>
-          <InputNumber min={0} max={totalScore} />
+          <InputNumber min={0} max={totalPoints} />
         </Form.Item>
-        <span className="ml-2 mt-3">/ {totalScore}</span>
+        <span className="ml-2 mt-3">/ {totalPoints}</span>
       </div>
 
       {questions.map((question, index) => (
@@ -222,10 +222,22 @@ const ExerciseAdminForm: React.FC<{
               ...questions,
               {
                 id: uuidV4(),
-                score: 0,
+                points: 0,
                 description: null,
                 answerDescription: null,
-                choices: [],
+                isMultipleAnswers: false,
+                choices: [
+                  {
+                    id: uuidV4(),
+                    description: null,
+                    isCorrect: true,
+                  },
+                  {
+                    id: uuidV4(),
+                    description: null,
+                    isCorrect: false,
+                  },
+                ],
               },
             ])
           }
