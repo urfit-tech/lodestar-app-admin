@@ -182,7 +182,7 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
           <StyledTitle ellipsis={{ rows: 2 }}>{title}</StyledTitle>
           <StyledCreatedAt>
             <CalendarOutlined className="mr-2" />
-            <span>{dateFormatter(createdAt, 'YYYY-MM-DD')}</span>
+            <span>{dateFormatter(createdAt, 'YYYY-MM-DD HH:mm:ss')}</span>
           </StyledCreatedAt>
         </div>
 
@@ -250,7 +250,7 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
               <StyledDesktopTitle>{title}</StyledDesktopTitle>
               <StyledCreatedAt>
                 <CalendarOutlined className="mr-2" />
-                <span>{dateFormatter(createdAt, 'YYYY-MM-DD')}</span>
+                <span>{dateFormatter(createdAt, 'YYYY-MM-DD HH:mm:ss')}</span>
               </StyledCreatedAt>
             </div>
 
