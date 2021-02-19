@@ -707,6 +707,7 @@ export const programMessages = {
       id: 'program.text.deleteChoiceDescription',
       defaultMessage: '選項刪除即不可恢復，確定要刪除嗎？',
     },
+    unfinishedQuestions: { id: 'program.text.unfinishedQuestions', defaultMessage: '未完成內容：{questions}' },
   }),
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },

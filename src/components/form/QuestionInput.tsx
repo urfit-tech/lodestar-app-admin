@@ -1,7 +1,7 @@
 import Icon, { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Form, InputNumber } from 'antd'
 import BraftEditor, { EditorState } from 'braft-editor'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuidV4 } from 'uuid'
@@ -74,6 +74,11 @@ const QuestionInput: React.FC<{
   const [answerDescription, setAnswerDescription] = useState<EditorState>(
     BraftEditor.createEditorState(value.answerDescription),
   )
+
+  useEffect(() => {
+    setDescription(BraftEditor.createEditorState(value.description))
+    setAnswerDescription(BraftEditor.createEditorState(value.answerDescription))
+  }, [value.answerDescription, value.description])
 
   return (
     <QuestionBlock variant={isCollapsed ? 'collapsed' : undefined}>
@@ -232,6 +237,10 @@ const ChoiceInput: React.FC<{
 }> = ({ index, value, onChange, onRemove }) => {
   const { formatMessage } = useIntl()
   const [description, setDescription] = useState<EditorState>(BraftEditor.createEditorState(value.description))
+
+  useEffect(() => {
+    setDescription(BraftEditor.createEditorState(value.description))
+  }, [value.description])
 
   return (
     <ChoiceBlock>

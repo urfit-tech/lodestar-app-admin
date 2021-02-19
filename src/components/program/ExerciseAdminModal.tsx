@@ -1,7 +1,8 @@
 import { EditOutlined, MoreOutlined, PlusOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, Divider, Dropdown, Form, Input, InputNumber, Menu, message, Modal } from 'antd'
+import { Alert, Button, Checkbox, Divider, Dropdown, Form, Input, InputNumber, Menu, message, Modal } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
 import { clone, sum } from 'ramda'
 import React, { useEffect, useState } from 'react'
@@ -76,11 +77,26 @@ const ExerciseAdminForm: React.FC<{
   const { deleteProgramContent } = useMutateProgramContent()
   const [updateExercise] = useMutation<types.UPDATE_EXERCISE, types.UPDATE_EXERCISEVariables>(UPDATE_EXERCISE)
 
-  const [loading, setLoading] = useState(false)
   const [questions, setQuestions] = useState<QuestionProps[]>(programContentBody.data?.questions || [])
+  const [invalidQuestions, setInvalidQuestions] = useState<number[]>([])
+  const [loading, setLoading] = useState(false)
 
   const totalPoints = sum(questions.map(question => question.points || 0))
   const handleSubmit = async (values: FieldProps) => {
+    const unfinishedQuestions = questions
+      .filter(
+        question =>
+          BraftEditor.createEditorState(question.description).isEmpty() ||
+          question.choices.every(choice => !choice.isCorrect) ||
+          question.choices.some(choice => BraftEditor.createEditorState(choice.description).isEmpty()),
+      )
+      .map((_, i) => i)
+    if (unfinishedQuestions.length) {
+      setInvalidQuestions(unfinishedQuestions)
+      return
+    }
+    setInvalidQuestions([])
+
     setLoading(true)
     updateExercise({
       variables: {
@@ -151,8 +167,10 @@ const ExerciseAdminForm: React.FC<{
           <Button
             disabled={loading}
             onClick={() => {
-              onCancel?.()
               form.resetFields()
+              setQuestions(programContentBody.data?.questions || [])
+              setInvalidQuestions([])
+              onCancel?.()
             }}
             className="mr-2"
           >
@@ -185,6 +203,19 @@ const ExerciseAdminForm: React.FC<{
           </Dropdown>
         </div>
       </div>
+
+      {!!invalidQuestions.length && (
+        <Alert
+          type="error"
+          message={formatMessage(programMessages.text.unfinishedQuestions, {
+            questions: invalidQuestions
+              .map(question => `${formatMessage(programMessages.label.question)} ${question + 1}`)
+              .join(formatMessage(commonMessages.ui.comma)),
+          })}
+          showIcon
+          className="mb-3"
+        />
+      )}
 
       <StyledTitle className="mb-3">{formatMessage(programMessages.label.exercise)}</StyledTitle>
 
