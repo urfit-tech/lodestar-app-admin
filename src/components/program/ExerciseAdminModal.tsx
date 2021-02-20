@@ -105,7 +105,9 @@ const ExerciseAdminForm: React.FC<{
   const [invalidQuestions, setInvalidQuestions] = useState<number[]>([])
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => setQuestions(programContentBody.data?.questions), [programContentBody.data?.questions])
+  useEffect(() => setQuestions(programContentBody.data?.questions), [
+    JSON.stringify(programContentBody.data?.questions),
+  ])
 
   const totalPoints = sum(questions.map(question => question.points || 0))
   const handleSubmit = async (values: FieldProps) => {

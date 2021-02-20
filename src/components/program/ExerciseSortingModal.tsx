@@ -1,6 +1,6 @@
 import Icon, { DragOutlined } from '@ant-design/icons'
-import { Button, Select } from 'antd'
-import { adjust, move } from 'ramda'
+import { Button } from 'antd'
+import { adjust } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'
@@ -8,12 +8,10 @@ import styled from 'styled-components'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { ReactComponent as AngleRightIcon } from '../../images/icon/angle-right.svg'
 import AdminModal from '../admin/AdminModal'
-import {
-  StyledDraggableItem,
+import DraggableItemCollectionBlock, {
+  ItemProps,
   StyledReactSortableWrapper,
-  StyledSelect,
-  StyledSelectOptionWrapper,
-} from '../common/ItemsSortingModal'
+} from '../common/DraggableItemCollectionBlock'
 import { BraftContent } from '../common/StyledBraftEditor'
 import { QuestionBlock, StyledAction } from '../form/QuestionInput'
 
@@ -22,11 +20,6 @@ const StyledQuestionBlock = styled.div`
   grid-template-columns: 1fr;
   grid-template-rows: 25px 1fr;
 `
-
-type ItemProps = {
-  id: string
-  description: string | null
-}
 
 const ExerciseSortingModal: React.FC<{
   programContentId: string
@@ -39,7 +32,7 @@ const ExerciseSortingModal: React.FC<{
 
   useEffect(() => {
     setSortedQuestions(questions)
-  }, [questions])
+  }, [JSON.stringify(questions)])
 
   return (
     <AdminModal
@@ -103,7 +96,6 @@ const QuestionSortingBlock: React.FC<{
   programContentId: string
   onSort: (newItems: ItemProps[]) => void
 }> = ({ description, choices, onSort }) => {
-  const { formatMessage } = useIntl()
   const [isCollapsed, setIsCollapsed] = useState(true)
 
   return (
@@ -121,44 +113,9 @@ const QuestionSortingBlock: React.FC<{
             onClick={() => setIsCollapsed(!isCollapsed)}
           />
         </div>
-        <StyledReactSortableWrapper className="pt-4 pl-4">
-          <ReactSortable handle=".sub-item" list={choices} setList={onSort} ghostClass="hover-background">
-            {choices.map((v, i) => (
-              <StyledDraggableItem
-                handlerClassName="sub-item"
-                key={v.id}
-                dataId={v.id}
-                className="mb-2"
-                actions={[
-                  <StyledSelect
-                    key={v.id}
-                    value={i + 1}
-                    showArrow={false}
-                    bordered={false}
-                    onSelect={position => onSort(move(i, Number(position) - 1, choices))}
-                    optionLabelProp="label"
-                    dropdownStyle={{ minWidth: '120px', borderRadius: '4px' }}
-                    dropdownRender={menu => <StyledSelectOptionWrapper>{menu}</StyledSelectOptionWrapper>}
-                  >
-                    {Array.from(Array(choices.length).keys()).map((value, index) => (
-                      <Select.Option
-                        className={i === index ? 'active' : i > index ? 'hover-top' : 'hover-bottom'}
-                        key={value}
-                        value={value + 1}
-                        label={value + 1}
-                      >
-                        <span>{value + 1}</span>
-                        {i === index ? `（${formatMessage(commonMessages.label.current)}）` : ''}
-                      </Select.Option>
-                    ))}
-                  </StyledSelect>,
-                ]}
-              >
-                <BraftContent>{v.description}</BraftContent>
-              </StyledDraggableItem>
-            ))}
-          </ReactSortable>
-        </StyledReactSortableWrapper>
+        <div className="pt-4 pl-4">
+          <DraggableItemCollectionBlock items={choices} onSort={onSort} />
+        </div>
       </StyledQuestionBlock>
     </QuestionBlock>
   )
