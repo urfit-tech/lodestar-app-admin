@@ -16,14 +16,14 @@ const StyledTitle = styled.div`
   font-weight: bold;
   letter-spacing: 0.8px;
 `
-const StyledAction = styled(Icon)<{ variant?: 'primary'; direction?: 'down' }>`
+export const StyledAction = styled(Icon)<{ variant?: 'primary'; direction?: 'down' }>`
   color: ${props => (props.variant === 'primary' ? props.theme['@primary'] : 'var(--gray-darker)')};
   cursor: pointer;
   font-size: 20px;
   ${props => (props.direction === 'down' ? 'transform: rotate(90deg);' : '')};
   transition: all 0.2s ease-in-out;
 `
-const QuestionBlock = styled.div<{ variant?: 'collapsed' }>`
+export const QuestionBlock = styled.div<{ variant?: 'collapsed' }>`
   margin-bottom: 1.5rem;
   padding: 1.5rem;
   ${props => (props.variant === 'collapsed' ? 'height: 75px;' : '')}

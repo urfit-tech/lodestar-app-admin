@@ -1,42 +1,42 @@
 import { DragOutlined } from '@ant-design/icons'
 import { Button, Select } from 'antd'
 import React, { useEffect, useState } from 'react'
-import { defineMessages, useIntl } from 'react-intl'
+import { useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
 import { commonMessages } from '../../helpers/translation'
 import AdminModal, { AdminModalProps } from '../admin/AdminModal'
 import DraggableItem from './DraggableItem'
 
-const messages = defineMessages({
-  current: { id: 'common.label.current', defaultMessage: '目前' },
-  sortItems: { id: 'common.ui.sortItems', defaultMessage: '排序' },
-})
-
-const StyledDraggableItem = styled(DraggableItem)`
+export const StyledDraggableItem = styled(DraggableItem)`
   padding: 0 0 0 14px;
   background: white;
   border: solid 1px var(--gray-light);
   border-radius: 4px;
 `
-const StyledSelect = styled(Select)`
+export const StyledSelect = styled(Select)`
   text-align: center;
   border-left: solid 1px var(--gray-light);
   height: 100%;
   width: 50px;
 `
-const StyledReactSortableWrapper = styled.div`
+export const StyledReactSortableWrapper = styled.div`
   & .hoverBackground {
+    border: 0;
+    padding: 0;
+    height: 2px;
     background: ${props => props.theme['@primary-color']};
-    height: 5px;
     color: transparent;
+    p {
+      color: transparent;
+    }
     & ${StyledSelect} {
       color: transparent;
       border-left: none;
     }
   }
 `
-const StyledSelectOptionWrapper = styled.div`
+export const StyledSelectOptionWrapper = styled.div`
   & .ant-select-item {
     transition: all 0.08s;
     border-top: 2px solid transparent;
@@ -86,10 +86,10 @@ const ItemsSortingModal: <T extends { id: string; title: string }>(
     <AdminModal
       renderTrigger={({ setVisible }) => (
         <Button type="link" icon={<DragOutlined />} onClick={() => setVisible(true)}>
-          {triggerText || formatMessage(messages.sortItems)}
+          {triggerText || formatMessage(commonMessages.ui.sortItems)}
         </Button>
       )}
-      title={formatMessage(messages.sortItems)}
+      title={formatMessage(commonMessages.ui.sortItems)}
       footer={null}
       renderFooter={({ setVisible }) => (
         <div className="mt-4">
@@ -142,7 +142,7 @@ const ItemsSortingModal: <T extends { id: string; title: string }>(
                       label={value + 1}
                     >
                       <span>{value + 1}</span>
-                      {sortingItemIndex === index ? `（${formatMessage(messages.current)}）` : ''}
+                      {sortingItemIndex === index ? `（${formatMessage(commonMessages.label.current)}）` : ''}
                     </Select.Option>
                   ))}
                 </StyledSelect>,

@@ -4,7 +4,7 @@ import { Alert, Button, Checkbox, Divider, Dropdown, Form, Input, InputNumber, M
 import { useForm } from 'antd/lib/form/Form'
 import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
-import { clone, sum } from 'ramda'
+import { clone, find, propEq, sum } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
@@ -14,7 +14,8 @@ import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateProgramContent } from '../../hooks/program'
 import types from '../../types'
 import { ProgramContentBodyProps, ProgramContentProps } from '../../types/program'
-import QuestionInput, { QuestionProps } from '../form/QuestionInput'
+import QuestionInput, { ChoiceProps, QuestionProps } from '../form/QuestionInput'
+import ExerciseSortingModal from './ExerciseSortingModal'
 
 const StyledTitle = styled.div`
   font-size: 1.5rem;
@@ -79,7 +80,6 @@ const ExerciseAdminModal: React.FC<{
           onCancel={() => setVisible(false)}
           onRefetch={() => {
             onRefetch?.()
-            setVisible(false)
           }}
         />
       </StyledModal>
@@ -97,10 +97,15 @@ const ExerciseAdminForm: React.FC<{
   const [form] = useForm<FieldProps>()
   const { deleteProgramContent } = useMutateProgramContent()
   const [updateExercise] = useMutation<types.UPDATE_EXERCISE, types.UPDATE_EXERCISEVariables>(UPDATE_EXERCISE)
+  const [updateExercisePosition] = useMutation<types.UPDATE_EXERCISE_POSITION, types.UPDATE_EXERCISE_POSITIONVariables>(
+    UPDATE_EXERCISE_POSITION,
+  )
 
   const [questions, setQuestions] = useState<QuestionProps[]>(programContentBody.data?.questions || [])
   const [invalidQuestions, setInvalidQuestions] = useState<number[]>([])
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => setQuestions(programContentBody.data?.questions), [programContentBody.data?.questions])
 
   const totalPoints = sum(questions.map(question => question.points || 0))
   const handleSubmit = async (values: FieldProps) => {
@@ -141,6 +146,7 @@ const ExerciseAdminForm: React.FC<{
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onCancel?.()
         onRefetch?.()
       })
       .catch(handleError)
@@ -244,11 +250,42 @@ const ExerciseAdminForm: React.FC<{
         <Input />
       </Form.Item>
 
-      <div className="d-flex align-items-center">
-        <Form.Item name="passingScore" label={formatMessage(programMessages.label.passingScore)}>
-          <InputNumber min={0} max={totalPoints} />
-        </Form.Item>
-        <span className="ml-2 mt-3">/ {totalPoints}</span>
+      <div className="d-flex align-items-center justify-content-between">
+        <div className="d-flex align-items-center">
+          <Form.Item name="passingScore" label={formatMessage(programMessages.label.passingScore)}>
+            <InputNumber min={0} max={totalPoints} />
+          </Form.Item>
+          <span className="ml-2 mt-3">/ {totalPoints}</span>
+        </div>
+        <ExerciseSortingModal
+          programContentId={programContent.id}
+          questions={questions}
+          onSort={(newItems, onClose) => {
+            const newQuestions = newItems.map(v => {
+              const matchQuestion = find<QuestionProps>(propEq('id', v.id))(questions)
+              return {
+                ...matchQuestion,
+                choices: v.subItemIds.map(id => find<ChoiceProps>(propEq('id', id))(matchQuestion?.choices || [])),
+              }
+            })
+            updateExercisePosition({
+              variables: {
+                programContentBodyId: programContentBody.id,
+                body: {
+                  data: {
+                    questions: newQuestions,
+                  },
+                },
+              },
+            })
+              .then(() => {
+                message.success(formatMessage(commonMessages.event.successfullySaved))
+                onClose()
+                onRefetch?.()
+              })
+              .catch(handleError)
+          }}
+        />
       </div>
 
       {questions.map((question, index) => (
@@ -311,6 +348,14 @@ const UPDATE_EXERCISE = gql`
     update_program_content(where: { id: { _eq: $programContentId } }, _set: $content) {
       affected_rows
     }
+    update_program_content_body(where: { id: { _eq: $programContentBodyId } }, _set: $body) {
+      affected_rows
+    }
+  }
+`
+
+const UPDATE_EXERCISE_POSITION = gql`
+  mutation UPDATE_EXERCISE_POSITION($programContentBodyId: uuid!, $body: program_content_body_set_input!) {
     update_program_content_body(where: { id: { _eq: $programContentBodyId } }, _set: $body) {
       affected_rows
     }

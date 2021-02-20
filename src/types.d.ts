@@ -3887,6 +3887,35 @@ export interface UPDATE_EXERCISEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_EXERCISE_POSITION
+// ====================================================
+
+export interface UPDATE_EXERCISE_POSITION_update_program_content_body {
+  __typename: "program_content_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_EXERCISE_POSITION {
+  /**
+   * update data of the table: "program_content_body"
+   */
+  update_program_content_body: UPDATE_EXERCISE_POSITION_update_program_content_body | null;
+}
+
+export interface UPDATE_EXERCISE_POSITIONVariables {
+  programContentBodyId: any;
+  body: program_content_body_set_input;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_BASIC
 // ====================================================
 
@@ -24812,6 +24841,7 @@ export interface practice_bool_exp {
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   practice_attachments?: practice_attachment_bool_exp | null;
+  practice_issues?: practice_issue_bool_exp | null;
   practice_reactions?: practice_reaction_bool_exp | null;
   program_content?: program_content_bool_exp | null;
   program_content_id?: uuid_comparison_exp | null;
@@ -24838,6 +24868,19 @@ export interface practice_insert_input {
   reviewed_at?: any | null;
   title?: string | null;
   updated_at?: any | null;
+}
+
+/**
+ * Boolean expression to filter rows from the table "practice_issue". All fields are combined with a logical 'AND'.
+ */
+export interface practice_issue_bool_exp {
+  _and?: (practice_issue_bool_exp | null)[] | null;
+  _not?: practice_issue_bool_exp | null;
+  _or?: (practice_issue_bool_exp | null)[] | null;
+  issue?: issue_bool_exp | null;
+  issue_id?: uuid_comparison_exp | null;
+  practice?: practice_bool_exp | null;
+  practice_id?: uuid_comparison_exp | null;
 }
 
 /**

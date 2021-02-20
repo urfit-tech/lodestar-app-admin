@@ -68,6 +68,7 @@ export const commonMessages = {
     uploadImage: { id: 'common.ui.uploadImage', defaultMessage: '上傳圖片' },
     download: { id: 'common.ui.download', defaultMessage: '下載' },
     private: { id: 'common.ui.private', defaultMessage: '私密' },
+    sortItems: { id: 'common.ui.sortItems', defaultMessage: '排序' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -185,6 +186,7 @@ export const commonMessages = {
     introductionVideo: { id: 'common.label.introductionVideo', defaultMessage: '介紹影片' },
     planTitle: { id: 'common.label.planTitle', defaultMessage: '方案名稱' },
     memberIdentity: { id: 'common.label.memberIdentity', defaultMessage: '會員身份' },
+    current: { id: 'common.label.current', defaultMessage: '目前' },
   }),
   term: defineMessages({
     assign: { id: 'common.term.assign', defaultMessage: '指派' },
