@@ -21,7 +21,7 @@ export const StyledSelect = styled(Select)`
   width: 50px;
 `
 export const StyledReactSortableWrapper = styled.div`
-  & .hoverBackground {
+  & .hover-background {
     border: 0;
     padding: 0;
     height: 2px;
@@ -41,10 +41,10 @@ export const StyledSelectOptionWrapper = styled.div`
     transition: all 0.08s;
     border-top: 2px solid transparent;
     border-bottom: 2px solid transparent;
-    &.hoverTop:hover {
+    &.hover-top:hover {
       border-top: 2px solid ${props => props.theme['@primary-color']};
     }
-    &.hoverBottom:hover {
+    &.hover-bottom:hover {
       border-bottom: 2px solid ${props => props.theme['@primary-color']};
     }
   }
@@ -107,7 +107,7 @@ const ItemsSortingModal: <T extends { id: string; title: string }>(
         <ReactSortable
           handle=".draggable-items"
           list={sortingItems}
-          ghostClass="hoverBackground"
+          ghostClass="hover-background"
           setList={setSortingItems}
         >
           {sortingItems.map((sortingItem, sortingItemIndex) => (
@@ -135,7 +135,7 @@ const ItemsSortingModal: <T extends { id: string; title: string }>(
                   {Array.from(Array(sortingItems.length).keys()).map((value, index) => (
                     <Select.Option
                       className={
-                        sortingItemIndex === index ? 'active' : sortingItemIndex > index ? 'hoverTop' : 'hoverBottom'
+                        sortingItemIndex === index ? 'active' : sortingItemIndex > index ? 'hover-top' : 'hover-bottom'
                       }
                       key={value}
                       value={value + 1}

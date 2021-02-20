@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import { v4 as uuidV4 } from 'uuid'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { ReactComponent as AngleRightIcon } from '../../images/icon/angle-right.svg'
+import { ChoiceProps, QuestionProps } from '../../types/program'
 import AdminModal from '../admin/AdminModal'
 import AdminBraftEditor from './AdminBraftEditor'
 
@@ -46,21 +47,6 @@ const StyledEditorWrapper = styled.div`
     border: solid 1px var(--gray);
   }
 `
-
-export type QuestionProps = {
-  id: string
-  points: number
-  description: string | null
-  answerDescription: string | null
-  isMultipleAnswers: boolean
-  choices: ChoiceProps[]
-}
-
-export type ChoiceProps = {
-  id: string
-  description: string | null
-  isCorrect: boolean
-}
 
 const QuestionInput: React.FC<{
   index: number

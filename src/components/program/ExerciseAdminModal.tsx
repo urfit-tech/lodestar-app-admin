@@ -13,8 +13,8 @@ import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateProgramContent } from '../../hooks/program'
 import types from '../../types'
-import { ProgramContentBodyProps, ProgramContentProps } from '../../types/program'
-import QuestionInput, { ChoiceProps, QuestionProps } from '../form/QuestionInput'
+import { ChoiceProps, ProgramContentBodyProps, ProgramContentProps, QuestionProps } from '../../types/program'
+import QuestionInput from '../form/QuestionInput'
 import ExerciseSortingModal from './ExerciseSortingModal'
 
 const StyledTitle = styled.div`

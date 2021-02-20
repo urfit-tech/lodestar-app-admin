@@ -1,7 +1,7 @@
 import Icon, { DragOutlined } from '@ant-design/icons'
 import { Button, Select } from 'antd'
 import { adjust, move } from 'ramda'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { ReactSortable } from 'react-sortablejs'
 import styled from 'styled-components'
@@ -36,6 +36,10 @@ const ExerciseSortingModal: React.FC<{
   const { formatMessage } = useIntl()
   const [isLoading, setIsLoading] = useState(false)
   const [sortedQuestions, setSortedQuestions] = useState(questions)
+
+  useEffect(() => {
+    setSortedQuestions(questions)
+  }, [questions])
 
   return (
     <AdminModal
@@ -75,19 +79,14 @@ const ExerciseSortingModal: React.FC<{
       )}
     >
       <StyledReactSortableWrapper>
-        <ReactSortable
-          handle={`.item`}
-          list={sortedQuestions}
-          setList={setSortedQuestions}
-          ghostClass="hoverBackground"
-        >
+        <ReactSortable handle=".item" list={sortedQuestions} setList={setSortedQuestions} ghostClass="hover-background">
           {sortedQuestions.map((v, i) => (
             <QuestionSortingBlock
               key={v.id}
               description={v.description}
               choices={v.choices}
               programContentId={programContentId}
-              onSortChoices={newChoices =>
+              onSort={newChoices =>
                 setSortedQuestions(adjust(i, question => ({ ...question, choices: newChoices }), sortedQuestions))
               }
             />
@@ -102,8 +101,8 @@ const QuestionSortingBlock: React.FC<{
   description: string | null
   choices: ItemProps[]
   programContentId: string
-  onSortChoices: (newChoices: ItemProps[]) => void
-}> = ({ description, choices, onSortChoices }) => {
+  onSort: (newItems: ItemProps[]) => void
+}> = ({ description, choices, onSort }) => {
   const { formatMessage } = useIntl()
   const [isCollapsed, setIsCollapsed] = useState(true)
 
@@ -123,10 +122,10 @@ const QuestionSortingBlock: React.FC<{
           />
         </div>
         <StyledReactSortableWrapper className="pt-4 pl-4">
-          <ReactSortable handle={`.subItem`} list={choices} setList={onSortChoices} ghostClass="hoverBackground">
+          <ReactSortable handle=".sub-item" list={choices} setList={onSort} ghostClass="hover-background">
             {choices.map((v, i) => (
               <StyledDraggableItem
-                handlerClassName="subItem"
+                handlerClassName="sub-item"
                 key={v.id}
                 dataId={v.id}
                 className="mb-2"
@@ -136,14 +135,14 @@ const QuestionSortingBlock: React.FC<{
                     value={i + 1}
                     showArrow={false}
                     bordered={false}
-                    onSelect={position => onSortChoices(move(i, Number(position) - 1, choices))}
+                    onSelect={position => onSort(move(i, Number(position) - 1, choices))}
                     optionLabelProp="label"
                     dropdownStyle={{ minWidth: '120px', borderRadius: '4px' }}
                     dropdownRender={menu => <StyledSelectOptionWrapper>{menu}</StyledSelectOptionWrapper>}
                   >
                     {Array.from(Array(choices.length).keys()).map((value, index) => (
                       <Select.Option
-                        className={i === index ? 'active' : i > index ? 'hoverTop' : 'hoverBottom'}
+                        className={i === index ? 'active' : i > index ? 'hover-top' : 'hover-bottom'}
                         key={value}
                         value={value + 1}
                         label={value + 1}
