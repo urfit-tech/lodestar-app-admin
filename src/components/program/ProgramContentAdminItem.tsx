@@ -8,6 +8,7 @@ import styled from 'styled-components'
 import { dateFormatter, handleError } from '../../helpers'
 import { commonMessages } from '../../helpers/translation'
 import { useProgramContentBody } from '../../hooks/program'
+import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import { ReactComponent as PracticeIcon } from '../../images/icon/homework.svg'
 import { ReactComponent as QuizIcon } from '../../images/icon/quiz.svg'
 import { ReactComponent as VideoIcon } from '../../images/icon/video.svg'
@@ -92,6 +93,9 @@ const ProgramContentAdminItem: React.FC<{
       </div>
 
       <div className="d-flex align-items-center">
+        {programContent.metadata?.withInvalidQuestion && (
+          <Icon className="mr-3" component={() => <ExclamationCircleIcon />} />
+        )}
         {programContent.listPrice === 0 && (
           <StyledTrialTag className="mr-3">{formatMessage(commonMessages.ui.trial)}</StyledTrialTag>
         )}

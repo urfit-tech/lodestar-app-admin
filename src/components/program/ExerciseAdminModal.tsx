@@ -1,4 +1,4 @@
-import { EditOutlined, MoreOutlined, PlusOutlined } from '@ant-design/icons'
+import Icon, { EditOutlined, MoreOutlined, PlusOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
 import { Alert, Button, Checkbox, Divider, Dropdown, Form, Input, InputNumber, Menu, message, Modal } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
@@ -12,6 +12,7 @@ import { v4 as uuidV4 } from 'uuid'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateProgramContent } from '../../hooks/program'
+import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import types from '../../types'
 import { ChoiceProps, ProgramContentBodyProps, ProgramContentProps, QuestionProps } from '../../types/program'
 import QuestionInput from '../form/QuestionInput'
@@ -102,7 +103,7 @@ const ExerciseAdminForm: React.FC<{
   )
 
   const [questions, setQuestions] = useState<QuestionProps[]>(programContentBody.data?.questions || [])
-  const [invalidQuestions, setInvalidQuestions] = useState<number[]>([])
+  const [questionValidations, setQuestionValidations] = useState<boolean[]>([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => setQuestions(programContentBody.data?.questions), [
@@ -111,19 +112,15 @@ const ExerciseAdminForm: React.FC<{
 
   const totalPoints = sum(questions.map(question => question.points || 0))
   const handleSubmit = async (values: FieldProps) => {
-    const unfinishedQuestions = questions
-      .filter(
-        question =>
-          BraftEditor.createEditorState(question.description).isEmpty() ||
-          question.choices.every(choice => !choice.isCorrect) ||
-          question.choices.some(choice => BraftEditor.createEditorState(choice.description).isEmpty()),
-      )
-      .map((_, i) => i)
-    if (unfinishedQuestions.length) {
-      setInvalidQuestions(unfinishedQuestions)
-      return
-    }
-    setInvalidQuestions([])
+    const validations = questions.map(
+      question =>
+        question.points !== 0 &&
+        question.choices.length > 1 &&
+        question.choices.some(choice => choice.isCorrect) &&
+        question.choices.every(choice => !BraftEditor.createEditorState(choice.description).isEmpty()) &&
+        !BraftEditor.createEditorState(question.description).isEmpty(),
+    )
+    setQuestionValidations(validations)
 
     setLoading(true)
     updateExercise({
@@ -139,6 +136,7 @@ const ExerciseAdminForm: React.FC<{
             isAvailableToGoBack: values.isAvailableToGoBack,
             isAvailableToRetry: values.isAvailableToRetry,
             passingScore: values.passingScore || 0,
+            withInvalidQuestion: validations.some(validation => !validation),
           },
         },
         body: {
@@ -166,8 +164,8 @@ const ExerciseAdminForm: React.FC<{
       initialValues={{
         isTrial: programContent.listPrice === 0,
         isVisible: !!programContent.publishedAt,
-        isAvailableToGoBack: programContent.metadata?.isAvailableToGoBack,
-        isAvailableToRetry: programContent.metadata?.isAvailableToRetry,
+        isAvailableToGoBack: !!programContent.metadata?.isAvailableToGoBack,
+        isAvailableToRetry: !!programContent.metadata?.isAvailableToRetry,
         isNotifyUpdate: programContent.isNotifyUpdate,
         title: programContent.title,
         passingScore: programContent.metadata?.passingScore || 0,
@@ -198,7 +196,7 @@ const ExerciseAdminForm: React.FC<{
             onClick={() => {
               form.resetFields()
               setQuestions(programContentBody.data?.questions || [])
-              setInvalidQuestions([])
+              setQuestionValidations([])
               onCancel?.()
             }}
             className="mr-2"
@@ -233,15 +231,25 @@ const ExerciseAdminForm: React.FC<{
         </div>
       </div>
 
-      {!!invalidQuestions.length && (
+      {questionValidations.some(validation => !validation) && (
         <Alert
           type="error"
-          message={formatMessage(programMessages.text.unfinishedQuestions, {
-            questions: invalidQuestions
-              .map(question => `${formatMessage(programMessages.label.question)} ${question + 1}`)
-              .join(formatMessage(commonMessages.ui.comma)),
-          })}
-          showIcon
+          message={
+            <>
+              <Icon className="mr-2" component={() => <ExclamationCircleIcon />} />
+              {formatMessage(programMessages.text.unfinishedQuestions, {
+                questions: questionValidations
+                  .reduce(
+                    (accumulator, validation, index) =>
+                      validation
+                        ? accumulator
+                        : [...accumulator, `${formatMessage(programMessages.label.question)} ${index + 1}`],
+                    [] as string[],
+                  )
+                  .join(formatMessage(commonMessages.ui.comma)),
+              })}
+            </>
+          }
           className="mb-3"
         />
       )}
