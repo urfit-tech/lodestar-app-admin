@@ -506,6 +506,7 @@ export const useLead = (salesId: string) => {
         : null,
     [data?.member],
   )
+  const withDurationInput = !sales?.telephone.startsWith('8')
 
   const [markUnresponsiveMember] = useMutation<types.MARK_UNRESPONSIVE_MEMBER, types.MARK_UNRESPONSIVE_MEMBERVariables>(
     MARK_UNRESPONSIVE_MEMBER,
@@ -615,7 +616,7 @@ export const useLead = (salesId: string) => {
           data: {
             member_id: currentLead.id,
             author_id: salesId,
-            type: 'outbound',
+            type: withDurationInput ? 'outbound' : null,
             status: memberNote.status,
             duration: memberNote.duration,
             description: memberNote.description,
