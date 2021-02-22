@@ -19,13 +19,13 @@ const MemberAvatar: React.FC<
 > = ({ memberId, renderAvatar, renderText, withName, ...props }) => {
   const { member } = usePublicMember(memberId)
   if (!member) {
-    return null
+    return <AvatarImage src="" {...props} />
   }
 
   return (
     <div className="d-flex align-items-center">
       {renderAvatar ? renderAvatar(member) : <AvatarImage src={member.pictureUrl || ''} {...props} />}
-      {renderText && renderText(member)}
+      {renderText?.(member)}
       {withName && <MemberName className="ml-3">{member.name}</MemberName>}
     </div>
   )

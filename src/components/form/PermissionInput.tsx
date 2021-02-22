@@ -103,8 +103,7 @@ const PermissionGroup: React.FC<{
       <Checkbox
         checked={options.every(option => value?.includes(option))}
         onChange={e =>
-          onChange &&
-          onChange(e.target.checked ? [...otherValue, ...options] : [...otherValue, ...(fixedOptions || [])])
+          onChange?.(e.target.checked ? [...otherValue, ...options] : [...otherValue, ...(fixedOptions || [])])
         }
       >
         {label}
@@ -112,17 +111,22 @@ const PermissionGroup: React.FC<{
       <Divider className="my-3" />
       <div className="pl-3">
         <Checkbox.Group value={value} onChange={value => onChange && onChange([...otherValue, ...(value as string[])])}>
-          {options.map(option => (
-            <div key={option}>
-              {option === 'MEMBER_ATTENDANT' && !enabledModules.attend ? null : (
+          {options
+            .filter(option =>
+              (option === 'MEMBER_ATTENDANT' && !enabledModules.attend) ||
+              (option === 'SALES_CALL_ADMIN' && !enabledModules.member_assignment)
+                ? false
+                : true,
+            )
+            .map(option => (
+              <div key={option}>
                 <Checkbox value={option} disabled={fixedOptions?.includes(option)}>
                   {permissionMessages[option as keyof typeof permissionMessages]
                     ? formatMessage(permissionMessages[option as keyof typeof permissionMessages])
                     : option}
                 </Checkbox>
-              )}
-            </div>
-          ))}
+              </div>
+            ))}
         </Checkbox.Group>
       </div>
     </StyledBlock>

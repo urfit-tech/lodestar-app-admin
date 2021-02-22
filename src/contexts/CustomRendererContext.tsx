@@ -14,7 +14,7 @@ export type CustomRendererProps = {
     content?: (props: renderMemberAdminLayoutProps) => React.ReactElement
   }
   renderAdminMenu?: (props: {
-    onClick: MenuClickEventHandler
+    permissions: { [key: string]: boolean }
     menuItems: {
       permissionIsAllowed: boolean
       icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
@@ -26,6 +26,7 @@ export type CustomRendererProps = {
         name: string
       }[]
     }[]
+    onClick?: MenuClickEventHandler
   }) => React.ReactNode
 }
 
