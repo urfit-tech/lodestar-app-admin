@@ -9,7 +9,6 @@ import moment from 'moment'
 import { sum } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
-import shajs from 'sha.js'
 import styled from 'styled-components'
 import { salesMessages } from '../../helpers/translation'
 import types from '../../types'
@@ -53,16 +52,16 @@ const SalesSummaryBlock: React.FC<{
     return <div>讀取錯誤</div>
   }
 
-  const hashedAssignedCount =
-    (sum(
-      shajs('sha256')
-        .update(`${salesId}-${moment().format('YYYYMMDD')}`)
-        .digest('hex')
-        .split('')
-        .map((v: string) => v.charCodeAt(0)),
-    ) %
-      12) +
-    10
+  // const hashedAssignedCount =
+  //   (sum(
+  //     shajs('sha256')
+  //       .update(`${salesId}-${moment().format('YYYYMMDD')}`)
+  //       .digest('hex')
+  //       .split('')
+  //       .map((v: string) => v.charCodeAt(0)),
+  //   ) %
+  //     12) +
+  //   10
 
   const score = 10 + salesSummary.contractsLastMonth * 1 + salesSummary.contractsThisMonth * 2
   const newAssignedRate = score > 70 ? 70 : score
@@ -91,7 +90,7 @@ const SalesSummaryBlock: React.FC<{
       <div className="d-flex align-items-center">
         <div className="mr-3">今日通時：{Math.ceil(salesSummary.totalDuration / 60)} 分鐘</div>
         <div className="mr-3">今日接通：{salesSummary.totalNotes} 次</div>
-        <div className="mr-3">今日名單派發：{hashedAssignedCount}</div>
+        {/* <div className="mr-3">今日名單派發：{hashedAssignedCount}</div> */}
         <div className="mr-3 flex-grow-1">
           <span className="mr-2">名單新舊佔比：</span>
           <Tooltip title={`新 ${newAssignedRate}% / 舊 ${100 - newAssignedRate}%`}>
