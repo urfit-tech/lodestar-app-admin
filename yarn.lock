@@ -9413,7 +9413,7 @@ lodash@^4.0.0, lodash@^4.16.5, lodash@^4.17.11, lodash@^4.17.15, lodash@^4.17.19
 
 "lodestar-app-admin@git+https://5283f1eb2c0cbdec821bd2bc65e18c942c4d51f8:x-oauth-basic@github.com/urfit-tech/lodestar-app-admin.git#develop":
   version "0.1.0"
-  resolved "git+https://5283f1eb2c0cbdec821bd2bc65e18c942c4d51f8:x-oauth-basic@github.com/urfit-tech/lodestar-app-admin.git#dd1a6c0bcada5c07ef4a44887ba98e2fc72b03e3"
+  resolved "git+https://5283f1eb2c0cbdec821bd2bc65e18c942c4d51f8:x-oauth-basic@github.com/urfit-tech/lodestar-app-admin.git#456cbbfaeccc51438bce1db1ab56a1665b7c8438"
   dependencies:
     "@ant-design/compatible" "^1.0.8"
     "@ant-design/icons" "^4.3.0"

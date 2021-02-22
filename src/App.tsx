@@ -27,7 +27,7 @@ const StyledText = styled.span`
   color: var(--gray-dark);
 `
 
-const App = () => {
+const App: React.FC = () => {
   return (
     <Application
       appId="xuemi"
@@ -76,7 +76,7 @@ const App = () => {
             )
           },
         },
-        renderAdminMenu: ({ menuItems, onClick }) => {
+        renderAdminMenu: ({ permissions, menuItems, onClick }) => {
           const customMenuItems = [
             ...menuItems.slice(0, 14),
             {
@@ -86,7 +86,7 @@ const App = () => {
               name: '合約資料管理',
             },
             {
-              permissionIsAllowed: true,
+              permissionIsAllowed: !!permissions.SALES_CALL_ADMIN,
               key: 'sales_call_admin',
               icon: () => <PhoneIcon />,
               name: '業務專區',
