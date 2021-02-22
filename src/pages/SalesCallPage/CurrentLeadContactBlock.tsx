@@ -46,7 +46,10 @@ type memberPropertyFieldProps = {
   [PropertyName: string]: string
 }
 
-const CurrentLeadContactBlock: React.FC<{ salesId: string }> = ({ salesId }) => {
+const CurrentLeadContactBlock: React.FC<{
+  salesId: string
+  onFinish?: () => void
+}> = ({ salesId, onFinish }) => {
   const { formatMessage } = useIntl()
   const { apiHost, authToken } = useAuth()
   const { id: appId } = useApp()
@@ -64,7 +67,7 @@ const CurrentLeadContactBlock: React.FC<{ salesId: string }> = ({ salesId }) => 
     updatePhones,
     insertNote,
     updateProperties,
-    markInvalid,
+    markUnresponsive,
   } = useLead(salesId)
 
   const [selectedPhone, setSelectedPhone] = useState('')
@@ -111,12 +114,12 @@ const CurrentLeadContactBlock: React.FC<{ salesId: string }> = ({ salesId }) => 
     if (!primaryPhoneNumber) {
       if (currentLead.phones.every(phone => disabledPhones.includes(phone))) {
         setLoading(true)
-        await markInvalid().catch(handleError)
+        await markUnresponsive().catch(handleError)
         setLoading(false)
         resetForms()
+        onFinish?.()
         return
       }
-
       message.error('請選取主要電話')
       return
     }
@@ -165,7 +168,9 @@ const CurrentLeadContactBlock: React.FC<{ salesId: string }> = ({ salesId }) => 
             value: propertyValues[property.id],
           })),
       )
+      memberNoteStatus === 'not-answered' && (await markUnresponsive())
       resetForms()
+      onFinish?.()
     } catch (error) {
       handleError(error)
     }
@@ -289,7 +294,7 @@ const CurrentLeadContactBlock: React.FC<{ salesId: string }> = ({ salesId }) => 
           >
             <Form.Item name="status" label={<StyledLabel>通話狀態</StyledLabel>}>
               <Select disabled={!primaryPhoneNumber}>
-                <Select.Option value="not-answered">未接</Select.Option>
+                <Select.Option value="not-answered">未接/語音信箱</Select.Option>
                 <Select.Option value="rejected">拒絕/一接就掛</Select.Option>
                 <Select.Option value="willing">有意願再聊</Select.Option>
               </Select>

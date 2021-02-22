@@ -507,8 +507,8 @@ export const useLead = (salesId: string) => {
     [data?.member],
   )
 
-  const [markInvalidMember] = useMutation<types.MARK_INVALID_MEMBER, types.MARK_INVALID_MEMBERVariables>(
-    MARK_INVALID_MEMBER,
+  const [markUnresponsiveMember] = useMutation<types.MARK_UNRESPONSIVE_MEMBER, types.MARK_UNRESPONSIVE_MEMBERVariables>(
+    MARK_UNRESPONSIVE_MEMBER,
   )
   const [updateMemberPhones] = useMutation<types.UPDATE_MEMBER_PHONE, types.UPDATE_MEMBER_PHONEVariables>(
     UPDATE_MEMBER_PHONE,
@@ -607,7 +607,7 @@ export const useLead = (salesId: string) => {
     properties,
     currentLead,
     refetchCurrentLead: refetch,
-    markInvalid: async () => currentLead && markInvalidMember({ variables: { memberId: currentLead.id } }),
+    markUnresponsive: async () => currentLead && markUnresponsiveMember({ variables: { memberId: currentLead.id } }),
     insertNote: async (memberNote: { status: string; duration: number; description: string }) =>
       currentLead &&
       insertMemberNote({
@@ -659,8 +659,8 @@ const UPDATE_MEMBER_PHONE = gql`
     }
   }
 `
-const MARK_INVALID_MEMBER = gql`
-  mutation MARK_INVALID_MEMBER($memberId: String!) {
+const MARK_UNRESPONSIVE_MEMBER = gql`
+  mutation MARK_UNRESPONSIVE_MEMBER($memberId: String!) {
     update_member(where: { id: { _eq: $memberId } }, _set: { manager_id: null }) {
       affected_rows
     }

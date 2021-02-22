@@ -18,11 +18,19 @@ const SalesCallPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { currentMemberId } = useAuth()
   const [activeKey, setActiveKey] = useQueryParam('tab', StringParam)
-  const { loadingMembers: loadingContactedMembers, members: contactedMembers } = useSalesCallMember({
+  const {
+    loadingMembers: loadingContactedMembers,
+    members: contactedMembers,
+    refetchMembers: refetchContactedMembers,
+  } = useSalesCallMember({
     status: 'contacted',
     salesId: currentMemberId || '',
   })
-  const { loadingMembers: loadingTransactedMembers, members: transactedMembers } = useSalesCallMember({
+  const {
+    loadingMembers: loadingTransactedMembers,
+    members: transactedMembers,
+    refetchMembers: refetchTransactedMembers,
+  } = useSalesCallMember({
     status: 'transacted',
     salesId: currentMemberId || '',
   })
@@ -38,7 +46,15 @@ const SalesCallPage: React.FC = () => {
 
       <Tabs activeKey={activeKey || 'potentials'} onChange={key => setActiveKey(key)}>
         <Tabs.TabPane key="potentials" tab={formatMessage(salesMessages.label.potentials)}>
-          {currentMemberId && <CurrentLeadContactBlock salesId={currentMemberId} />}
+          {currentMemberId && (
+            <CurrentLeadContactBlock
+              salesId={currentMemberId}
+              onFinish={() => {
+                refetchContactedMembers()
+                refetchTransactedMembers()
+              }}
+            />
+          )}
         </Tabs.TabPane>
         <Tabs.TabPane
           key="keep-in-touch"
