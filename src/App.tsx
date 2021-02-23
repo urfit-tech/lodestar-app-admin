@@ -13,12 +13,12 @@ import MemberNoteAdminPage from './pages/MemberNoteAdminPage'
 import SalesCallPage from './pages/SalesCallPage'
 import TermsPtPage from './pages/TermsPtPage'
 
-const App = () => {
+const App: React.FC = () => {
   return (
     <Application
       appId="xuemi"
       customRender={{
-        renderAdminMenu: ({ menuItems, onClick }) => {
+        renderAdminMenu: ({ permissions, menuItems, onClick }) => {
           const customMenuItems = [
             ...menuItems.slice(0, 14),
             {
