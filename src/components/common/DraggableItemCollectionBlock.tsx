@@ -9,10 +9,12 @@ import DraggableItem from './DraggableItem'
 import { BraftContent } from './StyledBraftEditor'
 
 const StyledSelect = styled(Select)`
-  text-align: center;
+  display: inline-flex;
+  align-items: center;
   border-left: solid 1px var(--gray-light);
-  height: 100%;
   width: 50px;
+  height: 100%;
+  text-align: center;
 `
 
 export const StyledReactSortableWrapper = styled.div`
@@ -33,10 +35,12 @@ export const StyledReactSortableWrapper = styled.div`
 `
 
 const StyledDraggableItem = styled(DraggableItem)`
-  padding: 0 0 0 14px;
-  background: white;
-  border: solid 1px var(--gray-light);
-  border-radius: 4px;
+  && {
+    border: solid 1px var(--gray-light);
+    border-radius: 4px;
+    padding: 0 0 0 14px;
+    background: white;
+  }
 `
 
 const StyledSelectOptionWrapper = styled.div`

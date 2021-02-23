@@ -10,6 +10,11 @@ const StyledDraggableItem = styled.div`
   align-items: center;
 `
 
+const StyledChildren = styled.div`
+  padding: 8px;
+  padding-left: 0;
+`
+
 const DraggableItem: React.FC<
   HTMLAttributes<HTMLDivElement> & {
     dataId: string
@@ -21,7 +26,7 @@ const DraggableItem: React.FC<
     <StyledDraggableItem {...divProps} data-id={dataId}>
       <div className="d-flex align-items-center">
         <DragOutlined onClick={() => {}} className={handlerClassName + ' mr-3'} />
-        {children}
+        <StyledChildren>{children}</StyledChildren>
       </div>
       <div className="align-self-stretch">{actions}</div>
     </StyledDraggableItem>

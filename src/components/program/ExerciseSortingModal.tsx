@@ -103,7 +103,7 @@ const QuestionSortingBlock: React.FC<{
     <QuestionBlock variant={isCollapsed ? 'collapsed' : undefined}>
       <StyledQuestionBlock>
         <div className="d-flex justify-content-between align-items-center">
-          <span className="d-flex align-items-center">
+          <span className="d-flex align-items-center mr-4">
             <Icon component={() => <DragOutlined />} className={`item mr-2 cursor-pointer`} />
             <BraftContent>{description}</BraftContent>
           </span>
