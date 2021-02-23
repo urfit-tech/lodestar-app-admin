@@ -4,13 +4,6 @@ import { renderMemberAdminLayoutProps } from '../components/layout/MemberAdminLa
 
 export type CustomRendererProps = {
   renderMemberAdminLayout?: {
-    sider?: (props: {
-      firstRejectedMemberNote: {
-        authorName: string
-        rejectedAt: Date | null
-      } | null
-      insertMemberRejectedAt: () => void
-    }) => React.ReactNode
     content?: (props: renderMemberAdminLayoutProps) => React.ReactElement
   }
   renderAdminMenu?: (props: {

@@ -69,6 +69,7 @@ export const commonMessages = {
     download: { id: 'common.ui.download', defaultMessage: '下載' },
     private: { id: 'common.ui.private', defaultMessage: '私密' },
     sortItems: { id: 'common.ui.sortItems', defaultMessage: '排序' },
+    modify: { id: 'common.ui.modify', defaultMessage: '更改' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -1223,7 +1224,7 @@ export const permissionMessages = defineMessages({
   MEMBER_MANAGER_ADMIN: { id: 'permission.MEMBER_MANAGER_ADMIN', defaultMessage: '指派承辦人功能' },
   MEMBER_CONTRACT_INSERT: { id: 'permission.MEMBER_CONTRACT_INSERT', defaultMessage: '建立合約功能' },
   MEMBER_ATTENDANT: { id: 'permission.MEMBER_ATTENDANT', defaultMessage: '打卡功能' },
-  SALES_CALL_ADMIN: {id: 'permission.SALES_CALL_ADMIN', defaultMessage: '檢視業務專區'},
+  SALES_CALL_ADMIN: { id: 'permission.SALES_CALL_ADMIN', defaultMessage: '檢視業務專區' },
   VIEW_ALL_MEMBER_NOTE: { id: 'permission.VIEW_ALL_MEMBER_NOTE', defaultMessage: '查看所有聯絡記錄' },
 
   // task

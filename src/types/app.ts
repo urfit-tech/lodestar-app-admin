@@ -19,6 +19,7 @@ export type Module =
   | 'member_card'
   | 'member_note'
   | 'member_property'
+  | 'member_rejection'
   | 'member_task'
   | 'merchandise'
   | 'merchandise_customization'

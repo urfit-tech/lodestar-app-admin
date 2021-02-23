@@ -2108,6 +2108,7 @@ export interface INSERT_MEMBER_NOTE_REJECTED_AT {
 export interface INSERT_MEMBER_NOTE_REJECTED_ATVariables {
   memberId: string;
   authorId: string;
+  description: string;
   rejectedAt: any;
 }
 
