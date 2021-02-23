@@ -103,25 +103,25 @@ const ExerciseAdminForm: React.FC<{
   )
 
   const [questions, setQuestions] = useState<QuestionProps[]>(programContentBody.data?.questions || [])
-  const [questionValidations, setQuestionValidations] = useState<boolean[]>([])
+  const [withInvalidQuestion, setWithInvalidQuestion] = useState(!!programContent.metadata?.withInvalidQuestion)
+  const questionValidations = questions.map(
+    question =>
+      question.points !== 0 &&
+      question.choices.length > 1 &&
+      question.choices.some(choice => choice.isCorrect) &&
+      question.choices.every(choice => !BraftEditor.createEditorState(choice.description).isEmpty()) &&
+      !BraftEditor.createEditorState(question.description).isEmpty(),
+  )
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => setQuestions(programContentBody.data?.questions), [
-    JSON.stringify(programContentBody.data?.questions),
-  ])
+  useEffect(() => {
+    setQuestions(programContentBody.data?.questions || [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(programContentBody.data?.questions)])
 
   const totalPoints = sum(questions.map(question => question.points || 0))
   const handleSubmit = async (values: FieldProps) => {
-    const validations = questions.map(
-      question =>
-        question.points !== 0 &&
-        question.choices.length > 1 &&
-        question.choices.some(choice => choice.isCorrect) &&
-        question.choices.every(choice => !BraftEditor.createEditorState(choice.description).isEmpty()) &&
-        !BraftEditor.createEditorState(question.description).isEmpty(),
-    )
-    setQuestionValidations(validations)
-
+    setWithInvalidQuestion(true)
     setLoading(true)
     updateExercise({
       variables: {
@@ -136,7 +136,7 @@ const ExerciseAdminForm: React.FC<{
             isAvailableToGoBack: values.isAvailableToGoBack,
             isAvailableToRetry: values.isAvailableToRetry,
             passingScore: values.passingScore || 0,
-            withInvalidQuestion: validations.some(validation => !validation),
+            withInvalidQuestion: questionValidations.some(validation => !validation),
           },
         },
         body: {
@@ -196,7 +196,7 @@ const ExerciseAdminForm: React.FC<{
             onClick={() => {
               form.resetFields()
               setQuestions(programContentBody.data?.questions || [])
-              setQuestionValidations([])
+              setWithInvalidQuestion(questionValidations.some(validation => !validation))
               onCancel?.()
             }}
             className="mr-2"
@@ -231,7 +231,7 @@ const ExerciseAdminForm: React.FC<{
         </div>
       </div>
 
-      {questionValidations.some(validation => !validation) && (
+      {withInvalidQuestion && questionValidations.some(validation => !validation) && (
         <Alert
           type="error"
           message={

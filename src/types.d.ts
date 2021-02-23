@@ -4237,6 +4237,7 @@ export interface INSERT_PROGRAM_CONTENTVariables {
   position: number;
   publishedAt?: any | null;
   programContentType: string;
+  metadata?: any | null;
 }
 
 /* tslint:disable */
@@ -22700,6 +22701,7 @@ export interface order_status_bool_exp {
   _and?: (order_status_bool_exp | null)[] | null;
   _not?: order_status_bool_exp | null;
   _or?: (order_status_bool_exp | null)[] | null;
+  last_paid_at?: timestamptz_comparison_exp | null;
   member_id?: String_comparison_exp | null;
   order_discounts?: order_discount_bool_exp | null;
   order_id?: String_comparison_exp | null;
@@ -22713,6 +22715,7 @@ export interface order_status_bool_exp {
  * ordering options when selecting data from "order_status"
  */
 export interface order_status_order_by {
+  last_paid_at?: order_by | null;
   member_id?: order_by | null;
   order_discounts_aggregate?: order_discount_aggregate_order_by | null;
   order_id?: order_by | null;

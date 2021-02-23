@@ -115,9 +115,11 @@ const QuestionInput: React.FC<{
 
       <Form.Item>
         <Checkbox
+          defaultChecked={value.isMultipleAnswers}
           onChange={e =>
             onChange?.({
               ...value,
+              choices: value.choices.map(v => ({ ...v, isCorrect: false })),
               isMultipleAnswers: e.target.checked,
             })
           }

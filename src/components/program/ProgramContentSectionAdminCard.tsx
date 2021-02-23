@@ -155,6 +155,10 @@ const ProgramContentSectionAdminCard: React.FC<{
                       position: programContentSection.programContents.length,
                       publishedAt: program?.publishedAt ? null : new Date(),
                       programContentType: 'exercise',
+                      metadata: {
+                        isAvailableToGoBack: true,
+                        isAvailableToRetry: true,
+                      },
                     },
                   })
                     .then(() => onRefetch?.())
@@ -183,6 +187,7 @@ const INSERT_PROGRAM_CONTENT = gql`
     $position: Int!
     $publishedAt: timestamptz
     $programContentType: String!
+    $metadata: jsonb
   ) {
     insert_program_content(
       objects: {
@@ -191,6 +196,7 @@ const INSERT_PROGRAM_CONTENT = gql`
         position: $position
         program_content_body: { data: { type: $programContentType, data: {} } }
         published_at: $publishedAt
+        metadata: $metadata
       }
     ) {
       returning {
