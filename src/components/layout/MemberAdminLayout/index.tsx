@@ -218,9 +218,11 @@ const MemberAdminLayout: React.FC<{
 
           {enabledModules.member_rejection && (
             <MemberRejectionBlock
-              lastRejectedMemberNote={member.notes.reduce((acc, cur) =>
-                maxBy(v => moment(v.rejectedAt || 0).valueOf(), acc, cur),
-              )}
+              lastRejectedMemberNote={
+                member.notes.length
+                  ? member.notes.reduce((acc, cur) => maxBy(v => moment(v.rejectedAt || 0).valueOf(), acc, cur))
+                  : null
+              }
               insertMemberNoteRejectedAt={description => {
                 insertMemberNoteRejectedAt({
                   variables: {

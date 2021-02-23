@@ -54,7 +54,7 @@ export const MemberRejectionBlock: React.FC<{
     }
     description: string | null
     rejectedAt: Date | null
-  }
+  } | null
   insertMemberNoteRejectedAt: (description: string) => void
 }> = ({ lastRejectedMemberNote, insertMemberNoteRejectedAt }) => {
   const [form] = useForm()
@@ -96,7 +96,7 @@ export const MemberRejectionBlock: React.FC<{
         </Form>
       </AdminModal>
 
-      {lastRejectedMemberNote.rejectedAt && (
+      {lastRejectedMemberNote?.rejectedAt && (
         <div className="mt-3">
           <StyledTime className="mb-1 lh-1">
             {moment(lastRejectedMemberNote.rejectedAt).format('YYYY-MM-DD HH:mm')}{' '}
