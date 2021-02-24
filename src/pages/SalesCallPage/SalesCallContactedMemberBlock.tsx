@@ -1,11 +1,10 @@
 import Icon, { SearchOutlined } from '@ant-design/icons'
-import { Button, Input, Table } from 'antd'
+import { Button, Input, Skeleton, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
 import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { commonMessages } from 'lodestar-app-admin/src/helpers/translation'
-// import { ReactComponent as DemoIcon } from '../../images/icons/demo.svg'
 import { ReactComponent as CallOutIcon } from 'lodestar-app-admin/src/images/icon/call-out.svg'
 import { ReactComponent as UserOIcon } from 'lodestar-app-admin/src/images/icon/user-o.svg'
 import moment from 'moment'
@@ -57,7 +56,8 @@ type RecordProps = {
 const SalesCallContactedMemberBlock: React.FC<{
   salesId: string
   members: SalesCallMemberProps[]
-}> = ({ salesId, members }) => {
+  loading: boolean
+}> = ({ salesId, members, loading }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { apiHost, authToken } = useAuth()
@@ -71,6 +71,10 @@ const SalesCallContactedMemberBlock: React.FC<{
     phone: undefined,
     email: undefined,
   })
+
+  if (loading) {
+    return <Skeleton active />
+  }
 
   const getColumnSearchProps: (onSetFilter: (value?: string) => void) => ColumnProps<RecordProps> = onSetFilter => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (

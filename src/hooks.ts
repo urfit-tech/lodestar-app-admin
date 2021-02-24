@@ -379,6 +379,9 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
         hasContacted,
         hasTransacted,
       },
+      context: {
+        important: true,
+      },
     },
   )
 

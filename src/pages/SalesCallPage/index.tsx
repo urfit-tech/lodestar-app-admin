@@ -60,13 +60,21 @@ const SalesCallPage: React.FC = () => {
           key="keep-in-touch"
           tab={`${formatMessage(salesMessages.label.keepInTouch)} (${contactedMembers.length})`}
         >
-          {currentMemberId && !loadingContactedMembers && (
-            <SalesCallContactedMemberBlock salesId={currentMemberId} members={contactedMembers} />
+          {currentMemberId && (
+            <SalesCallContactedMemberBlock
+              salesId={currentMemberId}
+              members={contactedMembers}
+              loading={loadingContactedMembers}
+            />
           )}
         </Tabs.TabPane>
         <Tabs.TabPane key="deals" tab={`${formatMessage(salesMessages.label.deals)} (${transactedMembers.length})`}>
-          {currentMemberId && !loadingTransactedMembers && (
-            <SalesCallTransactedMemberBlock salesId={currentMemberId} members={transactedMembers} />
+          {currentMemberId && (
+            <SalesCallTransactedMemberBlock
+              salesId={currentMemberId}
+              members={transactedMembers}
+              loading={loadingTransactedMembers}
+            />
           )}
         </Tabs.TabPane>
         <Tabs.TabPane key="revoked" tab={formatMessage(salesMessages.label.revoked)} disabled></Tabs.TabPane>

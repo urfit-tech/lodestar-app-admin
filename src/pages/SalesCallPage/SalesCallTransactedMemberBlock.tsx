@@ -1,5 +1,5 @@
 import Icon, { SearchOutlined } from '@ant-design/icons'
-import { Button, Input, Table } from 'antd'
+import { Button, Input, Skeleton, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
 import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
@@ -35,7 +35,8 @@ type RecordProps = {
 const SalesCallTransactedMemberBlock: React.FC<{
   salesId: string
   members: SalesCallMemberProps[]
-}> = ({ salesId, members }) => {
+  loading: boolean
+}> = ({ salesId, members, loading }) => {
   const { id: appId } = useApp()
   const { apiHost, authToken } = useAuth()
   const { sales } = useLead(salesId)
@@ -49,6 +50,10 @@ const SalesCallTransactedMemberBlock: React.FC<{
     phone: undefined,
     email: undefined,
   })
+
+  if (loading) {
+    return <Skeleton active />
+  }
 
   const getColumnSearchProps: (onSetFilter: (value?: string) => void) => ColumnProps<RecordProps> = onSetFilter => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
