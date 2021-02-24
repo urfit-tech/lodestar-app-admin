@@ -11553,20 +11553,14 @@ export interface CREATE_PODCAST_PROGRAMVariables {
 // GraphQL query operation: GET_PRACTICE_PREVIEW_COLLECTION
 // ====================================================
 
-export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_member {
-  __typename: "member";
-  id: string;
-  username: string;
-  picture_url: string | null;
-}
-
 export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content_program_content_section_program_program_roles {
   __typename: "program_role";
+  id: any;
   /**
    * instructor / assistant 
    */
   name: string;
-  id: any;
+  member_id: string;
 }
 
 export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content_program_content_section_program {
@@ -11605,10 +11599,7 @@ export interface GET_PRACTICE_PREVIEW_COLLECTION_practice {
   cover_url: string | null;
   created_at: any;
   reviewed_at: any | null;
-  /**
-   * An object relationship
-   */
-  member: GET_PRACTICE_PREVIEW_COLLECTION_practice_member;
+  member_id: string;
   /**
    * An object relationship
    */
@@ -11630,6 +11621,7 @@ export interface GET_PRACTICE_PREVIEW_COLLECTIONVariables {
   searchText?: string | null;
   programId?: any | null;
   unreviewed?: boolean | null;
+  programRoleMemberId?: string | null;
 }
 
 /* tslint:disable */

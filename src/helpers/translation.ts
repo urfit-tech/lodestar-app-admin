@@ -1239,6 +1239,9 @@ export const permissionMessages = defineMessages({
   PROJECT_FUNDING_ADMIN: { id: 'permission.PROJECT_ADMIN', defaultMessage: '募資專案功能' },
   PROJECT_PRE_ORDER_ADMIN: { id: 'permission.PROJECT_ADMIN', defaultMessage: '預購專案功能' },
   PROJECT_ON_SALE_ADMIN: { id: 'permission.PROJECT_ADMIN', defaultMessage: '促銷專案功能' },
+
+  // practice
+  PRACTICE_ADMIN: { id: 'permission.PRACTICE_ADMIN', defaultMessage: '所有作業功能' },
 })
 
 export const codeMessages = defineMessages({

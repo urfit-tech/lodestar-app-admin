@@ -11,12 +11,11 @@ import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { dateFormatter } from '../../helpers'
 import { practiceMessages } from '../../helpers/translation'
-import DefaultAvatar from '../../images/default/avatar.svg'
 import EmptyCover from '../../images/default/empty-cover.png'
 import { ReactComponent as CommentAltLinesIcon } from '../../images/icon/comment-alt-lines-o.svg'
 import types from '../../types'
 import AdminCard from '../admin/AdminCard'
-import { AvatarImage } from '../common/Image'
+import MemberAvatar from '../common/MemberAvatar'
 import { BREAK_POINT } from '../common/Responsive'
 
 type PracticeCardProps = CardProps & {
@@ -24,10 +23,9 @@ type PracticeCardProps = CardProps & {
   coverUrl: string | null
   title: string
   createdAt: Date
-  memberUrl: string | null
-  memberName: string
+  memberId: string
   reactedMemberIds: string[]
-  roles: { id: string; name: string }[]
+  roles: { id: string; name: string; memberId: string }[]
   isReviewed: boolean
   onRefetch?: () => void
   desktop?: boolean
@@ -86,15 +84,6 @@ const StyledCreatedAt = styled.div`
     margin-bottom: 0px;
   }
 `
-const StyledName = styled.div`
-  color: var(--gray-dark);
-  font-size: 14px;
-  letter-spacing: 0.4px;
-  line-height: 28px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-`
 const StyledCommentIcon = styled.div`
   display: flex;
   justify-content: center;
@@ -117,8 +106,7 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
   coverUrl,
   title,
   createdAt,
-  memberUrl,
-  memberName,
+  memberId,
   reactedMemberIds,
   roles,
   isReviewed,
@@ -187,10 +175,7 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
         </div>
 
         <div className="d-flex justify-content-between algin-items-center mb-3">
-          <div className="d-flex justify-content-center algin-items-center">
-            {<AvatarImage className="mr-2" src={memberUrl || DefaultAvatar} size="28px" />}
-            <StyledName>{memberName}</StyledName>
-          </div>
+          <MemberAvatar size="28px" withName memberId={memberId} />
           <div className="d-flex justify-content-center algin-items-center">
             <StyledCommentIcon>
               <CommentAltLinesIcon className="mr-2" />
@@ -254,9 +239,8 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
               </StyledCreatedAt>
             </div>
 
-            <div className="d-flex algin-items-center col-2 m-auto p-0" title={memberName}>
-              {<AvatarImage className="mr-2" src={memberUrl || DefaultAvatar} size="28px" />}
-              <StyledName>{memberName}</StyledName>
+            <div className="d-flex algin-items-center col-2 m-auto p-0">
+              <MemberAvatar size="28px" withName memberId={memberId} />
             </div>
           </div>
           <div className="d-flex col-3 p-0">
@@ -277,7 +261,7 @@ const PracticeCard: React.FC<PracticeCardProps & CardProps> = ({
 
             {currentUserRole === 'app-owner' ||
             roles
-              .filter(role => role?.id === currentMemberId)
+              .filter(role => role?.memberId === currentMemberId)
               .some(role => role.name === 'instructor' || role.name === 'assistant') ? (
               <StyledCheckboxWrapper className="d-flex m-auto">
                 <Checkbox
