@@ -331,7 +331,7 @@ const useOrderLog = (filters?: {
   memberId?: string
 }) => {
   const condition: types.GET_ORDERSVariables['condition'] = {
-    order_status: { status: { _in: filters?.statuses ? filters.statuses : undefined } },
+    order_status: filters?.statuses ? { status: { _in: filters.statuses } } : undefined,
     id: { _ilike: filters?.orderId ? `%${filters.orderId}%` : undefined },
     member: {
       id: {
@@ -389,43 +389,39 @@ const useOrderLog = (filters?: {
       : undefined
 
   const orderLogs: OrderLogProps[] =
-    loading || error || !data
-      ? []
-      : data.order_log.map(v => ({
-          id: v.id,
-          createdAt: v.created_at,
-          status: v.order_status?.status || 'UNKNOWN',
-          shipping: v.shipping,
-          name: v.member.name,
-          email: v.member.email,
+    data?.order_log.map(v => ({
+      id: v.id,
+      createdAt: v.created_at,
+      status: v.order_status?.status || 'UNKNOWN',
+      shipping: v.shipping,
+      name: v.member.name,
+      email: v.member.email,
 
-          orderProducts: v.order_products.map(w => ({
-            id: w.id,
-            name: w.name,
-            price: w.price,
-            startedAt: w.started_at && new Date(w.started_at),
-            endedAt: w.ended_at && new Date(w.ended_at),
-            product: w.product,
-            quantity: w.options?.quantity,
-            options: w.options,
-          })),
+      orderProducts: v.order_products.map(w => ({
+        id: w.id,
+        name: w.name,
+        price: w.price,
+        startedAt: w.started_at && new Date(w.started_at),
+        endedAt: w.ended_at && new Date(w.ended_at),
+        product: w.product,
+        quantity: w.options?.quantity,
+        options: w.options,
+      })),
 
-          orderDiscounts: v.order_discounts.map(w => ({
-            id: w.id,
-            name: w.name,
-            description: w.description,
-            price: w.price,
-          })),
+      orderDiscounts: v.order_discounts.map(w => ({
+        id: w.id,
+        name: w.name,
+        description: w.description,
+        price: w.price,
+      })),
 
-          totalPrice:
-            sum(v.order_products.map(prop('price'))) -
-            sum(v.order_discounts.map(prop('price'))) +
-            (v.shipping?.fee || 0),
+      totalPrice:
+        sum(v.order_products.map(prop('price'))) - sum(v.order_discounts.map(prop('price'))) + (v.shipping?.fee || 0),
 
-          expiredAt: v.expired_at,
-          paymentMethod: v.payment_logs[0]?.gateway,
-          orderExecutors: v.order_executors.map(w => w.member.name),
-        }))
+      expiredAt: v.expired_at,
+      paymentMethod: v.payment_logs[0]?.gateway,
+      orderExecutors: v.order_executors.map(w => w.member.name),
+    })) || []
 
   const totalCount = data?.order_log_aggregate.aggregate?.count || 0
 

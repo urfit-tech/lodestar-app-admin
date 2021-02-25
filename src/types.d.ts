@@ -20480,6 +20480,7 @@ export interface member_public_bool_exp {
   _or?: (member_public_bool_exp | null)[] | null;
   abstract?: String_comparison_exp | null;
   app_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   email?: String_comparison_exp | null;
   id?: String_comparison_exp | null;
@@ -20501,6 +20502,7 @@ export interface member_public_bool_exp {
 export interface member_public_order_by {
   abstract?: order_by | null;
   app_id?: order_by | null;
+  created_at?: order_by | null;
   description?: order_by | null;
   email?: order_by | null;
   id?: order_by | null;
