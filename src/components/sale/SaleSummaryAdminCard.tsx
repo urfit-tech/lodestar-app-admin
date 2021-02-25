@@ -37,14 +37,14 @@ const SaleSummaryAdminCard: React.FC = () => {
 
 const GET_TOTAL_ORDER_AMOUNT = gql`
   query GET_TOTAL_ORDER_AMOUNT {
-    order_product_aggregate(where: { order_log: { status: { _eq: "SUCCESS" } } }) {
+    order_product_aggregate(where: { order_log: { order_status: { status: { _eq: "SUCCESS" } } } }) {
       aggregate {
         sum {
           price
         }
       }
     }
-    order_discount_aggregate(where: { order_log: { status: { _eq: "SUCCESS" } } }) {
+    order_discount_aggregate(where: { order_log: { order_status: { status: { _eq: "SUCCESS" } } } }) {
       aggregate {
         sum {
           price

@@ -178,8 +178,10 @@ const OrderExportModal: React.FC = () => {
                 { updated_at: { _gte: startedAt, _lte: endedAt } },
                 { updated_at: { _is_null: true }, created_at: { _gte: startedAt, _lte: endedAt } },
               ],
-              status: {
-                _in: orderStatuses,
+              order_status: {
+                status: {
+                  _in: orderStatuses,
+                },
               },
             },
           },
@@ -296,8 +298,10 @@ const OrderExportModal: React.FC = () => {
                 { updated_at: { _gte: startedAt, _lte: endedAt } },
                 { updated_at: { _is_null: true }, created_at: { _gte: startedAt, _lte: endedAt } },
               ],
-              status: {
-                _in: orderStatuses,
+              order_status: {
+                status: {
+                  _in: orderStatuses,
+                },
               },
             },
           },
@@ -542,7 +546,7 @@ const GET_ORDER_DISCOUNT_COLLECTION = gql`
     order_discount(
       where: {
         order_log: {
-          status: { _in: $orderStatuses }
+          order_status: { status: { _in: $orderStatuses } }
           _or: [
             { updated_at: { _gte: $startedAt, _lte: $endedAt } }
             { updated_at: { _is_null: true }, created_at: { _gte: $startedAt, _lte: $endedAt } }
