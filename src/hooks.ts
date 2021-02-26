@@ -182,22 +182,28 @@ export const useMemberContractCollection = ({
                 agreed_at: sortOrder.agreedAt
                   ? {
                       [sortOrder.agreedAt === 'descend'
-                        ? '_lt'
+                        ? '_lte'
                         : '_gt']: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.agreed_at,
+                      [sortOrder.agreedAt === 'descend' ? '_gt' : '_lte']:
+                        sortOrder.agreedAt === 'descend' ? startedAt : endedAt,
                     }
                   : { _is_null: false },
                 revoked_at: sortOrder.revokedAt
                   ? {
                       [sortOrder.revokedAt === 'descend'
-                        ? '_lt'
+                        ? '_lte'
                         : '_gt']: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.revoked_at,
+                      [sortOrder.agreedAt === 'descend' ? '_gt' : '_lte']:
+                        sortOrder.agreedAt === 'descend' ? startedAt : endedAt,
                     }
                   : { _is_null: !isRevoked },
                 started_at: sortOrder.startedAt
                   ? {
                       [sortOrder.startedAt === 'descend'
-                        ? '_lt'
+                        ? '_lte'
                         : '_gt']: data?.xuemi_member_private_teach_contract.slice(-1)[0]?.started_at,
+                      [sortOrder.agreedAt === 'descend' ? '_gt' : '_lte']:
+                        sortOrder.agreedAt === 'descend' ? startedAt : endedAt,
                     }
                   : undefined,
               },
@@ -218,7 +224,6 @@ export const useMemberContractCollection = ({
             },
           })
       : undefined
-
   return {
     loadingMemberContracts: loading,
     errorMemberContracts: error,
