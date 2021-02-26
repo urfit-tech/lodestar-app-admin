@@ -155,9 +155,9 @@ export const useMemberContractCollection = ({
       },
       note: v.note,
       orderExecutors:
-        v.values?.orderExecutors?.map((v: { ratio: number; memberId: string }) => ({
+        v.values?.orderExecutors?.map((v: { ratio: number; member_id: string }) => ({
           ratio: v.ratio,
-          memberId: v.memberId,
+          memberId: v.member_id,
         })) || [],
       couponCount: v.values?.coupons.length || null,
       manager: v.member?.manager
@@ -203,6 +203,7 @@ export const useMemberContractCollection = ({
                     }
                   : undefined,
               },
+              limit: 10,
             },
             updateQuery: (prev, { fetchMoreResult }) => {
               if (!fetchMoreResult) {

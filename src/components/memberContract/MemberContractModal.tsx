@@ -170,7 +170,6 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
       .catch(err => handleError(err))
       .finally(() => setIsLoading(false))
   }
-
   const inputEditPermissions = {
     approvedAt: true,
     loanCanceledAt: true,
@@ -494,8 +493,11 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
             </StyledText>
           )}
           <StyledText className="mb-2">
-            {formatMessage(memberContractMessages.label.referralMember)}：{purchasedItem.referral?.name}(
-            {purchasedItem.referral?.email})
+            {purchasedItem.referral?.name
+              ? `${formatMessage(memberContractMessages.label.referralMember)}：${purchasedItem.referral?.name}(${
+                  purchasedItem.referral?.email
+                })`
+              : null}
           </StyledText>
           <StyledText className="mb-2">
             {formatMessage(memberContractMessages.label.servicePeriod)}：
