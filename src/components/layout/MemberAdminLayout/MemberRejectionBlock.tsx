@@ -4,7 +4,7 @@ import moment from 'moment'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import { commonMessages } from '../../../helpers/translation'
+import { commonMessages, errorMessages } from '../../../helpers/translation'
 import AdminModal from '../../admin/AdminModal'
 
 const StyledTime = styled.div`
@@ -39,12 +39,18 @@ const StyledTitle = styled.h4`
   color: var(--gray-darker);
 `
 
+const StyledTextArea = styled(Input.TextArea)`
+  resize: none;
+`
+
 const messages = defineMessages({
   memberReject: { id: 'member.ui.memberReject', defaultMessage: '學員拒絕' },
-  removeMember: { id: 'member.text.removeMember', defaultMessage: '學員將從「開發中」的名單內抽離。' },
+  removeMember: {
+    id: 'member.text.removeMember',
+    defaultMessage: '學員狀態將改為已拒絕，並從「開發中」的名單內抽離。',
+  },
   reasonOfRejection: { id: 'member.label.reasonOfRejection', defaultMessage: '拒絕原因' },
   markAsRejection: { id: 'member.text.markAsRejection', defaultMessage: '標註為拒絕' },
-  changeStateToRejection: { id: 'member.text.changeStateToRejection', defaultMessage: '要更改狀態為已拒絕嗎？' },
 })
 
 export const MemberRejectionBlock: React.FC<{
@@ -63,7 +69,7 @@ export const MemberRejectionBlock: React.FC<{
   return (
     <>
       <AdminModal
-        title={formatMessage(messages.changeStateToRejection)}
+        title={formatMessage(messages.memberReject)}
         renderTrigger={({ setVisible }) => (
           <Button onClick={() => setVisible(true)}>{formatMessage(messages.memberReject)}</Button>
         )}
@@ -77,9 +83,11 @@ export const MemberRejectionBlock: React.FC<{
               className="mr-2"
               type="primary"
               onClick={() => {
-                const description = form.getFieldValue('description')
-                insertMemberNoteRejectedAt(description)
-                setVisible(false)
+                form.validateFields().then(() => {
+                  const description = form.getFieldValue('description')
+                  insertMemberNoteRejectedAt(description)
+                  setVisible(false)
+                })
               }}
             >
               {formatMessage(commonMessages.ui.modify)}
@@ -89,9 +97,19 @@ export const MemberRejectionBlock: React.FC<{
       >
         <div className="mb-3">{formatMessage(messages.removeMember)}</div>
         <StyledTitle>{formatMessage(messages.reasonOfRejection)}</StyledTitle>
-        <Form form={form}>
-          <Form.Item name="description">
-            <Input.TextArea className="mb-4" />
+        <Form form={form} className="pb-2">
+          <Form.Item
+            name="description"
+            rules={[
+              {
+                required: true,
+                message: formatMessage(errorMessages.form.isRequired, {
+                  field: formatMessage(messages.reasonOfRejection),
+                }),
+              },
+            ]}
+          >
+            <StyledTextArea style={{ height: '120px' }} />
           </Form.Item>
         </Form>
       </AdminModal>

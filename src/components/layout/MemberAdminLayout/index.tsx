@@ -72,6 +72,7 @@ const MemberAdminLayout: React.FC<{
         productIds: string[]
       }
     }[]
+    noAgreedContract?: boolean
   }
   onRefetch: () => void
 }> = ({ member, onRefetch, children }) => {
@@ -93,14 +94,7 @@ const MemberAdminLayout: React.FC<{
       $rejectedAt: timestamptz!
     ) {
       insert_member_note_one(
-        object: {
-          member_id: $memberId
-          author_id: $authorId
-          description: $description
-          rejected_at: $rejectedAt
-          type: "outbound"
-          status: "answered"
-        }
+        object: { member_id: $memberId, author_id: $authorId, description: $description, rejected_at: $rejectedAt }
       ) {
         id
       }
@@ -216,7 +210,7 @@ const MemberAdminLayout: React.FC<{
 
           <Divider className="my-4" />
 
-          {enabledModules.member_rejection && (
+          {enabledModules.member_rejection && member.noAgreedContract && (
             <MemberRejectionBlock
               lastRejectedMemberNote={
                 member.notes.length

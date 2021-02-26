@@ -8116,6 +8116,11 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
   member_note_attachments: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_member_note_attachments[];
 }
 
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_contracts {
+  __typename: "member_contract";
+  id: any;
+}
+
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_status {
   __typename: "coupon_status";
   outdated: boolean | null;
@@ -8262,6 +8267,10 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk {
    * An array relationship
    */
   member_notes: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes[];
+  /**
+   * An array relationship
+   */
+  member_contracts: GET_MEMBER_DESCRIPTION_member_by_pk_member_contracts[];
   /**
    * An array relationship
    */
