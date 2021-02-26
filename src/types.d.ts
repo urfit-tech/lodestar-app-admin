@@ -2136,6 +2136,7 @@ export interface GET_MEMBER_CONTRACTS_member_contract {
   agreed_ip: string | null;
   agreed_options: any | null;
   revoked_at: any | null;
+  values: any | null;
   /**
    * An object relationship
    */
@@ -2151,6 +2152,36 @@ export interface GET_MEMBER_CONTRACTS {
 
 export interface GET_MEMBER_CONTRACTSVariables {
   memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: REVOKE_MEMBER_CONTRACT
+// ====================================================
+
+export interface REVOKE_MEMBER_CONTRACT_update_member_contract {
+  __typename: "member_contract_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface REVOKE_MEMBER_CONTRACT {
+  /**
+   * update data of the table: "member_contract"
+   */
+  update_member_contract: REVOKE_MEMBER_CONTRACT_update_member_contract | null;
+}
+
+export interface REVOKE_MEMBER_CONTRACTVariables {
+  memberContractId: any;
+  revocationValues: any;
+  revokedAt: any;
 }
 
 /* tslint:disable */
