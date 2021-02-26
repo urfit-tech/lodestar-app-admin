@@ -22211,6 +22211,7 @@ export interface order_log_export_bool_exp {
   app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   invoice?: jsonb_comparison_exp | null;
+  last_paid_at?: timestamptz_comparison_exp | null;
   member_email?: String_comparison_exp | null;
   member_id?: String_comparison_exp | null;
   member_name?: String_comparison_exp | null;
