@@ -68,6 +68,8 @@ export const commonMessages = {
     uploadImage: { id: 'common.ui.uploadImage', defaultMessage: '上傳圖片' },
     download: { id: 'common.ui.download', defaultMessage: '下載' },
     private: { id: 'common.ui.private', defaultMessage: '私密' },
+    sortItems: { id: 'common.ui.sortItems', defaultMessage: '排序' },
+    modify: { id: 'common.ui.modify', defaultMessage: '更改' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -185,6 +187,7 @@ export const commonMessages = {
     introductionVideo: { id: 'common.label.introductionVideo', defaultMessage: '介紹影片' },
     planTitle: { id: 'common.label.planTitle', defaultMessage: '方案名稱' },
     memberIdentity: { id: 'common.label.memberIdentity', defaultMessage: '會員身份' },
+    current: { id: 'common.label.current', defaultMessage: '目前' },
   }),
   term: defineMessages({
     assign: { id: 'common.term.assign', defaultMessage: '指派' },
@@ -619,13 +622,14 @@ export const programMessages = {
     availableToRetry: { id: 'program.label.availableToRetry', defaultMessage: '可重新測驗' },
     notifyUpdate: { id: 'program.label.notifyUpdate', defaultMessage: '通知內容更新' },
     exercise: { id: 'program.label.exercise', defaultMessage: '課後測驗' },
-    baseline: { id: 'program.label.baseline', defaultMessage: '及格分數' },
+    passingScore: { id: 'program.label.passingScore', defaultMessage: '及格分數' },
     points: { id: 'program.label.points', defaultMessage: '單題分數' },
     question: { id: 'program.label.question', defaultMessage: '題目' },
     choice: { id: 'program.label.choice', defaultMessage: '選項' },
     isCorrectAnswer: { id: 'program.label.isCorrectAnswer', defaultMessage: '此為正確解答' },
     answerDescription: { id: 'program.label.answerDescription', defaultMessage: '解答說明' },
     exerciseTitle: { id: 'program.label.exerciseTitle', defaultMessage: '標題' },
+    allowMultipleAnswers: { id: 'program.label.allowMultipleAnswers', defaultMessage: '允許多個正確解答' },
   }),
   text: defineMessages({
     searchProgramTitle: { id: 'program.text.searchProgramTitle', defaultMessage: '搜尋課程名稱' },
@@ -706,6 +710,7 @@ export const programMessages = {
       id: 'program.text.deleteChoiceDescription',
       defaultMessage: '選項刪除即不可恢復，確定要刪除嗎？',
     },
+    unfinishedQuestions: { id: 'program.text.unfinishedQuestions', defaultMessage: '未完成內容：{questions}' },
   }),
   ui: defineMessages({
     createProgram: { id: 'program.label.createProgram', defaultMessage: '建立課程' },
@@ -1076,6 +1081,7 @@ export const orderMessages = {
     orderLogUpdatedAt: { id: 'order.label.orderLogUpdatedAt', defaultMessage: '訂單更新時間' },
     orderLogTotalPrice: { id: 'order.label.orderLogTotalPrice', defaultMessage: '訂單總額' },
     orderLogExecutor: { id: 'order.label.orderLogExecutor', defaultMessage: '承辦人與分潤' },
+    referrer: { id: 'order.label.referrer', defaultMessage: '推薦人' },
     // order product
     orderProductName: { id: 'order.label.orderProductName', defaultMessage: '項目名稱' },
     orderProductCount: { id: 'order.label.orderProductCount', defaultMessage: '項目總數' },
@@ -1217,7 +1223,9 @@ export const permissionMessages = defineMessages({
   MEMBER_CATEGORY_ADMIN: { id: 'permission.MEMBER_CATEGORY_ADMIN', defaultMessage: '所有會員分類功能' },
   MEMBER_MANAGER_ADMIN: { id: 'permission.MEMBER_MANAGER_ADMIN', defaultMessage: '指派承辦人功能' },
   MEMBER_CONTRACT_INSERT: { id: 'permission.MEMBER_CONTRACT_INSERT', defaultMessage: '建立合約功能' },
+  MEMBER_CONTRACT_REVOKE: { id: 'permission.MEMBER_CONTRACT_REVOKE', defaultMessage: '解除合約功能' },
   MEMBER_ATTENDANT: { id: 'permission.MEMBER_ATTENDANT', defaultMessage: '打卡功能' },
+  SALES_CALL_ADMIN: { id: 'permission.SALES_CALL_ADMIN', defaultMessage: '檢視業務專區' },
   VIEW_ALL_MEMBER_NOTE: { id: 'permission.VIEW_ALL_MEMBER_NOTE', defaultMessage: '查看所有聯絡記錄' },
 
   // task
@@ -1232,6 +1240,9 @@ export const permissionMessages = defineMessages({
   PROJECT_FUNDING_ADMIN: { id: 'permission.PROJECT_ADMIN', defaultMessage: '募資專案功能' },
   PROJECT_PRE_ORDER_ADMIN: { id: 'permission.PROJECT_ADMIN', defaultMessage: '預購專案功能' },
   PROJECT_ON_SALE_ADMIN: { id: 'permission.PROJECT_ADMIN', defaultMessage: '促銷專案功能' },
+
+  // practice
+  PRACTICE_ADMIN: { id: 'permission.PRACTICE_ADMIN', defaultMessage: '所有作業功能' },
 })
 
 export const codeMessages = defineMessages({

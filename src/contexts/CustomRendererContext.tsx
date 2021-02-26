@@ -4,17 +4,10 @@ import { renderMemberAdminLayoutProps } from '../components/layout/MemberAdminLa
 
 export type CustomRendererProps = {
   renderMemberAdminLayout?: {
-    sider?: (props: {
-      firstRejectedMemberNote: {
-        authorName: string
-        rejectedAt: Date | null
-      } | null
-      insertMemberRejectedAt: () => void
-    }) => React.ReactNode
     content?: (props: renderMemberAdminLayoutProps) => React.ReactElement
   }
   renderAdminMenu?: (props: {
-    onClick: MenuClickEventHandler
+    permissions: { [key: string]: boolean }
     menuItems: {
       permissionIsAllowed: boolean
       icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
@@ -26,6 +19,7 @@ export type CustomRendererProps = {
         name: string
       }[]
     }[]
+    onClick?: MenuClickEventHandler
   }) => React.ReactNode
 }
 

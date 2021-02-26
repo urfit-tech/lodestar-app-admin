@@ -118,6 +118,7 @@ const ProjectBasicForm: React.FC<{
       onFinish={handleSubmit}
       onValuesChange={(_, values) => {
         values.targetUnit !== targetUnit && setTargetUnit(values.targetUnit)
+        values.targetUnit === 'participants' && form.setFieldsValue({ isParticipantsVisible: true })
       }}
     >
       <Form.Item label={formatMessage(projectMessages.label.projectTitle)} name="title">
@@ -152,18 +153,7 @@ const ProjectBasicForm: React.FC<{
             >
               <AmountInput unit={targetUnit} />
             </Form.Item>
-            <StyledFormItem
-              className="funding"
-              name="expiredAt"
-              rules={[
-                {
-                  required: true,
-                  message: formatMessage(errorMessages.form.isRequired, {
-                    field: formatMessage(projectMessages.label.expireAt),
-                  }),
-                },
-              ]}
-            >
+            <StyledFormItem className="funding" name="expiredAt">
               <DatePicker
                 style={{ width: '100%' }}
                 format="YYYY-MM-DD HH:mm"
@@ -201,7 +191,7 @@ const ProjectBasicForm: React.FC<{
         </Form.Item>
       )}
       <Form.Item label={formatMessage(projectMessages.label.participantsAmount)} name="isParticipantsVisible">
-        <Radio.Group>
+        <Radio.Group disabled={form.getFieldValue('targetUnit') === 'participants'}>
           <Radio value={true}>{formatMessage(commonMessages.status.visible)}</Radio>
           <Radio value={false}>{formatMessage(commonMessages.status.invisible)}</Radio>
         </Radio.Group>

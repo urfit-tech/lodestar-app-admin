@@ -62,8 +62,6 @@ const PracticeCollectionAdminPage: React.FC = () => {
         <AllPracticeCollectionBlock
           selectedProgramId={selectedProgramId}
           selectedStatus={selectedStatus}
-          currentMemberId={currentMemberId}
-          currentUserRole={currentUserRole}
           searchText={searchText}
         />
       )}
@@ -74,11 +72,10 @@ const PracticeCollectionAdminPage: React.FC = () => {
 const AllPracticeCollectionBlock: React.FC<{
   selectedProgramId: string
   selectedStatus: string
-  currentMemberId: string
-  currentUserRole: string
   searchText: string
-}> = ({ selectedProgramId, selectedStatus, currentMemberId, currentUserRole, searchText }) => {
+}> = ({ selectedProgramId, selectedStatus, searchText }) => {
   const { formatMessage } = useIntl()
+  const { currentMemberId, currentUserRole } = useAuth()
 
   let unreviewed: boolean | undefined
   switch (selectedStatus) {
@@ -89,10 +86,12 @@ const AllPracticeCollectionBlock: React.FC<{
       unreviewed = false
       break
   }
+
   const { loadingPractice, errorPractice, practices, refetchPractice } = usePracticePreviewCollection(
     selectedProgramId,
     searchText,
     unreviewed,
+    { programRoleMemberId: currentUserRole !== 'app-owner' ? currentMemberId : undefined },
   )
 
   if (loadingPractice) return <Skeleton active />
@@ -110,16 +109,21 @@ const AllPracticeCollectionBlock: React.FC<{
   )
 }
 
-const usePracticePreviewCollection = (selectedProgramId: string, searchText: string | null, unreviewed?: boolean) => {
+const usePracticePreviewCollection = (
+  selectedProgramId: string,
+  searchText: string | null,
+  unreviewed?: boolean,
+  options?: { programRoleMemberId?: string | null },
+) => {
   const { loading, error, data, refetch } = useQuery<
     types.GET_PRACTICE_PREVIEW_COLLECTION,
     types.GET_PRACTICE_PREVIEW_COLLECTIONVariables
   >(GET_PRACTICE_PREVIEW_COLLECTION, {
     variables: {
-      title: searchText ? `%${searchText}%` : undefined,
-      memberName: searchText ? `%${searchText}%` : undefined,
+      searchText: searchText ? `%${searchText}%` : undefined,
       programId: selectedProgramId === 'all' ? undefined : selectedProgramId,
       unreviewed,
+      programRoleMemberId: options?.programRoleMemberId,
     },
   })
 
@@ -128,24 +132,23 @@ const usePracticePreviewCollection = (selectedProgramId: string, searchText: str
     coverUrl: string | null
     createdAt: Date
     title: string
-    memberUrl: string | null
-    memberName: string
+    memberId: string
     reactedMemberIds: string[]
     isReviewed: boolean
-    roles: { id: string; name: string }[]
+    roles: { id: string; name: string; memberId: string }[]
   }[] =
     data?.practice.map(v => ({
       id: v.id,
       coverUrl: v.cover_url,
       createdAt: new Date(v.created_at),
       title: v.title,
-      memberUrl: v.member.picture_url,
-      memberName: v.member.username,
+      memberId: v.member_id,
       reactedMemberIds: v.practice_reactions.map(v => v.member_id),
       isReviewed: v.reviewed_at && new Date(v.reviewed_at),
       roles: v.program_content.program_content_section.program.program_roles.map(role => ({
         id: role.id,
         name: role.name,
+        memberId: role.member_id,
       })),
     })) || []
 
@@ -158,13 +161,21 @@ const usePracticePreviewCollection = (selectedProgramId: string, searchText: str
 }
 
 const GET_PRACTICE_PREVIEW_COLLECTION = gql`
-  query GET_PRACTICE_PREVIEW_COLLECTION($title: String, $memberName: String, $programId: uuid, $unreviewed: Boolean) {
+  query GET_PRACTICE_PREVIEW_COLLECTION(
+    $searchText: String
+    $programId: uuid
+    $unreviewed: Boolean
+    $programRoleMemberId: String
+  ) {
     practice(
       where: {
+        _or: [{ member: { username: { _like: $searchText } } }, { title: { _like: $searchText } }]
         program_content: {
-          program_content_section: { program_id: { _eq: $programId }, program: { _or: { title: { _like: $title } } } }
+          program_content_section: {
+            program_id: { _eq: $programId }
+            program: { program_roles: { member_id: { _eq: $programRoleMemberId } } }
+          }
         }
-        member: { _or: { username: { _like: $memberName } } }
         reviewed_at: { _is_null: $unreviewed }
         is_deleted: { _eq: false }
       }
@@ -175,17 +186,14 @@ const GET_PRACTICE_PREVIEW_COLLECTION = gql`
       cover_url
       created_at
       reviewed_at
-      member {
-        id
-        username
-        picture_url
-      }
+      member_id
       program_content {
         program_content_section {
           program {
             program_roles {
-              name
               id
+              name
+              member_id
             }
           }
         }

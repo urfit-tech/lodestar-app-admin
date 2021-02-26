@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
+import { isEmpty } from 'lodash'
 import { sum } from 'ramda'
 import { useAuth } from '../contexts/AuthContext'
 import { commonMessages } from '../helpers/translation'
@@ -131,6 +132,9 @@ export const useMemberAdmin = (memberId: string) => {
               options
             }
           }
+          member_contracts(where: { agreed_at: { _is_null: false } }) {
+            id
+          }
           coupons {
             id
             status {
@@ -167,7 +171,7 @@ export const useMemberAdmin = (memberId: string) => {
               }
             }
           }
-          order_logs(where: { order_status: { status: { _eq: "SUCCESS" } } }) {
+          order_logs(where: { status: { _eq: "SUCCESS" } }) {
             order_products_aggregate {
               aggregate {
                 sum {
@@ -204,6 +208,7 @@ export const useMemberAdmin = (memberId: string) => {
             productIds: string[]
           }
         }[]
+        noAgreedContract: boolean
       })
     | null =
     loading || error || !data || !data.member_by_pk
@@ -249,6 +254,7 @@ export const useMemberAdmin = (memberId: string) => {
               options: u.options,
             })),
           })),
+          noAgreedContract: isEmpty(data.member_by_pk.member_contracts),
           coupons: data.member_by_pk.coupons.map(v => ({
             status: {
               outdated: !!v.status?.outdated,
@@ -590,7 +596,7 @@ export const useMemberCollection = (filter?: {
             property_id
             value
           }
-          order_logs(where: { order_status: { status: { _eq: "SUCCESS" } } }) {
+          order_logs(where: { status: { _eq: "SUCCESS" } }) {
             order_products_aggregate {
               aggregate {
                 sum {
@@ -771,7 +777,7 @@ export const useMemberAllCollection = (filter?: {
             property_id
             value
           }
-          order_logs(where: { order_status: { status: { _eq: "SUCCESS" } } }) {
+          order_logs(where: { status: { _eq: "SUCCESS" } }) {
             order_products_aggregate {
               aggregate {
                 sum {

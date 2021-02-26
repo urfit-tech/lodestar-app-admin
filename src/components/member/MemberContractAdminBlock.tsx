@@ -1,10 +1,12 @@
-import { useQuery } from '@apollo/react-hooks'
-import { Button, Card, Skeleton } from 'antd'
+import { useMutation, useQuery } from '@apollo/react-hooks'
+import { Button, Card, message, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import moment from 'moment'
 import React from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { useAuth } from '../../contexts/AuthContext'
+import { handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import types from '../../types'
 
@@ -12,6 +14,12 @@ const messages = defineMessages({
   agreed: { id: 'contract.status.agreed', defaultMessage: '已簽署' },
   pending: { id: 'contract.status.pending', defaultMessage: '未簽署' },
   revoked: { id: 'contract.status.revoked', defaultMessage: '已解約' },
+  revokeContract: { id: 'contract.ui.revokeContract', defaultMessage: '解除合約' },
+  successfullyRevoked: { id: 'contract.event.successfullyRevoked', defaultMessage: '合約已解除！' },
+  deleteContractWarning: {
+    id: 'contract.text.deleteContractWarning',
+    defaultMessage: '你確定要解除合約？此操作無法復原，請審慎評估！',
+  },
 })
 
 const StyledCard = styled(Card)`
@@ -43,12 +51,39 @@ const MemberContractAdminBlock: React.FC<{
   memberId: string
 }> = ({ memberId }) => {
   const { formatMessage } = useIntl()
-  const { loadingContracts, errorContracts, contracts } = useMemberContracts(memberId)
+  const { permissions } = useAuth()
+  const { loadingContracts, errorContracts, contracts, refetchContracts } = useMemberContracts(memberId)
+  const [revokeMemberContract] = useMutation(REVOKE_MEMBER_CONTRACT)
 
   if (loadingContracts || errorContracts || !contracts) {
     return <Skeleton active />
   }
-
+  const handleContractRevoke = (memberContractId: string, values: any) => {
+    if (window.confirm(formatMessage(messages.deleteContractWarning))) {
+      permissions.MEMBER_CONTRACT_REVOKE &&
+        revokeMemberContract({
+          variables: {
+            memberContractId,
+            revocationValues: {
+              endedAt: values.endedAt,
+              memberId: values.memberId,
+              paymentNo: values.paymentNo,
+              startedAt: values.startedAt,
+              coinAmount: -values.coinAmount,
+              parentProductInfo: {
+                parentProductId: values.projectPlanProductId,
+              },
+            },
+            revokedAt: new Date(),
+          },
+        })
+          .then(() => {
+            message.success(formatMessage(messages.successfullyRevoked))
+            refetchContracts()
+          })
+          .catch(handleError)
+    }
+  }
   return (
     <div className="container">
       <a href={`/admin/members/${memberId}/contracts/new`} target="_blank" rel="noopener noreferrer">
@@ -89,16 +124,28 @@ const MemberContractAdminBlock: React.FC<{
                   })
                 : null}
             </StyledMeta>
-
-            <StyledDescription>
-              {formatMessage(memberMessages.text.startedAt, {
-                time: moment(contract.startedAt).format('YYYY-MM-DD HH:mm:ss'),
-              })}
-              <br />
-              {formatMessage(memberMessages.text.endedAt, {
-                time: moment(contract.endedAt).format('YYYY-MM-DD HH:mm:ss'),
-              })}
-            </StyledDescription>
+            <div className="d-flex align-items-center justify-content-between">
+              <StyledDescription>
+                {formatMessage(memberMessages.text.startedAt, {
+                  time: moment(contract.startedAt).format('YYYY-MM-DD HH:mm:ss'),
+                })}
+                <br />
+                {formatMessage(memberMessages.text.endedAt, {
+                  time: moment(contract.endedAt).format('YYYY-MM-DD HH:mm:ss'),
+                })}
+              </StyledDescription>
+              {permissions.MEMBER_CONTRACT_REVOKE && contract.agreedAt && !contract.revokedAt && (
+                <Button
+                  danger
+                  onClick={e => {
+                    e.preventDefault()
+                    handleContractRevoke(contract.id, contract.values)
+                  }}
+                >
+                  {formatMessage(messages.revokeContract)}
+                </Button>
+              )}
+            </div>
           </StyledCard>
         </a>
       ))}
@@ -118,6 +165,7 @@ const useMemberContracts = (memberId: string) => {
           agreed_ip
           agreed_options
           revoked_at
+          values
           contract {
             id
             name
@@ -131,6 +179,7 @@ const useMemberContracts = (memberId: string) => {
   const contracts: {
     id: string
     title: string
+    values: any
     startedAt: Date | null
     endedAt: Date | null
     agreedAt: Date | null
@@ -142,6 +191,7 @@ const useMemberContracts = (memberId: string) => {
       return {
         id: v.id,
         title: v.contract.name,
+        values: v.values,
         startedAt: v.started_at && new Date(v.started_at),
         endedAt: v.ended_at && new Date(v.ended_at),
         agreedAt: v.agreed_at && new Date(v.agreed_at),
@@ -158,5 +208,14 @@ const useMemberContracts = (memberId: string) => {
     refetchContracts: refetch,
   }
 }
-
+const REVOKE_MEMBER_CONTRACT = gql`
+  mutation REVOKE_MEMBER_CONTRACT($memberContractId: uuid!, $revocationValues: jsonb!, $revokedAt: timestamptz!) {
+    update_member_contract(
+      where: { id: { _eq: $memberContractId } }
+      _set: { revocation_values: $revocationValues, revoked_at: $revokedAt }
+    ) {
+      affected_rows
+    }
+  }
+`
 export default MemberContractAdminBlock

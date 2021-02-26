@@ -602,6 +602,16 @@ export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
 // GraphQL query operation: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN
 // ====================================================
 
+export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_aggregate_aggregate {
+  __typename: "appointment_plan_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_aggregate {
+  __typename: "appointment_plan_aggregate";
+  aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_aggregate_aggregate | null;
+}
+
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator {
   __typename: "member_public";
   id: string | null;
@@ -642,13 +652,18 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN {
   /**
+   * fetch aggregated fields from the table: "appointment_plan"
+   */
+  appointment_plan_aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_aggregate;
+  /**
    * fetch data from the table: "appointment_plan"
    */
   appointment_plan: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan[];
 }
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables {
-  creatorId?: string | null;
+  condition: appointment_plan_bool_exp;
+  orderBy?: appointment_plan_order_by[] | null;
 }
 
 /* tslint:disable */
@@ -2108,6 +2123,7 @@ export interface INSERT_MEMBER_NOTE_REJECTED_AT {
 export interface INSERT_MEMBER_NOTE_REJECTED_ATVariables {
   memberId: string;
   authorId: string;
+  description: string;
   rejectedAt: any;
 }
 
@@ -2135,6 +2151,7 @@ export interface GET_MEMBER_CONTRACTS_member_contract {
   agreed_ip: string | null;
   agreed_options: any | null;
   revoked_at: any | null;
+  values: any | null;
   /**
    * An object relationship
    */
@@ -2150,6 +2167,36 @@ export interface GET_MEMBER_CONTRACTS {
 
 export interface GET_MEMBER_CONTRACTSVariables {
   memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: REVOKE_MEMBER_CONTRACT
+// ====================================================
+
+export interface REVOKE_MEMBER_CONTRACT_update_member_contract {
+  __typename: "member_contract_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface REVOKE_MEMBER_CONTRACT {
+  /**
+   * update data of the table: "member_contract"
+   */
+  update_member_contract: REVOKE_MEMBER_CONTRACT_update_member_contract | null;
+}
+
+export interface REVOKE_MEMBER_CONTRACTVariables {
+  memberContractId: any;
+  revocationValues: any;
+  revokedAt: any;
 }
 
 /* tslint:disable */
@@ -3887,6 +3934,35 @@ export interface UPDATE_EXERCISEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL mutation operation: UPDATE_EXERCISE_POSITION
+// ====================================================
+
+export interface UPDATE_EXERCISE_POSITION_update_program_content_body {
+  __typename: "program_content_body_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_EXERCISE_POSITION {
+  /**
+   * update data of the table: "program_content_body"
+   */
+  update_program_content_body: UPDATE_EXERCISE_POSITION_update_program_content_body | null;
+}
+
+export interface UPDATE_EXERCISE_POSITIONVariables {
+  programContentBodyId: any;
+  body: program_content_body_set_input;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL mutation operation: UPDATE_PROGRAM_BASIC
 // ====================================================
 
@@ -4208,6 +4284,7 @@ export interface INSERT_PROGRAM_CONTENTVariables {
   position: number;
   publishedAt?: any | null;
   programContentType: string;
+  metadata?: any | null;
 }
 
 /* tslint:disable */
@@ -5732,11 +5809,6 @@ export interface GET_ORDERS_order_log_aggregate {
   aggregate: GET_ORDERS_order_log_aggregate_aggregate | null;
 }
 
-export interface GET_ORDERS_order_log_order_status {
-  __typename: "order_status";
-  status: string | null;
-}
-
 export interface GET_ORDERS_order_log_member {
   __typename: "member";
   name: string;
@@ -5803,9 +5875,9 @@ export interface GET_ORDERS_order_log {
   id: string;
   created_at: any;
   /**
-   * An object relationship
+   * SUCCESS, MATCHING, REFUND, PARTIAL_REFUND, PARTIAL_EXPIRED, PARTIAL_PAID, EXPIRED, UNPAID
    */
-  order_status: GET_ORDERS_order_log_order_status | null;
+  status: string;
   shipping: any | null;
   /**
    * expired order cannot be paid
@@ -8083,6 +8155,11 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
   member_note_attachments: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_member_note_attachments[];
 }
 
+export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_contracts {
+  __typename: "member_contract";
+  id: any;
+}
+
 export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_status {
   __typename: "coupon_status";
   outdated: boolean | null;
@@ -8229,6 +8306,10 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk {
    * An array relationship
    */
   member_notes: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes[];
+  /**
+   * An array relationship
+   */
+  member_contracts: GET_MEMBER_DESCRIPTION_member_by_pk_member_contracts[];
   /**
    * An array relationship
    */
@@ -9138,16 +9219,19 @@ export interface GET_MERCHANDISE_SPEC_COLLECTIONVariables {
 // GraphQL query operation: GET_ORDER_LOG_STATUS
 // ====================================================
 
-export interface GET_ORDER_LOG_STATUS_order_status {
-  __typename: "order_status";
-  status: string | null;
+export interface GET_ORDER_LOG_STATUS_order_log {
+  __typename: "order_log";
+  /**
+   * SUCCESS, MATCHING, REFUND, PARTIAL_REFUND, PARTIAL_EXPIRED, PARTIAL_PAID, EXPIRED, UNPAID
+   */
+  status: string;
 }
 
 export interface GET_ORDER_LOG_STATUS {
   /**
-   * fetch data from the table: "order_status"
+   * fetch data from the table: "order_log"
    */
-  order_status: GET_ORDER_LOG_STATUS_order_status[];
+  order_log: GET_ORDER_LOG_STATUS_order_log[];
 }
 
 /* tslint:disable */
@@ -11520,20 +11604,14 @@ export interface CREATE_PODCAST_PROGRAMVariables {
 // GraphQL query operation: GET_PRACTICE_PREVIEW_COLLECTION
 // ====================================================
 
-export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_member {
-  __typename: "member";
-  id: string;
-  username: string;
-  picture_url: string | null;
-}
-
 export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content_program_content_section_program_program_roles {
   __typename: "program_role";
+  id: any;
   /**
    * instructor / assistant 
    */
   name: string;
-  id: any;
+  member_id: string;
 }
 
 export interface GET_PRACTICE_PREVIEW_COLLECTION_practice_program_content_program_content_section_program {
@@ -11572,10 +11650,7 @@ export interface GET_PRACTICE_PREVIEW_COLLECTION_practice {
   cover_url: string | null;
   created_at: any;
   reviewed_at: any | null;
-  /**
-   * An object relationship
-   */
-  member: GET_PRACTICE_PREVIEW_COLLECTION_practice_member;
+  member_id: string;
   /**
    * An object relationship
    */
@@ -11594,10 +11669,10 @@ export interface GET_PRACTICE_PREVIEW_COLLECTION {
 }
 
 export interface GET_PRACTICE_PREVIEW_COLLECTIONVariables {
-  title?: string | null;
-  memberName?: string | null;
+  searchText?: string | null;
   programId?: any | null;
   unreviewed?: boolean | null;
+  programRoleMemberId?: string | null;
 }
 
 /* tslint:disable */
@@ -13504,11 +13579,13 @@ export enum order_log_update_column {
   expired_at = "expired_at",
   id = "id",
   invoice = "invoice",
+  last_paid_at = "last_paid_at",
   member_id = "member_id",
   message = "message",
   payment_model = "payment_model",
   retried_at = "retried_at",
   shipping = "shipping",
+  status = "status",
   updated_at = "updated_at",
 }
 
@@ -22122,6 +22199,7 @@ export interface order_log_bool_exp {
   expired_at?: timestamptz_comparison_exp | null;
   id?: String_comparison_exp | null;
   invoice?: jsonb_comparison_exp | null;
+  last_paid_at?: timestamptz_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   message?: String_comparison_exp | null;
@@ -22129,11 +22207,11 @@ export interface order_log_bool_exp {
   order_discounts?: order_discount_bool_exp | null;
   order_executors?: order_executor_bool_exp | null;
   order_products?: order_product_bool_exp | null;
-  order_status?: order_status_bool_exp | null;
   payment_logs?: payment_log_bool_exp | null;
   payment_model?: jsonb_comparison_exp | null;
   retried_at?: timestamptz_comparison_exp | null;
   shipping?: jsonb_comparison_exp | null;
+  status?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
 
@@ -22147,6 +22225,7 @@ export interface order_log_export_bool_exp {
   app_id?: String_comparison_exp | null;
   created_at?: timestamptz_comparison_exp | null;
   invoice?: jsonb_comparison_exp | null;
+  last_paid_at?: timestamptz_comparison_exp | null;
   member_email?: String_comparison_exp | null;
   member_id?: String_comparison_exp | null;
   member_name?: String_comparison_exp | null;
@@ -22183,6 +22262,7 @@ export interface order_log_insert_input {
   expired_at?: any | null;
   id?: string | null;
   invoice?: any | null;
+  last_paid_at?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   message?: string | null;
@@ -22194,6 +22274,7 @@ export interface order_log_insert_input {
   payment_model?: any | null;
   retried_at?: any | null;
   shipping?: any | null;
+  status?: string | null;
   updated_at?: any | null;
 }
 
@@ -22211,9 +22292,11 @@ export interface order_log_max_order_by {
   discount_type?: order_by | null;
   expired_at?: order_by | null;
   id?: order_by | null;
+  last_paid_at?: order_by | null;
   member_id?: order_by | null;
   message?: order_by | null;
   retried_at?: order_by | null;
+  status?: order_by | null;
   updated_at?: order_by | null;
 }
 
@@ -22231,9 +22314,11 @@ export interface order_log_min_order_by {
   discount_type?: order_by | null;
   expired_at?: order_by | null;
   id?: order_by | null;
+  last_paid_at?: order_by | null;
   member_id?: order_by | null;
   message?: order_by | null;
   retried_at?: order_by | null;
+  status?: order_by | null;
   updated_at?: order_by | null;
 }
 
@@ -22270,6 +22355,7 @@ export interface order_log_order_by {
   expired_at?: order_by | null;
   id?: order_by | null;
   invoice?: order_by | null;
+  last_paid_at?: order_by | null;
   member?: member_order_by | null;
   member_id?: order_by | null;
   message?: order_by | null;
@@ -22277,11 +22363,11 @@ export interface order_log_order_by {
   order_discounts_aggregate?: order_discount_aggregate_order_by | null;
   order_executors_aggregate?: order_executor_aggregate_order_by | null;
   order_products_aggregate?: order_product_aggregate_order_by | null;
-  order_status?: order_status_order_by | null;
   payment_logs_aggregate?: payment_log_aggregate_order_by | null;
   payment_model?: order_by | null;
   retried_at?: order_by | null;
   shipping?: order_by | null;
+  status?: order_by | null;
   updated_at?: order_by | null;
 }
 
@@ -22663,37 +22749,6 @@ export interface order_product_var_samp_order_by {
 export interface order_product_variance_order_by {
   accumulated_errors?: order_by | null;
   price?: order_by | null;
-}
-
-/**
- * Boolean expression to filter rows from the table "order_status". All fields are combined with a logical 'AND'.
- */
-export interface order_status_bool_exp {
-  _and?: (order_status_bool_exp | null)[] | null;
-  _not?: order_status_bool_exp | null;
-  _or?: (order_status_bool_exp | null)[] | null;
-  last_paid_at?: timestamptz_comparison_exp | null;
-  member_id?: String_comparison_exp | null;
-  order_discounts?: order_discount_bool_exp | null;
-  order_id?: String_comparison_exp | null;
-  order_log?: order_log_bool_exp | null;
-  order_products?: order_product_bool_exp | null;
-  payment_logs?: payment_log_bool_exp | null;
-  status?: String_comparison_exp | null;
-}
-
-/**
- * ordering options when selecting data from "order_status"
- */
-export interface order_status_order_by {
-  last_paid_at?: order_by | null;
-  member_id?: order_by | null;
-  order_discounts_aggregate?: order_discount_aggregate_order_by | null;
-  order_id?: order_by | null;
-  order_log?: order_log_order_by | null;
-  order_products_aggregate?: order_product_aggregate_order_by | null;
-  payment_logs_aggregate?: payment_log_aggregate_order_by | null;
-  status?: order_by | null;
 }
 
 /**

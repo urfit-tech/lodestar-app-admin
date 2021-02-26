@@ -134,7 +134,7 @@ const ProgramContentSectionAdminCard: React.FC<{
                       programContentSectionId: programContentSection.id,
                       title: 'untitled',
                       position: programContentSection.programContents.length,
-                      publishedAt: program && program.publishedAt ? undefined : new Date(),
+                      publishedAt: program?.publishedAt ? null : new Date(),
                       programContentType: 'practice',
                     },
                   })
@@ -145,7 +145,29 @@ const ProgramContentSectionAdminCard: React.FC<{
                 {formatMessage(messages.programPractice)}
               </StyledMenuItem>
             )}
-            {enabledModules.exercise && <StyledMenuItem>{formatMessage(messages.programExercise)}</StyledMenuItem>}
+            {enabledModules.exercise && (
+              <StyledMenuItem
+                onClick={() =>
+                  createProgramContent({
+                    variables: {
+                      programContentSectionId: programContentSection.id,
+                      title: 'untitled',
+                      position: programContentSection.programContents.length,
+                      publishedAt: program?.publishedAt ? null : new Date(),
+                      programContentType: 'exercise',
+                      metadata: {
+                        isAvailableToGoBack: true,
+                        isAvailableToRetry: true,
+                      },
+                    },
+                  })
+                    .then(() => onRefetch?.())
+                    .catch(handleError)
+                }
+              >
+                {formatMessage(messages.programExercise)}
+              </StyledMenuItem>
+            )}
           </Menu>
         }
         placement="topCenter"
@@ -165,6 +187,7 @@ const INSERT_PROGRAM_CONTENT = gql`
     $position: Int!
     $publishedAt: timestamptz
     $programContentType: String!
+    $metadata: jsonb
   ) {
     insert_program_content(
       objects: {
@@ -173,6 +196,7 @@ const INSERT_PROGRAM_CONTENT = gql`
         position: $position
         program_content_body: { data: { type: $programContentType, data: {} } }
         published_at: $publishedAt
+        metadata: $metadata
       }
     ) {
       returning {

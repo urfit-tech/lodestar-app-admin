@@ -47,6 +47,11 @@ const useAllMemberCollection = () => {
         }
       }
     `,
+    {
+      context: {
+        important: true,
+      },
+    },
   )
 
   const members: MemberOptionProps[] =

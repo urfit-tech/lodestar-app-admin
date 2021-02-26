@@ -44,7 +44,15 @@ export const useCategory = (classType: ClassType) => {
         }
       }
     `,
-    { variables: { appId, classType } },
+    {
+      variables: {
+        appId,
+        classType,
+      },
+      context: {
+        important: true,
+      },
+    },
   )
 
   const categories: (CategoryProps & {
@@ -136,7 +144,7 @@ export const useProductInventoryLog = (productId: string) => {
           where: {
             _and: [
               { product_id: { _eq: $productId } }
-              { order_log: { order_status: { status: { _eq: "SUCCESS" } } } }
+              { order_log: { status: { _eq: "SUCCESS" } } }
               { order_log: { delivered_at: { _is_null: false } } }
             ]
           }
@@ -216,7 +224,7 @@ export const useOrderPhysicalProductLog = (memberId?: string | null) => {
       query GET_PHYSICAL_PRODUCT_ORDER_LOG($memberId: String) {
         order_log(
           where: {
-            order_status: { status: { _eq: "SUCCESS" } }
+            status: { _eq: "SUCCESS" }
             order_products: {
               product_id: { _similar: "(ProjectPlan|MerchandiseSpec)%" }
               product: { product_owner: { member_id: { _eq: $memberId } } }

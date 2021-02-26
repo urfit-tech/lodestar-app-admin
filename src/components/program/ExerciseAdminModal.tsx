@@ -1,19 +1,22 @@
-import { EditOutlined, MoreOutlined, PlusOutlined } from '@ant-design/icons'
+import Icon, { EditOutlined, MoreOutlined, PlusOutlined } from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Button, Checkbox, Divider, Dropdown, Form, Input, InputNumber, Menu, message, Modal } from 'antd'
+import { Alert, Button, Checkbox, Divider, Dropdown, Form, Input, InputNumber, Menu, message, Modal } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
+import BraftEditor from 'braft-editor'
 import gql from 'graphql-tag'
-import { clone, sum } from 'ramda'
+import { clone, find, propEq, sum } from 'ramda'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import { v4 as uuidV4 } from 'uuid'
 import { handleError } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateProgramContent } from '../../hooks/program'
+import { ReactComponent as ExclamationCircleIcon } from '../../images/icon/exclamation-circle.svg'
 import types from '../../types'
-import { ProgramContentBodyProps, ProgramContentProps } from '../../types/program'
-import QuestionInput, { QuestionProps } from '../form/QuestionInput'
+import { ChoiceProps, ProgramContentBodyProps, ProgramContentProps, QuestionProps } from '../../types/program'
+import QuestionInput from '../form/QuestionInput'
+import ExerciseSortingModal from './ExerciseSortingModal'
 
 const StyledTitle = styled.div`
   font-size: 1.5rem;
@@ -29,8 +32,28 @@ type FieldProps = {
   isAvailableToRetry: boolean
   isNotifyUpdate: boolean
   title: string
-  baseline: number
+  passingScore: number
 }
+
+const StyledModal = styled(Modal)<{ isFullWidth?: boolean }>`
+  && {
+    ${props =>
+      props.isFullWidth &&
+      css`
+        &.ant-modal {
+          top: 0;
+          width: 100%;
+          max-width: 100%;
+          padding-bottom: 0;
+        }
+        > .ant-modal-content > .ant-modal-body {
+          max-width: 960px;
+          min-height: 100vh;
+          margin: 0 auto;
+        }
+      `}
+  }
+`
 
 const ExerciseAdminModal: React.FC<{
   programContent: ProgramContentProps
@@ -43,8 +66,9 @@ const ExerciseAdminModal: React.FC<{
     <>
       <EditOutlined onClick={() => setVisible(true)} />
 
-      <Modal
-        width="70vw"
+      <StyledModal
+        isFullWidth
+        width="100vw"
         footer={null}
         maskStyle={{ background: 'rgba(255, 255, 255, 0.8)' }}
         maskClosable={false}
@@ -55,9 +79,11 @@ const ExerciseAdminModal: React.FC<{
           programContent={programContent}
           programContentBody={programContentBody}
           onCancel={() => setVisible(false)}
-          onRefetch={() => onRefetch?.()}
+          onRefetch={() => {
+            onRefetch?.()
+          }}
         />
-      </Modal>
+      </StyledModal>
     </>
   )
 }
@@ -72,12 +98,30 @@ const ExerciseAdminForm: React.FC<{
   const [form] = useForm<FieldProps>()
   const { deleteProgramContent } = useMutateProgramContent()
   const [updateExercise] = useMutation<types.UPDATE_EXERCISE, types.UPDATE_EXERCISEVariables>(UPDATE_EXERCISE)
+  const [updateExercisePosition] = useMutation<types.UPDATE_EXERCISE_POSITION, types.UPDATE_EXERCISE_POSITIONVariables>(
+    UPDATE_EXERCISE_POSITION,
+  )
 
-  const [loading, setLoading] = useState(false)
   const [questions, setQuestions] = useState<QuestionProps[]>(programContentBody.data?.questions || [])
+  const [withInvalidQuestion, setWithInvalidQuestion] = useState(!!programContent.metadata?.withInvalidQuestion)
+  const questionValidations = questions.map(
+    question =>
+      question.points !== 0 &&
+      question.choices.length > 1 &&
+      question.choices.some(choice => choice.isCorrect) &&
+      question.choices.every(choice => !BraftEditor.createEditorState(choice.description).isEmpty()) &&
+      !BraftEditor.createEditorState(question.description).isEmpty(),
+  )
+  const [loading, setLoading] = useState(false)
 
-  const totalPoints = sum(questions.map(question => question.points))
+  useEffect(() => {
+    setQuestions(programContentBody.data?.questions || [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(programContentBody.data?.questions)])
+
+  const totalPoints = sum(questions.map(question => question.points || 0))
   const handleSubmit = async (values: FieldProps) => {
+    setWithInvalidQuestion(true)
     setLoading(true)
     updateExercise({
       variables: {
@@ -91,7 +135,8 @@ const ExerciseAdminForm: React.FC<{
           metadata: {
             isAvailableToGoBack: values.isAvailableToGoBack,
             isAvailableToRetry: values.isAvailableToRetry,
-            baseline: values.baseline || 0,
+            passingScore: values.passingScore || 0,
+            withInvalidQuestion: questionValidations.some(validation => !validation),
           },
         },
         body: {
@@ -101,6 +146,7 @@ const ExerciseAdminForm: React.FC<{
     })
       .then(() => {
         message.success(formatMessage(commonMessages.event.successfullySaved))
+        onCancel?.()
         onRefetch?.()
       })
       .catch(handleError)
@@ -118,11 +164,11 @@ const ExerciseAdminForm: React.FC<{
       initialValues={{
         isTrial: programContent.listPrice === 0,
         isVisible: !!programContent.publishedAt,
-        isAvailableToGoBack: programContent.metadata?.isAvailableToGoBack,
-        isAvailableToRetry: programContent.metadata?.isAvailableToRetry,
+        isAvailableToGoBack: !!programContent.metadata?.isAvailableToGoBack,
+        isAvailableToRetry: !!programContent.metadata?.isAvailableToRetry,
         isNotifyUpdate: programContent.isNotifyUpdate,
         title: programContent.title,
-        baseline: programContent.metadata?.baseline || 0,
+        passingScore: programContent.metadata?.passingScore || 0,
       }}
       onFinish={handleSubmit}
     >
@@ -148,8 +194,10 @@ const ExerciseAdminForm: React.FC<{
           <Button
             disabled={loading}
             onClick={() => {
-              onCancel?.()
               form.resetFields()
+              setQuestions(programContentBody.data?.questions || [])
+              setWithInvalidQuestion(questionValidations.some(validation => !validation))
+              onCancel?.()
             }}
             className="mr-2"
           >
@@ -183,17 +231,71 @@ const ExerciseAdminForm: React.FC<{
         </div>
       </div>
 
+      {withInvalidQuestion && questionValidations.some(validation => !validation) && (
+        <Alert
+          type="error"
+          message={
+            <>
+              <Icon className="mr-2" component={() => <ExclamationCircleIcon />} />
+              {formatMessage(programMessages.text.unfinishedQuestions, {
+                questions: questionValidations
+                  .reduce(
+                    (accumulator, validation, index) =>
+                      validation
+                        ? accumulator
+                        : [...accumulator, `${formatMessage(programMessages.label.question)} ${index + 1}`],
+                    [] as string[],
+                  )
+                  .join(formatMessage(commonMessages.ui.comma)),
+              })}
+            </>
+          }
+          className="mb-3"
+        />
+      )}
+
       <StyledTitle className="mb-3">{formatMessage(programMessages.label.exercise)}</StyledTitle>
 
       <Form.Item name="title" label={formatMessage(programMessages.label.exerciseTitle)}>
         <Input />
       </Form.Item>
 
-      <div className="d-flex align-items-center">
-        <Form.Item name="baseline" label={formatMessage(programMessages.label.baseline)}>
-          <InputNumber min={0} max={totalPoints} />
-        </Form.Item>
-        <span className="ml-2 mt-3">/ {totalPoints}</span>
+      <div className="d-flex align-items-center justify-content-between">
+        <div className="d-flex align-items-center">
+          <Form.Item name="passingScore" label={formatMessage(programMessages.label.passingScore)}>
+            <InputNumber min={0} max={totalPoints} />
+          </Form.Item>
+          <span className="ml-2 mt-3">/ {totalPoints}</span>
+        </div>
+        <ExerciseSortingModal
+          programContentId={programContent.id}
+          questions={questions}
+          onSort={(newItems, onClose) => {
+            const newQuestions = newItems.map(v => {
+              const matchQuestion = find<QuestionProps>(propEq('id', v.id))(questions)
+              return {
+                ...matchQuestion,
+                choices: v.subItemIds.map(id => find<ChoiceProps>(propEq('id', id))(matchQuestion?.choices || [])),
+              }
+            })
+            updateExercisePosition({
+              variables: {
+                programContentBodyId: programContentBody.id,
+                body: {
+                  data: {
+                    questions: newQuestions,
+                  },
+                },
+              },
+            })
+              .then(() => {
+                message.success(formatMessage(commonMessages.event.successfullySaved))
+                onClose()
+                onRefetch?.()
+              })
+              .catch(handleError)
+          }}
+        />
       </div>
 
       {questions.map((question, index) => (
@@ -222,7 +324,19 @@ const ExerciseAdminForm: React.FC<{
                 points: 0,
                 description: null,
                 answerDescription: null,
-                choices: [],
+                isMultipleAnswers: false,
+                choices: [
+                  {
+                    id: uuidV4(),
+                    description: null,
+                    isCorrect: true,
+                  },
+                  {
+                    id: uuidV4(),
+                    description: null,
+                    isCorrect: false,
+                  },
+                ],
               },
             ])
           }
@@ -244,6 +358,14 @@ const UPDATE_EXERCISE = gql`
     update_program_content(where: { id: { _eq: $programContentId } }, _set: $content) {
       affected_rows
     }
+    update_program_content_body(where: { id: { _eq: $programContentBodyId } }, _set: $body) {
+      affected_rows
+    }
+  }
+`
+
+const UPDATE_EXERCISE_POSITION = gql`
+  mutation UPDATE_EXERCISE_POSITION($programContentBodyId: uuid!, $body: program_content_body_set_input!) {
     update_program_content_body(where: { id: { _eq: $programContentBodyId } }, _set: $body) {
       affected_rows
     }

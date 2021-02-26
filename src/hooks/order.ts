@@ -5,7 +5,7 @@ import types from '../types'
 export const useOrderStatuses = () => {
   const { loading, error, data } = useQuery<types.GET_ORDER_LOG_STATUS>(gql`
     query GET_ORDER_LOG_STATUS {
-      order_status(distinct_on: status) {
+      order_log(distinct_on: status) {
         status
       }
     }
@@ -15,7 +15,7 @@ export const useOrderStatuses = () => {
     loading,
     error,
     data:
-      data?.order_status?.reduce(
+      data?.order_log?.reduce(
         (accumulator, value) =>
           value.status && !accumulator.includes(value.status) ? [...accumulator, value.status] : accumulator,
         [] as string[],

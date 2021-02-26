@@ -131,3 +131,18 @@ export type ProgramApprovalProps = {
   description: string | null
   feedback: string | null
 }
+
+export type QuestionProps = {
+  id: string
+  points: number
+  description: string | null
+  answerDescription: string | null
+  isMultipleAnswers: boolean
+  choices: ChoiceProps[]
+}
+
+export type ChoiceProps = {
+  id: string
+  description: string | null
+  isCorrect: boolean
+}

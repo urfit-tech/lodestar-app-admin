@@ -1,13 +1,13 @@
 import Icon, { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Form, InputNumber } from 'antd'
 import BraftEditor, { EditorState } from 'braft-editor'
-import { clone } from 'ramda'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { v4 as uuidV4 } from 'uuid'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { ReactComponent as AngleRightIcon } from '../../images/icon/angle-right.svg'
+import { ChoiceProps, QuestionProps } from '../../types/program'
 import AdminModal from '../admin/AdminModal'
 import AdminBraftEditor from './AdminBraftEditor'
 
@@ -17,14 +17,14 @@ const StyledTitle = styled.div`
   font-weight: bold;
   letter-spacing: 0.8px;
 `
-const StyledAction = styled(Icon)<{ variant?: 'primary'; direction?: 'down' }>`
+export const StyledAction = styled(Icon)<{ variant?: 'primary'; direction?: 'down' }>`
   color: ${props => (props.variant === 'primary' ? props.theme['@primary'] : 'var(--gray-darker)')};
   cursor: pointer;
   font-size: 20px;
   ${props => (props.direction === 'down' ? 'transform: rotate(90deg);' : '')};
   transition: all 0.2s ease-in-out;
 `
-const QuestionBlock = styled.div<{ variant?: 'collapsed' }>`
+export const QuestionBlock = styled.div<{ variant?: 'collapsed' }>`
   margin-bottom: 1.5rem;
   padding: 1.5rem;
   ${props => (props.variant === 'collapsed' ? 'height: 75px;' : '')}
@@ -48,20 +48,6 @@ const StyledEditorWrapper = styled.div`
   }
 `
 
-export type QuestionProps = {
-  id: string
-  points: number
-  description: string | null
-  answerDescription: string | null
-  choices: ChoiceProps[]
-}
-
-export type ChoiceProps = {
-  id: string
-  description: string | null
-  isCorrect: boolean
-}
-
 const QuestionInput: React.FC<{
   index: number
   value: QuestionProps
@@ -74,6 +60,11 @@ const QuestionInput: React.FC<{
   const [answerDescription, setAnswerDescription] = useState<EditorState>(
     BraftEditor.createEditorState(value.answerDescription),
   )
+
+  useEffect(() => {
+    setDescription(BraftEditor.createEditorState(value.description))
+    setAnswerDescription(BraftEditor.createEditorState(value.answerDescription))
+  }, [value.answerDescription, value.description])
 
   return (
     <QuestionBlock variant={isCollapsed ? 'collapsed' : undefined}>
@@ -111,14 +102,30 @@ const QuestionInput: React.FC<{
 
       <Form.Item label={formatMessage(programMessages.label.points)}>
         <InputNumber
+          min={0}
           value={value?.points}
           onChange={v =>
             onChange?.({
               ...value,
-              points: typeof v === 'string' ? parseInt(v) : Math.floor(v || 0),
+              points: typeof v === 'string' ? parseFloat(v) : v || 0,
             })
           }
         />
+      </Form.Item>
+
+      <Form.Item>
+        <Checkbox
+          defaultChecked={value.isMultipleAnswers}
+          onChange={e =>
+            onChange?.({
+              ...value,
+              choices: value.choices.map(v => ({ ...v, isCorrect: false })),
+              isMultipleAnswers: e.target.checked,
+            })
+          }
+        >
+          {formatMessage(programMessages.label.allowMultipleAnswers)}
+        </Checkbox>
       </Form.Item>
 
       <Form.Item label={formatMessage(programMessages.label.question)}>
@@ -143,9 +150,23 @@ const QuestionInput: React.FC<{
           index={index}
           value={choice}
           onChange={newChoice => {
-            const newQuestion = clone(value)
-            newQuestion.choices.splice(index, 1, newChoice)
-            onChange?.(newQuestion)
+            const newChoices = value.choices.map(v => {
+              if (v.id === newChoice.id) {
+                return newChoice
+              }
+              if (!value.isMultipleAnswers && newChoice.isCorrect) {
+                return {
+                  ...v,
+                  isCorrect: false,
+                }
+              }
+              return v
+            })
+
+            onChange?.({
+              ...value,
+              choices: newChoices,
+            })
           }}
           onRemove={() =>
             onChange?.({
@@ -205,6 +226,10 @@ const ChoiceInput: React.FC<{
   const { formatMessage } = useIntl()
   const [description, setDescription] = useState<EditorState>(BraftEditor.createEditorState(value.description))
 
+  useEffect(() => {
+    setDescription(BraftEditor.createEditorState(value.description))
+  }, [value.description])
+
   return (
     <ChoiceBlock>
       <div className="d-flex align-items-center justify-content-between mb-3">
@@ -215,12 +240,12 @@ const ChoiceInput: React.FC<{
           renderTrigger={({ setVisible }) => (
             <StyledAction component={() => <DeleteOutlined />} onClick={() => setVisible(true)} />
           )}
-          title={formatMessage(programMessages.ui.deleteQuestion)}
+          title={formatMessage(programMessages.ui.deleteChoice)}
           okText={formatMessage(commonMessages.ui.delete)}
           cancelText={formatMessage(commonMessages.ui.back)}
           onOk={() => onRemove?.()}
         >
-          {formatMessage(programMessages.text.deleteQuestionDescription)}
+          {formatMessage(programMessages.text.deleteChoiceDescription)}
         </AdminModal>
       </div>
 
