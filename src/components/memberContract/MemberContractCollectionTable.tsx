@@ -15,6 +15,7 @@ import { memberContractMessages } from '../../helpers/translation'
 import { useMemberContractCollection } from '../../hooks'
 import { DateRangeType, MemberContractProps, StatusType } from '../../types/memberContract'
 import MemberNameLabel from '../common/MemberNameLabel'
+import ExportContractCollectionButton from './ExportContractCollectionButton'
 import MemberContractFieldSelector from './MemberContractFieldSelector'
 import MemberContractFilterSelector from './MemberContractFilterSelector'
 import MemberContractModal from './MemberContractModal'
@@ -45,8 +46,6 @@ const TableWrapper = styled.div`
     white-space: nowrap;
   }
 `
-
-const fixedColumnKeys = ['agreedAt', 'revokedAt']
 
 const MemberContractCollectionTable: React.FC<{
   variant: 'agreed' | 'revoked'
@@ -92,6 +91,8 @@ const MemberContractCollectionTable: React.FC<{
   const [isLoading, setIsLoading] = useState(false)
   const [activeMemberContractId, setActiveMemberContractId] = useState<string | null>(null)
   const [visibleFields, setVisibleFields] = useState<string[]>([
+    'agreedAt',
+    'revokedAt',
     'member',
     'studentCertification',
     'startedAt',
@@ -419,7 +420,17 @@ const MemberContractCollectionTable: React.FC<{
           endedAt={filter.endedAt}
           onSetRange={({ startedAt, endedAt }) => setFilter({ ...filter, startedAt, endedAt })}
         />
-        <MemberContractFieldSelector value={visibleFields} onChange={value => setVisibleFields(value)} />
+        <div>
+          <MemberContractFieldSelector value={visibleFields} onChange={value => setVisibleFields(value)} />
+          <ExportContractCollectionButton
+            visibleFields={visibleFields}
+            columns={columns}
+            filter={filter}
+            sortOrder={sortOrder}
+            isRevoked={variant === 'revoked'}
+            authorId={currentUserRole === 'general-member' ? currentMemberId : null}
+          />
+        </div>
       </div>
 
       <AdminCard>
@@ -451,10 +462,7 @@ const MemberContractCollectionTable: React.FC<{
           renderTrigger={({ setVisible }) => (
             <TableWrapper>
               <Table<MemberContractProps>
-                columns={columns.filter(
-                  column =>
-                    fixedColumnKeys.includes(column.key as string) || visibleFields.includes(column.key as string),
-                )}
+                columns={columns.filter(column => visibleFields.includes(column.key as string))}
                 dataSource={memberContracts}
                 scroll={{ x: true }}
                 rowKey={row => row.id}

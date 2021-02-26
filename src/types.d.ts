@@ -8349,6 +8349,7 @@ export interface member_public_bool_exp {
   _or?: (member_public_bool_exp | null)[] | null;
   abstract?: String_comparison_exp | null;
   app_id?: String_comparison_exp | null;
+  created_at?: timestamptz_comparison_exp | null;
   description?: String_comparison_exp | null;
   email?: String_comparison_exp | null;
   id?: String_comparison_exp | null;

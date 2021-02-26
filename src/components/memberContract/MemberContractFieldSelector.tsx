@@ -102,7 +102,7 @@ const MemberContractFieldSelector: React.FC<{
             selectable={false}
             treeData={treeData}
             defaultCheckedKeys={value}
-            onCheck={value => onChange?.(value as string[])}
+            onCheck={value => onChange?.(['agreedAt', 'revokedAt', ...(value as string[])])}
           />
         </StyledOverlay>
       }

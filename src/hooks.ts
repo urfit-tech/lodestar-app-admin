@@ -1,13 +1,61 @@
-import { product } from 'ramda'
-import { useMutation, useQuery, useApolloClient } from '@apollo/react-hooks'
+import { useApolloClient, useMutation, useQuery } from '@apollo/react-hooks'
 import { SortOrder } from 'antd/lib/table/interface'
 import { Chance } from 'chance'
 import gql from 'graphql-tag'
+import { product } from 'ramda'
 import { useEffect, useMemo } from 'react'
 import { memberPropertyFields } from './helpers'
 import * as types from './types.d'
 import { DateRangeType, MemberContractProps, StatusType } from './types/memberContract'
 
+export const GET_MEMBER_PRIVATE_TEACH_CONTRACT = gql`
+  query GET_MEMBER_PRIVATE_TEACH_CONTRACT(
+    $condition: xuemi_member_private_teach_contract_bool_exp
+    $limit: Int
+    $orderBy: [xuemi_member_private_teach_contract_order_by!]
+  ) {
+    xuemi_member_private_teach_contract(where: $condition, limit: $limit, order_by: $orderBy) {
+      id
+      author_name
+      member_id
+      member_name
+      member_picture_url
+      member_email
+      referral_name
+      referral_email
+      appointment_creator_name
+      started_at
+      ended_at
+      agreed_at
+      revoked_at
+      approved_at
+      loan_canceled_at
+      refund_applied_at
+      student_certification
+      note
+      values
+      member {
+        id
+        created_at
+        manager {
+          id
+          name
+          username
+        }
+      }
+      last_marketing_activity
+      last_ad_package
+      last_ad_material
+      first_fill_in_date
+      last_fill_in_date
+    }
+    xuemi_member_private_teach_contract_aggregate(where: $condition) {
+      aggregate {
+        count
+      }
+    }
+  }
+`
 export const useMemberContractCollection = ({
   isRevoked,
   memberNameAndEmail,
@@ -62,63 +110,13 @@ export const useMemberContractCollection = ({
   const { loading, data, error, refetch, fetchMore } = useQuery<
     types.GET_MEMBER_PRIVATE_TEACH_CONTRACT,
     types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables
-  >(
-    gql`
-      query GET_MEMBER_PRIVATE_TEACH_CONTRACT(
-        $condition: xuemi_member_private_teach_contract_bool_exp
-        $limit: Int
-        $orderBy: [xuemi_member_private_teach_contract_order_by!]
-      ) {
-        xuemi_member_private_teach_contract(where: $condition, limit: $limit, order_by: $orderBy) {
-          id
-          author_name
-          member_id
-          member_name
-          member_picture_url
-          member_email
-          referral_name
-          referral_email
-          appointment_creator_name
-          started_at
-          ended_at
-          agreed_at
-          revoked_at
-          approved_at
-          loan_canceled_at
-          refund_applied_at
-          student_certification
-          note
-          values
-          member {
-            id
-            created_at
-            manager {
-              id
-              name
-              username
-            }
-          }
-          last_marketing_activity
-          last_ad_package
-          last_ad_material
-          first_fill_in_date
-          last_fill_in_date
-        }
-        xuemi_member_private_teach_contract_aggregate(where: $condition) {
-          aggregate {
-            count
-          }
-        }
-      }
-    `,
-    {
-      variables: {
-        condition,
-        orderBy,
-        limit: 10,
-      },
+  >(GET_MEMBER_PRIVATE_TEACH_CONTRACT, {
+    variables: {
+      condition,
+      orderBy,
+      limit: 10,
     },
-  )
+  })
 
   const memberContracts: MemberContractProps[] =
     data?.xuemi_member_private_teach_contract.map(v => ({
@@ -155,7 +153,7 @@ export const useMemberContractCollection = ({
       },
       note: v.note,
       orderExecutors:
-        v.values?.orderExecutors?.map((v: { ratio: number; member_id: string }) => ({
+        v.values?.orderExecutors?.map((v: any) => ({
           ratio: v.ratio,
           memberId: v.member_id,
         })) || [],
