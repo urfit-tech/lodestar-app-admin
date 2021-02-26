@@ -171,7 +171,7 @@ export const useMemberAdmin = (memberId: string) => {
               }
             }
           }
-          order_logs(where: { order_status: { status: { _eq: "SUCCESS" } } }) {
+          order_logs(where: { status: { _eq: "SUCCESS" } }) {
             order_products_aggregate {
               aggregate {
                 sum {
@@ -596,7 +596,7 @@ export const useMemberCollection = (filter?: {
             property_id
             value
           }
-          order_logs(where: { order_status: { status: { _eq: "SUCCESS" } } }) {
+          order_logs(where: { status: { _eq: "SUCCESS" } }) {
             order_products_aggregate {
               aggregate {
                 sum {
@@ -777,7 +777,7 @@ export const useMemberAllCollection = (filter?: {
             property_id
             value
           }
-          order_logs(where: { order_status: { status: { _eq: "SUCCESS" } } }) {
+          order_logs(where: { status: { _eq: "SUCCESS" } }) {
             order_products_aggregate {
               aggregate {
                 sum {

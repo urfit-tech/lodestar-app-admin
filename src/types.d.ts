@@ -5811,11 +5811,6 @@ export interface GET_ORDERS_order_log_aggregate {
   aggregate: GET_ORDERS_order_log_aggregate_aggregate | null;
 }
 
-export interface GET_ORDERS_order_log_order_status {
-  __typename: "order_status";
-  status: string | null;
-}
-
 export interface GET_ORDERS_order_log_member {
   __typename: "member";
   name: string;
@@ -5882,9 +5877,9 @@ export interface GET_ORDERS_order_log {
   id: string;
   created_at: any;
   /**
-   * An object relationship
+   * SUCCESS, MATCHING, REFUND, PARTIAL_REFUND, PARTIAL_EXPIRED, PARTIAL_PAID, EXPIRED, UNPAID
    */
-  order_status: GET_ORDERS_order_log_order_status | null;
+  status: string;
   shipping: any | null;
   /**
    * expired order cannot be paid
@@ -9226,16 +9221,19 @@ export interface GET_MERCHANDISE_SPEC_COLLECTIONVariables {
 // GraphQL query operation: GET_ORDER_STATUS
 // ====================================================
 
-export interface GET_ORDER_STATUS_order_status {
-  __typename: "order_status";
-  status: string | null;
+export interface GET_ORDER_STATUS_order_log {
+  __typename: "order_log";
+  /**
+   * SUCCESS, MATCHING, REFUND, PARTIAL_REFUND, PARTIAL_EXPIRED, PARTIAL_PAID, EXPIRED, UNPAID
+   */
+  status: string;
 }
 
 export interface GET_ORDER_STATUS {
   /**
-   * fetch data from the table: "order_status"
+   * fetch data from the table: "order_log"
    */
-  order_status: GET_ORDER_STATUS_order_status[];
+  order_log: GET_ORDER_STATUS_order_log[];
 }
 
 /* tslint:disable */
@@ -13583,11 +13581,13 @@ export enum order_log_update_column {
   expired_at = "expired_at",
   id = "id",
   invoice = "invoice",
+  last_paid_at = "last_paid_at",
   member_id = "member_id",
   message = "message",
   payment_model = "payment_model",
   retried_at = "retried_at",
   shipping = "shipping",
+  status = "status",
   updated_at = "updated_at",
 }
 
@@ -22201,6 +22201,7 @@ export interface order_log_bool_exp {
   expired_at?: timestamptz_comparison_exp | null;
   id?: String_comparison_exp | null;
   invoice?: jsonb_comparison_exp | null;
+  last_paid_at?: timestamptz_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   message?: String_comparison_exp | null;
@@ -22208,11 +22209,11 @@ export interface order_log_bool_exp {
   order_discounts?: order_discount_bool_exp | null;
   order_executors?: order_executor_bool_exp | null;
   order_products?: order_product_bool_exp | null;
-  order_status?: order_status_bool_exp | null;
   payment_logs?: payment_log_bool_exp | null;
   payment_model?: jsonb_comparison_exp | null;
   retried_at?: timestamptz_comparison_exp | null;
   shipping?: jsonb_comparison_exp | null;
+  status?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
 
@@ -22263,6 +22264,7 @@ export interface order_log_insert_input {
   expired_at?: any | null;
   id?: string | null;
   invoice?: any | null;
+  last_paid_at?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   message?: string | null;
@@ -22274,6 +22276,7 @@ export interface order_log_insert_input {
   payment_model?: any | null;
   retried_at?: any | null;
   shipping?: any | null;
+  status?: string | null;
   updated_at?: any | null;
 }
 
@@ -22291,9 +22294,11 @@ export interface order_log_max_order_by {
   discount_type?: order_by | null;
   expired_at?: order_by | null;
   id?: order_by | null;
+  last_paid_at?: order_by | null;
   member_id?: order_by | null;
   message?: order_by | null;
   retried_at?: order_by | null;
+  status?: order_by | null;
   updated_at?: order_by | null;
 }
 
@@ -22311,9 +22316,11 @@ export interface order_log_min_order_by {
   discount_type?: order_by | null;
   expired_at?: order_by | null;
   id?: order_by | null;
+  last_paid_at?: order_by | null;
   member_id?: order_by | null;
   message?: order_by | null;
   retried_at?: order_by | null;
+  status?: order_by | null;
   updated_at?: order_by | null;
 }
 
@@ -22350,6 +22357,7 @@ export interface order_log_order_by {
   expired_at?: order_by | null;
   id?: order_by | null;
   invoice?: order_by | null;
+  last_paid_at?: order_by | null;
   member?: member_order_by | null;
   member_id?: order_by | null;
   message?: order_by | null;
@@ -22357,11 +22365,11 @@ export interface order_log_order_by {
   order_discounts_aggregate?: order_discount_aggregate_order_by | null;
   order_executors_aggregate?: order_executor_aggregate_order_by | null;
   order_products_aggregate?: order_product_aggregate_order_by | null;
-  order_status?: order_status_order_by | null;
   payment_logs_aggregate?: payment_log_aggregate_order_by | null;
   payment_model?: order_by | null;
   retried_at?: order_by | null;
   shipping?: order_by | null;
+  status?: order_by | null;
   updated_at?: order_by | null;
 }
 
@@ -22743,37 +22751,6 @@ export interface order_product_var_samp_order_by {
 export interface order_product_variance_order_by {
   accumulated_errors?: order_by | null;
   price?: order_by | null;
-}
-
-/**
- * Boolean expression to filter rows from the table "order_status". All fields are combined with a logical 'AND'.
- */
-export interface order_status_bool_exp {
-  _and?: (order_status_bool_exp | null)[] | null;
-  _not?: order_status_bool_exp | null;
-  _or?: (order_status_bool_exp | null)[] | null;
-  last_paid_at?: timestamptz_comparison_exp | null;
-  member_id?: String_comparison_exp | null;
-  order_discounts?: order_discount_bool_exp | null;
-  order_id?: String_comparison_exp | null;
-  order_log?: order_log_bool_exp | null;
-  order_products?: order_product_bool_exp | null;
-  payment_logs?: payment_log_bool_exp | null;
-  status?: String_comparison_exp | null;
-}
-
-/**
- * ordering options when selecting data from "order_status"
- */
-export interface order_status_order_by {
-  last_paid_at?: order_by | null;
-  member_id?: order_by | null;
-  order_discounts_aggregate?: order_discount_aggregate_order_by | null;
-  order_id?: order_by | null;
-  order_log?: order_log_order_by | null;
-  order_products_aggregate?: order_product_aggregate_order_by | null;
-  payment_logs_aggregate?: payment_log_aggregate_order_by | null;
-  status?: order_by | null;
 }
 
 /**

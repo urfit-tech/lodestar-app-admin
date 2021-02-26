@@ -156,10 +156,8 @@ const OrderExportModal: React.FC = () => {
         variables: {
           condition: {
             order_log: {
-              order_status: {
-                last_paid_at: { _gte: startedAt, _lte: endedAt },
-                status: { _in: orderStatuses },
-              },
+              last_paid_at: { _gte: startedAt, _lte: endedAt },
+              status: { _in: orderStatuses },
             },
           },
         },
@@ -273,10 +271,8 @@ const OrderExportModal: React.FC = () => {
         variables: {
           condition: {
             order_log: {
-              order_status: {
-                last_paid_at: { _gte: startedAt, _lte: endedAt },
-                status: { _in: orderStatuses },
-              },
+              last_paid_at: { _gte: startedAt, _lte: endedAt },
+              status: { _in: orderStatuses },
             },
           },
         },
@@ -522,11 +518,7 @@ const GET_ORDER_PRODUCT_EXPORT = gql`
 const GET_ORDER_DISCOUNT_COLLECTION = gql`
   query GET_ORDER_DISCOUNT_COLLECTION($startedAt: timestamptz!, $endedAt: timestamptz!, $orderStatuses: [String!]) {
     order_discount(
-      where: {
-        order_log: {
-          order_status: { last_paid_at: { _gte: $startedAt, _lte: $endedAt }, status: { _in: $orderStatuses } }
-        }
-      }
+      where: { order_log: { last_paid_at: { _gte: $startedAt, _lte: $endedAt }, status: { _in: $orderStatuses } } }
       order_by: { order_log: { updated_at: desc } }
     ) {
       id

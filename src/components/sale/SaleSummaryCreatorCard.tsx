@@ -58,7 +58,7 @@ const SaleSummaryCreatorCard: React.FC<{
         order_product_aggregate(
           where: {
             order_log: {
-              order_status: { status: { _eq: "SUCCESS" } }
+              status: { _eq: "SUCCESS" }
               order_products: { product: { product_owner: { member_id: { _eq: $memberId } } } }
             }
           }
@@ -72,7 +72,7 @@ const SaleSummaryCreatorCard: React.FC<{
         order_discount_aggregate(
           where: {
             order_log: {
-              order_status: { status: { _eq: "SUCCESS" } }
+              status: { _eq: "SUCCESS" }
               order_products: { product: { product_owner: { member_id: { _eq: $memberId } } } }
             }
           }
