@@ -42,6 +42,7 @@ export type Module =
   | 'tempo_delivery'
   | 'voucher'
   | 'xuemi_pt'
+  | 'private_appointment_plan'
 
 export type Currency = {
   name: string

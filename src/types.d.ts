@@ -602,6 +602,16 @@ export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
 // GraphQL query operation: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN
 // ====================================================
 
+export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_aggregate_aggregate {
+  __typename: "appointment_plan_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_aggregate {
+  __typename: "appointment_plan_aggregate";
+  aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_aggregate_aggregate | null;
+}
+
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator {
   __typename: "member_public";
   id: string | null;
@@ -642,13 +652,18 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN {
   /**
+   * fetch aggregated fields from the table: "appointment_plan"
+   */
+  appointment_plan_aggregate: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_aggregate;
+  /**
    * fetch data from the table: "appointment_plan"
    */
   appointment_plan: GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan[];
 }
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables {
-  creatorId?: string | null;
+  condition: appointment_plan_bool_exp;
+  orderBy?: appointment_plan_order_by[] | null;
 }
 
 /* tslint:disable */

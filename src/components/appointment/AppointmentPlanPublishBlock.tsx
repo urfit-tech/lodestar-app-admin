@@ -5,6 +5,7 @@ import gql from 'graphql-tag'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
+import { useApp } from '../../contexts/AppContext'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages } from '../../helpers/translation'
 import { ReactComponent as StatusAlertIcon } from '../../images/default/status-alert.svg'
@@ -20,6 +21,7 @@ const AppointmentPlanPublishBlock: React.FC<{
   onRefetch?: () => void
 }> = ({ appointmentPlanAdmin, onRefetch }) => {
   const { formatMessage } = useIntl()
+  const { enabledModules } = useApp()
   const [publishState, setPublishState] = useState<string>(formatMessage(commonMessages.ui.publiclyPublished))
   const [publishAppointmentPlan] = useMutation<types.PUBLISH_APPOINTMENT_PLAN, types.PUBLISH_APPOINTMENT_PLANVariables>(
     PUBLISH_APPOINTMENT_PLAN,
@@ -172,7 +174,7 @@ const AppointmentPlanPublishBlock: React.FC<{
           </Dropdown.Button>
         ) : appointmentPlanStatus === 'published' || appointmentPlanStatus === 'publishedInPrivate' ? (
           <Button onClick={handleUnPublish}>{formatMessage(commonMessages.ui.cancelPublishing)}</Button>
-        ) : appointmentPlanStatus === 'unpublished' ? (
+        ) : enabledModules.private_appointment_plan && appointmentPlanStatus === 'unpublished' ? (
           <Dropdown.Button
             type="primary"
             icon={<DownOutlined />}
@@ -181,6 +183,16 @@ const AppointmentPlanPublishBlock: React.FC<{
           >
             <div>{publishState}</div>
           </Dropdown.Button>
+        ) : appointmentPlanStatus === 'unpublished' ? (
+          <Button
+            type="primary"
+            onClick={() => {
+              setPublishState(formatMessage(commonMessages.ui.publiclyPublished))
+              handlePublish(false)
+            }}
+          >
+            {formatMessage(commonMessages.ui.publiclyPublished)}
+          </Button>
         ) : null}
       </div>
     </AdminBlock>

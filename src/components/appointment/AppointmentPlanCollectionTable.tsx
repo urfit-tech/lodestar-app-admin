@@ -1,10 +1,9 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { Input, Table } from 'antd'
+import { Button, Input, Table } from 'antd'
 import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
-import { useHistory } from 'react-router-dom'
 import styled from 'styled-components'
 import { currencyFormatter } from '../../helpers'
 import { appointmentMessages } from '../../helpers/translation'
@@ -39,28 +38,12 @@ const StyledText = styled.div`
   line-height: 1.5;
   letter-spacing: 0.2px;
 `
-const StyledPublished = styled.div<{ active?: boolean }>`
-  display: flex;
-  align-items: center;
-  color: var(--gray-dark);
-  font-size: 14px;
-  letter-spacing: 0.4px;
-
-  :before {
-    display: inline-block;
-    margin-right: 0.5rem;
-    width: 10px;
-    height: 10px;
-    background: ${props => (props.active ? 'var(--success)' : 'var(--gray)')};
-    content: ' ';
-    border-radius: 50%;
-  }
-`
 
 const messages = defineMessages({
   instructor: { id: 'appointment.label.instructor', defaultMessage: '老師' },
   minutes: { id: 'appointment.label.minutes', defaultMessage: '分鐘' },
   price: { id: 'appointment.label.price', defaultMessage: '金額' },
+  appointment: { id: 'appointment.label.appointment', defaultMessage: '預約' },
   enrollments: { id: 'appointment.label.enrollments', defaultMessage: '已預約' },
   status: { id: 'appointment.label.status', defaultMessage: '狀態' },
   isPublished: { id: 'appointment.status.isPublished', defaultMessage: '已發佈' },
@@ -82,11 +65,18 @@ type AppointmentPlanProps = {
 }
 
 const AppointmentPlanCollectionTable: React.FC<{
-  creatorId?: string
-}> = ({ creatorId }) => {
+  condition: types.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['condition']
+  orderBy?: types.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['orderBy']
+  withAppointmentButton?: Boolean
+  onReady?: (count: number) => void
+}> = ({ condition, orderBy, withAppointmentButton, onReady }) => {
   const { formatMessage } = useIntl()
-  const history = useHistory()
-  const { loadingAppointmentPlans, appointmentPlans, refetchAppointmentPlans } = useAppointmentPlansAdmin(creatorId)
+  const {
+    loadingAppointmentPlans,
+    appointmentPlans,
+    appointmentPlanCount,
+    refetchAppointmentPlans,
+  } = useAppointmentPlansAdmin(condition, orderBy)
 
   const [searchName, setSearchName] = useState<string | null>(null)
   const [searchTitle, setSearchTitle] = useState<string | null>(null)
@@ -99,8 +89,14 @@ const AppointmentPlanCollectionTable: React.FC<{
   )
 
   useEffect(() => {
+    onReady?.(appointmentPlanCount)
     refetchAppointmentPlans()
-  }, [refetchAppointmentPlans])
+  }, [onReady, appointmentPlanCount, refetchAppointmentPlans])
+
+  const handleAppointment = (record: AppointmentPlanProps) => {
+    // TODO: appointment button handle
+    // console.log(record)
+  }
 
   return (
     <Table
@@ -108,7 +104,7 @@ const AppointmentPlanCollectionTable: React.FC<{
       rowClassName={() => 'cursor-pointer'}
       loading={loadingAppointmentPlans}
       onRow={record => ({
-        onClick: () => history.push(`/appointment-plans/${record.id}`),
+        onClick: () => window.open(`/appointment-plans/${record.id}`),
       })}
       columns={[
         {
@@ -176,25 +172,18 @@ const AppointmentPlanCollectionTable: React.FC<{
           sorter: (a, b) => b.enrollments - a.enrollments,
         },
         {
-          key: 'published',
-          title: formatMessage(messages.status),
-          // width: '7em',
+          key: 'appointmentButton',
+          title: '',
           render: (text, record, index) => (
-            <StyledPublished active={record.isPublished}>
-              {record.isPublished ? formatMessage(messages.isPublished) : formatMessage(messages.notPublished)}
-            </StyledPublished>
+            <Button
+              onClick={e => {
+                e.stopPropagation()
+                handleAppointment(record)
+              }}
+            >
+              {formatMessage(messages.appointment)}
+            </Button>
           ),
-          filters: [
-            {
-              text: formatMessage(messages.isPublished),
-              value: formatMessage(messages.isPublished),
-            },
-            {
-              text: formatMessage(messages.notPublished),
-              value: formatMessage(messages.notPublished),
-            },
-          ],
-          onFilter: (value, record) => record.isPublished === (value === formatMessage(messages.isPublished)),
         },
       ]}
       dataSource={data}
@@ -202,14 +191,27 @@ const AppointmentPlanCollectionTable: React.FC<{
   )
 }
 
-const useAppointmentPlansAdmin = (creatorId?: string) => {
+const useAppointmentPlansAdmin = (
+  condition: types.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['condition'],
+  orderBy: types.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables['orderBy'] = [
+    { updated_at: 'desc_nulls_last' as types.order_by },
+  ],
+) => {
   const { loading, error, data, refetch } = useQuery<
     types.GET_APPOINTMENT_PLAN_COLLECTION_ADMIN,
     types.GET_APPOINTMENT_PLAN_COLLECTION_ADMINVariables
   >(
     gql`
-      query GET_APPOINTMENT_PLAN_COLLECTION_ADMIN($creatorId: String) {
-        appointment_plan(where: { creator_id: { _eq: $creatorId } }, order_by: { updated_at: desc }) {
+      query GET_APPOINTMENT_PLAN_COLLECTION_ADMIN(
+        $condition: appointment_plan_bool_exp!
+        $orderBy: [appointment_plan_order_by!]
+      ) {
+        appointment_plan_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
+        }
+        appointment_plan(where: $condition, order_by: $orderBy) {
           id
           creator {
             id
@@ -229,7 +231,7 @@ const useAppointmentPlansAdmin = (creatorId?: string) => {
         }
       }
     `,
-    { variables: { creatorId } },
+    { variables: { condition, orderBy } },
   )
 
   const appointmentPlans: AppointmentPlanProps[] =
@@ -251,6 +253,7 @@ const useAppointmentPlansAdmin = (creatorId?: string) => {
   return {
     loadingAppointmentPlans: loading,
     errorAppointmentPlans: error,
+    appointmentPlanCount: data?.appointment_plan_aggregate.aggregate?.count || 0,
     appointmentPlans,
     refetchAppointmentPlans: refetch,
   }

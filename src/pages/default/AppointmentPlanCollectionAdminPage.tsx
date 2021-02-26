@@ -1,12 +1,11 @@
 import Icon from '@ant-design/icons'
 import { useMutation } from '@apollo/react-hooks'
-import { Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
-import { AdminPageBlock, AdminPageTitle } from '../../components/admin'
-import AppointmentPlanCollectionTable from '../../components/appointment/AppointmentPlanCollectionTable'
+import { AdminPageTitle } from '../../components/admin'
+import AppointmentPlanCollectionTabs from '../../components/appointment/AppointmentPlanCollectionTabs'
 import ProductCreationModal from '../../components/common/ProductCreationModal'
 import AdminLayout from '../../components/layout/AdminLayout'
 import { useAuth } from '../../contexts/AuthContext'
@@ -49,15 +48,7 @@ const AppointmentPlanCollectionAdminPage: React.FC = () => {
         />
       </div>
 
-      <AdminPageBlock>
-        {currentMemberId ? (
-          <AppointmentPlanCollectionTable
-            creatorId={currentUserRole === 'content-creator' ? currentMemberId : undefined}
-          />
-        ) : (
-          <Skeleton active />
-        )}
-      </AdminPageBlock>
+      <AppointmentPlanCollectionTabs />
     </AdminLayout>
   )
 }
