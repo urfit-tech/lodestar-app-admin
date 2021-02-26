@@ -400,11 +400,13 @@ const MemberContractCollectionTable: React.FC<{
       title: '首次填單日期',
       dataIndex: 'firstFilledAt',
       key: 'firstFilledAt',
+      render: (text, record, index) => moment(record.firstFilledAt).format('YYYY-MM-DD HH:MM'),
     },
     {
       title: '最後填單日期',
       dataIndex: 'lastFilledAt',
       key: 'lastFilledAt',
+      render: (text, record, index) => moment(record.lastFilledAt).format('YYYY-MM-DD HH:MM'),
     },
   ]
 
