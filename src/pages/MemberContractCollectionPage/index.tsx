@@ -5,15 +5,15 @@ import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
-import MemberContractCollectionTable from '../components/memberContract/MemberContractCollectionTable'
-import { memberContractMessages } from '../helpers/translation'
-import { ReactComponent as UserCopyIcon } from '../images/icons/user-copy.svg'
+import { memberContractMessages } from '../../helpers/translation'
+import { ReactComponent as UserCopyIcon } from '../../images/icons/user-copy.svg'
+import { MemberContractCollectionBlock } from './MemberContractCollectionBlock'
 
 const StyledIcon = styled(Icon)`
   font-size: 24px;
 `
 
-const MemberContractPage: React.FC = () => {
+export const MemberContractCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
 
   const tabContents: {
@@ -39,12 +39,10 @@ const MemberContractPage: React.FC = () => {
       <Tabs>
         {tabContents.map(v => (
           <Tabs.TabPane key={v.key} tab={v.tab}>
-            <MemberContractCollectionTable variant={v.key} />
+            <MemberContractCollectionBlock variant={v.key} />
           </Tabs.TabPane>
         ))}
       </Tabs>
     </AdminLayout>
   )
 }
-
-export default MemberContractPage

@@ -81,15 +81,19 @@ export const useMemberContractCollection = ({
     startedAt: SortOrder
   }
 }) => {
-  const condition: types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['condition'] = {
-    agreed_at: { _is_null: false },
-    revoked_at: { _is_null: !isRevoked },
-    author_name: { _ilike: authorName && `%${authorName}%` },
-    author_id: authorId ? { _eq: authorId } : undefined,
+  const dateRangeCondition: types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['dateRangeCondition'] = {
     [dateRangeType]: {
       _gt: startedAt,
       _lte: endedAt,
     },
+  }
+
+  const condition: types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['condition'] = {
+    ...dateRangeCondition,
+    agreed_at: { _is_null: false },
+    revoked_at: { _is_null: !isRevoked },
+    author_name: { _ilike: authorName && `%${authorName}%` },
+    author_id: authorId ? { _eq: authorId } : undefined,
     status: { _in: status.length ? status : undefined },
     _or: [
       { member_name: { _ilike: memberNameAndEmail && `%${memberNameAndEmail}%` } },
@@ -110,11 +114,110 @@ export const useMemberContractCollection = ({
   const { loading, data, error, refetch, fetchMore } = useQuery<
     types.GET_MEMBER_PRIVATE_TEACH_CONTRACT,
     types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables
-  >(GET_MEMBER_PRIVATE_TEACH_CONTRACT, {
-    variables: {
-      condition,
-      orderBy,
-      limit: 10,
+  >(
+    gql`
+      query GET_MEMBER_PRIVATE_TEACH_CONTRACT(
+        $condition: xuemi_member_private_teach_contract_bool_exp
+        $dateRangeCondition: xuemi_member_private_teach_contract_bool_exp
+        $limit: Int
+        $orderBy: [xuemi_member_private_teach_contract_order_by!]
+      ) {
+        xuemi_member_private_teach_contract(where: $condition, limit: $limit, order_by: $orderBy) {
+          id
+          author_name
+          member_id
+          member_name
+          member_picture_url
+          member_email
+          referral_name
+          referral_email
+          appointment_creator_name
+          started_at
+          ended_at
+          agreed_at
+          revoked_at
+          approved_at
+          loan_canceled_at
+          refund_applied_at
+          student_certification
+          note
+          values
+          member {
+            id
+            created_at
+            manager {
+              id
+              name
+              username
+            }
+          }
+          status
+          last_marketing_activity
+          last_ad_package
+          last_ad_material
+          first_fill_in_date
+          last_fill_in_date
+          price
+        }
+        private_teach_pending_contract: xuemi_member_private_teach_contract_aggregate(
+          where: { _and: [{ status: { _eq: "pending" } }, $dateRangeCondition] }
+        ) {
+          aggregate {
+            sum {
+              price
+            }
+          }
+        }
+        private_teach_loan_canceled_contract: xuemi_member_private_teach_contract_aggregate(
+          where: { _and: [{ status: { _eq: "loan-canceled" } }, $dateRangeCondition] }
+        ) {
+          aggregate {
+            sum {
+              price
+            }
+          }
+        }
+        private_teach_approved_contract: xuemi_member_private_teach_contract_aggregate(
+          where: { _and: [{ status: { _eq: "approved" } }, $dateRangeCondition] }
+        ) {
+          aggregate {
+            sum {
+              price
+            }
+          }
+        }
+        private_teach_refund_applied_contract: xuemi_member_private_teach_contract_aggregate(
+          where: { _and: [{ status: { _eq: "refund-applied" } }, $dateRangeCondition] }
+        ) {
+          aggregate {
+            sum {
+              price
+            }
+          }
+        }
+        private_teach_revoked_contract: xuemi_member_private_teach_contract_aggregate(
+          where: { _and: [{ status: { _eq: "revoked" } }, $dateRangeCondition] }
+        ) {
+          aggregate {
+            sum {
+              price
+            }
+          }
+        }
+        xuemi_member_private_teach_contract_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        condition,
+        dateRangeCondition,
+        orderBy,
+        limit: 10,
+      },
     },
   })
 
@@ -164,6 +267,7 @@ export const useMemberContractCollection = ({
             name: v.member.manager.name || v.member.manager.username,
           }
         : null,
+      status: v.status as StatusType,
       lastActivity: v.last_marketing_activity,
       lastAdPackage: v.last_ad_package,
       lastAdMaterial: v.last_ad_material,
@@ -224,10 +328,23 @@ export const useMemberContractCollection = ({
             },
           })
       : undefined
+
+  const memberContractPriceAmount: Record<
+    'pending' | 'approved' | 'refundApplied' | 'revoked' | 'loanCanceled', // statusType
+    number
+  > = {
+    pending: data?.private_teach_pending_contract.aggregate?.sum?.price || 0,
+    approved: data?.private_teach_approved_contract.aggregate?.sum?.price || 0,
+    refundApplied: data?.private_teach_refund_applied_contract.aggregate?.sum?.price || 0,
+    revoked: data?.private_teach_revoked_contract.aggregate?.sum?.price || 0,
+    loanCanceled: data?.private_teach_loan_canceled_contract.aggregate?.sum?.price || 0,
+  }
+
   return {
     loadingMemberContracts: loading,
     errorMemberContracts: error,
     memberContracts,
+    memberContractPriceAmount,
     refetchMemberContracts: refetch,
     loadMoreMemberContracts,
   }

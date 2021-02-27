@@ -8,7 +8,7 @@ import React from 'react'
 import './App.scss'
 import { ReactComponent as UserCopyIcon } from './images/icons/user-copy.svg'
 import MemberCollectionAdminPage from './pages/MemberCollectionAdminPage'
-import MemberContractPage from './pages/MemberContractPage'
+import { MemberContractCollectionPage } from './pages/MemberContractCollectionPage'
 import MemberNoteAdminPage from './pages/MemberNoteAdminPage'
 import SalesCallPage from './pages/SalesCallPage'
 import TermsPtPage from './pages/TermsPtPage'
@@ -94,7 +94,7 @@ const App: React.FC = () => {
         },
         member_contract_collection: {
           path: '/member-contracts',
-          pageName: <MemberContractPage />,
+          pageName: <MemberContractCollectionPage />,
           authenticated: true,
         },
         sales_call: {

@@ -10,10 +10,10 @@ import moment from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
+import MemberNameLabel from '../../components/common/MemberNameLabel'
 import { memberContractMessages } from '../../helpers/translation'
 import { useMutateMemberContract, useXuemiSales } from '../../hooks'
 import { ReactComponent as PlusIcon } from '../../images/icons/plus.svg'
-import MemberNameLabel from '../common/MemberNameLabel'
 
 const StyledAreaTitle = styled.h3`
   font-size: 16px;

@@ -8,14 +8,14 @@ import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { currencyFormatter } from 'lodestar-app-admin/src/helpers'
 import { commonMessages } from 'lodestar-app-admin/src/helpers/translation'
 import moment from 'moment'
+import { map, toPairs } from 'ramda'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import MemberNameLabel from '../../components/common/MemberNameLabel'
 import { memberContractMessages } from '../../helpers/translation'
 import { useMemberContractCollection } from '../../hooks'
 import { DateRangeType, MemberContractProps, StatusType } from '../../types/memberContract'
-import MemberNameLabel from '../common/MemberNameLabel'
-import ExportContractCollectionButton from './ExportContractCollectionButton'
 import MemberContractFieldSelector from './MemberContractFieldSelector'
 import MemberContractFilterSelector from './MemberContractFilterSelector'
 import MemberContractModal from './MemberContractModal'
@@ -47,7 +47,9 @@ const TableWrapper = styled.div`
   }
 `
 
-const MemberContractCollectionTable: React.FC<{
+const fixedColumnKeys = ['agreedAt', 'revokedAt']
+
+export const MemberContractCollectionBlock: React.FC<{
   variant: 'agreed' | 'revoked'
 }> = ({ variant }) => {
   const { formatMessage } = useIntl()
@@ -80,6 +82,7 @@ const MemberContractCollectionTable: React.FC<{
     loadingMemberContracts,
     errorMemberContracts,
     memberContracts,
+    memberContractPriceAmount,
     loadMoreMemberContracts,
     refetchMemberContracts,
   } = useMemberContractCollection({
@@ -111,6 +114,36 @@ const MemberContractCollectionTable: React.FC<{
   }
 
   const activeMemberContract = memberContracts.find(v => v.id === activeMemberContractId)
+
+  const priceAmountList = map(([status, amount]) => {
+    const statusConverter = {
+      pending: {
+        color: 'warning',
+        text: formatMessage(memberContractMessages.status.pendingApproval),
+      },
+      approved: {
+        color: 'success',
+        text: formatMessage(memberContractMessages.status.approvedApproval),
+      },
+      refundApplied: {
+        color: 'error',
+        text: formatMessage(memberContractMessages.label.refundApply),
+      },
+      revoked: {
+        color: 'gray-darker',
+        text: formatMessage(memberContractMessages.status.contractTermination),
+      },
+      loanCanceled: {
+        color: 'gray',
+        text: formatMessage(commonMessages.ui.cancel),
+      },
+    }
+
+    return {
+      ...statusConverter[status],
+      amount,
+    }
+  }, toPairs(memberContractPriceAmount))
 
   const getColumnSearchProps = ({
     onReset,
@@ -209,13 +242,7 @@ const MemberContractCollectionTable: React.FC<{
               color: ColorType
               text: string
               time: Date | null
-            } = record.loanCanceledAt
-              ? {
-                  color: 'gray',
-                  text: formatMessage(commonMessages.ui.cancel),
-                  time: record.loanCanceledAt,
-                }
-              : record.approvedAt
+            } = record.approvedAt
               ? record.refundAppliedAt
                 ? {
                     color: 'error',
@@ -227,6 +254,12 @@ const MemberContractCollectionTable: React.FC<{
                     text: formatMessage(memberContractMessages.status.approvedApproval),
                     time: record.approvedAt,
                   }
+              : record.loanCanceledAt
+              ? {
+                  color: 'gray',
+                  text: formatMessage(commonMessages.ui.cancel),
+                  time: record.loanCanceledAt,
+                }
               : {
                   color: 'warning',
                   text: formatMessage(memberContractMessages.status.pendingApproval),
@@ -510,4 +543,6 @@ const MemberContractCollectionTable: React.FC<{
   )
 }
 
-export default MemberContractCollectionTable
+const MemberContractAmountBlock = () => {
+  return <div></div>
+}

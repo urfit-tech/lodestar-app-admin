@@ -54,6 +54,7 @@ export const memberContractMessages = {
     applyRefund: { id: 'memberContract.status.applyRefund', defaultMessage: '提出退費' },
     pendingApproval: { id: 'memberContract.status.pendingApproval', defaultMessage: '審核中' },
     approvedApproval: { id: 'memberContract.status.approvedApproval', defaultMessage: '審核通過' },
+    contractTermination: { id: 'memberContract.status.contractTermination', defaultMessage: '解約' },
   }),
 }
 
@@ -66,10 +67,10 @@ export const salesMessages = {
     deals: { id: 'sales.label.deals', defaultMessage: '已成交' },
     revoked: { id: 'sales.label.revoked', defaultMessage: '已退款' },
     rejected: { id: 'sales.label.rejected', defaultMessage: '已拒絕' },
-    studentName: { id: "sales.label.studentName", defaultMessage: '學員姓名' },
-    tel: { id: "sales.label.tel", defaultMessage: '電話' },
-    lastContactAt: { id: "sales.label.lastContactAt", defaultMessage: "最近聯繫時間" },
-    serviceEndedAt: { id: "sales.label.serviceEndedAt", defaultMessage: "服務截止時間" },
-    productItem: { id: "sales.label.productItem", defaultMessage: "產品項目" }
+    studentName: { id: 'sales.label.studentName', defaultMessage: '學員姓名' },
+    tel: { id: 'sales.label.tel', defaultMessage: '電話' },
+    lastContactAt: { id: 'sales.label.lastContactAt', defaultMessage: '最近聯繫時間' },
+    serviceEndedAt: { id: 'sales.label.serviceEndedAt', defaultMessage: '服務截止時間' },
+    productItem: { id: 'sales.label.productItem', defaultMessage: '產品項目' },
   }),
 }

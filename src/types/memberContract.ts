@@ -1,5 +1,11 @@
-export type StatusType = 'pending' | 'approved' | 'refund-applied' | 'loan-canceled'
-export type DateRangeType = 'agreed_at' | 'started_at' | 'revoked_at'
+export type StatusType = 'pending' | 'approved' | 'refund-applied' | 'loan-canceled' | 'revoked' // statusType should change to camel case
+export type DateRangeType =
+  | 'agreed_at'
+  | 'started_at'
+  | 'approved_at'
+  | 'refund_applied_at'
+  | 'loan_canceled_at'
+  | 'revoked_at'
 
 export type MemberContractProps = {
   id: string
@@ -49,6 +55,7 @@ export type MemberContractProps = {
     id: string
     name: string
   } | null
+  status: StatusType
   lastActivity: string | null
   lastAdPackage: string | null
   lastAdMaterial: string | null
