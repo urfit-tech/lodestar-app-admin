@@ -63,12 +63,12 @@ const OrderExportModal: React.FC = () => {
         query: GET_ORDER_LOG_EXPORT,
         variables: {
           condition: {
-            _or: [
-              { updated_at: { _gte: startedAt, _lte: endedAt } },
-              { updated_at: { _is_null: true }, created_at: { _gte: startedAt, _lte: endedAt } },
-            ],
             status: {
               _in: orderStatuses,
+            },
+            last_paid_at: {
+              _gte: startedAt,
+              _lte: endedAt,
             },
           },
         },
@@ -174,12 +174,12 @@ const OrderExportModal: React.FC = () => {
         variables: {
           condition: {
             order_log: {
-              _or: [
-                { updated_at: { _gte: startedAt, _lte: endedAt } },
-                { updated_at: { _is_null: true }, created_at: { _gte: startedAt, _lte: endedAt } },
-              ],
               status: {
                 _in: orderStatuses,
+              },
+              last_paid_at: {
+                _gte: startedAt,
+                _lte: endedAt,
               },
             },
           },
@@ -249,9 +249,17 @@ const OrderExportModal: React.FC = () => {
       >({
         query: GET_ORDER_DISCOUNT_COLLECTION,
         variables: {
-          startedAt,
-          endedAt,
-          orderStatuses,
+          condition: {
+            order_log: {
+              status: {
+                _in: orderStatuses,
+              },
+              last_paid_at: {
+                _gte: startedAt,
+                _lte: endedAt,
+              },
+            },
+          },
         },
       })
 
@@ -292,12 +300,12 @@ const OrderExportModal: React.FC = () => {
         variables: {
           condition: {
             order_log: {
-              _or: [
-                { updated_at: { _gte: startedAt, _lte: endedAt } },
-                { updated_at: { _is_null: true }, created_at: { _gte: startedAt, _lte: endedAt } },
-              ],
               status: {
                 _in: orderStatuses,
+              },
+              last_paid_at: {
+                _gte: startedAt,
+                _lte: endedAt,
               },
             },
           },
@@ -538,19 +546,8 @@ const GET_ORDER_PRODUCT_EXPORT = gql`
   }
 `
 const GET_ORDER_DISCOUNT_COLLECTION = gql`
-  query GET_ORDER_DISCOUNT_COLLECTION($startedAt: timestamptz!, $endedAt: timestamptz!, $orderStatuses: [String!]) {
-    order_discount(
-      where: {
-        order_log: {
-          status: { _in: $orderStatuses }
-          _or: [
-            { updated_at: { _gte: $startedAt, _lte: $endedAt } }
-            { updated_at: { _is_null: true }, created_at: { _gte: $startedAt, _lte: $endedAt } }
-          ]
-        }
-      }
-      order_by: { order_log: { updated_at: desc } }
-    ) {
+  query GET_ORDER_DISCOUNT_COLLECTION($condition: order_discount_bool_exp) {
+    order_discount(where: $condition, order_by: { order_log: { updated_at: desc } }) {
       id
       order_log {
         id

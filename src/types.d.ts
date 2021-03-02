@@ -5749,9 +5749,7 @@ export interface GET_ORDER_DISCOUNT_COLLECTION {
 }
 
 export interface GET_ORDER_DISCOUNT_COLLECTIONVariables {
-  startedAt: any;
-  endedAt: any;
-  orderStatuses?: string[] | null;
+  condition?: order_discount_bool_exp | null;
 }
 
 /* tslint:disable */
