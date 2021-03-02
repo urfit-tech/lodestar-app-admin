@@ -2,6 +2,7 @@ import { useApolloClient } from '@apollo/react-hooks'
 import { Button } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SortOrder } from 'antd/lib/table/interface'
+import gql from 'graphql-tag'
 import { currencyFormatter, downloadCSV, handleError, toCSV } from 'lodestar-app-admin/src/helpers'
 import { commonMessages } from 'lodestar-app-admin/src/helpers/translation'
 import moment from 'moment'
@@ -133,6 +134,15 @@ const ExportContractCollectionButton: React.FC<{
           lastFilledAt: v.last_fill_in_date,
         })) || []
 
+      const salesIds = memberContracts
+        .map(contract => contract.orderExecutors?.map(executor => executor.memberId) || [])
+        .flat()
+
+      const { data: salesNames } = await apolloClient.query<types.GET_SALES_NAMES>({
+        query: GET_SALES_NAMES,
+        variables: { salesIds },
+      })
+
       const visibleColumns = columns.filter(column => visibleFields.includes(column.key as string))
 
       const csvData: string[][] = [
@@ -183,7 +193,14 @@ const ExportContractCollectionButton: React.FC<{
               case 'paymentNumber':
                 return `${contract.paymentOptions?.paymentNumber}` || ''
               case 'orderExecutors':
-                return contract.orderExecutors?.map(v => `${v.memberId} ${Math.floor(v.ratio * 100)}%`).join('\n') || ''
+                return (
+                  contract.orderExecutors
+                    ?.map(v => {
+                      const member = salesNames.member_public.find(member => member.id === v.memberId)
+                      return `${member?.name || member?.username || v.memberId} ${Math.floor(v.ratio * 100)}%`
+                    })
+                    .join('\n') || ''
+                )
               case 'lastActivity':
                 return contract.lastActivity || ''
               case 'lastAdPackage':
@@ -218,5 +235,15 @@ const ExportContractCollectionButton: React.FC<{
     </Button>
   )
 }
+
+const GET_SALES_NAMES = gql`
+  query GET_SALES_NAMES($salesIds: [String!]!) {
+    member_public(where: { id: { _in: $salesIds } }) {
+      id
+      name
+      username
+    }
+  }
+`
 
 export default ExportContractCollectionButton

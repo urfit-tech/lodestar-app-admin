@@ -30,6 +30,33 @@ export interface GET_MEMBER_NAMEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_SALES_NAMES
+// ====================================================
+
+export interface GET_SALES_NAMES_member_public {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+}
+
+export interface GET_SALES_NAMES {
+  /**
+   * fetch data from the table: "member_public"
+   */
+  member_public: GET_SALES_NAMES_member_public[];
+}
+
+export interface GET_SALES_NAMESVariables {
+  salesIds: string[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER_PRIVATE_TEACH_CONTRACT
 // ====================================================
 
@@ -2051,11 +2078,13 @@ export enum order_log_update_column {
   expired_at = "expired_at",
   id = "id",
   invoice = "invoice",
+  last_paid_at = "last_paid_at",
   member_id = "member_id",
   message = "message",
   payment_model = "payment_model",
   retried_at = "retried_at",
   shipping = "shipping",
+  status = "status",
   updated_at = "updated_at",
 }
 
@@ -9894,6 +9923,7 @@ export interface order_log_bool_exp {
   expired_at?: timestamptz_comparison_exp | null;
   id?: String_comparison_exp | null;
   invoice?: jsonb_comparison_exp | null;
+  last_paid_at?: timestamptz_comparison_exp | null;
   member?: member_bool_exp | null;
   member_id?: String_comparison_exp | null;
   message?: String_comparison_exp | null;
@@ -9901,11 +9931,11 @@ export interface order_log_bool_exp {
   order_discounts?: order_discount_bool_exp | null;
   order_executors?: order_executor_bool_exp | null;
   order_products?: order_product_bool_exp | null;
-  order_status?: order_status_bool_exp | null;
   payment_logs?: payment_log_bool_exp | null;
   payment_model?: jsonb_comparison_exp | null;
   retried_at?: timestamptz_comparison_exp | null;
   shipping?: jsonb_comparison_exp | null;
+  status?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
 }
 
@@ -9925,6 +9955,7 @@ export interface order_log_insert_input {
   expired_at?: any | null;
   id?: string | null;
   invoice?: any | null;
+  last_paid_at?: any | null;
   member?: member_obj_rel_insert_input | null;
   member_id?: string | null;
   message?: string | null;
@@ -9936,6 +9967,7 @@ export interface order_log_insert_input {
   payment_model?: any | null;
   retried_at?: any | null;
   shipping?: any | null;
+  status?: string | null;
   updated_at?: any | null;
 }
 
@@ -9953,9 +9985,11 @@ export interface order_log_max_order_by {
   discount_type?: order_by | null;
   expired_at?: order_by | null;
   id?: order_by | null;
+  last_paid_at?: order_by | null;
   member_id?: order_by | null;
   message?: order_by | null;
   retried_at?: order_by | null;
+  status?: order_by | null;
   updated_at?: order_by | null;
 }
 
@@ -9973,9 +10007,11 @@ export interface order_log_min_order_by {
   discount_type?: order_by | null;
   expired_at?: order_by | null;
   id?: order_by | null;
+  last_paid_at?: order_by | null;
   member_id?: order_by | null;
   message?: order_by | null;
   retried_at?: order_by | null;
+  status?: order_by | null;
   updated_at?: order_by | null;
 }
 
@@ -10181,23 +10217,6 @@ export interface order_product_on_conflict {
   constraint: order_product_constraint;
   update_columns: order_product_update_column[];
   where?: order_product_bool_exp | null;
-}
-
-/**
- * Boolean expression to filter rows from the table "order_status". All fields are combined with a logical 'AND'.
- */
-export interface order_status_bool_exp {
-  _and?: (order_status_bool_exp | null)[] | null;
-  _not?: order_status_bool_exp | null;
-  _or?: (order_status_bool_exp | null)[] | null;
-  last_paid_at?: timestamptz_comparison_exp | null;
-  member_id?: String_comparison_exp | null;
-  order_discounts?: order_discount_bool_exp | null;
-  order_id?: String_comparison_exp | null;
-  order_log?: order_log_bool_exp | null;
-  order_products?: order_product_bool_exp | null;
-  payment_logs?: payment_log_bool_exp | null;
-  status?: String_comparison_exp | null;
 }
 
 /**
@@ -15754,6 +15773,7 @@ export interface xuemi_member_private_teach_contract_bool_exp {
   member_name?: String_comparison_exp | null;
   member_picture_url?: String_comparison_exp | null;
   note?: String_comparison_exp | null;
+  price?: numeric_comparison_exp | null;
   referral_email?: String_comparison_exp | null;
   referral_name?: String_comparison_exp | null;
   refund_applied_at?: String_comparison_exp | null;
@@ -15788,6 +15808,7 @@ export interface xuemi_member_private_teach_contract_order_by {
   member_name?: order_by | null;
   member_picture_url?: order_by | null;
   note?: order_by | null;
+  price?: order_by | null;
   referral_email?: order_by | null;
   referral_name?: order_by | null;
   refund_applied_at?: order_by | null;
