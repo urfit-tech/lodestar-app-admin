@@ -1,5 +1,5 @@
 import { SearchOutlined } from '@ant-design/icons'
-import { Button, Checkbox, Input, Skeleton, Table } from 'antd'
+import { Button, Checkbox, Input, Spin, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { FilterConfirmProps, SorterResult, SortOrder } from 'antd/lib/table/interface'
 import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
@@ -45,6 +45,12 @@ const TableWrapper = styled.div`
   .ant-table-cell {
     white-space: nowrap;
   }
+`
+
+const StyledContractAmountBlock = styled.div`
+  display: inline-flex;
+  gap: 16px;
+  margin-bottom: 24px;
 `
 
 const fixedColumnKeys = ['agreedAt', 'revokedAt']
@@ -109,10 +115,6 @@ export const MemberContractCollectionBlock: React.FC<{
     'orderExecutors',
   ])
 
-  if (loadingMemberContracts && errorMemberContracts) {
-    return <Skeleton />
-  }
-
   const activeMemberContract = memberContracts.find(v => v.id === activeMemberContractId)
 
   const priceAmountList = map(([status, amount]) => {
@@ -125,7 +127,7 @@ export const MemberContractCollectionBlock: React.FC<{
         color: 'success',
         text: formatMessage(memberContractMessages.status.approvedApproval),
       },
-      refundApplied: {
+      'refund-applied': {
         color: 'error',
         text: formatMessage(memberContractMessages.label.refundApply),
       },
@@ -133,7 +135,7 @@ export const MemberContractCollectionBlock: React.FC<{
         color: 'gray-darker',
         text: formatMessage(memberContractMessages.status.contractTermination),
       },
-      loanCanceled: {
+      'loan-canceled': {
         color: 'gray',
         text: formatMessage(commonMessages.ui.cancel),
       },
@@ -468,6 +470,20 @@ export const MemberContractCollectionBlock: React.FC<{
         </div>
       </div>
 
+      {
+        <StyledContractAmountBlock>
+          {priceAmountList.map(v => (
+            <MemberContractAmountCard
+              key={v.text}
+              color={v.color}
+              text={v.text}
+              amount={v.amount}
+              loading={!!(loadingMemberContracts || errorMemberContracts)}
+            />
+          ))}
+        </StyledContractAmountBlock>
+      }
+
       <AdminCard>
         <MemberContractModal
           isRevoked={variant === 'revoked'}
@@ -498,6 +514,7 @@ export const MemberContractCollectionBlock: React.FC<{
             <TableWrapper>
               <Table<MemberContractProps>
                 columns={columns.filter(column => visibleFields.includes(column.key as string))}
+                loading={!!(loadingMemberContracts || errorMemberContracts)}
                 dataSource={memberContracts}
                 scroll={{ x: true }}
                 rowKey={row => row.id}
@@ -543,6 +560,56 @@ export const MemberContractCollectionBlock: React.FC<{
   )
 }
 
-const MemberContractAmountBlock = () => {
-  return <div></div>
+const StyledCard = styled.div`
+  display: grid;
+  grid-template-rows: 14px 20px;
+  row-gap: 18px;
+  border-radius: 4px;
+  width: 196px;
+  padding: 22px 16px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
+`
+
+const StyledCardTitle = styled.h4<{ color: string }>`
+  &:before {
+    content: '';
+    display: inline-block;
+    margin-right: 8px;
+    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+    background: var(--${({ color }) => color});
+  }
+
+  font-family: NotoSansCJKtc;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.57;
+  letter-spacing: 0.18px;
+  color: var(--gray-darker);
+  background-color: white;
+`
+
+const StyledPrice = styled.span`
+  font-family: Roboto;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1.3;
+  letter-spacing: 0.77px;
+  color: var(--gray-darker);
+`
+
+const MemberContractAmountCard: React.FC<{
+  color: string
+  text: string
+  amount: number
+  loading?: boolean
+}> = ({ color, text, amount, loading }) => {
+  return (
+    <StyledCard>
+      <StyledCardTitle color={color}>{text}</StyledCardTitle>
+      {loading ? <Spin size="small" /> : <StyledPrice>{currencyFormatter(amount)}</StyledPrice>}
+    </StyledCard>
+  )
 }

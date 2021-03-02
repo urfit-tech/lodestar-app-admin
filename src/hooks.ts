@@ -329,15 +329,12 @@ export const useMemberContractCollection = ({
           })
       : undefined
 
-  const memberContractPriceAmount: Record<
-    'pending' | 'approved' | 'refundApplied' | 'revoked' | 'loanCanceled', // statusType
-    number
-  > = {
+  const memberContractPriceAmount: Record<StatusType, number> = {
     pending: data?.private_teach_pending_contract.aggregate?.sum?.price || 0,
     approved: data?.private_teach_approved_contract.aggregate?.sum?.price || 0,
-    refundApplied: data?.private_teach_refund_applied_contract.aggregate?.sum?.price || 0,
+    'refund-applied': data?.private_teach_refund_applied_contract.aggregate?.sum?.price || 0,
     revoked: data?.private_teach_revoked_contract.aggregate?.sum?.price || 0,
-    loanCanceled: data?.private_teach_loan_canceled_contract.aggregate?.sum?.price || 0,
+    'loan-canceled': data?.private_teach_loan_canceled_contract.aggregate?.sum?.price || 0,
   }
 
   return {

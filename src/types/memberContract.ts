@@ -1,4 +1,4 @@
-export type StatusType = 'pending' | 'approved' | 'refund-applied' | 'loan-canceled' | 'revoked' // statusType should change to camel case
+export type StatusType = 'pending' | 'approved' | 'refund-applied' | 'loan-canceled' | 'revoked'
 export type DateRangeType =
   | 'agreed_at'
   | 'started_at'
