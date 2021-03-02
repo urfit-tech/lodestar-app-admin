@@ -13,6 +13,7 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import MemberNameLabel from '../../components/common/MemberNameLabel'
+import ExportContractCollectionButton from '../../components/memberContract/ExportContractCollectionButton'
 import { memberContractMessages } from '../../helpers/translation'
 import { useMemberContractCollection } from '../../hooks'
 import { DateRangeType, MemberContractProps, StatusType } from '../../types/memberContract'
@@ -470,19 +471,17 @@ export const MemberContractCollectionBlock: React.FC<{
         </div>
       </div>
 
-      {
-        <StyledContractAmountBlock>
-          {priceAmountList.map(v => (
-            <MemberContractAmountCard
-              key={v.text}
-              color={v.color}
-              text={v.text}
-              amount={v.amount}
-              loading={!!(loadingMemberContracts || errorMemberContracts)}
-            />
-          ))}
-        </StyledContractAmountBlock>
-      }
+      <StyledContractAmountBlock>
+        {priceAmountList.map(v => (
+          <MemberContractAmountCard
+            key={v.text}
+            color={v.color}
+            text={v.text}
+            amount={v.amount}
+            loading={!!(loadingMemberContracts || errorMemberContracts)}
+          />
+        ))}
+      </StyledContractAmountBlock>
 
       <AdminCard>
         <MemberContractModal

@@ -221,7 +221,7 @@ export const useMemberContractCollection = ({
     },
   )
 
-  const memberContracts: MemberContractProps[] =
+  const memberContracts: (MemberContractProps & { status: StatusType })[] =
     data?.xuemi_member_private_teach_contract.map(v => ({
       id: v.id,
       authorName: v.author_name,
