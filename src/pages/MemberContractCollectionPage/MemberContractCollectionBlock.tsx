@@ -13,10 +13,10 @@ import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
 import MemberNameLabel from '../../components/common/MemberNameLabel'
-import ExportContractCollectionButton from '../../components/memberContract/ExportContractCollectionButton'
 import { memberContractMessages } from '../../helpers/translation'
 import { useMemberContractCollection } from '../../hooks'
 import { DateRangeType, MemberContractProps, StatusType } from '../../types/memberContract'
+import ExportContractCollectionButton from './ExportContractCollectionButton'
 import MemberContractFieldSelector from './MemberContractFieldSelector'
 import MemberContractFilterSelector from './MemberContractFilterSelector'
 import MemberContractModal from './MemberContractModal'
@@ -53,8 +53,6 @@ const StyledContractAmountBlock = styled.div`
   gap: 16px;
   margin-bottom: 24px;
 `
-
-const fixedColumnKeys = ['agreedAt', 'revokedAt']
 
 export const MemberContractCollectionBlock: React.FC<{
   variant: 'agreed' | 'revoked'
