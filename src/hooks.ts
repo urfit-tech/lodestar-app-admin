@@ -219,7 +219,7 @@ export const useMemberContractCollection = ({
         limit: 10,
       },
     },
-  })
+  )
 
   const memberContracts: MemberContractProps[] =
     data?.xuemi_member_private_teach_contract.map(v => ({
