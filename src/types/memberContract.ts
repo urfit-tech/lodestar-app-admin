@@ -55,6 +55,7 @@ export type MemberContractProps = {
     id: string
     name: string
   } | null
+  status: StatusType | null
   lastActivity: string | null
   lastAdPackage: string | null
   lastAdMaterial: string | null

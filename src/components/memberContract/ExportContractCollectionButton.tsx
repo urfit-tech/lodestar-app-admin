@@ -78,6 +78,7 @@ const ExportContractCollectionButton: React.FC<{
         variables: {
           condition,
           orderBy,
+          withAmount: false,
         },
       })
 
@@ -127,6 +128,7 @@ const ExportContractCollectionButton: React.FC<{
                 name: v.member.manager.name || v.member.manager.username,
               }
             : null,
+          status: v.status as StatusType | null,
           lastActivity: v.last_marketing_activity,
           lastAdPackage: v.last_ad_package,
           lastAdMaterial: v.last_ad_material,
