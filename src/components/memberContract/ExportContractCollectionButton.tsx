@@ -135,7 +135,10 @@ const ExportContractCollectionButton: React.FC<{
         })) || []
 
       const salesIds = memberContracts
-        .map(contract => contract.orderExecutors?.map(executor => executor.memberId) || [])
+        .map(
+          contract =>
+            contract.orderExecutors?.filter(executor => executor.memberId).map(executor => executor.memberId) || [],
+        )
         .flat()
 
       const { data: salesNames } = await apolloClient.query<types.GET_SALES_NAMES>({
