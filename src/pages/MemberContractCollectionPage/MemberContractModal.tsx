@@ -6,7 +6,7 @@ import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { downloadFile, getFileDownloadableLink, handleError, uploadFile } from 'lodestar-app-admin/src/helpers'
 import { commonMessages, memberMessages, orderMessages } from 'lodestar-app-admin/src/helpers/translation'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled, { css } from 'styled-components'
@@ -87,12 +87,10 @@ type MemberContractModalProps = {
     installmentPlan: number
   } | null
   note?: string | null
-  orderExecutors?:
-    | {
-        memberId: string
-        ratio: number
-      }[]
-    | null
+  orderExecutors: {
+    memberId: string
+    ratio: number
+  }[]
   studentCertification?: string | null
   onRefetch: () => void
 } & AdminModalProps
@@ -114,7 +112,19 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   const { formatMessage } = useIntl()
   const { authToken, apiHost, currentUserRole } = useAuth()
   const { id: appId } = useApp()
-  const [form] = Form.useForm()
+  const [form] = Form.useForm<{
+    approvedAt: Moment | null
+    loanCanceledAt: Moment | null
+    refundAppliedAt: Moment | null
+    paymentMethod: string
+    paymentNumber: number
+    installmentPlan: string
+    note: string
+    orderExecutors: {
+      memberId: string
+      ratio: number
+    }[]
+  }>()
   const { xuemiSales } = useXuemiSales()
   const [certification, setCertification] = useState<File[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -150,12 +160,15 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                 paymentNumber,
                 installmentPlan,
               },
-              orderExecutors,
+              orderExecutors: orderExecutors.map(v => ({
+                member_id: v.memberId,
+                ratio: v.ratio,
+              })),
             },
             options: {
-              approvedAt,
-              loanCanceledAt,
-              refundAppliedAt,
+              approvedAt: approvedAt?.toDate() || null,
+              loanCanceledAt: loanCanceledAt?.toDate() || null,
+              refundAppliedAt: refundAppliedAt?.toDate() || null,
               note,
               studentCertification: certification[0]?.name || studentCertification,
             },
@@ -167,7 +180,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
         setVisible(false)
         onRefetch()
       })
-      .catch(err => handleError(err))
+      .catch(handleError)
       .finally(() => setIsLoading(false))
   }
   const inputEditPermissions = {

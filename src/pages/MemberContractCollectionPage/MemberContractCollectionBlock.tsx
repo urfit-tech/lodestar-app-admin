@@ -506,7 +506,7 @@ export const MemberContractCollectionBlock: React.FC<{
           }}
           paymentOptions={activeMemberContract?.paymentOptions}
           note={activeMemberContract?.note}
-          orderExecutors={activeMemberContract?.orderExecutors}
+          orderExecutors={activeMemberContract?.orderExecutors || []}
           studentCertification={activeMemberContract?.studentCertification}
           onRefetch={refetchMemberContracts}
           renderTrigger={({ setVisible }) => (

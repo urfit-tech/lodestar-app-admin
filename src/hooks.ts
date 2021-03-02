@@ -212,7 +212,7 @@ export const useMemberContractCollection = ({
       orderExecutors:
         v.values?.orderExecutors?.map((v: any) => ({
           ratio: v.ratio,
-          memberId: v.member_id,
+          memberId: v.member_id || v.memberId,
         })) || [],
       couponCount: v.values?.coupons.length || null,
       manager: v.member?.manager
