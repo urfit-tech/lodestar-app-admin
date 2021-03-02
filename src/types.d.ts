@@ -102,88 +102,11 @@ export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_co
    * An object relationship
    */
   member: GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_contract_member | null;
-  status: string | null;
   last_marketing_activity: string | null;
   last_ad_package: string | null;
   last_ad_material: string | null;
   first_fill_in_date: string | null;
   last_fill_in_date: string | null;
-  price: any | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_pending_contract_aggregate_sum {
-  __typename: "xuemi_member_private_teach_contract_sum_fields";
-  price: any | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_pending_contract_aggregate {
-  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
-  sum: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_pending_contract_aggregate_sum | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_pending_contract {
-  __typename: "xuemi_member_private_teach_contract_aggregate";
-  aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_pending_contract_aggregate | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_loan_canceled_contract_aggregate_sum {
-  __typename: "xuemi_member_private_teach_contract_sum_fields";
-  price: any | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_loan_canceled_contract_aggregate {
-  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
-  sum: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_loan_canceled_contract_aggregate_sum | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_loan_canceled_contract {
-  __typename: "xuemi_member_private_teach_contract_aggregate";
-  aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_loan_canceled_contract_aggregate | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_approved_contract_aggregate_sum {
-  __typename: "xuemi_member_private_teach_contract_sum_fields";
-  price: any | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_approved_contract_aggregate {
-  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
-  sum: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_approved_contract_aggregate_sum | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_approved_contract {
-  __typename: "xuemi_member_private_teach_contract_aggregate";
-  aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_approved_contract_aggregate | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_refund_applied_contract_aggregate_sum {
-  __typename: "xuemi_member_private_teach_contract_sum_fields";
-  price: any | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_refund_applied_contract_aggregate {
-  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
-  sum: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_refund_applied_contract_aggregate_sum | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_refund_applied_contract {
-  __typename: "xuemi_member_private_teach_contract_aggregate";
-  aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_refund_applied_contract_aggregate | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_revoked_contract_aggregate_sum {
-  __typename: "xuemi_member_private_teach_contract_sum_fields";
-  price: any | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_revoked_contract_aggregate {
-  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
-  sum: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_revoked_contract_aggregate_sum | null;
-}
-
-export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_revoked_contract {
-  __typename: "xuemi_member_private_teach_contract_aggregate";
-  aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_revoked_contract_aggregate | null;
 }
 
 export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_contract_aggregate_aggregate {
@@ -204,30 +127,192 @@ export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT {
   /**
    * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
    */
-  private_teach_pending_contract: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_pending_contract;
-  /**
-   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
-   */
-  private_teach_loan_canceled_contract: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_loan_canceled_contract;
-  /**
-   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
-   */
-  private_teach_approved_contract: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_approved_contract;
-  /**
-   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
-   */
-  private_teach_refund_applied_contract: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_refund_applied_contract;
-  /**
-   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
-   */
-  private_teach_revoked_contract: GET_MEMBER_PRIVATE_TEACH_CONTRACT_private_teach_revoked_contract;
-  /**
-   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
-   */
   xuemi_member_private_teach_contract_aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_xuemi_member_private_teach_contract_aggregate;
 }
 
 export interface GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables {
+  condition?: xuemi_member_private_teach_contract_bool_exp | null;
+  limit?: number | null;
+  orderBy?: xuemi_member_private_teach_contract_order_by[] | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION
+// ====================================================
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_xuemi_member_private_teach_contract_member_manager {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_xuemi_member_private_teach_contract_member {
+  __typename: "member";
+  id: string;
+  created_at: any | null;
+  /**
+   * An object relationship
+   */
+  manager: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_xuemi_member_private_teach_contract_member_manager | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_xuemi_member_private_teach_contract {
+  __typename: "xuemi_member_private_teach_contract";
+  id: any | null;
+  author_name: string | null;
+  member_id: string | null;
+  member_name: string | null;
+  member_picture_url: string | null;
+  member_email: string | null;
+  referral_name: string | null;
+  referral_email: string | null;
+  appointment_creator_name: string | null;
+  started_at: any | null;
+  ended_at: any | null;
+  agreed_at: any | null;
+  revoked_at: any | null;
+  approved_at: string | null;
+  loan_canceled_at: string | null;
+  refund_applied_at: string | null;
+  student_certification: string | null;
+  note: string | null;
+  values: any | null;
+  /**
+   * An object relationship
+   */
+  member: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_xuemi_member_private_teach_contract_member | null;
+  status: string | null;
+  last_marketing_activity: string | null;
+  last_ad_package: string | null;
+  last_ad_material: string | null;
+  first_fill_in_date: string | null;
+  last_fill_in_date: string | null;
+  price: any | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_pending_contract_aggregate_sum {
+  __typename: "xuemi_member_private_teach_contract_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_pending_contract_aggregate {
+  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
+  sum: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_pending_contract_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_pending_contract {
+  __typename: "xuemi_member_private_teach_contract_aggregate";
+  aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_pending_contract_aggregate | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_loan_canceled_contract_aggregate_sum {
+  __typename: "xuemi_member_private_teach_contract_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_loan_canceled_contract_aggregate {
+  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
+  sum: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_loan_canceled_contract_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_loan_canceled_contract {
+  __typename: "xuemi_member_private_teach_contract_aggregate";
+  aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_loan_canceled_contract_aggregate | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_approved_contract_aggregate_sum {
+  __typename: "xuemi_member_private_teach_contract_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_approved_contract_aggregate {
+  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
+  sum: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_approved_contract_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_approved_contract {
+  __typename: "xuemi_member_private_teach_contract_aggregate";
+  aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_approved_contract_aggregate | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_refund_applied_contract_aggregate_sum {
+  __typename: "xuemi_member_private_teach_contract_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_refund_applied_contract_aggregate {
+  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
+  sum: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_refund_applied_contract_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_refund_applied_contract {
+  __typename: "xuemi_member_private_teach_contract_aggregate";
+  aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_refund_applied_contract_aggregate | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_revoked_contract_aggregate_sum {
+  __typename: "xuemi_member_private_teach_contract_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_revoked_contract_aggregate {
+  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
+  sum: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_revoked_contract_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_revoked_contract {
+  __typename: "xuemi_member_private_teach_contract_aggregate";
+  aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_revoked_contract_aggregate | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_xuemi_member_private_teach_contract_aggregate_aggregate {
+  __typename: "xuemi_member_private_teach_contract_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_xuemi_member_private_teach_contract_aggregate {
+  __typename: "xuemi_member_private_teach_contract_aggregate";
+  aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_xuemi_member_private_teach_contract_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION {
+  /**
+   * fetch data from the table: "xuemi.member_private_teach_contract"
+   */
+  xuemi_member_private_teach_contract: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_xuemi_member_private_teach_contract[];
+  /**
+   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
+   */
+  private_teach_pending_contract: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_pending_contract;
+  /**
+   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
+   */
+  private_teach_loan_canceled_contract: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_loan_canceled_contract;
+  /**
+   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
+   */
+  private_teach_approved_contract: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_approved_contract;
+  /**
+   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
+   */
+  private_teach_refund_applied_contract: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_refund_applied_contract;
+  /**
+   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
+   */
+  private_teach_revoked_contract: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_private_teach_revoked_contract;
+  /**
+   * fetch aggregated fields from the table: "xuemi.member_private_teach_contract"
+   */
+  xuemi_member_private_teach_contract_aggregate: GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION_xuemi_member_private_teach_contract_aggregate;
+}
+
+export interface GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTIONVariables {
   condition?: xuemi_member_private_teach_contract_bool_exp | null;
   dateRangeCondition?: xuemi_member_private_teach_contract_bool_exp | null;
   limit?: number | null;

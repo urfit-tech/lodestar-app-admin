@@ -81,14 +81,14 @@ export const useMemberContractCollection = ({
     startedAt: SortOrder
   }
 }) => {
-  const dateRangeCondition: types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['dateRangeCondition'] = {
+  const dateRangeCondition: types.GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTIONVariables['dateRangeCondition'] = {
     [dateRangeType]: {
       _gt: startedAt,
       _lte: endedAt,
     },
   }
 
-  const condition: types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['condition'] = {
+  const condition: types.GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTIONVariables['condition'] = {
     ...dateRangeCondition,
     agreed_at: { _is_null: false },
     revoked_at: { _is_null: !isRevoked },
@@ -112,11 +112,11 @@ export const useMemberContractCollection = ({
   ]
 
   const { loading, data, error, refetch, fetchMore } = useQuery<
-    types.GET_MEMBER_PRIVATE_TEACH_CONTRACT,
-    types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables
+    types.GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION,
+    types.GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTIONVariables
   >(
     gql`
-      query GET_MEMBER_PRIVATE_TEACH_CONTRACT(
+      query GET_MEMBER_PRIVATE_TEACH_CONTRACT_COLLECTION(
         $condition: xuemi_member_private_teach_contract_bool_exp
         $dateRangeCondition: xuemi_member_private_teach_contract_bool_exp
         $limit: Int
