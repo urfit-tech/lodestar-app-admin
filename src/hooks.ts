@@ -140,9 +140,9 @@ export const useMemberContractCollection = ({
   }
 
   const condition: types.GET_MEMBER_PRIVATE_TEACH_CONTRACTVariables['condition'] = {
-    ...dateRangeCondition,
     agreed_at: { _is_null: false },
     revoked_at: { _is_null: !isRevoked },
+    ...dateRangeCondition,
     author_name: { _ilike: authorName && `%${authorName}%` },
     author_id: authorId ? { _eq: authorId } : undefined,
     status: { _in: status.length ? status : undefined },
