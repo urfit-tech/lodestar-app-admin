@@ -30,33 +30,6 @@ export interface GET_MEMBER_NAMEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_SALES_NAMES
-// ====================================================
-
-export interface GET_SALES_NAMES_member_public {
-  __typename: "member_public";
-  id: string | null;
-  name: string | null;
-  username: string | null;
-}
-
-export interface GET_SALES_NAMES {
-  /**
-   * fetch data from the table: "member_public"
-   */
-  member_public: GET_SALES_NAMES_member_public[];
-}
-
-export interface GET_SALES_NAMESVariables {
-  salesIds: string[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
 // GraphQL query operation: GET_MEMBER_PRIVATE_TEACH_CONTRACT
 // ====================================================
 
@@ -686,6 +659,33 @@ export interface UPDATE_MEMBER_PROPERTIES {
 
 export interface UPDATE_MEMBER_PROPERTIESVariables {
   data: member_property_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SALES_NAMES
+// ====================================================
+
+export interface GET_SALES_NAMES_member_public {
+  __typename: "member_public";
+  id: string | null;
+  name: string | null;
+  username: string | null;
+}
+
+export interface GET_SALES_NAMES {
+  /**
+   * fetch data from the table: "member_public"
+   */
+  member_public: GET_SALES_NAMES_member_public[];
+}
+
+export interface GET_SALES_NAMESVariables {
+  salesIds: string[];
 }
 
 /* tslint:disable */

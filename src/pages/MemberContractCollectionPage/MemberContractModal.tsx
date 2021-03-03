@@ -6,9 +6,11 @@ import { useApp } from 'lodestar-app-admin/src/contexts/AppContext'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import { downloadFile, getFileDownloadableLink, handleError, uploadFile } from 'lodestar-app-admin/src/helpers'
 import { commonMessages, memberMessages, orderMessages } from 'lodestar-app-admin/src/helpers/translation'
+import { ReactComponent as ExternalLinkIcon } from 'lodestar-app-admin/src/images/icon/external-link-square.svg'
 import moment, { Moment } from 'moment'
 import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
+import { Link } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import MemberNameLabel from '../../components/common/MemberNameLabel'
 import { memberContractMessages } from '../../helpers/translation'
@@ -473,7 +475,12 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
         <div className="col-4 row">
           <div className="col-12 mb-4">
             <StyledAreaTitle>{formatMessage(memberMessages.label.target)}</StyledAreaTitle>
-            <StyledAreaTitle>{member?.name}</StyledAreaTitle>
+            <StyledAreaTitle>
+              {member?.name}
+              <Link to={`/admin/members/${memberId}`} target="_blank">
+                <ExternalLinkIcon className="ml-2" />
+              </Link>
+            </StyledAreaTitle>
             <StyledSubText className="mb-1">{member?.email}</StyledSubText>
             {member?.phone.split(',').map(v => (
               <StyledSubText key={v}>{v}</StyledSubText>
