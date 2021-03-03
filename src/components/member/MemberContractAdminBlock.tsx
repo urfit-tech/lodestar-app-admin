@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { Button, Card, message, Skeleton } from 'antd'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import React from 'react'
+import React, { useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
 import { useAuth } from '../../contexts/AuthContext'
@@ -54,14 +54,16 @@ const MemberContractAdminBlock: React.FC<{
   const { permissions } = useAuth()
   const { loadingContracts, errorContracts, contracts, refetchContracts } = useMemberContracts(memberId)
   const [revokeMemberContract] = useMutation(REVOKE_MEMBER_CONTRACT)
+  const [revokeLoading, setRevokeLoading] = useState(false)
 
   if (loadingContracts || errorContracts || !contracts) {
     return <Skeleton active />
   }
-  const handleContractRevoke = (memberContractId: string, values: any) => {
+  const handleContractRevoke = async (memberContractId: string, values: any) => {
     if (window.confirm(formatMessage(messages.deleteContractWarning))) {
+      setRevokeLoading(true)
       permissions.MEMBER_CONTRACT_REVOKE &&
-        revokeMemberContract({
+        (await revokeMemberContract({
           variables: {
             memberContractId,
             revocationValues: {
@@ -81,7 +83,8 @@ const MemberContractAdminBlock: React.FC<{
             message.success(formatMessage(messages.successfullyRevoked))
             refetchContracts()
           })
-          .catch(handleError)
+          .catch(handleError))
+      setRevokeLoading(false)
     }
   }
   return (
@@ -137,6 +140,7 @@ const MemberContractAdminBlock: React.FC<{
               {permissions.MEMBER_CONTRACT_REVOKE && contract.agreedAt && !contract.revokedAt && (
                 <Button
                   danger
+                  loading={revokeLoading}
                   onClick={e => {
                     e.preventDefault()
                     handleContractRevoke(contract.id, contract.values)
