@@ -8,7 +8,7 @@ import { downloadFile, getFileDownloadableLink, handleError, uploadFile } from '
 import { commonMessages, memberMessages, orderMessages } from 'lodestar-app-admin/src/helpers/translation'
 import { ReactComponent as ExternalLinkIcon } from 'lodestar-app-admin/src/images/icon/external-link-square.svg'
 import moment, { Moment } from 'moment'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 import styled, { css } from 'styled-components'
@@ -130,7 +130,10 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   const { xuemiSales } = useXuemiSales()
   const [certification, setCertification] = useState<File[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [disabledInput, setDisabledInput] = useState({ refundAppliedAt: false })
   const updateMemberContract = useMutateMemberContract()
+
+  useEffect(() => setDisabledInput({ refundAppliedAt: !status.approvedAt }), [status.approvedAt])
 
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     form
@@ -268,7 +271,19 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   } else {
     sheet = (
       <>
-        <Form form={form} colon={false} preserve={false}>
+        <Form
+          form={form}
+          colon={false}
+          preserve={false}
+          onValuesChange={(_, { approvedAt }) => {
+            if (disabledInput.refundAppliedAt === !!approvedAt) {
+              setDisabledInput({
+                ...disabledInput,
+                refundAppliedAt: !disabledInput.refundAppliedAt,
+              })
+            }
+          }}
+        >
           <StyledAreaTitle>{formatMessage(memberMessages.label.status)}</StyledAreaTitle>
           <StyledRow className="mb-3">
             <Col span={8} className="pr-3">
@@ -292,7 +307,10 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                 name="refundAppliedAt"
                 initialValue={status.refundAppliedAt ? moment(status.refundAppliedAt) : null}
               >
-                <StyledDatePicker disabled={!inputEditPermissions?.['refundAppliedAt']} format="YYYY-MM-DD" />
+                <StyledDatePicker
+                  disabled={!inputEditPermissions?.['refundAppliedAt'] || disabledInput['refundAppliedAt']}
+                  format="YYYY-MM-DD"
+                />
               </Form.Item>
             </Col>
           </StyledRow>
