@@ -9461,7 +9461,7 @@ lodash.xorby@^4.7.0:
 
 "lodestar-app-admin@git+https://5283f1eb2c0cbdec821bd2bc65e18c942c4d51f8:x-oauth-basic@github.com/urfit-tech/lodestar-app-admin.git#master":
   version "0.1.0"
-  resolved "git+https://5283f1eb2c0cbdec821bd2bc65e18c942c4d51f8:x-oauth-basic@github.com/urfit-tech/lodestar-app-admin.git#f8659ee5c7b4bf782dc4382ffd763cd4378c1dbe"
+  resolved "git+https://5283f1eb2c0cbdec821bd2bc65e18c942c4d51f8:x-oauth-basic@github.com/urfit-tech/lodestar-app-admin.git#93f1b06b097e7dd242834c7f04177c6f75ee3019"
   dependencies:
     "@ant-design/compatible" "^1.0.8"
     "@ant-design/icons" "^4.3.0"
@@ -12184,9 +12184,9 @@ rc-resize-observer@^1.0.0:
     resize-observer-polyfill "^1.5.1"
 
 rc-select@^12.0.0, rc-select@~12.1.0:
-  version "12.1.3"
-  resolved "https://registry.yarnpkg.com/rc-select/-/rc-select-12.1.3.tgz#3d1715ba24313951f184b446ac352cfc2d548a20"
-  integrity sha512-pMJ27VQRh5QbyGLSE+by4tORYucNFbZxON+Ywj81qjXAGMjvhMcOOvlv1RZRNdnZxaMwH//3iDPOf80b0AJxZg==
+  version "12.1.5"
+  resolved "https://registry.yarnpkg.com/rc-select/-/rc-select-12.1.5.tgz#09fa379ad3de9d142ddb30471dcef8eec6431ff6"
+  integrity sha512-UElTMw0+XvYJmVfsHTWvLR42RKNf5qyN3Ed/JfuZQceIPK1/3ugGRjdEOKBsPmPyNB5389NAROCV4tQd9fmqwg==
   dependencies:
     "@babel/runtime" "^7.10.1"
     classnames "2.x"
