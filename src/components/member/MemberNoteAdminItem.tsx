@@ -12,7 +12,7 @@ import { useMutateMemberNote } from '../../hooks/member'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { ReactComponent as CallInIcon } from '../../images/icon/call-in.svg'
 import { ReactComponent as CallOutIcon } from '../../images/icon/call-out.svg'
-import { MemberAdminProps, MemberNoteAdminProps } from '../../types/member'
+import { MemberAdminProps, NoteAdminProps } from '../../types/member'
 import AdminModal from '../admin/AdminModal'
 import { CustomRatioImage } from '../common/Image'
 import { StyledModalParagraph } from '../program/ProgramDeletionAdminCard'
@@ -44,7 +44,7 @@ const StyledAuthorName = styled.div`
 `
 
 const MemberNoteAdminItem: React.FC<{
-  note: MemberNoteAdminProps
+  note: NoteAdminProps
   memberAdmin: MemberAdminProps
   onRefetch?: () => void
 }> = ({ note, memberAdmin, onRefetch }) => {
@@ -93,7 +93,6 @@ const MemberNoteAdminItem: React.FC<{
             <StyledMenuItem>
               <MemberNoteAdminModal
                 title={formatMessage(memberMessages.label.editMemberNote)}
-                member={memberAdmin}
                 note={note}
                 renderTrigger={({ setVisible }) => (
                   <div onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</div>

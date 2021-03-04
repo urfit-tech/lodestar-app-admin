@@ -8081,10 +8081,10 @@ export interface GET_MEMBERVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GET_MEMBER_DESCRIPTION
+// GraphQL query operation: GET_MEMBER_ADMIN
 // ====================================================
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_manager {
+export interface GET_MEMBER_ADMIN_member_by_pk_manager {
   __typename: "member";
   id: string;
   email: string;
@@ -8092,85 +8092,59 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_manager {
   picture_url: string | null;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_tags {
+export interface GET_MEMBER_ADMIN_member_by_pk_member_tags {
   __typename: "member_tag";
   id: any;
   tag_name: string;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_specialities {
+export interface GET_MEMBER_ADMIN_member_by_pk_member_specialities {
   __typename: "member_speciality";
   id: any;
   tag_name: string;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_phones {
+export interface GET_MEMBER_ADMIN_member_by_pk_member_phones {
   __typename: "member_phone";
   id: any;
   phone: string;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author {
-  __typename: "member";
-  id: string;
-  /**
-   * app-owner / content-creator
-   */
-  role: string;
-  name: string;
-  picture_url: string | null;
-}
-
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_member_note_attachments {
-  __typename: "member_note_attachment";
-  attachment_id: any | null;
-  data: any | null;
-  options: any | null;
-}
-
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_notes {
-  __typename: "member_note";
-  id: string;
-  /**
-   * NULL | inbound | outbound
-   */
-  type: string | null;
-  /**
-   * NULL | answered | missed
-   */
-  status: string | null;
-  duration: number;
-  description: string | null;
-  created_at: any;
-  rejected_at: any | null;
-  /**
-   * An object relationship
-   */
-  author: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_author;
-  /**
-   * An array relationship
-   */
-  member_note_attachments: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes_member_note_attachments[];
-}
-
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_contracts {
+export interface GET_MEMBER_ADMIN_member_by_pk_member_contracts {
   __typename: "member_contract";
   id: any;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_status {
+export interface GET_MEMBER_ADMIN_member_by_pk_member_notes_author {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_ADMIN_member_by_pk_member_notes {
+  __typename: "member_note";
+  id: string;
+  /**
+   * An object relationship
+   */
+  author: GET_MEMBER_ADMIN_member_by_pk_member_notes_author;
+  description: string | null;
+  rejected_at: any | null;
+}
+
+export interface GET_MEMBER_ADMIN_member_by_pk_coupons_status {
   __typename: "coupon_status";
   outdated: boolean | null;
   used: boolean | null;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code_coupon_plan_coupon_plan_products {
+export interface GET_MEMBER_ADMIN_member_by_pk_coupons_coupon_code_coupon_plan_coupon_plan_products {
   __typename: "coupon_plan_product";
   id: any;
   product_id: string;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code_coupon_plan {
+export interface GET_MEMBER_ADMIN_member_by_pk_coupons_coupon_code_coupon_plan {
   __typename: "coupon_plan";
   id: any;
   title: string;
@@ -8187,90 +8161,90 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code_coupon_
   /**
    * An array relationship
    */
-  coupon_plan_products: GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code_coupon_plan_coupon_plan_products[];
+  coupon_plan_products: GET_MEMBER_ADMIN_member_by_pk_coupons_coupon_code_coupon_plan_coupon_plan_products[];
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code {
+export interface GET_MEMBER_ADMIN_member_by_pk_coupons_coupon_code {
   __typename: "coupon_code";
   id: any;
   /**
    * An object relationship
    */
-  coupon_plan: GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code_coupon_plan;
+  coupon_plan: GET_MEMBER_ADMIN_member_by_pk_coupons_coupon_code_coupon_plan;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_coupons {
+export interface GET_MEMBER_ADMIN_member_by_pk_coupons {
   __typename: "coupon";
   id: any;
   /**
    * An object relationship
    */
-  status: GET_MEMBER_DESCRIPTION_member_by_pk_coupons_status | null;
+  status: GET_MEMBER_ADMIN_member_by_pk_coupons_status | null;
   /**
    * An object relationship
    */
-  coupon_code: GET_MEMBER_DESCRIPTION_member_by_pk_coupons_coupon_code;
+  coupon_code: GET_MEMBER_ADMIN_member_by_pk_coupons_coupon_code;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_permission_extras {
+export interface GET_MEMBER_ADMIN_member_by_pk_member_permission_extras {
   __typename: "member_permission_extra";
   id: any;
   permission_id: string;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate_sum {
+export interface GET_MEMBER_ADMIN_member_by_pk_coin_logs_aggregate_aggregate_sum {
   __typename: "coin_log_sum_fields";
   amount: any | null;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate {
+export interface GET_MEMBER_ADMIN_member_by_pk_coin_logs_aggregate_aggregate {
   __typename: "coin_log_aggregate_fields";
-  sum: GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate_sum | null;
+  sum: GET_MEMBER_ADMIN_member_by_pk_coin_logs_aggregate_aggregate_sum | null;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate {
+export interface GET_MEMBER_ADMIN_member_by_pk_coin_logs_aggregate {
   __typename: "coin_log_aggregate";
-  aggregate: GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate_aggregate | null;
+  aggregate: GET_MEMBER_ADMIN_member_by_pk_coin_logs_aggregate_aggregate | null;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate_aggregate_sum {
+export interface GET_MEMBER_ADMIN_member_by_pk_order_logs_order_products_aggregate_aggregate_sum {
   __typename: "order_product_sum_fields";
   price: any | null;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate_aggregate {
+export interface GET_MEMBER_ADMIN_member_by_pk_order_logs_order_products_aggregate_aggregate {
   __typename: "order_product_aggregate_fields";
-  sum: GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate_aggregate_sum | null;
+  sum: GET_MEMBER_ADMIN_member_by_pk_order_logs_order_products_aggregate_aggregate_sum | null;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate {
+export interface GET_MEMBER_ADMIN_member_by_pk_order_logs_order_products_aggregate {
   __typename: "order_product_aggregate";
-  aggregate: GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate_aggregate | null;
+  aggregate: GET_MEMBER_ADMIN_member_by_pk_order_logs_order_products_aggregate_aggregate | null;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_order_logs {
+export interface GET_MEMBER_ADMIN_member_by_pk_order_logs {
   __typename: "order_log";
   /**
    * An aggregated array relationship
    */
-  order_products_aggregate: GET_MEMBER_DESCRIPTION_member_by_pk_order_logs_order_products_aggregate;
+  order_products_aggregate: GET_MEMBER_ADMIN_member_by_pk_order_logs_order_products_aggregate;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_categories_category {
+export interface GET_MEMBER_ADMIN_member_by_pk_member_categories_category {
   __typename: "category";
   id: string;
   name: string;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk_member_categories {
+export interface GET_MEMBER_ADMIN_member_by_pk_member_categories {
   __typename: "member_category";
   /**
    * An object relationship
    */
-  category: GET_MEMBER_DESCRIPTION_member_by_pk_member_categories_category;
+  category: GET_MEMBER_ADMIN_member_by_pk_member_categories_category;
 }
 
-export interface GET_MEMBER_DESCRIPTION_member_by_pk {
+export interface GET_MEMBER_ADMIN_member_by_pk {
   __typename: "member";
   id: string;
   picture_url: string | null;
@@ -8287,59 +8261,252 @@ export interface GET_MEMBER_DESCRIPTION_member_by_pk {
   /**
    * An object relationship
    */
-  manager: GET_MEMBER_DESCRIPTION_member_by_pk_manager | null;
+  manager: GET_MEMBER_ADMIN_member_by_pk_manager | null;
   /**
    * An array relationship
    */
-  member_tags: GET_MEMBER_DESCRIPTION_member_by_pk_member_tags[];
+  member_tags: GET_MEMBER_ADMIN_member_by_pk_member_tags[];
   /**
    * An array relationship
    */
-  member_specialities: GET_MEMBER_DESCRIPTION_member_by_pk_member_specialities[];
+  member_specialities: GET_MEMBER_ADMIN_member_by_pk_member_specialities[];
   /**
    * An array relationship
    */
-  member_phones: GET_MEMBER_DESCRIPTION_member_by_pk_member_phones[];
+  member_phones: GET_MEMBER_ADMIN_member_by_pk_member_phones[];
   /**
    * An array relationship
    */
-  member_notes: GET_MEMBER_DESCRIPTION_member_by_pk_member_notes[];
+  member_contracts: GET_MEMBER_ADMIN_member_by_pk_member_contracts[];
   /**
    * An array relationship
    */
-  member_contracts: GET_MEMBER_DESCRIPTION_member_by_pk_member_contracts[];
+  member_notes: GET_MEMBER_ADMIN_member_by_pk_member_notes[];
   /**
    * An array relationship
    */
-  coupons: GET_MEMBER_DESCRIPTION_member_by_pk_coupons[];
+  coupons: GET_MEMBER_ADMIN_member_by_pk_coupons[];
   /**
    * An array relationship
    */
-  member_permission_extras: GET_MEMBER_DESCRIPTION_member_by_pk_member_permission_extras[];
+  member_permission_extras: GET_MEMBER_ADMIN_member_by_pk_member_permission_extras[];
   /**
    * An aggregated array relationship
    */
-  coin_logs_aggregate: GET_MEMBER_DESCRIPTION_member_by_pk_coin_logs_aggregate;
+  coin_logs_aggregate: GET_MEMBER_ADMIN_member_by_pk_coin_logs_aggregate;
   /**
    * An array relationship
    */
-  order_logs: GET_MEMBER_DESCRIPTION_member_by_pk_order_logs[];
+  order_logs: GET_MEMBER_ADMIN_member_by_pk_order_logs[];
   /**
    * An array relationship
    */
-  member_categories: GET_MEMBER_DESCRIPTION_member_by_pk_member_categories[];
+  member_categories: GET_MEMBER_ADMIN_member_by_pk_member_categories[];
 }
 
-export interface GET_MEMBER_DESCRIPTION {
+export interface GET_MEMBER_ADMIN {
   /**
    * fetch data from the table: "member" using primary key columns
    */
-  member_by_pk: GET_MEMBER_DESCRIPTION_member_by_pk | null;
+  member_by_pk: GET_MEMBER_ADMIN_member_by_pk | null;
 }
 
-export interface GET_MEMBER_DESCRIPTIONVariables {
+export interface GET_MEMBER_ADMINVariables {
   memberId: string;
-  authorId?: string | null;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_MEMBER_NOTES_ADMIN
+// ====================================================
+
+export interface GET_MEMBER_NOTES_ADMIN_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_tag {
+  __typename: "member_tag";
+  tag_name: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate {
+  __typename: "member_note_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_aggregate {
+  __typename: "member_note_aggregate";
+  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_author {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_manager {
+  __typename: "member";
+  id: string;
+  name: string;
+  username: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories {
+  __typename: "member_category";
+  id: any;
+  /**
+   * An object relationship
+   */
+  category: GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories_category;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_tags {
+  __typename: "member_tag";
+  tag_name: string;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum {
+  __typename: "order_product_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate {
+  __typename: "order_product_aggregate_fields";
+  sum: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate {
+  __typename: "order_product_aggregate";
+  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum {
+  __typename: "order_discount_sum_fields";
+  price: any | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate {
+  __typename: "order_discount_aggregate_fields";
+  sum: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate {
+  __typename: "order_discount_aggregate";
+  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs {
+  __typename: "order_log";
+  id: string;
+  /**
+   * An aggregated array relationship
+   */
+  order_products_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate;
+  /**
+   * An aggregated array relationship
+   */
+  order_discounts_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+  /**
+   * An object relationship
+   */
+  manager: GET_MEMBER_NOTES_ADMIN_member_note_member_manager | null;
+  /**
+   * An array relationship
+   */
+  member_categories: GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories[];
+  /**
+   * An array relationship
+   */
+  member_tags: GET_MEMBER_NOTES_ADMIN_member_note_member_member_tags[];
+  /**
+   * An array relationship
+   */
+  order_logs: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs[];
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note_member_note_attachments {
+  __typename: "member_note_attachment";
+  attachment_id: any | null;
+  data: any | null;
+  options: any | null;
+}
+
+export interface GET_MEMBER_NOTES_ADMIN_member_note {
+  __typename: "member_note";
+  id: string;
+  created_at: any;
+  /**
+   * NULL | inbound | outbound
+   */
+  type: string | null;
+  /**
+   * NULL | answered | missed
+   */
+  status: string | null;
+  /**
+   * An object relationship
+   */
+  author: GET_MEMBER_NOTES_ADMIN_member_note_author;
+  /**
+   * An object relationship
+   */
+  member: GET_MEMBER_NOTES_ADMIN_member_note_member | null;
+  duration: number;
+  description: string | null;
+  metadata: any | null;
+  note: string | null;
+  /**
+   * An array relationship
+   */
+  member_note_attachments: GET_MEMBER_NOTES_ADMIN_member_note_member_note_attachments[];
+}
+
+export interface GET_MEMBER_NOTES_ADMIN {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_MEMBER_NOTES_ADMIN_category[];
+  /**
+   * fetch data from the table: "member_tag"
+   */
+  member_tag: GET_MEMBER_NOTES_ADMIN_member_tag[];
+  /**
+   * fetch aggregated fields from the table: "member_note"
+   */
+  member_note_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_aggregate;
+  /**
+   * fetch data from the table: "member_note"
+   */
+  member_note: GET_MEMBER_NOTES_ADMIN_member_note[];
+}
+
+export interface GET_MEMBER_NOTES_ADMINVariables {
+  orderBy: member_note_order_by;
+  condition?: member_note_bool_exp | null;
 }
 
 /* tslint:disable */
@@ -10598,191 +10765,6 @@ export interface INSERT_MERCHANDISEVariables {
   isPhysical?: boolean | null;
   isCustomized?: boolean | null;
   isLimited?: boolean | null;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL query operation: GET_MEMBER_NOTES_ADMIN
-// ====================================================
-
-export interface GET_MEMBER_NOTES_ADMIN_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_tag {
-  __typename: "member_tag";
-  tag_name: string;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate {
-  __typename: "member_note_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_aggregate {
-  __typename: "member_note_aggregate";
-  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_aggregate_aggregate | null;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_author {
-  __typename: "member";
-  id: string;
-  name: string;
-  username: string;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_manager {
-  __typename: "member";
-  id: string;
-  name: string;
-  username: string;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories_category {
-  __typename: "category";
-  id: string;
-  name: string;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories {
-  __typename: "member_category";
-  id: any;
-  /**
-   * An object relationship
-   */
-  category: GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories_category;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_member_tags {
-  __typename: "member_tag";
-  tag_name: string;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum {
-  __typename: "order_product_sum_fields";
-  price: any | null;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate {
-  __typename: "order_product_aggregate_fields";
-  sum: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate_sum | null;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate {
-  __typename: "order_product_aggregate";
-  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate_aggregate | null;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum {
-  __typename: "order_discount_sum_fields";
-  price: any | null;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate {
-  __typename: "order_discount_aggregate_fields";
-  sum: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate_sum | null;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate {
-  __typename: "order_discount_aggregate";
-  aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate_aggregate | null;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs {
-  __typename: "order_log";
-  id: string;
-  /**
-   * An aggregated array relationship
-   */
-  order_products_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_products_aggregate;
-  /**
-   * An aggregated array relationship
-   */
-  order_discounts_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs_order_discounts_aggregate;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member {
-  __typename: "member";
-  id: string;
-  picture_url: string | null;
-  name: string;
-  username: string;
-  email: string;
-  /**
-   * An object relationship
-   */
-  manager: GET_MEMBER_NOTES_ADMIN_member_note_member_manager | null;
-  /**
-   * An array relationship
-   */
-  member_categories: GET_MEMBER_NOTES_ADMIN_member_note_member_member_categories[];
-  /**
-   * An array relationship
-   */
-  member_tags: GET_MEMBER_NOTES_ADMIN_member_note_member_member_tags[];
-  /**
-   * An array relationship
-   */
-  order_logs: GET_MEMBER_NOTES_ADMIN_member_note_member_order_logs[];
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note_member_note_attachments {
-  __typename: "member_note_attachment";
-  attachment_id: any | null;
-  data: any | null;
-  options: any | null;
-}
-
-export interface GET_MEMBER_NOTES_ADMIN_member_note {
-  __typename: "member_note";
-  id: string;
-  created_at: any;
-  /**
-   * An object relationship
-   */
-  author: GET_MEMBER_NOTES_ADMIN_member_note_author;
-  /**
-   * An object relationship
-   */
-  member: GET_MEMBER_NOTES_ADMIN_member_note_member | null;
-  duration: number;
-  description: string | null;
-  metadata: any | null;
-  note: string | null;
-  /**
-   * An array relationship
-   */
-  member_note_attachments: GET_MEMBER_NOTES_ADMIN_member_note_member_note_attachments[];
-}
-
-export interface GET_MEMBER_NOTES_ADMIN {
-  /**
-   * fetch data from the table: "category"
-   */
-  category: GET_MEMBER_NOTES_ADMIN_category[];
-  /**
-   * fetch data from the table: "member_tag"
-   */
-  member_tag: GET_MEMBER_NOTES_ADMIN_member_tag[];
-  /**
-   * fetch aggregated fields from the table: "member_note"
-   */
-  member_note_aggregate: GET_MEMBER_NOTES_ADMIN_member_note_aggregate;
-  /**
-   * fetch data from the table: "member_note"
-   */
-  member_note: GET_MEMBER_NOTES_ADMIN_member_note[];
-}
-
-export interface GET_MEMBER_NOTES_ADMINVariables {
-  orderBy: member_note_order_by;
-  condition?: member_note_bool_exp | null;
 }
 
 /* tslint:disable */

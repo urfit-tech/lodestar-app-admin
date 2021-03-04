@@ -3,7 +3,6 @@ import { useMutation } from '@apollo/react-hooks'
 import { Button, Divider, Layout, Tabs } from 'antd'
 import gql from 'graphql-tag'
 import moment from 'moment'
-import { maxBy } from 'ramda'
 import React from 'react'
 import { useIntl } from 'react-intl'
 import { Link, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
@@ -212,11 +211,7 @@ const MemberAdminLayout: React.FC<{
 
           {enabledModules.member_rejection && member.noAgreedContract && (
             <MemberRejectionBlock
-              lastRejectedMemberNote={
-                member.notes.length
-                  ? member.notes.reduce((acc, cur) => maxBy(v => moment(v.rejectedAt || 0).valueOf(), acc, cur))
-                  : null
-              }
+              lastRejectedMemberNote={member.lastRejectedNote}
               insertMemberNoteRejectedAt={description => {
                 insertMemberNoteRejectedAt({
                   variables: {

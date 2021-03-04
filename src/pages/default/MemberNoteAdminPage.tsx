@@ -11,18 +11,24 @@ import { useAuth } from '../../contexts/AuthContext'
 import { handleError } from '../../helpers'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import { useUploadAttachments } from '../../hooks/data'
-import { useMemberAdmin, useMutateMemberNote } from '../../hooks/member'
+import { useMemberAdmin, useMemberNotesAdmin, useMutateMemberNote } from '../../hooks/member'
 import { ReactComponent as FilePlusIcon } from '../../images/icon/file-plus.svg'
+import * as types from '../../types.d'
 
 const MemberProfileAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { memberId } = useParams<{ memberId: string }>()
   const { currentMemberId } = useAuth()
-  const { loadingMemberAdmin, errorMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
+
+  const { memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
+  const { loadingNotes, errorNotes, notes, refetchNotes } = useMemberNotesAdmin(
+    { created_at: types.order_by.desc },
+    { member: memberId },
+  )
   const { insertMemberNote } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
 
-  if (!currentMemberId || loadingMemberAdmin || errorMemberAdmin || !memberAdmin) {
+  if (!currentMemberId || loadingNotes || errorNotes || !memberAdmin) {
     return <Skeleton active />
   }
 
@@ -30,7 +36,6 @@ const MemberProfileAdminPage: React.FC = () => {
     <MemberAdminLayout member={memberAdmin} onRefetch={refetchMemberAdmin}>
       <div className="p-5">
         <MemberNoteAdminModal
-          member={memberAdmin}
           title={formatMessage(memberMessages.label.createMemberNote)}
           renderTrigger={({ setVisible }) => (
             <Button type="primary" icon={<FilePlusIcon />} onClick={() => setVisible(true)}>
@@ -55,18 +60,27 @@ const MemberProfileAdminPage: React.FC = () => {
                 }
                 message.success(formatMessage(commonMessages.event.successfullyCreated))
                 refetchMemberAdmin()
+                refetchNotes()
               })
               .catch(handleError)
           }
         />
         <AdminBlock className="mt-4">
-          {isEmpty(memberAdmin.notes) ? (
+          {isEmpty(notes) ? (
             <StyledEmptyBlock>
               <span>{formatMessage(memberMessages.text.noMemberNote)}</span>
             </StyledEmptyBlock>
           ) : (
-            memberAdmin.notes.map(note => (
-              <MemberNoteAdminItem key={note.id} note={note} memberAdmin={memberAdmin} onRefetch={refetchMemberAdmin} />
+            notes.map(note => (
+              <MemberNoteAdminItem
+                key={note.id}
+                note={note}
+                memberAdmin={memberAdmin}
+                onRefetch={() => {
+                  refetchMemberAdmin()
+                  refetchNotes()
+                }}
+              />
             ))
           )}
         </AdminBlock>

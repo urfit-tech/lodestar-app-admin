@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
 import { isEmpty } from 'lodash'
+import { Moment } from 'moment'
 import { sum } from 'ramda'
 import { useAuth } from '../contexts/AuthContext'
 import { commonMessages } from '../helpers/translation'
@@ -9,10 +10,10 @@ import { CouponPlanProps } from '../types/checkout'
 import {
   MemberAdminProps,
   MemberInfoProps,
-  MemberNoteAdminProps,
   MemberOptionProps,
   MemberProps,
   MemberPublicProps,
+  NoteAdminProps,
   UserRole,
 } from '../types/member'
 
@@ -77,13 +78,9 @@ export const useMember = (memberId: string) => {
 }
 
 export const useMemberAdmin = (memberId: string) => {
-  const { currentMemberId, permissions } = useAuth()
-  const { loading, error, data, refetch } = useQuery<
-    types.GET_MEMBER_DESCRIPTION,
-    types.GET_MEMBER_DESCRIPTIONVariables
-  >(
+  const { loading, error, data, refetch } = useQuery<types.GET_MEMBER_ADMIN, types.GET_MEMBER_ADMINVariables>(
     gql`
-      query GET_MEMBER_DESCRIPTION($memberId: String!, $authorId: String) {
+      query GET_MEMBER_ADMIN($memberId: String!) {
         member_by_pk(id: $memberId) {
           id
           picture_url
@@ -112,28 +109,17 @@ export const useMemberAdmin = (memberId: string) => {
             id
             phone
           }
-          member_notes(where: { author_id: { _eq: $authorId } }, order_by: { created_at: desc }) {
-            id
-            type
-            status
-            duration
-            description
-            created_at
-            rejected_at
-            author {
-              id
-              role
-              name
-              picture_url
-            }
-            member_note_attachments {
-              attachment_id
-              data
-              options
-            }
-          }
           member_contracts(where: { agreed_at: { _is_null: false } }) {
             id
+          }
+          member_notes(where: { rejected_at: { _is_null: false } }, order_by: [{ rejected_at: desc }], limit: 1) {
+            id
+            author {
+              id
+              name
+            }
+            description
+            rejected_at
           }
           coupons {
             id
@@ -192,7 +178,6 @@ export const useMemberAdmin = (memberId: string) => {
     {
       variables: {
         memberId,
-        authorId: permissions.VIEW_ALL_MEMBER_NOTE ? undefined : currentMemberId || '',
       },
     },
   )
@@ -234,26 +219,15 @@ export const useMemberAdmin = (memberId: string) => {
           tags: data.member_by_pk.member_tags.map(v => v.tag_name),
           specialities: data.member_by_pk.member_specialities.map(v => v.tag_name),
           phones: data.member_by_pk.member_phones.map(v => v.phone).filter(v => v),
-          notes: data.member_by_pk.member_notes.map(v => ({
-            id: v.id,
-            type: v.type as MemberNoteAdminProps['type'],
-            status: v.status,
-            duration: v.duration,
-            description: v.description,
-            createdAt: new Date(v.created_at),
-            rejectedAt: v.rejected_at ? new Date(v.rejected_at) : null,
-            author: {
-              id: v.author.id,
-              role: v.author.role,
-              name: v.author.name,
-              pictureUrl: v.author.picture_url,
-            },
-            attachments: v.member_note_attachments.map(u => ({
-              id: u.attachment_id,
-              data: u.data,
-              options: u.options,
-            })),
-          })),
+          lastRejectedNote: data.member_by_pk.member_notes[0]
+            ? {
+                author: {
+                  name: data.member_by_pk.member_notes[0].author.name,
+                },
+                description: data.member_by_pk.member_notes[0].description,
+                rejectedAt: new Date(data.member_by_pk.member_notes[0].rejected_at),
+              }
+            : null,
           noAgreedContract: isEmpty(data.member_by_pk.member_contracts),
           coupons: data.member_by_pk.coupons.map(v => ({
             status: {
@@ -290,6 +264,251 @@ export const useMemberAdmin = (memberId: string) => {
     errorMemberAdmin: error,
     memberAdmin,
     refetchMemberAdmin: refetch,
+  }
+}
+
+export const useMemberNotesAdmin = (
+  orderBy: types.GET_MEMBER_NOTES_ADMINVariables['orderBy'],
+  filters?: {
+    range?: [Moment, Moment]
+    author?: string
+    manager?: string
+    member?: string
+    categories?: string[]
+    tags?: string[]
+  },
+) => {
+  const { permissions, currentMemberId } = useAuth()
+  const condition: types.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
+    created_at: filters?.range
+      ? {
+          _gte: filters.range[0].toDate(),
+          _lte: filters.range[1].toDate(),
+        }
+      : undefined,
+    author: filters?.author
+      ? {
+          _or: [
+            { name: { _ilike: `%${filters.author}%` } },
+            { username: { _ilike: `%${filters.author}%` } },
+            { email: { _ilike: `%${filters.author}%` } },
+          ],
+        }
+      : permissions.VIEW_ALL_MEMBER_NOTE
+      ? undefined
+      : {
+          id: {
+            _eq: currentMemberId,
+          },
+        },
+    member: {
+      manager: filters?.manager
+        ? {
+            _or: [
+              { name: { _ilike: `%${filters.manager}%` } },
+              { username: { _ilike: `%${filters.manager}%` } },
+              { email: { _ilike: `%${filters.manager}%` } },
+            ],
+          }
+        : undefined,
+      _or: filters?.member
+        ? [
+            { id: { _eq: filters.member } },
+            { name: { _ilike: `%${filters.member}%` } },
+            { username: { _ilike: `%${filters.member}%` } },
+            { email: { _ilike: `%${filters.member}%` } },
+          ]
+        : undefined,
+      _and:
+        filters?.categories || filters?.tags
+          ? [
+              {
+                _or: filters.categories?.map(categoryId => ({
+                  member_categories: { category_id: { _eq: categoryId } },
+                })),
+              },
+              {
+                _or: filters.tags?.map(tag => ({
+                  member_tags: { tag_name: { _eq: tag } },
+                })),
+              },
+            ]
+          : undefined,
+    },
+  }
+  const { loading, error, data, refetch, fetchMore } = useQuery<
+    types.GET_MEMBER_NOTES_ADMIN,
+    types.GET_MEMBER_NOTES_ADMINVariables
+  >(
+    gql`
+      query GET_MEMBER_NOTES_ADMIN($orderBy: member_note_order_by!, $condition: member_note_bool_exp) {
+        category(where: { member_categories: {} }) {
+          id
+          name
+        }
+        member_tag(distinct_on: tag_name) {
+          tag_name
+        }
+        member_note_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
+        }
+        member_note(where: $condition, order_by: [$orderBy], limit: 10) {
+          id
+          created_at
+          type
+          status
+          author {
+            id
+            picture_url
+            name
+            username
+          }
+          member {
+            id
+            picture_url
+            name
+            username
+            email
+            manager {
+              id
+              name
+              username
+            }
+            member_categories {
+              id
+              category {
+                id
+                name
+              }
+            }
+            member_tags {
+              tag_name
+            }
+            order_logs {
+              id
+              order_products_aggregate {
+                aggregate {
+                  sum {
+                    price
+                  }
+                }
+              }
+              order_discounts_aggregate {
+                aggregate {
+                  sum {
+                    price
+                  }
+                }
+              }
+            }
+          }
+          duration
+          description
+          metadata
+          note
+          member_note_attachments {
+            attachment_id
+            data
+            options
+          }
+        }
+      }
+    `,
+    { variables: { condition, orderBy } },
+  )
+
+  const allMemberCategories: {
+    id: string
+    name: string
+  }[] =
+    data?.category.map(v => ({
+      id: v.id,
+      name: v.name,
+    })) || []
+  const allMemberTags: string[] = data?.member_tag.map(v => v.tag_name) || []
+
+  const notes: NoteAdminProps[] =
+    data?.member_note.map(v => ({
+      id: v.id,
+      createdAt: new Date(v.created_at),
+      type: v.type as NoteAdminProps['type'],
+      status: v.status,
+      author: {
+        id: v.author.id,
+        pictureUrl: v.author.picture_url,
+        name: v.author.name,
+      },
+      manager: v.member?.manager
+        ? {
+            id: v.member.manager.id,
+            name: v.member.manager.name || v.member.manager.username,
+          }
+        : null,
+      member: v.member
+        ? {
+            id: v.member.id,
+            pictureUrl: v.member.picture_url,
+            name: v.member.name || v.member.username,
+            email: v.member.email,
+          }
+        : null,
+      memberCategories:
+        v.member?.member_categories.map(u => ({
+          id: u.category.id,
+          name: u.category.name,
+        })) || [],
+      memberTags: v.member?.member_tags.map(u => u.tag_name) || [],
+      consumption:
+        sum(v.member?.order_logs.map(u => u.order_products_aggregate.aggregate?.sum?.price || 0) || []) -
+        sum(v.member?.order_logs.map(u => u.order_discounts_aggregate.aggregate?.sum?.price || 0) || []),
+      duration: v.duration || 0,
+      audioFilePath: v.metadata?.recordfile || null,
+      description: v.description,
+      metadata: v.metadata,
+      note: v.note,
+      attachments: v.member_note_attachments.map(u => ({
+        id: u.attachment_id,
+        data: u.data,
+        options: u.options,
+      })),
+    })) || []
+
+  const loadMoreNotes = () =>
+    fetchMore({
+      variables: {
+        orderBy,
+        condition: {
+          ...condition,
+          created_at: orderBy.created_at
+            ? { [orderBy.created_at === 'desc' ? '_lt' : '_gt']: data?.member_note.slice(-1)[0]?.created_at }
+            : undefined,
+          duration: orderBy.duration
+            ? { [orderBy.duration === 'desc' ? '_lt' : '_gt']: data?.member_note.slice(-1)[0]?.duration }
+            : undefined,
+        },
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) {
+          return prev
+        }
+        return {
+          ...prev,
+          member_note_aggregate: fetchMoreResult.member_note_aggregate,
+          member_note: [...prev.member_note, ...fetchMoreResult.member_note],
+        }
+      },
+    })
+
+  return {
+    loadingNotes: loading,
+    errorNotes: error,
+    allMemberCategories,
+    allMemberTags,
+    notes,
+    refetchNotes: refetch,
+    loadMoreNotes: (data?.member_note_aggregate.aggregate?.count || 0) > 10 ? loadMoreNotes : undefined,
   }
 }
 

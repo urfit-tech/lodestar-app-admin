@@ -85,8 +85,14 @@ export type MemberAdminProps = {
   specialities: string[]
   phones: string[]
   categories: CategoryProps[]
-  notes: MemberNoteAdminProps[]
   permissionIds: string[]
+  lastRejectedNote: {
+    author: {
+      name: string
+    }
+    description: string | null
+    rejectedAt: Date | null
+  } | null
 
   consumption?: number
   coins?: number
@@ -98,20 +104,37 @@ export type MemberPropertyProps = {
   value: string
 }
 
-export type MemberNoteAdminProps = {
+export type NoteAdminProps = {
   id: string
+  createdAt: Date
   type: 'inbound' | 'outbound' | null
   status: string | null
-  duration: number | null
-  description: string | null
-  createdAt: Date
-  rejectedAt: Date | null
   author: {
     id: string
-    role: string
-    name: string
     pictureUrl: string | null
+    name: string
   }
+  manager: {
+    id: string
+    name: string
+  } | null
+  member: {
+    id: string
+    pictureUrl: string | null
+    name: string
+    email: string
+  } | null
+  memberCategories: {
+    id: string
+    name: string
+  }[]
+  memberTags: string[]
+  consumption: number
+  duration: number
+  audioFilePath: string | null
+  description: string | null
+  metadata: any
+  note: string | null
   attachments: {
     id: string
     data: any
