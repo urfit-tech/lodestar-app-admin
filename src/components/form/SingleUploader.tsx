@@ -3,8 +3,8 @@ import { Button, message, Spin, Upload } from 'antd'
 import { UploadProps } from 'antd/lib/upload'
 import { UploadChangeParam, UploadFile } from 'antd/lib/upload/interface'
 import axios, { Canceler } from 'axios'
-import { cloneDeep } from 'lodash'
 import { extname } from 'path'
+import { clone } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
@@ -65,7 +65,7 @@ const SingleUploader: React.FC<SingleUploaderProps> = ({
     fileList: fileList || [value].filter(notEmpty),
     onChange: info => {
       if (info.file.name) {
-        onChange && onChange(cloneDeep(info.file))
+        onChange && onChange(clone(info.file))
       }
       if (info.file.status === 'uploading') {
         onUploading && onUploading(info)
