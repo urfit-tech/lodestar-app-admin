@@ -30,6 +30,31 @@ export interface GET_MEMBER_NAMEVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_SALES_MEMBERS
+// ====================================================
+
+export interface GET_SALES_MEMBERS_member {
+  __typename: "member";
+  id: string;
+  picture_url: string | null;
+  name: string;
+  username: string;
+  email: string;
+}
+
+export interface GET_SALES_MEMBERS {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_SALES_MEMBERS_member[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER_PRIVATE_TEACH_CONTRACT
 // ====================================================
 

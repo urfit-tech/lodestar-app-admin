@@ -1,4 +1,4 @@
-import Icon from '@ant-design/icons'
+import Icon, { BarChartOutlined } from '@ant-design/icons'
 import { Menu } from 'antd'
 import Application from 'lodestar-app-admin/src/Application'
 import { StyledMenu } from 'lodestar-app-admin/src/components/admin/AdminMenu'
@@ -7,6 +7,7 @@ import { isEmpty } from 'ramda'
 import React from 'react'
 import './App.scss'
 import { ReactComponent as UserCopyIcon } from './images/icons/user-copy.svg'
+import MaterialsAnalyticsPage from './pages/MaterialsAnalyticsPage'
 import MemberCollectionAdminPage from './pages/MemberCollectionAdminPage'
 import { MemberContractCollectionPage } from './pages/MemberContractCollectionPage'
 import MemberNoteAdminPage from './pages/MemberNoteAdminPage'
@@ -18,8 +19,8 @@ const App: React.FC = () => {
     <Application
       appId="xuemi"
       customRender={{
-        renderAdminMenu: ({ permissions, menuItems, onClick }) => {
-          const customMenuItems = [
+        renderAdminMenu: ({ role, permissions, menuItems, onClick }) => {
+          const customMenuItems: typeof menuItems = [
             ...menuItems.slice(0, 14),
             {
               permissionIsAllowed: true,
@@ -37,6 +38,19 @@ const App: React.FC = () => {
                   permissionIsAllowed: true,
                   key: 'sales_call',
                   name: '業務撥打',
+                },
+              ],
+            },
+            {
+              permissionIsAllowed: role === 'app-owner',
+              key: 'analytics',
+              icon: () => <BarChartOutlined />,
+              name: '數據分析',
+              subMenuItems: [
+                {
+                  permissionIsAllowed: true,
+                  key: 'analytics_materials',
+                  name: '素材表現',
                 },
               ],
             },
@@ -100,6 +114,11 @@ const App: React.FC = () => {
         sales_call: {
           path: '/sales-call',
           pageName: <SalesCallPage />,
+          authenticated: true,
+        },
+        analytics_materials: {
+          path: '/analytics/materials',
+          pageName: <MaterialsAnalyticsPage />,
           authenticated: true,
         },
         terms: {
