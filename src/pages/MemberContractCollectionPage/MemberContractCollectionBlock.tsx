@@ -49,9 +49,11 @@ const TableWrapper = styled.div`
 `
 
 const StyledContractAmountBlock = styled.div`
-  display: inline-flex;
+  display: flex;
   gap: 16px;
+  overflow-x: auto;
   margin-bottom: 24px;
+  padding-bottom: 12px;
 `
 
 export const MemberContractCollectionBlock: React.FC<{
@@ -558,6 +560,7 @@ export const MemberContractCollectionBlock: React.FC<{
 }
 
 const StyledCard = styled.div`
+  flex: 0 0 auto;
   display: grid;
   grid-template-rows: 14px 20px;
   row-gap: 18px;

@@ -275,6 +275,16 @@ export interface GET_SALE_COLLECTION {
 // GraphQL query operation: GET_SALES_CALL_MEMBER
 // ====================================================
 
+export interface GET_SALES_CALL_MEMBER_member_aggregate_aggregate {
+  __typename: "member_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_SALES_CALL_MEMBER_member_aggregate {
+  __typename: "member_aggregate";
+  aggregate: GET_SALES_CALL_MEMBER_member_aggregate_aggregate | null;
+}
+
 export interface GET_SALES_CALL_MEMBER_member_member_phones {
   __typename: "member_phone";
   id: any;
@@ -306,6 +316,7 @@ export interface GET_SALES_CALL_MEMBER_member_member_contracts {
   id: any;
   values: any | null;
   ended_at: any | null;
+  agreed_at: any | null;
 }
 
 export interface GET_SALES_CALL_MEMBER_member {
@@ -332,6 +343,10 @@ export interface GET_SALES_CALL_MEMBER_member {
 }
 
 export interface GET_SALES_CALL_MEMBER {
+  /**
+   * fetch aggregated fields from the table: "member"
+   */
+  member_aggregate: GET_SALES_CALL_MEMBER_member_aggregate;
   /**
    * fetch data from the table: "member"
    */
