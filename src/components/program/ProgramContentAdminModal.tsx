@@ -12,7 +12,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import { useApp } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { getFileDuration, handleError, uploadFile } from '../../helpers'
+import { handleError, uploadFile } from '../../helpers'
 import { commonMessages, programMessages } from '../../helpers/translation'
 import { useMutateProgramContent } from '../../hooks/program'
 import types from '../../types'
@@ -79,7 +79,8 @@ const ProgramContentAdminModal: React.FC<{
     if (file == null) {
       console.warn('File is null')
     }
-    const duration = Math.ceil(await getFileDuration(file))
+    // const duration = Math.ceil(await getFileDuration(file))
+    const duration = 0
     setRealDuration(duration)
     form.setFields([{ name: 'duration', value: Math.ceil(duration / 60 || 0) }])
     setUploading(false)
