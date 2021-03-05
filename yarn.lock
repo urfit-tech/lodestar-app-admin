@@ -5402,9 +5402,9 @@ date-fns@^1.27.2:
   integrity sha512-hBSVCvSmWC+QypYObzwGOd9wqdDpOt+0wl0KbU+R+uuZBS1jN8VsD1ss3irQDknRj5NvxiTF6oj/nDRnN/UQNw==
 
 date-fns@^2.15.0:
-  version "2.18.0"
-  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.18.0.tgz#08e50aee300ad0d2c5e054e3f0d10d8f9cdfe09e"
-  integrity sha512-NYyAg4wRmGVU4miKq5ivRACOODdZRY3q5WLmOJSq8djyzftYphU7dTHLcEtLqEvfqMKQ0jVv91P4BAwIjsXIcw==
+  version "2.19.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.19.0.tgz#65193348635a28d5d916c43ec7ce6fbd145059e1"
+  integrity sha512-X3bf2iTPgCAQp9wvjOQytnf5vO5rESYRXlPIVcgSbtT5OTScPcsf9eZU+B/YIkKAtYr5WeCii58BgATrNitlWg==
 
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.9:
   version "2.6.9"
@@ -9461,7 +9461,7 @@ lodash.xorby@^4.7.0:
 
 "lodestar-app-admin@git+https://5283f1eb2c0cbdec821bd2bc65e18c942c4d51f8:x-oauth-basic@github.com/urfit-tech/lodestar-app-admin.git#master":
   version "0.1.0"
-  resolved "git+https://5283f1eb2c0cbdec821bd2bc65e18c942c4d51f8:x-oauth-basic@github.com/urfit-tech/lodestar-app-admin.git#0a304d972269ce71a5d79a14d3bea1c5f0cc2cf4"
+  resolved "git+https://5283f1eb2c0cbdec821bd2bc65e18c942c4d51f8:x-oauth-basic@github.com/urfit-tech/lodestar-app-admin.git#dcefcaffcd213deb749ba1a610bfbef3497bca7f"
   dependencies:
     "@ant-design/compatible" "^1.0.8"
     "@ant-design/icons" "^4.3.0"

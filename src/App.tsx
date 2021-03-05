@@ -102,6 +102,11 @@ const App: React.FC = () => {
           pageName: <SalesCallPage />,
           authenticated: true,
         },
+        analytics_materials: {
+          path: '/analytics-materials',
+          pageName: <AnalyticsPage />,
+          authenticated: true,
+        },
         terms: {
           path: '/terms',
           pageName: <TermsPtPage />,
