@@ -235,5 +235,6 @@ export const getFileDuration = (blob: Blob): Promise<number> => {
         resolve(video.duration)
       }
     }
+    resolve(0)
   })
 }
