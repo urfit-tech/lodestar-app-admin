@@ -49,7 +49,7 @@ const StyledMemberEmail = styled.div`
   font-size: 12px;
   letter-spacing: 0.6px;
 `
-const StyledDescription = styled(Typography.Paragraph)`
+const StyledDescription = styled.div`
   white-space: pre-line;
 `
 const FilterWrapper = styled.div`
@@ -313,8 +313,8 @@ const NoteCollectionPage: React.FC = () => {
       title: formatMessage(messages.memberNoteNote),
       width: '15rem',
       render: (text, record, index) => (
-        <div onClick={event => event.stopPropagation()}>
-          <StyledDescription
+        <StyledDescription onClick={event => event.stopPropagation()}>
+          <Typography.Paragraph
             editable={{
               autoSize: { maxRows: 5, minRows: 1 },
               onChange: value =>
@@ -337,8 +337,8 @@ const NoteCollectionPage: React.FC = () => {
             className="mb-0"
           >
             {updatedNotes[record.id] || record.note || ''}
-          </StyledDescription>
-        </div>
+          </Typography.Paragraph>
+        </StyledDescription>
       ),
     },
   ]
