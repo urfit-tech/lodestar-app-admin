@@ -35,23 +35,19 @@ type RecordProps = {
 const SalesCallTransactedMemberBlock: React.FC<{
   salesId: string
   members: SalesCallMemberProps[]
-  loading: boolean
-}> = ({ salesId, members, loading }) => {
+  loadingMembers: boolean
+}> = ({ salesId, members, loadingMembers }) => {
+  const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { apiHost, authToken } = useAuth()
   const { sales } = useLead(salesId)
-  const { formatMessage } = useIntl()
   const [filters, setFilters] = useState<{
     studentName?: string
     phone?: string
     email?: string
-  }>({
-    studentName: undefined,
-    phone: undefined,
-    email: undefined,
-  })
+  }>({})
 
-  if (loading) {
+  if (loadingMembers) {
     return <Skeleton active />
   }
 
@@ -100,8 +96,8 @@ const SalesCallTransactedMemberBlock: React.FC<{
   const dataSource = members
     .filter(
       v =>
-        (!filters.studentName || v.name.includes(filters.studentName)) &&
-        (!filters.email || v.email.includes(filters.email)) &&
+        (!filters.studentName || v.name.toLowerCase().includes(filters.studentName.toLowerCase())) &&
+        (!filters.email || v.email.toLowerCase().includes(filters.email.toLowerCase())) &&
         (!filters.phone || v.phones.some(v => v.includes(filters.phone || ''))),
     )
     .map(v => ({

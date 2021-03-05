@@ -26,57 +26,41 @@ const StyledButton = styled(Button)`
   width: 56px;
   height: 36px;
 `
-
 const StyledAdminCard = styled(AdminCard)`
   position: relative;
 `
-
-const StyledNotice = styled.span`
+const StyledNotice = styled.div`
   :before {
     margin-right: 4px;
     content: '*';
     color: red;
     vertical-align: middle;
   }
-  position: absolute;
   font-size: 12px;
-  bottom: 44px;
-  line-height: 1;
 `
-
-type RecordProps = {
-  categoryNames: string[]
-  studentName: string
-  phones: string[]
-  email: string
-  lastContactAt: Date | null
-  memberId: string
-}
 
 const SalesCallContactedMemberBlock: React.FC<{
   salesId: string
   members: SalesCallMemberProps[]
-  loading: boolean
-}> = ({ salesId, members, loading }) => {
+  loadingMembers: boolean
+}> = ({ salesId, members, loadingMembers }) => {
   const { formatMessage } = useIntl()
   const { id: appId } = useApp()
   const { apiHost, authToken } = useAuth()
   const { sales } = useLead(salesId)
   const [filters, setFilters] = useState<{
     studentName?: string
-    phone?: string
     email?: string
-  }>({
-    studentName: undefined,
-    phone: undefined,
-    email: undefined,
-  })
+    phone?: string
+  }>({})
 
-  if (loading) {
+  if (loadingMembers) {
     return <Skeleton active />
   }
 
-  const getColumnSearchProps: (onSetFilter: (value?: string) => void) => ColumnProps<RecordProps> = onSetFilter => ({
+  const getColumnSearchProps: (
+    onSetFilter: (value?: string) => void,
+  ) => ColumnProps<SalesCallMemberProps> = onSetFilter => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div className="p-2">
         <Input
@@ -118,29 +102,16 @@ const SalesCallContactedMemberBlock: React.FC<{
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
   })
 
-  const dataSource = members
-    .filter(
-      v =>
-        (!filters.studentName || v.name.includes(filters.studentName)) &&
-        (!filters.email || v.email.includes(filters.email)) &&
-        (!filters.phone || v.phones.some(v => v.includes(filters.phone || ''))),
-    )
-    .sort((a, b) =>
-      a.firstContactAt && b.firstContactAt ? b.firstContactAt.getTime() - a.firstContactAt.getTime() : 1,
-    )
-    .map(v => ({
-      key: v.id,
-      categoryNames: v.categoryNames || [],
-      studentName: v.name,
-      phones: v.phones,
-      email: v.email,
-      lastContactAt: v.lastContactAt || null,
-      memberId: v.id,
-    }))
+  const dataSource = members.filter(
+    v =>
+      (!filters.studentName || v.name.toLowerCase().includes(filters.studentName.toLowerCase())) &&
+      (!filters.email || v.email.toLowerCase().includes(filters.email.toLowerCase())) &&
+      (!filters.phone || v.phones.some(v => v.includes(filters.phone || ''))),
+  )
 
   return (
     <StyledAdminCard>
-      <Table<RecordProps>
+      <Table<SalesCallMemberProps>
         rowKey="memberId"
         columns={[
           {
@@ -151,7 +122,7 @@ const SalesCallContactedMemberBlock: React.FC<{
           },
           {
             key: 'studentName',
-            dataIndex: 'studentName',
+            dataIndex: 'name',
             title: formatMessage(salesMessages.label.studentName),
             ...getColumnSearchProps((value?: string) =>
               setFilters({
@@ -187,12 +158,12 @@ const SalesCallContactedMemberBlock: React.FC<{
             key: 'lastContactAt',
             dataIndex: 'lastContactAt',
             title: formatMessage(salesMessages.label.lastContactAt),
-            render: lastContactAt => <time>{moment(lastContactAt).format('YYYY-MM-DD HH:mm')}</time>,
+            render: lastContactAt => <time>{moment(lastContactAt).fromNow()}</time>,
           },
           {
             key: 'memberId',
             dataIndex: 'memberId',
-            title: 'id',
+            title: '',
             render: (memberId, record) => (
               <div className="d-flex flex-row justify-content-end">
                 <a href={`admin/members/${memberId}`} target="_blank" rel="noreferrer">
@@ -219,7 +190,9 @@ const SalesCallContactedMemberBlock: React.FC<{
           },
         ]}
         dataSource={dataSource}
+        className="mb-3"
       />
+
       <StyledNotice>{formatMessage(messages.salesCallNotice)}</StyledNotice>
     </StyledAdminCard>
   )

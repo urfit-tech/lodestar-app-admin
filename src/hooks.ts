@@ -351,10 +351,9 @@ export type SalesCallMemberProps = {
   name: string
   email: string
   phones: string[]
-  categoryNames?: string[]
-  firstContactAt: Date | null
+  categoryNames: string[]
   lastContactAt: Date | null
-  contracts?: {
+  contracts: {
     projectPlanName: string
     endedAt: Date
   }[]
@@ -362,8 +361,7 @@ export type SalesCallMemberProps = {
 
 export const useSalesCallMember = ({ salesId, status }: { salesId: string; status: 'contacted' | 'transacted' }) => {
   const [hasContacted, hasTransacted] = [status === 'contacted', status === 'transacted']
-
-  const condition = hasContacted
+  const condition: types.GET_SALES_CALL_MEMBERVariables['condition'] = hasContacted
     ? {
         manager_id: { _eq: salesId },
         member_notes: {
@@ -373,14 +371,8 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
         },
         _not: {
           _or: [
-            {
-              member_notes: { rejected_at: { _is_null: false } },
-            },
-            {
-              member_contracts: {
-                _or: [{ agreed_at: { _is_null: false } }, { revoked_at: { _is_null: false } }],
-              },
-            },
+            { member_notes: { rejected_at: { _is_null: false } } },
+            { member_contracts: { _or: [{ agreed_at: { _is_null: false } }, { revoked_at: { _is_null: false } }] } },
           ],
         },
       }
@@ -394,8 +386,17 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
       }
     : {}
 
-  const orderBy = hasTransacted
+  const orderBy: types.GET_SALES_CALL_MEMBERVariables['orderBy'] = hasContacted
     ? [
+        {
+          member_notes_aggregate: {
+            max: {
+              created_at: types.order_by.desc,
+            },
+          },
+        },
+      ]
+    : [
         {
           member_contracts_aggregate: {
             max: {
@@ -404,7 +405,6 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
           },
         },
       ]
-    : []
 
   const { loading, data, error, refetch } = useQuery<types.GET_SALES_CALL_MEMBER, types.GET_SALES_CALL_MEMBERVariables>(
     gql`
@@ -414,6 +414,11 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
         $hasContacted: Boolean!
         $hasTransacted: Boolean!
       ) {
+        member_aggregate(where: $condition) {
+          aggregate {
+            count
+          }
+        }
         member(where: $condition, order_by: $orderBy) {
           id
           name
@@ -440,6 +445,7 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
             id
             values
             ended_at
+            agreed_at
           }
         }
       }
@@ -458,27 +464,24 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
   )
 
   const members: SalesCallMemberProps[] =
-    loading || error || !data
-      ? []
-      : data.member.map(v => ({
-          id: v.id,
-          name: v.name,
-          email: v.email,
-          phones: v.member_phones.map(w => w.phone),
-          categoryNames: v.member_categories?.map(w => w.category.name),
-          firstContactAt: v.member_notes?.slice(-1)[0]?.created_at
-            ? new Date(v.member_notes?.slice(-1)[0]?.created_at)
-            : null,
-          lastContactAt: v.member_notes?.[0]?.created_at ? new Date(v.member_notes?.slice(-1)[0]?.created_at) : null,
-          contracts: v.member_contracts?.map(w => ({
-            projectPlanName: w.values.projectPlanName,
-            endedAt: new Date(w.ended_at),
-          })),
-        }))
+    data?.member.map(v => ({
+      id: v.id,
+      name: v.name,
+      email: v.email,
+      phones: v.member_phones.map(w => w.phone),
+      lastContactAt: v.member_notes?.[0] ? new Date(v.member_notes.slice(-1)[0]?.created_at) : null,
+      categoryNames: v.member_categories?.map(w => w.category.name) || [],
+      contracts:
+        v.member_contracts?.map(w => ({
+          projectPlanName: w.values.projectPlanName,
+          endedAt: new Date(w.ended_at),
+        })) || [],
+    })) || []
 
   return {
     loadingMembers: loading,
     members,
+    totalMembers: data?.member_aggregate.aggregate?.count || 0,
     errorMembers: error,
     refetchMembers: refetch,
   }
