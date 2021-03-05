@@ -130,10 +130,22 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   const { xuemiSales } = useXuemiSales()
   const [certification, setCertification] = useState<File[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [disabledInput, setDisabledInput] = useState({ refundAppliedAt: false })
+  const [disabledInput, setDisabledInput] = useState({
+    approvedAt: false,
+    loanCanceledAt: false,
+    refundAppliedAt: false,
+  })
   const updateMemberContract = useMutateMemberContract()
 
-  useEffect(() => setDisabledInput({ refundAppliedAt: !status.approvedAt }), [status.approvedAt])
+  useEffect(
+    () =>
+      setDisabledInput({
+        approvedAt: !!status.loanCanceledAt,
+        loanCanceledAt: !!status.approvedAt,
+        refundAppliedAt: !!status.loanCanceledAt || !status.approvedAt,
+      }),
+    [status.loanCanceledAt, status.approvedAt],
+  )
 
   const handleSubmit = (setVisible: React.Dispatch<React.SetStateAction<boolean>>) => {
     form
@@ -275,13 +287,12 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
           form={form}
           colon={false}
           preserve={false}
-          onValuesChange={(_, { approvedAt }) => {
-            if (disabledInput.refundAppliedAt === !!approvedAt) {
-              setDisabledInput({
-                ...disabledInput,
-                refundAppliedAt: !disabledInput.refundAppliedAt,
-              })
-            }
+          onValuesChange={(_, { approvedAt, loanCanceledAt }) => {
+            setDisabledInput({
+              approvedAt: !!loanCanceledAt,
+              loanCanceledAt: !!approvedAt,
+              refundAppliedAt: !!loanCanceledAt || !approvedAt,
+            })
           }}
         >
           <StyledAreaTitle>{formatMessage(memberMessages.label.status)}</StyledAreaTitle>
@@ -289,7 +300,10 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
             <Col span={8} className="pr-3">
               <span>{formatMessage(memberContractMessages.label.approvedAt)}</span>
               <Form.Item name="approvedAt" initialValue={status.approvedAt ? moment(status.approvedAt) : null}>
-                <StyledDatePicker disabled={!inputEditPermissions?.['approvedAt']} format={'YYYY-MM-DD'} />
+                <StyledDatePicker
+                  disabled={!inputEditPermissions?.['approvedAt'] || disabledInput['approvedAt']}
+                  format={'YYYY-MM-DD'}
+                />
               </Form.Item>
             </Col>
             <Col span={8} className="pr-3">
@@ -298,7 +312,10 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                 name="loanCanceledAt"
                 initialValue={status.loanCanceledAt ? moment(status.loanCanceledAt) : null}
               >
-                <StyledDatePicker disabled={!inputEditPermissions?.['loanCanceledAt']} format={'YYYY-MM-DD'} />
+                <StyledDatePicker
+                  disabled={!inputEditPermissions?.['loanCanceledAt'] || disabledInput['loanCanceledAt']}
+                  format={'YYYY-MM-DD'}
+                />
               </Form.Item>
             </Col>
             <Col span={8}>
