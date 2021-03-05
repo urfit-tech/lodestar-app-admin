@@ -1,12 +1,14 @@
 import { MenuClickEventHandler } from 'rc-menu/lib/interface'
 import React, { useContext } from 'react'
 import { renderMemberAdminLayoutProps } from '../components/layout/MemberAdminLayout'
+import { UserRole } from '../types/member'
 
 export type CustomRendererProps = {
   renderMemberAdminLayout?: {
     content?: (props: renderMemberAdminLayoutProps) => React.ReactElement
   }
   renderAdminMenu?: (props: {
+    role: UserRole
     permissions: { [key: string]: boolean }
     menuItems: {
       permissionIsAllowed: boolean
