@@ -512,7 +512,10 @@ export const useLead = (salesId: string) => {
           where: {
             manager_id: { _eq: $salesId }
             assigned_at: { _is_null: false }
-            _not: { member_notes: { author_id: { _eq: $salesId } } }
+            _and: [
+              { _not: { member_notes: { author_id: { _eq: $salesId } } } }
+              { _not: { member_contracts: { agreed_at: { _is_null: false }, revoked_at: { _is_null: true } } } }
+            ]
           }
           order_by: [{ assigned_at: desc }]
           limit: 1
