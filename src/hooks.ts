@@ -514,7 +514,7 @@ export const useLead = (salesId: string) => {
             assigned_at: { _is_null: false }
             _not: { member_notes: { author_id: { _eq: $salesId } } }
           }
-          order_by: [{ assigned_at: asc }]
+          order_by: [{ assigned_at: desc }]
           limit: 1
         ) {
           id
