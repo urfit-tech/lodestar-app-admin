@@ -4,6 +4,32 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_CATEGORY
+// ====================================================
+
+export interface GET_CATEGORY_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_CATEGORY {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_CATEGORY_category[];
+}
+
+export interface GET_CATEGORYVariables {
+  class: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER_NAME
 // ====================================================
 

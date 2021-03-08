@@ -12,6 +12,7 @@ import { MemberContractCollectionPage } from './pages/MemberContractCollectionPa
 import MemberNoteAdminPage from './pages/MemberNoteAdminPage'
 import SalesCallPage from './pages/SalesCallPage'
 import SalesMaterialsPage from './pages/SalesMaterialsPage'
+import { SalesMemberCategoryPage } from './pages/SalesMemberCategoryPage'
 import TermsPtPage from './pages/TermsPtPage'
 
 const App: React.FC = () => {
@@ -119,6 +120,11 @@ const App: React.FC = () => {
         analytics_sales_materials: {
           path: '/analytics/sales-materials',
           pageName: <SalesMaterialsPage />,
+          authenticated: true,
+        },
+        analytics_sales_member_categories: {
+          path: '/analytics/sales-member-categories',
+          pageName: <SalesMemberCategoryPage />,
           authenticated: true,
         },
         terms: {
