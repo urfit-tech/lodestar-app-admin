@@ -4,6 +4,7 @@ import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { useIntl } from 'react-intl'
 import styled from 'styled-components'
+import { useAuth } from '../../contexts/AuthContext'
 import { commonMessages, memberMessages } from '../../helpers/translation'
 import DefaultAvatar from '../../images/default/avatar.svg'
 import { NoteAdminProps } from '../../types/member'
@@ -27,6 +28,7 @@ type FieldProps = {
   status: string | null
   duration: number
   description: string
+  note: string
 }
 
 const MemberNoteAdminModal: React.FC<
@@ -37,6 +39,7 @@ const MemberNoteAdminModal: React.FC<
 > = ({ note, onSubmit, ...props }) => {
   const { formatMessage } = useIntl()
   const [form] = useForm<FieldProps>()
+  const { currentUserRole } = useAuth()
 
   const [type, setType] = useState(note?.type || '')
   const [status, setStatus] = useState<FieldProps['status']>(note?.status || 'answered')
@@ -70,6 +73,7 @@ const MemberNoteAdminModal: React.FC<
       status: values.type ? values.status : null,
       duration: values.duration ? moment(values.duration).diff(moment().startOf('day'), 'seconds') : 0,
       description: values.description,
+      note: values.note,
       attachments,
     })
       .then(() => onSuccess())
@@ -170,6 +174,15 @@ const MemberNoteAdminModal: React.FC<
           label={formatMessage(memberMessages.label.description)}
           name="description"
           initialValue={note?.description}
+        >
+          <Input.TextArea />
+        </Form.Item>
+
+        <Form.Item
+          label={formatMessage(memberMessages.label.noteForAdmin)}
+          name="note"
+          initialValue={note?.note}
+          className={currentUserRole === 'app-owner' ? '' : 'd-none'}
         >
           <Input.TextArea />
         </Form.Item>

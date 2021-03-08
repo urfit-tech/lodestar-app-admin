@@ -92,7 +92,7 @@ const MemberNoteAdminItem: React.FC<{
           <Menu>
             <StyledMenuItem>
               <MemberNoteAdminModal
-                title={formatMessage(memberMessages.label.editMemberNote)}
+                title={formatMessage(memberMessages.label.editNote)}
                 note={note}
                 renderTrigger={({ setVisible }) => (
                   <div onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.edit)}</div>
@@ -140,7 +140,7 @@ const MemberNoteAdminItem: React.FC<{
             </StyledMenuItem>
             <StyledMenuItem>
               <AdminModal
-                title={formatMessage(memberMessages.label.deleteMemberNote)}
+                title={formatMessage(memberMessages.label.deleteNote)}
                 renderTrigger={({ setVisible }) => (
                   <div onClick={() => setVisible(true)}>{formatMessage(commonMessages.ui.delete)}</div>
                 )}

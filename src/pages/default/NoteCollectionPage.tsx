@@ -1,5 +1,5 @@
 import { SearchOutlined, UserOutlined } from '@ant-design/icons'
-import { Button, Checkbox, DatePicker, Input, message, Table, Tag, Typography } from 'antd'
+import { Button, Checkbox, DatePicker, Input, message, Table, Tag } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import { SorterResult } from 'antd/lib/table/interface'
 import Axios from 'axios'
@@ -50,7 +50,9 @@ const StyledMemberEmail = styled.div`
   letter-spacing: 0.6px;
 `
 const StyledDescription = styled.div`
-  white-space: pre-line;
+  color: var(--gray-darker);
+  line-height: 1.5;
+  letter-spacing: 0.2px;
 `
 const FilterWrapper = styled.div`
   padding-top: 0.5rem;
@@ -313,32 +315,7 @@ const NoteCollectionPage: React.FC = () => {
       title: formatMessage(messages.memberNoteNote),
       width: '15rem',
       render: (text, record, index) => (
-        <StyledDescription onClick={event => event.stopPropagation()}>
-          <Typography.Paragraph
-            editable={{
-              autoSize: { maxRows: 5, minRows: 1 },
-              onChange: value =>
-                updateMemberNote({
-                  variables: {
-                    memberNoteId: record.id,
-                    data: {
-                      note: value,
-                    },
-                  },
-                })
-                  .then(() =>
-                    setUpdatedNotes({
-                      ...updatedNotes,
-                      [record.id]: value,
-                    }),
-                  )
-                  .catch(handleError),
-            }}
-            className="mb-0"
-          >
-            {updatedNotes[record.id] || record.note || ''}
-          </Typography.Paragraph>
-        </StyledDescription>
+        <StyledDescription>{updatedNotes[record.id] || record.note || ''}</StyledDescription>
       ),
     },
   ]
@@ -368,7 +345,7 @@ const NoteCollectionPage: React.FC = () => {
       <AdminCard className="mb-5">
         <TableWrapper>
           <MemberNoteAdminModal
-            title={formatMessage(memberMessages.label.editMemberNote)}
+            title={formatMessage(memberMessages.label.editNote)}
             note={selectedNote || undefined}
             renderTrigger={({ setVisible }) => (
               <Table<NoteAdminProps>
@@ -395,7 +372,7 @@ const NoteCollectionPage: React.FC = () => {
             )}
             onSubmit={
               selectedNote
-                ? ({ type, status, duration, description, attachments }) =>
+                ? ({ type, status, duration, description, note, attachments }) =>
                     updateMemberNote({
                       variables: {
                         memberNoteId: selectedNote.id || '',
@@ -404,10 +381,16 @@ const NoteCollectionPage: React.FC = () => {
                           status,
                           duration,
                           description,
+                          note,
                         },
                       },
                     })
                       .then(async ({ data }) => {
+                        setUpdatedNotes(prev => ({
+                          ...prev,
+                          [selectedNote.id]: note,
+                        }))
+
                         const memberNoteId = data?.update_member_note_by_pk?.id
                         const deletedAttachmentIds = selectedNote.attachments
                           .filter(noteAttachment =>
