@@ -849,6 +849,79 @@ export interface GET_SALES_SUMMARYVariables {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_SALES_MATERIALS
+// ====================================================
+
+export interface GET_SALES_MATERIALS_allMembers {
+  __typename: "member_property";
+  v: string;
+}
+
+export interface GET_SALES_MATERIALS_assignedMembers {
+  __typename: "member_property";
+  v: string;
+}
+
+export interface GET_SALES_MATERIALS_calledMembers {
+  __typename: "member_property";
+  v: string;
+}
+
+export interface GET_SALES_MATERIALS_answeredMembers {
+  __typename: "member_property";
+  v: string;
+}
+
+export interface GET_SALES_MATERIALS_demonstratedMembers {
+  __typename: "member_property";
+  v: string;
+}
+
+export interface GET_SALES_MATERIALS_dealtMembers {
+  __typename: "member_property";
+  v: string;
+}
+
+export interface GET_SALES_MATERIALS {
+  /**
+   * fetch data from the table: "member_property"
+   */
+  allMembers: GET_SALES_MATERIALS_allMembers[];
+  /**
+   * fetch data from the table: "member_property"
+   */
+  assignedMembers: GET_SALES_MATERIALS_assignedMembers[];
+  /**
+   * fetch data from the table: "member_property"
+   */
+  calledMembers: GET_SALES_MATERIALS_calledMembers[];
+  /**
+   * fetch data from the table: "member_property"
+   */
+  answeredMembers: GET_SALES_MATERIALS_answeredMembers[];
+  /**
+   * fetch data from the table: "member_property"
+   */
+  demonstratedMembers: GET_SALES_MATERIALS_demonstratedMembers[];
+  /**
+   * fetch data from the table: "member_property"
+   */
+  dealtMembers: GET_SALES_MATERIALS_dealtMembers[];
+}
+
+export interface GET_SALES_MATERIALSVariables {
+  startedAt: any;
+  endedAt: any;
+  salesId: string;
+  materialName: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL fragment: private_teach_contract_aggregate
 // ====================================================
 

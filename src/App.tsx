@@ -7,11 +7,11 @@ import { isEmpty } from 'ramda'
 import React from 'react'
 import './App.scss'
 import { ReactComponent as UserCopyIcon } from './images/icons/user-copy.svg'
-import MaterialsAnalyticsPage from './pages/MaterialsAnalyticsPage'
 import MemberCollectionAdminPage from './pages/MemberCollectionAdminPage'
 import { MemberContractCollectionPage } from './pages/MemberContractCollectionPage'
 import MemberNoteAdminPage from './pages/MemberNoteAdminPage'
 import SalesCallPage from './pages/SalesCallPage'
+import SalesMaterialsPage from './pages/SalesMaterialsPage'
 import TermsPtPage from './pages/TermsPtPage'
 
 const App: React.FC = () => {
@@ -49,7 +49,7 @@ const App: React.FC = () => {
               subMenuItems: [
                 {
                   permissionIsAllowed: true,
-                  key: 'analytics_materials',
+                  key: 'analytics_sales_materials',
                   name: '素材表現',
                 },
               ],
@@ -116,9 +116,9 @@ const App: React.FC = () => {
           pageName: <SalesCallPage />,
           authenticated: true,
         },
-        analytics_materials: {
-          path: '/analytics/materials',
-          pageName: <MaterialsAnalyticsPage />,
+        analytics_sales_materials: {
+          path: '/analytics/sales-materials',
+          pageName: <SalesMaterialsPage />,
           authenticated: true,
         },
         terms: {
