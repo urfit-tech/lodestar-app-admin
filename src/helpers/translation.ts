@@ -1228,6 +1228,8 @@ export const permissionMessages = defineMessages({
   MEMBER_ATTENDANT: { id: 'permission.MEMBER_ATTENDANT', defaultMessage: '打卡功能' },
   SALES_CALL_ADMIN: { id: 'permission.SALES_CALL_ADMIN', defaultMessage: '檢視業務專區' },
   VIEW_ALL_MEMBER_NOTE: { id: 'permission.VIEW_ALL_MEMBER_NOTE', defaultMessage: '查看所有聯絡記錄' },
+  MEMBER_CONTRACT_VALUE_VIEW: { id: 'permission.MEMBER_CONTRACT_VALUE_VIEW', defaultMessage: '查看合約資料' },
+  MEMBER_CONTRACT_VALUE_EDIT: { id: 'permission.MEMBER_CONTRACT_VALUE_EDIT', defaultMessage: '編輯合約資料' },
 
   // task
   TASK_ADMIN: { id: 'permission.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },
