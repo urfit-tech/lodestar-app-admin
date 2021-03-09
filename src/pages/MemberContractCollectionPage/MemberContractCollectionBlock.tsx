@@ -381,6 +381,10 @@ export const MemberContractCollectionBlock: React.FC<{
       dataIndex: 'note',
       key: 'note',
     },
+    { title: '代幣', key: 'coin', dataIndex: 'coinAmount' },
+    { title: '諮詢次數', key: 'appointment', dataIndex: 'couponCount' },
+    { title: '指定業師', key: 'appointmentCreator', render: (_, record, text) => record.appointmentCreatorName },
+    { title: '介紹人', key: 'referralMember', render: (_, record, text) => record.referral.name },
 
     // payment
     {

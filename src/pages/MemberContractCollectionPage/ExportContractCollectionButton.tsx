@@ -191,6 +191,14 @@ const ExportContractCollectionButton: React.FC<{
                 return contract.projectPlanName || ''
               case 'note':
                 return contract.note || ''
+              case 'coin':
+                return `${contract.coinAmount || 0}`
+              case 'appointment':
+                return `${contract.couponCount || 0}`
+              case 'appointmentCreator':
+                return contract.appointmentCreatorName || ''
+              case 'referralMember':
+                return contract.referral.name || ''
               case 'paymentMethod':
                 return contract.paymentOptions?.paymentMethod || ''
               case 'installmentPlan':
