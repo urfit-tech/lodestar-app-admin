@@ -112,7 +112,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   ...props
 }) => {
   const { formatMessage } = useIntl()
-  const { authToken, apiHost, currentUserRole } = useAuth()
+  const { authToken, apiHost, currentUserRole, permissions } = useAuth()
   const { id: appId } = useApp()
   const [form] = Form.useForm<{
     approvedAt: Moment | null
@@ -211,7 +211,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
     orderExecutors: true,
   }
   let sheet
-  if (isRevoked) {
+  if (isRevoked || !permissions.MEMBER_CONTRACT_VALUE_EDIT) {
     sheet = (
       <>
         <StyledAreaTitle>{formatMessage(memberMessages.label.status)}</StyledAreaTitle>

@@ -60,7 +60,7 @@ export const MemberContractCollectionBlock: React.FC<{
   variant: 'agreed' | 'revoked'
 }> = ({ variant }) => {
   const { formatMessage } = useIntl()
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
   const [filter, setFilter] = useState<{
     authorName: string | null
     memberNameAndEmail: string | null
@@ -520,6 +520,9 @@ export const MemberContractCollectionBlock: React.FC<{
                 rowClassName="cursor-pointer"
                 onRow={record => ({
                   onClick: () => {
+                    if (!permissions.MEMBER_CONTRACT_VALUE_VIEW) {
+                      return
+                    }
                     setActiveMemberContractId(record.id)
                     setVisible(true)
                   },
