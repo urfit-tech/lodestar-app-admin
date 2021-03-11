@@ -324,6 +324,7 @@ export interface GET_SALES_CALL_MEMBER_member_member_notes {
 
 export interface GET_SALES_CALL_MEMBER_member_member_categories_category {
   __typename: "category";
+  id: string;
   name: string;
 }
 
