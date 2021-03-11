@@ -39,7 +39,7 @@ const CouponPlanDescriptionTabs: React.FC<{
 
     couponCodes.forEach(couponPlanCode => {
       couponPlanCode.coupons.forEach(coupon => {
-        data.push([couponPlanCode.code, coupon.used ? 'v' : '', coupon.member.email])
+        data.push([couponPlanCode.code, coupon.status?.used ? 'v' : '', coupon.member.email])
       })
 
       if (couponPlanCode.remaining) {
