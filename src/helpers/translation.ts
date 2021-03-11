@@ -70,6 +70,7 @@ export const commonMessages = {
     private: { id: 'common.ui.private', defaultMessage: '私密' },
     sortItems: { id: 'common.ui.sortItems', defaultMessage: '排序' },
     modify: { id: 'common.ui.modify', defaultMessage: '更改' },
+    nextStep: { id: 'common.ui.nextStep', defaultMessage: '下一步' },
   }),
   label: defineMessages({
     selectInstructor: { id: 'common.label.selectInstructor', defaultMessage: '選擇老師' },
@@ -404,6 +405,7 @@ export const errorMessages = {
     accountNameOrEmail: { id: 'error.form.accountNameOrEmail', defaultMessage: '請輸入使用者名稱或 Email' },
     account: { id: 'error.form.account', defaultMessage: '請輸入使用者名稱' },
     emailFormat: { id: 'error.form.emailFormat', defaultMessage: 'Email 格式錯誤' },
+    phoneFormat: { id: 'error.form.phoneFormat', defaultMessage: '手機格式錯誤' },
     couponCodes: { id: 'error.form.codes', defaultMessage: '至少一組折扣碼' },
     issueContent: { id: 'error.form.issueContent', defaultMessage: '請輸入回覆內容' },
     selectInstructor: { id: 'error.form.selectInstructor', defaultMessage: '請輸入帳號 或 Email' },
@@ -570,6 +572,32 @@ export const promotionMessages = {
     available: { id: 'promotion.status.available', defaultMessage: '可使用' },
     unavailable: { id: 'promotion.status.unavailable', defaultMessage: '已失效' },
     used: { id: 'promotion.status.used', defaultMessage: '已使用' },
+  }),
+}
+
+export const checkoutMessages = {
+  title: defineMessages({
+    chooseMemberCard: { id: 'checkout.modal.title.memberCard.choose', defaultMessage: '選擇會員卡' },
+    chooseCoupon: { id: 'checkout.modal.title', defaultMessage: '選擇折價券' },
+  }),
+  content: defineMessages({
+    discountDirectly: { id: 'checkout.discount.directly', defaultMessage: '直接折抵' },
+    useMemberCard: { id: 'checkout.form.radio.memberCard.use', defaultMessage: '使用會員卡' },
+  }),
+  form: {
+    placeholder: defineMessages({
+      enter: { id: 'checkout.coupon.form.placeholder.enter', defaultMessage: '輸入折扣碼' },
+    }),
+    radio: defineMessages({
+      noDiscount: { id: 'checkout.form.radio.coupon.noDiscount', defaultMessage: '無折扣' },
+      useCoupon: { id: 'checkout.form.radio.coupon.use', defaultMessage: '使用折價券' },
+      reselectCoupon: { id: 'checkout.form.radio.coupon.reselect', defaultMessage: '重新選擇' },
+      chooseCoupon: { id: 'checkout.form.radio.coupon.choose', defaultMessage: '選擇折價券' },
+    }),
+  },
+  coupon: defineMessages({
+    fromNow: { id: 'checkout.coupon.fromNow', defaultMessage: '即日起' },
+    noPeriod: { id: 'common.period.no', defaultMessage: '無使用期限' },
   }),
 }
 

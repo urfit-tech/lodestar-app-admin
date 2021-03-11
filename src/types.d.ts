@@ -618,6 +618,7 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_creator 
   picture_url: string | null;
   name: string | null;
   username: string | null;
+  abstract: string | null;
 }
 
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointment_enrollments_aggregate_aggregate {
@@ -633,6 +634,7 @@ export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan_appointm
 export interface GET_APPOINTMENT_PLAN_COLLECTION_ADMIN_appointment_plan {
   __typename: "appointment_plan";
   id: any;
+  creator_id: string;
   /**
    * An object relationship
    */
@@ -7014,6 +7016,97 @@ export interface GET_POSTS {
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_ENROLLED_CARD_IDS
+// ====================================================
+
+export interface GET_ENROLLED_CARD_IDS_card_enrollment {
+  __typename: "card_enrollment";
+  card_id: any | null;
+}
+
+export interface GET_ENROLLED_CARD_IDS {
+  /**
+   * fetch data from the table: "card_enrollment"
+   */
+  card_enrollment: GET_ENROLLED_CARD_IDS_card_enrollment[];
+}
+
+export interface GET_ENROLLED_CARD_IDSVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ENROLLED_CARD
+// ====================================================
+
+export interface GET_ENROLLED_CARD_card_by_pk {
+  __typename: "card";
+  id: any;
+  title: string;
+  description: string;
+  template: string;
+  app_id: string;
+}
+
+export interface GET_ENROLLED_CARD {
+  /**
+   * fetch data from the table: "card" using primary key columns
+   */
+  card_by_pk: GET_ENROLLED_CARD_card_by_pk | null;
+}
+
+export interface GET_ENROLLED_CARDVariables {
+  cardId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ENROLLED_CARDS
+// ====================================================
+
+export interface GET_ENROLLED_CARDS_card_enrollment_card {
+  __typename: "card";
+  id: any;
+  title: string;
+  description: string;
+  template: string;
+}
+
+export interface GET_ENROLLED_CARDS_card_enrollment {
+  __typename: "card_enrollment";
+  /**
+   * An object relationship
+   */
+  card: GET_ENROLLED_CARDS_card_enrollment_card | null;
+  updated_at: any | null;
+}
+
+export interface GET_ENROLLED_CARDS {
+  /**
+   * fetch data from the table: "card_enrollment"
+   */
+  card_enrollment: GET_ENROLLED_CARDS_card_enrollment[];
+}
+
+export interface GET_ENROLLED_CARDSVariables {
+  memberId: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_COUPON_PLAN_COLLECTION
 // ====================================================
 
@@ -7114,6 +7207,7 @@ export interface GET_COUPON__CODE_COLLECTION_coupon_code_coupons_member {
 export interface GET_COUPON__CODE_COLLECTION_coupon_code_coupons_status {
   __typename: "coupon_status";
   used: boolean | null;
+  outdated: boolean | null;
 }
 
 export interface GET_COUPON__CODE_COLLECTION_coupon_code_coupons {
@@ -7164,6 +7258,100 @@ export interface GET_COUPON__CODE_COLLECTION {
 
 export interface GET_COUPON__CODE_COLLECTIONVariables {
   couponPlanId: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: INSERT_VOUCHER_PLAN
+// ====================================================
+
+export interface INSERT_VOUCHER_PLAN_insert_voucher_plan {
+  __typename: "voucher_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface INSERT_VOUCHER_PLAN {
+  /**
+   * insert data into the table: "voucher_plan"
+   */
+  insert_voucher_plan: INSERT_VOUCHER_PLAN_insert_voucher_plan | null;
+}
+
+export interface INSERT_VOUCHER_PLANVariables {
+  title: string;
+  description?: string | null;
+  appId: string;
+  startedAt?: any | null;
+  endedAt?: any | null;
+  productQuantityLimit: number;
+  voucherCodes: voucher_code_insert_input[];
+  voucherPlanProducts: voucher_plan_product_insert_input[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL mutation operation: UPDATE_VOUCHER_PLAN
+// ====================================================
+
+export interface UPDATE_VOUCHER_PLAN_update_voucher_plan {
+  __typename: "voucher_plan_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_VOUCHER_PLAN_delete_voucher_plan_product {
+  __typename: "voucher_plan_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_VOUCHER_PLAN_insert_voucher_plan_product {
+  __typename: "voucher_plan_product_mutation_response";
+  /**
+   * number of affected rows by the mutation
+   */
+  affected_rows: number;
+}
+
+export interface UPDATE_VOUCHER_PLAN {
+  /**
+   * update data of the table: "voucher_plan"
+   */
+  update_voucher_plan: UPDATE_VOUCHER_PLAN_update_voucher_plan | null;
+  /**
+   * delete data from the table: "voucher_plan_product"
+   */
+  delete_voucher_plan_product: UPDATE_VOUCHER_PLAN_delete_voucher_plan_product | null;
+  /**
+   * insert data into the table: "voucher_plan_product"
+   */
+  insert_voucher_plan_product: UPDATE_VOUCHER_PLAN_insert_voucher_plan_product | null;
+}
+
+export interface UPDATE_VOUCHER_PLANVariables {
+  voucherPlanId: any;
+  title: string;
+  description?: string | null;
+  appId: string;
+  startedAt?: any | null;
+  endedAt?: any | null;
+  productQuantityLimit: number;
+  voucherPlanProducts: voucher_plan_product_insert_input[];
 }
 
 /* tslint:disable */
@@ -7276,100 +7464,6 @@ export interface GET_VOUCHER_CODE {
 
 export interface GET_VOUCHER_CODEVariables {
   voucherPlanId: any;
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: INSERT_VOUCHER_PLAN
-// ====================================================
-
-export interface INSERT_VOUCHER_PLAN_insert_voucher_plan {
-  __typename: "voucher_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface INSERT_VOUCHER_PLAN {
-  /**
-   * insert data into the table: "voucher_plan"
-   */
-  insert_voucher_plan: INSERT_VOUCHER_PLAN_insert_voucher_plan | null;
-}
-
-export interface INSERT_VOUCHER_PLANVariables {
-  title: string;
-  description?: string | null;
-  appId: string;
-  startedAt?: any | null;
-  endedAt?: any | null;
-  productQuantityLimit: number;
-  voucherCodes: voucher_code_insert_input[];
-  voucherPlanProducts: voucher_plan_product_insert_input[];
-}
-
-/* tslint:disable */
-/* eslint-disable */
-// @generated
-// This file was automatically generated and should not be edited.
-
-// ====================================================
-// GraphQL mutation operation: UPDATE_VOUCHER_PLAN
-// ====================================================
-
-export interface UPDATE_VOUCHER_PLAN_update_voucher_plan {
-  __typename: "voucher_plan_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_VOUCHER_PLAN_delete_voucher_plan_product {
-  __typename: "voucher_plan_product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_VOUCHER_PLAN_insert_voucher_plan_product {
-  __typename: "voucher_plan_product_mutation_response";
-  /**
-   * number of affected rows by the mutation
-   */
-  affected_rows: number;
-}
-
-export interface UPDATE_VOUCHER_PLAN {
-  /**
-   * update data of the table: "voucher_plan"
-   */
-  update_voucher_plan: UPDATE_VOUCHER_PLAN_update_voucher_plan | null;
-  /**
-   * delete data from the table: "voucher_plan_product"
-   */
-  delete_voucher_plan_product: UPDATE_VOUCHER_PLAN_delete_voucher_plan_product | null;
-  /**
-   * insert data into the table: "voucher_plan_product"
-   */
-  insert_voucher_plan_product: UPDATE_VOUCHER_PLAN_insert_voucher_plan_product | null;
-}
-
-export interface UPDATE_VOUCHER_PLANVariables {
-  voucherPlanId: any;
-  title: string;
-  description?: string | null;
-  appId: string;
-  startedAt?: any | null;
-  endedAt?: any | null;
-  productQuantityLimit: number;
-  voucherPlanProducts: voucher_plan_product_insert_input[];
 }
 
 /* tslint:disable */
@@ -8008,6 +8102,80 @@ export interface DELETE_ATTACHMENTS {
 
 export interface DELETE_ATTACHMENTSVariables {
   attachmentIds: any[];
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_COUPON_COLLECTION
+// ====================================================
+
+export interface GET_COUPON_COLLECTION_coupon_status {
+  __typename: "coupon_status";
+  outdated: boolean | null;
+  used: boolean | null;
+}
+
+export interface GET_COUPON_COLLECTION_coupon_coupon_code_coupon_plan_coupon_plan_products {
+  __typename: "coupon_plan_product";
+  id: any;
+  product_id: string;
+}
+
+export interface GET_COUPON_COLLECTION_coupon_coupon_code_coupon_plan {
+  __typename: "coupon_plan";
+  id: any;
+  title: string;
+  amount: any;
+  /**
+   * 1 - cash / 2 - percent
+   */
+  type: number;
+  constraint: any | null;
+  started_at: any | null;
+  ended_at: any | null;
+  description: string | null;
+  scope: any | null;
+  /**
+   * An array relationship
+   */
+  coupon_plan_products: GET_COUPON_COLLECTION_coupon_coupon_code_coupon_plan_coupon_plan_products[];
+}
+
+export interface GET_COUPON_COLLECTION_coupon_coupon_code {
+  __typename: "coupon_code";
+  code: string;
+  /**
+   * An object relationship
+   */
+  coupon_plan: GET_COUPON_COLLECTION_coupon_coupon_code_coupon_plan;
+}
+
+export interface GET_COUPON_COLLECTION_coupon {
+  __typename: "coupon";
+  id: any;
+  /**
+   * An object relationship
+   */
+  status: GET_COUPON_COLLECTION_coupon_status | null;
+  /**
+   * An object relationship
+   */
+  coupon_code: GET_COUPON_COLLECTION_coupon_coupon_code;
+}
+
+export interface GET_COUPON_COLLECTION {
+  /**
+   * fetch data from the table: "coupon"
+   */
+  coupon: GET_COUPON_COLLECTION_coupon[];
+}
+
+export interface GET_COUPON_COLLECTIONVariables {
+  memberId: string;
 }
 
 /* tslint:disable */
@@ -12465,6 +12633,8 @@ export enum appointment_plan_update_column {
   phone = "phone",
   price = "price",
   published_at = "published_at",
+  reservation_amount = "reservation_amount",
+  reservation_type = "reservation_type",
   support_locales = "support_locales",
   title = "title",
   updated_at = "updated_at",
@@ -16353,6 +16523,7 @@ export interface appointment_plan_arr_rel_insert_input {
 export interface appointment_plan_avg_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -16377,6 +16548,8 @@ export interface appointment_plan_bool_exp {
   phone?: String_comparison_exp | null;
   price?: numeric_comparison_exp | null;
   published_at?: timestamptz_comparison_exp | null;
+  reservation_amount?: numeric_comparison_exp | null;
+  reservation_type?: String_comparison_exp | null;
   support_locales?: jsonb_comparison_exp | null;
   title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -16398,6 +16571,8 @@ export interface appointment_plan_insert_input {
   phone?: string | null;
   price?: any | null;
   published_at?: any | null;
+  reservation_amount?: any | null;
+  reservation_type?: string | null;
   support_locales?: any | null;
   title?: string | null;
   updated_at?: any | null;
@@ -16416,6 +16591,8 @@ export interface appointment_plan_max_order_by {
   phone?: order_by | null;
   price?: order_by | null;
   published_at?: order_by | null;
+  reservation_amount?: order_by | null;
+  reservation_type?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
 }
@@ -16433,6 +16610,8 @@ export interface appointment_plan_min_order_by {
   phone?: order_by | null;
   price?: order_by | null;
   published_at?: order_by | null;
+  reservation_amount?: order_by | null;
+  reservation_type?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
 }
@@ -16473,6 +16652,8 @@ export interface appointment_plan_order_by {
   phone?: order_by | null;
   price?: order_by | null;
   published_at?: order_by | null;
+  reservation_amount?: order_by | null;
+  reservation_type?: order_by | null;
   support_locales?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
@@ -16484,6 +16665,7 @@ export interface appointment_plan_order_by {
 export interface appointment_plan_stddev_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -16492,6 +16674,7 @@ export interface appointment_plan_stddev_order_by {
 export interface appointment_plan_stddev_pop_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -16500,6 +16683,7 @@ export interface appointment_plan_stddev_pop_order_by {
 export interface appointment_plan_stddev_samp_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -16508,6 +16692,7 @@ export interface appointment_plan_stddev_samp_order_by {
 export interface appointment_plan_sum_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -16516,6 +16701,7 @@ export interface appointment_plan_sum_order_by {
 export interface appointment_plan_var_pop_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -16524,6 +16710,7 @@ export interface appointment_plan_var_pop_order_by {
 export interface appointment_plan_var_samp_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -16532,6 +16719,7 @@ export interface appointment_plan_var_samp_order_by {
 export interface appointment_plan_variance_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
