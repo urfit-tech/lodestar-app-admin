@@ -14,6 +14,15 @@ import {
   VoucherProps,
 } from '../types/checkout'
 
+import Axios from 'axios'
+import { prop, sum } from 'ramda'
+import { useCallback, useEffect, useState } from 'react'
+import { useAuth } from '../contexts/AuthContext'
+import { InvoiceProps } from '../types/merchandise'
+import { ShippingProps } from '../types/merchandise'
+import { CheckProps, OrderDiscountProps, OrderProductProps, shippingOptionProps } from '../types/checkout'
+
+
 export const useCouponPlanCollection = () => {
   const app = useApp()
 
@@ -125,6 +134,7 @@ export const useCouponCodeCollection = (couponPlanId: string) => {
             }
             status {
               used
+              outdated
             }
           }
           coupons_aggregate {
@@ -144,20 +154,23 @@ export const useCouponCodeCollection = (couponPlanId: string) => {
     loading || error || !data
       ? []
       : data.coupon_code.map(couponCode => ({
-          id: couponCode.id,
-          code: couponCode.code,
-          count: couponCode.count,
-          remaining: couponCode.remaining,
-          used: couponCode.coupons_aggregate.aggregate?.count || 0,
-          coupons: couponCode.coupons.map(coupon => ({
-            id: coupon.id,
-            member: {
-              id: coupon.member.id,
-              email: coupon.member.email,
-            },
+        id: couponCode.id,
+        code: couponCode.code,
+        count: couponCode.count,
+        remaining: couponCode.remaining,
+        used: couponCode.coupons_aggregate.aggregate?.count || 0,
+        coupons: couponCode.coupons.map(coupon => ({
+          id: coupon.id,
+          member: {
+            id: coupon.member.id,
+            email: coupon.member.email,
+          },
+          status: {
             used: !!coupon.status?.used,
-          })),
-        }))
+            outdated: !!coupon.status?.outdated,
+          },
+        })),
+      }))
 
   return {
     loadingCouponCodes: loading,
@@ -233,53 +246,6 @@ export const useVoucherCode = (voucherPlanId: string) => {
     refetchVoucherCodes: refetch,
   }
 }
-
-const GET_VOUCHER_PLAN_COLLECTION = gql`
-  query GET_VOUCHER_PLAN_COLLECTION {
-    voucher_plan {
-      id
-      title
-      description
-      started_at
-      ended_at
-      product_quantity_limit
-
-      voucher_codes_aggregate {
-        aggregate {
-          sum {
-            count
-            remaining
-          }
-        }
-      }
-      voucher_plan_products {
-        id
-        product_id
-      }
-    }
-  }
-`
-
-const GET_VOUCHER_CODE = gql`
-  query GET_VOUCHER_CODE($voucherPlanId: uuid!) {
-    voucher_code(where: { voucher_plan: { id: { _eq: $voucherPlanId } } }) {
-      id
-      code
-      count
-      remaining
-      vouchers {
-        id
-        member {
-          id
-          email
-        }
-        status {
-          used
-        }
-      }
-    }
-  }
-`
 
 export const useMutateVoucherPlan = () => {
   const { id: appId } = useApp()
@@ -396,3 +362,151 @@ export const useMutateVoucherPlan = () => {
     updateVoucherPlan,
   }
 }
+
+export const useCheck = (
+  productIds: string[],
+  discountId: string | null,
+  memberId: string | null,
+  shipping: ShippingProps | null,
+  options: { [ProductId: string]: any },
+) => {
+  const { authToken, apiHost } = useAuth()
+  const { id: appId } = useApp()
+  const [check, setCheck] = useState<CheckProps>({ orderProducts: [], orderDiscounts: [], shippingOption: null })
+  const [orderChecking, setOrderChecking] = useState(false)
+  const [orderPlacing, setOrderPlacing] = useState(false)
+  const [checkError, setCheckError] = useState<Error | null>(null)
+
+  useEffect(() => {
+    setOrderChecking(true)
+    Axios.post<{
+      code: string
+      message: string
+      result: {
+        orderProducts: OrderProductProps[]
+        orderDiscounts: OrderDiscountProps[]
+        shippingOption: shippingOptionProps
+      }
+    }>(
+      `${apiHost}/payment/checkout-order`,
+      {
+        appId,
+        memberId,
+        productIds,
+        discountId,
+        shipping,
+        options,
+      },
+      {
+        headers: { authorization: `Bearer ${authToken}` },
+      },
+    )
+      .then(({ data: { code, message, result } }) => {
+        if (code === 'SUCCESS') {
+          setCheck(result)
+        } else {
+          setCheckError(new Error(message))
+        }
+      })
+      .catch(setCheckError)
+      .finally(() => setOrderChecking(false))
+  }, [
+    appId,
+    memberId,
+    authToken,
+    apiHost,
+    discountId,
+    JSON.stringify(options),
+    JSON.stringify(productIds),
+    JSON.stringify(shipping),
+  ])
+
+  const placeOrder = useCallback(
+    async (paymentType: 'perpetual' | 'subscription' | 'groupBuying', invoice: InvoiceProps) => {
+      setOrderPlacing(true)
+      return Axios.post<{ code: string; message: string; result: { id: string } }>(
+        `${apiHost}/tasks/order`,
+        {
+          paymentModel: { type: paymentType },
+          productIds,
+          discountId,
+          memberId,
+          shipping,
+          invoice,
+          options,
+        },
+        {
+          headers: { authorization: `Bearer ${authToken}` },
+        },
+      )
+        .then(({ data: { code, result, message } }) => {
+          if (code === 'SUCCESS') {
+            return result.id
+          } else {
+            throw new Error(message)
+          }
+        })
+        .finally(() => setOrderPlacing(false))
+    },
+    [authToken, apiHost, discountId, memberId, options, productIds, shipping],
+  )
+
+  return {
+    check,
+    checkError,
+    orderPlacing,
+    orderChecking,
+    placeOrder,
+    totalPrice:
+      sum(check.orderProducts.map(prop('price'))) -
+      sum(check.orderDiscounts.map(prop('price'))) +
+      (check.shippingOption?.fee || 0),
+  }
+}
+
+const GET_VOUCHER_PLAN_COLLECTION = gql`
+  query GET_VOUCHER_PLAN_COLLECTION {
+    voucher_plan {
+      id
+      title
+      description
+      started_at
+      ended_at
+      product_quantity_limit
+
+      voucher_codes_aggregate {
+        aggregate {
+          sum {
+            count
+            remaining
+          }
+        }
+      }
+      voucher_plan_products {
+        id
+        product_id
+      }
+    }
+  }
+`
+
+const GET_VOUCHER_CODE = gql`
+  query GET_VOUCHER_CODE($voucherPlanId: uuid!) {
+    voucher_code(where: { voucher_plan: { id: { _eq: $voucherPlanId } } }) {
+      id
+      code
+      count
+      remaining
+      vouchers {
+        id
+        member {
+          id
+          email
+        }
+        status {
+          used
+        }
+      }
+    }
+  }
+`
