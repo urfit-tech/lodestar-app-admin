@@ -738,12 +738,6 @@ export interface GET_SALES_NAMESVariables {
 // GraphQL query operation: GET_SALES_SUMMARY
 // ====================================================
 
-export interface GET_SALES_SUMMARY_member_by_pk_member_properties {
-  __typename: "member_property";
-  id: any;
-  value: string;
-}
-
 export interface GET_SALES_SUMMARY_member_by_pk {
   __typename: "member";
   id: string;
@@ -751,10 +745,14 @@ export interface GET_SALES_SUMMARY_member_by_pk {
   name: string;
   username: string;
   email: string;
-  /**
-   * An array relationship
-   */
-  member_properties: GET_SALES_SUMMARY_member_by_pk_member_properties[];
+  metadata: any;
+}
+
+export interface GET_SALES_SUMMARY_xuemi_sales {
+  __typename: "xuemi_sales";
+  member_id: string | null;
+  sales_phone: string | null;
+  odds: string | null;
 }
 
 export interface GET_SALES_SUMMARY_order_executor_sharing {
@@ -815,6 +813,10 @@ export interface GET_SALES_SUMMARY {
    * fetch data from the table: "member" using primary key columns
    */
   member_by_pk: GET_SALES_SUMMARY_member_by_pk | null;
+  /**
+   * fetch data from the table: "xuemi.sales"
+   */
+  xuemi_sales: GET_SALES_SUMMARY_xuemi_sales[];
   /**
    * fetch data from the table: "order_executor_sharing"
    */
@@ -1305,6 +1307,8 @@ export enum appointment_plan_update_column {
   phone = "phone",
   price = "price",
   published_at = "published_at",
+  reservation_amount = "reservation_amount",
+  reservation_type = "reservation_type",
   support_locales = "support_locales",
   title = "title",
   updated_at = "updated_at",
@@ -5060,6 +5064,7 @@ export interface appointment_plan_arr_rel_insert_input {
 export interface appointment_plan_avg_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -5084,6 +5089,8 @@ export interface appointment_plan_bool_exp {
   phone?: String_comparison_exp | null;
   price?: numeric_comparison_exp | null;
   published_at?: timestamptz_comparison_exp | null;
+  reservation_amount?: numeric_comparison_exp | null;
+  reservation_type?: String_comparison_exp | null;
   support_locales?: jsonb_comparison_exp | null;
   title?: String_comparison_exp | null;
   updated_at?: timestamptz_comparison_exp | null;
@@ -5105,6 +5112,8 @@ export interface appointment_plan_insert_input {
   phone?: string | null;
   price?: any | null;
   published_at?: any | null;
+  reservation_amount?: any | null;
+  reservation_type?: string | null;
   support_locales?: any | null;
   title?: string | null;
   updated_at?: any | null;
@@ -5123,6 +5132,8 @@ export interface appointment_plan_max_order_by {
   phone?: order_by | null;
   price?: order_by | null;
   published_at?: order_by | null;
+  reservation_amount?: order_by | null;
+  reservation_type?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
 }
@@ -5140,6 +5151,8 @@ export interface appointment_plan_min_order_by {
   phone?: order_by | null;
   price?: order_by | null;
   published_at?: order_by | null;
+  reservation_amount?: order_by | null;
+  reservation_type?: order_by | null;
   title?: order_by | null;
   updated_at?: order_by | null;
 }
@@ -5167,6 +5180,7 @@ export interface appointment_plan_on_conflict {
 export interface appointment_plan_stddev_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -5175,6 +5189,7 @@ export interface appointment_plan_stddev_order_by {
 export interface appointment_plan_stddev_pop_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -5183,6 +5198,7 @@ export interface appointment_plan_stddev_pop_order_by {
 export interface appointment_plan_stddev_samp_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -5191,6 +5207,7 @@ export interface appointment_plan_stddev_samp_order_by {
 export interface appointment_plan_sum_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -5199,6 +5216,7 @@ export interface appointment_plan_sum_order_by {
 export interface appointment_plan_var_pop_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -5207,6 +5225,7 @@ export interface appointment_plan_var_pop_order_by {
 export interface appointment_plan_var_samp_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**
@@ -5215,6 +5234,7 @@ export interface appointment_plan_var_samp_order_by {
 export interface appointment_plan_variance_order_by {
   duration?: order_by | null;
   price?: order_by | null;
+  reservation_amount?: order_by | null;
 }
 
 /**

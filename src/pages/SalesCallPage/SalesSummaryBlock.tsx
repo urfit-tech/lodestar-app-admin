@@ -48,34 +48,23 @@ const SalesSummaryBlock: React.FC<{
     return <div>{formatMessage(errorMessages.data.fetch)}</div>
   }
 
-  if (!salesSummary) {
+  if (!salesSummary || !salesSummary.sales) {
     return <div>讀取錯誤</div>
   }
 
-  // const hashedAssignedCount =
-  //   (sum(
-  //     shajs('sha256')
-  //       .update(`${salesId}-${moment().format('YYYYMMDD')}`)
-  //       .digest('hex')
-  //       .split('')
-  //       .map((v: string) => v.charCodeAt(0)),
-  //   ) %
-  //     12) +
-  //   10
-
-  const score = 10 + salesSummary.contractsLastMonth * 1 + salesSummary.contractsThisMonth * 2
-  const newAssignedRate = score > 70 ? 70 : score
+  const score = salesSummary.sales.odds + salesSummary.contractsLastMonth * 1 + salesSummary.contractsThisMonth * 2 + 20
+  const newAssignedRate = score > 100 ? 100 : Math.ceil(score)
 
   return (
     <AdminBlock className="p-4">
       <div className="d-flex align-items-center">
         <div className="d-flex align-items-center justify-content-start flex-grow-1">
-          <AvatarImage size="44px" src={salesSummary.sales?.picture_url} className="mr-2" />
+          <AvatarImage size="44px" src={salesSummary.sales.picture_url} className="mr-2" />
           <div>
-            <MemberNameLabel>{salesSummary.sales?.name}</MemberNameLabel>
+            <MemberNameLabel>{salesSummary.sales.name}</MemberNameLabel>
             <MemberDescription>
-              <span className="mr-2">{salesSummary.sales?.email}</span>
-              <span>分機號碼：{salesSummary.sales?.telephone}</span>
+              <span className="mr-2">{salesSummary.sales.email}</span>
+              <span>分機號碼：{salesSummary.sales.telephone}</span>
             </MemberDescription>
           </div>
         </div>
@@ -121,10 +110,12 @@ const useSalesSummary = (salesId: string) => {
           name
           username
           email
-          member_properties(where: { property: { name: { _eq: "分機號碼" } } }) {
-            id
-            value
-          }
+          metadata
+        }
+        xuemi_sales(where: { member_id: { _eq: $salesId } }) {
+          member_id
+          sales_phone
+          odds
         }
         order_executor_sharing(where: { executor_id: { _eq: $salesId }, created_at: { _gte: $startOfMonth } }) {
           order_executor_id
@@ -192,7 +183,8 @@ const useSalesSummary = (salesId: string) => {
               picture_url: data.member_by_pk.picture_url,
               name: data.member_by_pk.name || data.member_by_pk.username,
               email: data.member_by_pk.email,
-              telephone: data.member_by_pk.member_properties[0]?.value || '',
+              telephone: data.xuemi_sales[0]?.sales_phone || '',
+              odds: parseFloat(data.xuemi_sales[0]?.odds || '0'),
             }
           : null,
         sharingOfMonth: sum(
