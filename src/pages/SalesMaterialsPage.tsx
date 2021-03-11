@@ -68,12 +68,11 @@ const SalesMaterialsPage: React.FC = () => {
 
 type MaterialStatisticsProps = {
   materialName: string
-  all: number
-  assigned: number
   called: number
-  answered: number
+  contacted: number
   demonstrated: number
   dealt: number
+  rejected: number
 }
 
 const MaterialStatisticsTable: React.FC<{
@@ -102,25 +101,17 @@ const MaterialStatisticsTable: React.FC<{
     return <div>讀取錯誤</div>
   }
 
-  const allMembersCount = count(data.allMembers.map(v => v.v))
-  const assignedMembersCount = count(data.assignedMembers.map(v => v.v))
   const calledMembersCount = count(data.calledMembers.map(v => v.v))
-  const answeredMembersCount = count(data.answeredMembers.map(v => v.v))
+  const contactedMembersCount = count(data.contactedMembers.map(v => v.v))
   const demonstratedMembersCount = count(data.demonstratedMembers.map(v => v.v))
   const dealtMembersCount = count(data.dealtMembers.map(v => v.v))
+  const rejectedMembersCount = count(data.rejectedMembers.map(v => v.v))
 
   const allMaterialNames = pipe(
     map((v: { [index: string]: number }) => Object.keys(v)),
     flatten,
     uniq,
-  )([
-    allMembersCount,
-    assignedMembersCount,
-    calledMembersCount,
-    answeredMembersCount,
-    demonstratedMembersCount,
-    dealtMembersCount,
-  ])
+  )([calledMembersCount, contactedMembersCount, demonstratedMembersCount, dealtMembersCount, rejectedMembersCount])
 
   const columns: ColumnProps<MaterialStatisticsProps>[] = [
     {
@@ -134,24 +125,14 @@ const MaterialStatisticsTable: React.FC<{
       onFilter: (value, record) => record.materialName.includes(`${value}`),
     },
     {
-      dataIndex: 'all',
-      title: '總數',
-      sorter: (a, b) => a.all - b.all,
-    },
-    {
-      dataIndex: 'assigned',
-      title: '已分配',
-      sorter: (a, b) => a.assigned - b.assigned,
-    },
-    {
       dataIndex: 'called',
       title: '已撥打',
       sorter: (a, b) => a.called - b.called,
     },
     {
-      dataIndex: 'answered',
-      title: '已通話',
-      sorter: (a, b) => a.answered - b.answered,
+      dataIndex: 'contacted',
+      title: '已開發',
+      sorter: (a, b) => a.contacted - b.contacted,
     },
     {
       dataIndex: 'demonstrated',
@@ -163,27 +144,30 @@ const MaterialStatisticsTable: React.FC<{
       title: '已成交',
       sorter: (a, b) => a.dealt - b.dealt,
     },
+    {
+      dataIndex: 'rejected',
+      title: '已拒絕',
+      sorter: (a, b) => a.rejected - b.rejected,
+    },
   ]
 
   return (
     <Table<MaterialStatisticsProps>
       columns={columns}
       dataSource={allMaterialNames.map(materialName => {
+        const called = calledMembersCount[materialName] || 0
+        const contacted = contactedMembersCount[materialName] || 0
+        const demonstrated = demonstratedMembersCount[materialName] || 0
         const dealt = dealtMembersCount[materialName] || 0
-        const demonstrated = Math.max(demonstratedMembersCount[materialName] || 0, dealt)
-        const answered = Math.max(answeredMembersCount[materialName] || 0, demonstrated)
-        const called = Math.max(calledMembersCount[materialName] || 0, answered)
-        const assigned = Math.max(assignedMembersCount[materialName] || 0, called)
-        const all = Math.max(allMembersCount[materialName] || 0, assigned)
+        const rejected = rejectedMembersCount[materialName] || 0
 
         return {
           materialName,
-          all,
-          assigned,
-          called,
-          answered,
-          demonstrated,
+          called: Math.max(called, contacted),
+          contacted: Math.max(contacted, demonstrated),
+          demonstrated: Math.max(demonstrated, dealt),
           dealt,
+          rejected,
         }
       })}
       pagination={false}
@@ -199,25 +183,6 @@ const GET_SALES_MATERIALS = gql`
     $salesId: String!
     $materialName: String!
   ) {
-    allMembers: member_property(
-      where: {
-        property: { name: { _eq: $materialName } }
-        value: { _neq: "" }
-        member: { manager_id: { _eq: $salesId } }
-        updated_at: { _gt: $startedAt, _lt: $endedAt }
-      }
-    ) {
-      v: value
-    }
-    assignedMembers: member_property(
-      where: {
-        property: { name: { _eq: $materialName } }
-        value: { _neq: "" }
-        member: { manager_id: { _eq: $salesId }, assigned_at: { _gt: $startedAt, _lt: $endedAt } }
-      }
-    ) {
-      v: value
-    }
     calledMembers: member_property(
       where: {
         property: { name: { _eq: $materialName } }
@@ -234,7 +199,7 @@ const GET_SALES_MATERIALS = gql`
     ) {
       v: value
     }
-    answeredMembers: member_property(
+    contactedMembers: member_property(
       where: {
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
@@ -244,9 +209,8 @@ const GET_SALES_MATERIALS = gql`
             author_id: { _eq: $salesId }
             created_at: { _gt: $startedAt, _lt: $endedAt }
             type: { _eq: "outbound" }
-            status: { _eq: "answered" }
-            duration: { _gt: 90 }
           }
+          _not: { member_notes: { rejected_at: { _is_null: true } } }
         }
       }
     ) {
@@ -258,6 +222,11 @@ const GET_SALES_MATERIALS = gql`
         value: { _neq: "" }
         member: {
           manager_id: { _eq: $salesId }
+          member_notes: {
+            author_id: { _eq: $salesId }
+            created_at: { _gt: $startedAt, _lt: $endedAt }
+            type: { _eq: "outbound" }
+          }
           member_tags: { tag_name: { _eq: "已示範" }, created_at: { _gt: $startedAt, _lt: $endedAt } }
         }
       }
@@ -270,7 +239,30 @@ const GET_SALES_MATERIALS = gql`
         value: { _neq: "" }
         member: {
           manager_id: { _eq: $salesId }
+          member_notes: {
+            author_id: { _eq: $salesId }
+            created_at: { _gt: $startedAt, _lt: $endedAt }
+            type: { _eq: "outbound" }
+          }
+          member_tags: { tag_name: { _eq: "已示範" }, created_at: { _gt: $startedAt, _lt: $endedAt } }
           member_contracts: { agreed_at: { _gt: $startedAt, _lt: $endedAt }, revoked_at: { _is_null: true } }
+        }
+      }
+    ) {
+      v: value
+    }
+    rejectedMembers: member_property(
+      where: {
+        property: { name: { _eq: $materialName } }
+        value: { _neq: "" }
+        member: {
+          manager_id: { _eq: $salesId }
+          member_notes: {
+            author_id: { _eq: $salesId }
+            created_at: { _gt: $startedAt, _lt: $endedAt }
+            type: { _eq: "outbound" }
+            rejected_at: { _is_null: false }
+          }
         }
       }
     ) {
