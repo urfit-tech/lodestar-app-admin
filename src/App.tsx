@@ -53,6 +53,11 @@ const App: React.FC = () => {
                   key: 'analytics_sales_materials',
                   name: '素材表現',
                 },
+                {
+                  permissionIsAllowed: true,
+                  key: 'analytics_sales_member_categories',
+                  name: '業務領域表現',
+                },
               ],
             },
             ...menuItems.slice(14),
