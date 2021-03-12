@@ -906,7 +906,7 @@ export interface GET_SALES_MATERIALS {
 export interface GET_SALES_MATERIALSVariables {
   startedAt: any;
   endedAt: any;
-  salesId: string;
+  sales: String_comparison_exp;
   materialName: string;
 }
 

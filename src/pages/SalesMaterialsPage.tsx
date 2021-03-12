@@ -1,6 +1,6 @@
 import { BarChartOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { DatePicker, Form, Skeleton, Table, Tabs } from 'antd'
+import { Checkbox, DatePicker, Form, Skeleton, Table, Tabs } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
@@ -8,6 +8,7 @@ import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
 import moment, { Moment } from 'moment'
 import { countBy, filter, flatten, map, pipe, split, trim, uniq } from 'ramda'
 import React, { useState } from 'react'
+import styled from 'styled-components'
 import SalesMemberInput from '../components/common/SalesMemberInput'
 import types from '../types'
 
@@ -24,9 +25,14 @@ const count = pipe(
   countBy(v => v),
 )
 
+const StyledWrapper = styled.div`
+  width: 400px;
+`
+
 const SalesMaterialsPage: React.FC = () => {
   const [range, setRange] = useState<[Moment, Moment]>([moment().startOf('month'), moment().endOf('month')])
-  const [selectedSalesId, setSelectedSalesId] = useState<string>('')
+  const [selectedSalesId, setSelectedSalesId] = useState('')
+  const [isSelectedAllSales, setIsSelectedAllSales] = useState(false)
   const [selectedMaterialName, setSelectedMaterialName] = useState('廣告素材')
 
   return (
@@ -44,7 +50,16 @@ const SalesMaterialsPage: React.FC = () => {
           />
         </Form.Item>
         <Form.Item label="業務">
-          <SalesMemberInput value={selectedSalesId} onChange={setSelectedSalesId} />
+          <StyledWrapper className="d-flex align-items-center">
+            <SalesMemberInput value={selectedSalesId} onChange={setSelectedSalesId} disabled={isSelectedAllSales} />
+            <Checkbox
+              checked={isSelectedAllSales}
+              onChange={e => setIsSelectedAllSales(e.target.checked)}
+              className="ml-3 flex-shrink-0"
+            >
+              全部業務
+            </Checkbox>
+          </StyledWrapper>
         </Form.Item>
       </Form>
 
@@ -54,11 +69,11 @@ const SalesMaterialsPage: React.FC = () => {
         <Tabs.TabPane key="行銷活動" tab="行銷活動"></Tabs.TabPane>
       </Tabs>
 
-      {selectedSalesId && (
+      {(selectedSalesId || isSelectedAllSales) && (
         <MaterialStatisticsTable
           startedAt={range[0].toDate()}
           endedAt={range[1].toDate()}
-          salesId={selectedSalesId}
+          salesId={isSelectedAllSales ? null : selectedSalesId}
           materialName={selectedMaterialName}
         />
       )}
@@ -78,7 +93,7 @@ type MaterialStatisticsProps = {
 const MaterialStatisticsTable: React.FC<{
   startedAt: Date
   endedAt: Date
-  salesId: string
+  salesId: string | null
   materialName: string
 }> = ({ startedAt, endedAt, salesId, materialName }) => {
   const { loading, error, data } = useQuery<types.GET_SALES_MATERIALS, types.GET_SALES_MATERIALSVariables>(
@@ -87,7 +102,7 @@ const MaterialStatisticsTable: React.FC<{
       variables: {
         startedAt,
         endedAt,
-        salesId,
+        sales: salesId ? { _eq: salesId } : {},
         materialName,
       },
     },
@@ -101,17 +116,19 @@ const MaterialStatisticsTable: React.FC<{
     return <div>讀取錯誤</div>
   }
 
-  const calledMembersCount = count(data.calledMembers.map(v => v.v))
-  const contactedMembersCount = count(data.contactedMembers.map(v => v.v))
-  const demonstratedMembersCount = count(data.demonstratedMembers.map(v => v.v))
-  const dealtMembersCount = count(data.dealtMembers.map(v => v.v))
-  const rejectedMembersCount = count(data.rejectedMembers.map(v => v.v))
+  const salesMaterials = {
+    calledMembersCount: count(data.calledMembers.map(v => v.v)),
+    contactedMembersCount: count(data.contactedMembers.map(v => v.v)),
+    demonstratedMembersCount: count(data.demonstratedMembers.map(v => v.v)),
+    dealtMembersCount: count(data.dealtMembers.map(v => v.v)),
+    rejectedMembersCount: count(data.rejectedMembers.map(v => v.v)),
+  }
 
   const allMaterialNames = pipe(
     map((v: { [index: string]: number }) => Object.keys(v)),
     flatten,
     uniq,
-  )([calledMembersCount, contactedMembersCount, demonstratedMembersCount, dealtMembersCount, rejectedMembersCount])
+  )(Object.values(salesMaterials))
 
   const columns: ColumnProps<MaterialStatisticsProps>[] = [
     {
@@ -155,11 +172,11 @@ const MaterialStatisticsTable: React.FC<{
     <Table<MaterialStatisticsProps>
       columns={columns}
       dataSource={allMaterialNames.map(materialName => {
-        const called = calledMembersCount[materialName] || 0
-        const contacted = contactedMembersCount[materialName] || 0
-        const demonstrated = demonstratedMembersCount[materialName] || 0
-        const dealt = dealtMembersCount[materialName] || 0
-        const rejected = rejectedMembersCount[materialName] || 0
+        const called = salesMaterials.calledMembersCount[materialName] || 0
+        const contacted = salesMaterials.contactedMembersCount[materialName] || 0
+        const demonstrated = salesMaterials.demonstratedMembersCount[materialName] || 0
+        const dealt = salesMaterials.dealtMembersCount[materialName] || 0
+        const rejected = salesMaterials.rejectedMembersCount[materialName] || 0
 
         return {
           materialName,
@@ -180,7 +197,7 @@ const GET_SALES_MATERIALS = gql`
   query GET_SALES_MATERIALS(
     $startedAt: timestamptz!
     $endedAt: timestamptz!
-    $salesId: String!
+    $sales: String_comparison_exp!
     $materialName: String!
   ) {
     calledMembers: member_property(
@@ -188,12 +205,8 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
-          manager_id: { _eq: $salesId }
-          member_notes: {
-            author_id: { _eq: $salesId }
-            created_at: { _gt: $startedAt, _lt: $endedAt }
-            type: { _eq: "outbound" }
-          }
+          manager_id: $sales
+          member_notes: { author_id: $sales, created_at: { _gt: $startedAt, _lt: $endedAt }, type: { _eq: "outbound" } }
         }
       }
     ) {
@@ -204,13 +217,14 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
-          manager_id: { _eq: $salesId }
+          manager_id: $sales
           member_notes: {
-            author_id: { _eq: $salesId }
+            author_id: $sales
             created_at: { _gt: $startedAt, _lt: $endedAt }
             type: { _eq: "outbound" }
+            duration: { _gt: 90 }
           }
-          _not: { member_notes: { rejected_at: { _is_null: true } } }
+          _not: { member_notes: { rejected_at: { _is_null: false } } }
         }
       }
     ) {
@@ -221,13 +235,14 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
-          manager_id: { _eq: $salesId }
+          manager_id: $sales
           member_notes: {
-            author_id: { _eq: $salesId }
+            author_id: $sales
             created_at: { _gt: $startedAt, _lt: $endedAt }
             type: { _eq: "outbound" }
+            duration: { _gt: 90 }
           }
-          member_tags: { tag_name: { _eq: "已示範" }, created_at: { _gt: $startedAt, _lt: $endedAt } }
+          member_tasks: { category: { name: { _eq: "預約DEMO" } } }
         }
       }
     ) {
@@ -238,13 +253,14 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
-          manager_id: { _eq: $salesId }
+          manager_id: $sales
           member_notes: {
-            author_id: { _eq: $salesId }
+            author_id: $sales
             created_at: { _gt: $startedAt, _lt: $endedAt }
             type: { _eq: "outbound" }
+            duration: { _gt: 90 }
           }
-          member_tags: { tag_name: { _eq: "已示範" }, created_at: { _gt: $startedAt, _lt: $endedAt } }
+          member_tasks: { category: { name: { _eq: "預約DEMO" } } }
           member_contracts: { agreed_at: { _gt: $startedAt, _lt: $endedAt }, revoked_at: { _is_null: true } }
         }
       }
@@ -256,9 +272,9 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
-          manager_id: { _eq: $salesId }
+          manager_id: $sales
           member_notes: {
-            author_id: { _eq: $salesId }
+            author_id: $sales
             created_at: { _gt: $startedAt, _lt: $endedAt }
             type: { _eq: "outbound" }
             rejected_at: { _is_null: false }

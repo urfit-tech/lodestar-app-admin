@@ -3,17 +3,13 @@ import { Spin } from 'antd'
 import gql from 'graphql-tag'
 import MemberSelector from 'lodestar-app-admin/src/components/form/MemberSelector'
 import React from 'react'
-import styled from 'styled-components'
 import types from '../../types'
-
-const StyledWrapper = styled.div`
-  width: 350px;
-`
 
 const SalesMemberInput: React.FC<{
   value?: string
   onChange?: (value: string) => void
-}> = ({ value, onChange }) => {
+  disabled?: boolean
+}> = ({ value, onChange, disabled }) => {
   const { loading, error, data } = useQuery<types.GET_SALES_MEMBERS>(GET_SALES_MEMBERS)
 
   if (loading) {
@@ -25,19 +21,18 @@ const SalesMemberInput: React.FC<{
   }
 
   return (
-    <StyledWrapper>
-      <MemberSelector
-        members={data.member.map(v => ({
-          id: v.id,
-          avatarUrl: v.picture_url,
-          name: v.name,
-          username: v.username,
-          email: v.email,
-        }))}
-        value={value}
-        onChange={value => typeof value === 'string' && onChange?.(value)}
-      />
-    </StyledWrapper>
+    <MemberSelector
+      members={data.member.map(v => ({
+        id: v.id,
+        avatarUrl: v.picture_url,
+        name: v.name,
+        username: v.username,
+        email: v.email,
+      }))}
+      value={value}
+      onChange={value => typeof value === 'string' && onChange?.(value)}
+      disabled={disabled}
+    />
   )
 }
 
