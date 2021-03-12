@@ -45,7 +45,7 @@ const App: React.FC = () => {
             {
               permissionIsAllowed: role === 'app-owner',
               key: 'analytics',
-              icon: () => <BarChartOutlined />,
+              icon: () => <BarChartOutlined style={{ margin: 0 }} />,
               name: '數據分析',
               subMenuItems: [
                 {
@@ -56,7 +56,7 @@ const App: React.FC = () => {
                 {
                   permissionIsAllowed: true,
                   key: 'analytics_sales_member_categories',
-                  name: '業務領域表現',
+                  name: '領域表現',
                 },
               ],
             },
