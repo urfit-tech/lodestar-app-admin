@@ -327,7 +327,11 @@ export const useEditablePrograms = (memberId: string) => {
 }
 
 export const useProgramContentEnrollment = () => {
-  const { loading, error, data } = useQuery<types.GET_PROGRAM_CONTENT_ENROLLMENT>(GET_PROGRAM_CONTENT_ENROLLMENT)
+  const { loading, error, data } = useQuery<types.GET_PROGRAM_CONTENT_ENROLLMENT>(GET_PROGRAM_CONTENT_ENROLLMENT, {
+    context: {
+      important: true,
+    },
+  })
 
   return {
     loading,
@@ -355,7 +359,7 @@ export const useProgramProgressCollection = (programId?: string | null) => {
   const { loading, error, data, refetch, fetchMore } = useQuery<
     types.GET_PROGRAM_PROGRESS,
     types.GET_PROGRAM_PROGRESSVariables
-  >(GET_PROGRAM_PROGRESS, { variables: { programId } })
+  >(GET_PROGRAM_PROGRESS, { variables: { programId }, context: { important: true } })
   const [isNoMore, setIsNoMore] = useState(false)
 
   useEffect(() => {
