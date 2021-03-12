@@ -353,6 +353,7 @@ export type SalesCallMemberProps = {
   phones: string[]
   categoryNames: string[]
   lastContactAt: Date | null
+  lastTaskCategoryName: string | null
   contracts: {
     projectPlanName: string
     endedAt: Date
@@ -448,6 +449,14 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
             ended_at
             agreed_at
           }
+          member_tasks(limit: 1, order_by: {created_at: desc}) 
+          @include(if: $hasContacted){
+            id
+            category {
+              id
+              name
+            }
+          }
         }
       }
     `,
@@ -471,6 +480,7 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
       email: v.email,
       phones: v.member_phones.map(w => w.phone),
       lastContactAt: v.member_notes?.[0] ? new Date(v.member_notes.slice(-1)[0]?.created_at) : null,
+      lastTaskCategoryName: v.member_tasks?.[0]?.category?.name || null,
       categoryNames: v.member_categories?.map(w => w.category.name) || [],
       contracts:
         v.member_contracts?.map(w => ({

@@ -70,6 +70,7 @@ export const salesMessages = {
     studentName: { id: 'sales.label.studentName', defaultMessage: '學員姓名' },
     tel: { id: 'sales.label.tel', defaultMessage: '電話' },
     lastContactAt: { id: 'sales.label.lastContactAt', defaultMessage: '最近聯繫時間' },
+    lastTask: { id: 'sales.label.lastTask', defaultMessage: '最近待辦' },
     serviceEndedAt: { id: 'sales.label.serviceEndedAt', defaultMessage: '服務截止時間' },
     productItem: { id: 'sales.label.productItem', defaultMessage: '產品項目' },
   }),
