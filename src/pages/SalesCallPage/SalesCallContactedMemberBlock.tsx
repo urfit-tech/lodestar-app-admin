@@ -162,7 +162,7 @@ const SalesCallContactedMemberBlock: React.FC<{
           },
           {
             key: 'memberId',
-            dataIndex: 'memberId',
+            dataIndex: 'id',
             title: '',
             render: (memberId, record) => (
               <div className="d-flex flex-row justify-content-end">
