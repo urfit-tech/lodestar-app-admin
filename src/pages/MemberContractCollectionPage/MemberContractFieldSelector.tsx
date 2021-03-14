@@ -53,6 +53,10 @@ const MemberContractFieldSelector: React.FC<{
         { title: '產品', key: 'projectPlanName' },
         { title: '備註', key: 'note' },
         // { title: '成交聯絡紀錄', key: 'memberNotes' },
+        { title: '代幣', key: 'coin' },
+        { title: '諮詢次數', key: 'appointment' },
+        { title: '指定業師', key: 'appointmentCreator' },
+        { title: '介紹人', key: 'referralMember' },
       ],
     },
     {

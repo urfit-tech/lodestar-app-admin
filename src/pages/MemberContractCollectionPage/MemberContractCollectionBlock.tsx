@@ -1,7 +1,7 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Input, Spin, Table } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
-import { FilterConfirmProps, SorterResult, SortOrder } from 'antd/lib/table/interface'
+import { SorterResult, SortOrder } from 'antd/lib/table/interface'
 import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
 import { AvatarImage } from 'lodestar-app-admin/src/components/common/Image'
 import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
@@ -50,7 +50,7 @@ const TableWrapper = styled.div`
 
 const StyledContractAmountBlock = styled.div`
   display: flex;
-  gap: 16px;
+  gap: 1.25%;
   overflow-x: auto;
   margin-bottom: 24px;
   padding-bottom: 12px;
@@ -60,7 +60,7 @@ export const MemberContractCollectionBlock: React.FC<{
   variant: 'agreed' | 'revoked'
 }> = ({ variant }) => {
   const { formatMessage } = useIntl()
-  const { currentMemberId, currentUserRole } = useAuth()
+  const { currentMemberId, currentUserRole, permissions } = useAuth()
   const [filter, setFilter] = useState<{
     authorName: string | null
     memberNameAndEmail: string | null
@@ -153,7 +153,7 @@ export const MemberContractCollectionBlock: React.FC<{
     onSearch,
   }: {
     onReset: (clearFilters: any) => void
-    onSearch: (selectedKeys?: React.ReactText[], confirm?: (param: FilterConfirmProps) => void) => void
+    onSearch: (selectedKeys?: React.ReactText[], confirm?: () => void) => void
   }): ColumnProps<MemberContractProps> => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => {
       return (
@@ -381,6 +381,10 @@ export const MemberContractCollectionBlock: React.FC<{
       dataIndex: 'note',
       key: 'note',
     },
+    { title: '代幣', key: 'coin', dataIndex: 'coinAmount' },
+    { title: '諮詢次數', key: 'appointment', dataIndex: 'couponCount' },
+    { title: '指定業師', key: 'appointmentCreator', render: (_, record, text) => record.appointmentCreatorName },
+    { title: '介紹人', key: 'referralMember', render: (_, record, text) => record.referral.name },
 
     // payment
     {
@@ -520,6 +524,9 @@ export const MemberContractCollectionBlock: React.FC<{
                 rowClassName="cursor-pointer"
                 onRow={record => ({
                   onClick: () => {
+                    if (!permissions.MEMBER_CONTRACT_VALUE_VIEW) {
+                      return
+                    }
                     setActiveMemberContractId(record.id)
                     setVisible(true)
                   },
@@ -560,12 +567,13 @@ export const MemberContractCollectionBlock: React.FC<{
 }
 
 const StyledCard = styled.div`
-  flex: 0 0 auto;
   display: grid;
   grid-template-rows: 14px 20px;
-  row-gap: 18px;
+  row-gap: clamp(18px, 32%, 40px);
   border-radius: 4px;
-  width: 196px;
+  min-width: 196px;
+  width: 19%;
+  aspect-ratio: 2;
   padding: 22px 16px;
   background-color: #ffffff;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.06);
@@ -582,10 +590,13 @@ const StyledCardTitle = styled.h4<{ color: string }>`
     background: var(--${({ color }) => color});
   }
 
+  display: flex;
+  align-items: center;
+  margin: 0;
   font-family: NotoSansCJKtc;
-  font-size: 14px;
+  font-size: clamp(14px, 1vw, 20px);
   font-weight: 500;
-  line-height: 1.57;
+  line-height: 1;
   letter-spacing: 0.18px;
   color: var(--gray-darker);
   background-color: white;
@@ -593,9 +604,9 @@ const StyledCardTitle = styled.h4<{ color: string }>`
 
 const StyledPrice = styled.span`
   font-family: Roboto;
-  font-size: 20px;
+  font-size: clamp(20px, 1.4vw, 30px);
   font-weight: bold;
-  line-height: 1.3;
+  line-height: 1;
   letter-spacing: 0.77px;
   color: var(--gray-darker);
 `

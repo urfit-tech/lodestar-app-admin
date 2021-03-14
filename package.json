@@ -7,8 +7,7 @@
     "lodestar-app-admin": "git+https://5283f1eb2c0cbdec821bd2bc65e18c942c4d51f8:x-oauth-basic@github.com/urfit-tech/lodestar-app-admin.git#master",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-scripts": "^4.0.1",
-    "sha.js": "^2.4.11"
+    "react-scripts": "^4.0.1"
   },
   "scripts": {
     "postinstall": "yarn upgrade lodestar-app-admin",
@@ -73,7 +72,6 @@
     "@types/react-dom": "^17.0.0",
     "@types/react-responsive": "^8.0.2",
     "@types/react-router-dom": "^5.1.6",
-    "@types/sha.js": "^2.4.0",
     "@types/styled-components": "^5.1.4",
     "@types/uuid": "^8.3.0",
     "@types/wavesurfer.js": "^3.3.1",

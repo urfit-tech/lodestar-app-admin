@@ -1,4 +1,4 @@
-import Icon from '@ant-design/icons'
+import Icon, { BarChartOutlined } from '@ant-design/icons'
 import { Menu } from 'antd'
 import Application from 'lodestar-app-admin/src/Application'
 import { StyledMenu } from 'lodestar-app-admin/src/components/admin/AdminMenu'
@@ -11,6 +11,7 @@ import MemberCollectionAdminPage from './pages/MemberCollectionAdminPage'
 import { MemberContractCollectionPage } from './pages/MemberContractCollectionPage'
 import MemberNoteAdminPage from './pages/MemberNoteAdminPage'
 import SalesCallPage from './pages/SalesCallPage'
+import SalesMaterialsPage from './pages/SalesMaterialsPage'
 import TermsPtPage from './pages/TermsPtPage'
 
 const App: React.FC = () => {
@@ -18,8 +19,8 @@ const App: React.FC = () => {
     <Application
       appId="xuemi"
       customRender={{
-        renderAdminMenu: ({ permissions, menuItems, onClick }) => {
-          const customMenuItems = [
+        renderAdminMenu: ({ role, permissions, menuItems, onClick }) => {
+          const customMenuItems: typeof menuItems = [
             ...menuItems.slice(0, 14),
             {
               permissionIsAllowed: true,
@@ -37,6 +38,19 @@ const App: React.FC = () => {
                   permissionIsAllowed: true,
                   key: 'sales_call',
                   name: '業務撥打',
+                },
+              ],
+            },
+            {
+              permissionIsAllowed: role === 'app-owner',
+              key: 'analytics',
+              icon: () => <BarChartOutlined />,
+              name: '數據分析',
+              subMenuItems: [
+                {
+                  permissionIsAllowed: true,
+                  key: 'analytics_sales_materials',
+                  name: '素材表現',
                 },
               ],
             },
@@ -100,6 +114,11 @@ const App: React.FC = () => {
         sales_call: {
           path: '/sales-call',
           pageName: <SalesCallPage />,
+          authenticated: true,
+        },
+        analytics_sales_materials: {
+          path: '/analytics/sales-materials',
+          pageName: <SalesMaterialsPage />,
           authenticated: true,
         },
         terms: {

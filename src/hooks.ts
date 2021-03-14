@@ -437,6 +437,7 @@ export const useSalesCallMember = ({ salesId, status }: { salesId: string; statu
           member_categories @include(if: $hasContacted) {
             id
             category {
+              id
               name
             }
           }
