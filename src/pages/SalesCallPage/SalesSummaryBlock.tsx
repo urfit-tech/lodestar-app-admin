@@ -72,7 +72,7 @@ const SalesSummaryBlock: React.FC<{
         <StyledMetrics className="flex-shrink-0 mr-4">
           本月業績：{currencyFormatter(salesSummary.sharingOfMonth)}
         </StyledMetrics>
-        <StyledMetrics className="flex-shrink-0">本月成交：{salesSummary.contractsThisMonth}</StyledMetrics>
+        <StyledMetrics className="flex-shrink-0">本月總件數：{salesSummary.sharingOrdersOfMonth}</StyledMetrics>
       </div>
       <Divider />
 
@@ -190,6 +190,7 @@ const useSalesSummary = (salesId: string) => {
         sharingOfMonth: sum(
           data.order_executor_sharing.map(sharing => Math.floor(sharing.total_price * sharing.ratio)),
         ),
+        sharingOrdersOfMonth: data.order_executor_sharing.length,
         contractsThisMonth: data.contracts_this_month?.aggregate?.count || 0,
         contractsLastMonth: data.contracts_last_month?.aggregate?.count || 0,
         totalDuration: data.member_note_aggregate.aggregate?.sum?.duration || 0,
