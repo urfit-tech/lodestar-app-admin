@@ -345,6 +345,21 @@ export interface GET_SALES_CALL_MEMBER_member_member_contracts {
   agreed_at: any | null;
 }
 
+export interface GET_SALES_CALL_MEMBER_member_member_tasks_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_SALES_CALL_MEMBER_member_member_tasks {
+  __typename: "member_task";
+  id: string;
+  /**
+   * An object relationship
+   */
+  category: GET_SALES_CALL_MEMBER_member_member_tasks_category | null;
+}
+
 export interface GET_SALES_CALL_MEMBER_member {
   __typename: "member";
   id: string;
@@ -366,6 +381,10 @@ export interface GET_SALES_CALL_MEMBER_member {
    * An array relationship
    */
   member_contracts: GET_SALES_CALL_MEMBER_member_member_contracts[];
+  /**
+   * An array relationship
+   */
+  member_tasks: GET_SALES_CALL_MEMBER_member_member_tasks[];
 }
 
 export interface GET_SALES_CALL_MEMBER {

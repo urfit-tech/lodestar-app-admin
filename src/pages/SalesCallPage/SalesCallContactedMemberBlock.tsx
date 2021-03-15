@@ -52,6 +52,7 @@ const SalesCallContactedMemberBlock: React.FC<{
     studentName?: string
     email?: string
     phone?: string
+    lastTaskCategoryName?: string
   }>({})
 
   if (loadingMembers) {
@@ -106,7 +107,9 @@ const SalesCallContactedMemberBlock: React.FC<{
     v =>
       (!filters.studentName || v.name.toLowerCase().includes(filters.studentName.toLowerCase())) &&
       (!filters.email || v.email.toLowerCase().includes(filters.email.toLowerCase())) &&
-      (!filters.phone || v.phones.some(v => v.includes(filters.phone || ''))),
+      (!filters.phone || v.phones.some(v => v.includes(filters.phone || ''))) &&
+      (!filters.lastTaskCategoryName ||
+        v.lastTaskCategoryName?.toLowerCase().includes(filters.lastTaskCategoryName.toLowerCase())),
   )
 
   return (
@@ -159,6 +162,17 @@ const SalesCallContactedMemberBlock: React.FC<{
             dataIndex: 'lastContactAt',
             title: formatMessage(salesMessages.label.lastContactAt),
             render: lastContactAt => <time>{moment(lastContactAt).fromNow()}</time>,
+          },
+          {
+            key: 'lastTaskCategoryName',
+            dataIndex: 'lastTaskCategoryName',
+            title: formatMessage(salesMessages.label.lastTask),
+            ...getColumnSearchProps((value?: string) =>
+              setFilters({
+                ...filters,
+                lastTaskCategoryName: value,
+              }),
+            ),
           },
           {
             key: 'memberId',
