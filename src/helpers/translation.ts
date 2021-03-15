@@ -465,8 +465,8 @@ export const appointmentMessages = {
     startedAt: { id: 'appointment.term.startedAt', defaultMessage: '起始時間' },
     periodType: { id: 'appointment.term.periodType', defaultMessage: '重複週期' },
     reservationPlan: { id: 'appointment.term.reservationPlan', defaultMessage: '提前預約' },
-    reservationAmount: {id: 'appointment.term.reservationAmount', defaultMessage: '時間長度' },
-    reservationType: {id: 'appointment.term.reservationType', defaultMessage: '時間單位' },
+    reservationAmount: { id: 'appointment.term.reservationAmount', defaultMessage: '時間長度' },
+    reservationType: { id: 'appointment.term.reservationType', defaultMessage: '時間單位' },
   }),
   label: defineMessages({
     duration: { id: 'appointment.label.duration', defaultMessage: '時間長度(分鐘)' },

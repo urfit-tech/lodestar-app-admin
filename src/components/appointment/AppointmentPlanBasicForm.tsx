@@ -8,7 +8,7 @@ import { defineMessages, useIntl } from 'react-intl'
 import { handleError } from '../../helpers'
 import { appointmentMessages, commonMessages, errorMessages } from '../../helpers/translation'
 import types from '../../types'
-import { AppointmentPlanAdminProps } from '../../types/appointment'
+import { AppointmentPlanAdminProps, ReservationType } from '../../types/appointment'
 import { StyledTips } from '../admin'
 
 const messages = defineMessages({
@@ -21,7 +21,7 @@ type FieldProps = {
   title: string
   phone: string
   reservationAmount: number
-  reservationType: string
+  reservationType: ReservationType
 }
 
 const AppointmentPlanBasicForm: React.FC<{
@@ -72,7 +72,7 @@ const AppointmentPlanBasicForm: React.FC<{
         title: appointmentPlanAdmin.title,
         phone: appointmentPlanAdmin.phone,
         reservationAmount: appointmentPlanAdmin.reservationAmount || 0,
-        reservationUnit: appointmentPlanAdmin.reservationType || 'hour',
+        reservationType: appointmentPlanAdmin.reservationType || 'hour',
       }}
       onFinish={handleSubmit}
     >
