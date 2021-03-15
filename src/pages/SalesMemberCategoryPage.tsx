@@ -1,6 +1,7 @@
-import { BarChartOutlined } from '@ant-design/icons'
+import { Funnel } from '@ant-design/charts'
+import { BarChartOutlined, FunnelPlotFilled } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { DatePicker, message, Table } from 'antd'
+import { Button, DatePicker, message, Popover, Table } from 'antd'
 import gql from 'graphql-tag'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
 import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
@@ -51,13 +52,13 @@ export function SalesMemberCategoryPage() {
     endedAt: moment().endOf('week').toDate(),
     category: null,
   })
-  const { assignedMemberCollection, ...assignedMember } = useAssignedMemberCollection(condition)
+  const { assignedMemberCollection, ...assignedMemberCollectionState } = useAssignedMemberCollection(condition)
 
   useEffect(() => {
-    if (assignedMember.error) {
+    if (assignedMemberCollectionState.error) {
       message.error('載入錯誤')
     }
-  }, [assignedMember.error])
+  }, [assignedMemberCollectionState.error])
 
   const sales = groupBy<AssignedMember>(({ manager: sale }) => `${sale.id}_${sale.name}`)(assignedMemberCollection)
 
@@ -150,7 +151,7 @@ export function SalesMemberCategoryPage() {
 
       <AdminCard>
         <Table<RecordType>
-          loading={assignedMember.loading}
+          loading={assignedMemberCollectionState.loading}
           dataSource={dataSource}
           rowKey="saleId"
           scroll={{ x: 1000, y: 400 }}
@@ -256,6 +257,56 @@ export function SalesMemberCategoryPage() {
             title="LE 值"
             dataIndex="laborEvaluationScore"
             sorter={(a, b) => a.laborEvaluationScore - b.laborEvaluationScore}
+          />
+
+          <Table.Column<RecordType>
+            key="chart"
+            title="轉化圖"
+            render={(_, record) => (
+              <Popover
+                trigger="click"
+                content={
+                  <Funnel
+                    data={[
+                      {
+                        stage: '指派名單數',
+                        number: record.memberCount.total,
+                      },
+                      {
+                        stage: '接通數',
+                        number: record.getThroughCount,
+                      },
+                      {
+                        stage: '成功開發數',
+                        number: record.notFirstRejectionCount,
+                      },
+                      {
+                        stage: '正在開發數',
+                        number: record.contactingCount,
+                      },
+                      {
+                        stage: '示範數',
+                        number: record.demoCount,
+                      },
+                      {
+                        stage: '成交數',
+                        number: record.agreedCount,
+                      },
+                    ]}
+                    width={320}
+                    height={320}
+                    padding={20}
+                    xField="stage"
+                    yField="number"
+                    isTransposed={false}
+                    legend={false}
+                  />
+                }
+                placement="topRight"
+              >
+                <Button type="text" icon={<FunnelPlotFilled />} />
+              </Popover>
+            )}
           />
         </Table>
       </AdminCard>
