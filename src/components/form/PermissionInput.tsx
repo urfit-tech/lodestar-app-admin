@@ -26,6 +26,7 @@ const messages = defineMessages({
   task: { id: 'permission.label.task', defaultMessage: '待辦管理' },
   appAdmin: { id: 'permission.label.appAdmin', defaultMessage: '網站管理' },
   project: { id: 'permission.label.project', defaultMessage: '專案管理' },
+  contract: { id: 'permission.label.contract', defaultMessage: '合約管理' },
 })
 
 const StyledBlock = styled.div`
@@ -66,23 +67,25 @@ const PermissionInput: React.FC<{
           {formatMessage(messages.all)}
         </Checkbox>
       </div>
-      {Object.keys(permissionGroups).map(groupId => (
-        <div key={groupId} className="col-4 mb-3">
-          {groupId === 'project' && !enabledModules.project ? null : (
-            <PermissionGroup
-              label={
-                messages[groupId as keyof typeof messages]
-                  ? formatMessage(messages[groupId as keyof typeof messages])
-                  : groupId
-              }
-              options={permissionGroups[groupId].map(permission => permission.id)}
-              fixedOptions={fixOptions}
-              value={value}
-              onChange={onChange}
-            />
-          )}
-        </div>
-      ))}
+      {Object.keys(messages)
+        .filter(key => key !== 'all')
+        .map(groupId => (
+          <div key={groupId} className="col-4 mb-3">
+            {groupId === 'project' && !enabledModules.project ? null : (
+              <PermissionGroup
+                label={
+                  messages[groupId as keyof typeof messages]
+                    ? formatMessage(messages[groupId as keyof typeof messages])
+                    : groupId
+                }
+                options={permissionGroups[groupId].map(permission => permission.id)}
+                fixedOptions={fixOptions}
+                value={value}
+                onChange={onChange}
+              />
+            )}
+          </div>
+        ))}
     </div>
   )
 }
