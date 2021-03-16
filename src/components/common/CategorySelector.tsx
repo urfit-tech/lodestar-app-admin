@@ -5,7 +5,7 @@ import { commonMessages } from 'lodestar-app-admin/src/helpers/translation'
 import { useIntl } from 'react-intl'
 import types from '../../types'
 
-export function CategorySelector({
+export default function CategorySelector({
   class: categoryClass,
   onChange,
 }: {

@@ -10,10 +10,10 @@ import moment from 'moment'
 import { filter, flatten, groupBy, keys, length, map, split, sum, toPairs } from 'ramda'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { CategorySelector } from '../components/common/CategorySelector'
+import CategorySelector from '../components/common/CategorySelector'
 import types from '../types'
 
-type AssignedMember = {
+type AssignedMemberProps = {
   id: string
   manager: {
     id: string
@@ -42,7 +42,7 @@ const StyledFilter = styled.div`
   line-height: 45px;
 `
 
-export function SalesMemberCategoryPage() {
+export default function SalesMemberCategoryPage() {
   const [condition, setCondition] = useState<{
     startedAt: Date | null
     endedAt: Date | null
@@ -60,7 +60,7 @@ export function SalesMemberCategoryPage() {
     }
   }, [assignedMemberCollectionState.error])
 
-  const sales = groupBy<AssignedMember>(({ manager: sale }) => `${sale.id}_${sale.name}`)(assignedMemberCollection)
+  const sales = groupBy<AssignedMemberProps>(({ manager: sale }) => `${sale.id}_${sale.name}`)(assignedMemberCollection)
 
   const dataSource = map(([sale, memberList]) => {
     const [saleId, saleName] = split('_')(sale)
@@ -314,11 +314,11 @@ export function SalesMemberCategoryPage() {
   )
 }
 
-function useAssignedMemberCollection(filter: {
+const useAssignedMemberCollection = (filter: {
   startedAt: Date | null
   endedAt: Date | null
   category: string | null
-}) {
+}) => {
   const { loading, error, data } = useQuery<types.GET_ASSIGNED_MEMBER, types.GET_ASSIGNED_MEMBERVariables>(
     gql`
       query GET_ASSIGNED_MEMBER($startedAt: timestamptz!, $endedAt: timestamptz!, $category: String) {
@@ -371,7 +371,7 @@ function useAssignedMemberCollection(filter: {
     },
   )
 
-  const assignedMemberCollection: AssignedMember[] =
+  const assignedMemberCollection: AssignedMemberProps[] =
     loading || !!error || !data
       ? []
       : data.member.map(v => ({

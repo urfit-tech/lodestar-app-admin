@@ -12,7 +12,7 @@ import { MemberContractCollectionPage } from './pages/MemberContractCollectionPa
 import MemberNoteAdminPage from './pages/MemberNoteAdminPage'
 import SalesCallPage from './pages/SalesCallPage'
 import SalesMaterialsPage from './pages/SalesMaterialsPage'
-import { SalesMemberCategoryPage } from './pages/SalesMemberCategoryPage'
+import SalesMemberCategoryPage from './pages/SalesMemberCategoryPage'
 import TermsPtPage from './pages/TermsPtPage'
 
 const App: React.FC = () => {
