@@ -1150,6 +1150,25 @@ export const orderMessages = {
   }),
 }
 
+export const permissionGroupsMessages = defineMessages({
+  backstage: { id: 'permission.label.backstage', defaultMessage: '後台權限' },
+  sales: { id: 'permission.label.sales', defaultMessage: '銷售管理' },
+  program: { id: 'permission.label.program', defaultMessage: '線上課程' },
+  programPackage: { id: 'permission.label.programPackage', defaultMessage: '課程組合' },
+  programProgress: { id: 'permission.label.programProgress', defaultMessage: '學習進度' },
+  appointment: { id: 'permission.label.appointment', defaultMessage: '預約服務' },
+  activity: { id: 'permission.label.activity', defaultMessage: '線下實體' },
+  blog: { id: 'permission.label.post', defaultMessage: '媒體文章' },
+  coupon: { id: 'permission.label.coupon', defaultMessage: '折價方案' },
+  voucher: { id: 'permission.label.voucher', defaultMessage: '兌換方案' },
+  bonus: { id: 'permission.label.bonus', defaultMessage: '紅利折抵' },
+  memberAdmin: { id: 'permission.label.memberAdmin', defaultMessage: '會員管理' },
+  task: { id: 'permission.label.task', defaultMessage: '待辦管理' },
+  appAdmin: { id: 'permission.label.appAdmin', defaultMessage: '網站管理' },
+  project: { id: 'permission.label.project', defaultMessage: '專案管理' },
+  contract: { id: 'permission.label.contract', defaultMessage: '合約管理' },
+})
+
 export const permissionMessages = defineMessages({
   // backstage
   BACKSTAGE_ENTER: { id: 'permission.BACKSTAGE_ENTER', defaultMessage: '可進入後台' },

@@ -24,13 +24,13 @@ export type Module =
   | 'merchandise'
   | 'merchandise_customization'
   | 'merchandise_virtualness'
-  | 'module'
   | 'order_contact'
   | 'permission'
   | 'podcast'
   | 'podcast_recording'
   | 'point'
   | 'practice'
+  | 'private_appointment_plan'
   | 'program_content_material'
   | 'program_package'
   | 'project'
@@ -42,7 +42,6 @@ export type Module =
   | 'tempo_delivery'
   | 'voucher'
   | 'xuemi_pt'
-  | 'private_appointment_plan'
 
 export type Currency = {
   name: string
