@@ -19,6 +19,16 @@ const messages = {
   salesCallNotice: { id: 'sales.content.salesCallNotice', defaultMessage: '開發中名單勿滯留過久，否則將影響名單派發' },
 }
 
+const TableWrapper = styled.div`
+  overflow-x: auto;
+  th {
+    white-space: nowrap;
+  }
+  td {
+    white-space: nowrap;
+    color: var(--gray-darker);
+  }
+`
 const StyledButton = styled(Button)`
   display: flex;
   justify-content: center;
@@ -114,99 +124,100 @@ const SalesCallContactedMemberBlock: React.FC<{
 
   return (
     <StyledAdminCard>
-      <Table<SalesCallMemberProps>
-        rowKey="memberId"
-        columns={[
-          {
-            key: 'categoryNames',
-            dataIndex: 'categoryNames',
-            title: formatMessage(commonMessages.term.category),
-            render: categoryNames => categoryNames.map((v: string) => <div>{v}</div>),
-          },
-          {
-            key: 'studentName',
-            dataIndex: 'name',
-            title: formatMessage(salesMessages.label.studentName),
-            ...getColumnSearchProps((value?: string) =>
-              setFilters({
-                ...filters,
-                studentName: value,
-              }),
-            ),
-          },
-          {
-            key: 'phones',
-            dataIndex: 'phones',
-            title: formatMessage(salesMessages.label.tel),
-            render: phones => phones.map((v: string) => <address className="m-0">{v}</address>),
-            ...getColumnSearchProps((value?: string) =>
-              setFilters({
-                ...filters,
-                phone: value,
-              }),
-            ),
-          },
-          {
-            key: 'email',
-            dataIndex: 'email',
-            title: 'Email',
-            ...getColumnSearchProps((value?: string) =>
-              setFilters({
-                ...filters,
-                email: value,
-              }),
-            ),
-          },
-          {
-            key: 'lastContactAt',
-            dataIndex: 'lastContactAt',
-            title: formatMessage(salesMessages.label.lastContactAt),
-            render: lastContactAt => <time>{moment(lastContactAt).fromNow()}</time>,
-          },
-          {
-            key: 'lastTaskCategoryName',
-            dataIndex: 'lastTaskCategoryName',
-            title: formatMessage(salesMessages.label.lastTask),
-            ...getColumnSearchProps((value?: string) =>
-              setFilters({
-                ...filters,
-                lastTaskCategoryName: value,
-              }),
-            ),
-          },
-          {
-            key: 'memberId',
-            dataIndex: 'id',
-            title: '',
-            render: (memberId, record) => (
-              <div className="d-flex flex-row justify-content-end">
-                <a href={`admin/members/${memberId}`} target="_blank" rel="noreferrer">
-                  <StyledButton icon={<Icon component={() => <UserOIcon />} />} className="mr-2" />
-                </a>
-                {/* TODO: jitsi demo */}
-                {/* <StyledButton icon={<Icon component={() => <DemoIcon />} />} className="mr-2" /> */}
-                <StyledButton
-                  disabled={!record.phones[0] || !sales?.telephone}
-                  icon={<Icon component={() => <CallOutIcon />} />}
-                  type="primary"
-                  onClick={() =>
-                    call({
-                      appId,
-                      apiHost,
-                      authToken,
-                      phone: record.phones[0],
-                      salesTelephone: sales?.telephone || '',
-                    })
-                  }
-                />
-              </div>
-            ),
-          },
-        ]}
-        dataSource={dataSource}
-        className="mb-3"
-      />
-
+      <TableWrapper>
+        <Table<SalesCallMemberProps>
+          rowKey="memberId"
+          columns={[
+            {
+              key: 'categoryNames',
+              dataIndex: 'categoryNames',
+              title: formatMessage(commonMessages.term.category),
+              render: categoryNames => categoryNames.map((v: string) => <div>{v}</div>),
+            },
+            {
+              key: 'studentName',
+              dataIndex: 'name',
+              title: formatMessage(salesMessages.label.studentName),
+              ...getColumnSearchProps((value?: string) =>
+                setFilters({
+                  ...filters,
+                  studentName: value,
+                }),
+              ),
+            },
+            {
+              key: 'phones',
+              dataIndex: 'phones',
+              title: formatMessage(salesMessages.label.tel),
+              render: phones => phones.map((v: string) => <address className="m-0">{v}</address>),
+              ...getColumnSearchProps((value?: string) =>
+                setFilters({
+                  ...filters,
+                  phone: value,
+                }),
+              ),
+            },
+            {
+              key: 'email',
+              dataIndex: 'email',
+              title: 'Email',
+              ...getColumnSearchProps((value?: string) =>
+                setFilters({
+                  ...filters,
+                  email: value,
+                }),
+              ),
+            },
+            {
+              key: 'lastContactAt',
+              dataIndex: 'lastContactAt',
+              title: formatMessage(salesMessages.label.lastContactAt),
+              render: lastContactAt => <time>{moment(lastContactAt).fromNow()}</time>,
+            },
+            {
+              key: 'lastTaskCategoryName',
+              dataIndex: 'lastTaskCategoryName',
+              title: formatMessage(salesMessages.label.lastTask),
+              ...getColumnSearchProps((value?: string) =>
+                setFilters({
+                  ...filters,
+                  lastTaskCategoryName: value,
+                }),
+              ),
+            },
+            {
+              key: 'memberId',
+              dataIndex: 'id',
+              title: '',
+              render: (memberId, record) => (
+                <div className="d-flex flex-row justify-content-end">
+                  <a href={`admin/members/${memberId}`} target="_blank" rel="noreferrer">
+                    <StyledButton icon={<Icon component={() => <UserOIcon />} />} className="mr-2" />
+                  </a>
+                  {/* TODO: jitsi demo */}
+                  {/* <StyledButton icon={<Icon component={() => <DemoIcon />} />} className="mr-2" /> */}
+                  <StyledButton
+                    disabled={!record.phones[0] || !sales?.telephone}
+                    icon={<Icon component={() => <CallOutIcon />} />}
+                    type="primary"
+                    onClick={() =>
+                      call({
+                        appId,
+                        apiHost,
+                        authToken,
+                        phone: record.phones[0],
+                        salesTelephone: sales?.telephone || '',
+                      })
+                    }
+                  />
+                </div>
+              ),
+            },
+          ]}
+          dataSource={dataSource}
+          className="mb-3"
+        />
+      </TableWrapper>
       <StyledNotice>{formatMessage(messages.salesCallNotice)}</StyledNotice>
     </StyledAdminCard>
   )

@@ -22,6 +22,15 @@ const StyledButton = styled(Button)`
   width: 56px;
   height: 36px;
 `
+const TableWrapper = styled.div`
+  overflow-x: auto;
+  th {
+    white-space: nowrap;
+  }
+  td {
+    color: var(--gray-darker);
+  }
+`
 
 type RecordProps = {
   studentName: string
@@ -111,86 +120,88 @@ const SalesCallTransactedMemberBlock: React.FC<{
 
   return (
     <AdminCard>
-      <Table<RecordProps>
-        rowKey="memberId"
-        columns={[
-          {
-            key: 'studentName',
-            dataIndex: 'studentName',
-            title: formatMessage(salesMessages.label.studentName),
-            ...getColumnSearchProps((value?: string) =>
-              setFilters({
-                ...filters,
-                studentName: value,
-              }),
-            ),
-          },
-          {
-            key: 'phones',
-            dataIndex: 'phones',
-            title: formatMessage(salesMessages.label.tel),
-            render: phones => phones.map((v: string) => <address className="m-0">{v}</address>),
-            ...getColumnSearchProps((value?: string) =>
-              setFilters({
-                ...filters,
-                phone: value,
-              }),
-            ),
-          },
-          {
-            key: 'email',
-            dataIndex: 'email',
-            title: 'Email',
-            ...getColumnSearchProps((value?: string) =>
-              setFilters({
-                ...filters,
-                email: value,
-              }),
-            ),
-          },
-          {
-            key: 'serviceEndedAtList',
-            dataIndex: 'serviceEndedAtList',
-            title: formatMessage(salesMessages.label.serviceEndedAt),
-            render: serviceEndedAtList =>
-              serviceEndedAtList.map((v: Date) => (
-                <time className="d-block">{moment(v).format('YYYY-MM-DD HH:mm')}</time>
-              )),
-          },
-          {
-            key: 'projectPlanNames',
-            dataIndex: 'projectPlanNames',
-            title: formatMessage(salesMessages.label.productItem),
-            render: projectPlanNames => projectPlanNames.map((v: string) => <div>{v}</div>),
-          },
-          {
-            key: 'memberId',
-            dataIndex: 'memberId',
-            render: (memberId, record) => (
-              <div className="d-flex flex-row justify-content-end">
-                <a href={`admin/members/${memberId}`} target="_blank" rel="noreferrer">
-                  <StyledButton icon={<Icon component={() => <UserOIcon />} />} className="mr-2" />
-                </a>
-                <StyledButton
-                  disabled={!record.phones[0] || !sales?.telephone}
-                  icon={<Icon component={() => <CallOutIcon />} />}
-                  type="primary"
-                  onClick={() =>
-                    call({
-                      appId,
-                      apiHost,
-                      authToken,
-                      phone: record.phones[0],
-                      salesTelephone: sales?.telephone || '',
-                    })
-                  }
-                />
-              </div>
-            ),
-          },
-        ]}
-        dataSource={dataSource}
-      />
+      <TableWrapper>
+        <Table<RecordProps>
+          rowKey="memberId"
+          columns={[
+            {
+              key: 'studentName',
+              dataIndex: 'studentName',
+              title: formatMessage(salesMessages.label.studentName),
+              ...getColumnSearchProps((value?: string) =>
+                setFilters({
+                  ...filters,
+                  studentName: value,
+                }),
+              ),
+            },
+            {
+              key: 'phones',
+              dataIndex: 'phones',
+              title: formatMessage(salesMessages.label.tel),
+              render: phones => phones.map((v: string) => <address className="m-0">{v}</address>),
+              ...getColumnSearchProps((value?: string) =>
+                setFilters({
+                  ...filters,
+                  phone: value,
+                }),
+              ),
+            },
+            {
+              key: 'email',
+              dataIndex: 'email',
+              title: 'Email',
+              ...getColumnSearchProps((value?: string) =>
+                setFilters({
+                  ...filters,
+                  email: value,
+                }),
+              ),
+            },
+            {
+              key: 'serviceEndedAtList',
+              dataIndex: 'serviceEndedAtList',
+              title: formatMessage(salesMessages.label.serviceEndedAt),
+              render: serviceEndedAtList =>
+                serviceEndedAtList.map((v: Date) => (
+                  <time className="d-block">{moment(v).format('YYYY-MM-DD HH:mm')}</time>
+                )),
+            },
+            {
+              key: 'projectPlanNames',
+              dataIndex: 'projectPlanNames',
+              title: formatMessage(salesMessages.label.productItem),
+              render: projectPlanNames => projectPlanNames.map((v: string) => <div>{v}</div>),
+            },
+            {
+              key: 'memberId',
+              dataIndex: 'memberId',
+              render: (memberId, record) => (
+                <div className="d-flex flex-row justify-content-end">
+                  <a href={`admin/members/${memberId}`} target="_blank" rel="noreferrer">
+                    <StyledButton icon={<Icon component={() => <UserOIcon />} />} className="mr-2" />
+                  </a>
+                  <StyledButton
+                    disabled={!record.phones[0] || !sales?.telephone}
+                    icon={<Icon component={() => <CallOutIcon />} />}
+                    type="primary"
+                    onClick={() =>
+                      call({
+                        appId,
+                        apiHost,
+                        authToken,
+                        phone: record.phones[0],
+                        salesTelephone: sales?.telephone || '',
+                      })
+                    }
+                  />
+                </div>
+              ),
+            },
+          ]}
+          dataSource={dataSource}
+        />
+      </TableWrapper>
     </AdminCard>
   )
 }
