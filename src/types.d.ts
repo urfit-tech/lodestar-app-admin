@@ -591,6 +591,8 @@ export interface UPDATE_APPOINTMENT_PLAN_TITLEVariables {
   appointmentPlanId: any;
   title: string;
   phone: string;
+  reservationAmount?: any | null;
+  reservationType?: string | null;
 }
 
 /* tslint:disable */
@@ -6623,6 +6625,11 @@ export interface GET_APPOINTMENT_PLAN_ADMIN_appointment_plan_by_pk {
   currency_id: string;
   creator_id: string;
   is_private: boolean;
+  reservation_amount: any;
+  /**
+   * hour / day
+   */
+  reservation_type: string | null;
   /**
    * An array relationship
    */

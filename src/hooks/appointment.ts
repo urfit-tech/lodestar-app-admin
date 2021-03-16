@@ -4,7 +4,7 @@ import moment from 'moment'
 import { useMemo } from 'react'
 import { AppointmentPeriodCardProps } from '../components/appointment/AppointmentPeriodCard'
 import types from '../types'
-import { AppointmentPlanAdminProps, ScheduleIntervalType } from '../types/appointment'
+import { AppointmentPlanAdminProps, ReservationType, ScheduleIntervalType } from '../types/appointment'
 
 export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
   const { loading, error, data, refetch } = useQuery<
@@ -25,6 +25,8 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
           currency_id
           creator_id
           is_private
+          reservation_amount
+          reservation_type
           appointment_schedules {
             id
             excludes
@@ -68,6 +70,8 @@ export const useAppointmentPlanAdmin = (appointmentPlanId: string) => {
       description: data.appointment_plan_by_pk.description,
       duration: data.appointment_plan_by_pk.duration,
       listPrice: data.appointment_plan_by_pk.price,
+      reservationAmount: data.appointment_plan_by_pk.reservation_amount,
+      reservationType: (data.appointment_plan_by_pk.reservation_type as ReservationType) || null,
       schedules: data.appointment_plan_by_pk.appointment_schedules.map(appointmentSchedule => {
         const excludedPeriods = appointmentSchedule.excludes as string[]
         return {

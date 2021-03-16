@@ -1,4 +1,5 @@
 export type ScheduleIntervalType = 'Y' | 'M' | 'W' | 'D'
+export type ReservationType = 'hour' | 'day'
 export type AppointmentPlanAdminProps = {
   id: string
   title: string
@@ -17,6 +18,8 @@ export type AppointmentPlanAdminProps = {
   currencyId: string
   creatorId: string
   isPrivate: boolean
+  reservationAmount: number
+  reservationType: ReservationType | null
 }
 
 export type AppointmentPeriodProps = {

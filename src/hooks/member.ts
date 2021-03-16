@@ -475,31 +475,34 @@ export const useMemberNotesAdmin = (
       })),
     })) || []
 
-  const loadMoreNotes = () =>
-    fetchMore({
-      variables: {
-        orderBy,
-        condition: {
-          ...condition,
-          created_at: orderBy.created_at
-            ? { [orderBy.created_at === 'desc' ? '_lt' : '_gt']: data?.member_note.slice(-1)[0]?.created_at }
-            : undefined,
-          duration: orderBy.duration
-            ? { [orderBy.duration === 'desc' ? '_lt' : '_gt']: data?.member_note.slice(-1)[0]?.duration }
-            : undefined,
-        },
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) {
-          return prev
-        }
-        return {
-          ...prev,
-          member_note_aggregate: fetchMoreResult.member_note_aggregate,
-          member_note: [...prev.member_note, ...fetchMoreResult.member_note],
-        }
-      },
-    })
+  const loadMoreNotes =
+    (data?.member_note_aggregate.aggregate?.count || 0) > 10
+      ? () =>
+          fetchMore({
+            variables: {
+              orderBy,
+              condition: {
+                ...condition,
+                created_at: orderBy.created_at
+                  ? { [orderBy.created_at === 'desc' ? '_lt' : '_gt']: data?.member_note.slice(-1)[0]?.created_at }
+                  : undefined,
+                duration: orderBy.duration
+                  ? { [orderBy.duration === 'desc' ? '_lt' : '_gt']: data?.member_note.slice(-1)[0]?.duration }
+                  : undefined,
+              },
+            },
+            updateQuery: (prev, { fetchMoreResult }) => {
+              if (!fetchMoreResult) {
+                return prev
+              }
+              return {
+                ...prev,
+                member_note_aggregate: fetchMoreResult.member_note_aggregate,
+                member_note: [...prev.member_note, ...fetchMoreResult.member_note],
+              }
+            },
+          })
+      : undefined
 
   return {
     loadingNotes: loading,
@@ -508,7 +511,7 @@ export const useMemberNotesAdmin = (
     allMemberTags,
     notes,
     refetchNotes: refetch,
-    loadMoreNotes: (data?.member_note_aggregate.aggregate?.count || 0) > 10 ? loadMoreNotes : undefined,
+    loadMoreNotes,
   }
 }
 

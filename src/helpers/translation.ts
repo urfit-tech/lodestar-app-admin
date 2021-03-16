@@ -466,6 +466,9 @@ export const appointmentMessages = {
     contactPhone: { id: 'appointment.term.contactPhone', defaultMessage: '聯絡手機' },
     startedAt: { id: 'appointment.term.startedAt', defaultMessage: '起始時間' },
     periodType: { id: 'appointment.term.periodType', defaultMessage: '重複週期' },
+    reservationPlan: { id: 'appointment.term.reservationPlan', defaultMessage: '提前預約' },
+    reservationAmount: { id: 'appointment.term.reservationAmount', defaultMessage: '時間長度' },
+    reservationType: { id: 'appointment.term.reservationType', defaultMessage: '時間單位' },
   }),
   label: defineMessages({
     duration: { id: 'appointment.label.duration', defaultMessage: '時間長度(分鐘)' },
@@ -1256,8 +1259,6 @@ export const permissionMessages = defineMessages({
   MEMBER_ATTENDANT: { id: 'permission.MEMBER_ATTENDANT', defaultMessage: '打卡功能' },
   SALES_CALL_ADMIN: { id: 'permission.SALES_CALL_ADMIN', defaultMessage: '檢視業務專區' },
   VIEW_ALL_MEMBER_NOTE: { id: 'permission.VIEW_ALL_MEMBER_NOTE', defaultMessage: '查看所有聯絡記錄' },
-  MEMBER_CONTRACT_VALUE_VIEW: { id: 'permission.MEMBER_CONTRACT_VALUE_VIEW', defaultMessage: '查看合約資料' },
-  MEMBER_CONTRACT_VALUE_EDIT: { id: 'permission.MEMBER_CONTRACT_VALUE_EDIT', defaultMessage: '編輯合約資料' },
 
   // task
   TASK_ADMIN: { id: 'permission.TASK_ADMIN', defaultMessage: '所有待辦清單功能' },
@@ -1274,6 +1275,18 @@ export const permissionMessages = defineMessages({
 
   // practice
   PRACTICE_ADMIN: { id: 'permission.PRACTICE_ADMIN', defaultMessage: '所有作業功能' },
+
+  // contract
+  CONTRACT_VALUE_VIEW: { id: 'permission.CONTRACT_VALUE_VIEW', defaultMessage: '檢視合約' },
+  CONTRACT_APPROVED_AT_EDIT: { id: 'CONTRACT_APPROVED_AT_EDIT', defaultMessage: '編輯審核通過日期' },
+  CONTRACT_CANCELED_AT_EDIT: { id: 'CONTRACT_CANCELED_AT_EDIT', defaultMessage: '編輯取消日期' },
+  CONTRACT_REFUND_AT_EDIT: { id: 'CONTRACT_REFUND_AT_EDIT', defaultMessage: '編輯提出退費日期' },
+  CONTRACT_PAYMENT_METHOD_EDIT: { id: 'CONTRACT_PAYMENT_METHOD_EDIT', defaultMessage: '編輯付款方式' },
+  CONTRACT_INSTALLMENT_PLAN_EDIT: { id: 'CONTRACT_INSTALLMENT_PLAN_EDIT', defaultMessage: '編輯付款期數' },
+  CONTRACT_PAYMENT_NUMBER_EDIT: { id: 'CONTRACT_PAYMENT_NUMBER_EDIT', defaultMessage: '編輯金流編號' },
+  CONTRACT_NOTE_EDIT: { id: 'CONTRACT_NOTE_EDIT', defaultMessage: '編輯備註' },
+  CONTRACT_REVENUE_SHARING_EDIT: { id: 'CONTRACT_REVENUE_SHARING_EDIT', defaultMessage: '編輯與新增業務分潤' },
+  CONTRACT_ATTACHMENT_EDIT: { id: 'CONTRACT_ATTACHMENT_EDIT', defaultMessage: '編輯上傳檔案' },
 })
 
 export const codeMessages = defineMessages({

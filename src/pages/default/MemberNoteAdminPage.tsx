@@ -1,6 +1,5 @@
 import { Button, message, Skeleton } from 'antd'
-import { isEmpty } from 'ramda'
-import React from 'react'
+import React, { useState } from 'react'
 import { useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
 import { AdminBlock } from '../../components/admin'
@@ -21,12 +20,14 @@ const MemberProfileAdminPage: React.FC = () => {
   const { currentMemberId } = useAuth()
 
   const { memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
-  const { loadingNotes, errorNotes, notes, refetchNotes } = useMemberNotesAdmin(
+  const { loadingNotes, errorNotes, notes, refetchNotes, loadMoreNotes } = useMemberNotesAdmin(
     { created_at: types.order_by.desc },
     { member: memberId },
   )
   const { insertMemberNote } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
+
+  const [loading, setLoading] = useState(false)
 
   if (!currentMemberId || loadingNotes || errorNotes || !memberAdmin) {
     return <Skeleton active />
@@ -66,7 +67,7 @@ const MemberProfileAdminPage: React.FC = () => {
           }
         />
         <AdminBlock className="mt-4">
-          {isEmpty(notes) ? (
+          {notes.length === 0 ? (
             <StyledEmptyBlock>
               <span>{formatMessage(memberMessages.text.noMemberNote)}</span>
             </StyledEmptyBlock>
@@ -82,6 +83,18 @@ const MemberProfileAdminPage: React.FC = () => {
                 }}
               />
             ))
+          )}
+
+          {loadMoreNotes && (
+            <Button
+              onClick={() => {
+                setLoading(true)
+                loadMoreNotes().finally(() => setLoading(true))
+              }}
+              loading={loading}
+            >
+              {formatMessage(commonMessages.ui.showMore)}
+            </Button>
           )}
         </AdminBlock>
       </div>
