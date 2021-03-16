@@ -4,6 +4,32 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
+// GraphQL query operation: GET_CATEGORY
+// ====================================================
+
+export interface GET_CATEGORY_category {
+  __typename: "category";
+  id: string;
+  name: string;
+}
+
+export interface GET_CATEGORY {
+  /**
+   * fetch data from the table: "category"
+   */
+  category: GET_CATEGORY_category[];
+}
+
+export interface GET_CATEGORYVariables {
+  class: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
 // GraphQL query operation: GET_MEMBER_NAME
 // ====================================================
 
@@ -927,6 +953,102 @@ export interface GET_SALES_MATERIALSVariables {
   endedAt: any;
   sales: String_comparison_exp;
   materialName: string;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_ASSIGNED_MEMBER
+// ====================================================
+
+export interface GET_ASSIGNED_MEMBER_member_manager {
+  __typename: "member";
+  id: string;
+  name: string;
+}
+
+export interface GET_ASSIGNED_MEMBER_member_member_notes {
+  __typename: "member_note";
+  id: string;
+  author_id: string;
+  /**
+   * NULL | inbound | outbound
+   */
+  type: string | null;
+  /**
+   * NULL | answered | missed
+   */
+  status: string | null;
+  duration: number;
+  created_at: any;
+  rejected_at: any | null;
+}
+
+export interface GET_ASSIGNED_MEMBER_member_member_contracts {
+  __typename: "member_contract";
+  id: any;
+  values: any | null;
+}
+
+export interface GET_ASSIGNED_MEMBER_member_member_contracts_aggregate_aggregate {
+  __typename: "member_contract_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_ASSIGNED_MEMBER_member_member_contracts_aggregate {
+  __typename: "member_contract_aggregate";
+  aggregate: GET_ASSIGNED_MEMBER_member_member_contracts_aggregate_aggregate | null;
+}
+
+export interface GET_ASSIGNED_MEMBER_member_member_tasks_aggregate_aggregate {
+  __typename: "member_task_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_ASSIGNED_MEMBER_member_member_tasks_aggregate {
+  __typename: "member_task_aggregate";
+  aggregate: GET_ASSIGNED_MEMBER_member_member_tasks_aggregate_aggregate | null;
+}
+
+export interface GET_ASSIGNED_MEMBER_member {
+  __typename: "member";
+  id: string;
+  /**
+   * An object relationship
+   */
+  manager: GET_ASSIGNED_MEMBER_member_manager | null;
+  /**
+   * An array relationship
+   */
+  member_notes: GET_ASSIGNED_MEMBER_member_member_notes[];
+  /**
+   * An array relationship
+   */
+  member_contracts: GET_ASSIGNED_MEMBER_member_member_contracts[];
+  /**
+   * An aggregated array relationship
+   */
+  member_contracts_aggregate: GET_ASSIGNED_MEMBER_member_member_contracts_aggregate;
+  /**
+   * An aggregated array relationship
+   */
+  member_tasks_aggregate: GET_ASSIGNED_MEMBER_member_member_tasks_aggregate;
+}
+
+export interface GET_ASSIGNED_MEMBER {
+  /**
+   * fetch data from the table: "member"
+   */
+  member: GET_ASSIGNED_MEMBER_member[];
+}
+
+export interface GET_ASSIGNED_MEMBERVariables {
+  startedAt: any;
+  endedAt: any;
+  category?: string | null;
 }
 
 /* tslint:disable */
