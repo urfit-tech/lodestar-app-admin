@@ -874,22 +874,12 @@ export interface GET_SALES_SUMMARYVariables {
 // GraphQL query operation: GET_SALES_MATERIALS
 // ====================================================
 
-export interface GET_SALES_MATERIALS_allMembers {
-  __typename: "member_property";
-  v: string;
-}
-
-export interface GET_SALES_MATERIALS_assignedMembers {
-  __typename: "member_property";
-  v: string;
-}
-
 export interface GET_SALES_MATERIALS_calledMembers {
   __typename: "member_property";
   v: string;
 }
 
-export interface GET_SALES_MATERIALS_answeredMembers {
+export interface GET_SALES_MATERIALS_contactedMembers {
   __typename: "member_property";
   v: string;
 }
@@ -904,15 +894,12 @@ export interface GET_SALES_MATERIALS_dealtMembers {
   v: string;
 }
 
+export interface GET_SALES_MATERIALS_rejectedMembers {
+  __typename: "member_property";
+  v: string;
+}
+
 export interface GET_SALES_MATERIALS {
-  /**
-   * fetch data from the table: "member_property"
-   */
-  allMembers: GET_SALES_MATERIALS_allMembers[];
-  /**
-   * fetch data from the table: "member_property"
-   */
-  assignedMembers: GET_SALES_MATERIALS_assignedMembers[];
   /**
    * fetch data from the table: "member_property"
    */
@@ -920,7 +907,7 @@ export interface GET_SALES_MATERIALS {
   /**
    * fetch data from the table: "member_property"
    */
-  answeredMembers: GET_SALES_MATERIALS_answeredMembers[];
+  contactedMembers: GET_SALES_MATERIALS_contactedMembers[];
   /**
    * fetch data from the table: "member_property"
    */
@@ -929,12 +916,16 @@ export interface GET_SALES_MATERIALS {
    * fetch data from the table: "member_property"
    */
   dealtMembers: GET_SALES_MATERIALS_dealtMembers[];
+  /**
+   * fetch data from the table: "member_property"
+   */
+  rejectedMembers: GET_SALES_MATERIALS_rejectedMembers[];
 }
 
 export interface GET_SALES_MATERIALSVariables {
   startedAt: any;
   endedAt: any;
-  salesId: string;
+  sales: String_comparison_exp;
   materialName: string;
 }
 

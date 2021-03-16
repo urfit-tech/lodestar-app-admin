@@ -1,6 +1,6 @@
 import { BarChartOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
-import { DatePicker, Form, Skeleton, Table, Tabs } from 'antd'
+import { Checkbox, DatePicker, Form, Skeleton, Table, Tabs } from 'antd'
 import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
@@ -8,6 +8,7 @@ import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
 import moment, { Moment } from 'moment'
 import { countBy, filter, flatten, map, pipe, split, trim, uniq } from 'ramda'
 import React, { useState } from 'react'
+import styled from 'styled-components'
 import SalesMemberInput from '../components/common/SalesMemberInput'
 import types from '../types'
 
@@ -24,9 +25,14 @@ const count = pipe(
   countBy(v => v),
 )
 
+const StyledWrapper = styled.div`
+  width: 400px;
+`
+
 const SalesMaterialsPage: React.FC = () => {
   const [range, setRange] = useState<[Moment, Moment]>([moment().startOf('month'), moment().endOf('month')])
-  const [selectedSalesId, setSelectedSalesId] = useState<string>('')
+  const [selectedSalesId, setSelectedSalesId] = useState('')
+  const [isSelectedAllSales, setIsSelectedAllSales] = useState(false)
   const [selectedMaterialName, setSelectedMaterialName] = useState('廣告素材')
 
   return (
@@ -44,7 +50,16 @@ const SalesMaterialsPage: React.FC = () => {
           />
         </Form.Item>
         <Form.Item label="業務">
-          <SalesMemberInput value={selectedSalesId} onChange={setSelectedSalesId} />
+          <StyledWrapper className="d-flex align-items-center">
+            <SalesMemberInput value={selectedSalesId} onChange={setSelectedSalesId} disabled={isSelectedAllSales} />
+            <Checkbox
+              checked={isSelectedAllSales}
+              onChange={e => setIsSelectedAllSales(e.target.checked)}
+              className="ml-3 flex-shrink-0"
+            >
+              全部業務
+            </Checkbox>
+          </StyledWrapper>
         </Form.Item>
       </Form>
 
@@ -54,11 +69,11 @@ const SalesMaterialsPage: React.FC = () => {
         <Tabs.TabPane key="行銷活動" tab="行銷活動"></Tabs.TabPane>
       </Tabs>
 
-      {selectedSalesId && (
+      {(selectedSalesId || isSelectedAllSales) && (
         <MaterialStatisticsTable
           startedAt={range[0].toDate()}
           endedAt={range[1].toDate()}
-          salesId={selectedSalesId}
+          salesId={isSelectedAllSales ? null : selectedSalesId}
           materialName={selectedMaterialName}
         />
       )}
@@ -68,18 +83,17 @@ const SalesMaterialsPage: React.FC = () => {
 
 type MaterialStatisticsProps = {
   materialName: string
-  all: number
-  assigned: number
   called: number
-  answered: number
+  contacted: number
   demonstrated: number
   dealt: number
+  rejected: number
 }
 
 const MaterialStatisticsTable: React.FC<{
   startedAt: Date
   endedAt: Date
-  salesId: string
+  salesId: string | null
   materialName: string
 }> = ({ startedAt, endedAt, salesId, materialName }) => {
   const { loading, error, data } = useQuery<types.GET_SALES_MATERIALS, types.GET_SALES_MATERIALSVariables>(
@@ -88,7 +102,7 @@ const MaterialStatisticsTable: React.FC<{
       variables: {
         startedAt,
         endedAt,
-        salesId,
+        sales: salesId ? { _eq: salesId } : {},
         materialName,
       },
     },
@@ -102,25 +116,19 @@ const MaterialStatisticsTable: React.FC<{
     return <div>讀取錯誤</div>
   }
 
-  const allMembersCount = count(data.allMembers.map(v => v.v))
-  const assignedMembersCount = count(data.assignedMembers.map(v => v.v))
-  const calledMembersCount = count(data.calledMembers.map(v => v.v))
-  const answeredMembersCount = count(data.answeredMembers.map(v => v.v))
-  const demonstratedMembersCount = count(data.demonstratedMembers.map(v => v.v))
-  const dealtMembersCount = count(data.dealtMembers.map(v => v.v))
+  const salesMaterials = {
+    calledMembersCount: count(data.calledMembers.map(v => v.v)),
+    contactedMembersCount: count(data.contactedMembers.map(v => v.v)),
+    demonstratedMembersCount: count(data.demonstratedMembers.map(v => v.v)),
+    dealtMembersCount: count(data.dealtMembers.map(v => v.v)),
+    rejectedMembersCount: count(data.rejectedMembers.map(v => v.v)),
+  }
 
   const allMaterialNames = pipe(
     map((v: { [index: string]: number }) => Object.keys(v)),
     flatten,
     uniq,
-  )([
-    allMembersCount,
-    assignedMembersCount,
-    calledMembersCount,
-    answeredMembersCount,
-    demonstratedMembersCount,
-    dealtMembersCount,
-  ])
+  )(Object.values(salesMaterials))
 
   const columns: ColumnProps<MaterialStatisticsProps>[] = [
     {
@@ -134,24 +142,14 @@ const MaterialStatisticsTable: React.FC<{
       onFilter: (value, record) => record.materialName.includes(`${value}`),
     },
     {
-      dataIndex: 'all',
-      title: '總數',
-      sorter: (a, b) => a.all - b.all,
-    },
-    {
-      dataIndex: 'assigned',
-      title: '已分配',
-      sorter: (a, b) => a.assigned - b.assigned,
-    },
-    {
       dataIndex: 'called',
       title: '已撥打',
       sorter: (a, b) => a.called - b.called,
     },
     {
-      dataIndex: 'answered',
-      title: '已通話',
-      sorter: (a, b) => a.answered - b.answered,
+      dataIndex: 'contacted',
+      title: '已開發',
+      sorter: (a, b) => a.contacted - b.contacted,
     },
     {
       dataIndex: 'demonstrated',
@@ -163,27 +161,30 @@ const MaterialStatisticsTable: React.FC<{
       title: '已成交',
       sorter: (a, b) => a.dealt - b.dealt,
     },
+    {
+      dataIndex: 'rejected',
+      title: '已拒絕',
+      sorter: (a, b) => a.rejected - b.rejected,
+    },
   ]
 
   return (
     <Table<MaterialStatisticsProps>
       columns={columns}
       dataSource={allMaterialNames.map(materialName => {
-        const dealt = dealtMembersCount[materialName] || 0
-        const demonstrated = Math.max(demonstratedMembersCount[materialName] || 0, dealt)
-        const answered = Math.max(answeredMembersCount[materialName] || 0, demonstrated)
-        const called = Math.max(calledMembersCount[materialName] || 0, answered)
-        const assigned = Math.max(assignedMembersCount[materialName] || 0, called)
-        const all = Math.max(allMembersCount[materialName] || 0, assigned)
+        const called = salesMaterials.calledMembersCount[materialName] || 0
+        const contacted = salesMaterials.contactedMembersCount[materialName] || 0
+        const demonstrated = salesMaterials.demonstratedMembersCount[materialName] || 0
+        const dealt = salesMaterials.dealtMembersCount[materialName] || 0
+        const rejected = salesMaterials.rejectedMembersCount[materialName] || 0
 
         return {
           materialName,
-          all,
-          assigned,
-          called,
-          answered,
-          demonstrated,
+          called: Math.max(called, contacted),
+          contacted: Math.max(contacted, demonstrated),
+          demonstrated: Math.max(demonstrated, dealt),
           dealt,
+          rejected,
         }
       })}
       pagination={false}
@@ -196,57 +197,34 @@ const GET_SALES_MATERIALS = gql`
   query GET_SALES_MATERIALS(
     $startedAt: timestamptz!
     $endedAt: timestamptz!
-    $salesId: String!
+    $sales: String_comparison_exp!
     $materialName: String!
   ) {
-    allMembers: member_property(
-      where: {
-        property: { name: { _eq: $materialName } }
-        value: { _neq: "" }
-        member: { manager_id: { _eq: $salesId } }
-        updated_at: { _gt: $startedAt, _lt: $endedAt }
-      }
-    ) {
-      v: value
-    }
-    assignedMembers: member_property(
-      where: {
-        property: { name: { _eq: $materialName } }
-        value: { _neq: "" }
-        member: { manager_id: { _eq: $salesId }, assigned_at: { _gt: $startedAt, _lt: $endedAt } }
-      }
-    ) {
-      v: value
-    }
     calledMembers: member_property(
       where: {
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
-          manager_id: { _eq: $salesId }
-          member_notes: {
-            author_id: { _eq: $salesId }
-            created_at: { _gt: $startedAt, _lt: $endedAt }
-            type: { _eq: "outbound" }
-          }
+          manager_id: $sales
+          member_notes: { author_id: $sales, created_at: { _gt: $startedAt, _lt: $endedAt }, type: { _eq: "outbound" } }
         }
       }
     ) {
       v: value
     }
-    answeredMembers: member_property(
+    contactedMembers: member_property(
       where: {
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
-          manager_id: { _eq: $salesId }
+          manager_id: $sales
           member_notes: {
-            author_id: { _eq: $salesId }
+            author_id: $sales
             created_at: { _gt: $startedAt, _lt: $endedAt }
             type: { _eq: "outbound" }
-            status: { _eq: "answered" }
             duration: { _gt: 90 }
           }
+          _not: { member_notes: { rejected_at: { _is_null: false } } }
         }
       }
     ) {
@@ -257,8 +235,14 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
-          manager_id: { _eq: $salesId }
-          member_tags: { tag_name: { _eq: "已示範" }, created_at: { _gt: $startedAt, _lt: $endedAt } }
+          manager_id: $sales
+          member_notes: {
+            author_id: $sales
+            created_at: { _gt: $startedAt, _lt: $endedAt }
+            type: { _eq: "outbound" }
+            duration: { _gt: 90 }
+          }
+          member_tasks: { category: { name: { _eq: "預約DEMO" } } }
         }
       }
     ) {
@@ -269,8 +253,32 @@ const GET_SALES_MATERIALS = gql`
         property: { name: { _eq: $materialName } }
         value: { _neq: "" }
         member: {
-          manager_id: { _eq: $salesId }
+          manager_id: $sales
+          member_notes: {
+            author_id: $sales
+            created_at: { _gt: $startedAt, _lt: $endedAt }
+            type: { _eq: "outbound" }
+            duration: { _gt: 90 }
+          }
+          member_tasks: { category: { name: { _eq: "預約DEMO" } } }
           member_contracts: { agreed_at: { _gt: $startedAt, _lt: $endedAt }, revoked_at: { _is_null: true } }
+        }
+      }
+    ) {
+      v: value
+    }
+    rejectedMembers: member_property(
+      where: {
+        property: { name: { _eq: $materialName } }
+        value: { _neq: "" }
+        member: {
+          manager_id: $sales
+          member_notes: {
+            author_id: $sales
+            created_at: { _gt: $startedAt, _lt: $endedAt }
+            type: { _eq: "outbound" }
+            rejected_at: { _is_null: false }
+          }
         }
       }
     ) {
