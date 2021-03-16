@@ -427,6 +427,7 @@ const AppointmentPlanAppointmentModal: React.FC<
                 </StyledAppointmentInfo>
               </div>
               <StyledButton
+                type="primary"
                 onClick={() => {
                   window.open(`//${settings['host']}/members/${appointmentValues.member?.id}`)
                 }}
