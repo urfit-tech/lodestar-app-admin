@@ -167,6 +167,7 @@ const AppointmentPlanCollectionTable: React.FC<{
     title: '',
     render: (text, record, index) => (
       <Button
+        type="primary"
         onClick={e => {
           e.stopPropagation()
           setSelectedAppointment(record)
