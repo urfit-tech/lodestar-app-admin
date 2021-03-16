@@ -369,6 +369,7 @@ const AppointmentPlanAppointmentModal: React.FC<
                     <Input placeholder={formatMessage(messages.phonePlaceholder)} />
                   </Form.Item>
                   <StyledButton
+                    type="primary"
                     onClick={handleAppointmentSubmit}
                     disabled={orderChecking || !isPaymentAvailable}
                     loading={orderChecking || orderPlacing || loading}
