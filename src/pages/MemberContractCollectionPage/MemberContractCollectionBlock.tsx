@@ -524,7 +524,7 @@ export const MemberContractCollectionBlock: React.FC<{
                 rowClassName="cursor-pointer"
                 onRow={record => ({
                   onClick: () => {
-                    if (!permissions.MEMBER_CONTRACT_VALUE_VIEW) {
+                    if (!permissions.CONTRACT_VALUE_VIEW) {
                       return
                     }
                     setActiveMemberContractId(record.id)

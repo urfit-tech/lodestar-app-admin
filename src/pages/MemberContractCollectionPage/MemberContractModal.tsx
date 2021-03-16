@@ -112,7 +112,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
   ...props
 }) => {
   const { formatMessage } = useIntl()
-  const { authToken, apiHost, currentUserRole, permissions } = useAuth()
+  const { authToken, apiHost, permissions } = useAuth()
   const { id: appId } = useApp()
   const [form] = Form.useForm<{
     approvedAt: Moment | null
@@ -200,18 +200,9 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
       .catch(handleError)
       .finally(() => setIsLoading(false))
   }
-  const inputEditPermissions = {
-    approvedAt: true,
-    loanCanceledAt: true,
-    refundAppliedAt: true,
-    paymentMethod: currentUserRole === 'general-member' ? false : true,
-    paymentNumber: true,
-    note: true,
-    installmentPlan: currentUserRole === 'general-member' ? false : true,
-    orderExecutors: true,
-  }
+
   let sheet
-  if (isRevoked || !permissions.MEMBER_CONTRACT_VALUE_EDIT) {
+  if (isRevoked) {
     sheet = (
       <>
         <StyledAreaTitle>{formatMessage(memberMessages.label.status)}</StyledAreaTitle>
@@ -301,7 +292,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
               <span>{formatMessage(memberContractMessages.label.approvedAt)}</span>
               <Form.Item name="approvedAt" initialValue={status.approvedAt ? moment(status.approvedAt) : null}>
                 <StyledDatePicker
-                  disabled={!inputEditPermissions?.['approvedAt'] || disabledInput['approvedAt']}
+                  disabled={!permissions.CONTRACT_APPROVED_AT_EDIT || disabledInput['approvedAt']}
                   format={'YYYY-MM-DD'}
                 />
               </Form.Item>
@@ -313,7 +304,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                 initialValue={status.loanCanceledAt ? moment(status.loanCanceledAt) : null}
               >
                 <StyledDatePicker
-                  disabled={!inputEditPermissions?.['loanCanceledAt'] || disabledInput['loanCanceledAt']}
+                  disabled={!permissions.CONTRACT_CANCELED_AT_EDIT || disabledInput['loanCanceledAt']}
                   format={'YYYY-MM-DD'}
                 />
               </Form.Item>
@@ -325,7 +316,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                 initialValue={status.refundAppliedAt ? moment(status.refundAppliedAt) : null}
               >
                 <StyledDatePicker
-                  disabled={!inputEditPermissions?.['refundAppliedAt'] || disabledInput['refundAppliedAt']}
+                  disabled={!permissions.CONTRACT_REFUND_AT_EDIT || disabledInput['refundAppliedAt']}
                   format="YYYY-MM-DD"
                 />
               </Form.Item>
@@ -341,7 +332,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                 rules={[{ required: true, message: '請選擇付款方式' }]}
                 initialValue={paymentOptions?.paymentMethod || null}
               >
-                <StyledSelect disabled={!inputEditPermissions?.['paymentMethod']}>
+                <StyledSelect disabled={!permissions.CONTRACT_PAYMENT_METHOD_EDIT}>
                   {['藍新', '歐付寶', '富比世', '新仲信', '舊仲信', '匯款', '現金', '裕富'].map((payment: string) => (
                     <Select.Option key={payment} value={payment}>
                       {payment}
@@ -353,7 +344,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
             <Col span={5} className="pr-3">
               <span>{formatMessage(memberContractMessages.label.installmentPlan)}</span>
               <Form.Item name="installmentPlan" initialValue={paymentOptions?.installmentPlan}>
-                <StyledSelect disabled={!inputEditPermissions?.['installmentPlan']}>
+                <StyledSelect disabled={!permissions.CONTRACT_INSTALLMENT_PLAN_EDIT}>
                   {[1, 3, 6, 8, 9, 12, 18, 24, 30].map((installmentPlan: number) => (
                     <Select.Option key={installmentPlan} value={installmentPlan}>
                       {installmentPlan}
@@ -365,7 +356,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
             <Col span={8}>
               <span>{formatMessage(memberContractMessages.label.paymentNumber)}</span>
               <Form.Item name="paymentNumber" initialValue={paymentOptions?.paymentNumber}>
-                <Input disabled={!inputEditPermissions?.['paymentNumber']} />
+                <Input disabled={!permissions.CONTRACT_PAYMENT_NUMBER_EDIT} />
               </Form.Item>
             </Col>
           </StyledRow>
@@ -374,7 +365,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
           <StyledRow className="mb-3">
             <Col span={24}>
               <Form.Item name="note" initialValue={note}>
-                <Input.TextArea disabled={!inputEditPermissions?.['note']}>{note}</Input.TextArea>
+                <Input.TextArea disabled={!permissions.CONTRACT_NOTE_EDIT}>{note}</Input.TextArea>
               </Form.Item>
             </Col>
           </StyledRow>
@@ -399,7 +390,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                         placeholder="承辦人"
                         style={{ width: '150px' }}
                         optionFilterProp="label"
-                        disabled={!inputEditPermissions?.['orderExecutors']}
+                        disabled={!permissions.CONTRACT_REVENUE_SHARING_EDIT}
                       >
                         {xuemiSales?.map(member => (
                           <Select.Option key={member.id} value={member.id} label={`${member.id} ${member.name}`}>
@@ -416,7 +407,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
                       fieldKey={[field.fieldKey, 'ratio']}
                     >
                       <InputNumber
-                        disabled={!inputEditPermissions?.['orderExecutors']}
+                        disabled={!permissions.CONTRACT_REVENUE_SHARING_EDIT}
                         min={0.1}
                         max={1}
                         step={0.1}
@@ -430,7 +421,7 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
 
                 <Form.Item>
                   <StyledAddButton
-                    disabled={!inputEditPermissions?.['orderExecutors']}
+                    disabled={!permissions.CONTRACT_REVENUE_SHARING_EDIT}
                     type="link"
                     onClick={() => add({ ratio: 0.1 })}
                   >
@@ -447,16 +438,18 @@ const MemberContractModal: React.FC<MemberContractModalProps> = ({
           <>
             <StyledAreaTitle>{formatMessage(memberContractMessages.label.proofOfEnrollment)}</StyledAreaTitle>
 
-            <FileUploader
-              fileList={certification}
-              onChange={files => setCertification(files)}
-              showUploadList
-              renderTrigger={({ onClick }) => (
-                <Button icon={<UploadOutlined />} onClick={onClick}>
-                  {formatMessage(memberContractMessages.ui.reupload)}
-                </Button>
-              )}
-            />
+            {permissions.CONTRACT_ATTACHMENT_EDIT && (
+              <FileUploader
+                fileList={certification}
+                onChange={files => setCertification(files)}
+                showUploadList
+                renderTrigger={({ onClick }) => (
+                  <Button icon={<UploadOutlined />} onClick={onClick}>
+                    {formatMessage(memberContractMessages.ui.reupload)}
+                  </Button>
+                )}
+              />
+            )}
 
             {!certification.length && (
               <>
