@@ -30,6 +30,7 @@ export type AppointmentPeriodProps = {
     periodType: ScheduleIntervalType | null
   }
   startedAt: Date
+  endedAt: Date
   isEnrolled?: boolean
   isExcluded?: boolean
 }

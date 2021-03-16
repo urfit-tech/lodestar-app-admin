@@ -79,6 +79,7 @@ const AppointmentPlanScheduleBlock: React.FC<{
             id: period.id,
             schedule: period.schedule,
             startedAt: period.startedAt,
+            endedAt: period.endedAt,
             isEnrolled: period.isEnrolled,
             isExcluded: period.isExcluded,
           }))}

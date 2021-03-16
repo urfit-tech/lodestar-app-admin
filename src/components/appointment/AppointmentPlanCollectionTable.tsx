@@ -1,6 +1,7 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { useQuery } from '@apollo/react-hooks'
 import { Button, Input, Table } from 'antd'
+import { ColumnProps } from 'antd/lib/table'
 import gql from 'graphql-tag'
 import React, { useEffect, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
@@ -9,6 +10,7 @@ import { currencyFormatter } from '../../helpers'
 import { appointmentMessages } from '../../helpers/translation'
 import types from '../../types'
 import { AvatarImage } from '../common/Image'
+import AppointmentPlanAppointmentModal from './AppointmentPlanAppointmentModal'
 
 const StyledCreatorName = styled.span`
   max-width: 10em;
@@ -55,8 +57,12 @@ const filterIcon = (filtered: boolean) => <SearchOutlined style={{ color: filter
 
 type AppointmentPlanProps = {
   id: string
-  avatarUrl?: string | null
-  creatorName: string
+  creator: {
+    id: string
+    avatarUrl: string | null
+    name: string
+    abstract: string | null
+  }
   title: string
   duration: number
   listPrice: number
@@ -80,11 +86,13 @@ const AppointmentPlanCollectionTable: React.FC<{
 
   const [searchName, setSearchName] = useState<string | null>(null)
   const [searchTitle, setSearchTitle] = useState<string | null>(null)
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [selectedAppointment, setSelectedAppointment] = useState<AppointmentPlanProps | null>(null)
 
   const data = appointmentPlans.filter(
     appointmentPlan =>
       (!searchName && !searchTitle) ||
-      (searchName && appointmentPlan.creatorName.includes(searchName)) ||
+      (searchName && appointmentPlan.creator.name.includes(searchName)) ||
       (searchTitle && appointmentPlan.title.includes(searchTitle)),
   )
 
@@ -93,101 +101,104 @@ const AppointmentPlanCollectionTable: React.FC<{
     refetchAppointmentPlans()
   }, [onReady, appointmentPlanCount, refetchAppointmentPlans])
 
-  const handleAppointment = (record: AppointmentPlanProps) => {
-    // TODO: appointment button handle
-    // console.log(record)
+  const columns: ColumnProps<AppointmentPlanProps>[] = [
+    {
+      key: 'id',
+      title: formatMessage(messages.instructor),
+      render: (text, record, index) => (
+        <div className="d-flex align-items-center justify-content-start">
+          <AvatarImage size="36px" src={record.creator.avatarUrl} className="mr-3" />
+          <StyledCreatorName className="pl-1">{record.creator.name}</StyledCreatorName>
+        </div>
+      ),
+      filterDropdown: () => (
+        <div className="p-2">
+          <Input
+            autoFocus
+            value={searchName || ''}
+            onChange={e => {
+              searchTitle && setSearchTitle('')
+              setSearchName(e.target.value)
+            }}
+          />
+        </div>
+      ),
+      filterIcon,
+    },
+    {
+      dataIndex: 'title',
+      title: formatMessage(appointmentMessages.term.planTitle),
+      render: (text, record, index) => <StyledPlanTitle>{text}</StyledPlanTitle>,
+      filterDropdown: () => (
+        <div className="p-2">
+          <Input
+            autoFocus
+            value={searchTitle || ''}
+            onChange={e => {
+              searchName && setSearchName('')
+              setSearchTitle(e.target.value)
+            }}
+          />
+        </div>
+      ),
+      filterIcon,
+    },
+    {
+      dataIndex: 'duration',
+      title: formatMessage(messages.minutes),
+      render: (text, record, index) => <StyledText>{text}</StyledText>,
+      sorter: (a, b) => b.duration - a.duration,
+    },
+    {
+      dataIndex: 'listPrice',
+      title: formatMessage(messages.price),
+      render: (text, record, index) => <StyledPlanPrice>{currencyFormatter(text)}</StyledPlanPrice>,
+      sorter: (a, b) => b.listPrice - a.listPrice,
+    },
+    {
+      dataIndex: 'enrollments',
+      title: formatMessage(messages.enrollments),
+      render: (text, record, index) => <StyledText>{formatMessage(messages.people, { count: `${text}` })}</StyledText>,
+      sorter: (a, b) => b.enrollments - a.enrollments,
+    },
+  ]
+  const appointmentButtonColumn: ColumnProps<AppointmentPlanProps> = {
+    key: 'appointmentButton',
+    title: '',
+    render: (text, record, index) => (
+      <Button
+        onClick={e => {
+          e.stopPropagation()
+          setSelectedAppointment(record)
+          setIsModalVisible(true)
+        }}
+      >
+        {formatMessage(messages.appointment)}
+      </Button>
+    ),
   }
-
   return (
-    <Table
-      rowKey="id"
-      rowClassName={() => 'cursor-pointer'}
-      loading={loadingAppointmentPlans}
-      onRow={record => ({
-        onClick: () => window.open(`/appointment-plans/${record.id}`),
-      })}
-      columns={[
-        {
-          key: 'id',
-          title: formatMessage(messages.instructor),
-          render: (text, record, index) => (
-            <div className="d-flex align-items-center justify-content-start">
-              <AvatarImage size="36px" src={record.avatarUrl} className="mr-3" />
-              <StyledCreatorName className="pl-1">{record.creatorName}</StyledCreatorName>
-            </div>
-          ),
-          filterDropdown: () => (
-            <div className="p-2">
-              <Input
-                autoFocus
-                value={searchName || ''}
-                onChange={e => {
-                  searchTitle && setSearchTitle('')
-                  setSearchName(e.target.value)
-                }}
-              />
-            </div>
-          ),
-          filterIcon,
-        },
-        {
-          dataIndex: 'title',
-          title: formatMessage(appointmentMessages.term.planTitle),
-          render: (text, record, index) => <StyledPlanTitle>{text}</StyledPlanTitle>,
-          filterDropdown: () => (
-            <div className="p-2">
-              <Input
-                autoFocus
-                value={searchTitle || ''}
-                onChange={e => {
-                  searchName && setSearchName('')
-                  setSearchTitle(e.target.value)
-                }}
-              />
-            </div>
-          ),
-          filterIcon,
-        },
-        {
-          dataIndex: 'duration',
-          title: formatMessage(messages.minutes),
-          // width: '7em',
-          render: (text, record, index) => <StyledText>{text}</StyledText>,
-          sorter: (a, b) => b.duration - a.duration,
-        },
-        {
-          dataIndex: 'listPrice',
-          title: formatMessage(messages.price),
-          // width: '10em',
-          render: (text, record, index) => <StyledPlanPrice>{currencyFormatter(text)}</StyledPlanPrice>,
-          sorter: (a, b) => b.listPrice - a.listPrice,
-        },
-        {
-          dataIndex: 'enrollments',
-          title: formatMessage(messages.enrollments),
-          // width: '7em',
-          render: (text, record, index) => (
-            <StyledText>{formatMessage(messages.people, { count: `${text}` })}</StyledText>
-          ),
-          sorter: (a, b) => b.enrollments - a.enrollments,
-        },
-        {
-          key: 'appointmentButton',
-          title: '',
-          render: (text, record, index) => (
-            <Button
-              onClick={e => {
-                e.stopPropagation()
-                handleAppointment(record)
-              }}
-            >
-              {formatMessage(messages.appointment)}
-            </Button>
-          ),
-        },
-      ]}
-      dataSource={data}
-    />
+    <>
+      <Table
+        rowKey="id"
+        rowClassName={() => 'cursor-pointer'}
+        loading={loadingAppointmentPlans}
+        onRow={record => ({
+          onClick: () => window.open(`/appointment-plans/${record.id}`),
+        })}
+        columns={withAppointmentButton ? [...columns, appointmentButtonColumn] : columns}
+        dataSource={data}
+      />
+      {selectedAppointment && (
+        <AppointmentPlanAppointmentModal
+          appointmentPlanId={selectedAppointment.id}
+          creator={selectedAppointment.creator}
+          visible={isModalVisible}
+          setModalVisible={setIsModalVisible}
+          onSuccess={() => refetchAppointmentPlans()}
+        />
+      )}
+    </>
   )
 }
 
@@ -213,11 +224,13 @@ const useAppointmentPlansAdmin = (
         }
         appointment_plan(where: $condition, order_by: $orderBy) {
           id
+          creator_id
           creator {
             id
             picture_url
             name
             username
+            abstract
           }
           title
           duration
@@ -239,8 +252,12 @@ const useAppointmentPlansAdmin = (
       ? []
       : data.appointment_plan.map(appointmentPlan => ({
           id: appointmentPlan.id,
-          avatarUrl: appointmentPlan.creator ? appointmentPlan.creator.picture_url : null,
-          creatorName: appointmentPlan.creator && appointmentPlan.creator.name ? appointmentPlan.creator.name : '',
+          creator: {
+            id: appointmentPlan.creator_id,
+            avatarUrl: appointmentPlan.creator?.picture_url || null,
+            name: appointmentPlan.creator?.name || appointmentPlan.creator?.username || '',
+            abstract: appointmentPlan.creator?.abstract || null,
+          },
           title: appointmentPlan.title,
           duration: appointmentPlan.duration,
           listPrice: appointmentPlan.price,

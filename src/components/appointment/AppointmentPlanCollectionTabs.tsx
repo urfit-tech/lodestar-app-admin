@@ -53,6 +53,7 @@ const AppointmentPlanCollectionTabs: React.FC = () => {
       condition: {
         published_at: { _is_null: true },
       },
+      withAppointmentButton: false,
       permissionIsAllowed: true,
     },
   ]
