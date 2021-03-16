@@ -52,9 +52,6 @@ const SalesSummaryBlock: React.FC<{
     return <div>讀取錯誤</div>
   }
 
-  const score = salesSummary.sales.odds + salesSummary.contractsLastMonth * 1 + salesSummary.contractsThisMonth * 2 + 20
-  const newAssignedRate = score > 100 ? 100 : Math.ceil(score)
-
   return (
     <AdminBlock className="p-4">
       <div className="d-flex align-items-center">
@@ -82,9 +79,11 @@ const SalesSummaryBlock: React.FC<{
         {/* <div className="mr-3">今日名單派發：{hashedAssignedCount}</div> */}
         <div className="mr-3 flex-grow-1">
           <span className="mr-2">名單新舊佔比：</span>
-          <Tooltip title={`新 ${newAssignedRate}% / 舊 ${100 - newAssignedRate}%`}>
-            <StyledProgress percent={100} showInfo={false} success={{ percent: newAssignedRate }} />
-          </Tooltip>
+          <AssignmentRateBar
+            salesId={salesId}
+            baseOdds={salesSummary.sales.odds}
+            lastAttend={salesSummary.sales.lastAttend}
+          />
         </div>
         <div>
           <span className="mr-2">{formatMessage(salesMessages.label.autoStartCalls)}</span>
@@ -95,15 +94,35 @@ const SalesSummaryBlock: React.FC<{
   )
 }
 
+const AssignmentRateBar: React.FC<{
+  salesId: string
+  baseOdds: number
+  lastAttend: {
+    startedAt: Date
+    endedAt: Date
+  } | null
+}> = ({ salesId, baseOdds, lastAttend }) => {
+  const { loadingOddsAddition, errorOddsAddition, oddsAdditions } = useSalesOddsAddition(salesId, lastAttend)
+
+  if (loadingOddsAddition || errorOddsAddition) {
+    return null
+  }
+
+  const score =
+    baseOdds + (oddsAdditions.lastAttendMemberNotesCount > 40 ? 5 : 0) + oddsAdditions.lastWeekAgreedContractsCount * 5
+  const newAssignmentRate = score > 100 ? 100 : Math.floor(score)
+
+  return (
+    <Tooltip title={`新 ${newAssignmentRate}% / 舊 ${100 - newAssignmentRate}%`}>
+      <StyledProgress percent={100} showInfo={false} success={{ percent: newAssignmentRate }} />
+    </Tooltip>
+  )
+}
+
 const useSalesSummary = (salesId: string) => {
   const { loading, error, data, refetch } = useQuery<hasura.GET_SALES_SUMMARY, hasura.GET_SALES_SUMMARYVariables>(
     gql`
-      query GET_SALES_SUMMARY(
-        $salesId: String!
-        $startOfToday: timestamptz!
-        $startOfMonth: timestamptz!
-        $startOfLastMonth: timestamptz!
-      ) {
+      query GET_SALES_SUMMARY($salesId: String!, $startOfToday: timestamptz!, $startOfMonth: timestamptz!) {
         member_by_pk(id: $salesId) {
           id
           picture_url
@@ -111,34 +130,20 @@ const useSalesSummary = (salesId: string) => {
           username
           email
           metadata
-        }
-        xuemi_sales(where: { member_id: { _eq: $salesId } }) {
-          member_id
-          sales_phone
-          odds
+          member_properties(where: { property: { name: { _eq: "分機號碼" } } }) {
+            id
+            value
+          }
+          attends(where: { ended_at: { _is_null: false } }, order_by: [{ started_at: desc }], limit: 1) {
+            id
+            started_at
+            ended_at
+          }
         }
         order_executor_sharing(where: { executor_id: { _eq: $salesId }, created_at: { _gte: $startOfMonth } }) {
           order_executor_id
           total_price
           ratio
-        }
-        contracts_this_month: member_contract_aggregate(
-          where: { author_id: { _eq: $salesId }, agreed_at: { _gte: $startOfMonth }, revoked_at: { _is_null: true } }
-        ) {
-          aggregate {
-            count
-          }
-        }
-        contracts_last_month: member_contract_aggregate(
-          where: {
-            author_id: { _eq: $salesId }
-            agreed_at: { _gte: $startOfLastMonth }
-            revoked_at: { _is_null: true }
-          }
-        ) {
-          aggregate {
-            count
-          }
         }
         member_note_aggregate(
           where: {
@@ -156,13 +161,6 @@ const useSalesSummary = (salesId: string) => {
             }
           }
         }
-        assigned_members_today: member_aggregate(
-          where: { manager_id: { _eq: $salesId }, assigned_at: { _gte: $startOfToday } }
-        ) {
-          aggregate {
-            count
-          }
-        }
       }
     `,
     {
@@ -170,7 +168,6 @@ const useSalesSummary = (salesId: string) => {
         salesId,
         startOfToday: moment().startOf('day').toDate(),
         startOfMonth: moment().startOf('month').toDate(),
-        startOfLastMonth: moment().subtract(1, 'month').startOf('month').toDate(),
       },
     },
   )
@@ -183,19 +180,22 @@ const useSalesSummary = (salesId: string) => {
               picture_url: data.member_by_pk.picture_url,
               name: data.member_by_pk.name || data.member_by_pk.username,
               email: data.member_by_pk.email,
-              telephone: data.xuemi_sales[0]?.sales_phone || '',
-              odds: parseFloat(data.xuemi_sales[0]?.odds || '0'),
+              telephone: data.member_by_pk.member_properties[0]?.value || '',
+              odds: parseFloat(data.member_by_pk.metadata?.assignment?.odds || '0'),
+              lastAttend: data.member_by_pk.attends[0]
+                ? {
+                    startedAt: new Date(data.member_by_pk.attends[0].started_at),
+                    endedAt: new Date(data.member_by_pk.attends[0].ended_at),
+                  }
+                : null,
             }
           : null,
         sharingOfMonth: sum(
           data.order_executor_sharing.map(sharing => Math.floor(sharing.total_price * sharing.ratio)),
         ),
         sharingOrdersOfMonth: data.order_executor_sharing.length,
-        contractsThisMonth: data.contracts_this_month?.aggregate?.count || 0,
-        contractsLastMonth: data.contracts_last_month?.aggregate?.count || 0,
         totalDuration: data.member_note_aggregate.aggregate?.sum?.duration || 0,
         totalNotes: data.member_note_aggregate.aggregate?.count || 0,
-        assignedMembersToday: data.assigned_members_today.aggregate?.count || 0,
       }
     : null
 
@@ -204,6 +204,61 @@ const useSalesSummary = (salesId: string) => {
     errorSalesSummary: error,
     salesSummary,
     refetchSalesSummary: refetch,
+  }
+}
+
+const useSalesOddsAddition = (
+  salesId: string,
+  lastAttend: {
+    startedAt: Date
+    endedAt: Date
+  } | null,
+) => {
+  const { loading, error, data, refetch } = useQuery<
+    types.GET_SALES_ODDS_ADDITION,
+    types.GET_SALES_ODDS_ADDITIONVariables
+  >(
+    gql`
+      query GET_SALES_ODDS_ADDITION(
+        $salesId: String!
+        $startedAt: timestamptz!
+        $endedAt: timestamptz!
+        $startOfLastWeek: timestamptz!
+      ) {
+        member_note_aggregate(where: { author_id: { _eq: $salesId }, created_at: { _gt: $startedAt, _lt: $endedAt } }) {
+          aggregate {
+            count
+          }
+        }
+        member_contract_aggregate(
+          where: { author_id: { _eq: $salesId }, agreed_at: { _gt: $startOfLastWeek }, revoked_at: { _is_null: true } }
+        ) {
+          aggregate {
+            count
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        salesId,
+        startedAt: lastAttend?.startedAt || moment().subtract(12, 'hours').startOf('hour'),
+        endedAt: lastAttend?.endedAt || moment().startOf('hour'),
+        startOfLastWeek: moment().subtract(7, 'days').startOf('day').toDate(),
+      },
+    },
+  )
+
+  const oddsAdditions = {
+    lastAttendMemberNotesCount: data?.member_note_aggregate.aggregate?.count || 0,
+    lastWeekAgreedContractsCount: data?.member_contract_aggregate.aggregate?.count || 0,
+  }
+
+  return {
+    loadingOddsAddition: loading,
+    errorOddsAddition: error,
+    oddsAdditions,
+    refetchOddsAddition: refetch,
   }
 }
 

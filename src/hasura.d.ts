@@ -997,6 +997,19 @@ export interface GET_MEMBER_NOTES_ADMINVariables {
 // GraphQL query operation: GET_SALES_SUMMARY
 // ====================================================
 
+export interface GET_SALES_SUMMARY_member_by_pk_member_properties {
+  __typename: "member_property";
+  id: any;
+  value: string;
+}
+
+export interface GET_SALES_SUMMARY_member_by_pk_attends {
+  __typename: "attend";
+  id: any;
+  started_at: any;
+  ended_at: any | null;
+}
+
 export interface GET_SALES_SUMMARY_member_by_pk {
   __typename: "member";
   id: string;
@@ -1005,13 +1018,14 @@ export interface GET_SALES_SUMMARY_member_by_pk {
   username: string;
   email: string;
   metadata: any;
-}
-
-export interface GET_SALES_SUMMARY_xuemi_sales {
-  __typename: "xuemi_sales";
-  member_id: string | null;
-  sales_phone: string | null;
-  odds: string | null;
+  /**
+   * An array relationship
+   */
+  member_properties: GET_SALES_SUMMARY_member_by_pk_member_properties[];
+  /**
+   * An array relationship
+   */
+  attends: GET_SALES_SUMMARY_member_by_pk_attends[];
 }
 
 export interface GET_SALES_SUMMARY_order_executor_sharing {
@@ -1019,26 +1033,6 @@ export interface GET_SALES_SUMMARY_order_executor_sharing {
   order_executor_id: any | null;
   total_price: any | null;
   ratio: any | null;
-}
-
-export interface GET_SALES_SUMMARY_contracts_this_month_aggregate {
-  __typename: "member_contract_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_SALES_SUMMARY_contracts_this_month {
-  __typename: "member_contract_aggregate";
-  aggregate: GET_SALES_SUMMARY_contracts_this_month_aggregate | null;
-}
-
-export interface GET_SALES_SUMMARY_contracts_last_month_aggregate {
-  __typename: "member_contract_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_SALES_SUMMARY_contracts_last_month {
-  __typename: "member_contract_aggregate";
-  aggregate: GET_SALES_SUMMARY_contracts_last_month_aggregate | null;
 }
 
 export interface GET_SALES_SUMMARY_member_note_aggregate_aggregate_sum {
@@ -1057,52 +1051,72 @@ export interface GET_SALES_SUMMARY_member_note_aggregate {
   aggregate: GET_SALES_SUMMARY_member_note_aggregate_aggregate | null;
 }
 
-export interface GET_SALES_SUMMARY_assigned_members_today_aggregate {
-  __typename: "member_aggregate_fields";
-  count: number | null;
-}
-
-export interface GET_SALES_SUMMARY_assigned_members_today {
-  __typename: "member_aggregate";
-  aggregate: GET_SALES_SUMMARY_assigned_members_today_aggregate | null;
-}
-
 export interface GET_SALES_SUMMARY {
   /**
    * fetch data from the table: "member" using primary key columns
    */
   member_by_pk: GET_SALES_SUMMARY_member_by_pk | null;
   /**
-   * fetch data from the table: "xuemi.sales"
-   */
-  xuemi_sales: GET_SALES_SUMMARY_xuemi_sales[];
-  /**
    * fetch data from the table: "order_executor_sharing"
    */
   order_executor_sharing: GET_SALES_SUMMARY_order_executor_sharing[];
   /**
-   * fetch aggregated fields from the table: "member_contract"
-   */
-  contracts_this_month: GET_SALES_SUMMARY_contracts_this_month;
-  /**
-   * fetch aggregated fields from the table: "member_contract"
-   */
-  contracts_last_month: GET_SALES_SUMMARY_contracts_last_month;
-  /**
    * fetch aggregated fields from the table: "member_note"
    */
   member_note_aggregate: GET_SALES_SUMMARY_member_note_aggregate;
-  /**
-   * fetch aggregated fields from the table: "member"
-   */
-  assigned_members_today: GET_SALES_SUMMARY_assigned_members_today;
 }
 
 export interface GET_SALES_SUMMARYVariables {
   salesId: string;
   startOfToday: any;
   startOfMonth: any;
-  startOfLastMonth: any;
+}
+
+/* tslint:disable */
+/* eslint-disable */
+// @generated
+// This file was automatically generated and should not be edited.
+
+// ====================================================
+// GraphQL query operation: GET_SALES_ODDS_ADDITION
+// ====================================================
+
+export interface GET_SALES_ODDS_ADDITION_member_note_aggregate_aggregate {
+  __typename: "member_note_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_SALES_ODDS_ADDITION_member_note_aggregate {
+  __typename: "member_note_aggregate";
+  aggregate: GET_SALES_ODDS_ADDITION_member_note_aggregate_aggregate | null;
+}
+
+export interface GET_SALES_ODDS_ADDITION_member_contract_aggregate_aggregate {
+  __typename: "member_contract_aggregate_fields";
+  count: number | null;
+}
+
+export interface GET_SALES_ODDS_ADDITION_member_contract_aggregate {
+  __typename: "member_contract_aggregate";
+  aggregate: GET_SALES_ODDS_ADDITION_member_contract_aggregate_aggregate | null;
+}
+
+export interface GET_SALES_ODDS_ADDITION {
+  /**
+   * fetch aggregated fields from the table: "member_note"
+   */
+  member_note_aggregate: GET_SALES_ODDS_ADDITION_member_note_aggregate;
+  /**
+   * fetch aggregated fields from the table: "member_contract"
+   */
+  member_contract_aggregate: GET_SALES_ODDS_ADDITION_member_contract_aggregate;
+}
+
+export interface GET_SALES_ODDS_ADDITIONVariables {
+  salesId: string;
+  startedAt: any;
+  endedAt: any;
+  startOfLastWeek: any;
 }
 
 /* tslint:disable */
@@ -4089,25 +4103,6 @@ export enum xuemi_assign_rule_update_column {
   target_member_id = "target_member_id",
   total_limit = "total_limit",
   trigger_id = "trigger_id",
-}
-
-/**
- * unique or primary key constraints on table "xuemi.attend"
- */
-export enum xuemi_attend_constraint {
-  attend_pkey = "attend_pkey",
-}
-
-/**
- * update columns of table "xuemi.attend"
- */
-export enum xuemi_attend_update_column {
-  created_at = "created_at",
-  ended_at = "ended_at",
-  id = "id",
-  member_id = "member_id",
-  started_at = "started_at",
-  updated_at = "updated_at",
 }
 
 /**
@@ -7928,8 +7923,7 @@ export interface member_bool_exp {
   assignRulesByTargetMemberId?: xuemi_assign_rule_bool_exp | null;
   assign_rules?: xuemi_assign_rule_bool_exp | null;
   assigned_at?: timestamptz_comparison_exp | null;
-  attends?: xuemi_attend_bool_exp | null;
-  attendsByMemberId?: attend_bool_exp | null;
+  attends?: attend_bool_exp | null;
   coin_logs?: coin_log_bool_exp | null;
   coin_status?: coin_status_bool_exp | null;
   comment_reactions?: comment_reaction_bool_exp | null;
@@ -8331,8 +8325,7 @@ export interface member_insert_input {
   assignRulesByTargetMemberId?: xuemi_assign_rule_arr_rel_insert_input | null;
   assign_rules?: xuemi_assign_rule_arr_rel_insert_input | null;
   assigned_at?: any | null;
-  attends?: xuemi_attend_arr_rel_insert_input | null;
-  attendsByMemberId?: attend_arr_rel_insert_input | null;
+  attends?: attend_arr_rel_insert_input | null;
   coin_logs?: coin_log_arr_rel_insert_input | null;
   comment_reactions?: comment_reaction_arr_rel_insert_input | null;
   comment_replies?: comment_reply_arr_rel_insert_input | null;
@@ -8758,8 +8751,7 @@ export interface member_order_by {
   assignRulesByTargetMemberId_aggregate?: xuemi_assign_rule_aggregate_order_by | null;
   assign_rules_aggregate?: xuemi_assign_rule_aggregate_order_by | null;
   assigned_at?: order_by | null;
-  attendsByMemberId_aggregate?: attend_aggregate_order_by | null;
-  attends_aggregate?: xuemi_attend_aggregate_order_by | null;
+  attends_aggregate?: attend_aggregate_order_by | null;
   coin_logs_aggregate?: coin_log_aggregate_order_by | null;
   coin_status?: coin_status_order_by | null;
   comment_reactions_aggregate?: comment_reaction_aggregate_order_by | null;
@@ -16366,85 +16358,6 @@ export interface xuemi_assign_rule_variance_order_by {
   limit?: order_by | null;
   position?: order_by | null;
   total_limit?: order_by | null;
-}
-
-/**
- * order by aggregate values of table "xuemi.attend"
- */
-export interface xuemi_attend_aggregate_order_by {
-  count?: order_by | null;
-  max?: xuemi_attend_max_order_by | null;
-  min?: xuemi_attend_min_order_by | null;
-}
-
-/**
- * input type for inserting array relation for remote table "xuemi.attend"
- */
-export interface xuemi_attend_arr_rel_insert_input {
-  data: xuemi_attend_insert_input[];
-  on_conflict?: xuemi_attend_on_conflict | null;
-}
-
-/**
- * Boolean expression to filter rows from the table "xuemi.attend". All fields are combined with a logical 'AND'.
- */
-export interface xuemi_attend_bool_exp {
-  _and?: (xuemi_attend_bool_exp | null)[] | null;
-  _not?: xuemi_attend_bool_exp | null;
-  _or?: (xuemi_attend_bool_exp | null)[] | null;
-  created_at?: timestamptz_comparison_exp | null;
-  ended_at?: timestamptz_comparison_exp | null;
-  id?: uuid_comparison_exp | null;
-  member?: member_bool_exp | null;
-  member_id?: String_comparison_exp | null;
-  started_at?: timestamptz_comparison_exp | null;
-  updated_at?: timestamptz_comparison_exp | null;
-}
-
-/**
- * input type for inserting data into table "xuemi.attend"
- */
-export interface xuemi_attend_insert_input {
-  created_at?: any | null;
-  ended_at?: any | null;
-  id?: any | null;
-  member?: member_obj_rel_insert_input | null;
-  member_id?: string | null;
-  started_at?: any | null;
-  updated_at?: any | null;
-}
-
-/**
- * order by max() on columns of table "xuemi.attend"
- */
-export interface xuemi_attend_max_order_by {
-  created_at?: order_by | null;
-  ended_at?: order_by | null;
-  id?: order_by | null;
-  member_id?: order_by | null;
-  started_at?: order_by | null;
-  updated_at?: order_by | null;
-}
-
-/**
- * order by min() on columns of table "xuemi.attend"
- */
-export interface xuemi_attend_min_order_by {
-  created_at?: order_by | null;
-  ended_at?: order_by | null;
-  id?: order_by | null;
-  member_id?: order_by | null;
-  started_at?: order_by | null;
-  updated_at?: order_by | null;
-}
-
-/**
- * on conflict condition type for table "xuemi.attend"
- */
-export interface xuemi_attend_on_conflict {
-  constraint: xuemi_attend_constraint;
-  update_columns: xuemi_attend_update_column[];
-  where?: xuemi_attend_bool_exp | null;
 }
 
 /**
