@@ -27,7 +27,7 @@ import { sum } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import * as types from '../types.d'
+import types from '../types'
 
 const messages = defineMessages({
   memberNoteCreatedAt: { id: 'member.label.memberNoteCreatedAt', defaultMessage: '聯絡時間' },
@@ -547,31 +547,21 @@ const LoadRecordFileButton: React.FC<{
     }
   }
 
-  return !audioUrl ? (
-    <Button type="primary" loading={typeof audioUrl === 'string'} onClick={() => loadAudioData()}>
-      {formatMessage(podcastMessages.ui.play)}
-    </Button>
-  ) : (
+  return audioUrl ? (
     <div className="d-flex align-items-center">
       <a href={audioUrl} download={`${memberName}_${startTime.replace(/:/g, '')}.wav`} className="flex-shrink-0 mr-2">
         <Button type="primary">{formatMessage(commonMessages.ui.download)}</Button>
       </a>
       <audio src={audioUrl} controls />
     </div>
+  ) : (
+    <Button type="primary" loading={typeof audioUrl === 'string'} onClick={() => loadAudioData()}>
+      {formatMessage(podcastMessages.ui.play)}
+    </Button>
   )
 }
 
-const useMemberNotesAdmin = (
-  orderBy: types.GET_MEMBER_NOTES_ADMINVariables['orderBy'],
-  filters?: {
-    range?: [Moment, Moment]
-    author?: string
-    manager?: string
-    member?: string
-    categories?: string[]
-    tags?: string[]
-  },
-) => {
+const useMemberNotesAdmin = (orderBy: types.GET_MEMBER_NOTES_ADMINVariables['orderBy'], filters?: FiltersProps) => {
   const { permissions, currentMemberId } = useAuth()
   const condition: types.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
     created_at: filters?.range
