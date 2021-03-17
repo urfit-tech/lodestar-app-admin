@@ -6,6 +6,7 @@ import gql from 'graphql-tag'
 import { AdminPageTitle } from 'lodestar-app-admin/src/components/admin'
 import AdminCard from 'lodestar-app-admin/src/components/admin/AdminCard'
 import AdminLayout from 'lodestar-app-admin/src/components/layout/AdminLayout'
+import { useAuth } from 'lodestar-app-admin/src/contexts/AuthContext'
 import moment from 'moment'
 import { filter, flatten, groupBy, keys, length, map, split, sum, toPairs } from 'ramda'
 import { useEffect, useState } from 'react'
@@ -43,6 +44,7 @@ const StyledFilter = styled.div`
 `
 
 export default function SalesMemberCategoryPage() {
+  const { isAuthenticated } = useAuth()
   const [condition, setCondition] = useState<{
     startedAt: Date | null
     endedAt: Date | null
@@ -55,7 +57,7 @@ export default function SalesMemberCategoryPage() {
   const { assignedMemberCollection, ...assignedMemberCollectionState } = useAssignedMemberCollection(condition)
 
   useEffect(() => {
-    if (assignedMemberCollectionState.error) {
+    if (isAuthenticated && assignedMemberCollectionState.error) {
       message.error('載入錯誤')
     }
   }, [assignedMemberCollectionState.error])
@@ -158,7 +160,7 @@ export default function SalesMemberCategoryPage() {
           bordered
           pagination={false}
         >
-          <Table.Column title="業務名稱" dataIndex="saleName" key="saleName" />
+          <Table.Column title="業務名稱" dataIndex="saleName" key="saleName" width="8rem" />
 
           <Table.ColumnGroup title="指派名單數">
             <Table.Column<Pick<RecordType, 'memberCount'>>
@@ -167,6 +169,7 @@ export default function SalesMemberCategoryPage() {
               dataIndex="memberCount"
               render={({ firstHand }) => <span>{firstHand}</span>}
               sorter={(a, b) => a.memberCount.firstHand - b.memberCount.firstHand}
+              width="6.5rem"
             />
 
             <Table.Column<Pick<RecordType, 'memberCount'>>
@@ -175,6 +178,7 @@ export default function SalesMemberCategoryPage() {
               dataIndex="memberCount"
               render={({ secondHand }) => <span>{secondHand}</span>}
               sorter={(a, b) => a.memberCount.secondHand - b.memberCount.secondHand}
+              width="6.5rem"
             />
 
             <Table.Column<Pick<RecordType, 'memberCount'>>
@@ -183,6 +187,7 @@ export default function SalesMemberCategoryPage() {
               dataIndex="memberCount"
               render={({ total }) => <span>{total}</span>}
               sorter={(a, b) => a.memberCount.total - b.memberCount.total}
+              width="5.5rem"
             />
           </Table.ColumnGroup>
 
@@ -191,6 +196,7 @@ export default function SalesMemberCategoryPage() {
             title="接通數"
             dataIndex="getThroughCount"
             sorter={(a, b) => a.getThroughCount - b.getThroughCount}
+            width="6.5rem"
           />
 
           <Table.ColumnGroup title="初次接觸">
@@ -199,6 +205,7 @@ export default function SalesMemberCategoryPage() {
               title="成功開發數"
               dataIndex="notFirstRejectionCount"
               sorter={(a, b) => a.notFirstRejectionCount - b.notFirstRejectionCount}
+              width="7rem"
             />
 
             <Table.Column<Pick<RecordType, 'memberCount' | 'notFirstRejectionCount'>>
@@ -211,6 +218,7 @@ export default function SalesMemberCategoryPage() {
               sorter={(a, b) =>
                 a.notFirstRejectionCount / a.memberCount.total - b.notFirstRejectionCount / b.memberCount.total
               }
+              width="6.5rem"
             />
           </Table.ColumnGroup>
 
@@ -219,6 +227,7 @@ export default function SalesMemberCategoryPage() {
             title="正在開發數"
             dataIndex="contactingCount"
             sorter={(a, b) => a.contactingCount - b.contactingCount}
+            width="6.5rem"
           />
 
           <Table.ColumnGroup title="示範">
@@ -227,6 +236,7 @@ export default function SalesMemberCategoryPage() {
               title="示範數"
               dataIndex="demoCount"
               sorter={(a, b) => a.demoCount - b.demoCount}
+              width="6.5rem"
             />
 
             <Table.Column<Pick<RecordType, 'memberCount' | 'demoCount'>>
@@ -235,11 +245,12 @@ export default function SalesMemberCategoryPage() {
               dataIndex="demoCount"
               render={(demoCount, { memberCount }) => <span>{Math.floor((demoCount / memberCount.total) * 100)}%</span>}
               sorter={(a, b) => a.demoCount / a.memberCount.total - b.demoCount / b.memberCount.total}
+              width="6.5rem"
             />
           </Table.ColumnGroup>
 
           <Table.ColumnGroup title="成交">
-            <Table.Column key="agreedCount" title="成交數" dataIndex="agreedCount" />
+            <Table.Column key="agreedCount" title="成交數" dataIndex="agreedCount" width="6.5rem" />
 
             <Table.Column<Pick<RecordType, 'agreedCount' | 'memberCount'>>
               key="agreedRate"
@@ -249,6 +260,7 @@ export default function SalesMemberCategoryPage() {
                 <span>{Math.floor((agreedCount / memberCount.total) * 100)}%</span>
               )}
               sorter={(a, b) => a.agreedCount / a.memberCount.total - b.agreedCount / b.memberCount.total}
+              width="6.5rem"
             />
           </Table.ColumnGroup>
 
@@ -257,6 +269,7 @@ export default function SalesMemberCategoryPage() {
             title="LE 值"
             dataIndex="laborEvaluationScore"
             sorter={(a, b) => a.laborEvaluationScore - b.laborEvaluationScore}
+            width="6rem"
           />
 
           <Table.Column<RecordType>
@@ -307,6 +320,7 @@ export default function SalesMemberCategoryPage() {
                 <Button type="text" icon={<FunnelPlotFilled />} />
               </Popover>
             )}
+            width="6.5rem"
           />
         </Table>
       </AdminCard>
