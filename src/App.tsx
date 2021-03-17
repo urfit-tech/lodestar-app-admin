@@ -24,7 +24,7 @@ const App: React.FC = () => {
           const customMenuItems: typeof menuItems = [
             ...menuItems.slice(0, 14),
             {
-              permissionIsAllowed: true,
+              permissionIsAllowed: role !== 'content-creator',
               key: 'member_contract_collection',
               icon: () => <UserCopyIcon />,
               name: '合約資料管理',
