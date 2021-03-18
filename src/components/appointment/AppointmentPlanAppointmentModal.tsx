@@ -70,11 +70,14 @@ const StyledPeriodTitle = styled.div`
   font-weight: bold;
   letter-spacing: 0.2px;
 `
-const StyledPeriod = styled.div`
+const StyledPeriod = styled.div<{ variant?: 'editable' }>`
   font-size: 16px;
   font-weight: 500;
   color: ${props => props.theme['@primary-color']};
   margin-bottom: 25px;
+  span {
+    ${props => props.variant === 'editable' && 'cursor: pointer;'}
+  }
 `
 const StyledMeta = styled.div`
   color: var(--gray-dark);
@@ -114,8 +117,8 @@ const AppointmentPlanAppointmentModal: React.FC<
   const { loadingAppointmentPlanAdmin, appointmentPlanAdmin, refetchAppointmentPlanAdmin } = useAppointmentPlanAdmin(
     appointmentPlanId,
   )
-  const [appointmentStep, setAppointmentStep] = useState<'member' | 'period' | 'discount' | 'success' | 'failed'>(
-    'member',
+  const [appointmentStep, setAppointmentStep] = useState<'period' | 'member' | 'discount' | 'success' | 'failed'>(
+    'period',
   )
   const [appointmentValues, setAppointmentValues] = useState<{
     member: {
@@ -126,8 +129,8 @@ const AppointmentPlanAppointmentModal: React.FC<
     period: { startedAt: Date | null; endedAt: Date | null }
     discountId: string | null
   }>({
-    member: null,
     period: { startedAt: null, endedAt: null },
+    member: null,
     discountId: null,
   })
 
@@ -155,10 +158,10 @@ const AppointmentPlanAppointmentModal: React.FC<
     form.resetFields()
     setTaskType(null)
     setTaskId(null)
-    setAppointmentStep('member')
+    setAppointmentStep('period')
     setAppointmentValues({
-      member: null,
       period: { startedAt: null, endedAt: null },
+      member: null,
       discountId: null,
     })
   }
@@ -208,11 +211,11 @@ const AppointmentPlanAppointmentModal: React.FC<
     if (!appointmentValues.member || !appointmentValues.member.id) {
       return
     }
-    setAppointmentStep('period')
+    setAppointmentStep('discount')
   }
   const handlePeriodSubmit = (startedAt: Date, endedAt: Date) => {
     setAppointmentValues(values => ({ ...values, period: { startedAt, endedAt } }))
-    setAppointmentStep('discount')
+    setAppointmentStep('member')
   }
   const handleAppointmentSubmit = async () => {
     const values = await form.validateFields(['phone']).catch(() => {})
@@ -273,8 +276,8 @@ const AppointmentPlanAppointmentModal: React.FC<
               </Form.Item>
               <div className="text-right">
                 <div>
-                  <Button className="mr-2" onClick={() => setModalVisible(false)}>
-                    {formatMessage(commonMessages.ui.cancel)}
+                  <Button className="mr-2" onClick={() => resetModal()}>
+                    {formatMessage(commonMessages.ui.previousStep)}
                   </Button>
                   <Button type="primary" onClick={handleMemberSubmit}>
                     {formatMessage(commonMessages.ui.nextStep)}
@@ -333,13 +336,15 @@ const AppointmentPlanAppointmentModal: React.FC<
                 ))}
               {appointmentStep === 'discount' && (
                 <>
-                  <StyledPeriod>
-                    {appointmentValues.period.startedAt &&
-                      appointmentValues.period.endedAt &&
-                      dateRangeFormatter({
-                        startedAt: appointmentValues.period.startedAt,
-                        endedAt: appointmentValues.period.endedAt,
-                      })}
+                  <StyledPeriod variant="editable">
+                    <span onClick={() => resetModal()}>
+                      {appointmentValues.period.startedAt &&
+                        appointmentValues.period.endedAt &&
+                        dateRangeFormatter({
+                          startedAt: appointmentValues.period.startedAt,
+                          endedAt: appointmentValues.period.endedAt,
+                        })}
+                    </span>
                   </StyledPeriod>
                   <div className="mb-3">
                     <StyledSubTitle>{formatMessage(messages.selectDiscount)}</StyledSubTitle>

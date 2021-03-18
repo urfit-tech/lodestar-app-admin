@@ -70,6 +70,7 @@ export const commonMessages = {
     private: { id: 'common.ui.private', defaultMessage: '私密' },
     sortItems: { id: 'common.ui.sortItems', defaultMessage: '排序' },
     modify: { id: 'common.ui.modify', defaultMessage: '更改' },
+    previousStep: { id: 'common.ui.previousStep', defaultMessage: '上一步' },
     nextStep: { id: 'common.ui.nextStep', defaultMessage: '下一步' },
   }),
   label: defineMessages({
