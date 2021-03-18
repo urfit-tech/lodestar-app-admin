@@ -215,8 +215,8 @@ const useSalesOddsAddition = (
   } | null,
 ) => {
   const { loading, error, data, refetch } = useQuery<
-    types.GET_SALES_ODDS_ADDITION,
-    types.GET_SALES_ODDS_ADDITIONVariables
+    hasura.GET_SALES_ODDS_ADDITION,
+    hasura.GET_SALES_ODDS_ADDITIONVariables
   >(
     gql`
       query GET_SALES_ODDS_ADDITION(

@@ -27,7 +27,7 @@ import { sum } from 'ramda'
 import React, { useRef, useState } from 'react'
 import { defineMessages, useIntl } from 'react-intl'
 import styled from 'styled-components'
-import types from '../types'
+import hasura from '../hasura'
 
 const messages = defineMessages({
   memberNoteCreatedAt: { id: 'member.label.memberNoteCreatedAt', defaultMessage: '聯絡時間' },
@@ -126,8 +126,8 @@ const NoteCollectionPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { authToken, apiHost } = useAuth()
 
-  const [orderBy, setOrderBy] = useState<types.GET_MEMBER_NOTES_ADMINVariables['orderBy']>({
-    created_at: types.order_by.desc,
+  const [orderBy, setOrderBy] = useState<hasura.GET_MEMBER_NOTES_ADMINVariables['orderBy']>({
+    created_at: 'desc' as hasura.order_by,
   })
   const [filters, setFilters] = useState<FiltersProps>({
     range: [moment().startOf('month'), moment().endOf('month')],
@@ -427,7 +427,7 @@ const NoteCollectionPage: React.FC = () => {
                   const newSorter = sorter as SorterResult<NoteAdminProps>
                   setOrderBy({
                     [newSorter.columnKey === 'duration' ? 'duration' : 'created_at']:
-                      newSorter.order === 'ascend' ? types.order_by.asc : types.order_by.desc,
+                      newSorter.order === 'ascend' ? 'asc' : 'desc',
                   })
                 }}
                 onRow={note => ({
@@ -561,9 +561,9 @@ const LoadRecordFileButton: React.FC<{
   )
 }
 
-const useMemberNotesAdmin = (orderBy: types.GET_MEMBER_NOTES_ADMINVariables['orderBy'], filters?: FiltersProps) => {
+const useMemberNotesAdmin = (orderBy: hasura.GET_MEMBER_NOTES_ADMINVariables['orderBy'], filters?: FiltersProps) => {
   const { permissions, currentMemberId } = useAuth()
-  const condition: types.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
+  const condition: hasura.GET_MEMBER_NOTES_ADMINVariables['condition'] = {
     created_at: filters?.range
       ? {
           _gte: filters.range[0].toDate(),
@@ -621,8 +621,8 @@ const useMemberNotesAdmin = (orderBy: types.GET_MEMBER_NOTES_ADMINVariables['ord
     },
   }
   const { loading, error, data, refetch, fetchMore } = useQuery<
-    types.GET_MEMBER_NOTES_ADMIN,
-    types.GET_MEMBER_NOTES_ADMINVariables
+    hasura.GET_MEMBER_NOTES_ADMIN,
+    hasura.GET_MEMBER_NOTES_ADMINVariables
   >(
     gql`
       query GET_MEMBER_NOTES_ADMIN($orderBy: member_note_order_by!, $condition: member_note_bool_exp) {
