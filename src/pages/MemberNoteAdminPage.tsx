@@ -17,17 +17,17 @@ import hasura from '../hasura'
 const MemberProfileAdminPage: React.FC = () => {
   const { formatMessage } = useIntl()
   const { memberId } = useParams<{ memberId: string }>()
-  const { currentMemberId } = useAuth()
+  const { currentMemberId, currentUserRole } = useAuth()
 
-  const { loadingMemberAdmin, errorMemberAdmin, memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
+  const { memberAdmin, refetchMemberAdmin } = useMemberAdmin(memberId)
   const { loadingNotes, errorNotes, notes, refetchNotes } = useMemberNotesAdmin(
     { created_at: 'desc' as hasura.order_by },
-    { member: memberId },
+    { member: memberId, author: currentUserRole !== 'app-owner' ? currentMemberId || '' : undefined },
   )
   const { insertMemberNote } = useMutateMemberNote()
   const uploadAttachments = useUploadAttachments()
 
-  if (!currentMemberId || loadingMemberAdmin || errorMemberAdmin || !memberAdmin) {
+  if (!currentMemberId || loadingNotes || errorNotes || !memberAdmin) {
     return <Skeleton active />
   }
 
@@ -59,6 +59,7 @@ const MemberProfileAdminPage: React.FC = () => {
                 }
                 message.success(formatMessage(commonMessages.event.successfullyCreated))
                 refetchMemberAdmin()
+                refetchNotes()
               })
               .catch(handleError)
           }
@@ -73,7 +74,15 @@ const MemberProfileAdminPage: React.FC = () => {
             </StyledEmptyBlock>
           ) : (
             notes.map(note => (
-              <MemberNoteAdminItem key={note.id} note={note} memberAdmin={memberAdmin} onRefetch={refetchNotes} />
+              <MemberNoteAdminItem
+                key={note.id}
+                note={note}
+                memberAdmin={memberAdmin}
+                onRefetch={() => {
+                  refetchMemberAdmin()
+                  refetchNotes()
+                }}
+              />
             ))
           )}
         </AdminBlock>

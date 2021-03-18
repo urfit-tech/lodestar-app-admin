@@ -8,7 +8,10 @@
     "ilike",
     "jitsi",
     "jsonb",
+    "nowrap",
+    "recordfile",
     "shajs",
+    "starttime",
     "timestamptz",
     "typegen",
     "wavesurfer"
